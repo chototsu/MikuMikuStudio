@@ -86,7 +86,6 @@ public class HelloIntersection extends SimpleGame {
         );
         ts.setEnabled(true);
         sb.setRenderState(ts);
-        rootNode.attachChild(sb);
 
         /** Set the action called "firebullet", bound to KEY_F, to performAction FireBullet*/
         input.addKeyboardAction("firebullet",KeyInput.KEY_F,new FireBullet());
@@ -170,6 +169,7 @@ public class HelloIntersection extends SimpleGame {
     protected void simpleRender(){
         /** Play laser if I need to*/
         SoundAPIController.getRenderer().draw(laserSound);
+        display.getRenderer().draw(sb);
     }
 
     /**
