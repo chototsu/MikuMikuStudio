@@ -47,7 +47,7 @@ import com.jme.renderer.Renderer;
  * that gives a way of displaying data to the created window.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLDisplaySystem.java,v 1.5 2003-10-28 19:59:05 mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.6 2004-01-18 22:46:23 mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -71,6 +71,14 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             throw new JmeException("LWJGL library not set.");
         }
         
+    }
+    
+    /**
+     * <code>setTitle</code> sets the window title of the created window.
+     * @param title the title.
+     */
+    public void setTitle(String title) {
+        Window.setTitle(title);
     }
 
     /**

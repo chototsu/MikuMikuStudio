@@ -47,11 +47,11 @@ import com.jme.util.LoggingSystem;
  * continues to run until finish is called.
  * 
  * @author Mark Powell
- * @version $Id: AbstractGame.java,v 1.3 2003-12-01 13:18:58 mojomonkey Exp $
+ * @version $Id: AbstractGame.java,v 1.4 2004-01-18 22:46:23 mojomonkey Exp $
  */
 
 public abstract class AbstractGame {
-    private final static String JME_VERSION_TAG = "jME version 0.2.0";
+    private final static String JME_VERSION_TAG = "jME version 0.4.0";
 
     //Flag for running the system.
     private boolean finished;

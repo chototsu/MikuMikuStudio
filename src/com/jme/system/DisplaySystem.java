@@ -54,7 +54,7 @@ import com.jme.renderer.Renderer;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.5 2003-10-28 19:59:05 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.6 2004-01-18 22:46:23 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
     protected int width, height;
@@ -89,6 +89,8 @@ public abstract class DisplaySystem {
     public int getHeight() {
         return height;
     }
+    
+    public abstract void setTitle(String title);
 
     /**
      * <code>createWindow</code> creates a window with the desired settings. 
