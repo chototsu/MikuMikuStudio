@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestLightState.java,v 1.2 2004-02-19 21:02:04 mojomonkey Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;
@@ -128,6 +128,7 @@ public class TestLightState extends SimpleGame {
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
 
         input = new FirstPersonController(this, cam, "LWJGL");
+        display.setTitle("Light State Test");
 
     }
 
@@ -181,6 +182,7 @@ public class TestLightState extends SimpleGame {
         dr.setDirection(new Vector3f(150, 0 , 150));
 
         LightState state = display.getRenderer().getLightState();
+        state.setEnabled(true);
         state.attach(am);
         state.attach(dr);
         state.attach(am2);
