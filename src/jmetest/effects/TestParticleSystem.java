@@ -44,6 +44,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -66,6 +67,8 @@ public class TestParticleSystem extends SimpleGame {
 	private Timer timer;
 	private InputController input;
 	private KeyInput key;
+	
+	private Text fps;
 
 	public static void main(String[] args) {
 		TestParticleSystem app = new TestParticleSystem();
@@ -75,12 +78,10 @@ public class TestParticleSystem extends SimpleGame {
 
 	protected void update(float interpolation) {
 		timer.update();
-        System.out.println(timer.getFrameRate());
         input.update(timer.getTimePerFrame() * 10);
-		ps.update(10f / timer.getFrameRate());
-		cam.update();
-
-		root.updateWorldData(0.005f);
+        
+        fps.print("FPS: " + timer.getFrameRate());
+		root.updateWorldData(timer.getTimePerFrame() * 10);
 
 		if (KeyBindingManager
 			.getKeyBindingManager()
@@ -152,11 +153,20 @@ public class TestParticleSystem extends SimpleGame {
 		TextureState ts = display.getRenderer().getTextureState();
 		ts.setTexture(
 			TextureManager.loadTexture(
-				TestParticleSystem.class.getClassLoader().getResource("jmetest/data/texture/star.png"),
+				"data/texture/star.png",
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
 		ts.setEnabled(true);
+		
+		TextureState font = display.getRenderer().getTextureState();
+		font.setTexture(
+				TextureManager.loadTexture(
+						"data/Font/font.png",
+						Texture.MM_LINEAR,
+						Texture.FM_LINEAR,
+						true));
+		font.setEnabled(true);
 
 		ps = new ParticleSystem(100);
 		ps.setStartColor(
@@ -175,8 +185,15 @@ public class TestParticleSystem extends SimpleGame {
 		ps.addController(pc);
 		ps.setRenderState(as1);
 		ps.setRenderState(ts);
-
+		ps.setName("Particle System");
+		
+		fps = new Text("");
+		fps.setRenderState(as1);
+		fps.setRenderState(font);
+		fps.setName("FPS Counter");
+		
 		root.attachChild(ps);
+		root.attachChild(fps);
 		root.updateGeometricState(0.0f, true);
 
 	}
