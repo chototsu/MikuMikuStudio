@@ -44,13 +44,13 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.26 2004-08-21 06:18:32 cep21 Exp $
+ * @version $Id: Matrix3f.java,v 1.27 2004-08-22 02:00:35 cep21 Exp $
  */
 public class Matrix3f {
 	public float m00, m01, m02;
 	public float m10, m11, m12;
 	public float m20, m21, m22;
-    private static Vector3f tempVa=new Vector3f();
+    private static final Vector3f tempVa=new Vector3f();
 
 	/**
 	 * Constructor instantiates a new <code>Matrix3f</code> object. The

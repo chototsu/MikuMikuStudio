@@ -39,13 +39,13 @@ import com.jme.scene.Spatial;
  * the negative left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeRightAction.java,v 1.11 2004-08-21 06:18:32 cep21 Exp $
+ * @version $Id: KeyNodeStrafeRightAction.java,v 1.12 2004-08-22 02:00:34 cep21 Exp $
  */
 public class KeyNodeStrafeRightAction extends AbstractInputAction {
 
     private Spatial node;
 
-    private static Vector3f tempVa=new Vector3f();
+    private static final Vector3f tempVa=new Vector3f();
 
     /**
      * Constructor instantiates a new <code>KeyNodeStrafeRightAction</code> object.

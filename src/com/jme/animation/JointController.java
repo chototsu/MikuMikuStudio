@@ -23,8 +23,6 @@ public class JointController extends Controller {
      */
     public int numJoints;
 
-    int b;
-
     /**
      * movementInfo[i] contains a float value time and an array of TransformMatrix.  At time <code>time</code>
      * the joint i is at movement <code>jointChange[i]</code>
@@ -70,9 +68,9 @@ public class JointController extends Controller {
     private TransformMatrix[] inverseChainMatrix;
 
     // Internal worker classes
-    private Quaternion unSyncbeginAngle=new Quaternion();
-    private Vector3f unSyncbeginPos=new Vector3f();
-    private TransformMatrix tempUnSyncd=new TransformMatrix();
+    private final static Quaternion unSyncbeginAngle=new Quaternion();
+    private final static Vector3f unSyncbeginPos=new Vector3f();
+    private final static TransformMatrix tempUnSyncd=new TransformMatrix();
 
     /**
      * Tells update that it should be called every <code>skipRate</code> seconds

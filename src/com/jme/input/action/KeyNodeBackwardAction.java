@@ -41,11 +41,11 @@ import com.jme.scene.Spatial;
  * <code>performAction</code> method. The speed is set with construction or
  * the <code>setSpeed</code> method. This can be thought as units/second.
  * @author Mark Powell
- * @version $Id: KeyNodeBackwardAction.java,v 1.12 2004-08-21 06:19:31 cep21 Exp $
+ * @version $Id: KeyNodeBackwardAction.java,v 1.13 2004-08-22 02:00:33 cep21 Exp $
  */
 public class KeyNodeBackwardAction extends AbstractInputAction {
     private Spatial node;
-    private static Vector3f tempVa=new Vector3f();
+    private static final Vector3f tempVa=new Vector3f();
 
     /**
      * Constructor creates a new <code>KeyNodeBackwardAction</code> object.

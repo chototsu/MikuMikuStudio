@@ -40,13 +40,13 @@ import com.jme.renderer.Camera;
  * a certain angle. This angle is determined by the speed at which the camera
  * can turn and the time between frames.
  * @author Mark Powell
- * @version $Id: KeyRotateLeftAction.java,v 1.10 2004-08-21 06:18:32 cep21 Exp $
+ * @version $Id: KeyRotateLeftAction.java,v 1.11 2004-08-22 02:00:34 cep21 Exp $
  */
 public class KeyRotateLeftAction extends AbstractInputAction {
     private Camera camera;
     private Vector3f lockAxis;
 
-    private static Matrix3f incr=new Matrix3f();
+    private static final Matrix3f incr=new Matrix3f();
 
 
     /**

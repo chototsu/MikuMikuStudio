@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.15 2004-08-21 06:18:30 cep21 Exp $
+ * @version $Id: BoundingSphere.java,v 1.16 2004-08-22 02:00:32 cep21 Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -62,8 +62,8 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     /** When this flag is true, updateModelBound() for BoundingSphere will calculate the smallest bounding volume.*/ 
     static public boolean useExactBounds=false;
 
-    static private Vector3f tempVeca=new Vector3f();
-    static private Vector3f tempVecb=new Vector3f();
+    private static final Vector3f tempVeca=new Vector3f();
+    private static final Vector3f tempVecb=new Vector3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>

@@ -34,10 +34,10 @@ public class SpatialTransformer extends Controller{
     /** Interpolated array of keyframe states*/
     public ArrayList keyframes;
 
-    Vector3f unSyncbeginPos=new Vector3f();
-    Vector3f unSyncendPos=new Vector3f();
-    private Quaternion unSyncbeginRot=new Quaternion();
-    private Quaternion unSyncendRot=new Quaternion();
+    private final static Vector3f unSyncbeginPos=new Vector3f();
+    private final static Vector3f unSyncendPos=new Vector3f();
+    private final static Quaternion unSyncbeginRot=new Quaternion();
+    private final static Quaternion unSyncendRot=new Quaternion();
 
     /** Current time in the animation*/
     private float curTime;

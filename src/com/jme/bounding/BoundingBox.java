@@ -46,7 +46,7 @@ import com.jme.math.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.14 2004-08-21 02:39:11 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.15 2004-08-22 02:00:32 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -60,7 +60,7 @@ public class BoundingBox extends Box implements BoundingVolume {
 
     private Vector3f origCenter = new Vector3f();
     private Vector3f origExtent = new Vector3f();
-    private static Matrix3f tempMat=new Matrix3f();
+    private static final Matrix3f tempMat=new Matrix3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>

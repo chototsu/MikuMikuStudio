@@ -49,7 +49,7 @@ import com.jme.renderer.ColorRGBA;
  * The reason for lack of documentation is that it should have little use to someone
  * outside the API, unless they already know how to use it.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.13 2004-08-21 02:39:27 cep21 Exp $
+ * @version $Id: ClodCreator.java,v 1.14 2004-08-22 02:00:35 cep21 Exp $
  */
 
 public class ClodCreator extends VETMesh {
@@ -74,9 +74,9 @@ public class ClodCreator extends VETMesh {
   Vector deletedEdges; // <CollapseRecord>
   CollapseRecord[] records;
 
-    private static Vector3f tempVa=new Vector3f();
-    private static Vector3f tempVb=new Vector3f();
-    private static Vector3f tempVc=new Vector3f();
+  private static final Vector3f tempVa=new Vector3f();
+  private static final Vector3f tempVb=new Vector3f();
+  private static final Vector3f tempVc=new Vector3f();
 
   protected class HeapRecord {
     public HeapRecord() {

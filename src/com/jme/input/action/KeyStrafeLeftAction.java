@@ -39,13 +39,13 @@ import com.jme.renderer.Camera;
  * move along the positive left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyStrafeLeftAction.java,v 1.8 2004-08-21 06:18:32 cep21 Exp $
+ * @version $Id: KeyStrafeLeftAction.java,v 1.9 2004-08-22 02:00:34 cep21 Exp $
  */
 public class KeyStrafeLeftAction extends AbstractInputAction {
 
     private Camera camera;
     
-    private static Vector3f tempVa=new Vector3f();
+    private static final Vector3f tempVa=new Vector3f();
 
     /**
      * Constructor instantiates a new <code>KeyStrafeLeftAction</code> object.

@@ -7,13 +7,10 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.LoggingSystem;
-import com.jme.util.TextureManager;
-import com.jme.image.Texture;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.io.*;
-import java.net.URL;
 
 /**
  * Started Date: Jun 12, 2004<br><br>
@@ -42,41 +39,37 @@ public class KeyframeController extends Controller{
     /**
      * A special array used with SmoothTransform to store temporary smooth transforms
      */
-    transient ArrayList prevKeyframes;
+    transient private ArrayList prevKeyframes;
 
     /**
      * The mesh that is actually morphed
      */
-    TriMesh morphMesh;
+    private TriMesh morphMesh;
 
     /**
      * The current time in the animation
      */
-    transient float curTime;
+    transient private float curTime;
 
     /**
      * The current frame of the animation
      */
-    transient int curFrame;
-
-    transient Vector3f tempV3f=new Vector3f();
-    transient Vector2f tempV2f=new Vector2f();
-    transient ColorRGBA tempColor=new ColorRGBA();
+    transient private int curFrame;
 
     /**
      * The PointInTime before <code>curTime</code>
      */
-    transient PointInTime before;
+    transient private PointInTime before;
 
     /**
      * The PointInTime after <code>curTime</code>
      */
-    transient PointInTime after;
+    transient private PointInTime after;
 
     /**
      * If true, the animation is moving forward, if false the animation is moving backwards
      */
-    transient boolean movingForward;
+    transient private boolean movingForward;
 
     /**
      * Used with SmoothTransform to signal it is doing a smooth transform
@@ -451,9 +444,6 @@ public class KeyframeController extends Controller{
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         keyframes=(ArrayList) in.readObject();
-        tempV3f=new Vector3f();
-        tempV2f=new Vector2f();
-        tempColor=new ColorRGBA();
         movingForward=true;
     }
 

@@ -38,11 +38,11 @@ import com.jme.renderer.Camera;
  * <code>KeyLookUpAction</code> tilts a camera up a given angle. This angle
  * should be represented as a radian.
  * @author Mark Powell
- * @version $Id: KeyLookUpAction.java,v 1.9 2004-08-21 06:18:31 cep21 Exp $
+ * @version $Id: KeyLookUpAction.java,v 1.10 2004-08-22 02:00:33 cep21 Exp $
  */
 public class KeyLookUpAction extends AbstractInputAction {
 
-    private static Matrix3f incr=new Matrix3f();
+    private static final Matrix3f incr=new Matrix3f();
     private Camera camera;
 
     /**
