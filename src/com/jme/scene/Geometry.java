@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.45 2004-05-20 18:29:42 renanse Exp $
+ * @version $Id: Geometry.java,v 1.46 2004-05-28 00:42:34 cep21 Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -897,5 +897,47 @@ public abstract class Geometry extends Spatial implements Serializable {
 
         return worldRotation.mult(vertex[i]).addLocal(worldTranslation);
     }
+    /**
+     * Sets this geometry's first texture buffer as a refrence to
+     * the passed <code>FloatBuffer</code>.  Incorrectly built FloatBuffers can
+     * have undefined results.  Use with care.
+     * @param toSet The <code>FloatBuffer</code> to set this
+     * geometry's first texture buffer to
+     */
+    protected void setTextureBuffer(FloatBuffer toSet){
+        this.texBuf[0]=toSet;
+    }
 
+    /**
+     * Sets this geometry's normal buffer as a refrence to
+     * the passed <code>FloatBuffer</code>.  Incorrectly built FloatBuffers can
+     * have undefined results.  Use with care.
+     * @param toSet The <code>FloatBuffer</code> to set this
+     * geometry's normal buffer to
+     */
+    protected void setNormalBuffer(FloatBuffer toSet){
+        normBuf=toSet;
+    }
+
+    /**
+     * Sets this geometry's vertex buffer as a refrence to
+     * the passed <code>FloatBuffer</code>.  Incorrectly built FloatBuffers can
+     * have undefined results.  Use with care.
+     * @param toSet The <code>FloatBuffer</code> to set this
+     * geometry's vertex buffer to
+     */
+    protected void setVertexBuffer(FloatBuffer toSet){
+        vertBuf=toSet;
+    }
+
+    /**
+     * Sets this geometry's color buffer as a refrence to
+     * the passed <code>FloatBuffer</code>.  Incorrectly built FloatBuffers can
+     * have undefined results.  Use with care.
+     * @param toSet The <code>FloatBuffer</code> to set this
+     * geometry's color buffer to
+     */
+    protected void setFloatBuffer(FloatBuffer toSet){
+        colorBuf=toSet;
+    }
 }
