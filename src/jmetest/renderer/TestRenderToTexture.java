@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.22 2004-04-23 01:41:48 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.23 2004-04-23 02:30:17 renanse Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -60,6 +60,7 @@ public class TestRenderToTexture extends SimpleGame {
 
   private TextureRenderer tRenderer;
   private Texture fakeTex;
+  private float lastRend = 1;
 
   /**
    * Entry point for the test,
@@ -99,7 +100,11 @@ public class TestRenderToTexture extends SimpleGame {
    * @see com.jme.app.SimpleGame#render()
    */
   protected void simpleRender(float interpolation) {
-    tRenderer.render(fakeScene, fakeTex);
+    lastRend += timer.getTimePerFrame();
+    if (lastRend > .03f) {
+      tRenderer.render(fakeScene, fakeTex);
+      lastRend = 0;
+    }
   }
 
   /**
@@ -161,6 +166,7 @@ public class TestRenderToTexture extends SimpleGame {
     tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
     fakeTex = tRenderer.setupTexture();
     tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
+    tRenderer.updateCamera();
 
     // Now add that texture to the "real" cube.
     ts = display.getRenderer().getTextureState();
@@ -177,8 +183,8 @@ public class TestRenderToTexture extends SimpleGame {
         true), 1);
     rootNode.setRenderState(ts);
 
-    // Since we have 2 textures, the geometry needs to know how to split up the coords.
-    realBox.setTextures(realBox.getTextures(0), 1);
+    // Since we have 2 textures, the geometry needs to know how to split up the coords for the second state.
+    realBox.copyTextureCoords(0, 1);
 
     fakeScene.updateGeometricState(0.0f, true);
     fakeScene.updateRenderState();
