@@ -42,9 +42,9 @@ import jme.math.Vector;
  * thought of as a cylinder with domed caps.
  * 
  * @author Mark Powell
- * @version $Id: BoundingCapsule.java,v 1.3 2003-08-27 20:48:48 mojomonkey Exp $
+ * @version $Id: BoundingCapsule.java,v 1.4 2003-08-28 18:52:12 mojomonkey Exp $
  */
-public class BoundingCapsule {
+public class BoundingCapsule implements BoundingVolume {
 	private Line lineSegment;
 	private float radius;
 

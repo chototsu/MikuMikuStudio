@@ -40,10 +40,10 @@ import jme.math.Vector;
  * with a center of (0, 0, 0). The ellipsoid can also be expressed as the 
  * center matrix form (and will be in this class) as: (X-C)^T A (X-C) = 1.
  * @author Mark Powell
- * @version $Id: BoundingEllipsoid.java,v 1.1 2003-08-28 18:48:21 mojomonkey Exp $
+ * @version $Id: BoundingEllipsoid.java,v 1.2 2003-08-28 18:52:12 mojomonkey Exp $
  *
  */
-public class BoundingEllipsoid {
+public class BoundingEllipsoid implements BoundingVolume {
     private Vector center;
     private Matrix a;
     private Matrix inverseA;

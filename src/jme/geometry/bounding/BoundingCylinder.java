@@ -43,9 +43,9 @@ import jme.math.Vector;
  * also defined by the equation Xi = P + RYi where R = [U V D], and U V causes
  * R to be orthonormal.
  * @author Mark Powell
- * @version $Id: BoundingCylinder.java,v 1.1 2003-08-28 14:29:53 mojomonkey Exp $
+ * @version $Id: BoundingCylinder.java,v 1.2 2003-08-28 18:52:12 mojomonkey Exp $
  */
-public class BoundingCylinder {
+public class BoundingCylinder implements BoundingVolume {
     private Vector center; //P
     private Vector direction; //D
     private Vector u;

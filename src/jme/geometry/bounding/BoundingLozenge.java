@@ -42,9 +42,9 @@ import jme.math.Vector;
  * <br><br>
  * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
- * @version $Id: BoundingLozenge.java,v 1.2 2003-08-27 20:48:48 mojomonkey Exp $
+ * @version $Id: BoundingLozenge.java,v 1.3 2003-08-28 18:52:12 mojomonkey Exp $
  */
-public class BoundingLozenge {
+public class BoundingLozenge implements BoundingVolume {
     private Rectangle rectangle;
     private float radius;
 

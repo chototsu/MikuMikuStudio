@@ -45,9 +45,9 @@ import jme.math.Vector;
  * 
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.3 2003-08-08 17:19:34 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.4 2003-08-28 18:52:12 mojomonkey Exp $
  */
-public class BoundingSphere {
+public class BoundingSphere implements BoundingVolume {
 	private float radius;
 	private Vector center;
 
