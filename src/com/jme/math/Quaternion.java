@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.17 2004-05-27 20:08:22 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.18 2004-05-27 20:14:10 cep21 Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -400,6 +400,51 @@ public class Quaternion {
         z = interpolated.z;
         w = interpolated.w;
         return interpolated;
+    }
+
+    /**
+     * Sets the values of this quaternion to the slerp from itself to q2 by changeAmnt
+     * @param q2 Final interpolation value
+     * @param changeAmnt The amount diffrence
+     */
+    public void slerp(Quaternion q2, float changeAmnt) {
+        if (this.x == q2.x && this.y == q2.y && this.z == q2.z && this.w == q2.w) {
+            return;
+        }
+
+        float result =
+            (this.x * q2.x) + (this.y * q2.y) + (this.z * q2.z) + (this.w * q2.w);
+
+        if (result < 0.0f) {
+            // Negate the second quaternion and the result of the dot product
+            q2.x = -q2.x;
+            q2.y = -q2.y;
+            q2.z = -q2.z;
+            q2.w = -q2.w;
+            result = -result;
+        }
+
+        // Set the first and second scale for the interpolation
+        float scale0 = 1 - changeAmnt;
+        float scale1 = changeAmnt;
+
+        // Check if the angle between the 2 quaternions was big enough to warrant such calculations
+        if ((1 - result) > 0.1f) {
+            // Get the angle between the 2 quaternions, and then store the sin() of that angle
+            float theta = (float) Math.acos(result);
+            float sinTheta = (float) Math.sin(theta);
+
+            // Calculate the scale for q1 and q2, according to the angle and it's sine value
+            scale0 = (float) Math.sin((1 - changeAmnt) * theta) / sinTheta;
+            scale1 = (float) Math.sin((changeAmnt * theta)) / sinTheta;
+        }
+
+        // Calculate the x, y, z and w values for the quaternion by using a special
+        // form of linear interpolation for quaternions.
+        this.x = (scale0 * this.x) + (scale1 * q2.x);
+        this.y = (scale0 * this.y) + (scale1 * q2.y);
+        this.z = (scale0 * this.z) + (scale1 * q2.z);
+        this.w = (scale0 * this.w) + (scale1 * q2.w);
     }
 
     /**
