@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.4 2003-12-10 01:05:36 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.5 2004-01-22 21:48:55 mojomonkey Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -117,6 +117,7 @@ public class BoundingSphere implements BoundingVolume {
      * @param points the points to contain.
      */
     public void computeFromPoints(Vector3f[] points) {
+        System.out.println("Computing from points");
         containAABB(points);
     }
 
@@ -129,6 +130,10 @@ public class BoundingSphere implements BoundingVolume {
      */
     public void containAABB(Vector3f[] points) {
         LoggingSystem.getLogger().log(Level.INFO, "Bounding Sphere calculated " +            "using AABB.");
+    
+        if(points.length <= 0) {
+            return;
+        }
     
         Vector3f min = new Vector3f(points[0].x, points[0].y, points[0].z);
         Vector3f max = new Vector3f(min.x, min.y, min.z);

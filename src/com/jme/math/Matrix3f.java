@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.6 2003-12-23 03:45:53 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.7 2004-01-22 21:48:55 mojomonkey Exp $
  */
 public class Matrix3f {
     private float[][] matrix;
@@ -55,6 +55,18 @@ public class Matrix3f {
     public Matrix3f() {
         matrix = new float[3][3];
         loadIdentity();
+    }
+    
+    public void copy(Matrix3f matrix) {
+        if(null == matrix) {
+            loadIdentity();
+        } else {
+            for(int i = 0; i < 4; i++) {
+                for(int j = 0; j < 4; j++) {
+                 this.matrix[i][j] = matrix.matrix[i][j];
+              }
+            }
+        }
     }
 
     /**
@@ -277,6 +289,35 @@ public class Matrix3f {
         matrix[2][0] = xzm - ySin;
         matrix[2][1] = yzm + xSin;
         matrix[2][2] = z2 * oneMinusCos + cos;
+    }
+    
+    public void fromAngles(Vector3f angles) {
+        float angle;
+        float sr, sp, sy, cr, cp, cy;
+
+        angle = (float) (angles.z * (Math.PI * 2 / 360));
+        sy = (float) java.lang.Math.sin(angle);
+        cy = (float) java.lang.Math.cos(angle);
+        angle = (float) (angles.y * (Math.PI * 2 / 360));
+        sp = (float) java.lang.Math.sin(angle);
+        cp = (float) java.lang.Math.cos(angle);
+        angle = (float) (angles.x * (Math.PI * 2 / 360));
+        sr = (float) java.lang.Math.sin(angle);
+        cr = (float) java.lang.Math.cos(angle);
+
+        // matrix = (Z * Y) * X
+        matrix[0][0] = cp * cy;
+        matrix[1][0] = cp * sy;
+        matrix[2][0] = -sp;
+        matrix[0][1] = sr * sp * cy + cr * -sy;
+        matrix[1][1] = sr * sp * sy + cr * cy;
+        matrix[2][1] = sr * cp;
+        matrix[0][2] = (cr * sp * cy + -sr * -sy);
+        matrix[1][2] = (cr * sp * sy + -sr * cy);
+        matrix[2][2] = cr * cp;
+        matrix[0][3] = 0.0f;
+        matrix[1][3] = 0.0f;
+        matrix[2][3] = 0.0f;
     }
 
     /**

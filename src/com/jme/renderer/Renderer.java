@@ -70,7 +70,7 @@ import com.jme.widget.text.WidgetText;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.9 2004-01-20 12:40:02 greggpatton Exp $
+ * @version $Id: Renderer.java,v 1.10 2004-01-22 21:48:55 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -294,7 +294,7 @@ public interface Renderer {
      * @param t the mesh to be rendered.
      */
     public void draw(TriMesh t);
-
+    
     /**
      * <code>draw</code> renders a WidgetPanel object to the back buffer.
      * @param wp the WidgetPanel to be rendered.
@@ -312,5 +312,5 @@ public interface Renderer {
      * @param wt the WidgetScrollerButton object to be rendered.
      */
     public void draw(WidgetScrollerButton wsb);
-
+ 
 }

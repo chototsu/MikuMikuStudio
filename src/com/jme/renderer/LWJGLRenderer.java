@@ -90,7 +90,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.11 2004-01-20 12:39:12 greggpatton Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.12 2004-01-22 21:48:55 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -783,30 +783,26 @@ public class LWJGLRenderer implements Renderer {
 
         // render the object
         GL.glBegin(GL.GL_LINE_STRIP);
-    
+
         ColorRGBA[] color = c.getColors();
         float colorInterval = 0;
         float colorModifier = 0;
         int colorCounter = 0;
-        if(null != color) {
-            GL.glColor4f(
-                color[0].r,
-                color[0].g,
-                color[0].b,
-                color[0].a);
-        
+        if (null != color) {
+            GL.glColor4f(color[0].r, color[0].g, color[0].b, color[0].a);
+
             colorInterval = 1f / c.getColors().length;
             colorModifier = colorInterval;
             colorCounter = 0;
         }
-        
+
         Vector3f point;
         for (float t = 0;
             t <= (1 + (1.0f / c.getSteps()));
             t += 1.0f / c.getSteps()) {
-                
+
             if (t >= colorInterval && color != null) {
-                
+
                 colorInterval += colorModifier;
                 GL.glColor4f(
                     c.getColors()[colorCounter].r,
@@ -815,7 +811,7 @@ public class LWJGLRenderer implements Renderer {
                     c.getColors()[colorCounter].a);
                 colorCounter++;
             }
-            
+
             point = c.getPoint(t);
             GL.glVertex3f(point.x, point.y, point.z);
         }
@@ -907,6 +903,8 @@ public class LWJGLRenderer implements Renderer {
         if (s != null) {
             s.onDraw(this);
         }
+        
+        
     }
 
     /**
@@ -987,8 +985,14 @@ public class LWJGLRenderer implements Renderer {
         float x = (wt.getX()) + wt.getXOffset();
         float y = wt.getY() + wt.getHeight() + wt.getYOffset();
 
-        wt.getFont().renderString(wt.getText(), x, y, wt.getScale(), wt.getFgColor(), wt.getFgColor());
-        
+        wt.getFont().renderString(
+            wt.getText(),
+            x,
+            y,
+            wt.getScale(),
+            wt.getFgColor(),
+            wt.getFgColor());
+
         resetWidgetProjection();
     }
 
@@ -1039,7 +1043,7 @@ public class LWJGLRenderer implements Renderer {
     private void drawBorder2d(Widget w) {
 
         WidgetBorder border = w.getBorder();
-        
+
         if (border.getType() == WidgetBorderType.RAISED) {
             drawRaisedBorder2d(w);
         } else if (border.getType() == WidgetBorderType.LOWERED) {
@@ -1093,7 +1097,13 @@ public class LWJGLRenderer implements Renderer {
         resetWidgetProjection();
     }
 
-    private void drawBox2d(int top, int left, int bottom, int right, WidgetBorder border, ColorRGBA color) {
+    private void drawBox2d(
+        int top,
+        int left,
+        int bottom,
+        int right,
+        WidgetBorder border,
+        ColorRGBA color) {
 
         if (color != null) {
             GL.glColor3f(color.r, color.g, color.b);
@@ -1108,7 +1118,14 @@ public class LWJGLRenderer implements Renderer {
 
     }
 
-    private void drawBorder2d(int top, int left, int bottom, int right, WidgetBorder border, ColorRGBA topLeft, ColorRGBA bottomRight) {
+    private void drawBorder2d(
+        int top,
+        int left,
+        int bottom,
+        int right,
+        WidgetBorder border,
+        ColorRGBA topLeft,
+        ColorRGBA bottomRight) {
 
         GL.glBegin(GL.GL_QUADS);
 
@@ -1139,29 +1156,65 @@ public class LWJGLRenderer implements Renderer {
         GL.glEnd();
     }
 
-    private void drawFlatBorder2d(int top, int left, int bottom, int right, WidgetBorder border) {
-        drawBorder2d(top, left, bottom, right, border, border.getFlatColor(), border.getFlatColor());
+    private void drawFlatBorder2d(
+        int top,
+        int left,
+        int bottom,
+        int right,
+        WidgetBorder border) {
+        drawBorder2d(
+            top,
+            left,
+            bottom,
+            right,
+            border,
+            border.getFlatColor(),
+            border.getFlatColor());
     }
 
-    private void drawLoweredBorder2d(int top, int left, int bottom, int right, WidgetBorder border) {
-        drawBorder2d(top, left, bottom, right, border, border.getDarkColor(), border.getLightColor());
+    private void drawLoweredBorder2d(
+        int top,
+        int left,
+        int bottom,
+        int right,
+        WidgetBorder border) {
+        drawBorder2d(
+            top,
+            left,
+            bottom,
+            right,
+            border,
+            border.getDarkColor(),
+            border.getLightColor());
     }
 
-    private void drawRaisedBorder2d(int top, int left, int bottom, int right, WidgetBorder border) {
-        drawBorder2d(top, left, bottom, right, border, border.getLightColor(), border.getDarkColor());
+    private void drawRaisedBorder2d(
+        int top,
+        int left,
+        int bottom,
+        int right,
+        WidgetBorder border) {
+        drawBorder2d(
+            top,
+            left,
+            bottom,
+            right,
+            border,
+            border.getLightColor(),
+            border.getDarkColor());
     }
 
     private void initWidgetProjection(Widget widget) {
         WidgetViewport v;
-        
+
         Widget p = widget.getWidgetParent();
-        
+
         if (p != null) {
             v = p.getViewport();
         } else {
             v = widget.getViewport();
         }
-        
+
         int x = (int) v.getMinX();
         int y = (int) v.getMinY();
         int w = (int) v.getWidth();
@@ -1184,7 +1237,7 @@ public class LWJGLRenderer implements Renderer {
         GL.glPushMatrix();
 
         GL.glLoadIdentity();
-        
+
     }
 
     private void resetWidgetProjection() {

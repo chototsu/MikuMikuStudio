@@ -55,9 +55,10 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.7 2004-01-20 12:51:24 greggpatton Exp $
+ * @version $Id: DisplaySystem.java,v 1.8 2004-01-22 21:48:55 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
+    private static DisplaySystem display;
     protected int width, height;
     
     /**
@@ -77,10 +78,15 @@ public abstract class DisplaySystem {
      */
     public static DisplaySystem getDisplaySystem(String key) {
         if("LWJGL".equalsIgnoreCase(key)) {
-            return new LWJGLDisplaySystem();
+            display = new LWJGLDisplaySystem();
+            return display;
         }
         
         return null;
+    }
+    
+    public static DisplaySystem getDisplaySystem() {
+        return display;
     }
 
     public int getWidth() {
