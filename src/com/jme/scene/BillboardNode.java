@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package com.jme.scene;
 
@@ -34,25 +34,26 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
+import com.jme.math.FastMath;
 
 /**
  * <code>BillboardNode</code> defines a node that always orients towards the camera. However, it
- * does not tilt up/down as the camera rises. This keep geometry from appearing to fall over if the camera 
+ * does not tilt up/down as the camera rises. This keep geometry from appearing to fall over if the camera
  * rises or lowers. <code>BillboardNode</code> is useful to contain a single quad that has a image
- * applied to it for lowest detail models. This quad, with the texture, will appear to be a full 
+ * applied to it for lowest detail models. This quad, with the texture, will appear to be a full
  * model at great distances, and save on rendering and memory. It is important to note that the
  * billboards orientation will always be up (0,1,0). This means that a standard camera with up (0,1,0)
- * is the only camera setting compatible with <code>BillboardNode</code>. 
- * 
+ * is the only camera setting compatible with <code>BillboardNode</code>.
+ *
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.2 2004-03-03 22:00:52 mojomonkey Exp $
+ * @version $Id: BillboardNode.java,v 1.3 2004-03-19 18:13:03 renanse Exp $
  */
 public class BillboardNode extends Node {
 	private float lastTime;
 	private Matrix3f orient;
 	private Vector3f diff;
 	private Vector3f loc;
-	
+
 
 	/**
 	 * Constructor instantiates a new <code>BillboardNode</code>. The name of the node is supplied
@@ -65,13 +66,13 @@ public class BillboardNode extends Node {
 		loc = new Vector3f();
 		diff = new Vector3f();
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * <code>rotateBillboard</code> rotates the billboards rotation to orient to face the camera.
 	 * First, the difference between the billboards position and camera position is determined. This
-	 * distance from the projection from the billboard's normal is calculated and if this is 
-	 * substantially different, the billboard is rotated until it's normals is facing the 
+	 * distance from the projection from the billboard's normal is calculated and if this is
+	 * substantially different, the billboard is rotated until it's normals is facing the
 	 * camera.
 	 * @param camera
 	 */
@@ -81,8 +82,8 @@ public class BillboardNode extends Node {
 			worldScale = parent.getWorldScale() * localScale;
 			parent.getWorldRotation().mult(localRotation, worldRotation);
 			worldTranslation = parent.getWorldRotation().mult(localTranslation, worldTranslation)
-			.multLocal(parent.getWorldScale())
-			.addLocal(parent.getWorldTranslation());
+                            .multLocal(parent.getWorldScale())
+                            .addLocal(parent.getWorldTranslation());
 		} else {
 			worldScale = localScale;
 			worldRotation = localRotation;
@@ -92,18 +93,17 @@ public class BillboardNode extends Node {
 		//apply the rotation to match that of the camera's
 		diff = camera.getLocation().subtract(worldTranslation);
 		float invWorldScale = 1.0f / worldScale;
-		worldRotation.mult(diff, loc).mult(invWorldScale, loc);
+		worldRotation.mult(diff, loc).multLocal(invWorldScale);
 
 		// squared length of the camera projection in the xz-plane
-		float epsilon = 1e-06f;
 		float lengthSquared = loc.x * loc.x + loc.z * loc.z;
-		if (lengthSquared < epsilon) {
+		if (lengthSquared < FastMath.FLT_EPSILON) {
 			// camera on the billboard axis, rotation not defined
 			return;
 		}
 
 		// unitize the projection
-		float invLength = 1.0f / (float)Math.sqrt(lengthSquared);
+		float invLength = FastMath.invSqrt(lengthSquared);
 		loc.x *= invLength;
 		loc.y = 0.0f;
 		loc.z *= invLength;
@@ -118,10 +118,10 @@ public class BillboardNode extends Node {
 		orient.m20 = -loc.x;
 		orient.m21 = 0;
 		orient.m22 = loc.z;
-		
+
 		//orientate the billboard
 		worldRotation.apply(orient);
-		
+
 		for (int i = 0, cSize = children.size(); i < cSize; i++) {
 			Spatial child = (Spatial) children.get(i);
 			if (child != null) {
