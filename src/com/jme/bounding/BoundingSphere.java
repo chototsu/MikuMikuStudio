@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.18 2004-09-10 22:36:12 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.19 2004-09-12 02:11:02 cep21 Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -689,7 +689,10 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
 	 */
 	public boolean intersects(BoundingVolume bv) {
-		return bv.intersectsSphere(this);
+        if (bv==null)
+            return false;
+        else
+		    return bv.intersectsSphere(this);
 	}
 
 	/*

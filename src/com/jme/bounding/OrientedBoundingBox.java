@@ -401,7 +401,10 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
 	 */
 	public boolean intersects(BoundingVolume bv) {
-		return bv.intersectsOrientedBoundingBox(this);
+        if (bv==null)
+            return false;
+        else
+		    return bv.intersectsOrientedBoundingBox(this);
 	}
 
 	/*

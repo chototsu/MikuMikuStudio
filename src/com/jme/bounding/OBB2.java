@@ -780,7 +780,10 @@ public class OBB2 implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
 	 */
 	public boolean intersects(BoundingVolume bv) {
-		return bv.intersectsOBB2(this);
+        if (bv==null)
+            return false;
+        else
+		    return bv.intersectsOBB2(this);
 	}
 
 	/*
