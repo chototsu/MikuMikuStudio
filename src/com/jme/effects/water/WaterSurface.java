@@ -47,7 +47,7 @@ import com.jme.math.Vector2f;
  * Portions from Game Programming Gems 4 article by Jerry Tessendorf
  *
  * @author Joshua Slack
- * @version $Id: WaterSurface.java,v 1.2 2004-04-25 00:09:48 renanse Exp $
+ * @version $Id: WaterSurface.java,v 1.3 2004-04-25 00:40:30 renanse Exp $
  */
 
 public class WaterSurface extends TriMesh {
@@ -291,7 +291,7 @@ public class WaterSurface extends TriMesh {
   }
 
   void propagate(float dt) {
-    dt *= 3;
+    dt *= 2;
     // apply obstruction
     gravity = 9.8f * dt * dt;
     for (int i = 0; i < size; i++)
