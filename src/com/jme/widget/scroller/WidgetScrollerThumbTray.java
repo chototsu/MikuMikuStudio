@@ -37,13 +37,11 @@ import java.util.Observer;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.widget.Widget;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetContainerAbstract;
 import com.jme.widget.WidgetImpl;
 import com.jme.widget.input.mouse.WidgetMouseStateAbstract;
 import com.jme.widget.layout.WidgetFlowLayout;
-import com.jme.widget.renderer.WidgetRenderer;
+import com.jme.widget.panel.WidgetPanel;
 import com.jme.widget.util.WidgetRepeater;
 
 /**
@@ -52,7 +50,7 @@ import com.jme.widget.util.WidgetRepeater;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetScrollerThumbTray extends WidgetContainerAbstract implements Observer {
+public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
     private WidgetRepeater repeat = new WidgetRepeater();
 
@@ -361,8 +359,6 @@ public class WidgetScrollerThumbTray extends WidgetContainerAbstract implements 
                 pageDownRight();
             }
         }
-
-        ((WidgetRenderer)r).draw((Widget)this);
 
         super.draw(r);
     }
