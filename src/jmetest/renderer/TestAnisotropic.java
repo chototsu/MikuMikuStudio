@@ -35,23 +35,21 @@ package jmetest.renderer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.scene.shape.Disk;
+import com.jme.scene.shape.Quad;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jme.scene.shape.Quad;
-import com.jme.bounding.BoundingBox;
-import com.jme.input.KeyInput;
-import com.jme.input.KeyBindingManager;
-import com.jme.scene.state.LightState;
-import com.jme.math.Vector2f;
 
 /**
  * <code>TestAnisotropic</code>
  * @author Joshua Slack
- * @version $Id: TestAnisotropic.java,v 1.2 2004-06-30 00:28:49 renanse Exp $
+ * @version $Id: TestAnisotropic.java,v 1.3 2004-06-30 19:32:29 renanse Exp $
  */
 public class TestAnisotropic extends SimpleGame {
 
