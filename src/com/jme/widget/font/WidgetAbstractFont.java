@@ -149,7 +149,7 @@ public abstract class WidgetAbstractFont implements WidgetFont {
             texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
             texture.setFilter(Texture.FM_LINEAR);
             texture.setImage(textureImage);
-            texture.setMipmapState(Texture.MM_NONE);
+            texture.setMipmapState(Texture.MM_LINEAR);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
