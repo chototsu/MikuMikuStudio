@@ -36,10 +36,12 @@ package com.jme.math;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.4 2004-04-22 22:26:40 renanse Exp $
+ * @version $Id: Ray.java,v 1.5 2004-07-30 23:15:58 cep21 Exp $
  */
 public class Ray {
+    /** The ray's begining point. */
     public Vector3f origin;
+    /** The direction of the ray. */
     public Vector3f direction;
 
     /**

@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.24 2004-07-14 22:46:23 cep21 Exp $
+ * @version $Id: Matrix3f.java,v 1.25 2004-07-30 23:13:53 cep21 Exp $
  */
 public class Matrix3f {
 	public float m00, m01, m02;
@@ -60,6 +60,18 @@ public class Matrix3f {
 		loadIdentity();
 	}
 
+    /**
+     * constructs a matrix with the given values.
+     * @param m00 0x0 in the matrix.
+     * @param m01 0x1 in the matrix.
+     * @param m02 0x2 in the matrix.
+     * @param m10 1x0 in the matrix.
+     * @param m11 1x1 in the matrix.
+     * @param m12 1x2 in the matrix.
+     * @param m20 2x0 in the matrix.
+     * @param m21 2x1 in the matrix.
+     * @param m22 2x2 in the matrix.
+     */
 	public Matrix3f(float m00, float m01, float m02, float m10, float m11,
 			float m12, float m20, float m21, float m22) {
 

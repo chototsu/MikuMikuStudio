@@ -35,34 +35,46 @@ package com.jme.math;
 import java.util.Random;
 
 /**
- * <code>FastMath</code>
+ * <code>FastMath</code> provides 'fast' math approximations and float equivalents of Math
+ * functions
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.12 2004-05-24 17:48:20 renanse Exp $
+ * @version $Id: FastMath.java,v 1.13 2004-07-30 23:10:43 cep21 Exp $
  */
 
 public class FastMath {
 
+    /** A "close to zero" double epsilon value for use*/
     public static final double DBL_EPSILON = 2.220446049250313E-16d;
 
+    /** A "close to zero" float epsilon value for use*/
     public static final float FLT_EPSILON = 1.1920928955078125E-7f;
 
+    /** The value PI as a float. */
     public static final float PI = (float) (4.0 * atan(1.0f));
 
+    /** The value 2PI as a float. */
     public static final float TWO_PI = 2.0f * PI;
 
+    /** The value PI/2 as a float. */
     public static final float HALF_PI = 0.5f * PI;
 
+    /** The value 1/PI as a float. */
     public static final float INV_PI = 1.0f / PI;
 
+    /** The value 1/(2PI) as a float. */
     public static final float INV_TWO_PI = 1.0f / TWO_PI;
 
+    /** A value to multiply a degree value by, to convert it to radians. */
     public static final float DEG_TO_RAD = PI / 180.0f;
 
+    /** A value to multiply a radian value by, to convert it to degrees. */
     public static final float RAD_TO_DEG = 180.0f / PI;
 
+    /** A precreated random object for random numbers. */
     public static final Random rand = new Random();
 
+    /** If true, fast trig approximations are used for values such as sin/cos/tan. */
     public static boolean USE_FAST_TRIG = false;
 
     // A good implementation found on the Java boards.
@@ -71,16 +83,37 @@ public class FastMath {
     //       you know that the new number will have fewer bits, so ANDing the original
     // number
     //       with anything less than it will give 0.
+
+    /**
+     * Returns true if the number is a power of 2 (2,4,8,16...)
+     * @param number The number to test.
+     * @return True if it is a power of two.
+     */
     public static boolean isPowerOfTwo(int number) {
         return (number > 0) && (number & (number - 1)) == 0;
     }
 
+    /**
+     * Linear interpolation from v0 to v1 by f percent.  IE (1-f) * V0 + f * V1
+     * @param f Percent value to use.
+     * @param v0 Begining value. 0% of f
+     * @param v1 ending value.  100% of f
+     * @return An interpolation between v0 and v1.
+     */
     public static float LERP(float f, float v0, float v1) {
       return ( (1 - (f)) * (v0) + (f) * (v1));
     }
 
 
-    /** */
+     /**
+     * Returns the arc cosine of an angle given in radians.<br>
+     * Special cases:
+     * <ul><li>If fValue is smaller than -1, then the result is PI.
+     * <li>If the argument is greater than 1, then the result is 0.</ul>
+     * @param fValue The angle, in radians.
+     * @return fValue's acos
+     * @see java.lang.Math#acos(double)
+     */
     public static float acos(float fValue) {
         if (-1.0f < fValue) {
             if (fValue < 1.0f)
@@ -92,7 +125,15 @@ public class FastMath {
         }
     }
 
-    /** */
+     /**
+     * Returns the arc sine of an angle given in radians.<br>
+     * Special cases:
+     * <ul><li>If fValue is smaller than -1, then the result is -HALF_PI.
+     * <li>If the argument is greater than 1, then the result is HALF_PI.</ul>
+     * @param fValue The angle, in radians.
+     * @return fValue's asin
+     * @see java.lang.Math#asin(double)
+     */
     public static float asin(float fValue) {
         if (-1.0f < fValue) {
             if (fValue < 1.0f)
@@ -104,22 +145,44 @@ public class FastMath {
         }
     }
 
-    /** */
+     /**
+     * Returns the arc tangent of an angle given in radians.<br>
+     * @param fValue The angle, in radians.
+     * @return fValue's asin
+     * @see java.lang.Math#atan(double)
+     */
     public static float atan(float fValue) {
         return (float) Math.atan((double) fValue);
     }
 
-    /** */
+    /**
+     * A direct call to Math.atan2.
+     * @param fY
+     * @param fX
+     * @return Math.atan2(fY,fX)
+     * @see java.lang.Math#atan2(double, double)
+     */
     public static float atan2(float fY, float fX) {
         return (float) Math.atan2((double) fY, (double) fX);
     }
 
-    /** */
+    /**
+     * Rounds a fValue up.  A call to Math.ceil
+     * @param fValue The value.
+     * @return The fValue rounded up
+     * @see java.lang.Math#ceil(double)
+     */
     public static float ceil(float fValue) {
         return (float) Math.ceil((double) fValue);
     }
 
-    /** */
+    /**
+     * Returns cos of a value.  If USE_FAST_TRIG is enabled, an approximate value is returned.
+     * Otherwise, a direct value is used.
+     * @param fValue The value to cosine, in raidans.
+     * @return The cosine of fValue.
+     * @see java.lang.Math#cos(double)
+     */
     public static float cos(float fValue) {
       if (USE_FAST_TRIG)
         return FastTrig.cos(fValue);
@@ -127,37 +190,74 @@ public class FastMath {
         return (float) Math.cos((double) fValue);
     }
 
-    /** */
+    /**
+     * Returns E^fValue
+     * @param fValue Value to raise to a power.
+     * @return The value E^fValue
+     * @see java.lang.Math#exp(double)
+     */
     public static float exp(float fValue) {
         return (float) Math.exp((double) fValue);
     }
 
-    /** */
+    /**
+     * Returns Absolute value of a float.
+     * @param fValue The value to abs.
+     * @return The abs of the value.
+     * @see java.lang.Math#abs(float)
+     */
     public static float abs(float fValue) {
-        return (float) Math.abs(fValue);
+        return Math.abs(fValue);
     }
 
-    /** */
+    /**
+     * Returns a number rounded down.
+     * @param fValue The value to round
+     * @return The given number rounded down
+     * @see java.lang.Math#floor(double)
+     */
     public static float floor(float fValue) {
         return (float) Math.floor((double) fValue);
     }
 
-    /** */
+    /**
+     * Returns 1/sqrt(fValue)
+     * @param fValue The value to process.
+     * @return 1/sqrt(fValue)
+     * @see java.lang.Math#sqrt(double)
+     */
     public static float invSqrt(float fValue) {
         return (float) (1.0 / Math.sqrt((double) fValue));
     }
 
-    /** */
+    /**
+     * Returns the log base E of a value.
+     * @param fValue The value to log.
+     * @return The log of fValue base E
+     * @see java.lang.Math#log(double)
+     */
     public static float log(float fValue) {
         return (float) Math.log((double) fValue);
     }
 
-    /** */
+    /**
+     * Returns a number raised to an exponent power.  fBase^fExponent
+     * @param fBase The base value (IE 2)
+     * @param fExponent The exponent value (IE 3)
+     * @return base raised to exponent (IE 8)
+     * @see java.lang.Math#pow(double, double)
+     */
     public static float pow(float fBase, float fExponent) {
         return (float) Math.pow((double) fBase, (double) fExponent);
     }
 
-    /** */
+    /**
+     * Returns sine of a value.  If USE_FAST_TRIG is enabled, an approximate value is returned.
+     * Otherwise, a direct value is used.
+     * @param fValue The value to sine, in raidans.
+     * @return The sine of fValue.
+     * @see java.lang.Math#sin(double)
+     */
     public static float sin(float fValue) {
       if (USE_FAST_TRIG)
         return FastTrig.sin(fValue);
@@ -165,17 +265,32 @@ public class FastMath {
         return (float) Math.sin((double) fValue);
     }
 
-    /** */
+    /**
+     * Returns the value squared.  fValue ^ 2
+     * @param fValue The vaule to square.
+     * @return The square of the given value.
+     */
     public static float sqr(float fValue) {
         return fValue * fValue;
     }
 
-    /** */
+    /**
+     * Returns the square root of a given value.
+     * @param fValue The value to sqrt.
+     * @return The square root of the given value.
+     * @see java.lang.Math#sqrt(double)
+     */
     public static float sqrt(float fValue) {
         return (float) Math.sqrt((double) fValue);
     }
 
-    /** */
+    /**
+     * Returns the tangent of a value.  If USE_FAST_TRIG is enabled, an approximate value
+     * is returned.  Otherwise, a direct value is used.
+     * @param fValue The value to tangent, in raidans.
+     * @return The tangent of fValue.
+     * @see java.lang.Math#tan(double)
+     */
     public static float tan(float fValue) {
       if (USE_FAST_TRIG)
         return FastTrig.tan(fValue);
@@ -183,7 +298,11 @@ public class FastMath {
         return (float) Math.tan((double) fValue);
     }
 
-    /** */
+    /**
+     * Returns 1 if the number is positive, -1 if the number is negative, and 0 otherwise
+     * @param iValue The integer to examine.
+     * @return The integer's sign.
+     */
     public static int sign(int iValue) {
         if (iValue > 0) return 1;
 
@@ -192,7 +311,11 @@ public class FastMath {
         return 0;
     }
 
-    /** */
+    /**
+     * Returns 1 if the number is positive, -1 if the number is negative, and 0 otherwise
+     * @param fValue The float to examine.
+     * @return The float's sign.
+     */
     public static float sign(float fValue) {
         if (fValue > 0.0f) return 1.0f;
 
@@ -398,17 +521,23 @@ public class FastMath {
         return fResult;
     }
 
+    /**
+     * Returns a random float between 0 and 1.
+     * @return A random float between 0 and 1.
+     */
     public static float nextRandomFloat() {
         return rand.nextFloat();
     }
 
     /**
-     * FastTrig
+     * FastTrig is used to calculate quick trig functions using a lookup table.
      *
-     * @Author Erikd
+     * @author Erikd
+     * @author Jack Lindamood (javadoc only)
      */
     static public class FastTrig {
 
+        /** The size of the lookup table.  The bigger, the more accurate. */
         public static int PRECISION = 0x100000;
 
         private static float RAD_SLICE = TWO_PI / PRECISION, sinTable[] = null,
@@ -433,14 +562,32 @@ public class FastMath {
                     & (PRECISION - 1);
         }
 
+        /**
+         * Returns the sine of a given value, by looking up it's approximation in a
+         * precomputed table.
+         * @param radians The value to sine.
+         * @return The approximation of the value's sine.
+         */
         public static float sin(float radians) {
             return sinTable[radToIndex(radians)];
         }
 
+        /**
+         * Returns the cosine of a given value, by looking up it's approximation in a
+         * precomputed table.
+         * @param radians The value to cosine.
+         * @return The approximation of the value's cosine.
+         */
         public static float cos(float radians) {
             return sinTable[radToIndex(HALF_PI-radians)];
         }
 
+        /**
+         * Returns the tangent of a given value, by looking up it's approximation in a
+         * precomputed table.
+         * @param radians The value to tan.
+         * @return The approximation of the value's tangent.
+         */
         public static float tan(float radians) {
             return tanTable[radToIndex(radians)];
         }
