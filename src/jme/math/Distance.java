@@ -35,6 +35,9 @@ package jme.math;
 /**
  * <code>Distance</code> is a static class that provides commonly used math
  * functions.
+ * 
+ * <br><br>
+ * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
  *
  */

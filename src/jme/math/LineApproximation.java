@@ -33,6 +33,8 @@ package jme.math;
 
 /**
  * <code>LineApproximation</code>
+ * <br><br>
+ * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
  *
  */

@@ -32,7 +32,9 @@
 package jme.math;
 
 /**
- * <code>Eigen</code> 
+ * <code>Eigen</code>
+ * <br><br>
+ * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
  */
 public class Eigen {
