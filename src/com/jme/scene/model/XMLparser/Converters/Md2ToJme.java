@@ -9,6 +9,7 @@ import com.jme.scene.model.EmptyTriMesh;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
+import com.jme.effects.transients.FadeInOut;
 
 import java.io.*;
 import java.util.Random;
@@ -427,5 +428,17 @@ public class Md2ToJme extends FormatConverter{
         };
     }
 
-
+    /**
+     * This function returns the KeyframeController that animates an MD2 converted mesh.
+     * Null is returned if a KeyframeController cannot be found.
+     * @param model The MD2 mesh.
+     * @return This mesh's controller.
+     */
+    public static KeyframeController findController(Node model) {
+        if (model.getQuantity()==0 ||
+                model.getChild(0).getControllers().size()==0 ||
+                !(model.getChild(0).getController(0) instanceof KeyframeController))
+            return null;
+        return (KeyframeController) model.getChild(0).getController(0);
+    }
 }
