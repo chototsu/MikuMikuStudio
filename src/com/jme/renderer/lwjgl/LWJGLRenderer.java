@@ -129,7 +129,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.39 2004-08-28 20:32:52 cep21 Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.40 2004-08-31 02:05:12 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1002,7 +1002,8 @@ public class LWJGLRenderer implements Renderer {
     GL11.glTranslatef(translation.x, translation.y, translation.z);
     GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
     GL11.glScalef(scale.x, scale.y, scale.z);
-    GL11.glEnable(GL11.GL_NORMALIZE);  // since we are using glScalef, we should enable this to keep normals working.
+    if (!(scale.x == 1 && scale.y == 1 && scale.z == 1))
+      GL11.glEnable(GL11.GL_NORMALIZE);  // since we are using glScalef, we should enable this to keep normals working.
 
     prepVBO(t);
 
