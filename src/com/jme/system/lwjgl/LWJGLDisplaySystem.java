@@ -60,6 +60,7 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
+import java.awt.Toolkit;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -405,6 +406,12 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         try {
             Display.setDisplayMode(mode);
             Display.setFullscreen(fs);
+						if (!fs) {
+							int x, y;
+							x = (Toolkit.getDefaultToolkit().getScreenSize().width - width) >> 1;
+							y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) >> 1;
+							Display.setLocation(x,y);
+						}
             Display.create();
             // kludge added here...  LWJGL does not properly clear their
             // keyboard and mouse buffers when you call the destroy method,
