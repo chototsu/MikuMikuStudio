@@ -34,7 +34,7 @@ package com.jme.widget.layout;
 
 import com.jme.math.Vector2f;
 import com.jme.widget.Widget;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 
 /**
  * @author Gregg Patton
@@ -44,11 +44,7 @@ import com.jme.widget.WidgetContainerAbstract;
  */
 public class WidgetAbsoluteLayout extends WidgetLayoutManager {
 
-    public void addLayoutWidget(Widget w) {}
-
-    public void removeLayoutWidget(Widget w) {}
-
-    public Vector2f preferredLayoutSize(WidgetContainerAbstract parent) {
+    public Vector2f preferredLayoutSize(WidgetAbstractContainer parent) {
         if (parent.isVisible() == false)
             return new Vector2f();
 
@@ -77,11 +73,11 @@ public class WidgetAbsoluteLayout extends WidgetLayoutManager {
         return ret;
     }
 
-    public Vector2f minimumLayoutSize(WidgetContainerAbstract parent) {
+    public Vector2f minimumLayoutSize(WidgetAbstractContainer parent) {
         return null;
     }
 
-    public void layoutContainer(WidgetContainerAbstract parent) {
+    public void layoutContainer(WidgetAbstractContainer parent) {
 
         int tot = parent.getWidgetCount();
 

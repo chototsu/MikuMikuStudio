@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -32,22 +32,22 @@
 package com.jme.widget.layout;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.jme.math.Vector2f;
 
 import com.jme.widget.Widget;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 import com.jme.widget.WidgetFillType;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.bounds.WidgetBoundingRectangle;
 
 /**
- * @author pattogo
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * <code>WidgetFlowLayout</code>
+ * @author Gregg Patton
+ * @version $Id: WidgetFlowLayout.java,v 1.3 2004-02-09 12:34:43 greggpatton Exp $
  */
 public class WidgetFlowLayout extends WidgetLayoutManager {
 
@@ -59,34 +59,71 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
     private WidgetAlignmentType alignmentType = WidgetAlignmentType.ALIGN_CENTER;
     private WidgetFillType fillType = WidgetFillType.NONE;
 
+    /**
+     * <code>RowItem</code>
+     */
+    private class RowItem {
+        Widget child;
+        int childIdx;
+        WidgetBoundingRectangle r;
+    }
+
+    /**
+     * 
+     */
     public WidgetFlowLayout() {
         super();
     }
 
+    /**
+     * @param type
+     */
     public WidgetFlowLayout(WidgetAlignmentType type) {
         this.alignmentType = type;
     }
 
+    /**
+     * @param type
+     */
     public WidgetFlowLayout(WidgetFillType type) {
         this.fillType = type;
     }
 
+    /**
+     * @param hgap
+     * @param vgap
+     */
     public WidgetFlowLayout(int hgap, int vgap) {
         this.hgap = hgap;
         this.vgap = vgap;
     }
 
+    /**
+     * @param alignmentType
+     * @param fillType
+     */
     public WidgetFlowLayout(WidgetAlignmentType alignmentType, WidgetFillType fillType) {
         this.alignmentType = alignmentType;
         this.fillType = fillType;
     }
 
+    /**
+     * @param type
+     * @param hgap
+     * @param vgap
+     */
     public WidgetFlowLayout(WidgetAlignmentType type, int hgap, int vgap) {
         this.alignmentType = type;
         this.hgap = hgap;
         this.vgap = vgap;
     }
 
+    /**
+     * @param alignmentType
+     * @param fillType
+     * @param hgap
+     * @param vgap
+     */
     public WidgetFlowLayout(WidgetAlignmentType alignmentType, WidgetFillType fillType, int hgap, int vgap) {
         this.alignmentType = alignmentType;
         this.fillType = fillType;
@@ -94,7 +131,13 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
         this.vgap = vgap;
     }
 
-    protected Vector2f calcLayout(WidgetContainerAbstract parent, boolean setPosSize) {
+    /**
+     * <code>calcLayout</code>
+     * @param parent
+     * @param setPosSize
+     * @return
+     */
+    private Vector2f calcLayout(WidgetAbstractContainer parent, boolean setPosSize) {
         Vector2f ret = new Vector2f();
 
         if (parent.isVisible() == false)
@@ -115,7 +158,6 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
             boolean fillHorizontal = (fillType == WidgetFillType.HORIZONTAL);
 
             WidgetInsets insets = parent.getInsets();
-            WidgetBorder border = parent.getBorder();
 
             float parentWidth = parent.getWidth();
             float parentHeight = parent.getHeight();
@@ -123,7 +165,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
             float widthStart = insets.getLeft();
             float curWidth = widthStart;
 
-            float heightStart = parentHeight - (border.getTop() + insets.getTop());
+            float heightStart = parentHeight - insets.getTop();
             float maxRowHeight = 0;
 
             float xPos = widthStart;
@@ -134,6 +176,9 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
             ArrayList preferredSizes = new ArrayList();
             ArrayList newBounds = new ArrayList();
+
+            ArrayList rows = new ArrayList();
+            ArrayList curRow = new ArrayList();
 
             WidgetBoundingRectangle r;
 
@@ -147,7 +192,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
                     if (fillType == WidgetFillType.HORIZONTAL) {
                         size.x = parentWidth - (insets.getLeft() + insets.getRight());
-                    } 
+                    }
                 }
 
                 preferredSizes.add(size);
@@ -177,9 +222,9 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
                     pastMaxWidth = (maximumSize.x > 0 && maximumSize.x < curWidth || fillHorizontal);
                     pastParentWidth = (!pastMaxWidth && wrap && parentWidth > 0 && parentWidth < curWidth);
-                    
+
                     pastWidth = pastMaxWidth || pastParentWidth;
-                    
+
                     lastChild = (idx + 1 == totalChildren);
                     atRowStart = (xPos == widthStart);
 
@@ -187,9 +232,8 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                         maxRowHeight = size.y;
                     }
 
-                   
                     if (pastWidth || lastChild) {
-                        
+
                         /* 
                          * Passed max width 
                          * OR
@@ -228,6 +272,11 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
                         yPos -= maxRowHeight;
 
+                        /*
+                         * Initialize the current row array
+                         */
+                        curRow = new ArrayList();
+                        
                         for (int i = rowStartIdx; i <= idx; i++) {
 
                             r = (WidgetBoundingRectangle) newBounds.get(i);
@@ -238,7 +287,24 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                              * Set size to preferred width and max row height
                              */
                             r.setHeight(maxRowHeight);
+                        
+                            
+                            /*
+                             * Store RowItem in current row array
+                             */
+                            RowItem ri = new RowItem();
+                            
+                            ri.child = parent.getWidget(i);
+                            ri.childIdx = i;         
+                            ri.r = r;   
+                                                
+                            curRow.add(ri);
                         }
+
+                        /*
+                         * Add current row array to rows array
+                         */
+                        rows.add(curRow);
 
                         if (idx + 1 != totalChildren) {
                             /*
@@ -271,11 +337,11 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                          * NOT last child
                          */
 
-                        r.setMinXPreserveSize(xPos); //Set the x location (left)
-
                         if (!atRowStart) { //NOT first in row
                             xPos += hgap; //Add horizontal gap
                         }
+
+                        r.setMinXPreserveSize(xPos); //Set the x location (left)
 
                         xPos += size.x;
                     }
@@ -293,32 +359,85 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                     r = (WidgetBoundingRectangle) newBounds.get(idx);
 
                     bounds = (WidgetBoundingRectangle) bounds.merge(r);
-
-                    if (setPosSize == true) {
-                        Vector2f l = r.getMin();
-                        Vector2f s = r.getSize();
-                        
-                        // TODO:  Handle alignment here    
-//                        if (this.alignmentType == WidgetAlignmentType.ALIGN_CENTER)
-//                            l.x = (int) (l.x + (parentWidth.x - rWidth) / 2);
-//                        else if (this.alignmentType == WidgetAlignmentType.ALIGN_EAST)
-//                            leftPos = (int) (x + (parentDim.x - rWidth));
-                        
-                        child.setLocation(l);
-                        child.setSize(s);
-                    }
                 }
 
                 ret.x = bounds.getWidth();
                 ret.y = bounds.getHeight();
 
             }
+
+            if (setPosSize == true) {
+
+                float xOffset = 0;
+                float innerXOffset = 0;
+                float curRowWidth;
+
+                RowItem ri;
+
+                if (this.alignmentType == WidgetAlignmentType.ALIGN_CENTER)
+                    xOffset = (int)(parentWidth - bounds.getWidth()) / 2f;
+                else if (this.alignmentType == WidgetAlignmentType.ALIGN_EAST)
+                    xOffset = (parentWidth - bounds.getWidth()) - (insets.getLeft() + insets.getRight());
+
+                Iterator rowsI = rows.iterator();
+                                    
+                while (rowsI.hasNext()) {
+                 
+                    curRow = (ArrayList) rowsI.next();
+                    
+                    curRowWidth = calcRowWidth(curRow);
+
+                    if (this.alignmentType == WidgetAlignmentType.ALIGN_CENTER) {
+                        innerXOffset = (int)(bounds.getWidth() - curRowWidth) / 2f;
+                    }
+
+                    Iterator curRowI = curRow.iterator();
+                    
+                    while (curRowI.hasNext()) {
+                 
+                        ri = (RowItem) curRowI.next();    
+
+                        Vector2f l = ri.r.getMin();
+                        Vector2f s = ri.r.getSize();
+
+                        l.x += xOffset + innerXOffset;
+
+                        ri.child.setLocation(l);
+                        ri.child.setSize(s);
+                    }
+                }
+            }
         }
 
         return ret;
     }
 
-    public Vector2f preferredLayoutSize(WidgetContainerAbstract parent) {
+    /**
+     * <code>calcRowWidth</code>
+     * @param curRow
+     * @return
+     */
+    private float calcRowWidth(ArrayList curRow) {
+        float ret = 0;
+        
+        
+        RowItem ri;
+        Iterator i = curRow.iterator();
+        
+        while (i.hasNext()) {
+            ri = (RowItem) i.next();
+            ret += ri.r.getWidth();
+        }
+        
+        return ret;
+    }
+
+    /** <code>preferredLayoutSize</code> 
+     * @param parent
+     * @return
+     * @see com.jme.widget.layout.WidgetLayoutManager#preferredLayoutSize(com.jme.widget.WidgetAbstractContainer)
+     */
+    public Vector2f preferredLayoutSize(WidgetAbstractContainer parent) {
         if (parent.isVisible() == false)
             return new Vector2f();
 
@@ -333,50 +452,90 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
         return ret;
     }
 
-    public void layoutContainer(WidgetContainerAbstract parent) {
+    /** <code>layoutContainer</code> 
+     * @param parent
+     * @see com.jme.widget.layout.WidgetLayoutManager#layoutContainer(com.jme.widget.WidgetAbstractContainer)
+     */
+    public void layoutContainer(WidgetAbstractContainer parent) {
         calcLayout(parent, true);
     }
 
+    /**
+     * <code>getHgap</code>
+     * @return
+     */
     public int getHgap() {
         return hgap;
     }
 
+    /**
+     * <code>setHgap</code>
+     * @param i
+     */
     public void setHgap(int i) {
         hgap = i;
     }
 
+    /**
+     * <code>getVgap</code>
+     * @return
+     */
     public int getVgap() {
         return vgap;
     }
 
+    /**
+     * <code>setVgap</code>
+     * @param i
+     */
     public void setVgap(int i) {
         vgap = i;
     }
 
+    /**
+     * <code>getAlignmentType</code>
+     * @return
+     */
     public WidgetAlignmentType getAlignmentType() {
         return alignmentType;
     }
 
+    /**
+     * <code>setAlignmentType</code>
+     * @param type
+     */
     public void setAlignmentType(WidgetAlignmentType type) {
         alignmentType = type;
     }
 
+    /**
+     * <code>getFillType</code>
+     * @return
+     */
     public WidgetFillType getFillType() {
         return fillType;
     }
 
+    /**
+     * <code>setFillType</code>
+     * @param type
+     */
     public void setFillType(WidgetFillType type) {
         fillType = type;
     }
 
-    public void addLayoutWidget(Widget w) {}
-
-    public void removeLayoutWidget(Widget w) {}
-
+    /**
+     * <code>isWrap</code>
+     * @return
+     */
     public boolean isWrap() {
         return wrap;
     }
 
+    /**
+     * <code>setWrap</code>
+     * @param b
+     */
     public void setWrap(boolean b) {
         wrap = b;
     }

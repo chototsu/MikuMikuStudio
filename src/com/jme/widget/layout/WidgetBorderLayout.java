@@ -34,19 +34,15 @@ package com.jme.widget.layout;
 import com.jme.math.Vector2f;
 
 import com.jme.widget.Widget;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 import com.jme.widget.WidgetInsets;
-import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.bounds.WidgetBoundingRectangle;
-import com.jme.widget.bounds.WidgetViewport;
+import com.jme.widget.bounds.WidgetViewRectangle;
 
-//import java.awt.LayoutManager2;
-//import java.awt.BorderLayout;
 /**
+ * <code>WidgetBorderLayout</code>
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: WidgetBorderLayout.java,v 1.2 2004-02-09 12:34:43 greggpatton Exp $
  */
 public class WidgetBorderLayout extends WidgetLayoutManager2 {
 
@@ -55,8 +51,6 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
     private static final int NORTH = 2;
     private static final int SOUTH = 3;
     private static final int WEST = 4;
-
-    // for Western, top-to-bottom, left-to-right orientations
 
     private int hgap;
     private int vgap;
@@ -81,10 +75,17 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
 
     private class DistributedSize {
         int startSize, centerSize, endSize;
+        int startInset, endInset;
+        
         void set(int startSize, int centerSize, int endSize) {
             this.startSize = startSize;
             this.centerSize = centerSize;
             this.endSize = endSize;
+        }
+
+        void setInsets(int startInset, int endInset) {
+            this.startInset = startInset;
+            this.endInset = endInset;
         }
     }
 
@@ -112,10 +113,6 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
 
     }
 
-    public void addLayoutWidget(Widget w) {}
-
-    public void removeLayoutWidget(Widget w) {}
-
     private void setupDimensions() {
 
         centerDim = centerWidget != null && centerWidget.isVisible() ? centerWidget.getPreferredSize() : new Vector2f();
@@ -126,7 +123,7 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
 
     }
 
-    public Vector2f preferredLayoutSize(WidgetContainerAbstract parent) {
+    public Vector2f preferredLayoutSize(WidgetAbstractContainer parent) {
         if (parent.isVisible() == false)
             return new Vector2f();
 
@@ -160,27 +157,25 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
 
         WidgetInsets insets = parent.getInsets();
 
-        WidgetBorder border = parent.getBorder();
-
         Vector2f ret = new Vector2f();
-        ret.x = width + insets.getLeft() + insets.getRight() + border.getLeft() + border.getRight();
-        ret.y = height + insets.getTop() + insets.getBottom() + border.getTop() + border.getBottom();
+        ret.x = width + insets.getLeft() + insets.getRight();
+        ret.y = height + insets.getTop() + insets.getBottom();
 
         return ret;
 
     }
 
-    public Vector2f minimumLayoutSize(WidgetContainerAbstract parent) {
+    public Vector2f minimumLayoutSize(WidgetAbstractContainer parent) {
         return preferredLayoutSize(parent);
     }
 
-    public Vector2f maximumLayoutSize(WidgetContainerAbstract target) {
+    public Vector2f maximumLayoutSize(WidgetAbstractContainer target) {
         Vector2f ret = new Vector2f();
         ret.x = ret.y = 3000;
         return ret;
     }
 
-    public void layoutContainer(WidgetContainerAbstract parent) {
+    public void layoutContainer(WidgetAbstractContainer parent) {
         if (parent.isVisible() == false)
             return;
 
@@ -197,12 +192,14 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
         y += insets.getTop();
 
         dsWCE.set((int) westDim.x, (int) centerDim.x, (int) eastDim.x);
+        dsWCE.setInsets(insets.getLeft(), insets.getRight());
         distributeSizes(dsWCE, (int) parentDim.x, this.hgap, westWidget != null, centerWidget != null, eastWidget != null);
         westDim.x = dsWCE.startSize;
         centerDim.x = dsWCE.centerSize;
         eastDim.x = dsWCE.endSize;
 
         dsNCS.set((int) southDim.y, (int) centerDim.y, (int) northDim.y);
+        dsNCS.setInsets(insets.getTop(), insets.getBottom());
         distributeSizes(this.dsNCS, (int) parentDim.y, this.vgap, southWidget != null, centerWidget != null, northWidget != null);
         southDim.y = dsNCS.startSize;
         centerDim.y = dsNCS.centerSize;
@@ -211,8 +208,8 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
         eastDim.y = centerDim.y;
         westDim.y = centerDim.y;
 
-        northDim.x = parentDim.x;
-        southDim.x = parentDim.x;
+        northDim.x = parentDim.x - (insets.getLeft() + insets.getRight());
+        southDim.x = parentDim.x - (insets.getLeft() + insets.getRight());
 
         if (centerWidget != null && centerWidget.isVisible()) {
             centerWidget.setLocation((int) (x + westDim.x + horzGap(westWidget)), (int) (y + southDim.y + vertGap(southWidget)));
@@ -244,6 +241,9 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
     }
 
     private void distributeSizes(DistributedSize ds, int totalSize, int gap, boolean hasStart, boolean hasCenter, boolean hasEnd) {
+        
+        totalSize -= (ds.startInset + ds.endInset);
+        
         if (hasStart && hasCenter)
             totalSize -= gap;
         if (hasCenter && hasEnd)
@@ -298,25 +298,25 @@ public class WidgetBorderLayout extends WidgetLayoutManager2 {
             return 0;
     }
 
-    public int getLayoutAlignmentX(WidgetContainerAbstract target) {
+    public int getLayoutAlignmentX(WidgetAbstractContainer target) {
         return 0;
     }
 
-    public int getLayoutAlignmentY(WidgetContainerAbstract target) {
+    public int getLayoutAlignmentY(WidgetAbstractContainer target) {
         return 0;
     }
 
-    public void invalidateLayout(WidgetContainerAbstract target) {}
+    public void invalidateLayout(WidgetAbstractContainer target) {}
 
     protected WidgetBoundingRectangle calcVisiblityRect(Widget w) {
         WidgetBoundingRectangle r = null;
 
         Widget p = w.getWidgetParent();
 
-        WidgetViewport vp = null;
+        WidgetViewRectangle vp = null;
 
         if (p != null) {
-            vp = p.getViewport();
+            vp = p.getViewRectangle();
 
             r = new WidgetBoundingRectangle(true);
 

@@ -34,7 +34,7 @@ package com.jme.widget.layout;
 import com.jme.math.Vector2f;
 
 import com.jme.widget.Widget;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 
 /**
  * @author Gregg Patton
@@ -45,12 +45,12 @@ import com.jme.widget.WidgetContainerAbstract;
 public abstract class WidgetLayoutManager2 extends WidgetLayoutManager {
 	public abstract void addLayoutWidget(Widget widget, Object constraints);
 
-	public abstract Vector2f maximumLayoutSize(WidgetContainerAbstract target);
+	public abstract Vector2f maximumLayoutSize(WidgetAbstractContainer target);
 
-	public abstract int getLayoutAlignmentX(WidgetContainerAbstract target);
+	public abstract int getLayoutAlignmentX(WidgetAbstractContainer target);
 
-	public abstract int getLayoutAlignmentY(WidgetContainerAbstract target);
+	public abstract int getLayoutAlignmentY(WidgetAbstractContainer target);
 
-	public abstract void invalidateLayout(WidgetContainerAbstract target);
+	public abstract void invalidateLayout(WidgetAbstractContainer target);
 
 }

@@ -35,9 +35,9 @@ import com.jme.math.Vector2f;
 import com.jme.scene.Spatial;
 
 import com.jme.widget.Widget;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 import com.jme.widget.bounds.WidgetBoundingRectangle;
-import com.jme.widget.bounds.WidgetViewport;
+import com.jme.widget.bounds.WidgetViewRectangle;
 
 /**
  * @author pattogo
@@ -49,13 +49,9 @@ public abstract class WidgetLayoutManager {
 
     protected Vector2f maximumSize = new Vector2f();
 
-    public abstract void addLayoutWidget(Widget w);
+    public abstract Vector2f preferredLayoutSize(WidgetAbstractContainer parent);
 
-    public abstract void removeLayoutWidget(Widget w);
-
-    public abstract Vector2f preferredLayoutSize(WidgetContainerAbstract parent);
-
-    public abstract void layoutContainer(WidgetContainerAbstract parent);
+    public abstract void layoutContainer(WidgetAbstractContainer parent);
 
     public Vector2f getMaximumSize() {
         return this.maximumSize;
@@ -74,17 +70,17 @@ public abstract class WidgetLayoutManager {
         Widget p = w.getWidgetParent();
 
         if (p != null) {
-            return p.getViewport();
+            return p.getViewRectangle();
         } else {
             return null;
         }
     }
 
     public void calcViewport(Widget w) {
-        WidgetViewport vp = new WidgetViewport();
+        WidgetViewRectangle vp = new WidgetViewRectangle();
 
         if (!w.isVisible()) {
-            w.setViewport(vp);
+            w.setViewRectangle(vp);
             return;
         }
 
@@ -138,7 +134,7 @@ public abstract class WidgetLayoutManager {
 
         }
 
-        w.setViewport(vp);
+        w.setViewRectangle(vp);
 
     }
 
