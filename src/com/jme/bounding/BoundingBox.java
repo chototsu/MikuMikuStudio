@@ -48,7 +48,7 @@ import com.jme.scene.shape.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.6 2004-04-22 22:26:23 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.7 2004-04-29 18:38:17 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -300,7 +300,7 @@ public class BoundingBox extends Box implements BoundingVolume {
             rVal.checkPlanes[5] = checkPlanes[5];
             return rVal;
         } else
-            return new BoundingBox(name+"_clone", (Vector3f)center.clone(), xExtent, yExtent, zExtent);
+            return new BoundingBox(name+"_clone", (center != null ? (Vector3f)center.clone() : null), xExtent, yExtent, zExtent);
     }
 
     /**
