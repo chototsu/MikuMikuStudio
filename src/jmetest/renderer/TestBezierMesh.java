@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.6 2004-02-23 21:26:41 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.7 2004-02-27 00:18:09 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -232,6 +232,7 @@ public class TestBezierMesh extends SimpleGame {
         pl.setEnabled(true);
 
         lightstate = display.getRenderer().getLightState();
+        lightstate.setTwoSidedLighting(true);
         lightstate.setEnabled(true);
         lightNode = new LightNode("Light Node",lightstate);
         lightNode.setLight(pl);
