@@ -32,6 +32,7 @@
 package com.jme.scene.state;
 
 import java.util.Stack;
+import java.util.ArrayList;
 import java.io.Serializable;
 
 import com.jme.scene.Controller;
@@ -44,7 +45,7 @@ import com.jme.scene.Spatial;
  * and it is OK to assign to more than one Spatial the same render state.
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.16 2004-08-20 23:21:19 ericthered Exp $
+ * @version $Id: RenderState.java,v 1.17 2004-08-28 20:34:06 cep21 Exp $
  */
 public abstract class RenderState implements Serializable {
 
@@ -83,14 +84,15 @@ public abstract class RenderState implements Serializable {
   /** Max number of Controller for each RenderState. */
   public final static int MAX_CONTROLLERS = 10;
 
-  private Controller[] controllers;
+//  private Controller[] controllers;
+    private ArrayList controllers;
   private boolean enabled = true;
 
   /**
    * Construts a new RenderState.  The state is enabled by default.
    */
   public RenderState() {
-    controllers = new Controller[MAX_CONTROLLERS];
+//    controllers = new Controller[MAX_CONTROLLERS];
   }
 
   /**
@@ -122,7 +124,7 @@ public abstract class RenderState implements Serializable {
    * Returns an array of Controllers for this render state.
    * @return The controllers for this render state.
    */
-  public Controller[] getControllers() {
+  public ArrayList getControllers() {
     return controllers;
   }
 
@@ -133,7 +135,10 @@ public abstract class RenderState implements Serializable {
    * @param c The controller to add.
    */
   public void addController(int index, Controller c) {
-    controllers[index] = c;
+//    controllers[index] = c;
+      if (controllers==null)
+        controllers=new ArrayList();
+      controllers.set(index,c);
   }
 
   /**
