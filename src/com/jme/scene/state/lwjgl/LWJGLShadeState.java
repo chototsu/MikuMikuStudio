@@ -39,7 +39,7 @@ import com.jme.scene.state.ShadeState;
  * <code>LWJGLShadeState</code> subclasses the ShadeState class using the
  * LWJGL API to access OpenGL to set the shade state.
  * @author Mark Powell
- * @version $Id: LWJGLShadeState.java,v 1.3 2004-04-22 22:26:58 renanse Exp $
+ * @version $Id: LWJGLShadeState.java,v 1.4 2004-08-03 04:05:52 cep21 Exp $
  */
 public class LWJGLShadeState extends ShadeState {
     //open gl params
@@ -60,7 +60,7 @@ public class LWJGLShadeState extends ShadeState {
     /**
      * <code>set</code> sets the OpenGL shade state to that specified by
      * the state.
-     * @see com.jme.scene.state.RenderState#set()
+     * @see com.jme.scene.state.ShadeState#apply() ()
      */
     public void apply() {
       if (isEnabled())

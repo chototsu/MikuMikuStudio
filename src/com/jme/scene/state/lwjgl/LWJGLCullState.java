@@ -38,13 +38,13 @@ import com.jme.scene.state.CullState;
 /**
  * <code>LWJGLCullState</code>
  * @author Mark Powell
- * @version $Id: LWJGLCullState.java,v 1.3 2004-04-22 22:26:57 renanse Exp $
+ * @version $Id: LWJGLCullState.java,v 1.4 2004-08-03 04:04:57 cep21 Exp $
  */
 public class LWJGLCullState extends CullState {
 
     /** <code>set</code>
      *
-     * @see com.jme.scene.state.RenderState#set()
+     * @see com.jme.scene.state.CullState#apply()
      */
     public void apply() {
         if (isEnabled()) {

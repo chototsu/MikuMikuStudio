@@ -39,7 +39,7 @@ import com.jme.scene.state.ZBufferState;
  * <code>LWJGLZBufferState</code> subclasses ZBufferState to use the
  * LWJGL API to access OpenGL.
  * @author Mark Powell
- * @version $Id: LWJGLZBufferState.java,v 1.3 2004-04-22 22:26:59 renanse Exp $
+ * @version $Id: LWJGLZBufferState.java,v 1.4 2004-08-03 04:06:46 cep21 Exp $
  */
 public class LWJGLZBufferState extends ZBufferState {
     //the open gl depth tests
@@ -57,7 +57,7 @@ public class LWJGLZBufferState extends ZBufferState {
     /**
      * <code>set</code> turns on the specified depth test specified by the
      * state.
-     * @see com.jme.scene.state.RenderState#set()
+     * @see com.jme.scene.state.RenderState#apply()
      */
     public void apply() {
         if (isEnabled()) {

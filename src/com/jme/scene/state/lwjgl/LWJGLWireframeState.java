@@ -40,14 +40,14 @@ import com.jme.scene.state.WireframeState;
  * LWJGL API to access OpenGL. If the state is enabled, wireframe mode is
  * used, otherwise solid fill is used.
  * @author Mark Powell
- * @version $Id: LWJGLWireframeState.java,v 1.3 2004-04-22 22:26:59 renanse Exp $
+ * @version $Id: LWJGLWireframeState.java,v 1.4 2004-08-03 04:06:28 cep21 Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
 
     /**
      * <code>set</code> sets the polygon mode to line or fill depending on
      * if the state is enabled or not.
-     * @see com.jme.scene.state.RenderState#set()
+     * @see com.jme.scene.state.WireframeState#apply()
      */
     public void apply() {
         if (isEnabled()) {

@@ -38,7 +38,7 @@ import com.jme.scene.state.AttributeState;
 /**
  * <code>LWJGLAttributeState</code>
  * @author Mark Powell
- * @version $Id: LWJGLAttributeState.java,v 1.3 2004-04-22 22:26:57 renanse Exp $
+ * @version $Id: LWJGLAttributeState.java,v 1.4 2004-08-03 04:04:23 cep21 Exp $
  */
 public class LWJGLAttributeState extends AttributeState {
   int[] glAttributeState = {
@@ -67,7 +67,7 @@ public class LWJGLAttributeState extends AttributeState {
 
   /** <code>set</code>
    *
-   * @see com.jme.scene.state.RenderState#set()
+   * @see com.jme.scene.state.RenderState#apply() ()
    */
   public void apply() {
     if (isEnabled()) {
