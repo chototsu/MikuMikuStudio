@@ -65,7 +65,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.25 2004-07-22 18:21:15 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.26 2004-07-23 17:18:09 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -91,7 +91,7 @@ public abstract class SimpleGame extends BaseGame {
     timer.update();
     tpf = timer.getTimePerFrame();
     input.update(tpf);
-    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
+    fps.print("FPS: " + (int) tpf + " - " +
               display.getRenderer().getStatistics());
 
     simpleUpdate();
