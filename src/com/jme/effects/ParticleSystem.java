@@ -37,7 +37,7 @@
 package com.jme.effects;
 
 import com.jme.math.Line;
-import com.jme.math.Plane;
+import com.jme.math.Rectangle;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -51,7 +51,7 @@ import com.jme.scene.state.RenderState;
  * <code>ParticleSystem</code>
  * 
  * @author Ahmed
- * @version $Id: ParticleSystem.java,v 1.6 2004-02-14 17:35:23 mojomonkey Exp $
+ * @version $Id: ParticleSystem.java,v 1.7 2004-02-17 13:32:05 darkprophet Exp $
  */
 public class ParticleSystem extends Node {
 
@@ -62,9 +62,9 @@ public class ParticleSystem extends Node {
 
 	private Particle[] particles;
 
-	private boolean useGeo;
+	private byte geoToUse;
 	private Line psLine;
-	private Plane psPlane;
+	private Rectangle psRect;
 
 	private boolean alwaysRotate;
 
@@ -103,6 +103,8 @@ public class ParticleSystem extends Node {
 			particles[i].setName("Particle " + (i + 1));
 			attachChild(particles[i]);
 		}
+		
+		geoToUse = 0;
 	}
 
 	//----
@@ -245,24 +247,21 @@ public class ParticleSystem extends Node {
 	// ----
 	// geometry stuff
 	// ----
-	public void useGeometry(boolean g) {
-		useGeo = g;
+	public int getGeometry() {
+		return (int)geoToUse;
 	}
 	public void setGeometry(Line l) {
 		psLine = l;
-		psPlane = null;
+		geoToUse = 1;
 	}
-	public void setGeometry(Plane p) {
-		psPlane = p;
-		psLine = null;
-	}
-	public boolean useGeometry() {
-		return useGeo;
+	public void setGeometry(Rectangle r) {
+		psRect = r;
+		geoToUse = 2;
 	}
 	public Line getLine() {
 		return psLine;
 	}
-	public Plane getPlane() {
-		return psPlane;
+	public Rectangle getRectangle() {
+		return psRect;
 	}
 }

@@ -37,7 +37,7 @@ import com.jme.scene.Controller;
 import com.jme.system.DisplaySystem;
 
 /*
- * NOTE: 2/15/04 - Fixed random point using line. MP 
+ * NOTE: 2/15/04 - Fixed random point using line. MP
  */
 
 /**
@@ -194,29 +194,31 @@ public class ParticleController extends Controller {
 		currentP.life = 1.0f;
 		currentP.fade = (float) (ps.getFade() * Math.random() + ps.getFade());
 
-		if (ps.useGeometry()) {
-			if (ps.getLine() != null) {
+		switch (ps.getGeometry()) {
+			case 1 :
 				currentP.setLocalTranslation(ps.getLine().random());
-			}
-		} else {
-			currentP.getLocalTranslation().x = ps.getStartPosition().x;
-			currentP.getLocalTranslation().y = ps.getStartPosition().y;
-			currentP.getLocalTranslation().z = ps.getStartPosition().z;
+				break;
+			case 2 :
+				currentP.setLocalTranslation(ps.getRectangle().random());
+				break;
+			default :
+				currentP.getLocalTranslation().x = ps.getStartPosition().x;
+				currentP.getLocalTranslation().y = ps.getStartPosition().y;
+				currentP.getLocalTranslation().z = ps.getStartPosition().z;
+				break;
+
 		}
 
-		currentP.color.r = ps.getStartColor().r;
-		currentP.color.g = ps.getStartColor().g;
-		currentP.color.b = ps.getStartColor().b;
-		currentP.color.a = ps.getStartColor().a;
+	currentP.color.r = ps.getStartColor().r;
+	currentP.color.g = ps.getStartColor().g;
+	currentP.color.b = ps.getStartColor().b;
+	currentP.color.a = ps.getStartColor().a;
 
-		currentP.size = ps.getStartSize();
+	currentP.size = ps.getStartSize();
 
-		currentP.velocity.x =
-			(float) (((Math.random() * 32767) % 50) - 26) * 10;
-		currentP.velocity.y =
-			(float) (((Math.random() * 32767) % 50) - 26) * 10;
-		currentP.velocity.z =
-			(float) (((Math.random() * 32767) % 50) - 26) * 10;
+	currentP.velocity.x = (float) (((Math.random() * 32767) % 50) - 26) * 10;
+	currentP.velocity.y = (float) (((Math.random() * 32767) % 50) - 26) * 10;
+	currentP.velocity.z = (float) (((Math.random() * 32767) % 50) - 26) * 10;
 
-	}
+}
 }
