@@ -4,6 +4,7 @@ import com.jme.util.LittleEndien;
 import com.jme.scene.Node;
 import com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
+import com.jme.animation.SpatialTransformer;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -43,5 +44,19 @@ public class MaxToJme extends FormatConverter {
         chunkedTDS=null;
         myIn=null;
         new JmeBinaryWriter().writeScene(toReturn,bin);
+    }
+
+    /**
+     * This function returns the controller of a loaded 3ds model.  Will return
+     * null if a correct SpatialTransformer could not be found, or if one does not exist.
+     * @param model The model that was loaded.
+     * @return The controller for that 3ds model.
+     */
+    public static SpatialTransformer findController(Node model) {
+        if (model.getQuantity()==0 ||
+                model.getChild(0).getControllers().size()==0 ||
+                !(model.getChild(0).getController(0) instanceof SpatialTransformer))
+            return null;
+        return (SpatialTransformer) (model.getChild(0)).getController(0);
     }
 }
