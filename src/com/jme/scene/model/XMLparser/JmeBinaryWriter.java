@@ -54,6 +54,14 @@ public class JmeBinaryWriter {
     private static final Vector3f DEFAULT_TRANSLATION = new Vector3f();
     private static final Vector3f DEFAULT_SCALE = new Vector3f(1,1,1);
 
+
+    /**
+     * Holds properties that modify how JmeBinaryWriter writes a file.
+     */
+    private HashMap properties=new HashMap();
+
+
+
     /**
      * Creates a new Binary Writer.
      */
@@ -308,6 +316,17 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeJointMesh(JointMesh2 jointMesh) throws IOException {
+        if ("astrimesh".equals(properties.get("jointmesh"))){
+            writeMesh(jointMesh);
+            return;
+        }
+        int i;
+        for (i=0;i<jointMesh.jointIndex.length;i++)
+            if (jointMesh.jointIndex[i]!=-1) break;
+        if (i==jointMesh.jointIndex.length){    // if the mesh has no joint parents, I just write it as a TriMesh
+            writeMesh(jointMesh);
+            return;
+        }
         HashMap atts=new HashMap();
         atts.clear();
         putSpatialAtts(jointMesh,atts);
@@ -906,5 +925,25 @@ public class JmeBinaryWriter {
         if (DEBUG) System.out.println("Writting file begin");
         myOut.writeLong(BinaryFormatConstants.BEGIN_FILE);
         writeTag("scene",null);
+    }
+
+    /**
+     * Adds a property .  Properties can tell this how to save the binary file.<br><br>
+     * The only keys currently used are:<br>
+     * key -> PropertyDataType<br>
+     *
+     * @param key Key to add (For example "texdir")
+     * @param property Property for that key to have (For example "c:\\blarg\\")
+     */
+    public void setProperty(String key, Object property) {
+        properties.put(key,property);
+    }
+
+    /**
+     * Removes a property.  This is equivalent to setProperty(key,null)
+     * @param key The property to remove.
+     */
+    public void clearProperty(String key){
+        properties.remove(key);
     }
 }
