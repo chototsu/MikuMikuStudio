@@ -37,11 +37,11 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Quad</code> defines a four sided, two dimensional shape. The local 
+ * <code>Quad</code> defines a four sided, two dimensional shape. The local
  * height of the <code>Quad</code> defines it's size about the y-axis, while
  * the width defines the x-axis. The z-axis will always be 0.
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.3 2004-04-26 15:17:04 mojomonkey Exp $
+ * @version $Id: Quad.java,v 1.4 2004-09-14 07:12:46 renanse Exp $
  */
 public class Quad extends TriMesh {
 
@@ -57,7 +57,7 @@ public class Quad extends TriMesh {
 
     /**
      * Constructor creates a new <code>Quade</code> object with the provided
-     * width and height. 
+     * width and height.
      * @param name the name of the <code>Quad</code>.
      * @param width the width of the <code>Quad</code>.
      * @param height the height of the <code>Quad</code>.
@@ -66,11 +66,29 @@ public class Quad extends TriMesh {
         super(name);
         initialize(width, height);
     }
-    
+
     /**
-     * 
+     * <code>resize</code> changes the width and height of the given quad
+     * by altering its vertices.
+     *
+     * @param width the new width of the <code>Quad</code>.
+     * @param height the new height of the <code>Quad</code>.
+     */
+    public void resize(float width, float height) {
+      Vector3f[] verts = new Vector3f[4];
+
+      verts[0] = new Vector3f(-width/2f, height/2f, 0);
+      verts[1] = new Vector3f(-width/2f, -height/2f, 0);
+      verts[2] = new Vector3f(width/2f, -height/2f, 0);
+      verts[3] = new Vector3f(width/2f, height/2f, 0);
+
+      setVertices(verts);
+    }
+
+    /**
+     *
      * <code>initialize</code> builds the data for the <code>Quad</code> object.
-     * 
+     *
      *
      * @param width the width of the <code>Quad</code>.
      * @param height the height of the <code>Quad</code>.
@@ -118,7 +136,7 @@ public class Quad extends TriMesh {
 
   /**
    * <code>getCenter</code> returns the center of the <code>Quad</code>.
-   * 
+   *
    * @return Vector3f the center of the <code>Quad</code>.
    */
   public Vector3f getCenter() {
