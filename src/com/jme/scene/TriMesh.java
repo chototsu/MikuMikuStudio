@@ -37,13 +37,16 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
+import java.util.ArrayList;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.math.Matrix3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.bounding.OBBTree;
 
 /**
  * <code>TriMesh</code> defines a geometry mesh. This mesh defines a three
@@ -53,12 +56,17 @@ import com.jme.util.LoggingSystem;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.25 2004-09-06 07:10:23 cep21 Exp $
+ * @version $Id: TriMesh.java,v 1.26 2004-09-07 04:33:01 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
 	private transient IntBuffer indexBuffer;
 	protected int triangleQuantity = -1;
+
+    /** This tree is only built on calls too updateCollisionTree. */
+    private OBBTree collisionTree;
+    /** This is and should only be used by collision detection. */
+    private Matrix3f worldMatrot;
 
 	/**
 	 * Empty Constructor to be used internally only.
@@ -300,5 +308,56 @@ public class TriMesh extends Geometry implements Serializable {
 		updateIndexBuffer();
     }
 
+    /**
+     * This function creates a collision tree from the TriMesh's current information.  If the
+     * information changes, the tree needs to be updated.
+     */
+    public void updateCollisionTree(){
+        if (collisionTree==null) collisionTree=new OBBTree();
+        collisionTree.construct(this);
+    }
 
+    /**
+     * This function checks for intersection between this trimesh and the given one.  On the first intersection, true
+     * is returned.
+     * @param toCheck The intersection testing mesh.
+     * @return True if they intersect.
+     */
+    public boolean checkIntersection(TriMesh toCheck){
+        if (collisionTree==null || toCheck.collisionTree==null)
+            return false;
+        else{
+            collisionTree.bounds.transform(worldRotation,worldTranslation,worldScale,collisionTree.worldBounds);
+            worldMatrot=worldRotation.toRotationMatrix();
+            toCheck.worldMatrot=toCheck.worldRotation.toRotationMatrix();
+            return collisionTree.intersect(toCheck.collisionTree);
+        }
+    }
+
+    /**
+     * This function finds all intersections between this trimesh and the checking one.  The intersections
+     * are stored as Integer objects of Triangle indexes in each of the parameters.
+     * @param toCheck The TriMesh to check.
+     * @param thisIndex The array of triangle indexes intersecting in this mesh.
+     * @param otherIndex The array of triangle indexes intersecting in the given mesh.
+     */
+    public void findIntersection(TriMesh toCheck,ArrayList thisIndex,ArrayList otherIndex){
+        if (collisionTree==null || toCheck.collisionTree==null)
+            return ;
+        else{
+            collisionTree.bounds.transform(worldRotation,worldTranslation,worldScale,collisionTree.worldBounds);
+            worldMatrot=worldRotation.toRotationMatrix();
+            toCheck.worldMatrot=toCheck.worldRotation.toRotationMatrix();
+            collisionTree.intersect(toCheck.collisionTree,thisIndex,otherIndex);
+        }
+    }
+
+    /**
+     * This function is <b>ONLY</b> to be used by the intersection testing code.  It should not be called by users.  It
+     * returns a matrix3f representation of the mesh's world rotation.
+     * @return This mesh's world rotation.
+     */
+    public Matrix3f findWorldRotMat() {
+        return worldMatrot;
+    }
 }
