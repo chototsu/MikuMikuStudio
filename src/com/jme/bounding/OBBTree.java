@@ -16,7 +16,7 @@ import java.util.ArrayList;
  * This class is used exclusivly by the TriMesh object. There is no need for
  * users to call functions on this class directly. It is a tree of OBB objects
  * that represent a model's bound.
- * 
+ *
  * @author Jack Lindamood
  */
 public class OBBTree {
@@ -60,17 +60,18 @@ public class OBBTree {
 
     /**
      * Recreates this OBBTree's information for the given TriMesh.
-     * 
+     *
      * @param parent
      *            The trimesh that this OBBTree should represent.
      */
     public void construct(TriMesh parent) {
         this.myParent = parent;
-        Vector3f[] triangles = parent.getMeshAsTriangles(); 
-        tris = new TreeTriangle[triangles.length / 3]; 
+        Vector3f[] triangles = parent.getMeshAsTriangles();
+				if (tris == null || tris.length != triangles.length / 3)
+					tris = new TreeTriangle[triangles.length / 3];
         for (int i = 0; i < tris.length; i++) {
-        	tris[i] = new TreeTriangle(triangles[i * 3 + 0], 
-        		triangles[i * 3 + 1], triangles[i * 3 + 2]); 
+        	tris[i] = new TreeTriangle(triangles[i * 3 + 0],
+        		triangles[i * 3 + 1], triangles[i * 3 + 2]);
             tris[i].putCentriod();
             tris[i].index = i;
         }
@@ -82,7 +83,7 @@ public class OBBTree {
 
     /**
      * Creates an OBB tree recursivly from the tris's array of triangles.
-     * 
+     *
      * @param start
      *            The start index of the tris array, inclusive.
      * @param end
@@ -91,19 +92,23 @@ public class OBBTree {
     public void createTree(int start, int end) {
         myStart = start;
         myEnd = end;
-        bounds = new OBB2();
-        worldBounds = new OBB2();
+				if (bounds == null)
+					bounds = new OBB2();
+				if (worldBounds == null)
+					worldBounds = new OBB2();
         bounds.computeFromTris(tris, start, end);
         if (myEnd - myStart + 1 <= maxPerLeaf) {
             return;
         } else {
             splitTris(start, end);
-            this.left = new OBBTree();
+						if (this.left == null)
+							this.left = new OBBTree();
             this.left.tris = this.tris;
             this.left.myParent = this.myParent;
             this.left.createTree(start, (start + end) / 2);
 
-            this.right = new OBBTree();
+						if (this.right == null)
+							this.right = new OBBTree();
             this.right.tris = this.tris;
             this.right.myParent = this.myParent;
             this.right.createTree((start + end) / 2 + 1, end);
@@ -113,7 +118,7 @@ public class OBBTree {
     // Assume this is ok and param needs rotation.
     /**
      * Returns true if this OBBTree intersects the given OBBTree.
-     * 
+     *
      * @param collisionTree
      *            The Tree to test.
      * @return True if they intersect.
@@ -170,7 +175,7 @@ public class OBBTree {
     /**
      * Stores in the given array list all indexes of triangle intersection
      * between the two OBBTree.
-     * 
+     *
      * @param collisionTree
      *            The tree to test this one against.
      * @param aList
@@ -239,7 +244,7 @@ public class OBBTree {
     /**
      * Stores in the given array list all indexes of triangle intersection
      * between this tree and a given ray.
-     * 
+     *
      * @param ray
      *            The ray to test this tree against.
      * @param triList
@@ -280,7 +285,7 @@ public class OBBTree {
 
     /**
      * Splits the root obb acording to the largest bounds extent.
-     * 
+     *
      * @param start
      *            Start index in the tris array, inclusive, that is the OBB to
      *            split.
@@ -303,9 +308,9 @@ public class OBBTree {
     }
 
     /**
-     * 
+     *
      * <code>sortZ</code> sorts the z bounds of the tree.
-     * 
+     *
      * @param start
      *            the start index of the triangle list.
      * @param end
@@ -320,9 +325,9 @@ public class OBBTree {
     }
 
     /**
-     * 
+     *
      * <code>sortY</code> sorts the y bounds of the tree.
-     * 
+     *
      * @param start
      *            the start index of the triangle list.
      * @param end
@@ -337,9 +342,9 @@ public class OBBTree {
     }
 
     /**
-     * 
+     *
      * <code>sortX</code> sorts the x bounds of the tree.
-     * 
+     *
      * @param start
      *            the start index of the triangle list.
      * @param end
