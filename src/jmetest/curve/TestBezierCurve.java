@@ -54,7 +54,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.2 2004-02-19 03:59:49 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.3 2004-02-20 16:27:29 mojomonkey Exp $
  */
 public class TestBezierCurve extends SimpleGame {
     private TriMesh t, t2, t3, t4;
@@ -126,7 +126,7 @@ public class TestBezierCurve extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonController(this, cam, properties.getRenderer());
         display.setTitle("Bezier Curve Test");
 
     }
@@ -143,6 +143,7 @@ public class TestBezierCurve extends SimpleGame {
         points[3] = new Vector3f(4, 0, 0);
 
         curve = new BezierCurve(points);
+        curve.setName("Curve");
         ColorRGBA[] colors = new ColorRGBA[4];
         colors[0] = new ColorRGBA(0,1,0,1);
         colors[1] = new ColorRGBA(1,0,0,1);
@@ -158,30 +159,35 @@ public class TestBezierCurve extends SimpleGame {
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         t = new Box(min, max);
+        t.setName("Control 1");
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
 
         t.setLocalTranslation(points[0]);
 
         t2 = new Box(min, max);
+        t2.setName("Control 2");
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
 
         t2.setLocalTranslation(points[1]);
 
         t3 = new Box(min, max);
+        t3.setName("Control 3");
         t3.setModelBound(new BoundingSphere());
         t3.updateModelBound();
 
         t3.setLocalTranslation(points[2]);
 
         t4 = new Box(min, max);
+        t4.setName("Control 4");
         t4.setModelBound(new BoundingSphere());
         t4.updateModelBound();
 
         t4.setLocalTranslation(points[3]);
 
         box = new Box(min.mult(5), max.mult(5));
+        box.setName("Controlled Box");
         box.setModelBound(new BoundingSphere());
         box.updateModelBound();
 
@@ -203,6 +209,7 @@ public class TestBezierCurve extends SimpleGame {
         box.setRenderState(ts);
 
         scene = new Node();
+        scene.setName("Main 3D scene");
         scene.setRenderState(buf);
         scene.attachChild(t);
         scene.attachChild(t2);
@@ -211,6 +218,7 @@ public class TestBezierCurve extends SimpleGame {
         scene.attachChild(box);
         scene.attachChild(curve);
         root = new Node();
+        root.setName("Scene graph Root");
         root.attachChild(scene);
 
         scene.updateGeometricState(0.0f, true);
