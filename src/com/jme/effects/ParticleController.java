@@ -231,6 +231,24 @@ public class ParticleController extends Controller {
             (float) (((Math.random() * 32767) % 50) - 26) * 10;
         currentP.velocity.z =
             (float) (((Math.random() * 32767) % 50) - 26) * 10;
-
+    }
+    
+    public boolean getParticlesAlive() {
+    	boolean success = false;
+    	for (int i = 0; i < ps.getParticles().length; i++) {
+    		if (ps.getParticles()[i].life > 0) {
+    			success = false;
+    			break;
+    		}else {
+    			success = true;
+    		}
+    	}
+    	
+    	if (success) {
+    		return true;
+    	}else {
+    		return false;
+    	}
+    	
     }
 }
