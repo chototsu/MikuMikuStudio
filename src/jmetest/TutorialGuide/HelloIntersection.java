@@ -70,7 +70,7 @@ public class HelloIntersection extends SimpleGame {
         target.setModelBound(new BoundingSphere());
         target.updateModelBound();
         rootNode.attachChild(target);
-    
+
         /** Create a skybox to suround our world*/
         sb = new Skybox("skybox", 200, 200, 200);
         URL monkeyLoc = HelloIntersection.class.getClassLoader().getResource(
@@ -132,7 +132,7 @@ public class HelloIntersection extends SimpleGame {
         int numBullets;
 
         FireBullet() {
-            setAllowsRepeats(true);
+            setAllowsRepeats(false);
         }
 
         public void performAction(float time) {
