@@ -35,22 +35,23 @@ package com.jme.util;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
-import com.jme.math.Vector3f;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.math.FastMath;
+import com.jme.math.Vector3f;
 
 /**
  * <code>AreaUtils</code> is used to calculate the area of various objects, such as bounding volumes.  These
  * functions are very loose approximations.
  * @author Joshua Slack
- * @version $Id: AreaUtils.java,v 1.6 2004-08-17 17:37:38 cep21 Exp $
+ * @version $Id: AreaUtils.java,v 1.7 2004-08-25 22:19:13 cep21 Exp $
  */
 
 public class AreaUtils {
 
   /**
    * calcScreenArea -- in Pixels
-   * Aproximates the screen area of a bounding volume.  If the volume isn't a BoundingSphere or
-   * BoundingBox, 0 is returned.
+   * Aproximates the screen area of a bounding volume.  If the volume isn't a
+   * BoundingSphere, BoundingBox, or OrientedBoundingBox 0 is returned.
    *
    * @param bound The bounds to calculate the volume from.
    * @param distance The distance from camera to object.
@@ -62,7 +63,15 @@ public class AreaUtils {
       return calcScreenArea((BoundingSphere)bound, distance, screenWidth);
     else if (bound instanceof BoundingBox)
       return calcScreenArea((BoundingBox)bound, distance, screenWidth);
+    else if (bound instanceof OrientedBoundingBox)
+      return calcScreenArea((OrientedBoundingBox)bound, distance, screenWidth);
     return 0.0f;
+  }
+
+  private static float calcScreenArea(OrientedBoundingBox bound, float distance, float screenWidth) {
+      // Calc as if we are a BoundingSphere for now...
+      float radiusSquare=bound.getExtent().lengthSquared();
+      return ((radiusSquare*screenWidth*screenWidth)/(distance*distance*4))*FastMath.PI;
   }
 
   private static float calcScreenArea(BoundingSphere bound, float distance, float screenWidth) {
@@ -76,10 +85,10 @@ public class AreaUtils {
   }
 
   private static float calcScreenArea(BoundingBox bound, float distance, float screenWidth) {
-    // Calc as if we are a BoundingSphere for now...
-    float radiusSquare=bound.xExtent*bound.xExtent+
-        bound.yExtent*bound.yExtent+
-        bound.zExtent*bound.zExtent;
-      return ((radiusSquare*screenWidth*screenWidth)/(distance*distance*4))*FastMath.PI;
+      // Calc as if we are a BoundingSphere for now...
+      float radiusSquare=bound.xExtent*bound.xExtent+
+          bound.yExtent*bound.yExtent+
+          bound.zExtent*bound.zExtent;
+        return ((radiusSquare*screenWidth*screenWidth)/(distance*distance*4))*FastMath.PI;
   }
 }
