@@ -54,7 +54,7 @@ import com.jme.scene.state.RenderState;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.30 2004-04-22 22:26:45 renanse Exp $
+ * @version $Id: Geometry.java,v 1.31 2004-04-23 02:27:52 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
   protected BoundingVolume bound;
@@ -407,7 +407,7 @@ public abstract class Geometry extends Spatial implements Serializable {
   /**
    *
    * <code>setTextures</code> sets the texture coordinates of a given
-   * texture unit. If the texture unit is not valid, than the coordinates
+   * texture unit. If the texture unit is not valid, then the coordinates
    * are ignored.
    * @param textures the coordinates to set.
    * @param textureUnit the texture unit to set them to.
@@ -423,6 +423,30 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
     this.texture[textureUnit] = textures;
     updateTextureBuffer(textureUnit);
+  }
+
+  /**
+   *
+   * <code>copyTextureCoords</code> copys the texture coordinates of a given
+   * texture unit to another location. If the texture unit is not valid,
+   * then the coordinates are ignored.
+   * @param fromIndex the coordinates to copy.
+   * @param toIndex the texture unit to set them to.
+   */
+  public void copyTextureCoords(int fromIndex, int toIndex) {
+    if (fromIndex < 0 || fromIndex >= this.texture.length) {
+      return;
+    }
+    if (toIndex < 0 || toIndex >= this.texture.length) {
+      return;
+    }
+    if (this.texture != null) {
+      if (this.texture[fromIndex].length != texture.length) {
+        texBuf[toIndex] = null;
+      }
+    }
+    this.texture[toIndex] = (Vector2f[])texture[fromIndex].clone();
+    updateTextureBuffer(toIndex);
   }
 
   /**
