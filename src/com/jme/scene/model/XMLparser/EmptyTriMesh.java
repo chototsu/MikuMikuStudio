@@ -7,7 +7,7 @@ import com.jme.renderer.ColorRGBA;
 
 /**
  * Started Date: Jun 14, 2004<br><br>
- * This class is for use with SAXStackProcessor.  It is the same as a TriMesh but doesn't update its floatbuffers for
+ * This class is for use with jME's loader system.  It is the same as a TriMesh but doesn't update its floatbuffers for
  * compact storage.  It is <b>NOT</b> ment to be attached to a scenegraph and is for internal use only.
  * 
  * @author Jack Lindamood

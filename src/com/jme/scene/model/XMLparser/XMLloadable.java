@@ -3,7 +3,7 @@ package com.jme.scene.model.XMLparser;
 /**
  * Started Date: Jun 6, 2004
  *
- * Is implimented by jME objects to allow them to be saved/loaded to/from XML
+ * Is implimented by jME objects to allow them to be saved/loaded to/from jME
  * All implimenting classes must have a default constructor, or they will be
  * unable to be processed.  It is guaranteed that loadFromXML(String args) will
  * be called directly default construction.  The user should make sure that the String
@@ -31,7 +31,7 @@ public interface XMLloadable {
      * Given a String from a previous object of the same class, <code>loadFromXML</code> will
      * duplicate that class
      * @param args The string args given to reconstruct this class
-     * @return The object that <code>SAXStackProcessor</code> will use.  This can either be the same object that
+     * @return The object that <code>JmeBinaryReader</code> will use.  This can either be the same object that
      * loadFromXML was called on, or a new object.  Only the returned object will be used. 
      */
     public Object loadFromXML(String args);

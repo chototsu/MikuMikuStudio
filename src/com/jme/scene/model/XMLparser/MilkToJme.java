@@ -13,16 +13,15 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.image.Texture;
 
 import java.io.*;
-import java.net.URL;
 
 /**
  * Started Date: Jun 8, 2004
- * This class converts a .ms3d file to jME's XML format.  The way it converts is by first
- * building the .ms3d scenegraph object, then saving that object to XML format via XMLWriter
+ * This class converts a .ms3d file to jME's binary format.  The way it converts is by first
+ * building the .ms3d scenegraph object, then saving that object to binary format via JmeBinaryWriter
  * 
  * @author Jack Lindamood
  */
-public class MilkToXML {
+public class MilkToJme {
     DataInput inFile;
     byte[] tempChar=new byte[128];
     int nNumVertices;
@@ -34,21 +33,22 @@ public class MilkToXML {
 
     /**
      * This class's only public function.  It creates a node from a .ms3d file and then writes that node to the given
-     * Writer in XML format
-     * @param file A URL pointing to the .ms3d file
-     * @param o The Writer to write it's XML equivalent to
+     * OutputStream in binary format
+     * @param MSFile An inputStream that is the .ms3d file
+     * @param o The Stream to write it's jME binary equivalent to
      * @throws IOException If anything funky goes wrong with reading information
      */
-    public void writeFiletoStream(URL file,Writer o) throws IOException {
-        inFile=new LittleEndien(file.openStream());
-        finalNode=new Node(new File(file.getFile()).getName());
+    public void writeFiletoStream(InputStream MSFile,OutputStream o) throws IOException {
+        inFile=new LittleEndien(MSFile);
+        finalNode=new Node("ms3d file");
         checkHeader();
         readVerts();
         readTriangles();
         readGroups();
         readMats();
         readJoints();
-        new XMLWriter(o).writeScene(finalNode);
+        JmeBinaryWriter jbw=new JmeBinaryWriter();
+        jbw.writeScene(finalNode,o);
     }
 
     private void readJoints() throws IOException {

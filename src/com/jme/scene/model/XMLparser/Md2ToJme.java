@@ -14,24 +14,27 @@ import java.io.*;
 
 
 /**
- * Started Date: Jun 14, 2004
+ * Started Date: Jun 14, 2004<br><br>
+ *
+ * This class converts a .md2 file to jME's binary format.
  * 
  * @author Jack Lindamood
  */
-public class Md2ToXML {
+public class Md2ToJme {
 
     Node nodeToReturn;
     /**
      * This class's only public function.  It creates a node from a .md2 file and then writes that node to the given
-     * OutputStream in XML format
+     * OutputStream in jME's binary format
      * @param file A URL pointing to the .md2 file
-     * @param o The stream to write it's XML equivalent to
+     * @param o The stream to write it's binary equivalent to
      * @throws java.io.IOException If anything funky goes wrong with reading information
      */
-    public void writeFiletoStream(URL file,Writer o) throws IOException {
+    public void writeFiletoStream(URL file,OutputStream o) throws IOException {
         if (file==null)
             throw new NullPointerException("Unable to load null URL streams");
-        new XMLWriter(o).writeScene(new Md2ConverterCopy(file));
+        JmeBinaryWriter i=new JmeBinaryWriter();
+        i.writeScene(new Md2ConverterCopy(file),o);
     }
 
     /**
