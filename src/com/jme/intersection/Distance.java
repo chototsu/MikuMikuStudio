@@ -34,13 +34,14 @@ package com.jme.intersection;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
+import com.jme.math.FastMath;
 
 /**
  * <code>Distance</code> provides functional methods for determining the
  * distances between one object and another. These methods are static to allow
  * for easy calling.
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.5 2004-04-22 22:26:36 renanse Exp $
+ * @version $Id: Distance.java,v 1.6 2004-07-30 22:25:13 cep21 Exp $
  */
 public class Distance {
 
@@ -52,7 +53,7 @@ public class Distance {
      * @return the distance between the two points.
      */
     public static float distance(Vector3f point1, Vector3f point2) {
-        return (float) Math.sqrt(distanceSquared(point1, point2));
+        return FastMath.sqrt(distanceSquared(point1, point2));
 
     }
 
