@@ -50,7 +50,7 @@ import com.jme.math.Vector2f;
  * <code>DisplaySystem</code>
  *
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.31 2004-07-25 23:46:58 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.32 2004-08-02 21:34:12 cep21 Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -73,20 +73,28 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.31 2004-07-25 23:46:58 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.32 2004-08-02 21:34:12 cep21 Exp $
  */
 public abstract class DisplaySystem {
 
+    /** The display system that has been created. */
     private static DisplaySystem display;
 
-    protected int width, height;
+    /** Width selected for the renderer. */
+    protected int width;
+    /** height selected for the renderer. */
+    protected int height;
 
+    /** Alpha bits to use for the renderer. */
     protected int alphaBits = 0;
 
+    /** Depth bits to use for the renderer. */
     protected int depthBits = 8;
 
+    /** Stencil bits to use for the renderer. */
     protected int stencilBits = 0;
 
+    /** Number of samples to use for the multisample buffer. */
     protected int samples = 0;
 
     /**
@@ -94,6 +102,10 @@ public abstract class DisplaySystem {
      */
     public static final String[] rendererNames = { "LWJGL"};
 
+    /**
+     * A new display system has been created.  The default static display system is set to the
+     * newly created display system.
+     */
     protected DisplaySystem() {
         display = this;
     }
@@ -119,14 +131,26 @@ public abstract class DisplaySystem {
         return display;
     }
 
+    /**
+     * Returns the currently created display system.
+     * @return The current display system.
+     */
     public static DisplaySystem getDisplaySystem() {
         return display;
     }
 
+    /**
+     * Returns the selected width for the display system.
+     * @return The current user selected width.
+     */
     public int getWidth() {
         return width;
     }
 
+    /**
+     * Returns the selected height for the display system.
+     * @return The current user selected height.
+     */
     public int getHeight() {
         return height;
     }
@@ -161,6 +185,11 @@ public abstract class DisplaySystem {
      */
     public abstract void setVSyncEnabled(boolean enabled);
 
+    /**
+     * Sets the title of the display system.  This is usually reflected by the renderer as text
+     * in the menu bar.
+     * @param title The new display title.
+     */
     public abstract void setTitle(String title);
 
     /**
@@ -252,6 +281,7 @@ public abstract class DisplaySystem {
     public abstract WidgetFont getFont(String fontName);
 
     /**
+     * Returns the minimum bits per pixel in the alpha buffer.
      * @return the int value of alphaBits.
      */
     public int getMinAlphaBits() {
@@ -259,6 +289,7 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Sets the minimum bits per pixel in the alpha buffer.
      * @param alphaBits -
      *            the new value for alphaBits
      */
@@ -267,6 +298,7 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Returns the minimum bits per pixel in the depth buffer.
      * @return the int value of depthBits.
      */
     public int getMinDepthBits() {
@@ -274,6 +306,7 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Sets the minimum bits per pixel in the depth buffer.
      * @param depthBits -
      *            the new value for depthBits
      */
@@ -282,6 +315,7 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Returns the minimum bits per pixel in the stencil buffer.
      * @return the int value of stencilBits.
      */
     public int getMinStencilBits() {
@@ -289,6 +323,7 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Sets the minimum bits per pixel in the stencil buffer.
      * @param stencilBits -
      *            the new value for stencilBits
      */
@@ -297,6 +332,7 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Returns the  minimum samples in multisample buffer.
      * @return the int value of samples.
      */
     public int getMinSamples() {
@@ -304,6 +340,7 @@ public abstract class DisplaySystem {
     }
 
     /**
+     * Sets the minimum samples in the multisample buffer.
      * @param samples -
      *            the new value for samples
      */
@@ -311,6 +348,12 @@ public abstract class DisplaySystem {
         this.samples = samples;
     }
 
+
+    /**
+     * Called when the display system is created, this function sets the default render states for
+     * the renderer.  It should not be called directly by the user.
+     * @param r The renderer to get the default states from.
+     */
     public static void updateStates(Renderer r) {
 
         Spatial.defaultStateList[RenderState.RS_ALPHA] = r.getAlphaState();
@@ -347,7 +390,8 @@ public abstract class DisplaySystem {
     }
 
     /**
-     * Crate a TextureRenderer using the underlying system.
+     * Crate a TextureRenderer using the underlying system.  This should not be user called.  It
+     * is called when the display system is created.
      *
      * @param width
      *            width of texture
@@ -361,7 +405,7 @@ public abstract class DisplaySystem {
      * @param isRectangle
      * @param target
      * @param mipmaps
-     * @return
+     * @return A TextureRenderer for the display system.
      */
     public abstract TextureRenderer createTextureRenderer(int width,
             int height, boolean useRGB, boolean useRGBA, boolean useDepth,
@@ -371,17 +415,17 @@ public abstract class DisplaySystem {
          * Translate world to screen coordinates
          *
          * @param worldPosition
-         *            Vector3f
-         * @return Vector2f
+         *            Vector3f representing the world position to retrieve.
+         * @return Vector2f The screen position of that vector3f world position.
          */
         public abstract Vector3f getScreenCoordinates(Vector3f worldPosition);
 
         /**
          * Translate world to screen coordinates
          *
-         * @param worldPosition Vector3f
-         * @param store Vector3f
-         * @return Vector3f
+         * @param worldPosition Vector3f representing the world position to retrieve.
+         * @param store Vector3f to store the world position in.
+         * @return Vector3f The store vector3f, after storing.
          */
         public abstract Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store);
 
@@ -389,9 +433,9 @@ public abstract class DisplaySystem {
          * Translate screen to world coordinates.
          *
          * @param screenPosition
-         *            Vector2f
-         * @param zPos float
-         * @return Vector3f
+         *            Vector2f representing the screen position with 0,0 at the bottom left.
+         * @param zPos float The z position away from the viewing plane.
+         * @return Vector3f A vector3f representing the vector's world position.
          */
         public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
                 float zPos);
@@ -399,10 +443,10 @@ public abstract class DisplaySystem {
   /**
    * Translate screen to world coordinates.
    *
-   * @param screenPosition Vector2f
-   * @param zPos float
-   * @param store Vector3f
-   * @return Vector3f
+   * @param screenPosition Vector2f representing the screen position with 0,0 at the bottom left
+   * @param zPos float The z position away from the viewing plane.
+   * @param store Vector3f The vector to store the result in.
+   * @return Vector3f The store vector, after storing it's result.
    */
   public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
           float zPos, Vector3f store);
