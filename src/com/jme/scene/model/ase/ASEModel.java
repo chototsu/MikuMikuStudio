@@ -55,10 +55,14 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
- * <code>ASEModel</code>
+ * <code>ASEModel</code> defines a model using the ASE model format. 
+ * This loader builds the mesh of the model but currently does not
+ * build any animations defined for the format. Therefore, if a 
+ * call to <code>getAnimationController</code> is made, null will
+ * be returned.
  * 
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.2 2004-02-13 02:50:10 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.3 2004-02-13 21:47:21 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -99,6 +103,35 @@ public class ASEModel extends Model {
 	private ArrayList materials = new ArrayList();
 	private ArrayList objectList = new ArrayList();
 
+	/**
+	 * Constructor instantiates a new <code>ASEModel</code> object. 
+	 * No data is loaded at this time and a call to <code>load</code>
+	 * is required to initialize the model with data.
+	 *
+	 */
+	public ASEModel() {
+		super();
+	}
+	
+	/**
+	 * Constructor instantiates a new <code>ASEModel</code> object. The
+	 * file provided is then read and the data loaded. Thefore, a call
+	 * to <code>load</code> is not required.
+	 * @param file the ase file to load.
+	 */
+	public ASEModel(String file) {
+		super();
+		load(file);
+	}
+	
+	/**
+	 *  <code>load</code> parses a given file, loading the mesh data into
+	 * a structure that jME can render. Each Geomobject the ase file defines
+	 * is created as a <code>TriMesh</code> and attached to this 
+	 * <code>Model</code>. Animation is currently not supported.
+	 * @param file the ase file to load.
+	 * @see com.jme.scene.model.Model#load(java.lang.String)
+	 */
 	public void load(String file) {
 		InputStream is = null;
 		int fileSize = 0;
@@ -123,7 +156,6 @@ public class ASEModel extends Model {
 
 			fileContents = fc.toString();
 
-			// Close the .ase file that we opened
 			reader.close();
 
 			parseFile();
@@ -137,7 +169,9 @@ public class ASEModel extends Model {
 	}
 
 	/**
-	 * <code>getAnimationController</code>
+	 * <code>getAnimationController</code> returns the animation 
+	 * controller. Currently, no animation is loaded, and null will
+	 * be returned until the animation is implemented.
 	 * 
 	 * @return @see com.jme.scene.model.Model#getAnimationController()
 	 */
@@ -145,6 +179,13 @@ public class ASEModel extends Model {
 		return null;
 	}
 
+	/**
+	 * 
+	 * <code>parseFile</code> reads the file contents. First, the
+	 * number of materials and objects are read, then each material
+	 * is read and each object is read.
+	 *
+	 */
 	private void parseFile() {
 		ASEMaterialInfo textureInfo = new ASEMaterialInfo();
 		ASEObject mesh = new ASEObject();
@@ -171,6 +212,13 @@ public class ASEModel extends Model {
 
 	}
 
+	/**
+	 * 
+	 * <code>convertToTriMesh</code> converts the data read into 
+	 * a collection of <code>TriMesh</code> classes that the
+	 * jME renderer can display.
+	 *
+	 */
 	private void convertToTriMesh() {
 
 		for (int i = 0; i < numOfObjects; i++) {
@@ -270,6 +318,12 @@ public class ASEModel extends Model {
 		}
 	}
 
+	/**
+	 * 
+	 * <code>getObjectCount</code> counts the number of Geomobject entries
+	 * in the ASE file. This count is then returned.
+	 * @return the number of Geomobject entries.
+	 */
 	private int getObjectCount() {
 		int objectCount = 0;
 		tokenizer = new StringTokenizer(fileContents);
@@ -310,6 +364,14 @@ public class ASEModel extends Model {
 		return 0;
 	}
 
+	/**
+	 * 
+	 * <code>getMaterialInfo</code> reads the data for a given material
+	 * entry in the file. The material state information is read and 
+	 * set as well as the texture state information.
+	 * @param material the material structure to store into.
+	 * @param desiredMaterial the material to load from the file.
+	 */
 	private void getMaterialInfo(
 		ASEMaterialInfo material,
 		int desiredMaterial) {
@@ -369,6 +431,12 @@ public class ASEModel extends Model {
 		}
 	}
 
+	/**
+	 * 
+	 * <code>moveToObject</code> moves the file pointer to a specific 
+	 * GEOMOBJECT entry in the ase file.
+	 * @param desiredObject the object number to move to.
+	 */
 	private void moveToObject(int desiredObject) {
 		int objectCount = 0;
 
@@ -384,6 +452,14 @@ public class ASEModel extends Model {
 		}
 	}
 
+	/**
+	 * 
+	 * <code>readObjectInfo</code> reads the mesh information defined by
+	 * the GEOMOBJECT entry in the file. This information is kept in the
+	 * ASEObject class until it is ready to be converted to a TriMesh.
+	 * @param currentObject the object to store the data in.
+	 * @param desiredObject the object to read.
+	 */
 	private void readObjectInfo(ASEObject currentObject, int desiredObject) {
 		String word;
 
@@ -416,6 +492,14 @@ public class ASEModel extends Model {
 		}
 	}
 
+	/**
+	 * 
+	 * <code>readObjectData</code> reads each bit of data defined by a
+	 * GEOMOBJECT. Namely, material id, vertices, texture vertices, faces,
+	 * texture faces, texture file, u and v tiling.
+	 * @param currentObject the object to store the information in.
+	 * @param desiredObject the object to read.
+	 */
 	private void readObjectData(ASEObject currentObject, int desiredObject) {
 		// Load the material ID for this object
 		getData(currentObject, MATERIAL_ID, desiredObject);
@@ -442,6 +526,14 @@ public class ASEModel extends Model {
 		getData(currentObject, VTILE, desiredObject);
 	}
 
+	/**
+	 * 
+	 * <code>getData</code> reads a specified bit of data out of a GEOMOBECT
+	 * entry in the ase file. 
+	 * @param currentObject the object to save the data in.
+	 * @param desiredData the object type to read.
+	 * @param desiredObject the object to read.
+	 */
 	private void getData(
 		ASEObject currentObject,
 		String desiredData,
@@ -507,14 +599,18 @@ public class ASEModel extends Model {
 		}
 	}
 
+	/**
+	 * 
+	 * <code>readVertex</code> reads the vertices information from a 
+	 * GEOMOBJECT entry. Some converting is required to get the 
+	 * coordinate axes into the default jme axes.
+	 * @param currentObject the object to start the vertex in.
+	 */
 	private void readVertex(ASEObject currentObject) {
 		int index = 0;
 
 		// Read past the vertex index
 		index = Integer.parseInt(tokenizer.nextToken());
-		//currentObject.tempVertices[index] = new Vector3f();
-
-		//convert to standard coordinate axis.
 		currentObject.getVertices()[index].x =
 			Float.parseFloat(tokenizer.nextToken());
 		currentObject.getVertices()[index].z =
@@ -524,6 +620,13 @@ public class ASEModel extends Model {
 
 	}
 
+	/**
+	 * 
+	 * <code>readTextureVertex</code> reads in a single texture coordinate
+	 * from the ase file.
+	 * @param currentObject the object that has the coordinate.
+	 * @param texture the object that defines the texture.
+	 */
 	private void readTextureVertex(
 		ASEObject currentObject,
 		ASEMaterialInfo texture) {
@@ -544,6 +647,14 @@ public class ASEModel extends Model {
 
 	}
 
+	/**
+	 * 
+	 * <code>readFace</code> reads the face of a triangle, that
+	 * is how vertices are put together to
+	 * form the mesh.
+	 * @param currentObject the object to store the information
+	 * in.
+	 */
 	private void readFace(ASEObject currentObject) {
 		int index = 0;
 
@@ -566,6 +677,14 @@ public class ASEModel extends Model {
 			Integer.parseInt(tokenizer.nextToken());
 	}
 
+	/**
+	 * 
+	 * <code>readFace</code> reads the face of a triangle, that
+	 * is how texture vertices are put together to
+	 * form the mesh.
+	 * @param currentObject the object to store the information
+	 * in.
+	 */
 	private void readTextureFace(ASEObject currentObject) {
 		int index = 0;
 
@@ -582,6 +701,14 @@ public class ASEModel extends Model {
 			Integer.parseInt(tokenizer.nextToken());
 	}
 
+	/**
+	 * 
+	 * <code>computeNormals</code> normals are not defined in the 
+	 * ase file, so we calculate them manually. Each vertex has a
+	 * matching normal. This normal is the average of all the face
+	 * normals surrounding the vertex.
+	 *
+	 */
 	private void computeNormals() {
 		if (numOfObjects <= 0) {
 			return;
@@ -645,6 +772,10 @@ public class ASEModel extends Model {
 		}
 	}
 
+	/**
+	 * 
+	 * <code>ASEMaterialInfo</code> holds material and texture information.
+	 */
 	private class ASEMaterialInfo {
 		String name; // The texture name
 		public String file;
@@ -660,6 +791,10 @@ public class ASEModel extends Model {
 		float vOffset; // v offset of texture (Currently not used)
 	};
 
+	/**
+	 * 
+	 * <code>ASEObject</code> holds the data for the mesh.
+	 */
 	public class ASEObject extends TriMesh {
 		public int materialID;
 		public Vector2f[] tempTexVerts; // The texture's UV coordinates
