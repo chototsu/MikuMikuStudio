@@ -29,16 +29,18 @@
  * POSSIBILITY OF SUCH DAMAGE. 
  * 
  */
-package com.jme.scene;
+package com.jme.scene.lod;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
+import com.jme.scene.SwitchModel;
+import com.jme.scene.SwitchNode;
 
 /**
  * <code>DiscreteLodNode</code>
  * @author Mark Powell
- * @version $Id: DiscreteLodNode.java,v 1.1 2004-03-05 16:50:19 mojomonkey Exp $
+ * @version $Id: DiscreteLodNode.java,v 1.1 2004-04-01 20:12:40 mojomonkey Exp $
  */
 public class DiscreteLodNode extends SwitchNode {
 	private Vector3f modelCenter;
