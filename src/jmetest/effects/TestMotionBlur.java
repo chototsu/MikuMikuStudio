@@ -56,17 +56,24 @@ public class TestMotionBlur extends VariableTimestepGame {
 	private TextureRenderer tRenderer;
 	private Texture fakeTex;
 
+	private boolean firstFrame = true;
+
 	protected void update(float timeD) {
 		float time = timeD * 10;
 		input.update(time);
 
-		tRenderer.updateCamera();
-		tRenderer.render(rootNode, fakeTex);
+		if (firstFrame == false) {
+			tRenderer.updateCamera();
+			tRenderer.render(rootNode, fakeTex);
+		}
 
 		rootNode.updateGeometricState(time, false);
 	}
 
 	protected void render(float timeD) {
+		if (firstFrame == true) {
+			firstFrame = false;
+		}
 		display.getRenderer().clearBuffers();
 		display.getRenderer().draw(rootNode);
 	}
@@ -106,7 +113,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 		rootNode = new Node("Root Node");
 		sceneNode = new Node("SceneNode");
 		blurNode = new Node("Blur Node");
-		
+
 		// set render queues
 		//blurNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
@@ -123,7 +130,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 						Texture.MM_LINEAR,
 						Texture.FM_LINEAR,
 						true));
-		
+
 		tRenderer = display.createTextureRenderer(512,
 				512,
 				false,
@@ -132,7 +139,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 				false,
 				TextureRenderer.RENDER_TEXTURE_2D,
 				0);
-		tRenderer.setBackgroundColor(ColorRGBA.white);
+		tRenderer.setBackgroundColor(ColorRGBA.black);
 		tRenderer.setCamera(cam);
 		tRenderer.updateCamera();
 		fakeTex = tRenderer.setupTexture();
@@ -142,7 +149,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 		blurTS.setEnabled(true);
 
 		Quad quad = new Quad("Blur Quad", 10, 10);
-		quad.setSolidColor(new ColorRGBA(1, 1, 1, 0.55f));
+		quad.setSolidColor(new ColorRGBA(1, 1, 1, 0.18f));
 		quad.setRenderState(blurTS);
 		quad.setRenderState(as);
 
