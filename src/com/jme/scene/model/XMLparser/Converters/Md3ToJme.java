@@ -42,15 +42,12 @@ public class Md3ToJme extends FormatConverter{
         Node toReturn=new Node("MD3 File");
         for (int i=0;i<head.numSurface;i++){
             MD3Surface thisSurface=surfaces[i];
-//            for (int j=0;j<thisSurface.numTriangles;j++){
-                TriMesh object=new TriMesh(thisSurface.name);
-                object.setIndices(thisSurface.triIndexes);
-                object.setVertices(thisSurface.verts[0]);
-                object.setNormals(thisSurface.norms[0]);
-                object.setTextures(thisSurface.texCoords);
-//                object.setLocalScale(frames[0].scale);
-                toReturn.attachChild(object);
-//            }
+            TriMesh object=new TriMesh(thisSurface.name);
+            object.setIndices(thisSurface.triIndexes);
+            object.setVertices(thisSurface.verts[0]);
+            object.setNormals(thisSurface.norms[0]);
+            object.setTextures(thisSurface.texCoords);
+            toReturn.attachChild(object);
         }
         return toReturn;
     }
@@ -184,7 +181,7 @@ public class Md3ToJme extends FormatConverter{
             offTexCoord=file.readInt();
             offXyzNor=file.readInt();
             offEnd=file.readInt();
-            readShader();            // Skip shader info TODO REMOVE
+//            readShader();            // Skip shader info
             readTriangles();
             readTexCoord();
             readVerts();
