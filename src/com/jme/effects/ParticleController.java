@@ -40,13 +40,14 @@ import com.jme.system.DisplaySystem;
  * <code>ParticleController</code>
  * 
  * @author Ahmed
- * @version $Id: ParticleController.java,v 1.3 2004-02-03 22:44:13 darkprophet Exp $
+ * @version $Id: ParticleController.java,v 1.3 2004/02/03 22:44:13 darkprophet
+ *          Exp $
  */
 public class ParticleController extends Controller {
 
 	private boolean isFirst;
 	private ParticleSystem ps;
-	private float time;
+	private float time, averageSize;
 	private Particle currentP;
 
 	private Vector3f[] points = new Vector3f[4];
@@ -63,21 +64,19 @@ public class ParticleController extends Controller {
 
 	public void update(float timeF) {
 		time = timeF * ps.getSpeed();
-
 		for (int i = 0; i < ps.getQuantity(); i++) {
 			currentP = (Particle) ps.getChild(i);
 
+			if (isFirst) {
+				averageSize = (float) (ps.getStartSize() + ps.getEndSize()) / 2;
+				BoundingSphere sphere = new BoundingSphere();
+				sphere.setCenter(currentP.getLocalTranslation());
+				sphere.setRadius(averageSize);
+				currentP.setModelBound(sphere);
+				currentP.updateModelBound();
+			}
+
 			if (getRepeatType() == RT_WRAP) {
-				if (isFirst) {
-					float average = (ps.getStartSize() + ps.getEndSize()) / 2;
-					points[0] = new Vector3f(average, average, 0);
-					points[1] = new Vector3f(average, average, 0);
-					points[2] = new Vector3f(average, average, 0);
-					points[3] = new Vector3f(average, average, 0);
-					currentP.setModelBound(new BoundingSphere());
-					currentP.getModelBound().computeFromPoints(points);
-					currentP.updateModelBound();
-				}
 				// check if dead
 				if (currentP.life <= 0.0f) {
 					regenerateParticle();
@@ -89,14 +88,6 @@ public class ParticleController extends Controller {
 			} else if (getRepeatType() == RT_CLAMP) {
 				// if its the first time, generate
 				if (isFirst) {
-					float average = (ps.getStartSize() + ps.getEndSize()) / 2;
-					points[0] = new Vector3f(average, average, 0);
-					points[1] = new Vector3f(average, average, 0);
-					points[2] = new Vector3f(average, average, 0);
-					points[3] = new Vector3f(average, average, 0);
-					currentP.setModelBound(new BoundingSphere());
-					currentP.getModelBound().computeFromPoints(points);
-					currentP.updateModelBound();
 					regenerateParticle();
 					continue;
 				} else if (currentP.life <= 0.0f) {
@@ -119,11 +110,14 @@ public class ParticleController extends Controller {
 		currentP.life -= currentP.fade * time;
 
 		// update position by velocity;
-		currentP.getLocalTranslation().x += (currentP.velocity.x / (ps.getFriction() * 1000))
+		currentP.getLocalTranslation().x
+			+= (currentP.velocity.x / (ps.getFriction() * 1000))
 			* time;
-		currentP.getLocalTranslation().y += (currentP.velocity.y / (ps.getFriction() * 1000))
+		currentP.getLocalTranslation().y
+			+= (currentP.velocity.y / (ps.getFriction() * 1000))
 			* time;
-		currentP.getLocalTranslation().z += (currentP.velocity.z / (ps.getFriction() * 1000))
+		currentP.getLocalTranslation().z
+			+= (currentP.velocity.z / (ps.getFriction() * 1000))
 			* time;
 		//currentP.setLocalTranslation(currentP.position);
 
@@ -196,9 +190,17 @@ public class ParticleController extends Controller {
 		currentP.life = 1.0f;
 		currentP.fade = (float) (ps.getFade() * Math.random() + ps.getFade());
 
-		currentP.getLocalTranslation().x = ps.getStartPosition().x;
-		currentP.getLocalTranslation().y = ps.getStartPosition().y;
-		currentP.getLocalTranslation().z = ps.getStartPosition().z;
+		if (ps.useGeometry()) {
+			if (ps.getLine() != null) {
+				currentP.getLocalTranslation().x = ps.getLine().random().x;
+				currentP.getLocalTranslation().y = ps.getLine().random().y;
+				currentP.getLocalTranslation().z = ps.getLine().random().z;
+			}
+		} else {
+			currentP.getLocalTranslation().x = ps.getStartPosition().x;
+			currentP.getLocalTranslation().y = ps.getStartPosition().y;
+			currentP.getLocalTranslation().z = ps.getStartPosition().z;
+		}
 
 		currentP.color.r = ps.getStartColor().r;
 		currentP.color.g = ps.getStartColor().g;
