@@ -24,7 +24,7 @@ public class TestMilkXMLWrite extends SimpleGame{
     protected void simpleInitGame() {
 
         MilkToXML converter=new MilkToXML();
-        URL MSFile=TestMilkLoader.class.getClassLoader().getResource(
+        URL MSFile=TestMilkXMLWrite.class.getClassLoader().getResource(
         "jmetest/data/model/msascii/run.ms3d");
         ByteArrayOutputStream blah=new ByteArrayOutputStream();
 
@@ -37,6 +37,9 @@ public class TestMilkXMLWrite extends SimpleGame{
         }
         System.out.println(blah);
         SAXReader toScreen=new SAXReader();
+        URL TEXdir=TestMilkXMLWrite.class.getClassLoader().getResource(
+                "jmetest/data/model/msascii/");
+        toScreen.setProperty("texurl",TEXdir);
         Node mi=toScreen.loadXML(new ByteArrayInputStream(blah.toByteArray()));
         mi.setLocalScale(.1f);
         rootNode.attachChild(mi);
