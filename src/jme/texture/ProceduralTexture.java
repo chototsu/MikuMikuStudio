@@ -35,9 +35,13 @@ package jme.texture;
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
+import java.io.File;
+import java.io.IOException;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 
 import jme.exception.MonkeyRuntimeException;
@@ -157,6 +161,30 @@ public class ProceduralTexture {
 		
 		LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO,
 				"Created procedural texture successfully.");
+	}
+	
+	public boolean saveTexture(String filename) {
+
+		if (null == filename) {
+			throw new MonkeyRuntimeException("Screenshot filename cannot be null");
+		}
+		LoggingSystem.getLoggingSystem().getLogger().log(
+			Level.INFO,
+			"Taking screenshot: " + filename + ".png");
+
+		
+		BufferedImage imageData = (BufferedImage) proceduralTexture.getImage();
+
+		//write out the screenshot image to a file.
+		try {
+			File out = new File(filename + ".png");
+			return ImageIO.write(imageData, "png", out);
+		} catch (IOException e) {
+			LoggingSystem.getLoggingSystem().getLogger().log(
+				Level.WARNING,
+				"Could not create file: " + filename + ".png");
+			return false;
+		}
 	}
 
 	/**
