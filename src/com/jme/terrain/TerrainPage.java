@@ -61,6 +61,8 @@ public class TerrainPage extends Node {
         }
     }
     
+    //XXX this is just sending a copy of the same bounding volume. Each child
+    //needs it's own. Fix.
     public void setModelBound(BoundingVolume v) {
         for(int i = 0; i < this.getQuantity(); i++) {
             if(this.getChild(i) instanceof TerrainPage) {
@@ -180,7 +182,7 @@ public class TerrainPage extends Node {
                 heightBlock1[count++] = heightMap[i + (j*size)];
             }
         }
-        Vector3f origin1 = new Vector3f(-size/4 * stepScale + 1, 0, size/4  * stepScale - 1);
+        Vector3f origin1 = new Vector3f(-size/4 * stepScale, 0, size/4  * stepScale);
         TerrainBlock block1 = new TerrainBlock(name+"Block1", size/2, stepScale, heightBlock1, origin1, clod);
         this.attachChild(block1);
         
@@ -192,7 +194,7 @@ public class TerrainPage extends Node {
                 heightBlock2[count++] = heightMap[i + (j*size)];
             }
         }
-        Vector3f origin2 = new Vector3f(-size/4  * stepScale + 1, 0, -size/4  * stepScale - 1);
+        Vector3f origin2 = new Vector3f(-size/4  * stepScale, 0, -size/4  * stepScale);
         TerrainBlock block2 = new TerrainBlock(name+"Block2", size/2, stepScale, heightBlock2, origin2, clod);
         this.attachChild(block2);
         
@@ -204,7 +206,7 @@ public class TerrainPage extends Node {
                 heightBlock3[count++] = heightMap[i + (j*size)];
             }
         }
-        Vector3f origin3 = new Vector3f(size/4  * stepScale - 1, 0, size/4  * stepScale - 1);
+        Vector3f origin3 = new Vector3f(size/4  * stepScale, 0, size/4  * stepScale);
         TerrainBlock block3 = new TerrainBlock(name+"Block3", size/2, stepScale, heightBlock3, origin3, clod);
         this.attachChild(block3);
         
@@ -216,7 +218,7 @@ public class TerrainPage extends Node {
                 heightBlock4[count++] = heightMap[i + (j*size)];
             }
         }
-        Vector3f origin4 = new Vector3f(size/4  * stepScale - 1, 0, -size/4  * stepScale + 1);
+        Vector3f origin4 = new Vector3f(size/4  * stepScale, 0, -size/4  * stepScale);
         TerrainBlock block4 = new TerrainBlock(name+"Block4", size/2, stepScale, heightBlock4, origin4, clod);
         this.attachChild(block4);
     
