@@ -40,7 +40,7 @@ import com.jme.scene.Spatial;
 /**
  * <code>RenderState</code>
  * @author Mark Powell
- * @version $Id: RenderState.java,v 1.13 2004-07-06 04:44:57 cep21 Exp $
+ * @version $Id: RenderState.java,v 1.14 2004-07-25 23:01:32 mojomonkey Exp $
  */
 public abstract class RenderState implements Serializable{
 
@@ -62,7 +62,7 @@ public abstract class RenderState implements Serializable{
   public final static int MAX_CONTROLLERS = 10;
 
   private Controller[] controllers;
-  private boolean enabled = false;
+  private boolean enabled = true;
 
   public RenderState() {
     controllers = new Controller[MAX_CONTROLLERS];
