@@ -36,6 +36,9 @@ import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 
@@ -75,7 +78,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.3 2004-09-14 21:52:25 mojomonkey Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.4 2005-02-24 07:02:08 renanse Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
@@ -209,12 +212,25 @@ public final class LWJGLPropertiesDialog extends JDialog {
         
         centerPanel.setLayout(new BorderLayout());
         
+        KeyListener aListener = new KeyAdapter() {
+            public void keyPressed(KeyEvent e) {
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    if (verifyAndSaveCurrentSelection())
+                        dispose();
+                }
+            }
+        };
+        
         displayResCombo = setUpResolutionChooser();
+        displayResCombo.addKeyListener(aListener);
         colorDepthCombo = new JComboBox();
+        colorDepthCombo.addKeyListener(aListener);
         displayFreqCombo = new JComboBox();
+        displayFreqCombo.addKeyListener(aListener);
         fullscreenBox = new JCheckBox("Fullscreen?");
         fullscreenBox.setSelected(source.getFullscreen());
         rendererCombo = setUpRendererChooser();
+        rendererCombo.addKeyListener(aListener);
         
         updateDisplayChoices();
         
