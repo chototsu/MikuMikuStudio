@@ -38,11 +38,11 @@ import com.jme.renderer.Camera;
  * <code>KeyLookDownAction</code> tilts a camera down a given angle. This angle
  * should be represented as a radian.
  * @author Mark Powell
- * @version $Id: KeyLookDownAction.java,v 1.7 2004-07-30 21:25:15 cep21 Exp $
+ * @version $Id: KeyLookDownAction.java,v 1.8 2004-08-21 06:18:31 cep21 Exp $
  */
 public class KeyLookDownAction extends AbstractInputAction {
 
-    private Matrix3f incr;
+    private static Matrix3f incr=new Matrix3f();
     private Camera camera;
 
     /**
@@ -53,7 +53,6 @@ public class KeyLookDownAction extends AbstractInputAction {
     public KeyLookDownAction(Camera camera, float speed) {
         this.camera = camera;
         this.speed = speed;
-        incr = new Matrix3f();
     }
 
     /**
@@ -63,7 +62,6 @@ public class KeyLookDownAction extends AbstractInputAction {
      * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(float time) {
-        incr.loadIdentity();
         incr.fromAxisAngle(camera.getLeft(), speed * time);
         incr.mult(camera.getLeft(), camera.getLeft());
         incr.mult(camera.getDirection(), camera.getDirection());

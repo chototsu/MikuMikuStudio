@@ -47,7 +47,7 @@ import java.io.*;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.15 2004-08-03 03:21:19 cep21 Exp $
+ * @version $Id: ColorRGBA.java,v 1.16 2004-08-21 06:18:33 cep21 Exp $
  */
 public class ColorRGBA implements Externalizable{
 
@@ -219,6 +219,20 @@ public class ColorRGBA implements Externalizable{
     public float[] getColorArray() {
         float[] f = {r,g,b,a};
         return f;
+    }
+
+    /**
+     * Stores the current r/g/b/a values into the tempf array.  The tempf array must have a
+     * length of 4 or greater, or an array index out of bounds exception will be thrown.
+     * @param store The array of floats to store the values into.
+     * @return The float[] after storage.
+     */
+    public float[] getColorArray(float[] store) {
+        store[0]=r;
+        store[1]=g;
+        store[2]=b;
+        store[3]=a;
+        return store;
     }
 
     /**

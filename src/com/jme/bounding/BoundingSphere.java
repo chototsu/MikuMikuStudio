@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.14 2004-08-21 02:45:45 cep21 Exp $
+ * @version $Id: BoundingSphere.java,v 1.15 2004-08-21 06:18:30 cep21 Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -61,7 +61,9 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     /** When this flag is true, updateModelBound() for BoundingSphere will calculate the smallest bounding volume.*/ 
     static public boolean useExactBounds=false;
-    static private Vector3f tempVec=new Vector3f();
+
+    static private Vector3f tempVeca=new Vector3f();
+    static private Vector3f tempVecb=new Vector3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -284,8 +286,8 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     public void containAABB(Vector3f[] points) {
         if (points.length <= 0) { return; }
 
-        Vector3f min = (Vector3f) points[0].clone();
-        Vector3f max = (Vector3f) min.clone();
+        Vector3f min = tempVeca.set(points[0]);
+        Vector3f max = tempVecb.set(tempVeca);
 
         for (int i = 1; i < points.length; i++) {
             if (points[i].x < min.x)
@@ -301,11 +303,10 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             else if (points[i].z > max.z) max.z = points[i].z;
         }
 
-        center = max.add(min);
-        center.multLocal(0.5f);
+        if (center==null) center=new Vector3f();
+        max.add(min,center).multLocal(.5f);
 
-        Vector3f halfDiagonal = max.subtract(min).multLocal(0.5f);
-        radius = halfDiagonal.length();
+        radius = max.subtractLocal(min).multLocal(.5f).length();
     }
 
     /**
@@ -470,7 +471,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     private BoundingVolume merge(float temp_radius,
             Vector3f temp_center, BoundingSphere rVal) {
-        Vector3f diff = temp_center.subtract(center,tempVec);
+        Vector3f diff = temp_center.subtract(center,tempVeca);
         float lengthSquared = diff.lengthSquared();
         float radiusDiff = temp_radius - radius;
 

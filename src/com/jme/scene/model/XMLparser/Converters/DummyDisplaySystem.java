@@ -149,6 +149,9 @@ public class DummyDisplaySystem extends DisplaySystem{
             public void enableStatistics(boolean value){}
             public void clearStatistics() {}
             public String getStatistics() {return null;}
+
+            public StringBuffer getStatistics(StringBuffer a) {return null;}
+
             public void setBackgroundColor(ColorRGBA c) {}
             public ColorRGBA getBackgroundColor() {return null;}
             public void clearZBuffer() {}

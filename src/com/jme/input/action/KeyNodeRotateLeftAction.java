@@ -44,10 +44,14 @@ import com.jme.scene.Spatial;
  * rotate about the world. The locking of the axis is particularly useful for
  * control schemes similar to first person shooters.
  * @author Mark Powell
- * @version $Id: KeyNodeRotateLeftAction.java,v 1.10 2004-07-30 21:27:20 cep21 Exp $
+ * @version $Id: KeyNodeRotateLeftAction.java,v 1.11 2004-08-21 06:18:31 cep21 Exp $
  */
 public class KeyNodeRotateLeftAction extends AbstractInputAction {
-    private Matrix3f incr;
+    private static Matrix3f incr=new Matrix3f();
+    private static Matrix3f tempMa=new Matrix3f();
+    private static Matrix3f tempMb=new Matrix3f();
+    private static Vector3f tempVa=new Vector3f();
+
     private Spatial node;
     private Vector3f lockAxis;
 
@@ -58,7 +62,6 @@ public class KeyNodeRotateLeftAction extends AbstractInputAction {
      * @param speed the speed at which the node can move.
      */
     public KeyNodeRotateLeftAction(Spatial node, float speed) {
-        incr = new Matrix3f();
         this.node = node;
         this.speed = speed;
     }
@@ -83,13 +86,12 @@ public class KeyNodeRotateLeftAction extends AbstractInputAction {
      * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(float time) {
-        incr.loadIdentity();
         if (lockAxis == null) {
-            incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(1), speed * time);
+            incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(1,tempVa), speed * time);
         } else {
             incr.fromAxisAngle(lockAxis, speed * time);
         }
-        node.getLocalRotation().fromRotationMatrix(incr.mult(node.getLocalRotation().toRotationMatrix()));
+        node.getLocalRotation().fromRotationMatrix(incr.mult(node.getLocalRotation().toRotationMatrix(tempMa),tempMb));
         node.getLocalRotation().normalize();
     }
 }

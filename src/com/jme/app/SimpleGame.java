@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.29 2004-08-14 00:49:55 cep21 Exp $
+ * @version $Id: SimpleGame.java,v 1.30 2004-08-21 06:18:29 cep21 Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -91,6 +91,11 @@ public abstract class SimpleGame extends BaseGame {
     /** Location of the font for jME's text at the bottom */
   public static String fontLocation = "com/jme/app/defaultfont.tga";
 
+  /** This is used to display print text. */
+  protected StringBuffer updateBuffer=new StringBuffer(30);
+  /** This is used to recieve getStatistics calls.*/
+  protected StringBuffer tempBuffer=new StringBuffer();
+
   /**
    * This is called every frame in BaseGame.start()
    * @param interpolation unused in this implementation
@@ -103,9 +108,14 @@ public abstract class SimpleGame extends BaseGame {
     tpf = timer.getTimePerFrame();
       /** Check for key/mouse updates. */
     input.update(tpf);
+
+    updateBuffer.setLength(0);
+    updateBuffer.append("FPS: ").append((int)timer.getFrameRate()).append(" - ");
+    updateBuffer.append(display.getRenderer().getStatistics(tempBuffer));
       /** Send the fps to our fps bar at the bottom. */
-    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
-              display.getRenderer().getStatistics());
+//    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
+//              display.getRenderer().getStatistics());
+    fps.print(updateBuffer);
       /** Call simpleUpdate in any derived classes of SimpleGame. */
     simpleUpdate();
 

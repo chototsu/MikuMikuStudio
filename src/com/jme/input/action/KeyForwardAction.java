@@ -41,10 +41,10 @@ import com.jme.renderer.Camera;
  * of the camera can be thought of as how many units per second the camera
  * can travel.
  * @author Mark Powell
- * @version $Id: KeyForwardAction.java,v 1.6 2004-07-30 21:24:54 cep21 Exp $
+ * @version $Id: KeyForwardAction.java,v 1.7 2004-08-21 06:18:31 cep21 Exp $
  */
 public class KeyForwardAction extends AbstractInputAction {
-
+    private static Vector3f tempVa=new Vector3f();
     private Camera camera;
 
     /**
@@ -66,7 +66,7 @@ public class KeyForwardAction extends AbstractInputAction {
     public void performAction(float time) {
 
         Vector3f loc = camera.getLocation();
-        loc.addLocal(camera.getDirection().mult((speed*time)));
+        loc.addLocal(camera.getDirection().mult(speed*time,tempVa));
         camera.setLocation(loc);
         camera.update();
     }

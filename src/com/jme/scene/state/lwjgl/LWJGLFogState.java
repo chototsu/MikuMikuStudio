@@ -43,7 +43,7 @@ import com.jme.scene.state.FogState;
  * <code>LWJGLFogState</code> subclasses the fog state using the LWJGL API
  * to set the OpenGL fog state.
  * @author Mark Powell
- * @version $Id: LWJGLFogState.java,v 1.5 2004-07-06 04:48:10 cep21 Exp $
+ * @version $Id: LWJGLFogState.java,v 1.6 2004-08-21 06:18:34 cep21 Exp $
  */
 public class LWJGLFogState extends FogState {
     //buffer to hold the color
@@ -52,6 +52,7 @@ public class LWJGLFogState extends FogState {
     private int[] glFogDensity = { GL11.GL_LINEAR, GL11.GL_EXP, GL11.GL_EXP2 };
 
     private int[] glFogApply = { GL11.GL_FASTEST, GL11.GL_NICEST };
+    private static float[] tempf=new float[4];
 
     /**
      * Constructor instantiates a new <code>LWJGLFogState</code> object with
@@ -78,7 +79,7 @@ public class LWJGLFogState extends FogState {
             GL11.glFogf(GL11.GL_FOG_END, end);
 
             colorBuf.clear();
-            colorBuf.put(color.getColorArray());
+            colorBuf.put(color.getColorArray(tempf));
             colorBuf.flip();
 
             GL11.glFog(GL11.GL_FOG_COLOR, colorBuf);

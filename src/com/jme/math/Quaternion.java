@@ -47,7 +47,7 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.26 2004-07-20 16:41:56 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.27 2004-08-21 06:18:32 cep21 Exp $
  */
 public class Quaternion implements Externalizable{
     public float x, y, z, w;
@@ -238,6 +238,40 @@ public class Quaternion implements Externalizable{
         matrix.m22 = 1.0f-(fTxx+fTyy);
 
         return matrix;
+    }
+
+    /**
+     *
+     * <code>toRotationMatrix</code> converts this quaternion to a rotational
+     * matrix.  The result is stored in result.
+     * @param result The Matrix3f to store the result in.
+     * @return the rotation matrix representation of this quaternion.
+     */
+    public Matrix3f toRotationMatrix(Matrix3f result) {
+        float fTx  = 2.0f*x;
+        float fTy  = 2.0f*y;
+        float fTz  = 2.0f*z;
+        float fTwx = fTx*w;
+        float fTwy = fTy*w;
+        float fTwz = fTz*w;
+        float fTxx = fTx*x;
+        float fTxy = fTy*x;
+        float fTxz = fTz*x;
+        float fTyy = fTy*y;
+        float fTyz = fTz*y;
+        float fTzz = fTz*z;
+
+        result.m00 = 1.0f-(fTyy+fTzz);
+        result.m01 = fTxy-fTwz;
+        result.m02 = fTxz+fTwy;
+        result.m10 = fTxy+fTwz;
+        result.m11 = 1.0f-(fTxx+fTzz);
+        result.m12 = fTyz-fTwx;
+        result.m20 = fTxz-fTwy;
+        result.m21 = fTyz+fTwx;
+        result.m22 = 1.0f-(fTxx+fTyy);
+
+        return result;
     }
 
     /**

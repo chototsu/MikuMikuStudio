@@ -44,7 +44,7 @@ import com.jme.math.Vector3f;
  * [0,1] where 0 is the first control point and 1 is the second control
  * point.
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.9 2004-04-22 22:26:23 renanse Exp $
+ * @version $Id: BezierCurve.java,v 1.10 2004-08-21 06:18:30 cep21 Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -77,7 +77,7 @@ public class BezierCurve extends Curve {
      * is calculated and returned.
      * @see com.jme.curve.Curve#getPoint(float)
      */
-    public Vector3f getPoint(float time) {
+    public Vector3f getPoint(float time,Vector3f point) {
         //first point
         if (time < 0) {
             return vertex[0];
@@ -87,10 +87,10 @@ public class BezierCurve extends Curve {
             return vertex[vertex.length - 1];
         }
 
-        Vector3f point = new Vector3f();
-
         float muk = 1;
         float munk = (float) Math.pow(1 - time, vertex.length - 1);
+
+        point.zero();
 
         for (int i = 0; i < vertex.length; i++) {
             int count = vertex.length - 1;
@@ -118,6 +118,10 @@ public class BezierCurve extends Curve {
         }
 
         return point;
+    }
+
+    public Vector3f getPoint(float time) {
+        return getPoint(time,new Vector3f());
     }
 
     /**

@@ -58,7 +58,7 @@ import com.jme.renderer.ColorRGBA;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.8 2004-07-09 02:03:37 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.9 2004-08-21 06:18:33 cep21 Exp $
  */
 public class LWJGLFont {
     /**
@@ -75,7 +75,7 @@ public class LWJGLFont {
 
     //buffer that holds the text.
     private ByteBuffer scratch;
-    private char[] charbuf;
+//    private char[] charbuf;
 
     //Color to render the font.
     private ColorRGBA fontColor;
@@ -88,7 +88,7 @@ public class LWJGLFont {
     public LWJGLFont() {
         fontColor = new ColorRGBA(1,1,1,1);
         scratch = BufferUtils.createByteBuffer(1);//ByteBuffer.allocateDirect(1).order(ByteOrder.nativeOrder());
-        charbuf = new char[1];
+//        charbuf = new char[1];
         buildDisplayList();
     }
 
@@ -140,13 +140,15 @@ public class LWJGLFont {
         //Put the string into a "pointer"
         if(text.length() != scratch.capacity()) {
 	        scratch = BufferUtils.createByteBuffer(text.length()); //ByteBuffer.allocateDirect(text.length()).order(ByteOrder.nativeOrder());
-                charbuf = new char[text.length()];
+//                charbuf = new char[text.length()];
         } else {
             scratch.clear();
         }
-        text.getChars(0, charbuf.length, charbuf, 0);
-        for (int z = 0; z < charbuf.length; z++)
-          scratch.put((byte)charbuf[z]);
+//        text.getChars(0, charbuf.length, charbuf, 0);
+
+        int charLen=text.length();
+        for (int z = 0; z < charLen; z++)
+          scratch.put((byte)text.charAt(z));
         scratch.flip();
         GL11.glColor4f(fontColor.r, fontColor.g, fontColor.b, fontColor.a);
         //call the list for each letter in the string.

@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * curve), the orientation precision defines how accurate the orientation of the
  * spatial will be.
  * @author Mark Powell
- * @version $Id: CurveController.java,v 1.7 2004-04-22 22:26:24 renanse Exp $
+ * @version $Id: CurveController.java,v 1.8 2004-08-21 06:18:30 cep21 Exp $
  */
 public class CurveController extends Controller {
     private Spatial mover;
@@ -150,7 +150,7 @@ public class CurveController extends Controller {
 
                 if (getRepeatType() == RT_CLAMP) {
                     deltaTime = currentTime - getMinTime();
-                    mover.setLocalTranslation(curve.getPoint(deltaTime));
+                    mover.setLocalTranslation(curve.getPoint(deltaTime,mover.getLocalTranslation()));
                     if(autoRotation) {
                         mover.setLocalRotation(
                             curve.getOrientation(
@@ -164,7 +164,7 @@ public class CurveController extends Controller {
                         currentTime = 0;
                         deltaTime = 0;
                     }
-                    mover.setLocalTranslation(curve.getPoint(deltaTime));
+                    mover.setLocalTranslation(curve.getPoint(deltaTime,mover.getLocalTranslation()));
                     if(autoRotation) {
                         mover.setLocalRotation(
                             curve.getOrientation(
@@ -180,7 +180,7 @@ public class CurveController extends Controller {
                     }
                     if (cycleForward) {
 
-                        mover.setLocalTranslation(curve.getPoint(deltaTime));
+                        mover.setLocalTranslation(curve.getPoint(deltaTime,mover.getLocalTranslation()));
                         if(autoRotation) {
                             mover.setLocalRotation(
                                 curve.getOrientation(
@@ -190,7 +190,7 @@ public class CurveController extends Controller {
                         }
                     } else {
                         mover.setLocalTranslation(
-                            curve.getPoint(1.0f - deltaTime));
+                            curve.getPoint(1.0f - deltaTime,mover.getLocalTranslation()));
                         if(autoRotation) {
                             mover.setLocalRotation(
                                 curve.getOrientation(

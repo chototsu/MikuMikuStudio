@@ -40,7 +40,7 @@ import com.jme.scene.TriMesh;
 /**
  * <code>Sphere</code> is um ... a sphere :)
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.5 2004-08-01 07:04:18 cep21 Exp $
+ * @version $Id: Sphere.java,v 1.6 2004-08-21 06:18:34 cep21 Exp $
  */
 public class Sphere extends TriMesh {
     private int zSamples;
@@ -48,6 +48,10 @@ public class Sphere extends TriMesh {
 
     public float radius;
     public Vector3f center;
+
+    private static Vector3f tempVa=new Vector3f();
+    private static Vector3f tempVb=new Vector3f();
+    private static Vector3f tempVc=new Vector3f();
 
     /**
      * Constructs a sphere.  By default the Sphere has not geometry data or center.
@@ -157,7 +161,7 @@ public class Sphere extends TriMesh {
             float fZ = radius * fZFraction;
 
             // compute center of slice
-            Vector3f kSliceCenter = (Vector3f)center.clone();
+            Vector3f kSliceCenter = tempVb.set(center);
             kSliceCenter.z+=fZ;
 
             // compute radius of slice
@@ -169,15 +173,15 @@ public class Sphere extends TriMesh {
             int iSave = i;
             for (int iR = 0; iR < radialSamples; iR++) {
                 float fRadialFraction = iR * fInvRS; // in [0,1)
-                Vector3f kRadial = new Vector3f(afCos[iR], afSin[iR], 0);
-                vertex[i] = kSliceCenter.add(kRadial.mult(fSliceRadius));
+                Vector3f kRadial = tempVc.set(afCos[iR], afSin[iR], 0);
+                vertex[i] = kSliceCenter.add(kRadial.mult(fSliceRadius,tempVa));
 
                 kNormal = vertex[i].subtract(center);
                 kNormal.normalizeLocal();
                 if (true) // later we may allow interior texture vs. exterior
                     normal[i] = kNormal;
                 else
-                    normal[i] = kNormal.negate();
+                    normal[i] = kNormal.negateLocal();
 
                 if (texture[0][i] == null)
                     texture[0][i] = new Vector2f();

@@ -129,7 +129,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.36 2004-08-20 23:21:20 ericthered Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.37 2004-08-21 06:18:33 cep21 Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -166,6 +166,8 @@ public class LWJGLRenderer implements Renderer {
   private boolean processingQueue;
 
   private RenderQueue queue;
+
+  private Vector3f tempVa=new Vector3f();
 
   /**
    * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -954,7 +956,7 @@ public class LWJGLRenderer implements Renderer {
         colorCounter++;
       }
 
-      point = c.getPoint(t);
+      point = c.getPoint(t,tempVa);
       GL11.glVertex3f(point.x, point.y, point.z);
     }
 
@@ -1322,6 +1324,18 @@ public class LWJGLRenderer implements Renderer {
   public String getStatistics() {
     return "Number of Triangles: " + numberOfTris
         + " : Number of Vertices: " + numberOfVerts;
+  }
+
+  /**
+   * <code>getStatistics</code> returns a string value of the rendering
+   * statistics information (number of triangles and number of vertices).
+   *
+   * @return the string representation of the current statistics.
+   */
+  public StringBuffer getStatistics(StringBuffer a) {
+      a.setLength(0);
+      a.append("Number of Triangles: ").append(numberOfTris).append(" : Number of Vertices: ").append(numberOfVerts);
+      return a;
   }
 
   /**

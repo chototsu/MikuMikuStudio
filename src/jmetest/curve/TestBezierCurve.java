@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.14 2004-08-14 00:50:00 cep21 Exp $
+ * @version $Id: TestBezierCurve.java,v 1.15 2004-08-21 06:18:35 cep21 Exp $
  */
 public class TestBezierCurve extends SimpleGame {
 
@@ -93,31 +93,31 @@ public class TestBezierCurve extends SimpleGame {
     t.setModelBound(new BoundingSphere());
     t.updateModelBound();
 
-    t.setLocalTranslation(points[0]);
+    t.setLocalTranslation(new Vector3f(points[0]));
 
     TriMesh t2 = new Box("Control 2", min, max);
     t2.setModelBound(new BoundingSphere());
     t2.updateModelBound();
 
-    t2.setLocalTranslation(points[1]);
+    t2.setLocalTranslation(new Vector3f(points[1]));
 
     TriMesh t3 = new Box("Control 3", min, max);
     t3.setModelBound(new BoundingSphere());
     t3.updateModelBound();
 
-    t3.setLocalTranslation(points[2]);
+    t3.setLocalTranslation(new Vector3f(points[2]));
 
     TriMesh t4 = new Box("Control 4", min, max);
     t4.setModelBound(new BoundingSphere());
     t4.updateModelBound();
 
-    t4.setLocalTranslation(points[3]);
+    t4.setLocalTranslation(new Vector3f(points[3]));
 
     TriMesh box = new Box("Controlled Box", min.mult(5), max.mult(5));
     box.setModelBound(new BoundingSphere());
     box.updateModelBound();
 
-    box.setLocalTranslation(points[0]);
+    box.setLocalTranslation(new Vector3f(points[0]));
 
     CurveController cc = new CurveController(curve, box);
     box.addController(cc);

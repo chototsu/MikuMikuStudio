@@ -77,7 +77,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.39 2004-08-20 23:21:21 ericthered Exp $
+ * @version $Id: Renderer.java,v 1.40 2004-08-21 06:18:33 cep21 Exp $
  */
 public interface Renderer {
 
@@ -327,12 +327,21 @@ public interface Renderer {
 
     /** Reset rendering tracking statistical information. */
     public void clearStatistics();
+
     /**
      * Returns statistical data as a String.  The data is renderer specific but usually contains
      * triangle and vertex counts at a minimum.
      * @return Statistical data for the renderer.
      */
     public String getStatistics();
+
+    /**
+     * Stores the statistical data into the passed string buffer and returns a when finished.  This
+     * is a more efficient version of getStatistics.  Previous information in the StringBuffer is lost.
+     * @param a The string buffer to store the result in.
+     * @return The string buffer a, after storage.
+     */
+    public StringBuffer getStatistics(StringBuffer a);
 
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color

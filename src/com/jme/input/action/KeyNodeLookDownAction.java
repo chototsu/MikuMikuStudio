@@ -32,6 +32,7 @@
 package com.jme.input.action;
 
 import com.jme.math.Matrix3f;
+import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
@@ -39,10 +40,13 @@ import com.jme.scene.Spatial;
  * towards the worlds negative y-axis. The rotation is along the node's left
  * vector (the first column of it's rotation matrix).
  * @author Mark Powell
- * @version $Id: KeyNodeLookDownAction.java,v 1.10 2004-07-30 21:26:21 cep21 Exp $
+ * @version $Id: KeyNodeLookDownAction.java,v 1.11 2004-08-21 06:18:31 cep21 Exp $
  */
 public class KeyNodeLookDownAction extends AbstractInputAction {
-    private Matrix3f incr;
+    static private Matrix3f incr=new Matrix3f();
+    static private Matrix3f tempMa=new Matrix3f();
+    static private Matrix3f tempMb=new Matrix3f();
+    static private Vector3f tempV=new Vector3f();
     private Spatial node;
 
     /**
@@ -52,7 +56,6 @@ public class KeyNodeLookDownAction extends AbstractInputAction {
      * @param speed the speed at which the node can move.
      */
     public KeyNodeLookDownAction(Spatial node, float speed) {
-        incr = new Matrix3f();
         this.node = node;
         this.speed = speed;
     }
@@ -64,9 +67,8 @@ public class KeyNodeLookDownAction extends AbstractInputAction {
      * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(float time) {
-        incr.loadIdentity();
-        incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(0), speed * time);
-        node.getLocalRotation().fromRotationMatrix(incr.mult(node.getLocalRotation().toRotationMatrix()));
+        incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(0,tempV), speed * time);
+        node.getLocalRotation().fromRotationMatrix(incr.mult(node.getLocalRotation().toRotationMatrix(tempMa),tempMb));
         node.getLocalRotation().normalize();
     }
 }

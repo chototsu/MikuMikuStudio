@@ -47,7 +47,7 @@ import com.jme.system.JmeException;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.11 2004-06-17 16:31:14 renanse Exp $
+ * @version $Id: Curve.java,v 1.12 2004-08-21 06:18:30 cep21 Exp $
  */
 public abstract class Curve extends Geometry {
 
@@ -140,6 +140,16 @@ public abstract class Curve extends Geometry {
     public abstract Vector3f getPoint(float time);
 
     /**
+     * Equivalent to getPoint(float) but instead of creating a new Vector3f object
+     * on the heap, the result is stored in store and store is returned.
+     * @param time the time frame on the curve: [0, 1].
+     * @param store the vector3f object to store the point in.
+     * @return store, after receiving the result.
+     * @see #getPoint(float) 
+     */
+    public abstract Vector3f getPoint(float time, Vector3f store);
+
+    /**
      *
      * <code>getOrientation</code> calculates a rotation matrix that
      * defines the orientation along a curve. How the matrix is
@@ -167,4 +177,6 @@ public abstract class Curve extends Geometry {
      *      along a curve.
      */
     public abstract Matrix3f getOrientation(float time, float precision, Vector3f up);
+
+
 }
