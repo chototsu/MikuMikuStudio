@@ -1,6 +1,4 @@
 /*
- * Created on Jan 20, 2004
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -58,7 +56,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.2 2004-04-05 11:36:13 greggpatton Exp $
+ * @version $Id: RenParticleEditor.java,v 1.3 2004-04-16 17:57:31 renanse Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -226,7 +224,9 @@ public class RenParticleEditor extends VariableTimestepGame {
     root.attachChild(manager.getParticles());
     main.attachChild(root);
     root.updateGeometricState(0.0f, true);
+    main.updateRenderState();
     fpsNode.updateGeometricState(0.0f, true);
+    fpsNode.updateRenderState();
     frame = new GUIFrame(input);
     controlFrame.updateFromManager();
   }

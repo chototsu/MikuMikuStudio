@@ -1,6 +1,4 @@
 /*
- * Created on Jan 20, 2004
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -52,7 +50,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.14 2004-03-28 03:16:21 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.15 2004-04-16 17:57:31 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -221,7 +219,9 @@ public class TestParticleSystem extends SimpleGame {
     root.attachChild(manager.getParticles());
     main.attachChild(root);
     root.updateGeometricState(0.0f, true);
+    main.updateRenderState();
     fpsNode.updateGeometricState(0.0f, true);
+    fpsNode.updateRenderState();
 
   }
 

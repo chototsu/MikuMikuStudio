@@ -1,6 +1,4 @@
 /*
- * Created on Jan 20, 2004
- *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -82,7 +80,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.26 2004-04-01 19:16:53 mojomonkey Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.27 2004-04-16 17:57:31 renanse Exp $
  *
  */
 
