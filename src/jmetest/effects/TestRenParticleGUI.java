@@ -39,7 +39,6 @@ import com.jme.effects.RenParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.AbstractInputController;
 import com.jme.input.InputSystem;
-import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -58,7 +57,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.6 2004-03-24 23:47:52 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.7 2004-03-25 16:24:56 mojomonkey Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
@@ -126,7 +125,7 @@ public class TestRenParticleGUI extends SimpleGame {
 
   protected void initSystem() {
     LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
-    controlFrame.show();
+    controlFrame.setVisible(true);
     try {
       display = DisplaySystem.getDisplaySystem(properties.getRenderer());
       display.createWindow(

@@ -36,7 +36,6 @@ import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.input.InputSystem;
-import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -53,7 +52,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleSystem.java,v 1.3 2004-03-20 00:03:17 renanse Exp $
+ * @version $Id: TestRenParticleSystem.java,v 1.4 2004-03-25 16:24:56 mojomonkey Exp $
  */
 public class TestRenParticleSystem extends SimpleGame {
 
