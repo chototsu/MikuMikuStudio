@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.2 2003-11-13 21:22:47 mojomonkey Exp $
+ * @version $Id: TestMilestone2.java,v 1.3 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class TestMilestone2 extends AbstractGame {
     private TriMesh t;
@@ -99,7 +99,6 @@ public class TestMilestone2 extends AbstractGame {
      */
     protected void update() {
         input.update(0.25f);
-       
     }
 
     /** 

@@ -40,6 +40,7 @@ import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
@@ -56,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.4 2003-11-13 17:57:32 mojomonkey Exp $
+ * @version $Id: TestLightState.java,v 1.5 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class TestLightState extends AbstractGame {
     private TriMesh t;
@@ -124,6 +125,7 @@ public class TestLightState extends AbstractGame {
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
+        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
 
         input = new FirstPersonController(this, cam, "LWJGL");
 

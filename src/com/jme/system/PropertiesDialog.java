@@ -59,7 +59,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.3 2003-10-22 13:56:35 mojomonkey Exp $
+ * @version $Id: PropertiesDialog.java,v 1.4 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class PropertiesDialog extends JDialog {
 
@@ -121,6 +121,15 @@ public class PropertiesDialog extends JDialog {
      */
     public boolean isDone() {
         return done;
+    }
+    
+    /**
+     * 
+     * <code>setImage</code> sets the background image of the dialog.
+     * @param image the image file.
+     */
+    public void setImage(String image) {
+        imageFile = image;
     }
 
     /**

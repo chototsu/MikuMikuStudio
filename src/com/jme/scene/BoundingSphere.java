@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.2 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.3 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -62,7 +62,6 @@ public class BoundingSphere implements BoundingVolume {
      */
     public BoundingSphere() {
         center = new Vector3f();
-        LoggingSystem.getLogger().log(Level.INFO, "Bounding Sphere created.");
     }
 
     /**
@@ -77,8 +76,6 @@ public class BoundingSphere implements BoundingVolume {
             this.center = center;
         }
         this.radius = radius;
-        LoggingSystem.getLogger().log(Level.INFO, "Bounding Sphere created.");
-    
     }
 
     /**

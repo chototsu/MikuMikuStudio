@@ -40,6 +40,7 @@ import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
@@ -58,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.2 2003-11-24 14:24:33 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.3 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class TestTimer extends AbstractGame {
     private TriMesh t;
@@ -146,6 +147,8 @@ public class TestTimer extends AbstractGame {
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");
+        
+        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
 
     }
 

@@ -74,7 +74,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.5 2003-10-31 22:02:54 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.6 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -113,6 +113,32 @@ public class LWJGLRenderer implements Renderer {
         LoggingSystem.getLogger().log(
             Level.INFO,
             "LWJGLRenderer created. W:  " + width + "H: " + height);
+    }
+    
+    /**
+     * <code>setCullingMode</code> defines which side of a triangle (if any) 
+     * will be culled. Front means the side the normal faces will be culled,
+     * back means the side opposite the normal will be culled.
+     * @param mode the side to cull.
+     */
+    public void setCullingMode(int mode) {
+        switch(mode) {
+            case CULL_FRONT:
+                GL.glCullFace(GL.GL_FRONT);
+                GL.glEnable(GL.GL_CULL_FACE);
+                break;
+            case CULL_BACK:
+                GL.glCullFace(GL.GL_BACK);
+                GL.glEnable(GL.GL_CULL_FACE);
+                break;
+            case CULL_NONE:
+                GL.glCullFace(GL.GL_NONE);
+                GL.glEnable(GL.GL_CULL_FACE);
+                break;
+            default:
+                GL.glDisable(GL.GL_CULL_FACE);
+                break;
+        }
     }
 
     /**

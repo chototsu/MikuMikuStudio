@@ -66,9 +66,31 @@ import com.jme.scene.state.ZBufferState;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.5 2003-10-31 22:02:54 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.6 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public interface Renderer {
+    /**
+     * Culls the side opposite the normal.
+     */
+    public final static int CULL_BACK = 0;
+    /**
+     * Culls the side of the normal.
+     */
+    public final static int CULL_FRONT = 1;
+    /**
+     * Culls no sides.
+     */
+    public final static int CULL_NONE = 2;
+    
+    /**
+     * 
+     * <code>setCullingMode</code> sets the culling mode of the renderer. This
+     * defines the side culling. jME is defined as a Right-Handed Coordinate
+     * system. This means that vertex winding should be counter-clockwise to
+     * provide normals that face away from the object. 
+     * @param mode the side to cull.
+     */
+    public void setCullingMode(int mode);
     
     /**
      * <code>setCamera</code> sets the reference to the applications camera 

@@ -39,10 +39,10 @@ import com.jme.renderer.Renderer;
  * 
  * <code>Text</code>
  * @author Mark Powell
- * @version $Id: Text.java,v 1.1 2003-10-17 20:45:04 mojomonkey Exp $
+ * @version $Id: Text.java,v 1.2 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class Text extends Geometry {
-    private String text;
+    private StringBuffer text;
 
     /**
      * Constructor takes a path to the texture to use of the font base. This
@@ -56,7 +56,7 @@ public class Text extends Geometry {
     public Text(String text) {
         
         setForceView(true);
-        this.text = text;
+        this.text = new StringBuffer(text);
     }
     
     /**
@@ -66,7 +66,7 @@ public class Text extends Geometry {
      * @param text the text to display.
      */
     public void print(String text) {
-        this.text = text;
+        this.text.replace(0, this.text.length(), text);
     }
 
     /**
@@ -75,7 +75,7 @@ public class Text extends Geometry {
      * object.
      * @return the text string of this object.
      */
-    public String getText() {
+    public StringBuffer getText() {
         return text;
     }
     

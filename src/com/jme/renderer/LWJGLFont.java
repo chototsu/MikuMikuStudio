@@ -56,7 +56,7 @@ import org.lwjgl.opengl.Window;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.1 2003-10-17 20:45:04 mojomonkey Exp $
+ * @version $Id: LWJGLFont.java,v 1.2 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class LWJGLFont {
     /**
@@ -121,7 +121,7 @@ public class LWJGLFont {
      * @param text the String to render.
      * @param set the mode of font: NORMAL or ITALICS.
      */
-    public void print(int x, int y, String text, int set) {
+    public void print(int x, int y, StringBuffer text, int set) {
         if (set > 1) {
             set = 1;
         } else if (set < 0) {
@@ -140,9 +140,9 @@ public class LWJGLFont {
 
         //Put the string into a "pointer"
         ByteBuffer scratch =
-            ByteBuffer.allocateDirect(text.getBytes().length).order(
+            ByteBuffer.allocateDirect(text.length()).order(
                 ByteOrder.nativeOrder());
-        scratch.put(text.getBytes());
+        scratch.put(text.toString().getBytes());
         scratch.flip();
         GL.glColor4f(red, green, blue, alpha);
         //call the list for each letter in the string.

@@ -40,7 +40,7 @@ import com.jme.renderer.Camera;
  * <code>MouseLook</code> defines a mouse action that detects mouse movement
  * and converts it into camera rotations and camera tilts. 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.5 2003-10-30 20:41:23 mojomonkey Exp $
+ * @version $Id: MouseLook.java,v 1.6 2003-12-01 13:18:58 mojomonkey Exp $
  */
 public class MouseLook implements MouseInputAction {
     private RelativeMouse mouse;
@@ -115,6 +115,7 @@ public class MouseLook implements MouseInputAction {
      * @see com.jme.input.action.MouseInputAction#performAction(float)
      */
     public void performAction(float time) {
+        time *= speed;
         if (mouse.getLocalTranslation().x > 0) {
             rotateRight.performAction(
                 time * mouse.getLocalTranslation().x);
