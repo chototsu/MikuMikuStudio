@@ -76,7 +76,7 @@ import org.lwjgl.opengl.GL;
  *
  * @author naj
  * @author Mark Powell
- * @version $Id: MilkshapeModel.java,v 1.7 2003-09-05 15:43:12 mojomonkey Exp $
+ * @version $Id: MilkshapeModel.java,v 1.8 2003-09-05 22:20:23 mojomonkey Exp $
  */
 public class MilkshapeModel implements Model {
 
@@ -749,7 +749,7 @@ public class MilkshapeModel implements Model {
             if (materials[i].name.length() > 0) {
                 try {
                     materials[i].glTextureAddress =
-                        loadTexture(absoluteFilePath + materials[i].name);
+                        loadTexture(absoluteFilePath + materials[i].colorMap);
                 } catch (Exception e) {
                     materials[i].glTextureAddress = 0;
                 }
@@ -765,6 +765,7 @@ public class MilkshapeModel implements Model {
      * @return the image address in memory
      */
     private final int loadTexture(String file) throws Exception {
+        System.out.println(file);
         return TextureManager.getTextureManager().loadTexture(
             file,
             GL.GL_LINEAR_MIPMAP_LINEAR,
