@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
- * All rights reserved.
- *
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
+ * reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * 
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
+ * 
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,11 +27,11 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  */
 
 /*
- * EDIT:  02/09/2004 - Added getRendererType method. GOP
+ * EDIT: 02/09/2004 - Added getRendererType method. GOP
  */
 
 package com.jme.system;
@@ -48,44 +48,51 @@ import com.jme.math.Vector2f;
 
 /**
  * <code>DisplaySystem</code>
+ * 
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.24 2004-04-25 21:04:44 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.25 2004-04-25 21:16:14 mojomonkey Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
- * Specifically, any implementing class will create a window for rendering.
- * It also should create the appropriate <code>Renderer</code> object that
- * allows the client to render to this window.
- *
+ * Specifically, any implementing class will create a window for rendering. It
+ * also should create the appropriate <code>Renderer</code> object that allows
+ * the client to render to this window.
+ * 
  * Implmenting classes should check for the appropriate libraries to insure
- * these libraries are indeed installed on the system. This will allow users
- * to cleanly exit if an improper library was chosen for rendering.
- *
+ * these libraries are indeed installed on the system. This will allow users to
+ * cleanly exit if an improper library was chosen for rendering.
+ * 
  * Example usage:
- *
+ * 
  * <code>
  * DisplaySystem ds = DisplaySystem.getDisplaySystem("LWJGL");<br>
  * ds.createWindow(640,480,32,60,true);<br>
  * Renderer r = ds.getRenderer();<br>
  * </code>
- *
+ * 
  * @see com.jme.renderer.Renderer
- *
+ * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.24 2004-04-25 21:04:44 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.25 2004-04-25 21:16:14 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
+
     private static DisplaySystem display;
+
     protected int width, height;
+
     protected int alphaBits = 0;
+
     protected int depthBits = 8;
+
     protected int stencilBits = 0;
+
     protected int samples = 0;
 
     /**
      * The list of current implemented rendering APIs that subclass Display.
      */
-    public static final String[] rendererNames = { "LWJGL" };
+    public static final String[] rendererNames = { "LWJGL"};
 
     protected DisplaySystem() {
         display = this;
@@ -93,21 +100,23 @@ public abstract class DisplaySystem {
 
     /**
      * <code>getDisplaySystem</code> is a factory method that creates the
-     * appropriate display system specified by the key parameter. If the
-     * key given is not a valid identifier for a specific display system,
-     * null is returned. For valid display systems see the
-     * <code>rendererNames</code> array.
-     * @param key the display system to use.
+     * appropriate display system specified by the key parameter. If the key
+     * given is not a valid identifier for a specific display system, null is
+     * returned. For valid display systems see the <code>rendererNames</code>
+     * array.
+     * 
+     * @param key
+     *            the display system to use.
      * @return the appropriate display system specified by the key.
      */
     public static DisplaySystem getDisplaySystem(String key) {
-      if ("LWJGL".equalsIgnoreCase(key)) {
-        new LWJGLDisplaySystem();
-      } else {
-        display = null;
-      }
+        if ("LWJGL".equalsIgnoreCase(key)) {
+            new LWJGLDisplaySystem();
+        } else {
+            display = null;
+        }
 
-      return display;
+        return display;
     }
 
     public static DisplaySystem getDisplaySystem() {
@@ -123,23 +132,32 @@ public abstract class DisplaySystem {
     }
 
     /**
-     * <code>isValidDisplayMode</code> determines if the given parameters constitute
-     * a valid display mode on this system. Returning true does not necessarily
-     * guarantee that the system is capable of running in the specified display mode,
-     * merely that it <i>believes</i> it is possible.
-     * @param width the width/horizontal resolution of the display.
-     * @param height the height/vertical resolution of the display.
-     * @param bpp the bit depth of the display.
-     * @param freq the frequency of refresh of the display (in Hz).
+     * <code>isValidDisplayMode</code> determines if the given parameters
+     * constitute a valid display mode on this system. Returning true does not
+     * necessarily guarantee that the system is capable of running in the
+     * specified display mode, merely that it <i>believes </i> it is possible.
+     * 
+     * @param width
+     *            the width/horizontal resolution of the display.
+     * @param height
+     *            the height/vertical resolution of the display.
+     * @param bpp
+     *            the bit depth of the display.
+     * @param freq
+     *            the frequency of refresh of the display (in Hz).
      */
-    public abstract boolean isValidDisplayMode(int width, int height, int bpp, int freq);
+    public abstract boolean isValidDisplayMode(int width, int height, int bpp,
+            int freq);
 
     /**
-     * <code>setVSyncEnabled</code> attempts to enable or disable monitor vertical
-     * synchronization. The method is a "best attempt" to change the monitor vertical
-     * refresh synchronization, and is <b>not</b> guaranteed to be successful.
-     * @param enabled <code>true</code> to synchronize, <code>false</code> to
-	 *                                                       	  ignore synchronization
+     * <code>setVSyncEnabled</code> attempts to enable or disable monitor
+     * vertical synchronization. The method is a "best attempt" to change the
+     * monitor vertical refresh synchronization, and is <b>not </b> guaranteed
+     * to be successful.
+     * 
+     * @param enabled
+     *            <code>true</code> to synchronize, <code>false</code> to
+     *            ignore synchronization
      */
     public abstract void setVSyncEnabled(boolean enabled);
 
@@ -147,40 +165,49 @@ public abstract class DisplaySystem {
 
     /**
      * <code>createWindow</code> creates a window with the desired settings.
-     * The width and height defined by w and h define the size of the window
-     * if fullscreen is false, otherwise it defines the resolution of the
-     * fullscreen display. The color depth is defined by bpp. The
-     * implementing class should only allow 16, 24, and 32. The monitor
-     * frequency is defined by the frq parameter and should not exceed the
-     * capabilities of the connected hardware, the implementing class should
-     * attempt to assure this does not happen. Lastly, the boolean flag fs
-     * determines if the display should be windowed or fullscreen. If false,
-     * windowed is chosen. This window will be placed in the center of the
-     * screen initially. If true fullscreen mode will be entered with the
-     * appropriate settings.
-     * @param w the width/horizontal resolution of the display.
-     * @param h the height/vertical resolution of the display.
-     * @param bpp the color depth of the display.
-     * @param frq the frequency of refresh of the display.
-     * @param fs flag determining if fullscreen is to be used or not. True will
-     *      use fullscreen, false will use windowed mode.
+     * The width and height defined by w and h define the size of the window if
+     * fullscreen is false, otherwise it defines the resolution of the
+     * fullscreen display. The color depth is defined by bpp. The implementing
+     * class should only allow 16, 24, and 32. The monitor frequency is defined
+     * by the frq parameter and should not exceed the capabilities of the
+     * connected hardware, the implementing class should attempt to assure this
+     * does not happen. Lastly, the boolean flag fs determines if the display
+     * should be windowed or fullscreen. If false, windowed is chosen. This
+     * window will be placed in the center of the screen initially. If true
+     * fullscreen mode will be entered with the appropriate settings.
+     * 
+     * @param w
+     *            the width/horizontal resolution of the display.
+     * @param h
+     *            the height/vertical resolution of the display.
+     * @param bpp
+     *            the color depth of the display.
+     * @param frq
+     *            the frequency of refresh of the display.
+     * @param fs
+     *            flag determining if fullscreen is to be used or not. True will
+     *            use fullscreen, false will use windowed mode.
      */
     public abstract void createWindow(int w, int h, int bpp, int frq, boolean fs);
 
     /**
-     * <code>getRenderer</code> returns the <code>Renderer</code> implementation
-     * that is compatible with the chosen <code>DisplaySystem</code>. For
-     * example, if <code>LWJGLDisplaySystem</code> is used, the returned
-     * <code>Renderer</code> will be </code>LWJGLRenderer</code>.
+     * <code>getRenderer</code> returns the <code>Renderer</code>
+     * implementation that is compatible with the chosen
+     * <code>DisplaySystem</code>. For example, if
+     * <code>LWJGLDisplaySystem</code> is used, the returned
+     * <code>Renderer</code> will be</code> LWJGLRenderer</code>.
+     * 
      * @see com.jme.renderer.Renderer
      * @return the appropriate <code>Renderer</code> implementation that is
-     *      compatible with the used <code>DisplaySystem</code>.
+     *         compatible with the used <code>DisplaySystem</code>.
      */
     public abstract Renderer getRenderer();
 
     /**
-     * <code>getRendererType</code> returns an instance of a strongly typed enumeration
-     * that can be used to determine the renderer that the DisplaySystem is currently using.
+     * <code>getRendererType</code> returns an instance of a strongly typed
+     * enumeration that can be used to determine the renderer that the
+     * DisplaySystem is currently using.
+     * 
      * @see com.jme.util.JmeType
      * @return
      */
@@ -190,7 +217,7 @@ public abstract class DisplaySystem {
      * <code>isCreated</code> returns the current status of the display
      * system. If the window and renderer are created, true is returned,
      * otherwise false.
-     *
+     * 
      * @return whether the display system is created.
      */
     public abstract boolean isCreated();
@@ -199,142 +226,144 @@ public abstract class DisplaySystem {
      * <code>isClosing</code> notifies if the window is currently closing.
      * This could be caused via the application itself or external interrupts
      * such as alt-f4 etc.
+     * 
      * @return true if the window is closing, false otherwise.
      */
     public abstract boolean isClosing();
 
     /**
-     * <code>reset</code> cleans up the display system for closing or restarting.
-     *
+     * <code>reset</code> cleans up the display system for closing or
+     * restarting.
+     *  
      */
     public abstract void reset();
 
     /**
-     * @param fontName - name of the font to loaded
-     * @return an instance of the requested font, null of
-     *      the isn't loaded.
+     * @param fontName -
+     *            name of the font to loaded
+     * @return an instance of the requested font, null of the isn't loaded.
      */
     public abstract WidgetFont getFont(String fontName);
 
-
-
     /**
-    *
-    * @return the int value of alphaBits.
-    */
-    public int getMinAlphaBits(){
+     * @return the int value of alphaBits.
+     */
+    public int getMinAlphaBits() {
         return alphaBits;
     }
 
     /**
-    *
-    * @param alphaBits - the new value for alphaBits
-    */
-    public void setMinAlphaBits(int alphaBits){
+     * @param alphaBits -
+     *            the new value for alphaBits
+     */
+    public void setMinAlphaBits(int alphaBits) {
         this.alphaBits = alphaBits;
     }
 
-
     /**
-    *
-    * @return the int value of depthBits.
-    */
-    public int getMinDepthBits(){
+     * @return the int value of depthBits.
+     */
+    public int getMinDepthBits() {
         return depthBits;
     }
 
     /**
-    *
-    * @param depthBits - the new value for depthBits
-    */
-    public void setMinDepthBits(int depthBits){
+     * @param depthBits -
+     *            the new value for depthBits
+     */
+    public void setMinDepthBits(int depthBits) {
         this.depthBits = depthBits;
     }
 
-
     /**
-    *
-    * @return the int value of stencilBits.
-    */
-    public int getMinStencilBits(){
+     * @return the int value of stencilBits.
+     */
+    public int getMinStencilBits() {
         return stencilBits;
     }
 
     /**
-    *
-    * @param stencilBits - the new value for stencilBits
-    */
-    public void setMinStencilBits(int stencilBits){
+     * @param stencilBits -
+     *            the new value for stencilBits
+     */
+    public void setMinStencilBits(int stencilBits) {
         this.stencilBits = stencilBits;
     }
 
-
     /**
-    *
-    * @return the int value of samples.
-    */
-    public int getMinSamples(){
+     * @return the int value of samples.
+     */
+    public int getMinSamples() {
         return samples;
     }
 
     /**
-    *
-    * @param samples - the new value for samples
-    */
-    public void setMinSamples(int samples){
+     * @param samples -
+     *            the new value for samples
+     */
+    public void setMinSamples(int samples) {
         this.samples = samples;
     }
 
     public static void updateStates(Renderer r) {
 
         Spatial.defaultStateList[RenderState.RS_ALPHA] = r.getAlphaState();
-        Spatial.defaultStateList[RenderState.RS_ATTRIBUTE] = r.getAttributeState();
+        Spatial.defaultStateList[RenderState.RS_ATTRIBUTE] = r
+                .getAttributeState();
         Spatial.defaultStateList[RenderState.RS_CULL] = r.getCullState();
         Spatial.defaultStateList[RenderState.RS_DITHER] = r.getDitherState();
         Spatial.defaultStateList[RenderState.RS_FOG] = r.getFogState();
         Spatial.defaultStateList[RenderState.RS_LIGHT] = r.getLightState();
-        Spatial.defaultStateList[RenderState.RS_MATERIAL] = r.getMaterialState();
+        Spatial.defaultStateList[RenderState.RS_MATERIAL] = r
+                .getMaterialState();
         Spatial.defaultStateList[RenderState.RS_SHADE] = r.getShadeState();
-//          Spatial.defaultStateList[RenderState.RS_SHOW_BOUNDINGS] = r.getSBState();
         Spatial.defaultStateList[RenderState.RS_TEXTURE] = r.getTextureState();
-//          Spatial.defaultStateList[RenderState.RS_VERTEXCOLOR] = r.getVCState();
-        Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM] = r.getVertexProgramState();
-        Spatial.defaultStateList[RenderState.RS_WIREFRAME] = r.getWireframeState();
+        Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM] = r
+                .getVertexProgramState();
+        Spatial.defaultStateList[RenderState.RS_WIREFRAME] = r
+                .getWireframeState();
         Spatial.defaultStateList[RenderState.RS_ZBUFFER] = r.getZBufferState();
         Spatial.defaultStateList[RenderState.RS_STENCIL] = r.getStencilState();
 
     }
 
-
     /**
      * Crate a TextureRenderer using the underlying system.
-     * @param width width of texture
-     * @param height height of texture
-     * @param useRGB  if this is true, useRGBA should not be
-     * @param useRGBA  if this is true, useRGB should not be
+     * 
+     * @param width
+     *            width of texture
+     * @param height
+     *            height of texture
+     * @param useRGB
+     *            if this is true, useRGBA should not be
+     * @param useRGBA
+     *            if this is true, useRGB should not be
      * @param useDepth
      * @param isRectangle
      * @param target
      * @param mipmaps
      * @return
      */
-    public abstract TextureRenderer createTextureRenderer(int width, int height,
-        boolean useRGB, boolean useRGBA, boolean useDepth,
-        boolean isRectangle, int target, int mipmaps);
-
+    public abstract TextureRenderer createTextureRenderer(int width,
+            int height, boolean useRGB, boolean useRGBA, boolean useDepth,
+            boolean isRectangle, int target, int mipmaps);
 
     /**
      * Translate world to screen coordinates
-     * @param worldPosition Vector3f
+     * 
+     * @param worldPosition
+     *            Vector3f
      * @return Vector2f
      */
     public abstract Vector2f getScreenCoordinates(Vector3f worldPosition);
 
-
     /**
      * Translate screen to world coordinates.
-     * @param screenPosition Vector2f
+     * 
+     * @param screenPosition
+     *            Vector2f
      * @return Vector3f
      */
-    public abstract Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos);
-  }
+    public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
+            float zPos);
+}
