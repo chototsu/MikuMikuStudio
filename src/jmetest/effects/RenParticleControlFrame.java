@@ -44,6 +44,11 @@ import java.awt.*;
 import javax.swing.*;
 import javax.swing.border.*;
 import java.awt.event.*;
+import com.jme.scene.state.*;
+import com.jme.util.*;
+import com.jme.image.*;
+import com.jme.system.*;
+import java.io.*;
 
 public class RenParticleControlFrame extends JFrame {
   BorderLayout borderLayout1 = new BorderLayout();
@@ -141,7 +146,7 @@ public class RenParticleControlFrame extends JFrame {
    * <code>RenParticleControlFrame</code>
    *
    * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.10 2004-03-24 23:13:56 renanse Exp $
+   * @version $Id: RenParticleControlFrame.java,v 1.11 2004-03-24 23:47:52 renanse Exp $
    *
    */
 
@@ -254,17 +259,22 @@ public class RenParticleControlFrame extends JFrame {
     textureBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
     textureLabel.setFont(new java.awt.Font("Arial", 1, 13));
     textureLabel.setText("Texture Image:");
-    changeTextureButton.setEnabled(false);
     changeTextureButton.setFont(new java.awt.Font("Arial", 1, 12));
     changeTextureButton.setMargin(new Insets(2, 2, 2, 2));
     changeTextureButton.setText("Browse...");
+    changeTextureButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        changeTexture();
+      }
+    });
     imageLabel.setBackground(Color.lightGray);
-    imageLabel.setBorder(BorderFactory.createLineBorder(SystemColor.controlText,
-        1));
     imageLabel.setMaximumSize(new Dimension(128, 128));
     imageLabel.setMinimumSize(new Dimension(0, 0));
-    imageLabel.setOpaque(true);
+    imageLabel.setOpaque(false);
     imageLabel.setText("");
+    ImageIcon icon = new ImageIcon(TestRenParticleGUI.class.getClassLoader().getResource(
+        "jmetest/data/texture/flaresmall.jpg"));
+    imageLabel.setIcon(icon);
 
     gravityPanel.setBorder(gravityBorder);
     gravityPanel.setLayout(gridBagLayout9);
@@ -602,17 +612,13 @@ public class RenParticleControlFrame extends JFrame {
     appPanel.add(texturePanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
         , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(5, 10, 5, 5), 0, 0));
-    texturePanel.add(textureLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
-        new Insets(0, 0, 0, 4), 0, 0));
+    texturePanel.add(textureLabel,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(10, 10, 5, 5), 0, 0));
     texturePanel.add(changeTextureButton,
-                     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-                                            , GridBagConstraints.EAST,
-                                            GridBagConstraints.NONE,
-                                            new Insets(10, 0, 5, 4), 0, 0));
-    texturePanel.add(imageLabel, new GridBagConstraints(1, 0, 1, 2, 1.0, 0.0
-        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
-        new Insets(5, 5, 5, 5), 32, 32));
+                      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 10, 10, 5), 0, 0));
+    texturePanel.add(imageLabel,  new GridBagConstraints(1, 0, 1, 2, 1.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 5, 5), 0, 0));
     appPanel.add(countPanel, new GridBagConstraints(1, 1, 1, 1, 0.5, 0.0
         , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(5, 5, 5, 10), 0, 0));
@@ -757,6 +763,9 @@ public class RenParticleControlFrame extends JFrame {
     manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
     manager.warmup();
     updateFromManager();
+    ImageIcon icon = new ImageIcon(TestRenParticleGUI.class.getClassLoader().getResource(
+        "jmetest/data/texture/flaresmall.jpg"));
+    imageLabel.setIcon(icon);
   }
 
   /**
@@ -1049,9 +1058,40 @@ public class RenParticleControlFrame extends JFrame {
       particles = Integer.parseInt(response);
     } catch (NumberFormatException ex) {
       JOptionPane.showMessageDialog(this, "Invalid number entered.  Using 100 instead.", "Invalid", JOptionPane.WARNING_MESSAGE);
-      particles = 100;;
+      particles = 100;
     }
     resetManager(particles);
     updateCountLabels();
   }
+
+  private void changeTexture() {
+    TestRenParticleGUI.noUpdate = true;
+    try {
+      JFileChooser chooser = new JFileChooser();
+      chooser.setMultiSelectionEnabled(false);
+      int result = chooser.showOpenDialog(this);
+      if (result == JFileChooser.CANCEL_OPTION) {
+        return;
+      }
+      File textFile = chooser.getSelectedFile();
+
+      TestRenParticleGUI.root.clearRenderState(RenderState.RS_TEXTURE);
+      TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().
+          getTextureState();
+      ts.setTexture(
+          TextureManager.loadTexture(
+          textFile.getAbsolutePath(),
+          Texture.MM_LINEAR,
+          Texture.FM_LINEAR,
+          true));
+      ts.setEnabled(true);
+      ImageIcon icon = new ImageIcon(textFile.getAbsolutePath());
+      imageLabel.setIcon(icon);
+      validate();
+    } catch (Exception ex) {
+      ex.printStackTrace();
+    }
+    TestRenParticleGUI.noUpdate = false;
+  }
+
 }

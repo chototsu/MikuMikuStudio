@@ -58,7 +58,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.5 2004-03-24 23:13:56 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.6 2004-03-24 23:47:52 renanse Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
@@ -224,7 +224,7 @@ public class TestRenParticleGUI extends SimpleGame {
     manager.setRandomMod(1.0f);
 
     root.setRenderState(ts);
-    root.setRenderState(as1);
+    main.setRenderState(as1);
     root.attachChild(manager.getParticles());
     main.attachChild(root);
     root.updateGeometricState(0.0f, true);
