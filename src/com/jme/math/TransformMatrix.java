@@ -106,16 +106,15 @@ public class TransformMatrix {
     /**
      * <code>multLocal</code> multiplies this matrix with another matrix and stores
      * the result back in this, returning this.  if null is passed, nothing happens
-     * This function is equivilent to this*=in2;
-     * @param inMatrix The matrix to multiply by
+     * This function changes this matrix to what the child would look like if this were applied as it's parent
+     * @param child The matrix to multiply by
+     * @param tempStore A temporary Vector3f object for this TransformMatrix to use during the calculation.
      * @return this matrix after multiplication
      */
-    public TransformMatrix multLocal(TransformMatrix inMatrix){
-
-//      Math: {this=2: inMatrix=1 } (R2 ( R1 V + T1) + T2) = (R2 R1) V + (R2 T1 + T2)
-        translation.addLocal(rot.mult(inMatrix.translation));
-        rot.multLocal(inMatrix.rot);
-        scale.multLocal(inMatrix.scale);
+    public TransformMatrix multLocal(TransformMatrix child,Vector3f tempStore){
+        this.scale.multLocal(child.scale);
+        this.translation.addLocal(rot.mult(child.translation,tempStore).multLocal(child.scale));
+        this.rot.multLocal(child.rot);
         return this;
     }
 
