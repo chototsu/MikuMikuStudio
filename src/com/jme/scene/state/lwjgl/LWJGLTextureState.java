@@ -55,7 +55,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.11 2004-05-15 02:06:55 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.12 2004-05-15 02:17:27 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -273,7 +273,6 @@ public class LWJGLTextureState extends TextureState {
                         texture.getBlendColor());
 
                 // set up wrap mode
-                System.err.println("wrap: "+texture.getWrap());
                 switch (texture.getWrap()) {
                   case Texture.WM_ECLAMP_S_ECLAMP_T:
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
