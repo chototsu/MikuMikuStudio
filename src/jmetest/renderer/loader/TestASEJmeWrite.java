@@ -20,7 +20,8 @@ public class TestASEJmeWrite extends SimpleGame{
         app.start();
     }
     protected void simpleInitGame() {
-        URL statue=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Statue.ase");
+        InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
+        URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
         if (statue==null){
             System.out.println("Unable to find statue file, did you include jme-test.jar in classpath?");
             System.exit(0);
@@ -28,8 +29,9 @@ public class TestASEJmeWrite extends SimpleGame{
         AseToJme i=new AseToJme();
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
-            i.writeFiletoStream(statue,BO);
+            i.convert(statue,BO);
             JmeBinaryReader jbr=new JmeBinaryReader();
+            jbr.setProperty("texurl",stateTextureDir);
             Node file=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
             rootNode.attachChild(file);
         } catch (IOException e) {

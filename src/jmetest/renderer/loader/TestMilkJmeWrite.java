@@ -29,7 +29,7 @@ public class TestMilkJmeWrite extends SimpleGame{
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
         try {
-            converter.writeFiletoStream(MSFile.openStream(),BO);
+            converter.convert(MSFile.openStream(),BO);
         } catch (IOException e) {
             System.out.println("IO problem writting the file!!!");
             System.out.println(e.getMessage());

@@ -51,7 +51,7 @@ public class TestMd2JmeWrite extends SimpleGame{
 
         try {
             long time = System.currentTimeMillis();
-            converter.writeFiletoStream(freak,BO);
+            converter.convert(freak.openStream(),BO);
             System.out.println("Time to convert from md2 to .jme:"+ ( System.currentTimeMillis()-time));
         } catch (IOException e) {
             System.out.println("damn exceptions:" + e.getMessage());
