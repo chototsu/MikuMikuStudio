@@ -34,7 +34,6 @@ package com.jme.scene.state.lwjgl;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.io.IOException;
 
 import org.lwjgl.opengl.GL11;
 
@@ -44,7 +43,7 @@ import com.jme.scene.state.FogState;
  * <code>LWJGLFogState</code> subclasses the fog state using the LWJGL API
  * to set the OpenGL fog state.
  * @author Mark Powell
- * @version $Id: LWJGLFogState.java,v 1.4 2004-07-06 04:47:37 cep21 Exp $
+ * @version $Id: LWJGLFogState.java,v 1.5 2004-07-06 04:48:10 cep21 Exp $
  */
 public class LWJGLFogState extends FogState {
     //buffer to hold the color
