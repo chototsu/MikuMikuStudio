@@ -74,7 +74,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene2</code>
  * @author Gregg Patton
- * @version $Id: TestScene2.java,v 1.3 2004-02-25 16:36:47 mojomonkey Exp $
+ * @version $Id: TestScene2.java,v 1.4 2004-03-04 03:08:09 greggpatton Exp $
  */
 public class TestScene2 extends TestAbstractScene implements Observer {
 
@@ -229,6 +229,8 @@ public class TestScene2 extends TestAbstractScene implements Observer {
             lightState.attach(dr);
             lightState.attach(spotlight1);
             lightState.attach(spotlight2);
+
+            lightState.setEnabled(true);
 
             am.setEnabled(true);
             spotlight1.setEnabled(true);

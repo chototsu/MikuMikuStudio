@@ -68,9 +68,9 @@ public class TestWidgetApp1 extends SimpleGame {
 
         static final int TOTAL_BUTTONS = 30;
         static final int TOTAL_BUNNIES = 2;
-        static final int TOTAL_ROLLOUTS = 1;
+        static final int TOTAL_ROLLOUTS = 3;
 
-        static final boolean ADD_CENTER = true;
+        static final boolean ADD_CENTER = false;
         static final boolean ADD_NORTH = true;
         static final boolean ADD_SOUTH = true;
         static final boolean ADD_EAST = true;
@@ -79,6 +79,7 @@ public class TestWidgetApp1 extends SimpleGame {
         static final boolean PANEL = false;
         static final boolean SCROLL_PANEL = false;
         static final boolean SCROLL_PANEL_FILL_HORIZONTAL = false;
+        static final boolean GRID_TEST = false;
         static final boolean ROLLOUT_CONTAINER = true;
 
         WidgetText fps;
@@ -106,6 +107,7 @@ public class TestWidgetApp1 extends SimpleGame {
 
             if (ADD_NORTH)
                 add(northPanel, WidgetBorderLayoutConstraint.NORTH);
+                //add(northButton, WidgetBorderLayoutConstraint.NORTH);
 
             WidgetButton south = new WidgetButton("South", WidgetAlignmentType.ALIGN_CENTER);
             if (ADD_SOUTH)
@@ -121,28 +123,8 @@ public class TestWidgetApp1 extends SimpleGame {
 
             if (ADD_CENTER) {
 
-                WidgetPanel centerPanel = new WidgetPanel();
-
-                centerPanel.setInsets(new WidgetInsets(5, 5, 5, 5));
-
-                int xSize = 4;
-                int ySize = 10;
-
-                centerPanel.setLayout(new WidgetGridLayout(xSize, ySize, 5, 5));
-                //centerPanel.setLayout(new WidgetGridLayout(xSize, ySize));
-
-                for (int y = 0; y < ySize; y++) {
-                    for (int x = 0; x < xSize; x++) {
-
-                        WidgetButton button =
-                            new WidgetButton("" + (x + 1) + "," + (y + 1), WidgetAlignmentType.ALIGN_CENTER);
-                        button.setInsets(new WidgetInsets(0, 3, 2, 2));
-
-                        centerPanel.add(button);
-                    }
-                }
-
-                add(centerPanel, WidgetBorderLayoutConstraint.CENTER);
+                WidgetButton centerButton = new WidgetButton("Center", WidgetAlignmentType.ALIGN_CENTER);
+                add(centerButton, WidgetBorderLayoutConstraint.CENTER);
 
             } else {
 
@@ -161,9 +143,37 @@ public class TestWidgetApp1 extends SimpleGame {
 
                     WidgetPanel panel = new WidgetPanel();
 
-                    add(northPanel, WidgetBorderLayoutConstraint.CENTER);
-                    addWidgets(northPanel);
+                    panel.setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_CENTER, WidgetFillType.HORIZONTAL));
 
+                    add(panel, WidgetBorderLayoutConstraint.CENTER);
+
+                    for (int i = 0; i < TOTAL_ROLLOUTS; i++) {
+                        addWidgets(panel, "Rollout " + (i + 1));
+                    }
+
+                } else if (GRID_TEST) {
+                  WidgetPanel centerPanel = new WidgetPanel();
+
+                  centerPanel.setInsets(new WidgetInsets(5, 5, 5, 5));
+
+                  int xSize = 4;
+                  int ySize = 10;
+
+                  centerPanel.setLayout(new WidgetGridLayout(xSize, ySize));
+
+                  for (int y = 0; y < ySize; y++) {
+                      for (int x = 0; x < xSize; x++) {
+
+                          WidgetButton button =
+                              new WidgetButton("" + (x + 1) + "," + (y + 1), WidgetAlignmentType.ALIGN_CENTER);
+                          button.setInsets(new WidgetInsets(0, 3, 2, 2));
+
+                          centerPanel.add(button);
+                      }
+                  }
+
+                  add(centerPanel, WidgetBorderLayoutConstraint.CENTER);
+                  
                 } else if (ROLLOUT_CONTAINER) {
 
                     WidgetRolloutPanelContainer rpc = new WidgetRolloutPanelContainer();
@@ -195,7 +205,7 @@ public class TestWidgetApp1 extends SimpleGame {
 
             if (ROLLOUT_CONTAINER == true) {
                 rollout = new WidgetRolloutPanel(title);
-                rollout.setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_CENTER, 0, 0));
+                rollout.setPanelLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_CENTER, 0, 0));
                 //rollout.setPanelInsets(new WidgetInsets(5, 5, 0, 5));
             }
 
@@ -211,7 +221,7 @@ public class TestWidgetApp1 extends SimpleGame {
                 button.setInsets(new WidgetInsets(10, 3, 12, 2));
 
                 if (rollout != null)
-                    rollout.add(button);
+                    rollout.addPanelWidget(button);
                 else
                     c.add(button);
 
@@ -310,6 +320,7 @@ public class TestWidgetApp1 extends SimpleGame {
     public static void main(String[] args) {
         TestWidgetApp1 app = new TestWidgetApp1();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        //app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
         app.start();
     }
 

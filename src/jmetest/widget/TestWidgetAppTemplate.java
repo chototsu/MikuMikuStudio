@@ -41,6 +41,7 @@ import com.jme.system.JmeException;
 import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.WidgetInsets;
+import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.button.WidgetButton;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
 import com.jme.widget.layout.WidgetFlowLayout;
@@ -59,8 +60,8 @@ public class TestWidgetAppTemplate extends SimpleGame {
             setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_CENTER));
 
             WidgetButton north = new WidgetButton("Button", WidgetAlignmentType.ALIGN_CENTER);
-            //WidgetButton north = new WidgetButton("Button");
-            north.setInsets(new WidgetInsets(0, 3, 2, 2));
+            north.setBorder(new WidgetBorder(2, 2, 2, 2));
+            north.setInsets(new WidgetInsets(5, 5, 5, 5));
             add(north);
 
             doLayout();
@@ -152,7 +153,8 @@ public class TestWidgetAppTemplate extends SimpleGame {
 
     public static void main(String[] args) {
         TestWidgetAppTemplate app = new TestWidgetAppTemplate();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        //app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
         app.start();
     }
 
