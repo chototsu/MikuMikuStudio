@@ -34,11 +34,9 @@ package com.jme.widget.font;
 import java.util.Hashtable;
 import java.util.logging.Level;
 
-import com.jme.renderer.Renderer;
+import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
-import com.jme.widget.impl.lwjgl.WidgetLWJGLRenderer;
 
 /**
  * @author Gregg Patton
@@ -50,20 +48,18 @@ public class WidgetFontManager {
 
     private static WidgetFontManager fm;
     private static Hashtable fontList;
-	private static Renderer renderer;
+	private static DisplaySystem displaySystem;
 	
-    protected WidgetFontManager(Renderer r) {
+    protected WidgetFontManager(DisplaySystem d) {
         fontList = new Hashtable();
 
-		renderer = r;
-		
-		if (renderer instanceof WidgetLWJGLRenderer) {
-			WidgetFont f = new WidgetLWJGLFont("Default");
-			fontList.put(f.getName(), f);
+		displaySystem = d;
 
-			//        f = new WidgetFont("Default");
-			//        fontList.put(f.getName(), f);
-		}
+        WidgetFont f = displaySystem.getFont("Default");
+		fontList.put(f.getName(), f);
+
+		//        f = new WidgetFont("Default");
+		//        fontList.put(f.getName(), f);
 
     }
 
@@ -79,7 +75,7 @@ public class WidgetFontManager {
 
     }
 
-    public static void init(Renderer r) {
-        fm = new WidgetFontManager(r);
+    public static void init(DisplaySystem d) {
+        fm = new WidgetFontManager(d);
     }
 }
