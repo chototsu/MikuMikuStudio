@@ -7,6 +7,7 @@ import java.util.Stack;
 import java.util.Hashtable;
 import java.io.File;
 import java.net.MalformedURLException;
+import java.net.URL;
 
 import com.jme.scene.*;
 import com.jme.scene.shape.Box;
@@ -92,9 +93,7 @@ class SAXStackProcessor {
 
 
     void decreaseStack(String qName,StringBuffer data) throws SAXException {
-        Object child,parent;
         Node childNode,parentNode;
-        Geometry tempGeoCurrent;
         Spatial parentSpatial,childSpatial;
         if (qName.equalsIgnoreCase("Scene")){
             myScene=(Node) s.pop();
@@ -189,15 +188,14 @@ class SAXStackProcessor {
 
     private TextureState buildTexture(Attributes atts) throws SAXException {
         TextureState t=renderer.getTextureState();
-//            t.setTexture(TextureManager.loadTexture(atts.getValue("file"),
-//                Texture.MM_LINEAR,
-//                Texture.FM_LINEAR,
-//                true));
         try {
-            if (!atts.getValue("file").equals("null"))
-                t.loadFromFile(new File(atts.getValue("file")),Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+            if (atts.getValue("URL")!=null && !atts.getValue("URL").equals("null")){
+                t.loadFromFile(new URL(atts.getValue("URL")),Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+            }
+            if (atts.getValue("file")!=null && !atts.getValue("file").equals("null"))
+                t.loadFromFile(new File(atts.getValue("file")).toURI().toURL(),Texture.MM_LINEAR,Texture.FM_LINEAR,true);
         } catch (MalformedURLException e) {
-            throw new SAXException("Bad file name: " + atts.getValue("file"));
+            throw new SAXException("Bad file name: " + atts.getValue("file") + "*" + atts.getValue("URL"));
         }
         t.setEnabled(true);
         return t;
@@ -292,7 +290,7 @@ class SAXStackProcessor {
         Vector2f[] vecs=new Vector2f[information.length/2];
         for (int i=0;i<vecs.length;i++){
             vecs[i]=new Vector2f(Float.parseFloat(information[i*2+0]),
-                    Float.parseFloat(information[i*2+0]));
+                    Float.parseFloat(information[i*2+1]));
         }
         return vecs;
     }
