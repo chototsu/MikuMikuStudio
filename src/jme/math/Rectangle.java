@@ -32,21 +32,34 @@
 package jme.math;
 
 /**
- * <code>Rectangle</code>
+ * <code>Rectangle</code> defines a finite plane with an origin point and
+ * two edge directions that defines it's extents. 
  * @author Mark Powell
- * @version $Id: Rectangle.java,v 1.1 2003-08-27 20:48:48 mojomonkey Exp $
+ * @version $Id: Rectangle.java,v 1.2 2003-08-27 21:22:36 mojomonkey Exp $
  */
 public class Rectangle {
     private Vector origin;
     private Vector firstEdge;
     private Vector secondEdge;
     
+    /**
+     * Constructor instantiates a new <code>Rectangle</code> object. All values
+     * origin, firstEdge and secondEdge are (0, 0, 0).
+     *
+     */
     public Rectangle() {
         origin = new Vector();
         firstEdge = new Vector();
         secondEdge = new Vector();
     }
 
+    /**
+     * Constructor instantiates a new <code>Rectangle</code> object. The 
+     * attributes of the rectangle are defined during construction.
+     * @param origin the point defining the least point of the rectange.
+     * @param firstEdge the first extent.
+     * @param secondEdge the second extent.
+     */
     public Rectangle(Vector origin, Vector firstEdge, Vector secondEdge) {
         this.origin = origin;
         this.firstEdge = firstEdge;
@@ -54,42 +67,48 @@ public class Rectangle {
     }
     
     /**
-     * @return
+     * <code>getFirstEdge</code> returns the first extent vector.
+     * @return the first vector edge.
      */
     public Vector getFirstEdge() {
         return firstEdge;
     }
 
     /**
-     * @param firstEdge
+     * <code>setFirstEdge</code> sets the first extent vector.
+     * @param firstEdge the new first vector edge.
      */
     public void setFirstEdge(Vector firstEdge) {
         this.firstEdge = firstEdge;
     }
 
     /**
-     * @return
+     * <code>getOrigin</code> returns the origin point of the rectangle.
+     * @return the origin of the rectangle.
      */
     public Vector getOrigin() {
         return origin;
     }
 
     /**
-     * @param origin
+     * <code>setOrigin</code> sets the origin point of the rectangle.
+     * @param origin the new origin of the rectangle.
      */
     public void setOrigin(Vector origin) {
         this.origin = origin;
     }
 
     /**
-     * @return
+     * <code>getSecondEdge</code> returns the second extent vector.
+     * @return the second edge vector.
      */
     public Vector getSecondEdge() {
         return secondEdge;
     }
 
     /**
-     * @param secondEdge
+     * <code>setSecondEdge</code> sets the second edge vector.
+     * @param secondEdge the new second edge vector.
      */
     public void setSecondEdge(Vector secondEdge) {
         this.secondEdge = secondEdge;
