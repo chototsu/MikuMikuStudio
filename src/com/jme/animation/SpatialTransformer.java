@@ -84,9 +84,10 @@ public class SpatialTransformer extends Controller{
      * @param objIndex The index to update.
      */
     private void updatePivot(int objIndex) {
-        if (haveChanged[objIndex]){
+        if (haveChanged[objIndex])
             return;
-        }
+        else
+            haveChanged[objIndex]=true;
         int parentIndex=parentIndexes[objIndex];
         if (parentIndex!=-1){
             updatePivot(parentIndex);
@@ -94,7 +95,6 @@ public class SpatialTransformer extends Controller{
         pivots[objIndex].interpolateTransforms(beginPointTime.look[objIndex],endPointTime.look[objIndex],delta);
         if (parentIndex!=-1)
             pivots[objIndex].combineWithParent(pivots[parentIndex]);
-        haveChanged[objIndex]=true;
     }
 
     /**
