@@ -222,7 +222,7 @@ public abstract class BufferFilter implements IBufferFilter{
 	 */
 	public void setOcclusionLF(int i) {
 		occlusionLF= i;
-		//bufferProperties.setOcclusionLF(i);
+		bufferProperties.setOcclusion(i);
 
 	}
 
@@ -265,7 +265,7 @@ public abstract class BufferFilter implements IBufferFilter{
 	 */
 	public void setRoomLF(int i) {
 		roomLF= i;
-		//bufferProperties.setRoomLF(i);
+		bufferProperties.setRoom(i);
 	}
 
 	/**
