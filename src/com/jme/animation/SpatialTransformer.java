@@ -187,11 +187,11 @@ public class SpatialTransformer extends Controller{
      * values to make the animation look correct.  Tail and head values are assumed to be the identity.
      */
     public void interpolateMissing() {
-        if (keyframes.size()==1)
-            return;
-        fillTrans();
-        fillRots();
-        fillScales();
+        if (keyframes.size()!=1){
+            fillTrans();
+            fillRots();
+            fillScales();
+        }
         for (int objIndex=0;objIndex<numObjects;objIndex++)
             pivots[objIndex].applyToSpatial(toChange[objIndex]);
     }
