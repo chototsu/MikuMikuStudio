@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.19 2004-06-06 02:22:07 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.20 2004-06-24 04:41:21 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -357,7 +357,7 @@ public class Quaternion {
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
             interpolated.set(q1);
             this.set(q1);
-            return interpolated; 
+            return interpolated;
         }
 
         float result =
@@ -431,12 +431,12 @@ public class Quaternion {
         // Check if the angle between the 2 quaternions was big enough to warrant such calculations
         if ((1 - result) > 0.1f) {
             // Get the angle between the 2 quaternions, and then store the sin() of that angle
-            float theta = (float) Math.acos(result);
-            float sinTheta = (float) Math.sin(theta);
+            float theta = (float) FastMath.acos(result);
+            float sinTheta = (float) FastMath.sin(theta);
 
             // Calculate the scale for q1 and q2, according to the angle and it's sine value
-            scale0 = (float) Math.sin((1 - changeAmnt) * theta) / sinTheta;
-            scale1 = (float) Math.sin((changeAmnt * theta)) / sinTheta;
+            scale0 = (float) FastMath.sin((1 - changeAmnt) * theta) / sinTheta;
+            scale1 = (float) FastMath.sin((changeAmnt * theta)) / sinTheta;
         }
 
         // Calculate the x, y, z and w values for the quaternion by using a special
