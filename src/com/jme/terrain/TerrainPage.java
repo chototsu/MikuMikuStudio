@@ -110,7 +110,7 @@ public class TerrainPage extends Node {
      * @param offset the texture offset for the page.
      * @param offsetAmount the amount of the offset.
      */
-    public TerrainPage(String name, int blockSize, int size, Vector3f stepScale,
+    protected TerrainPage(String name, int blockSize, int size, Vector3f stepScale,
             int[] heightMap, boolean clod, int totalSize, Vector2f offset,
             int offsetAmount) {
         super(name);

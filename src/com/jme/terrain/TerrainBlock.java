@@ -51,7 +51,7 @@ import com.jme.math.Vector3f;
  * use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.16 2004-04-28 13:37:59 mojomonkey Exp $
+ * @version $Id: TerrainBlock.java,v 1.17 2004-04-29 01:24:19 mojomonkey Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
     //size of the block, totalSize is the total size of the heightmap if this
@@ -101,7 +101,7 @@ public class TerrainBlock extends AreaClodMesh {
      * @param offset the offset for texture coordinates.
      * @param offsetAmount the total offset amount.
      */
-    public TerrainBlock(String name, int size, Vector3f stepScale,
+    protected TerrainBlock(String name, int size, Vector3f stepScale,
             int[] heightMap, Vector3f origin, boolean clod, int totalSize,
             Vector2f offset, int offsetAmount) {
         super(name);
