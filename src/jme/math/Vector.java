@@ -33,7 +33,6 @@ package jme.math;
 
 import jme.exception.MonkeyRuntimeException;
 
-
 /**
  * <code>Vector</code> defines a three dimensional vector of (x,y,z). 
  * @author Mark Powell
@@ -42,7 +41,7 @@ public class Vector {
 	public float x;
 	public float y;
 	public float z;
-	
+
 	/**
 	 * Constructor creates a base <code>Vector</code> with values of
 	 * (0, 0, 0).
@@ -52,7 +51,7 @@ public class Vector {
 		y = 0;
 		z = 0;
 	}
-	
+
 	/**
 	 * Constructor creates a <code>Vector</code> with the value given
 	 * in the parameter as (x, y, z).
@@ -74,22 +73,22 @@ public class Vector {
 	 * @throws MonkeyRuntimeException if the attributes is not length 3.
 	 */
 	public Vector(float[] attributes) {
-		if(attributes.length != 3) {
+		if (attributes.length != 3) {
 			throw new MonkeyRuntimeException("Attributes must be length 3.");
 		}
-		
+
 		this.x = attributes[0];
 		this.y = attributes[1];
 		this.z = attributes[2];
 	}
-	
+
 	/**
 	 * Constructor builds a new <code>Vector</code> as a copy of a 
 	 * passed in vector.
 	 * @param v the vector to copy.
 	 */
 	public Vector(Vector v) {
-		if(null == v) {
+		if (null == v) {
 			x = y = z = 0;
 		} else {
 			this.x = v.x;
@@ -97,7 +96,7 @@ public class Vector {
 			this.z = v.z;
 		}
 	}
-	
+
 	/**
 	 * <code>divide</code> divides the values of this vector by a 
 	 * scalar and returns the result. The values of this vector 
@@ -106,9 +105,9 @@ public class Vector {
 	 * @return the result <code>Vector</code>.
 	 */
 	public Vector divide(float scalar) {
-		return new Vector(x/scalar, y/scalar, z/scalar);
+		return new Vector(x / scalar, y / scalar, z / scalar);
 	}
-	
+
 	/**
 	 * <code>mult</code> multiplies the values of this vector by a 
 	 * scalar and returns the result. The values of this vector 
@@ -119,7 +118,7 @@ public class Vector {
 	public Vector mult(float scalar) {
 		return new Vector(x * scalar, y * scalar, z * scalar);
 	}
-	
+
 	/**
 	 * <code>add</code> adds the values of this vector by another 
 	 * vector and returns the result. The values of this vector 
@@ -130,7 +129,7 @@ public class Vector {
 	public Vector add(Vector v) {
 		return new Vector(x + v.x, y + v.y, z + v.z);
 	}
-	
+
 	/**
 	 * <code>subtract</code> subtracts the values of this vector by  
 	 * another vector and returns the result. The values of this vector 
@@ -141,24 +140,24 @@ public class Vector {
 	public Vector subtract(Vector v) {
 		return new Vector(x - v.x, y - v.y, z - v.z);
 	}
-	
+
 	/**
 	 * <code>length</code> calculates the magnitude of this vector.
 	 * @return the length or magnitude of the vector.
 	 */
 	public float length() {
-		return (float)Math.sqrt(lengthSquared());
+		return (float) Math.sqrt(lengthSquared());
 	}
-	
+
 	/**
 	 * <code>lengthSquared</code> calculates the squared value of
 	 * the magnitude of the vector.
 	 * @return the magnitude squared of the vector.
 	 */
 	public float lengthSquared() {
-		return x*x + y*y + z*z;
+		return x * x + y * y + z * z;
 	}
-	
+
 	/**
 	 * <code>dot</code> calculates the dot product of this
 	 * vector with the parameter vector.
@@ -166,9 +165,9 @@ public class Vector {
 	 * @return the dot product of this vector with the parameter vector.
 	 */
 	public float dot(Vector v) {
-		return x*v.x + y*v.y + z*v.z;
+		return x * v.x + y * v.y + z * v.z;
 	}
-	
+
 	/**
 	 * <code>cross</code> calculates the cross product of this vector
 	 * with a parameter vector v.
@@ -176,11 +175,12 @@ public class Vector {
 	 * @return the cross product vector.
 	 */
 	public Vector cross(Vector v) {
-		return new Vector(((y * v.z) - (z * v.y)),
+		return new Vector(
+			((y * v.z) - (z * v.y)),
 			((z * v.x) - (x * v.z)),
 			((x * v.y) - (y * v.x)));
 	}
-	
+
 	/**
 	 * <code>negate</code> sets this vector to the negative (-x, -y, -z).
 	 *
@@ -190,17 +190,63 @@ public class Vector {
 		y = -y;
 		z = -z;
 	}
-	
+
 	/**
 	 * <code>normalize</code> returns the unit vector of this vector.
 	 * @return unit vector of this vector.
 	 */
 	public Vector normalize() {
-		float length = length();				
+		float length = length();
 
-		return divide(length);	
+		return divide(length);
 	}
 	
+	/**
+	 * <code>unitize</code> sets this vector to the unit vector or
+	 * direction vector.
+	 *
+	 */
+	public void unitize() {
+		float length = length();
+			
+		float fInvLength = 1.0f/length;
+		x *= fInvLength;
+		y *= fInvLength;
+		z *= fInvLength;
+	}
+
+	/**
+	 * <code>generateOrthonormalBasis</code> generates a vector that
+	 * satisfies u and v are perpendicular in respect to w.
+	 * @param u the u vector to be set.
+	 * @param v the v vector to be set.
+	 * @param w the w vector should already be set.
+	 * @param isUnitLength true if w is unitized, false otherwise.
+	 */
+	public static void generateOrthonormalBasis(
+		Vector u,
+		Vector v,
+		Vector w,
+		boolean isUnitLength) {
+		if (!isUnitLength) {
+			w.unitize();
+		}
+
+		if (Math.abs(w.x) >= Math.abs(w.y)
+			&& Math.abs(w.x) >= Math.abs(w.z)) {
+			u.x = -w.y;
+			u.y = +w.x;
+			u.z = 0.0f;
+		} else {
+			u.x = 0.0f;
+			u.y = +w.z;
+			u.z = -w.y;
+		}
+
+		u.unitize();
+		v = w.cross(u);
+	}
+
 	/**
 	 * <code>toString</code> returns the string representation of
 	 * this Vector. The format is as follows:
@@ -210,7 +256,7 @@ public class Vector {
 	 * @return the string representation of the vector.
 	 */
 	public String toString() {
-		return "("+x+","+y+","+z+")";
+		return "(" + x + "," + y + "," + z + ")";
 	}
-	
+
 }

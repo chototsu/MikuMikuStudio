@@ -33,16 +33,16 @@ package jme.math;
 
 
 /**
- * <code>MathUtils</code> is a static class that provides commonly used math
+ * <code>Distance</code> is a static class that provides commonly used math
  * functions.
  * @author Mark Powell
  *
  */
-public class MathUtils {
+public class Distance {
 	
 	/**
 	 * <code>distance</code> calculates the distance between two points. These
-	 * points are described as a <code>Vector3f</code> object.
+	 * points are described as a <code>Vector</code> object.
 	 * @param point1 the first point.
 	 * @param point2 the second point.
 	 * @return the distance between point1 and point2.
@@ -51,5 +51,35 @@ public class MathUtils {
 		return Math.sqrt(((point1.x - point2.x) * (point1.x - point2.x)) +
 						 ((point1.y - point2.y) * (point1.y - point2.y)) +
 						 ((point1.z - point2.z) * (point1.z - point2.z)));
+	}
+	
+	/**
+	 * <code>distanceSquared</code> calculates the distance squared
+	 * between two points. These points are described as a 
+	 * <code>Vector</code> object.
+	 * @param point1 the first point.
+	 * @param point2 the second point.
+	 * @return the distance squared between point1 and point2.
+	 */
+	public static float distanceSquared(Vector point1, Vector point2) {
+		return ((point1.x - point2.x) * (point1.x - point2.x)) +
+		((point1.y - point2.y) * (point1.y - point2.y)) +
+		((point1.z - point2.z) * (point1.z - point2.z));
+	}
+	
+	/**
+	 * <code>distanceSquared</code> calculates the distance squared
+	 * between a point and a line. 
+	 * @param point the point to check.
+	 * @param line the line to check.
+	 * @return the distance squared between a point and line.
+	 */
+	public static float distanceSquared(Vector point, Line line) {
+		Vector diff = point.subtract(line.getOrigin());
+		float squareLen = line.getDirection().lengthSquared();
+		float t = diff.dot(line.getDirection())/squareLen;
+		diff = diff.subtract(line.getDirection().mult(t));
+
+		return diff.lengthSquared();
 	}
 }
