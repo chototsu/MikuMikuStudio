@@ -147,7 +147,7 @@ public abstract class WidgetAbstractFont implements WidgetFont {
             textureImage.setData(buf);
 
             texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
-            texture.setFilter(Texture.MM_NEAREST);
+            texture.setFilter(Texture.FM_LINEAR);
             texture.setImage(textureImage);
             texture.setMipmapState(Texture.MM_NONE);
             texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
