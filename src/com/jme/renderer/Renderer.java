@@ -34,11 +34,11 @@ package com.jme.renderer;
 import com.jme.curve.Curve;
 import com.jme.effects.Tint;
 import com.jme.input.Mouse;
+import com.jme.scene.BoundingVolume;
 import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
 import com.jme.scene.Geometry;
-import com.jme.scene.*;
-import com.jme.scene.Node;
+import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
@@ -74,7 +74,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.20 2004-03-13 03:07:40 renanse Exp $
+ * @version $Id: Renderer.java,v 1.21 2004-03-13 15:01:47 mojomonkey Exp $
  */
 public interface Renderer {
     /**

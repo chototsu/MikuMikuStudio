@@ -79,10 +79,8 @@ import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
-import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
-import com.jme.scene.Sphere;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
@@ -116,7 +114,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.37 2004-03-13 03:07:40 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.38 2004-03-13 15:01:47 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
