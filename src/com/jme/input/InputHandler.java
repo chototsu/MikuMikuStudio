@@ -37,10 +37,13 @@ import com.jme.input.action.AbstractInputAction;
 import com.jme.input.action.MouseInputAction;
 
 /**
- * <code>InputHandler</code>
+ * <code>InputHandler</code> handles mouse and key inputs.  Inputs are added and whenever
+ * update is called whenever action needs to take place (usually every frame).  Mouse actions
+ * are performed every update call.  Keyboard actions are performed only if the correct key is
+ * pressed.
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.7 2004-07-30 20:49:49 cep21 Exp $
+ * @version $Id: InputHandler.java,v 1.8 2004-07-30 20:51:30 cep21 Exp $
  */
 public class InputHandler {
     /** List of keyboard actions.  They are performed in update if valid.*/
