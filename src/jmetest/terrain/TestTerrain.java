@@ -32,6 +32,8 @@
 
 package jmetest.terrain;
 
+import javax.swing.ImageIcon;
+
 import com.jme.app.*;
 import com.jme.image.*;
 import com.jme.input.*;
@@ -45,12 +47,13 @@ import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
 import com.jme.terrain.util.MidPointHeightMap;
+import com.jme.terrain.util.ProceduralTextureGenerator;
 import com.jme.terrain.util.RawHeightMap;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.7 2004-04-13 02:08:59 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.8 2004-04-13 16:43:37 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -185,18 +188,26 @@ public class TestTerrain extends SimpleGame {
         scene.setRenderState(lightstate);
         root = new Node("Root node");
         
-        RawHeightMap heightMap = new RawHeightMap("C:/eclipse/workspace/jMonkeyEngine/src/jmetest/data/images/Terrain.raw", 128);
+        MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0));
         tb.setDetailTexture(1, 4);
         scene.attachChild(tb);
         scene.setRenderState(cs);
         
+        ProceduralTextureGenerator pt = new ProceduralTextureGenerator(heightMap);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png")), -128, 0, 128);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg")), 0, 128, 255);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/highest.jpg")), 128, 255, 384);
+        
+        pt.createTexture(512);
+        
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(
-        		TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png"),
+        		pt.getImageIcon().getImage(),
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
+				true,
 				true);
         ts.setTexture(t1 ,0);
         
