@@ -4,12 +4,10 @@ import com.jme.app.SimpleGame;
 import com.jme.scene.shape.Box;
 import com.jme.scene.Node;
 import com.jme.math.Vector3f;
-import com.jme.math.Quaternion;
 import com.jme.scene.model.ms3d.MilkLoader;
 import com.jme.scene.model.ms3d.MilkAnimation;
 import com.jme.scene.model.Loader;
-import com.jme.scene.model.msascii.MilkshapeASCIIModel;
-import com.jme.animation.DeformationJointController;
+
 
 import java.net.URL;
 

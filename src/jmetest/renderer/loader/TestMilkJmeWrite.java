@@ -1,8 +1,8 @@
 package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.MilkToXML;
-import com.jme.scene.model.XMLparser.SAXReader;
+import com.jme.scene.model.XMLparser.MilkToJme;
+import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.math.Vector3f;
@@ -16,33 +16,37 @@ import java.io.*;
  * 
  * @author Jack Lindamood
  */
-public class TestMilkXMLWrite extends SimpleGame{
+public class TestMilkJmeWrite extends SimpleGame{
     public static void main(String[] args) {
-        new TestMilkXMLWrite().start();
+        new TestMilkJmeWrite().start();
     }
 
     protected void simpleInitGame() {
 
-        MilkToXML converter=new MilkToXML();
-        URL MSFile=TestMilkXMLWrite.class.getClassLoader().getResource(
+        MilkToJme converter=new MilkToJme();
+        URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
         "jmetest/data/model/msascii/run.ms3d");
-        StringWriter blah=new StringWriter();
+        ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
         try {
-            converter.writeFiletoStream(MSFile,blah);
+            converter.writeFiletoStream(MSFile.openStream(),BO);
         } catch (IOException e) {
             System.out.println("IO problem writting the file!!!");
             System.out.println(e.getMessage());
             System.exit(0);
         }
-        System.out.println(blah);
-        SAXReader toScreen=new SAXReader();
-        URL TEXdir=TestMilkXMLWrite.class.getClassLoader().getResource(
+        JmeBinaryReader jbr=new JmeBinaryReader();
+        URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
                 "jmetest/data/model/msascii/");
-        toScreen.setProperty("texurl",TEXdir);
-        Node mi=toScreen.loadXML(new ByteArrayInputStream(blah.toString().getBytes()));
-        mi.setLocalScale(.1f);
-        rootNode.attachChild(mi);
+        jbr.setProperty("texurl",TEXdir);
+        Node i=null;
+        try {
+            i=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+        } catch (IOException e) {
+            System.out.println("darn exceptions:" + e.getMessage());
+        }
+        i.setLocalScale(.1f);
+        rootNode.attachChild(i);
     }
 
     private void drawAxis() {

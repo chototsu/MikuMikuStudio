@@ -15,49 +15,40 @@ import java.net.URL;
 
 /**
  * Started Date: Jun 14, 2004<br><br>
- * Test class to test the ability to load and save .md2 files to XML format
+ * Test class to test the ability to load and save .md2 files to jME binary format
  * 
  * @author Jack Lindamood
  */
-public class TestMd2XMLWrite extends SimpleGame{
+public class TestMd2JmeWrite extends SimpleGame{
     float totalFPS;
     long totalCounts;
     private KeyframeController kc;
 
     public static void main(String[] args) {
-        TestMd2XMLWrite app=new TestMd2XMLWrite();
-        app.setDialogBehaviour(TestMd2XMLWrite.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+        TestMd2JmeWrite app=new TestMd2JmeWrite();
+        app.setDialogBehaviour(TestMd2JmeWrite.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
     }
-    protected void simpleUpdate() {
-        totalFPS+=timer.getFrameRate();
-        totalCounts++;
-        if (totalCounts%1000==0){
-            System.out.println("FPS: " + (totalFPS/totalCounts));
-            totalFPS = totalCounts = 0;
-        }
-     if (KeyBindingManager
-             .getKeyBindingManager()
-             .isValidCommand("smoothTrans", false)) {
-         kc.smoothTransform(1f,kc.getMaxTime(),25);
-     }
-
-    }
     protected void simpleInitGame() {
-        Md2ToXML converter=new Md2ToXML();
+
+        Md2ToJme converter=new Md2ToJme();
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
-        URL textu=TestMd2XMLWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.jpg");
-        URL freak=TestMd2XMLWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.md2");
+        URL textu=TestMd2JmeWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.jpg");
+        URL freak=TestMd2JmeWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.md2");
         Node freakmd2=null;
 
         try {
-            converter.writeFiletoStream(freak,new OutputStreamWriter(BO));
+            converter.writeFiletoStream(freak,BO);
         } catch (IOException e) {
-            System.out.println("damn exceptions!");
+            System.out.println("damn exceptions:" + e.getMessage());
         }
-        SAXReader s=new SAXReader();
-        freakmd2=s.loadXML(new ByteArrayInputStream(BO.toByteArray()));
+        JmeBinaryReader jbr=new JmeBinaryReader();
+        try {
+            freakmd2=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+        } catch (IOException e) {
+            System.out.println("damn exceptions:" + e.getMessage());
+        }
 
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
@@ -77,5 +68,5 @@ public class TestMd2XMLWrite extends SimpleGame{
         KeyBindingManager.getKeyBindingManager().set(
             "smoothTrans",
             KeyInput.KEY_T);
-    }
-}
+     }
+ }
