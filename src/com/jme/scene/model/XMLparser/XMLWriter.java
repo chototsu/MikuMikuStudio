@@ -284,9 +284,13 @@ public class XMLWriter {
     }
 
     private void writeTextureState(TextureState textureState) throws IOException {
+        if (textureState.getTexture()==null) return;
+        String s=textureState.getTexture().getImageLocation();
         currentLine.append("<texturestate ");
-        if (textureState.getTexture()!=null)
-            currentLine.append("URL=\"").append(textureState.getTexture().getImageLocation()).append("\" ");
+        if ("file:/".equals(s.substring(0,6)))
+            currentLine.append("file=\"").append(s.substring(6)).append("\" ");
+        else
+            currentLine.append("URL=\"").append(s).append("\" ");
         currentLine.append("/>");
         writeLine();
     }
