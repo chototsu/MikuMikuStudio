@@ -39,4 +39,20 @@ package jme.geometry.hud;
  */
 public class TextPanel extends AbstractComponent {
 
+	/* (non-Javadoc)
+	 * @see jme.geometry.hud.AbstractComponent#dispose()
+	 */
+	public void dispose() {
+		// TODO Auto-generated method stub
+		
+	}
+
+	/* (non-Javadoc)
+	 * @see jme.geometry.hud.AbstractComponent#render()
+	 */
+	public void render() {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

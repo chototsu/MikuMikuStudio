@@ -31,52 +31,89 @@
  */
 package jme.geometry.hud;
 
+import java.util.ArrayList;
+
+import org.lwjgl.vector.Vector3f;
+
 /**
- * <code>AbstractComponent</code>
+ * <code>AbstractComponent</code> defines a base level of implementation of the
+ * <code>Component</code> interface. The <code>dispose</code> and
+ * <code>render</code> methods must be implmented by the subclass.
  * 
  * @author Mark Powell
- * @version 
  */
-public class AbstractComponent implements Component {
+public abstract class AbstractComponent implements Component {
+	protected int locationX;
+	protected int locationY;
+	protected float height;
+	protected float width;
+	protected Vector3f color = new Vector3f(1,1,1);
+	protected float alpha;
+	
+	protected ArrayList children = new ArrayList();
 
-    /* (non-Javadoc)
+    /**
+     * <code>add</code> places the subcomponent in the array list
+     * of children. This list is not sorted in anyway.
+     * 
+     * @param subComponent the child to add to this component.
      * @see jme.geometry.hud.Component#add(jme.geometry.hud.Component)
      */
     public void add(Component subComponent) {
-        // TODO Auto-generated method stub
-
+        children.add(subComponent);
     }
 
-    /* (non-Javadoc)
-     * @see jme.geometry.hud.Component#remove(jme.geometry.hud.Component)
-     */
+	/**
+	 * <code>remove</code> removes thes specified subComponent from
+	 * this component. This effectively disposes the subcomponent as
+	 * well as any children this child may have had.
+	 * 
+	 * @param subComponent the child to remove.
+	 * @see jme.geometry.hud.Component#remove(jme.geometry.hud.Component)
+	 */
     public void remove(Component subComponent) {
-        // TODO Auto-generated method stub
-
+        children.remove(subComponent);
+		subComponent.dispose();
     }
 
-    /* (non-Javadoc)
-     * @see jme.geometry.hud.Component#contains(int, int)
+    /**
+     * <code>contains</code> reports true if the supplied point is within
+     * the constraints of the component. If the point falls outside 
+     * of the component false is returned.
+     * 
+     * @param x the x value of the component.
+     * @param y the y value of the component.
+     * @return true if the point is within the component, false otherwise.
+     * @see jme.geometry.hud.Component#contains(int,int)
      */
     public boolean contains(int x, int y) {
-        // TODO Auto-generated method stub
+        if((x >= locationX && x <= locationX + width ) &&
+			(x >= locationY && x <= locationY + height )) {
+				return true;
+			}
         return false;
     }
 
-    /* (non-Javadoc)
-     * @see jme.geometry.hud.Component#setColor(float, float, float)
+    /**
+     * <code>setColor</code> sets the overall color of the component.
+     * @param r the red value.
+     * @param g the green value.
+     * @param b the blue value.
+     * @see jme.geometry.hud.Component#setColor(float,float,float)
      */
     public void setColor(float r, float g, float b) {
-        // TODO Auto-generated method stub
-
+        color.x = r;
+        color.y = g;
+        color.z = b;
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>setTransparency</code> sets the alpha channel of the component.
+     * @param a the alpha value.
      * @see jme.geometry.hud.Component#setTransparency(float)
      */
     public void setTransparency(float a) {
-        // TODO Auto-generated method stub
-
+        alpha = a;
     }
 
     /* (non-Javadoc)
@@ -146,9 +183,8 @@ public class AbstractComponent implements Component {
     /* (non-Javadoc)
      * @see jme.geometry.hud.Component#dispose()
      */
-    public void dispose() {
-        // TODO Auto-generated method stub
-
-    }
+    public abstract void dispose();
+    
+    public abstract void render();
 
 }

@@ -153,4 +153,11 @@ public interface Component {
      *
      */
     public void dispose();
+    
+    /**
+     * <code>render</code> takes care of displaying the component to the 
+     * screen.
+     *
+     */
+    public void render();
 }
