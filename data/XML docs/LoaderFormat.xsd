@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v2004 rel. 2 U (http://www.xmlspy.com) by john (john) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" attributeFormDefault="unqualified">
 	<xs:element name="Scene">
 		<xs:annotation>
@@ -57,14 +58,20 @@
 											</xs:complexContent>
 										</xs:complexType>
 									</xs:element>
-									<xs:element name="Primative" minOccurs="0" maxOccurs="unbounded">
+									<xs:element name="Primitive" minOccurs="0" maxOccurs="unbounded">
 										<xs:annotation>
 											<xs:documentation>Primative jME types</xs:documentation>
 										</xs:annotation>
 										<xs:complexType>
 											<xs:complexContent>
 												<xs:extension base="Spatial">
-													<xs:attribute name="type" type="xs:string" use="required"/>
+													<xs:attribute name="type" use="required">
+														<xs:simpleType>
+															<xs:restriction base="xs:string">
+																<xs:enumeration value="box"/>
+															</xs:restriction>
+														</xs:simpleType>
+													</xs:attribute>
 													<xs:attribute name="params" type="xs:string" use="required"/>
 												</xs:extension>
 											</xs:complexContent>

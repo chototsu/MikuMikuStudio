@@ -3,7 +3,7 @@
 <Scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="LoaderFormat.xsd">
 	<SharedElementsBase>
 		<SharedMaterialBase identification="red" alpha="0" ambient=".1 .1 .1 .1" diffuse="1 0 0 0" emissive="0 0 0 0" shiny="64" specular="1 1 1 0"/>
-		<SharedTextureBase filename="CVS root/src/jmetest/data/images/monkey.jpg" identification="monkeyguy"/>
+		<SharedTextureBase filename="CVS root/src/jmetest/data/images/Monkey.jpg" identification="monkeyguy"/>
 	</SharedElementsBase>
 	<Model name="Human">
 		<Mesh name="Head">
@@ -11,14 +11,14 @@
 			<Vertex>
             0 0 0 1 0 0 0 1 0 </Vertex>
 			<Normal>0 0 1 0 0 1 0 0 1</Normal>
-			<Color>1 0 0 1 0 1 0 1 0 0 0 1 </Color>
+			<Color>1 0 0 1 0 1 0 1 0 0 1 1 </Color>
 			<TextureCoords/>
 			<Index> 0 1 2
             </Index>
 		</Mesh>
-		<Primative type="Box" params="MyBox -1 -1 -1 1 1 1" translation="7 7 7">
+		<Primitive type="box" params="MyBox -1 -1 -1 1 1 1" translation="7 7 7">
 			<SharedTypes identification="monkeyguy"/>
 			<SharedTypes identification="red"/>
-		</Primative>
+		</Primitive>
 	</Model>
 </Scene>
