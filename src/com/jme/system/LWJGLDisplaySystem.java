@@ -37,6 +37,7 @@
 package com.jme.system;
 
 import java.awt.Toolkit;
+import java.util.logging.Level;
 
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
@@ -45,6 +46,7 @@ import org.lwjgl.opengl.Window;
 import com.jme.renderer.LWJGLRenderer;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
+import com.jme.util.LoggingSystem;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
 
@@ -56,7 +58,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.10 2004-02-09 12:17:03 greggpatton Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.11 2004-03-01 18:06:07 mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -74,11 +76,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 	 *
 	 */
 	public LWJGLDisplaySystem() {
-		try {
-			System.loadLibrary("lwjgl");
-		} catch (UnsatisfiedLinkError e) {
-			throw new JmeException("LWJGL library not set.");
-		}
+		LoggingSystem.getLogger().log(Level.INFO, "LWJGL Display System created.");
 
 	}
 
