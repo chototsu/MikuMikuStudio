@@ -43,12 +43,16 @@ import com.jme.scene.TriMesh;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.9 2004-04-09 22:39:25 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.10 2004-04-14 02:30:22 mojomonkey Exp $
  */
 public class ClodMesh extends TriMesh {
   int currentRecord, targetRecord;
   CollapseRecord[] records;
 
+  public ClodMesh(String name) {
+      super(name);
+  }
+  
   public ClodMesh(
       String name,
       TriMesh data,
@@ -90,6 +94,32 @@ public class ClodMesh extends TriMesh {
     updateTextureBuffer();
     updateIndexBuffer();
     updateModelBound();
+  }
+  
+  public void create(CollapseRecord[] records) {
+  
+      targetRecord = 0;
+      currentRecord = 0;
+
+      if (records != null && records.length > 0) {
+        this.records = records;
+      } else {
+        ClodCreator creator = new ClodCreator(this.getVertices(), this.getNormals(), this.getColors(), this.getTextures(),
+                                  this.getIndices());
+        this.records = creator.getRecords();
+        creator.removeAllTriangles();
+        creator = null;
+      }
+      triangleQuantity = this.records[0].numbTriangles;
+      vertQuantity = this.records[0].numbVerts;
+
+      updateColorBuffer();
+      updateNormalBuffer();
+      updateVertexBuffer();
+      updateTextureBuffer();
+      updateIndexBuffer();
+      updateModelBound();
+      
   }
 
   public void selectLevelOfDetail(Renderer r) {

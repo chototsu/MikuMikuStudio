@@ -31,31 +31,48 @@
 
 package com.jme.terrain;
 
-import com.jme.scene.TriMesh;
+import com.jme.renderer.Renderer;
+import com.jme.scene.lod.AreaClodMesh;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 
 /**
  * @author Mark Powell
  */
-public class TerrainBlock extends TriMesh {
+public class TerrainBlock extends AreaClodMesh {
 
     private int size;
 
     private float stepScale;
+    
+    private boolean useClod;
 
     /** Creates a new instance of TerrainBlock */
     public TerrainBlock(String name, int size, float stepScale,
-            int[] heightMap, Vector3f origin) {
+            int[] heightMap, Vector3f origin, boolean clod) {
         super(name);
+        this.useClod = clod;
         this.size = size;
         this.stepScale = stepScale;
         setLocalTranslation(origin);
         buildVertices(heightMap);
         buildTextureCoordinates();
         buildNormals();
+        
+        if(useClod) {
+            this.create(null);
+            this.setTrisPerPixel(0.075f);
+        }
     }
 
+    public int chooseTargetRecord(Renderer r) {
+    	if(useClod) {
+    	    return super.chooseTargetRecord(r);
+    	} else {
+    	    return 0;
+    	}
+    }
+    
     /**
      * 
      * <code>setDetailTexture</code> sets the detail texture unit's repeat
