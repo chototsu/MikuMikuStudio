@@ -31,6 +31,8 @@
  */
 package com.jme.terrain;
 
+import java.util.logging.Level;
+
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.FastMath;
@@ -39,6 +41,7 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.system.JmeException;
 import com.jme.scene.Spatial;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>TerrainPage</code> is used to build a quad tree of terrain blocks.
@@ -53,7 +56,7 @@ import com.jme.scene.Spatial;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.18 2004-05-15 19:20:59 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.19 2004-05-16 20:49:43 darkprophet Exp $
  */
 public class TerrainPage extends Node {
 
@@ -321,7 +324,8 @@ public class TerrainPage extends Node {
      */
     private void createQuadPage(int size, int blockSize, Vector3f stepScale,
             int[] heightMap, boolean clod) {
-        System.err.println("CREATING PAGES!");
+        LoggingSystem.getLogger().log(Level.INFO,
+        "Creating Page");
         //      create 4 terrain pages
         Vector2f tempOffset = new Vector2f();
         int quarterSize = size >> 2;
