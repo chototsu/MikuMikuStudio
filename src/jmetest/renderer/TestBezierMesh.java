@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.3 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.4 2004-02-22 20:50:05 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -96,24 +96,26 @@ public class TestBezierMesh extends SimpleGame {
         input.update(timer.getTimePerFrame() * 10);
         
         
-        //update individual sprites
-         if ((int) currentPos.x == (int) newPos.x
-             && (int) currentPos.y == (int) newPos.y
-             && (int) currentPos.z == (int) newPos.z) {
-             newPos.x = (float) Math.random() * 10 - 5;
-             newPos.y = (float) Math.random() * 10 - 5;
-             newPos.z = (float) Math.random() * 10 - 5;
-         }
+//        //update individual sprites
+//         if ((int) currentPos.x == (int) newPos.x
+//             && (int) currentPos.y == (int) newPos.y
+//             && (int) currentPos.z == (int) newPos.z) {
+//             newPos.x = (float) Math.random() * 10 - 5;
+//             newPos.y = (float) Math.random() * 10 - 5;
+//             newPos.z = (float) Math.random() * 10 - 5;
+//         }
+//
+//         currentPos.x -= (currentPos.x - newPos.x)
+//             / (timer.getFrameRate() / 2);
+//         currentPos.y -= (currentPos.y - newPos.y)
+//             / (timer.getFrameRate() / 2);
+//         currentPos.z -= (currentPos.z - newPos.z)
+//             / (timer.getFrameRate() / 2);
+//             
+//         lightNode.setLocalTranslation(currentPos);
 
-         currentPos.x -= (currentPos.x - newPos.x)
-             / (timer.getFrameRate() / 2);
-         currentPos.y -= (currentPos.y - newPos.y)
-             / (timer.getFrameRate() / 2);
-         currentPos.z -= (currentPos.z - newPos.z)
-             / (timer.getFrameRate() / 2);
-             
-         lightNode.setLocalTranslation(currentPos);
-         scene.updateWorldData(timer.getTimePerFrame());
+            lightNode.setLocalTranslation(new Vector3f(100, 100, 0));
+         scene.updateGeometricState(timer.getTimePerFrame(), true);
     }
 
     /** 
@@ -211,8 +213,8 @@ public class TestBezierMesh extends SimpleGame {
 
         BezierMesh bez = new BezierMesh("Bezier Mesh");
         bez.setPatch(bp);
-        bez.setWorldBound(new BoundingSphere());
-        bez.setForceView(true);
+        bez.setModelBound(new BoundingSphere());
+        bez.updateModelBound();
         scene.attachChild(bez);
         
         MaterialState ms = display.getRenderer().getMaterialState();
@@ -239,6 +241,8 @@ public class TestBezierMesh extends SimpleGame {
         Vector3f min = new Vector3f(-0.15f, -0.15f, -0.15f);
         Vector3f max = new Vector3f(0.15f,0.15f,0.15f);
         Box lightBox = new Box("box", min,max);
+        lightBox.setModelBound(new BoundingSphere());
+        lightBox.updateModelBound();
         
         
         lightNode.attachChild(lightBox);
