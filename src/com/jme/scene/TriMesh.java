@@ -56,9 +56,9 @@ import com.jme.bounding.OBBTree;
  * The points are referenced via a indices array. This array instructs the
  * renderer the order in which to draw the points, creating triangles on every
  * three points.
- * 
+ *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.30 2004-09-14 21:52:12 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.31 2004-09-16 17:10:59 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -83,7 +83,7 @@ public class TriMesh extends Geometry implements Serializable {
 
 	/**
 	 * Constructor instantiates a new <code>TriMesh</code> object.
-	 * 
+	 *
 	 * @param name
 	 *            the name of the scene element. This is required for
 	 *            identification and comparision purposes.
@@ -97,7 +97,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * Constructor instantiates a new <code>TriMesh</code> object. Provided
 	 * are the attributes that make up the mesh all attributes may be null,
 	 * except for vertices and indices.
-	 * 
+	 *
 	 * @param name
 	 *            the name of the scene element. This is required for
 	 *            identification and comparision purposes.
@@ -133,7 +133,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * index and vertex array must not be null, but the others may be. Every 3
 	 * indices define an index in the <code>vertices</code> array that
 	 * refrences a vertex of a triangle.
-	 * 
+	 *
 	 * @param vertices
 	 *            The vertex information for this TriMesh.
 	 * @param normal
@@ -165,9 +165,9 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>getIndices</code> retrieves the indices into the vertex array.
-	 * 
+	 *
 	 * @return the indices into the vertex array.
 	 */
 	public int[] getIndices() {
@@ -175,10 +175,10 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>getIndexAsBuffer</code> retrieves the indices array as an
 	 * <code>IntBuffer</code>.
-	 * 
+	 *
 	 * @return the indices array as an <code>IntBuffer</code>.
 	 */
 	public IntBuffer getIndexAsBuffer() {
@@ -189,7 +189,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * Stores in the <code>storage</code> array the indices of triangle
 	 * <code>i</code>. If <code>i</code> is an invalid index, or if
 	 * <code>storage.length!=3</code>, then nothing happens
-	 * 
+	 *
 	 * @param i
 	 *            The index of the triangle to get.
 	 * @param storage
@@ -209,7 +209,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * Stores in the <code>vertices</code> array the vertex values of triangle
 	 * <code>i</code>. If <code>i</code> is an invalid triangle index,
 	 * nothing happens.
-	 * 
+	 *
 	 * @param i
 	 * @param vertices
 	 */
@@ -225,7 +225,7 @@ public class TriMesh extends Geometry implements Serializable {
 
 	/**
 	 * Returns the number of triangles this TriMesh contains.
-	 * 
+	 *
 	 * @return The current number of triangles.
 	 */
 	public int getTriangleQuantity() {
@@ -233,10 +233,10 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setIndices</code> sets the index array for this
 	 * <code>TriMesh</code>.
-	 * 
+	 *
 	 * @param indices
 	 *            the index array.
 	 */
@@ -249,7 +249,13 @@ public class TriMesh extends Geometry implements Serializable {
 	/**
 	 * <code>draw</code> calls super to set the render state then passes
 	 * itself to the renderer.
-	 * 
+         *
+         * LOGIC:
+         * 1. If we're not RenderQueue calling draw goto 2, if we are, goto 3
+         * 2. If we are supposed to use queue, add to queue and RETURN, else 3
+         * 3. call super draw
+         * 4. tell renderer to draw me.
+         *
 	 * @param r
 	 *            the renderer to display
 	 */
@@ -265,7 +271,7 @@ public class TriMesh extends Geometry implements Serializable {
 	/**
 	 * <code>drawBounds</code> calls super to set the render state then passes
 	 * itself to the renderer.
-	 * 
+	 *
 	 * @param r
 	 *            the renderer to display
 	 */
@@ -274,10 +280,10 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that
 	 * contains the indices array.
-	 *  
+	 *
 	 */
 	public void updateIndexBuffer() {
 		if (indices == null) {
@@ -309,7 +315,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * Sets this geometry's index buffer as a refrence to the passed
 	 * <code>IntBuffer</code>. Incorrectly built IntBuffers can have
 	 * undefined results. Use with care.
-	 * 
+	 *
 	 * @param toSet
 	 *            The <code>IntBuffer</code> to set this geometry's index
 	 *            buffer to
@@ -320,7 +326,7 @@ public class TriMesh extends Geometry implements Serializable {
 
 	/**
 	 * Used with Serialization. Do not call this directly.
-	 * 
+	 *
 	 * @param in
 	 * @throws IOException
 	 * @throws ClassNotFoundException
@@ -375,7 +381,7 @@ public class TriMesh extends Geometry implements Serializable {
 	/**
 	 * This function checks for intersection between this trimesh and the given
 	 * one. On the first intersection, true is returned.
-	 * 
+	 *
 	 * @param toCheck
 	 *            The intersection testing mesh.
 	 * @return True if they intersect.
@@ -399,7 +405,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * This function finds all intersections between this trimesh and the
 	 * checking one. The intersections are stored as Integer objects of Triangle
 	 * indexes in each of the parameters.
-	 * 
+	 *
 	 * @param toCheck
 	 *            The TriMesh to check.
 	 * @param thisIndex
@@ -428,7 +434,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * This function is <b>ONLY </b> to be used by the intersection testing
 	 * code. It should not be called by users. It returns a matrix3f
 	 * representation of the mesh's world rotation.
-	 * 
+	 *
 	 * @return This mesh's world rotation.
 	 */
 	public Matrix3f findWorldRotMat() {

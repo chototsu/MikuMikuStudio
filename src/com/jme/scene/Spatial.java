@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  *
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.52 2004-09-15 21:29:06 renanse Exp $
+ * @version $Id: Spatial.java,v 1.53 2004-09-16 17:10:59 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 	/** Spatial's rotation relative to its parent. */
@@ -386,6 +386,9 @@ public abstract class Spatial implements Serializable {
 	 * <code>setForceCull</code> sets if this node should always be culled or
 	 * not. True will always cull the node, false will allow proper culling to
 	 * take place.
+         *
+         * NOTE: You must set this AFTER attaching to a parent or it will be
+         * reset with the parent's forceCull value.
 	 *
 	 * @param forceCull
 	 *            the value for forcing a culling.
