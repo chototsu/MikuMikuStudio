@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -55,15 +55,15 @@ import com.jme.image.Texture;
 import com.jme.renderer.ColorRGBA;
 
 /**
- * 
+ *
  * <code>TextureManager</code> provides static methods for building a
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.8 2004-03-04 03:18:30 greggpatton Exp $
+ * @version $Id: TextureManager.java,v 1.9 2004-03-22 20:05:21 renanse Exp $
  */
 public class TextureManager {
-   
+
     // For TGA loading
     private static final int NO_TRANSPARENCY = 255;
     private static final int FULL_TRANSPARENCY = 0;
@@ -82,14 +82,14 @@ public class TextureManager {
     private static short imageDescriptor;
     private static DirectColorModel cm;
     private static int[] pixels;
-    
+
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * string. Filter parameters are used
      * to define the filtering of the texture. Whether the texture is to be
      * mipmapped or not is denoted by the isMipmapped boolean flag. If there
      * is an error loading the file, null is returned.
-     * 
+     *
      * @param file the filename of the texture image.
      * @param minFilter the filter for the near values.
      * @param magFilter the filter for the far values.
@@ -97,7 +97,7 @@ public class TextureManager {
      *      or not. True load the texture mipmapped, false do not.
      * @param flipped true flips the bits of the image, false does not. True
      *      by default.
-     * 
+     *
      * @return the loaded texture. If there is a problem
      *      loading the texture, null is returned.
      */
@@ -108,20 +108,20 @@ public class TextureManager {
 			boolean isMipMapped) {
     	return loadTexture(file, minFilter, magFilter, isMipMapped, true);
     }
-    
+
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * string. Filter parameters are used
      * to define the filtering of the texture. Whether the texture is to be
      * mipmapped or not is denoted by the isMipmapped boolean flag. If there
      * is an error loading the file, null is returned.
-     * 
+     *
      * @param file the filename of the texture image.
      * @param minFilter the filter for the near values.
      * @param magFilter the filter for the far values.
      * @param isMipmapped determines if we will load the texture mipmapped
      *      or not. True load the texture mipmapped, false do not.
-     * 
+     *
      * @return the loaded texture. If there is a problem
      *      loading the texture, null is returned.
      */
@@ -131,7 +131,7 @@ public class TextureManager {
 			int magFilter,
 			boolean isMipmapped,
 			boolean flipped) {
-    	
+
     	URL url = null;
 		try {
 			url = new URL("file:"+file);
@@ -141,14 +141,14 @@ public class TextureManager {
 		return loadTexture(url,minFilter,magFilter,isMipmapped,flipped);
     }
 
-    
+
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * url. Filter parameters are used
      * to define the filtering of the texture. Whether the texture is to be
      * mipmapped or not is denoted by the isMipmapped boolean flag. If there
      * is an error loading the file, null is returned.
-     * 
+     *
      * @param file the url of the texture image.
      * @param minFilter the filter for the near values.
      * @param magFilter the filter for the far values.
@@ -156,7 +156,7 @@ public class TextureManager {
      *      or not. True load the texture mipmapped, false do not.
      * @param flipped true flips the bits of the image, false does not. True
      *      by default.
-     * 
+     *
      * @return the loaded texture. If there is a problem
      *      loading the texture, null is returned.
      */
@@ -174,13 +174,13 @@ public class TextureManager {
      * to define the filtering of the texture. Whether the texture is to be
      * mipmapped or not is denoted by the isMipmapped boolean flag. If there
      * is an error loading the file, null is returned.
-     * 
+     *
      * @param file the url of the texture image.
      * @param minFilter the filter for the near values.
      * @param magFilter the filter for the far values.
      * @param isMipmapped determines if we will load the texture mipmapped
      *      or not. True load the texture mipmapped, false do not.
-     * 
+     *
      * @return the loaded texture. If there is a problem
      *      loading the texture, null is returned.
      */
@@ -191,12 +191,14 @@ public class TextureManager {
         boolean isMipmapped,
         boolean flipped) {
 
-		if(null == file) {
-    		return null;
-    	}
-    	
+        if (null == file) {
+          return null;
+        }
+
     	java.awt.Image image = null;
     	String fileName = file.getFile();
+        if (fileName == null || fileName.trim().equals("")) return null;
+
         if (".TGA".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.')))) {
             //Load the TGA file
             image = loadTGAImage(file);
@@ -217,7 +219,7 @@ public class TextureManager {
 
         com.jme.image.Image imageData =
             loadImage(image, flipped);
-        
+
         Texture texture = new Texture();
         texture.setApply(Texture.AM_MODULATE);
         texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
@@ -230,9 +232,9 @@ public class TextureManager {
     }
 
     /**
-     * 
+     *
      * <code>loadImage</code> sets the image data.
-     * 
+     *
      * @param image The image data.
      * @param flipImage if true will flip the image's y values.
      * @return the loaded image.
@@ -240,25 +242,25 @@ public class TextureManager {
     public static com.jme.image.Image loadImage(
         java.awt.Image image,
         boolean flipImage) {
-            
+
         boolean hasAlpha = hasAlpha(image);
 
         //      Obtain the image data.
         BufferedImage tex = null;
         try {
-            
+
             tex =
                 new BufferedImage(
                     image.getWidth(null),
                     image.getHeight(null),
                     hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
-                    
+
         } catch (IllegalArgumentException e) {
-        	LoggingSystem.getLogger().log(Level.WARNING, "Problem creating buffered Image: " + 
+        	LoggingSystem.getLogger().log(Level.WARNING, "Problem creating buffered Image: " +
         			e.getMessage());
             return null;
         }
-        
+
         Graphics2D g = (Graphics2D) tex.getGraphics();
         g.drawImage(image, null, null);
         g.dispose();
@@ -293,7 +295,7 @@ public class TextureManager {
         textureImage.setWidth(tex.getWidth());
         textureImage.setHeight(tex.getHeight());
         textureImage.setData(scratch);
-        
+
         return textureImage;
 
     }
@@ -304,9 +306,9 @@ public class TextureManager {
     * file and reading in each byte. After the image data is read, it is
     * used to create a new <code>Image</code> object. This object is
     * returned to be used for normal use.
-    * 
+    *
     * @param file the name of the bitmap file.
-    * 
+    *
     * @return <code>Image</code> object that contains the bitmap information.
     */
     private static java.awt.Image loadBMPImage(URL file) {
@@ -322,15 +324,15 @@ public class TextureManager {
             if (bh.bitcount == 24) {
                 return (bh.readMap24(data));
             }
-            
+
             if (bh.bitcount == 32) {
                 return (bh.readMap32(data));
             }
-            
+
             if (bh.bitcount == 8) {
                 return (bh.readMap8(data));
             }
-            
+
         } catch (IOException e) {
             LoggingSystem.getLogger().log(Level.WARNING, "Error while loading " + file);
         }
@@ -344,9 +346,9 @@ public class TextureManager {
      * file and reading in each byte. After the image data is read, it is
      * used to create a new <code>Image</code> object. This object is
      * returned to be used for normal use.
-     * 
+     *
      * @param file the name of the targa file.
-     * 
+     *
      * @return <code>Image</code> object that contains the targa information.
      */
     private static java.awt.Image loadTGAImage(URL file) {
@@ -432,7 +434,7 @@ public class TextureManager {
     /**
      * <code>flipEndian</code> is used to flip the endian bit of the header file.
      * @param signedShort the bit to flip.
-     * 
+     *
      * @return the flipped bit.
      */
     private static short flipEndian(short signedShort) {
@@ -450,14 +452,14 @@ public class TextureManager {
              BufferedImage bufferedImage = (BufferedImage)image;
              return bufferedImage.getColorModel().hasAlpha();
          }
-    
+
          PixelGrabber pixelGrabber = new PixelGrabber(image, 0, 0, 1, 1, false);
 
          try {
              pixelGrabber.grabPixels();
          } catch (InterruptedException e) {
          }
-    
+
          ColorModel colorModel = pixelGrabber.getColorModel();
          return colorModel.hasAlpha();
      }
