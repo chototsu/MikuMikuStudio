@@ -34,49 +34,66 @@ package jme.math;
 /**
  * <code>Line</code> defines a line represented as 
  * L(t) = origin + t * direction for any real-valued t, and
- * direction is not necessarily unit length.
+ * direction is not necessarily unit length. This can further be thought of as 
+ * a ray, infinite line or a line segment.
  * 
  * @author Mark Powell
+ * @version $Id: Line.java,v 1.2 2003-08-22 02:26:48 mojomonkey Exp $
  */
 public class Line {
-	private Vector origin;
-		private Vector direction;
+    private Vector origin;
+    private Vector direction;
 
-		public Line() {
-			origin = new Vector();
-			direction = new Vector();
-		}
+    /**
+     * Default constructor instantiates a new <code>Line</code> that is defined
+     * by an origin and a direction. 
+     *
+     */
+    public Line() {
+        origin = new Vector();
+        direction = new Vector();
+    }
 
-		public Line(Vector origin, Vector direction) {
-			this.origin = origin;
-			this.direction = direction;
-		}
+    /**
+     * Constructor instantiates a new <code>Line</code> that is supplied an
+     * origin and direction.
+     * @param origin the origin of the line.
+     * @param direction the direction of the line.
+     */
+    public Line(Vector origin, Vector direction) {
+        this.origin = origin;
+        this.direction = direction;
+    }
 
-		/**
-		 * @return
-		 */
-		public Vector getDirection() {
-			return direction;
-		}
+    /**
+     * <code>getDirection</code> returns the direction of the line.
+     * @return the direction of the line.
+     */
+    public Vector getDirection() {
+        return direction;
+    }
 
-		/**
-		 * @param direction
-		 */
-		public void setDirection(Vector direction) {
-			this.direction = direction;
-		}
+    /**
+     * <code>setDirection</code> sets the direction of the line.
+     * @param direction the new direction of the line.
+     */
+    public void setDirection(Vector direction) {
+        this.direction = direction;
+    }
 
-		/**
-		 * @return
-		 */
-		public Vector getOrigin() {
-			return origin;
-		}
+    /**
+     * <code>getOrigin</code> retrieves the direction of the line.
+     * @return the direction of the line.
+     */
+    public Vector getOrigin() {
+        return origin;
+    }
 
-		/**
-		 * @param origin
-		 */
-		public void setOrigin(Vector origin) {
-			this.origin = origin;
-		}
+    /**
+     * <code>setOrigin</code> sets the new origin of the line.
+     * @param origin the new origin of the line.
+     */
+    public void setOrigin(Vector origin) {
+        this.origin = origin;
+    }
 }

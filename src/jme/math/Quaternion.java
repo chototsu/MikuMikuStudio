@@ -43,6 +43,7 @@ import jme.exception.MonkeyRuntimeException;
  * {x y z w}.
  * 
  * @author Mark Powell
+ * @version $Id: Quaternion.java,v 1.5 2003-08-22 02:26:48 mojomonkey Exp $
  */
 public class Quaternion {
 	public float x, y, z, w;

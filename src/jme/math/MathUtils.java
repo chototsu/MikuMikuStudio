@@ -32,13 +32,22 @@
 package jme.math;
 
 /**
- * <code>Math Utils</code> provides a variety of useful math functions.
+ * <code>Math Utils</code> provides a variety of useful math functions. These
+ * math function typically don't have a common class to reside, or provide a
+ * quicker version than available in common libraries.
  * @author Mark Powell
+ * @version $Id: MathUtils.java,v 1.5 2003-08-22 02:26:48 mojomonkey Exp $
  */
 public class MathUtils {
 
-    /** sqrt(a^2 + b^2) without under/overflow. **/
-
+    /**
+     * <code>hypot</code> defines a Euclidean distance function. Using the
+     * function a^2 + b^2 = c^2 to find the hypotenuse of a right triangle,
+     * the length of the hypotenuse is returned.
+     * @param a the first point value.
+     * @param b the second point value.
+     * @return the length of c.
+     */
     public static float hypot(float a, float b) {
         double r;
         if (Math.abs(a) > Math.abs(b)) {

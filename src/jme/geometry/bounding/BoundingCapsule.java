@@ -34,7 +34,6 @@ package jme.geometry.bounding;
 import jme.math.Line;
 import jme.math.LineApproximation;
 import jme.math.Distance;
-import jme.math.Segment;
 import jme.math.Vector;
 
 /**
@@ -43,29 +42,56 @@ import jme.math.Vector;
  * thought of as a cylinder with domed caps.
  * 
  * @author Mark Powell
- * @version $Id: BoundingCapsule.java,v 1.1 2003-08-18 22:25:02 mojomonkey Exp $
+ * @version $Id: BoundingCapsule.java,v 1.2 2003-08-22 02:26:48 mojomonkey Exp $
  */
 public class BoundingCapsule {
-	private Segment lineSegment;
+	private Line lineSegment;
 	private float radius;
 
+    /**
+     * Default constructor instantiates an empty bounding capsule. Both the
+     * radius and the line segment are initial values. It is recommended to 
+     * use the <code>leastSquaresFit</code> method with an array of points.
+     *
+     */
 	public BoundingCapsule() {
-		lineSegment = new Segment();
+		lineSegment = new Line();
 	}
 
-	public BoundingCapsule(Segment lineSegment, float radius) {
+    /**
+     * Constructor instantiates a new <code>BoundingCapsule</code> with 
+     * supplied attributes of line segment and radius.
+     * @param lineSegment the line defining the length of center of the
+     *      capsule.
+     * @param radius the radius of the capsule.
+     */
+	public BoundingCapsule(Line lineSegment, float radius) {
 		this.lineSegment = lineSegment;
 		this.radius = radius;
 	}
 
+    /**
+     * <code>getOrigin</code> gets the origin of the line segment that
+     * makes up the capsule.
+     * @return the origin of the line segment.
+     */
 	public Vector getOrigin() {
 		return lineSegment.getOrigin();
 	}
 
+    /**
+     * <code>getDirection</code> gets the direction vector of the line
+     * segment that makes up the capsule.
+     * @return the direction of the line segment.
+     */
 	public Vector getDirection() {
 		return lineSegment.getDirection();
 	}
 
+    /**
+     * <code>getRadius</code> gets the radius of the capsule.
+     * @return the radius of the capsule.
+     */
 	public float getRadius() {
 		return radius;
 	}
@@ -99,19 +125,19 @@ public class BoundingCapsule {
 		float max = Float.MIN_VALUE;
 		for (int i = 0; i < points.length; i++) {
 			Vector diff = points[i].subtract(line.getOrigin());
-			float fU = u.dot(diff);
-			float fV = v.dot(diff);
-			float fW = w.dot(diff);
-			float fDiscr = maxRadiusSqr - (fU * fU + fV * fV);
-			float radical = (float) Math.sqrt(Math.abs(fDiscr));
+			float uDiff = u.dot(diff);
+			float vDiff = v.dot(diff);
+			float wDiff = w.dot(diff);
+			float discr = maxRadiusSqr - (uDiff * uDiff + vDiff * vDiff);
+			float radical = (float) Math.sqrt(Math.abs(discr));
 
-			float fTest = fW + radical;
-			if (fTest < min)
-				min = fTest;
+			float test = wDiff + radical;
+			if (test < min)
+				min = test;
 
-			fTest = fW - radical;
-			if (fTest > max)
-				max = fTest;
+			test = wDiff - radical;
+			if (test > max)
+				max = test;
 		}
 
 		if (min < max) {

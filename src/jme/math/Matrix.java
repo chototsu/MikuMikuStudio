@@ -39,6 +39,7 @@ import jme.exception.MonkeyRuntimeException;
  * convinience methods for creating the matrix from a multitude of sources.
  * 
  * @author Mark Powell
+ * @version $Id: Matrix.java,v 1.4 2003-08-22 02:26:48 mojomonkey Exp $
  */
 public class Matrix {
     private float matrix[];

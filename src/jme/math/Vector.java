@@ -36,6 +36,7 @@ import jme.exception.MonkeyRuntimeException;
 /**
  * <code>Vector</code> defines a three dimensional vector of (x,y,z). 
  * @author Mark Powell
+ * @version $Id: Vector.java,v 1.7 2003-08-22 02:26:48 mojomonkey Exp $
  */
 public class Vector {
 	public float x;

@@ -32,69 +32,72 @@
 package jme.math;
 
 /**
- * <code>LineApproximation</code>
+ * <code>LineApproximation</code> is a static class that will create a
+ * line that best fits a collection of points. The method that this line is
+ * created by depends on the static method called.
  * <br><br>
  * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
  *
  */
 public class LineApproximation {
-	
-	/**
-	 * <code>orthogonalLineFit</code> creates a line that uses 
-	 * least squares and measures errors orthogonally rather than
-	 * linearly. 
-	 * @param points the points to fit a line to.
-	 * @return the line that best fits the points.
-	 */
-	public static Line orthogonalLineFit(Vector[] points) {
-			
-		Vector origin = new Vector();
-		Vector direction = new Vector();
-		//		compute average of points
-		origin = points[0];
-		int i;
-		for (i = 1; i < points.length; i++)
-			origin = origin.add(points[i]);
-		float inverseQuantity = 1.0f / points.length;
-		origin = origin.mult(inverseQuantity);
 
-		// compute sums of products
-		float fSumXX = 0.0f, fSumXY = 0.0f, fSumXZ = 0.0f;
-		float fSumYY = 0.0f, fSumYZ = 0.0f, fSumZZ = 0.0f;
-		for (i = 0; i < points.length; i++) {
-			Vector kDiff = points[i].subtract(origin);
-			fSumXX += kDiff.x * kDiff.x;
-			fSumXY += kDiff.x * kDiff.y;
-			fSumXZ += kDiff.x * kDiff.z;
-			fSumYY += kDiff.y * kDiff.y;
-			fSumYZ += kDiff.y * kDiff.z;
-			fSumZZ += kDiff.z * kDiff.z;
-		}
+    /**
+     * <code>orthogonalLineFit</code> creates a line that uses 
+     * least squares and measures errors orthogonally rather than
+     * linearly. 
+     * @param points the points to fit a line to.
+     * @return the line that best fits the points.
+     */
+    public static Line orthogonalLineFit(Vector[] points) {
+
+        Vector origin = new Vector();
+        Vector direction = new Vector();
+        //compute average of points
+        origin = points[0];
+        for(int i = 1; i < points.length; i++) {
+            origin = origin.add(points[i]);
+        }
+        
+        float inverseQuantity = 1.0f / points.length;
+        origin = origin.mult(inverseQuantity);
+
+        // compute sums of products
+        float sumXX = 0.0f, sumXY = 0.0f, sumXZ = 0.0f;
+        float sumYY = 0.0f, sumYZ = 0.0f, sumZZ = 0.0f;
+        for(int i = 0; i < points.length; i++) {
+            Vector diff = points[i].subtract(origin);
+            sumXX += diff.x * diff.x;
+            sumXY += diff.x * diff.y;
+            sumXZ += diff.x * diff.z;
+            sumYY += diff.y * diff.y;
+            sumYZ += diff.y * diff.z;
+            sumZZ += diff.z * diff.z;
+        }
 
         float[][] matrix = new float[3][3];
-		// setup the eigensolver
-		matrix[0][0] = fSumYY + fSumZZ;
-        matrix[0][1] = -fSumXY;
-        matrix[0][2] = -fSumXZ;
+        // setup the eigensolver
+        matrix[0][0] = sumYY + sumZZ;
+        matrix[0][1] = -sumXY;
+        matrix[0][2] = -sumXZ;
         matrix[1][0] = matrix[0][1];
-        matrix[1][1] = fSumXX + fSumZZ;
-        matrix[1][2] = -fSumYZ;
+        matrix[1][1] = sumXX + sumZZ;
+        matrix[1][2] = -sumYZ;
         matrix[2][0] = matrix[0][2];
         matrix[2][1] = matrix[1][2];
-        matrix[2][2] = fSumXX + fSumYY;
+        matrix[2][2] = sumXX + sumYY;
         EigenSystem eigen = new EigenSystem(matrix);
-        
-		// compute eigenstuff, smallest eigenvalue is in last position
-		eigen.tridiagonalReduction();
+
+        // compute eigenstuff, smallest eigenvalue is in last position
+        eigen.tridiagonalReduction();
         eigen.tridiagonalQL();
         eigen.decreasingSort();
 
-		// unit-length direction for best-fit line
-		direction.x = eigen.getEigenvector(0, 2);
-		direction.y = eigen.getEigenvector(1, 2);
-		direction.z = eigen.getEigenvector(2, 2);
-		
-		return new Line(origin, direction);
-	}
+        // unit-length direction for best-fit line
+        direction.x = eigen.getEigenvector(0, 2);
+        direction.y = eigen.getEigenvector(1, 2);
+        direction.z = eigen.getEigenvector(2, 2);
+
+        return new Line(origin, direction);
+    }
 }
