@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.3 2004-03-02 01:44:58 mojomonkey Exp $
+ * @version $Id: TestMultitexture.java,v 1.4 2004-03-02 03:12:27 mojomonkey Exp $
  */
 public class TestMultitexture extends SimpleGame {
     private TriMesh t;
@@ -185,7 +185,7 @@ public class TestMultitexture extends SimpleGame {
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
-        t.setLocalTranslation(new Vector3f(0,100,0));
+        t.setLocalTranslation(new Vector3f(0,0,0));
         
         scene.attachChild(t);
         root.attachChild(scene);
