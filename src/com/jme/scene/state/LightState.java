@@ -41,7 +41,7 @@ import com.jme.light.Light;
  * be added to the light state. Each light is processed and used to modify
  * the color of the scene.
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.4 2004-04-16 17:12:49 renanse Exp $
+ * @version $Id: LightState.java,v 1.5 2004-04-16 21:57:45 renanse Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -50,9 +50,17 @@ public abstract class LightState extends RenderState {
      */
     public static final int MAX_LIGHTS_ALLOWED = 8;
 
+
+    /** Combine light states starting from the root node and working towards the given Spatial. Ignore disabled states. Stop combining when lights == MAX_LIGHTS_ALLOWED */
     public static final int COMBINE_FIRST = 0;
+
+    /** Combine light states starting from the given Spatial and working towards the root. Ignore disabled states. Stop combining when lights == MAX_LIGHTS_ALLOWED */
     public static final int COMBINE_CLOSEST = 1;
+
+    /** Similar to COMBINE_CLOSEST, but if a disabled state is encountered, it will stop combining at that point. Stop combining when lights == MAX_LIGHTS_ALLOWED */
     public static final int COMBINE_RECENT_ENABLED = 2;
+
+    /** Do not combine light states, just use the most recent one. */
     public static final int REPLACE = 5;
 
     //holds the lights
