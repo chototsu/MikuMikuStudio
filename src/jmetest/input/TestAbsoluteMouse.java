@@ -161,6 +161,7 @@ public class TestAbsoluteMouse extends SimpleGame {
         cam.update();
 
         scene.updateGeometricState(0.0f, true);
+        scene.updateRenderState();
     }
 
     /**

@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.5 2004-04-02 21:22:29 mojomonkey Exp $
+ * @version $Id: TestMilestone2.java,v 1.6 2004-04-16 19:04:51 mojomonkey Exp $
  */
 public class TestMilestone2 extends SimpleGame {
     private TriMesh t;
@@ -244,6 +244,7 @@ public class TestMilestone2 extends SimpleGame {
         
 
         scene.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**

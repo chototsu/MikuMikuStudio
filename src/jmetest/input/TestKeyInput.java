@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestKeyInput.java,v 1.3 2004-04-16 19:04:51 mojomonkey Exp $
  */
 public class TestKeyInput extends SimpleGame {
     private Text text;
@@ -153,6 +153,7 @@ public class TestKeyInput extends SimpleGame {
         cam.update();
 
         scene.updateGeometricState(0.0f, true);
+        scene.updateRenderState();
     }
 
     /**
