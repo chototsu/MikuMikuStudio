@@ -74,14 +74,20 @@ public class JmeBinaryReader {
 
     /**
      * Constructs a new JmeBinaryReader.  This must be called after a DisplaySystem
-     * has been initialized
+     * has been initialized.
      */
     public JmeBinaryReader(){
         renderer=DisplaySystem.getDisplaySystem().getRenderer();
     }
 
 
-
+    /**
+     * Reads the binaryJme InputStream and saves it to storeNode
+     * @param storeNode Place to save the jME Scene
+     * @param binaryJme InputStream with the jME Scene
+     * @return The given storeNode
+     * @throws IOException If anything wierd goes on while reading.
+     */
     public Node loadBinaryFormat(Node storeNode, InputStream binaryJme) throws IOException {
         if (DEBUG) System.out.println("Begining read");
         myScene=null;
@@ -107,7 +113,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * This will read the binaryJme InputStream to
+     * Reads the binaryJme InputStream to
      * convert jME's binary format to a Node.
      * @param binaryJme The binary format jME scene
      * @return A Node representing the binary file
@@ -253,7 +259,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * processes an END_TAG flag, which signals a tag has finished reading all children information.
+     * Processes an END_TAG flag, which signals a tag has finished reading all children information.
      * @throws IOException If anything bad happens in reading the binary file
      */
     private void readEnd() throws IOException {
