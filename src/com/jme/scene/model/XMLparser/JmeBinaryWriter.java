@@ -402,6 +402,8 @@ public class JmeBinaryWriter {
                 writeSpatialTransformer((SpatialTransformer)r);
             } else if (r instanceof KeyframeController){
                 writeKeyframeController((KeyframeController)r);
+            } else if (r instanceof XMLloadable){
+                writeXMLloadable((XMLloadable) r);
             }
         }
     }
