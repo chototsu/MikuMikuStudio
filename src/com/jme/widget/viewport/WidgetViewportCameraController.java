@@ -37,19 +37,19 @@ import com.jme.renderer.Camera;
 /**
  * <code>WidgetViewportCameraController</code>
  * @author Gregg Patton
- * @version $Id: WidgetViewportCameraController.java,v 1.2 2004-03-25 17:14:17 mojomonkey Exp $
+ * @version $Id: WidgetViewportCameraController.java,v 1.3 2004-03-27 17:43:40 greggpatton Exp $
  */
 public class WidgetViewportCameraController {
     Camera camera;
-    AbstractInputHandler inputController;
+    AbstractInputHandler inputHandler;
 
-    public WidgetViewportCameraController(Camera camera, AbstractInputHandler inputController) {
+    public WidgetViewportCameraController(Camera camera, AbstractInputHandler inputHandler) {
 
         this.camera = camera;
-        this.inputController = inputController;
+        this.inputHandler = inputHandler;
 
-        if (this.inputController != null)
-            this.inputController.setCamera(camera);
+        if (this.inputHandler != null)
+            this.inputHandler.setCamera(camera);
 
     }
 
@@ -62,11 +62,32 @@ public class WidgetViewportCameraController {
     }
 
     /**
-     * <code>getInputController</code>
+     * <code>setCamera</code>
+     * @param camera
+     */
+    public void setCamera(Camera camera) {
+        this.camera = camera;
+        if (this.camera != null && inputHandler != null)
+            inputHandler.setCamera(this.camera);
+    }
+
+    /**
+     * <code>getInputHandler</code>
      * @return
      */
-    public AbstractInputHandler getInputController() {
-        return inputController;
+    public AbstractInputHandler getInputHandler() {
+        return inputHandler;
+    }
+
+    /**
+     * <code>setInputHandler</code>
+     * @param controller
+     */
+    public void setInputHandler(AbstractInputHandler handler) {
+        inputHandler = handler;
+
+        if (this.camera != null && inputHandler != null)
+            inputHandler.setCamera(this.camera);
     }
 
 }
