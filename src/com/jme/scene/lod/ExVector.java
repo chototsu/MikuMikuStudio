@@ -11,7 +11,8 @@ public class ExVector extends Vector {
     super(i,j);
   }
   public boolean add(Object obj) {
-    remove(obj);
+    if (indexOf(obj) >= 0) return false;
+
     return super.add(obj);
   }
   public Object get(Object obj) {
