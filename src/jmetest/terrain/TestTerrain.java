@@ -48,7 +48,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.4 2004-04-12 02:49:55 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.5 2004-04-12 15:55:59 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -182,7 +182,7 @@ public class TestTerrain extends SimpleGame {
         
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0));
-        tb.setDetailTexture(1, 8);
+        tb.setDetailTexture(1, 4);
         scene.attachChild(tb);
         scene.setRenderState(cs);
         
@@ -203,6 +203,21 @@ public class TestTerrain extends SimpleGame {
         ts.setTexture( t2,1);
         t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
         
+        t1.setApply(Texture.AM_COMBINE);
+        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
+        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
+        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
+        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
+        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
+        t1.setCombineScaleRGB(3);
+        
+        t2.setApply(Texture.AM_COMBINE);
+        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
+        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
+        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
+        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
+        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
+        t2.setCombineScaleRGB(3);
         scene.setRenderState(ts);
 
         ZBufferState buf = display.getRenderer().getZBufferState();
