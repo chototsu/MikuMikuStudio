@@ -31,40 +31,42 @@
  */
 
 /*
- * Created on 29 oct. 2003
+ * Created on 31 oct. 2003
  *
  */
-package com.jme.sound.action;
+package com.jme.sound.utils;
 
-import com.jme.input.action.KeyStrafeLeftAction;
-import com.jme.renderer.Camera;
+import java.util.Hashtable;
+
 import com.jme.sound.IEffectPlayer;
-import com.jme.sound.utils.EffectRepository;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class SoundStrafeLeftAction extends KeyStrafeLeftAction {
-	private String sound;
-	private IEffectPlayer player;
-	/**
-	 * @param camera
-	 * @param speed
-	 */
-	public SoundStrafeLeftAction(Camera camera, float speed, IEffectPlayer soundPlayer, String soundName) {
-		super(camera, speed);
-		player= soundPlayer;
-		sound= soundName;
+public class EffectPlayerRepository {
+
+	private Hashtable repository = new Hashtable();
+	private static EffectPlayerRepository instance;
+
+	private EffectPlayerRepository() {
+
 	}
 
-	/**
-	* @see com.jme.input.action.InputAction#performAction(float)
-	*/
-	public void performAction(float time) {
-		super.performAction(time);
-		if (player != null && player.getStatus() != IEffectPlayer.PLAYING) {
-			player.play(EffectRepository.getRepository().getSource(sound));
+	public synchronized static EffectPlayerRepository getRepository() {
+		if (instance == null) {
+			instance = new EffectPlayerRepository();
 		}
+		return instance;
 	}
+
+	public void bind(Object player, IEffectPlayer source) {
+		repository.put(player, source);
+
+	}
+
+	public IEffectPlayer getSource(Object player) {
+		return (IEffectPlayer) repository.get(player);
+	}
+
 }

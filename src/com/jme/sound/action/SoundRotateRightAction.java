@@ -38,7 +38,8 @@ package com.jme.sound.action;
 
 import com.jme.input.action.KeyRotateRightAction;
 import com.jme.renderer.Camera;
-import com.jme.sound.SoundSource;
+import com.jme.sound.IEffectPlayer;
+import com.jme.sound.utils.EffectRepository;
 
 /**
  * @author Arman Ozcelik
@@ -46,24 +47,24 @@ import com.jme.sound.SoundSource;
  */
 public class SoundRotateRightAction extends KeyRotateRightAction {
 	private String sound;
-		private SoundSource player;
-		/**
-		 * @param camera
-		 * @param speed
-		 */
-		public SoundRotateRightAction(Camera camera, float speed, SoundSource soundPlayer, String soundName) {
-			super(camera, speed);
-			player = soundPlayer;
-			sound = soundName;
-		}
+	private IEffectPlayer player;
+	/**
+	 * @param camera
+	 * @param speed
+	 */
+	public SoundRotateRightAction(Camera camera, float speed, IEffectPlayer soundPlayer, String soundName) {
+		super(camera, speed);
+		player= soundPlayer;
+		sound= soundName;
+	}
 
-		/**
-		* @see com.jme.input.action.InputAction#performAction(float)
-		*/
-		public void performAction(float time) {
-			super.performAction(time);
-			if (player != null && !player.isPlaying()) {
-				player.play(sound);
-			}
+	/**
+	* @see com.jme.input.action.InputAction#performAction(float)
+	*/
+	public void performAction(float time) {
+		super.performAction(time);
+		if (player != null && player.getStatus() != IEffectPlayer.PLAYING) {
+			player.play(EffectRepository.getRepository().getSource(sound));
 		}
 	}
+}

@@ -4,8 +4,10 @@
  */
 package com.jme.test.sound;
 
+import com.jme.sound.IEffectPlayer;
+import com.jme.sound.IRenderer;
 import com.jme.sound.SoundSystem;
-import com.jme.sound.SoundRenderer;
+import com.jme.sound.utils.EffectRepository;
 
 
 
@@ -17,28 +19,22 @@ public class TestSound{
 	
 	
 	public static void main(String[] args) throws InterruptedException {
-		SoundSystem system=SoundSystem.getSoundSystem("LWJGL");
-		SoundRenderer renderer=system.getRenderer();
-		renderer.addSoundPlayer("MONSTER");
+		SoundSystem system=SoundSystem.getSoundEffectSystem("LWJGL");
+		IRenderer renderer=system.getRenderer();
+		
 		renderer.addSoundPlayer("NPC");
 		
-		renderer.loadSoundAs("music", "cu.wav");
-		renderer.loadSoundAs("bored", "01.mp3");
+		renderer.loadSoundAs("music", "../data/sound/walk.mp3");
 		
-		renderer.getSoundPlayer("MONSTER").setNumberOfBuffers(1);
-		renderer.getSoundPlayer("NPC").setNumberOfBuffers(128);
 		
-		renderer.getSoundPlayer("MONSTER").updatePosition(1, 0, 0);
-		renderer.getSoundPlayer("NPC").updatePosition(0, 0, 0);
-		renderer.getSoundPlayer("NPC").updateVelocity(0, 0, 0);
 		
 		//renderer.getSoundPlayer("MONSTER").play("music");
-		renderer.getSoundPlayer("NPC").play("bored");
+		renderer.getSoundPlayer("NPC").play(EffectRepository.getRepository().getSource("music"));
 		
 		
-		//while(renderer.getSoundPlayer("MONSTER").isPlaying()){
-		//	Thread.sleep(1000);
-		//}
+		while(renderer.getSoundPlayer("NPC").getStatus()==IEffectPlayer.PLAYING){
+			Thread.sleep(1000);
+		}
 		
 		
 	}

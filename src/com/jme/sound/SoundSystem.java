@@ -31,18 +31,18 @@
  */
 package com.jme.sound;
 
-
-
 /**
  * @author Arman Ozcelik
- * @version $Id: SoundSystem.java,v 1.3 2003-10-25 02:23:09 Anakan Exp $
+ * @version $Id: SoundSystem.java,v 1.4 2003-11-01 23:28:11 Anakan Exp $
  */
 public abstract class SoundSystem {
 	/**
 		* The list of current implemented rendering APIs that subclass SoundSystem.
 		*/
-	public static final String[] rendererNames = { "LWJGL" };
-
+	public static final String[] rendererNames= { "LWJGL" };
+	
+	protected static boolean created;
+	
 	/**
 		 * 
 		 * <code>getSoundSystem</code> is a factory method that creates the
@@ -53,7 +53,7 @@ public abstract class SoundSystem {
 		 * @param key the display system to use.
 		 * @return the appropriate display system specified by the key.
 		 */
-	public static SoundSystem getSoundSystem(String key) {
+	public static SoundSystem getSoundEffectSystem(String key) {
 		if ("LWJGL".equalsIgnoreCase(key)) {
 			return new LWJGLSoundSystem();
 		}
@@ -72,7 +72,7 @@ public abstract class SoundSystem {
 		*      compatible with the used <code>SoundSystem</code>.
 		*/
 
-	public abstract SoundRenderer getRenderer();
+	public abstract IRenderer getRenderer();
 
 	/**
 		* <code>isCreated</code> returns the current status of the sound
@@ -83,10 +83,5 @@ public abstract class SoundSystem {
 		*/
 
 	public abstract boolean isCreated();
-
-	
-		
-		
-	
 
 }

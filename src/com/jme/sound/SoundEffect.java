@@ -31,40 +31,32 @@
  */
 
 /*
- * Created on 29 oct. 2003
+ * Created on 31 oct. 2003
  *
  */
-package com.jme.sound.action;
-
-import com.jme.input.action.KeyStrafeLeftAction;
-import com.jme.renderer.Camera;
-import com.jme.sound.IEffectPlayer;
-import com.jme.sound.utils.EffectRepository;
+package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class SoundStrafeLeftAction extends KeyStrafeLeftAction {
-	private String sound;
-	private IEffectPlayer player;
-	/**
-	 * @param camera
-	 * @param speed
-	 */
-	public SoundStrafeLeftAction(Camera camera, float speed, IEffectPlayer soundPlayer, String soundName) {
-		super(camera, speed);
-		player= soundPlayer;
-		sound= soundName;
+public class SoundEffect implements IEffect {
+	
+	private int name;
+	private int type;
+	
+	public SoundEffect(int name, int type){
+		this.name=name;
+		this.type=type;
+	}
+	
+	public int getName() {
+		return name;
 	}
 
-	/**
-	* @see com.jme.input.action.InputAction#performAction(float)
-	*/
-	public void performAction(float time) {
-		super.performAction(time);
-		if (player != null && player.getStatus() != IEffectPlayer.PLAYING) {
-			player.play(EffectRepository.getRepository().getSource(sound));
-		}
+	
+	public int getSoundType() {
+		return type;
 	}
+
 }

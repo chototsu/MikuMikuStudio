@@ -51,8 +51,9 @@ import com.jme.system.JmeException;
 import com.jme.system.LWJGLDisplaySystem;
 import com.jme.util.TextureManager;
 
+import com.jme.sound.IRenderer;
 import com.jme.sound.SoundSystem;
-import com.jme.sound.SoundRenderer;
+
 /**
  * @author Arman Ozcelik
  *
@@ -62,7 +63,7 @@ public class TestSoundMove extends AbstractGame {
 	private Text text;
 	private Camera cam;
 	private Node scene;
-	private SoundRenderer soundRenderer;
+	private IRenderer soundRenderer;
 	private RelativeMouse mouse;
 	float x;
 	float y;
@@ -80,24 +81,7 @@ public class TestSoundMove extends AbstractGame {
 	protected void update() {
 		mouse.update();
 		
-		if (!soundRenderer.getSoundPlayer("NPC").isPlaying()) {
-			soundRenderer.getSoundPlayer("NPC").play("bored");
-
-		} else {
-			if (mouse.getLocalTranslation().x > 0) {
-				x+=0.05f;
-			} else if (mouse.getLocalTranslation().x < 0) {
-				x-= 0.5f;
-			}
-			if (mouse.getLocalTranslation().y > 0) {
-				y+=0.05f;
-			} else if (mouse.getLocalTranslation().y < 0) {
-				y-=0.05f;
-			}
-			soundRenderer.getSoundPlayer("NPC").updatePosition(x, y, 0);
-			text.print("Position: x=" + x + " , y=" +
-							y);
-		}
+		
 	}
 
 	/**
@@ -132,7 +116,7 @@ public class TestSoundMove extends AbstractGame {
 			System.exit(1);
 		}
 		InputSystem.createInputSystem(properties.getRenderer());
-		SoundSystem system = SoundSystem.getSoundSystem("LWJGL");
+		SoundSystem system = SoundSystem.getSoundEffectSystem("LWJGL");
 		soundRenderer = system.getRenderer();
 
 		ColorRGBA blueColor = new ColorRGBA();
@@ -207,12 +191,7 @@ public class TestSoundMove extends AbstractGame {
 		soundRenderer.loadSoundAs("music", "walk.wav");
 		soundRenderer.loadSoundAs("bored", "03.mp3");
 
-		soundRenderer.getSoundPlayer("MONSTER").setNumberOfBuffers(1);
-		soundRenderer.getSoundPlayer("NPC").setNumberOfBuffers(128);
 
-		soundRenderer.getSoundPlayer("MONSTER").updatePosition(0, 0, 0);
-		soundRenderer.getSoundPlayer("NPC").updatePosition(0, 0, 0);
-		soundRenderer.getSoundPlayer("NPC").updateVelocity(0, 0, 0);
 
 	}
 

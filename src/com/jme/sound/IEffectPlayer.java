@@ -31,54 +31,52 @@
  */
 
 /*
- * Created on 27 oct. 2003
+ * Created on 31 oct. 2003
  *
  */
 package com.jme.sound;
 
-import java.util.ArrayList;
-
-import com.jme.sound.utils.StreamRepository;
+import com.jme.math.Vector3f;
 
 /**
  * @author Arman Ozcelik
- * 
- * This class thread unsafe. A playlist sould be filled once for ever.
  *
  */
-public class LWJGLPlaylist implements Playlist {
+public interface IEffectPlayer extends ISource {
 
-	private ArrayList preloaded;
-	/**
-	 * 
-	 */
-	public LWJGLPlaylist() {
-		preloaded = new ArrayList();
-	}
+	public static final int PLAYING = 1;
+	public static final int LOOPING = 2;
+	public static final int PAUSED = 3;
+	public static final int STOPPED = 4;
 
-	public void queueSound(String name) {
-		String file = StreamRepository.getInstance().getStream(name);
-		if (file.endsWith(".mp3")) {
-			preloaded.add(new LWJGLMP3Stream(file));
-		}
-		if (file.endsWith(".wav")) {
-			preloaded.add(new LWJGLWaveStream(file));
-		}
-	}
+	public void play(IEffect effect);
 
-	public SoundStream next() {
-		if (preloaded.size() > 0) {
-			return (SoundStream) preloaded.remove(0);
-		}
-		return null;
-	}
+	public void loop(IEffect effect);
 
-	public boolean hasNext() {
-		return preloaded.size() > 0;
-	}
+	public void pause();
 
-	public int length() {
-		return preloaded.size();
-	}
+	public void stop();
+
+	public int getStatus();
+
+	public Vector3f getPosition();
+	
+	public void setPosition(Vector3f pos);
+	
+	public Vector3f getVelocity();
+	
+	public void setVelocity(Vector3f vel);
+
+	public float getPitch();
+	
+	public void setPitch(float pitch);
+
+	public void setVolume(float volume);
+	
+	public void setPlayersVolume(float volume);
+	
+	public void setMaxDistance(float maxDistance);
+	
+	public float getVolume();
 
 }

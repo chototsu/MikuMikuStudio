@@ -36,7 +36,6 @@
  */
 package com.jme.sound;
 
-
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -69,7 +68,7 @@ public class LWJGLWaveStream implements SoundStream {
 	private int length;
 
 	private int offset;
-	
+
 	private boolean isRead;
 
 	/**
@@ -85,7 +84,6 @@ public class LWJGLWaveStream implements SoundStream {
 
 	}
 
-	
 	private void initChannels() {
 		//		get channels
 		if (format.getChannels() == 1) {
@@ -111,7 +109,8 @@ public class LWJGLWaveStream implements SoundStream {
 	}
 
 	public ByteBuffer read() throws IOException {
-		if(isRead) return ByteBuffer.allocateDirect(0);
+		if (isRead)
+			return ByteBuffer.allocateDirect(0);
 		try {
 			audioStream = AudioSystem.getAudioInputStream(new File(file));
 		} catch (FileNotFoundException e) {
@@ -121,21 +120,24 @@ public class LWJGLWaveStream implements SoundStream {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		format = audioStream.getFormat();
-		sampleRate = (int) format.getSampleRate();
-		initChannels();
-		length =
-			format.getChannels()
-				* (int) audioStream.getFrameLength()
-				* format.getSampleSizeInBits()
-				/ 8;
+		if (format == null) {
+			format = audioStream.getFormat();
+		}
+		if (sampleRate == 0) {
+			sampleRate = (int) format.getSampleRate();
+		}
+		if(channels==0){
+			initChannels();
+		}
+		
+		length = format.getChannels() * (int) audioStream.getFrameLength() * format.getSampleSizeInBits() / 8;
 		ByteBuffer buffer = null;
 		byte[] temp = new byte[length];
 		audioStream.read(temp);
 		buffer = ByteBuffer.allocateDirect(length);
 		buffer.put(temp);
 		buffer.rewind();
-		isRead=true;
+		isRead = true;
 		return buffer;
 
 	}
@@ -202,9 +204,7 @@ public class LWJGLWaveStream implements SoundStream {
 		return length;
 	}
 
-
-	
-	public int getStreamType() {		
+	public int getStreamType() {
 		return WAV_SOUND_STREAM;
 	}
 

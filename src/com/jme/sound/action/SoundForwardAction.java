@@ -38,7 +38,9 @@ package com.jme.sound.action;
 
 import com.jme.input.action.KeyForwardAction;
 import com.jme.renderer.Camera;
-import com.jme.sound.SoundSource;
+import com.jme.sound.IEffect;
+import com.jme.sound.IEffectPlayer;
+import com.jme.sound.utils.EffectRepository;
 
 /**
  * @author Arman Ozcelik
@@ -46,27 +48,29 @@ import com.jme.sound.SoundSource;
  */
 public class SoundForwardAction extends KeyForwardAction {
 
-	private SoundSource player;
+	private IEffectPlayer player;
 	private String sound;
 
 	/**
 	 * @param camera
 	 * @param speed
 	 */
-	public SoundForwardAction(Camera camera, float speed, SoundSource soundPlayer, String soundName) {
+	public SoundForwardAction(Camera camera, float speed, IEffectPlayer soundPlayer, String soundName) {
 		super(camera, speed);
-		player = soundPlayer;
-		sound = soundName;
+		player= soundPlayer;
+		sound= soundName;
 	}
 
 	/**
-	 * @see com.jme.input.action.InputAction#performAction(float)
-	 */
+	* @see com.jme.input.action.InputAction#performAction(float)
+	*/
 	public void performAction(float time) {
 		super.performAction(time);
-		if (player != null && !player.isPlaying()) {
-			player.play(sound);
+		if (player != null && player.getStatus() != IEffectPlayer.PLAYING) {
+			IEffect effect=EffectRepository.getRepository().getSource(sound);
+			if(effect !=null){
+				player.play(effect);
+			}
 		}
 	}
-
 }

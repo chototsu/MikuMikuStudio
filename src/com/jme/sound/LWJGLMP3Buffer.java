@@ -31,24 +31,46 @@
  */
 
 /*
- * Created on 27 oct. 2003
+ * Created on 1 nov. 2003
  *
  */
 package com.jme.sound;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+
+import org.lwjgl.openal.AL;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public interface Playlist {
+public class LWJGLMP3Buffer extends MP3Buffer {
 
-	public void queueSound(String name);
-	
-	public boolean hasNext();
-	
-	public SoundStream next();
-	
-	public int length();
-	
-	
+	IntBuffer buffer;
+
+	public LWJGLMP3Buffer() {
+		buffer= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		AL.alGenBuffers(buffer);
+	}
+
+	public int getBufferNumber() {
+
+		return buffer.get(0);
+	}
+
+	public int getChannels() {
+		switch (channels) {
+			case MONO8 :
+				return AL.AL_FORMAT_MONO8;
+			case MONO16 :
+				return AL.AL_FORMAT_MONO16;
+			case STEREO8 :
+				return AL.AL_FORMAT_STEREO8;
+			case STEREO16 :
+				return AL.AL_FORMAT_STEREO16;
+		}
+		return 0;
+	}
 }

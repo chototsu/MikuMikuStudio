@@ -1,24 +1,3 @@
-package com.jme.sound;
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-
-import javax.sound.sampled.AudioFormat;
-
-import org.lwjgl.openal.AL;
-
-import javazoom.jl.decoder.Bitstream;
-import javazoom.jl.decoder.BitstreamException;
-import javazoom.jl.decoder.Decoder;
-import javazoom.jl.decoder.DecoderException;
-import javazoom.jl.decoder.Header;
-import javazoom.jl.decoder.SampleBuffer;
-
 /*
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
@@ -60,6 +39,25 @@ import javazoom.jl.decoder.SampleBuffer;
  * @author Arman Ozcelik
  *
  */
+package com.jme.sound;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+
+import javax.sound.sampled.AudioFormat;
+
+import org.lwjgl.openal.AL;
+
+import javazoom.jl.decoder.Bitstream;
+import javazoom.jl.decoder.BitstreamException;
+import javazoom.jl.decoder.Decoder;
+import javazoom.jl.decoder.DecoderException;
+import javazoom.jl.decoder.Header;
+import javazoom.jl.decoder.SampleBuffer;
 public class LWJGLMP3Stream implements SoundStream {
 
 	private AudioFormat format;
@@ -140,8 +138,6 @@ public class LWJGLMP3Stream implements SoundStream {
 
 	public ByteBuffer read() throws IOException {
 		try {
-
-			ByteArrayOutputStream buffer = new ByteArrayOutputStream();
 			Header header = stream.readFrame();
 			if (header == null) {
 				//TODO reload?
@@ -149,25 +145,24 @@ public class LWJGLMP3Stream implements SoundStream {
 			}
 			if (sampleBuf == null) {
 				sampleBuf =
-					new SampleBuffer(
-						header.frequency(),
-						(header.mode() == Header.SINGLE_CHANNEL) ? 1 : 2);
+					new SampleBuffer(header.frequency(), (header.mode() == Header.SINGLE_CHANNEL) ? 1 : 2);
 				decoder.setOutputBuffer(sampleBuf);
 			}
-			channels =
-				(header.mode() == Header.SINGLE_CHANNEL)
-					? AL.AL_FORMAT_MONO16
-					: AL.AL_FORMAT_STEREO16;
-			sampleRate = header.frequency();
-			sampleBuf = (SampleBuffer) decoder.decodeFrame(header, stream);
+			if (channels == 0) {
+				channels =
+					(header.mode() == Header.SINGLE_CHANNEL) ? AL.AL_FORMAT_MONO8 : AL.AL_FORMAT_STEREO16;
+			}
+			if (sampleRate == 0) {
+				sampleRate = header.frequency();
+			}
+			//sampleBuf = (SampleBuffer) decoder.decodeFrame(header, stream);
+			decoder.decodeFrame(header, stream);
 			stream.closeFrame();
-
-			buffer.write(toByteArray(sampleBuf.getBuffer(), 0, sampleBuf.getBufferLength()));
-			ByteBuffer obuf = ByteBuffer.allocateDirect(buffer.size());
-			obuf.put(buffer.toByteArray());
-			obuf.rewind();
-			return obuf;
-
+			byte[] obuf = toByteArray(sampleBuf.getBuffer(), 0, sampleBuf.getBufferLength());
+			ByteBuffer buf = ByteBuffer.allocateDirect(obuf.length);
+			buf.put(obuf);
+			buf.rewind();
+			return buf;
 		} catch (BitstreamException bs) {
 			bs.printStackTrace();
 		} catch (DecoderException e) {
@@ -188,11 +183,9 @@ public class LWJGLMP3Stream implements SoundStream {
 	protected byte[] toByteArray(short[] samples, int offs, int len) {
 		byte[] b = new byte[len * 2];
 		int idx = 0;
-		short s;
 		while (len-- > 0) {
-			s = samples[offs++];
-			b[idx++] = (byte) (s & 0x00FF);
-			b[idx++] = (byte) ((s >>> 8) & 0x00FF);
+			b[idx++] = (byte) (samples[offs++] & 0x00FF);
+			b[idx++] = (byte) ((samples[offs] >>> 8) & 0x00FF);
 		}
 		return b;
 	}

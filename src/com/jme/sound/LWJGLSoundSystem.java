@@ -36,15 +36,16 @@ import org.lwjgl.openal.AL;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: LWJGLSoundSystem.java,v 1.4 2003-10-28 16:33:26 Anakan Exp $
+ * @version $Id: LWJGLSoundSystem.java,v 1.5 2003-11-01 23:28:10 Anakan Exp $
  */
 public class LWJGLSoundSystem extends SoundSystem {
 
-	private LWJGLSoundRenderer renderer;
-	private boolean created;
+	private LWJGLSoundRenderer renderer;	
 	
 	public LWJGLSoundSystem(){
-		initOpenAL();
+		if(!created){
+			initOpenAL();
+		}
 		renderer=new LWJGLSoundRenderer();
 		created = true;
 		
@@ -53,7 +54,7 @@ public class LWJGLSoundSystem extends SoundSystem {
 	/**
 	 * TODO Comment
 	 */
-	public SoundRenderer getRenderer() {
+	public IRenderer getRenderer() {
 		return renderer;
 	}
 
@@ -71,7 +72,6 @@ public class LWJGLSoundSystem extends SoundSystem {
 	private void initOpenAL() {
 		try {
 			AL.create();
-			Thread.sleep(1000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

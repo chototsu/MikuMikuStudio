@@ -31,51 +31,44 @@
  */
 
 /*
- * Created on 23 oct. 2003
+ * Created on 31 oct. 2003
  *
  */
 package com.jme.sound;
 
-import com.jme.math.Vector3f;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+
+import org.lwjgl.openal.AL;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public interface SoundSource {
+public class LWJGLWaveBuffer extends WaveBuffer {
+	IntBuffer buffer;
+	
+	public LWJGLWaveBuffer(){
+		buffer=ByteBuffer.allocateDirect(4 ).order(ByteOrder.nativeOrder()).asIntBuffer();
+		AL.alGenBuffers(buffer);
+	}
+	
+	public int getBufferNumber() {
+		
+		return buffer.get(0);
+	}
 
-	public int getSourceNumber();
 	
-	public void setStream(SoundStream stream);
-	
-	public SoundStream getStream();
-	
-	public void play(String name);
-	
-	public void stop();
-	
-	public void pause();
-	
-	public void updatePosition(float x, float y, float z);
-	
-	public void updateVelocity(float x, float y, float z);
-	
-	public boolean isPlaying();
-	
-	public boolean isPaused();
-	
-	public boolean isStopped();
-	
-	public void setNumberOfBuffers(int buffers);
-	
-	public Vector3f getPosition();
-	
-	public void setMaxVolume(float value);
-	
-	public void setVolume(float factor);
-	
-	public void setPlaylist(Playlist p);
+	public int getChannels() {
+		switch(channels){
+			case MONO8: return AL.AL_FORMAT_MONO8;
+			case MONO16: return AL.AL_FORMAT_MONO16;
+			case STEREO8: return AL.AL_FORMAT_STEREO8;
+			case STEREO16:return AL.AL_FORMAT_STEREO16;
+		}
+		return 0;
+	}
 	
 	
-
 }

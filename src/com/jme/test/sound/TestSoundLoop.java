@@ -32,6 +32,8 @@
 package com.jme.test.sound;
 
 
+
+
 import com.jme.app.AbstractGame;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
@@ -47,8 +49,8 @@ import com.jme.system.LWJGLDisplaySystem;
 import com.jme.util.TextureManager;
 
 
+import com.jme.sound.IRenderer;
 import com.jme.sound.SoundSystem;
-import com.jme.sound.SoundRenderer;
 
 /**
  * <code>TestSoundLoop</code>
@@ -60,7 +62,7 @@ public class TestSoundLoop extends AbstractGame {
     private Text text;
     private Camera cam;
     private Node scene;
-    private SoundRenderer soundRenderer;
+    private IRenderer soundRenderer;
     
     public static void main(String[] args) {
         TestSoundLoop app = new TestSoundLoop();
@@ -73,10 +75,7 @@ public class TestSoundLoop extends AbstractGame {
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
-        if(!soundRenderer.getSoundPlayer("NPC").isPlaying()) {
-            soundRenderer.getSoundPlayer("NPC").play("bored");
-        
-        }
+       
     }
 
     /**
@@ -108,7 +107,7 @@ public class TestSoundLoop extends AbstractGame {
             System.exit(1);
         }
         
-        SoundSystem system=SoundSystem.getSoundSystem("LWJGL");
+        SoundSystem system=SoundSystem.getSoundEffectSystem("LWJGL");
         soundRenderer=system.getRenderer();
         
         
@@ -138,7 +137,7 @@ public class TestSoundLoop extends AbstractGame {
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
-                "data/Font/font.png",
+                "../data/Font/font.png",
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR,
                 true));
@@ -158,16 +157,13 @@ public class TestSoundLoop extends AbstractGame {
         
         soundRenderer.addSoundPlayer("MONSTER");
         soundRenderer.addSoundPlayer("NPC");
-
+		
         soundRenderer.loadSoundAs("music", "cu.wav");
-        soundRenderer.loadSoundAs("bored", "data/music/02 Butterfly Wings.mp3");
+        soundRenderer.loadSoundAs("bored", "../data/sound/03.mp3");
 
-        soundRenderer.getSoundPlayer("MONSTER").setNumberOfBuffers(1);
-        soundRenderer.getSoundPlayer("NPC").setNumberOfBuffers(128);
-
-        soundRenderer.getSoundPlayer("MONSTER").updatePosition(1, 0, 0);
-        soundRenderer.getSoundPlayer("NPC").updatePosition(0, 0, 0);
-        soundRenderer.getSoundPlayer("NPC").updateVelocity(0, 0, 0);
+       
+        
+        
 
     }
 

@@ -40,30 +40,32 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 
 import org.lwjgl.openal.AL;
 
 import com.jme.math.Vector3f;
-import com.jme.sound.utils.StreamRepository;
+import com.jme.util.LoggingSystem;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class LWJGLSource implements SoundSource {
+public class LWJGLSource implements IMusicPlayer {
 
 	private int sourceNumber;
 	private SoundStream stream;
 	private boolean paused, playing;
 	private BufferedPlayer player;
-	private int numberOfBuffers = 1;
+	private int numberOfBuffers= 1;
 	private Vector3f position;
-	private Playlist playList;
 
 	public LWJGLSource(int sourceNum) {
-		this.sourceNumber = sourceNum;
-		position = new Vector3f();
-		player = new BufferedPlayer();
+		this.sourceNumber= sourceNum;
+		position= new Vector3f();
+		player= new BufferedPlayer();
+		player.start();
+		LoggingSystem.getLogger().log(Level.INFO, "LWJGLSoundSource created. SourceNumber:  " + sourceNum);
 	}
 
 	/**
@@ -82,7 +84,7 @@ public class LWJGLSource implements SoundSource {
 			stop();
 		}
 		stream.close();
-		this.stream = stream;
+		this.stream= stream;
 	}
 
 	/**
@@ -99,24 +101,20 @@ public class LWJGLSource implements SoundSource {
 	 * If the sound type is wave then the number of buffers is set to 1.
 	 * @param name the sound name.
 	 */
-	public void play(String name) {
-		
-		if (playList != null && playList.hasNext()){
-	
-		}else {
-			String file = StreamRepository.getInstance().getStream(name);
-			if (file.endsWith(".mp3")) {
-				if (numberOfBuffers < 8)
-					numberOfBuffers = 8;
-				setStream(new LWJGLMP3Stream(file));
-			}
-			if (file.endsWith(".wav")) {
-				setNumberOfBuffers(1);
-				setStream(new LWJGLWaveStream(file));
-			}
+	public void play(String file) {
+		playing= true;
+		paused= false;
+		//String file= StreamRepository.getInstance().getStream(name);
+		if (file.endsWith(".mp3")) {
+			if (numberOfBuffers < 8)
+				numberOfBuffers= 128;
+			setStream(new LWJGLMP3Stream(file));
 		}
-		player = new BufferedPlayer();
-		player.start();
+		if (file.endsWith(".wav")) {
+			setNumberOfBuffers(1);
+			setStream(new LWJGLWaveStream(file));
+		}
+		
 
 	}
 
@@ -129,7 +127,7 @@ public class LWJGLSource implements SoundSource {
 	 * @param z the z position of the source
 	 */
 	public void updatePosition(float x, float y, float z) {
-		Vector3f newPos = new Vector3f(x, y, z);
+		Vector3f newPos= new Vector3f(x, y, z);
 		updatePosition(newPos);
 	}
 
@@ -140,10 +138,10 @@ public class LWJGLSource implements SoundSource {
 	* @param pos the new position of the source
 	*/
 	public void updatePosition(Vector3f pos) {
-		position.x = pos.x;
-		position.y = pos.y;
-		position.z = pos.z;
-		float length = position.length();
+		position.x= pos.x;
+		position.y= pos.y;
+		position.z= pos.z;
+		float length= position.length();
 		if (isPlaying() && !isPaused()) {
 			AL.alSource3f(
 				sourceNumber,
@@ -182,19 +180,19 @@ public class LWJGLSource implements SoundSource {
 
 	public void stop() {
 		AL.alSourceStop(sourceNumber);
-		playing = false;
-		paused = false;
+		playing= false;
+		paused= false;
 	}
 
 	public void pause() {
 		if (isPlaying()) {
 			AL.alSourcePause(sourceNumber);
-			paused = true;
+			paused= true;
 		}
 	}
 
 	public void setNumberOfBuffers(int buffs) {
-		numberOfBuffers = buffs;
+		numberOfBuffers= buffs;
 
 	}
 
@@ -212,11 +210,9 @@ public class LWJGLSource implements SoundSource {
 		private IntBuffer buffers;
 		private IntBuffer temp;
 		protected BufferedPlayer() {
-			buffers =
-				ByteBuffer
-					.allocateDirect(4 * numberOfBuffers)
-					.order(ByteOrder.nativeOrder())
-					.asIntBuffer();
+			buffers=
+				ByteBuffer.allocateDirect(4 * numberOfBuffers).order(ByteOrder.nativeOrder()).asIntBuffer();
+			temp= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
 			AL.alGenBuffers(buffers);
 		}
 
@@ -225,14 +221,12 @@ public class LWJGLSource implements SoundSource {
 		}
 
 		public boolean streamBuffer(int bufferNumber) {
-			ByteBuffer data = null;
+			ByteBuffer data= null;
 			try {
-				data = stream.read();
-
+				data= stream.read();
 				if (data.capacity() == 0) {
 					return false;
 				}
-
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -242,6 +236,8 @@ public class LWJGLSource implements SoundSource {
 				data,
 				data.capacity(),
 				stream.getSampleRate());
+				data.clear();
+				data=null;
 			return true;
 		}
 
@@ -249,7 +245,7 @@ public class LWJGLSource implements SoundSource {
 
 			if (plays())
 				return true;
-			for (int a = 0; a < buffers.capacity(); a++) {
+			for (int a= 0; a < buffers.capacity(); a++) {
 				if (!streamBuffer(buffers.get(a)))
 					return false;
 			}
@@ -259,16 +255,13 @@ public class LWJGLSource implements SoundSource {
 		}
 
 		public boolean update() {
-			boolean active = true;
-			int processed = AL.alGetSourcei(sourceNumber, AL.AL_BUFFERS_PROCESSED);
+			boolean active= true;
+			int processed= AL.alGetSourcei(sourceNumber, AL.AL_BUFFERS_PROCESSED);
 			while ((processed > 0)) {
-
 				processed--;
-				temp = ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
-
 				AL.alSourceUnqueueBuffers(sourceNumber, temp);
+				active= streamBuffer(temp.get(0));
 
-				active = streamBuffer(temp.get(0));
 				AL.alSourceQueueBuffers(sourceNumber, temp);
 			}
 
@@ -276,22 +269,16 @@ public class LWJGLSource implements SoundSource {
 		}
 
 		public void run() {
-			if (playList != null && playList.hasNext()) {
-				setStream(playList.next());
-				if(stream.getStreamType()==SoundStream.MP3_SOUND_STREAM){
-					if(numberOfBuffers<8){
-						numberOfBuffers=8;
-					}
-				}
-				if(stream.getStreamType()==SoundStream.WAV_SOUND_STREAM){
-					numberOfBuffers=1;
+
+			while (stream == null) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
 				}
 			}
-			if (stream == null)
-				return; //DISPLAY ERROR?
+			LoggingSystem.getLogger().log(Level.INFO, "New Stream " + stream);
 
-			playing = true;
-			paused = false;
 			playback();
 			while (update()) {
 				if (!plays()) {
@@ -300,16 +287,26 @@ public class LWJGLSource implements SoundSource {
 					}
 				}
 			}
+
 			AL.alSourceStop(sourceNumber);
-			if(playList !=null && playList.hasNext()) run();//argh recursive call
-			playing = false;
-			paused = false;
+			AL.alSourceUnqueueBuffers(sourceNumber, buffers);
+			playing= false;
+			paused= false;
+			stream= null;
+			run();
+
 		}
 
 	}
+	/* (non-Javadoc)
+	 * @see com.jme.sound.IMusicPlayer#getNumberOfBuffers()
+	 */
+	public int getNumberOfBuffers() {
+		return numberOfBuffers;
+	}
 
-	public void setPlaylist(Playlist p) {
-		playList = p;
+	public int getType() {
+		return STREAMING;
 	}
 
 }

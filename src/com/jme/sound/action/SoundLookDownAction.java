@@ -38,7 +38,8 @@ package com.jme.sound.action;
 
 import com.jme.input.action.KeyLookDownAction;
 import com.jme.renderer.Camera;
-import com.jme.sound.SoundSource;
+import com.jme.sound.IEffectPlayer;
+import com.jme.sound.utils.EffectRepository;
 
 /**
  * @author Arman Ozcelik
@@ -47,15 +48,15 @@ import com.jme.sound.SoundSource;
 public class SoundLookDownAction extends KeyLookDownAction {
 
 	private String sound;
-	private SoundSource player;
+	private IEffectPlayer player;
 	/**
 	 * @param camera
 	 * @param speed
 	 */
-	public SoundLookDownAction(Camera camera, float speed, SoundSource soundPlayer, String soundName) {
+	public SoundLookDownAction(Camera camera, float speed, IEffectPlayer soundPlayer, String soundName) {
 		super(camera, speed);
-		player = soundPlayer;
-		sound = soundName;
+		player= soundPlayer;
+		sound= soundName;
 	}
 
 	/**
@@ -63,8 +64,8 @@ public class SoundLookDownAction extends KeyLookDownAction {
 	*/
 	public void performAction(float time) {
 		super.performAction(time);
-		if (player != null && !player.isPlaying()) {
-			player.play(sound);
+		if (player != null && player.getStatus() != IEffectPlayer.PLAYING) {
+			player.play(EffectRepository.getRepository().getSource(sound));
 		}
 	}
 }

@@ -29,18 +29,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+/*
+ * Created on 31 oct. 2003
+ *
+ */
 package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: SoundRenderer.java,v 1.3 2003-10-25 02:23:09 Anakan Exp $
+ *
  */
-public interface SoundRenderer {
+public interface ISource {
+	
+	public static final int STREAMING=1;
+	
+	public static final int BUFFERING=2;
+	
+	public int getType();
+	
+	public int getSourceNumber();
 
-	
-	public void addSoundPlayer(Object name);
-	
-	public void loadSoundAs(String name, String file);
-	
-	public SoundSource getSoundPlayer(Object name);
 }

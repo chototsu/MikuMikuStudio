@@ -31,49 +31,36 @@
  */
 
 /*
- * Created on 23 oct. 2003
+ * Created on 31 oct. 2003
  *
  */
-package com.jme.sound.utils;
+package com.jme.sound;
 
-
-import java.util.Hashtable;
-
-import com.jme.sound.SoundSource;
-
-
+import java.nio.ByteBuffer;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class SourceRepository {
-
-	private Hashtable repository=new Hashtable();
-	private static SourceRepository instance;
+public interface ISoundBuffer {
 	
-	private SourceRepository() {
-		
-	}
-	
-	public synchronized static SourceRepository getRepository(){
-		if(instance==null){
-			instance=new SourceRepository();
-		}
-		return instance;		
-	}
-	
-	public void bind(Object player, SoundSource source){
-		repository.put(player, source);
-		
-	}
-	
-	public SoundSource getSource(Object player){
-		return (SoundSource)repository.get(player);
-	}
+	public static final int MONO8=1;
+	public static final int MONO16=2;
+	public static final int STEREO8=3;
+	public static final int STEREO16=4;
 	
 	
+	public void load(String name);
 	
+	public int getBufferNumber();
+	
+	public ByteBuffer getBufferData();
+	
+	public int getChannels();
+	
+	public int getSampleRate();
+	
+	public void release();
 	
 	
 	

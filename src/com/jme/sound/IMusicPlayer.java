@@ -31,40 +31,34 @@
  */
 
 /*
- * Created on 29 oct. 2003
+ * Created on 31 oct. 2003
  *
  */
-package com.jme.sound.action;
-
-import com.jme.input.action.KeyStrafeLeftAction;
-import com.jme.renderer.Camera;
-import com.jme.sound.IEffectPlayer;
-import com.jme.sound.utils.EffectRepository;
+package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class SoundStrafeLeftAction extends KeyStrafeLeftAction {
-	private String sound;
-	private IEffectPlayer player;
-	/**
-	 * @param camera
-	 * @param speed
-	 */
-	public SoundStrafeLeftAction(Camera camera, float speed, IEffectPlayer soundPlayer, String soundName) {
-		super(camera, speed);
-		player= soundPlayer;
-		sound= soundName;
-	}
+public interface IMusicPlayer extends ISource{
+	
+	public static final int PLAYING=1;
+	public static final int PAUSED=3;
+	public static final int STOPPED=4;
 
-	/**
-	* @see com.jme.input.action.InputAction#performAction(float)
-	*/
-	public void performAction(float time) {
-		super.performAction(time);
-		if (player != null && player.getStatus() != IEffectPlayer.PLAYING) {
-			player.play(EffectRepository.getRepository().getSource(sound));
-		}
-	}
+	public void setNumberOfBuffers(int numBuffers);
+	
+	public int getNumberOfBuffers();
+	
+	public void play(String song);
+	
+	public void pause();
+	
+	public void stop();
+	
+	public boolean isPlaying();
+	
+	public boolean isStopped();
+	
+	public boolean isPaused();
 }
