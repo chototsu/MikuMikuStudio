@@ -188,6 +188,22 @@ public abstract class UIObject extends Quad {
     }
 
     /**
+     * gets the x scale of the control
+     * @return
+     */
+    public float getXScale() {
+        return _xscale;
+    }
+
+    /**
+     * gets the y scale of the control
+     * @return
+     */
+    public float getYScale() {
+        return _yscale;
+    }
+
+    /**
      * Places the center of the control at the given screen location
      * @return
      */
@@ -255,6 +271,7 @@ public abstract class UIObject extends Quad {
         getLocalScale().x = _xscale;
         getLocalScale().y = _yscale;
         setLocalTranslation(new Vector3f(_x + _width>>1, _y + _height>>1, 0.0f));
+        _hitArea = new UIActiveArea(_x, _y, (int) (_width * _xscale), (int) (_height * _yscale), _inputHandler);
     }
 
     /**
