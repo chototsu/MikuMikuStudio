@@ -40,7 +40,7 @@ import com.jme.renderer.Renderer;
  * distance from the camera.
  * 
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.4 2004-09-14 21:52:13 mojomonkey Exp $
+ * @version $Id: SwitchNode.java,v 1.5 2005-03-11 23:27:35 Mojomonkey Exp $
  */
 public class SwitchNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -63,6 +63,7 @@ public class SwitchNode extends Node {
 	 */
 	public SwitchNode(String name) {
 		super(name);
+		activeChild = SN_INVALID_CHILD;
 	}
 
 	/**
