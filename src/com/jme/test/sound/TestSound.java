@@ -2,7 +2,7 @@
  * Created on 18 oct. 2003
  *
  */
-package com.jme.sound.test;
+package com.jme.test.sound;
 
 import com.jme.sound.SoundSystem;
 
