@@ -51,7 +51,7 @@ import com.jme.system.DisplaySystem;
  * it to update itself.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: AreaClodMesh.java,v 1.10 2004-08-21 00:32:00 cep21 Exp $
+ * @version $Id: AreaClodMesh.java,v 1.11 2004-09-05 16:08:22 cep21 Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   private float trisPerPixel = 1f;
@@ -128,7 +128,13 @@ public class AreaClodMesh extends ClodMesh {
                                     "AreaClodMesh found with no Bounds.");
       return 0;
     }
-    
+      
+    if (records == null || records.length == 0) {
+      LoggingSystem.getLogger().log(Level.WARNING,
+                                    "Records was null.");
+      return 0;
+    }
+
     float newDistance = getWorldBound().distanceTo(r.getCamera().getLocation());
     if (Math.abs(newDistance - lastDistance) <= distTolerance)
       return targetRecord; // we haven't moved relative to the model, send the old measurement back.
@@ -142,12 +148,6 @@ public class AreaClodMesh extends ClodMesh {
     // estimate area of polygon via bounding volume
     float area = AreaUtils.calcScreenArea(getWorldBound(), lastDistance, DisplaySystem.getDisplaySystem().getWidth());
     float trisToDraw = area * trisPerPixel;
-    if (records == null || records.length == 0) {
-      LoggingSystem.getLogger().log(Level.WARNING,
-                                    "Records was null.");
-      return 0;
-    }
-    
     targetRecord = records.length - 1;
     for (int i = records.length; --i >= 0; ) {
       if (trisToDraw - records[i].numbTriangles < 0) break;
