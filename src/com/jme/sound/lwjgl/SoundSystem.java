@@ -442,6 +442,18 @@ public class SoundSystem implements ISoundSystem {
 			ByteBuffer data = BufferUtils.createByteBuffer(buf.length);//ByteBuffer.allocateDirect(buf.length);
 			data.put(buf);
 			data.rewind();
+
+			
+			  // On Mac we need to convert this to big endian
+			if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
+			{
+			    ShortBuffer tmp2 = data.duplicate().order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+			    while(tmp2.hasRemaining())
+			        data.putShort(tmp2.get());
+			    data.rewind();
+			} 
+			
+			
 			tmp = generateBuffers(1);
 			int chans = getChannels(vorbisInfo);
 			int rate= chans == AL10.AL_FORMAT_MONO16

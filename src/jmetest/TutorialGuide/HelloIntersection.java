@@ -142,7 +142,7 @@ public class HelloIntersection extends SimpleGame {
 		laserURL = HelloIntersection.class.getClassLoader().getResource(
 				"jmetest/data/sound/laser.ogg");
 		hitURL = HelloIntersection.class.getClassLoader().getResource(
-				"jmetest/data/sound/explosion.ogg");
+				"jmetest/data/sound/explosion.wav");
 		// Ask the system for a program id for this resource
 		int programid = SoundPool.compile(new URL[] { laserURL });
 		int hitid = SoundPool.compile(new URL[] { hitURL });
