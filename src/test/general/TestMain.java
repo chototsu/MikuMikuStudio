@@ -135,7 +135,7 @@ public class TestMain extends AbstractGame {
 				e.getPosition().z / 4)
 				+ 3;
 
-		if (camera.getPosition().x > 4000) {
+        if (camera.getPosition().x > 4000) {
 			camera.getPosition().x = 4000;
 		}
 

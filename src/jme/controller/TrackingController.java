@@ -62,6 +62,10 @@ public class TrackingController extends AbstractGameController {
 	//the minimal distance the camera can be away from the entity.
 	private double trackingDistance;
 	private float trackingSpeed;
+    
+    //View of the camera
+    private Vector3f targetView;
+    private float interpolationTime;
 
 	//Camera system
 	private Camera camera;
@@ -124,7 +128,10 @@ public class TrackingController extends AbstractGameController {
 
 		camera.update(time);
 		camera.updateFrustum();
-		camera.setView(entity.getPosition());
+        targetView = entity.getPosition();
+        interpolationTime = 0;
+        updateCameraView(time);
+		
 
 		double distance =
 			MathUtils.distance(camera.getPosition(), entity.getPosition());
@@ -137,8 +144,8 @@ public class TrackingController extends AbstractGameController {
 						null)).normalise(
 					null);
 
-			camera.getPosition().x += vec.x * trackingSpeed;
-			camera.getPosition().z += vec.z * trackingSpeed;
+			camera.getPosition().x += vec.x * trackingSpeed * time;
+			camera.getPosition().z += vec.z * trackingSpeed * time;
 
 			camera.getPosition().y = entity.getPosition().y;
 		}
@@ -208,6 +215,10 @@ public class TrackingController extends AbstractGameController {
 
 		return true;
 	}
+    
+    private void updateCameraView(float time) {
+            camera.setView(targetView);
+    }
 
 	/**
 	 * <code>setDefaultKeyBindings</code> sets the default bindings for
