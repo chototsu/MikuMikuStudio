@@ -29,6 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  02/09/2004 - Added viewport accessors. GOP
+ */ 
 package com.jme.renderer;
 
 import java.util.logging.Level;
@@ -46,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * class abstract. API specific classes are expected to extend this class and
  * handle renderer viewport setting.
  * @author Mark Powell
- * @version $Id: AbstractCamera.java,v 1.3 2004-02-03 22:13:25 mojomonkey Exp $
+ * @version $Id: AbstractCamera.java,v 1.4 2004-02-09 11:58:54 greggpatton Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -466,6 +470,84 @@ public abstract class AbstractCamera implements Camera {
      */
     public void setPlaneState(int planeState) {
         this.planeState = planeState;
+    }
+
+    /**
+     * <code>getViewPortLeft</code> gets the left boundary of the viewport
+     * @return the left boundary of the viewport
+     */
+    public float getViewPortLeft() {
+        return viewPortLeft;
+    }
+
+    /**
+     * <code>setViewPortLeft</code> sets the left boundary of the viewport
+     * @param left the left boundary of the viewport 
+     */
+    public void setViewPortLeft(float left) {
+        viewPortLeft = left;
+    }
+
+    /**
+     * <code>getViewPortRight</code> gets the right boundary of the viewport
+     * @return the right boundary of the viewport
+     */
+    public float getViewPortRight() {
+        return viewPortRight;
+    }
+
+    /**
+     * <code>setViewPortRight</code> sets the right boundary of the viewport
+     * @param right the right boundary of the viewport
+     */
+    public void setViewPortRight(float right) {
+        viewPortRight = right;
+    }
+
+    /**
+     * <code>getViewPortTop</code> gets the top boundary of the viewport
+     * @return the top boundary of the viewport
+     */
+    public float getViewPortTop() {
+        return viewPortTop;
+    }
+
+    /**
+     * <code>setViewPortTop</code> sets the top boundary of the viewport
+     * @param top the top boundary of the viewport
+     */
+    public void setViewPortTop(float top) {
+        viewPortTop = top;
+    }
+
+    /**
+     * <code>getViewPortBottom</code> gets the bottom boundary of the viewport
+     * @return the bottom boundary of the viewport
+     */
+    public float getViewPortBottom() {
+        return viewPortBottom;
+    }
+
+    /**
+     * <code>setViewPortBottom</code> sets the bottom boundary of the viewport
+     * @param bottom the bottom boundary of the viewport
+     */
+    public void setViewPortBottom(float bottom) {
+        viewPortBottom = bottom;
+    }
+
+    /**
+     * <code>setViewPort</code> sets the boundaries of the viewport
+     * @param left the left boundary of the viewport
+     * @param right the right boundary of the viewport
+     * @param bottom the bottom boundary of the viewport
+     * @param top the top boundary of the viewport
+     */
+    public void setViewPort(float left, float right, float bottom, float top) {
+        setViewPortLeft(left);
+        setViewPortRight(right);
+        setViewPortBottom(bottom);
+        setViewPortTop(top);
     }
 
     /**

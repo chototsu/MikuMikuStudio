@@ -29,6 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+/*
+ * EDIT:  02/09/2004 - Added viewport accessors. GOP
+ */ 
+ 
 package com.jme.renderer;
 
 import java.io.Serializable;
@@ -43,7 +47,8 @@ import com.jme.scene.BoundingVolume;
  * and the camera model. The frustum is also maintained here to allow for easy
  * frustum culling.
  * @author Mark Powell
- * @version $Id: Camera.java,v 1.3 2003-10-27 21:28:18 mojomonkey Exp $
+ * @author Gregg Patton
+ * @version $Id: Camera.java,v 1.4 2004-02-09 12:00:26 greggpatton Exp $
  */
 public interface Camera extends Serializable {
 
@@ -168,6 +173,63 @@ public interface Camera extends Serializable {
      */
     public void setPlaneState(int planeState);
     
+    /**
+     * <code>getViewPortLeft</code> gets the left boundary of the viewport
+     * @return the left boundary of the viewport
+     */
+    public float getViewPortLeft();
+
+    /**
+     * <code>setViewPortLeft</code> sets the left boundary of the viewport
+     * @param left the left boundary of the viewport 
+     */
+    public void setViewPortLeft(float left);
+
+    /**
+     * <code>getViewPortRight</code> gets the right boundary of the viewport
+     * @return the right boundary of the viewport
+     */
+    public float getViewPortRight();
+
+    /**
+     * <code>setViewPortRight</code> sets the right boundary of the viewport
+     * @param right the right boundary of the viewport
+     */
+    public void setViewPortRight(float right);
+
+    /**
+     * <code>getViewPortTop</code> gets the top boundary of the viewport
+     * @return the top boundary of the viewport
+     */
+    public float getViewPortTop();
+
+    /**
+     * <code>setViewPortTop</code> sets the top boundary of the viewport
+     * @param top the top boundary of the viewport
+     */
+    public void setViewPortTop(float top);
+
+    /**
+     * <code>getViewPortBottom</code> gets the bottom boundary of the viewport
+     * @return the bottom boundary of the viewport
+     */
+    public float getViewPortBottom();
+
+    /**
+     * <code>setViewPortBottom</code> sets the bottom boundary of the viewport
+     * @param bottom the bottom boundary of the viewport
+     */
+    public void setViewPortBottom(float bottom);
+
+    /**
+     * <code>setViewPort</code> sets the boundaries of the viewport
+     * @param left the left boundary of the viewport
+     * @param right the right boundary of the viewport
+     * @param bottom the bottom boundary of the viewport
+     * @param top the top boundary of the viewport
+     */
+    public void setViewPort(float left, float right, float bottom, float top);
+
     /**
      * <code>culled</code> tests a bounding volume against the planes of the 
      * camera's frustum. The frustums planes are set such that the normals
