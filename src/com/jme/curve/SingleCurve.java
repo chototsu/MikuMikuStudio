@@ -34,23 +34,54 @@ package com.jme.curve;
 /**
  * <code>SingleCurve</code>
  * @author Mark Powell
- * @version $Id: SingleCurve.java,v 1.1 2004-01-05 01:44:31 mojomonkey Exp $
+ * @version $Id: SingleCurve.java,v 1.2 2004-01-06 04:06:46 mojomonkey Exp $
  */
 public abstract class SingleCurve extends Curve {
+
+    public SingleCurve(float minTime, float maxTime) {
+        super(minTime, maxTime);
+    }
 
     /* (non-Javadoc)
      * @see com.jme.curve.Curve#getLength(float, float)
      */
     public float getLength(float time0, float time1) {
-        // TODO Auto-generated method stub
-        return 0;
+        return integrate(time0, time1);
     }
 
     /* (non-Javadoc)
      * @see com.jme.curve.Curve#getTime(float, int, float)
      */
     public float getTime(float length, int iterations, float tolerance) {
-        // TODO Auto-generated method stub
+        if (length <= 0.0f)
+            return minTime;
+
+        if (length >= getTotalLength())
+            return maxTime;
+
+        // initial guess for Newton's method
+        float fRatio = length / getTotalLength();
+        float fOmRatio = 1.0f - fRatio;
+        float fTime = fOmRatio * minTime + fRatio * maxTime;
+
+        for (int i = 0; i < iterations; i++) {
+            float fDifference = getLength(minTime, fTime) - length;
+            if (Math.abs(fDifference) < tolerance)
+                return fTime;
+
+            fTime -= fDifference / getSpeed(fTime);
+        }
+
+        // Newton's method failed.  If this happens, increase iterations or
+        // tolerance or integration accuracy.
+        return Float.MAX_VALUE;
+    }
+
+    protected float getSpeedWithData(float time, Curve data) {
+        return data.getSpeed(time);
+    }
+
+    private float integrate(float a, float b) {
         return 0;
     }
 }
