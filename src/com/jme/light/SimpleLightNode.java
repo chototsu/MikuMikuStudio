@@ -2,7 +2,6 @@ package com.jme.light;
 
 import com.jme.scene.Node;
 import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
 
 /**
  * Started Date: Jul 21, 2004<br><br>
