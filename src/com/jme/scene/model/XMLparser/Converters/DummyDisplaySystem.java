@@ -12,6 +12,7 @@ import com.jme.widget.WidgetRenderer;
 import com.jme.widget.font.WidgetFont;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
+import com.jme.image.Texture;
 
 import java.net.URL;
 
@@ -94,6 +95,7 @@ class DummyDisplaySystem extends DisplaySystem{
             class TextureStateN extends TextureState{
                 TextureStateN(){
                     numTexUnits=1;
+                    texture = new Texture[numTexUnits];
                 }
                 public void delete(int unit) {}
                 public void deleteAll() {}
