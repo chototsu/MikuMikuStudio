@@ -127,7 +127,7 @@ public class WidgetBoundingRectangle implements BoundingVolume {
     }
 
     public float getMaxY() {
-        return max.x;
+        return max.y;
     }
 
     public void setMaxY(float y) {
