@@ -393,7 +393,12 @@ public class JmeBinaryReader {
                 }
                 p=TextureManager.loadTexture(context,
                         Texture.MM_LINEAR,Texture.FM_LINEAR,true);
-                p.setImageLocation("file:/"+atts.get("file"));
+                if (p==null) {
+                    t.setEnabled(false);
+                    return t;
+                } else{
+                    p.setImageLocation("file:/"+atts.get("file"));
+                }
             }
             if (p==null)
                 LoggingSystem.getLogger().log(Level.INFO,"Unable to load file: " + atts.get("file"));
@@ -554,7 +559,11 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Adds a property .  Properties can tell this how to process the binary file
+     * Adds a property .  Properties can tell this how to process the binary file.<br><br>
+     * The only keys currently used are:<br>
+     * key -> PropertyDataType<br>
+     * "texurl" --> (URL) When loading a texture, will use this directory as the base texture directory <br>
+     *
      * @param key Key to add (For example "texdir")
      * @param property Property for that key to have (For example "c:\\blarg\\")
      */
