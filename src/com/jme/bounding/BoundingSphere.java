@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.12 2004-08-13 06:04:04 cep21 Exp $
+ * @version $Id: BoundingSphere.java,v 1.13 2004-08-20 02:42:54 cep21 Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -565,6 +565,15 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      */
     public float distanceTo(Vector3f point) {
         return center.distance(point);
+    }
+
+    /**
+     * Stores the current center of this BoundingSphere into the store vector.
+     * @param store The vector to store the center into.
+     * @return The store vector, after setting it's contents to the center
+     */
+    public Vector3f getCenter(Vector3f store) {
+        return store.set(center);
     }
 
     /**

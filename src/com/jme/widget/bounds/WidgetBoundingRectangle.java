@@ -32,6 +32,7 @@
 package com.jme.widget.bounds;
 
 import com.jme.bounding.BoundingVolume;
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector2f;
@@ -607,6 +608,16 @@ public class WidgetBoundingRectangle implements BoundingVolume {
      */
     public float distanceTo(Vector3f point) {
       return center.subtract(new Vector2f(point.x, point.y)).length();
+    }
+
+    /**
+     * Stores the current center of this BoundingRectangle into the store vector.  The
+     * z component of the store is simply set to 0 because this object's center is just 2D.
+     * @param store The vector to store the center into.
+     * @return The store vector, after setting it's contents to the center
+     */
+    public Vector3f getCenter(Vector3f store) {
+        return store.set(center.x,center.y,0);
     }
 
     public String toString() {

@@ -41,7 +41,7 @@ import java.io.Serializable;
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points.
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.5 2004-07-06 05:06:28 cep21 Exp $
+ * @version $Id: BoundingVolume.java,v 1.6 2004-08-20 02:42:54 cep21 Exp $
  */
 public interface BoundingVolume extends Serializable{
 
@@ -140,12 +140,19 @@ public interface BoundingVolume extends Serializable{
      */
     public void recomputeMesh();
 
-  /**
-   * Find the distance from the center of this Bounding Volume to the given point.
-   *
-   * @param point The point to get the distance to
-   * @return distance
-   */
-  public abstract float distanceTo(Vector3f point);
+    /**
+     * Find the distance from the center of this Bounding Volume to the given point.
+     *
+     * @param point The point to get the distance to
+     * @return distance
+     */
+    public float distanceTo(Vector3f point);
+
+    /**
+     * This function stores the approximate center of the bounding volume into the store vector.
+     * For easy function usage, the store vector should be returned when the function is complete.
+     * @param store The vector to store the center in.
+     */
+    public Vector3f getCenter(Vector3f store);
 
 }

@@ -47,7 +47,7 @@ import com.jme.util.MemPool;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.12 2004-08-17 22:15:36 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.13 2004-08-20 02:42:54 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -372,6 +372,17 @@ public class BoundingBox extends Box implements BoundingVolume {
      */
     public float distanceTo(Vector3f point) {
       return center.distance(point);
+    }
+
+
+    /**
+     * Stores the current center of this BoundingBox into the store vector.
+     * @param store The vector to store the center into.
+     * @return The store vector, after setting it's contents to the center
+     */ 
+    public Vector3f getCenter(Vector3f store) {
+        store.set(center);
+        return store;
     }
 
     /**
