@@ -33,6 +33,10 @@ public class OrientedBox extends TriMesh{
     /** If true, the box's vectorStore array correctly represnts the box's corners.*/
     protected boolean correctCorners;
 
+    private static final Vector3f tempVa=new Vector3f();
+    private static final Vector3f tempVb=new Vector3f();
+    private static final Vector3f tempVc=new Vector3f();
+
     /**
      * Creates a new OrientedBox with the given name.
      * @param name The name of the new box.
@@ -216,57 +220,56 @@ public class OrientedBox extends TriMesh{
      */
     protected void computeCorners() {
         correctCorners=true;
-        Vector3f yCrossZmulX=yAxis.cross(zAxis).multLocal(extent.x);
-        Vector3f zCrossXmulY=zAxis.cross(xAxis).multLocal(extent.y);
-        Vector3f xCrossYmulZ=xAxis.cross(yAxis).multLocal(extent.z);
-        float xDotYcrossZ=xAxis.dot(yAxis.cross(zAxis));
+        float xDotYcrossZ=xAxis.dot(yAxis.cross(zAxis,tempVa));
+        Vector3f yCrossZmulX=yAxis.cross(zAxis,tempVa).multLocal(extent.x);
+        Vector3f zCrossXmulY=zAxis.cross(xAxis,tempVb).multLocal(extent.y);
+        Vector3f xCrossYmulZ=xAxis.cross(yAxis,tempVc).multLocal(extent.z);
+        
         vectorStore[0].set(
-                yCrossZmulX.add(
-                    zCrossXmulY.add(
-                        xCrossYmulZ))).
-                divideLocal(xDotYcrossZ).addLocal(center);
-
+                ((yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ)+center.x,
+                ((yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ)+center.y,
+                ((yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ)+center.z
+        );
         vectorStore[1].set(
-                yCrossZmulX.mult(-1).addLocal(
-                    zCrossXmulY.add(
-                        xCrossYmulZ))).
-                divideLocal(xDotYcrossZ).addLocal(center);
+                (-yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
+                (-yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
+                (-yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
+        );
 
         vectorStore[2].set(
-                yCrossZmulX.add(
-                    zCrossXmulY.mult(-1).addLocal(
-                        xCrossYmulZ))).
-                divideLocal(xDotYcrossZ).addLocal(center);
+                (yCrossZmulX.x + -zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
+                (yCrossZmulX.y + -zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
+                (yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
+        );
 
         vectorStore[3].set(
-                yCrossZmulX.add(
-                    zCrossXmulY.add(
-                        xCrossYmulZ.mult(-1)))).
-                divideLocal(xDotYcrossZ).addLocal(center);
+                (yCrossZmulX.x + zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
+                (yCrossZmulX.y + zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
+                (yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
+        );
 
         vectorStore[4].set(
-                yCrossZmulX.mult(-1).addLocal(
-                    zCrossXmulY.mult(-1).addLocal(
-                        xCrossYmulZ))).
-                divideLocal(xDotYcrossZ).addLocal(center);
+                (-yCrossZmulX.x + -zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
+                (-yCrossZmulX.y + -zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
+                (-yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
+        );
 
         vectorStore[5].set(
-                yCrossZmulX.mult(-1).addLocal(
-                    zCrossXmulY.add(
-                        xCrossYmulZ.mult(-1)))).
-                divideLocal(xDotYcrossZ).addLocal(center);
-
+                (-yCrossZmulX.x + zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
+                (-yCrossZmulX.y + zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
+                (-yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
+        );
         vectorStore[6].set(
-                yCrossZmulX.add(
-                    zCrossXmulY.mult(-1).addLocal(
-                        xCrossYmulZ.mult(-1)))).
-                divideLocal(xDotYcrossZ).addLocal(center);
+                (yCrossZmulX.x + -zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
+                (yCrossZmulX.y + -zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
+                (yCrossZmulX.z + -zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
+        );
 
         vectorStore[7].set(
-                yCrossZmulX.mult(-1).addLocal(
-                    zCrossXmulY.mult(-1).addLocal(
-                        xCrossYmulZ.mult(-1)))).
-                divideLocal(xDotYcrossZ).addLocal(center);
+                -(yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
+                -(yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
+                -(yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
+        );
     }
 
     /**
