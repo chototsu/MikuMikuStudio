@@ -432,7 +432,7 @@ public class SoundSystem implements ISoundSystem {
 			tmp = generateBuffers(1);
 			int chans = getChannels(vorbisInfo);
 			int rate= chans == AL10.AL_FORMAT_MONO16
-			? vorbisInfo.rate * 2
+			? vorbisInfo.rate 
 					: vorbisInfo.rate;
 			float time = (buf.length) / (rate * vorbisInfo.channels * 2);
 			tmp[0].configure(data, chans, rate, time);
