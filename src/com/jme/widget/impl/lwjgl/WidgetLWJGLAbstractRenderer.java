@@ -34,7 +34,6 @@ package com.jme.widget.impl.lwjgl;
 import java.util.Vector;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.glu.GLU;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
 import com.jme.widget.Widget;
@@ -49,7 +48,7 @@ import java.util.Iterator;
 /**
  * <code>WidgetLWJGLAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.8 2004-04-22 22:27:17 renanse Exp $
+ * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.9 2004-04-25 03:04:37 mojomonkey Exp $
  */
 public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer {
 

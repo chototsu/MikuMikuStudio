@@ -39,7 +39,6 @@ import com.jme.widget.WidgetAbstractImpl;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.WidgetRenderer;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
-import com.jme.widget.renderer.WidgetRendererFactory;
 
 
 /**
@@ -59,7 +58,7 @@ import com.jme.widget.renderer.WidgetRendererFactory;
  *  Alignment code doesn't work properly.
  *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.4 2004-04-22 22:27:16 renanse Exp $$
+ * @version $$Id: WidgetImage.java,v 1.5 2004-04-25 03:04:38 mojomonkey Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
