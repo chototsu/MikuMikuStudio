@@ -63,7 +63,7 @@ import com.jme.scene.shape.Disk;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.16 2004-09-08 17:06:39 mojomonkey Exp $
+ * @version $Id: TestClodMesh.java,v 1.17 2005-01-08 17:27:08 renanse Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
@@ -147,7 +147,6 @@ public class TestClodMesh extends SimpleGame {
         JmeBinaryReader jbr=new JmeBinaryReader();
         jbr.setProperty("texurl",stateTextureDir);
         model=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-        rootNode.attachChild(model);
     } catch (IOException e) {
         
     }
