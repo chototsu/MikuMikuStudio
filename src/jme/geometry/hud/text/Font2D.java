@@ -37,7 +37,6 @@ import java.util.logging.Level;
 
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLU;
 
 import jme.exception.MonkeyRuntimeException;
 import jme.system.DisplaySystem;
@@ -68,7 +67,6 @@ public class Font2D {
     public static final int ITALICS = 1;
 
     private GL gl = null;
-    private GLU glu = null;
 
     //texture name and 
     private int texId;
@@ -95,7 +93,6 @@ public class Font2D {
         alpha = 1.0f;
         
         gl = DisplaySystem.getDisplaySystem().getGL();
-        glu = DisplaySystem.getDisplaySystem().getGLU();
         
         if(null == gl) {
             throw new MonkeyRuntimeException("GL must be created before a call " +
@@ -137,7 +134,7 @@ public class Font2D {
     public void setColor(float r, float g, float b, float a) {
         red = r;
         green = g;
-        blue = a;
+        blue = b;
         alpha = a;
     }
     
@@ -220,8 +217,8 @@ public class Font2D {
         TextureManager.getTextureManager().bind(texId);
 
         for (int loop = 0; loop < 256; loop++) {
-            cx = (float) (loop % 16) / 16.0f;
-            cy = (float) (loop / 16) / 16.0f;
+            cx = (loop % 16) / 16.0f;
+            cy = (loop / 16) / 16.0f;
 
             gl.newList(base + loop, GL.COMPILE);
             gl.begin(GL.QUADS);

@@ -65,7 +65,6 @@ public class TrackingController extends AbstractGameController {
     
     //View of the camera
     private Vector targetView;
-    private float interpolationTime;
 
 	//Camera system
 	private Camera camera;
@@ -129,8 +128,7 @@ public class TrackingController extends AbstractGameController {
 		camera.update(time);
 		camera.updateFrustum();
         targetView = entity.getPosition();
-        interpolationTime = 0;
-        updateCameraView(time);
+        updateCameraView();
 		
 
 		double distance =
@@ -213,7 +211,7 @@ public class TrackingController extends AbstractGameController {
 		return true;
 	}
     
-    private void updateCameraView(float time) {
+    private void updateCameraView() {
             camera.setView(targetView);
     }
 

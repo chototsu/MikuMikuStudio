@@ -54,8 +54,7 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 	private int iterations; //how many faults to generate.
 	private int minDelta; //the range of height increases (min)
 	private int maxDelta; //the range of height increases (max)
-	private float filter; //the errosion filter value.
-
+	
 	/**
 	 * Constructor sets the attributes of the fault fractal system and
 	 * generates the heightmap.

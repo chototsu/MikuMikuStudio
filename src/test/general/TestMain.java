@@ -41,7 +41,6 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL;
 import jme.AbstractGame;
 import jme.entity.Entity;
-import jme.entity.effects.ParticleEmitter;
 import jme.geometry.model.md3.Md3Model;
 import jme.geometry.primitive.Pyramid;
 import jme.geometry.hud.SplashScreen;
@@ -72,29 +71,16 @@ public class TestMain extends AbstractGame {
 	private ProceduralTexture pt;
 	private SlopeLighting sl;
 	private AbstractHeightMap hm1;
-	private AbstractHeightMap hm2;
-	private AbstractHeightMap hm3;
 	private World world;
 	private Geomipmap l;
-	private int texid;
 	private Camera camera = null;
 	private Font2D font = null;
-	private float rtri = 0.0f;
-	private float rquad = 0.0f;
-	private float cnt1;
-	private float cnt2;
 	private Pyramid object;
 	Entity e;
 	private TestController cc = null;
 	protected Logger log = null;
 	private Timer timer;
-	private ParticleEmitter pe;
 	SplashScreen ss;
-
-	private static int fogMode[] = { GL.EXP, GL.EXP2, GL.LINEAR };
-	// Storage For Three Types Of Fog
-	private static int fogfilter = 0; // Which Fog Mode To Use 
-	private static float fogColor[] = { 0.5f, 0.5f, 0.5f, 1.0f }; // Fog Color
 
 	static {
 		if (GL.WGL_EXT_swap_control) {
@@ -125,8 +111,8 @@ public class TestMain extends AbstractGame {
 		if (e.getPosition().x < 200) {
 			e.getPosition().x = 200;
 		}
-
-		if (e.getPosition().z < 200) {
+        
+        if (e.getPosition().z < 200) {
 			e.getPosition().z = 200;
 		}
 		e.getPosition().y =

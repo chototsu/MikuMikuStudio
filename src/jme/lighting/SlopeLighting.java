@@ -124,10 +124,10 @@ public class SlopeLighting extends AbstractLightMap {
 					&& (x - dirX) < size
 					&& (z - dirZ) < size) {
 					shade =
-						(1.0f - ((float) (heightMap
+						(1.0f - ((heightMap
 								.getTrueHeightAtPoint(x - dirX, z - dirZ)
 								- (float) heightMap.getTrueHeightAtPoint(x, z))
-								/ (float) softness));
+								/ softness));
 					if (shade > maxBright) {
 						shade = maxBright;
 					} else if (shade < minBright) {

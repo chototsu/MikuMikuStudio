@@ -53,7 +53,7 @@ import org.lwjgl.opengl.GL;
  * 2 - BottomRight<br>
  * 
  * @author Samuel Wasson
- * @version $Id: Triangle.java,v 1.1 2003-08-08 02:31:25 swasson Exp $
+ * @version $Id: Triangle.java,v 1.2 2003-08-19 02:10:14 mojomonkey Exp $
  */
 
 public class Triangle extends Primitive {
@@ -147,9 +147,9 @@ public class Triangle extends Primitive {
 			}
 		}
 		//set up bounding volumes.
-		boundingBox = new BoundingBox(new Vector(), new Vector(-(float)size,-(float)size,-(float)size),
-			new Vector((float)size,(float)size,(float)size));
-		boundingSphere = new BoundingSphere((float)size, null);
+		boundingBox = new BoundingBox(new Vector(), new Vector(-size,-size,-size),
+			new Vector(size,size,size));
+		boundingSphere = new BoundingSphere(size, null);
 		
 	}
 	

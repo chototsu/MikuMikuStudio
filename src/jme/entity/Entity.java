@@ -263,8 +263,21 @@ public class Entity implements EntityInterface {
         return position;
     }
     
+    /**
+     * <code>getPhysics</code> returns the physics module of the particular
+     * entity.
+     * @return the physics module of the entity.
+     */
     public PhysicsModule getPhysics() {
         return physics;
+    }
+    
+    /**
+     * <code>getId</code> returns the id of the entity.
+     * @return the id of the entity.
+     */
+    public int getId() {
+        return id;
     }
 
     /**

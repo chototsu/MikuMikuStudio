@@ -160,7 +160,7 @@ public abstract class Terrain implements Locale {
 		gl.fogfv(GL.FOG_COLOR, 
 			Sys.getDirectBufferAddress(
 			temp.asFloatBuffer().put(color)));
-		//gl.fogf(GL.FOG_DENSITY, density);
+		gl.fogf(GL.FOG_DENSITY, density);
 		gl.fogf(GL.FOG_START, start);
 		gl.fogf(GL.FOG_END, end);
 	}

@@ -64,7 +64,6 @@ public class Frustum {
     private float[] clip;
     private FloatBuffer projBuf;
     private FloatBuffer modlBuf;
-    private FloatBuffer clipBuf;
 
     /**
      * Constructor instantiates a new <code>Frustum</code> object. This 
@@ -83,11 +82,6 @@ public class Frustum {
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
         modlBuf =
-            ByteBuffer
-                .allocateDirect(64)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        clipBuf =
             ByteBuffer
                 .allocateDirect(64)
                 .order(ByteOrder.nativeOrder())

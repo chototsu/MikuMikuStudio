@@ -60,8 +60,6 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 	private int maxParticles;
 	private float caldera;
 
-	private float filter = 0.7f;
-
 	/**
 	 * Constructor sets the attributes of the Particle Deposition
 	 * Height Map and then generates the map.

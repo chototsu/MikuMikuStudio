@@ -160,8 +160,7 @@ public class Md3Model implements Geometry {
     private static final int START_TORSO_ANIMATION = 6;
     private static final int START_LEGS_ANIMATION = 13;
     private static final int MAX_ANIMATIONS = 25;
-    private final static int MAX_TEXTURES = 100;
-
+    
     /**
      * Constructor instantiates a new <code>Md3Model</code> object. During
      * creation, the model is loaded and initialized.
@@ -522,7 +521,6 @@ public class Md3Model implements Geometry {
 
     private boolean importMD3(Model3D pModel, String file) {
         System.out.println("LOADING: " + file);
-        InputStream is = null;
         int fileSize = 0;
         File f = new File(file);
         try {
@@ -912,7 +910,6 @@ public class Md3Model implements Geometry {
 
         // Open the skin file
         InputStream is = null;
-        int fileSize = 0;
         try {
             is = new FileInputStream(strSkin);
             // wrap a buffer to make reading more efficient (faster)
@@ -985,7 +982,6 @@ public class Md3Model implements Geometry {
         }
         
         InputStream is = null;
-        int fileSize = 0;
         try {
             is = new FileInputStream(shaderFile);
             BufferedReader reader =
@@ -1068,13 +1064,11 @@ public class Md3Model implements Geometry {
         AnimationInfo[] animations = new AnimationInfo[MAX_ANIMATIONS];
 
         InputStream is = null;
-        int fileSize = 0;
         try {
             is = new FileInputStream(configFile);
             BufferedReader reader =
                 new BufferedReader(new InputStreamReader(is));
             
-            String word = "";
             String line = "";
             int currentAnim = 0;
             int torsoOffset = 0;
@@ -1402,7 +1396,7 @@ public class Md3Model implements Geometry {
          * the size of the MD3 file.
          */
         int fileSize;
-    };
+    }
 
     /**
      * <code>Md3MeshInfo</code> stores information about each mesh of the 
@@ -1453,7 +1447,7 @@ public class Md3Model implements Geometry {
          * the total size of the mesh.
          */
         int meshSize;
-    };
+    }
 
     /**
      * <code>Md3Skin</code> contains the skin name.
@@ -1463,7 +1457,7 @@ public class Md3Model implements Geometry {
          * the name of the skin.
          */
         String name;
-    };
+    }
 
     /**
      * 
@@ -1471,7 +1465,7 @@ public class Md3Model implements Geometry {
      */
     private class Md3TexCoord {
         float[] textureCoord = new float[2];
-    };
+    }
 
     /**
      * 
@@ -1490,7 +1484,7 @@ public class Md3Model implements Geometry {
          * the rotation of the tag.
          */
         float[] rotation = new float[9];
-    };
+    }
 
     /**
      * 
@@ -1517,7 +1511,7 @@ public class Md3Model implements Geometry {
          * the modeler used to create the bone.
          */
         String creator;
-    };
+    }
 
     /**
      * 
@@ -1532,7 +1526,7 @@ public class Md3Model implements Geometry {
          * the normal values for the triangle.
          */
         int[] normal = new int[2];
-    };
+    }
 
     /**
      * 
@@ -1548,7 +1542,7 @@ public class Md3Model implements Geometry {
          * the texture coordinates for the face.
          */
         int[] coordIndex = new int[3];
-    };
+    }
 
     /**
      * 
@@ -1589,7 +1583,7 @@ public class Md3Model implements Geometry {
          * v offset of the texture.
          */
         float vOffset;
-    };
+    }
 
     /**
      * 
@@ -1637,7 +1631,7 @@ public class Md3Model implements Geometry {
          * the faces of the object.
          */
         Face[] faces;
-    };
+    }
 
     /**
      * 
@@ -1665,7 +1659,7 @@ public class Md3Model implements Geometry {
          * how many frames per second used for the animations.
          */
         int framesPerSecond;
-    };
+    }
 
     /**
      * 
@@ -1729,5 +1723,5 @@ public class Md3Model implements Geometry {
          * model tags for animation.
          */
         Md3Tag[] tags;
-    };
+    }
 }

@@ -39,7 +39,6 @@ import jme.AbstractGame;
 import jme.system.DisplaySystem;
 import jme.utility.Timer;
 import jme.math.Vector;
-import jme.controller.BaseFPSController;
 import jme.geometry.hud.text.Font2D;
 import jme.geometry.primitive.Triangle;
 
@@ -55,7 +54,6 @@ import jme.geometry.primitive.Triangle;
 public class TestPolygon extends AbstractGame {
 	
 	private Timer timer;
-	private BaseFPSController controller;
 	private Font2D font;
 	private Triangle triangle;
 	private Vector[] points;

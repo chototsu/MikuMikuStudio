@@ -54,7 +54,7 @@ import org.lwjgl.opengl.GL;
  * 3 - BottomLeft<br>
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.3 2003-08-08 19:00:28 mojomonkey Exp $
+ * @version $Id: Quad.java,v 1.4 2003-08-19 02:10:14 mojomonkey Exp $
  */
 public class Quad extends Primitive {
     private GL gl;
@@ -152,8 +152,8 @@ public class Quad extends Primitive {
 			}
 		}
 		//set up bounding volumes.
-		boundingBox = new BoundingBox(new Vector(), new Vector(-(float)size,-(float)size,-(float)size),
-			new Vector((float)size,(float)size,(float)size));
+		boundingBox = new BoundingBox(new Vector(), new Vector(-size,-size,-size),
+			new Vector(size,size,size));
 		boundingSphere = new BoundingSphere();
 		boundingSphere.containAABB(points);
     }

@@ -66,7 +66,8 @@ public class SkyDome implements Sky {
 	private float vTile;
 
 	//attributes for animation
-	private float xSpeed, ySpeed;
+	private float xSpeed;
+    private float ySpeed;
 	private float xTexAnimation = 0.0f;
 	private float yTexAnimation = 0.0f;
 	private float rotationSpeed;
@@ -165,7 +166,7 @@ public class SkyDome implements Sky {
 	 */
 	public void update(float time) {
 		xTexAnimation += xSpeed * time / 10000;
-		yTexAnimation += xSpeed * time / 10000;
+		yTexAnimation += ySpeed * time / 10000;
 		rotation += rotationSpeed * time;
 
 		if (rotation > 360 || rotation < 0) {

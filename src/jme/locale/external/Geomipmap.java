@@ -324,12 +324,12 @@ public class Geomipmap extends Terrain {
 		float midZ;
 		float texRight;
 		float texTop;
-		float halfSize = (float) size / 2.0f;
+		float halfSize = size / 2.0f;
 		//set up the texture coordinates for the four corners of the fan.
-		texLeft = ((float) Math.abs(x - halfSize) / terrainSize);
-		texBottom = ((float) Math.abs(z - halfSize) / terrainSize);
-		texRight = ((float) Math.abs(x + halfSize) / terrainSize);
-		texTop = ((float) Math.abs(z + halfSize) / terrainSize);
+		texLeft = (Math.abs(x - halfSize) / terrainSize);
+		texBottom = (Math.abs(z - halfSize) / terrainSize);
+		texRight = (Math.abs(x + halfSize) / terrainSize);
+		texTop = (Math.abs(z + halfSize) / terrainSize);
 
 		//set up the coordinate of the middle of the fan.
 		midX = ((texLeft + texRight) / 2);
@@ -428,7 +428,7 @@ public class Geomipmap extends Terrain {
 
 		//set up the neighbors for the fans. This will be based on the
 		//LOD level.
-		float fsize = (float) patchSize;
+		float fsize = patchSize;
 		int divisor = patchSize - 1;
 		int LOD = patches[patch].LOD;
 

@@ -96,7 +96,7 @@ public class ProceduralTexture {
 		BufferedImage img =
 			new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_RGB);
 		DataBufferInt data =
-			(DataBufferInt) ((BufferedImage) img).getRaster().getDataBuffer();
+			(DataBufferInt) img.getRaster().getDataBuffer();
 		int[] pixels = data.getData();
 
 		//tempvalues for the color
@@ -118,8 +118,7 @@ public class ProceduralTexture {
 					BufferedImage tempImg =
 						((TextureTile) textureList.get(i)).imageData;
 					data =
-						(DataBufferInt) ((BufferedImage) tempImg)
-							.getRaster()
+						(DataBufferInt) tempImg.getRaster()
 							.getDataBuffer();
 					pixels = data.getData();
 					
