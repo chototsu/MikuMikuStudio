@@ -128,7 +128,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.26 2004-06-29 23:20:57 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.27 2004-07-02 02:33:29 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1011,9 +1011,6 @@ public class LWJGLRenderer implements Renderer {
       g.setVBOVertexID(buf.get(0));
       GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOVertexID());
       GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
-                                      (FloatBuffer)null,
-                                      GL15.GL_STATIC_DRAW);
-      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
                                       g.getVerticeAsFloatBuffer(),
                                       GL15.GL_STATIC_DRAW);
       buf.clear();
@@ -1023,9 +1020,6 @@ public class LWJGLRenderer implements Renderer {
       g.setVBONormalID(buf.get(0));
       GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBONormalID());
       GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
-                                      (FloatBuffer)null,
-                                      GL15.GL_STATIC_DRAW);
-      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
                                       g.getNormalAsFloatBuffer(),
                                       GL15.GL_STATIC_DRAW);
       buf.clear();
@@ -1034,9 +1028,6 @@ public class LWJGLRenderer implements Renderer {
       GL15.glGenBuffers(buf);
       g.setVBOColorID(buf.get(0));
       GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
-      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 4 * 4,
-                                      (FloatBuffer)null,
-                                      GL15.GL_STATIC_DRAW);
       GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 4 * 4,
                                       g.getColorAsFloatBuffer(),
                                       GL15.GL_STATIC_DRAW);
@@ -1050,10 +1041,6 @@ public class LWJGLRenderer implements Renderer {
           g.setVBOTextureID(i, buf.get(0));
           GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER,
                                           g.getVBOTextureID(i));
-          GL15.glBufferData(GL15.GL_ARRAY_BUFFER,
-                                          verts * 2 * 4,
-                                          (FloatBuffer)null,
-                                          GL15.GL_STATIC_DRAW);
           GL15.glBufferData(GL15.GL_ARRAY_BUFFER,
                                           verts * 2 * 4,
                                           g.getTextureAsFloatBuffer(i),
