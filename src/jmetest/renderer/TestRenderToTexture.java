@@ -49,16 +49,17 @@ import java.nio.*;
  * @author Joshua Slack
  */
 public class TestRenderToTexture extends SimpleGame {
-    private TriMesh t;
+    private TriMesh t, t2;
     private Camera cam;
     private Node root;
-    private Node scene;
+    private Node scene, fake;
     private InputController input;
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
     private float angle = 0;
     private Vector3f axis;
+    private TextureState ts;
 
   /** Pbuffer instance */
   private static Pbuffer pbuffer;
@@ -92,8 +93,10 @@ public class TestRenderToTexture extends SimpleGame {
         timer.update();
         input.update(timer.getTimePerFrame());
 
-        t.setLocalRotation(rotQuat);
+//        t.setLocalRotation(rotQuat);
+        t2.setLocalRotation(rotQuat);
         scene.updateGeometricState(0.0f, true);
+        fake.updateGeometricState(0.0f, true);
     }
 
   private void initPbuffer() {
@@ -128,8 +131,8 @@ public class TestRenderToTexture extends SimpleGame {
 
             pbuffer.makeCurrent();
             display.getRenderer().clearBuffers();
-              display.getRenderer().getCamera().update();
-            display.getRenderer().draw(root);
+            scene.unsetStates();
+            display.getRenderer().draw(fake);
             GL.glBindTexture(GL.GL_TEXTURE_2D, tex_handle);
             GL.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_COMPRESSED_RGB, 0, 0, 512, 512, 0);
             pbuffer.releaseContext();
@@ -138,6 +141,7 @@ public class TestRenderToTexture extends SimpleGame {
             e.printStackTrace();
             System.exit(0);
         }
+        scene.setRenderState(ts);
 
         display.getRenderer().clearBuffers();
             GL.glPushMatrix();
@@ -186,7 +190,7 @@ public class TestRenderToTexture extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonController(this, cam, "LWJGL");
-        input.setKeySpeed(2f);
+        input.setKeySpeed(5f);
         input.setMouseSpeed(.5f);
         timer = Timer.getTimer("LWJGL");
 
@@ -233,6 +237,7 @@ public class TestRenderToTexture extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         scene = new Node("3D Scene Node");
         root = new Node("Root Scene Node");
+        fake = new Node("Fake node");
 
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
@@ -247,6 +252,14 @@ public class TestRenderToTexture extends SimpleGame {
 
         scene.attachChild(t);
         root.attachChild(scene);
+
+        t2 = new Box("Box", min,max);
+        t2.setModelBound(new BoundingSphere());
+        t2.updateModelBound();
+
+        t2.setLocalTranslation(new Vector3f(0,0,0));
+
+        fake.attachChild(t2);
 
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
@@ -270,12 +283,12 @@ public class TestRenderToTexture extends SimpleGame {
                     (float)Math.random(),
                     (float)Math.random(),1);
         }
-//        t.setColors(colors);
+        t2.setColors(colors);
 
 
 //        TextureState ts = display.getRenderer().getTextureState();
 //                ts.setEnabled(true);
-            TextureState ts = display.getRenderer().getTextureState();
+            ts = display.getRenderer().getTextureState();
             Texture tex = new Texture();
             ts.setEnabled(true);
             tex.setTextureId(tex_handle);
