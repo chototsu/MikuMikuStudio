@@ -71,7 +71,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: PropertiesDialog2.java,v 1.1 2004-06-28 21:17:54 ericthered Exp $
+ * @version $Id: PropertiesDialog2.java,v 1.2 2004-06-28 22:16:56 ericthered Exp $
  */
 public final class PropertiesDialog2 extends JDialog {
 
@@ -392,7 +392,7 @@ public final class PropertiesDialog2 extends JDialog {
         for (int i = 0; i < modes.length; i++) {
             //Filter out all bit depths lower than 16 - Java incorrectly reports
             //them as valid depths though the monitor does not support them
-            if (modes[i].getBitDepth() <= 16) continue;
+            if (modes[i].getBitDepth() < 16) continue;
             
             String res = modes[i].getWidth() + " x " + modes[i].getHeight();
             String depth = String.valueOf(modes[i].getBitDepth()) + " bpp";
