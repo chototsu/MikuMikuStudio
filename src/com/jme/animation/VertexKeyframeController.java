@@ -1,33 +1,33 @@
-/* 
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding 
- * All rights reserved. 
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- * 
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE. 
- * 
+/*
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 package com.jme.animation;
 
@@ -40,12 +40,12 @@ import com.jme.system.JmeException;
 
 /**
  * <code>VertexKeyframeController</code> controls animation of a particular
- * model using a collection of keyframe models. Each model represents a 
+ * model using a collection of keyframe models. Each model represents a
  * state of the displayed model at a certain (regular) time frame. Essentially,
  * the displayed model is morphed from one keyframe to another giving the
- * impression of movement. 
+ * impression of movement.
  * @author Mark Powell
- * @version $Id: VertexKeyframeController.java,v 1.3 2004-03-01 22:15:25 mojomonkey Exp $
+ * @version $Id: VertexKeyframeController.java,v 1.4 2004-03-31 21:59:14 renanse Exp $
  */
 public class VertexKeyframeController extends Controller {
 	private TriMesh[] keyframes;
@@ -70,6 +70,7 @@ public class VertexKeyframeController extends Controller {
 	 * @see com.jme.scene.Controller#update(float)
 	 */
 	public void update(float time) {
+          time *= getSpeed();
 		//determine repeat type. This defines how the current time
 		//and keyframes are loaded.
 		if (getRepeatType() == Controller.RT_CLAMP) {
@@ -279,7 +280,7 @@ public class VertexKeyframeController extends Controller {
 	}
 
 	/**
-	 * <code>setMaxFrame</code> sets the maximum keyframe to display. 
+	 * <code>setMaxFrame</code> sets the maximum keyframe to display.
 	 * This allows the user to define a subgroup of the total keyframes
 	 * to display. Effectively allowing the keyframes to define multiple
 	 * animations and the user to switch between different animations.
@@ -306,7 +307,7 @@ public class VertexKeyframeController extends Controller {
 	}
 
 	/**
-	 * <code>setMinFrame</code> sets the minimum keyframe to display. 
+	 * <code>setMinFrame</code> sets the minimum keyframe to display.
 	 * This allows the user to define a subgroup of the total keyframes
 	 * to display. Effectively allowing the keyframes to define multiple
 	 * animations and the user to switch between different animations.
