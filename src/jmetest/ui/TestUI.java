@@ -41,7 +41,7 @@ import com.jme.ui.*;
 
 /**
  * @author schustej
- * 
+ *
  * TODO To change the template for this generated type comment go to Window -
  * Preferences - Java - Code Style - Code Templates
  */
@@ -81,11 +81,11 @@ public class TestUI extends BaseGame {
      * The UI component's node
      */
     protected Node uiNode;
-    
+
     /*
      * UI Components
      */
-    
+
     UIButton _button = null;
     UICheck  _check = null;
     UIBillboard _bill = null;
@@ -97,7 +97,7 @@ public class TestUI extends BaseGame {
 
     /**
      * initializes the display and camera.
-     * 
+     *
      * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
@@ -121,7 +121,7 @@ public class TestUI extends BaseGame {
          * Create the input system
          */
         InputSystem.createInputSystem(properties.getRenderer());
-        
+
         /*
          * Set the background color for the window
          */
@@ -132,8 +132,8 @@ public class TestUI extends BaseGame {
          * This is a specialized input handler
          * for interacting with UI... you may of
          * course add other input handlers
-         * 
-         * Be sure to call the update method of the input handler 
+         *
+         * Be sure to call the update method of the input handler
          * during the update phase
          */
         input = new InputHandler();
@@ -166,7 +166,7 @@ public class TestUI extends BaseGame {
 
     /**
      * initializes the scene
-     * 
+     *
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
@@ -233,7 +233,7 @@ public class TestUI extends BaseGame {
         as2.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
         as2.setTestEnabled(true);
         as2.setTestFunction(AlphaState.TF_GREATER);
-        
+
         /*
          * The absolute mouse
          */
@@ -242,7 +242,7 @@ public class TestUI extends BaseGame {
         cursor.setEnabled(true);
         cursor.setTexture(TextureManager.loadTexture(TestAbsoluteMouse.class.getClassLoader().getResource(
                 "jmetest/data/cursor/cursor1.png"), Texture.MM_LINEAR, Texture.FM_LINEAR, true));
-        
+
         /*
          * Add the cursor texture to the mouse
          */
@@ -262,7 +262,7 @@ public class TestUI extends BaseGame {
          * so the UIObjects can retrieve it
          */
         input.setMouse( mouse);
-        
+
         /*
          * The texture for the font
          */
@@ -288,11 +288,11 @@ public class TestUI extends BaseGame {
         mouseText.setRenderState(font);
         mouseText.setRenderState(as1);
         mouseText.setLocalTranslation(new Vector3f(1, 15, 0));
-        
+
         /*
-         * UI Objects 
+         * UI Objects
          */
-        
+
         _button = new UIButton( "button",
                 					input,
                 					"jmetest/data/images/buttonup.png",
@@ -301,7 +301,7 @@ public class TestUI extends BaseGame {
                 					100,
                 					100,
                 					1.0f);
-        
+
         _check = new UICheck( "check",
                 					input,
                 					"jmetest/data/images/checkup.png",
@@ -311,13 +311,13 @@ public class TestUI extends BaseGame {
                 					100,
                 					200,
                 					1.0f);
-        
+
         _bill = new UIBillboard( "bill",
                 					"jmetest/data/images/Monkey.png",
                 					100,
                 					300,
                 					0.5f);
-        
+
         /*
          * Put everything together
          */
@@ -340,7 +340,7 @@ public class TestUI extends BaseGame {
         uiNode.attachChild( _button);
         uiNode.attachChild( _check);
         uiNode.attachChild( _bill);
-        
+
         /*
          * root Node
          */
@@ -364,7 +364,7 @@ public class TestUI extends BaseGame {
 
         rootNode.updateGeometricState(0.0f, true);
         rootNode.updateRenderState();
-        
+
         /*
          * Key bindings
          */
@@ -372,18 +372,15 @@ public class TestUI extends BaseGame {
 		input.addKeyboardAction( "toggle_wire", KeyInput.KEY_T, new KeyToggleRenderState( wireState, rootNode));
 		input.addKeyboardAction( "toggle_lights", KeyInput.KEY_L, new KeyToggleRenderState( lightState, rootNode));
 		input.addKeyboardAction( "toggle_bounds", KeyInput.KEY_B, new KeyToggleBoolean( showBounds));
-		
+
     }
 
     /**
      * Not used.
-     * 
+     *
      * @see com.jme.app.SimpleGame#update()
      */
     protected final void update(float interpolation) {
-
-        input.update( interpolation);
-        
         /*
          * update the timer and the fps text
          */
@@ -405,12 +402,12 @@ public class TestUI extends BaseGame {
          */
         _button.update();
         _check.update();
-        
+
     }
 
     /**
      * draws the scene graph
-     * 
+     *
      * @see com.jme.app.SimpleGame#render()
      */
     protected void render(float interpolation) {
@@ -432,7 +429,7 @@ public class TestUI extends BaseGame {
 
     /**
      * not used.
-     * 
+     *
      * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
@@ -440,7 +437,7 @@ public class TestUI extends BaseGame {
     }
 
     /**
-     * 
+     *
      * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
@@ -450,7 +447,7 @@ public class TestUI extends BaseGame {
 
     /**
      * Entry point for the test,
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {
