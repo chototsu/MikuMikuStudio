@@ -77,15 +77,19 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.40 2004-08-21 06:18:33 cep21 Exp $
+ * @version $Id: Renderer.java,v 1.41 2004-08-22 18:42:25 cep21 Exp $
  */
 public interface Renderer {
 
-    // TODO: Javadoc these
+    /** The Spatial will inherit its render queue state from its parent.  */
     public final static int QUEUE_INHERIT      = 0;
+    /** The Spatial will skip render queueing.  */
     public final static int QUEUE_SKIP         = 1;
+    /** The Spatial will render in the opaque bucket.  */
     public final static int QUEUE_OPAQUE       = 2;
+    /** The Spatial will render in the transparent bucket.  */
     public final static int QUEUE_TRANSPARENT  = 3;
+    /** The Spatial will render in the ortho bucket.  */
     public final static int QUEUE_ORTHO        = 4;
 
     /**
