@@ -219,7 +219,7 @@ public class TestAlphaState extends SimpleGame {
         cam.update();
 
         scene.updateGeometricState(0.0f, true);
-
+        scene.updateRenderState();
     }
     /**
      * not used.

@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.9 2004-04-02 21:14:48 mojomonkey Exp $
+ * @version $Id: TestMd2.java,v 1.10 2004-04-16 19:21:40 renanse Exp $
  */
 public class TestMd2 extends SimpleGame {
   LightState state;
@@ -187,12 +187,12 @@ public class TestMd2 extends SimpleGame {
     am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
     am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
     am.setLocation(new Vector3f(25, 10, 10));
-    
+
     PointLight am2 = new PointLight();
     am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
     am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
     am2.setLocation(new Vector3f( -25, 10, 0));
-    
+
     DirectionalLight dr = new DirectionalLight();
     dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
     dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
@@ -220,6 +220,7 @@ public class TestMd2 extends SimpleGame {
 
     model.getAnimationController().setRepeatType(Controller.RT_WRAP);
     model.updateGeometricState(0, true);
+    model.updateRenderState();
 
     AlphaState as1 = display.getRenderer().getAlphaState();
     as1.setBlendEnabled(true);
@@ -249,6 +250,7 @@ public class TestMd2 extends SimpleGame {
     fpsNode.setForceView(true);
 
     fpsNode.updateGeometricState(0.0f, true);
+    fpsNode.updateRenderState();
 
     keyframeSelector = new Md2KeyframeSelector( (VertexKeyframeController)
                                                model.getAnimationController());

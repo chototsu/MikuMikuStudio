@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -45,7 +45,7 @@ import com.jme.system.JmeException;
 /**
  * <code>TestFogState</code>
  * @author Mark Powell
- * @version 
+ * @version
  */
 public class TestFogState extends SimpleGame {
     private TriMesh t, t2;
@@ -53,7 +53,7 @@ public class TestFogState extends SimpleGame {
     private Node scene;
 
     /**
-     * Entry point for the test, 
+     * Entry point for the test,
      * @param args
      */
     public static void main(String[] args) {
@@ -70,7 +70,7 @@ public class TestFogState extends SimpleGame {
 
     }
 
-    /** 
+    /**
      * clears the buffers and then draws the TriMesh.
      * @see com.jme.app.SimpleGame#render()
      */
@@ -117,7 +117,7 @@ public class TestFogState extends SimpleGame {
 
     }
 
-    /** 
+    /**
      * builds the trimesh.
      * @see com.jme.app.SimpleGame#initGame()
      */
@@ -158,7 +158,7 @@ public class TestFogState extends SimpleGame {
         t = new TriMesh("Triangle", verts, null, color, null, indices);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
-        
+
         Vector3f[] verts2 = new Vector3f[3];
         ColorRGBA[] color2 = new ColorRGBA[3];
 
@@ -202,7 +202,7 @@ public class TestFogState extends SimpleGame {
         scene.attachChild(t);
         scene.attachChild(t2);
         scene.setLocalTranslation(new Vector3f(0,-25,0));
-        
+
         FogState fs = display.getRenderer().getFogState();
         fs.setDensity(0.5f);
         fs.setEnabled(true);
@@ -212,11 +212,11 @@ public class TestFogState extends SimpleGame {
         fs.setDensityFunction(FogState.DF_LINEAR);
         fs.setApplyFunction(FogState.AF_PER_VERTEX);
         scene.setRenderState(fs);
-        
+
         cam.update();
 
         scene.updateGeometricState(0.0f, true);
-
+        scene.updateRenderState();
     }
     /**
      * not used.
@@ -226,7 +226,7 @@ public class TestFogState extends SimpleGame {
 
     }
 
-    /** 
+    /**
      * Not used.
      * @see com.jme.app.SimpleGame#cleanup()
      */

@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -56,7 +56,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.7 2004-04-02 21:18:22 mojomonkey Exp $
+ * @version $Id: TestLightState.java,v 1.8 2004-04-16 19:21:38 renanse Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;
@@ -65,7 +65,7 @@ public class TestLightState extends SimpleGame {
     private InputHandler input;
 
     /**
-     * Entry point for the test, 
+     * Entry point for the test,
      * @param args
      */
     public static void main(String[] args) {
@@ -82,7 +82,7 @@ public class TestLightState extends SimpleGame {
         input.update(0.25f);
     }
 
-    /** 
+    /**
      * clears the buffers and then draws the TriMesh.
      * @see com.jme.app.SimpleGame#render()
      */
@@ -124,47 +124,47 @@ public class TestLightState extends SimpleGame {
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
-        
+
         input = new FirstPersonHandler(this, cam, "LWJGL");
         display.setTitle("Light State Test");
 
     }
 
-    /** 
+    /**
      * builds the trimesh.
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         Vector3f max = new Vector3f(10,10,10);
         Vector3f min = new Vector3f(0,0,0);
-        
+
         t = new Box("Box", min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
-        
+
         Pyramid t2 = new Pyramid("Pyramid", 10,20);
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
-        
+
         t.setLocalTranslation(new Vector3f(0,0,-10));
-        
+
         t2.setLocalTranslation(new Vector3f(-20,0,0));
-        
+
         scene = new Node("Scene graph node");
         scene.attachChild(t);
         scene.attachChild(t2);
-        
+
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
-        
+
         SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         am.setDirection(new Vector3f(-1, -0.5f, 0));
         am.setLocation(new Vector3f(25, 10, 0));
         am.setAngle(15);
-        
+
         SpotLight am2 = new SpotLight();
         am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
@@ -190,7 +190,7 @@ public class TestLightState extends SimpleGame {
         scene.setRenderState(state);
         scene.setRenderState(buf);
         cam.update();
-        
+
         TextureState ts = display.getRenderer().getTextureState();
                 ts.setEnabled(true);
                 ts.setTexture(
@@ -199,16 +199,16 @@ public class TestLightState extends SimpleGame {
                         Texture.MM_LINEAR,
                         Texture.FM_LINEAR,
                         true));
-                        
+
         WireframeState ws = display.getRenderer().getWireframeState();
         ws.setEnabled(false);
         //t2.setRenderState(ws);
-                        
+
         scene.setRenderState(ts);
-        
+
 
         scene.updateGeometricState(0.0f, true);
-
+        scene.updateRenderState();
     }
     /**
      * not used.
@@ -218,7 +218,7 @@ public class TestLightState extends SimpleGame {
 
     }
 
-    /** 
+    /**
      * Not used.
      * @see com.jme.app.SimpleGame#cleanup()
      */

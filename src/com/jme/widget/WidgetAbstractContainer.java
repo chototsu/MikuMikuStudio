@@ -2,38 +2,38 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 /*
  * EDIT:  04/02/2004 - Renamed methods get/setInputController to get/setInputHandler. GOP
  */
- 
+
 package com.jme.widget;
 
 import java.util.ArrayList;
@@ -66,19 +66,19 @@ import com.jme.widget.util.WidgetNotifier;
 public abstract class WidgetAbstractContainer extends Node implements Widget {
     private class WidgetContainerImpl extends WidgetAbstractImpl {
 
-        /** <code>initWidgetRenderer</code> 
-         * 
+        /** <code>initWidgetRenderer</code>
+         *
          * @see com.jme.widget.Widget#initWidgetRenderer()
          */
         public void initWidgetRenderer() {}
 
-		/** <code>drawBounds</code> 
+		/** <code>drawBounds</code>
 		 * @param r
 		 * @see com.jme.scene.Spatial#drawBounds(com.jme.renderer.Renderer)
 		 */
 		public void drawBounds(Renderer r) {
 			//do nothing
-			
+
 		}
     }
 
@@ -289,7 +289,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.setMouseOwner(widget);
     }
 
-    /** <code>getWidgetUnderMouse</code> 
+    /** <code>getWidgetUnderMouse</code>
      * @return
      * @see com.jme.widget.Widget#getWidgetUnderMouse()
      */
@@ -297,7 +297,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         return widgetImpl.getWidgetUnderMouse();
     }
 
-    /** <code>setWidgetUnderMouse</code> 
+    /** <code>setWidgetUnderMouse</code>
      * @param widget
      * @see com.jme.widget.Widget#setWidgetUnderMouse(com.jme.widget.Widget)
      */
@@ -305,7 +305,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.setWidgetUnderMouse(widget);
     }
 
-    /** <code>getLastWidgetUnderMouse</code> 
+    /** <code>getLastWidgetUnderMouse</code>
      * @return
      * @see com.jme.widget.Widget#getLastWidgetUnderMouse()
      */
@@ -313,7 +313,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         return widgetImpl.getLastWidgetUnderMouse();
     }
 
-    /** <code>setLastWidgetUnderMouse</code> 
+    /** <code>setLastWidgetUnderMouse</code>
      * @param widget
      * @see com.jme.widget.Widget#setLastWidgetUnderMouse(com.jme.widget.Widget)
      */
@@ -321,7 +321,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.setLastWidgetUnderMouse(widget);
     }
 
-    /** <code>getWidgetRenderer</code> 
+    /** <code>getWidgetRenderer</code>
      * @return
      * @see com.jme.widget.Widget#getWidgetRenderer()
      */
@@ -329,7 +329,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         return widgetImpl.getWidgetRenderer();
     }
 
-    /** <code>setWidgetRenderer</code> 
+    /** <code>setWidgetRenderer</code>
      * @param widgetRenderer
      * @see com.jme.widget.Widget#setWidgetRenderer(com.jme.widget.WidgetRenderer)
      */
@@ -351,7 +351,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         return widgetImpl.getInputHandler();
     }
 
-    /** 
+    /**
      * @see com.jme.widget.Widget#setInputHandler(com.jme.input.InputHandler)
      */
     public void setInputHandler(AbstractInputHandler ih) {
@@ -881,7 +881,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         return widgetImpl.getNotifierMouseMove();
     }
 
-    /** <code>getTextureCoords</code> 
+    /** <code>getTextureCoords</code>
      * @return
      * @see com.jme.widget.Widget#getTextureCoords()
      */
@@ -889,7 +889,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         return widgetImpl.getTextureCoords();
     }
 
-    /** <code>setTextureCoords</code> 
+    /** <code>setTextureCoords</code>
      * @param coords
      * @see com.jme.widget.Widget#setTextureCoords(com.jme.widget.WidgetTextureCoords)
      */
@@ -923,8 +923,8 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.deleteMouseButtonDownObserver(o);
     }
 
-    /** <code>deleteMouseButtonDownObservers</code> 
-     * 
+    /** <code>deleteMouseButtonDownObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseButtonDownObservers()
      */
     public void deleteMouseButtonDownObservers() {
@@ -952,8 +952,8 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.deleteMouseButtonUpObserver(o);
     }
 
-    /** <code>deleteMouseButtonUpObservers</code> 
-     * 
+    /** <code>deleteMouseButtonUpObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseButtonUpObservers()
      */
     public void deleteMouseButtonUpObservers() {
@@ -981,8 +981,8 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.deleteMouseMoveObserver(o);
     }
 
-    /** <code>deleteMouseMoveObservers</code> 
-     * 
+    /** <code>deleteMouseMoveObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseMoveObservers()
      */
     public void deleteMouseMoveObservers() {
@@ -1010,8 +1010,8 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.deleteMouseDragObserver(o);
     }
 
-    /** <code>deleteMouseDragObservers</code> 
-     * 
+    /** <code>deleteMouseDragObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseDragObservers()
      */
     public void deleteMouseDragObservers() {
@@ -1039,8 +1039,8 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.deleteMouseEnterObserver(o);
     }
 
-    /** <code>deleteMouseEnterObservers</code> 
-     * 
+    /** <code>deleteMouseEnterObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseEnterObservers()
      */
     public void deleteMouseEnterObservers() {
@@ -1068,8 +1068,8 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         widgetImpl.deleteMouseExitObserver(o);
     }
 
-    /** <code>deleteMouseExitObservers</code> 
-     * 
+    /** <code>deleteMouseExitObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseExitObservers()
      */
     public void deleteMouseExitObservers() {

@@ -30,18 +30,18 @@ public class TestFadeInOutTransientEffect extends SimpleGame {
 	private Node rootNode, fadeOutNode, fadeInNode;
 	private Text fps;
 	private Timer timer;
-	
+
 	private TextureRenderer tRen;
 	private Texture fadeInT, fadeOutT;
-	
-	private Quad fadeIn, fadeOut; 
-	
+
+	private Quad fadeIn, fadeOut;
+
 	protected void update(float interpolation) {
 		fps.print("FPS: " + (int) timer.getFrameRate() + ", "
 				+ display.getRenderer().getStatistics() + ", Memory Usage:"
 				+ (Runtime.getRuntime().freeMemory()/(1024*1024)) + "Mb/"
 				+ (Runtime.getRuntime().totalMemory()/(1024*1024)) + "Mb");
-		
+
 		rootNode.updateWorldData(timer.getTimePerFrame() * 10);
 	}
 	protected void render(float interpolation) {
@@ -93,36 +93,37 @@ public class TestFadeInOutTransientEffect extends SimpleGame {
 		fps = new Text("FPS", "");
 		fps.setRenderState(fontAS);
 		fps.setRenderState(fontTS);
-		
+
 		fadeOut = new Quad("Fade Out");
 		fadeOut.initialize(5, 5);
 		fadeOut.setRenderState(fontTS);
 		fadeOutNode.attachChild(fadeOut);
-		
+
 		fadeIn = new Quad("Fade In");
 		fadeIn.initialize(5, 5);
 		fadeInNode.attachChild(fadeIn);
-		
+
 		tRen = display.createTextureRenderer(512, 512, false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
 		fadeInT = tRen.setupTexture();
 		fadeOutT = tRen.setupTexture();
 		tRen.render(fadeInNode, fadeInT);
 		tRen.render(fadeOutNode, fadeOutT);
-		
+
 		TextureState fadeOutTS = display.getRenderer().getTextureState();
 		fadeOutTS.setEnabled(true);
 		fadeOutTS.setTexture(fadeOutT);
-		
+
 		TextureState fadeInTS = display.getRenderer().getTextureState();
 		fadeInTS.setEnabled(true);
 		fadeOutTS.setTexture(fadeInT);
-		
+
 		fio = new FadeInOut("FadeInOut", fadeOutTS, fadeInTS, new ColorRGBA(1, 0, 0, 0), 0.01f);
 		fioC = new FadeInOutController(fio);
 		fio.addController(fioC);
-		
+
 		rootNode.attachChild(fps);
 		rootNode.attachChild(fio);
+                rootNode.updateRenderState();
 	}
 	protected void reinit() {
 	}

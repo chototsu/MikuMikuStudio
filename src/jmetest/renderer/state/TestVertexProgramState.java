@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package jmetest.renderer.state;
 
@@ -38,7 +38,6 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Torus;
-import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.VertexProgramState;
@@ -50,13 +49,13 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Eric Woroshow
- * @version $Id: TestVertexProgramState.java,v 1.4 2004-04-02 15:52:20 mojomonkey Exp $
+ * @version $Id: TestVertexProgramState.java,v 1.5 2004-04-16 19:21:40 renanse Exp $
  */
 public class TestVertexProgramState extends VariableTimestepGame {
 
     /** The position of the light in object space */
     private final float[] lightPosition = { -0.8f, 0.8f, 0.8f, 0.0f };
-    
+
     private Camera cam;
     private NodeHandler control;
     private Node scene;
@@ -116,7 +115,7 @@ public class TestVertexProgramState extends VariableTimestepGame {
      * Set up the scene.
      * @see com.jme.app.AbstractGame#initGame()
      */
-    protected void initGame() {        
+    protected void initGame() {
         //Enable depth testing
         ZBufferState zstate = display.getRenderer().getZBufferState();
         zstate.setEnabled(true);
@@ -131,18 +130,19 @@ public class TestVertexProgramState extends VariableTimestepGame {
 		Torus shaded = createShadedTorus(), outline = createOutlineTorus();
         scene.attachChild(shaded);
         scene.attachChild(outline);
-        
-        AttributeState as = display.getRenderer().getAttributeState();
-        as.setEnabled(true);
-        as.setMask(AttributeState.ALL_ATTRIB_BIT);
-        
-        scene.setRenderState(as);
+//
+//        AttributeState as = display.getRenderer().getAttributeState();
+//        as.setEnabled(true);
+//        as.setMask(AttributeState.ALL_ATTRIB_BIT);
+//
+//        scene.setRenderState(as);
 
         //Allow the torus to be controlled by the mouse.
         //By attatching the controller to the scene root, we can manipulate
         //both torii at once, thus guaranteeing that the outline and shaded
         //version will never be out of sync.
         control = new NodeHandler(this, scene, properties.getRenderer());
+        scene.updateRenderState();
     }
 
     private Torus createShadedTorus() {
@@ -169,7 +169,7 @@ public class TestVertexProgramState extends VariableTimestepGame {
 
 		return torus;
     }
-    
+
     private Torus createOutlineTorus() {
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_FRONT);
@@ -182,16 +182,16 @@ public class TestVertexProgramState extends VariableTimestepGame {
 
         Torus torus = new Torus("outlineTorus", 128, 32, 3.0f, 5.0f);
         //PQTorus torus = new PQTorus("outlineTorus", 5, 3, 2.0f, 1.0f, 256, 32);
-        
+
         ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
         ColorRGBA[] colors = new ColorRGBA[torus.getVertices().length];
         for (int i = 0; i < colors.length; i++)
             colors[i] = black;
-        
+
         torus.setColors(colors);
         torus.setRenderState(cs);
         torus.setRenderState(ws);
-        
+
         return torus;
     }
 

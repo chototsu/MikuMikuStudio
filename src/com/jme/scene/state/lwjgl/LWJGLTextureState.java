@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.4 2004-04-16 17:50:28 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.5 2004-04-16 19:21:34 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.
@@ -326,7 +326,7 @@ public class LWJGLTextureState extends TextureState {
     }
 
     public RenderState extract(Stack stack, Spatial spat) {
-      int mode = spat.getLightCombineMode();
+      int mode = spat.getTextureCombineMode();
       if (mode == REPLACE) return (LWJGLLightState) stack.peek();
 
       // accumulate the lights in the stack into a single LightState object

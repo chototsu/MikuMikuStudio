@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
 /**
  * <code>RenderState</code>
  * @author Mark Powell
- * @version $Id: RenderState.java,v 1.6 2004-04-16 17:12:49 renanse Exp $
+ * @version $Id: RenderState.java,v 1.7 2004-04-16 19:21:37 renanse Exp $
  */
 public abstract class RenderState {
 
@@ -62,7 +62,7 @@ public abstract class RenderState {
   public final static int MAX_CONTROLLERS = 10;
 
   private Controller[] controllers;
-  private boolean enabled;
+  private boolean enabled = false;
 
   public RenderState() {
     controllers = new Controller[MAX_CONTROLLERS];
