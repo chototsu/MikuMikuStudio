@@ -49,7 +49,7 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.6 2004-04-22 22:27:09 renanse Exp $
+ * @version $Id: BinaryFileReader.java,v 1.7 2004-07-02 05:31:43 cep21 Exp $
  */
 public class BinaryFileReader {
 	private byte[] fileContents;
@@ -82,7 +82,18 @@ public class BinaryFileReader {
 		open(f);
 	}
 
-	/**
+    public BinaryFileReader(InputStream md2) {
+        try {
+            DataInputStream bis=new DataInputStream(md2);
+            fileContents = new byte[bis.available()];
+            bis.readFully(fileContents);
+            bis.close();
+        } catch (IOException e) {
+            throw new JmeException("Could not read InputStream ");
+        }
+    }
+
+    /**
 	 *
 	 * <code>open</code> opens a given URL stream. The data is read completely
 	 * and the stream is then closed. This allows the stream to only be needed
