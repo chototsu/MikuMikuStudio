@@ -68,7 +68,7 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.jme.effects.RenParticleManager;
+import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.23 2004-03-28 03:06:31 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.24 2004-03-28 03:16:02 renanse Exp $
  *
  */
 
@@ -195,7 +195,7 @@ public class RenParticleControlFrame extends JFrame {
     setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
     addWindowListener(new WindowAdapter() {
       public void windowClosing(WindowEvent e) {
-        TestRenParticleGUI.quit = true;
+        RenParticleEditor.quit = true;
       }
     });
     colorBorder = new TitledBorder(" PARTICLE COLOR ");
@@ -262,7 +262,7 @@ public class RenParticleControlFrame extends JFrame {
     endSizeSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = endSizeSlider.getValue();
-        TestRenParticleGUI.manager.setEndSize(val / 10f);
+        RenParticleEditor.manager.setEndSize(val / 10f);
         updateSizeLabels();
         regenCode();
       }
@@ -271,7 +271,7 @@ public class RenParticleControlFrame extends JFrame {
     startSizeSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = startSizeSlider.getValue();
-        TestRenParticleGUI.manager.setStartSize(val / 10f);
+        RenParticleEditor.manager.setStartSize(val / 10f);
         updateSizeLabels();
         regenCode();
       }
@@ -288,7 +288,7 @@ public class RenParticleControlFrame extends JFrame {
     speedSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = speedSlider.getValue();
-        TestRenParticleGUI.manager.setSpeed( (float) val * .1f);
+        RenParticleEditor.manager.setSpeed( (float) val * .1f);
         updateSpeedLabels();
         regenCode();
       }
@@ -311,7 +311,7 @@ public class RenParticleControlFrame extends JFrame {
     imageLabel.setMinimumSize(new Dimension(0, 0));
     imageLabel.setOpaque(false);
     imageLabel.setText("");
-    ImageIcon icon = new ImageIcon(TestRenParticleGUI.class.getClassLoader().getResource(
+    ImageIcon icon = new ImageIcon(RenParticleEditor.class.getClassLoader().getResource(
         "jmetest/data/texture/flaresmall.jpg"));
     imageLabel.setIcon(icon);
 
@@ -333,8 +333,8 @@ public class RenParticleControlFrame extends JFrame {
     gravXSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = gravXSlider.getValue();
-        if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().x = (float) val * 0.001f;
+        if (RenParticleEditor.manager != null)
+          RenParticleEditor.manager.getGravityForce().x = (float) val * 0.001f;
         regenCode();
       }
     });
@@ -353,8 +353,8 @@ public class RenParticleControlFrame extends JFrame {
     gravYSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = gravYSlider.getValue();
-        if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().y = (float) val * 0.001f;
+        if (RenParticleEditor.manager != null)
+          RenParticleEditor.manager.getGravityForce().y = (float) val * 0.001f;
         regenCode();
       }
     });
@@ -373,8 +373,8 @@ public class RenParticleControlFrame extends JFrame {
     gravZSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = gravZSlider.getValue();
-        if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().z = (float) val * 0.001f;
+        if (RenParticleEditor.manager != null)
+          RenParticleEditor.manager.getGravityForce().z = (float) val * 0.001f;
         regenCode();
       }
     });
@@ -390,7 +390,7 @@ public class RenParticleControlFrame extends JFrame {
     minAgeSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = minAgeSlider.getValue();
-        TestRenParticleGUI.manager.setParticlesMinimumLifeTime( (float) val);
+        RenParticleEditor.manager.setParticlesMinimumLifeTime( (float) val);
         updateAgeLabels();
         regenCode();
       }
@@ -410,10 +410,10 @@ public class RenParticleControlFrame extends JFrame {
     emitZSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = emitZSlider.getValue();
-        if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().z = (float) val *
+        if (RenParticleEditor.manager != null) {
+          RenParticleEditor.manager.getEmissionDirection().z = (float) val *
               .1f;
-          TestRenParticleGUI.manager.updateRotationMatrix();
+          RenParticleEditor.manager.updateRotationMatrix();
         }
         regenCode();
       }
@@ -428,10 +428,10 @@ public class RenParticleControlFrame extends JFrame {
     emitYSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = emitYSlider.getValue();
-        if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().y = (float) val *
+        if (RenParticleEditor.manager != null) {
+          RenParticleEditor.manager.getEmissionDirection().y = (float) val *
               .1f;
-          TestRenParticleGUI.manager.updateRotationMatrix();
+          RenParticleEditor.manager.updateRotationMatrix();
         }
         regenCode();
       }
@@ -446,10 +446,10 @@ public class RenParticleControlFrame extends JFrame {
     emitXSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = emitXSlider.getValue();
-        if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().x = (float) val *
+        if (RenParticleEditor.manager != null) {
+          RenParticleEditor.manager.getEmissionDirection().x = (float) val *
               .1f;
-          TestRenParticleGUI.manager.updateRotationMatrix();
+          RenParticleEditor.manager.updateRotationMatrix();
         }
         regenCode();
       }
@@ -471,7 +471,7 @@ public class RenParticleControlFrame extends JFrame {
     angleSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = angleSlider.getValue();
-        TestRenParticleGUI.manager.setEmissionMaximumAngle( (float) val *
+        RenParticleEditor.manager.setEmissionMaximumAngle( (float) val *
             FastMath.DEG_TO_RAD);
         updateAngleLabels();
         regenCode();
@@ -487,7 +487,7 @@ public class RenParticleControlFrame extends JFrame {
     randomSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = randomSlider.getValue();
-        TestRenParticleGUI.manager.setRandomMod( (float) val * .1f);
+        RenParticleEditor.manager.setRandomMod( (float) val * .1f);
         updateRandomLabels();
         regenCode();
       }
@@ -559,16 +559,16 @@ public class RenParticleControlFrame extends JFrame {
     spawnBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
         if (spawnBox.isSelected())
-          TestRenParticleGUI.manager.setRepeatType(Controller.RT_WRAP);
+          RenParticleEditor.manager.setRepeatType(Controller.RT_WRAP);
         else
-          TestRenParticleGUI.manager.setRepeatType(Controller.RT_CLAMP);
+          RenParticleEditor.manager.setRepeatType(Controller.RT_CLAMP);
       }
     });
     spawnButton.setFont(new java.awt.Font("Arial", 0, 12));
     spawnButton.setText("Force Spawn");
     spawnButton.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        TestRenParticleGUI.manager.forceRespawn();
+        RenParticleEditor.manager.forceRespawn();
       }
     });
     rateVarLabel.setEnabled(false);
@@ -580,7 +580,7 @@ public class RenParticleControlFrame extends JFrame {
     rateSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = rateSlider.getValue();
-        TestRenParticleGUI.manager.setReleaseRate( val );
+        RenParticleEditor.manager.setReleaseRate( val );
         updateRateLabels();
         regenCode();
       }
@@ -591,7 +591,7 @@ public class RenParticleControlFrame extends JFrame {
     rateVarSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = rateVarSlider.getValue();
-        TestRenParticleGUI.manager.setReleaseVariance( (float) val * .01f);
+        RenParticleEditor.manager.setReleaseVariance( (float) val * .01f);
         updateRateLabels();
         regenCode();
       }
@@ -600,7 +600,7 @@ public class RenParticleControlFrame extends JFrame {
     rateBox.setText("Regulate Flow");
     rateBox.addActionListener(new java.awt.event.ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        TestRenParticleGUI.manager.setControlFlow(rateBox.isSelected());
+        RenParticleEditor.manager.setControlFlow(rateBox.isSelected());
         updateRateLabels();
       }
     });
@@ -615,7 +615,7 @@ public class RenParticleControlFrame extends JFrame {
     velocitySlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = velocitySlider.getValue();
-        TestRenParticleGUI.manager.setInitialVelocity( (float) val * .01f);
+        RenParticleEditor.manager.setInitialVelocity( (float) val * .01f);
         updateVelocityLabels();
         regenCode();
       }
@@ -648,7 +648,7 @@ public class RenParticleControlFrame extends JFrame {
 
     startAlphaSpinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        TestRenParticleGUI.manager.getStartColor().a = (Integer.parseInt(
+        RenParticleEditor.manager.getStartColor().a = (Integer.parseInt(
             startAlphaSpinner.getValue().toString()) / 255f);
         regenCode();
       }
@@ -656,7 +656,7 @@ public class RenParticleControlFrame extends JFrame {
 
     endAlphaSpinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        TestRenParticleGUI.manager.getEndColor().a = (Integer.parseInt(
+        RenParticleEditor.manager.getEndColor().a = (Integer.parseInt(
             endAlphaSpinner.getValue().toString()) / 255f);
         regenCode();
       }
@@ -855,7 +855,7 @@ public class RenParticleControlFrame extends JFrame {
   private void applyExample() {
     if (exampleList == null || exampleList.getSelectedValue() == null)return;
     String examType = exampleList.getSelectedValue().toString();
-    RenParticleManager manager = TestRenParticleGUI.manager;
+    ParticleManager manager = RenParticleEditor.manager;
     if ("FIRE".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
@@ -998,52 +998,52 @@ public class RenParticleControlFrame extends JFrame {
    * updateFromManager
    */
   public void updateFromManager() {
-    startColorPanel.setBackground(makeColor(TestRenParticleGUI.manager.
+    startColorPanel.setBackground(makeColor(RenParticleEditor.manager.
                                             getStartColor(), false));
-    endColorPanel.setBackground(makeColor(TestRenParticleGUI.manager.
+    endColorPanel.setBackground(makeColor(RenParticleEditor.manager.
                                           getEndColor(), false));
-    startAlphaSpinner.setValue(new Integer(makeColor(TestRenParticleGUI.manager.
+    startAlphaSpinner.setValue(new Integer(makeColor(RenParticleEditor.manager.
         getStartColor(), true).getAlpha()));
-    endAlphaSpinner.setValue(new Integer(makeColor(TestRenParticleGUI.manager.
+    endAlphaSpinner.setValue(new Integer(makeColor(RenParticleEditor.manager.
         getEndColor(), true).getAlpha()));
     updateColorLabels();
-    startSizeSlider.setValue( (int) (TestRenParticleGUI.manager.getStartSize() *
+    startSizeSlider.setValue( (int) (RenParticleEditor.manager.getStartSize() *
                                      10));
-    endSizeSlider.setValue( (int) (TestRenParticleGUI.manager.getEndSize() * 10));
+    endSizeSlider.setValue( (int) (RenParticleEditor.manager.getEndSize() * 10));
     updateSizeLabels();
-    minAgeSlider.setValue( (int) (TestRenParticleGUI.manager.
+    minAgeSlider.setValue( (int) (RenParticleEditor.manager.
                                   getParticlesMinimumLifeTime()));
     updateAgeLabels();
-    speedSlider.setValue( (int) (TestRenParticleGUI.manager.getSpeed() *
+    speedSlider.setValue( (int) (RenParticleEditor.manager.getSpeed() *
                                  10));
     updateSpeedLabels();
-    gravXSlider.setValue( (int) (TestRenParticleGUI.manager.getGravityForce().x *
+    gravXSlider.setValue( (int) (RenParticleEditor.manager.getGravityForce().x *
                                  1000));
-    gravYSlider.setValue( (int) (TestRenParticleGUI.manager.getGravityForce().y *
+    gravYSlider.setValue( (int) (RenParticleEditor.manager.getGravityForce().y *
                                  1000));
-    gravZSlider.setValue( (int) (TestRenParticleGUI.manager.getGravityForce().z *
+    gravZSlider.setValue( (int) (RenParticleEditor.manager.getGravityForce().z *
                                  1000));
-    emitXSlider.setValue( (int) (TestRenParticleGUI.manager.
+    emitXSlider.setValue( (int) (RenParticleEditor.manager.
                                  getEmissionDirection().x * 10));
-    emitYSlider.setValue( (int) (TestRenParticleGUI.manager.
+    emitYSlider.setValue( (int) (RenParticleEditor.manager.
                                  getEmissionDirection().y * 10));
-    emitZSlider.setValue( (int) (TestRenParticleGUI.manager.
+    emitZSlider.setValue( (int) (RenParticleEditor.manager.
                                  getEmissionDirection().z * 10));
-    angleSlider.setValue( (int) (TestRenParticleGUI.manager.
+    angleSlider.setValue( (int) (RenParticleEditor.manager.
                                  getEmissionMaximumAngle() *
                                  FastMath.RAD_TO_DEG));
     updateAngleLabels();
-    randomSlider.setValue( (int) (TestRenParticleGUI.manager.getRandomMod() *
+    randomSlider.setValue( (int) (RenParticleEditor.manager.getRandomMod() *
                                   10));
     updateRandomLabels();
-    rateBox.setSelected(TestRenParticleGUI.manager.getControlFlow());
-    rateSlider.setValue(TestRenParticleGUI.manager.getReleaseRate());
-    rateSlider.setMaximum(TestRenParticleGUI.manager.getParticlesNumber() * 5);
-    rateVarSlider.setValue( (int) (TestRenParticleGUI.manager.
+    rateBox.setSelected(RenParticleEditor.manager.getControlFlow());
+    rateSlider.setValue(RenParticleEditor.manager.getReleaseRate());
+    rateSlider.setMaximum(RenParticleEditor.manager.getParticlesNumber() * 5);
+    rateVarSlider.setValue( (int) (RenParticleEditor.manager.
                                    getReleaseVariance() * 100));
     updateRateLabels();
-    spawnBox.setSelected(TestRenParticleGUI.manager.getRepeatType() == Controller.RT_WRAP);
-    velocitySlider.setValue( (int) (TestRenParticleGUI.manager.
+    spawnBox.setSelected(RenParticleEditor.manager.getRepeatType() == Controller.RT_WRAP);
+    velocitySlider.setValue( (int) (RenParticleEditor.manager.
                                    getInitialVelocity() * 100));
     updateVelocityLabels();
     regenCode();
@@ -1055,74 +1055,74 @@ public class RenParticleControlFrame extends JFrame {
    * @param particles number of particles to reset manager with.
    */
   public void resetManager(int particles) {
-    TestRenParticleGUI.noUpdate = true;
-    TestRenParticleGUI.root.detachChild(TestRenParticleGUI.manager.getParticles());
-    TestRenParticleGUI.manager = new RenParticleManager(particles,
-        TestRenParticleGUI.manager.getCamera());
+    RenParticleEditor.noUpdate = true;
+    RenParticleEditor.root.detachChild(RenParticleEditor.manager.getParticles());
+    RenParticleEditor.manager = new ParticleManager(particles,
+        RenParticleEditor.manager.getCamera());
 
     ColorRGBA rgba = makeColorRGBA(startColorPanel.getBackground());
     rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
-    TestRenParticleGUI.manager.setStartColor(rgba);
+    RenParticleEditor.manager.setStartColor(rgba);
 
     rgba = makeColorRGBA(endColorPanel.getBackground());
     rgba.a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
-    TestRenParticleGUI.manager.setEndColor(rgba);
+    RenParticleEditor.manager.setEndColor(rgba);
 
     int val = startSizeSlider.getValue();
-    TestRenParticleGUI.manager.setStartSize(val / 10f);
+    RenParticleEditor.manager.setStartSize(val / 10f);
 
     val = endSizeSlider.getValue();
-    TestRenParticleGUI.manager.setEndSize(val / 10f);
+    RenParticleEditor.manager.setEndSize(val / 10f);
 
     val = minAgeSlider.getValue();
-    TestRenParticleGUI.manager.setParticlesMinimumLifeTime( (float) val);
+    RenParticleEditor.manager.setParticlesMinimumLifeTime( (float) val);
 
     val = speedSlider.getValue();
-    TestRenParticleGUI.manager.setSpeed( (float) val * .1f);
+    RenParticleEditor.manager.setSpeed( (float) val * .1f);
 
     val = gravXSlider.getValue();
-    TestRenParticleGUI.manager.getGravityForce().x = (float) val * 0.001f;
+    RenParticleEditor.manager.getGravityForce().x = (float) val * 0.001f;
     val = gravYSlider.getValue();
-    TestRenParticleGUI.manager.getGravityForce().y = (float) val * 0.001f;
+    RenParticleEditor.manager.getGravityForce().y = (float) val * 0.001f;
     val = gravZSlider.getValue();
-    TestRenParticleGUI.manager.getGravityForce().z = (float) val * 0.001f;
+    RenParticleEditor.manager.getGravityForce().z = (float) val * 0.001f;
 
     val = emitXSlider.getValue();
-    TestRenParticleGUI.manager.getEmissionDirection().x = (float) val * .1f;
+    RenParticleEditor.manager.getEmissionDirection().x = (float) val * .1f;
     val = emitYSlider.getValue();
-    TestRenParticleGUI.manager.getEmissionDirection().y = (float) val * .1f;
+    RenParticleEditor.manager.getEmissionDirection().y = (float) val * .1f;
     val = emitZSlider.getValue();
-    TestRenParticleGUI.manager.getEmissionDirection().z = (float) val * .1f;
-    TestRenParticleGUI.manager.updateRotationMatrix();
+    RenParticleEditor.manager.getEmissionDirection().z = (float) val * .1f;
+    RenParticleEditor.manager.updateRotationMatrix();
 
     val = angleSlider.getValue();
-    TestRenParticleGUI.manager.setEmissionMaximumAngle( (float) val *
+    RenParticleEditor.manager.setEmissionMaximumAngle( (float) val *
         FastMath.DEG_TO_RAD);
 
     val = randomSlider.getValue();
-    TestRenParticleGUI.manager.setRandomMod( (float) val * .1f);
+    RenParticleEditor.manager.setRandomMod( (float) val * .1f);
 
     val = rateSlider.getValue();
-    TestRenParticleGUI.manager.setReleaseRate(val);
+    RenParticleEditor.manager.setReleaseRate(val);
     val = rateVarSlider.getValue();
-    TestRenParticleGUI.manager.setReleaseVariance( (float) val * .01f);
+    RenParticleEditor.manager.setReleaseVariance( (float) val * .01f);
 
-    TestRenParticleGUI.manager.setRepeatType(spawnBox.isSelected() ? Controller.RT_WRAP : Controller.RT_CLAMP);
+    RenParticleEditor.manager.setRepeatType(spawnBox.isSelected() ? Controller.RT_WRAP : Controller.RT_CLAMP);
 
-    TestRenParticleGUI.manager.setControlFlow(rateBox.isSelected());
+    RenParticleEditor.manager.setControlFlow(rateBox.isSelected());
     rateSlider.setMaximum(particles * 5);
     rateSlider.setValue(particles);
 
-    TestRenParticleGUI.manager.getParticles().addController(TestRenParticleGUI.manager);
+    RenParticleEditor.manager.getParticles().addController(RenParticleEditor.manager);
 
     val = velocitySlider.getValue();
-    TestRenParticleGUI.manager.setInitialVelocity( (float) val * .01f);
+    RenParticleEditor.manager.setInitialVelocity( (float) val * .01f);
     updateVelocityLabels();
 
-    TestRenParticleGUI.root.attachChild(TestRenParticleGUI.manager.getParticles());
+    RenParticleEditor.root.attachChild(RenParticleEditor.manager.getParticles());
     regenCode();
     validate();
-    TestRenParticleGUI.noUpdate = false;
+    RenParticleEditor.noUpdate = false;
   }
 
   /**
@@ -1175,7 +1175,7 @@ public class RenParticleControlFrame extends JFrame {
    * updateCountLabels
    */
   private void updateCountLabels() {
-    int val = TestRenParticleGUI.manager.getParticlesNumber();
+    int val = RenParticleEditor.manager.getParticlesNumber();
     countLabel.setText("Particles: "+val);
   }
 
@@ -1226,73 +1226,73 @@ public class RenParticleControlFrame extends JFrame {
   }
 
   private void startColorPanel_mouseClicked(MouseEvent e) {
-    TestRenParticleGUI.noUpdate = true;
+    RenParticleEditor.noUpdate = true;
     Color color = JColorChooser.showDialog(this, "Choose new start color:",
                                            startColorPanel.getBackground());
     if (color == null)return;
     ColorRGBA rgba = makeColorRGBA(color);
     rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
-    TestRenParticleGUI.manager.setStartColor(rgba);
+    RenParticleEditor.manager.setStartColor(rgba);
     startColorPanel.setBackground(color);
     regenCode();
     updateColorLabels();
-    TestRenParticleGUI.noUpdate = false;
+    RenParticleEditor.noUpdate = false;
   }
 
   private void endColorPanel_mouseClicked(MouseEvent e) {
-    TestRenParticleGUI.noUpdate = true;
+    RenParticleEditor.noUpdate = true;
     Color color = JColorChooser.showDialog(this, "Choose new end color:",
                                            endColorPanel.getBackground());
     if (color == null)return;
     ColorRGBA rgba = makeColorRGBA(color);
     rgba.a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
-    TestRenParticleGUI.manager.setEndColor(rgba);
+    RenParticleEditor.manager.setEndColor(rgba);
     endColorPanel.setBackground(color);
     regenCode();
     updateColorLabels();
-    TestRenParticleGUI.noUpdate = false;
+    RenParticleEditor.noUpdate = false;
   }
 
   private void regenCode() {
     StringBuffer code = new StringBuffer();
-    if (TestRenParticleGUI.manager == null) {
+    if (RenParticleEditor.manager == null) {
       codeTextArea.setText("");
       return;
     }
-    code.append("RenParticleManager manager = new RenParticleManager(" +
-                TestRenParticleGUI.manager.getParticlesNumber() +
+    code.append("ParticleManager manager = new ParticleManager(" +
+                RenParticleEditor.manager.getParticlesNumber() +
                 ", display.getRenderer().getCamera());\n");
     code.append("manager.setGravityForce(" +
-                codeString(TestRenParticleGUI.manager.getGravityForce()) +
+                codeString(RenParticleEditor.manager.getGravityForce()) +
                 ");\n");
     code.append("manager.setEmissionDirection(" +
-                codeString(TestRenParticleGUI.manager.getEmissionDirection()) +
+                codeString(RenParticleEditor.manager.getEmissionDirection()) +
                 ");\n");
     code.append("manager.setEmissionMaximumAngle(" +
-                TestRenParticleGUI.manager.getEmissionMaximumAngle() + "f);\n");
+                RenParticleEditor.manager.getEmissionMaximumAngle() + "f);\n");
     code.append("manager.setSpeed(" +
-                TestRenParticleGUI.manager.getSpeed() + "f);\n");
+                RenParticleEditor.manager.getSpeed() + "f);\n");
     code.append("manager.setParticlesMinimumLifeTime(" +
-                TestRenParticleGUI.manager.getParticlesMinimumLifeTime() +
+                RenParticleEditor.manager.getParticlesMinimumLifeTime() +
                 "f);\n");
     code.append("manager.setStartSize(" +
-                TestRenParticleGUI.manager.getStartSize() + "f);\n");
-    code.append("manager.setEndSize(" + TestRenParticleGUI.manager.getEndSize() +
+                RenParticleEditor.manager.getStartSize() + "f);\n");
+    code.append("manager.setEndSize(" + RenParticleEditor.manager.getEndSize() +
                 "f);\n");
     code.append("manager.setStartColor(" +
-                codeString(TestRenParticleGUI.manager.getStartColor()) + ");\n");
+                codeString(RenParticleEditor.manager.getStartColor()) + ");\n");
     code.append("manager.setEndColor(" +
-                codeString(TestRenParticleGUI.manager.getEndColor()) + ");\n");
+                codeString(RenParticleEditor.manager.getEndColor()) + ");\n");
     code.append("manager.setRandomMod(" +
-                TestRenParticleGUI.manager.getRandomMod() + "f);\n");
+                RenParticleEditor.manager.getRandomMod() + "f);\n");
     code.append("manager.setControlFlow(" +
-                TestRenParticleGUI.manager.getControlFlow() + ");\n");
+                RenParticleEditor.manager.getControlFlow() + ");\n");
     code.append("manager.setReleaseRate(" +
-                TestRenParticleGUI.manager.getReleaseRate() + ");\n");
+                RenParticleEditor.manager.getReleaseRate() + ");\n");
     code.append("manager.setReleaseVariance(" +
-                TestRenParticleGUI.manager.getReleaseVariance() + "f);\n");
+                RenParticleEditor.manager.getReleaseVariance() + "f);\n");
     code.append("manager.setInitialVelocity(" +
-                TestRenParticleGUI.manager.getInitialVelocity() + "f);\n");
+                RenParticleEditor.manager.getInitialVelocity() + "f);\n");
     code.append("\n");
     code.append("manager.warmUp(1000);\n");
     code.append("manager.getParticles().addController(manager);\n");
@@ -1338,19 +1338,19 @@ public class RenParticleControlFrame extends JFrame {
   }
 
   private void changeTexture() {
-    TestRenParticleGUI.noUpdate = true;
+    RenParticleEditor.noUpdate = true;
     try {
       JFileChooser chooser = new JFileChooser(lastDir);
       chooser.setMultiSelectionEnabled(false);
       int result = chooser.showOpenDialog(this);
       if (result == JFileChooser.CANCEL_OPTION) {
-        TestRenParticleGUI.noUpdate = false;
+        RenParticleEditor.noUpdate = false;
         return;
       }
       File textFile = chooser.getSelectedFile();
       lastDir = textFile.getParentFile();
 
-      TestRenParticleGUI.root.clearRenderState(RenderState.RS_TEXTURE);
+      RenParticleEditor.root.clearRenderState(RenderState.RS_TEXTURE);
       TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().
           getTextureState();
       ts.setTexture(
@@ -1360,14 +1360,14 @@ public class RenParticleControlFrame extends JFrame {
           Texture.FM_LINEAR,
           true));
       ts.setEnabled(true);
-      TestRenParticleGUI.root.setRenderState(ts);
+      RenParticleEditor.root.setRenderState(ts);
       ImageIcon icon = new ImageIcon(textFile.getAbsolutePath());
       imageLabel.setIcon(icon);
       validate();
     } catch (Exception ex) {
       ex.printStackTrace();
     }
-    TestRenParticleGUI.noUpdate = false;
+    RenParticleEditor.noUpdate = false;
   }
 
 }
