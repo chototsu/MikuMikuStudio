@@ -32,6 +32,10 @@
 package com.jme.scene.state;
 
 import com.jme.image.Texture;
+import com.jme.util.TextureManager;
+
+import java.io.IOException;
+import java.net.URL;
 
 /**
  * <code>TextureState</code> maintains a texture state for a given node and
@@ -41,7 +45,7 @@ import com.jme.image.Texture;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.12 2004-06-29 19:08:07 renanse Exp $
+ * @version $Id: TextureState.java,v 1.13 2004-07-06 04:44:34 cep21 Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -64,7 +68,7 @@ public abstract class TextureState extends RenderState {
     public static final int REPLACE = 5;
 
     //the texture
-    protected Texture[] texture;
+    protected transient Texture[] texture;
 
     protected static int numTexUnits = 0;
 
@@ -157,4 +161,44 @@ public abstract class TextureState extends RenderState {
     public float getMaxAnisotropic() {
       return maxAnisotropic;
     }
+
+
+    /**
+     * Used with serialization.  Do not call this manually.
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        int ii=in.readShort();
+        texture=new Texture[ii];
+        for (int i=0;i<texture.length;i++){
+            if (in.readBoolean())
+                texture[i]=TextureManager.loadTexture(new URL(in.readUTF()),in.readInt(),in.readInt(), true);
+        }
+    }
+
+    /**
+     * Used with serialization.  Do not call this manually.
+     * @param out
+     * @throws IOException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException{
+        out.defaultWriteObject();
+        out.writeShort(texture.length);
+        for (int i=0;i<texture.length;i++){
+            if (texture[i]==null)
+                out.writeBoolean(false);
+            else{
+                out.writeBoolean(true);
+                out.writeUTF(texture[i].getImageLocation());
+                out.writeInt(texture[i].getMipmapState());
+                out.writeInt(texture[i].getFilter());
+            }
+        }
+    }
+
 }
