@@ -343,7 +343,7 @@ public class DisplaySystem {
             GraphicsEnvironment.getLocalGraphicsEnvironment();
         GraphicsDevice[] gd = ge.getScreenDevices();
         for (int i = 0; i < modes.length; i++) {
-            if (modes[i].width == width
+        	if (modes[i].width == width
                 && modes[i].height == height
                 && modes[i].bpp == bpp
                 && modes[i].freq == freq) {
@@ -459,7 +459,7 @@ public class DisplaySystem {
 
             if (fullscreen) {
                 Display.setDisplayMode(mode);
-                gl = new GL(title, bpp, 1, 1, 1);
+                gl = new GL(title, bpp, 0, 1, 0);
             } else {
                 int x, y;
                 x =
@@ -469,7 +469,7 @@ public class DisplaySystem {
                     (Toolkit.getDefaultToolkit().getScreenSize().height
                         - height)
                         / 2;
-                gl = new GL(title, x, y, width, height, bpp, 1, 1, 1);
+                gl = new GL(title, x, y, width, height, bpp, 0, 1, 0);
             }
 
             gl.create();

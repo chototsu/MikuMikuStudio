@@ -44,6 +44,7 @@ public class LandMobility {
 	float minVelocity;
 	float acceleration;
 	float deceleration;
+	float coastDeceleration;
     float currentAcceleration;
 	float currentVelocity;
 	float prevVelocity;
@@ -73,12 +74,12 @@ public class LandMobility {
 			}
 		} else {
             if(currentVelocity > 0) {
-                currentVelocity = currentVelocity + deceleration * time;
+                currentVelocity = currentVelocity - coastDeceleration * time;
 			    if(currentVelocity < 0) {
                     currentVelocity = 0;
 			    }
             } else if(currentVelocity < 0) {
-				currentVelocity = currentVelocity + acceleration * time;
+				currentVelocity = currentVelocity + coastDeceleration * time;
                 if(currentVelocity > 0) {
                     currentVelocity = 0;
                 }
@@ -116,6 +117,10 @@ public class LandMobility {
     public void move(float acceleration) {
         currentAcceleration = acceleration;
         moving = true;
+    }
+    
+    public void setCoastDeceleration(float cd) {
+    	coastDeceleration = cd;
     }
 	
 	

@@ -82,8 +82,9 @@ public class TrackingController extends AbstractGameController {
 		physics = new LandMobility();
 		physics.setMaxVelocity(40.0f);
 		physics.setMinVelocity(-20.0f);
-		physics.setAcceleration(10.0f);
-		physics.setDeceleration(-20.0f);
+		physics.setAcceleration(30.0f);
+		physics.setDeceleration(-40.0f);
+		physics.setCoastDeceleration(20.0f);
 		physics.setCurrentAngle(0);
 		physics.setTurningVelocity(60.0f);
 		
