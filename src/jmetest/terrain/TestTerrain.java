@@ -37,6 +37,7 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
+import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
@@ -49,7 +50,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.21 2004-04-28 13:37:58 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.22 2004-04-30 14:41:41 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -80,7 +81,7 @@ public class TestTerrain extends SimpleGame {
     rootNode.setRenderState(fs);
 
     CullState cs = display.getRenderer().getCullState();
-    cs.setCullMode(CullState.CS_NONE);
+    cs.setCullMode(CullState.CS_BACK);
     cs.setEnabled(true);
 
     lightState.setTwoSidedLighting(true);
@@ -124,6 +125,19 @@ public class TestTerrain extends SimpleGame {
         "jmetest/data/texture/Detail.jpg"),
                                             Texture.MM_LINEAR,
                                             Texture.FM_LINEAR, true);
+    
+    TextureState blah = display.getRenderer().getTextureState();
+    blah.setTexture(TextureManager.loadTexture(TestTerrain.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR, Texture.MM_LINEAR, false));
+    blah.setEnabled(true);
+    for(int i = 0; i < 100; i++) {
+        Sphere s = new Sphere("Sphere" + i, 10, 10, 2);
+        s.setRenderState(blah);
+        float randX = (float)Math.random() * 100 * terrainScale.x + 10;
+        float randZ = (float)Math.random() * 100 * terrainScale.z + 10;
+        s.setLocalTranslation(new Vector3f(randX, tb.getHeight(randX, randZ), randZ));
+        rootNode.attachChild(s);
+    }
+    
     ts.setTexture(t2, 1);
     t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 
