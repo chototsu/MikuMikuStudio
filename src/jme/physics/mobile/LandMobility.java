@@ -31,40 +31,59 @@
  */
 package jme.physics.mobile;
 
+import java.util.logging.Level;
+
+import jme.utility.LoggingSystem;
+
 import org.lwjgl.vector.Vector3f;
 
 /**
- * <code>LandMobility</code>
+ * <code>LandMobility</code> handles the acceleration and velocity of a 
+ * land vehicle. It is set such that to move forward/backward the entity is
+ * accelerated/decelerated. The velocity of entity is determined by:
+ * V1 = V0 + a(t). Turning is also determined by a set turning velocity. 
+ * 
+ * Future enhancements should include using the normal of the geometry moving
+ * over to for friction, gravity changes. 
  * 
  * @author Mark Powell
  */
 public class LandMobility {
 	private float currentTurningVel;
-    float maxVelocity;
-	float minVelocity;
-	float acceleration;
-	float deceleration;
-	float coastDeceleration;
-    float currentAcceleration;
-	float currentVelocity;
-	float prevVelocity;
+    private float maxVelocity;
+	private float minVelocity;
 	
-	float turningVelocity;
-	float currentAngle;
-	float distance;
+    private float baseAcceleration;
+    private float coastDeceleration;
+    private float currentAcceleration;
+	private float currentVelocity;
+	private float prevVelocity;
+	
+	private float turningVelocity;
+	private float currentAngle;
+	private float distance;
 
-	boolean moving;
+	private boolean moving;
 	
+    /**
+     * Constuctor instantiates a new <code>LandMobility</code> object. 
+     *
+     */
 	public LandMobility() {
-		currentVelocity = 0;
-		distance = 0;
-		deceleration = 0.01f;
-        currentTurningVel = 0;
-        currentAngle = 0;
-        
+          LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO, 
+            "LandMobility physics module created.");
 	}
 
+    /**
+     * <code>update</code> calculates the current velocity of the entity,
+     * as well as the current angle the entity is facing. This is scaled by
+     * the current time frame sent as a parameter. This insures independance
+     * from the framerate.
+     * 
+     * @param time the time between updates.
+     */
 	public void update(float time) {
+        //if we are moving, update the velocity otherwise coast to a stop.
 		if(moving) {
 			currentVelocity = prevVelocity + currentAcceleration * time;
 			if(currentVelocity > maxVelocity) {
@@ -87,15 +106,22 @@ public class LandMobility {
 		}
 		prevVelocity = currentVelocity;
 		
+        //only update if time is valid. This insures that the initial time of
+        //infinity does not result in a bad result.
 		if(time < Float.MAX_VALUE) {
 			distance += currentVelocity * time;
             currentAngle += currentTurningVel * time;
         
         }
-        
+        //set moving to false to allow for release of the movement key.
         moving = false;
 	}
 	
+    /**
+     * <code>updatePosition</code> sets the entities new position based on 
+     * it's current velocity and angle. 
+     * @param position the position to update.
+     */
 	public void updatePosition(Vector3f position) {
 		float x, z;
 		float sin = (float)Math.sin(Math.toRadians(currentAngle));
@@ -110,164 +136,65 @@ public class LandMobility {
 
 	}
 	
-	public void turn(float turningVelocity){
-		currentTurningVel = turningVelocity;
+    /**
+     * <code>turn</code> affects the current turning velocity, where negative
+     * one turns right by the set turning velocity and positive one turns left
+     * by the set turning velocity. For increases of turning speed increase the
+     * scalar and vice versa for decreasing.
+     * @param turnScalar the amount to multiply the turning velocity by.
+     */
+	public void turn(float turnScalar){
+		currentTurningVel = turningVelocity * turnScalar;
 	}
     
-    public void move(float acceleration) {
-        currentAcceleration = acceleration;
+    /**
+     * <code>move</code> sets the current acceleration to the base acceleration
+     * time the acceleration scalar. Therefore, if you wanted to move forward
+     * at full speed the accelerationScalar would be set to 1. If you wanted
+     * to decelerate by half the speed (-0.5).
+     * @param accelerationScalar the scalar to multiply the baseAcceleration and
+     *      set the current acceleration.
+     *      
+     */
+    public void move(float accelerationScalar) {
+        currentAcceleration = baseAcceleration * accelerationScalar;
         moving = true;
     }
     
+    
     public void strafe(float speed) {
-    	//TODO
+    	//TODO set up strafe
     }
     
     public void setCoastDeceleration(float cd) {
     	coastDeceleration = cd;
     }
-	//TODO clean up all the getter/setters not all needed!
-	/**
-	 * @return
-	 */
-	public float getMaxVelocity() {
-		return maxVelocity;
-	}
-
-	/**
-	 * @return
-	 */
-	public float getMinVelocity() {
-		return minVelocity;
-	}
-
-	/**
-	 * @return
-	 */
-	public boolean isMoving() {
-		return moving;
-	}
-
-	/**
-	 * @return
-	 */
-	public float getPrevVelocity() {
-		return prevVelocity;
-	}
-
-	/**
-	 * @return
-	 */
 	public float getTurningVelocity() {
 		return turningVelocity;
 	}
-
-	/**
-	 * @param f
-	 */
 	public void setMaxVelocity(float f) {
 		maxVelocity = f;
 	}
-
-	/**
-	 * @param f
-	 */
 	public void setMinVelocity(float f) {
 		minVelocity = f;
 	}
-
-	/**
-	 * @param b
-	 */
-	public void setMoving(boolean b) {
-		moving = b;
-	}
-
-	/**
-	 * @param f
-	 */
-	public void setPrevVelocity(float f) {
-		prevVelocity = f;
-	}
-
-	/**
-	 * @param f
-	 */
 	public void setTurningVelocity(float f) {
 		turningVelocity = f;
 	}
-
-	/**
-	 * @return
-	 */
-	public float getAcceleration() {
-		return acceleration;
-	}
-
-	/**
-	 * @return
-	 */
 	public float getCurrentAngle() {
 		return currentAngle;
 	}
-
-	/**
-	 * @return
-	 */
 	public float getCurrentVelocity() {
 		return currentVelocity;
 	}
-
-	/**
-	 * @return
-	 */
-	public float getDeceleration() {
-		return deceleration;
-	}
-
-	/**
-	 * @return
-	 */
-	public float getDistance() {
-		return distance;
-	}
-
-	/**
-	 * @param f
-	 */
-	public void setAcceleration(float f) {
-		acceleration = f;
-	}
-
-	/**
-	 * @param f
-	 */
 	public void setCurrentAngle(float f) {
 		currentAngle = f;
 	}
-
-	/**
-	 * @param f
-	 */
-	public void setCurrentVelocity(float f) {
-		currentVelocity = f;
-	}
-
-	/**
-	 * @param f
-	 */
-	public void setDeceleration(float f) {
-		deceleration = f;
-	}
-
-	/**
-	 * @param f
-	 */
-	public void setDistance(float f) {
-		distance = f;
-	}
-    
-    public float getCurrentTurningVel() {
+	public float getCurrentTurningVel() {
         return currentTurningVel;
+    }
+    
+    public void setBaseAcceleration(float baseAcceleration) {
+        this.baseAcceleration = baseAcceleration;
     }
 }

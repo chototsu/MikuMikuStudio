@@ -47,12 +47,11 @@ import jme.system.KeyBindingManager;
 import jme.utility.LoggingSystem;
 
 /**
- * @author mpowell
- *
- * To change the template for this generated type comment go to
- * Window>Preferences>Java>Code Generation>Code and Comments
+ * <code>TrackingController</code> 
+ * @author Mark Powell
  */
 public class TrackingController extends AbstractGameController {
+    //TODO remove animation from this class. Move to model code??
 	private int idleAnim;
 	private int currentAnimation;
 	private LandMobility physics;
@@ -82,8 +81,7 @@ public class TrackingController extends AbstractGameController {
 		physics = new LandMobility();
 		physics.setMaxVelocity(40.0f);
 		physics.setMinVelocity(-20.0f);
-		physics.setAcceleration(30.0f);
-		physics.setDeceleration(-40.0f);
+		physics.setBaseAcceleration(60.0f);
 		physics.setCoastDeceleration(20.0f);
 		physics.setCurrentAngle(0);
 		physics.setTurningVelocity(60.0f);
@@ -201,19 +199,19 @@ public class TrackingController extends AbstractGameController {
 			((Md3Model) entity.getGeometry()).setLegsAnimation("LEGS_RUN");
 		}
 		if (isKeyDown("forward")) {
-			physics.move(physics.getAcceleration());
+			physics.move(1);
 		}
 
 		if (isKeyDown("back")) {
-			physics.move(physics.getDeceleration());
+			physics.move(-0.5f);
 		}
 
 		if (isKeyDown("right")) {
-			physics.turn(-physics.getTurningVelocity());
+			physics.turn(-1);
 			entity.setYaw(physics.getCurrentAngle());
 		} else {
 			if (isKeyDown("left")) {
-				physics.turn(physics.getTurningVelocity());
+				physics.turn(1);
 				entity.setYaw(physics.getCurrentAngle());
 			} else {
 				physics.turn(0);
