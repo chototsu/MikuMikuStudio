@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.25 2004-07-06 21:34:32 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.26 2004-07-22 18:19:59 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -751,7 +751,7 @@ public class Vector3f implements Externalizable{
      * @return the string representation of this vector.
      */
     public String toString() {
-        return "org.jme.math.Vector3f [X=" + x + ", Y=" + y + ", Z=" + z + "]";
+        return "com.jme.math.Vector3f [X=" + x + ", Y=" + y + ", Z=" + z + "]";
     }
 
 
