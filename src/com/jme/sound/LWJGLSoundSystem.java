@@ -33,26 +33,21 @@ package com.jme.sound;
 
 import org.lwjgl.openal.AL;
 
+
 /**
  * @author Arman Ozcelik
- * @version $Id: LWJGLSoundSystem.java,v 1.2 2003-10-20 19:23:34 mojomonkey Exp $
+ * @version $Id: LWJGLSoundSystem.java,v 1.3 2003-10-25 02:23:09 Anakan Exp $
  */
 public class LWJGLSoundSystem extends SoundSystem {
 
 	private LWJGLSoundRenderer renderer;
-	private int maxSources;
-	private int maxBuffers;
 	private boolean created;
-	/**
-	 * TODO Comment
-	 */
-	public void createSoundSystem(int maxSources, int maxBuffers) {
-		this.maxSources = maxSources;
-		this.maxBuffers = maxBuffers;
+	
+	public LWJGLSoundSystem(){
 		initOpenAL();
-		renderer = new LWJGLSoundRenderer(maxBuffers, maxSources);
+		renderer=new LWJGLSoundRenderer();
 		created = true;
-
+		
 	}
 
 	/**
@@ -78,8 +73,12 @@ public class LWJGLSoundSystem extends SoundSystem {
 			AL.create();
 		} catch (Exception e) {
 			e.printStackTrace();
-			return;
 		}
 	}
+
+	
+
+	
+
 
 }

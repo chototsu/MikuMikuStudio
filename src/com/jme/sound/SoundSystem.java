@@ -31,9 +31,11 @@
  */
 package com.jme.sound;
 
+
+
 /**
  * @author Arman Ozcelik
- * @version $Id: SoundSystem.java,v 1.2 2003-10-20 19:23:34 mojomonkey Exp $
+ * @version $Id: SoundSystem.java,v 1.3 2003-10-25 02:23:09 Anakan Exp $
  */
 public abstract class SoundSystem {
 	/**
@@ -58,13 +60,7 @@ public abstract class SoundSystem {
 		return null;
 	}
 
-	/**
-	 * 
-	 * @param maxSouces
-	 * @param maxBuffers
-	 */
-
-	public abstract void createSoundSystem(int maxSouces, int maxBuffers);
+	
 
 	/**
 		* <code>getRenderer</code> returns the <code>SoundRenderer</code> implementation
@@ -87,4 +83,10 @@ public abstract class SoundSystem {
 		*/
 
 	public abstract boolean isCreated();
+
+	
+		
+		
+	
+
 }

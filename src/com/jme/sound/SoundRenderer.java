@@ -33,57 +33,14 @@ package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: SoundRenderer.java,v 1.2 2003-10-20 19:23:34 mojomonkey Exp $
+ * @version $Id: SoundRenderer.java,v 1.3 2003-10-25 02:23:09 Anakan Exp $
  */
 public interface SoundRenderer {
 
-	/**
-	 * TODO Comment
-	 * @param bindingName
-	 * @param file
-	 * @param source
-	 */
-	public void loadWaveAs(String bindingName, String file, int source);
-
-	/**
-	 * TODO Comment
-	 * @param sound
-	 */
-	public void loop(String sound);
-
-	/**
-	 * TODO Comment
-	 * @param sound
-	 */
-	public void play(String sound);
-
-	/**
-	 * Comment
-	 * @param sound
-	 * @param xPosition
-	 * @param yPosition
-	 * @param zPosition
-	 * @param xVelocity
-	 * @param yVelocity
-	 * @param zVelocity
-	 */
-
-	public void playFaded(
-		String sound,
-		float xPosition,
-		float yPosition,
-		float zPosition,
-		float xVelocity,
-		float yVelocity,
-		float zVelocity);
-
-	/**
-	 * TODO Comment
-	 * @param sound
-	 * @param xPosition
-	 * @param yPosition
-	 * @param zPosition
-	 */
-
-	public void playLocalized(String sound, float xPosition, float yPosition, float zPosition);
+	
+	public void addSoundPlayer(Object name);
+	
+	public void loadSoundAs(String name, String file);
+	
+	public SoundSource getSoundPlayer(Object name);
 }

@@ -29,60 +29,69 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+/*
+ * Created on 23 oct. 2003
+ *
+ */
 package com.jme.sound;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 
-import org.lwjgl.openal.AL;
-
-
-import com.jme.sound.utils.StreamRepository;
-import com.jme.sound.utils.SourceRepository;
-
-
+import javax.sound.sampled.AudioFormat;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: LWJGLSoundRenderer.java,v 1.3 2003-10-25 02:23:09 Anakan Exp $
+ *
  */
-public class LWJGLSoundRenderer implements SoundRenderer {
-	
-	private float[] listenerPos = { 0.0f, 0.0f, 0.0f };
-	//Velocity of the listener.
-	private float[] listenerVel = { 0.0f, 0.0f, 0.0f };
-	//Orientation of the listener. (first 3 elements are "at", second 3 are "up")
-	private float[] listenerOri = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
+public interface SoundStream {
 
-	public LWJGLSoundRenderer() {
-		setListenerValues();
-	}
+	/**
+	 * Closes this stream .
+	 *
+	 */
+	public void close();
 
-	private void setListenerValues() {
-		AL.alListener3f(AL.AL_POSITION, listenerPos[0], listenerPos[1], listenerPos[2]);
-		AL.alListener3f(AL.AL_VELOCITY, listenerVel[0], listenerVel[1], listenerVel[2]);
-		AL.alListener3f(AL.AL_ORIENTATION, listenerOri[0], listenerOri[1], listenerOri[2]);
-	}
+	/**
+	 * 
+	 * @return the audio channels provided by the stream 
+	 */
+	public int getChannels();
 
-	
+	/**
+	 * 
+	 * @return the <code>AudioFormat</code> of this stream
+	 */
+	public AudioFormat getFormat();
 
-	public void addSoundPlayer(Object name){
-		IntBuffer source=ByteBuffer.allocateDirect(4 ).order(ByteOrder.nativeOrder()).asIntBuffer();
-		AL.alGenSources(source);
-		SourceRepository.getRepository().bind(name, new LWJGLSource(source.get(0)));
-	}
-		
-	
-	
-	public void loadSoundAs(String name, String file){
-		StreamRepository.getInstance().bind(name, file);
-	}
+	/**
+	 * 
+	 * @return The length in bytes of the sound data.
+	 */
+	public int getLength();
 
-	
-	public SoundSource getSoundPlayer(Object name) {
-		return SourceRepository.getRepository().getSource(name);
-	}
-	
+	/**
+	 * 
+	 * @return the sample rate of the sound data contained in this stream
+	 */
+	public int getSampleRate();
+
+	/**
+	 * Reads the rest of the data in the stream.
+	 * @return the data in the stream as a direct <code>ByteBuffer</code>
+	 * The length is 0 if no more data is available in the Stream.
+	 */
+	public ByteBuffer read() throws IOException;
+
+	/**
+	 * Reads the next nbOfbytes in the stream.
+	 * @param nbOfBytes Number of bytes to read.
+	 * @return the data in the stream as a direct <code>ByteBuffer</code>
+	 * The length is 0 if no more data is available in the Stream.
+	 * If there are less than nbOfBytes available the returned <code>ByteBuffer</code> size 
+	 * is the next number of bytes available in the Stream.
+	 */
+	public ByteBuffer read(int nbOfBytes) throws IOException;
 
 }

@@ -29,46 +29,53 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.sound;
+
+/*
+ * Created on 23 oct. 2003
+ *
+ */
+package com.jme.sound.utils;
+
 
 import java.util.Hashtable;
+
+import com.jme.sound.SoundSource;
 
 
 
 /**
  * @author Arman Ozcelik
- * @version $Id: SoundBindingManager.java,v 1.2 2003-10-20 19:23:34 mojomonkey Exp $
+ *
  */
-public class SoundBindingManager {
+public class SourceRepository {
+
+	private Hashtable repository=new Hashtable();
+	private static SourceRepository instance;
 	
-	private static SoundBindingManager instance;
-	private Hashtable buffs=new Hashtable();
-	private Hashtable sources=new Hashtable();
-	
-	private SoundBindingManager(){
+	private SourceRepository() {
 		
 	}
-	/**
-	 * 
-	 */
-	public synchronized static SoundBindingManager getInstance(){
+	
+	public synchronized static SourceRepository getRepository(){
 		if(instance==null){
-			instance=new SoundBindingManager();
+			instance=new SourceRepository();
 		}
 		return instance;		
 	}
 	
-	public void bind(String name, Integer bufferNumber, Integer source){
-		buffs.put(name, bufferNumber);
-		sources.put(name, source);
+	public void bind(Object player, SoundSource source){
+		repository.put(player, source);
+		
 	}
 	
-	public int getByName(String name){
-		return ((Integer)buffs.get(name)).intValue();
+	public SoundSource getSource(Object player){
+		return (SoundSource)repository.get(player);
 	}
 	
-	public int getSourceByName(String name){
-		return ((Integer)sources.get(name)).intValue();
-	}
+	
+	
+	
+	
+	
 
 }

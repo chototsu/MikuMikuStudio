@@ -29,60 +29,43 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+/*
+ * Created on 23 oct. 2003
+ *
+ */
 package com.jme.sound;
-
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
-
-import org.lwjgl.openal.AL;
-
-
-import com.jme.sound.utils.StreamRepository;
-import com.jme.sound.utils.SourceRepository;
-
-
 
 /**
  * @author Arman Ozcelik
- * @version $Id: LWJGLSoundRenderer.java,v 1.3 2003-10-25 02:23:09 Anakan Exp $
+ *
  */
-public class LWJGLSoundRenderer implements SoundRenderer {
-	
-	private float[] listenerPos = { 0.0f, 0.0f, 0.0f };
-	//Velocity of the listener.
-	private float[] listenerVel = { 0.0f, 0.0f, 0.0f };
-	//Orientation of the listener. (first 3 elements are "at", second 3 are "up")
-	private float[] listenerOri = { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
+public interface SoundSource {
 
-	public LWJGLSoundRenderer() {
-		setListenerValues();
-	}
-
-	private void setListenerValues() {
-		AL.alListener3f(AL.AL_POSITION, listenerPos[0], listenerPos[1], listenerPos[2]);
-		AL.alListener3f(AL.AL_VELOCITY, listenerVel[0], listenerVel[1], listenerVel[2]);
-		AL.alListener3f(AL.AL_ORIENTATION, listenerOri[0], listenerOri[1], listenerOri[2]);
-	}
-
+	public int getSourceNumber();
 	
-
-	public void addSoundPlayer(Object name){
-		IntBuffer source=ByteBuffer.allocateDirect(4 ).order(ByteOrder.nativeOrder()).asIntBuffer();
-		AL.alGenSources(source);
-		SourceRepository.getRepository().bind(name, new LWJGLSource(source.get(0)));
-	}
-		
+	public void setStream(SoundStream stream);
 	
+	public SoundStream getStream();
 	
-	public void loadSoundAs(String name, String file){
-		StreamRepository.getInstance().bind(name, file);
-	}
-
+	public void play(String name);
 	
-	public SoundSource getSoundPlayer(Object name) {
-		return SourceRepository.getRepository().getSource(name);
-	}
+	public void stop();
+	
+	public void pause();
+	
+	public void updatePosition(float x, float y, float z);
+	
+	public void updateVelocity(float x, float y, float z);
+	
+	public boolean isPlaying();
+	
+	public boolean isPaused();
+	
+	public boolean isStopped();
+	
+	public void setNumberOfBuffers(int buffers);
+	
 	
 
 }

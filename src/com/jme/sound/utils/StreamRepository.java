@@ -29,70 +29,46 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.sound;
+package com.jme.sound.utils;
 
-import java.nio.ByteBuffer;
-
-import javax.sound.sampled.AudioInputStream;
+import java.util.Hashtable;
 
 
-public abstract class WaveData {
-	/** actual wave data */
-	public ByteBuffer data;
 
-	/** format type of data */
-	public int format;
 
-	/** sample rate of data */
-	public int samplerate;
-    
-    public WaveData() {
-    
-    }
-
+/**
+ * @author Arman Ozcelik
+ * @version $Id: StreamRepository.java,v 1.1 2003-10-25 02:26:03 Anakan Exp $
+ */
+public class StreamRepository {
+	
+	private static StreamRepository instance;
+	private Hashtable sources=new Hashtable();
+	
+	private StreamRepository(){
+		
+	}
 	/**
-	 * Creates a new WaveData
 	 * 
-	 * @param data actual wavedata
-	 * @param format format of wave data
-	 * @param samplerate sample rate of data
 	 */
-	public WaveData(ByteBuffer data, int format, int samplerate) {
-		this.data = data;
-		this.format = format;
-		this.samplerate = samplerate;
+	public synchronized static StreamRepository getInstance(){
+		if(instance==null){
+			instance=new StreamRepository();
+		}
+		return instance;		
+	}
+	
+	public void bind(String name, String file){
+		sources.put(name, file);
+	}
+	
+	public String getStream(String name){
+		return (String)sources.get(name);
+		
+	}
+	
+	public boolean contains(String name){
+		return sources.containsKey(name);
 	}
 
-	/**
-	 * Disposes the wavedata
-	 */
-	public void dispose() {
-		data.clear();
-	}
-
-	/**
-	 * Creates a WaveData container from the specified filename
-	 * 
-	 * @param filepath path to file (relative, and in classpath) 
-	 * @return WaveData containing data, or null if a failure occured
-	 */
-	public abstract void create(String filepath);
-		
-
-	/**
-	 * Creates a WaveData container from the specified bytes
-	 *
-	 * @param buffer array of bytes containing the complete wave file
-	 * @return WaveData containing data, or null if a failure occured
-	 */
-	public abstract void create(byte[] buffer);
-		
-
-	/**
-	 * Creates a WaveData container from the specified stream
-	 * 
-	 * @param ais AudioInputStream to read from
-	 * @return WaveData containing data, or null if a failure occured
-	 */
-    public abstract void create(AudioInputStream ais);
 }
