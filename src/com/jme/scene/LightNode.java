@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -42,12 +42,12 @@ import com.jme.scene.state.LightState;
 /**
  * <code>LightNode</code> defines a scene node that contains and maintains a
  * light object. A light node contains a single light, and positions the light
- * based on it's translation vector. If the contained light is a spot light, 
+ * based on it's translation vector. If the contained light is a spot light,
  * the rotation of the node determines it's direction. If the contained light
  * is a Directional light rotation determines it's direction. It has no
  * concept of location.
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.3 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: LightNode.java,v 1.4 2004-02-24 01:32:21 mojomonkey Exp $
  */
 public class LightNode extends Node {
     private Light light;
@@ -66,7 +66,7 @@ public class LightNode extends Node {
     }
 
     /**
-     * 
+     *
      * <code>setLight</code> sets the light of this node. If a light was
      * previously set to the node, it is replaced by this light.
      * @param light the light to use for the node.
@@ -78,7 +78,7 @@ public class LightNode extends Node {
     }
 
     /**
-     * 
+     *
      * <code>getLight</code> returns the light object this node is controlling.
      * @return the light object of the node.
      */
@@ -87,9 +87,9 @@ public class LightNode extends Node {
     }
 
     /**
-     * 
+     *
      * <code>setTarget</code> defines the node (and it's children) that is
-     * affected by this light. 
+     * affected by this light.
      * @param node the node that is the target of the light.
      */
     public void setTarget(Spatial node) {
@@ -105,7 +105,7 @@ public class LightNode extends Node {
         super.updateWorldData(time);
         Matrix3f lightRotate = worldRotation.mult(localRotation);
         Vector3f lightTranslate =
-            ((worldRotation.mult(localTranslation)).mult(worldScale)).add(
+            ((worldRotation.mult(localTranslation)).multLocal(worldScale)).addLocal(
                 worldTranslation);
 
         switch (light.getType()) {

@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -39,12 +39,12 @@ import org.lwjgl.Sys;
 /**
  * <code>Timer</code> handles the system's time related functionality. This
  * allows the calculation of the framerate. To keep the framerate calculation
- * accurate, a call to update each frame is required. <code>Timer</code> is 
- * a singleton object and must be created via the <code>getTimer</code> 
+ * accurate, a call to update each frame is required. <code>Timer</code> is
+ * a singleton object and must be created via the <code>getTimer</code>
  * method.
- * 
+ *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.2 2004-02-02 23:03:52 ericthered Exp $
+ * @version $Id: LWJGLTimer.java,v 1.3 2004-02-24 01:32:22 mojomonkey Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;
@@ -52,8 +52,9 @@ public class LWJGLTimer extends Timer {
     //frame rate parameters.
     private long oldTime = 0;
     private long newTime = 0;
-    private float fps = 0;
-    
+    private final static int TIMER_SMOOTHNESS = 20;
+    private float[] fps = new float[TIMER_SMOOTHNESS];
+
     /**
      * Constructor builds a <code>Timer</code> object. All values will be
      * initialized to it's default values.
@@ -62,9 +63,12 @@ public class LWJGLTimer extends Timer {
         //reset time
         Sys.setTime(0);
 
+        // set fps... might want to make it something other than 0 if funny activity at beginning.
+        for (int i = TIMER_SMOOTHNESS; --i>=0; ) fps[i]=0;
+
         //set priority of this process
         Sys.setProcessPriority(Sys.LOW_PRIORITY);
-        
+
         //print timer resolution info
         LoggingSystem.getLogger().log(
             Level.INFO,
@@ -77,35 +81,37 @@ public class LWJGLTimer extends Timer {
      * @see com.jme.util.Timer#getTime()
      */
     public long getTime(){
-    	return Sys.getTime();
+        return Sys.getTime();
     }
-    
+
     /**
      * @see com.jme.util.Timer#getResoultion()
      */
     public long getResolution(){
-    	return Sys.getTimerResolution();
+        return Sys.getTimerResolution();
     }
-    
+
     /**
      * <code>getFrameRate</code> returns the current frame rate since the
      * last call to <code>update</code>.
      * @return the current frame rate.
      */
     public float getFrameRate() {
-        return fps;
+        float rVal = 0f;
+        for (int i = TIMER_SMOOTHNESS; --i>=0; ) rVal+=fps[i];
+        return rVal/((float)TIMER_SMOOTHNESS);
     }
-    
+
     /**
-     * 
+     *
      */
     public float getTimePerFrame() {
-        return 1f/fps;
+        return 1f/getFrameRate();
     }
-    
+
     /**
      * <code>setProcessPriority</code> sets the priority of this application.
-     * 
+     *
      * @param priority the application's priority level.
      */
     public void setProcessPriority(int priority) {
@@ -114,7 +120,7 @@ public class LWJGLTimer extends Timer {
 
     /**
      * <code>setTime</code> sets the time of the timer.
-     * 
+     *
      * @param time the new time of the timer.
      */
     public void setTime(long time) {
@@ -128,19 +134,20 @@ public class LWJGLTimer extends Timer {
     public void update() {
         newTime = Sys.getTime();
         frameDiff = newTime - oldTime;
-        fps =
+        for (int i = 0; i<TIMER_SMOOTHNESS-1; i++) fps[i] = fps[i+1];
+        fps[TIMER_SMOOTHNESS-1] =
             (float) Sys.getTimerResolution()
                 / (float)frameDiff;
         oldTime = newTime;
     }
-    
+
     /**
      * <code>toString</code> returns the string representation of this timer
      * in the format:<br><br>
      * jme.utility.Timer@1db699b<br>
      * Time: {LONG}<br>
      * FPS: {FLOAT}<br>
-     * 
+     *
      * @return the string representation of this object.
      */
     public String toString() {

@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -35,11 +35,11 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>KeyNodeStrafeLeftAction</code> defines an action that moves a node along 
+ * <code>KeyNodeStrafeLeftAction</code> defines an action that moves a node along
  * the positive left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeLeftAction.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
+ * @version $Id: KeyNodeStrafeLeftAction.java,v 1.3 2004-02-24 01:32:20 mojomonkey Exp $
  */
 public class KeyNodeStrafeLeftAction implements InputAction {
 
@@ -56,10 +56,10 @@ public class KeyNodeStrafeLeftAction implements InputAction {
         this.node = node;
         this.speed = speed;
     }
-    
+
     /**
-     * 
-     * <code>setSpeed</code> sets the speed in units/second that the 
+     *
+     * <code>setSpeed</code> sets the speed in units/second that the
      * node can move.
      * @param movementSpeed the units/second of the node.
      */
@@ -69,12 +69,12 @@ public class KeyNodeStrafeLeftAction implements InputAction {
 
     /**
      * <code>performAction</code> moves the node along the left vector for
-     * a given distance of speed * time. 
+     * a given distance of speed * time.
      * @see com.jme.input.action.InputAction#performAction(float)
      */
     public void performAction(float time) {
         Vector3f loc = node.getLocalTranslation();
-        loc = loc.add(node.getLocalRotation().getColumn(0).mult((speed * time)));
+        loc.addLocal(node.getLocalRotation().getColumn(0).multLocal((speed * time)));
         node.setLocalTranslation(loc);
         node.updateWorldData(time);
     }

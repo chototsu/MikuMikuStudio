@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -43,11 +43,11 @@ import com.jme.scene.state.RenderState;
 
 /**
  * <code>Spatial</code> defines the base class for scene graph nodes. It
- * maintains a link to a parent, it's local transforms and the world's 
- * transforms. All other nodes, such as <code>Node</code> and 
+ * maintains a link to a parent, it's local transforms and the world's
+ * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.16 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.17 2004-02-24 01:32:21 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -77,17 +77,17 @@ public abstract class Spatial implements Serializable {
     protected RenderState[] parentStateList;
 
     protected ArrayList geometricalControllers = new ArrayList();
-    
+
     protected String name;
 
     /**
-     * Constructor instantiates a new <code>Spatial</code> object setting 
+     * Constructor instantiates a new <code>Spatial</code> object setting
      * the rotation, translation and scale value to defaults.
      * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
      */
     public Spatial(String name) {
-    	this.name = name;
+        this.name = name;
         renderStateList = new RenderState[RenderState.RS_MAX_STATE];
         parentStateList = new RenderState[RenderState.RS_MAX_STATE];
         localRotation = new Matrix3f();
@@ -97,11 +97,11 @@ public abstract class Spatial implements Serializable {
         localScale = 1.0f;
         worldScale = 1.0f;
     }
-    
+
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -135,7 +135,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getWorldBound</code> retrieves the world bound at this node level.
      * @return the world bound at this level.
      */
@@ -144,7 +144,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setWorldBound</code> sets the world bound for this node level.
      * @param worldBound the world bound at this level.
      */
@@ -153,7 +153,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>onDraw</code> checks the node with the camera to see if it
      * should be culled, if not, the node's draw method is called.
      * @param r the renderer used for display.
@@ -175,7 +175,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>draw</code> abstract method that handles drawing data to the
      * renderer if it is geometry and passing the call to it's children if it
      * is a node.
@@ -184,8 +184,8 @@ public abstract class Spatial implements Serializable {
     public abstract void draw(Renderer r);
 
     /**
-     * 
-     * <code>getWorldRotation</code> retrieves the rotation matrix of the 
+     *
+     * <code>getWorldRotation</code> retrieves the rotation matrix of the
      * world.
      * @return the world's rotation matrix.
      */
@@ -194,7 +194,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getWorldTranslation</code> retrieves the translation vector of
      * the world.
      * @return the world's tranlsation vector.
@@ -204,7 +204,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getWorldScale</code> retrieves the scale factor of the world.
      * @return the world's scale factor.
      */
@@ -213,8 +213,8 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
-     * <code>isForceCulled</code> reports if this node should always be 
+     *
+     * <code>isForceCulled</code> reports if this node should always be
      * culled or not. If true, this node will not be displayed.
      * @return true if this node should never be displayed, false otherwise.
      */
@@ -223,7 +223,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>isForceView</code> returns true if the node will be rendered whether
      * it's in the camera frustum or not.
      * @return true if viewing is forced, false otherwise.
@@ -233,7 +233,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setForceCull</code> sets if this node should always be culled or
      * not. True will always cull the node, false will allow proper culling to
      * take place.
@@ -244,7 +244,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setForceView</code> will force the node to be rendered whether it's
      * in the camera frustum or not.
      * @param value true to force viewing, false otherwise.
@@ -254,7 +254,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>updateGeometricState</code> updates all the geometry information
      * for the node.
      * @param time the frame time.
@@ -269,8 +269,8 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
-     * <code>updateWorldData</code> updates the world transforms from the 
+     *
+     * <code>updateWorldData</code> updates the world transforms from the
      * parent down to the leaf.
      * @param time the frame time.
      */
@@ -301,14 +301,17 @@ public abstract class Spatial implements Serializable {
         // update world transforms
         if (!computesWorldTransform) {
             if (parent != null) {
-            	worldScale = parent.getWorldScale() * localScale;
+                worldScale = parent.getWorldScale() * localScale;
                 parent.getWorldRotation().mult(localRotation, worldRotation);
-                worldTranslation =
-                    parent.getWorldTranslation().add(
-                        (
-                            parent.getWorldRotation().mult(
-                                localTranslation)).mult(
-                            parent.getWorldScale()));
+                parent.getWorldRotation().mult(localTranslation, worldTranslation);
+                worldTranslation.multLocal(parent.getWorldScale());
+                worldTranslation.addLocal(parent.getWorldTranslation());
+//                worldTranslation =
+//                    parent.getWorldTranslation().add(
+//                        (
+//                            parent.getWorldRotation().mult(
+//                                localTranslation)).mult(
+//                            parent.getWorldScale()));
 
             } else {
                 worldScale = localScale;
@@ -319,16 +322,16 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
-     * <code>updateWorldBound</code> updates the bounding volume of the 
-     * world. Abstract, geometry transforms the bound while node merges 
+     *
+     * <code>updateWorldBound</code> updates the bounding volume of the
+     * world. Abstract, geometry transforms the bound while node merges
      * the children's bound.
      *
      */
     public abstract void updateWorldBound();
 
     /**
-     * 
+     *
      * <code>propagateBoundToRoot</code> passes the new world bound up the
      * tree to the root.
      *
@@ -375,7 +378,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setLocalRotation</code> sets the local rotation of this node, using
      * a quaterion to build the matrix.
      * @param quaternion the quaternion that defines the matrix.
@@ -401,7 +404,7 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * <code>getLocalTranslation</code> retrieves the local translation of 
+     * <code>getLocalTranslation</code> retrieves the local translation of
      * this node.
      * @return the local translation of this node.
      */
@@ -419,11 +422,11 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
-     * <code>setRenderState</code> sets a render state for this node. Note, 
-     * there can only be one render state per type per node. That is, there 
+     *
+     * <code>setRenderState</code> sets a render state for this node. Note,
+     * there can only be one render state per type per node. That is, there
      * can only be a single AlphaState a single TextureState, etc. If there
-     * is already a render state for a type set the old render state will 
+     * is already a render state for a type set the old render state will
      * be rendered. Otherwise, null is returned.
      * @param rs the render state to add.
      * @return the old render state.
@@ -439,8 +442,8 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
-     * <code>setStates</code> activates all the render states for this 
+     *
+     * <code>setStates</code> activates all the render states for this
      * particular node. These states will remain activated until unset is
      * called.
      *
@@ -457,9 +460,9 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
-     * <code>unsetStates</code> deactivates all the render states for this 
-     * particular node. 
+     *
+     * <code>unsetStates</code> deactivates all the render states for this
+     * particular node.
      *
      */
     public void unsetStates() {

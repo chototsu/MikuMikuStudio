@@ -2,37 +2,37 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 /*
  * EDIT:  02/09/2004 - Added viewport accessors. GOP
- */ 
+ */
 package com.jme.renderer;
 
 import java.util.logging.Level;
@@ -45,12 +45,12 @@ import com.jme.util.LoggingSystem;
 
 /**
  * <code>AbstractCamera</code> implments the <code>Camera</code> interface
- * implementing all non-API specific camera calculations. Those requiring 
+ * implementing all non-API specific camera calculations. Those requiring
  * API (LWJGL, JOGL, etc) specific calls are not implemented making this
  * class abstract. API specific classes are expected to extend this class and
  * handle renderer viewport setting.
  * @author Mark Powell
- * @version $Id: AbstractCamera.java,v 1.5 2004-02-19 23:12:03 mojomonkey Exp $
+ * @version $Id: AbstractCamera.java,v 1.6 2004-02-24 01:32:17 mojomonkey Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -156,11 +156,11 @@ public abstract class AbstractCamera implements Camera {
             worldPlane[i] = new Plane();
         }
 
-        //call the API specific rendering 
+        //call the API specific rendering
         onFrustumChange();
         onViewPortChange();
         onFrameChange();
-        
+
         LoggingSystem.getLogger().log(Level.INFO, "Camera created.");
     }
 
@@ -267,9 +267,9 @@ public abstract class AbstractCamera implements Camera {
         this.frustumTop = frustumTop;
         onFrustumChange();
     }
-    
+
     /**
-     * 
+     *
      * <code>getLocation</code> retrieves the location vector of the camera.
      * @see com.jme.renderer.Camera#getLocation()
      * @return the position of the camera.
@@ -278,7 +278,7 @@ public abstract class AbstractCamera implements Camera {
         return location;
     }
 
-    /** 
+    /**
      * <code>getDirection</code> retrieves the direction vector the camera is
      * facing.
      * @see com.jme.renderer.Camera#getDirection()
@@ -288,7 +288,7 @@ public abstract class AbstractCamera implements Camera {
         return direction;
     }
 
-    /** 
+    /**
      * <code>getLeft</code> retrieves the left axis of the camera.
      * @see com.jme.renderer.Camera#getLeft()
      * @return the left axis of the camera.
@@ -304,9 +304,9 @@ public abstract class AbstractCamera implements Camera {
     public Vector3f getUp() {
         return up;
     }
-    
+
     /**
-     * 
+     *
      * <code>setLocation</code> sets the position of the camera.
      * @see com.jme.renderer.Camera#setLocation(com.jme.math.Vector3f)
      * @param location the position of the camera.
@@ -326,7 +326,7 @@ public abstract class AbstractCamera implements Camera {
         onFrameChange();
     }
 
-    /** 
+    /**
      * <code>setLeft</code> sets the left axis of this camera.
      * @see com.jme.renderer.Camera#setLeft(com.jme.math.Vector3f)
      * @param left the left axis of this camera.
@@ -457,7 +457,7 @@ public abstract class AbstractCamera implements Camera {
      * <code>getPlaneState</code> returns the state of the frustum planes. So
      * checks can be made as to which frustum plane has been examined for
      * culling thus far.
-     * 
+     *
      * @return the current plane state int.
      */
     public int getPlaneState() {
@@ -483,7 +483,7 @@ public abstract class AbstractCamera implements Camera {
 
     /**
      * <code>setViewPortLeft</code> sets the left boundary of the viewport
-     * @param left the left boundary of the viewport 
+     * @param left the left boundary of the viewport
      */
     public void setViewPortLeft(float left) {
         viewPortLeft = left;
@@ -552,11 +552,11 @@ public abstract class AbstractCamera implements Camera {
     }
 
     /**
-     * <code>culled</code> tests a bounding volume against the planes of the 
+     * <code>culled</code> tests a bounding volume against the planes of the
      * camera's frustum. The frustums planes are set such that the normals
      * all face in towards the viewable scene. Therefore, if the bounding
      * volume is on the negative side of the plane is can be culled out. If
-     * the object should be culled (i.e. not rendered) true is returned, 
+     * the object should be culled (i.e. not rendered) true is returned,
      * otherwise, false is returned. If bound is null, false is returned and
      * the object will not be culled.
      * @param bound the bound to check for culling
@@ -564,7 +564,7 @@ public abstract class AbstractCamera implements Camera {
      */
     public boolean culled(BoundingVolume bound) {
         if(bound == null) {
-        	return false;
+            return false;
         }
         int planeCounter = planeQuantity - 1;
         int mask = 1 << planeCounter;
@@ -594,7 +594,7 @@ public abstract class AbstractCamera implements Camera {
      * made to the planes. The new frustum values are kept in a temporary
      * location for use when calculating the new frame. It should be noted
      * that the abstract implementation of this class only updates the data,
-     * and does not make any rendering calls. As such, any impelmenting 
+     * and does not make any rendering calls. As such, any impelmenting
      * subclass should insure to override this method call it with super and
      * then call the rendering specific code.
      */
@@ -624,9 +624,9 @@ public abstract class AbstractCamera implements Camera {
     }
 
     /**
-     * <code>onFrameChange</code> updates the view frame of the camera. It 
-     * should be noted that the abstract implementation of this class only 
-     * updates the data, and does not make any rendering calls. As such, any 
+     * <code>onFrameChange</code> updates the view frame of the camera. It
+     * should be noted that the abstract implementation of this class only
+     * updates the data, and does not make any rendering calls. As such, any
      * implementing  subclass should insure to override this method call it with
      * super and then call the rendering specific code.
      */
@@ -634,31 +634,35 @@ public abstract class AbstractCamera implements Camera {
         float dirDotLocation = direction.dot(location);
 
         // left plane
-        worldPlane[LEFT_PLANE].setNormal(
-            left.mult(coeffLeft[0]).add(direction.mult(coeffLeft[1])));
+        Vector3f leftPlaneNormal = worldPlane[LEFT_PLANE].getNormal();
+        leftPlaneNormal.x = left.x; leftPlaneNormal.y = left.y; leftPlaneNormal.z = left.z;
+        worldPlane[LEFT_PLANE].setNormal(leftPlaneNormal.multLocal(coeffLeft[0]).addLocal(direction.x*coeffLeft[1], direction.y*coeffLeft[1], direction.z*coeffLeft[1]));
         worldPlane[LEFT_PLANE].setConstant(
-            location.dot(worldPlane[LEFT_PLANE].getNormal()));
+            location.dot(leftPlaneNormal));
 
         // right plane
-        worldPlane[RIGHT_PLANE].setNormal(
-            left.mult(coeffRight[0]).add(direction.mult(coeffRight[1])));
+        Vector3f rightPlaneNormal = worldPlane[RIGHT_PLANE].getNormal();
+        rightPlaneNormal.x = left.x; rightPlaneNormal.y = left.y; rightPlaneNormal.z = left.z;
+        worldPlane[RIGHT_PLANE].setNormal(rightPlaneNormal.multLocal(coeffRight[0]).addLocal(direction.x*coeffRight[1], direction.y*coeffRight[1], direction.z*coeffRight[1]));
         worldPlane[RIGHT_PLANE].setConstant(
-            location.dot(worldPlane[RIGHT_PLANE].getNormal()));
+            location.dot(rightPlaneNormal));
 
         // bottom plane
-        worldPlane[BOTTOM_PLANE].setNormal(
-            up.mult(coeffBottom[0]).add(direction.mult(coeffBottom[1])));
+        Vector3f bottomPlaneNormal = worldPlane[BOTTOM_PLANE].getNormal();
+        bottomPlaneNormal.x = up.x; bottomPlaneNormal.y = up.y; bottomPlaneNormal.z = up.z;
+        worldPlane[BOTTOM_PLANE].setNormal(bottomPlaneNormal.multLocal(coeffBottom[0]).addLocal(direction.x*coeffBottom[1], direction.y*coeffBottom[1], direction.z*coeffBottom[1]));
         worldPlane[BOTTOM_PLANE].setConstant(
-            location.dot(worldPlane[BOTTOM_PLANE].getNormal()));
+            location.dot(bottomPlaneNormal));
 
         // top plane
-        worldPlane[TOP_PLANE].setNormal(
-            up.mult(coeffTop[0]).add(direction.mult(coeffTop[1])));
+        Vector3f topPlaneNormal = worldPlane[TOP_PLANE].getNormal();
+        topPlaneNormal.x = up.x; topPlaneNormal.y = up.y; topPlaneNormal.z = up.z;
+        worldPlane[TOP_PLANE].setNormal(topPlaneNormal.multLocal(coeffTop[0]).addLocal(direction.x*coeffTop[1], direction.y*coeffTop[1], direction.z*coeffTop[1]));
         worldPlane[TOP_PLANE].setConstant(
-            location.dot(worldPlane[TOP_PLANE].getNormal()));
+            location.dot(topPlaneNormal));
 
         // far plane
-        worldPlane[FAR_PLANE].setNormal(direction.negate());
+        worldPlane[FAR_PLANE].setNormal(worldPlane[FAR_PLANE].getNormal().negateLocal());
         worldPlane[FAR_PLANE].setConstant(- (dirDotLocation + frustumFar));
 
         // near plane
