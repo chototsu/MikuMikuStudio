@@ -42,19 +42,17 @@ import com.jme.light.*;
 import com.jme.math.*;
 import com.jme.renderer.*;
 import com.jme.scene.*;
-import com.jme.scene.shape.Box;
 import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
 import com.jme.terrain.util.MidPointHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
-import com.jme.terrain.util.RawHeightMap;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.10 2004-04-14 02:30:23 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.11 2004-04-15 02:56:39 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
