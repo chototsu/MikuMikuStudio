@@ -61,7 +61,7 @@ import com.jme.scene.state.TextureState;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.21 2005-03-17 23:02:54 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.22 2005-03-17 23:34:22 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -119,6 +119,10 @@ public class ParticleManager extends Controller {
     
     private Camera camera;
     private int iterations;
+
+    // vectors to prevent repeated object creation:
+    private Vector3f upXemit, absUpVector, abUpMinUp;
+
     
     /**
      * ParticleManager constructor
@@ -139,6 +143,11 @@ public class ParticleManager extends Controller {
         startColor = new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f);
         endColor = new ColorRGBA(1.0f, 1.0f, 0.0f, 0.0f);
         particleSpeed = new Vector3f();
+        
+        // init working vectors.. used to prevent additional object creation.
+        upXemit = new Vector3f();
+        absUpVector = new Vector3f();
+        abUpMinUp = new Vector3f();
         
         setMinTime(0);
         setMaxTime(Float.MAX_VALUE);
@@ -328,8 +337,6 @@ public class ParticleManager extends Controller {
 
         float upDotEmit = upVector.dot(worldEmit);
         if ( ( (double) FastMath.abs(upDotEmit)) > 1.0d - FastMath.DBL_EPSILON) {
-            Vector3f absUpVector = new Vector3f();
-            Vector3f abUpMinUp = new Vector3f();
             absUpVector.x = upVector.x <= 0.0f ? -upVector.x : upVector.x;
             absUpVector.y = upVector.y <= 0.0f ? -upVector.y : upVector.y;
             absUpVector.z = upVector.z <= 0.0f ? -upVector.z : upVector.z;
@@ -349,8 +356,8 @@ public class ParticleManager extends Controller {
                     absUpVector.z = 1.0f;
                     absUpVector.x = absUpVector.y = 0.0f;
                 }
-            abUpMinUp = absUpVector.subtract(upVector);
-            Vector3f upXemit = absUpVector.subtract(worldEmit);
+            absUpVector.subtract(upVector, abUpMinUp);
+            absUpVector.subtract(worldEmit, upXemit);
             float f4 = 2.0f / abUpMinUp.dot(abUpMinUp);
             float f6 = 2.0f / upXemit.dot(upXemit);
             float f8 = f4 * f6 * abUpMinUp.dot(upXemit);
@@ -370,7 +377,7 @@ public class ParticleManager extends Controller {
             }
             
         } else {
-            Vector3f upXemit = upVector.cross(worldEmit);
+            upVector.cross(worldEmit, upXemit);
             float f2 = 1.0f / (1.0f + upDotEmit);
             float f5 = f2 * upXemit.x;
             float f7 = f2 * upXemit.z;
