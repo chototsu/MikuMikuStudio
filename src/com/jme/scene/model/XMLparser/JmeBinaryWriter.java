@@ -656,18 +656,14 @@ public class JmeBinaryWriter {
         writeEndTag("color");
 
         atts.clear();
-        try{
-            for (int i=0;i<triMesh.getNumberOfUnits();i++){
-                if (triMesh.getTextures(i)!=null){
-                    if (i!=0)
-                        atts.put("texindex",new Integer(i));
-                    atts.put("data",triMesh.getTextures(i));
-                }
+        for (int i=0;i<triMesh.getNumberOfUnits();i++){
+            if (triMesh.getTextures(i).length>0) {
+                if (i!=0)
+                    atts.put("texindex",new Integer(i));
+                atts.put("data",triMesh.getTextures(i));
                 writeTag("texturecoords",atts);
                 writeEndTag("texturecoords");
             }
-        } catch(NullPointerException e){  // in this case, there is no texture defined
-            // just do nothing
         }
 
         atts.clear();
