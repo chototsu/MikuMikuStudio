@@ -161,17 +161,22 @@ class KeyframeInfoChunk extends ChunkerClass{
         long temp=myIn.readLong();    // unknown
         int keys=myIn.readInt();
         Vector3f axis=new Vector3f();
+        Quaternion prevRot=null;
         for (int i=0;i<keys;i++){
             int trackPosition=myIn.readInt();
             short accData=myIn.readShort(); // acceleration data
 
             float angle =myIn.readFloat();
-            angle*=-1;  // Opposite correction
+            angle*=-1;  // negative correction
             axis.x =myIn.readFloat();
             axis.y =myIn.readFloat();
             axis.z =myIn.readFloat();
             Quaternion toAdd=new Quaternion();
             toAdd.fromAngleAxis(angle,axis);
+            if (i!=0)
+                toAdd=prevRot.mult(toAdd);
+            prevRot=toAdd;
+
             locateTrack(trackPosition).rot=toAdd;
 
         }
