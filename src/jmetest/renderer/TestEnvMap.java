@@ -38,6 +38,7 @@ import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.model.ase.ASEModel;
+import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Torus;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -46,7 +47,7 @@ import com.jme.util.TextureManager;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestEnvMap.java,v 1.1 2004-04-25 03:06:42 mojomonkey Exp $
+ * @version $Id: TestEnvMap.java,v 1.2 2004-04-26 01:51:20 mojomonkey Exp $
  */
 public class TestEnvMap extends SimpleGame {
 
@@ -63,12 +64,25 @@ public class TestEnvMap extends SimpleGame {
     
     cam.setLocation(new Vector3f(0, 0, 100));
     cam.update();
-    input = new NodeHandler(this, rootNode, properties.getRenderer());
-    input.setKeySpeed(10);
-    input.setMouseSpeed(2);
+    
     
     Torus torus = new Torus("Torus", 50, 50, 10, 20);
     torus.copyTextureCoords(0,1);
+    
+    Quad background = new Quad("Background");
+    background.initialize(150,120);
+    background.setLocalTranslation(new Vector3f(0,0,-30));
+    
+    Texture bg = TextureManager.loadTexture(
+            TestEnvMap.class.getClassLoader().getResource(
+            "jmetest/data/texture/clouds.png"),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true);
+    TextureState bgts = display.getRenderer().getTextureState();
+    bgts.setTexture(bg);
+    bgts.setEnabled(true);
+    background.setRenderState(bgts);
     
     TextureState ts = display.getRenderer().getTextureState();
     //Base texture, not environmental map.
@@ -101,5 +115,10 @@ public class TestEnvMap extends SimpleGame {
     
     torus.setRenderState(ts);
     rootNode.attachChild(torus);
+    rootNode.attachChild(background);
+    
+    input = new NodeHandler(this, torus, properties.getRenderer());
+    input.setKeySpeed(10);
+    input.setMouseSpeed(2);
   }
 }
