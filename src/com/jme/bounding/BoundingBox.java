@@ -49,7 +49,7 @@ import com.jme.math.FastMath;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.9 2004-06-25 19:20:28 ericthered Exp $
+ * @version $Id: BoundingBox.java,v 1.10 2004-08-03 12:57:06 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -60,6 +60,9 @@ public class BoundingBox extends Box implements BoundingVolume {
 
     private float oldXExtent, oldYExtent, oldZExtent;
     private Vector3f oldCenter = new Vector3f();
+
+    private Vector3f origCenter = new Vector3f();
+    private Vector3f origExtent = new Vector3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
@@ -148,9 +151,10 @@ public class BoundingBox extends Box implements BoundingVolume {
         center.set(max.add(min));
         center.multLocal(0.5f);
 
-        xExtent = max.x - center.x;
-        yExtent = max.y - center.y;
-        zExtent = max.z - center.z;
+        origExtent.x = xExtent = max.x - center.x;
+        origExtent.y = yExtent = max.y - center.y;
+        origExtent.z = zExtent = max.z - center.z;
+        origCenter.set(center);
     }
 
     /**
@@ -164,8 +168,7 @@ public class BoundingBox extends Box implements BoundingVolume {
         Quaternion rotate,
         Vector3f translate,
         Vector3f scale) {
-        Vector3f newCenter = rotate.mult(center).multLocal(scale).addLocal(translate);
-        return new BoundingBox(newCenter, scale.x * xExtent, scale.y * yExtent, scale.z * zExtent);
+        return this.transform(rotate,translate,scale,null);
     }
 
     /**
@@ -184,11 +187,50 @@ public class BoundingBox extends Box implements BoundingVolume {
 
         BoundingBox box = (BoundingBox)store;
         if (box == null) box = new BoundingBox(new Vector3f(0,0,0), 1,1,1);
-        rotate.mult(center, box.center);
+
+        box.origCenter.set(origCenter);
+        rotate.mult(origCenter, box.center);
         box.center.multLocal(scale).addLocal(translate);
-        box.xExtent = scale.x*xExtent;
-        box.yExtent = scale.y*yExtent;
-        box.zExtent = scale.z*zExtent;
+
+        // Rotate a corner
+        box.origExtent.set(origExtent);
+        rotate.multLocal(box.origExtent);
+        box.xExtent = Math.abs(box.origExtent.x);
+        box.yExtent = Math.abs(box.origExtent.y);
+        box.zExtent = Math.abs(box.origExtent.z);
+
+        // Rotate the second corner
+        box.origExtent.x=origExtent.x;
+        box.origExtent.y=-origExtent.y;
+        box.origExtent.z=origExtent.z;
+        rotate.multLocal(box.origExtent);
+        box.xExtent = Math.max(box.xExtent, Math.abs(box.origExtent.x));
+        box.yExtent = Math.max(box.yExtent, Math.abs(box.origExtent.y));
+        box.zExtent = Math.max(box.zExtent, Math.abs(box.origExtent.z));
+
+        // Rotate the third corner
+        box.origExtent.x=-origExtent.x;
+        box.origExtent.y=origExtent.y;
+        box.origExtent.z=origExtent.z;
+        rotate.multLocal(box.origExtent);
+        box.xExtent = Math.max(box.xExtent, Math.abs(box.origExtent.x));
+        box.yExtent = Math.max(box.yExtent, Math.abs(box.origExtent.y));
+        box.zExtent = Math.max(box.zExtent, Math.abs(box.origExtent.z));
+
+        // Rotate the fourth corner
+        box.origExtent.x=-origExtent.x;
+        box.origExtent.y=-origExtent.y;
+        box.origExtent.z=origExtent.z;
+        rotate.multLocal(box.origExtent);
+        box.xExtent = Math.max(box.xExtent, Math.abs(box.origExtent.x));
+        box.yExtent = Math.max(box.yExtent, Math.abs(box.origExtent.y));
+        box.zExtent = Math.max(box.zExtent, Math.abs(box.origExtent.z));
+
+        box.xExtent*=scale.x;
+        box.yExtent*=scale.y;
+        box.zExtent*=scale.z;
+
+        box.origExtent.set(origExtent);
         return box;
     }
 
@@ -256,6 +298,7 @@ public class BoundingBox extends Box implements BoundingVolume {
     }
 
     private BoundingBox merge(Vector3f boxCenter, float boxX, float boxY, float boxZ, BoundingBox rVal) {
+
         minPnt.x = center.x-xExtent;
         if (minPnt.x > boxCenter.x-boxX) minPnt.x = boxCenter.x-boxX;
         minPnt.y = center.y-yExtent;
@@ -294,9 +337,15 @@ public class BoundingBox extends Box implements BoundingVolume {
             rVal.checkPlanes[3] = checkPlanes[3];
             rVal.checkPlanes[4] = checkPlanes[4];
             rVal.checkPlanes[5] = checkPlanes[5];
+            rVal.origCenter.set(origCenter);
+            rVal.origExtent.set(origExtent);
             return rVal;
-        } else
-            return new BoundingBox(name+"_clone", (center != null ? (Vector3f)center.clone() : null), xExtent, yExtent, zExtent);
+        } else{
+            BoundingBox rVal=new BoundingBox(name+"_clone", (center != null ? (Vector3f)center.clone() : null), xExtent, yExtent, zExtent);
+            rVal.origCenter.set(origCenter);
+            rVal.origExtent.set(origExtent);
+            return rVal;
+        }
     }
 
     /**
