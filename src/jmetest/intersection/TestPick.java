@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -41,7 +41,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
+import com.jme.scene.BoundingBox;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.7 2004-03-02 01:45:03 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.8 2004-03-11 00:10:23 renanse Exp $
  */
 public class TestPick extends SimpleGame {
     private Camera cam;
@@ -76,16 +76,16 @@ public class TestPick extends SimpleGame {
     private Model model;
 
     /**
-     * Entry point for the test, 
+     * Entry point for the test,
      * @param args
      */
     public static void main(String[] args) {
         TestPick app = new TestPick();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
-        
+
     }
-    
+
     public void addSpatial(Spatial spatial) {
         scene.attachChild(spatial);
         scene.updateGeometricState(0.0f, true);
@@ -100,11 +100,11 @@ public class TestPick extends SimpleGame {
         timer.update();
         input.update(timer.getTimePerFrame());
         scene.updateGeometricState(timer.getTimePerFrame(), true);
-        
-       
+
+
     }
 
-    /** 
+    /**
      * clears the buffers and then draws the TriMesh.
      * @see com.jme.app.SimpleGame#render()
      */
@@ -150,17 +150,17 @@ public class TestPick extends SimpleGame {
         input = new FirstPersonController(this, cam, properties.getRenderer());
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
-        
+
         timer = Timer.getTimer(properties.getRenderer());
-        
+
         rotQuat = new Quaternion();
         axis = new Vector3f(1,0,0);
-        
+
         display.setTitle("Mouse Pick");
 
     }
 
-    /** 
+    /**
      * builds the trimesh.
      * @see com.jme.app.SimpleGame#initGame()
      */
@@ -168,7 +168,7 @@ public class TestPick extends SimpleGame {
         text = new Text("Test Label","Hits: 0 Shots: 0");
         Text cross = new Text("Crosshairs", "+");
         text.setLocalTranslation(new Vector3f(1,60,0));
-        cross.setLocalTranslation(new Vector3f((float)(display.getWidth()/2), (float)(display.getHeight()/2),0));
+        cross.setLocalTranslation(new Vector3f((float)(display.getWidth()/2f)-8f, (float)(display.getHeight()/2f)-8f,0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
         textImage.setTexture(
@@ -191,53 +191,53 @@ public class TestPick extends SimpleGame {
         scene = new Node("3D scene node");
         root = new Node("Scene Root");
         root.setForceView(true);
-        
+
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
-        
+
         root.attachChild(scene);
-        
+
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
-        
+
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingSphere());
+        scene.setWorldBound(new BoundingBox());
         cam.update();
-        
+
         root.attachChild(text);
         root.attachChild(cross);
-        
+
         model = new MilkshapeASCIIModel("Milkshape Model");
         URL modelURL = TestPick.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
         model.load(modelURL, "jmetest/data/model/msascii/");
         model.getAnimationController().setActive(false);
 
-        
+
         Vector3f[] vertex = new Vector3f[1000];
         ColorRGBA[] color = new ColorRGBA[1000];
         for (int i = 0; i < 1000; i++) {
-        	vertex[i] = new Vector3f();
-        	vertex[i].x = (float) Math.random() * -100 - 50;
-        	vertex[i].y = (float) Math.random() * 50 - 25;
-        	vertex[i].z = (float) Math.random() * 50 - 25;
-        	color[i] = new ColorRGBA();
-        	color[i].r = (float) Math.random();
-        	color[i].g = (float) Math.random();
-        	color[i].b = (float) Math.random();
-        	color[i].a = 1.0f;
+            vertex[i] = new Vector3f();
+            vertex[i].x = (float) Math.random() * -100 - 50;
+            vertex[i].y = (float) Math.random() * 50 - 25;
+            vertex[i].z = (float) Math.random() * 50 - 25;
+            color[i] = new ColorRGBA();
+            color[i].r = (float) Math.random();
+            color[i].g = (float) Math.random();
+            color[i].b = (float) Math.random();
+            color[i].a = 1.0f;
         }
 
         Line l = new Line("Line Group",vertex, null, color, null);
-        l.setModelBound(new BoundingSphere());
+        l.setModelBound(new BoundingBox());
         l.updateModelBound();
-        
+
         scene.attachChild(l);
-        
-        
+
+
         scene.attachChild(model);
         scene.updateGeometricState(0.0f, true);
-        
+
         MousePick pick = new MousePick(cam, scene, text);
         pick.setMouse(input.getMouse());
         input.addAction(pick);
@@ -251,7 +251,7 @@ public class TestPick extends SimpleGame {
 
     }
 
-    /** 
+    /**
      * Not used.
      * @see com.jme.app.SimpleGame#cleanup()
      */
