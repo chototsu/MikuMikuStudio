@@ -39,7 +39,7 @@ import com.jme.math.Vector3f;
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points. 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.2 2004-02-19 21:23:24 mojomonkey Exp $
+ * @version $Id: BoundingVolume.java,v 1.3 2004-02-20 16:28:48 mojomonkey Exp $
  */
 public interface BoundingVolume {
     /**
@@ -53,8 +53,6 @@ public interface BoundingVolume {
      */
     public BoundingVolume transform(Matrix3f rotate, 
             Vector3f translate, float scale);
-    
-    public BoundingVolume transform(Matrix3f rotate, Vector3f translate, float scale, BoundingVolume bv);
     
     /**
      * 

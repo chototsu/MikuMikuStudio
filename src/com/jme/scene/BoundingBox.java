@@ -40,7 +40,7 @@ import com.jme.math.Vector3f;
  * vertices. The box is defined by a center and a minimum and maximum point. The
  * box will always be axis aligned. 
  * @author Mark Powell
- * @version $Id: BoundingBox.java,v 1.2 2004-02-19 21:23:24 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.3 2004-02-20 16:28:48 mojomonkey Exp $
  */
 public class BoundingBox implements BoundingVolume {
     private Vector3f center;
@@ -100,30 +100,7 @@ public class BoundingBox implements BoundingVolume {
         return new BoundingBox(newCenter, newMin, newMax);
     }
     
-    /**
-     * <code>transform</code> alters the bounding box to correspond to the 
-     * geometry it contains.
-     * @see com.jme.scene.BoundingVolume#transform(com.jme.math.Matrix3f, com.jme.math.Vector3f, float)
-     */
-    public BoundingVolume transform(
-    		Matrix3f rotate,
-			Vector3f translate,
-			float scale,
-			BoundingVolume bv) {
-    	
-    	if(bv instanceof BoundingBox) {
-
-	    	Vector3f newCenter = ((rotate.mult(center)).mult(scale).add(translate));
-	    	Vector3f newMin = ((rotate.mult(min)).mult(scale)).add(translate);
-	    	Vector3f newMax = ((rotate.mult(max)).mult(scale)).add(translate);
-	    	
-	    	((BoundingBox)bv).setCenter(newCenter);
-	    	((BoundingBox)bv).setMin(newMin);
-	    	((BoundingBox)bv).setMax(newMax);
-    	}
-
-    	return bv;
-    }
+    
 
     /* (non-Javadoc)
      * @see com.jme.scene.BoundingVolume#whichSide(com.jme.math.Plane)
