@@ -44,7 +44,7 @@ import org.lwjgl.opengl.Pbuffer;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.2 2004-03-04 19:43:26 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.3 2004-03-04 20:08:01 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -150,7 +150,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      */
     public Texture setupTexture(int glTextureID) {
         GL.glBindTexture(GL.GL_TEXTURE_2D, glTextureID);
-        GL.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 0, 0, 512, 512, 0);
+        GL.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
 
         Texture rVal = new Texture();
         rVal.setTextureId(glTextureID);

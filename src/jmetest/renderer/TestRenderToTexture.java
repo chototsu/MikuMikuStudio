@@ -31,33 +31,42 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.*;
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.light.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
-import org.lwjgl.opengl.*;
-import java.nio.*;
+import com.jme.app.SimpleGame;
+import com.jme.image.Texture;
+import com.jme.input.FirstPersonController;
+import com.jme.input.InputController;
+import com.jme.light.DirectionalLight;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.LWJGLRenderer;
+import com.jme.renderer.LWJGLTextureRenderer;
+import com.jme.scene.BoundingSphere;
+import com.jme.scene.Box;
+import com.jme.scene.Node;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.util.TextureManager;
+import com.jme.util.Timer;
 
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
  */
 public class TestRenderToTexture extends SimpleGame {
-    private TriMesh t, t2;
+    private Box realBox, monkeyBox;
     private Camera cam;
-    private Node root;
-    private Node scene, fake;
+    private Node root, scene;
+    private Node fakeScene;
     private InputController input;
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
-    private Quaternion rotQuat2;
+    private Quaternion rotMBQuat;
     private float angle = 0;
     private float angle2 = 0;
     private Vector3f axis;
@@ -91,15 +100,15 @@ public class TestRenderToTexture extends SimpleGame {
             }
         }
         rotQuat.fromAngleAxis(angle, axis);
-        rotQuat2.fromAngleAxis(angle2, axis);
+        rotMBQuat.fromAngleAxis(angle2, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
         display.setTitle("Render to Texture - FPS:"+(int)timer.getFrameRate()+" - "+display.getRenderer().getStatistics());
 
-        t.setLocalRotation(rotQuat);
-        t2.setLocalRotation(rotQuat2);
+        realBox.setLocalRotation(rotQuat);
+        monkeyBox.setLocalRotation(rotMBQuat);
         scene.updateGeometricState(0.0f, true);
-        fake.updateGeometricState(0.0f, true);
+        fakeScene.updateGeometricState(0.0f, true);
     }
 
     /**
@@ -108,7 +117,7 @@ public class TestRenderToTexture extends SimpleGame {
      */
     protected void render(float interpolation) {
         display.getRenderer().clearStatistics();
-        tRenderer.render(fake, fakeTex);
+        tRenderer.render(fakeScene, fakeTex);
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
 
@@ -139,6 +148,8 @@ public class TestRenderToTexture extends SimpleGame {
 
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
+
+        // setup our camera
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
@@ -147,13 +158,14 @@ public class TestRenderToTexture extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
+        // Setup the input controller and timer
         input = new FirstPersonController(this, cam, "LWJGL");
         input.setKeySpeed(10f);
         input.setMouseSpeed(1f);
         timer = Timer.getTimer("LWJGL");
 
         rotQuat = new Quaternion();
-        rotQuat2 = new Quaternion();
+        rotMBQuat = new Quaternion();
         axis = new Vector3f(1,1,0.5f);
         display.setTitle("Render to Texture");
         display.getRenderer().enableStatistics(true);
@@ -167,33 +179,51 @@ public class TestRenderToTexture extends SimpleGame {
 
         scene = new Node("3D Scene Node");
         root = new Node("Root Scene Node");
-        fake = new Node("Fake node");
 
+        // Setup dimensions for a box
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
 
-        t = new Box("Box", min,max);
-        t.setModelBound(new BoundingSphere());
-        t.updateModelBound();
-        t.setLocalTranslation(new Vector3f(0,0,0));
+        // Make the real world box -- you'll see this spinning around..  woo...
+        realBox = new Box("Box", min,max);
+        realBox.setModelBound(new BoundingSphere());
+        realBox.updateModelBound();
+        realBox.setLocalTranslation(new Vector3f(0,0,0));
 
-        scene.attachChild(t);
+        scene.attachChild(realBox);
         root.attachChild(scene);
 
-        t2 = new Box("Inner Box", min,max);
-        t2.setModelBound(new BoundingSphere());
-        t2.updateModelBound();
-        t2.setLocalTranslation(new Vector3f(0,0,0));
+        // Make a monkey box -- some geometry that will be rendered onto a flat texture.
+        monkeyBox = new Box("Fake Monkey Box", min,max);
+        monkeyBox.setModelBound(new BoundingSphere());
+        monkeyBox.updateModelBound();
+        monkeyBox.setLocalTranslation(new Vector3f(0,0,0));
 
-        fake.attachChild(t2);
+        // add the monkey box to a node.  This node is a root node, not part of the "real world" tree.
+        fakeScene = new Node("Fake node");
+        fakeScene.attachChild(monkeyBox);
 
+        // Setup our params for the depth buffer
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         scene.setRenderState(buf);
-        fake.setRenderState(buf);
+        fakeScene.setRenderState(buf);
 
+        // Add a directional light to the "real world" scene.
+        DirectionalLight am = new DirectionalLight();
+        am.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        am.setDirection(new Vector3f(0, 0, -25));
+
+        LightState state = display.getRenderer().getLightState();
+        state.attach(am);
+        state.setEnabled(true);
+        am.setEnabled(true);
+        scene.setRenderState(state);
+
+        // Lets add a monkey texture to the geometry we are going to rendertotexture...
         TextureState ts = display.getRenderer().getTextureState();
             ts.setEnabled(true);
             ts.setTexture(
@@ -202,19 +232,20 @@ public class TestRenderToTexture extends SimpleGame {
                     Texture.MM_LINEAR_LINEAR,
                     Texture.FM_LINEAR,
                     true));
-        fake.setRenderState(ts);
+        fakeScene.setRenderState(ts);
 
+        // Ok, now lets create the Texture object that our monkey cube will be rendered to.
         tRenderer = new LWJGLTextureRenderer((LWJGLRenderer)display.getRenderer());
         tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
         fakeTex = tRenderer.setupTexture();
 
+        // Now add that texture to the "real" cube.
         ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         ts.setTexture(fakeTex);
         scene.setRenderState(ts);
 
         cam.update();
-
         scene.updateGeometricState(0.0f, true);
     }
 
