@@ -3,9 +3,9 @@ package com.jme.util;
 import java.io.*;
 
 /**
- * Created by IntelliJ IDEA.
- * Programmed by Jack Lindamood
- * Started Date: May 27, 2004
+ * <code>LittleEndien</code> is a class to read littleendien stored data
+ * via a InputStream.  Currently used to read .ms3d files.
+ * @author Jack Lindamood
  */
 public class LittleEndien implements DataInput{
 
