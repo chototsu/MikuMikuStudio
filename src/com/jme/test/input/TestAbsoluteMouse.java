@@ -133,7 +133,7 @@ public class TestAbsoluteMouse extends AbstractGame {
         mouse = new AbsoluteMouse(display.getWidth(), display.getHeight());
         TextureState cursor = display.getRenderer().getTextureState();
         cursor.setEnabled(true);
-        cursor.setTexture(TextureManager.loadTexture("data/cursor/test.png",
+        cursor.setTexture(TextureManager.loadTexture("data/cursor/test.PNG",
                     Texture.MM_LINEAR, Texture.FM_LINEAR, true));
         mouse.setRenderState(cursor);
         mouse.setMouseInput(InputSystem.getMouseInput());
