@@ -54,7 +54,7 @@ import jme.utility.LoggingSystem;
 import jme.utility.StringUtils;
 import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
-import jme.geometry.Geometry;
+import jme.geometry.model.Model;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.Window;
@@ -96,9 +96,9 @@ import org.lwjgl.opengl.Window;
  * 
  * 
  * @author Mark Powell
- * @version $Id: Md3Model.java,v 1.11 2003-09-10 20:32:59 mojomonkey Exp $
+ * @version $Id: Md3Model.java,v 1.12 2003-09-15 22:20:27 mojomonkey Exp $
  */
-public class Md3Model implements Geometry {
+public class Md3Model implements Model {
     /**
      * LOWER defines the legs section of the model.
      */
@@ -275,14 +275,22 @@ public class Md3Model implements Geometry {
         //set the desired color
         GL.glColor4f(r, g, b, a);
 
-        //Update the leg and torso animations
-        updateModel(lower);
-        updateModel(upper);
-
         //start rendering with the legs first.
         drawLink(lower);
         //set culling back to GL.GL_BACK
         DisplaySystem.getDisplaySystem().cullMode(GL.GL_BACK, true);
+    }
+    
+    /**
+     * <code>update</code> updates the position of the model's vertices
+     * to allow for animation.
+     * @param time the time between frames.
+     */
+    public void update(float time) {
+        updateModel(lower);
+        updateModel(upper);
+
+    
     }
 
     /**
@@ -1754,4 +1762,6 @@ public class Md3Model implements Geometry {
          */
         Md3Tag[] tags;
     }
+
+    
 }

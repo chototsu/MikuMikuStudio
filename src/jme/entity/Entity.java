@@ -40,6 +40,7 @@ import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.Geometry;
 import jme.geometry.bounding.BoundingVolume;
+import jme.geometry.model.Model;
 import jme.math.Vector;
 import jme.physics.PhysicsModule;
 import jme.entity.camera.Frustum;
@@ -65,7 +66,7 @@ import org.lwjgl.opengl.Window;
  * <code>Entity</code> to represent something abstract.
  * 
  * @author Mark Powell
- * @version $Id: Entity.java,v 1.9 2003-09-10 20:32:59 mojomonkey Exp $
+ * @version $Id: Entity.java,v 1.10 2003-09-15 22:20:28 mojomonkey Exp $
  */
 public class Entity implements EntityInterface {
     
@@ -317,6 +318,12 @@ public class Entity implements EntityInterface {
      * <code>update</code> updates the state of the entity. 
      */
     public void update(float time) {
+        //if the geometry is of type model it should be updated.
+        if(null != geometry) {
+            if(geometry instanceof Model) {
+                ((Model)geometry).update(time);
+            }
+        }
         if(null != physics) {
             physics.update(time);
             physics.updatePosition(position);
