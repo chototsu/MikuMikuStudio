@@ -39,9 +39,12 @@ import com.jme.math.Ray;
 /**
  * <code>Intersection</code> provides functional methods for calculating the
  * intersection of some objects. All the methods are static to allow for quick
- * and easy calls. 
+ * and easy calls. <code>Intersection</code> relays requests to specific classes
+ * to handle the actual work. By providing checks to just <code>BoundingVolume</code>
+ * the client application need not worry about what type of bounding volume is 
+ * being used.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.11 2004-04-02 16:27:32 mojomonkey Exp $
+ * @version $Id: Intersection.java,v 1.12 2004-04-02 16:41:27 mojomonkey Exp $
  */
 public class Intersection {
     /**
