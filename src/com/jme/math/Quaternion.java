@@ -47,7 +47,7 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.23 2004-07-14 22:46:47 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.24 2004-07-16 12:19:46 cep21 Exp $
  */
 public class Quaternion implements Externalizable{
     public float x, y, z, w;
@@ -375,8 +375,7 @@ public class Quaternion implements Externalizable{
         float scale1 = t;
 
         // Check if the angle between the 2 quaternions was big enough to warrant such calculations
-        if ((1 - result) > 0.1f) {
-            // Get the angle between the 2 quaternions, and then store the sin() of that angle
+        if ((1 - result) > 0.1f) {// Get the angle between the 2 quaternions, and then store the sin() of that angle
             float theta = FastMath.acos(result);
             float sinTheta = FastMath.sin(theta);
 
@@ -566,6 +565,23 @@ public class Quaternion implements Externalizable{
         v.z = 2*x*z*v.x + 2*y*z*v.y +   z*z*v.z - 2*w*y*v.x -   y*y*v.z + 2*w*x*v.y -   x*x*v.z + w*w*v.z;
         v.x = tempX; v.y = tempY;
         return v;
+    }
+
+    /**
+     * Multiplies this Quaternion by the supplied quaternion.  The result is stored in this Quaternion, which is also
+     * returned for chaining.  Similar to this*=q.
+     * @param q The Quaternion to multiply this one by.
+     * @return This Quaternion, after multiplication.
+     */
+    public Quaternion multLocal(Quaternion q) {
+        float x1 =  x * q.w + y * q.z - z * q.y + w * q.x;
+        float y1 = -x * q.z + y * q.w + z * q.x + w * q.y;
+        float z1 =  x * q.y - y * q.x + z * q.w + w * q.z;
+        w = -x * q.x - y * q.y - z * q.z + w * q.w;
+        x=x1;
+        y=y1;
+        z=z1;
+        return this;
     }
 
     /**
