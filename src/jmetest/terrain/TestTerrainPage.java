@@ -33,255 +33,135 @@ package jmetest.terrain;
 
 import javax.swing.ImageIcon;
 
-import com.jme.app.*;
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.light.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
-import com.jme.terrain.*;
+import com.jme.app.SimpleGame;
+import com.jme.image.Texture;
+import com.jme.input.NodeHandler;
+import com.jme.light.DirectionalLight;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.CameraNode;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.FogState;
+import com.jme.scene.state.TextureState;
+import com.jme.terrain.TerrainPage;
 import com.jme.terrain.util.FaultFractalHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
+import com.jme.util.TextureManager;
 
 /**
- * <code>TestLightState</code>
+ * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.9 2004-04-22 22:27:47 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.10 2004-04-23 05:16:24 renanse Exp $
  */
-public class TestTerrainPage extends BaseGame {
-    private Camera cam;
+public class TestTerrainPage extends SimpleGame {
 
-    private CameraNode camNode;
+  private CameraNode camNode;
 
-    private Node root;
+  /**
+   * Entry point for the test,
+   *
+   * @param args
+   */
+  public static void main(String[] args) {
+    TestTerrainPage app = new TestTerrainPage();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
+  }
 
-    private InputHandler input;
+  /**
+   * builds the trimesh.
+   *
+   * @see com.jme.app.SimpleGame#initGame()
+   */
+  protected void simpleInitGame() {
 
-    private Timer timer;
+    camNode = new CameraNode("Camera Node", cam);
+    camNode.setLocalTranslation(new Vector3f(0, 250, -20));
+    camNode.updateWorldData(0);
+    input = new NodeHandler(this, camNode, properties.getRenderer());
+    input.setKeySpeed(50f);
+    input.setMouseSpeed(1f);
+    display.setTitle("Terrain Test");
 
-    private Text fps;
+    DirectionalLight dr = new DirectionalLight();
+    dr.setEnabled(true);
+    dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+    dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+    dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
 
-    /**
-     * Entry point for the test,
-     *
-     * @param args
-     */
-    public static void main(String[] args) {
-        //LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
-        TestTerrainPage app = new TestTerrainPage();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
-    }
+    CullState cs = display.getRenderer().getCullState();
+    cs.setCullMode(CullState.CS_BACK);
+    cs.setEnabled(true);
+    rootNode.setRenderState(cs);
 
-    /**
-     * Not used in this test.
-     *
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
+    lightState.setTwoSidedLighting(true);
+    lightState.attach(dr);
 
-        timer.update();
-        input.update(timer.getTimePerFrame());
+    //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
+    FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255,
+        0.75f);
+    TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), 10,
+                                     heightMap.getHeightMap(), true);
 
-        root.updateGeometricState(timer.getTimePerFrame(), true);
-        fps.print("FPS: " + (int) timer.getFrameRate() + " : "
-                + display.getRenderer().getStatistics());
-        display.getRenderer().clearStatistics();
-    }
+    tb.setDetailTexture(1, 16);
+    rootNode.attachChild(tb);
 
-    /**
-     * clears the buffers and then draws the TriMesh.
-     *
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
+    ProceduralTextureGenerator pt = new ProceduralTextureGenerator(heightMap);
+    pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource(
+        "jmetest/data/texture/grassb.png")), -128, 0, 128);
+    pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource(
+        "jmetest/data/texture/dirt.jpg")), 0, 128, 255);
+    pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource(
+        "jmetest/data/texture/highest.jpg")), 128, 255, 384);
 
-        display.getRenderer().draw(root);
-//        display.getRenderer().drawBounds(root);
+    pt.createTexture(512);
 
-    }
+    TextureState ts = display.getRenderer().getTextureState();
+    ts.setEnabled(true);
+    Texture t1 = TextureManager.loadTexture(
+        pt.getImageIcon().getImage(),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true,
+        true);
+    ts.setTexture(t1, 0);
 
-    /**
-     * creates the displays and sets up the viewport.
-     *
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(properties.getWidth(), properties.getHeight(),
-                    properties.getDepth(), properties.getFreq(), properties
-                            .getFullscreen());
-            cam = display.getRenderer().getCamera(properties.getWidth(),
-                    properties.getHeight());
+    Texture t2 = TextureManager.loadTexture(TestTerrain.class.getClassLoader().
+                                            getResource(
+        "jmetest/data/texture/Detail.jpg"),
+                                            Texture.MM_LINEAR,
+                                            Texture.FM_LINEAR,
+                                            true);
+    ts.setTexture(t2, 1);
+    t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        ColorRGBA blackColor = new ColorRGBA(0.5f, 0.5f, 0.5f, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+    t1.setApply(Texture.AM_COMBINE);
+    t1.setCombineFuncRGB(Texture.ACF_MODULATE);
+    t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
+    t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
+    t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
+    t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
+    t1.setCombineScaleRGB(0);
 
-        display.getRenderer().setCamera(cam);
+    t2.setApply(Texture.AM_COMBINE);
+    t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
+    t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
+    t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
+    t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
+    t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
+    t2.setCombineScaleRGB(0);
+    rootNode.setRenderState(ts);
+    rootNode.setForceView(true);
 
-        camNode = new CameraNode("Camera Node", cam);
-        camNode.setLocalTranslation(new Vector3f(0, 250, -20));
-        camNode.updateWorldData(0);
-        //camNode.setLocalTranslation(new Vector3f();
-        input = new NodeHandler(this, camNode, "LWJGL");
-        input.setKeySpeed(50f);
-        input.setMouseSpeed(1f);
-        display.setTitle("Terrain Test");
-        display.getRenderer().enableStatistics(true);
-        timer = Timer.getTimer(properties.getRenderer());
-
-    }
-
-    /**
-     * builds the trimesh.
-     *
-     * @see com.jme.app.SimpleGame#initGame()
-     */
-    protected void initGame() {
-        Vector3f max = new Vector3f(0.5f, 0.5f, 0.5f);
-        Vector3f min = new Vector3f(-0.5f, -0.5f, -0.5f);
-
-        WireframeState ws = display.getRenderer().getWireframeState();
-        ws.setEnabled(false);
-        AlphaState as1 = display.getRenderer().getAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        as1.setEnabled(true);
-
-        DirectionalLight dr = new DirectionalLight();
-        dr.setEnabled(true);
-        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
-
-
-        CullState cs = display.getRenderer().getCullState();
-        cs.setCullMode(CullState.CS_BACK);
-        cs.setEnabled(true);
-
-        LightState lightstate = display.getRenderer().getLightState();
-        lightstate.setTwoSidedLighting(true);
-        lightstate.setEnabled(true);
-        lightstate.attach(dr);
-        Node scene = new Node("scene");
-        scene.setRenderState(ws);
-        scene.setRenderState(lightstate);
-        root = new Node("Root node");
-        //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
-        FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255, 0.75f);
-        TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), 10, heightMap.getHeightMap(), true);
-
-        tb.setDetailTexture(1, 16);
-        scene.attachChild(tb);
-        scene.setRenderState(cs);
-
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
-
-        TextureState font = display.getRenderer().getTextureState();
-        font.setTexture(TextureManager.loadTexture(TestTerrain.class
-                .getClassLoader().getResource("jmetest/data/font/font.png"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR, true));
-        font.setEnabled(true);
-
-        fps = new Text("FPS counter", "");
-        fps.setRenderState(font);
-        fps.setRenderState(as1);
-
-        ProceduralTextureGenerator pt = new ProceduralTextureGenerator(heightMap);
-        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png")), -128, 0, 128);
-        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg")), 0, 128, 255);
-        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/highest.jpg")), 128, 255, 384);
-
-        pt.createTexture(512);
-
-        TextureState ts = display.getRenderer().getTextureState();
-        ts.setEnabled(true);
-        Texture t1 = TextureManager.loadTexture(
-        		pt.getImageIcon().getImage(),
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true,
-				true);
-        ts.setTexture(t1 ,0);
-
-
-        Texture t2 = TextureManager.loadTexture(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/Detail.jpg"),
-		        Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true);
-        ts.setTexture( t2,1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
-
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(0);
-
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(0);
-        scene.setRenderState(ts);
-
-        scene.setRenderState(buf);
-        root.attachChild(scene);
-        root.attachChild(fps);
-        root.setForceView(true);
-
-        FogState fs = display.getRenderer().getFogState();
-        fs.setDensity(0.5f);
-        fs.setEnabled(true);
-        fs.setColor(new ColorRGBA(0.5f,0.5f,0.5f,0.5f));
-        fs.setEnd(1000);
-        fs.setStart(500);
-        fs.setDensityFunction(FogState.DF_LINEAR);
-        fs.setApplyFunction(FogState.AF_PER_VERTEX);
-        scene.setRenderState(fs);
-
-        root.updateGeometricState(0.0f, true);
-        root.updateRenderState();
-
-    }
-
-    /**
-     * not used.
-     *
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-
-    }
-
-    /**
-     * Not used.
-     *
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-
-    }
-
+    FogState fs = display.getRenderer().getFogState();
+    fs.setDensity(0.5f);
+    fs.setEnabled(true);
+    fs.setColor(new ColorRGBA(0.5f, 0.5f, 0.5f, 0.5f));
+    fs.setEnd(1000);
+    fs.setStart(500);
+    fs.setDensityFunction(FogState.DF_LINEAR);
+    fs.setApplyFunction(FogState.AF_PER_VERTEX);
+    rootNode.setRenderState(fs);
+  }
 }

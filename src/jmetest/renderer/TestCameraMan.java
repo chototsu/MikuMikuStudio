@@ -33,7 +33,7 @@ package jmetest.renderer;
 
 import java.net.URL;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.InputHandler;
 import com.jme.input.NodeHandler;
@@ -64,254 +64,131 @@ import com.jme.scene.state.AlphaState;
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
  */
-public class TestCameraMan extends BaseGame {
-    private Model model;
-    private Camera cam;
-    private Node root, scene, monitorNode;
-    private InputHandler input;
-    private Timer timer;
-    private CameraNode camNode;
+public class TestCameraMan extends SimpleGame {
+  private Model model;
+  private Node monitorNode;
+  private CameraNode camNode;
 
-    private TextureRenderer tRenderer;
-    private Texture fakeTex;
+  private TextureRenderer tRenderer;
+  private Texture fakeTex;
 
-    private Node fpsNode;
-    private Text fps;
+  /**
+   * Entry point for the test,
+   * @param args
+   */
+  public static void main(String[] args) {
+    TestCameraMan app = new TestCameraMan();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
+  }
 
-    /**
-     * Entry point for the test,
-     * @param args
-     */
-    public static void main(String[] args) {
-        TestCameraMan app = new TestCameraMan();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
-    }
+  protected void simpleUpdate() {
+    monitorNode.updateGeometricState(0.0f, true);
+  }
 
-    /**
-     * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
-        timer.update();
-        fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
-                  display.getRenderer().getStatistics());
-        input.update(timer.getTimePerFrame());
-        scene.updateGeometricState(0.0f, true);
-        monitorNode.updateGeometricState(0.0f, true);
-    }
+  protected void simpleRender() {
+    tRenderer.render(model, fakeTex);
+    display.getRenderer().draw(monitorNode);
+  }
 
-    /**
-     * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearStatistics();
-        //render to texture
-        tRenderer.render(model, fakeTex);
-        //display scene
-        display.getRenderer().clearBuffers();
-        display.getRenderer().draw(root);
-        display.getRenderer().draw(monitorNode);
-        display.getRenderer().draw(fpsNode);
-    }
+  /**
+   * builds the trimesh.
+   * @see com.jme.app.SimpleGame#initGame()
+   */
+  protected void simpleInitGame() {
+    cam.setLocation(new Vector3f(0.0f, 50.0f, 100.0f));
+    cam.update();
 
-    /**
-     * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
-                    properties.getHeight());
+    tRenderer = display.createTextureRenderer(256, 256, false, true, false, false,
+                                              TextureRenderer.RENDER_TEXTURE_2D,
+                                              0);
+    camNode = new CameraNode("Camera Node", tRenderer.getCamera());
+    camNode.setLocalTranslation(new Vector3f(0, 50, -50));
+    camNode.updateGeometricState(0, true);
 
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+    // Setup the input controller and timer
+    input = new NodeHandler(this, camNode, "LWJGL");
+    input.setKeySpeed(10f);
+    input.setMouseSpeed(1f);
 
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
+    display.setTitle("Camera Man");
 
-        // setup our camera
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 50.0f, 100.0f);
-        Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-        Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
-        cam.setFrame(loc, left, up, dir);
-        display.getRenderer().setCamera(cam);
-        tRenderer = display.createTextureRenderer(256, 256, false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
-        camNode = new CameraNode("Camera Node", tRenderer.getCamera());
-        camNode.setLocalTranslation(new Vector3f(0,50,-50));
-        camNode.updateGeometricState(0,true);
-        // Setup the input controller and timer
-        //input = new FirstPersonHandler(this, cam, "LWJGL");
-        input = new NodeHandler(this, camNode, "LWJGL");
-        input.setKeySpeed(10f);
-        input.setMouseSpeed(1f);
-        timer = Timer.getTimer("LWJGL");
+    DirectionalLight am = new DirectionalLight();
+    am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
+    am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+    am.setDirection(new Vector3f(1, 0, 0));
 
-        display.setTitle("Camera Man");
-        display.getRenderer().enableStatistics(true);
-    }
+    LightState state = display.getRenderer().getLightState();
+    state.setEnabled(true);
+    state.attach(am);
+    am.setEnabled(true);
 
-    /**
-     * builds the trimesh.
-     * @see com.jme.app.SimpleGame#initGame()
-     */
-    protected void initGame() {
+    SpotLight sl = new SpotLight();
+    sl.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+    sl.setAmbient(new ColorRGBA(0.75f, 0.75f, 0.75f, 1.0f));
+    sl.setDirection(new Vector3f(0, 0, 1));
+    sl.setLocation(new Vector3f(0, 0, 0));
+    sl.setAngle(25);
+    sl.setEnabled(true);
 
-        scene = new Node("3D Scene Node");
-        root = new Node("Root Scene Node");
+    rootNode.setRenderState(state);
 
-       DirectionalLight am = new DirectionalLight();
-        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(1, 0, 0));
+    model = new MilkshapeASCIIModel("Milkshape Model");
+    URL modelURL = TestCameraMan.class.getClassLoader().getResource(
+        "jmetest/data/model/msascii/run.txt");
+    model.load(modelURL, "jmetest/data/model/msascii/");
+    model.getAnimationController().setActive(false);
+    rootNode.attachChild(model);
 
+    CullState cs = display.getRenderer().getCullState();
+    cs.setCullMode(CullState.CS_BACK);
+    cs.setEnabled(true);
+    rootNode.setRenderState(cs);
+    model.setRenderState(cs);
 
-        LightState state = display.getRenderer().getLightState();
-        state.setEnabled(true);
-        state.attach(am);
-        am.setEnabled(true);
+    lightState.detachAll();
+    LightNode cameraLight = new LightNode("Camera Light", lightState);
+    cameraLight.setLight(sl);
+    cameraLight.setTarget(model);
 
-        SpotLight sl = new SpotLight();
-        sl.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-        sl.setAmbient(new ColorRGBA(0.75f, 0.75f, 0.75f, 1.0f));
-        sl.setDirection(new Vector3f(0, 0, 1));
-        sl.setLocation(new Vector3f(0, 0, 0));
-        sl.setAngle(25);
+    Model camBox = new MilkshapeASCIIModel("Camera Box");
+    URL camBoxUrl = TestCameraMan.class.getClassLoader().getResource(
+        "jmetest/data/model/msascii/camera.txt");
+    camBox.load(camBoxUrl, "jmetest/data/model/msascii/");
+    camNode.attachChild(camBox);
+    camNode.attachChild(cameraLight);
+    rootNode.attachChild(camNode);
 
-        LightState cameraLightState = display.getRenderer().getLightState();
-        cameraLightState.setEnabled(true);
+    monitorNode = new Node("Monitor Node");
+    Quad quad = new Quad("Monitor");
+    quad.initialize(3, 3);
+    quad.setLocalTranslation(new Vector3f(3.75f, 52.5f, 90));
+    monitorNode.attachChild(quad);
 
-        sl.setEnabled(true);
+    Quad quad2 = new Quad("Monitor");
+    quad2.initialize(3.4f, 3.4f);
+    quad2.setLocalTranslation(new Vector3f(3.95f, 52.6f, 89.5f));
+    monitorNode.attachChild(quad2);
 
-        scene.setRenderState(state);
+    // Setup our params for the depth buffer
+    ZBufferState buf = display.getRenderer().getZBufferState();
+    buf.setEnabled(true);
+    buf.setFunction(ZBufferState.CF_LEQUAL);
 
-        model = new MilkshapeASCIIModel("Milkshape Model");
-        URL modelURL = TestCameraMan.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
-        model.load(modelURL, "jmetest/data/model/msascii/");
-        model.getAnimationController().setActive(false);
-        scene.attachChild(model);
-        root.attachChild(scene);
+    monitorNode.setRenderState(buf);
 
-        CullState cs = display.getRenderer().getCullState();
-        cs.setCullMode(CullState.CS_BACK);
-        cs.setEnabled(true);
-        scene.setRenderState(cs);
-        model.setRenderState(cs);
-
-        LightNode cameraLight = new LightNode("Camera Light", cameraLightState);
-        cameraLight.setLight(sl);
-        cameraLight.setTarget(model);
-
-        Model camBox = new MilkshapeASCIIModel("Camera Box");
-        URL camBoxUrl = TestCameraMan.class.getClassLoader().getResource("jmetest/data/model/msascii/camera.txt");
-        camBox.load(camBoxUrl, "jmetest/data/model/msascii/");
-        camNode.attachChild(camBox);
-        camNode.attachChild(cameraLight);
-
-
-        monitorNode = new Node("Monitor Node");
-        Quad quad = new Quad("Monitor");
-        quad.initialize(3,3);
-        quad.setLocalTranslation(new Vector3f(3.75f,52.5f,90));
-
-        Quad quad2 = new Quad("Monitor");
-        quad2.initialize(3.4f,3.4f);
-        quad2.setLocalTranslation(new Vector3f(3.95f,52.6f,89.5f));
-
-        // Setup our params for the depth buffer
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
-
-        scene.setRenderState(buf);
-        monitorNode.setRenderState(buf);
-        monitorNode.attachChild(quad);
-        monitorNode.attachChild(quad2);
-        scene.attachChild(camNode);
-
-
-        // Ok, now lets create the Texture object that our monkey cube will be rendered to.
+    // Ok, now lets create the Texture object that our monkey cube will be rendered to.
 
 //        tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
-        tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
-        fakeTex = tRenderer.setupTexture();
-        TextureState screen = display.getRenderer().getTextureState();
-        screen.setTexture(fakeTex);
-        screen.setEnabled(true);
-        quad.setRenderState(screen);
+    tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
+    fakeTex = tRenderer.setupTexture();
+    TextureState screen = display.getRenderer().getTextureState();
+    screen.setTexture(fakeTex);
+    screen.setEnabled(true);
+    quad.setRenderState(screen);
 
-        TextureState ts = display.getRenderer().getTextureState();
-        ts.setEnabled(true);
-
-        //This code is all for the FPS display...
-        // First setup alpha state
-        AlphaState as1 = display.getRenderer().getAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        as1.setEnabled(true);
-
-        // Now setup font texture
-        TextureState font = display.getRenderer().getTextureState();
-        font.setTexture(
-            TextureManager.loadTexture(
-            TestImposterNode.class.getClassLoader().getResource(
-            "jmetest/data/font/font.png"),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true));
-        font.setEnabled(true);
-
-        // Then our font Text object.
-        fps = new Text("FPS label", "");
-        fps.setRenderState(font);
-        fps.setRenderState(as1);
-        fps.setForceView(true);
-
-        // Finally, a stand alone node (not attached to root on purpose)
-        fpsNode = new Node("FPS node");
-        fpsNode.attachChild(fps);
-        fpsNode.setForceView(true);
-
-        cam.update();
-        scene.updateGeometricState(0.0f, true);
-        scene.updateRenderState();
-        fpsNode.updateGeometricState(0.0f, true);
-        fpsNode.updateRenderState();
-        monitorNode.updateGeometricState(0.0f, true);
-        monitorNode.updateRenderState();
-    }
-
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-
-    }
-
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-
-    }
+    monitorNode.updateGeometricState(0.0f, true);
+    monitorNode.updateRenderState();
+  }
 
 }
