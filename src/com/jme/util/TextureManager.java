@@ -54,6 +54,7 @@ import com.jme.image.BitmapHeader;
 import com.jme.image.Texture;
 import com.jme.system.DisplaySystem;
 import com.jme.scene.state.TextureState;
+import java.nio.ByteOrder;
 
 /**
  *
@@ -63,7 +64,7 @@ import com.jme.scene.state.TextureState;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.27 2004-09-08 17:40:09 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.28 2004-11-16 16:46:27 renanse Exp $
  */
 final public class TextureManager {
 
@@ -306,27 +307,25 @@ final public class TextureManager {
                                     "Problem creating buffered Image: " +
                                     e.getMessage());
       return null;
-    }
-    Graphics2D g = (Graphics2D) tex.getGraphics();
-    g.drawImage(image, null, null);
+		}
+		AffineTransform tx = null;
+		if (flipImage) {
+			tx = AffineTransform.getScaleInstance(1, -1);
+			tx.translate(0, -image.getHeight(null));
+		}
+
+		Graphics2D g = (Graphics2D) tex.getGraphics();
+    g.drawImage(image, tx, null);
     g.dispose();
-    if (flipImage) {
-      //Flip the image
-      AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-      tx.translate(0, -image.getHeight(null));
-      AffineTransformOp op = new AffineTransformOp(tx,
-          AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-      tex = op.filter(tex, null);
-    }
 
     //Get a pointer to the image memory
     ByteBuffer scratch = ByteBuffer.allocateDirect(4 * tex.getWidth()
-        * tex.getHeight());
+        * tex.getHeight()).order(ByteOrder.nativeOrder());
     byte data[] = (byte[]) tex.getRaster().getDataElements(0, 0,
         tex.getWidth(), tex.getHeight(), null);
     scratch.clear();
     scratch.put(data);
-    scratch.rewind();
+    scratch.flip();
     com.jme.image.Image textureImage = new com.jme.image.Image();
     textureImage.setType(hasAlpha
                          ? com.jme.image.Image.RGBA8888
