@@ -17,6 +17,15 @@ public class FastMath {
 
   public static final Random rand = new Random();
 
+  // A good implementation found on the Java boards.
+  // note: a number is a power of two if and only if it is the smallest number
+  //       with that number of significant bits. Therefore, if you subtract 1,
+  //       you know that the new number will have fewer bits, so ANDing the original number
+  //       with anything less than it will give 0.
+  public static boolean isPowerOfTwo(int number) {
+      return (number > 0) && (number & (number - 1)) == 0;
+  }
+
   /** */
   public static float acos(float fValue) {
     if ( -1.0f < fValue) {
