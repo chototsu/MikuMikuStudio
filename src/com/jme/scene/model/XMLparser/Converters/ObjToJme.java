@@ -148,7 +148,10 @@ public class ObjToJme extends FormatConverter{
             addNormalToList(parts);
             return;
         } else if ("g".equals(parts[0])){
-            setDefaultGroup();
+            if (materialNames.get(parts[1])!=null)
+                curGroup=(MaterialGrouping) materialNames.get(parts[1]);
+            else
+                setDefaultGroup();
             return;
         } else if ("f".equals(parts[0])){
             addFaces(parts);
@@ -177,7 +180,7 @@ public class ObjToJme extends FormatConverter{
         } else if ("d".equals(parts[0])){
             curGroup.m.setAlpha(Float.parseFloat(parts[1]));
             return;
-        } else if ("map_Ka".equals(parts[0])){
+        } else if ("map_Kd".equals(parts[0]) || "map_Ka".equals(parts[0])){
             Texture t=new Texture();
             t.setImageLocation("file:/"+s.substring(6).trim());
             curGroup.ts.setTexture(t);
