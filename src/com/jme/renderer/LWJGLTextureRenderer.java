@@ -47,7 +47,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.15 2004-04-02 18:36:58 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.16 2004-04-02 21:04:14 mojomonkey Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -194,6 +194,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * @param tex the Texture to render it to.
      */
     public void render(Spatial spat, Texture tex) {
+        spat.setIsRoot(true);
         try {
             if (pbuffer.isBufferLost()) {
                 LoggingSystem.getLogger().log(Level.WARNING, "PBuffer contents lost - will recreate the buffer");
@@ -222,6 +223,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(), "render(Spatial, Texture)", e);
         }
+        spat.setIsRoot(false);
     }
 
 
