@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.16 2004-05-26 00:11:55 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.17 2004-05-26 00:17:44 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -406,7 +406,7 @@ public class LWJGLTextureState extends TextureState {
       IntBuffer id = BufferUtils.createIntBuffer(1);
       id.put(texture[unit].getTextureId());
       id.rewind();
-      texture[unit] = null;
+      texture[unit].setTextureId(0);
       GL11.glDeleteTextures(id);
     }
 
@@ -421,7 +421,7 @@ public class LWJGLTextureState extends TextureState {
         id.put(texture[i].getTextureId());
         id.rewind();
         GL11.glDeleteTextures(id);
-        texture[i] = null;
+        texture[i].setTextureId(0);
       }
     }
 }
