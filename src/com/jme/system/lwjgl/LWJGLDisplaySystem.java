@@ -70,7 +70,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.8 2004-04-20 20:47:56 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.9 2004-04-22 20:34:23 mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -305,7 +305,11 @@ public class LWJGLDisplaySystem extends DisplaySystem {
       // Viewport matrix
       IntBuffer vpBuffer = BufferUtils.createIntBuffer(16);
       GL11.glGetInteger(GL11.GL_VIEWPORT, vpBuffer);
-
+      int[] vpArray = new int[vpBuffer.capacity()];
+      for(int i = 0; i < vpArray.length; i++) {
+          vpArray[i] = vpBuffer.get();
+      }
+      
       float[] result = new float[4];
 
       GLU.gluProject(
@@ -314,7 +318,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
               worldPosition.z,
               mvArray,
               prArray,
-              vpBuffer.array(),
+              vpArray,
               result);
 
       return new Vector2f(result[0], result[1]);
