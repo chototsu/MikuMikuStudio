@@ -59,7 +59,7 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.11 2004-07-08 20:36:38 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.12 2004-07-23 22:01:59 renanse Exp $
  */
 
 public class LensFlare extends Node {
@@ -103,83 +103,83 @@ public class LensFlare extends Node {
     // draw main flare at src point
     Vector3f tempPoint;
     tempPoint = mainFlare.getWorldTranslation();
-    tempPoint.x = flarePoint.x;
-    tempPoint.y = flarePoint.y;
+    tempPoint.x = flarePoint.x + midPoint.x;
+    tempPoint.y = flarePoint.y + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[0].getWorldTranslation();
-    tempPoint.x = flarePoint.x / .8f;
-    tempPoint.y = flarePoint.y / .8f;
+    tempPoint.x = flarePoint.x / .8f + midPoint.x;
+    tempPoint.y = flarePoint.y / .8f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[1].getWorldTranslation();
-    tempPoint.x = flarePoint.x;
-    tempPoint.y = flarePoint.y;
+    tempPoint.x = flarePoint.x + midPoint.x;
+    tempPoint.y = flarePoint.y + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[2].getWorldTranslation();
-    tempPoint.x = flarePoint.x / .8f;
-    tempPoint.y = flarePoint.y / .8f;
+    tempPoint.x = flarePoint.x / .8f + midPoint.x;
+    tempPoint.y = flarePoint.y / .8f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[3].getWorldTranslation();
-    tempPoint.x = flarePoint.x / 2f;
-    tempPoint.y = flarePoint.y / 2f;
+    tempPoint.x = flarePoint.x / 2f + midPoint.x;
+    tempPoint.y = flarePoint.y / 2f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[4].getWorldTranslation();
-    tempPoint.x = flarePoint.x / 2.2f;
-    tempPoint.y = flarePoint.y / 2.2f;
+    tempPoint.x = flarePoint.x / 2.2f + midPoint.x;
+    tempPoint.y = flarePoint.y / 2.2f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[5].getWorldTranslation();
-    tempPoint.x = flarePoint.x / 2.4f;
-    tempPoint.y = flarePoint.y / 2.4f;
+    tempPoint.x = flarePoint.x / 2.4f + midPoint.x;
+    tempPoint.y = flarePoint.y / 2.4f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[6].getWorldTranslation();
-    tempPoint.x = flarePoint.x / 3f;
-    tempPoint.y = flarePoint.y / 3f;
+    tempPoint.x = flarePoint.x / 3f + midPoint.x;
+    tempPoint.y = flarePoint.y / 3f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[7].getWorldTranslation();
-    tempPoint.x = flarePoint.x / 5f;
-    tempPoint.y = flarePoint.y / 5f;
+    tempPoint.x = flarePoint.x / 5f + midPoint.x;
+    tempPoint.y = flarePoint.y / 5f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[8].getWorldTranslation();
-    tempPoint.x = -flarePoint.x / 3f;
-    tempPoint.y = -flarePoint.y / 3f;
+    tempPoint.x = -flarePoint.x / 3f + midPoint.x;
+    tempPoint.y = -flarePoint.y / 3f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[9].getWorldTranslation();
-    tempPoint.x = -flarePoint.x / 2f;
-    tempPoint.y = -flarePoint.y / 2f;
+    tempPoint.x = -flarePoint.x / 2f + midPoint.x;
+    tempPoint.y = -flarePoint.y / 2f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[10].getWorldTranslation();
-    tempPoint.x = -flarePoint.x / 1.8f;
-    tempPoint.y = -flarePoint.y / 1.8f;
+    tempPoint.x = -flarePoint.x / 1.8f + midPoint.x;
+    tempPoint.y = -flarePoint.y / 1.8f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[11].getWorldTranslation();
-    tempPoint.x = -flarePoint.x / 1.5f;
-    tempPoint.y = -flarePoint.y / 1.5f;
+    tempPoint.x = -flarePoint.x / 1.5f + midPoint.x;
+    tempPoint.y = -flarePoint.y / 1.5f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[12].getWorldTranslation();
-    tempPoint.x = -flarePoint.x / 1.4f;
-    tempPoint.y = -flarePoint.y / 1.4f;
+    tempPoint.x = -flarePoint.x / 1.4f + midPoint.x;
+    tempPoint.y = -flarePoint.y / 1.4f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[13].getWorldTranslation();
-    tempPoint.x = -flarePoint.x / 1.1f;
-    tempPoint.y = -flarePoint.y / 1.1f;
+    tempPoint.x = -flarePoint.x / 1.1f + midPoint.x;
+    tempPoint.y = -flarePoint.y / 1.1f + midPoint.y;
     tempPoint.z = 0;
 
     tempPoint = sFlare[14].getWorldTranslation();
-    tempPoint.x = -flarePoint.x;
-    tempPoint.y = -flarePoint.y;
+    tempPoint.x = -flarePoint.x + midPoint.x;
+    tempPoint.y = -flarePoint.y + midPoint.y;
     tempPoint.z = 0;
   }
 
