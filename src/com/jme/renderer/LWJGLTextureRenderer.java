@@ -46,7 +46,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.10 2004-03-08 16:59:04 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.11 2004-03-08 17:07:07 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -218,6 +218,17 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         try {
             pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0, 0, texture);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (texture != null && useDirectRender) {
+                System.err.println("Attempting to fall back to Copy Texture.");
+                texture = null;
+                useDirectRender = false;
+                initPbuffer();
+                return;
+            }
+        }
+        try {
             activate();
 
             PBUFFER_WIDTH = pbuffer.getWidth();
