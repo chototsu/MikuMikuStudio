@@ -50,7 +50,7 @@ import com.jme.math.Vector3f;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.11 2004-04-29 14:21:32 mojomonkey Exp $
+ * @version $Id: Camera.java,v 1.12 2004-05-10 21:56:24 mojomonkey Exp $
  */
 public interface Camera extends Serializable {
 
@@ -176,6 +176,8 @@ public interface Camera extends Serializable {
     public void setFrustum(float near, float far, float left, float right,
             float top, float bottom);
 
+    public void setFrustumPerspective(float fovY, float aspect, float near, float far);
+    
     /**
      * <code>getFrustumBottom</code> returns the value of the bottom frustum
      * plane.
