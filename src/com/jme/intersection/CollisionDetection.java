@@ -31,15 +31,18 @@
  */
 package com.jme.intersection;
 
+import java.util.logging.Level;
+
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>CollisionDetection</code> provides a system for calculating collisions
  * based on given criteria. 
  * @author Mark Powell
- * @version $Id: CollisionDetection.java,v 1.2 2003-12-09 20:38:27 mojomonkey Exp $
+ * @version $Id: CollisionDetection.java,v 1.3 2004-02-19 03:52:49 mojomonkey Exp $
  */
 public class CollisionDetection {
 
@@ -57,9 +60,10 @@ public class CollisionDetection {
         CollisionResults results) {
             
         if(test.equals(scene)) {
+            LoggingSystem.getLogger().log(Level.WARNING, "Cannot test " +                "collision against itself");
             return;
         }
-            
+        
         if (Intersection
             .intersection(test.getWorldBound(), scene.getWorldBound())) {
             if ((scene instanceof Node)) {
@@ -69,7 +73,7 @@ public class CollisionDetection {
                 }
             } else {
                 //find the triangle that is being hit.
-                //add this node and the triangle to the PickResults list.
+                //add this node and the triangle to the CollisionResults list.
                 results.addNode((Geometry) scene);
             }
         }
