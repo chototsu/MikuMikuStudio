@@ -38,9 +38,11 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Cylinder</code>
+ * <code>Cylinder</code> provides an extension of <code>TriMesh</code>. A
+ * <code>Cylinder</code> is defined by a height and radius.  The center of the
+ * Cylinder is the origin.
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.2 2004-04-22 22:26:53 renanse Exp $
+ * @version $Id: Cylinder.java,v 1.3 2004-08-01 05:23:58 cep21 Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -49,6 +51,16 @@ public class Cylinder extends TriMesh {
 	private float radius;
 	private float height;
 
+    /**
+     * Creates a new Cylinder.  By default its center is the origin.  Usually,
+     * a higher sample number creates a better looking cylinder, but at the
+     * cost of more vertex information.
+     * @param name The name of this Cylinder.
+     * @param axisSamples Number of triangle samples along the axis.
+     * @param radialSamples Number of triangle samples along the radial.
+     * @param radius The radius of the cylinder.
+     * @param height The cylinder's height.
+     */
 	public Cylinder(
 		String name,
 		int axisSamples,

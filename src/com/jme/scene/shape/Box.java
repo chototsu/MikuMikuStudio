@@ -44,7 +44,7 @@ import com.jme.bounding.BoundingBox;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.7 2004-06-25 19:20:28 ericthered Exp $
+ * @version $Id: Box.java,v 1.8 2004-08-01 05:19:45 cep21 Exp $
  */
 public class Box extends TriMesh implements XMLloadable {
     public float xExtent, yExtent, zExtent;
@@ -88,11 +88,30 @@ public class Box extends TriMesh implements XMLloadable {
         setData(min, max, true);
     }
 
+    /**
+     * Constructs a new box.  The box has the given center and extends in the x, y, and z
+     * out from the center (+ and -) by the given amounts.  So, for example, a box with extent of .5
+     * would be the unit cube.
+     * @param name Name of the box.
+     * @param center Center of the box.
+     * @param xExtent x extent of the box, in both directions.
+     * @param yExtent y extent of the box, in both directions.
+     * @param zExtent z extent of the box, in both directions.
+     */
     public Box(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
         super(name);
         setData(center, xExtent, yExtent, zExtent, true);
     }
 
+    /**
+     * Changes the data of the box so that the two opposite corners are minPoint and
+     * maxPoint.  The other corners are created from those two poitns.  If update buffers
+     * is flagged as true, the vertex/normal/texture/color/index buffers are updated when the
+     * data is changed.
+     * @param minPoint The new minPoint of the box.
+     * @param maxPoint The new maxPoint of the box.
+     * @param updateBuffers If true, buffers are updated.
+     */
     public void setData(Vector3f minPoint, Vector3f maxPoint, boolean updateBuffers) {
         center.set(maxPoint).addLocal(minPoint).multLocal(0.5f);
 
@@ -102,6 +121,17 @@ public class Box extends TriMesh implements XMLloadable {
         setData(center, x, y, z, updateBuffers);
     }
 
+    /**
+     * Changes the data of the box so that its center is <code>center</code> and it extends
+     * in the x, y, and z directions by the given extent.  Note that the actual sides will be
+     * 2x the given extent values because the box extends in + & - from the center for each
+     * extent.
+     * @param center The center of the box.
+     * @param xExtent x extent of the box, in both directions.
+     * @param yExtent y extent of the box, in both directions.
+     * @param zExtent z extent of the box, in both directions.
+     * @param updateBuffers If true, buffers are updated.
+     */
     public void setData(Vector3f center, float xExtent, float yExtent, float zExtent, boolean updateBuffers) {
         if (center != null)
             this.center.set(center);
@@ -370,10 +400,19 @@ public class Box extends TriMesh implements XMLloadable {
         return rVal;
     }
 
-
+    /**
+     * Returns the current center of the box.
+     * @return The box's center.
+     */
 	public Vector3f getCenter(){
 		return center;
 	}
+
+    /**
+     * Sets the center of the box.  Note that even though the center is set, Geometry
+     * information is not updated.  In most cases, you'll want to use setData()
+     * @param aCenter The new center.
+     */
 	public void setCenter(Vector3f aCenter){
 		center.set(aCenter);
 	}
