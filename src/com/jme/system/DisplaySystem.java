@@ -50,7 +50,7 @@ import com.jme.math.Vector2f;
  * <code>DisplaySystem</code>
  *
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.34 2004-08-20 23:21:22 ericthered Exp $
+ * @version $Id: DisplaySystem.java,v 1.35 2004-09-13 21:13:12 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -73,7 +73,7 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.34 2004-08-20 23:21:22 ericthered Exp $
+ * @version $Id: DisplaySystem.java,v 1.35 2004-09-13 21:13:12 renanse Exp $
  */
 public abstract class DisplaySystem {
 
@@ -84,6 +84,14 @@ public abstract class DisplaySystem {
     protected int width;
     /** height selected for the renderer. */
     protected int height;
+    /** Bit depth selected for renderer. */
+    protected int bpp;
+    /** Frequency selected for renderer. */
+    protected int frq;
+    /** Is the display full screen? */
+    protected boolean fs;
+    /** Is the display created already? */
+    protected boolean created;
 
     /** Alpha bits to use for the renderer. */
     protected int alphaBits = 0;
@@ -140,19 +148,43 @@ public abstract class DisplaySystem {
     }
 
     /**
-     * Returns the selected width for the display system.
-     * @return The current user selected width.
+     * Returns the set width for the display system.
+     * @return The set width.
      */
     public int getWidth() {
         return width;
     }
 
     /**
-     * Returns the selected height for the display system.
-     * @return The current user selected height.
+     * Returns the set height for the display system.
+     * @return The set height.
      */
     public int getHeight() {
         return height;
+    }
+
+    /**
+     * Returns the set bitdepth for the display system.
+     * @return the set bit depth
+     */
+    public int getBitDepth() {
+      return bpp;
+    }
+
+    /**
+     * Returns the set frequency for the display system.
+     * @return the set frequency
+     */
+    public int getFrequency() {
+      return frq;
+    }
+
+    /**
+     * Returns whether or not the display system is set to be full screen.
+     * @return true if full screen
+     */
+    public boolean isFullScreen() {
+      return fs;
     }
 
     /**
@@ -220,6 +252,23 @@ public abstract class DisplaySystem {
     public abstract void createWindow(int w, int h, int bpp, int frq, boolean fs);
 
     /**
+     * <code>recreateWindow</code> recreates a window with the desired settings.
+     *
+     * @param w
+     *            the width/horizontal resolution of the display.
+     * @param h
+     *            the height/vertical resolution of the display.
+     * @param bpp
+     *            the color depth of the display.
+     * @param frq
+     *            the frequency of refresh of the display.
+     * @param fs
+     *            flag determining if fullscreen is to be used or not. True will
+     *            use fullscreen, false will use windowed mode.
+     */
+    public abstract void recreateWindow(int w, int h, int bpp, int frq, boolean fs);
+
+    /**
      * <code>getRenderer</code> returns the <code>Renderer</code>
      * implementation that is compatible with the chosen
      * <code>DisplaySystem</code>. For example, if
@@ -249,7 +298,9 @@ public abstract class DisplaySystem {
      *
      * @return whether the display system is created.
      */
-    public abstract boolean isCreated();
+    public boolean isCreated() {
+        return created;
+    }
 
     /**
      * <code>isClosing</code> notifies if the window is currently closing.

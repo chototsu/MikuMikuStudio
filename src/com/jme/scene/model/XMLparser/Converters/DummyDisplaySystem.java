@@ -29,6 +29,7 @@ public class DummyDisplaySystem extends DisplaySystem{
     public void setVSyncEnabled(boolean enabled) {}
     public void setTitle(String title) {}
     public void createWindow(int w, int h, int bpp, int frq, boolean fs) {}
+    public void recreateWindow(int w, int h, int bpp, int frq, boolean fs) {}
     public Renderer getRenderer() {
         return new Renderer(){
             public void setCamera(Camera camera) {}
@@ -99,6 +100,7 @@ public class DummyDisplaySystem extends DisplaySystem{
                 public void delete(int unit) {}
                 public void deleteAll() {}
                 public void apply() {}
+                public void assignTextureID(Texture t) {}
             }
             public TextureState createTextureState() {
                 return new TextureStateN();
@@ -179,7 +181,6 @@ public class DummyDisplaySystem extends DisplaySystem{
     };
     }
     public RendererType getRendererType() {return null;}
-    public boolean isCreated() {return false;}
     public boolean isClosing() {return false;}
     public void reset() {}
     public void close() {}

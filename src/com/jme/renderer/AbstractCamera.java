@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.23 2004-09-03 22:36:35 cep21 Exp $
+ * @version $Id: AbstractCamera.java,v 1.24 2004-09-13 21:13:11 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
   //planes of the frustum
@@ -506,6 +506,15 @@ public abstract class AbstractCamera implements Camera {
     onFrameChange();
 
   }
+
+  /**
+   * <code>resize</code> resizes this cameras view with the given width/height.
+   * This is similar to constructing a new camera, but reusing the same
+   * Object.
+   * @param width int
+   * @param height int
+   */
+  public abstract void resize(int width, int height);
 
   /**
    * <code>getPlaneState</code> returns the state of the frustum planes. So

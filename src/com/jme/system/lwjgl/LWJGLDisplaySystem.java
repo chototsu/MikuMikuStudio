@@ -74,14 +74,6 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
-    private int bpp;
-
-    private int frq;
-
-    private boolean fs;
-
-    private boolean created;
-
     private LWJGLRenderer renderer;
 
     /**
@@ -149,6 +141,38 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     }
 
     /**
+     * <code>recreateWindow</code> will recreate a LWJGL display context. This
+     * window will be a purely native context as defined by the LWJGL API.
+     *
+     * If a window is not already created, it calls createWindow and exits.
+     * Other wise it calls reinitDisplay and renderer.reinit(width,height)
+     *
+     * @see com.jme.system.DisplaySystem#recreateWindow(int, int, int, int,
+     *      boolean)
+     */
+    public void recreateWindow(int w, int h, int bpp, int frq, boolean fs) {
+      if (!created) {
+        createWindow(w,h,bpp,frq,fs);
+        return;
+      }
+        //confirm that the parameters are valid.
+        if (w <= 0 || h <= 0) {
+            throw new JmeException("Invalid resolution values: " + w + " " + h);
+        } else if ((bpp != 32) && (bpp != 16) && (bpp != 24)) { throw new JmeException(
+                "Invalid pixel depth: " + bpp); }
+
+        //set the window attributes
+        this.width = w;
+        this.height = h;
+        this.bpp = bpp;
+        this.frq = frq;
+        this.fs = fs;
+
+        reinitDisplay();
+        renderer.reinit(width,height);
+    }
+
+    /**
      * <code>getRenderer</code> returns the created rendering class for LWJGL (
      * <code>LWJGLRenderer</code>). This will give the needed access to
      * display data to the window.
@@ -157,17 +181,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     public Renderer getRenderer() {
         return renderer;
-    }
-
-    /**
-     * <code>isCreated</code> returns true if the current display is created,
-     * false otherwise.
-     *
-     * @see com.jme.system.DisplaySystem#isCreated()
-     * @return true if display is created.
-     */
-    public boolean isCreated() {
-        return created;
     }
 
     /**
@@ -390,8 +403,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         if (null == mode) { throw new JmeException("Bad display mode"); }
 
         try {
-            Display.setFullscreen(fs);
             Display.setDisplayMode(mode);
+            Display.setFullscreen(fs);
             Display.create();
             // kludge added here...  LWJGL does not properly clear their
             // keyboard and mouse buffers when you call the destroy method,
@@ -407,6 +420,27 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
                     "initDisplay()", e);
             throw new Error("Cannot create window: " + e.getMessage());
+        }
+    }
+
+    /**
+     * <code>reinitDisplay</code> recreates the LWJGL window with the desired
+     * specifications.  All textures, etc should remain in the context.
+     */
+    private void reinitDisplay() {
+        //create the Display.
+        DisplayMode mode = getValidDisplayMode(width, height, bpp, frq);
+        if (null == mode) { throw new JmeException("Bad display mode"); }
+
+        try {
+            Display.setDisplayMode(mode);
+            Display.setFullscreen(fs);
+        } catch (Exception e) {
+            //System.exit(1);
+            LoggingSystem.getLogger().log(Level.SEVERE, "Cannot recreate window");
+            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+                    "reinitDisplay()", e);
+            throw new Error("Cannot recreate window: " + e.getMessage());
         }
     }
 }

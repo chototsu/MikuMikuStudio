@@ -75,7 +75,7 @@ import java.nio.IntBuffer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.45 2004-09-01 05:21:21 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.46 2004-09-13 21:13:11 renanse Exp $
  */
 public interface Renderer {
 
@@ -342,7 +342,8 @@ public interface Renderer {
     public boolean takeScreenShot(String filename);
 
     /**
-     * <code>grabScreenContents</code> reads a block of pixels from the current framebuffer.
+     * <code>grabScreenContents</code> reads a block of pixels from the current
+     * framebuffer.
      *
      * @param buff a buffer to store contents in.
      * @param x - x starting point of block
@@ -442,7 +443,8 @@ public interface Renderer {
     public boolean isProcessingQueue();
 
     /**
-     * Check a given Spatial to see if it should be queued.  return true if it was queued
+     * Check a given Spatial to see if it should be queued.  return true if it
+     * was queued.
      * @param s Spatial to check
      * @return true if it was queued.
      */
