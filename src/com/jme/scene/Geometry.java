@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.40 2004-05-19 01:34:56 renanse Exp $
+ * @version $Id: Geometry.java,v 1.41 2004-05-19 16:16:25 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -81,9 +81,6 @@ public abstract class Geometry extends Spatial implements Serializable {
     protected transient FloatBuffer vertBuf;
 
     protected transient FloatBuffer[] texBuf;
-
-    //float arrays for update phase
-    private float[] colorArray;
 
     private RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
@@ -757,23 +754,25 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void updateColorBuffer() {
         if (color == null) { return; }
-        if (colorArray == null || colorArray.length != vertex.length * 4) {
-            colorArray = new float[vertex.length * 4];
-        }
+
+        int bufferLength = vertex.length * 4;
 
         if (colorBuf == null) {
-            colorBuf = ByteBuffer.allocateDirect(4 * colorArray.length).order(
+            colorBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
                     ByteOrder.nativeOrder()).asFloatBuffer();
-        }
-        for (int i = 0; i < vertex.length; i++) {
-            colorArray[i * 4] = color[i].r;
-            colorArray[i * 4 + 1] = color[i].g;
-            colorArray[i * 4 + 2] = color[i].b;
-            colorArray[i * 4 + 3] = color[i].a;
         }
 
         colorBuf.clear();
-        colorBuf.put(colorArray);
+
+        ColorRGBA tempColor;
+        for (int i = 0; i < bufferLength; i++) {
+          tempColor = color[i];
+          if (tempColor != null) {
+            vertBuf.put(tempColor.r).put(tempColor.g)
+                   .put(tempColor.b).put(tempColor.a);
+          }
+        }
+
         colorBuf.flip();
 
     }
@@ -784,29 +783,28 @@ public abstract class Geometry extends Spatial implements Serializable {
      *
      */
     public void updateVertexBuffer() {
-        if (vertex == null) { return; }
-        float[] buffer;
-        if (vertQuantity >= 0)
-            buffer = new float[vertQuantity * 3];
-        else
-            buffer = new float[vertex.length * 3];
-        if (vertBuf == null || vertBuf.capacity() < (4 * buffer.length)) {
-            vertBuf = ByteBuffer.allocateDirect(4 * buffer.length).order(
-                    ByteOrder.nativeOrder()).asFloatBuffer();
+      if (vertex == null) { return; }
+      int bufferLength;
+      if (vertQuantity >= 0)
+        bufferLength = vertQuantity * 3;
+      else
+        bufferLength = vertex.length * 3;
+      if (vertBuf == null || vertBuf.capacity() < (4 * bufferLength)) {
+        vertBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
+            ByteOrder.nativeOrder()).asFloatBuffer();
+      }
+
+      vertBuf.clear();
+
+      Vector3f tempVect;
+      for (int i = 0, endPoint = bufferLength / 3; i < endPoint; i++) {
+        tempVect = vertex[i];
+        if (tempVect != null) {
+          vertBuf.put(tempVect.x).put(tempVect.y).put(tempVect.z);
         }
+      }
 
-        for (int i = 0, endPoint = buffer.length / 3; i < endPoint; i++) {
-            if (vertex[i] != null) {
-                buffer[i * 3] = vertex[i].x;
-                buffer[i * 3 + 1] = vertex[i].y;
-                buffer[i * 3 + 2] = vertex[i].z;
-            }
-        }
-
-        vertBuf.clear();
-        vertBuf.put(buffer);
-        vertBuf.flip();
-
+      vertBuf.flip();
     }
 
     /**
@@ -816,46 +814,37 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void updateNormalBuffer() {
         if (normal == null) { return; }
-        float[] buffer = new float[vertex.length * 3];
+        int bufferLength;
+        if (vertQuantity >= 0)
+          bufferLength = vertQuantity * 3;
+        else
+          bufferLength = vertex.length * 3;
         if (normBuf == null) {
-            normBuf = ByteBuffer.allocateDirect(4 * buffer.length).order(
+            normBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
                     ByteOrder.nativeOrder()).asFloatBuffer();
-        }
-        for (int i = 0; i < vertex.length; i++) {
-            buffer[i * 3] = normal[i].x;
-            buffer[i * 3 + 1] = normal[i].y;
-            buffer[i * 3 + 2] = normal[i].z;
         }
 
         normBuf.clear();
-        normBuf.put(buffer);
+
+        Vector3f tempVect;
+        for (int i = 0, endPoint = bufferLength / 3; i < endPoint; i++) {
+          tempVect = normal[i];
+          if (tempVect != null) {
+            normBuf.put(tempVect.x).put(tempVect.y).put(tempVect.z);
+          }
+        }
+
         normBuf.flip();
 
     }
 
     /**
      * <code>updateTextureBuffer</code> sets the float buffer that contains
-     * this geometry's texture information.
+     * this geometry's texture information.  Updates textureUnit 0.
      *
      */
     public void updateTextureBuffer() {
-        if (texture == null) { return; }
-        if (texture[0] == null) { return; }
-        float[] buffer = new float[vertex.length * 2];
-        if (texBuf[0] == null) {
-            texBuf[0] = ByteBuffer.allocateDirect(4 * buffer.length).order(
-                    ByteOrder.nativeOrder()).asFloatBuffer();
-        }
-        for (int i = 0; i < vertex.length; i++) {
-            if (texture[0][i] != null) {
-                buffer[i * 2] = texture[0][i].x;
-                buffer[i * 2 + 1] = texture[0][i].y;
-            }
-        }
-        texBuf[0].clear();
-        texBuf[0].put(buffer);
-        texBuf[0].flip();
-
+      updateTextureBuffer(0);
     }
 
     /**
@@ -866,19 +855,27 @@ public abstract class Geometry extends Spatial implements Serializable {
     public void updateTextureBuffer(int textureUnit) {
         if (texture == null) { return; }
         if (texture[textureUnit] == null) { return; }
-        float[] buffer = new float[vertex.length * 2];
+        int bufferLength;
+        if (vertQuantity >= 0)
+          bufferLength = vertQuantity * 2;
+        else
+          bufferLength = vertex.length * 2;
+
         if (texBuf[textureUnit] == null) {
-            texBuf[textureUnit] = ByteBuffer.allocateDirect(4 * buffer.length)
+            texBuf[textureUnit] = ByteBuffer.allocateDirect(4 * bufferLength)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
-            for (int i = 0; i < vertex.length; i++) {
-                if (texture[textureUnit][i] != null) {
-                    buffer[i * 2] = texture[textureUnit][i].x;
-                    buffer[i * 2 + 1] = texture[textureUnit][i].y;
-                }
+        }
+
+        texBuf[textureUnit].clear();
+
+        Vector2f tempVect;
+        for (int i = 0, max = bufferLength>>1; i < max; i++) {
+          tempVect = texture[textureUnit][i];
+            if (tempVect != null) {
+              texBuf[textureUnit].put(tempVect.x).put(tempVect.y);
             }
         }
-        texBuf[textureUnit].clear();
-        texBuf[textureUnit].put(buffer);
+
         texBuf[textureUnit].flip();
 
     }
