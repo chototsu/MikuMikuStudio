@@ -37,16 +37,44 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Quad</code>
+ * <code>Quad</code> defines a four sided, two dimensional shape. The local 
+ * height of the <code>Quad</code> defines it's size about the y-axis, while
+ * the width defines the x-axis. The z-axis will always be 0.
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.2 2004-04-22 22:26:54 renanse Exp $
+ * @version $Id: Quad.java,v 1.3 2004-04-26 15:17:04 mojomonkey Exp $
  */
 public class Quad extends TriMesh {
 
+    /**
+     * Constructor creates a new <code>Quad</code> object. That data for the
+     * <code>Quad</code> is not set until a call to <code>initialize</code> is
+     * made.
+     * @param name the name of this <code>Quad</code>.
+     */
     public Quad(String name) {
         super(name);
     }
 
+    /**
+     * Constructor creates a new <code>Quade</code> object with the provided
+     * width and height. 
+     * @param name the name of the <code>Quad</code>.
+     * @param width the width of the <code>Quad</code>.
+     * @param height the height of the <code>Quad</code>.
+     */
+    public Quad(String name, float width, float height) {
+        super(name);
+        initialize(width, height);
+    }
+    
+    /**
+     * 
+     * <code>initialize</code> builds the data for the <code>Quad</code> object.
+     * 
+     *
+     * @param width the width of the <code>Quad</code>.
+     * @param height the height of the <code>Quad</code>.
+     */
     public void initialize(float width, float height) {
         Vector3f[] verts = new Vector3f[4];
         Vector3f[] norms = new Vector3f[4];
@@ -89,9 +117,9 @@ public class Quad extends TriMesh {
     }
 
   /**
-   * getCenter
-   *
-   * @return Vector3f
+   * <code>getCenter</code> returns the center of the <code>Quad</code>.
+   * 
+   * @return Vector3f the center of the <code>Quad</code>.
    */
   public Vector3f getCenter() {
     return worldTranslation;
