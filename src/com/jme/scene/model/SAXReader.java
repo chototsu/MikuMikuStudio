@@ -11,7 +11,6 @@ import com.jme.util.LoggingSystem;
 import com.jme.scene.Node;
 
 import java.util.logging.Level;
-import java.util.Stack;
 import java.io.File;
 import java.io.InputStream;
 
@@ -22,36 +21,51 @@ import java.io.InputStream;
  */
 public class SAXReader extends DefaultHandler{
     public final static File XSD=new File("data/XML docs/LoaderFormat.xsd");
+    static final String JAXP_SCHEMA_LANGUAGE =
+        "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
+    static final String JAXP_SCHEMA_SOURCE =
+        "http://java.sun.com/xml/jaxp/properties/schemaSource";
+    static final String W3C_XML_SCHEMA =
+        "http://www.w3.org/2001/XMLSchema";
+
+
     private StringBuffer currentData=new StringBuffer();
-    private Stack currentlyProcessing=new Stack();
-    private Node lastScene;
     long time;
+    private SAXStackProcessor computer;
+
     public SAXReader(){
         super();
+        try{
+            computer=new SAXStackProcessor();
+        } catch (NullPointerException np){
+            throw new JmeException("Try setting the display system first");
+        }
     }
 
-    public void loadXML(InputStream SAXFile){
-        lastScene=new Node("File loaded Scene");
+    public Node loadXML(InputStream SAXFile){
         time=System.currentTimeMillis();
         SAXParserFactory factory=SAXParserFactory.newInstance();
         factory.setValidating(true);
+        factory.setNamespaceAware(true);
+
         try {
-            factory.setFeature("http://xml.org/sax/features/validation",true);
-            SAXParser parser=factory.newSAXParser();
+            SAXParser parser=factory.newSAXParser();    // Use .xsd validating parser?
+//            parser.setProperty(JAXP_SCHEMA_LANGUAGE,W3C_XML_SCHEMA);
+//            parser.setProperty(JAXP_SCHEMA_SOURCE,XSD);
+
             parser.parse(SAXFile,this);
+
         } catch (Throwable t) {
             throw new JmeException("Parser exception caught:" + t.getClass() + " * " + t.getCause() + "*" + t.getMessage());
         }
         System.out.println("Total load time: " + (System.currentTimeMillis()-time));
+        return computer.fetchOriginal();
     }
 
     public Node fetchCopy(){
-        return lastScene;
+        return computer.fetchCopy();
     }
 
-    public void setDocumentLocator(Locator l){
-
-    }
     public void startDocument() throws SAXException{
         LoggingSystem.getLogger().log(
             Level.INFO,
@@ -66,12 +80,15 @@ public class SAXReader extends DefaultHandler{
 
     public void startElement(String uri,String localName,String qName, Attributes atts) throws SAXException{
         currentData.setLength(0);
-        SAXStackProcessor.increaseStack(qName,atts,currentlyProcessing);
+        System.out.print("qName: " + qName);
+        computer.increaseStack(qName,atts);
+        System.out.println("*");
     }
 
     public void endElement(String uri,String localName, String qName) throws SAXException{
-        Node r=SAXStackProcessor.processStack(qName,currentData,currentlyProcessing);
-        if (r!=null) lastScene.attachChild(r);
+        System.out.print("End: " + qName);
+        computer.decreaseStack(qName,currentData);
+        System.out.println("*");
     }
 
     public void characters(char[] ch, int start,int length) throws SAXException{
