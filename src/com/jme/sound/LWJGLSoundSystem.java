@@ -36,7 +36,7 @@ import org.lwjgl.openal.AL;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: LWJGLSoundSystem.java,v 1.3 2003-10-25 02:23:09 Anakan Exp $
+ * @version $Id: LWJGLSoundSystem.java,v 1.4 2003-10-28 16:33:26 Anakan Exp $
  */
 public class LWJGLSoundSystem extends SoundSystem {
 
@@ -71,6 +71,7 @@ public class LWJGLSoundSystem extends SoundSystem {
 	private void initOpenAL() {
 		try {
 			AL.create();
+			Thread.sleep(1000);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

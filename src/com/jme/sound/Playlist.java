@@ -31,51 +31,24 @@
  */
 
 /*
- * Created on 23 oct. 2003
+ * Created on 27 oct. 2003
  *
  */
 package com.jme.sound;
-
-import com.jme.math.Vector3f;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public interface SoundSource {
+public interface Playlist {
 
-	public int getSourceNumber();
+	public void queueSound(String name);
 	
-	public void setStream(SoundStream stream);
+	public boolean hasNext();
 	
-	public SoundStream getStream();
+	public SoundStream next();
 	
-	public void play(String name);
-	
-	public void stop();
-	
-	public void pause();
-	
-	public void updatePosition(float x, float y, float z);
-	
-	public void updateVelocity(float x, float y, float z);
-	
-	public boolean isPlaying();
-	
-	public boolean isPaused();
-	
-	public boolean isStopped();
-	
-	public void setNumberOfBuffers(int buffers);
-	
-	public Vector3f getPosition();
-	
-	public void setMaxVolume(float value);
-	
-	public void setVolume(float factor);
-	
-	public void setPlaylist(Playlist p);
+	public int length();
 	
 	
-
 }

@@ -161,8 +161,8 @@ public class LWJGLMP3Stream implements SoundStream {
 			sampleRate = header.frequency();
 			sampleBuf = (SampleBuffer) decoder.decodeFrame(header, stream);
 			stream.closeFrame();
-			
-			buffer.write(toByteArray(sampleBuf.getBuffer(), 0,sampleBuf.getBufferLength()));
+
+			buffer.write(toByteArray(sampleBuf.getBuffer(), 0, sampleBuf.getBufferLength()));
 			ByteBuffer obuf = ByteBuffer.allocateDirect(buffer.size());
 			obuf.put(buffer.toByteArray());
 			obuf.rewind();
@@ -201,6 +201,10 @@ public class LWJGLMP3Stream implements SoundStream {
 		ByteBuffer temp = ByteBuffer.allocateDirect(4 * size);
 		temp.order(ByteOrder.nativeOrder());
 		return temp.asIntBuffer();
+	}
+
+	public int getStreamType() {
+		return MP3_SOUND_STREAM;
 	}
 
 }

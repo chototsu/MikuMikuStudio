@@ -47,6 +47,10 @@ import javax.sound.sampled.AudioFormat;
  */
 public interface SoundStream {
 
+	public static final int MP3_SOUND_STREAM=1;
+	public static final int WAV_SOUND_STREAM=2;
+	public static final int OGG_SOUND_STREAM=3;
+	
 	/**
 	 * Closes this stream .
 	 *
@@ -93,5 +97,15 @@ public interface SoundStream {
 	 * is the next number of bytes available in the Stream.
 	 */
 	public ByteBuffer read(int nbOfBytes) throws IOException;
+	
+	
+	/**
+	 * 
+	 * @return the stream type. The values can be  
+	 * MP3_SOUND_STREAM=1;
+	 * WAV_SOUND_STREAM=2;
+	 * OGG_SOUND_STREAM=3;
+	 */
+	public int getStreamType();
 
 }

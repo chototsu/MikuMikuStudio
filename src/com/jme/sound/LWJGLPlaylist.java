@@ -31,51 +31,54 @@
  */
 
 /*
- * Created on 23 oct. 2003
+ * Created on 27 oct. 2003
  *
  */
 package com.jme.sound;
 
-import com.jme.math.Vector3f;
+import java.util.ArrayList;
+
+import com.jme.sound.utils.StreamRepository;
 
 /**
  * @author Arman Ozcelik
+ * 
+ * This class thread unsafe. A playlist sould be filled once for ever.
  *
  */
-public interface SoundSource {
+public class LWJGLPlaylist implements Playlist {
 
-	public int getSourceNumber();
-	
-	public void setStream(SoundStream stream);
-	
-	public SoundStream getStream();
-	
-	public void play(String name);
-	
-	public void stop();
-	
-	public void pause();
-	
-	public void updatePosition(float x, float y, float z);
-	
-	public void updateVelocity(float x, float y, float z);
-	
-	public boolean isPlaying();
-	
-	public boolean isPaused();
-	
-	public boolean isStopped();
-	
-	public void setNumberOfBuffers(int buffers);
-	
-	public Vector3f getPosition();
-	
-	public void setMaxVolume(float value);
-	
-	public void setVolume(float factor);
-	
-	public void setPlaylist(Playlist p);
-	
-	
+	private ArrayList preloaded;
+	/**
+	 * 
+	 */
+	public LWJGLPlaylist() {
+		preloaded = new ArrayList();
+	}
+
+	public void queueSound(String name) {
+		String file = StreamRepository.getInstance().getStream(name);
+		if (file.endsWith(".mp3")) {
+			preloaded.add(new LWJGLMP3Stream(file));
+		}
+		if (file.endsWith(".wav")) {
+			preloaded.add(new LWJGLWaveStream(file));
+		}
+	}
+
+	public SoundStream next() {
+		if (preloaded.size() > 0) {
+			return (SoundStream) preloaded.remove(0);
+		}
+		return null;
+	}
+
+	public boolean hasNext() {
+		return preloaded.size() > 0;
+	}
+
+	public int length() {
+		return preloaded.size();
+	}
 
 }

@@ -202,4 +202,10 @@ public class LWJGLWaveStream implements SoundStream {
 		return length;
 	}
 
+
+	
+	public int getStreamType() {		
+		return WAV_SOUND_STREAM;
+	}
+
 }
