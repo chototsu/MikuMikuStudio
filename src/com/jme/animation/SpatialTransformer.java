@@ -8,40 +8,61 @@ import com.jme.math.Quaternion;
 
 import java.util.ArrayList;
 import java.util.BitSet;
+import java.util.Arrays;
 
 /**
  * Started Date: Jul 9, 2004<br><br>
  *
+ * This class animates spatials by interpolating between various transformations.  The user defines objects to be
+ * transformed and what rotation/translation/scale to give each object at various points in time.  The user must call
+ * interpolateMissing() before using the controller in order to interpolate unspecified translation/rotation/scale.
  *
  *
  * @author Jack Lindamood
  */
 public class SpatialTransformer extends Controller{
+
+    /** Number of objects this transformer changes.*/
     private int numObjects;
+    /** Refrences to the objects that will be changed.*/
     public Spatial[] toChange;
+    /** Used internally by update specifying how to change each object.*/
     private TransformMatrix[] pivots;
+    /** parentIndexes[i] states that toChange[i]'s parent is toChange[parentIndex[i]].*/
     public int[] parentIndexes;
 
+    /** Interpolated array of keyframe states*/
     public ArrayList keyframes;
+
     Vector3f unSyncbeginPos=new Vector3f();
     Vector3f unSyncendPos=new Vector3f();
     private Quaternion unSyncbeginRot=new Quaternion();
     private Quaternion unSyncendRot=new Quaternion();
+
+    /** Current time in the animation*/
     private float curTime;
+    /** Time previous to curTime*/
     private PointInTime beginPointTime;
+    /** Time after curTime*/
     private PointInTime endPointTime;
 
+    /** Used internally in update to flag that a pivot has been updated*/
+    private boolean[] haveChanged;
+
+    /**
+     * Constructs a new SpatialTransformer that will operate on <code>numObjects</code> Spatials
+     * @param numObjects The number of spatials to change
+     */
     public SpatialTransformer(int numObjects){
         this.numObjects=numObjects;
         toChange=new Spatial[numObjects];
         pivots=new TransformMatrix[numObjects];
         parentIndexes=new int[numObjects];
-        for (int i=0;i<numObjects;i++){
-            parentIndexes[i]=-1;
+        haveChanged=new boolean[numObjects];
+        Arrays.fill(parentIndexes,-1);
+        for (int i=0;i<numObjects;i++)
             pivots[i]=new TransformMatrix();
-        }
         keyframes=new ArrayList();
-
     }
 
 
@@ -49,23 +70,27 @@ public class SpatialTransformer extends Controller{
         if (!isActive()) return;
         curTime+=time*getSpeed();
         setBeginAndEnd();
+        Arrays.fill(haveChanged,false);
 
-        boolean[] haveChanged=new boolean[numObjects];
         for (int i=0;i<numObjects;i++){
             if (toChange[i] instanceof Spatial){
-                updatePivot(i,haveChanged);
+                updatePivot(i);
             }
         }
     }
 
-    private void updatePivot(int objIndex, boolean[] haveChanged) {
+    /**
+     * Called by update, and itself recursivly.  Will, when completed, change toChange[objIndex] by pivots[objIndex]
+     * @param objIndex The index to update.
+     */
+    private void updatePivot(int objIndex) {
         Spatial thisSpatial=(Spatial) toChange[objIndex];
         if (haveChanged[objIndex]){
             return;
         }
         pivots[objIndex].loadIdentity();
         if (parentIndexes[objIndex]!=-1){
-            updatePivot(parentIndexes[objIndex],haveChanged);
+            updatePivot(parentIndexes[objIndex]);
             pivots[objIndex].set(pivots[parentIndexes[objIndex]]);
         }
         TransformMatrix temp=new TransformMatrix();
@@ -78,7 +103,9 @@ public class SpatialTransformer extends Controller{
         haveChanged[objIndex]=true;
     }
 
-
+    /**
+     * Called in update to calculate the correct beginPointTime and endPointTime.
+     */
     private void setBeginAndEnd() {
         for (int i=1;i<keyframes.size();i++){
             if (curTime <= ((PointInTime)keyframes.get(i)).time){
@@ -95,12 +122,24 @@ public class SpatialTransformer extends Controller{
         curTime=((PointInTime)keyframes.get(0)).time;
     }
 
+    /**
+     * Sets an object to animate.  The object's index is <code>index</code> and it's parent index is
+     * <code>parentIndex</code>.  A parent index of -1 indicates it has no parent.
+     * @param objChange The spatial that will be updated by this SpatialTransformer.
+     * @param index The index of that spatial in this transformer's array
+     * @param parentIndex The parentIndex in this transformer's array for this Spatial
+     */
+
     public void setObject(Spatial objChange, int index, int parentIndex) {
         toChange[index]=objChange;
         parentIndexes[index]=parentIndex;
     }
 
-
+    /**
+     * Returns the keyframe for <code>time</code>.  If one doens't exist, a new one is created
+     * @param time The time to look for.
+     * @return The keyframe refrencing <code>time</code>.
+     */
     private PointInTime findTime(float time) {
         for (int i=0;i<keyframes.size();i++){
             if (((PointInTime)keyframes.get(i)).time==time)
@@ -116,21 +155,44 @@ public class SpatialTransformer extends Controller{
         return t;
     }
 
+    /**
+     * Sets object with index <code>indexInST</code> to rotate by <code>rot</code> at time <code>time</code>.
+     * @param indexInST The index of the spatial to change
+     * @param time The time for the spatial to take this rotation
+     * @param rot The rotation to take
+     */
     public void setRotation(int indexInST, float time, Quaternion rot) {
         PointInTime toAdd=findTime(time);
         toAdd.setRotation(indexInST,rot);
     }
 
+    /**
+     * Sets object with index <code>indexInST</code> to translate by <code>position</code> at time <code>time</code>.
+     * @param indexInST The index of the spatial to change
+     * @param time The time for the spatial to take this translation
+     * @param position The position to take
+     */
     public void setPosition(int indexInST, float time, Vector3f position) {
         PointInTime toAdd=findTime(time);
         toAdd.setTranslation(indexInST,position);
     }
 
+    /**
+     * Sets object with index <code>indexInST</code> to scale by <code>scale</code> at time <code>time</code>.
+     * @param indexInST The index of the spatial to change
+     * @param time The time for the spatial to take this scale
+     * @param scale The scale to take
+     */
     public void setScale(int indexInST, float time, Vector3f scale) {
         PointInTime toAdd=findTime(time);
         toAdd.setScale(indexInST,scale);
     }
 
+    /**
+     * A one time callable function.  If a keyframe exist at time <code>time</code>, then the objects are animated to
+     * that keyframe
+     * @param time The time in this SpatialTransformer to look like.
+     */
     public void setTimeFrame(float time) {
         int index;
         for (index=0;index<keyframes.size();index++)
@@ -145,12 +207,14 @@ public class SpatialTransformer extends Controller{
         }
     }
 
+    /**
+     * Called by setTimeFrame.  Similar to the othe updatePivot
+     * @param objIndex The index to change
+     * @param thisTime The PointInTime that it will look like
+     * @param haveChanged Boolean array specifying if it has been changed yet.
+     */
     private void updatePivot(int objIndex, PointInTime thisTime,boolean []haveChanged) {
         if (haveChanged[objIndex]){
-//            Spatial thisSpatial=(Spatial) toChange[objIndex];
-//            thisSpatial.setLocalRotation(pivots[objIndex].getRotation((Matrix3f) null));
-//            thisSpatial.setLocalTranslation(pivots[objIndex].getTranslation(null));
-//            thisSpatial.setLocalScale(pivots[objIndex].getScale(null));
             return;
         }
         pivots[objIndex].loadIdentity();
@@ -161,13 +225,15 @@ public class SpatialTransformer extends Controller{
         pivots[objIndex].multLocal(thisTime.look[objIndex]);
         Spatial thisSpatial=(Spatial) toChange[objIndex];
         pivots[objIndex].applyToSpatial(thisSpatial);
-//        thisSpatial.setLocalRotation(pivots[objIndex].getRotation((Matrix3f) null));
-//        thisSpatial.setLocalTranslation(pivots[objIndex].getTranslation(null));
-//        thisSpatial.setLocalScale(pivots[objIndex].getScale(null));
 
         haveChanged[objIndex]=true;
     }
 
+
+    /**
+     * This must be called one time, once all translations/rotations/scales have been set.  It will interpolate unset
+     * values to make the animation look correct.  Tail and head values are assumed to be the identity.
+     */
     public void interpolateMissing() {
         if (keyframes.size()==1)
             return;
@@ -176,6 +242,9 @@ public class SpatialTransformer extends Controller{
         fillScales();
     }
 
+    /**
+     * Called by interpolateMissing(), it will interpolate missing scale values.
+     */
     private void fillScales() {
         for (int objIndex=0;objIndex<numObjects;objIndex++){
             // 1) Find first non-null scale of objIndex <code>objIndex</code>
@@ -214,6 +283,12 @@ public class SpatialTransformer extends Controller{
         }
     }
 
+    /**
+     * Interpolates unspecified scale values for objectIndex from start to end.
+     * @param objectIndex Index to interpolate.
+     * @param startScaleIndex Starting scale index.
+     * @param endScaleIndex Ending scale index.
+     */
     private void fillScale(int objectIndex, int startScaleIndex, int endScaleIndex) {
         ((PointInTime)keyframes.get(startScaleIndex)).look[objectIndex].getScale(unSyncbeginPos);
         ((PointInTime)keyframes.get(endScaleIndex)).look[objectIndex].getScale(unSyncendPos);
@@ -230,6 +305,9 @@ public class SpatialTransformer extends Controller{
     }
 
 
+    /**
+     * Called by interpolateMissing(), it will interpolate missing rotation values.
+     */
     private void fillRots() {
         for (int joint=0;joint<numObjects;joint++){
             // 1) Find first non-null rotation of joint <code>joint</code>
@@ -264,6 +342,12 @@ public class SpatialTransformer extends Controller{
         }
     }
 
+    /**
+     * Interpolates unspecified rot values for objectIndex from start to end.
+     * @param objectIndex Index to interpolate.
+     * @param startRotIndex Starting rot index.
+     * @param endRotIndex Ending rot index.
+     */
     private void fillQuats(int objectIndex,int startRotIndex, int endRotIndex) {
         ((PointInTime)keyframes.get(startRotIndex)).look[objectIndex].getRotation(unSyncbeginRot);
         ((PointInTime)keyframes.get(endRotIndex)).look[objectIndex].getRotation(unSyncendRot);
@@ -279,6 +363,9 @@ public class SpatialTransformer extends Controller{
         }
     }
 
+    /**
+     * Called by interpolateMissing(), it will interpolate missing translation values.
+     */
     private void fillTrans() {
         for (int objIndex=0;objIndex<numObjects;objIndex++){
             // 1) Find first non-null translation of objIndex <code>objIndex</code>
@@ -317,6 +404,12 @@ public class SpatialTransformer extends Controller{
         }
     }
 
+    /**
+     * Interpolates unspecified translation values for objectIndex from start to end.
+     * @param objectIndex Index to interpolate.
+     * @param startPosIndex Starting translation index.
+     * @param endPosIndex Ending translation index.
+     */
     private void fillVecs(int objectIndex,int startPosIndex, int endPosIndex) {
         ((PointInTime)keyframes.get(startPosIndex)).look[objectIndex].getTranslation(unSyncbeginPos);
         ((PointInTime)keyframes.get(endPosIndex)).look[objectIndex].getTranslation(unSyncendPos);
@@ -333,13 +426,34 @@ public class SpatialTransformer extends Controller{
     }
 
 
-    public class PointInTime{
-        public BitSet usedRot;
-        public BitSet usedTrans;
-        public BitSet usedScale;
-        public float time;
-        public TransformMatrix[] look; // toChange[i] looks like look[i] at time
+    /**
+     * Returns the number of Objects used by this SpatialTransformer
+     * @return The number of objects.
+     */
+    public int getNumObjects(){
+        return numObjects;
+    }
 
+    /**
+     * Defines a point in time where at time <code>time</code>, ohject <code>toChange[i]</code> will assume transformation
+     * <code>look[i]</code>.  BitSet's used* specify if the transformation value was specified by the user, or interpolated
+     */
+    public class PointInTime{
+        /**Bit i is true if look[i].rotation was user defined. */
+        public BitSet usedRot;
+        /**Bit i is true if look[i].translation was user defined. */
+        public BitSet usedTrans;
+        /**Bit i is true if look[i].scale was user defined. */
+        public BitSet usedScale;
+        /**The time of this TransformationMatrix. */
+        public float time;
+        /** toChange[i] looks like look[i] at time.*/
+        public TransformMatrix[] look;
+
+        /**
+         * Constructs a new PointInTime with the time <code>time</code>
+         * @param time
+         */
         PointInTime(float time){
             look=new TransformMatrix[numObjects];
             usedRot=new BitSet(numObjects);
@@ -350,26 +464,34 @@ public class SpatialTransformer extends Controller{
             this.time=time;
         }
 
-        PointInTime(){
-            look=new TransformMatrix[numObjects];
-        }
-
-
+        /**
+         * Sets the rotation for objIndex and sets usedRot to true for that index
+         * @param objIndex The object to take the rotation at this point in time.
+         * @param rot The rotation to take.
+         */
         void setRotation(int objIndex,Quaternion rot){
             look[objIndex].setRotationQuaternion(rot);
             usedRot.set(objIndex);
         }
+
+        /**
+         * Sets the translation for objIndex and sets usedTrans to true for that index
+         * @param objIndex The object to take the translation at this point in time.
+         * @param trans The translation to take.
+         */
         void setTranslation(int objIndex,Vector3f trans){
             look[objIndex].setTranslation(trans);
             usedTrans.set(objIndex);
         }
+
+        /**
+         * Sets the scale for objIndex and sets usedScale to true for that index
+         * @param objIndex The object to take the scale at this point in time.
+         * @param scale The scale to take.
+         */
         void setScale(int objIndex,Vector3f scale){
             look[objIndex].setScale(scale);
             usedScale.set(objIndex);
         }
-    }
-
-    public int getNumObjects(){
-        return numObjects;
     }
 }
