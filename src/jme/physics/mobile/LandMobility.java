@@ -119,11 +119,14 @@ public class LandMobility {
         moving = true;
     }
     
+    public void strafe(float speed) {
+    	//TODO
+    }
+    
     public void setCoastDeceleration(float cd) {
     	coastDeceleration = cd;
     }
-	
-	
+	//TODO clean up all the getter/setters not all needed!
 	/**
 	 * @return
 	 */

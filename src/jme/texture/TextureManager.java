@@ -323,6 +323,7 @@ public class TextureManager {
             int id = ((Integer)obj).intValue();
 
             if (id != boundID) {
+            	boundID = id;
                 gl.bindTexture(GL.TEXTURE_2D, id);
             }
 
@@ -345,6 +346,7 @@ public class TextureManager {
      */
     public void bind(int id) {
         if (id != boundID) {
+        	boundID = id;
             gl.bindTexture(GL.TEXTURE_2D, id);
         }
     }

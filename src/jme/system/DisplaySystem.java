@@ -84,9 +84,6 @@ public class DisplaySystem {
     //Singleton reference.
     private static DisplaySystem instance = null;
 
-    //Frequency constant
-    private static final int DEFAULT_FREQ = 60;
-
     //the OpenGL objects
     private static GL gl;
     private static GLU glu;

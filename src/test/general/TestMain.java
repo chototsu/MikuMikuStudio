@@ -268,7 +268,7 @@ public class TestMain extends AbstractGame {
 		cc = new TestController(camera, e, this);
 		cc.setHeightMap(hm1);
 		//MilkshapeModel msmodel = new MilkshapeModel("jme/data/tris.ms3d");
-		Md3Model msmodel = new Md3Model("jme/data/model/Paladin","Paladin","railgun");
+		Md3Model msmodel = new Md3Model("jme/data/model/lara","lara","railgun");
 		msmodel.setTorsoAnimation("TORSO_STAND");
 		msmodel.setLegsAnimation("LEGS_IDLE");
 		
@@ -303,15 +303,15 @@ public class TestMain extends AbstractGame {
 
         //object = new MilkshapeModel("jme/data/tree.ms3d");
 		
-		Entity[] elist = new Entity[500];
+		Entity[] elist = new Entity[1000];
 		float x,z;
-		for(int i = 0;  i < 500; i++) {
+		for(int i = 0;  i < 1000; i++) {
 			elist[i] = new Entity(i+1);
 			elist[i].setGeometry(object);
 			elist[i].setVisibilityType(Entity.VISIBILITY_POINT);
 			do {
-				x = (float)Math.random() * 1000;
-				z = (float)Math.random() * 1000;
+				x = (float)Math.random() * 2000;
+				z = (float)Math.random() * 2000;
 			} while(hm1.getInterpolatedHeight(x/2,z/2) < 75 || hm1.getInterpolatedHeight(x/2,z/2) > 200);
 			elist[i].setPosition(new Vector3f(x,hm1.getInterpolatedHeight(x/2,z/2)+1,z));
 			world.addEntity(elist[i]);
