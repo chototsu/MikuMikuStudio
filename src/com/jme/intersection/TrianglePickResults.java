@@ -38,23 +38,32 @@ import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
 
 /**
- * TrianglePickResults creates a PickResults object that calculates
- * picking to the triangle accuracy. PickData objects are added to the
- * pick list as they happen, these data objects only refer to the two
- * meshes, not their triangle lists. While TrianglePickResults defines a
- * processPick method, it is empty and should be further defined by the
- * user if so desired.
+ * TrianglePickResults creates a PickResults object that calculates picking to
+ * the triangle accuracy. PickData objects are added to the pick list as they
+ * happen, these data objects refer to the two meshes, as well as their triangle
+ * lists. While TrianglePickResults defines a processPick method, it is empty
+ * and should be further defined by the user if so desired.
  * 
- * NOTE: Only TriMesh objects may obtain triangle accuracy, all others will 
+ * NOTE: Only TriMesh objects may obtain triangle accuracy, all others will
  * result in Bounding accuracy.
  * 
  * @author Mark Powell
- * @version $Id: TrianglePickResults.java,v 1.2 2004-10-14 01:23:12 mojomonkey Exp $
+ * @version $Id: TrianglePickResults.java,v 1.2 2004/10/14 01:23:12 mojomonkey
+ *          Exp $
  */
-public class TrianglePickResults extends PickResults{
+public class TrianglePickResults extends PickResults {
 
-	/* (non-Javadoc)
-	 * @see com.jme.intersection.PickResults#addPick(com.jme.math.Ray, com.jme.scene.Geometry)
+	/**
+	 * <code>addPick</code> adds a geometry object to the pick list. If the
+	 * Geometry object is not a TriMesh, the process stops here. However, if the
+	 * Geometry is a TriMesh, further processing occurs to obtain the triangle
+	 * lists that the ray passes through.
+	 * 
+	 * @param ray the ray that is doing the picking.
+	 * @param s the geometry to add to the pick list.
+	 * 
+	 * @see com.jme.intersection.PickResults#addPick(com.jme.math.Ray,
+	 *      com.jme.scene.Geometry)
 	 */
 	public void addPick(Ray ray, Geometry s) {
 		ArrayList a = new ArrayList();
@@ -71,11 +80,16 @@ public class TrianglePickResults extends PickResults{
 		}
 	}
 
-	/* (non-Javadoc)
+	/**
+	 * <code>processPick</code> will handle processing of the pick list. This
+	 * is very application specific and therefore left as an empty method. 
+	 * Applications wanting an automated picking system should extend 
+	 * TrianglePickResults and override this method.
+	 * 
 	 * @see com.jme.intersection.PickResults#processPick()
 	 */
 	public void processPick() {
-		
+
 	}
 
 }
