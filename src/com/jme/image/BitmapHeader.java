@@ -34,13 +34,12 @@ package com.jme.image;
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
 import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * <code>BitmapHeader</code> defines header information about a bitmap (BMP) image
  * file format.
  * @author Mark Powell
- * @version $Id: BitmapHeader.java,v 1.3 2004-02-12 23:05:33 mojomonkey Exp $
+ * @version $Id: BitmapHeader.java,v 1.4 2004-02-22 20:43:46 mojomonkey Exp $
  */
 public class BitmapHeader {
     public int size;
@@ -56,19 +55,22 @@ public class BitmapHeader {
     public int clrused;
     public int clrimp;
 
-    public java.awt.Image readMap32(InputStream fs, BitmapHeader bh)
-        throws IOException {
+    public java.awt.Image readMap32(byte[] data, BitmapHeader bh) {
         java.awt.Image image;
         int xwidth = bh.sizeimage / bh.height;
         int ndata[] = new int[bh.height * bh.width];
         byte brgb[] = new byte[bh.width * 4 * bh.height];
-        fs.read(brgb, 0, bh.width * 4 * bh.height);
+        
+        for(int i = 0; i < bh.width * 4 * bh.height; i++) {
+                    brgb[i] = data[i + 54];
+                }
         int nindex = 0;
 
         for (int j = 0; j < bh.height; j++) {
             for (int i = 0; i < bh.width; i++) {
                 ndata[bh.width * (bh.height - j - 1) + i] =
                     constructInt3(brgb, nindex);
+                System.out.println(ndata[bh.width * (bh.height - j - 1) + i]);
                 nindex += 4;
             }
         }
@@ -76,17 +78,19 @@ public class BitmapHeader {
         image =
             Toolkit.getDefaultToolkit().createImage(
                 new MemoryImageSource(bh.width, bh.height, ndata, 0, bh.width));
-        fs.close();
         return (image);
     }
 
-    public java.awt.Image readMap24(InputStream fs, BitmapHeader bh)
+    public java.awt.Image readMap24(byte[] data, BitmapHeader bh)
         throws IOException {
         java.awt.Image image;
         int npad = (bh.sizeimage / bh.height) - bh.width * 3;
         int ndata[] = new int[bh.height * bh.width];
         byte brgb[] = new byte[(bh.width + npad) * 3 * bh.height];
-        fs.read(brgb, 0, (bh.width + npad) * 3 * bh.height);
+        for(int i = 0; i < (bh.width + npad) * 3 * bh.height; i++) {
+            brgb[i] = data[i + 54];
+        }
+        
         int nindex = 0;
 
         for (int j = 0; j < bh.height; j++) {
@@ -101,13 +105,11 @@ public class BitmapHeader {
         image =
             Toolkit.getDefaultToolkit().createImage(
                 new MemoryImageSource(bh.width, bh.height, ndata, 0, bh.width));
-        fs.close();
         return image;
     }
 
-    public java.awt.Image readMap8(InputStream fs, BitmapHeader bh)
-        throws IOException {
-        java.awt.Image image;
+    public java.awt.Image readMap8(byte[] data, BitmapHeader bh) {
+         java.awt.Image image;
         int nNumColors = 0;
 
         if (bh.clrused > 0) {
@@ -123,18 +125,27 @@ public class BitmapHeader {
 
         int npalette[] = new int[nNumColors];
         byte bpalette[] = new byte[nNumColors * 4];
-        fs.read(bpalette, 0, nNumColors * 4);
+        System.out.println(bpalette.length);
+        
+        for(int i = 0; i < nNumColors * 4; i++) {
+            bpalette[i] = data[i + 54];
+            System.out.println(bpalette[i]);
+        }
+        
         int nindex8 = 0;
 
         for (int n = 0; n < nNumColors; n++) {
             npalette[n] = constructInt3(bpalette, nindex8);
+            System.out.println(npalette[n]);
             nindex8 += 4;
         }
 
         int npad8 = (bh.sizeimage / bh.height) - bh.width;
         int ndata8[] = new int[bh.width * bh.height];
         byte bdata[] = new byte[(bh.width + npad8) * bh.height];
-        fs.read(bdata, 0, (bh.width + npad8) * bh.height);
+        for(int i = 0; i < bdata.length; i++) {
+            bdata[i] = data[i + bpalette.length + 54];
+        }
         nindex8 = 0;
 
         for (int j8 = 0; j8 < bh.height; j8++) {
@@ -214,13 +225,17 @@ public class BitmapHeader {
         return (ret);
     }
 
-    public final void read(InputStream fs) throws IOException {
+    public final void read(byte[] data){
         final int bflen = 14;
         byte bf[] = new byte[bflen];
-        fs.read(bf, 0, bflen);
+        for(int i = 0; i < bf.length; i++) {
+            bf[i] = data[i];
+        }
         final int bilen = 40;
         byte bi[] = new byte[bilen];
-        fs.read(bi, 0, bilen);
+        for(int i = 0; i < bi.length; i++) {
+            bi[i] = data[i + 14];
+        }
 
         size = constructInt(bf, 2);
         bisize = constructInt(bi, 2);
@@ -234,5 +249,6 @@ public class BitmapHeader {
         ypm = constructInt(bi, 28);
         clrused = constructInt(bi, 32);
         clrimp = constructInt(bi, 36);
+        
     }
 }
