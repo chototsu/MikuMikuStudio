@@ -34,19 +34,66 @@ package jme.physics;
 import org.lwjgl.vector.Vector3f;
 
 /**
- * <code>PhysicsModule</code>
+ * <code>PhysicsModule</code> is an interface that defines the method for 
+ * moving an entity through the environment. Implementation will define how
+ * the position and angle of the entity is affected per round. Calling 
+ * <code>update</code> will set the physics attributes of the entity, such as
+ * the newest angle and velocity. Where <code>updatePosition</code> will set 
+ * the new position of the entity.
  * 
  * @author Mark Powell
  */
 public interface PhysicsModule {
 
+    /**
+     * <code>update</code> should update any physical attributes of the entity.
+     * @param time the time between updates.
+     */
     public void update(float time);
+    /**
+     * <code>updatePosition</code> sets the position (supplied as a parameter)
+     * to the new position defined by the module's attributes.
+     * @param position the position to set.
+     */
     public void updatePosition(Vector3f position);
+    /**
+     * <code>turn</code> turns the entity in the way defined by the
+     * implementation of <code>PhysicsModule</code>. 
+     * @param turnScalar any scalar to the turning properties of the entity.
+     */
     public void turn(float turnScalar);
+    /**
+     * <code>move</code> moves the entity in the way defined by the 
+     * implementation of <code>PhysicsModule</code>.
+     * @param moveScalar any scalar to the movement properties of the entity.
+     */
     public void move(float moveScalar);
+    /**
+     * <code>strafe</code> strafes the entity in the way defined by the 
+     * implementation of <code>PhysicsModule</code>.
+     * @param strafeScalar any scalar to the strafe properties of the entity.
+     */
     public void strafe(float strafeScalar);
+    /**
+     * 
+     * <code>getCurrentAngle</code> returns the current angle of the entity as
+     * defined by the physics module.
+     * @return the current angle of the entity.
+     */
     public float getCurrentAngle();
+    /**
+     * 
+     * <code>getCurrentVelocity</code> returns the current velocity of the 
+     * entity as defined by the physics module.
+     * @return the current velocity of the entity.
+     */
     public float getCurrentVelocity();
+    /**
+     * 
+     * <code>getCurrentTurningVel</code> returns the current turning velocity
+     * of the entity as defined by the physics module.
+     * @return the current turning velocity of the entity.
+     */
     public float getCurrentTurningVel();
 
 }
