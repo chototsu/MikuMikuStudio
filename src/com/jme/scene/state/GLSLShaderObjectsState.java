@@ -31,10 +31,15 @@
 package com.jme.scene.state;
 
 import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.ArrayList;
 
 import com.jme.math.Matrix3f;
 import com.jme.math.Matrix4f;
+import com.jme.util.ShaderAttribute;
 import com.jme.util.ShaderUniform;
 
 /**
@@ -45,6 +50,7 @@ import com.jme.util.ShaderUniform;
 public abstract class GLSLShaderObjectsState extends RenderState {
 
     public ArrayList uniforms = new ArrayList();
+    public ArrayList attribs = new ArrayList();
 
     /**
      * <code>isSupported</code> determines if the ARB_shader_objects extension
@@ -53,6 +59,13 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      * @return if ARB shader objects are supported
      */
     public abstract boolean isSupported();
+
+    /**
+     * <code>relinkProgram</code> instructs openGL to relink the associated 
+     * program and sets the attributes.  This should be used after setting 
+     * ShaderAttributes.
+     */
+    public abstract void relinkProgram();
 
     /**
      * Set an uniform value for this shader object.
@@ -308,6 +321,288 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         uniforms.clear();
     }
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value
+     *            the new value
+     */
+
+    public void setAttribute(String var, short value) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_SHORT);
+        object.s1 = value;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value
+     *            the new value
+     */
+
+    public void setAttribute(String var, float value) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_FLOAT);
+        object.f1 = value;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value1
+     *            the new value
+     * @param value2
+     *            the new value
+     */
+
+    public void setAttribute(String var, short value1, short value2) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_SHORT2);
+        object.s1 = value1;
+        object.s2 = value2;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value1
+     *            the new value
+     * @param value2
+     *            the new value
+     */
+
+    public void setAttribute(String var, float value1, float value2) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_FLOAT2);
+        object.f1 = value1;
+        object.f2 = value2;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value1
+     *            the new value
+     * @param value2
+     *            the new value
+     * @param value3
+     *            the new value
+     */
+
+    public void setAttribute(String var, short value1, short value2, short value3) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_SHORT3);
+        object.s1 = value1;
+        object.s2 = value2;
+        object.s3 = value3;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value1
+     *            the new value
+     * @param value2
+     *            the new value
+     * @param value3
+     *            the new value
+     */
+
+    public void setAttribute(String var, float value1, float value2, float value3) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_FLOAT3);
+        object.f1 = value1;
+        object.f2 = value2;
+        object.f3 = value3;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value1
+     *            the new value
+     * @param value2
+     *            the new value
+     * @param value3
+     *            the new value
+     * @param value4
+     *            the new value
+     */
+
+    public void setAttribute(String var, short value1, short value2, short value3,
+            short value4) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_SHORT4);
+        object.s1 = value1;
+        object.s2 = value2;
+        object.s3 = value3;
+        object.s4 = value4;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value1
+     *            the new value
+     * @param value2
+     *            the new value
+     * @param value3
+     *            the new value
+     * @param value4
+     *            the new value
+     */
+
+    public void setAttribute(String var, float value1, float value2,
+            float value3, float value4) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_FLOAT4);
+        object.f1 = value1;
+        object.f2 = value2;
+        object.f3 = value3;
+        object.f4 = value4;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     * @param value1
+     *            the new value
+     * @param value2
+     *            the new value
+     * @param value3
+     *            the new value
+     * @param value4
+     *            the new value
+     */
+    public void setAttribute(String var, byte value1, byte value2,
+            byte value3, byte value4) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_NORMALIZED_UBYTE4);
+        object.b1 = value1;
+        object.b2 = value2;
+        object.b3 = value3;
+        object.b4 = value4;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute pointer value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     */
+    public void setAttributePointer(String var, int size, boolean normalized, 
+            int stride, FloatBuffer data) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_POINTER_FLOAT);
+        object.size = size;
+        object.normalized = normalized;
+        object.stride = stride;
+        object.data = data;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute pointer value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     */
+    public void setAttributePointer(String var, int size, boolean normalized, 
+            boolean unsigned, int stride, ByteBuffer data) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_POINTER_BYTE);
+        object.size = size;
+        object.normalized = normalized;
+        object.unsigned = unsigned;
+        object.stride = stride;
+        object.data = data;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute pointer value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     */
+    public void setAttributePointer(String var, int size, boolean normalized, 
+            boolean unsigned, int stride, IntBuffer data) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_POINTER_INT);
+        object.size = size;
+        object.normalized = normalized;
+        object.unsigned = unsigned;
+        object.stride = stride;
+        object.data = data;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * Set an attribute pointer value for this shader object.
+     * 
+     * @param var
+     *            attribute variable to change
+     */
+    public void setAttributePointer(String var, int size, boolean normalized, 
+            boolean unsigned, int stride, ShortBuffer data) {
+        ShaderAttribute object = getShaderAttribute(var, ShaderAttribute.SU_POINTER_SHORT);
+        object.size = size;
+        object.normalized = normalized;
+        object.unsigned = unsigned;
+        object.stride = stride;
+        object.data = data;
+        if (object.attributeID == -1)
+            attribs.add(object);
+    }
+
+    /**
+     * <code>clearAttributes</code> clears all attribute values from this state.
+     *
+     */
+    public void clearAttributes() {
+        attribs.clear();
+    }
+    
+    
     /**
      * @return RS_SHADER_OBJECTS
      * @see com.jme.scene.state.RenderState#getType()
@@ -324,6 +619,16 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         }
 
         return new ShaderUniform(name, type);
+    }
+
+    private ShaderAttribute getShaderAttribute(String name, int type) {
+        for (int x = attribs.size(); --x >= 0; ) {
+            ShaderAttribute temp = (ShaderAttribute)attribs.get(x);
+            if (name.equals(temp.name))
+                return temp;
+        }
+
+        return new ShaderAttribute(name, type);
     }
         
     /**

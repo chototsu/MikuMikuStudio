@@ -279,6 +279,7 @@ public class DummyDisplaySystem extends DisplaySystem {
 
             public GLSLShaderObjectsState createGLSLShaderObjectsState() {
                 return new GLSLShaderObjectsState() {
+                    private static final long serialVersionUID = 1L;
 
                     public boolean isSupported() {
                         return false;
@@ -288,6 +289,9 @@ public class DummyDisplaySystem extends DisplaySystem {
                     }
 
                     public void apply() {
+                    }
+
+                    public void relinkProgram() {
                     }
                 };
             }

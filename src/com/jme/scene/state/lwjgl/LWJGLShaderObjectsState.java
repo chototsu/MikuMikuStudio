@@ -34,23 +34,28 @@ import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.logging.Level;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBFragmentShader;
 import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.ARBVertexProgram;
 import org.lwjgl.opengl.ARBVertexShader;
 import org.lwjgl.opengl.GLContext;
 
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.util.LoggingSystem;
+import com.jme.util.ShaderAttribute;
 import com.jme.util.ShaderUniform;
 
 /**
  * Implementation of the GL_ARB_shader_objects extension.
  * 
  * @author Thomas Hourdel
+ * @author Joshua Slack (attributes)
  */
 public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
 
@@ -70,6 +75,24 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     }
 
     /**
+     * <code>relinkProgram</code> instructs openGL to relink the associated 
+     * program.  This should be used after setting ShaderAttributes.
+     */
+    public void relinkProgram() {
+        ByteBuffer nameBuf = BufferUtils.createByteBuffer(64);
+        for (int x = 0, aSize = attribs.size(); x<aSize; x++) {
+            ShaderAttribute attrib = (ShaderAttribute)attribs.get(x);
+            nameBuf.clear();
+            nameBuf.put(attrib.name.getBytes());
+            nameBuf.rewind();
+            attrib.attributeID = x+1;
+            ARBVertexShader.glBindAttribLocationARB(programID, x+1, nameBuf);            
+        }
+
+        ARBShaderObjects.glLinkProgramARB(programID);     
+    }
+
+    /**
      * Get uniform variable location according to his string name.
      * 
      * @param name
@@ -78,7 +101,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
     private int getUniLoc(ShaderUniform uniform) {
         if (uniform.uniformID == -1) {
             ByteBuffer nameBuf = BufferUtils
-            	.createByteBuffer(uniform.name.getBytes().length);
+            	.createByteBuffer(uniform.name.getBytes().length+1);
             nameBuf.clear();
             nameBuf.put(uniform.name.getBytes());
             nameBuf.rewind();
@@ -164,6 +187,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
             programID = ARBShaderObjects.glCreateProgramObjectARB();
             ARBShaderObjects.glAttachObjectARB(programID, vertexShaderID);
             ARBShaderObjects.glAttachObjectARB(programID, fragmentShaderID);
+            
             ARBShaderObjects.glLinkProgramARB(programID);
         }
 
@@ -215,7 +239,107 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                 if (programID != -1) {
                     // Apply the shader...
                     ARBShaderObjects.glUseProgramObjectARB(programID);
-
+                    
+                    // Assign attribs...
+                    if (!attribs.isEmpty()) {
+                        for (int x = attribs.size(); --x >= 0; ) {
+                            ShaderAttribute attVar = (ShaderAttribute) attribs.get(x);
+                            switch (attVar.type) {
+                            case ShaderAttribute.SU_SHORT:
+                                ARBVertexProgram.glVertexAttrib1sARB(
+                                        attVar.attributeID,
+                                        attVar.s1);
+                                break;
+                            case ShaderAttribute.SU_SHORT2:
+                                ARBVertexProgram.glVertexAttrib2sARB(
+                                        attVar.attributeID,
+                                        attVar.s1, attVar.s2);
+                                break;
+                            case ShaderAttribute.SU_SHORT3:
+                                ARBVertexProgram.glVertexAttrib3sARB(
+                                        attVar.attributeID,
+                                        attVar.s1, attVar.s2,
+                                        attVar.s3);
+                                break;
+                            case ShaderAttribute.SU_SHORT4:
+                                ARBVertexProgram.glVertexAttrib4sARB(
+                                        attVar.attributeID,
+                                        attVar.s1, attVar.s2,
+                                        attVar.s3, attVar.s4);
+                                break;
+                            case ShaderAttribute.SU_FLOAT:
+                                ARBVertexProgram.glVertexAttrib1fARB(
+                                        attVar.attributeID,
+                                        attVar.f1);
+                                break;
+                            case ShaderAttribute.SU_FLOAT2:
+                                ARBVertexProgram.glVertexAttrib2fARB(
+                                        attVar.attributeID,
+                                        attVar.f1, attVar.f2);
+                                break;
+                            case ShaderAttribute.SU_FLOAT3:
+                                ARBVertexProgram.glVertexAttrib3fARB(
+                                        attVar.attributeID,
+                                        attVar.f1, attVar.f2,
+                                        attVar.f3);
+                                break;
+                            case ShaderAttribute.SU_FLOAT4:
+                                ARBVertexProgram.glVertexAttrib4fARB(
+                                        attVar.attributeID,
+                                        attVar.f1, attVar.f2,
+                                        attVar.f3, attVar.f4);
+                                break;
+                            case ShaderAttribute.SU_NORMALIZED_UBYTE4:
+                                ARBVertexProgram.glVertexAttrib4NubARB(
+                                        attVar.attributeID,
+                                        attVar.b1, attVar.b2,
+                                        attVar.b3, attVar.b4);
+                                break;
+                            case ShaderAttribute.SU_POINTER_FLOAT:
+                                ARBVertexProgram.glVertexAttribPointerARB(
+                                        attVar.attributeID,
+                                        attVar.size,
+                                        attVar.normalized,
+                                        attVar.stride,
+                                        (FloatBuffer)attVar.data);
+                                ARBVertexProgram.glEnableVertexAttribArrayARB(attVar.attributeID);
+                                break;
+                            case ShaderAttribute.SU_POINTER_BYTE:
+                                ARBVertexProgram.glVertexAttribPointerARB(
+                                        attVar.attributeID,
+                                        attVar.size,
+                                        attVar.unsigned,
+                                        attVar.normalized,
+                                        attVar.stride,
+                                        (ByteBuffer)attVar.data);
+                                ARBVertexProgram.glEnableVertexAttribArrayARB(attVar.attributeID);
+                                break;
+                            case ShaderAttribute.SU_POINTER_INT:
+                                ARBVertexProgram.glVertexAttribPointerARB(
+                                        attVar.attributeID,
+                                        attVar.size,
+                                        attVar.unsigned,
+                                        attVar.normalized,
+                                        attVar.stride,
+                                        (IntBuffer)attVar.data);
+                                ARBVertexProgram.glEnableVertexAttribArrayARB(attVar.attributeID);
+                                break;
+                            case ShaderAttribute.SU_POINTER_SHORT:
+                                ARBVertexProgram.glVertexAttribPointerARB(
+                                        attVar.attributeID,
+                                        attVar.size,
+                                        attVar.unsigned,
+                                        attVar.normalized,
+                                        attVar.stride,
+                                        (ShortBuffer)attVar.data);
+                                ARBVertexProgram.glEnableVertexAttribArrayARB(attVar.attributeID);
+                                break;
+                            default: // Should never happen.
+                                break;
+                            }
+                        }
+                    }
+                    
                     // Assign uniforms...
                     if (!uniforms.isEmpty()) {
                         for (int x = uniforms.size(); --x >= 0; ) {
@@ -300,7 +424,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
                                         uniformVar.transpose,
                                         uniformVar.matrixBuffer);
                                 break;
-                            default: // Sould never happen.
+                            default: // Should never happen.
                                 break;
                             }
                         }
