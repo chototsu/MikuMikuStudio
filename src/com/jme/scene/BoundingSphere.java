@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.25 2004-03-13 17:17:54 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.26 2004-03-17 16:16:27 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -348,9 +348,8 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     public Object clone(BoundingVolume store) {
         if (store != null && store instanceof BoundingSphere) {
             BoundingSphere rVal = (BoundingSphere)store;
-            rVal.center.x = center.x;
-            rVal.center.y = center.y;
-            rVal.center.z = center.z;
+            if (rVal.center == null) rVal.center = new Vector3f(center.x, center.y, center.z);
+            else rVal.center.set(center.x, center.y, center.z);
             rVal.radius = radius;
             rVal.checkPlanes[0] = checkPlanes[0];
             rVal.checkPlanes[1] = checkPlanes[1];
