@@ -47,13 +47,12 @@ import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
 import com.jme.terrain.util.FaultFractalHeightMap;
-import com.jme.terrain.util.MidPointHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.13 2004-04-18 20:15:37 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.14 2004-04-19 02:53:58 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -213,7 +212,7 @@ public class TestTerrain extends SimpleGame {
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true,
-				true);
+				false);
         ts.setTexture(t1 ,0);
 
 
