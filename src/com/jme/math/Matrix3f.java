@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.30 2005-03-15 19:53:16 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.31 2005-03-15 21:08:38 renanse Exp $
  */
 public class Matrix3f {
 
@@ -346,7 +346,7 @@ public class Matrix3f {
      *             if the array is not of size 9.
      */
     public void set(float[][] matrix) {
-        if (matrix.length != 4 || matrix[0].length != 4) { throw new JmeException(
+        if (matrix.length != 3 || matrix[0].length != 3) { throw new JmeException(
         "Array must be of size 9."); }
 
         m00 = matrix[0][0];
