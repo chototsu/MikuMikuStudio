@@ -139,6 +139,7 @@ public class MilkToJme extends FormatConverter{
                 texState=DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
                 Texture tempTex=new Texture();
                 tempTex.setImageLocation("file:/"+texFile);
+                tempTex.setWrap(Texture.WM_WRAP_S_WRAP_T);
                 texState.setTexture(tempTex);
             }
             inFile.readFully(tempChar,0,128);   // Alpha map, but it is ignored
