@@ -39,6 +39,7 @@ import java.util.logging.Level;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.image.Image;
@@ -53,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.8 2004-04-25 03:06:17 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.9 2004-04-25 21:03:45 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -103,11 +104,15 @@ public class LWJGLTextureState extends TextureState {
     public LWJGLTextureState() {
         super();
         if (numTexUnits == 0) {
-            IntBuffer buf = ByteBuffer.allocateDirect(64).order(
-                    ByteOrder.nativeOrder()).asIntBuffer();
-            GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
-
-            numTexUnits = buf.get(0);
+            if(GLContext.GL_ARB_multitexture) {
+	            IntBuffer buf = ByteBuffer.allocateDirect(64).order(
+	                    ByteOrder.nativeOrder()).asIntBuffer();
+	            GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
+	
+	            numTexUnits = buf.get(0);
+            } else {
+                numTexUnits = 1;
+            }
         }
         texture = new Texture[numTexUnits];
     }
@@ -126,7 +131,9 @@ public class LWJGLTextureState extends TextureState {
 
         for (int i = 0; i < getNumberOfUnits(); i++) {
             if (!isEnabled() || getTexture(i) == null) {
-                GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+                if(GLContext.GL_ARB_multitexture) {
+                    GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+                }
                 GL11.glDisable(GL11.GL_TEXTURE_2D);
             }
         }
@@ -141,7 +148,9 @@ public class LWJGLTextureState extends TextureState {
                     continue;
                 }
 
-                GL13.glActiveTexture(index);
+                if(GLContext.GL_ARB_multitexture) {
+                    GL13.glActiveTexture(index);
+                }
                 GL11.glEnable(GL11.GL_TEXTURE_2D);
 
                 //texture not yet loaded.
@@ -188,7 +197,7 @@ public class LWJGLTextureState extends TextureState {
                 GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT,
                         textureCorrection[texture.getCorrection()]);
 
-                if (texture.getApply() == Texture.AM_COMBINE) {
+                if (texture.getApply() == Texture.AM_COMBINE && GLContext.GL_ARB_multitexture) {
                     GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
                             GL11.GL_TEXTURE_ENV_MODE, textureApply[texture
                                     .getApply()]);
