@@ -32,13 +32,24 @@
 package com.jme.math;
 
 /**
- * <code>Triangle</code>
+ * <code>Triangle</code> defines a object for containing triangle information.
+ * The triangle is defined by a collection of three <code>Vector3f</code>
+ * objects. 
  * @author Mark Powell
- * @version 
+ * @version $Id: Triangle.java,v 1.2 2003-12-04 23:18:06 mojomonkey Exp $
  */
 public class Triangle {
     private Vector3f[] points;
     
+    /**
+     * Constructor instantiates a new <Code>Triangle</code> object with the
+     * supplied vectors as the points. It is recommended that the vertices
+     * be supplied in a counter clockwise winding to support normals for a
+     * right handed coordinate system.
+     * @param p1 the first point of the triangle.
+     * @param p2 the second point of the triangle.
+     * @param p3 the third point of the triangle.
+     */
     public Triangle(Vector3f p1, Vector3f p2, Vector3f p3) {
         points = new Vector3f[3];
         points[0] = p1;
@@ -46,10 +57,24 @@ public class Triangle {
         points[2] = p3;
     }
     
+    /**
+     * 
+     * <code>get</code> retrieves a point on the triangle denoted by the index
+     * supplied.
+     * @param i the index of the point.
+     * @return the point.
+     */
     public Vector3f get(int i) {
         return points[i];
     }
 
+    /**
+     * 
+     * <code>set</code> sets one of the triangles points to that specified as
+     * a parameter.
+     * @param i the index to place the point.
+     * @param point the point to set.
+     */
     public void set(int i, Vector3f point) {
         points[i] = point;
     }
