@@ -35,7 +35,7 @@ package com.jme.math;
  * <code>Line</code> defines a line. Where a line is defined as infinite along
  * two points. The two points of the line are defined as the origin and direction.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.1 2003-12-08 20:29:54 mojomonkey Exp $
+ * @version $Id: Line.java,v 1.2 2004-01-28 17:09:07 mojomonkey Exp $
  */
 public class Line {
     private Vector3f origin;
@@ -96,5 +96,21 @@ public class Line {
      */
     public void setDirection(Vector3f direction) {
         this.direction = direction;
+    }
+    
+    /**
+     * 
+     * <code>random</code> determines a random point along the line. 
+     * @return a random point on the line.
+     */
+    public Vector3f random() {
+        Vector3f result = new Vector3f();
+        float rand = (float)Math.random();
+        
+        result.x = (origin.x * (1 - rand)) + (direction.x * rand);
+        result.y = (origin.y * (1 - rand)) + (direction.y * rand);
+        result.z = (origin.z * (1 - rand)) + (direction.z * rand);
+        
+        return result;
     }
 }
