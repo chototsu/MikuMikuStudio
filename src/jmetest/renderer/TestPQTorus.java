@@ -50,7 +50,7 @@ import com.jme.util.*;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.3 2004-03-20 20:02:25 ericthered Exp $
+ * @version $Id: TestPQTorus.java,v 1.4 2004-03-21 23:22:51 renanse Exp $
  */
 public class TestPQTorus extends VariableTimestepGame {
 
@@ -64,7 +64,7 @@ public class TestPQTorus extends VariableTimestepGame {
     private float angle = 0;
     private Vector3f axis = new Vector3f(1, 1, 0);
     private PQTorus t;
-    
+
     private float p, q;
 
     /**
@@ -84,16 +84,22 @@ public class TestPQTorus extends VariableTimestepGame {
      */
     protected void update(float interpolation) {
         if (Keyboard.isKeyDown(Keyboard.KEY_P)){
-            p += 0.01f;
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+              p -= 0.01f;
+            else
+              p += 0.01f;
             generatePQTorus();
         }
         if (Keyboard.isKeyDown(Keyboard.KEY_Q)){
+          if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) || Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            q -= 0.01f;
+          else
             q += 0.01f;
             generatePQTorus();
         }
-        
+
         input.update(interpolation * 5);
-        
+
         if (interpolation < 1) {
             angle = angle + interpolation;
             if (angle > 360) angle = 0;
@@ -148,7 +154,7 @@ public class TestPQTorus extends VariableTimestepGame {
 
     /**
      * builds the trimesh.
-     * 
+     *
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
@@ -158,16 +164,16 @@ public class TestPQTorus extends VariableTimestepGame {
         p = 3.0f;
         q = 2.0f;
         generatePQTorus();
-        
+
         //Set the render states
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setFunction(ZBufferState.CF_LEQUAL);
         buf.setEnabled(true);
-        
+
         WireframeState ws = display.getRenderer().getWireframeState();
         ws.setFace(WireframeState.WS_FRONT);
         ws.setEnabled(false);
-        
+
 		TextureState ts = display.getRenderer().getTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(
@@ -183,11 +189,11 @@ public class TestPQTorus extends VariableTimestepGame {
         scene.setRenderState(ws);
 
         setUpLighting();
-        
+
         scene.setForceView(true);
         scene.updateGeometricState(0.0f, true);
     }
-    
+
     private void setUpLighting(){
 		SpotLight am = new SpotLight();
 		am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
@@ -202,7 +208,7 @@ public class TestPQTorus extends VariableTimestepGame {
 		am2.setDirection(new Vector3f(0, 0, 0));
 		am2.setLocation(new Vector3f(-250, 10, 0));
 		am2.setAngle(1);
-		
+
 		DirectionalLight dr = new DirectionalLight();
 		dr.setDiffuse(new ColorRGBA(0.25f, 0.75f, 0.25f, 1.0f));
 		dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
@@ -213,19 +219,19 @@ public class TestPQTorus extends VariableTimestepGame {
 		state.attach(dr);
 		state.attach(am2);
 		state.setEnabled(true);
-		
+
 		am.setEnabled(true);
 		am2.setEnabled(true);
 		dr.setEnabled(true);
-		
+
 		scene.setRenderState(state);
     }
-    
+
     private void generatePQTorus(){
         //Generate a torus with 128 steps along the torus, 16 radial samples,
         //and a radius of 2.0 units
         t = new PQTorus("torus", p, q, 2.0f, 1.0f, 128, 16);
-        
+
         //Update the scene
         scene.detachAllChildren();
         scene.attachChild(t);
