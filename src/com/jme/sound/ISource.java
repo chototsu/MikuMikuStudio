@@ -122,9 +122,13 @@ public interface ISource {
 	public IBuffer getBuffer();
 
 	public void queueBuffers(IBuffer[] buffers);
+	
+	public void queueBuffer(IBuffer buffers);
 
-	public void unqueueBuffers(IBuffer[] buffers);
+	public void unqueueBuffers(IBuffer[] buffer);
 
+	public void unqueueBuffer(IBuffer buffer);
+	
 	public boolean isPlaying();
 
 	public void setFilter(IBufferFilter filter);

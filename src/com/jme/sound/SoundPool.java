@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
- * All rights reserved.
- *
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
+ * reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * 
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
+ * 
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,40 +27,39 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  */
-
 /*
- * Created on 22 janv. 2004
- *
+ * Created on 14 juin 2004
  */
 package com.jme.sound;
 
-import java.nio.ByteBuffer;
+import java.net.URL;
+import java.util.Hashtable;
 
 /**
- * @author Arman Ozcelik
- *
+ * @author Arman
+ *  
  */
-public interface IBuffer {
+public class SoundPool {
 
+    private static Hashtable table = new Hashtable();
 
+    public static IBuffer getBuffer(String fileName) {
+        if (!table.containsKey(fileName)) {
+            table.put(fileName, SoundAPIController.getSoundSystem().loadBuffer(
+                    fileName));
+        }
+        return (IBuffer) table.get(fileName);
+    }
 
-	public void configure(ByteBuffer data, int format, int freq, float durationInSeconds);
+    public static IBuffer getBuffer(URL url) {
+        if (!table.containsKey(url.getFile())) {
 
-	public void delete();
+            table.put(url.getFile(), SoundAPIController.getSoundSystem()
+                    .loadBuffer(url));
+        }
+        return (IBuffer) table.get(url.getFile());
+    }
 
-	public int getBitDepth();
-
-	public int getNumChannels();
-
-	public ByteBuffer getData();
-
-	public int getFrequency();
-
-	public int getSize();
-	
-	public float getDuration();
-	
-	public int getBufferNumber();
 }

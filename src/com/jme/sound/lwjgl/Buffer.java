@@ -46,72 +46,94 @@ import com.jme.sound.IBuffer;
 
 /**
  * @author Arman Ozcelik
- *
+ *  
  */
 public class Buffer implements IBuffer {
 
-    protected int bufferNumber;
-    private ByteBuffer data;
+	protected int bufferNumber;
+	private ByteBuffer data;
+	protected float playTime;
 
-    public Buffer(int bufferNumber) {
-        this.bufferNumber= bufferNumber;
-    }
+	public Buffer(int bufferNumber) {
+		this.bufferNumber = bufferNumber;
+	}
 
-    /* (non-Javadoc)
-     * @see com.jme.sound.IBuffer#configure(java.nio.ByteBuffer, int, int)
-     */
-    public void configure(ByteBuffer data, int format, int freq) {
-        this.data= data;
-        AL10.alBufferData(bufferNumber, format, data, freq);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.sound.IBuffer#configure(java.nio.ByteBuffer, int, int)
+	 */
+	public void configure(ByteBuffer data, int format, int freq, float durationInSeconds) {
+		this.data = data;
+		AL10.alBufferData(bufferNumber, format, data, freq);
+		playTime=durationInSeconds;
+		
+	}
 
-    /* (non-Javadoc)
-     * @see com.jme.sound.IBuffer#delete()
-     */
-    public void delete() {
-        IntBuffer alBuffer= BufferUtils.createIntBuffer(1);//ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
-        alBuffer.put(bufferNumber);
-        alBuffer.rewind();
-        AL10.alDeleteBuffers(alBuffer);
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.sound.IBuffer#delete()
+	 */
+	public void delete() {
+		IntBuffer alBuffer = BufferUtils.createIntBuffer(1);//ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		alBuffer.put(bufferNumber);
+		alBuffer.rewind();
+		AL10.alDeleteBuffers(alBuffer);
 
-    }
+	}
 
-    /* (non-Javadoc)
-     * @see com.jme.sound.IBuffer#getBitDepth()
-     */
-    public int getBitDepth() {
-        return AL10.alGetBufferi(bufferNumber, AL10.AL_BITS);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.sound.IBuffer#getBitDepth()
+	 */
+	public int getBitDepth() {
+		return AL10.alGetBufferi(bufferNumber, AL10.AL_BITS);
+	}
 
-    /* (non-Javadoc)
-     * @see com.jme.sound.IBuffer#getNumChannels()
-     */
-    public int getNumChannels() {
-        return AL10.alGetBufferi(bufferNumber, AL10.AL_CHANNELS);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.sound.IBuffer#getNumChannels()
+	 */
+	public int getNumChannels() {
+		return AL10.alGetBufferi(bufferNumber, AL10.AL_CHANNELS);
+	}
 
-    /* (non-Javadoc)
-     * @see com.jme.sound.IBuffer#getData()
-     */
-    public ByteBuffer getData() {
-        return data;
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.sound.IBuffer#getData()
+	 */
+	public ByteBuffer getData() {
+		return data;
+	}
 
-    /* (non-Javadoc)
-     * @see com.jme.sound.IBuffer#getFrequency()
-     */
-    public int getFrequency() {
-        return AL10.alGetBufferi(bufferNumber, AL10.AL_FREQUENCY);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.sound.IBuffer#getFrequency()
+	 */
+	public int getFrequency() {
+		return AL10.alGetBufferi(bufferNumber, AL10.AL_FREQUENCY);
+	}
 
-    /* (non-Javadoc)
-     * @see com.jme.sound.IBuffer#getSize()
-     */
-    public int getSize() {
-        return AL10.alGetBufferi(bufferNumber, AL10.AL_SIZE);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.sound.IBuffer#getSize()
+	 */
+	public int getSize() {
+		return AL10.alGetBufferi(bufferNumber, AL10.AL_SIZE);
+	}
 
-    public int getBufferNumber(){
-        return bufferNumber;
-    }
+	public int getBufferNumber() {
+		return bufferNumber;
+	}
+	
+	public float getDuration(){
+		return playTime;
+	}
+
 }

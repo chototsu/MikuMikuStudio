@@ -43,21 +43,22 @@ import com.jme.sound.IBufferFilter;
 import com.jme.sound.ISoundRenderer;
 import com.jme.sound.ISource;
 import com.jme.sound.SoundAPIController;
+import com.jme.sound.SoundPool;
 import com.jme.sound.scene.SoundSpatial;
 
 /**
  * @author Arman Ozcelik
  *  
  */
-public class SphericalSound extends SoundSpatial implements ISource {
+public class SphericalSound extends SoundSpatial {
 
     private int cullMode;
 
-    private ISource[] sequence;
+    private ISource source;
 
-    private int[] playTime;
+    private IBuffer[] sequence;
 
-    private int activeSource = 0;
+    private float sequenceDuration;
 
     private boolean sequenced;
 
@@ -65,41 +66,48 @@ public class SphericalSound extends SoundSpatial implements ISource {
 
     private boolean loopingEnabled;
 
+    private float queueCheckPercentage;
+
     public SphericalSound(String file) {
-        sequence = new ISource[1];
-        sequence[0] = SoundAPIController.getSoundSystem().loadSource(file);
+        source = SoundAPIController.getSoundSystem().generateSources(1)[0];
+        sequence = new IBuffer[1];
+        sequence[0] = SoundPool.getBuffer(file);
+        sequenceDuration = sequence[0].getDuration();
         cullMode = SoundSpatial.CULL_DISTANCE;
     }
 
     public SphericalSound(URL url) {
-        sequence = new ISource[1];
-        sequence[0] = SoundAPIController.getSoundSystem().loadSource(url);
+        source = SoundAPIController.getSoundSystem().generateSources(1)[0];
+        sequence = new IBuffer[1];
+        sequence[0] = SoundPool.getBuffer(url);
+        sequenceDuration = sequence[0].getDuration();
         cullMode = SoundSpatial.CULL_DISTANCE;
     }
 
-    public SphericalSound(String[] files, int[] playingTimeInMillis) {
-        sequence = new ISource[files.length];
+    public SphericalSound(String[] files) {
+
+        sequence = new IBuffer[files.length];
+        source = SoundAPIController.getSoundSystem().generateSources(1)[0];
         for (int a = 0; a < files.length; a++) {
-            sequence[a] = SoundAPIController.getSoundSystem().loadSource(
-                    files[a]);
+            sequence[a] = SoundPool.getBuffer(files[a]);
+            sequenceDuration += sequence[a].getDuration();
         }
         if (files.length > 1) {
             sequenced = true;
         }
-        playTime = playingTimeInMillis;
         cullMode = SoundSpatial.CULL_DISTANCE;
     }
 
-    public SphericalSound(URL[] urls, int[] playingTimeInMillis) {
-        sequence = new ISource[urls.length];
+    public SphericalSound(URL[] urls) {
+        source = SoundAPIController.getSoundSystem().generateSources(1)[0];
+        sequence = new IBuffer[urls.length];
         for (int a = 0; a < urls.length; a++) {
-            sequence[a] = SoundAPIController.getSoundSystem().loadSource(
-                    urls[a]);
+            sequence[a] = SoundPool.getBuffer(urls[a]);
+            sequenceDuration += sequence[a].getDuration();
         }
         if (urls.length > 1) {
             sequenced = true;
         }
-        playTime = playingTimeInMillis;
         cullMode = SoundSpatial.CULL_DISTANCE;
     }
 
@@ -117,7 +125,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @return
      */
     public ISource getSource() {
-        return sequence[activeSource];
+        return source;
     }
 
     /**
@@ -125,7 +133,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @param source
      */
     public void setSource(ISource source) {
-        sequence[activeSource] = source;
+        this.source = source;
     }
 
     /**
@@ -143,33 +151,18 @@ public class SphericalSound extends SoundSpatial implements ISource {
     }
 
     /**
-     * @return Returns the activeSource.
-     */
-    public int getActiveSequence() {
-        return activeSource;
-    }
-
-    /**
-     * Used to override the actual playing sound sequence.
-     * using a number higher than the number of samples-1 will have no effect
-     * @param number The sequence to activate. Remark that the sample numbering starts at 0
-     */
-    public void setActiveSource(int number) {
-        if(number < sequence.length)
-            activeSource = number;
-    }
-
-    /**
      * Detects if this SphericalSound is sequence playing enabled.
-     * @return Returns true if there are more than 2 samples inside this SphericalSound.
+     * 
+     * @return Returns true if there are more than 2 samples inside this
+     *         SphericalSound.
      */
     public boolean isSequenced() {
         return sequenced;
     }
 
-    
     /**
-     * Gets the number of samples 
+     * Gets the number of samples
+     * 
      * @return the number of sequences
      */
     public int getSequenceSize() {
@@ -177,19 +170,21 @@ public class SphericalSound extends SoundSpatial implements ISource {
     }
 
     public void updateWorldData(float timeInSeconds) {
-        super.updateWorldData(timeInSeconds);
-        if (playTime != null) {
-            if (activeSource < sequence.length) {
-                if (sequenceStartTime == 0) sequenceStartTime = timeInSeconds;
-                if ((timeInSeconds - sequenceStartTime) > playTime[activeSource]/1000) {
-                    stop(activeSource);
-                    sequenceStartTime = timeInSeconds;
-                    activeSource++;
-                }
-            } else {
-                if (loopingEnabled) activeSource = 0;
+        //check if this sound contains sequences
+        if (loopingEnabled) {
+            //first time check
+            if (sequenceStartTime == 0) sequenceStartTime = timeInSeconds;
+            if ((timeInSeconds - sequenceStartTime) >= sequenceDuration) {
+                //stop the playing source
+                unqueueBuffers(sequence);
+                queueBuffers(sequence);
+                //reset timer
+                sequenceStartTime = timeInSeconds;
             }
+
         }
+
+        super.updateWorldData(timeInSeconds);
     }
 
     /**
@@ -213,7 +208,14 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#play()
      */
     public void play() {
-        if (activeSource < sequence.length) sequence[activeSource].play();
+
+        if (source.isPlaying()) {
+
+        return; }
+
+        source.queueBuffers(sequence);
+        source.play();
+
     }
 
     /*
@@ -222,13 +224,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#pause()
      */
     public void pause() {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].pause();
-        }
-    }
 
-    private void pause(int seqNumber) {
-        sequence[seqNumber].pause();
+        source.pause();
+
     }
 
     /*
@@ -237,14 +235,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#stop()
      */
     public void stop() {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].stop();
-        }
-    }
 
-    private void stop(int seqNumber) {
-
-        sequence[seqNumber].stop();
+        source.stop();
 
     }
 
@@ -254,7 +246,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#rewind()
      */
     public void rewind() {
-        activeSource = 0;
+        source.rewind();
     }
 
     /*
@@ -275,9 +267,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setPitch(float)
      */
     public void setPitch(float pitch) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setPitch(pitch);
-        }
+
+        source.setPitch(pitch);
     }
 
     /*
@@ -286,7 +277,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getPitch()
      */
     public float getPitch() {
-        return sequence[0].getPitch();
+        return source.getPitch();
     }
 
     /*
@@ -295,9 +286,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setGain(float)
      */
     public void setGain(float gain) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setGain(gain);
-        }
+
+        source.setGain(gain);
+
     }
 
     /*
@@ -306,7 +297,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getGain()
      */
     public float getGain() {
-        return sequence[0].getGain();
+        return source.getGain();
     }
 
     /*
@@ -315,9 +306,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setMaxDistance(float)
      */
     public void setMaxDistance(float maxDistance) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setMaxDistance(maxDistance);
-        }
+
+        source.setMaxDistance(maxDistance);
 
     }
 
@@ -327,7 +317,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getMaxDistance()
      */
     public float getMaxDistance() {
-        return sequence[0].getMaxDistance();
+        return source.getMaxDistance();
     }
 
     /*
@@ -336,9 +326,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setRolloffFactor(float)
      */
     public void setRolloffFactor(float rolloffFactor) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setRolloffFactor(rolloffFactor);
-        }
+
+        source.setRolloffFactor(rolloffFactor);
 
     }
 
@@ -348,7 +337,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getRolloffFactor()
      */
     public float getRolloffFactor() {
-        return sequence[0].getRolloffFactor();
+        return source.getRolloffFactor();
     }
 
     /*
@@ -357,9 +346,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setReferenceDistance(float)
      */
     public void setReferenceDistance(float referenceDistance) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setReferenceDistance(referenceDistance);
-        }
+
+        source.setReferenceDistance(referenceDistance);
 
     }
 
@@ -369,7 +357,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getReferenceDistance()
      */
     public float getReferenceDistance() {
-        return sequence[0].getReferenceDistance();
+        return source.getReferenceDistance();
     }
 
     /*
@@ -378,9 +366,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setMinGain(float)
      */
     public void setMinGain(float minGain) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setMinGain(minGain);
-        }
+
+        source.setMinGain(minGain);
+
     }
 
     /*
@@ -389,7 +377,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getMinGain()
      */
     public float getMinGain() {
-        return sequence[0].getMinGain();
+        return source.getMinGain();
     }
 
     /*
@@ -398,9 +386,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setMaxGain(float)
      */
     public void setMaxGain(float maxGain) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setMaxGain(maxGain);
-        }
+
+        source.setMaxGain(maxGain);
+
     }
 
     /*
@@ -409,7 +397,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getMaxGain()
      */
     public float getMaxGain() {
-        return sequence[0].getMaxGain();
+        return source.getMaxGain();
     }
 
     /*
@@ -418,9 +406,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setConeOuterGain(float)
      */
     public void setConeOuterGain(float coneOuterGain) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setConeOuterGain(coneOuterGain);
-        }
+
+        source.setConeOuterGain(coneOuterGain);
+
     }
 
     /*
@@ -429,7 +417,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getConeOuterGain()
      */
     public float getConeOuterGain() {
-        return sequence[0].getConeOuterGain();
+        return source.getConeOuterGain();
     }
 
     /*
@@ -438,9 +426,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setPosition(com.jme.math.Vector3f)
      */
     public void setPosition(Vector3f position) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setPosition(position);
-        }
+
+        source.setPosition(position);
+
     }
 
     /*
@@ -449,9 +437,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setPosition(float, float, float)
      */
     public void setPosition(float x, float y, float z) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setPosition(x, y, z);
-        }
+
+        source.setPosition(x, y, z);
+
     }
 
     /*
@@ -460,7 +448,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getPosition()
      */
     public Vector3f getPosition() {
-        return sequence[0].getPosition();
+        return source.getPosition();
     }
 
     /*
@@ -469,9 +457,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setVelocity(com.jme.math.Vector3f)
      */
     public void setVelocity(Vector3f velocity) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setVelocity(velocity);
-        }
+
+        source.setVelocity(velocity);
 
     }
 
@@ -481,9 +468,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setVelocity(float, float, float)
      */
     public void setVelocity(float x, float y, float z) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setVelocity(x, y, z);
-        }
+
+        source.setVelocity(x, y, z);
 
     }
 
@@ -493,7 +479,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getVelocity()
      */
     public Vector3f getVelocity() {
-        return sequence[0].getVelocity();
+        return source.getVelocity();
     }
 
     /*
@@ -502,9 +488,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setDirection(com.jme.math.Vector3f)
      */
     public void setDirection(Vector3f direction) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setDirection(direction);
-        }
+
+        source.setDirection(direction);
+
     }
 
     /*
@@ -513,9 +499,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setDirection(float, float, float)
      */
     public void setDirection(float x, float y, float z) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setDirection(x, y, z);
-        }
+
+        source.setDirection(x, y, z);
 
     }
 
@@ -525,7 +510,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getDirection()
      */
     public Vector3f getDirection() {
-        return sequence[0].getDirection();
+        return source.getDirection();
     }
 
     /*
@@ -534,9 +519,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#setSourceRelative(boolean)
      */
     public void setSourceRelative(boolean isRelative) {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setSourceRelative(isRelative);
-        }
+
+        source.setSourceRelative(isRelative);
 
     }
 
@@ -546,7 +530,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#isSourceRelative()
      */
     public boolean isSourceRelative() {
-        return sequence[0].isSourceRelative();
+        return source.isSourceRelative();
     }
 
     /*
@@ -556,7 +540,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      */
     public void setLooping(boolean isLooping) {
         if (!sequenced) {
-            sequence[0].setLooping(isLooping);
+            source.setLooping(isLooping);
             loopingEnabled = isLooping;
         }
 
@@ -578,7 +562,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getBuffersQueued()
      */
     public int getBuffersQueued() {
-        return sequence[0].getBuffersQueued();
+        return source.getBuffersQueued();
     }
 
     /*
@@ -587,30 +571,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#getBuffersProcessed()
      */
     public int getBuffersProcessed() {
-        return sequence[0].getBuffersProcessed();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.sound.ISource#setBuffer(com.jme.sound.IBuffer)
-     */
-    public void setBuffer(IBuffer buffer) {
-        if (activeSource < sequence.length) {
-            sequence[activeSource].setBuffer(buffer);
-        }
-
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.sound.ISource#getBuffer()
-     */
-    public IBuffer getBuffer() {
-        if (activeSource < sequence.length)
-                return sequence[activeSource].getBuffer();
-        return null;
+        return source.getBuffersProcessed();
     }
 
     /*
@@ -619,8 +580,14 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#queueBuffers(com.jme.sound.IBuffer[])
      */
     public void queueBuffers(IBuffer[] buffers) {
-        if (activeSource < sequence.length)
-                sequence[activeSource].queueBuffers(buffers);
+
+        source.queueBuffers(buffers);
+
+    }
+
+    public void queueBuffer(IBuffer buffer) {
+
+        source.queueBuffer(buffer);
 
     }
 
@@ -630,8 +597,14 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#unqueueBuffers(com.jme.sound.IBuffer[])
      */
     public void unqueueBuffers(IBuffer[] buffers) {
-        if (activeSource < sequence.length)
-                sequence[activeSource].unqueueBuffers(buffers);
+
+        source.unqueueBuffers(buffers);
+
+    }
+
+    public void unqueueBuffer(IBuffer buffer) {
+
+        source.unqueueBuffer(buffer);
 
     }
 
@@ -641,9 +614,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#isPlaying()
      */
     public boolean isPlaying() {
-        
-       return activeSource < sequence.length ? sequence[activeSource].isPlaying() : false;
-        
+        return source.isPlaying();
+
     }
 
     /*
@@ -653,16 +625,37 @@ public class SphericalSound extends SoundSpatial implements ISource {
      */
     public void setFilter(IBufferFilter filter) {
         for (int a = 0; a < sequence.length; a++) {
-            sequence[a].setFilter(filter);
+            source.setFilter(filter);
         }
     }
-    
-    public int getPlayingTime(){
-        if(playTime !=null){
-            if(activeSource < sequence.length){
-                return playTime[activeSource];
-            }
-        }
-        return 0;
+
+    /**
+     * The playing time the playing sample
+     * 
+     * @return the sample duration in seconds
+     */
+    public float getPlayingTime() {
+
+        return sequenceDuration;
+
     }
+
+    /**
+     * @return Returns the queueCheckPercentage.
+     */
+    public float getQueueCheckPercentage() {
+        return queueCheckPercentage;
+    }
+
+    /**
+     * @param queueCheckPercentage
+     *            The queueCheckPercentage to set.
+     */
+    public void setQueueCheckPercentage(float queueCheckPercentage) {
+        this.queueCheckPercentage = queueCheckPercentage;
+
+        sequenceDuration -= (sequenceDuration * queueCheckPercentage) / 100;
+
+    }
+
 }

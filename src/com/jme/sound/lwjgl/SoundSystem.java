@@ -122,7 +122,9 @@ public class SoundSystem implements ISoundSystem {
 	 */
 	public IBuffer[] generateBuffers(int numOfBuffers) {
 		Buffer[] result = new Buffer[numOfBuffers];
-		IntBuffer alBuffers = BufferUtils.createIntBuffer(numOfBuffers);//ByteBuffer.allocateDirect(4 * numOfBuffers).order(ByteOrder.nativeOrder()).asIntBuffer();
+		IntBuffer alBuffers = BufferUtils.createIntBuffer(numOfBuffers);//ByteBuffer.allocateDirect(4
+		// *
+		// numOfBuffers).order(ByteOrder.nativeOrder()).asIntBuffer();
 		AL10.alGenBuffers(alBuffers);
 		for (int i = 0; i < numOfBuffers; i++) {
 			result[i] = new Buffer(alBuffers.get(i));
@@ -167,18 +169,13 @@ public class SoundSystem implements ISoundSystem {
 		//        }
 		return null;
 	}
-	
+
 	/*
-	public static byte[] toByteArray(short[] samples, int offs, int len) {
-		byte[] b = new byte[len * 2];
-		int idx = 0;
-		while (len-- > 0) {
-			b[idx++] = (byte) (samples[offs++] & 0x00FF);
-			b[idx++] = (byte) ((samples[offs] >>> 8) & 0x00FF);
-		}
-		return b;
-	}
-	*/
+	 * public static byte[] toByteArray(short[] samples, int offs, int len) {
+	 * byte[] b = new byte[len * 2]; int idx = 0; while (len-- > 0) { b[idx++] =
+	 * (byte) (samples[offs++] & 0x00FF); b[idx++] = (byte) ((samples[offs] >>>
+	 * 8) & 0x00FF); } return b; }
+	 */
 	/**
 	 * @return
 	 */
@@ -208,7 +205,9 @@ public class SoundSystem implements ISoundSystem {
 		int channels = getChannels(audioStream.getFormat());
 		IBuffer[] tmp = generateBuffers(1);
 		tmp[0].configure(data, channels, (int) audioStream.getFormat()
-				.getSampleRate());
+				.getSampleRate(), getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
+		
+		System.out.println("Wav estimated time "+ getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
 		//cleanup
 		data.clear();
 		data = null;
@@ -223,10 +222,10 @@ public class SoundSystem implements ISoundSystem {
 		int length = 0;
 		InputStream input = null;
 		ByteArrayOutputStream baout = new ByteArrayOutputStream();
-		
+
 		IBuffer[] tmp = null;
 		try {
-			
+
 			input = file.openStream();
 			int convsize = 4096 * 2;
 			byte[] convbuffer = new byte[convsize];
@@ -394,7 +393,7 @@ public class SoundSystem implements ISoundSystem {
 										}
 										baout.write(convbuffer, 0, 2
 												* vorbisInfo.channels * bout);
-										
+
 										length += 2 * vorbisInfo.channels
 												* bout;
 										dspState.synthesis_read(bout);
@@ -426,14 +425,21 @@ public class SoundSystem implements ISoundSystem {
 			}
 			syncState.clear();
 			byte[] buf = baout.toByteArray();
+
 			ByteBuffer data = BufferUtils.createByteBuffer(buf.length);//ByteBuffer.allocateDirect(buf.length);
 			data.put(buf);
 			data.rewind();
 			tmp = generateBuffers(1);
 			int chans = getChannels(vorbisInfo);
-			tmp[0].configure(data, chans, chans == AL10.AL_FORMAT_MONO16
-					? vorbisInfo.rate * 2
-					: vorbisInfo.rate);
+			int rate= chans == AL10.AL_FORMAT_MONO16
+			? vorbisInfo.rate * 2
+					: vorbisInfo.rate;
+			float time = (buf.length) / (rate * vorbisInfo.channels * 2);
+			tmp[0].configure(data, chans, rate, time);
+					
+			System.out.println("Sample rate= " + vorbisInfo.rate);
+			System.out.println("Estimated Play Time " + time);
+
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -469,6 +475,33 @@ public class SoundSystem implements ISoundSystem {
 			throw new JmeException("Only mono or stereo is supported");
 		}
 	}
+	
+	
+	
+	private float getPlayTime(byte[] data, AudioFormat format, int rate) {
+//		get channels
+		if (format.getChannels() == 1) {
+			if (format.getSampleSizeInBits() == 8) {
+				return (data.length) / (rate );
+			} else if (format.getSampleSizeInBits() == 16) {
+				return (data.length) / (rate*2);
+			} else {
+				throw new JmeException("Illegal sample size");
+			}
+		} else if (format.getChannels() == 2) {
+			if (format.getSampleSizeInBits() == 8) {
+				return (data.length) / (rate *2);
+			} else if (format.getSampleSizeInBits() == 16) {
+				return (data.length) / (rate * 4);
+			} else {
+				throw new JmeException("Illegal sample size");
+			}
+		} else {
+			throw new JmeException("Only mono or stereo is supported");
+		}
+		
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -489,7 +522,9 @@ public class SoundSystem implements ISoundSystem {
 	 */
 	public ISource[] generateSources(int numOfSources) {
 		Source[] result = new Source[numOfSources];
-		IntBuffer alSources = BufferUtils.createIntBuffer(numOfSources);//ByteBuffer.allocateDirect(4 * numOfSources).order(ByteOrder.nativeOrder()).asIntBuffer();
+		IntBuffer alSources = BufferUtils.createIntBuffer(numOfSources);//ByteBuffer.allocateDirect(4
+		// *
+		// numOfSources).order(ByteOrder.nativeOrder()).asIntBuffer();
 		AL10.alGenSources(alSources);
 		for (int i = 0; i < numOfSources; i++) {
 			result[i] = new Source(alSources.get(i));
