@@ -36,7 +36,7 @@ import java.util.logging.Level;
 import jme.entity.Entity;
 import jme.entity.camera.Camera;
 import jme.exception.MonkeyRuntimeException;
-import jme.math.MathUtils;
+import jme.math.Distance;
 import jme.math.Vector;
 import jme.physics.PhysicsModule;
 import jme.system.KeyBindingManager;
@@ -134,7 +134,7 @@ public class TrackingController extends AbstractGameController {
 		
 
 		double distance =
-			MathUtils.distance(camera.getPosition(), entity.getPosition());
+			Distance.distance(camera.getPosition(), entity.getPosition());
 		if (distance > trackingDistance) {
 			Vector vec =
 				(

@@ -32,7 +32,7 @@
 
 package jme.geometry.bounding;
 
-import jme.math.MathUtils;
+import jme.math.Distance;
 import jme.math.Vector;
 
 /**
@@ -40,7 +40,7 @@ import jme.math.Vector;
  * all vertices that make up the geometry.
  * 
  * @author Mark Powell
- * @version $Id: BoundingBox.java,v 1.3 2003-08-08 18:46:54 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.4 2003-08-18 22:25:02 mojomonkey Exp $
  */
 public class BoundingBox {
 	private Vector center;
@@ -121,7 +121,7 @@ public class BoundingBox {
 	 * 		the minPoint point.
 	 */
 	public double getRadius() {
-		return MathUtils.distance(center, minPoint);
+		return Distance.distance(center, minPoint);
 	}
 
 	/**
