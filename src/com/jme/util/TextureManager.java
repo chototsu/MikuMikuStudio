@@ -58,7 +58,7 @@ import com.jme.renderer.ColorRGBA;
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.4 2004-02-22 20:50:47 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.5 2004-02-24 18:00:34 mojomonkey Exp $
  */
 public class TextureManager {
    
@@ -194,12 +194,12 @@ public class TextureManager {
     	}
     	
     	java.awt.Image image = null;
-
-        if (".TGA".equalsIgnoreCase(file.getFile().substring(file.getFile().indexOf('.')))) {
+    	String fileName = file.getFile();
+        if (".TGA".equalsIgnoreCase(fileName.substring(file.getFile().lastIndexOf('.')))) {
             //Load the TGA file
             image = loadTGAImage(file);
         } else if (
-            ".BMP".equalsIgnoreCase(file.getFile().substring(file.getFile().indexOf('.')))) {
+            ".BMP".equalsIgnoreCase(fileName.substring(file.getFile().lastIndexOf('.')))) {
             image = loadBMPImage(file);
         } else {
             //Load the new image.
@@ -209,12 +209,13 @@ public class TextureManager {
         if (null == image) {
             LoggingSystem.getLogger().log(
                 Level.WARNING,
-                "Could not load" + file);
+                "Could not load: " + file);
             return null;
         }
 
         com.jme.image.Image imageData =
             loadImage(image, flipped);
+        
         Texture texture = new Texture();
         texture.setApply(Texture.AM_MODULATE);
         texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
@@ -246,6 +247,8 @@ public class TextureManager {
                     image.getHeight(null),
                     BufferedImage.TYPE_3BYTE_BGR);
         } catch (IllegalArgumentException e) {
+        	LoggingSystem.getLogger().log(Level.WARNING, "Problem creating buffered Image: " + 
+        			e.getMessage());
             return null;
         }
         Graphics2D g = (Graphics2D) tex.getGraphics();
@@ -282,6 +285,7 @@ public class TextureManager {
         textureImage.setWidth(tex.getWidth());
         textureImage.setHeight(tex.getHeight());
         textureImage.setData(scratch);
+        
         return textureImage;
 
     }
@@ -303,19 +307,25 @@ public class TextureManager {
             DataInputStream dis = new DataInputStream(fs);
             BitmapHeader bh = new BitmapHeader();
             byte[] data = new byte[dis.available()];
+            System.out.println(data.length);
+            System.out.println(data[0]);
             dis.readFully(data);
+            System.out.println(data[0]);
             dis.close();
             bh.read(data);
 
-            if (bh.bitcount == 24)
+            if (bh.bitcount == 24) {
                 return (bh.readMap24(data, bh));
-
-            if (bh.bitcount == 32)
+            }
+            
+            if (bh.bitcount == 32) {
                 return (bh.readMap32(data, bh));
-
-            if (bh.bitcount == 8)
+            }
+            
+            if (bh.bitcount == 8) {
                 return (bh.readMap8(data, bh));
-
+            }
+            
         } catch (IOException e) {
             LoggingSystem.getLogger().log(Level.WARNING, "Error while loading " + file);
         }

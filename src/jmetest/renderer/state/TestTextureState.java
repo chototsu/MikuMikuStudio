@@ -220,7 +220,7 @@ public class TestTextureState extends SimpleGame {
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
-                TestTextureState.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
+                TestTextureState.class.getClassLoader().getResource("jmetest/data/model/marble.bmp"),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR,
                 true));
