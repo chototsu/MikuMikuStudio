@@ -63,14 +63,12 @@ public class ParticleSystem implements EntityInterface {
      * @see jme.entity.EntityInterface#render()
      */
     public void render() {
-    	gl.enable(GL.DEPTH_TEST);
     	gl.pushMatrix();
     	gl.translatef(position.x, position.y, position.z);
         for(int i = 0; i < emitters.size(); i++) {
             ((ParticleEmitter)emitters.get(i)).render();
         }
         gl.popMatrix();
-        gl.disable(GL.DEPTH_TEST);
     }
 
     /**
