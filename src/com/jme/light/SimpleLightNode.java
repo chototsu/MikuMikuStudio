@@ -29,6 +29,7 @@ public class SimpleLightNode extends Node{
      * @param name
      *            the name of the scene element. This is required for
      *            identification and comparision purposes.
+     * @param light The light to be moved around by this Node
      */
     public SimpleLightNode(String name,Light light) {
         super(name);
