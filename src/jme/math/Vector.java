@@ -43,18 +43,36 @@ public class Vector {
 	public float y;
 	public float z;
 	
+	/**
+	 * Constructor creates a base <code>Vector</code> with values of
+	 * (0, 0, 0).
+	 */
 	public Vector() {
 		x = 0;
 		y = 0;
 		z = 0;
 	}
 	
+	/**
+	 * Constructor creates a <code>Vector</code> with the value given
+	 * in the parameter as (x, y, z).
+	 * @param x the x value of the vector.
+	 * @param y the y value of the vector.
+	 * @param z the z value of the vector.
+	 */
 	public Vector(float x, float y, float z) {
 		this.x = x;
 		this.y = y;
 		this.z = z;
 	}
 
+	/**
+	 * Constructor creates a <code>Vector</code> based on an array of
+	 * length three. Where the first position is x, second y, and third
+	 * z. 
+	 * @param attributes the attributes of the Vector.
+	 * @throws MonkeyRuntimeException if the attributes is not length 3.
+	 */
 	public Vector(float[] attributes) {
 		if(attributes.length != 3) {
 			throw new MonkeyRuntimeException("Attributes must be length 3.");
@@ -65,52 +83,118 @@ public class Vector {
 		this.z = attributes[2];
 	}
 	
+	/**
+	 * Constructor builds a new <code>Vector</code> as a copy of a 
+	 * passed in vector.
+	 * @param v the vector to copy.
+	 */
 	public Vector(Vector v) {
-		this.x = v.x;
-		this.y = v.y;
-		this.z = v.z;
+		if(null == v) {
+			x = y = z = 0;
+		} else {
+			this.x = v.x;
+			this.y = v.y;
+			this.z = v.z;
+		}
 	}
 	
+	/**
+	 * <code>divide</code> divides the values of this vector by a 
+	 * scalar and returns the result. The values of this vector 
+	 * remain untouched.
+	 * @param scalar the value to divide this vectors attributes by.
+	 * @return the result <code>Vector</code>.
+	 */
 	public Vector divide(float scalar) {
 		return new Vector(x/scalar, y/scalar, z/scalar);
 	}
 	
+	/**
+	 * <code>mult</code> multiplies the values of this vector by a 
+	 * scalar and returns the result. The values of this vector 
+	 * remain untouched.
+	 * @param scalar the value to multiply the vector attributes by.
+	 * @return the result </code>Vector</code>.
+	 */
 	public Vector mult(float scalar) {
 		return new Vector(x * scalar, y * scalar, z * scalar);
 	}
 	
+	/**
+	 * <code>add</code> adds the values of this vector by another 
+	 * vector and returns the result. The values of this vector 
+	 * remain untouched.
+	 * @param vector the vector to add the vector attributes by.
+	 * @return the result </code>Vector</code>.
+	 */
 	public Vector add(Vector v) {
 		return new Vector(x + v.x, y + v.y, z + v.z);
 	}
 	
+	/**
+	 * <code>subtract</code> subtracts the values of this vector by  
+	 * another vector and returns the result. The values of this vector 
+	 * remain untouched.
+	 * @param vector the vector to subtract from this vector.
+	 * @return the result </code>Vector</code>.
+	 */
 	public Vector subtract(Vector v) {
 		return new Vector(x - v.x, y - v.y, z - v.z);
 	}
 	
+	/**
+	 * <code>length</code> calculates the magnitude of this vector.
+	 * @return the length or magnitude of the vector.
+	 */
 	public float length() {
 		return (float)Math.sqrt(lengthSquared());
 	}
 	
+	/**
+	 * <code>lengthSquared</code> calculates the squared value of
+	 * the magnitude of the vector.
+	 * @return the magnitude squared of the vector.
+	 */
 	public float lengthSquared() {
 		return x*x + y*y + z*z;
 	}
 	
+	/**
+	 * <code>dot</code> calculates the dot product of this
+	 * vector with the parameter vector.
+	 * @param v the vector to use for the dot product with this.
+	 * @return the dot product of this vector with the parameter vector.
+	 */
 	public float dot(Vector v) {
 		return x*v.x + y*v.y + z*v.z;
 	}
 	
+	/**
+	 * <code>cross</code> calculates the cross product of this vector
+	 * with a parameter vector v.
+	 * @param v the vector to take the cross product of with this.
+	 * @return the cross product vector.
+	 */
 	public Vector cross(Vector v) {
 		return new Vector(((y * v.z) - (z * v.y)),
 			((z * v.x) - (x * v.z)),
 			((x * v.y) - (y * v.x)));
 	}
 	
+	/**
+	 * <code>negate</code> sets this vector to the negative (-x, -y, -z).
+	 *
+	 */
 	public void negate() {
 		x = -x;
 		y = -y;
 		z = -z;
 	}
 	
+	/**
+	 * <code>normalize</code> returns the unit vector of this vector.
+	 * @return unit vector of this vector.
+	 */
 	public Vector normalize() {
 		float length = length();				
 
