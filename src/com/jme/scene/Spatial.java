@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.38 2004-05-07 22:03:25 renanse Exp $
+ * @version $Id: Spatial.java,v 1.39 2004-05-12 20:51:47 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices
@@ -342,7 +342,7 @@ public abstract class Spatial implements Serializable {
    * parent down to the leaf.
    * @param time the frame time.
    */
-  public void updateWorldData(float time) {
+  protected void updateWorldData(float time) {
     //update spatial state via controllers
     Object controller;
     for (int i = 0, gSize = geometricalControllers.size();
