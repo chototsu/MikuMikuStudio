@@ -42,7 +42,7 @@ import org.lwjgl.opengl.GL;
  * LWJGL API to access OpenGL to set the material for a given node and it's
  * children.
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.1 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.2 2004-02-12 23:06:50 mojomonkey Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
     //buffer for color
@@ -67,49 +67,50 @@ public class LWJGLMaterialState extends MaterialState {
      * @see com.jme.scene.state.RenderState#set()
      */
     public void set() {
-        float[] color = new float[4];
-        color[3] = 1.0f;
-
-        color[0] = getEmissive().r;
-        color[1] = getEmissive().g;
-        color[2] = getEmissive().b;
-
-        buffer.clear();
-        buffer.put(color);
-        buffer.flip();
-
-        GL.glMaterial(GL.GL_FRONT, GL.GL_EMISSION, buffer);
-
-        color[0] = getAmbient().r;
-        color[1] = getAmbient().g;
-        color[2] = getAmbient().b;
-
-        buffer.clear();
-        buffer.put(color);
-        buffer.flip();
-        GL.glMaterial(GL.GL_FRONT, GL.GL_AMBIENT, buffer);
-
-        color[0] = getDiffuse().r;
-        color[1] = getDiffuse().g;
-        color[2] = getDiffuse().b;
-
-        buffer.clear();
-        buffer.put(color);
-        buffer.flip();
-        GL.glMaterial(GL.GL_FRONT, GL.GL_DIFFUSE, buffer);
-
-        color[0] = getSpecular().r;
-        color[1] = getSpecular().g;
-        color[2] = getSpecular().b;
-
-        buffer.clear();
-        buffer.put(color);
-        buffer.flip();
-        
-        GL.glMaterial(GL.GL_FRONT, GL.GL_SPECULAR, buffer);
-
-        GL.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, getShininess());
-
+    	if(isEnabled()) {
+	        float[] color = new float[4];
+	        color[3] = 1.0f;
+	
+	        color[0] = getEmissive().r;
+	        color[1] = getEmissive().g;
+	        color[2] = getEmissive().b;
+	
+	        buffer.clear();
+	        buffer.put(color);
+	        buffer.flip();
+	
+	        GL.glMaterial(GL.GL_FRONT, GL.GL_EMISSION, buffer);
+	
+	        color[0] = getAmbient().r;
+	        color[1] = getAmbient().g;
+	        color[2] = getAmbient().b;
+	
+	        buffer.clear();
+	        buffer.put(color);
+	        buffer.flip();
+	        GL.glMaterial(GL.GL_FRONT, GL.GL_AMBIENT, buffer);
+	
+	        color[0] = getDiffuse().r;
+	        color[1] = getDiffuse().g;
+	        color[2] = getDiffuse().b;
+	
+	        buffer.clear();
+	        buffer.put(color);
+	        buffer.flip();
+	        GL.glMaterial(GL.GL_FRONT, GL.GL_DIFFUSE, buffer);
+	
+	        color[0] = getSpecular().r;
+	        color[1] = getSpecular().g;
+	        color[2] = getSpecular().b;
+	
+	        buffer.clear();
+	        buffer.put(color);
+	        buffer.flip();
+	        
+	        GL.glMaterial(GL.GL_FRONT, GL.GL_SPECULAR, buffer);
+	
+	        GL.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, getShininess());
+    	}
     }
 
     /**
