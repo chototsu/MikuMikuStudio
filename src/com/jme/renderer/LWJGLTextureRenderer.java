@@ -46,15 +46,15 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.8 2004-03-06 07:34:21 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.9 2004-03-06 08:25:39 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
     private LWJGLCamera camera;
     private ColorRGBA backgroundColor = new ColorRGBA(1,1,1,1);
 
-    private int PBUFFER_WIDTH = 512;
-    private int PBUFFER_HEIGHT = 512;
+    private int PBUFFER_WIDTH = 256;
+    private int PBUFFER_HEIGHT = 256;
 
     /** Pbuffer instance */
     private Pbuffer pbuffer;
@@ -217,6 +217,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
 
     private void initPbuffer() {
+
         try {
             pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0, 0, texture);
             activate();

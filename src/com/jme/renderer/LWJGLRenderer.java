@@ -112,7 +112,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.33 2004-03-05 21:55:17 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.34 2004-03-06 08:25:39 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -143,7 +143,7 @@ public class LWJGLRenderer implements Renderer {
      * @param height
      *            the height of the rendering context.
      */
-    public LWJGLRenderer(int width, int height) {
+    public LWJGLRenderer (int width, int height) {
         if (width <= 0 || height <= 0) {
             LoggingSystem.getLogger().log(
                 Level.WARNING,
