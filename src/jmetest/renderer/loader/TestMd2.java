@@ -38,7 +38,7 @@ import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.light.DirectionalLight;
-import com.jme.light.SpotLight;
+import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.8 2004-03-31 23:33:23 renanse Exp $
+ * @version $Id: TestMd2.java,v 1.9 2004-04-02 21:14:48 mojomonkey Exp $
  */
 public class TestMd2 extends SimpleGame {
   LightState state;
@@ -183,20 +183,16 @@ public class TestMd2 extends SimpleGame {
         Texture.FM_LINEAR,
         true));
 
-    SpotLight am = new SpotLight();
+    PointLight am = new PointLight();
     am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
     am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-    am.setDirection(new Vector3f(0, 0, 0));
     am.setLocation(new Vector3f(25, 10, 10));
-    am.setAngle(5);
-
-    SpotLight am2 = new SpotLight();
+    
+    PointLight am2 = new PointLight();
     am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
     am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-    am2.setDirection(new Vector3f(0, 0, 0));
     am2.setLocation(new Vector3f( -25, 10, 0));
-    am2.setAngle(5);
-
+    
     DirectionalLight dr = new DirectionalLight();
     dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
     dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
