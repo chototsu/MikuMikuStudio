@@ -9,7 +9,10 @@ import java.io.*;
 
 /**
  * Started Date: Jul 3, 2004<br><br>
- * 
+ *
+ * This node is created to store xml or jme files signaled inside a file.  It stores
+ * how the file is loaded/created so that it can be easily saved and recreated the same way.
+ *
  * @author Jack Lindamood
  */
 public class LoaderNode extends Node{
