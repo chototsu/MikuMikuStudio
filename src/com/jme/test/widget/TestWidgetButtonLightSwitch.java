@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.2 2004-01-25 01:12:25 greggpatton Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.3 2004-01-25 02:15:19 mojomonkey Exp $
  */
 public class TestWidgetButtonLightSwitch extends AbstractGame {
     static String STARTED_STATE_STRING = " Stop ";
@@ -219,7 +219,7 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
                 onOffButton.setTitle(OFF_STATE_STRING);
 
                 spotlight1.setEnabled(false);
-                spotlight2.setEnabled(false);
+                spotlight2.setEnabled(true);
                 dr.setEnabled(false);
 
             } else {
