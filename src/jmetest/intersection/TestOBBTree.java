@@ -5,6 +5,7 @@ import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.TriMesh;
 import com.jme.math.Vector3f;
+import com.jme.math.Quaternion;
 import com.jme.animation.SpatialTransformer;
 import com.jme.bounding.BoundingBox;
 import com.jme.renderer.ColorRGBA;
@@ -62,7 +63,12 @@ public class TestOBBTree extends SimpleGame {
         {
         ColorRGBA[] colors=new ColorRGBA[s.getVertices().length];
         for (int i=0;i<colors.length;i++){
-            colors[i]=ColorRGBA.white;
+            if (i%3==0)
+                colors[i]=ColorRGBA.white;
+            else if (i%3==1)
+                colors[i]=ColorRGBA.green;
+            else
+                colors[i]=ColorRGBA.gray;
         }
         if (a.size()!=0){
             int[] indices=s.getIndices();
@@ -78,7 +84,12 @@ public class TestOBBTree extends SimpleGame {
         {
         ColorRGBA[] colors2=new ColorRGBA[r.getVertices().length];
         for (int i=0;i<colors2.length;i++){
-            colors2[i]=ColorRGBA.white;
+            if (i%3==0)
+                colors2[i]=ColorRGBA.white;
+            else if (i%3==1)
+                colors2[i]=ColorRGBA.green;
+            else
+                colors2[i]=ColorRGBA.gray;
         }
         if (b.size()!=0){
             int[] indices=r.getIndices();
