@@ -53,7 +53,7 @@ import com.jme.terrain.util.RawHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.8 2004-04-13 16:43:37 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.9 2004-04-14 00:48:36 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -225,7 +225,7 @@ public class TestTerrain extends SimpleGame {
         t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
         t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
         t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(3);
+        t1.setCombineScaleRGB(0);
         
         t2.setApply(Texture.AM_COMBINE);
         t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
@@ -233,7 +233,7 @@ public class TestTerrain extends SimpleGame {
         t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
         t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
         t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(3);
+        t2.setCombineScaleRGB(0);
         scene.setRenderState(ts);
 
         ZBufferState buf = display.getRenderer().getZBufferState();

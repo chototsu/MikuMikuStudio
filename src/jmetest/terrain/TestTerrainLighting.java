@@ -51,7 +51,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.2 2004-04-13 02:08:59 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.3 2004-04-14 00:48:36 mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
     private Camera cam;
@@ -249,7 +249,7 @@ public class TestTerrainLighting extends SimpleGame {
         t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
         t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
         t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(3);
+        t1.setCombineScaleRGB(0);
         
         t2.setApply(Texture.AM_COMBINE);
         t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
@@ -257,7 +257,7 @@ public class TestTerrainLighting extends SimpleGame {
         t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
         t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
         t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(3);
+        t2.setCombineScaleRGB(0);
         scene.setRenderState(ts);
 
         ZBufferState buf = display.getRenderer().getZBufferState();
