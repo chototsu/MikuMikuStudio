@@ -49,6 +49,7 @@ import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -113,6 +114,12 @@ public class TestScenegraph extends SimpleGame {
 				.getKeyBindingManager()
 				.isValidCommand("tex3")) {
 			selectedNode.setRenderState(ts3);
+		}
+		
+		if (KeyBindingManager
+				.getKeyBindingManager()
+				.isValidCommand("notex")) {
+			selectedNode.clearRenderState(RenderState.RS_TEXTURE);
 		}
 	}
 
@@ -183,6 +190,10 @@ public class TestScenegraph extends SimpleGame {
 		KeyBindingManager.getKeyBindingManager().set(
 				"tex3",
 				KeyInput.KEY_0);
+		KeyBindingManager.getKeyBindingManager().set(
+				"notex",
+				KeyInput.KEY_7);
+		
 	}
 
 	/**
