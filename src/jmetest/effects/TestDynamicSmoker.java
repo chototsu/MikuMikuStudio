@@ -90,7 +90,7 @@ public class TestDynamicSmoker extends SimpleGame {
     input.setKeySpeed(10f);
     input.setMouseSpeed(1f);
 
-    display.setTitle("Smoke box");
+    display.setTitle("Dynamic Smoke box");
 
     // hijack the camera model for our own purposes
     Model camBox = new MilkshapeASCIIModel("Camera Box");
