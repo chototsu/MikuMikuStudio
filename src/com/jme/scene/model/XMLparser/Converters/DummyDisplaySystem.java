@@ -29,6 +29,7 @@ public class DummyDisplaySystem extends DisplaySystem{
     public void setVSyncEnabled(boolean enabled) {}
     public void setTitle(String title) {}
     public void createWindow(int w, int h, int bpp, int frq, boolean fs) {}
+		public void createHeadlessWindow(int w, int h, int bpp) {}
     public void recreateWindow(int w, int h, int bpp, int frq, boolean fs) {}
     public Renderer getRenderer() {
         return new Renderer(){
@@ -203,7 +204,11 @@ public class DummyDisplaySystem extends DisplaySystem{
             public boolean isProcessingQueue() {return false;}
             public boolean checkAndAdd(Spatial s) {return false;}
             public boolean supportsVBO() {return false;}
-    };
+						public boolean isHeadless() {return false;}
+						public void setHeadless(boolean headless) {}
+						public int getWidth() {return -1;}
+						public int getHeight() {return -1;}
+		};
     }
     public RendererType getRendererType() {return null;}
     public boolean isClosing() {return false;}

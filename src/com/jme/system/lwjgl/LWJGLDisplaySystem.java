@@ -60,6 +60,8 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
+import org.lwjgl.opengl.PixelFormat;
+import org.lwjgl.opengl.Pbuffer;
 import java.awt.Toolkit;
 
 /**
@@ -70,14 +72,15 @@ import java.awt.Toolkit;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.11 2004/04/26 20:31:14 mojomonkey
- *          Exp $
+ * @author Joshua Slack - Optimizations and Headless rendering
+ * @version $Id: LWJGLDisplaySystem.java,v 1.21 2004-11-09 19:55:49 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
     private LWJGLRenderer renderer;
+    private Pbuffer headlessDisplay;
 
-    /**
+  /**
      * Constructor instantiates a new <code>LWJGLDisplaySystem</code> object.
      * During instantiation confirmation is made to determine if the LWJGL API
      * is installed properly. If not, a JmeException is thrown.
@@ -142,6 +145,41 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     }
 
     /**
+     * <code>createHeadlessWindow</code> will create a headless LWJGL display
+		 * context. This window will be a purely native context as defined by
+		 * the LWJGL API.
+     *
+     * @see com.jme.system.DisplaySystem#createHeadlessWindow(int, int, int)
+     */
+    public void createHeadlessWindow(int w, int h, int bpp) {
+        //confirm that the parameters are valid.
+        if (w <= 0 || h <= 0) {
+            throw new JmeException("Invalid resolution values: " + w + " " + h);
+        } else if ((bpp != 32) && (bpp != 16) && (bpp != 24)) { throw new JmeException(
+                "Invalid pixel depth: " + bpp); }
+
+        //set the window attributes
+        this.width = w;
+        this.height = h;
+        this.bpp = bpp;
+
+        initHeadlessDisplay();
+        renderer = new LWJGLRenderer(width, height);
+        renderer.setHeadless(true);
+        updateStates(renderer);
+
+        created = true;
+    }
+
+    /**
+     * Returns the Pbuffer used for headless display or null if not headless.
+     * @return Pbuffer
+     */
+    public Pbuffer getHeadlessDisplay() {
+      return headlessDisplay;
+    }
+
+    /**
      * <code>recreateWindow</code> will recreate a LWJGL display context. This
      * window will be a purely native context as defined by the LWJGL API.
      *
@@ -192,7 +230,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @return true if a close request is active.
      */
     public boolean isClosing() {
+      if (headlessDisplay == null)
         return Display.isCloseRequested();
+      else return false;
     }
 
     /**
@@ -384,7 +424,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
         for (int i = 0; i < modes.length; i++) {
             if (modes[i].getWidth() == width && modes[i].getHeight() == height
-                    && modes[i].getBitsPerPixel() == bpp && modes[i].getFrequency()== freq) {
+                    && modes[i].getBitsPerPixel() == bpp && (freq == 0 || modes[i].getFrequency()== freq)) {
 
             return modes[i]; }
         }
@@ -412,7 +452,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 							y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) >> 1;
 							Display.setLocation(x,y);
 						}
-            Display.create();
+						Display.create();
             // kludge added here...  LWJGL does not properly clear their
             // keyboard and mouse buffers when you call the destroy method,
             // so if you run two jme programs in the same jvm back to back
@@ -427,6 +467,29 @@ public class LWJGLDisplaySystem extends DisplaySystem {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
                     "initDisplay()", e);
             throw new Error("Cannot create window: " + e.getMessage());
+        }
+    }
+
+    /**
+     * <code>initHeadlessDisplay</code> creates the LWJGL window with the desired
+     * specifications.
+     *
+     */
+    private void initHeadlessDisplay() {
+        //create the Display.
+        DisplayMode mode = getValidDisplayMode(width, height, bpp, frq);
+        PixelFormat format = new PixelFormat(bpp, alphaBits, depthBits, stencilBits, samples);
+
+        try {
+            Display.setDisplayMode(mode); // done so the renderer has access to this information.
+            headlessDisplay = new Pbuffer(width, height, format, null);
+            headlessDisplay.makeCurrent();
+        } catch (Exception e) {
+            //System.exit(1);
+            LoggingSystem.getLogger().log(Level.SEVERE, "Cannot create headless window");
+            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+                    "initHeadlessDisplay()", e);
+            throw new Error("Cannot create headless window: " + e.getMessage());
         }
     }
 

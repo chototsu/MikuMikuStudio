@@ -47,12 +47,6 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 
 /**
- * <code>DisplaySystem</code>
- *
- * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.35 2004-09-13 21:13:12 renanse Exp $
- */
-/**
  * <code>DisplaySystem</code> defines an interface for system creation.
  * Specifically, any implementing class will create a window for rendering. It
  * also should create the appropriate <code>Renderer</code> object that allows
@@ -73,7 +67,9 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.35 2004-09-13 21:13:12 renanse Exp $
+ * @author Gregg Patton
+ * @author Joshua Slack - Optimizations and Headless rendering
+ * @version $Id: DisplaySystem.java,v 1.36 2004-11-09 19:55:49 renanse Exp $
  */
 public abstract class DisplaySystem {
 
@@ -250,6 +246,25 @@ public abstract class DisplaySystem {
      *            use fullscreen, false will use windowed mode.
      */
     public abstract void createWindow(int w, int h, int bpp, int frq, boolean fs);
+
+    /**
+     * <code>createHeadlessWindow</code> creates a headless window with the
+     * desired settings.  A headless window is a rendering target that is not
+     * shown on screen.  It is useful for doing offline rendering, integration
+     * (such as swing) and so forth.  You can not have a regular and headless
+     * window at the same time.
+     * The width and height defined by w and h define the size of the window if
+     * fullscreen is false, otherwise it defines the resolution of the
+     * fullscreen display. The color depth is defined by bpp.
+     *
+     * @param w
+     *            the width/horizontal resolution of the display.
+     * @param h
+     *            the height/vertical resolution of the display.
+     * @param bpp
+     *            the color depth of the display.
+     */
+    public abstract void createHeadlessWindow(int w, int h, int bpp);
 
     /**
      * <code>recreateWindow</code> recreates a window with the desired settings.
