@@ -201,4 +201,16 @@ public class Vector {
 		return divide(length);	
 	}
 	
+	/**
+	 * <code>toString</code> returns the string representation of
+	 * this Vector. The format is as follows:
+	 * 
+	 * (XXX.XXX, YYY.YYY, ZZZ.ZZZ)
+	 * 
+	 * @return the string representation of the vector.
+	 */
+	public String toString() {
+		return "("+x+","+y+","+z+")";
+	}
+	
 }
