@@ -45,7 +45,7 @@ import com.jme.math.FastMath;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.10 2004-05-23 21:23:55 mojomonkey Exp $
+ * @version $Id: ColorRGBA.java,v 1.11 2004-06-14 07:57:36 cep21 Exp $
  */
 public class ColorRGBA {
 
@@ -220,6 +220,35 @@ public class ColorRGBA {
     }
 
     /**
+     * Sets this color to the interpolation by changeAmnt from this to the finalColor
+     * this=(1-changeAmnt)*this + changeAmnt * finalColor
+     * @param finalColor The final color to interpolate towards
+     * @param changeAmnt An amount between 0.0 - 1.0 representing a precentage
+     *  change from this towards finalColor
+     */
+    public void interpolate(ColorRGBA finalColor,float changeAmnt){
+        this.r=(1-changeAmnt)*this.r + changeAmnt*finalColor.r;
+        this.g=(1-changeAmnt)*this.g + changeAmnt*finalColor.g;
+        this.b=(1-changeAmnt)*this.b + changeAmnt*finalColor.b;
+        this.a=(1-changeAmnt)*this.a + changeAmnt*finalColor.a;
+    }
+
+    /**
+     * Sets this color to the interpolation by changeAmnt from beginColor to finalColor
+     * this=(1-changeAmnt)*beginColor + changeAmnt * finalColor
+     * @param beginColor The begining color (changeAmnt=0)
+     * @param finalColor The final color to interpolate towards (changeAmnt=1)
+     * @param changeAmnt An amount between 0.0 - 1.0 representing a precentage
+     *  change from beginColor towards finalColor
+     */
+    public void interpolate(ColorRGBA beginColor,ColorRGBA finalColor,float changeAmnt){
+        this.r=(1-changeAmnt)*beginColor.r + changeAmnt*finalColor.r;
+        this.g=(1-changeAmnt)*beginColor.g + changeAmnt*finalColor.g;
+        this.b=(1-changeAmnt)*beginColor.b + changeAmnt*finalColor.b;
+        this.a=(1-changeAmnt)*beginColor.a + changeAmnt*finalColor.a;
+    }
+
+    /**
      *
      * <code>randomColor</code> is a utility method that generates a random
      * color.
@@ -267,7 +296,7 @@ public class ColorRGBA {
      * <code>equals</code> returns true if this color is logically equivalent
      * to a given color. That is, if the values of the two colors are the same.
      * False is returned otherwise.
-     * @param the object to compare againts.
+     * @param o the object to compare againts.
      * @return true if the colors are equal, false otherwise.
      */
     public boolean equals(Object o) {
