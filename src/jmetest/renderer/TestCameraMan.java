@@ -40,7 +40,6 @@ import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.LightNode;
 import com.jme.light.SpotLight;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;

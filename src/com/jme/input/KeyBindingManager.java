@@ -41,11 +41,14 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>KeyBindingManager</code> maintains a list of command and
  * key pairs. A key is denoted as an int and corresponds to <code>KeyInput</code>'s
- * constants. 
+ * constants. A call to <code>isValidCommand</code> with an associated command will return
+ * true if they key associated with the command is pressed. This allows for pairings with
+ * <code>InputAction</code> how is also associated with a command, to be paired allowing
+ * for actions to be performed within the game based on user input.
  * 
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.2 2003-10-27 21:18:17 mojomonkey Exp $
+ * @version $Id: KeyBindingManager.java,v 1.3 2004-04-03 17:55:43 mojomonkey Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
