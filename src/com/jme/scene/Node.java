@@ -60,7 +60,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.37 2005-02-20 23:24:23 renanse Exp $
+ * @version $Id: Node.java,v 1.38 2005-02-24 22:58:00 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -423,5 +423,9 @@ public class Node extends Spatial implements Serializable {
             toStore.attachChild(child.putClone(null, properties));
         }
         return toStore;
+    }
+
+    public ArrayList getChildren() {
+        return children;
     }
 }
