@@ -168,6 +168,7 @@ public class JointController extends Controller {
         return storedNext;
     }
     public void update(float time) {
+        if (!this.isActive()) return;
         curTime+=time*this.getSpeed();
         currentSkip+=time;
         if (currentSkip>=skipRate){
@@ -175,6 +176,7 @@ public class JointController extends Controller {
         } else{
             return;
         }
+
         PointInTime now=(PointInTime) movementInfo.get(curTimePoint);
         PointInTime then=null;
         if (now.time < curTime){
