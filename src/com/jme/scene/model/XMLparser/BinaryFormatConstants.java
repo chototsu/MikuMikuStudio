@@ -34,7 +34,9 @@ public interface BinaryFormatConstants {
     static final byte DATA_BYTEARRAY = 13;
     static final byte DATA_SHORTARRAY = 14;
     static final byte DATA_V2F = 15;
+    static final byte DATA_MATRIX3 = 16;
     // -- Data type identifiers
 
     float XYZ_SCALE = 1/64.0f;
+
 }
