@@ -14,6 +14,7 @@ import com.jme.math.Vector2f;
 import com.jme.image.Texture;
 
 import java.net.URL;
+import java.nio.IntBuffer;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -128,7 +129,7 @@ public class DummyDisplaySystem extends DisplaySystem{
                 };
             }
             public VertexProgramState getVertexProgramState() {return createVertexProgramState();}
-            
+
             public FragmentProgramState createFragmentProgramState() {
                 return new FragmentProgramState(){
                     public boolean isSupported() {return false;}
@@ -161,6 +162,7 @@ public class DummyDisplaySystem extends DisplaySystem{
             public void setOrthoCenter() {}
             public void unsetOrtho() {}
             public boolean takeScreenShot(String filename) {return false;}
+            public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h) {}
             public void draw(Spatial s) {}
             public void drawBounds(Clone c) {}
             public void drawBounds(Spatial s) {}
@@ -179,7 +181,7 @@ public class DummyDisplaySystem extends DisplaySystem{
             public boolean isProcessingQueue() {return false;}
             public boolean checkAndAdd(Spatial s) {return false;}
             public boolean supportsVBO() {return false;}
-        };
+    };
     }
     public RendererType getRendererType() {return null;}
     public boolean isCreated() {return false;}
