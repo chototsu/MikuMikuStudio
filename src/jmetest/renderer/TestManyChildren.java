@@ -32,221 +32,88 @@
 
 package jmetest.renderer;
 
-import com.jme.app.*;
-import com.jme.bounding.*;
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.light.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.shape.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
+import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
+import com.jme.light.DirectionalLight;
+import com.jme.light.SpotLight;
+import com.jme.math.FastMath;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Clone;
+import com.jme.scene.CloneNode;
+import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.13 2004-04-22 22:27:40 renanse Exp $
+ * @version $Id: TestManyChildren.java,v 1.14 2004-04-23 04:01:29 renanse Exp $
  */
-public class TestManyChildren extends BaseGame {
-    private Camera cam;
-    private CameraNode camNode;
-    private Node root;
-    private InputHandler input;
-    private Timer timer;
-    private Text fps;
-    private Node fpsNode;
+public class TestManyChildren extends SimpleGame {
 
-    /**
-     * Entry point for the test,
-     * @param args
-     */
-    public static void main(String[] args) {
-        LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
-        TestManyChildren app = new TestManyChildren();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
+  /**
+   * Entry point for the test,
+   * @param args
+   */
+  public static void main(String[] args) {
+    LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
+    TestManyChildren app = new TestManyChildren();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
+  }
+
+  /**
+   * builds the trimesh.
+   * @see com.jme.app.SimpleGame#initGame()
+   */
+  protected void simpleInitGame() {
+    display.setTitle("2,500 Box Test");
+    Vector3f max = new Vector3f(0.5f, 0.5f, 0.5f);
+    Vector3f min = new Vector3f( -0.5f, -0.5f, -0.5f);
+
+    CloneNode scene = new CloneNode("Clone node");
+    TriMesh t = new Box("Box", min, max);
+    t.setModelBound(new BoundingBox());
+    t.updateModelBound();
+    scene.setGeometry(t);
+
+    for (int i = 0; i < 2500; i++) {
+      float x = (float) FastMath.nextRandomFloat() * 10;
+      float y = (float) FastMath.nextRandomFloat() * 10;
+      float z = (float) FastMath.nextRandomFloat() * 10;
+      Clone c = new Clone("Box Clone " + i);
+      c.setLocalTranslation(new Vector3f(x, y, z));
+      scene.attachChild(c);
     }
 
-    /**
-     * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
+    SpotLight am = new SpotLight();
+    am.setDiffuse(new ColorRGBA(0.0f, 0.0f, 1.0f, 1.0f));
+    am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+    am.setDirection(new Vector3f( -30, -10, -5).normalizeLocal());
+    am.setLocation(new Vector3f(30, 10, 5));
+    am.setAngle(15);
 
-        timer.update();
-        input.update(timer.getTimePerFrame());
-        root.updateGeometricState(timer.getTimePerFrame(), true);
-        fps.print("FPS: " + (int) timer.getFrameRate() + " : " +display.getRenderer().getStatistics());
-//        System.out.println(timer.getFrameRate());
-        display.getRenderer().clearStatistics();
-    }
+    SpotLight am2 = new SpotLight();
+    am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+    am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+    am2.setDirection(new Vector3f( -30, -10, -20).normalizeLocal());
+    am2.setLocation(new Vector3f(30, 10, 20));
+    am2.setAngle(10);
 
-    /**
-     * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
+    DirectionalLight dr = new DirectionalLight();
+    dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+    dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+    //dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+    dr.setDirection(new Vector3f(150, 0, 150));
 
-        display.getRenderer().draw(root);
-        display.getRenderer().draw(fpsNode);
-
-
-    }
-
-    /**
-     * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
-                    properties.getHeight());
-
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-
-        display.getRenderer().setCamera(cam);
-
-        camNode = new CameraNode("Camera Node", cam);
-        //camNode.setLocalTranslation(new Vector3f();
-        input = new NodeHandler(this, camNode, "LWJGL");
-        input.setKeySpeed(2f);
-        input.setMouseSpeed(0.5f);
-        display.setTitle("2,500 Box Test");
-        display.getRenderer().enableStatistics(true);
-        timer = Timer.getTimer(properties.getRenderer());
-
-    }
-
-    /**
-     * builds the trimesh.
-     * @see com.jme.app.SimpleGame#initGame()
-     */
-    protected void initGame() {
-        Vector3f max = new Vector3f(0.5f,0.5f,0.5f);
-        Vector3f min = new Vector3f(-0.5f,-0.5f,-0.5f);
-
-        CloneNode scene = new CloneNode("Clone node");
-        root = new Node("Root node");
-        TriMesh t = new Box("Box", min, max);
-        t.setModelBound(new BoundingBox());
-        t.updateModelBound();
-        scene.setGeometry(t);
-
-        for(int i = 0; i < 2500; i++) {
-            float x = (float)Math.random() * 10;
-            float y = (float)Math.random() * 10;
-            float z = (float)Math.random() * 10;
-            Clone c = new Clone("Box Clone " + i);
-            c.setLocalTranslation(new Vector3f(x,y,z));
-            scene.attachChild(c);
-        }
-
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
-
-        SpotLight am = new SpotLight();
-        am.setDiffuse(new ColorRGBA(0.0f, 0.0f, 1.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(-30, -10, -5).normalizeLocal());
-        am.setLocation(new Vector3f(30, 10, 5));
-        am.setAngle(15);
-
-        SpotLight am2 = new SpotLight();
-        am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-        am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am2.setDirection(new Vector3f(-30, -10, -20).normalizeLocal());
-        am2.setLocation(new Vector3f(30, 10, 20));
-//        am2.setDirection(new Vector3f(25, -10, 0).normalizeLocal());
-//        am2.setLocation(new Vector3f(-25, 10, 0));
-        am2.setAngle(10);
-
-        AlphaState as1 = display.getRenderer().getAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        as1.setEnabled(true);
-
-        TextureState font = display.getRenderer().getTextureState();
-        font.setTexture(
-            TextureManager.loadTexture(
-                TestManyChildren.class.getClassLoader().getResource(
-                    "jmetest/data/font/font.png"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-        font.setEnabled(true);
-
-        fps = new Text("FPS counter","");
-        fps.setRenderState(font);
-        fps.setRenderState(as1);
-        fps.setForceView(true);
-
-        fpsNode = new Node("FPS node");
-        fpsNode.attachChild(fps);
-        fpsNode.setForceView(true);
-
-        DirectionalLight dr = new DirectionalLight();
-        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        //dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-        dr.setDirection(new Vector3f(150, 0 , 150));
-
-        LightState state = display.getRenderer().getLightState();
-        state.setEnabled(true);
-        state.attach(am);
-        state.attach(am2);
-        LightState state2 = display.getRenderer().getLightState();
-        state2.setEnabled(true);
-        state2.attach(dr);
-        am.setEnabled(true);
-        am2.setEnabled(true);
-        dr.setEnabled(true);
-        scene.setRenderState(state);
-        root.setRenderState(state2);
-        scene.setRenderState(buf);
-        root.attachChild(scene);
-
-        root.updateGeometricState(0.0f, true);
-        root.updateRenderState();
-        fpsNode.updateGeometricState(0.0f, true);
-        fpsNode.updateRenderState();
-    }
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-
-    }
-
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-
-    }
-
+    lightState.detachAll();
+    lightState.attach(am);
+    lightState.attach(am2);
+    lightState.attach(dr);
+    am.setEnabled(true);
+    am2.setEnabled(true);
+    dr.setEnabled(true);
+    rootNode.attachChild(scene);
+  }
 }
