@@ -101,7 +101,7 @@ public class TestRenderToTexture extends SimpleGame {
 
   private void initPbuffer() {
       try {
-          pbuffer = new Pbuffer(800, 600, 32, 0, 0, 0);
+          pbuffer = new Pbuffer(512, 512, 32, 0, 0, 0);
           pbuffer.makeCurrent();
 
           GL.glClearColor(.1f, .1f, .1f, 1f);
