@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import com.jme.math.Vector2f;
  * also known as a pq torus.
  *
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.2 2004-04-11 15:58:54 mojomonkey Exp $
+ * @version $Id: PQTorus.java,v 1.3 2004-04-22 22:26:53 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 

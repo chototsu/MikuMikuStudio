@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.11 2004-03-27 01:05:06 renanse Exp $
+ * @version $Id: AbstractGame.java,v 1.12 2004-04-22 22:26:21 renanse Exp $
  */
 public abstract class AbstractGame {
   //Flag for running the system.

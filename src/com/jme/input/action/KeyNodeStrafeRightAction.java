@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * the negative left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeRightAction.java,v 1.5 2004-03-02 16:40:09 renanse Exp $
+ * @version $Id: KeyNodeStrafeRightAction.java,v 1.6 2004-04-22 22:26:33 renanse Exp $
  */
 public class KeyNodeStrafeRightAction implements InputAction {
 

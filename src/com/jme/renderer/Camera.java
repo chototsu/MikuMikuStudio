@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import com.jme.math.Vector3f;
  * frustum culling.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.9 2004-04-02 15:51:55 mojomonkey Exp $
+ * @version $Id: Camera.java,v 1.10 2004-04-22 22:26:41 renanse Exp $
  */
 public interface Camera extends Serializable {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.4 2004-04-22 21:47:07 renanse Exp $
+ * @version $Id: KeyBindingManager.java,v 1.5 2004-04-22 22:26:29 renanse Exp $
  */
 public class KeyBindingManager {
 	//singleton instance

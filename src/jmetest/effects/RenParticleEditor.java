@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -56,7 +59,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.3 2004-04-16 17:57:31 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.4 2004-04-22 22:27:31 renanse Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 

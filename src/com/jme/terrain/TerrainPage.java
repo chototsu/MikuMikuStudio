@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,16 +46,16 @@ import com.jme.system.JmeException;
  * @version $id$
  */
 public class TerrainPage extends Node {
-    
+
     private Vector2f offset;
     private int totalSize;
     private int offsetAmount;
-    
+
     public TerrainPage(String name, int blockSize, int size, float stepScale,
             int[] heightMap, boolean clod) {
         this(name, blockSize, size, stepScale, heightMap, clod, size, new Vector2f(), 0);
     }
-    
+
     public TerrainPage(String name, int blockSize, int size, float stepScale,
             int[] heightMap, boolean clod, int totalSize, Vector2f offset, int offsetAmount) {
         super(name);
@@ -67,18 +67,18 @@ public class TerrainPage extends Node {
         this.totalSize = totalSize;
         split(size, blockSize, stepScale, heightMap, clod);
     }
-    
+
     public void setDetailTexture(int unit, int repeat) {
         for(int i = 0; i < this.getQuantity(); i++) {
             if(this.getChild(i) instanceof TerrainPage) {
                 ((TerrainPage)getChild(i)).setDetailTexture(unit, repeat);
             } else if( this.getChild(i) instanceof TerrainBlock) {
                 ((TerrainBlock)getChild(i)).setDetailTexture(unit, repeat);
-                    
+
             }
         }
     }
-    
+
     //XXX this is just sending a copy of the same bounding volume. Each child
     //needs it's own. Fix.
     public void setModelBound(BoundingVolume v) {
@@ -87,24 +87,24 @@ public class TerrainPage extends Node {
                 ((TerrainPage)getChild(i)).setModelBound(v);
             } else if( this.getChild(i) instanceof TerrainBlock) {
                 ((TerrainBlock)getChild(i)).setModelBound(v);
-                    
+
             }
         }
     }
-    
+
     public void updateModelBound() {
         for(int i = 0; i < this.getQuantity(); i++) {
             if(this.getChild(i) instanceof TerrainPage) {
                 ((TerrainPage)getChild(i)).updateModelBound();
             } else if( this.getChild(i) instanceof TerrainBlock) {
                 ((TerrainBlock)getChild(i)).updateModelBound();
-                    
+
             }
         }
     }
 
     /**
-     * <code>split</code> 
+     * <code>split</code>
      *
      * @param blockSize
      * @param size
@@ -118,22 +118,22 @@ public class TerrainPage extends Node {
         } else {
             createQuadPage(size, blockSize, stepScale, heightMap, clod);
         }
-        
+
     }
 
     /**
-     * <code>createQuadPage</code> 
+     * <code>createQuadPage</code>
      *
-     * 
+     *
      */
     private void createQuadPage(int size, int blockSize, float stepScale, int[] heightMap, boolean clod) {
 //      create 4 terrain pages
         Vector2f tempOffset = new Vector2f();
         offsetAmount += size/4;
-        
+
         int split = (size + 1) / 2;
         int newBlockSize = split * split;
-        
+
         //1 upper left
         int[] heightBlock1 = new int[newBlockSize];
         int count = 0;
@@ -143,18 +143,18 @@ public class TerrainPage extends Node {
             }
         }
         Vector3f origin1 = new Vector3f(-size/4 * stepScale, 0, -size/4  * stepScale);
-        
+
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
         tempOffset.x += origin1.x;
         tempOffset.y += origin1.z;
-        
-        
-        
+
+
+
         TerrainPage page1 = new TerrainPage(name+"Page1", blockSize, split, stepScale, heightBlock1, clod, totalSize, tempOffset, offsetAmount);
         page1.setLocalTranslation(origin1);
         this.attachChild(page1);
-        
+
         //2 lower left
         int[] heightBlock2 = new int[newBlockSize];
         count = 0;
@@ -164,16 +164,16 @@ public class TerrainPage extends Node {
             }
         }
         Vector3f origin2 = new Vector3f(-size/4  * stepScale, 0, size/4  * stepScale);
-        
+
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
         tempOffset.x += origin2.x;
         tempOffset.y += origin2.z;
-        
+
         TerrainPage page2 = new TerrainPage(name+"Page2", blockSize, split, stepScale, heightBlock2, clod, totalSize, tempOffset,offsetAmount);
         page2.setLocalTranslation(origin2);
         this.attachChild(page2);
-        
+
         //3 lower right
         int[] heightBlock3 = new int[newBlockSize];
         count = 0;
@@ -183,16 +183,16 @@ public class TerrainPage extends Node {
             }
         }
         Vector3f origin3 = new Vector3f(size/4  * stepScale, 0, -size/4  * stepScale);
-        
+
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
         tempOffset.x += origin3.x;
         tempOffset.y += origin3.z;
-        
+
         TerrainPage page3 = new TerrainPage(name+"Page3", blockSize, split, stepScale, heightBlock3, clod, totalSize, tempOffset,offsetAmount);
         page3.setLocalTranslation(origin3);
         this.attachChild(page3);
-////        
+////
         //4 upper right
         int[] heightBlock4 = new int[newBlockSize];
         count = 0;
@@ -202,22 +202,22 @@ public class TerrainPage extends Node {
             }
         }
         Vector3f origin4 = new Vector3f(size/4  * stepScale, 0, size/4  * stepScale);
-        
+
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
         tempOffset.x += origin4.x;
         tempOffset.y += origin4.z;
-        
+
         TerrainPage page4 = new TerrainPage(name+"Page4", blockSize, split, stepScale, heightBlock4, clod, totalSize, tempOffset,offsetAmount);
         page4.setLocalTranslation(origin4);
         this.attachChild(page4);
-        
+
     }
 
     /**
-     * <code>createQuadBlock</code> 
+     * <code>createQuadBlock</code>
      *
-     * 
+     *
      */
     private void createQuadBlock(int size, float stepScale, int[] heightMap, boolean clod) {
         Vector2f tempOffset = new Vector2f();
@@ -233,17 +233,17 @@ public class TerrainPage extends Node {
             }
         }
         Vector3f origin1 = new Vector3f(-size/4 * stepScale, 0, -size/4  * stepScale);
-        
+
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
         tempOffset.x += origin1.x;
         tempOffset.y += origin1.z;
-        
+
         TerrainBlock block1 = new TerrainBlock(name+"Block1", split, stepScale, heightBlock1, origin1, clod, totalSize, tempOffset,offsetAmount);
         this.attachChild(block1);
         block1.setModelBound(new BoundingBox());
         block1.updateModelBound();
-        
+
         //2 lower left
         int[] heightBlock2 = new int[newBlockSize];
         count = 0;
@@ -253,17 +253,17 @@ public class TerrainPage extends Node {
             }
         }
         Vector3f origin2 = new Vector3f(-size/4  * stepScale, 0, size/4  * stepScale);
-        
+
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
         tempOffset.x += origin2.x;
         tempOffset.y += origin2.z;
-        
+
         TerrainBlock block2 = new TerrainBlock(name+"Block2", split, stepScale, heightBlock2, origin2, clod, totalSize, tempOffset,offsetAmount);
         this.attachChild(block2);
         block2.setModelBound(new BoundingBox());
         block2.updateModelBound();
-        
+
         //3 lower right
         int[] heightBlock3 = new int[newBlockSize];
         count = 0;
@@ -273,17 +273,17 @@ public class TerrainPage extends Node {
             }
         }
         Vector3f origin3 = new Vector3f(size/4  * stepScale, 0, -size/4  * stepScale);
-        
+
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
         tempOffset.x += origin3.x;
         tempOffset.y += origin3.z;
-        
+
         TerrainBlock block3 = new TerrainBlock(name+"Block3", split, stepScale, heightBlock3, origin3, clod, totalSize, tempOffset,offsetAmount);
         this.attachChild(block3);
         block3.setModelBound(new BoundingBox());
         block3.updateModelBound();
-        
+
         //4 upper right
         int[] heightBlock4 = new int[newBlockSize];
         count = 0;
@@ -293,18 +293,18 @@ public class TerrainPage extends Node {
             }
         }
         Vector3f origin4 = new Vector3f(size/4  * stepScale, 0, size/4  * stepScale);
-        
+
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
         tempOffset.x += origin4.x;
         tempOffset.y += origin4.z;
-        
+
         TerrainBlock block4 = new TerrainBlock(name+"Block4", split, stepScale, heightBlock4, origin4, clod, totalSize, tempOffset,offsetAmount);
         this.attachChild(block4);
         block4.setModelBound(new BoundingBox());
         block4.updateModelBound();
-    
+
     }
-    
-    
+
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,13 +45,13 @@ import com.jme.util.LoggingSystem;
  * data for terrain rendering. The loading of the data is dependent on the
  * subclass. The abstract implementation provides a means to retrieve the height
  * data and to save it.
- * 
+ *
  * It is the general contract that any subclass provide a means of editing
  * required attributes and calling <code>load</code> again to recreate a
  * heightfield with these new parameters.
- * 
+ *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.1 2004-04-12 00:30:46 mojomonkey Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.2 2004-04-22 22:27:07 renanse Exp $
  */
 public abstract class AbstractHeightMap {
 
@@ -76,7 +76,7 @@ public abstract class AbstractHeightMap {
      * <code>setHeightScale</code> sets the scale of the height values.
      * Typically, the height is a little too extreme and should be scaled to a
      * smaller value (i.e. 0.25), to produce cleaner slopes.
-     * 
+     *
      * @param scale
      *            the scale to multiply height values by.
      */
@@ -88,7 +88,7 @@ public abstract class AbstractHeightMap {
      * <code>setHeightAtPoint</code> sets the height value for a given
      * coordinate. It is recommended that the height value be within the 0 - 255
      * range.
-     * 
+     *
      * @param height
      *            the new height for the coordinate.
      * @param x
@@ -103,10 +103,10 @@ public abstract class AbstractHeightMap {
     /**
      * <code>setSize</code> sets the size of the terrain where the area is
      * size x size.
-     * 
+     *
      * @param size
      *            the new size of the terrain.
-     * 
+     *
      * @throws MonkeyRuntimeException
      *             if the size is less than or equal to zero.
      */
@@ -121,7 +121,7 @@ public abstract class AbstractHeightMap {
      * <code>setFilter</code> sets the erosion value for the filter. This
      * value must be between 0 and 1, where 0.2 - 0.4 produces arguably the best
      * results.
-     * 
+     *
      * @param filter
      *            the erosion value.
      * @throws MonkeyRuntimeException
@@ -136,7 +136,7 @@ public abstract class AbstractHeightMap {
     /**
      * <code>getTrueHeightAtPoint</code> returns the non-scaled value at the
      * point provided.
-     * 
+     *
      * @param x
      *            the x (east/west) coordinate.
      * @param z
@@ -150,7 +150,7 @@ public abstract class AbstractHeightMap {
     /**
      * <code>getScaledHeightAtPoint</code> returns the scaled value at the
      * point provided.
-     * 
+     *
      * @param x
      *            the x (east/west) coordinate.
      * @param z
@@ -164,7 +164,7 @@ public abstract class AbstractHeightMap {
     /**
      * <code>getInterpolatedHeight</code> returns the height of a point that
      * does not fall directly on the height posts.
-     * 
+     *
      * @param x
      *            the x coordinate of the point.
      * @param z
@@ -201,7 +201,7 @@ public abstract class AbstractHeightMap {
 
     /**
      * <code>getHeightMap</code> returns the entire grid of height data.
-     * 
+     *
      * @return the grid of height data.
      */
     public int[] getHeightMap() {
@@ -211,7 +211,7 @@ public abstract class AbstractHeightMap {
     /**
      * <code>getSize</code> returns the size of one side the height map. Where
      * the area of the height map is size x size.
-     * 
+     *
      * @return the size of a single side.
      */
     public int getSize() {
@@ -221,11 +221,11 @@ public abstract class AbstractHeightMap {
     /**
      * <code>save</code> will save the heightmap data into a new RAW file
      * denoted by the supplied filename.
-     * 
+     *
      * @param filename
      *            the file name to save the current data as.
      * @return true if the save was successful, false otherwise.
-     * 
+     *
      * @throws MonkeyRuntimeException
      *             if filename is null.
      */
@@ -262,7 +262,7 @@ public abstract class AbstractHeightMap {
     /**
      * <code>normalizeTerrain</code> takes the current terrain data and
      * converts it to values between 0 and 255.
-     * 
+     *
      * @param tempBuffer
      *            the terrain to normalize.
      */
@@ -300,7 +300,7 @@ public abstract class AbstractHeightMap {
     /**
      * <code>erodeTerrain</code> is a convenience method that applies the FIR
      * filter to a given height map. This simulates water errosion.
-     * 
+     *
      * @param tempBuffer
      *            the terrain to filter.
      */
@@ -348,7 +348,7 @@ public abstract class AbstractHeightMap {
     /**
      * <code>load</code> populates the height map data. This is dependent on
      * the subclass's implementation.
-     * 
+     *
      * @return true if the load was successful, false otherwise.
      */
     public abstract boolean load();

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -36,7 +36,7 @@ import com.jme.util.lwjgl.*;
 /**
  * <code>Timer</code>
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.5 2004-04-02 23:29:18 mojomonkey Exp $
+ * @version $Id: Timer.java,v 1.6 2004-04-22 22:27:10 renanse Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -48,7 +48,7 @@ public abstract class Timer {
      * @return a long value representing the current time
      */
     public abstract long getTime();
-    
+
     /**
      * Returns the time in seconds. There is no guarantee that the timer
      * starts at 0.0 seconds.
@@ -57,7 +57,7 @@ public abstract class Timer {
     public float getTimeInSeconds(){
         return getTime() / (float)getResolution();
     }
-    
+
     /**
      * Returns the resolution of the timer.
      * @return the number of timer ticks per second

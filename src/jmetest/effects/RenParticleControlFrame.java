@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -80,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.27 2004-04-16 17:57:31 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.28 2004-04-22 22:27:30 renanse Exp $
  *
  */
 

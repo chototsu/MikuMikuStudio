@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.scene.state.LightState;
  * is a Directional light rotation determines it's direction. It has no
  * concept of location.
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.1 2004-04-02 15:51:54 mojomonkey Exp $
+ * @version $Id: LightNode.java,v 1.2 2004-04-22 22:26:38 renanse Exp $
  */
 public class LightNode extends Node {
     private Light light;

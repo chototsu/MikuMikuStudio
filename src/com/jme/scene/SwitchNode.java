@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package com.jme.scene;
 
@@ -34,12 +34,12 @@ import com.jme.renderer.Renderer;
 
 /**
  * <code>SwitchNode</code> defines a node that maintains a single active child at a time. This allows
- * the instantanious switching of children depending on any number of factors. For example, 
+ * the instantanious switching of children depending on any number of factors. For example,
  * multiple levels of detail models can be loaded into the switch node and the active model can
- * be set depending on the distance from the camera. 
- * 
+ * be set depending on the distance from the camera.
+ *
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.1 2004-03-03 23:02:49 mojomonkey Exp $
+ * @version $Id: SwitchNode.java,v 1.2 2004-04-22 22:26:46 renanse Exp $
  */
 public class SwitchNode extends Node {
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.util.Timer;
  * method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.1 2004-04-02 23:29:17 mojomonkey Exp $
+ * @version $Id: LWJGLTimer.java,v 1.2 2004-04-22 22:27:11 renanse Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;

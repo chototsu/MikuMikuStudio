@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.14 2004-04-19 20:44:52 renanse Exp $
+ * @version $Id: TestBezierMesh.java,v 1.15 2004-04-22 22:27:38 renanse Exp $
  */
 public class TestBezierMesh extends BaseGame {
     private TriMesh t;

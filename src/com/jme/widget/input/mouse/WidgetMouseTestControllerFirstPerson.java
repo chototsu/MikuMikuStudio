@@ -1,7 +1,7 @@
 /*
- * Copyright (c) 2004, Gregg Patton
+ * Copyright (c) 2003-2004, Gregg Patton
  * All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
  * are met:
@@ -12,7 +12,7 @@
  *    documentation and/or other materials provided with the distribution.
  * 3. The name of the author may not be used to endorse or promote products
  *    derived from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
  * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
  * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
@@ -23,7 +23,7 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
  * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * 
+ *
  */
 package com.jme.widget.input.mouse;
 
@@ -48,7 +48,7 @@ import com.jme.renderer.RendererType;
 /**
  * <code>WidgetMouseTestControllerFirstPerson</code>
  * @author Gregg Patton
- * @version $Id: WidgetMouseTestControllerFirstPerson.java,v 1.5 2004-03-25 17:14:17 mojomonkey Exp $
+ * @version $Id: WidgetMouseTestControllerFirstPerson.java,v 1.6 2004-04-22 22:27:20 renanse Exp $
  */
 public class WidgetMouseTestControllerFirstPerson extends AbstractInputHandler {
 
@@ -96,7 +96,7 @@ public class WidgetMouseTestControllerFirstPerson extends AbstractInputHandler {
         MouseLook mouseLook = new MouseLook(mouse, camera, 0.1f);
         mouseLook.setLockAxis(camera.getUp());
         addAction(mouseLook);
-        
+
     }
 
     /* (non-Javadoc)

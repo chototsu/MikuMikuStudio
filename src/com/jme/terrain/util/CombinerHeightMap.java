@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -40,14 +40,14 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>CombinerHeightMap</code> generates a new height map based on
  * two provided height maps. These had maps can either be added together
- * or substracted from each other. Each heightmap has a weight to 
+ * or substracted from each other. Each heightmap has a weight to
  * determine how much one will affect the other. By default it is set to
  * 0.5, 0.5 and meaning the two heightmaps are averaged evenly. This
  * value can be adjusted at will, as long as the two factors are equal
  * to 1.0.
- * 
+ *
  * @author Mark Powell
- * @version $Id: CombinerHeightMap.java,v 1.1 2004-04-12 00:30:45 mojomonkey Exp $
+ * @version $Id: CombinerHeightMap.java,v 1.2 2004-04-22 22:27:07 renanse Exp $
  */
 public class CombinerHeightMap extends AbstractHeightMap {
 	/**
@@ -74,7 +74,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 	 * Constructor combines two given heightmaps by the specified mode.
 	 * The heightmaps will be evenly distributed. The heightmaps
 	 * must be of the same size.
-	 * 
+	 *
 	 * @param map1 the first heightmap to combine.
 	 * @param map2 the second heightmap to combine.
 	 * @param mode denotes whether to add or subtract the heightmaps, may
@@ -86,8 +86,8 @@ public class CombinerHeightMap extends AbstractHeightMap {
 		AbstractHeightMap map1,
 		AbstractHeightMap map2,
 		int mode) {
-		
-		//insure all parameters are valid.	
+
+		//insure all parameters are valid.
 		if (null == map1 || null == map2) {
 			throw new JmeException("Height map may not be null");
 		}
@@ -99,7 +99,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 		if ((factor1 + factor2) != 1.0f) {
 			throw new JmeException("factor1 and factor2 must add to 1.0");
 		}
-		
+
 		this.size = map1.getSize();
 		this.map1 = map1;
 		this.map2 = map2;
@@ -111,11 +111,11 @@ public class CombinerHeightMap extends AbstractHeightMap {
 
 	/**
 	 * Constructor combines two given heightmaps by the specified mode.
-	 * The heightmaps will be distributed based on the given factors. 
+	 * The heightmaps will be distributed based on the given factors.
 	 * For example, if factor1 is 0.6 and factor2 is 0.4, then 60% of
 	 * map1 will be used with 40% of map2. The two factors must add up
 	 * to 1.0. The heightmaps must also be of the same size.
-	 * 
+	 *
 	 * @param map1 the first heightmap to combine.
 	 * @param factor1 the factor for map1.
 	 * @param map2 the second heightmap to combine.
@@ -124,7 +124,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 	 * 		be either ADDITION or SUBTRACTION.
 	 * @throws JmeException if either map is null, their size
 	 * 		do not match, the mode is invalid, or the factors do not add
-	 * 		to 1.0. 
+	 * 		to 1.0.
 	 */
 	public CombinerHeightMap(
 		AbstractHeightMap map1,
@@ -132,7 +132,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 		AbstractHeightMap map2,
 		float factor2,
 		int mode) {
-			
+
 		//insure all parameters are valid.
 		if (null == map1 || null == map2) {
 			throw new JmeException("Height map may not be null");
@@ -162,10 +162,10 @@ public class CombinerHeightMap extends AbstractHeightMap {
 	}
 
 	/**
-	 * <code>setFactors</code> sets the distribution of heightmaps. 
+	 * <code>setFactors</code> sets the distribution of heightmaps.
 	 * For example, if factor1 is 0.6 and factor2 is 0.4, then 60% of
 	 * map1 will be used with 40% of map2. The two factors must add up
-	 * to 1.0. 
+	 * to 1.0.
 	 * @param factor1 the factor for map1.
 	 * @param factor2 the factor for map2.
 	 * @throws JmeException if the factors do not add to 1.0.
@@ -180,7 +180,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 	}
 
 	/**
-	 * <code>setHeightMaps</code> sets the height maps to combine. 
+	 * <code>setHeightMaps</code> sets the height maps to combine.
 	 * The size of the height maps must be the same.
 	 * @param map1 the first height map.
 	 * @param map2 the second height map.
@@ -191,7 +191,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 		if (null == map1 || null == map2) {
 			throw new JmeException("Height map may not be null");
 		}
-		
+
 		if (map1.getSize() != map2.getSize()) {
 			throw new JmeException("The two maps must be of the same size");
 		}
@@ -218,7 +218,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 	 * <code>load</code> builds a new heightmap based on the combination of
 	 * two other heightmaps. The conditions of the combiner determine the
 	 * final outcome of the heightmap.
-	 * 
+	 *
 	 * @return boolean if the heightmap was successfully created.
 	 */
 	public boolean load() {

@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -45,9 +45,9 @@ import com.jme.util.LoggingSystem;
  * <code>RawHeightMap</code> creates a height map from a RAW image file. The
  * greyscale image denotes height based on the value of the pixel for each
  * point. Where pure black denotes 0 and pure white denotes 255.
- * 
+ *
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.2 2004-04-13 02:08:26 mojomonkey Exp $
+ * @version $Id: RawHeightMap.java,v 1.3 2004-04-22 22:27:08 renanse Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
     private String filename;
@@ -57,11 +57,11 @@ public class RawHeightMap extends AbstractHeightMap {
      * loads a RAW image file to use as a height
      * field. The greyscale image denotes the height of the terrain, where
      * dark is low point and bright is high point. The values of the RAW
-     * correspond directly with the RAW values or 0 - 255. 
-     * 
+     * correspond directly with the RAW values or 0 - 255.
+     *
      * @param filename the RAW file to use as the heightmap.
      * @param size the size of the RAW (must be square).
-     * 
+     *
      * @throws MonkeyRuntimeException if the filename is null or not RAW, and
      *      if the size is 0 or less.
      */
@@ -84,9 +84,9 @@ public class RawHeightMap extends AbstractHeightMap {
 
     /**
      * <code>load</code> fills the height data array with the appropriate
-     * data from the set RAW image. If the RAW image has not been set a 
+     * data from the set RAW image. If the RAW image has not been set a
      * JmeException will be thrown.
-     * 
+     *
      * @return true if the load is successfull, false otherwise.
      */
     public boolean load() {
@@ -95,7 +95,7 @@ public class RawHeightMap extends AbstractHeightMap {
             throw new JmeException(
                 "Must supply valid filename and " + "size (> 0)");
         }
-        
+
         //clean up
         if (null != heightData) {
             unloadHeightMap();
@@ -109,7 +109,7 @@ public class RawHeightMap extends AbstractHeightMap {
 
         try {
             fis = new FileInputStream(filename);
-            
+
             DataInputStream dis = new DataInputStream(fis);
             if(heightData.length != dis.available()) {
                 LoggingSystem.getLogger().log(Level.WARNING, "Incorrect map size. Aborting raw load.");
@@ -147,7 +147,7 @@ public class RawHeightMap extends AbstractHeightMap {
      * call to <code>load</code> is required to put the changes into effect.
      *
      * @param filename the new file to use for the height data.
-     * 
+     *
      * @throws JmeException if the file is null or not RAW.
      */
     public void setFilename(String filename) {

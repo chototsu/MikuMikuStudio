@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -48,7 +48,7 @@ import com.jme.util.Timer;
  * no frame rate is specified, the game will run at 60 frames per second.
  *
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.4 2004-03-27 01:05:06 renanse Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.5 2004-04-22 22:26:22 renanse Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
 

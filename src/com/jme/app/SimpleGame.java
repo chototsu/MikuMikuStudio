@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.9 2004-04-22 22:08:19 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.10 2004-04-22 22:26:22 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 

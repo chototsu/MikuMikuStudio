@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.math.Vector3f;
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points.
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.2 2004-04-09 22:40:00 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.3 2004-04-22 22:26:23 renanse Exp $
  */
 public interface BoundingVolume {
 

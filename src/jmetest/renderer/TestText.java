@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestText</code> draws text using the scenegraph.
  * @author Mark Powell
- * @version $Id: TestText.java,v 1.7 2004-04-19 20:44:55 renanse Exp $
+ * @version $Id: TestText.java,v 1.8 2004-04-22 22:27:42 renanse Exp $
  */
 public class TestText extends BaseGame {
 
@@ -92,10 +92,10 @@ public class TestText extends BaseGame {
             e.printStackTrace();
             System.exit(1);
         }
-        
+
         ColorRGBA blueColor = new ColorRGBA(0f, 0f, 255f, 1f);
         display.getRenderer().setBackgroundColor(blueColor);
-        
+
         cam.setFrustum(1.0f,1000.0f,-0.55f,0.55f,0.4125f,-0.4125f);
         Vector3f loc = new Vector3f(4.0f,0.0f,0.0f);
         Vector3f left = new Vector3f(0.0f,-1.0f,0.0f);
@@ -117,7 +117,7 @@ public class TestText extends BaseGame {
         as.setTestEnabled(true);
         as.setTestFunction(AlphaState.TF_GREATER);
         as.setEnabled(true);
-        
+
         TextureState ts = display.getRenderer().getTextureState();
         ts.setTexture(
             TextureManager.loadTexture(
@@ -126,12 +126,12 @@ public class TestText extends BaseGame {
                 Texture.FM_LINEAR,
                 true));
         ts.setEnabled(true);
-        
+
         text = new Text("text", "Testing Text! Look, symbols: <>?!^&*_");
         text.setLocalTranslation(new Vector3f(1,60,0));
         text.setRenderState(ts);
         text.setRenderState(as);
-        
+
         scene = new Node("3D Scene Node");
         scene.attachChild(text);
         cam.update();

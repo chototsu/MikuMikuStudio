@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.15 2004-04-02 15:52:05 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.16 2004-04-22 22:26:52 renanse Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -504,20 +504,20 @@ public class MilkshapeASCIIModel extends Model {
 				return null;
 			}
 		}
-        
+
         Texture tex = TextureManager.loadTexture(
         		fileURL,
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true);
-        
+
         if(tex != null) {
-        
+
 			TextureState ts =
 				DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
 			ts.setEnabled(true);
 			ts.setTexture(tex);
-			
+
 			return ts;
         } else {
         	return null;

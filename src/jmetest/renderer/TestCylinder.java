@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.5 2004-04-19 20:44:53 renanse Exp $
+ * @version $Id: TestCylinder.java,v 1.6 2004-04-22 22:27:39 renanse Exp $
  */
 public class TestCylinder extends BaseGame {
     private Camera cam;

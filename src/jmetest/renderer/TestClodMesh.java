@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -71,7 +71,7 @@ import com.jme.util.Timer;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.10 2004-04-19 20:44:52 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.11 2004-04-22 22:27:39 renanse Exp $
  */
 
 public class TestClodMesh extends VariableTimestepGame {

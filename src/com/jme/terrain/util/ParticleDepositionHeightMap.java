@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -38,18 +38,18 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 
 /**
- * <code>ParticleDepositionHeightMap</code> creates a heightmap based on the 
- * Particle Deposition algorithm based on Jason Shankel's paper from 
- * "Game Programming Gems". A heightmap is created using a Molecular beam 
- * epitaxy, or MBE, for depositing thin layers of atoms on a substrate. 
+ * <code>ParticleDepositionHeightMap</code> creates a heightmap based on the
+ * Particle Deposition algorithm based on Jason Shankel's paper from
+ * "Game Programming Gems". A heightmap is created using a Molecular beam
+ * epitaxy, or MBE, for depositing thin layers of atoms on a substrate.
  * We drop a sequence of particles and simulate their flow across a surface
  * of previously dropped particles. This creates a few high peaks, for further
  * realism we can define a caldera. Similar to the way volcano's form
  * islands, rock is deposited via lava, when the lava cools, it recedes
- * into the volcano, creating the caldera. 
- * 
+ * into the volcano, creating the caldera.
+ *
  * @author Mark Powell
- * @version $Id: ParticleDepositionHeightMap.java,v 1.2 2004-04-15 02:54:31 mojomonkey Exp $
+ * @version $Id: ParticleDepositionHeightMap.java,v 1.3 2004-04-22 22:27:08 renanse Exp $
  */
 public class ParticleDepositionHeightMap extends AbstractHeightMap {
 
@@ -63,9 +63,9 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 	/**
 	 * Constructor sets the attributes of the Particle Deposition
 	 * Height Map and then generates the map.
-	 * 
+	 *
 	 * @param size the size of the terrain where the area is size x size.
-	 * @param jumps number of areas to drop particles. Can also think 
+	 * @param jumps number of areas to drop particles. Can also think
 	 * 		of it as the number of peaks.
 	 * @param peakWalk determines how much to agitate the drop point
 	 * 		during a creation of a single peak. The lower the number
@@ -78,7 +78,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 	 * @param caldera defines the altitude to invert a peak. This is
 	 * 		represented as a percentage, where 0.0 will not invert
 	 * 		anything, and 1.0 will invert all.
-	 * 
+	 *
 	 * @throws MonkeyRuntimeException if any value is less than zero, and
 	 * 		if caldera is not between 0 and 1. If minParticles is greater than
 	 * 		max particles as well.
@@ -230,7 +230,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 
 				for (x = sx; x <= tx; x++) {
 					for (y = sy; y <= ty; y++) {
-						
+
 						calderaX = (x + size) % size;
 						calderaY = (y + size) % size;
 
@@ -292,7 +292,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 			}
 		}
 
-		LoggingSystem.getLogger().log(Level.INFO, 
+		LoggingSystem.getLogger().log(Level.INFO,
 				"Created heightmap using Particle Deposition");
 
 		return false;
@@ -315,7 +315,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 	 * <code>setPeakWalk</code> sets how often the jump point will be
 	 * aggitated. The lower the peakWalk, the more often the point will
 	 * be aggitated.
-	 * 
+	 *
 	 * @param peakWalk the amount to aggitate the jump point.
 	 * @throws JmeException if peakWalk is negative or zero.
 	 */
@@ -330,7 +330,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 	/**
 	 * <code>setCaldera</code> sets the level at which a peak will be
 	 * inverted.
-	 * 
+	 *
 	 * @param caldera the level at which a peak will be inverted. This must be
 	 * 		between 0 and 1, as it is represented as a percentage.
 	 * @throws JmeException if caldera is not between 0 and 1.
@@ -358,7 +358,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 	 * <code>setMinParticles</code> sets the minimum number of particles
 	 * for a single jump.
 	 * @param minParticles the minimum number of particles for a single jump.
-	 * @throws JmeException if minParticles are greater than 
+	 * @throws JmeException if minParticles are greater than
 	 * 		the current maxParticles;
 	 */
 	public void setMinParticles(int minParticles) {

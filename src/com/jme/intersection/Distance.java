@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.math.Vector3f;
  * distances between one object and another. These methods are static to allow
  * for easy calling.
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.4 2004-04-02 15:51:53 mojomonkey Exp $
+ * @version $Id: Distance.java,v 1.5 2004-04-22 22:26:36 renanse Exp $
  */
 public class Distance {
 

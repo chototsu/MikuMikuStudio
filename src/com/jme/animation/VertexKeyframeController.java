@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.system.JmeException;
  * the displayed model is morphed from one keyframe to another giving the
  * impression of movement.
  * @author Mark Powell
- * @version $Id: VertexKeyframeController.java,v 1.6 2004-04-01 16:21:26 renanse Exp $
+ * @version $Id: VertexKeyframeController.java,v 1.7 2004-04-22 22:26:21 renanse Exp $
  */
 public class VertexKeyframeController extends Controller {
 	private TriMesh[] keyframes;

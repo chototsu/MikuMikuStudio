@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Eric Woroshow
- * @version $Id: TestVertexProgramState.java,v 1.6 2004-04-17 00:35:59 ericthered Exp $
+ * @version $Id: TestVertexProgramState.java,v 1.7 2004-04-22 22:27:44 renanse Exp $
  */
 public class TestVertexProgramState extends VariableTimestepGame {
 
@@ -179,7 +179,7 @@ public class TestVertexProgramState extends VariableTimestepGame {
         ws.setEnabled(true);
 
         Torus torus = new Torus("outlineTorus", 128, 32, 3.0f, 5.0f);
-        
+
         ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
         ColorRGBA[] colors = new ColorRGBA[torus.getVertices().length];
         for (int i = 0; i < colors.length; i++)

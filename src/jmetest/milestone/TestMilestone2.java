@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.7 2004-04-19 20:44:57 renanse Exp $
+ * @version $Id: TestMilestone2.java,v 1.8 2004-04-22 22:27:37 renanse Exp $
  */
 public class TestMilestone2 extends BaseGame {
     private TriMesh t;
@@ -69,7 +69,7 @@ public class TestMilestone2 extends BaseGame {
     private Thread thread;
 
     /**
-     * Entry point for the test, 
+     * Entry point for the test,
      * @param args
      */
     public static void main(String[] args) {
@@ -77,16 +77,16 @@ public class TestMilestone2 extends BaseGame {
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.setGenerator();
         app.start();
-        
+
     }
-    
+
     public void setGenerator() {
         gen = new BoxGenerator(this);
         thread = new Thread(gen);
         thread.start();
-        
+
     }
-    
+
     public void addSpatial(Spatial spatial) {
         scene.attachChild(spatial);
         scene.updateGeometricState(0.0f, true);
@@ -101,7 +101,7 @@ public class TestMilestone2 extends BaseGame {
         input.update(0.25f);
     }
 
-    /** 
+    /**
      * clears the buffers and then draws the TriMesh.
      * @see com.jme.app.SimpleGame#render()
      */
@@ -149,7 +149,7 @@ public class TestMilestone2 extends BaseGame {
 
     }
 
-    /** 
+    /**
      * builds the trimesh.
      * @see com.jme.app.SimpleGame#initGame()
      */
@@ -173,36 +173,36 @@ public class TestMilestone2 extends BaseGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
-        
+
         Vector3f max = new Vector3f(10,10,10);
         Vector3f min = new Vector3f(0,0,0);
-        
-        
-        
+
+
+
         t = new Box("Main box", min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
-        
+
         t.setLocalTranslation(new Vector3f(0,0,-10));
-        
+
         scene = new Node("3D Scene Node");
         scene.attachChild(t);
         root = new Node("Root Scene Node");
         root.attachChild(scene);
         root.attachChild(text);
-        
-        
+
+
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
-        
+
         SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         am.setDirection(new Vector3f(-1, -0.5f, 0));
         am.setLocation(new Vector3f(25, 10, 0));
         am.setAngle(15);
-        
+
         SpotLight am2 = new SpotLight();
         am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
@@ -228,7 +228,7 @@ public class TestMilestone2 extends BaseGame {
         scene.setRenderState(state);
         scene.setRenderState(buf);
         cam.update();
-        
+
         TextureState ts = display.getRenderer().getTextureState();
                 ts.setEnabled(true);
                 ts.setTexture(
@@ -237,11 +237,11 @@ public class TestMilestone2 extends BaseGame {
                         Texture.MM_LINEAR,
                         Texture.FM_LINEAR,
                         true));
-                        
+
         scene.setRenderState(ts);
-        
+
         root.attachChild(text);
-        
+
 
         scene.updateGeometricState(0.0f, true);
         root.updateRenderState();
@@ -255,7 +255,7 @@ public class TestMilestone2 extends BaseGame {
 
     }
 
-    /** 
+    /**
      * Not used.
      * @see com.jme.app.SimpleGame#cleanup()
      */

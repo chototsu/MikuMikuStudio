@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.renderer.Camera;
  * of the camera can be thought of as how many units per second the camera
  * can travel.
  * @author Mark Powell
- * @version $Id: KeyForwardAction.java,v 1.3 2004-02-24 01:32:19 mojomonkey Exp $
+ * @version $Id: KeyForwardAction.java,v 1.4 2004-04-22 22:26:31 renanse Exp $
  */
 public class KeyForwardAction implements InputAction {
 

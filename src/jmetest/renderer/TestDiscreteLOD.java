@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.6 2004-04-19 20:44:53 renanse Exp $
+ * @version $Id: TestDiscreteLOD.java,v 1.7 2004-04-22 22:27:39 renanse Exp $
  */
 public class TestDiscreteLOD extends BaseGame {
 	private Camera cam;
@@ -94,7 +94,7 @@ public class TestDiscreteLOD extends BaseGame {
 		rotQuat.fromAngleAxis(angle, axis);
 
 		dlod.setLocalRotation(rotQuat);
-        
+
 		root.updateGeometricState(timer.getTimePerFrame(), true);
 		fps.print(
 			"FPS: "
@@ -171,25 +171,25 @@ public class TestDiscreteLOD extends BaseGame {
 		Sphere s1 = new Sphere("Sphere", 100, 100, 25);
 		s1.setModelBound(new BoundingBox());
 		s1.updateModelBound();
-        
+
         Sphere s2 = new Sphere("Sphere", 50, 50, 25);
         s2.setModelBound(new BoundingBox());
         s2.updateModelBound();
-        
+
         Sphere s3 = new Sphere("Sphere", 30, 20, 25);
         s3.setModelBound(new BoundingBox());
         s3.updateModelBound();
-        
+
         Sphere s4 = new Sphere("Sphere", 10, 10, 25);
         s4.setModelBound(new BoundingBox());
         s4.updateModelBound();
-        
+
         DistanceSwitchModel m = new DistanceSwitchModel(4);
         m.setModelDistance(0, 0, 100);
         m.setModelDistance(1, 100, 200);
         m.setModelDistance(2, 200, 300);
         m.setModelDistance(3, 300, 1000);
-        
+
         dlod = new DiscreteLodNode("DLOD", m);
         dlod.attachChild(s1);
         dlod.attachChild(s2);

@@ -1,33 +1,33 @@
-/* 
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding 
- * All rights reserved. 
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- * 
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE. 
- * 
+/*
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 package com.jme.scene.model.md2;
 
@@ -43,16 +43,16 @@ import com.jme.system.JmeException;
  * end. Calling the <code>setAnimation</code> method, this class sets the
  * start and end frames of the controller.
  * @author Mark Powell
- * @version $Id: Md2KeyframeSelector.java,v 1.1 2004-02-08 20:02:58 mojomonkey Exp $
+ * @version $Id: Md2KeyframeSelector.java,v 1.2 2004-04-22 22:26:52 renanse Exp $
  */
 public class Md2KeyframeSelector {
 	private VertexKeyframeController controller;
 	private Md2Animations[] animations;
 
 	/**
-	 * Constructor instantiates a new <code>Md2KeyframeSelector</code> 
+	 * Constructor instantiates a new <code>Md2KeyframeSelector</code>
 	 * object. The controller that will be used for animation selection
-	 * is passed during construction. This controller should be the 
+	 * is passed during construction. This controller should be the
 	 * same that is added to the MD2 model.
 	 * @param controller the animation controller used for keyframe selection.
 	 */
@@ -62,10 +62,10 @@ public class Md2KeyframeSelector {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setAnimation</code> sets the desired animation based on the
-	 * index of the animation list. 
-	 * @param animation the index into the animation list. 
+	 * index of the animation list.
+	 * @param animation the index into the animation list.
 	 */
 	public void setAnimation(int animation) {
 		if(animation < 0 || animation >= animations.length) {
@@ -76,9 +76,9 @@ public class Md2KeyframeSelector {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setAnimation</code> sets the desired animation based on the
-	 * name of the animation. If the name of the animation does not 
+	 * name of the animation. If the name of the animation does not
 	 * exist there is no change in the animation.
 	 * @param animation the name of the animation to switch to.
 	 */
@@ -93,8 +93,8 @@ public class Md2KeyframeSelector {
 	}
 
 	/**
-	 * 
-	 * <code>isValidAnimation</code> returns true or false if an 
+	 *
+	 * <code>isValidAnimation</code> returns true or false if an
 	 * animation name exists in the animation list. If the name is
 	 * valid, true is returned, otherwise false is returned.
 	 * @param animation the animation name to test.
@@ -110,9 +110,9 @@ public class Md2KeyframeSelector {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>getAnimationList</code> returns a list of all the animation
-	 * names for a given controller. 
+	 * names for a given controller.
 	 * @return the animation names list.
 	 */
 	public String[] getAnimationList() {
@@ -124,9 +124,9 @@ public class Md2KeyframeSelector {
 
 		return names;
 	}
-	
+
 	/**
-	 * 
+	 *
 	 * <code>getNumberOfAnimations</code> returns the number of animations
 	 * in the controller.
 	 * @return the number of animations that exist.
@@ -136,7 +136,7 @@ public class Md2KeyframeSelector {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>initializeAnimations</code> builds a list of animations
 	 * that are unique. This is based on animation names. The last two
 	 * characters are removed from the name (as this typically corresponds
@@ -186,7 +186,7 @@ public class Md2KeyframeSelector {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>Md2Animations</code> holds information about a single
 	 * animation.
 	 */

@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -57,26 +57,26 @@ import com.jme.util.LoggingSystem;
  * of 5 50% of the texture will be used for the output texture. When combining
  * multiple input textures with overlapping values, you can create a smooth
  * blending for the output texture.
- * 
+ *
  * Currently, the output texture will have the same dimensions as the input
  * heightmap.
- * 
+ *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.2 2004-04-15 02:54:31 mojomonkey Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.3 2004-04-22 22:27:08 renanse Exp $
  */
 public class ProceduralTextureGenerator {
 	//output image
 	private ImageIcon proceduralTexture;
-	
+
 	//inputs: height map and all input textures.
 	private AbstractHeightMap heightMap;
 	private ArrayList textureList;
-	
+
 	//the size of the texture.
 	private int size;
 
 	/**
-	 * Constructor instantiates a new <code>ProceduralTexture</code> object 
+	 * Constructor instantiates a new <code>ProceduralTexture</code> object
 	 * initializing the list for textures and the height map.
 	 * @param heightMap the height map to use for the texture generation.
 	 */
@@ -103,7 +103,7 @@ public class ProceduralTextureGenerator {
 		int green = 0;
 		int blue = 0;
 
-		
+
 		int scaledX;
 		int scaledZ;
 
@@ -120,13 +120,13 @@ public class ProceduralTextureGenerator {
 						(DataBufferInt) tempImg.getRaster()
 							.getDataBuffer();
 					pixels = data.getData();
-					
+
 					//We may have to tile the texture if the terrain is
 					//larger than the texture.
 					scaledX = x % tempImg.getWidth();
 					scaledZ = z % tempImg.getHeight();
-					
-					//Retrieve the amount of the color to use for this 
+
+					//Retrieve the amount of the color to use for this
 					//texture.
 					float scalar = getTextureScale(interpolateHeight(x,z,mapRatio),i);
 					red += scalar
@@ -141,11 +141,11 @@ public class ProceduralTextureGenerator {
 						* ((pixels[scaledZ * tempImg.getWidth()
 							+ scaledX] & 0x000000FF));
 				}
-				
+
 				//set the color for the final texture.
 				int rgb = red << 16 | green << 8 | blue;
 				img.setRGB(x, textureSize - (z+1), rgb);
-				
+
 				red = 0;
 				green = 0;
 				blue = 0;
@@ -155,11 +155,11 @@ public class ProceduralTextureGenerator {
 		//create the new image from the data.
 		proceduralTexture = new ImageIcon(img);
 		proceduralTexture.setDescription("TerrainTexture");
-		
+
 		LoggingSystem.getLogger().log(Level.INFO,
 				"Created procedural texture successfully.");
 	}
-	
+
 	public boolean saveTexture(String filename) {
 
 		if (null == filename) {
@@ -169,7 +169,7 @@ public class ProceduralTextureGenerator {
 			Level.INFO,
 			"Taking screenshot: " + filename + ".png");
 
-		
+
 		BufferedImage imageData = (BufferedImage) proceduralTexture.getImage();
 
 		//write out the screenshot image to a file.
@@ -190,9 +190,9 @@ public class ProceduralTextureGenerator {
 	 * associated with it. This determines how much of the texture color
 	 * to use for a particular pixel. Where optimal is 100% of the color,
 	 * less than low is 0% and higher than high is 0%. For example if the
-	 * values are (0, 10, 20), and the height is 5, then 50% of the 
+	 * values are (0, 10, 20), and the height is 5, then 50% of the
 	 * color will be used.
-	 * 
+	 *
 	 * @param image the input texture.
 	 * @param low the low color value for this texture.
 	 * @param optimal the optimal color value for this texture.
@@ -230,10 +230,10 @@ public class ProceduralTextureGenerator {
 		}
 		heightMap = hm;
 	}
-	
+
 	/**
 	 * <code>getImageIcon</code> retrieves the procedural texture that
-	 * has been created. Note that this will return null until 
+	 * has been created. Note that this will return null until
 	 * <code>createTexture</code> has been called.
 	 * @return the <code>ImageIcon</code> of the output texture.
 	 */
@@ -265,34 +265,34 @@ public class ProceduralTextureGenerator {
 			return 0.0f;
 		}
 	}
-	
+
 	private int interpolateHeight(int x, int z, float ratio) {
 		int low, highX, highZ;
 		float intX, intZ;
 		float scaledX = x * ratio;
 		float scaledZ = z * ratio;
 		float interpolation;
-		
+
 		low = heightMap.getTrueHeightAtPoint((int)scaledX, (int)scaledZ);
-		
+
 		if(scaledX+1 >= size) {
 			return low;
 		} else {
 			highX = heightMap.getTrueHeightAtPoint((int)scaledX+1, (int)scaledZ);
 		}
-		
+
 		interpolation = scaledX - (int)scaledX;
 		intX = ((highX - low) * interpolation) + low;
-		
+
 		if(scaledZ+1 >=size) {
 			return low;
 		} else {
 			highZ = heightMap.getTrueHeightAtPoint((int)scaledX, (int)scaledZ+1);
 		}
-		
+
 		interpolation = scaledZ - (int)scaledZ;
 		intZ = ((highZ - low) * interpolation) + low;
-		
+
 		return (int)((intX+intZ)/2);
 	}
 

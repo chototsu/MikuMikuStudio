@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 package com.jme.util;
@@ -56,13 +56,13 @@ import com.jme.image.Texture;
 import com.jme.renderer.ColorRGBA;
 
 /**
- * 
+ *
  * <code>TextureManager</code> provides static methods for building a
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
- * 
+ *
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.14 2004-04-19 02:20:18 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.15 2004-04-22 22:27:10 renanse Exp $
  */
 public class TextureManager {
 
@@ -105,7 +105,7 @@ public class TextureManager {
      * texture. Whether the texture is to be mipmapped or not is denoted by the
      * isMipmapped boolean flag. If there is an error loading the file, null is
      * returned.
-     * 
+     *
      * @param file
      *            the filename of the texture image.
      * @param minFilter
@@ -118,7 +118,7 @@ public class TextureManager {
      * @param flipped
      *            true flips the bits of the image, false does not. True by
      *            default.
-     * 
+     *
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
@@ -133,7 +133,7 @@ public class TextureManager {
      * texture. Whether the texture is to be mipmapped or not is denoted by the
      * isMipmapped boolean flag. If there is an error loading the file, null is
      * returned.
-     * 
+     *
      * @param file
      *            the filename of the texture image.
      * @param minFilter
@@ -143,7 +143,7 @@ public class TextureManager {
      * @param isMipmapped
      *            determines if we will load the texture mipmapped or not. True
      *            load the texture mipmapped, false do not.
-     * 
+     *
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
@@ -165,7 +165,7 @@ public class TextureManager {
      * Whether the texture is to be mipmapped or not is denoted by the
      * isMipmapped boolean flag. If there is an error loading the file, null is
      * returned.
-     * 
+     *
      * @param file
      *            the url of the texture image.
      * @param minFilter
@@ -178,7 +178,7 @@ public class TextureManager {
      * @param flipped
      *            true flips the bits of the image, false does not. True by
      *            default.
-     * 
+     *
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
@@ -193,7 +193,7 @@ public class TextureManager {
      * Whether the texture is to be mipmapped or not is denoted by the
      * isMipmapped boolean flag. If there is an error loading the file, null is
      * returned.
-     * 
+     *
      * @param file
      *            the url of the texture image.
      * @param minFilter
@@ -203,7 +203,7 @@ public class TextureManager {
      * @param isMipmapped
      *            determines if we will load the texture mipmapped or not. True
      *            load the texture mipmapped, false do not.
-     * 
+     *
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
@@ -272,9 +272,9 @@ public class TextureManager {
     }
 
     /**
-     * 
+     *
      * <code>loadImage</code> sets the image data.
-     * 
+     *
      * @param image
      *            The image data.
      * @param flipImage
@@ -340,10 +340,10 @@ public class TextureManager {
      * and reading in each byte. After the image data is read, it is used to
      * create a new <code>Image</code> object. This object is returned to be
      * used for normal use.
-     * 
+     *
      * @param file
      *            the name of the bitmap file.
-     * 
+     *
      * @return <code>Image</code> object that contains the bitmap information.
      */
     private static java.awt.Image loadBMPImage(InputStream fs) {
@@ -375,10 +375,10 @@ public class TextureManager {
      * and reading in each byte. After the image data is read, it is used to
      * create a new <code>Image</code> object. This object is returned to be
      * used for normal use.
-     * 
+     *
      * @param file
      *            the name of the targa file.
-     * 
+     *
      * @return <code>Image</code> object that contains the targa information.
      */
     private static java.awt.Image loadTGAImage(InputStream fis) {
@@ -457,10 +457,10 @@ public class TextureManager {
     /**
      * <code>flipEndian</code> is used to flip the endian bit of the header
      * file.
-     * 
+     *
      * @param signedShort
      *            the bit to flip.
-     * 
+     *
      * @return the flipped bit.
      */
     private static short flipEndian(short signedShort) {
@@ -471,7 +471,7 @@ public class TextureManager {
     /**
      * <code>hasAlpha</code> returns true if the specified image has
      * transparent pixels
-     * 
+     *
      * @param image
      *            Image to check
      * @return true if the specified image has transparent pixels

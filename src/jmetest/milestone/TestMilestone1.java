@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -45,15 +45,15 @@ import com.jme.system.JmeException;
 
 /**
  * <code>TestMilestone1</code> tests all features of Milestone 1:
- * 
+ *
  * Properties Dialog
  * Game loop
  * Scene graph elements
  * renderer
  * Culling
- * 
+ *
  * @author Mark Powell
- * @version $Id: TestMilestone1.java,v 1.4 2004-04-19 20:44:57 renanse Exp $
+ * @version $Id: TestMilestone1.java,v 1.5 2004-04-22 22:27:37 renanse Exp $
  */
 public class TestMilestone1 extends BaseGame {
     private Node scene;
@@ -86,12 +86,12 @@ public class TestMilestone1 extends BaseGame {
     protected void initSystem() {
         try {
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(properties.getWidth(), properties.getHeight(), 
-                                properties.getDepth(), properties.getFreq(), 
+            display.createWindow(properties.getWidth(), properties.getHeight(),
+                                properties.getDepth(), properties.getFreq(),
                                 properties.getFullscreen());
             cam = display.getRenderer().getCamera(properties.getWidth(),
                                 properties.getHeight());
-            
+
         } catch (JmeException e) {
             e.printStackTrace();
             System.exit(1);
@@ -143,7 +143,7 @@ public class TestMilestone1 extends BaseGame {
             vertex2[i].x = (float) Math.random()* -100 - 50;
             vertex2[i].y = (float) Math.random() * 50 - 25;
             vertex2[i].z = (float) Math.random() * 50 - 25;
-    
+
             color2[i] = new ColorRGBA();
             color2[i].r = (float) Math.random();
             color2[i].g = (float) Math.random();
@@ -157,7 +157,7 @@ public class TestMilestone1 extends BaseGame {
         p.updateModelBound();
         Node pointNode = new Node("Point Node");
         pointNode.attachChild(p);
-        
+
         Vector3f[] verts = new Vector3f[3];
         ColorRGBA[] color3 = new ColorRGBA[3];
 
@@ -195,12 +195,12 @@ public class TestMilestone1 extends BaseGame {
         t.setLocalTranslation(new Vector3f(-150, 0, 0));
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
-        
+
         pointNode.attachChild(t);
         pointNode.setLocalTranslation(new Vector3f(0,-50,0));
-        
+
         //should be culled:
-        
+
         Vector3f[] verts2 = new Vector3f[3];
         ColorRGBA[] color4 = new ColorRGBA[3];
 
@@ -238,7 +238,7 @@ public class TestMilestone1 extends BaseGame {
         t2.setLocalTranslation(new Vector3f(150, 0, 0));
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
-        
+
         scene = new Node("Scene graph node");
         scene.attachChild(l);
         scene.attachChild(pointNode);

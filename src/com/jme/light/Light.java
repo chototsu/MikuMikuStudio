@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -37,19 +37,19 @@ import com.jme.renderer.ColorRGBA;
  * <code>Light</code> defines the attributes of a light element. This class
  * is abstract and intended to be subclassed by specific lighting types. A
  * light will illuminate portions of the scene by assigning its properties
- * to the objects in the scene. This will affect the objects color values, 
- * depending on the color of the ambient, diffuse and specular light 
+ * to the objects in the scene. This will affect the objects color values,
+ * depending on the color of the ambient, diffuse and specular light
  * components.
- * 
- * Ambient light defines the general light of the scene, that is the 
+ *
+ * Ambient light defines the general light of the scene, that is the
  * intensity and color of lighting if no particular lights are affecting it.
- * 
- * Diffuse lighting defines the reflection of light on matte surfaces. 
- * 
+ *
+ * Diffuse lighting defines the reflection of light on matte surfaces.
+ *
  * Specular lighting defines the reflection of light on shiny surfaces.
- * 
+ *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.2 2004-04-02 21:09:19 mojomonkey Exp $
+ * @version $Id: Light.java,v 1.3 2004-04-22 22:26:38 renanse Exp $
  */
 public abstract class Light {
 
@@ -79,11 +79,11 @@ public abstract class Light {
     private float constant;
     private float linear;
     private float quadratic;
-    
+
     private boolean enabled;
 
     /**
-     * Constructor instantiates a new <code>Light</code> object. All 
+     * Constructor instantiates a new <code>Light</code> object. All
      * light color values are set to white.
      *
      */
@@ -92,9 +92,9 @@ public abstract class Light {
         diffuse = new ColorRGBA();
         specular = new ColorRGBA();
     }
-    
+
     /**
-     * 
+     *
      * <code>getType</code> returns the type of the light that has been
      * created.
      * @return the type of light that has been created.
@@ -134,7 +134,7 @@ public abstract class Light {
     }
 
     /**
-     * <code>getQuadratic</code> returns the value for the quadratic 
+     * <code>getQuadratic</code> returns the value for the quadratic
      * attentuation.
      * @return the value for the quadratic attenuation.
      */
@@ -152,7 +152,7 @@ public abstract class Light {
 
     /**
      * <code>isAttenuate</code> returns true if attenuation is to be used
-     * for this light. 
+     * for this light.
      * @return true if attenuation is to be used, false otherwise.
      */
     public boolean isAttenuate() {
@@ -167,19 +167,19 @@ public abstract class Light {
     public void setAttenuate(boolean attenuate) {
         this.attenuate = attenuate;
     }
-    
+
     /**
-     * 
-     * <code>isEnabled</code> returns true if the light is enabled, false 
+     *
+     * <code>isEnabled</code> returns true if the light is enabled, false
      * otherwise.
      * @return true if the light is enabled, false if it is not.
      */
     public boolean isEnabled() {
         return enabled;
     }
-    
+
     /**
-     * 
+     *
      * <code>setEnabled</code> sets the light on or off. True turns it on,
      * false turns it off.
      * @param value true to turn the light on, false to turn it off.

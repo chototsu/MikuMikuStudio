@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.8 2004-04-19 20:44:54 renanse Exp $
+ * @version $Id: TestMultitexture.java,v 1.9 2004-04-22 22:27:41 renanse Exp $
  */
 public class TestMultitexture extends BaseGame {
     private TriMesh t;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.scene.Spatial;
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.4 2004-04-16 17:50:28 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.5 2004-04-22 22:26:58 renanse Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.

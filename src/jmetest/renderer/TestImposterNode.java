@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.11 2004-04-16 18:08:27 renanse Exp $
+ * @version $Id: TestImposterNode.java,v 1.12 2004-04-22 22:27:40 renanse Exp $
  */
 public class TestImposterNode extends VariableTimestepGame {
   private Camera cam;

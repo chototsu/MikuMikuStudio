@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.1 2004-04-19 20:44:45 renanse Exp $
+ * @version $Id: BaseGame.java,v 1.2 2004-04-22 22:26:21 renanse Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 

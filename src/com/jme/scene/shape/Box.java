@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import com.jme.scene.TriMesh;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.2 2004-04-12 21:15:27 renanse Exp $
+ * @version $Id: Box.java,v 1.3 2004-04-22 22:26:53 renanse Exp $
  */
 public class Box extends TriMesh {
     public float xExtent, yExtent, zExtent;

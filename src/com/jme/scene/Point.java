@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * <code>Point</code> defines a collection of vertices that are rendered as
  * single points.
  * @author Mark Powell
- * @version $Id: Point.java,v 1.5 2004-03-13 03:07:38 renanse Exp $
+ * @version $Id: Point.java,v 1.6 2004-04-22 22:26:46 renanse Exp $
  */
 public class Point extends Geometry {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -34,7 +34,7 @@ package com.jme.scene.state;
 /**
  * <code>AttributeState</code>
  * @author Mark Powell
- * @version $Id: AttributeState.java,v 1.2 2004-04-16 17:12:49 renanse Exp $
+ * @version $Id: AttributeState.java,v 1.3 2004-04-22 22:26:55 renanse Exp $
  */
 public abstract class AttributeState extends RenderState {
 	public static final int ALL_ATTRIB_BIT = 0;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLVertexProgramState</code>
  *
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.5 2004-04-21 18:56:35 renanse Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.6 2004-04-22 22:26:59 renanse Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 

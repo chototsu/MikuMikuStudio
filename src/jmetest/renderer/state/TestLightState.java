@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -56,7 +56,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.9 2004-04-19 20:44:47 renanse Exp $
+ * @version $Id: TestLightState.java,v 1.10 2004-04-22 22:27:44 renanse Exp $
  */
 public class TestLightState extends BaseGame {
     private TriMesh t;

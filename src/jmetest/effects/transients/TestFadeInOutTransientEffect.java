@@ -1,4 +1,35 @@
 /*
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+/*
  * Created on Apr 6, 2004
  */
 package jmetest.effects.transients;
@@ -24,114 +55,114 @@ import com.jme.util.Timer;
  * @author Ahmed
  */
 public class TestFadeInOutTransientEffect extends BaseGame {
-	private Camera cam;
-	private FadeInOut fio;
-	private FadeInOutController fioC;
-	private Node rootNode, fadeOutNode, fadeInNode;
-	private Text fps;
-	private Timer timer;
+    private Camera cam;
+    private FadeInOut fio;
+    private FadeInOutController fioC;
+    private Node rootNode, fadeOutNode, fadeInNode;
+    private Text fps;
+    private Timer timer;
 
-	private TextureRenderer tRen;
-	private Texture fadeInT, fadeOutT;
+    private TextureRenderer tRen;
+    private Texture fadeInT, fadeOutT;
 
-	private Quad fadeIn, fadeOut;
+    private Quad fadeIn, fadeOut;
 
-	protected void update(float interpolation) {
-		fps.print("FPS: " + (int) timer.getFrameRate() + ", "
-				+ display.getRenderer().getStatistics() + ", Memory Usage:"
-				+ (Runtime.getRuntime().freeMemory()/(1024*1024)) + "Mb/"
-				+ (Runtime.getRuntime().totalMemory()/(1024*1024)) + "Mb");
+    protected void update(float interpolation) {
+        fps.print("FPS: " + (int) timer.getFrameRate() + ", "
+                + display.getRenderer().getStatistics() + ", Memory Usage:"
+                + (Runtime.getRuntime().freeMemory()/(1024*1024)) + "Mb/"
+                + (Runtime.getRuntime().totalMemory()/(1024*1024)) + "Mb");
 
-		rootNode.updateWorldData(timer.getTimePerFrame() * 10);
-	}
-	protected void render(float interpolation) {
-		display.getRenderer().clearBuffers();
-		display.getRenderer().draw(rootNode);
-		display.getRenderer().clearStatistics();
-	}
-	protected void initSystem() {
-		try {
-			display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-			display.createWindow(properties.getWidth(), properties.getHeight(),
-					properties.getDepth(), properties.getFreq(), properties
-							.getFullscreen());
-			display.setTitle("FadeInOut Test");
-			cam = display.getRenderer().getCamera(properties.getWidth(),
-					properties.getHeight());
-		} catch (JmeException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		display.getRenderer().setBackgroundColor(new ColorRGBA(0, 0, 0, 0));
-		cam.setFrustum(1f, 1000f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-		Vector3f loc = new Vector3f(0, 0, 20);
-		Vector3f left = new Vector3f(-1, 0, 0);
-		Vector3f up = new Vector3f(0, 1, 0);
-		Vector3f dir = new Vector3f(0, 0, -1);
-		cam.setFrame(loc, left, up, dir);
-		display.getRenderer().setCamera(cam);
-		display.getRenderer().enableStatistics(true);
-		timer = Timer.getTimer(properties.getRenderer());
-	}
-	protected void initGame() {
-		rootNode = new Node("Scene Graph Root Node");
-		fadeOutNode = new Node("Fade Out Node");
-		fadeInNode = new Node("Fade In Node");
-		AlphaState fontAS = display.getRenderer().getAlphaState();
-		fontAS.setBlendEnabled(true);
-		fontAS.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		fontAS.setDstFunction(AlphaState.DB_ONE);
-		fontAS.setTestEnabled(true);
-		fontAS.setTestFunction(AlphaState.TF_GREATER);
-		fontAS.setEnabled(true);
-		TextureState fontTS = display.getRenderer().getTextureState();
-		fontTS.setTexture(TextureManager.loadTexture(
-				TestFadeInOutTransientEffect.class.getClassLoader()
-						.getResource("jmetest/data/font/font.png"),
-				Texture.MM_LINEAR, Texture.FM_LINEAR, true));
-		fontTS.setEnabled(true);
-		fps = new Text("FPS", "");
-		fps.setRenderState(fontAS);
-		fps.setRenderState(fontTS);
+        rootNode.updateWorldData(timer.getTimePerFrame() * 10);
+    }
+    protected void render(float interpolation) {
+        display.getRenderer().clearBuffers();
+        display.getRenderer().draw(rootNode);
+        display.getRenderer().clearStatistics();
+    }
+    protected void initSystem() {
+        try {
+            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            display.createWindow(properties.getWidth(), properties.getHeight(),
+                    properties.getDepth(), properties.getFreq(), properties
+                            .getFullscreen());
+            display.setTitle("FadeInOut Test");
+            cam = display.getRenderer().getCamera(properties.getWidth(),
+                    properties.getHeight());
+        } catch (JmeException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+        display.getRenderer().setBackgroundColor(new ColorRGBA(0, 0, 0, 0));
+        cam.setFrustum(1f, 1000f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+        Vector3f loc = new Vector3f(0, 0, 20);
+        Vector3f left = new Vector3f(-1, 0, 0);
+        Vector3f up = new Vector3f(0, 1, 0);
+        Vector3f dir = new Vector3f(0, 0, -1);
+        cam.setFrame(loc, left, up, dir);
+        display.getRenderer().setCamera(cam);
+        display.getRenderer().enableStatistics(true);
+        timer = Timer.getTimer(properties.getRenderer());
+    }
+    protected void initGame() {
+        rootNode = new Node("Scene Graph Root Node");
+        fadeOutNode = new Node("Fade Out Node");
+        fadeInNode = new Node("Fade In Node");
+        AlphaState fontAS = display.getRenderer().getAlphaState();
+        fontAS.setBlendEnabled(true);
+        fontAS.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        fontAS.setDstFunction(AlphaState.DB_ONE);
+        fontAS.setTestEnabled(true);
+        fontAS.setTestFunction(AlphaState.TF_GREATER);
+        fontAS.setEnabled(true);
+        TextureState fontTS = display.getRenderer().getTextureState();
+        fontTS.setTexture(TextureManager.loadTexture(
+                TestFadeInOutTransientEffect.class.getClassLoader()
+                        .getResource("jmetest/data/font/font.png"),
+                Texture.MM_LINEAR, Texture.FM_LINEAR, true));
+        fontTS.setEnabled(true);
+        fps = new Text("FPS", "");
+        fps.setRenderState(fontAS);
+        fps.setRenderState(fontTS);
 
-		fadeOut = new Quad("Fade Out");
-		fadeOut.initialize(5, 5);
-		fadeOut.setRenderState(fontTS);
-		fadeOutNode.attachChild(fadeOut);
+        fadeOut = new Quad("Fade Out");
+        fadeOut.initialize(5, 5);
+        fadeOut.setRenderState(fontTS);
+        fadeOutNode.attachChild(fadeOut);
 
-		fadeIn = new Quad("Fade In");
-		fadeIn.initialize(5, 5);
-		fadeInNode.attachChild(fadeIn);
+        fadeIn = new Quad("Fade In");
+        fadeIn.initialize(5, 5);
+        fadeInNode.attachChild(fadeIn);
 
-		tRen = display.createTextureRenderer(512, 512, false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
-		fadeInT = tRen.setupTexture();
-		fadeOutT = tRen.setupTexture();
-		tRen.render(fadeInNode, fadeInT);
-		tRen.render(fadeOutNode, fadeOutT);
+        tRen = display.createTextureRenderer(512, 512, false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
+        fadeInT = tRen.setupTexture();
+        fadeOutT = tRen.setupTexture();
+        tRen.render(fadeInNode, fadeInT);
+        tRen.render(fadeOutNode, fadeOutT);
 
-		TextureState fadeOutTS = display.getRenderer().getTextureState();
-		fadeOutTS.setEnabled(true);
-		fadeOutTS.setTexture(fadeOutT);
+        TextureState fadeOutTS = display.getRenderer().getTextureState();
+        fadeOutTS.setEnabled(true);
+        fadeOutTS.setTexture(fadeOutT);
 
-		TextureState fadeInTS = display.getRenderer().getTextureState();
-		fadeInTS.setEnabled(true);
-		fadeOutTS.setTexture(fadeInT);
+        TextureState fadeInTS = display.getRenderer().getTextureState();
+        fadeInTS.setEnabled(true);
+        fadeOutTS.setTexture(fadeInT);
 
-		fio = new FadeInOut("FadeInOut", fadeOutTS, fadeInTS, new ColorRGBA(1, 0, 0, 0), 0.01f);
-		fioC = new FadeInOutController(fio);
-		fio.addController(fioC);
+        fio = new FadeInOut("FadeInOut", fadeOutTS, fadeInTS, new ColorRGBA(1, 0, 0, 0), 0.01f);
+        fioC = new FadeInOutController(fio);
+        fio.addController(fioC);
 
-		rootNode.attachChild(fps);
-		rootNode.attachChild(fio);
+        rootNode.attachChild(fps);
+        rootNode.attachChild(fio);
                 rootNode.updateRenderState();
-	}
-	protected void reinit() {
-	}
-	protected void cleanup() {
-	}
-	public static void main(String[] args) {
-		TestFadeInOutTransientEffect app = new TestFadeInOutTransientEffect();
-		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
-		app.start();
-	}
+    }
+    protected void reinit() {
+    }
+    protected void cleanup() {
+    }
+    public static void main(String[] args) {
+        TestFadeInOutTransientEffect app = new TestFadeInOutTransientEffect();
+        app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
+    }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ package com.jme.scene;
  * of this will provide the update method that takes the current time and
  * modifies an object in a application specific way.
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.5 2004-03-31 22:56:59 renanse Exp $
+ * @version $Id: Controller.java,v 1.6 2004-04-22 22:26:44 renanse Exp $
  */
 public abstract class Controller {
     public static final int RT_CLAMP = 0;

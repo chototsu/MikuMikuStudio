@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.11 2004-04-19 20:44:48 renanse Exp $
+ * @version $Id: TestMd2.java,v 1.12 2004-04-22 22:27:43 renanse Exp $
  */
 public class TestMd2 extends BaseGame {
   LightState state;

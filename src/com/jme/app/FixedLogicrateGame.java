@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * rate and a fixed frame rate.
  *
  * @author Eric Woroshow
- * @version $Id: FixedLogicrateGame.java,v 1.4 2004-03-27 01:05:06 renanse Exp $
+ * @version $Id: FixedLogicrateGame.java,v 1.5 2004-04-22 22:26:22 renanse Exp $
  */
 public abstract class FixedLogicrateGame extends AbstractGame {
 	private static final int MAX_LOOPS = 50;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
 /**
  * Test of the point renderer for the LWJGL renderer.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererPoint.java,v 1.6 2004-04-19 20:44:53 renanse Exp $
+ * @version $Id: TestLWJGLRendererPoint.java,v 1.7 2004-04-22 22:27:40 renanse Exp $
  */
 public class TestLWJGLRendererPoint extends BaseGame {
 

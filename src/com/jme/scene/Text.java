@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.renderer.Renderer;
  *
  * <code>Text</code>
  * @author Mark Powell
- * @version $Id: Text.java,v 1.6 2004-03-13 03:07:39 renanse Exp $
+ * @version $Id: Text.java,v 1.7 2004-04-22 22:26:47 renanse Exp $
  */
 public class Text extends Geometry {
     private StringBuffer text;

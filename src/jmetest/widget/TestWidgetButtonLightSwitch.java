@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.13 2004-04-19 20:45:01 renanse Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.14 2004-04-22 22:27:49 renanse Exp $
  */
 public class TestWidgetButtonLightSwitch extends BaseGame {
 	static String STARTED_STATE_STRING = " Stop ";

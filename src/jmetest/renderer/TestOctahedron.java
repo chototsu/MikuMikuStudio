@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.6 2004-04-19 20:44:54 renanse Exp $
+ * @version $Id: TestOctahedron.java,v 1.7 2004-04-22 22:27:41 renanse Exp $
  */
 public class TestOctahedron extends BaseGame {
     private Camera cam;
@@ -170,7 +170,7 @@ public class TestOctahedron extends BaseGame {
         s = new Octahedron("Octahedron", 20);
         s.setModelBound(new BoundingBox());
         s.updateModelBound();
-        
+
         scene.attachChild(s);
 
         TextureState ts = display.getRenderer().getTextureState();

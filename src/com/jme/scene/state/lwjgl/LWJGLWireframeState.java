@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.scene.state.WireframeState;
  * LWJGL API to access OpenGL. If the state is enabled, wireframe mode is
  * used, otherwise solid fill is used.
  * @author Mark Powell
- * @version $Id: LWJGLWireframeState.java,v 1.2 2004-04-16 17:12:53 renanse Exp $
+ * @version $Id: LWJGLWireframeState.java,v 1.3 2004-04-22 22:26:59 renanse Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
 

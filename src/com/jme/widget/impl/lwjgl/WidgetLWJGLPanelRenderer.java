@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+* Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -37,7 +37,7 @@ import com.jme.widget.panel.WidgetPanel;
 /**
  * <code>WidgetLWJGLPanelRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLPanelRenderer.java,v 1.2 2004-04-16 20:47:23 renanse Exp $
+ * @version $Id: WidgetLWJGLPanelRenderer.java,v 1.3 2004-04-22 22:27:17 renanse Exp $
  */
 public class WidgetLWJGLPanelRenderer extends WidgetLWJGLAbstractRenderer {
 

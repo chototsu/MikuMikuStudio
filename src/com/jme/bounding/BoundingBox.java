@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.scene.shape.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.5 2004-04-16 17:34:47 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.6 2004-04-22 22:26:23 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 

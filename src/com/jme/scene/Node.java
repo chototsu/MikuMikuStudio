@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -55,7 +55,7 @@ import java.util.Stack;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.19 2004-04-16 17:12:50 renanse Exp $
+ * @version $Id: Node.java,v 1.20 2004-04-22 22:26:45 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.

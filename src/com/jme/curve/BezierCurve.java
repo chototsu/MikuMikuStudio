@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -35,7 +35,7 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 
 /**
- * <code>BezierCurve</code> uses an ordered-list of three-dimensional 
+ * <code>BezierCurve</code> uses an ordered-list of three-dimensional
  * points and the equation:
  * x(t) = Sum(n, i=0) Bn,i(t)Pi<br>
  * t [0,1]<br>
@@ -44,7 +44,7 @@ import com.jme.math.Vector3f;
  * [0,1] where 0 is the first control point and 1 is the second control
  * point.
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.8 2004-03-12 21:35:12 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.9 2004-04-22 22:26:23 renanse Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -58,7 +58,7 @@ public class BezierCurve extends Curve {
     }
 
     /**
-     * Constructor instantiates a new <code>BezierCurve</code> object. 
+     * Constructor instantiates a new <code>BezierCurve</code> object.
      * The control points that define the curve are supplied.
      * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
@@ -69,12 +69,12 @@ public class BezierCurve extends Curve {
     }
 
     /**
-     * <code>getPoint</code> calculates a point on a Bezier curve 
-     * from a given time value within the interval [0, 1]. If the 
+     * <code>getPoint</code> calculates a point on a Bezier curve
+     * from a given time value within the interval [0, 1]. If the
      * value is zero or less, the first control point is returned. If
      * the value is one or more, the last control point is returned.
      * Using the equation of a Bezier Curve, the point at the interval
-     * is calculated and returned. 
+     * is calculated and returned.
      * @see com.jme.curve.Curve#getPoint(float)
      */
     public Vector3f getPoint(float time) {
@@ -125,7 +125,7 @@ public class BezierCurve extends Curve {
      * for any given point along to the line to still be facing
      * in the direction of the line.
      * @param time the current time (between 0 and 1)
-     * @param precision how accurate to (i.e. the next time) to 
+     * @param precision how accurate to (i.e. the next time) to
      *      check against.
      * @return the rotation matrix.
      * @see com.jme.curve.Curve#getOrientation(float, float)
@@ -161,7 +161,7 @@ public class BezierCurve extends Curve {
      * keep the rotation matrix following the line, but insures the
      * object's up vector is not drastically changed.
      * @param time the current time (between 0 and 1)
-     * @param precision how accurate to (i.e. the next time) to 
+     * @param precision how accurate to (i.e. the next time) to
      *      check against.
      * @return the rotation matrix.
      * @see com.jme.curve.Curve#getOrientation(float, float)
@@ -187,7 +187,7 @@ public class BezierCurve extends Curve {
         rotation.setColumn(0, tangent);
         rotation.setColumn(1, normal);
         rotation.setColumn(2, binormal);
-        
+
         return rotation;
     }
 

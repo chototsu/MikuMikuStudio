@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.scene.TriMesh;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.10 2004-04-14 02:30:22 mojomonkey Exp $
+ * @version $Id: ClodMesh.java,v 1.11 2004-04-22 22:26:48 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int currentRecord, targetRecord;
@@ -52,7 +52,7 @@ public class ClodMesh extends TriMesh {
   public ClodMesh(String name) {
       super(name);
   }
-  
+
   public ClodMesh(
       String name,
       TriMesh data,
@@ -95,9 +95,9 @@ public class ClodMesh extends TriMesh {
     updateIndexBuffer();
     updateModelBound();
   }
-  
+
   public void create(CollapseRecord[] records) {
-  
+
       targetRecord = 0;
       currentRecord = 0;
 
@@ -119,7 +119,7 @@ public class ClodMesh extends TriMesh {
       updateTextureBuffer();
       updateIndexBuffer();
       updateModelBound();
-      
+
   }
 
   public void selectLevelOfDetail(Renderer r) {

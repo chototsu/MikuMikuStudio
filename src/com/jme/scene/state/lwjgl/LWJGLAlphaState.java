@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.scene.state.AlphaState;
  * <code>LWJGLAlphaState</code> subclasses the AlphaState using the LWJGL API
  * to set OpenGL's alpha state.
  * @author Mark Powell
- * @version $Id: LWJGLAlphaState.java,v 1.2 2004-04-16 17:12:51 renanse Exp $
+ * @version $Id: LWJGLAlphaState.java,v 1.3 2004-04-22 22:26:57 renanse Exp $
  */
 public class LWJGLAlphaState extends AlphaState {
     //gl alpha values

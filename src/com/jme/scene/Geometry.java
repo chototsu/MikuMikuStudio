@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -54,7 +54,7 @@ import com.jme.scene.state.RenderState;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.29 2004-04-20 20:04:56 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.30 2004-04-22 22:26:45 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
   protected BoundingVolume bound;

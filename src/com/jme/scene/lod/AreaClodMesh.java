@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.system.DisplaySystem;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: AreaClodMesh.java,v 1.5 2004-04-19 20:42:58 renanse Exp $
+ * @version $Id: AreaClodMesh.java,v 1.6 2004-04-22 22:26:48 renanse Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   float trisPerPixel = 1f;

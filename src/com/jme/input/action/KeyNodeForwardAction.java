@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.scene.Spatial;
  * <code>performAction</code> method. The speed is set with construction or
  * the <code>setSpeed</code> method. This can be thought as units/second.
  * @author Mark Powell
- * @version $Id: KeyNodeForwardAction.java,v 1.5 2004-03-02 16:40:08 renanse Exp $
+ * @version $Id: KeyNodeForwardAction.java,v 1.6 2004-04-22 22:26:32 renanse Exp $
  */
 public class KeyNodeForwardAction implements InputAction {
     private Spatial node;

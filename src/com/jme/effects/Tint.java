@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,7 @@ import com.jme.scene.Geometry;
 /**
  * <code>Tint</code>
  * @author Ahmed
- * @version $Id: Tint.java,v 1.5 2004-03-13 03:07:41 renanse Exp $
+ * @version $Id: Tint.java,v 1.6 2004-04-22 22:26:25 renanse Exp $
  */
 public class Tint extends Geometry {
 

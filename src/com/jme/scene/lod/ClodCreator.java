@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import com.jme.renderer.ColorRGBA;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.9 2004-04-14 23:03:52 mojomonkey Exp $
+ * @version $Id: ClodCreator.java,v 1.10 2004-04-22 22:26:48 renanse Exp $
  */
 
 public class ClodCreator extends VETMesh {

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.5 2004-04-19 20:44:55 renanse Exp $
+ * @version $Id: TestTorus.java,v 1.6 2004-04-22 22:27:42 renanse Exp $
  */
 public class TestTorus extends BaseGame {
 	private Camera cam;
@@ -57,7 +57,7 @@ public class TestTorus extends BaseGame {
 	private InputHandler input;
 	private Timer timer;
 	private Text fps;
-    
+
     private Quaternion rotQuat = new Quaternion();
    private float angle = 0;
    private Vector3f axis = new Vector3f(1,1,0);
@@ -82,7 +82,7 @@ public class TestTorus extends BaseGame {
 
 		timer.update();
 		input.update(timer.getTimePerFrame());
-        
+
         if (timer.getTimePerFrame() < 1) {
             angle = angle + (timer.getTimePerFrame() * 1);
             if (angle > 360) {
@@ -91,9 +91,9 @@ public class TestTorus extends BaseGame {
         }
 
         rotQuat.fromAngleAxis(angle, axis);
-        
+
         t.setLocalRotation(rotQuat);
-        
+
 		root.updateGeometricState(timer.getTimePerFrame(), true);
 		fps.print(
 			"FPS: "

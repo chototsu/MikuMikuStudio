@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+* Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -53,7 +53,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene3</code>
  * @author Gregg Patton
- * @version $Id: TestScene3.java,v 1.2 2004-04-16 20:35:57 renanse Exp $
+ * @version $Id: TestScene3.java,v 1.3 2004-04-22 22:27:50 renanse Exp $
  */
 public class TestScene3 extends TestAbstractScene {
 

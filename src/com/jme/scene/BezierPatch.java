@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -36,11 +36,11 @@ import com.jme.system.JmeException;
 
 /**
  * <code>BezierPatch</code> defines a 4x4 mesh of control points. The patch
- * will be enough to generate a single section of a <code>BezierMesh</code>. 
- * The detail level of the patch determines the smoothness of the resultant 
+ * will be enough to generate a single section of a <code>BezierMesh</code>.
+ * The detail level of the patch determines the smoothness of the resultant
  * <code>BezierMesh</code>.
  * @author Mark Powell
- * @version $Id: BezierPatch.java,v 1.3 2004-01-14 22:31:54 mojomonkey Exp $
+ * @version $Id: BezierPatch.java,v 1.4 2004-04-22 22:26:44 renanse Exp $
  */
 public class BezierPatch {
     private Vector3f[][] anchors;
@@ -69,7 +69,7 @@ public class BezierPatch {
         this.anchors = anchors;
         detailLevel = 0;
     }
-    
+
     /**
      * Constructor instantiates a new <code>BezierPatch</code> with a given
      * control point grid and a given detail level.
@@ -86,7 +86,7 @@ public class BezierPatch {
     }
 
     /**
-     * 
+     *
      * <code>setAnchors</code> sets the control anchors of this patch.
      * @param anchors the control anchors of this patch.
      */
@@ -99,8 +99,8 @@ public class BezierPatch {
     }
 
     /**
-     * 
-     * <code>getAnchors</code> returns the control anchors that make up this 
+     *
+     * <code>getAnchors</code> returns the control anchors that make up this
      * patch.
      * @return the control anchors of this patch.
      */
@@ -109,7 +109,7 @@ public class BezierPatch {
     }
 
     /**
-     * 
+     *
      * <code>setAnchor</code> sets a single anchor of the patch.
      * @param i the i index (row).
      * @param j the j index (column).
@@ -117,14 +117,14 @@ public class BezierPatch {
      */
     public void setAnchor(int i, int j, Vector3f anchor) {
         if ((i < 0 || i > 4) || (j < 0 || j > 4)) {
-            throw new JmeException("Bezier Patch anchor out of bounds."); 
+            throw new JmeException("Bezier Patch anchor out of bounds.");
         }
 
         anchors[i][j] = anchor;
     }
 
     /**
-     * 
+     *
      * <code>getAnchor</code> returns a single control anchor of a given
      * (i, j) of the patch.
      * @param i the i index (row).
@@ -133,23 +133,23 @@ public class BezierPatch {
      */
     public Vector3f getAnchor(int i, int j) {
         if ((i < 0 || i > 4) || (j < 0 || j > 4)) {
-            throw new JmeException("Bezier Patch anchor out of bounds."); 
+            throw new JmeException("Bezier Patch anchor out of bounds.");
         }
-        
+
         return anchors[i][j];
     }
-    
+
     /**
-     * 
+     *
      * <code>setDetailLevel</code> sets the detail level of this patch.
      * @param detailLevel the detail level of this patch.
      */
     public void setDetailLevel(int detailLevel) {
         this.detailLevel = detailLevel;
     }
-    
+
     /**
-     * 
+     *
      * <code>getDetailLevel</code> retrieves the detail level of this patch.
      * @return the detail level of this patch.
      */

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.widget.bounds.WidgetBoundingRectangle;
 /**
  * <code>WidgetFlowLayout</code>
  * @author Gregg Patton
- * @version $Id: WidgetFlowLayout.java,v 1.5 2004-03-04 03:29:11 greggpatton Exp $
+ * @version $Id: WidgetFlowLayout.java,v 1.6 2004-04-22 22:27:21 renanse Exp $
  */
 public class WidgetFlowLayout extends WidgetLayoutManager {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.renderer.Camera;
  * move along the positive left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyStrafeLeftAction.java,v 1.4 2004-02-24 01:32:20 mojomonkey Exp $
+ * @version $Id: KeyStrafeLeftAction.java,v 1.5 2004-04-22 22:26:34 renanse Exp $
  */
 public class KeyStrafeLeftAction implements InputAction {
 

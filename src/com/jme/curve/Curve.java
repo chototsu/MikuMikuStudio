@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.system.JmeException;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.9 2004-03-13 03:07:39 renanse Exp $
+ * @version $Id: Curve.java,v 1.10 2004-04-22 22:26:24 renanse Exp $
  */
 public abstract class Curve extends Geometry {
 

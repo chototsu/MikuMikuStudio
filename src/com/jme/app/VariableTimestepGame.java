@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -43,7 +43,7 @@ import com.jme.util.Timer;
  * the logic based on the time elapsed.
  *
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.6 2004-03-27 04:04:33 renanse Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.7 2004-04-22 22:26:22 renanse Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 

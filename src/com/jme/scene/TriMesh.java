@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * renderer the order in which to draw the points, creating triangles on
  * every three points.
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.10 2004-04-06 22:13:18 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.11 2004-04-22 22:26:47 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
     protected int[] indices;

@@ -1,4 +1,7 @@
 /*
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
@@ -50,7 +53,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.16 2004-04-19 20:44:58 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.17 2004-04-22 22:27:31 renanse Exp $
  */
 public class TestParticleSystem extends BaseGame {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.renderer.Camera;
  * <code>MouseLook</code> defines a mouse action that detects mouse movement
  * and converts it into camera rotations and camera tilts.
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.7 2004-02-24 01:32:20 mojomonkey Exp $
+ * @version $Id: MouseLook.java,v 1.8 2004-04-22 22:26:34 renanse Exp $
  */
 public class MouseLook implements MouseInputAction {
     private RelativeMouse mouse;

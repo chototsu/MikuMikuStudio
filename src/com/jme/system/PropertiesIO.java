@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -52,9 +52,9 @@ import com.jme.util.LoggingSystem;
  * DEPTH=32<br>
  * FULLSCREEN=false<br>
  * <br>
- * 
+ *
  * @author Mark Powell
- * @version $Id: PropertiesIO.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: PropertiesIO.java,v 1.2 2004-04-22 22:27:05 renanse Exp $
  */
 public class PropertiesIO {
     /**
@@ -75,12 +75,12 @@ public class PropertiesIO {
      */
     public static final int DEFAULT_FREQ = 60;
     /**
-     * The default fullscreen flag, used if there is a problem with the 
+     * The default fullscreen flag, used if there is a problem with the
      * properties file.
      */
     public static final boolean DEFAULT_FULLSCREEN = true;
     /**
-     * The default renderer flag, used if there is a problem with the 
+     * The default renderer flag, used if there is a problem with the
      * properties file.
      */
     public static final String DEFAULT_RENDERER = "LWJGL";
@@ -92,7 +92,7 @@ public class PropertiesIO {
 
     /**
      * Constructor creates the <code>PropertiesIO</code> object for use.
-     * 
+     *
      * @param filename the properties file to use.
      * @throws MonkeyRuntimeException if the filename is null.
      */
@@ -114,8 +114,8 @@ public class PropertiesIO {
      * instantiation and put all properties in the table. If there is a
      * problem loading or reading the file, false is returned. If all goes
      * well, true is returned.
-     * 
-     * @return the success of the load, true indicated success and false 
+     *
+     * @return the success of the load, true indicated success and false
      *      indicates failure.
      */
     public boolean load() {
@@ -160,8 +160,8 @@ public class PropertiesIO {
 
     /**
      * <code>save</code> overwrites the properties file with the given
-     * parameters. 
-     *  
+     * parameters.
+     *
      * @param width the width of the resolution.
      * @param height the height of the resolution.
      * @param depth the bits per pixel.
@@ -169,9 +169,9 @@ public class PropertiesIO {
      * @param fullscreen use fullscreen or not.
      * @return true if save was successful, false otherwise.
      */
-    public boolean save(int width, int height, int depth, int freq, 
+    public boolean save(int width, int height, int depth, int freq,
             boolean fullscreen, String renderer) {
-        
+
         FileOutputStream fout;
         try {
             fout = new FileOutputStream(filename);
@@ -201,10 +201,10 @@ public class PropertiesIO {
     }
 
     /**
-     * <code>getWidth</code> returns the width as read from the properties 
+     * <code>getWidth</code> returns the width as read from the properties
      * file. If the properties file does not contain width or was not read
      * properly, the default width is returned.
-     * 
+     *
      * @return the width determined by the properties file, or the default.
      */
     public int getWidth() {
@@ -217,10 +217,10 @@ public class PropertiesIO {
     }
 
     /**
-     * <code>getHeight</code> returns the height as read from the properties 
+     * <code>getHeight</code> returns the height as read from the properties
      * file. If the properties file does not contain height or was not read
      * properly, the default height is returned.
-     * 
+     *
      * @return the height determined by the properties file, or the default.
      */
     public int getHeight() {
@@ -233,10 +233,10 @@ public class PropertiesIO {
     }
 
     /**
-     * <code>getDepth</code> returns the depth as read from the properties 
+     * <code>getDepth</code> returns the depth as read from the properties
      * file. If the properties file does not contain depth or was not read
      * properly, the default depth is returned.
-     * 
+     *
      * @return the depth determined by the properties file, or the default.
      */
     public int getDepth() {
@@ -247,12 +247,12 @@ public class PropertiesIO {
             return Integer.parseInt(d);
         }
     }
-    
+
     /**
      * <code>getFreq</code> returns the frequency of the monitor as read from
      * the properties file. If the properties file does not contain frequency
      * or was not read properly the default frequency is returned.
-     * 
+     *
      * @return the frequency determined by the properties file, or the default.
      */
     public int getFreq() {
@@ -265,11 +265,11 @@ public class PropertiesIO {
     }
 
     /**
-     * <code>getFullscreen</code> returns the fullscreen flag as read from the 
-     * properties file. If the properties file does not contain the fullscreen 
+     * <code>getFullscreen</code> returns the fullscreen flag as read from the
+     * properties file. If the properties file does not contain the fullscreen
      * flag or was not read properly, the default fullscreen flag is returned.
-     * 
-     * @return the fullscreen flag determined by the properties file, or the 
+     *
+     * @return the fullscreen flag determined by the properties file, or the
      *      default.
      */
     public boolean getFullscreen() {
@@ -280,9 +280,9 @@ public class PropertiesIO {
             return new Boolean(prop.getProperty("FULLSCREEN")).booleanValue();
         }
     }
-    
+
     /**
-     * 
+     *
      * <code>getRenderer</code> returns the requested rendering API, or the
      * default.
      * @return the rendering API or the default.
@@ -295,17 +295,17 @@ public class PropertiesIO {
             return renderer;
         }
     }
-    
+
     /**
      * <code>get</code> takes an arbitrary string as a key and returns any
-     * value associated with it, null if none. 
+     * value associated with it, null if none.
      * @param key the key to use for data retrieval.
      * @return the string associated with the key, null if none.
      */
     public String get(String key) {
         return prop.getProperty(key);
     }
-    
+
     /**
      * <code>set</code> adds a key/value pair to the properties list.
      * @param key the key of the pair.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import com.jme.math.Vector2f;
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.22 2004-04-20 20:47:56 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.23 2004-04-22 22:27:05 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -72,7 +72,7 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.22 2004-04-20 20:47:56 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.23 2004-04-22 22:27:05 renanse Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * towards the worlds negative y-axis. The rotation is along the node's left
  * vector (the first column of it's rotation matrix).
  * @author Mark Powell
- * @version $Id: KeyNodeLookDownAction.java,v 1.5 2004-03-02 17:41:42 renanse Exp $
+ * @version $Id: KeyNodeLookDownAction.java,v 1.6 2004-04-22 22:26:32 renanse Exp $
  */
 public class KeyNodeLookDownAction implements InputAction {
     private Matrix3f incr;

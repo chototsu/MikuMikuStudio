@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import com.jme.scene.Spatial;
  * rotate about the world. The locking of the axis is particularly useful for
  * control schemes similar to first person shooters.
  * @author Mark Powell
- * @version $Id: KeyNodeRotateLeftAction.java,v 1.5 2004-03-02 17:41:42 renanse Exp $
+ * @version $Id: KeyNodeRotateLeftAction.java,v 1.6 2004-04-22 22:26:32 renanse Exp $
  */
 public class KeyNodeRotateLeftAction implements InputAction {
     private Matrix3f incr;

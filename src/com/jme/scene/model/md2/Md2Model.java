@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * mesh.
  *
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.16 2004-04-06 22:13:44 renanse Exp $
+ * @version $Id: Md2Model.java,v 1.17 2004-04-22 22:26:52 renanse Exp $
  */
 public class Md2Model extends Model {
     private BinaryFileReader bis = null;

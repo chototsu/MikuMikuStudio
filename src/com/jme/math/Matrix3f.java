@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * a given set of values.
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.17 2004-03-31 03:06:41 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.18 2004-04-22 22:26:39 renanse Exp $
  */
 public class Matrix3f {
     public float m00, m01, m02;

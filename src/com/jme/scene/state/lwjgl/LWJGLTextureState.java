@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.5 2004-04-16 19:21:34 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.6 2004-04-22 22:26:59 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -39,7 +39,7 @@ import com.jme.scene.state.ShadeState;
  * <code>LWJGLShadeState</code> subclasses the ShadeState class using the
  * LWJGL API to access OpenGL to set the shade state.
  * @author Mark Powell
- * @version $Id: LWJGLShadeState.java,v 1.2 2004-04-16 17:12:52 renanse Exp $
+ * @version $Id: LWJGLShadeState.java,v 1.3 2004-04-22 22:26:58 renanse Exp $
  */
 public class LWJGLShadeState extends ShadeState {
     //open gl params

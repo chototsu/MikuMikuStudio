@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -48,7 +48,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
  * input.  To activate/deactivate capturing mouse input right-click on the viewport.
  * Not all the viewports will capture mouse input.
  * @author Gregg Patton
- * @version $Id: TestWidgetViewportApp.java,v 1.5 2004-04-19 20:45:02 renanse Exp $
+ * @version $Id: TestWidgetViewportApp.java,v 1.6 2004-04-22 22:27:49 renanse Exp $
  */
 public class TestWidgetViewportApp extends BaseGame {
 

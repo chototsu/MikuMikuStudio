@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.scene.Spatial;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.3 2004-03-31 21:57:54 renanse Exp $
+ * @version $Id: TextureRenderer.java,v 1.4 2004-04-22 22:26:42 renanse Exp $
  */
 public interface TextureRenderer {
 

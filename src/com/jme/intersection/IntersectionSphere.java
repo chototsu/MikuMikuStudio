@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,10 +42,10 @@ import com.jme.math.Vector3f;
  * intersection of sphere objects. All the methods are static to allow for quick
  * and easy calls.
  * @author Mark Powell
- * @version $Id: IntersectionSphere.java,v 1.1 2004-04-02 16:27:31 mojomonkey Exp $
+ * @version $Id: IntersectionSphere.java,v 1.2 2004-04-22 22:26:36 renanse Exp $
  */
 public class IntersectionSphere {
-	
+
 	/**
     *
     * <code>intersection</code> determines if a ray has intersected a sphere.
@@ -164,7 +164,7 @@ public class IntersectionSphere {
            return true;
        }
    }
-   
+
    /**
    *
    * <code>intersection</code> compares two static spheres for intersection.

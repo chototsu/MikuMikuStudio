@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 package com.jme.system;
@@ -58,10 +58,10 @@ import com.jme.util.LoggingSystem;
  * <code>PropertiesIO</code> class. It provides a simple clean method of
  * creating a properties file. The <code>PropertiesIO</code> is still created
  * by the client application, and passed during construction.
- * 
+ *
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.7 2004-02-08 00:58:20 ericthered Exp $
+ * @version $Id: PropertiesDialog.java,v 1.8 2004-04-22 22:27:05 renanse Exp $
  */
 public class PropertiesDialog extends JDialog {
 
@@ -84,7 +84,7 @@ public class PropertiesDialog extends JDialog {
 
 	/**
 	 * Constructor builds the interface for the <code>PropertiesDialog</code>.
-	 * 
+	 *
 	 * @param source
 	 *            the <code>PropertiesIO</code> object to use for working
 	 *            with the properties file.
@@ -97,21 +97,21 @@ public class PropertiesDialog extends JDialog {
 	public PropertiesDialog(PropertiesIO source, String imageFile) {
 		if (null == source)
 			throw new JmeException("PropertyIO source cannot be null");
-		
+
 		URL file = null;
 		try {
 			file = new URL("file:" + imageFile);
 		} catch (MalformedURLException e) {}
-		
+
 		this.source = source;
 		this.imageFile = file;
 
 		init();
 	}
-	
+
 	/**
 	 * Constructor builds the interface for the <code>PropertiesDialog</code>.
-	 * 
+	 *
 	 * @param source
 	 *            the <code>PropertiesIO</code> object to use for working
 	 *            with the properties file.
@@ -124,7 +124,7 @@ public class PropertiesDialog extends JDialog {
 	public PropertiesDialog(PropertiesIO source, URL imageFile) {
 		if (null == source)
 			throw new JmeException("PropertyIO source cannot be null");
-		
+
 		this.source = source;
 		this.imageFile = imageFile;
 
@@ -135,7 +135,7 @@ public class PropertiesDialog extends JDialog {
 	 * <code>isDone</code> returns the status of the dialog. If true, the
 	 * application has either been used to change/set the properties file, or
 	 * has been closed.
-	 * 
+	 *
 	 * @return true if the dialog is closed, false if it is still up.
 	 */
 	public boolean isDone() {
@@ -144,7 +144,7 @@ public class PropertiesDialog extends JDialog {
 
 	/**
 	 * <code>setImage</code> sets the background image of the dialog.
-	 * 
+	 *
 	 * @param image <code>String</code> representing the image file.
 	 */
 	public void setImage(String image) {
@@ -156,10 +156,10 @@ public class PropertiesDialog extends JDialog {
 		} catch (MalformedURLException e) {}
 		setImage(file);
 	}
-	
+
 	/**
 	 * <code>setImage</code> sets the background image of the dialog.
-	 * 
+	 *
 	 * @param image <code>URL</code> pointing to the image file.
 	 */
 	public void setImage(URL image) {
@@ -177,7 +177,7 @@ public class PropertiesDialog extends JDialog {
 		toFront();
 	}
 
-	
+
 	/**
 	 * <code>center</code> places this <code>PropertiesDialog</code> in
 	 * the center of the screen.
@@ -188,9 +188,9 @@ public class PropertiesDialog extends JDialog {
 		y = (Toolkit.getDefaultToolkit().getScreenSize().height - this.getHeight()) / 2;
 		this.setLocation(x, y);
 	}
-	
+
 	/**
-	 * <code>init</code> creates the components to use the dialog.  
+	 * <code>init</code> creates the components to use the dialog.
 	 */
 	private void init() {
 		try {
@@ -198,14 +198,14 @@ public class PropertiesDialog extends JDialog {
 		} catch (Exception e) {
 			LoggingSystem.getLogger().log(Level.WARNING, "Could not set native look and feel.");
 		}
-		
+
 		this.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				dispose();
 				System.exit(0);
 			}
 		});
-		
+
 		this.setTitle("Select Display Settings");
 
 		//The panels...
@@ -220,7 +220,7 @@ public class PropertiesDialog extends JDialog {
 
 		mainPanel.setLayout(new BorderLayout());
 		centerPanel.setLayout(new BorderLayout());
-		
+
 		icon = new JLabel(new ImageIcon(imageFile));
 		centerPanel.add(icon, BorderLayout.NORTH);
 
@@ -274,7 +274,7 @@ public class PropertiesDialog extends JDialog {
 	 * <code>verifyAndSaveCurrentSelection</code> first verifies that the
 	 * display mode is valid for this system, and then saves the current
 	 * selection as a properties.cfg file.
-	 * 
+	 *
 	 * @return if the selection is valid
 	 */
 	private boolean verifyAndSaveCurrentSelection() {
@@ -316,7 +316,7 @@ public class PropertiesDialog extends JDialog {
 	/**
 	 * <code>setUpChooser</code> retrieves all available display modes and
 	 * places them in a <code>JComboBox</code>.
-	 * 
+	 *
 	 * @return the combo box of display modes.
 	 */
 	private JComboBox setUpResolutionChooser() {
@@ -341,9 +341,9 @@ public class PropertiesDialog extends JDialog {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setUpFreqChooser</code> sets available display frequencys.
-	 * 
+	 *
 	 * @return the combo box that contains the display frequencys.
 	 */
 	private JComboBox setUpFreqChooser() {
@@ -354,10 +354,10 @@ public class PropertiesDialog extends JDialog {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setUpRendererChooser</code> sets the list of available
 	 * renderers. This is obtained from the <code>DisplaySystem</code> class.
-	 * 
+	 *
 	 * @return the list of renderers.
 	 */
 	private JComboBox setUpRendererChooser() {

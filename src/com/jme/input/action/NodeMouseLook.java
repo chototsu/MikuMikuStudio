@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.scene.Spatial;
  * <code>NodeMouseLook</code> defines a mouse action that detects mouse movement
  * and converts it into node rotations and node tilts.
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.3 2004-03-02 03:56:46 renanse Exp $
+ * @version $Id: NodeMouseLook.java,v 1.4 2004-04-22 22:26:34 renanse Exp $
  */
 public class NodeMouseLook implements MouseInputAction {
     private RelativeMouse mouse;

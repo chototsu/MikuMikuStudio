@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * is the first point of the next line. Therefore, for N points there are
  * N-1 lines.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.6 2004-03-13 03:07:38 renanse Exp $
+ * @version $Id: Line.java,v 1.7 2004-04-22 22:26:45 renanse Exp $
  */
 public class Line extends Geometry {
 

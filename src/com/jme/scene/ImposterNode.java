@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.renderer.Camera;
 /**
  * <code>ImposterNode</code>
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.7 2004-04-16 18:08:27 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.8 2004-04-22 22:26:45 renanse Exp $
  */
 public class ImposterNode extends Node {
   private TextureRenderer tRenderer;

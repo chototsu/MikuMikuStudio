@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,7 +41,7 @@ import com.jme.system.JmeException;
  * curve the surface of the mesh will take. The patch also contains information
  * about it's detail level, which defines how smooth the mesh will be.
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.9 2004-02-27 19:05:24 renanse Exp $
+ * @version $Id: BezierMesh.java,v 1.10 2004-04-22 22:26:43 renanse Exp $
  */
 public class BezierMesh extends TriMesh {
     private BezierPatch patch;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  *
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.13 2004-04-02 15:52:04 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.14 2004-04-22 22:26:51 renanse Exp $
  */
 public class ASEModel extends Model {
 

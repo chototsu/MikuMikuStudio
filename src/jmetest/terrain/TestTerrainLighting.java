@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -50,7 +50,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.8 2004-04-20 19:01:20 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.9 2004-04-22 22:27:47 renanse Exp $
  */
 public class TestTerrainLighting extends BaseGame {
     private Camera cam;
@@ -81,7 +81,7 @@ public class TestTerrainLighting extends BaseGame {
 
         timer.update();
         input.update(timer.getTimePerFrame());
-        
+
 //      update individual sprites
         if ((int) currentPos.x == (int) newPos.x
             && (int) currentPos.z == (int) newPos.z) {
@@ -94,7 +94,7 @@ public class TestTerrainLighting extends BaseGame {
         currentPos.y = 255;
         currentPos.z -= (currentPos.z - newPos.z)
             / (timer.getFrameRate() / 2);
-            
+
         lightNode.setLocalTranslation(currentPos);
 
         root.updateGeometricState(timer.getTimePerFrame(), true);
@@ -169,10 +169,10 @@ public class TestTerrainLighting extends BaseGame {
     protected void initGame() {
         Vector3f max = new Vector3f(0.5f, 0.5f, 0.5f);
         Vector3f min = new Vector3f(-0.5f, -0.5f, -0.5f);
-        
+
         WireframeState ws = display.getRenderer().getWireframeState();
         ws.setEnabled(false);
-        
+
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -180,26 +180,26 @@ public class TestTerrainLighting extends BaseGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         as1.setEnabled(true);
-        
+
         PointLight dr = new PointLight();
         dr.setEnabled(true);
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setLocation(new Vector3f(0.5f, -0.5f, 0));
-        
-        
+
+
 
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
-        
+
         LightState lightstate = display.getRenderer().getLightState();
         lightstate.setTwoSidedLighting(true);
         lightstate.setEnabled(true);
         //lightstate.attach(dr);
-        
+
         lightNode = new LightNode("light", lightstate );
-        
+
         lightNode.setLight(dr);
         Vector3f min2 = new Vector3f(-0.5f, -0.5f, -0.5f);
         Vector3f max2 = new Vector3f(0.5f,0.5f,0.5f);
@@ -208,15 +208,15 @@ public class TestTerrainLighting extends BaseGame {
         lightBox.setModelBound(new BoundingBox());
         lightBox.updateModelBound();
         lightNode.attachChild(lightBox);
-        
-        
+
+
         Node scene = new Node("scene");
         lightNode.setTarget(scene);
         scene.attachChild(lightNode);
         scene.setRenderState(ws);
         scene.setRenderState(lightstate);
         root = new Node("Root node");
-        
+
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0), false);
         tb.setDetailTexture(1, 4);
@@ -224,7 +224,7 @@ public class TestTerrainLighting extends BaseGame {
         tb.updateModelBound();
         scene.attachChild(tb);
         scene.setRenderState(cs);
-        
+
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(false);
         Texture t1 = TextureManager.loadTexture(
@@ -233,15 +233,15 @@ public class TestTerrainLighting extends BaseGame {
 				Texture.FM_LINEAR,
 				true);
         ts.setTexture(t1 ,0);
-        
-        
+
+
         Texture t2 = TextureManager.loadTexture(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/Detail.jpg"),
 		        Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true);
         ts.setTexture( t2,1);
         t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        
+
         t1.setApply(Texture.AM_COMBINE);
         t1.setCombineFuncRGB(Texture.ACF_MODULATE);
         t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
@@ -249,7 +249,7 @@ public class TestTerrainLighting extends BaseGame {
         t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
         t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
         t1.setCombineScaleRGB(0);
-        
+
         t2.setApply(Texture.AM_COMBINE);
         t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
         t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
@@ -277,7 +277,7 @@ public class TestTerrainLighting extends BaseGame {
         fps.setRenderState(font);
         fps.setRenderState(as1);
 
-        
+
         scene.setRenderState(buf);
         root.attachChild(scene);
         root.attachChild(fps);

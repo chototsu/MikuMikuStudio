@@ -1,35 +1,35 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 /*
  * EDIT:  03/30/2004 - Added default constructor. GOP
  * EDIT:  04/01/2004 - Check for null in handleMouse(). GOP
@@ -68,7 +68,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         super();
         init();
     }
-    
+
     /**
      * @param ic
      */
@@ -107,7 +107,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
     /**
      * <code>noInitMsg</code>
-     * 
+     *
      */
     protected static void noInitMsg() {
         String msg = "WidgetAbstractFrame is not initialized.";
@@ -117,7 +117,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
     /**
      * <code>init</code>
-     * 
+     *
      */
     public void init() {
 
@@ -141,11 +141,11 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
     /**
      * <code>destroy</code>
-     * 
+     *
      */
     public static void destroy() {}
 
-    /** <code>update</code> 
+    /** <code>update</code>
      * @param o
      * @param arg
      * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
@@ -154,7 +154,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
     /**
      * <code>handleInput</code>
-     * 
+     *
      */
     public void handleInput() {
         handleInput(true, 0);
@@ -193,7 +193,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
     /**
      * <code>handleKeyboard</code>
-     * 
+     *
      */
     protected void handleKeyboard() {
         //super.handleKeyboard();
@@ -201,7 +201,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
     /**
      * <code>handleMouse</code>
-     * 
+     *
      */
     protected void handleMouse() {
         MouseInput mi = getMouseInput();
@@ -209,38 +209,38 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         if (mi != null) {
             MouseButtonStateType buttonType = mi.getButtonState();
             MouseButtonStateType lastButtonType = mi.getPreviousButtonState();
-    
+
             if (lastButtonType != buttonType) {
-    
+
                 if (buttonType != MouseButtonStateType.MOUSE_BUTTON_NONE) {
-    
+
                     handleMouseButtonDown();
-    
+
                 } else {
-    
+
                     handleMouseButtonUp();
-    
+
                 }
             }
-    
+
             if (buttonType == MouseButtonStateType.MOUSE_BUTTON_NONE
                 && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
-    
+
                 handleMouseMove();
-    
+
             } else if (
                 buttonType != MouseButtonStateType.MOUSE_BUTTON_NONE
                     && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
-    
+
                 handleMouseDrag();
             }
-    
+
             lastButtonType = buttonType;
         }
     }
 
-    /** <code>doMouseButtonDown</code> 
-     * 
+    /** <code>doMouseButtonDown</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#doMouseButtonDown()
      */
     public void doMouseButtonDown() {
@@ -251,8 +251,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         }
     }
 
-    /** <code>handleMouseButtonDown</code> 
-     * 
+    /** <code>handleMouseButtonDown</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseButtonDown()
      */
     public void handleMouseButtonDown() {
@@ -260,8 +260,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         doMouseButtonDown();
     }
 
-    /** <code>doMouseButtonUp</code> 
-     * 
+    /** <code>doMouseButtonUp</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#doMouseButtonUp()
      */
     public void doMouseButtonUp() {
@@ -272,8 +272,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         }
     }
 
-    /** <code>handleMouseButtonUp</code> 
-     * 
+    /** <code>handleMouseButtonUp</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseButtonUp()
      */
     public void handleMouseButtonUp() {
@@ -281,8 +281,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         doMouseButtonUp();
     }
 
-    /** <code>doMouseDrag</code> 
-     * 
+    /** <code>doMouseDrag</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#doMouseDrag()
      */
     public void doMouseDrag() {
@@ -293,8 +293,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         }
     }
 
-    /** <code>handleMouseDrag</code> 
-     * 
+    /** <code>handleMouseDrag</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseDrag()
      */
     public void handleMouseDrag() {
@@ -302,8 +302,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         doMouseDrag();
     }
 
-    /** <code>handleMouseEnter</code> 
-     * 
+    /** <code>handleMouseEnter</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseEnter()
      */
     public void handleMouseEnter() {
@@ -311,8 +311,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         doMouseEnter();
     }
 
-    /** <code>handleMouseExit</code> 
-     * 
+    /** <code>handleMouseExit</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseExit()
      */
     public void handleMouseExit() {
@@ -320,8 +320,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         doMouseExit();
     }
 
-    /** <code>doMouseMove</code> 
-     * 
+    /** <code>doMouseMove</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#doMouseMove()
      */
     public void doMouseMove() {
@@ -340,8 +340,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         }
     }
 
-    /** <code>handleMouseMove</code> 
-     * 
+    /** <code>handleMouseMove</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseMove()
      */
     public void handleMouseMove() {
@@ -349,7 +349,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         doMouseMove();
     }
 
-    /** <code>onDraw</code> 
+    /** <code>onDraw</code>
      * @param r
      * @see com.jme.scene.Spatial#onDraw(com.jme.renderer.Renderer)
      */
@@ -359,7 +359,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         timer.update();
     }
 
-    /** <code>draw</code> 
+    /** <code>draw</code>
      * @param r
      * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
      */
@@ -372,8 +372,8 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         r.getCamera().update();
     }
 
-    /** <code>initWidgetRenderer</code> 
-     * 
+    /** <code>initWidgetRenderer</code>
+     *
      * @see com.jme.widget.Widget#initWidgetRenderer()
      */
     public void initWidgetRenderer() {}

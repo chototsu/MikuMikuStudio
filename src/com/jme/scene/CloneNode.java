@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -42,7 +42,7 @@ import java.util.Stack;
 /**
  * <code>CloneNode</code>
  * @author Mark Powell
- * @version $Id: CloneNode.java,v 1.4 2004-04-16 20:35:55 renanse Exp $
+ * @version $Id: CloneNode.java,v 1.5 2004-04-22 22:26:44 renanse Exp $
  */
 public class CloneNode extends Node {
     private TriMesh geometry;

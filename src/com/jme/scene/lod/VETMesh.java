@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -44,7 +44,7 @@ import java.util.Vector;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: VETMesh.java,v 1.5 2004-04-09 17:06:55 renanse Exp $
+ * @version $Id: VETMesh.java,v 1.6 2004-04-22 22:26:50 renanse Exp $
  */
 
 public class VETMesh {

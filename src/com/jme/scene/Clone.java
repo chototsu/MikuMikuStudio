@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -45,7 +45,7 @@ import com.jme.renderer.Renderer;
  * clone builds it's bounding volume by transforming the cloned geometry's
  * model bounds by it's current position, orientation and scale.
  * @author Mark Powell
- * @version $Id: Clone.java,v 1.5 2004-03-13 03:07:37 renanse Exp $
+ * @version $Id: Clone.java,v 1.6 2004-04-22 22:26:44 renanse Exp $
  */
 public class Clone extends Spatial {
 

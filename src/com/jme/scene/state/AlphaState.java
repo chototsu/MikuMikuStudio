@@ -1,45 +1,45 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
 package com.jme.scene.state;
 
 /**
- * <code>AlphaState</code> maintains the state of the alpha values of a 
+ * <code>AlphaState</code> maintains the state of the alpha values of a
  * particular node and it's children. The alpha state provides a method for
  * blending a source pixel with a destination pixel. The alpha value provides
  * a transparent or translucent surfaces. For example, this would allow for
  * the rendering of green glass. Where you could see all objects behind this
  * green glass but they would be tinted green.
  * @author Mark Powell
- * @version $Id: AlphaState.java,v 1.1 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: AlphaState.java,v 1.2 2004-04-22 22:26:54 renanse Exp $
  */
 public abstract class AlphaState extends RenderState {
     //source functions
@@ -72,7 +72,7 @@ public abstract class AlphaState extends RenderState {
      * 1 - alpha.
      */
     public final static int SB_SRC_ALPHA_SATURATE = 6;
-    
+
     //destination functions
     /**
      * The destination value of the blend function is all zeros.
@@ -107,14 +107,14 @@ public abstract class AlphaState extends RenderState {
      * value.
      */
     public final static int DB_ONE_MINUS_DST_ALPHA = 7;
-    
+
     //test functions
     /**
      * Never passes the depth test.
      */
     public final static int TF_NEVER = 0;
     /**
-     * Pass the test if this alpha is less than the reference alpha. 
+     * Pass the test if this alpha is less than the reference alpha.
      */
     public final static int TF_LESS = 1;
     /**
@@ -142,7 +142,7 @@ public abstract class AlphaState extends RenderState {
      * Always passes the depth test.
      */
     public final static int TF_ALWAYS = 7;
-   
+
     //attributes
     protected boolean blendEnabled;
     protected int srcBlend;
@@ -152,7 +152,7 @@ public abstract class AlphaState extends RenderState {
     protected float reference;
 
     /**
-     * Constructor instantiates a new <code>AlphaState</code> object with 
+     * Constructor instantiates a new <code>AlphaState</code> object with
      * default values.
      *
      */
@@ -172,28 +172,28 @@ public abstract class AlphaState extends RenderState {
     public int getType() {
         return RS_ALPHA;
     }
-    
+
     /**
-     * 
-     * <code>isBlendEnabled</code> returns true if blending is turned on, 
+     *
+     * <code>isBlendEnabled</code> returns true if blending is turned on,
      * otherwise false is returned.
      * @return true if blending is enabled, false otherwise.
      */
     public boolean isBlendEnabled() {
         return blendEnabled;
     }
-    
+
     /**
-     * 
+     *
      * <code>setBlendEnabled</code> sets whether or not blending is enabled.
      * @param value true to enable the blending, false to disable it.
      */
     public void setBlendEnabled(boolean value) {
         blendEnabled = value;
     }
-    
+
     /**
-     * 
+     *
      * <code>setSrcFunction</code> sets the source function for the blending
      * function. If an invalid value is passed, the default SB_SRC_ALPHA is
      * used.
@@ -205,21 +205,21 @@ public abstract class AlphaState extends RenderState {
         }
         srcBlend = srcFunction;
     }
-    
+
     /**
-     * 
-     * <code>getSrcFunction</code> returns the source function for the 
+     *
+     * <code>getSrcFunction</code> returns the source function for the
      * blending function.
      * @return the source function for the blending function.
      */
     public int getSrcFunction() {
         return srcBlend;
     }
-    
+
     /**
-     * 
-     * <code>setDstFunction</code> sets the destination function for the 
-     * blending function. If an invalid value is passed, the default 
+     *
+     * <code>setDstFunction</code> sets the destination function for the
+     * blending function. If an invalid value is passed, the default
      * DB_ONE_MINUS_SRC_ALPHA is used.
      * @param dstFunction the destination function for the blending equation.
      */
@@ -229,9 +229,9 @@ public abstract class AlphaState extends RenderState {
         }
         dstBlend = dstFunction;
     }
-    
+
     /**
-     * 
+     *
      * <code>getDstFunction</code> returns the destination function for the
      * blending function.
      * @return the destination function for the blending function.
@@ -239,19 +239,19 @@ public abstract class AlphaState extends RenderState {
     public int getDstFunction() {
         return dstBlend;
     }
-    
+
     /**
-     * 
+     *
      * <code>isTestEnabled</code> returns true if alpha testing is enabled,
      * false otherwise.
-     * @return true if alpha testing is enabled, false otherwise. 
+     * @return true if alpha testing is enabled, false otherwise.
      */
     public boolean isTestEnabled() {
         return testEnabled;
     }
-    
+
     /**
-     * 
+     *
      * <code>setTestEnabled</code> turns alpha testing on and off. True turns
      * on the testing, while false diables it.
      * @param value true to enabled alpha testing, false to disable it.
@@ -259,9 +259,9 @@ public abstract class AlphaState extends RenderState {
     public void setTestEnabled(boolean value) {
         testEnabled = value;
     }
-    
+
     /**
-     * 
+     *
      * <code>setTestFunction</code> sets the testing function used for the
      * alpha testing. If an invalid value is passed, the default TF_ALWAYS is
      * used.
@@ -273,9 +273,9 @@ public abstract class AlphaState extends RenderState {
         }
         test = testFunction;
     }
-    
+
     /**
-     * 
+     *
      * <code>getTestFunction</code> returns the testing function used for the
      * alpha testing.
      * @return the testing function used for the alpha testing.
@@ -283,10 +283,10 @@ public abstract class AlphaState extends RenderState {
     public int getTestFunction() {
         return test;
     }
-    
+
     /**
-     * 
-     * <code>setReference</code> sets the reference value that incoming 
+     *
+     * <code>setReference</code> sets the reference value that incoming
      * alpha values are compared to. This is clamped to [0, 1].
      * @param reference the reference value that alpha values are compared to.
      */
@@ -294,15 +294,15 @@ public abstract class AlphaState extends RenderState {
         if(reference < 0) {
             reference = 0;
         }
-        
+
         if(reference > 1) {
             reference = 1;
         }
         this.reference = reference;
     }
-    
+
     /**
-     * 
+     *
      * <code>getReference</code> returns the reference value that incoming
      * alpha values are compared to.
      * @return the reference value that alpha values are compared to.
@@ -310,5 +310,5 @@ public abstract class AlphaState extends RenderState {
     public float getReference() {
         return reference;
     }
-    
+
 }

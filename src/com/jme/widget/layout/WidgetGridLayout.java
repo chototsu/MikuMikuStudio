@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -93,10 +93,10 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 
 		int totalGridSize = xSize * ySize;
         int totalChildren = parent.getWidgetCount();
-        
+
         if (totalChildren > totalGridSize)
         	totalChildren = totalGridSize;
-        
+
         float maxHeight = 0;
         float maxWidth = 0;
 
@@ -120,17 +120,17 @@ public class WidgetGridLayout extends WidgetLayoutManager {
                         maxWidth = size.x;
                     if (size.y > maxHeight)
                         maxHeight = size.y;
-                        
-                    visibleChildren.add(child);    
+
+                    visibleChildren.add(child);
 
                 }
             }
-            
+
             ret.x = maxWidth * xSize;
             ret.y = maxHeight * ySize;
-            
+
             if (setPosSize == true) {
-                
+
                 WidgetInsets insets = parent.getInsets();
 
 				/*
@@ -138,15 +138,15 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 				 */
                 int width = parent.getWidth() - (insets.getLeft() + insets.getRight());
                 int height = parent.getHeight()- (insets.getTop() + insets.getBottom());
-                
+
                 /*
-                 * Calculate the widget width.  
-                 * Apply hgap if there will be more than one horizontal widget.  
+                 * Calculate the widget width.
+                 * Apply hgap if there will be more than one horizontal widget.
                  */
                 int widgetWidth = (int) ((width) / xSize) - (xSize > 1 ? hgap : 0);
 
                 /*
-                 * Calculate the widget height.  
+                 * Calculate the widget height.
                  * Apply vgap if there will be more than one vertical widget.
                  */
                 int widgetHeight = (int) ((height ) / ySize) - (ySize > 1 ? vgap : 0);
@@ -167,7 +167,7 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 				 * Calculate the x increment
 				 */
                 int xChange = widgetWidth + hgap;
-                
+
                 /*
 				 * Calculate the y increment
                  */
@@ -177,7 +177,7 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 				 * Initialize the column counter
 				 */
                 int curX = 0;
-                
+
                 /*
                  * Initialize the row counter
                  */
@@ -187,23 +187,23 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 				 * Calculate the remaing space on the row from the width so
 				 * it can be spread horizontally across the widgets.
 				 */
-				int widthErrorRemainder = calcWidthRemainder(xSize, width, widgetWidth);                
+				int widthErrorRemainder = calcWidthRemainder(xSize, width, widgetWidth);
 
 				/*
 				 * Calculate the remaing space on the column from the height so
 				 * it can be spread vertically across the widgets.
 				 */
-                int heightErrorRemainder = ySize > 0 && widgetHeight > 0 ? height % widgetHeight : 0;                
+                int heightErrorRemainder = ySize > 0 && widgetHeight > 0 ? height % widgetHeight : 0;
 
 				/*
 				 * Used to apply the width error
 				 */
                 int widthError;
-                
+
                 /*
                  * Used to apply the height error
                  */
-                int heightError;                                
+                int heightError;
 
 				/*
 				 * Used to pad the last widget in the row so it
@@ -215,7 +215,7 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 				 * Used to pad the last widget in the column so it
 				 * will end on the correct point
 				 */
-				int heightPad;                                
+				int heightPad;
 
 				/*
 				 * Pixel position for the lower left corner
@@ -223,9 +223,9 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 				 */
                 int xPos = xStart;
                 int yPos = yStart;
-                
+
                 Iterator i = visibleChildren.iterator();
-                
+
                 while (i.hasNext()) {
                     child = (Widget) i.next();
 
@@ -247,30 +247,30 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 					 * appropriate edge
 					 */
 					if (curX > 0 && curX + 1 >= xSize) {
-						widthPad = (parent.getWidth() - insets.getRight()) - (xPos + widgetWidth + widthError); 
+						widthPad = (parent.getWidth() - insets.getRight()) - (xPos + widgetWidth + widthError);
 					} else {
 						widthPad = 0;
 					}
-					
+
 					/*
 					 * If this is the last widget in the column, calclulate
 					 * how much to pad the height to get it to reach the
 					 * appropriate edge
 					 */
 					if (curY > 0 && curY + 1 >= ySize) {
-						heightPad = (yPos - heightError) - (insets.getBottom()); 
+						heightPad = (yPos - heightError) - (insets.getBottom());
 					} else {
 						heightPad = 0;
 					}
 
                     child.setWidth(widgetWidth + widthError + widthPad);
-                    
+
                     child.setHeight(widgetHeight + heightError + heightPad);
-                             
+
                     child.setLocation(xPos, yPos - heightError - heightPad);
-                    
+
                     curX ++;
-                    
+
 
 					/*
 					 * If this is the last widget in the row
@@ -278,36 +278,36 @@ public class WidgetGridLayout extends WidgetLayoutManager {
 					 * increment the y position
 					 */
                     if (curX >= xSize) {
-                        
-                        xPos = xStart;
-						curX = 0;       
 
-						widthErrorRemainder = calcWidthRemainder(xSize, width, widgetWidth);                
-                        
-                        yPos += yChange - heightError;       
+                        xPos = xStart;
+						curX = 0;
+
+						widthErrorRemainder = calcWidthRemainder(xSize, width, widgetWidth);
+
+                        yPos += yChange - heightError;
 
 						curY ++;
 
                         heightErrorRemainder--;
-                        
+
                     } else {
-                        
+
                         xPos += xChange + widthError;
 
                         widthErrorRemainder--;
-                        
+
                     }
                 }
             }
         }
-        
+
         return ret;
     }
 
 	static private int calcWidthRemainder(int xSize, int width, int widgetWidth) {
 		return xSize > 0 && widgetWidth > 0 ? width % widgetWidth : 0;
 	}
-    
+
     /**
      * @see com.jme.widget.layout.WidgetLayoutManager#preferredLayoutSize(com.jme.widget.WidgetAbstractContainer)
      */

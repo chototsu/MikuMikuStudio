@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -41,10 +41,10 @@ import com.jme.math.Ray;
  * intersection of some objects. All the methods are static to allow for quick
  * and easy calls. <code>Intersection</code> relays requests to specific classes
  * to handle the actual work. By providing checks to just <code>BoundingVolume</code>
- * the client application need not worry about what type of bounding volume is 
+ * the client application need not worry about what type of bounding volume is
  * being used.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.12 2004-04-02 16:41:27 mojomonkey Exp $
+ * @version $Id: Intersection.java,v 1.13 2004-04-22 22:26:36 renanse Exp $
  */
 public class Intersection {
     /**
@@ -70,7 +70,7 @@ public class Intersection {
         return false;
     }
 
-    
+
     /**
      *
      * <code>intersection</code> compares two bounding volumes for intersection.
@@ -105,5 +105,5 @@ public class Intersection {
         }
     }
 
-    
+
 }

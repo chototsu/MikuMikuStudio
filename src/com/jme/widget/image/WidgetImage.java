@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -47,19 +47,19 @@ import com.jme.widget.renderer.WidgetRendererFactory;
  * @author Mike Kienenberger
  *
  * <code>ImageWidget</code> is a widget that draws a 2d image.
- * 
+ *
  * The image may be scaled by four methods:
  *   SCALE_MODE_NONE - The image will not be scaled.
  *   SCALE_MODE_SIZE_TO_FIT - The image will be scaled to fill the size of the widget.  Alignment is unused.
  *   SCALE_MODE_ABSOLUTE - The image is scaled vertically and horizontally by a percentage of the original size of the image.
  *   SCALE_MODE_RELATIVE - The image is scaled vertically and horizontally by a percentage of the size of the widget.
- * 
+ *
  * KNOWN ISSUES:
  *  Drawing isn't clipped to the widget bounds.
  *  Alignment code doesn't work properly.
- * 
+ *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.3 2004-04-18 20:17:12 mojomonkey Exp $$
+ * @version $$Id: WidgetImage.java,v 1.4 2004-04-22 22:27:16 renanse Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
@@ -71,7 +71,7 @@ public class WidgetImage extends WidgetAbstractImpl {
     private int scaleMode = SCALE_MODE_SIZE_TO_FIT;
     private float scaleHorizontal = 1f;
     private float scaleVertical = 1f;
-    
+
     private Image image;
 
     public WidgetImage() {
@@ -105,7 +105,7 @@ public class WidgetImage extends WidgetAbstractImpl {
     public void draw(Renderer r) {
         r.draw(getWidgetRenderer());
     }
-    
+
     public void drawBounds(Renderer r) {
         //ignore
     }
@@ -181,25 +181,25 @@ public class WidgetImage extends WidgetAbstractImpl {
 //
    protected void alignWest(Vector2f size, WidgetInsets insets) {
         if (SCALE_MODE_SIZE_TO_FIT == scaleMode)  return;
-        
+
         super.alignWest(size, insets);
     }
 
     protected void alignEast(Vector2f size, WidgetInsets insets) {
         if (SCALE_MODE_SIZE_TO_FIT == scaleMode)  return;
-        
+
         super.alignEast(size, insets);
     }
 
     protected void alignNorth(Vector2f size, WidgetInsets insets) {
         if (SCALE_MODE_SIZE_TO_FIT == scaleMode)  return;
-        
+
         super.alignNorth(size, insets);
     }
 
     protected void alignSouth(Vector2f size, WidgetInsets insets) {
         if (SCALE_MODE_SIZE_TO_FIT == scaleMode)  return;
-        
+
         super.alignSouth(size, insets);
     }
 

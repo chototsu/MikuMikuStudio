@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.17 2004-04-05 07:03:40 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.18 2004-04-22 22:26:41 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
   //planes of the frustum

@@ -1,20 +1,20 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package com.jme.intersection;
 
@@ -38,9 +38,9 @@ import com.jme.math.Vector3f;
  * <code>Intersection</code> provides functional methods for calculating the
  * intersection of box objects. All the methods are static to allow for quick
  * and easy calls.
- * 
+ *
  * @author Mark Powell
- * @version $Id: IntersectionBox.java,v 1.7 2004-04-02 17:08:01 mojomonkey Exp $
+ * @version $Id: IntersectionBox.java,v 1.8 2004-04-22 22:26:36 renanse Exp $
  */
 public class IntersectionBox {
 
@@ -50,9 +50,9 @@ public class IntersectionBox {
     public static final double EPSILON = 1e-12;
 
     /**
-     * 
+     *
      * <code>intersection</code> determines if a ray has intersected a box.
-     * 
+     *
      * @param ray
      *            the ray to test.
      * @param box
@@ -73,11 +73,11 @@ public class IntersectionBox {
     }
 
     /**
-     * 
+     *
      * <code>intersection</code> compares two static spheres for intersection.
      * If any part of the two spheres touch, true is returned, otherwise false
      * will return.
-     * 
+     *
      * @param box1
      *            the first box to test.
      * @param box2
@@ -99,10 +99,10 @@ public class IntersectionBox {
     }
 
     /**
-     * 
+     *
      * <code>clip</code> determines if a line segment intersects the current
      * test plane.
-     * 
+     *
      * @param denom
      *            the denominator of the line segment.
      * @param numer
@@ -129,10 +129,10 @@ public class IntersectionBox {
     }
 
     /**
-     * 
+     *
      * <code>findIntersection</code> determines if any of the planes of the box are
-     * intersected by a ray (defined by an origin and direction). 
-     * 
+     * intersected by a ray (defined by an origin and direction).
+     *
      * @param origin the origin of the ray.
      * @param direction the direction of the ray.
      * @param extent the extents of the box.

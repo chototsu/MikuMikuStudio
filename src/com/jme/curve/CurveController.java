@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * curve), the orientation precision defines how accurate the orientation of the
  * spatial will be.
  * @author Mark Powell
- * @version $Id: CurveController.java,v 1.6 2004-03-26 19:48:02 mojomonkey Exp $
+ * @version $Id: CurveController.java,v 1.7 2004-04-22 22:26:24 renanse Exp $
  */
 public class CurveController extends Controller {
     private Spatial mover;
@@ -56,7 +56,7 @@ public class CurveController extends Controller {
     private boolean autoRotation = false;
 
     /**
-     * Constructor instantiates a new <code>CurveController</code> object. 
+     * Constructor instantiates a new <code>CurveController</code> object.
      * The curve object that the controller operates on and the spatial object
      * that is moved is specified during construction.
      * @param curve the curve to operate on.
@@ -72,9 +72,9 @@ public class CurveController extends Controller {
     }
 
     /**
-     * Constructor instantiates a new <code>CurveController</code> object. 
+     * Constructor instantiates a new <code>CurveController</code> object.
      * The curve object that the controller operates on and the spatial object
-     * that is moved is specified during construction. The game time to 
+     * that is moved is specified during construction. The game time to
      * start and the game time to finish is also supplied.
      * @param curve the curve to operate on.
      * @param mover the spatial to move.
@@ -94,7 +94,7 @@ public class CurveController extends Controller {
     }
 
     /**
-     * 
+     *
      * <code>setUpVector</code> sets the locking vector for the spatials up
      * vector. This prevents rolling along the curve and allows for a better
      * tracking.
@@ -105,7 +105,7 @@ public class CurveController extends Controller {
     }
 
     /**
-     * 
+     *
      * <code>setOrientationPrecision</code> sets a precision value for the
      * spatials orientation. The smaller the number the higher the precision.
      * By default 0.1 is used, and typically does not require changing.
@@ -114,11 +114,11 @@ public class CurveController extends Controller {
     public void setOrientationPrecision(float value) {
         orientationPrecision = value;
     }
-    
+
     /**
-     * 
+     *
      * <code>setAutoRotation</code> determines if the object assigned to
-     * the controller will rotate with the curve or just following the 
+     * the controller will rotate with the curve or just following the
      * curve.
      * @param value true if the object is to rotate with the curve, false
      *      otherwise.
@@ -126,9 +126,9 @@ public class CurveController extends Controller {
     public void setAutoRotation(boolean value) {
         autoRotation = value;
     }
-    
+
     /**
-     * 
+     *
      * <code>isAutoRotating</code> returns true if the object is rotating with
      * the curve and false if it is not.
      * @return true if the object is following the curve, false otherwise.
@@ -139,7 +139,7 @@ public class CurveController extends Controller {
 
     /**
      * <code>update</code> moves a spatial along the given curve for along a
-     * time period. 
+     * time period.
      * @see com.jme.scene.Controller#update(float)
      */
     public void update(float time) {

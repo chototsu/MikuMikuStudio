@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.12 2004-04-19 20:44:55 renanse Exp $
+ * @version $Id: TestCollision.java,v 1.13 2004-04-22 22:27:36 renanse Exp $
  */
 public class TestCollision extends BaseGame {
 

@@ -1,31 +1,31 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -39,13 +39,13 @@ import com.jme.scene.model.JointMesh;
 
 /**
  * <code>DeformationJointController</code> defines a controller that
- * controls the animation of a mesh via a collection of joints. The 
+ * controls the animation of a mesh via a collection of joints. The
  * controller uses these joints to modify specific vertices of the mesh
- * in essense deforming the original mesh. So model types require a 
+ * in essense deforming the original mesh. So model types require a
  * call to <code>setupJointAnimations</code> to properly position and
- * initialize the joints (Milkshape). 
+ * initialize the joints (Milkshape).
  * @author Mark Powell
- * @version $Id: DeformationJointController.java,v 1.6 2004-03-26 19:48:03 mojomonkey Exp $
+ * @version $Id: DeformationJointController.java,v 1.7 2004-04-22 22:26:20 renanse Exp $
  */
 public class DeformationJointController extends Controller {
 	//keyframe information
@@ -56,9 +56,9 @@ public class DeformationJointController extends Controller {
 	private JointMesh[] meshes;
 	//going forward or backward?
 	private int modifier = 1;
-	
+
 	private boolean doBoundsUpdate;
-	
+
 	private Vector3f positionVector3f = new Vector3f();
 	private Vector3f multVector = new Vector3f();
 
@@ -69,12 +69,12 @@ public class DeformationJointController extends Controller {
 	public DeformationJointController() {
 		super();
 	}
-	
+
     /**
-     * 
+     *
      * <code>setUpdateModelBounds</code> well determine if the bounds of the
      * model is updated as the model animates. This decision is left up to the
-     * user as it is model dependant if the model changes enough in it's 
+     * user as it is model dependant if the model changes enough in it's
      * animation sequence, it is advised to update the bounds. By default
      * the bounds are not updated.
      * @param value true if the bounds should be updated each frame. False,
@@ -85,7 +85,7 @@ public class DeformationJointController extends Controller {
 	}
 
 	/**
-	 * <code>setMeshes</code> sets the collection of meshes that the 
+	 * <code>setMeshes</code> sets the collection of meshes that the
 	 * joints will alter.
 	 * @param meshes the animated meshes.
 	 */
@@ -94,7 +94,7 @@ public class DeformationJointController extends Controller {
 	}
 
 	/**
-	 * <code>setJoints</code> sets the collection of joints used by 
+	 * <code>setJoints</code> sets the collection of joints used by
 	 * the controller to animate the meshes.
 	 * @param joints the joints used to animate the mesh.
 	 */
@@ -136,9 +136,9 @@ public class DeformationJointController extends Controller {
 		return joints[index];
 	}
 
-	
+
 	/**
-	 * <code>setCurrentFrame</code> sets the frame that the animation is 
+	 * <code>setCurrentFrame</code> sets the frame that the animation is
 	 * current set to.
 	 * @param currentFrame the keyframe that is the current state of the
 	 * 		animation.
@@ -150,7 +150,7 @@ public class DeformationJointController extends Controller {
 	/**
 	 * <code>setTotalFrames</code> sets the total number of frames
 	 * that makes up this controllers animation sequence.
-	 * @param totalFrames the number of frames that make up the total 
+	 * @param totalFrames the number of frames that make up the total
 	 * 		animation.
 	 */
 	public void setTotalFrames(int totalFrames) {
@@ -159,7 +159,7 @@ public class DeformationJointController extends Controller {
 
 	/**
 	 * <code>update</code> changes the animation of the mesh by
-	 * a specified time interval. 
+	 * a specified time interval.
 	 * @see com.jme.scene.Controller#update(float)
 	 */
 	public void update(float time) {
@@ -194,7 +194,7 @@ public class DeformationJointController extends Controller {
 			for (int jointIndex = 0;
 				jointIndex < joints.length;
 				jointIndex++) {
-					
+
 				DeformationJoint joint = joints[jointIndex];
 				int positionKeyframeCount = joint.numberPosistionKeyframes;
 				int rotationKeyframeCount = joint.numberRotationKeyframes;
@@ -202,7 +202,7 @@ public class DeformationJointController extends Controller {
 					joints[jointIndex].finalMatrix.copy(
 						joints[jointIndex].absoluteMatrix);
 				} else {
-					
+
 					Quaternion rotationVector3f = new Quaternion();
 					Keyframe lastPositionKeyframe = null;
 					Keyframe currentPositionKeyframe = null;
@@ -392,14 +392,14 @@ public class DeformationJointController extends Controller {
 
 				}
 				meshes[i].updateVertexBuffer();
-				
+
 				if(doBoundsUpdate) {
 					meshes[i].updateModelBound();
 				}
 			}
 		}
 	}
-	
+
 	/**
 	 * <code>setupJointAnimations</code> calculates the initial absolute
 	 * and relative matrices for each joint in the controller.

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+* Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -40,7 +40,7 @@ import com.jme.widget.slider.WidgetSliderThumbTray;
 /**
  * <code>WidgetLWJGLSliderThumbTrayRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLSliderThumbTrayRenderer.java,v 1.2 2004-04-16 20:47:23 renanse Exp $
+ * @version $Id: WidgetLWJGLSliderThumbTrayRenderer.java,v 1.3 2004-04-22 22:27:18 renanse Exp $
  */
 public class WidgetLWJGLSliderThumbTrayRenderer extends WidgetLWJGLAbstractRenderer {
 

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+* Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
 * All rights reserved.
 *
 * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import java.util.Iterator;
 /**
  * <code>WidgetLWJGLAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.7 2004-04-16 21:24:35 mojomonkey Exp $
+ * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.8 2004-04-22 22:27:17 renanse Exp $
  */
 public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer {
 
@@ -153,7 +153,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
 
         Spatial.applyDefaultStates();
         applyStates(states);
-        
+
         int l = left;
         int b = bottom;
         int r = right;
@@ -284,11 +284,11 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         int y = (int) v.getMinY();
         int w = (int) v.getWidth();
         int h = (int) v.getHeight();
-        
+
         if(w <= 0) {
             w = 1;
         }
-        
+
         if(h <= 0) {
             h = 1;
         }

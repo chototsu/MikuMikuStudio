@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -70,7 +70,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.9 2004-04-22 20:34:23 mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.10 2004-04-22 22:27:06 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -309,7 +309,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
       for(int i = 0; i < vpArray.length; i++) {
           vpArray[i] = vpBuffer.get();
       }
-      
+
       float[] result = new float[4];
 
       GLU.gluProject(

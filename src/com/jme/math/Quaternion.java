@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.11 2004-03-17 23:18:18 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.12 2004-04-22 22:26:39 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -49,7 +49,7 @@ import com.jme.scene.state.TextureState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.5 2004-03-25 17:14:38 mojomonkey Exp $
+ * @version $Id: Mouse.java,v 1.6 2004-04-22 22:26:30 renanse Exp $
  */
 public abstract class Mouse extends Geometry {
     /**
