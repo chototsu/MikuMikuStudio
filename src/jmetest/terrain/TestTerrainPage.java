@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.11 2004-04-23 17:32:42 mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.12 2004-04-23 22:31:10 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -122,7 +122,7 @@ public class TestTerrainPage extends SimpleGame {
     ts.setEnabled(true);
     Texture t1 = TextureManager.loadTexture(
         pt.getImageIcon().getImage(),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true,
         true);
@@ -131,7 +131,7 @@ public class TestTerrainPage extends SimpleGame {
     Texture t2 = TextureManager.loadTexture(TestTerrain.class.getClassLoader().
                                             getResource(
         "jmetest/data/texture/Detail.jpg"),
-                                            Texture.MM_LINEAR,
+                                            Texture.MM_LINEAR_LINEAR,
                                             Texture.FM_LINEAR,
                                             true);
     ts.setTexture(t2, 1);
