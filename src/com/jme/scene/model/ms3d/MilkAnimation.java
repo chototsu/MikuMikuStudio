@@ -156,7 +156,7 @@ public class MilkAnimation extends Controller{
 
     private void combineWithInverse() {
         for (int i=0;i<jointMovements.length;i++)
-            jointMovements[i].multLocal(movementFile.myJoints[i].inverseChainMatrix);
+            jointMovements[i].multLocal(movementFile.myJoints[i].inverseChainMatrix,unSyncbeginPos);
     }
     private void createJointTransforms(float changeAmnt) {
         for (int index=0;index<jointMovements.length;index++){
@@ -169,11 +169,11 @@ public class MilkAnimation extends Controller{
             unSyncbeginPos.interpolate(movementFile.myJoints[index].keyframePos[currentFrame+1],changeAmnt);
             tempUnSyncd.set(unSyncbeginAngle,unSyncbeginPos);
             jointMovements[index].set(movementFile.myJoints[index].localRefMatrix);
-            jointMovements[index].multLocal(tempUnSyncd);
+            jointMovements[index].multLocal(tempUnSyncd,unSyncbeginPos);
             if (theParentIndex!=-1){
                 tempUnSyncd.set(jointMovements[index]);
                 jointMovements[index].set(jointMovements[theParentIndex]);
-                jointMovements[index].multLocal(tempUnSyncd);
+                jointMovements[index].multLocal(tempUnSyncd,unSyncbeginPos);
             }
         }
     }
