@@ -32,6 +32,7 @@
 package com.jme.scene.state;
 
 import java.util.Stack;
+import java.io.Serializable;
 
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
@@ -39,9 +40,9 @@ import com.jme.scene.Spatial;
 /**
  * <code>RenderState</code>
  * @author Mark Powell
- * @version $Id: RenderState.java,v 1.12 2004-04-30 17:29:41 mojomonkey Exp $
+ * @version $Id: RenderState.java,v 1.13 2004-07-06 04:44:57 cep21 Exp $
  */
-public abstract class RenderState {
+public abstract class RenderState implements Serializable{
 
   public final static int RS_ALPHA = 0;
   public final static int RS_DITHER = 1;
