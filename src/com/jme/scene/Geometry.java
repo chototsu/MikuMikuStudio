@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a 
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.6 2004-02-03 22:13:25 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.7 2004-02-19 21:23:24 mojomonkey Exp $
  */
 public class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -300,7 +300,7 @@ public class Geometry extends Spatial implements Serializable {
      */
     public void updateWorldBound() {
         if(bound != null) {
-           worldBound = bound.transform(worldRotation, worldTranslation, worldScale);
+           bound.transform(worldRotation, worldTranslation, worldScale, worldBound);
         }  
     } 
     
