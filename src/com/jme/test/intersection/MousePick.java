@@ -39,10 +39,8 @@ import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 
 /**

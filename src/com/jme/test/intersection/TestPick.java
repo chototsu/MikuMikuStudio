@@ -48,7 +48,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -59,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.2 2003-12-04 21:39:57 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.3 2003-12-04 23:18:28 mojomonkey Exp $
  */
 public class TestPick extends AbstractGame {
     private TriMesh t;
