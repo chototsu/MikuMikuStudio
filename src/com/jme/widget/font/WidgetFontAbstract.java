@@ -71,11 +71,19 @@ public abstract class WidgetFontAbstract implements WidgetFont {
     }
 
     public void create(String filename) {
-    	try {
-    		URL url = new URL("file:"+filename);
+    	URL url = null;
+    	
+    	url = WidgetFontAbstract.class.getClassLoader().getResource(FONT_DIRECTORY+name+"."+FONT_EXT);
+    	
+    	if(url != null) {
     		create(url);
-    	} catch (MalformedURLException e){
-    		LoggingSystem.getLogger().log(Level.WARNING, "Could not load: "+filename);
+    	} else {
+    		try {
+	    		url = new URL("file:"+filename);
+	    		create(url);
+	    	} catch (MalformedURLException e){
+	    		LoggingSystem.getLogger().log(Level.WARNING, "Could not load: "+filename);
+	    	}
     	}
     }
     
