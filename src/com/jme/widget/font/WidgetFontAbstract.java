@@ -31,18 +31,21 @@
  */
 package com.jme.widget.font;
 
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.DataInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.channels.ReadableByteChannel;
+import java.util.logging.Level;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.LoggingSystem;
 
 /**
  * @author Gregg Patton
@@ -68,6 +71,15 @@ public abstract class WidgetFontAbstract implements WidgetFont {
     }
 
     public void create(String filename) {
+    	try {
+    		URL url = new URL("file:"+filename);
+    		create(url);
+    	} catch (MalformedURLException e){
+    		LoggingSystem.getLogger().log(Level.WARNING, "Could not load: "+filename);
+    	}
+    }
+    
+    public void create(URL filename) {
         try {
             int numChars, numTexBytes, cnt;
             WidgetFontChar fontChar;
@@ -75,17 +87,16 @@ public abstract class WidgetFontAbstract implements WidgetFont {
             header = new WidgetFontHeader();
             texture = new Texture();
 
-            File data = new File(filename);
-
-            ReadableByteChannel channel = new FileInputStream(data).getChannel();
-            ByteBuffer buf = ByteBuffer.allocateDirect((int) data.length());
-
+            InputStream is = filename.openStream();
+            DataInputStream dis = new DataInputStream(is);
+            
+            byte[] data = new byte[dis.available()];
+            dis.readFully(data);
+            ByteBuffer buf = ByteBuffer.allocateDirect(data.length);
             buf.order(ByteOrder.LITTLE_ENDIAN);
 
             buf.rewind();
-            channel.read(buf);
-            channel.close();
-
+            buf.put(data);
             buf.rewind();
 
             header.setTex(buf.getInt());
