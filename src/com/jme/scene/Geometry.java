@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.44 2004-05-20 17:13:07 renanse Exp $
+ * @version $Id: Geometry.java,v 1.45 2004-05-20 18:29:42 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -754,10 +754,13 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void updateColorBuffer() {
         if (color == null) { return; }
+        int bufferLength;
+        if (vertQuantity >= 0)
+          bufferLength = vertQuantity * 4;
+        else
+          bufferLength = vertex.length * 4;
 
-        int bufferLength = vertex.length * 4;
-
-        if (colorBuf == null) {
+        if (colorBuf == null || colorBuf.capacity() < (4 * bufferLength)) {
             colorBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
                     ByteOrder.nativeOrder()).asFloatBuffer();
         }
@@ -819,9 +822,9 @@ public abstract class Geometry extends Spatial implements Serializable {
           bufferLength = vertQuantity * 3;
         else
           bufferLength = vertex.length * 3;
-        if (normBuf == null) {
-            normBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
-                    ByteOrder.nativeOrder()).asFloatBuffer();
+        if (normBuf == null || normBuf.capacity() < (4 * bufferLength)) {
+          normBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
+              ByteOrder.nativeOrder()).asFloatBuffer();
         }
 
         normBuf.clear();
@@ -861,7 +864,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         else
           bufferLength = vertex.length * 2;
 
-        if (texBuf[textureUnit] == null) {
+        if (texBuf[textureUnit] == null || texBuf[textureUnit].capacity() < (4 * bufferLength)) {
             texBuf[textureUnit] = ByteBuffer.allocateDirect(4 * bufferLength)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
         }
