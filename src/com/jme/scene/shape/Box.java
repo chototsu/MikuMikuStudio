@@ -45,7 +45,7 @@ import com.jme.bounding.BoundingBox;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.4 2004-06-06 08:13:22 cep21 Exp $
+ * @version $Id: Box.java,v 1.5 2004-06-08 22:08:48 cep21 Exp $
  */
 public class Box extends TriMesh implements XMLloadable{
     public float xExtent, yExtent, zExtent;
@@ -60,6 +60,7 @@ public class Box extends TriMesh implements XMLloadable{
      * For internal usage only
      */
     public Box(){
+        super("temp");
     }
 
     /**
@@ -388,14 +389,10 @@ public class Box extends TriMesh implements XMLloadable{
 
     public Object loadFromXML(String args) {
         String[] parts=args.split(" ");
-        Box toReturn=new Box("temp",
-                new Vector3f(Float.parseFloat(parts[0]),Float.parseFloat(parts[1]),Float.parseFloat(parts[2])),
-                Float.parseFloat(parts[3]),
-                Float.parseFloat(parts[4]),
-                Float.parseFloat(parts[5])
-                );
-        toReturn.setModelBound(new BoundingBox());
-        toReturn.updateModelBound();
-        return toReturn;
+        setData(new Vector3f(Float.parseFloat(parts[0]),Float.parseFloat(parts[1]),Float.parseFloat(parts[2]))
+                , Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]), true);
+        this.setModelBound(new BoundingBox());
+        this.updateModelBound();
+        return this;
     }
 }
