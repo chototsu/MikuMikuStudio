@@ -30,8 +30,6 @@
  */
 package jmetest.renderer.state;
 
-import org.lwjgl.opengl.GL11;
-
 import com.jme.app.VariableTimestepGame;
 import com.jme.image.Texture;
 import com.jme.input.NodeController;
@@ -40,6 +38,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Torus;
+import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.VertexProgramState;
@@ -51,7 +50,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Eric Woroshow
- * @version $Id: TestVertexProgramState.java,v 1.1 2004-03-20 20:42:29 ericthered Exp $
+ * @version $Id: TestVertexProgramState.java,v 1.2 2004-03-23 15:55:19 mojomonkey Exp $
  */
 public class TestVertexProgramState extends VariableTimestepGame {
 
@@ -77,11 +76,7 @@ public class TestVertexProgramState extends VariableTimestepGame {
     protected void render(float f) {
         display.getRenderer().clearBuffers();
 
-        GL11.glPushAttrib(GL11.GL_ALL_ATTRIB_BITS);
-
         display.getRenderer().draw(scene);
-
-        GL11.glPopAttrib();
     }
 
     /**
@@ -136,6 +131,12 @@ public class TestVertexProgramState extends VariableTimestepGame {
 		Torus shaded = createShadedTorus(), outline = createOutlineTorus();
         scene.attachChild(shaded);
         scene.attachChild(outline);
+        
+        AttributeState as = display.getRenderer().getAttributeState();
+        as.setEnabled(true);
+        as.setMask(AttributeState.ALL_ATTRIB_BIT);
+        
+        scene.setRenderState(as);
 
         //Allow the torus to be controlled by the mouse.
         //By attatching the controller to the scene root, we can manipulate
