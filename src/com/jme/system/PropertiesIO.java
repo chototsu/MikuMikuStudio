@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <br>
  *
  * @author Mark Powell
- * @version $Id: PropertiesIO.java,v 1.2 2004-04-22 22:27:05 renanse Exp $
+ * @version $Id: PropertiesIO.java,v 1.3 2004-08-02 21:47:09 cep21 Exp $
  */
 public class PropertiesIO {
     /**
@@ -94,7 +94,7 @@ public class PropertiesIO {
      * Constructor creates the <code>PropertiesIO</code> object for use.
      *
      * @param filename the properties file to use.
-     * @throws MonkeyRuntimeException if the filename is null.
+     * @throws JmeException if the filename is null.
      */
     public PropertiesIO(String filename) {
         if (null == filename) {

@@ -35,9 +35,22 @@ import com.jme.scene.*;
 import com.jme.math.*;
 import com.jme.renderer.*;
 
+/**
+ * This class is a set of static mesh creation utilities.
+ */
 public class MeshUtils {
 
-    /** */
+    private MeshUtils(){}
+
+    /**
+     * Creates a dodecahedron mesh.  If rpkMesh is null, a new mesh is used and returned.
+     * @param rpkMesh The TriMesh to store the result in.
+     * @param bWantNormals If true, normals are created.
+     * @param bWantColors If true, colors are created.
+     * @param bWantUVs If true, UV coords are created.
+     * @param bOutsideView
+     * @return rpkMesh after creation.
+     */
     public static TriMesh createDodecahedronMesh(
         TriMesh rpkMesh,
         boolean bWantNormals,
@@ -241,7 +254,16 @@ public class MeshUtils {
         }
         return rpkMesh;
     }
-    /** */
+
+    /**
+     * Creates a Icosahedron mesh.  If rpkMesh is null, a new mesh is used and returned.
+     * @param rpkMesh The TriMesh to store the result in.
+     * @param bWantNormals If true, normals are created.
+     * @param bWantColors If true, colors are created.
+     * @param bWantUVs If true, UV coords are created.
+     * @param bOutsideView
+     * @return rpkMesh after creation.
+     */
     public static TriMesh createIcosahedronMesh(
         TriMesh rpkMesh,
         boolean bWantNormals,

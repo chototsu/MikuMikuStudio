@@ -46,7 +46,7 @@ import com.jme.util.LoggingSystem;
  * to simulate water errosion.
  *
  * @author Mark Powell
- * @version $Id: FaultFractalHeightMap.java,v 1.2 2004-04-22 22:27:08 renanse Exp $
+ * @version $Id: FaultFractalHeightMap.java,v 1.3 2004-08-02 21:49:04 cep21 Exp $
  */
 public class FaultFractalHeightMap extends AbstractHeightMap {
 
@@ -69,7 +69,7 @@ public class FaultFractalHeightMap extends AbstractHeightMap {
 	 *      1, where 0 is no filtering and 1 is extreme filtering. Suggested
 	 *      values are 0.2-0.4.
 	 *
-	 * @throws MonkeyRuntimeException if size is not greater than zero,
+	 * @throws JmeException if size is not greater than zero,
 	 *      iterations is not greater than zero, minDelta is more than
 	 *      maxDelta and if filter is not between 0 and 1.
 	 */

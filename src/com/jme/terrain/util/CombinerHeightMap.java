@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * to 1.0.
  *
  * @author Mark Powell
- * @version $Id: CombinerHeightMap.java,v 1.2 2004-04-22 22:27:07 renanse Exp $
+ * @version $Id: CombinerHeightMap.java,v 1.3 2004-08-02 21:48:41 cep21 Exp $
  */
 public class CombinerHeightMap extends AbstractHeightMap {
 	/**
@@ -79,7 +79,7 @@ public class CombinerHeightMap extends AbstractHeightMap {
 	 * @param map2 the second heightmap to combine.
 	 * @param mode denotes whether to add or subtract the heightmaps, may
 	 * 		be either ADDITION or SUBTRACTION.
-	 * @throws MonkeyRuntimeException if either map is null, their size
+	 * @throws JmeException if either map is null, their size
 	 * 		do not match or the mode is invalid.
 	 */
 	public CombinerHeightMap(

@@ -39,19 +39,23 @@ import com.jme.math.Vector3f;
 import com.jme.math.FastMath;
 
 /**
- * <code>AreaUtils</code>
+ * <code>AreaUtils</code> is used to calculate the area of various objects, such as bounding volumes.  These
+ * functions are very loose approximations.
  * @author Joshua Slack
- * @version $Id: AreaUtils.java,v 1.3 2004-04-22 22:27:09 renanse Exp $
+ * @version $Id: AreaUtils.java,v 1.4 2004-08-02 21:54:54 cep21 Exp $
  */
 
 public class AreaUtils {
 
   /**
    * calcScreenArea -- in Pixels
+   * Aproximates the screen area of a bounding volume.  If the volume isn't a BoundingSphere or
+   * BoundingBox, 0 is returned.
    *
-   * @param bound BoundingVolume
-   * @param cam Camera
-   * @return float
+   * @param bound The bounds to calculate the volume from.
+   * @param distance The distance from camera to object.
+   * @param screenWidth The width of the screen.
+   * @return The area in pixels on the screen of the bounding volume.
    */
   public static float calcScreenArea(BoundingVolume bound, float distance, float screenWidth) {
     if (bound instanceof BoundingSphere)
@@ -61,13 +65,6 @@ public class AreaUtils {
     return 0.0f;
   }
 
-  /**
-   * calcScreenArea -- in Pixels
-   *
-   * @param bound BoundingSphere
-   * @param cam Camera
-   * @return float
-   */
   private static float calcScreenArea(BoundingSphere bound, float distance, float screenWidth) {
     // Where is the center point and a radius point that lies in a plan parallel to the view plane?
 //    // Calc radius based on these two points and plug into circle area formula.
@@ -78,13 +75,6 @@ public class AreaUtils {
     return radius * radius * FastMath.PI;
   }
 
-  /**
-   * calcScreenArea -- in Pixels
-   *
-   * @param bound BoundingBox
-   * @param cam Camera
-   * @return float
-   */
   private static float calcScreenArea(BoundingBox bound, float distance, float screenWidth) {
     // Calc as if we are a BoundingSphere for now...
     Vector3f radVect = new Vector3f(bound.xExtent, bound.yExtent, bound.zExtent);
@@ -92,5 +82,4 @@ public class AreaUtils {
     BoundingSphere sphere = new BoundingSphere(radVect.length(), tempCenter);
     return calcScreenArea(sphere, distance, screenWidth);
   }
-
 }

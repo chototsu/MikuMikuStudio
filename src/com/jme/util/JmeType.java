@@ -41,12 +41,14 @@ package com.jme.util;
  * effective method overloading, performFoo(FooType1 type) has a different
  * signature than performFoo(FooType2 type).
  * @author Gregg Patton
- * @version $Id: JmeType.java,v 1.2 2004-04-22 22:27:09 renanse Exp $
+ * @version $Id: JmeType.java,v 1.3 2004-08-02 21:55:37 cep21 Exp $
  */
 public abstract class JmeType {
 
+    /** The name of this JmeType */
     protected String name;
 
+    /** Creates a new JmeType with the given name. */
     protected JmeType(String name) {
         this.name = name;
     }

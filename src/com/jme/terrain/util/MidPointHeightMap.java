@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * two.
  *
  * @author Mark Powell
- * @version $Id: MidPointHeightMap.java,v 1.4 2004-04-22 22:27:08 renanse Exp $
+ * @version $Id: MidPointHeightMap.java,v 1.5 2004-08-02 21:49:39 cep21 Exp $
  */
 public class MidPointHeightMap extends AbstractHeightMap {
     private float roughness;
@@ -66,7 +66,7 @@ public class MidPointHeightMap extends AbstractHeightMap {
 	 * @param size the size of the terrain, must be a power of 2.
 	 * @param roughness how chaotic to make the terrain.
 	 *
-	 * @throws MonkeyRuntimeException if size is less than or equal to
+	 * @throws JmeException if size is less than or equal to
 	 * 		zero or roughtness is less than 0.
 	 */
     public MidPointHeightMap(int size, float roughness) {

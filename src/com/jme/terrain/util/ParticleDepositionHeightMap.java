@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * into the volcano, creating the caldera.
  *
  * @author Mark Powell
- * @version $Id: ParticleDepositionHeightMap.java,v 1.3 2004-04-22 22:27:08 renanse Exp $
+ * @version $Id: ParticleDepositionHeightMap.java,v 1.4 2004-08-02 21:50:05 cep21 Exp $
  */
 public class ParticleDepositionHeightMap extends AbstractHeightMap {
 
@@ -79,7 +79,7 @@ public class ParticleDepositionHeightMap extends AbstractHeightMap {
 	 * 		represented as a percentage, where 0.0 will not invert
 	 * 		anything, and 1.0 will invert all.
 	 *
-	 * @throws MonkeyRuntimeException if any value is less than zero, and
+	 * @throws JmeException if any value is less than zero, and
 	 * 		if caldera is not between 0 and 1. If minParticles is greater than
 	 * 		max particles as well.
 	 */

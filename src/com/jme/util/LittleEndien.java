@@ -4,16 +4,20 @@ import java.io.*;
 
 /**
  * <code>LittleEndien</code> is a class to read littleendien stored data
- * via a InputStream.  Currently used to read .ms3d files.
+ * via a InputStream.  All functions work as defined in DataInput, but
+ * assume they come from a LittleEndien input stream.  Currently used to read .ms3d and .3ds files.
  * @author Jack Lindamood
  */
 public class LittleEndien implements DataInput{
 
-    BufferedInputStream in;
-    BufferedReader inRead;
-    byte[]  buffer;
+    private BufferedInputStream in;
+    private BufferedReader inRead;
 
-
+    /**
+     * Creates a new LittleEndien reader from the given input stream.  The
+     * stream is wrapped in a BufferedReader automatically.
+     * @param in The input stream to read from.
+     */
     public LittleEndien(InputStream in){
         this.in = new BufferedInputStream(in);
         inRead=new BufferedReader(new InputStreamReader(in));

@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.4 2004-07-21 21:19:44 guurk Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.5 2004-08-02 21:48:16 cep21 Exp $
  */
 public abstract class AbstractHeightMap {
 
@@ -107,7 +107,7 @@ public abstract class AbstractHeightMap {
      * @param size
      *            the new size of the terrain.
      *
-     * @throws MonkeyRuntimeException
+     * @throws JmeException
      *             if the size is less than or equal to zero.
      */
     public void setSize(int size) {
@@ -124,7 +124,7 @@ public abstract class AbstractHeightMap {
      *
      * @param filter
      *            the erosion value.
-     * @throws MonkeyRuntimeException
+     * @throws JmeException
      *             if filter is less than 0 or greater than 1.
      */
     public void setFilter(float filter) {
@@ -227,7 +227,7 @@ public abstract class AbstractHeightMap {
      *            the file name to save the current data as.
      * @return true if the save was successful, false otherwise.
      *
-     * @throws MonkeyRuntimeException
+     * @throws JmeException
      *             if filename is null.
      */
     public boolean save(String filename) {

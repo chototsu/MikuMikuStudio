@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * point. Where pure black denotes 0 and pure white denotes 255.
  *
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.3 2004-04-22 22:27:08 renanse Exp $
+ * @version $Id: RawHeightMap.java,v 1.4 2004-08-02 21:50:40 cep21 Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
     private String filename;
@@ -62,7 +62,7 @@ public class RawHeightMap extends AbstractHeightMap {
      * @param filename the RAW file to use as the heightmap.
      * @param size the size of the RAW (must be square).
      *
-     * @throws MonkeyRuntimeException if the filename is null or not RAW, and
+     * @throws JmeException if the filename is null or not RAW, and
      *      if the size is 0 or less.
      */
     public RawHeightMap(String filename, int size) {
