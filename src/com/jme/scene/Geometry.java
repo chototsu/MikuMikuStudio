@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.51 2004-06-25 19:13:42 renanse Exp $
+ * @version $Id: Geometry.java,v 1.52 2004-07-02 23:49:54 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -536,8 +536,8 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void setTextures(Vector2f[] textures, int textureUnit) {
         if (textureUnit < 0 || textureUnit >= this.texture.length) { return; }
-        if (this.texture != null) {
-            if (this.texture[textureUnit].length != texture.length) {
+        if (this.texture != null && textures != null) {
+            if (this.texture[textureUnit].length != textures.length) {
                 texBuf[textureUnit] = null;
             }
         }
@@ -875,7 +875,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void updateTextureBuffer(int textureUnit) {
         if (texture == null) { return; }
-        if (texture[textureUnit] == null) { return; }
+        if (texture[textureUnit] == null) { texBuf[textureUnit] = null;  return; }
         int bufferLength;
         if (vertQuantity >= 0)
           bufferLength = vertQuantity * 2;
