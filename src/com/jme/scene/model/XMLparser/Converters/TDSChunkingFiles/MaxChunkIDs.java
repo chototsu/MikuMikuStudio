@@ -6,7 +6,7 @@ package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
  * List of 3ds ChunkHeader ID #'s.
  * @author Jack Lindamood
  */
-public interface MaxChunkIDs {
+interface MaxChunkIDs {
 
     // These must all be diffrent values
     static final int NULL_CHUNK   =0x0000;

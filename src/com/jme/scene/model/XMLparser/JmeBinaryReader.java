@@ -80,14 +80,9 @@ public class JmeBinaryReader {
         renderer=DisplaySystem.getDisplaySystem().getRenderer();
     }
 
-    /**
-     * This will read the binaryJme InputStream to
-     * convert jME's binary format to a Node.
-     * @param binaryJme The binary format jME scene
-     * @return A Node representing the binary file
-     * @throws IOException If anything wierd goes on while reading
-     */
-    public Node loadBinaryFormat(InputStream binaryJme) throws IOException {
+
+
+    public Node loadBinaryFormat(Node storeNode, InputStream binaryJme) throws IOException {
         if (DEBUG) System.out.println("Begining read");
         myScene=null;
         s.clear();
@@ -95,6 +90,7 @@ public class JmeBinaryReader {
         attributes.clear();
         myIn=new DataInputStream(binaryJme);
         readHeader();
+        s.push(storeNode);  // This will be pop'd off when </scene> is encountered and saved into myScene
         byte flag=myIn.readByte();
         while (flag!=BinaryFormatConstants.END_FILE){
             if (flag==BinaryFormatConstants.BEGIN_TAG)
@@ -111,6 +107,17 @@ public class JmeBinaryReader {
     }
 
     /**
+     * This will read the binaryJme InputStream to
+     * convert jME's binary format to a Node.
+     * @param binaryJme The binary format jME scene
+     * @return A Node representing the binary file
+     * @throws IOException If anything wierd goes on while reading
+     */
+    public Node loadBinaryFormat(InputStream binaryJme) throws IOException {
+        return loadBinaryFormat(new Node("XML loaded scene"),binaryJme);
+    }
+
+    /**
      * Processes a BEGIN_TAG flag, which signals that a tag has begun.  Attributes for the
      * tag are read, and if needed an object is pushed on the stack
      * @throws IOException If anything wierd goes on in reading
@@ -119,8 +126,8 @@ public class JmeBinaryReader {
         String tagName=myIn.readUTF();
         if (DEBUG) System.out.println("Reading tagName:" + tagName);
         readInObjects(attributes);
-        if (tagName.equalsIgnoreCase("Scene")){
-            s.push(new Node("XML Scene"));
+        if (tagName.equals("scene")){
+//            s.push(new Node("XML Scene"));    Already on stack
         } else if (tagName.equals("node")){
             s.push(processSpatial(new Node((String) attributes.get("name")),attributes));
         } else if (tagName.equals("materialstate")){
@@ -224,6 +231,20 @@ public class JmeBinaryReader {
         } else if (tagName.equals("keyframepointintime")){
             s.push(attributes.get("time"));  // Store the current time on the stack
             s.push(new EmptyTriMesh());
+        } else if (tagName.equals("jmefile")){
+            if (attributes.get("file")!=null){
+                LoaderNode i=new LoaderNode("file "+(String) attributes.get("file"));
+                i.loadFromFilePath((String)attributes.get("type"),(String) attributes.get("file"),properties);
+                s.push(i);
+            } else if (attributes.get("classloader")!=null){
+                LoaderNode i=new LoaderNode("classloader "+(String) attributes.get("classloader"));
+                i.loadFromClassLoader((String)attributes.get("type"),(String) attributes.get("classloader"),properties);
+                s.push(i);
+            } else if (attributes.get("url")!=null){
+                LoaderNode i=new LoaderNode("classloader "+(URL) attributes.get("url"));
+                i.loadFromURLPath((String)attributes.get("type"),(URL) attributes.get("url"),properties);
+                s.push(i);
+            }
         } else{
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
@@ -337,6 +358,11 @@ public class JmeBinaryReader {
             KeyframeController kc=(KeyframeController)s.pop();
             kc.setKeyframe(time,parentMesh);
             s.push(kc);
+        } else if (tagName.equals("jmefile")){
+            LoaderNode childLoaderNode=(LoaderNode) s.pop();
+            parentNode=(Node) s.pop();
+            parentNode.attachChild(childLoaderNode);
+            s.push(parentNode);
         } else {
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
@@ -388,7 +414,11 @@ public class JmeBinaryReader {
                 URL context;
                 if (properties.containsKey("texurl")){
                     context=new URL((URL) properties.get("texurl"),(String) atts.get("file"));
-                } else{
+                } else if (properties.containsKey("texclasspath")){
+                    context=JmeBinaryReader.class.getClassLoader().getResource(
+                            (String)properties.get("texclasspath")+(String)atts.get("file")
+                    );
+                } else {
                     context=new File((String) atts.get("file")).toURI().toURL();
                 }
                 p=TextureManager.loadTexture(context,

@@ -199,12 +199,29 @@ public class JmeBinaryWriter {
     private void writeSpatial(Spatial s) throws IOException {
         if (s instanceof XMLloadable)
             writeXMLloadable((XMLloadable)s);
+        else if (s instanceof LoaderNode)
+            writeLoaderNode((LoaderNode)s);
         else if (s instanceof JointMesh2)
             writeJointMesh((JointMesh2)s);
         else if (s instanceof Node)
             writeNode((Node) s);
         else if (s instanceof TriMesh)
             writeMesh((TriMesh)s);
+    }
+
+    private void writeLoaderNode(LoaderNode loaderNode) throws IOException {
+        HashMap atts=new HashMap();
+        atts.clear();
+        atts.put("type",loaderNode.type);
+        if (loaderNode.filePath!=null)
+            atts.put("file",loaderNode.filePath);
+        else if (loaderNode.urlPath!=null)
+            atts.put("url",loaderNode.urlPath);
+        else if (loaderNode.classLoaderPath!=null)
+            atts.put("classloader",loaderNode.classLoaderPath);
+        writeTag("jmefile",atts);
+        writeEndTag("jmefile");
+
     }
 
     /**
