@@ -32,6 +32,8 @@
 
 package jmetest.renderer;
 
+import org.lwjgl.input.Keyboard;
+
 import com.jme.app.*;
 import com.jme.image.Texture;
 import com.jme.input.*;
@@ -49,33 +51,28 @@ import com.jme.util.*;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.8 2004-04-16 18:47:32 mojomonkey Exp $
+ * @version $Id: TestPQTorus.java,v 1.9 2004-04-22 02:18:26 renanse Exp $
  */
-public class TestPQTorus extends VariableTimestepGame {
-
-    private Camera cam;
-    private CameraNode camNode;
-    private Node scene;
-    private InputHandler input;
+public class TestPQTorus extends SimpleGame {
 
     private Quaternion rotQuat = new Quaternion();
-    private float angle = 0f;
+    private float angle = 0;
     private Vector3f axis = new Vector3f(1, 1, 0);
-    
     private PQTorus t;
-    private float p, q;
-    
-    //Animation variables
-    private float targetp, targetq;
-    
-    /**
+    private Text pqText;
+
+    private float p = 1, q = 2;
+    private boolean anim = false;
+    private float targetP = p, targetQ = q;
+
+  /**
      * Entry point for the test.
      * @param args arguments passed to the program; ignored
      */
     public static void main(String[] args) {
-        //LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
+        LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
         TestPQTorus app = new TestPQTorus();
-        app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
@@ -83,172 +80,90 @@ public class TestPQTorus extends VariableTimestepGame {
      * Animates the PQ torus.
      * @see com.jme.app.SimpleGame#update()
      */
-    protected void update(float interpolation) {
-        input.update(interpolation * 5);
-        handleInput();
-        animateTorus();
-        
-        if (interpolation < 1) {
-            angle = angle + interpolation;
-            if (angle > 360) angle = 0;
+    protected void simpleUpdate(float interpolation) {
+      pqText.print("P: "+p+"  Q: "+q);
+
+      if (!anim) {
+        if (Keyboard.isKeyDown(Keyboard.KEY_P)) {
+          if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ||
+              Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            targetP -= 1;
+          else
+            targetP += 1;
+          anim = true;
+        }
+        if (Keyboard.isKeyDown(Keyboard.KEY_Q)) {
+          if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT) ||
+              Keyboard.isKeyDown(Keyboard.KEY_RSHIFT))
+            targetQ -= 1;
+          else
+            targetQ += 1;
+          anim = true;
         }
 
-        rotQuat.fromAngleAxis(angle, axis);
-        t.setLocalRotation(rotQuat);
+      } else {
+        if (targetP != p || targetQ != q) {
+          if (FastMath.abs(targetP - p) < .01f)
+            p = targetP;
+          else if (p < targetP) p += .01f;
+          else p -= .01f;
 
-        scene.updateGeometricState(interpolation, true);
+          if (FastMath.abs(targetQ - q) < .01f)
+            q = targetQ;
+          else if (q < targetQ) q += .01f;
+          else q -= .01f;
+
+          generatePQTorus();
+          rootNode.updateRenderState();
+        } else anim = false;
+      }
+
+      if (interpolation < 1) {
+        angle = angle + interpolation / 50;
+        if (angle > 360) angle = 0;
+      }
+
+        rotQuat.fromAngleAxis(angle * FastMath.DEG_TO_RAD, axis);
+        rootNode.setLocalRotation(rotQuat);
     }
 
     /**
-     * Clears the buffers and then draws the PQ torus.
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-        display.getRenderer().draw(scene);
-    }
-
-    /**
-     * Creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(properties.getWidth(), properties.getHeight(),
-                    properties.getDepth(), properties.getFreq(), properties.getFullscreen());
-            display.setTitle("PQ Torus!");
-            cam = display.getRenderer().getCamera(properties.getWidth(), properties.getHeight());
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        display.getRenderer().setCamera(cam);
-
-        camNode = new CameraNode("camera node", cam);
-        camNode.setLocalTranslation(new Vector3f(0, 0, -25));
-        camNode.updateWorldData(0);
-
-        input = new NodeHandler(this, camNode, properties.getRenderer());
-        input.getKeyBindingManager().set("inc p", KeyInput.KEY_P);
-        input.getKeyBindingManager().set("dec p", new int[]{KeyInput.KEY_P, KeyInput.KEY_MINUS});
-        input.getKeyBindingManager().set("inc q", KeyInput.KEY_Q);
-        input.getKeyBindingManager().set("dec q", new int[]{KeyInput.KEY_Q, KeyInput.KEY_MINUS});
-        
-        input.setKeySpeed(1f);
-        input.setMouseSpeed(1f);
-    }
-
-    /**
-     * Initializes the scene.
+     * builds the trimesh.
+     *
      * @see com.jme.app.SimpleGame#initGame()
      */
-    protected void initGame() {
-        scene = new Node("scene");
+    protected void simpleInitGame() {
+      display.setTitle("PQ Torus Test");
+      pqText = new Text("PQ label", "");
+      pqText.setLocalTranslation(new Vector3f(0,20,0));
+      pqText.setForceView(true);
+      fpsNode.attachChild(pqText);
 
         //Generate the geometry
-        p = targetp = 3.0f;
-        q = targetq = 2.0f;
         generatePQTorus();
-        
-        //Set the render states
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setFunction(ZBufferState.CF_LEQUAL);
-        buf.setEnabled(true);
-        
-        WireframeState ws = display.getRenderer().getWireframeState();
-        ws.setFace(WireframeState.WS_FRONT);
-        ws.setEnabled(false);
-        
-		TextureState ts = display.getRenderer().getTextureState();
-		ts.setEnabled(true);
-		ts.setTexture(
-			TextureManager.loadTexture(
-				TestBoxColor.class.getClassLoader().getResource(
-					"jmetest/data/texture/dirt.jpg"),
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true));
 
-		scene.setRenderState(ts);
-        scene.setRenderState(buf);
-        scene.setRenderState(ws);
+        TextureState ts = display.getRenderer().getTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(
+            TextureManager.loadTexture(
+            TestBoxColor.class.getClassLoader().getResource(
+            "jmetest/data/images/Monkey.jpg"),
+            Texture.MM_LINEAR,
+            Texture.FM_LINEAR,
+            true));
 
-        setUpLighting();
-        
-        scene.setForceView(true);
-        scene.updateGeometricState(0.0f, true);
-        scene.updateRenderState();
+        rootNode.setRenderState(ts);
+
     }
-    
-    private void setUpLighting(){
-		SpotLight am = new SpotLight();
-		am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-		am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		am.setDirection(new Vector3f(0, 0, 0));
-		am.setLocation(new Vector3f(250, 100, 0));
-		am.setAngle(1);
 
-		SpotLight am2 = new SpotLight();
-		am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-		am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		am2.setDirection(new Vector3f(0, 0, 0));
-		am2.setLocation(new Vector3f(-250, 10, 0));
-		am2.setAngle(1);
-		
-		DirectionalLight dr = new DirectionalLight();
-		dr.setDiffuse(new ColorRGBA(0.25f, 0.75f, 0.25f, 1.0f));
-		dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
-		dr.setDirection(new Vector3f(150, 0, 150));
-
-		LightState state = display.getRenderer().getLightState();
-		state.attach(am);
-		state.attach(dr);
-		state.attach(am2);
-		state.setEnabled(true);
-		
-		am.setEnabled(true);
-		am2.setEnabled(true);
-		dr.setEnabled(true);
-		
-		scene.setRenderState(state);
-    }
-    
     private void generatePQTorus(){
         //Generate a torus with 128 steps along the torus, 16 radial samples,
         //and a radius of 2.0 units
         t = new PQTorus("torus", p, q, 2.0f, 1.0f, 128, 16);
-        
+
         //Update the scene
-        scene.detachAllChildren();
-        scene.attachChild(t);
-    }
-    
-    private void handleInput(){
-        if (input.getKeyBindingManager().isValidCommand("inc p"))
-            targetp++;
-        if (input.getKeyBindingManager().isValidCommand("dec p"))
-            targetp--;
-        
-        if (input.getKeyBindingManager().isValidCommand("inc q"))
-            targetq++;
-        if (input.getKeyBindingManager().isValidCommand("dec q"))
-            targetq--;
-    }
-    
-    private void animateTorus(){
-        if (p >= targetp && q >= targetq) return;
-        
-        if (p < targetp)
-            p += 0.01f;
-        if (q < targetq)
-            q += 0.01f;
-        generatePQTorus();
+        rootNode.detachAllChildren();
+        rootNode.attachChild(t);
     }
 
     /**

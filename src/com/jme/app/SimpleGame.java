@@ -61,19 +61,19 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.6 2004-04-19 21:04:22 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.7 2004-04-22 02:18:26 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
-  private Camera cam;
+  protected Camera cam;
   protected Node rootNode;
-  private InputHandler input;
-  private Timer timer;
-  private Node fpsNode;
-  private Text fps;
+  protected InputHandler input;
+  protected Timer timer;
+  protected Node fpsNode;
+  protected Text fps;
 
-  private WireframeState wireState;
-  private LightState lightState;
+  protected WireframeState wireState;
+  protected LightState lightState;
 
   public static String fontLocation = "jmetest/data/font/font.png";
 
@@ -86,6 +86,9 @@ public abstract class SimpleGame extends BaseGame {
     input.update(timer.getTimePerFrame());
     fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
               display.getRenderer().getStatistics());
+
+    simpleUpdate(interpolation);
+
     rootNode.updateGeometricState(interpolation, true);
 
     if (KeyBindingManager
@@ -100,6 +103,7 @@ public abstract class SimpleGame extends BaseGame {
       lightState.setEnabled(!lightState.isEnabled());
       rootNode.updateRenderState();
     }
+
   }
 
   /**
@@ -111,6 +115,7 @@ public abstract class SimpleGame extends BaseGame {
     display.getRenderer().clearBuffers();
     display.getRenderer().draw(rootNode);
     display.getRenderer().draw(fpsNode);
+    simpleRender(interpolation);
   }
 
   /**
@@ -206,13 +211,13 @@ public abstract class SimpleGame extends BaseGame {
 
      // Then our font Text object.
      fps = new Text("FPS label", "");
-     fps.setRenderState(font);
-     fps.setRenderState(as1);
      fps.setForceView(true);
 
      // Finally, a stand alone node (not attached to root on purpose)
      fpsNode = new Node("FPS node");
      fpsNode.attachChild(fps);
+     fpsNode.setRenderState(font);
+     fpsNode.setRenderState(as1);
      fpsNode.setForceView(true);
 
      // ---- LIGHTS
@@ -236,6 +241,9 @@ public abstract class SimpleGame extends BaseGame {
   }
 
   protected abstract void simpleInitGame();
+
+  protected void simpleUpdate(float interpolation) {}
+  protected void simpleRender(float interpolation) {}
 
   /**
    * unused
