@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.1 2003-11-14 19:37:28 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.2 2003-11-24 14:24:33 mojomonkey Exp $
  */
 public class TestTimer extends AbstractGame {
     private TriMesh t;
@@ -223,7 +223,7 @@ public class TestTimer extends AbstractGame {
         am.setEnabled(true);
         am2.setEnabled(true);
         dr.setEnabled(true);
-        scene.setRenderState(state);
+        //scene.setRenderState(state);
         scene.setRenderState(buf);
         cam.update();
         
