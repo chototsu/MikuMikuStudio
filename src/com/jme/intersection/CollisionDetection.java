@@ -39,9 +39,11 @@ import com.jme.scene.Spatial;
  * <code>CollisionDetection</code> provides a system for calculating collisions
  * based on given criteria.
  * @author Mark Powell
- * @version $Id: CollisionDetection.java,v 1.7 2004-07-30 22:24:20 cep21 Exp $
+ * @version $Id: CollisionDetection.java,v 1.8 2004-08-03 02:04:38 cep21 Exp $
  */
 public class CollisionDetection {
+
+    private CollisionDetection(){}
 
     /**
      *

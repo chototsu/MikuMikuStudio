@@ -41,9 +41,11 @@ import com.jme.math.FastMath;
  * distances between one object and another. These methods are static to allow
  * for easy calling.
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.6 2004-07-30 22:25:13 cep21 Exp $
+ * @version $Id: Distance.java,v 1.7 2004-08-03 02:04:38 cep21 Exp $
  */
 public class Distance {
+
+    private Distance(){}
 
     /**
      *

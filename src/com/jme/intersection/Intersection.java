@@ -44,9 +44,12 @@ import com.jme.math.Ray;
  * the client application need not worry about what type of bounding volume is
  * being used.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.14 2004-07-19 22:11:59 renanse Exp $
+ * @version $Id: Intersection.java,v 1.15 2004-08-03 02:04:38 cep21 Exp $
  */
 public class Intersection {
+
+
+    private Intersection(){}
     /**
      * EPSILON represents the error buffer used to denote a hit.
      */

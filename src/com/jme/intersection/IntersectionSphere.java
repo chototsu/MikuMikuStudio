@@ -42,9 +42,11 @@ import com.jme.math.Vector3f;
  * intersection of sphere objects. All the methods are static to allow for quick
  * and easy calls.
  * @author Mark Powell
- * @version $Id: IntersectionSphere.java,v 1.2 2004-04-22 22:26:36 renanse Exp $
+ * @version $Id: IntersectionSphere.java,v 1.3 2004-08-03 02:04:38 cep21 Exp $
  */
 public class IntersectionSphere {
+
+    private IntersectionSphere(){}
 
 	/**
     *

@@ -40,10 +40,11 @@ import com.jme.math.Vector3f;
  * and easy calls.
  *
  * @author Mark Powell
- * @version $Id: IntersectionBox.java,v 1.8 2004-04-22 22:26:36 renanse Exp $
+ * @version $Id: IntersectionBox.java,v 1.9 2004-08-03 02:04:38 cep21 Exp $
  */
 public class IntersectionBox {
 
+    private IntersectionBox(){}
     /**
      * EPSILON represents the error buffer used to denote a hit.
      */
