@@ -32,41 +32,81 @@
 
 package com.jme.animation;
 
+import com.jme.math.Matrix4f;
+import com.jme.math.Vector3f;
+
 /**
- * <code>Keyframe</code> defines a positional or a rotational keyframe. The
- * keyframe defines a position a vertex should be at a given time. An animation
- * system uses a collection of these keyframes to build a sequence of 
- * transitions to manipulate and animate a collection of vertices.
+ * <code>DeformationJoint</code> defines a joint that contains a 
+ * collection of position keyframes and rotation keyframes. A joint 
+ * controller will then maintain a collection of these joints, causing
+ * the joint to affect a vertex based on the current keyframe.
  * @author Mark Powell
- * @version $Id: Keyframe.java,v 1.2 2004-02-01 07:51:06 mojomonkey Exp $
+ * @version $Id: DeformationJoint.java,v 1.1 2004-02-01 07:51:06 mojomonkey Exp $
  */
-public class Keyframe {
+public class DeformationJoint {
 
-    /**
-     * The time in milliseconds after the start of the animation for which
-     * that keyframe occurs.
-     */
-    public float time;
+	/**
+	 * The name of the joint.
+	 */
+	public String name;
 
-    /**
-     * For a position keyframe (x,y,z) are the coordinates to translate.
-     * For a rotation keyframe (x,y,z) are angles, in radians, to rotate.
-     */
-    public float x, y, z;
+	/**
+	 * The name of the parent joint.
+	 */
+	public String parentName;
 
-    /**
-     * Create a keyframe at a given time and vector.
-     * @param time the time in milliseconds after the start of the animation
-     * for which that keyframe occurs.
-     * @param x the x value of the translation or rotation for the keyframe.
-     * @param y the y value of the translation or rotation for the keyframe.
-     * @param z the z value of the translation or rotation for the keyframe.
-     */
-    public Keyframe(float time, float x, float y, float z) {
-        this.time = time;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
+	/**
+	 * The local translation of the joint in 3D space.
+	 */
+	public Vector3f pos = new Vector3f();
 
+	/**
+	 * The local rotation of the joint in 3D space.
+	 */
+	public Vector3f rot = new Vector3f();
+
+	/**
+	 * The number of position keyframes for the joint.
+	 */
+	public int numberPosistionKeyframes;
+
+	/**
+	 * The number of position keyframes for the joint.
+	 */
+	public int numberRotationKeyframes;
+
+	/**
+	 * The tranlation keyframes of the animation.
+	 */
+	public Keyframe[] positionKeys;
+
+	/**
+	 * The rotation keyframes of the animation.
+	 */
+	public Keyframe[] rotationKeys;
+
+	/**
+	 * The transformation of a joint from its parent.
+	 */
+	public Matrix4f relativeMatrix = new Matrix4f();
+
+	/**
+	 * The original transformation of the joint.
+	 */
+	public Matrix4f absoluteMatrix = new Matrix4f();
+
+	/**
+	 * The helper Matrix4f for calculating the final Matrix4f.
+	 */
+	public Matrix4f relativeFinalMatrix = new Matrix4f();
+
+	/**
+	 * The final result of all transformations in the skeleton.
+	 */
+	public Matrix4f finalMatrix = new Matrix4f();
+
+	/**
+	 * The parent joint index.
+	 */
+	public int parentIndex;
 }
