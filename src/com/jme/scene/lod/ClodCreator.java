@@ -114,6 +114,8 @@ public class ClodCreator extends VETMesh {
     m_bCollapsing = true;
     while (m_iHQuantity > 0) {
       System.err.println("m_iHQuantity: "+m_iHQuantity);
+      for (int i = 0; i < m_iHQuantity; i++)
+        System.err.println("met: "+i+"  metric: "+(m_apkHeap[i] != null ? m_apkHeap[i].m_fMetric : -1)+"  index: "+(m_apkHeap[i] != null ? m_apkHeap[i].m_iHIndex : -100));
       if (m_apkHeap[0].m_fMetric == Float.MAX_VALUE) {
         // all remaining heap elements have infinite weight
         flushVertices();
@@ -192,7 +194,7 @@ public class ClodCreator extends VETMesh {
     // test end points to see if either has only 2-edges sharing it
     int i;
     for (i = 0; i < 2; i++) {
-      ExVector pkESet = getEdges(kEdge.m_aiV[i]);
+      ExVector pkESet = (ExVector)getEdges(kEdge.m_aiV[i]).clone();
       int j;
       for (j = 0; j < pkESet.size(); j++) {
         EdgeAttribute pkEM = (EdgeAttribute)m_kEMap.get(pkESet.toArray()[j]);
@@ -369,7 +371,7 @@ public class ClodCreator extends VETMesh {
     // last triangle sharing the collapse edge will remove that edge from
     // the edge map, thereby invalidating any iterator that points to data
     // in the collapse edge.
-    ExVector kTSet = pkEM.m_kTSet; // <Triangle>
+    ExVector kTSet = (ExVector)pkEM.m_kTSet.clone(); // <Triangle>
     int iTDeletions = kTSet.size();
     if (!(iTDeletions > 0)) throw new AssertionError();
     for (int j = 0; j < kTSet.size(); j++)
@@ -381,7 +383,7 @@ public class ClodCreator extends VETMesh {
     Triangle kT;
     VertexAttribute pkVM = (VertexAttribute) m_kVMap.get(new Integer(iVThrow));
     if (pkVM != null) {
-      kTSet = pkVM.m_kTSet;
+      kTSet = (ExVector)pkVM.m_kTSet.clone();
       for (int j = 0; j < kTSet.size(); j++) {
         kT = (Triangle) kTSet.toArray()[j];
         modifyTriangle(kT, iVKeep, iVThrow);
@@ -392,9 +394,9 @@ public class ClodCreator extends VETMesh {
     // are shared by the triangles containing the 'keep' vertex.  Modify these
     // metrics and update the heap.
     TreeSet kModified = new TreeSet(); // <Edge>
-    ExVector pkTSet = getTriangles(iVKeep); // <Triangle>
+    ExVector pkTSet = (ExVector)getTriangles(iVKeep).clone(); // <Triangle>
     if (pkTSet != null) {
-      kTSet = pkTSet;
+      kTSet = (ExVector)pkTSet.clone();
       for (int j = 0; j < kTSet.size(); j++) {
         kT = (Triangle) kTSet.toArray()[j];
         kModified.add(new Edge(kT.m_aiV[0], kT.m_aiV[1]));
@@ -827,7 +829,7 @@ public class ClodCreator extends VETMesh {
       if (m_bCollapsing) {
         HeapRecord pkRecord = (HeapRecord) att.m_pvData;
 //        System.err.println("B: m_iHIndex: "+pkRecord.m_iHIndex+" edge:"+rkE.hashCode());
-        if (!(pkRecord.m_kEdge == rkE)) throw new AssertionError();
+        if (!(pkRecord.m_kEdge.equals(rkE))) throw new AssertionError();
         if (pkRecord.m_iHIndex >= 0) {
           update(pkRecord.m_iHIndex,
                  getMetric(rkE, (EdgeAttribute) m_kEMap.get(rkE)));
@@ -854,19 +856,6 @@ public class ClodCreator extends VETMesh {
         remove();
 //        System.err.println("inside onEdgeRemove - after remove");
       }
-//      Vector v = new Vector();
-//      for (int x = 0; x < m_apkHeap.length; x++) {
-//        if (m_apkHeap[x] != null && !pkRecord.equals(m_apkHeap[x])) {
-//          v.add(m_apkHeap[x]);
-//        }
-//      }
-//      m_apkHeap = new HeapRecord[m_apkHeap.length];
-//      Iterator it = v.iterator();
-//      int x = 0;
-//      while (it.hasNext()) {
-//        m_apkHeap[x] = (HeapRecord) it.next();
-//        x++;
-//      }
       pkRecord = null;
     }
   }

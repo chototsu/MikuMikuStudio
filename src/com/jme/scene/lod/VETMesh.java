@@ -269,6 +269,8 @@ public class VETMesh {
                                TriangleAttribute ta) {}
 
   public void insertTriangle(int iV0, int iV1, int iV2) {
+    boolean hadTri = false, hadV0 = false, hadV1 = false, hadV2 = false,
+        hadE0 = false, hadE1 = false, hadE2 = false;
     Triangle kT = new Triangle(iV0, iV1, iV2);
     Edge kE0 = new Edge(iV0, iV1), kE1 = new Edge(iV1, iV2),
         kE2 = new Edge(iV2, iV0);
@@ -276,11 +278,13 @@ public class VETMesh {
     // insert triangle
     TriangleAttribute kRT_TA = new TriangleAttribute();
 //    Pair kRT =
+    hadTri = (m_kTMap.get(kT) != null);
     m_kTMap.put(kT, kRT_TA); //pair<Iterator,boolean>
 
     // insert vertices
     VertexAttribute iV0_VA = (VertexAttribute)m_kVMap.get(new Integer(iV0));
     if (iV0_VA == null) iV0_VA = new VertexAttribute();
+    else hadV0 = true;
     iV0_VA.m_kESet.add(kE0);
     iV0_VA.m_kESet.add(kE2);
     iV0_VA.m_kTSet.add(kT);
@@ -289,6 +293,7 @@ public class VETMesh {
 
     VertexAttribute iV1_VA = (VertexAttribute)m_kVMap.get(new Integer(iV1));
     if (iV1_VA == null) iV1_VA = new VertexAttribute();
+    else hadV1 = true;
     iV1_VA.m_kESet.add(kE0);
     iV1_VA.m_kESet.add(kE1);
     iV1_VA.m_kTSet.add(kT);
@@ -297,6 +302,7 @@ public class VETMesh {
 
     VertexAttribute iV2_VA = (VertexAttribute)m_kVMap.get(new Integer(iV2));
     if (iV2_VA == null) iV2_VA = new VertexAttribute();
+    else hadV2 = true;
     iV2_VA.m_kESet.add(kE1);
     iV2_VA.m_kESet.add(kE2);
     iV2_VA.m_kTSet.add(kT);
@@ -306,18 +312,21 @@ public class VETMesh {
     // insert edges
     EdgeAttribute kE0_EA = (EdgeAttribute)m_kEMap.get(kE0);
     if (kE0_EA == null) kE0_EA = new EdgeAttribute();
+    else hadE0 = true;
     kE0_EA.m_kTSet.add(kT);
 //    Pair kRE0 =
     m_kEMap.put(kE0, kE0_EA); //pair<Iterator,boolean>
 
     EdgeAttribute kE1_EA = (EdgeAttribute)m_kEMap.get(kE1);
     if (kE1_EA == null) kE1_EA = new EdgeAttribute();
+    else hadE1 = true;
     kE1_EA.m_kTSet.add(kT);
 //    Pair kRE1 =
     m_kEMap.put(kE1, kE1_EA); //pair<Iterator,boolean>
 
     EdgeAttribute kE2_EA = (EdgeAttribute)m_kEMap.get(kE2);
     if (kE2_EA == null) kE2_EA = new EdgeAttribute();
+    else hadE2 = true;
     kE2_EA.m_kTSet.add(kT);
 //    Pair kRE2 =
     m_kEMap.put(kE2, kE2_EA); //pair<Iterator,boolean>
@@ -325,13 +334,13 @@ public class VETMesh {
     // Notify derived classes that mesh components have been inserted.  The
     // notification occurs here to make sure the derived classes have access
     // to the current state of the mesh after the triangle insertion.
-    onVertexInsert(iV0, true, iV0_VA);
-    onVertexInsert(iV1, true, iV1_VA);
-    onVertexInsert(iV2, true, iV2_VA);
-    onEdgeInsert(kE0, true, kE0_EA);
-    onEdgeInsert(kE1, true, kE1_EA);
-    onEdgeInsert(kE2, true, kE2_EA);
-    onTriangleInsert(kT, true, kRT_TA);
+    onVertexInsert(iV0, !hadV0, iV0_VA);
+    onVertexInsert(iV1, !hadV1, iV1_VA);
+    onVertexInsert(iV2, !hadV2, iV2_VA);
+    onEdgeInsert(kE0, !hadE0, kE0_EA);
+    onEdgeInsert(kE1, !hadE1, kE1_EA);
+    onEdgeInsert(kE2, !hadE2, kE2_EA);
+    onTriangleInsert(kT, !hadTri, kRT_TA);
   }
 
   public void insertTriangle(Triangle rkT) {
@@ -593,7 +602,7 @@ public class VETMesh {
         EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(new Edge(kT.m_aiV[i], kT.m_aiV[ (i + 1) % 3]));
 
         // visit each adjacent triangle
-        ExVector rkTSet = pkE.m_kTSet; // <Triangle>
+        ExVector rkTSet = (ExVector)pkE.m_kTSet.clone(); // <Triangle>
         triIt = rkTSet.iterator();
         while (triIt.hasNext()) {
           Triangle rkTAdj = (Triangle)triIt.next();
@@ -661,7 +670,7 @@ public class VETMesh {
           EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(kE);
 
           // visit each adjacent triangle
-          ExVector rkTSet = pkE.m_kTSet; // <Triangle>
+          ExVector rkTSet = (ExVector)pkE.m_kTSet.clone(); // <Triangle>
           triIt = rkTSet.iterator();
           while (triIt.hasNext()) {
             Triangle rkTAdj = (Triangle)triIt.next();
@@ -728,7 +737,7 @@ public class VETMesh {
           EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(kE);
 
           // visit each adjacent triangle
-          ExVector rkTSet = pkE.m_kTSet; // <Triangle>
+          ExVector rkTSet = (ExVector)pkE.m_kTSet.clone(); // <Triangle>
           triIt = rkTSet.iterator();
           while (triIt.hasNext()) {
             Triangle rkTAdj = (Triangle)triIt.next();
@@ -808,7 +817,7 @@ public class VETMesh {
 //        assert(pkE != null);
 
         // visit each adjacent triangle
-        ExVector rkTSet = pkE.m_kTSet; // <Triangle>
+        ExVector rkTSet = (ExVector)pkE.m_kTSet.clone(); // <Triangle>
         triIt = rkTSet.iterator();
         while (triIt.hasNext()) {
           Triangle kTAdj = (Triangle)triIt.next();
