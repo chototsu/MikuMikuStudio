@@ -84,7 +84,7 @@ public class LandMobility implements PhysicsModule {
      * @param time the time between updates.
      */
 	public void update(float time) {
-        //if we are moving, update the velocity otherwise coast to a stop.
+		//if we are moving, update the velocity otherwise coast to a stop.
 		if(moving) {
 			currentVelocity = prevVelocity + currentAcceleration * time;
 			if(currentVelocity > maxVelocity) {

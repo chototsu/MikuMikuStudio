@@ -45,359 +45,281 @@ import jme.exception.MonkeyRuntimeException;
  * @author Mark Powell
  */
 public class Quaternion {
-    public float x, y, z, w;
-    
-    public Quaternion() {
-        x = 0;
-        y = 0;
-        z = 0;
-        w = 0;
-    }
+	public float x, y, z, w;
 
-    /**
-     * Constructor instantiates a new <code>Quaternion</code> object from
-     * a collection of rotation angles.
-     * @param angles the angles of rotation that will define the 
-     *      <code>Quaternion</code>.
-     */
-    public Quaternion(float[] angles) {
-        fromAngles(angles);
-    }
+	public Quaternion() {
+		x = 0;
+		y = 0;
+		z = 0;
+		w = 0;
+	}
 
-    /**
-     * Constructor instantiates a new <code>Quaternion</code> object from
-     * an interpolation between two other quaternions.
-     * @param q1 the first quaternion.
-     * @param q2 the second quaternion.
-     * @param interp the amount to interpolate between the two quaternions.
-     */
-    public Quaternion(Quaternion q1, Quaternion q2, float interp) {
-        slerp(q1, q2, interp);
-    }
+	/**
+	 * Constructor instantiates a new <code>Quaternion</code> object from
+	 * a collection of rotation angles.
+	 * @param angles the angles of rotation that will define the 
+	 *      <code>Quaternion</code>.
+	 */
+	public Quaternion(float[] angles) {
+		fromAngles(angles);
+	}
 
-    /**
-     * <code>fromAngles</code> builds a quaternion from the Euler rotation
-     * angles (x,y,z).
-     * @param angles the Euler angles of rotation.
-     */
-    public void fromAngles(float[] angles) {
-        float angle;
-        float sr, sp, sy, cr, cp, cy;
-        angle = angles[2] * 0.5f;
-        sy = (float)Math.sin(angle);
-        cy = (float)Math.cos(angle);
-        angle = angles[1] * 0.5f;
-        sp = (float)Math.sin(angle);
-        cp = (float)Math.cos(angle);
-        angle = angles[0] * 0.5f;
-        sr = (float)Math.sin(angle);
-        cr = (float)Math.cos(angle);
+	/**
+	 * Constructor instantiates a new <code>Quaternion</code> object from
+	 * an interpolation between two other quaternions.
+	 * @param q1 the first quaternion.
+	 * @param q2 the second quaternion.
+	 * @param interp the amount to interpolate between the two quaternions.
+	 */
+	public Quaternion(Quaternion q1, Quaternion q2, float interp) {
+		slerp(q1, q2, interp);
+	}
 
-        float crcp = cr * cp;
-        float srsp = sr * sp;
+	/**
+	 * <code>fromAngles</code> builds a quaternion from the Euler rotation
+	 * angles (x,y,z).
+	 * @param angles the Euler angles of rotation.
+	 */
+	public void fromAngles(float[] angles) {
+		float angle;
+		float sr, sp, sy, cr, cp, cy;
+		angle = angles[2] * 0.5f;
+		sy = (float) Math.sin(angle);
+		cy = (float) Math.cos(angle);
+		angle = angles[1] * 0.5f;
+		sp = (float) Math.sin(angle);
+		cp = (float) Math.cos(angle);
+		angle = angles[0] * 0.5f;
+		sr = (float) Math.sin(angle);
+		cr = (float) Math.cos(angle);
 
-        x = (sr * cp * cy - cr * sp * sy);
-        y = (cr * sp * cy + sr * cp * sy);
-        z = (crcp * sy - srsp * cy);
-        w = (crcp * cy + srsp * sy);
-    }
+		float crcp = cr * cp;
+		float srsp = sr * sp;
 
-    /**
-     * <code>fromMatrix</code> creates a quaternion from the rotational 
-     * matrix. A quaternion can be created from a 3x3 or 4x4 matrix. 
-     * @param matrix
-     * @param rowColumnCount
-     */
-    public void fromMatrix(float[] matrix, int rowColumnCount) {
-        if (matrix == null || (rowColumnCount != 3) && (rowColumnCount != 4)) {
-            throw new MonkeyRuntimeException("matrix cannot be null, while" +                "rowColumnCount must be 3 or 4.");
-        }
-        // This function is used to take in a 3x3 or 4x4 matrix and convert the matrix
-        // to a quaternion.  If rowColumnCount is a 3, then we need to convert the 3x3
-        // matrix passed in to a 4x4 matrix, otherwise we just leave the matrix how it is.
-        // Since we want to apply a matrix to an OpenGL matrix, we need it to be 4x4.
+		x = (sr * cp * cy - cr * sp * sy);
+		y = (cr * sp * cy + sr * cp * sy);
+		z = (crcp * sy - srsp * cy);
+		w = (crcp * cy + srsp * sy);
+	}
 
-        // Point the matrix pointer to the matrix passed in, assuming it's a 4x4 matrix
-        float[] pMatrix = matrix;
+	/**
+	 * <code>fromMatrix</code> creates a quaternion from the rotational 
+	 * matrix. A quaternion can be created from a 3x3 or 4x4 matrix. 
+	 * @param matrix
+	 * @param rowColumnCount
+	 */
+	public void fromMatrix(float[] matrix, int rowColumnCount) {
+		if (matrix == null || (rowColumnCount != 3) && (rowColumnCount != 4)) {
+			throw new MonkeyRuntimeException(
+				"matrix cannot be null, while"
+					+ "rowColumnCount must be 3 or 4.");
+		}
+		// This function is used to take in a 3x3 or 4x4 matrix and convert the matrix
+		// to a quaternion.  If rowColumnCount is a 3, then we need to convert the 3x3
+		// matrix passed in to a 4x4 matrix, otherwise we just leave the matrix how it is.
+		// Since we want to apply a matrix to an OpenGL matrix, we need it to be 4x4.
 
-        // Create a 4x4 matrix to convert a 3x3 matrix to a 4x4 matrix (If rowColumnCount == 3)
-        float[] m4x4 = new float[16];
+		// Point the matrix pointer to the matrix passed in, assuming it's a 4x4 matrix
+		float[] pMatrix = matrix;
 
-        // If the matrix is a 3x3 matrix (which it is for Quake3), then convert it to a 4x4
-        if (matrix.length == 9) {
-            // Set the 9 top left indices of the 4x4 matrix to the 9 indices in the 3x3 matrix.
-            // It would be a good idea to actually draw this out so you can visualize it.
-            m4x4[0] = matrix[0];
-            m4x4[1] = matrix[1];
-            m4x4[2] = matrix[2];
-            m4x4[3] = 0f;
-            m4x4[4] = matrix[3];
-            m4x4[5] = matrix[4];
-            m4x4[6] = matrix[5];
-            m4x4[7] = 0f;
-            m4x4[8] = matrix[6];
-            m4x4[9] = matrix[7];
-            m4x4[10] = matrix[8];
-            m4x4[11] = 0f;
+		// Create a 4x4 matrix to convert a 3x3 matrix to a 4x4 matrix (If rowColumnCount == 3)
+		float[] m4x4 = new float[16];
 
-            // Since the bottom and far right indices are zero, set the bottom right corner to 1.
-            // This is so that it follows the standard diagonal line of 1's in the identity matrix.
-            m4x4[12] = 0f;
-            m4x4[13] = 0f;
-            m4x4[14] = 0f;
-            m4x4[15] = 1;
+		// If the matrix is a 3x3 matrix (which it is for Quake3), then convert it to a 4x4
+		if (matrix.length == 9) {
+			// Set the 9 top left indices of the 4x4 matrix to the 9 indices in the 3x3 matrix.
+			// It would be a good idea to actually draw this out so you can visualize it.
+			m4x4[0] = matrix[0];
+			m4x4[1] = matrix[1];
+			m4x4[2] = matrix[2];
+			m4x4[3] = 0f;
+			m4x4[4] = matrix[3];
+			m4x4[5] = matrix[4];
+			m4x4[6] = matrix[5];
+			m4x4[7] = 0f;
+			m4x4[8] = matrix[6];
+			m4x4[9] = matrix[7];
+			m4x4[10] = matrix[8];
+			m4x4[11] = 0f;
 
-            // Set the matrix pointer to the first index in the newly converted matrix
-            pMatrix = m4x4;
-        }
+			// Since the bottom and far right indices are zero, set the bottom right corner to 1.
+			// This is so that it follows the standard diagonal line of 1's in the identity matrix.
+			m4x4[12] = 0f;
+			m4x4[13] = 0f;
+			m4x4[14] = 0f;
+			m4x4[15] = 1;
 
-        // The next step, once we made sure we are dealing with a 4x4 matrix, is to check the
-        // diagonal of the matrix.  This means that we add up all of the indices that comprise
-        // the standard 1's in the identity matrix.  If you draw out the identity matrix of a
-        // 4x4 matrix, you will see that they 1's form a diagonal line.  Notice we just assume
-        // that the last index (15) is 1 because it is not effected in the 3x3 rotation matrix.
+			// Set the matrix pointer to the first index in the newly converted matrix
+			pMatrix = m4x4;
+		}
 
-        // Find the diagonal of the matrix by adding up it's diagonal indices.
-        // This is also known as the "trace", but I will call the variable diagonal.
-        float diagonal = pMatrix[0] + pMatrix[5] + pMatrix[10] + 1;
-        float scale = 0.0f;
+		// The next step, once we made sure we are dealing with a 4x4 matrix, is to check the
+		// diagonal of the matrix.  This means that we add up all of the indices that comprise
+		// the standard 1's in the identity matrix.  If you draw out the identity matrix of a
+		// 4x4 matrix, you will see that they 1's form a diagonal line.  Notice we just assume
+		// that the last index (15) is 1 because it is not effected in the 3x3 rotation matrix.
 
-        // Below we check if the diagonal is greater than zero.  To avoid accidents with
-        // floating point numbers, we substitute 0 with 0.00000001.  If the diagonal is
-        // great than zero, we can perform an "instant" calculation, otherwise we will need
-        // to identify which diagonal element has the greatest value.  Note, that it appears
-        // that %99 of the time, the diagonal IS greater than 0 so the rest is rarely used.
+		// Find the diagonal of the matrix by adding up it's diagonal indices.
+		// This is also known as the "trace", but I will call the variable diagonal.
+		float diagonal = pMatrix[0] + pMatrix[5] + pMatrix[10] + 1;
+		float scale = 0.0f;
 
-        // If the diagonal is greater than zero
-        if (diagonal > 0.00000001f) {
-            // Calculate the scale of the diagonal
-            scale = (float)Math.sqrt(diagonal) * 2f;
+		// Below we check if the diagonal is greater than zero.  To avoid accidents with
+		// floating point numbers, we substitute 0 with 0.00000001.  If the diagonal is
+		// great than zero, we can perform an "instant" calculation, otherwise we will need
+		// to identify which diagonal element has the greatest value.  Note, that it appears
+		// that %99 of the time, the diagonal IS greater than 0 so the rest is rarely used.
 
-            // Calculate the x, y, z and w of the quaternion through the respective equation
-            x = (pMatrix[9] - pMatrix[6]) / scale;
-            y = (pMatrix[2] - pMatrix[8]) / scale;
-            z = (pMatrix[4] - pMatrix[1]) / scale;
-            w = 0.25f * scale;
-        } else {
-            // If the first element of the diagonal is the greatest value
-            if (pMatrix[0] > pMatrix[5] && pMatrix[0] > pMatrix[10]) {
-                // Find the scale according to the first element, and double that value
-                scale =
-                    (float)Math.sqrt(
-                        1.0f + pMatrix[0] - pMatrix[5] - pMatrix[10])
-                        * 2.0f;
+		// If the diagonal is greater than zero
+		if (diagonal > 0.00000001f) {
+			// Calculate the scale of the diagonal
+			scale = (float) Math.sqrt(diagonal) * 2f;
 
-                // Calculate the x, y, z and w of the quaternion through the respective equation
-                x = 0.25f * scale;
-                y = (pMatrix[4] + pMatrix[1]) / scale;
-                z = (pMatrix[2] + pMatrix[8]) / scale;
-                w = (pMatrix[9] - pMatrix[6]) / scale;
-            }
-            // Else if the second element of the diagonal is the greatest value
-            else if (pMatrix[5] > pMatrix[10]) {
-                // Find the scale according to the second element, and double that value
-                scale =
-                    (float)Math.sqrt(
-                        1.0f + pMatrix[5] - pMatrix[0] - pMatrix[10])
-                        * 2.0f;
+			// Calculate the x, y, z and w of the quaternion through the respective equation
+			x = (pMatrix[9] - pMatrix[6]) / scale;
+			y = (pMatrix[2] - pMatrix[8]) / scale;
+			z = (pMatrix[4] - pMatrix[1]) / scale;
+			w = 0.25f * scale;
+		} else {
+			// If the first element of the diagonal is the greatest value
+			if (pMatrix[0] > pMatrix[5] && pMatrix[0] > pMatrix[10]) {
+				// Find the scale according to the first element, and double that value
+				scale =
+					(float) Math.sqrt(
+						1.0f + pMatrix[0] - pMatrix[5] - pMatrix[10])
+						* 2.0f;
 
-                // Calculate the x, y, z and w of the quaternion through the respective equation
-                x = (pMatrix[4] + pMatrix[1]) / scale;
-                y = 0.25f * scale;
-                z = (pMatrix[9] + pMatrix[6]) / scale;
-                w = (pMatrix[2] - pMatrix[8]) / scale;
-            }
-            // Else the third element of the diagonal is the greatest value
-            else {
-                // Find the scale according to the third element, and double that value
-                scale =
-                    (float)Math.sqrt(
-                        1.0f + pMatrix[10] - pMatrix[0] - pMatrix[5])
-                        * 2.0f;
+				// Calculate the x, y, z and w of the quaternion through the respective equation
+				x = 0.25f * scale;
+				y = (pMatrix[4] + pMatrix[1]) / scale;
+				z = (pMatrix[2] + pMatrix[8]) / scale;
+				w = (pMatrix[9] - pMatrix[6]) / scale;
+			}
+			// Else if the second element of the diagonal is the greatest value
+			else if (pMatrix[5] > pMatrix[10]) {
+				// Find the scale according to the second element, and double that value
+				scale =
+					(float) Math.sqrt(
+						1.0f + pMatrix[5] - pMatrix[0] - pMatrix[10])
+						* 2.0f;
 
-                // Calculate the x, y, z and w of the quaternion through the respective equation
-                x = (pMatrix[2] + pMatrix[8]) / scale;
-                y = (pMatrix[9] + pMatrix[6]) / scale;
-                z = 0.25f * scale;
-                w = (pMatrix[4] - pMatrix[1]) / scale;
-            }
-        }
+				// Calculate the x, y, z and w of the quaternion through the respective equation
+				x = (pMatrix[4] + pMatrix[1]) / scale;
+				y = 0.25f * scale;
+				z = (pMatrix[9] + pMatrix[6]) / scale;
+				w = (pMatrix[2] - pMatrix[8]) / scale;
+			}
+			// Else the third element of the diagonal is the greatest value
+			else {
+				// Find the scale according to the third element, and double that value
+				scale =
+					(float) Math.sqrt(
+						1.0f + pMatrix[10] - pMatrix[0] - pMatrix[5])
+						* 2.0f;
 
-    }
+				// Calculate the x, y, z and w of the quaternion through the respective equation
+				x = (pMatrix[2] + pMatrix[8]) / scale;
+				y = (pMatrix[9] + pMatrix[6]) / scale;
+				z = 0.25f * scale;
+				w = (pMatrix[4] - pMatrix[1]) / scale;
+			}
+		}
 
-    /**
-     * <code>slerp</code> sets this quaternion's value as an interpolation
-     * between two other quaternions. 
-     * @param q1 the first quaternion.
-     * @param q2 the second quaternion.
-     * @param interp the amount to interpolate between the two quaternions.
-     */
-    public void slerp(Quaternion q1, Quaternion q2, float interp) {
-        float a = 0;
-        float b = 0;
-        a += q1.x - q2.x * q1.x - q2.x;
-        a += q1.y - q2.y * q1.y - q2.y;
-        a += q1.z - q2.z * q1.z - q2.z;
-        a += q1.w - q2.w * q1.w - q2.w;
+	}
 
-        a += q1.x + q2.x * q1.x + q2.x;
-        a += q1.y + q2.y * q1.y + q2.y;
-        a += q1.z + q2.z * q1.z + q2.z;
-        a += q1.w + q2.w * q1.w + q2.w;
+	/**
+	 * <code>slerp</code> sets this quaternion's value as an interpolation
+	 * between two other quaternions. 
+	 * @param q1 the first quaternion.
+	 * @param q2 the second quaternion.
+	 * @param interp the amount to interpolate between the two quaternions.
+	 */
+	public Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
+		// Create a local quaternion to store the interpolated quaternion
+		Quaternion interpolated = new Quaternion();
 
-        if (a > b) {
-            q2.inverse();
-        }
+		if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
+			return q1;
+		}
 
-        float cosom = q1.x * q2.x + q1.y * q2.y + q1.z * q2.z + q1.w * q2.w;
-        float sclq1, sclq2;
+		float result =
+			(q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z) + (q1.w * q2.w);
 
-        if ((1.0 + cosom) > 0.00000001f) {
-            if ((1.0 - cosom) > 0.00000001f) {
-                double omega = Math.acos(cosom);
-                double sinom = Math.sin(omega);
-                sclq1 = (float) ((Math.sin(1.0 - interp) * omega) / sinom);
-                sclq2 = (float) ((Math.sin(interp * omega)) / sinom);
-            } else {
-                sclq1 = 1.0f - interp;
-                sclq2 = interp;
-            }
+		if (result < 0.0f) {
+			// Negate the second quaternion and the result of the dot product
+			q2.x = -q2.x;
+			q2.y = -q2.y;
+			q2.z = -q2.z;
+			q2.w = -q2.w;
+			result = -result;
+		}
 
-            x = sclq1 * q1.x + sclq2 * q2.x;
-            y = sclq1 * q1.y + sclq2 * q2.y;
-            z = sclq1 * q1.z + sclq2 * q2.z;
-            w = sclq1 * q1.w + sclq2 * q2.w;
+		// Set the first and second scale for the interpolation
+		float scale0 = 1 - t;
+		float scale1 = t;
 
-        } else {
-            x = -q1.y;
-            y = q1.x;
-            z = -q1.w;
-            w = q1.z;
+		// Check if the angle between the 2 quaternions was big enough to warrant such calculations
+		if ((1 - result) > 0.1f) {
+			// Get the angle between the 2 quaternions, and then store the sin() of that angle
+			float theta = (float) Math.acos(result);
+			float sinTheta = (float) Math.sin(theta);
 
-            sclq1 = (float) (Math.sin((1.0 - interp) * 0.5 * Math.PI));
-            sclq2 = (float) (Math.sin(interp * 0.5 * Math.PI));
+			// Calculate the scale for q1 and q2, according to the angle and it's sine value
+			scale0 = (float) Math.sin((1 - t) * theta) / sinTheta;
+			scale1 = (float) Math.sin((t * theta)) / sinTheta;
+		}
 
-            x = sclq1 * q1.x + sclq2 * q2.x;
-            y = sclq1 * q1.y + sclq2 * q2.y;
-            z = sclq1 * q1.z + sclq2 * q2.z;
-            w = sclq1 * q1.w + sclq2 * q2.w;
-        }
-    }
-    
-    public Quaternion slerpNew(Quaternion q1, Quaternion q2, float t) {
-                // Create a local quaternion to store the interpolated quaternion
-                Quaternion qInterpolated = new Quaternion();
+		// Calculate the x, y, z and w values for the quaternion by using a special
+		// form of linear interpolation for quaternions.
+		interpolated.x = (scale0 * q1.x) + (scale1 * q2.x);
+		interpolated.y = (scale0 * q1.y) + (scale1 * q2.y);
+		interpolated.z = (scale0 * q1.z) + (scale1 * q2.z);
+		interpolated.w = (scale0 * q1.w) + (scale1 * q2.w);
 
-                // This function is the milk and honey of our quaternion code, the rest of
-                // the functions are an appendage to what is done here.  Everyone understands
-                // the terms, "matrix to quaternion", "quaternion to matrix", "create quaternion matrix",
-                // "quaternion multiplication", etc.. but "SLERP" is the stumbling block, even a little 
-                // bit after hearing what it stands for, "Spherical Linear Interpolation".  What that
-                // means is that we have 2 quaternions (or rotations) and we want to interpolate between 
-                // them.  The reason what it's called "spherical" is that quaternions deal with a sphere.  
-                // Linear interpolation just deals with 2 points primarily, where when dealing with angles
-                // and rotations, we need to use sin() and cos() for interpolation.  If we wanted to use
-                // quaternions for camera rotations, which have much more instant and jerky changes in 
-                // rotations, we would use Spherical-Cubic Interpolation.  The equation for SLERP is this:
-                //
-                // q = (((b.a)^-1)^t)a
-                //
-                // Go here for an a detailed explanation and proofs of this equation:
-                //
-                // http://www.magic-software.com/Documentation/quat.pdf
-                //
-                // Now, Let's code it
+		// Return the interpolated quaternion
+		x = interpolated.x;
+		y = interpolated.y;
+		z = interpolated.z;
+		w = interpolated.w;
+		return interpolated;
+	}
 
-                // Here we do a check to make sure the 2 quaternions aren't the same, return q1 if they are
-                if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w)
-                    return q1;
+	public float[] getMatrix() {
+		float[] matrix = new float[16];
+		matrix[0] = 1.0f - 2.0f * (y * y + z * z);
+		matrix[1] = 2.0f * (x * y - w * z);
+		matrix[2] = 2.0f * (x * z + w * y);
+		matrix[3] = 0.0f;
 
-                // Following the (b.a) part of the equation, we do a dot product between q1 and q2.
-                // We can do a dot product because the same math applied for a 3D vector as a 4D vector.
-                float result =
-                    (q1.x * q2.x) + (q1.y * q2.y) + (q1.z * q2.z) + (q1.w * q2.w);
+		// Second row
+		matrix[4] = 2.0f * (x * y + w * z);
+		matrix[5] = 1.0f - 2.0f * (x * x + z * z);
+		matrix[6] = 2.0f * (y * z - w * x);
+		matrix[7] = 0.0f;
 
-                // If the dot product is less than 0, the angle is greater than 90 degrees
-                if (result < 0.0f) {
-                    // Negate the second quaternion and the result of the dot product
-                    q2.x = -q2.x;
-                    q2.y = -q2.y;
-                    q2.z = -q2.z;
-                    q2.w = -q2.w;
-                    result = -result;
-                }
+		// Third row
+		matrix[8] = 2.0f * (x * z - w * y);
+		matrix[9] = 2.0f * (y * z + w * x);
+		matrix[10] = 1.0f - 2.0f * (x * x + y * y);
+		matrix[11] = 0.0f;
 
-                // Set the first and second scale for the interpolation
-                float scale0 = 1 - t;
-                float scale1 = t;
+		// Fourth row
+		matrix[12] = 0;
+		matrix[13] = 0;
+		matrix[14] = 0;
+		matrix[15] = 1.0f;
 
-                // Next, we want to actually calculate the spherical interpolation.  Since this
-                // calculation is quite computationally expensive, we want to only perform it
-                // if the angle between the 2 quaternions is large enough to warrant it.  If the
-                // angle is fairly small, we can actually just do a simpler linear interpolation
-                // of the 2 quaternions, and skip all the complex math.  We create a "delta" value
-                // of 0.1 to say that if the cosine of the angle (result of the dot product) between
-                // the 2 quaternions is smaller than 0.1, then we do NOT want to perform the full on 
-                // interpolation using.  This is because you won't really notice the difference.
+		return matrix;
+	}
 
-                // Check if the angle between the 2 quaternions was big enough to warrant such calculations
-                if ((1 - result) > 0.1f) {
-                    // Get the angle between the 2 quaternions, and then store the sin() of that angle
-                    float theta = (float)Math.acos(result);
-                    float sinTheta = (float)Math.sin(theta);
-
-                    // Calculate the scale for q1 and q2, according to the angle and it's sine value
-                    scale0 = (float)Math.sin((1 - t) * theta) / sinTheta;
-                    scale1 = (float)Math.sin((t * theta)) / sinTheta;
-                }
-
-                // Calculate the x, y, z and w values for the quaternion by using a special
-                // form of linear interpolation for quaternions.
-                qInterpolated.x = (scale0 * q1.x) + (scale1 * q2.x);
-                qInterpolated.y = (scale0 * q1.y) + (scale1 * q2.y);
-                qInterpolated.z = (scale0 * q1.z) + (scale1 * q2.z);
-                qInterpolated.w = (scale0 * q1.w) + (scale1 * q2.w);
-
-                // Return the interpolated quaternion
-                return qInterpolated;
-            }
-
-    public float[] getMatrix() {
-        float[] matrix = new float[16];
-        matrix[0] = 1.0f - 2.0f * (y * y + z * z);
-        matrix[1] = 2.0f * (x * y - w * z);
-        matrix[2] = 2.0f * (x * z + w * y);
-        matrix[3] = 0.0f;
-
-        // Second row
-        matrix[4] = 2.0f * (x * y + w * z);
-        matrix[5] = 1.0f - 2.0f * (x * x + z * z);
-        matrix[6] = 2.0f * (y * z - w * x);
-        matrix[7] = 0.0f;
-
-        // Third row
-        matrix[8] = 2.0f * (x * z - w * y);
-        matrix[9] = 2.0f * (y * z + w * x);
-        matrix[10] = 1.0f - 2.0f * (x * x + y * y);
-        matrix[11] = 0.0f;
-
-        // Fourth row
-        matrix[12] = 0;
-        matrix[13] = 0;
-        matrix[14] = 0;
-        matrix[15] = 1.0f;
-
-        return matrix;
-    }
-
-    /**
-     * <code>inverse</code> inverts the values of the quaternion.
-     *
-     */
-    public void inverse() {
-        x *= -1;
-        y *= -1;
-        z *= -1;
-        w *= -1;
-    }
+	/**
+	 * <code>inverse</code> inverts the values of the quaternion.
+	 *
+	 */
+	public void inverse() {
+		x *= -1;
+		y *= -1;
+		z *= -1;
+		w *= -1;
+	}
 }

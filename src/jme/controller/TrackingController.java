@@ -144,8 +144,8 @@ public class TrackingController extends AbstractGameController {
 						null)).normalise(
 					null);
 
-			camera.getPosition().x += vec.x * trackingSpeed * time;
-			camera.getPosition().z += vec.z * trackingSpeed * time;
+			camera.getPosition().x += vec.x * trackingSpeed * (time/200);
+			camera.getPosition().z += vec.z * trackingSpeed * (time/200);
 
 			camera.getPosition().y = entity.getPosition().y;
 		}
