@@ -66,6 +66,7 @@ public class TestScenegraph extends SimpleGame {
 	private Thread thread;
 	private Timer timer;
 	private Box box1, box2, box3, box4, box5, box6;
+	private Box selectionBox;
 	private Node node1, node2, node3, node4, node5, node6;
 	private Text text;
 	private Node selectedNode;
@@ -91,6 +92,10 @@ public class TestScenegraph extends SimpleGame {
 		timer.update();
 		input.update(timer.getTimePerFrame());
 		scene.updateGeometricState(0.0f, true);
+		
+		selectionBox.setLocalTranslation(selectedNode.getWorldTranslation());
+		selectionBox.setLocalRotation(selectedNode.getWorldRotation());
+		
 		
 		if (KeyBindingManager
 				.getKeyBindingManager()
@@ -245,7 +250,7 @@ public class TestScenegraph extends SimpleGame {
 		cs.setEnabled(true);
 		scene.setRenderState(cs);
         
-        scene.setRenderState(state);
+        
         
         
 
@@ -256,11 +261,23 @@ public class TestScenegraph extends SimpleGame {
 
 		scene.setRenderState(buf);
 
+		ColorRGBA[] green = new ColorRGBA[24];
+		for(int i = 0; i < 24; i++) {
+			green[i] = new ColorRGBA(0,1,0,0.5f);
+		}
+		
+		selectionBox = new Box("Selection", min.mult(1.25f), max.mult(1.25f));
+		selectionBox.setColors(green);
+		selectionBox.setRenderState(as1);
+		
+		
 		node1 = new Node("Node 1");
 		box1 = new Box("Box 1", min, max);
 		node1.attachChild(box1);
 		node1.setLocalTranslation(new Vector3f(0, 30, 0));
 		selectedNode = node1;
+		node1.setRenderState(state);
+		
 		node2 = new Node("Node 2");
 		box2 = new Box("Box 2", min, max);
 		node2.attachChild(box2);
@@ -330,6 +347,7 @@ public class TestScenegraph extends SimpleGame {
 		scene.attachChild(node1);
         root.attachChild(line);
 		root.attachChild(scene);
+		scene.attachChild(selectionBox);
 		cam.update();
 		scene.updateGeometricState(0.0f, true);
 
@@ -409,7 +427,8 @@ public class TestScenegraph extends SimpleGame {
         nc4.addAction(s6);
         nc5.addAction(s6);
         nc6.addAction(s6);
-
+        
+        
 	}
 
 	public void setSelectedNode(int node) {
