@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.47 2004-06-01 08:50:24 cep21 Exp $
+ * @version $Id: Geometry.java,v 1.48 2004-06-03 22:09:33 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -760,7 +760,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         else
           bufferLength = vertex.length * 4;
 
-        if (colorBuf == null || colorBuf.capacity() < (4 * bufferLength)) {
+        if (colorBuf == null || colorBuf.capacity() < (bufferLength)) {
             colorBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
                     ByteOrder.nativeOrder()).asFloatBuffer();
         }
@@ -792,7 +792,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         bufferLength = vertQuantity * 3;
       else
         bufferLength = vertex.length * 3;
-      if (vertBuf == null || vertBuf.capacity() < (4 * bufferLength)) {
+      if (vertBuf == null || vertBuf.capacity() < (bufferLength)) {
         vertBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
             ByteOrder.nativeOrder()).asFloatBuffer();
       }
@@ -822,7 +822,7 @@ public abstract class Geometry extends Spatial implements Serializable {
           bufferLength = vertQuantity * 3;
         else
           bufferLength = vertex.length * 3;
-        if (normBuf == null || normBuf.capacity() < (4 * bufferLength)) {
+        if (normBuf == null || normBuf.capacity() < (bufferLength)) {
           normBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
               ByteOrder.nativeOrder()).asFloatBuffer();
         }
@@ -864,7 +864,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         else
           bufferLength = vertex.length * 2;
 
-        if (texBuf[textureUnit] == null || texBuf[textureUnit].capacity() < (4 * bufferLength)) {
+        if (texBuf[textureUnit] == null || texBuf[textureUnit].capacity() < (bufferLength)) {
             texBuf[textureUnit] = ByteBuffer.allocateDirect(4 * bufferLength)
                     .order(ByteOrder.nativeOrder()).asFloatBuffer();
         }
