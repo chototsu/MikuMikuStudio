@@ -38,7 +38,7 @@ import java.util.Random;
  * <code>FastMath</code>
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.10 2004-05-01 03:48:47 renanse Exp $
+ * @version $Id: FastMath.java,v 1.11 2004-05-24 17:08:19 renanse Exp $
  */
 
 public class FastMath {
@@ -62,6 +62,8 @@ public class FastMath {
     public static final float RAD_TO_DEG = 180.0f / PI;
 
     public static final Random rand = new Random();
+
+    public static boolean USE_FAST_TRIG = false;
 
     // A good implementation found on the Java boards.
     // note: a number is a power of two if and only if it is the smallest number
@@ -119,6 +121,9 @@ public class FastMath {
 
     /** */
     public static float cos(float fValue) {
+      if (USE_FAST_TRIG)
+        return FastTrig.cos(fValue);
+      else
         return (float) Math.cos((double) fValue);
     }
 
@@ -154,6 +159,9 @@ public class FastMath {
 
     /** */
     public static float sin(float fValue) {
+      if (USE_FAST_TRIG)
+        return FastTrig.sin(fValue);
+      else
         return (float) Math.sin((double) fValue);
     }
 
@@ -169,6 +177,9 @@ public class FastMath {
 
     /** */
     public static float tan(float fValue) {
+      if (USE_FAST_TRIG)
+        return FastTrig.tan(fValue);
+      else
         return (float) Math.tan((double) fValue);
     }
 
@@ -401,20 +412,18 @@ public class FastMath {
         public static int PRECISION = 0x100000;
 
         private static float RAD_SLICE = TWO_PI / PRECISION, sinTable[] = null,
-                cosTable[] = null, tanTable[] = null;
+                tanTable[] = null;
 
         static {
 
             RAD_SLICE = TWO_PI / PRECISION;
             sinTable = new float[PRECISION];
-            cosTable = new float[PRECISION];
             tanTable = new float[PRECISION];
             float rad = 0;
 
             for (int i = 0; i < PRECISION; i++) {
                 rad = (float) i * RAD_SLICE;
                 sinTable[i] = (float) java.lang.Math.sin(rad);
-                cosTable[i] = (float) java.lang.Math.cos(rad);
                 tanTable[i] = (float) java.lang.Math.tan(rad);
             }
         }
@@ -429,7 +438,7 @@ public class FastMath {
         }
 
         public static float cos(float radians) {
-            return cosTable[radToIndex(radians)];
+            return sinTable[radToIndex(HALF_PI-radians)];
         }
 
         public static float tan(float radians) {
