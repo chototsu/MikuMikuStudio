@@ -35,34 +35,40 @@ import com.jme.util.JmeType;
 
 /**
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: WidgetButtonStateType.java,v 1.4 2004-05-27 02:07:29 guurk Exp $
  */
 public final class WidgetButtonStateType extends JmeType {
-    public final static WidgetButtonStateType BUTTON_UP =
-        new WidgetButtonStateType("BUTTON_UP");
-    public final static WidgetButtonStateType BUTTON_DOWN =
-        new WidgetButtonStateType("BUTTON_DOWN");
-    public final static WidgetButtonStateType BUTTON_DISABLED =
-        new WidgetButtonStateType("BUTTON_DISABLED");
+	public final static WidgetButtonStateType BUTTON_OVER =
+		new WidgetButtonStateType("BUTTON_OVER");
+	public final static WidgetButtonStateType BUTTON_UP =
+		new WidgetButtonStateType("BUTTON_UP");
+	public final static WidgetButtonStateType BUTTON_DOWN =
+		new WidgetButtonStateType("BUTTON_DOWN");
+	public final static WidgetButtonStateType BUTTON_DISABLED =
+		new WidgetButtonStateType("BUTTON_DISABLED");
 
-    private WidgetButtonStateType(String name) {
-        super(name);
-    }
+	private WidgetButtonStateType(String name) {
+		super(name);
+	}
 
-    public JmeType getType(String name) {
-        JmeType type = null;
+	public JmeType getType(String name) {
+		JmeType type = null;
 
-        if (BUTTON_UP.name.equals(name)) {
-            type = BUTTON_UP;
-        } else if (BUTTON_DOWN.name.equals(name)) {
-            type = BUTTON_DOWN;
-        } else if (BUTTON_DISABLED.name.equals(name)) {
-            type = BUTTON_DISABLED;
-        }
+		if (BUTTON_UP.name.equals(name)) {
+			type = BUTTON_UP;
+		} else if (BUTTON_DOWN.name.equals(name)) {
+			type = BUTTON_DOWN;
+		} else if (BUTTON_DISABLED.name.equals(name)) {
+			type = BUTTON_DISABLED;
+		} else if (BUTTON_OVER.name.equals(name)) {
+			type = BUTTON_OVER;
+		}
 
-        return type;
-    }
+		return type;
+	}
 
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ */
