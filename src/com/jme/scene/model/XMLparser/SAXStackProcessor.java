@@ -5,6 +5,8 @@ import org.xml.sax.SAXException;
 
 import java.util.Stack;
 import java.util.Hashtable;
+import java.io.File;
+import java.net.MalformedURLException;
 
 import com.jme.scene.*;
 import com.jme.scene.shape.Box;
@@ -18,7 +20,6 @@ import com.jme.math.Vector2f;
 import com.jme.math.Quaternion;
 import com.jme.bounding.BoundingBox;
 import com.jme.system.DisplaySystem;
-import com.jme.util.TextureManager;
 import com.jme.image.Texture;
 
 /**
@@ -38,6 +39,7 @@ class SAXStackProcessor {
     }
 
     void increaseStack(String qName, Attributes atts) throws SAXException{
+        
         new TriMesh();
         if (qName.equalsIgnoreCase("Scene")){
             s.push(new Node("XML Scene"));
@@ -45,6 +47,8 @@ class SAXStackProcessor {
             s.push(processSpatial(new Node(atts.getValue("name")),atts));
         } else if (qName.equals("materialstate")){
             s.push(buildMaterial(atts));
+        } else if (qName.equals("texturestate")){
+            s.push(buildTexture(atts));
         } else if (qName.equals("mesh")){
             s.push(processSpatial(new TriMesh(atts.getValue("name")),atts));
         } else if (qName.equals("vertex") || qName.equals("normal") ||
@@ -60,7 +64,27 @@ class SAXStackProcessor {
                 throw new SAXException("Unknown publicobject: " +shares.get(atts.getValue("ident")));
             }
             s.push(toAdd);
-        } else{
+        } else if (qName.equals("xmlloadable")){
+            try {
+                Class c=Class.forName(atts.getValue("class"));
+                if (!XMLloadable.class.isAssignableFrom(c)){
+                    throw new SAXException("Given XML class must implement XMLloadable");
+                }
+                XMLloadable x=(XMLloadable) c.newInstance();
+                Object o=x.loadFromXML(atts.getValue("args"));
+                if (o instanceof Spatial){
+                    processSpatial((Spatial) o,atts);
+                }
+                s.push(o);
+            } catch (ClassNotFoundException e) {
+                throw new SAXException("Unknown class type:" + atts.getValue("class"));
+            } catch (IllegalAccessException e) {
+                throw new SAXException("XMLloadable classes must have a default() constructor: " + atts.getValue("class"));
+            } catch (InstantiationException e) {
+                throw new SAXException("XMLloadable classes cannot be abstract: " + atts.getValue("class"));
+            }
+
+        }  else{
             throw new SAXException("Illegale Qualified name: " + qName);
         }
         return;
@@ -81,6 +105,11 @@ class SAXStackProcessor {
             s.push(parentNode);
         } else if (qName.equals("materialstate")){
             MaterialState childMaterial=(MaterialState) s.pop();
+            parentSpatial=(Spatial) s.pop();
+            parentSpatial.setRenderState(childMaterial);
+            s.push(parentSpatial);
+        } else if (qName.equals("texturestate")){
+            TextureState childMaterial=(TextureState) s.pop();
             parentSpatial=(Spatial) s.pop();
             parentSpatial.setRenderState(childMaterial);
             s.push(parentSpatial);
@@ -120,6 +149,21 @@ class SAXStackProcessor {
             s.push(parentNode);
         } else if (qName.equals("sharedtypes")){
             // Nothing to do, these only identify XML areas
+        } else if (qName.equals("xmlloadable")){
+            Object o=s.pop();
+            if (o instanceof RenderState){
+                parentSpatial=(Spatial) s.pop();
+                parentSpatial.setRenderState((RenderState) o);
+                s.push(parentSpatial);
+            } else if (o instanceof Controller){
+                parentSpatial=(Spatial) s.pop();
+                parentSpatial.addController((Controller) o);
+                s.push(parentSpatial);
+            } else if (o instanceof Spatial){
+                parentNode=(Node) s.pop();
+                parentNode.attachChild((Spatial) o);
+                s.push(parentNode);
+            }
         } else if (qName.equals("sharednodeitem")){
             XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
             shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
@@ -143,18 +187,17 @@ class SAXStackProcessor {
         }
     }
 
-    private void lookThruSpatial(Spatial lookThru) {
-        if (lookThru.getControllers().size()!=0){
-
-        }
-    }
-
     private TextureState buildTexture(Attributes atts) throws SAXException {
         TextureState t=renderer.getTextureState();
-            t.setTexture(TextureManager.loadTexture(atts.getValue("filename"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+//            t.setTexture(TextureManager.loadTexture(atts.getValue("file"),
+//                Texture.MM_LINEAR,
+//                Texture.FM_LINEAR,
+//                true));
+        try {
+            t.loadFromFile(new File(atts.getValue("file")),Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+        } catch (MalformedURLException e) {
+            throw new SAXException("Bad file name: " + atts.getValue("file"));
+        }
         t.setEnabled(true);
         return t;
     }
@@ -271,11 +314,15 @@ class SAXStackProcessor {
 
     private static int[] createIntArray(StringBuffer data) {
         if (data.length()==0) return null;
-        String [] information=data.toString().trim().split(" ");
+        String [] information=data.toString().trim().split("\\p{Space}");
         if (information.length==1 && information[0].equals("")) return null;
         int[] indexes=new int[information.length];
+        int count=0;
         for (int i=0;i<indexes.length;i++){
-            indexes[i]=Integer.parseInt(information[i]);
+            if (information[i].length()!=0){
+                indexes[count]=Integer.parseInt(information[i]);
+                count++;
+            }
         }
         return indexes;
     }
