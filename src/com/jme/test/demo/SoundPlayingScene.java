@@ -36,17 +36,19 @@
  */
 package com.jme.test.demo;
 
-
-
 import java.util.logging.Level;
 
 import com.jme.entity.Entity;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
+import com.jme.scene.BoundingSphere;
+import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.sound.IEffectPlayer;
 import com.jme.sound.IRenderer;
 import com.jme.sound.utils.EffectRepository;
@@ -67,7 +69,7 @@ public class SoundPlayingScene implements Scene {
 	private Text text;
 	private float timeElapsed;
 	private Timer timer;
-	private Vector3f soundPosition= new Vector3f(-15, 0, 0);
+	private Vector3f soundPosition= new Vector3f(-50, 0, 0);
 
 	private Entity backgroundMusic, e;
 
@@ -78,13 +80,14 @@ public class SoundPlayingScene implements Scene {
 	private int status;
 
 	private boolean toRight= true, ascending= true;
-	
-	
+
+	private TriMesh t;
 
 	public void init(SceneEnabledGame game) {
 		this.game= game;
 		timer= game.getTimer();
 		text= new Text("Playing sound");
+
 		TextureState ts= game.getDisplaySystem().getRenderer().getTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(
@@ -94,6 +97,7 @@ public class SoundPlayingScene implements Scene {
 				Texture.FM_LINEAR,
 				true));
 		text.setRenderState(ts);
+
 		AlphaState as1= game.getDisplaySystem().getRenderer().getAlphaState();
 		as1.setBlendEnabled(true);
 		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -101,11 +105,12 @@ public class SoundPlayingScene implements Scene {
 		as1.setTestEnabled(true);
 		as1.setTestFunction(AlphaState.TF_GREATER);
 		text.setRenderState(as1);
+
 		soundRenderer= game.getSoundSystem().getRenderer();
 		backgroundMusic= new Entity("BACKGROUND");
 		soundRenderer.addSoundPlayer(backgroundMusic);
 		soundRenderer.getSoundPlayer(backgroundMusic).setPosition(soundPosition);
-		soundRenderer.getSoundPlayer(backgroundMusic).setMaxDistance(25.0f);
+		soundRenderer.getSoundPlayer(backgroundMusic).setMaxDistance(30.0f);
 		soundLoader= new OnDemandSoundLoader(10);
 		soundLoader.start();
 		soundLoader.queueSound(
@@ -113,11 +118,34 @@ public class SoundPlayingScene implements Scene {
 			"C:/eclipse/workspace/JavaMonkeyEngine/jme/data/sound/0.mp3");
 		soundNode= new Node();
 		soundNode.attachChild(text);
-		soundNode.updateGeometricState(0.0f, true);
 		status= Scene.LOADING_NEXT_SCENE;
 		System.out.println("LOADING Sound");
 		text.print("Position " + soundPosition);
 		text.setLocalTranslation(new Vector3f(1, 60, 0));
+		Vector3f max= new Vector3f(5, 5, 5);
+		Vector3f min= new Vector3f(-5, -5, -5);
+		t= new Box(min, max);
+		t.setModelBound(new BoundingSphere());
+		t.updateModelBound();
+		TextureState tst= game.getDisplaySystem().getRenderer().getTextureState();
+		tst.setEnabled(true);
+		tst.setTexture(
+			TextureManager.loadTexture(
+				"../data/Images/Monkey.jpg",
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true));
+
+		soundNode.setRenderState(tst);
+
+		ZBufferState buf=  game.getDisplaySystem().getRenderer().getZBufferState();
+		buf.setEnabled(true);
+		buf.setFunction(ZBufferState.CF_LEQUAL);
+		soundNode.setRenderState(buf);
+		soundNode.attachChild(t);
+
+		//game.getCamera().update();
+		soundNode.updateGeometricState(0.0f, true);
 
 	}
 
@@ -136,37 +164,43 @@ public class SoundPlayingScene implements Scene {
 			return false;
 		}
 		if (EffectRepository.getRepository().getSource(backgroundMusic.getId()) != null) {
-			status=READY;
+			status= READY;
 		} else {
 			return false;
 		}
 		timer.update();
-		timeElapsed+=timer.getTimePerFrame();
-		if(timeElapsed>5 && status !=LOAD_NEXT_SCENE){
-			timeElapsed=0;
-			status=LOAD_NEXT_SCENE;
-		}
-		if (soundRenderer.getSoundPlayer(backgroundMusic).getStatus() != IEffectPlayer.LOOPING) {
-			soundRenderer.getSoundPlayer(backgroundMusic).loop(
+		timeElapsed += timer.getTimePerFrame();
+		if (soundRenderer.getSoundPlayer(backgroundMusic).getStatus() != IEffectPlayer.PLAYING) {
+			soundRenderer.getSoundPlayer(backgroundMusic).play(
 				EffectRepository.getRepository().getSource(backgroundMusic.getId()));
 
 		}
 		if (toRight) {
-				soundPosition.x += 0.1;
-			if (soundPosition.x > 15) {
+			soundPosition.x += 0.2;
+			
+			if (soundPosition.x > 30) {
 				ascending= false;
-				toRight=false;
+				toRight= false;
 			}
 		}
 		if (!ascending) {
-			soundPosition.x -= 0.1;
-			if (soundPosition.x < -15) {
+			soundPosition.x -= 0.2;
+			
+			if (soundPosition.x < -30) {
 				toRight= true;
-				ascending=true;
+				ascending= true;
 			}
-		}		
+		}
+		
+		soundPosition.y= (float)Math.sin(soundPosition.x);
 		soundRenderer.getSoundPlayer(backgroundMusic).setPosition(soundPosition);
-		text.print("Position " + soundPosition);
+		if(timeElapsed >0.5){
+			timeElapsed=0;
+			text.print("Position " + soundPosition);
+		}
+		
+		t.setLocalTranslation(soundPosition);
+		soundNode.updateGeometricState(0.0f, true);
 		return true;
 	}
 
@@ -185,7 +219,7 @@ public class SoundPlayingScene implements Scene {
 	public void cleanup() {
 		soundRenderer.getSoundPlayer(backgroundMusic).stop();
 		EffectRepository.getRepository().remove(backgroundMusic.getId());
-		soundNode=null;
+		soundNode= null;
 	}
 
 	/* (non-Javadoc)
@@ -209,10 +243,8 @@ public class SoundPlayingScene implements Scene {
 	public void setStatus(int status) {
 		this.status= status;
 	}
-	
-	public void finalize(){
-		LoggingSystem.getLogger().log(
-						Level.INFO,
-						"Finalizing "+getClass().getName());
+
+	public void finalize() {
+		LoggingSystem.getLogger().log(Level.INFO, "Finalizing " + getClass().getName());
 	}
 }

@@ -36,7 +36,6 @@
  */
 package com.jme.test.demo;
 
-
 import com.jme.input.InputController;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
@@ -60,7 +59,7 @@ public class JmeDemo extends SceneEnabledGame {
 	private SceneController demoScene;
 	private Camera cam;
 	private InputController input;
-	private Timer timer; 
+	private Timer timer;
 	protected void update() {
 		demoScene.update();
 	}
@@ -71,10 +70,10 @@ public class JmeDemo extends SceneEnabledGame {
 	}
 
 	protected void initSystem() {
-		
+
 		timer= Timer.getTimer("LWJGL");
-		demoScene=new SceneController(this);
-		
+		demoScene= new SceneController(this);
+
 		/*****************************************************************
 		 * 						INIT DISPLAY							 *
 		 *****************************************************************/
@@ -94,10 +93,11 @@ public class JmeDemo extends SceneEnabledGame {
 			blackColor.b= 0;
 			display.getRenderer().setBackgroundColor(blackColor);
 			cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-			Vector3f loc= new Vector3f(4.0f, 0.0f, 0.0f);
-			Vector3f left= new Vector3f(0.0f, -1.0f, 0.0f);
-			Vector3f up= new Vector3f(0.0f, 0.0f, 1.0f);
-			Vector3f dir= new Vector3f(-1.0f, 0f, 0.0f);
+
+			Vector3f loc= new Vector3f(0.0f, 0.0f, 20.0f);
+			Vector3f left= new Vector3f(-1.0f, 0.0f, 0.0f);
+			Vector3f up= new Vector3f(0.0f, 1.0f, 0.0f);
+			Vector3f dir= new Vector3f(0.0f, 0f, -1.0f);
 			cam.setFrame(loc, left, up, dir);
 			display.getRenderer().setCamera(cam);
 			/*****************************************************************
@@ -126,7 +126,7 @@ public class JmeDemo extends SceneEnabledGame {
 	}
 
 	protected void initGame() {
-		if(demoScene !=null){
+		if (demoScene != null) {
 			demoScene.init("com.jme.test.demo.LoadingScene");
 		}
 	}
@@ -155,7 +155,7 @@ public class JmeDemo extends SceneEnabledGame {
 
 	public static void main(String[] args) {
 		JmeDemo app= new JmeDemo();
-		
+
 		app.useDialogAlways(true);
 		app.start();
 	}
@@ -171,7 +171,7 @@ public class JmeDemo extends SceneEnabledGame {
 	 * @see com.jme.test.demo.SceneEnabledGame#getTimer()
 	 */
 	public Timer getTimer() {
-		
+
 		return timer;
 	}
 
