@@ -36,6 +36,10 @@
  */
 package com.jme.test.demo;
 
+
+
+import java.util.logging.Level;
+
 import com.jme.entity.Entity;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
@@ -47,6 +51,8 @@ import com.jme.sound.IEffectPlayer;
 import com.jme.sound.IRenderer;
 import com.jme.sound.utils.EffectRepository;
 import com.jme.sound.utils.OnDemandSoundLoader;
+
+import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
@@ -71,7 +77,9 @@ public class SoundPlayingScene implements Scene {
 
 	private int status;
 
-	boolean toRight= true, ascending= true;
+	private boolean toRight= true, ascending= true;
+	
+	
 
 	public void init(SceneEnabledGame game) {
 		this.game= game;
@@ -128,11 +136,16 @@ public class SoundPlayingScene implements Scene {
 			return false;
 		}
 		if (EffectRepository.getRepository().getSource(backgroundMusic.getId()) != null) {
-			status= READY;
+			status=READY;
 		} else {
 			return false;
 		}
 		timer.update();
+		timeElapsed+=timer.getTimePerFrame();
+		if(timeElapsed>5 && status !=LOAD_NEXT_SCENE){
+			timeElapsed=0;
+			status=LOAD_NEXT_SCENE;
+		}
 		if (soundRenderer.getSoundPlayer(backgroundMusic).getStatus() != IEffectPlayer.LOOPING) {
 			soundRenderer.getSoundPlayer(backgroundMusic).loop(
 				EffectRepository.getRepository().getSource(backgroundMusic.getId()));
@@ -151,8 +164,7 @@ public class SoundPlayingScene implements Scene {
 				toRight= true;
 				ascending=true;
 			}
-		}
-		
+		}		
 		soundRenderer.getSoundPlayer(backgroundMusic).setPosition(soundPosition);
 		text.print("Position " + soundPosition);
 		return true;
@@ -171,8 +183,9 @@ public class SoundPlayingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#cleanup()
 	 */
 	public void cleanup() {
-		// TODO Auto-generated method stub
-
+		soundRenderer.getSoundPlayer(backgroundMusic).stop();
+		EffectRepository.getRepository().remove(backgroundMusic.getId());
+		soundNode=null;
 	}
 
 	/* (non-Javadoc)
@@ -187,8 +200,7 @@ public class SoundPlayingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#getLinkedSceneClassName()
 	 */
 	public String getLinkedSceneClassName() {
-		// TODO Auto-generated method stub
-		return null;
+		return "com.jme.test.demo.LoadingScene";
 	}
 
 	/* (non-Javadoc)
@@ -197,5 +209,10 @@ public class SoundPlayingScene implements Scene {
 	public void setStatus(int status) {
 		this.status= status;
 	}
-
+	
+	public void finalize(){
+		LoggingSystem.getLogger().log(
+						Level.INFO,
+						"Finalizing "+getClass().getName());
+	}
 }

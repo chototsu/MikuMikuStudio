@@ -36,12 +36,15 @@
  */
 package com.jme.test.demo;
 
+import java.util.logging.Level;
+
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
+import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
@@ -57,10 +60,11 @@ public class LoadingScene implements Scene {
 	private Timer timer;
 	private SceneEnabledGame demo;
 	private Node loadingNode;
+	private static boolean firstTime= true;
 
 	public void init(SceneEnabledGame game) {
 		this.demo= game;
-		timer=game.getTimer();
+		timer= game.getTimer();
 		loadingNode= new Node();
 		loadingNode.updateGeometricState(0.0f, true);
 		text= new Text("Loading Scene");
@@ -68,7 +72,11 @@ public class LoadingScene implements Scene {
 		TextureState ts= demo.getDisplaySystem().getRenderer().getTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(
-			TextureManager.loadTexture("C:/eclipse/workspace/JavaMonkeyEngine/jme/data/Font/font.png", Texture.MM_LINEAR, Texture.FM_LINEAR, true));
+			TextureManager.loadTexture(
+				"C:/eclipse/workspace/JavaMonkeyEngine/jme/data/Font/font.png",
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true));
 		text.setRenderState(ts);
 		AlphaState as1= demo.getDisplaySystem().getRenderer().getAlphaState();
 		as1.setBlendEnabled(true);
@@ -78,37 +86,36 @@ public class LoadingScene implements Scene {
 		as1.setTestFunction(AlphaState.TF_GREATER);
 		text.setRenderState(as1);
 		loadingNode.attachChild(text);
-		status=LOAD_NEXT_SCENE;
-		
+		status= READY;
+
 	}
 
-	
-	public int getStatus() {		
+	public int getStatus() {
 		return status;
 	}
 
-	
 	public boolean update() {
 		timeElapsed += timer.getTimePerFrame();
 		if (timeElapsed > 1) {
 			timeElapsed= 0;
 			text.print(text.getText().toString() + ".");
+
 		}
 		timer.update();
 		return true;
 	}
 
-	
 	public boolean render() {
+		if (status == READY) {
+			status= LOAD_NEXT_SCENE;
+		}
 		demo.getDisplaySystem().getRenderer().clearBuffers();
 		demo.getDisplaySystem().getRenderer().draw(loadingNode);
 		return true;
 	}
 
-	
 	public void cleanup() {
-		// TODO Auto-generated method stub
-
+		loadingNode= null;
 	}
 
 	/* (non-Javadoc)
@@ -125,13 +132,15 @@ public class LoadingScene implements Scene {
 		return "com.jme.test.demo.SoundPlayingScene";
 	}
 
-
-
 	/* (non-Javadoc)
 	 * @see com.jme.test.demo.Scene#setStatus(int)
 	 */
 	public void setStatus(int status) {
-		this.status=status;
+		this.status= status;
+	}
+
+	public void finalize() {
+		LoggingSystem.getLogger().log(Level.INFO, "Finalizing " + getClass().getName());
 	}
 
 }

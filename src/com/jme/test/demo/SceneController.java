@@ -36,6 +36,10 @@
  */
 package com.jme.test.demo;
 
+import java.util.logging.Level;
+
+import com.jme.util.LoggingSystem;
+
 /**
  * @author Arman Ozcelik
  *
@@ -70,18 +74,20 @@ public class SceneController {
 
 	public void update() {
 		game.getInput().update(1);
+		if (playingScene.getStatus() == Scene.LOAD_NEXT_SCENE) {
+			playingScene.setStatus(Scene.LOADING_NEXT_SCENE);
+			preloadNextScene();
+		}
 		if (playingScene.getStatus() == Scene.READY
 			|| playingScene.getStatus() == Scene.LOAD_NEXT_SCENE
 			|| playingScene.getStatus() == Scene.LOADING_NEXT_SCENE) {
 			playingScene.update();
 		}
-		if (playingScene.getStatus() == Scene.LOAD_NEXT_SCENE) {
-			playingScene.setStatus(Scene.LOADING_NEXT_SCENE);
-			preloadNextScene();
-		}
 		if (nextScene != null) {
 			nextScene.update();
 			if (nextScene.getStatus() == Scene.READY) {
+				playingScene.cleanup();
+				LoggingSystem.getLogger().log(Level.INFO, "Cleaning " + playingScene.getClass().getName());
 				playingScene= nextScene;
 				nextScene= null;
 			}
@@ -94,26 +100,24 @@ public class SceneController {
 	}
 
 	public void preloadNextScene() {
-		if (!preloadStarted) {
-			preloadStarted= true;
-			Runnable r= new Runnable() {
-				public void run() {
-					try {
-						nextScene= (Scene)Class.forName(playingScene.getLinkedSceneClassName()).newInstance();
-					} catch (InstantiationException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					} catch (ClassNotFoundException e) {
-						e.printStackTrace();
-					}
-					nextScene.init(game);
 
+		Runnable r= new Runnable() {
+			public void run() {
+				try {
+					nextScene= (Scene)Class.forName(playingScene.getLinkedSceneClassName()).newInstance();
+				} catch (InstantiationException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					e.printStackTrace();
 				}
-			};
-			Thread t= new Thread(r);
-			t.start();
-		}
+				nextScene.init(game);
+
+			}
+		};
+		Thread t= new Thread(r);
+		t.start();
 
 	}
 
