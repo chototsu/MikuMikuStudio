@@ -29,6 +29,11 @@
 * POSSIBILITY OF SUCH DAMAGE. 
 * 
 */
+
+/*
+ * EDIT:  04/02/2004 - Added default constructor. GOP
+ */
+
 package com.jme.widget.viewport;
 
 import com.jme.input.AbstractInputHandler;
@@ -37,12 +42,14 @@ import com.jme.renderer.Camera;
 /**
  * <code>WidgetViewportCameraController</code>
  * @author Gregg Patton
- * @version $Id: WidgetViewportCameraController.java,v 1.3 2004-03-27 17:43:40 greggpatton Exp $
+ * @version $Id: WidgetViewportCameraController.java,v 1.4 2004-04-04 12:57:37 greggpatton Exp $
  */
 public class WidgetViewportCameraController {
     Camera camera;
     AbstractInputHandler inputHandler;
 
+    public WidgetViewportCameraController() {}
+    
     public WidgetViewportCameraController(Camera camera, AbstractInputHandler inputHandler) {
 
         this.camera = camera;
