@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.22 2004-08-21 01:35:02 cep21 Exp $
+ * @version $Id: TriMesh.java,v 1.23 2004-08-26 23:53:20 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -252,11 +252,13 @@ public class TriMesh extends Geometry implements Serializable {
 		if (indices == null) {
 			return;
 		}
-		indexBuffer = ByteBuffer.allocateDirect(
-				4 * (triangleQuantity >= 0
-						? triangleQuantity * 3
-						: indices.length)).order(ByteOrder.nativeOrder())
-				.asIntBuffer();
+        if (indexBuffer==null || indexBuffer.capacity()<indices.length){
+            indexBuffer = ByteBuffer.allocateDirect(
+                    4 * (triangleQuantity >= 0
+                            ? triangleQuantity * 3
+                            : indices.length)).order(ByteOrder.nativeOrder())
+                    .asIntBuffer();
+        }
 
 		indexBuffer.clear();
 		indexBuffer.put(indices, 0, triangleQuantity >= 0
