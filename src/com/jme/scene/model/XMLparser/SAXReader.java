@@ -11,8 +11,13 @@ import com.jme.util.LoggingSystem;
 import com.jme.scene.Node;
 
 import java.util.logging.Level;
+import java.util.Hashtable;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.io.File;
 import java.io.InputStream;
+import java.net.URL;
 
 /**
  * XML file format parser for jME
@@ -58,7 +63,7 @@ public class SAXReader{
             parser.parse(SAXFile,myHandler);
 
         } catch (Throwable t) {
-            throw new JmeException("Parser exception caught:" + t.getClass() + " * " + t.getMessage());
+            throw new JmeException("Parser exception caught:" + " * " + t.getLocalizedMessage() + " * ");
         }
         System.out.println("Total load time: " + (System.currentTimeMillis()-time));
         return computer.fetchOriginal();
@@ -71,4 +76,22 @@ public class SAXReader{
     public Node fetchCopy(){
         return computer.fetchCopy();
     }
+
+    /**
+     * Adds a property to this SAXReader.  Properties can tell the SAXReader how to process the XML file
+     * @param key Key to add (For example "texdir")
+     * @param property Property for that key to have (For example "c:\\blarg\\")
+     */
+    public void setProperty(String key, Object property) {
+        computer.properties.put(key,property);
+    }
+
+    /**
+     * Removes a property from the SAXReader's properties HashMap
+     * @param key
+     */
+    public void clearProperty(String key){
+        computer.properties.remove(key);
+    }
+
 }
