@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -40,7 +40,7 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
-import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
 
 import com.jme.sound.IBuffer;
 
@@ -50,68 +50,68 @@ import com.jme.sound.IBuffer;
  */
 public class Buffer implements IBuffer {
 
-	protected int bufferNumber;
-	private ByteBuffer data;
+    protected int bufferNumber;
+    private ByteBuffer data;
 
-	public Buffer(int bufferNumber) {
-		this.bufferNumber= bufferNumber;
-	}
+    public Buffer(int bufferNumber) {
+        this.bufferNumber= bufferNumber;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.jme.sound.IBuffer#configure(java.nio.ByteBuffer, int, int)
-	 */
-	public void configure(ByteBuffer data, int format, int freq) {
-		this.data= data;
-		AL.alBufferData(bufferNumber, format, data, data.capacity(), freq);
-	}
+    /* (non-Javadoc)
+     * @see com.jme.sound.IBuffer#configure(java.nio.ByteBuffer, int, int)
+     */
+    public void configure(ByteBuffer data, int format, int freq) {
+        this.data= data;
+        AL10.alBufferData(bufferNumber, format, data, data.capacity(), freq);
+    }
 
-	/* (non-Javadoc)
-	 * @see com.jme.sound.IBuffer#delete()
-	 */
-	public void delete() {
-		IntBuffer alBuffer= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
-		alBuffer.put(bufferNumber);
-		alBuffer.rewind();
-		AL.alDeleteBuffers(alBuffer);
+    /* (non-Javadoc)
+     * @see com.jme.sound.IBuffer#delete()
+     */
+    public void delete() {
+        IntBuffer alBuffer= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+        alBuffer.put(bufferNumber);
+        alBuffer.rewind();
+        AL10.alDeleteBuffers(alBuffer);
 
-	}
+    }
 
-	/* (non-Javadoc)
-	 * @see com.jme.sound.IBuffer#getBitDepth()
-	 */
-	public int getBitDepth() {
-		return AL.alGetBufferi(bufferNumber, AL.AL_BITS);
-	}
+    /* (non-Javadoc)
+     * @see com.jme.sound.IBuffer#getBitDepth()
+     */
+    public int getBitDepth() {
+        return AL10.alGetBufferi(bufferNumber, AL10.AL_BITS);
+    }
 
-	/* (non-Javadoc)
-	 * @see com.jme.sound.IBuffer#getNumChannels()
-	 */
-	public int getNumChannels() {
-		return AL.alGetBufferi(bufferNumber, AL.AL_CHANNELS);
-	}
+    /* (non-Javadoc)
+     * @see com.jme.sound.IBuffer#getNumChannels()
+     */
+    public int getNumChannels() {
+        return AL10.alGetBufferi(bufferNumber, AL10.AL_CHANNELS);
+    }
 
-	/* (non-Javadoc)
-	 * @see com.jme.sound.IBuffer#getData()
-	 */
-	public ByteBuffer getData() {
-		return data;
-	}
+    /* (non-Javadoc)
+     * @see com.jme.sound.IBuffer#getData()
+     */
+    public ByteBuffer getData() {
+        return data;
+    }
 
-	/* (non-Javadoc)
-	 * @see com.jme.sound.IBuffer#getFrequency()
-	 */
-	public int getFrequency() {
-		return AL.alGetBufferi(bufferNumber, AL.AL_FREQUENCY);
-	}
+    /* (non-Javadoc)
+     * @see com.jme.sound.IBuffer#getFrequency()
+     */
+    public int getFrequency() {
+        return AL10.alGetBufferi(bufferNumber, AL10.AL_FREQUENCY);
+    }
 
-	/* (non-Javadoc)
-	 * @see com.jme.sound.IBuffer#getSize()
-	 */
-	public int getSize() {
-		return AL.alGetBufferi(bufferNumber, AL.AL_SIZE);
-	}
+    /* (non-Javadoc)
+     * @see com.jme.sound.IBuffer#getSize()
+     */
+    public int getSize() {
+        return AL10.alGetBufferi(bufferNumber, AL10.AL_SIZE);
+    }
 
-	public int getBufferNumber(){
-		return bufferNumber;
-	}
+    public int getBufferNumber(){
+        return bufferNumber;
+    }
 }

@@ -39,12 +39,13 @@ import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;
-import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Pbuffer;
+import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.6 2004-03-05 06:51:22 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.7 2004-03-05 21:55:17 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -105,7 +106,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
 
         activate();
-        GL.glClearColor(
+        GL11.glClearColor(
             backgroundColor.r,
             backgroundColor.g,
             backgroundColor.b,
@@ -137,7 +138,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 .asIntBuffer();
 
         //Create the texture
-        GL.glGenTextures(ibuf);
+        GL11.glGenTextures(ibuf);
         int glTextureID = ibuf.get(0);
 
         return setupTexture(glTextureID);
@@ -150,8 +151,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * @return the new Texture
      */
     public Texture setupTexture(int glTextureID) {
-        GL.glBindTexture(GL.GL_TEXTURE_2D, glTextureID);
-        GL.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
+        GL11.glBindTexture(GL11.GL_TEXTURE_2D, glTextureID);
+        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
 
         Texture rVal = new Texture();
         rVal.setTextureId(glTextureID);
@@ -180,8 +181,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             activate();
             parentRenderer.clearBuffers();
             parentRenderer.draw(spat);
-            GL.glBindTexture(GL.GL_TEXTURE_2D, tex.getTextureId());
-            GL.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
+            GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+            GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
             deactivate();
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(), "render(Spatial, Texture)", e);
@@ -191,10 +192,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     private void initPbuffer() {
         try {
-            pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0);
+            pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0, 0, null);
             activate();
 
-            GL.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+            GL11.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 
             if (camera == null) initCamera();
             camera.update();
@@ -215,7 +216,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     public void deactivate() {
         if (active == 1) {
-            Pbuffer.releaseContext();
+            Window.makeCurrent();
         }
         active--;
     }

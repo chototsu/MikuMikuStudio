@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -53,53 +53,53 @@ public class WidgetLWJGLMouseState extends WidgetMouseStateAbstract {
         this.y = Window.getHeight() / 2;
     }
 
-	public void init() {
+    public void init() {
 
-		try {
+        try {
 
             Mouse.create();
-			Mouse.setNativeCursor(WidgetLWJGLStandardCursor.cursor);
+            Mouse.setNativeCursor(WidgetLWJGLStandardCursor.cursor);
 
         } catch (Exception e) {
-			LoggingSystem.getLogger().log(Level.WARNING, e.getMessage());
+            LoggingSystem.getLogger().log(Level.WARNING, e.getMessage());
         }
-	}
-	
-	public void destroy() {
-		try {
-			
+    }
+
+    public void destroy() {
+        try {
+
             Mouse.setNativeCursor(null);
-            
+
         } catch (Exception e) {
-			LoggingSystem.getLogger().log(Level.WARNING, e.getMessage());
+            LoggingSystem.getLogger().log(Level.WARNING, e.getMessage());
         }
-        
-		Mouse.destroy();
-	}
-	
-	public void poll() {
-		Mouse.poll();
-	}
+
+        Mouse.destroy();
+    }
+
+    public void poll() {
+        Mouse.poll();
+    }
 
     public void setState() {
-    	
-    	poll();
-    	
-        dx = Mouse.dx;
-        dy = Mouse.dy;
-        dwheel = Mouse.dwheel;
+
+        poll();
+
+        dx = Mouse.getDX();
+        dy = Mouse.getDY();
+        dwheel = Mouse.getDWheel();
 
         x += dx;
         y += dy;
 
         setButtonType();
-        
+
     }
 
     private void setButtonType() {
         int button = 0;
 
-        for (int i = 0; i < Mouse.buttonCount; i++) {
+        for (int i = 0; i < Mouse.getButtonCount(); i++) {
             if (Mouse.isButtonDown(i)) {
                 switch (i) {
                     case 0 :
@@ -141,7 +141,7 @@ public class WidgetLWJGLMouseState extends WidgetMouseStateAbstract {
                 buttonType = WidgetMouseButtonType.MOUSE_BUTTON_1_2_3;
                 break;
         }
-        
+
     }
 
     public String toString() {

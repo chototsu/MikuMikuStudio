@@ -31,8 +31,8 @@
  */
 package com.jme.renderer;
 
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLU;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.glu.GLU;
 
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a
@@ -41,7 +41,7 @@ import org.lwjgl.opengl.GLU;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.4 2004-03-05 01:19:51 renanse Exp $
+ * @version $Id: LWJGLCamera.java,v 1.5 2004-03-05 21:55:17 renanse Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -78,9 +78,9 @@ public class LWJGLCamera extends AbstractCamera {
         super.onFrustumChange();
 
         // set projection matrix
-        GL.glMatrixMode(GL.GL_PROJECTION);
-        GL.glLoadIdentity();
-        GL.glFrustum(
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glLoadIdentity();
+        GL11.glFrustum(
             frustumLeft,
             frustumRight,
             frustumBottom,
@@ -101,7 +101,7 @@ public class LWJGLCamera extends AbstractCamera {
         int y = (int) (viewPortBottom * height);
         int w = (int) ((viewPortRight - viewPortLeft) * width);
         int h = (int) ((viewPortTop - viewPortBottom) * height);
-        GL.glViewport(x, y, w, h);
+        GL11.glViewport(x, y, w, h);
     }
 
     /**
@@ -117,8 +117,8 @@ public class LWJGLCamera extends AbstractCamera {
             ((LWJGLTextureRenderer)parent).activate();
 
         // set view matrix
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glLoadIdentity();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glLoadIdentity();
         location.add(direction, lookAt);
         GLU.gluLookAt(
             location.x,

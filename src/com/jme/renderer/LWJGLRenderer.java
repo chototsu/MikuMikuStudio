@@ -65,9 +65,8 @@ import java.util.logging.Level;
 
 import javax.imageio.ImageIO;
 
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLU;
-import org.lwjgl.opengl.Window;
+import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.glu.*;
 
 import com.jme.curve.Curve;
 import com.jme.effects.Tint;
@@ -113,7 +112,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.32 2004-03-05 01:19:51 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.33 2004-03-05 21:55:17 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -313,7 +312,7 @@ public class LWJGLRenderer implements Renderer {
         } else {
             backgroundColor = c;
         }
-        GL.glClearColor(
+        GL11.glClearColor(
             backgroundColor.r,
             backgroundColor.g,
             backgroundColor.b,
@@ -337,12 +336,12 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#clearZBuffer()
      */
     public void clearZBuffer() {
-        GL.glDisable(GL.GL_DITHER);
-        GL.glEnable(GL.GL_SCISSOR_TEST);
-        GL.glScissor(0, 0, width, height);
-        GL.glClear(GL.GL_DEPTH_BUFFER_BIT);
-        GL.glDisable(GL.GL_SCISSOR_TEST);
-        GL.glEnable(GL.GL_DITHER);
+        GL11.glDisable(GL11.GL_DITHER);
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor(0, 0, width, height);
+        GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        GL11.glEnable(GL11.GL_DITHER);
     }
 
     /**
@@ -351,12 +350,12 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#clearBackBuffer()
      */
     public void clearBackBuffer() {
-        GL.glDisable(GL.GL_DITHER);
-        GL.glEnable(GL.GL_SCISSOR_TEST);
-        GL.glScissor(0, 0, width, height);
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT);
-        GL.glDisable(GL.GL_SCISSOR_TEST);
-        GL.glEnable(GL.GL_DITHER);
+        GL11.glDisable(GL11.GL_DITHER);
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor(0, 0, width, height);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        GL11.glEnable(GL11.GL_DITHER);
     }
 
     /**
@@ -365,12 +364,12 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#clearBuffers()
      */
     public void clearBuffers() {
-        GL.glDisable(GL.GL_DITHER);
-        GL.glEnable(GL.GL_SCISSOR_TEST);
-        GL.glScissor(0, 0, width, height);
-        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-        GL.glDisable(GL.GL_SCISSOR_TEST);
-        GL.glEnable(GL.GL_DITHER);
+        GL11.glDisable(GL11.GL_DITHER);
+        GL11.glEnable(GL11.GL_SCISSOR_TEST);
+        GL11.glScissor(0, 0, width, height);
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+        GL11.glDisable(GL11.GL_SCISSOR_TEST);
+        GL11.glEnable(GL11.GL_DITHER);
     }
 
     /**
@@ -380,7 +379,7 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#displayBackBuffer()
      */
     public void displayBackBuffer() {
-        GL.glFlush();
+        GL11.glFlush();
         Window.paint();
         Window.update();
     }
@@ -409,13 +408,13 @@ public class LWJGLRenderer implements Renderer {
                 .allocateDirect(width * height * 4)
                 .order(ByteOrder.nativeOrder())
                 .asIntBuffer();
-        GL.glReadPixels(
+        GL11.glReadPixels(
             0,
             0,
             width,
             height,
-            GL.GL_BGRA,
-            GL.GL_UNSIGNED_BYTE,
+            GL12.GL_BGRA,
+            GL11.GL_UNSIGNED_BYTE,
             buff);
         BufferedImage img =
             new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
@@ -447,37 +446,37 @@ public class LWJGLRenderer implements Renderer {
      */
     public void draw(Tint t) {
         // set up ortho mode
-        GL.glMatrixMode(GL.GL_PROJECTION);
-        GL.glPushMatrix();
-        GL.glLoadIdentity();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
         GLU.gluOrtho2D(0, Window.getWidth(), 0, Window.getHeight());
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPushMatrix();
-        GL.glLoadIdentity();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
 
         // set the color of the tint
-        GL.glColor4f(
+        GL11.glColor4f(
             t.getTintColor().r,
             t.getTintColor().g,
             t.getTintColor().b,
             t.getTintColor().a);
 
         // drawQuad
-        GL.glBegin(GL.GL_QUADS);
+        GL11.glBegin(GL11.GL_QUADS);
         {
-            GL.glVertex2f(0, 0);
-            GL.glVertex2f(0, Window.getHeight());
-            GL.glVertex2f(Window.getWidth(), Window.getHeight());
-            GL.glVertex2f(Window.getWidth(), 0);
+            GL11.glVertex2f(0, 0);
+            GL11.glVertex2f(0, Window.getHeight());
+            GL11.glVertex2f(Window.getWidth(), Window.getHeight());
+            GL11.glVertex2f(Window.getWidth(), 0);
         }
-        GL.glEnd();
+        GL11.glEnd();
 
         // remove ortho mode, and go back to original
         // state
-        GL.glMatrixMode(GL.GL_PROJECTION);
-        GL.glPopMatrix();
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
 
     }
 
@@ -495,15 +494,15 @@ public class LWJGLRenderer implements Renderer {
         Vector3f translation = p.getWorldTranslation();
         float scale = p.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPushMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
 
-        GL.glTranslatef(translation.x, translation.y, translation.z);
-        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL.glScalef(scale, scale, scale);
+        GL11.glTranslatef(translation.x, translation.y, translation.z);
+        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL11.glScalef(scale, scale, scale);
 
         // render the object
-        GL.glBegin(GL.GL_POINTS);
+        GL11.glBegin(GL11.GL_POINTS);
 
         // draw points
         Vector3f[] vertex = p.getVertices();
@@ -520,40 +519,40 @@ public class LWJGLRenderer implements Renderer {
                 if (texture != null) {
                     // N,C,T
                     for (int i = 0; i < vertex.length; i++) {
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glColor4f(
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 } else {
                     // N,C
                     for (int i = 0; i < vertex.length; i++) {
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glColor4f(
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 }
             } else {
                 if (texture != null) {
                     // N,T
                     for (int i = 0; i < vertex.length; i++) {
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 } else {
                     // N
                     for (int i = 0; i < vertex.length; i++) {
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 }
             }
@@ -562,45 +561,45 @@ public class LWJGLRenderer implements Renderer {
                 if (texture != null) {
                     // C,T
                     for (int i = 0; i < vertex.length; i++) {
-                        GL.glColor4f(
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 } else {
                     // C
                     for (int i = 0; i < vertex.length; i++) {
-                        GL.glColor4f(
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 }
             } else {
                 if (texture != null) {
                     // T
                     for (int i = 0; i < vertex.length; i++) {
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 } else {
                     // none
                     for (int i = 0; i < vertex.length; i++) {
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 }
             }
         }
 
-        GL.glEnd();
+        GL11.glEnd();
 
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
 
     }
 
@@ -618,15 +617,15 @@ public class LWJGLRenderer implements Renderer {
         Vector3f translation = l.getWorldTranslation();
         float scale = l.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPushMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
 
-        GL.glTranslatef(translation.x, translation.y, translation.z);
-        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL.glScalef(scale, scale, scale);
+        GL11.glTranslatef(translation.x, translation.y, translation.z);
+        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL11.glScalef(scale, scale, scale);
 
         // render the object
-        GL.glBegin(GL.GL_LINES);
+        GL11.glBegin(GL11.GL_LINES);
 
         // draw line
         Vector3f[] vertex = l.getVertices();
@@ -643,66 +642,66 @@ public class LWJGLRenderer implements Renderer {
                 if (texture != null) {
                     // N,C,T
                     for (int i = 0; i < vertex.length - 1; i++) {
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glColor4f(
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         i++;
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glColor4f(
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
 
                 } else {
                     // N,C
                     for (int i = 0; i < vertex.length - 1; i++) {
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glColor4f(
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         i++;
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glColor4f(
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 }
             } else {
                 if (texture != null) {
                     // N,T
                     for (int i = 0; i < vertex.length - 1; i++) {
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         i++;
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
 
                 } else {
                     // N
                     for (int i = 0; i < vertex.length - 1; i++) {
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         i++;
-                        GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
 
                 }
@@ -712,67 +711,67 @@ public class LWJGLRenderer implements Renderer {
                 if (texture != null) {
                     // C,T
                     for (int i = 0; i < vertex.length - 1; i++) {
-                        GL.glColor4f(
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         i++;
-                        GL.glColor4f(
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
 
                 } else {
                     // C
                     for (int i = 0; i < vertex.length - 1; i++) {
-                        GL.glColor4f(
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         i++;
-                        GL.glColor4f(
+                        GL11.glColor4f(
                             color[i].r,
                             color[i].g,
                             color[i].b,
                             color[i].a);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 }
             } else {
                 if (texture != null) {
                     // T
                     for (int i = 0; i < vertex.length - 1; i++) {
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         i++;
-                        GL.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
 
                 } else {
                     // none
                     for (int i = 0; i < vertex.length - 1; i++) {
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         i++;
-                        GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                     }
                 }
             }
         }
 
-        GL.glEnd();
+        GL11.glEnd();
 
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
 
     }
 
@@ -788,22 +787,22 @@ public class LWJGLRenderer implements Renderer {
         Vector3f translation = c.getWorldTranslation();
         float scale = c.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPushMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
 
-        GL.glTranslatef(translation.x, translation.y, translation.z);
-        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL.glScalef(scale, scale, scale);
+        GL11.glTranslatef(translation.x, translation.y, translation.z);
+        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL11.glScalef(scale, scale, scale);
 
         // render the object
-        GL.glBegin(GL.GL_LINE_STRIP);
+        GL11.glBegin(GL11.GL_LINE_STRIP);
 
         ColorRGBA[] color = c.getColors();
         float colorInterval = 0;
         float colorModifier = 0;
         int colorCounter = 0;
         if (null != color) {
-            GL.glColor4f(color[0].r, color[0].g, color[0].b, color[0].a);
+            GL11.glColor4f(color[0].r, color[0].g, color[0].b, color[0].a);
 
             colorInterval = 1f / c.getColors().length;
             colorModifier = colorInterval;
@@ -817,7 +816,7 @@ public class LWJGLRenderer implements Renderer {
             if (t >= colorInterval && color != null) {
 
                 colorInterval += colorModifier;
-                GL.glColor4f(
+                GL11.glColor4f(
                     c.getColors()[colorCounter].r,
                     c.getColors()[colorCounter].g,
                     c.getColors()[colorCounter].b,
@@ -826,16 +825,16 @@ public class LWJGLRenderer implements Renderer {
             }
 
             point = c.getPoint(t);
-            GL.glVertex3f(point.x, point.y, point.z);
+            GL11.glVertex3f(point.x, point.y, point.z);
         }
 
         if (statisticsOn) {
             numberOfVerts += limit;
         }
 
-        GL.glEnd();
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPopMatrix();
+        GL11.glEnd();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
     }
 
     /**
@@ -852,43 +851,43 @@ public class LWJGLRenderer implements Renderer {
         Vector3f translation = t.getWorldTranslation();
         float scale = t.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPushMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
 
-        GL.glTranslatef(translation.x, translation.y, translation.z);
-        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL.glScalef(scale, scale, scale);
+        GL11.glTranslatef(translation.x, translation.y, translation.z);
+        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL11.glScalef(scale, scale, scale);
 
         // render the object
 
-        GL.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
-        GL.glEnableClientState(GL.GL_VERTEX_ARRAY);
+        GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
         FloatBuffer normals = t.getNormalAsFloatBuffer();
         if (normals != null) {
-            GL.glEnableClientState(GL.GL_NORMAL_ARRAY);
-            GL.glNormalPointer(0, normals);
+            GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+            GL11.glNormalPointer(0, normals);
         } else {
-            GL.glDisableClientState(GL.GL_NORMAL_ARRAY);
+            GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
         }
 
         FloatBuffer colors = t.getColorAsFloatBuffer();
         if (colors != null) {
-            GL.glEnableClientState(GL.GL_COLOR_ARRAY);
-            GL.glColorPointer(4, 0, colors);
+            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+            GL11.glColorPointer(4, 0, colors);
         } else {
-            GL.glDisableClientState(GL.GL_COLOR_ARRAY);
+            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         }
 
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureAsFloatBuffer(i);
             if (textures != null) {
-                GL.glClientActiveTextureARB(GL.GL_TEXTURE0_ARB + i);
+                GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                 if (textures != null) {
-                    GL.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-                    GL.glTexCoordPointer(2, 0, textures);
+                    GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                    GL11.glTexCoordPointer(2, 0, textures);
                 } else {
-                    GL.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+                    GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 }
             }
         }
@@ -899,10 +898,10 @@ public class LWJGLRenderer implements Renderer {
             numberOfTris += adder / 3;
             numberOfVerts += adder;
         }
-        GL.glDrawElements(GL.GL_TRIANGLES, indices);
+        GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
 
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
     }
 
     /**
@@ -919,31 +918,31 @@ public class LWJGLRenderer implements Renderer {
 
         // render the object
 
-        GL.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
-        GL.glEnableClientState(GL.GL_VERTEX_ARRAY);
+        GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
+        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
         FloatBuffer normals = t.getNormalAsFloatBuffer();
         if (normals != null) {
-            GL.glEnableClientState(GL.GL_NORMAL_ARRAY);
-            GL.glNormalPointer(0, normals);
+            GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+            GL11.glNormalPointer(0, normals);
         } else {
-            GL.glDisableClientState(GL.GL_NORMAL_ARRAY);
+            GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
         }
 
         FloatBuffer colors = t.getColorAsFloatBuffer();
         if (colors != null) {
-            GL.glEnableClientState(GL.GL_COLOR_ARRAY);
-            GL.glColorPointer(4, 0, colors);
+            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+            GL11.glColorPointer(4, 0, colors);
         } else {
-            GL.glDisableClientState(GL.GL_COLOR_ARRAY);
+            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         }
 
         FloatBuffer textures = t.getTextureAsFloatBuffer();
         if (textures != null) {
-            GL.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-            GL.glTexCoordPointer(2, 0, textures);
+            GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            GL11.glTexCoordPointer(2, 0, textures);
         } else {
-            GL.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+            GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         }
     }
 
@@ -962,12 +961,12 @@ public class LWJGLRenderer implements Renderer {
         Vector3f translation = c.getWorldTranslation();
         float scale = c.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPushMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
 
-        GL.glTranslatef(translation.x, translation.y, translation.z);
-        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL.glScalef(scale, scale, scale);
+        GL11.glTranslatef(translation.x, translation.y, translation.z);
+        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL11.glScalef(scale, scale, scale);
 
         IntBuffer indices = c.getIndexBuffer();
         if (statisticsOn) {
@@ -976,10 +975,10 @@ public class LWJGLRenderer implements Renderer {
             numberOfVerts += adder;
         }
 
-        GL.glDrawElements(GL.GL_TRIANGLES, indices);
+        GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
 
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
     }
 
     /**
@@ -1023,14 +1022,14 @@ public class LWJGLRenderer implements Renderer {
             return;
         }
 
-        GL.glMatrixMode(GL.GL_PROJECTION);
-        GL.glPushMatrix();
-        GL.glLoadIdentity();
-        GL.glOrtho(0, Window.getWidth(), 0, Window.getHeight(), -1, 1);
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPushMatrix();
-        GL.glLoadIdentity();
-        GL.glTranslatef(
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        GL11.glOrtho(0, Window.getWidth(), 0, Window.getHeight(), -1, 1);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        GL11.glTranslatef(
             m.getLocalTranslation().x,
             m.getLocalTranslation().y,
             0);
@@ -1039,22 +1038,22 @@ public class LWJGLRenderer implements Renderer {
         int width = m.getImageWidth();
         int height = m.getImageHeight();
 
-        GL.glBegin(GL.GL_QUADS);
-        GL.glTexCoord2f(0, 0);
-        GL.glVertex2f(0, 0);
+        GL11.glBegin(GL11.GL_QUADS);
+        GL11.glTexCoord2f(0, 0);
+        GL11.glVertex2f(0, 0);
 
-        GL.glTexCoord2f(1, 0);
-        GL.glVertex2f(width, 0);
-        GL.glTexCoord2f(1, 1);
-        GL.glVertex2f(width, height);
-        GL.glTexCoord2f(0, 1);
-        GL.glVertex2f(0, height);
-        GL.glEnd();
+        GL11.glTexCoord2f(1, 0);
+        GL11.glVertex2f(width, 0);
+        GL11.glTexCoord2f(1, 1);
+        GL11.glVertex2f(width, height);
+        GL11.glTexCoord2f(0, 1);
+        GL11.glVertex2f(0, height);
+        GL11.glEnd();
 
-        GL.glMatrixMode(GL.GL_PROJECTION);
-        GL.glPopMatrix();
-        GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
     }
 
     /**
