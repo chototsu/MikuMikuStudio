@@ -38,7 +38,7 @@ import com.jme.renderer.*;
 /**
  * This class is a set of static mesh creation utilities.
  */
-public class MeshUtils {
+final public class MeshUtils {
 
     private MeshUtils(){}
 

@@ -59,7 +59,7 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.12 2004-07-23 22:01:59 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.13 2004-08-02 22:10:34 cep21 Exp $
  */
 
 public class LensFlare extends Node {
@@ -68,6 +68,10 @@ public class LensFlare extends Node {
   private Vector2f midPoint;
   private Vector3f flarePoint;
 
+  /**
+   * Creates a new LensFlare node.
+   * @param name The name of the node.
+   */
   public LensFlare(String name) {
     super(name);
     initChildren();

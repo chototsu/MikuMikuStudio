@@ -34,9 +34,10 @@ package com.jme.util;
 import com.jme.util.lwjgl.*;
 
 /**
- * <code>Timer</code>
+ * <code>Timer</code> is the base class for a high resolultion timer.  It is created from
+ * getTimer("display system")
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.7 2004-07-29 07:13:44 cep21 Exp $
+ * @version $Id: Timer.java,v 1.8 2004-08-02 22:07:52 cep21 Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -64,10 +65,17 @@ public abstract class Timer {
      */
     public abstract long getResolution();
 
-    //---
-
+    /**
+     * Returns the "calls per second".  If this is called every frame, then it will return the
+     * "frames per second".
+     * @return The "calls per second".
+     */
     public abstract float getFrameRate();
 
+    /**
+     * Returns the time, in seconds, between the last call and the current one.
+     * @return Time between this call and the last one.
+     */
     public abstract float getTimePerFrame();
 
     /**

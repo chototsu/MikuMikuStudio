@@ -56,9 +56,11 @@ import com.jme.renderer.ColorRGBA;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.22 2004-07-03 20:02:11 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.23 2004-08-02 22:05:09 cep21 Exp $
  */
-public class TextureManager {
+final public class TextureManager {
+
+    private TextureManager(){}
 	// For TGA loading
 	private static final int NO_TRANSPARENCY = 255;
 	private static final int FULL_TRANSPARENCY = 0;
@@ -89,12 +91,9 @@ public class TextureManager {
 	 *            the filter for the near values.
 	 * @param magFilter
 	 *            the filter for the far values.
-	 * @param isMipmapped
+	 * @param isMipMapped
 	 *            determines if we will load the texture mipmapped or not. True
 	 *            load the texture mipmapped, false do not.
-	 * @param flipped
-	 *            true flips the bits of the image, false does not. True by
-	 *            default.
 	 *
 	 * @return the loaded texture. If there is a problem loading the texture,
 	 *         null is returned.
@@ -119,6 +118,8 @@ public class TextureManager {
 	 * @param isMipmapped
 	 *            determines if we will load the texture mipmapped or not. True
 	 *            load the texture mipmapped, false do not.
+     * @param flipped
+     *            If true, the images Y values are flipped.
 	 *
 	 * @return the loaded texture. If there is a problem loading the texture,
 	 *         null is returned.
@@ -146,13 +147,10 @@ public class TextureManager {
 	 *            the filter for the near values.
 	 * @param magFilter
 	 *            the filter for the far values.
-	 * @param isMipmapped
+	 * @param isMipMapped
 	 *            determines if we will load the texture mipmapped or not. True
 	 *            load the texture mipmapped, false do not.
-	 * @param flipped
-	 *            true flips the bits of the image, false does not. True by
-	 *            default.
-	 *
+     *
 	 * @return the loaded texture. If there is a problem loading the texture,
 	 *         null is returned.
 	 */
@@ -176,6 +174,8 @@ public class TextureManager {
 	 * @param isMipmapped
 	 *            determines if we will load the texture mipmapped or not. True
 	 *            load the texture mipmapped, false do not.
+     * @param flipped
+     *            If true, the images Y values are flipped.
 	 *
 	 * @return the loaded texture. If there is a problem loading the texture,
 	 *         null is returned.
@@ -313,8 +313,8 @@ public class TextureManager {
 	 * create a new <code>Image</code> object. This object is returned to be
 	 * used for normal use.
 	 *
-	 * @param file
-	 *            the name of the bitmap file.
+	 * @param fs
+	 *            The bitmap file stream.
 	 *
 	 * @return <code>Image</code> object that contains the bitmap information.
 	 */

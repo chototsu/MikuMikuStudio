@@ -47,11 +47,11 @@ import com.jme.util.Timer;
  * method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.5 2004-07-09 17:04:55 renanse Exp $
+ * @version $Id: LWJGLTimer.java,v 1.6 2004-08-02 22:09:17 cep21 Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;
-    private static LWJGLTimer instance = null;
+//    private static LWJGLTimer instance = null;
     //frame rate parameters.
     private long oldTime = 0;
     private long newTime = 0;
@@ -90,7 +90,7 @@ public class LWJGLTimer extends Timer {
     }
 
     /**
-     * @see com.jme.util.Timer#getResoultion()
+     * @see com.jme.util.Timer#getResolution()
      */
     public long getResolution(){
         return timerRez;
@@ -107,9 +107,6 @@ public class LWJGLTimer extends Timer {
         return rVal/((float)TIMER_SMOOTHNESS);
     }
 
-    /**
-     *
-     */
     public float getTimePerFrame() {
         return 1f/getFrameRate();
     }
