@@ -77,6 +77,8 @@ public class TestFireMilk extends SimpleGame {
     cam.setLocation(new Vector3f(0.0f, 0.0f, 200.0f));
     cam.update();
     input.setKeySpeed(100);
+    
+    lightState.setEnabled(false);
 
     MilkToJme converter=new MilkToJme();
     URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
@@ -101,7 +103,7 @@ public class TestFireMilk extends SimpleGame {
         System.out.println("darn exceptions:" + e.getMessage());
     }
     ((JointController) i.getChild(0).getController(0)).setSpeed(1.0f);
-    ((JointController) i.getChild(0).getController(0)).setRepeatType(Controller.RT_WRAP);
+    ((JointController) i.getChild(0).getController(0)).setRepeatType(Controller.RT_CYCLE);
     i.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     rootNode.attachChild(i);
 
