@@ -120,7 +120,7 @@ import com.jme.widget.text.WidgetText;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.29 2004-03-02 21:43:01 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.30 2004-03-03 17:11:56 darkprophet Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -462,51 +462,16 @@ public class LWJGLRenderer implements Renderer {
 		GL.glPushMatrix();
 		GL.glLoadIdentity();
 
-		// draw the texture
-		if (t.useTexture()) {
-			GL.glTranslatef(
-				t.getTextureLocation().x,
-				t.getTextureLocation().y,
-				0);
-			GL.glColor4f(
-				t.getTextureColor().r,
-				t.getTextureColor().g,
-				t.getTextureColor().b,
-				t.getTextureColor().a);
-
-			GL.glBegin(GL.GL_QUADS);
-			{
-				// bottom left
-				GL.glTexCoord2f(0, 0);
-				GL.glVertex2f(0, 0);
-
-				// top left
-				GL.glTexCoord2f(0, 1);
-				GL.glVertex2f(0, t.getTextureSize().y);
-
-				// top right
-				GL.glTexCoord2f(1, 1);
-				GL.glVertex2f(t.getTextureSize().x, t.getTextureSize().y);
-
-				// bottom right
-				GL.glTexCoord2f(1, 0);
-				GL.glVertex2f(t.getTextureSize().x, 0);
-			}
-			GL.glEnd();
-		}
-
-		// draw the tint
-		// set the color
-		GL.glDisable(GL.GL_TEXTURE_2D);
-		GL.glLoadIdentity();
+		// set the color of the tint
 		GL.glColor4f(
 			t.getTintColor().r,
 			t.getTintColor().g,
 			t.getTintColor().b,
 			t.getTintColor().a);
+		
 		// drawQuad
 		GL.glBegin(GL.GL_QUADS);
-		{
+		{			
 			GL.glVertex2f(0, 0);
 			GL.glVertex2f(0, Window.getHeight());
 			GL.glVertex2f(Window.getWidth(), Window.getHeight());
@@ -516,7 +481,6 @@ public class LWJGLRenderer implements Renderer {
 
 		// remove ortho mode, and go back to original
 		// state
-		GL.glEnable(GL.GL_TEXTURE_2D);
 		GL.glMatrixMode(GL.GL_PROJECTION);
 		GL.glPopMatrix();
 		GL.glMatrixMode(GL.GL_MODELVIEW);
