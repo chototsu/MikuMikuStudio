@@ -54,6 +54,17 @@ public class UIBillboard extends UIObject {
 				0.0f));
 	}
 	
+	public void setLocation( int x, int y) {
+	    _x = x;
+	    _y = y;
+		setLocalTranslation(new Vector3f(_x + _width / 2, _y + _height / 2,
+				0.0f));
+	}
+	
+	public void setWrap( int wrap) {
+	    _textureStates[0].getTexture().setWrap( wrap);
+	}
+	
 	/* (non-Javadoc)
 	 * @see org.resonus.finis.ui.UIObject#update()
 	 */

@@ -35,6 +35,8 @@ public abstract class UIObject extends Quad {
 	protected int _state = UP;
 
 	protected InputHandler _inputHandler = null;
+	
+	protected UIActiveArea _hitArea = null;
 
   public UIObject(String name, InputHandler inputHandler, int x, int y, float scale) {
 		super(name);
@@ -64,6 +66,8 @@ public abstract class UIObject extends Quad {
 		setLocalTranslation(new Vector3f(_x + ( _width * _scale / 2), _y + ( _height * _scale / 2), 0.0f));
 		setLocalScale(_scale);
 
+		_hitArea = new UIActiveArea( _x, _y, (int) (_width * _scale), (int) ( _height * _scale), _inputHandler);
+		
 		/*
 		 * doesn't seem to work right. It ends up being in the wrong place.
 		 */
@@ -73,15 +77,7 @@ public abstract class UIObject extends Quad {
 	public abstract boolean update();
 
 	protected boolean hitTest() {
-	    Vector3f mouseloc = _inputHandler.getMouse().getHotSpotPosition();
-		if (mouseloc.x >= _x
-				&& mouseloc.x <= _x + ( _width * _scale)
-				&& mouseloc.y  >= _y
-				&& mouseloc.y  <= _y
-						+ ( _height * _scale)) {
-			return true;
-		} else
-			return false;
+	    return _hitArea.hitTest();
 	}
 
 	public int getState() {
