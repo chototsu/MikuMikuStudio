@@ -45,7 +45,6 @@ public class HelloMousePick extends SimpleGame {
         cursorLoc=HelloMousePick.class.getClassLoader().getResource("jmetest/data/cursor/cursor1.png");
         Texture t=TextureManager.loadTexture(cursorLoc,Texture.MM_LINEAR, Texture.FM_LINEAR, true);
         ts.setTexture(t);
-        ts.setEnabled(true);
         am.setRenderState(ts);
 
         // Make the mouse's background blend with what's already there
@@ -55,7 +54,6 @@ public class HelloMousePick extends SimpleGame {
         as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
         as.setTestEnabled(true);
         as.setTestFunction(AlphaState.TF_GREATER);
-        as.setEnabled(true);
         am.setRenderState(as);
 
         // Get the mouse input device and assign it to the AbsoluteMouse

@@ -64,8 +64,6 @@ public class HelloKeyInput extends SimpleGame {
         t.setWrap(Texture.WM_WRAP_S_WRAP_T);
         // Set the texture to the TextureState
         ts.setTexture(t);
-        // Enable the TextureState
-        ts.setEnabled(true);
 
         // Assign the TextureState to the square
         square.setRenderState(ts);
