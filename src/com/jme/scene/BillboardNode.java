@@ -46,7 +46,7 @@ import com.jme.renderer.Renderer;
  * is the only camera setting compatible with <code>BillboardNode</code>.
  *
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.11 2004-08-02 00:59:56 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.12 2004-08-02 21:18:39 cep21 Exp $
  */
 public class BillboardNode extends Node {
   private float lastTime;
@@ -55,7 +55,9 @@ public class BillboardNode extends Node {
   private Vector3f loc;
   private int type;
 
+  /** Alligns this Billboard Node to the screen. */
   public static final int SCREEN_ALIGNED = 0;
+  /** Alligns this Billboard Node to the screen, but keeps the Y axis fixed. */
   public static final int AXIAL = 1;
 //  public static final int WORLD_ORIENTED = 2;
 
@@ -202,10 +204,18 @@ public class BillboardNode extends Node {
     worldRotation.apply(orient);
   }
 
+  /**
+   * Returns the type of rotation this BillboardNode is set too.
+   * @return The type of rotation, AXIAL or SCREEN.
+   */
   public int getType() {
     return type;
   }
 
+  /**
+   * Sets the type of rotation this BillboardNode will have.  The type can be either
+   * SCREEN_ALIGNED or AXIAL.  Invalid types will assume no billboard rotation.
+   */
   public void setType(int type) {
     this.type = type;
   }

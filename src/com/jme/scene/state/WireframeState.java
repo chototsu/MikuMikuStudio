@@ -37,15 +37,20 @@ package com.jme.scene.state;
  * rendered solid.
  *
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.4 2004-07-03 01:46:07 cep21 Exp $
+ * @version $Id: WireframeState.java,v 1.5 2004-08-02 21:14:32 cep21 Exp $
  */
 public abstract class WireframeState extends RenderState {
 
+    /** Both sides of the model are wireframed. */
     public static final int WS_FRONT_AND_BACK = 0;
+    /** The front will be wireframed, but the back will be solid. */
     public static final int WS_FRONT = 1;
+    /** The back will be wireframed, but the front will be solid. */
     public static final int WS_BACK = 2;
 
+    /** Default wireframe of front and back. */
     protected int face = WS_FRONT_AND_BACK;
+    /** Default line width of 1 pixel. */
     protected float lineWidth = 1.0f;
 
     /**
@@ -79,8 +84,9 @@ public abstract class WireframeState extends RenderState {
     }
 
     /**
-     * <code>setFace</code>
-     * @param face
+     * <code>setFace</code> sets which face will recieve the wireframe.  One of WS_FRONT_AND_BACK,
+     * WS_FRONT, or WS_BACK
+     * @param face The flag signaling which face will recieve the wireframe.
      */
     public void setFace(int face){
         this.face = face;

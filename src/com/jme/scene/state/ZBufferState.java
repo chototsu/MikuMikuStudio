@@ -37,7 +37,7 @@ package com.jme.scene.state;
  * will be used. This buffer is based on z depth, or distance between the
  * pixel source and the eye.
  * @author Mark Powell
- * @version $Id: ZBufferState.java,v 1.2 2004-04-22 22:26:57 renanse Exp $
+ * @version $Id: ZBufferState.java,v 1.3 2004-08-02 21:15:13 cep21 Exp $
  */
 public abstract class ZBufferState extends RenderState {
     /**
@@ -73,9 +73,9 @@ public abstract class ZBufferState extends RenderState {
      */
     public static final int CF_ALWAYS = 7;
 
-    //depth function
+    /** Depth function. */
     protected int function;
-    //depth mask is writable or not.
+    /** Depth mask is writable or not. */
     protected boolean writable;
 
     /**
