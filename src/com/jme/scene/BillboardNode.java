@@ -35,7 +35,6 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
-import com.jme.math.Quaternion;
 
 /**
  * <code>BillboardNode</code> defines a node that always orients towards the camera. However, it
@@ -47,7 +46,7 @@ import com.jme.math.Quaternion;
  * is the only camera setting compatible with <code>BillboardNode</code>.
  *
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.6 2004-04-14 17:02:16 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.7 2004-04-14 23:03:52 mojomonkey Exp $
  */
 public class BillboardNode extends Node {
   private float lastTime;

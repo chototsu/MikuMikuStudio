@@ -33,7 +33,6 @@
 package com.jme.scene.lod;
 
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 import java.util.Vector;
@@ -47,7 +46,7 @@ import com.jme.renderer.ColorRGBA;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.8 2004-04-09 17:06:55 renanse Exp $
+ * @version $Id: ClodCreator.java,v 1.9 2004-04-14 23:03:52 mojomonkey Exp $
  */
 
 public class ClodCreator extends VETMesh {

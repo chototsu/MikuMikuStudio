@@ -3,11 +3,8 @@ package com.jme.util;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
-import com.jme.renderer.Camera;
 import com.jme.math.Vector3f;
-import com.jme.math.Vector2f;
 import com.jme.math.FastMath;
-import com.jme.system.DisplaySystem;
 
 /**
  * <p>Title: </p>
