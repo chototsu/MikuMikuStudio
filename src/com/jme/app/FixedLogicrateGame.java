@@ -43,8 +43,8 @@ import com.jme.util.Timer;
  * fast as the hardware permits, while running the game logic at a fixed rate.
  * The concept behind this is forcing every game logic tick to represent a fixed
  * amount of real-time. For example, if the logic is updated at a rate of 15
- * ticks per second, and we have a person moving at 30 pixels per second, each
- * tick the person should move 2 pixels.
+ * times per second, and we have a person moving at 30 pixels per second, each
+ * update the person should move 2 pixels.
  * <br>
  * To compensate for the non-constant frame rate, we smooth the visuals using
  * interpolation. So, if the scene is rendered twice without the game logic
@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * rate and a fixed frame rate. 
  * 
  * @author Eric Woroshow
- * @version $Id: FixedLogicrateGame.java,v 1.1 2004-02-02 23:02:43 ericthered Exp $
+ * @version $Id: FixedLogicrateGame.java,v 1.2 2004-02-03 01:05:41 ericthered Exp $
  */
 public abstract class FixedLogicrateGame extends AbstractGame {
 	private static final int MAX_LOOPS = 50;
@@ -77,6 +77,12 @@ public abstract class FixedLogicrateGame extends AbstractGame {
 	//Flag for running the system.
 	private boolean finished;
 
+	/**
+	 * <code>setLogicTicksPerSecond</code> sets the number of logic times per second
+	 * the game should update the logic. This should not be called prior to the application
+	 * being <code>start()</code>-ed.
+	 * @param tps the desired logic rate in ticks per second
+	 */
 	public void setLogicTicksPerSecond(int tps){
 		if (tps < 0)
 			throw new IllegalArgumentException("Ticks per second cannot be less than zero.");
@@ -86,8 +92,7 @@ public abstract class FixedLogicrateGame extends AbstractGame {
 	}
 	
 	/**
-	 * The simplest main game loop possible: render and update as fast as
-	 * possible.
+	 * Ticks logic at a fixed rate while rendering as fast as hardware permits.
 	 */
 	public final void start() {
 		LoggingSystem.getLogger().log(Level.INFO, "Application started.");
