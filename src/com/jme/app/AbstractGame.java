@@ -46,7 +46,7 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.10 2004-03-25 19:25:47 renanse Exp $
+ * @version $Id: AbstractGame.java,v 1.11 2004-03-27 01:05:06 renanse Exp $
  */
 public abstract class AbstractGame {
   //Flag for running the system.
@@ -209,7 +209,9 @@ public abstract class AbstractGame {
      * <code>finish</code> breaks out of the main game loop. It is preferable to
      * call <code>finish</code> instead of <code>quit</code>.
      */
-    public abstract void finish();
+    public void finish() {
+      finished = true;
+    }
 
     /**
      * <code>quit</code> exits the program. By default, it simply uses the

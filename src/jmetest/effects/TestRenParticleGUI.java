@@ -58,7 +58,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.12 2004-03-27 00:59:34 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.13 2004-03-27 01:05:07 renanse Exp $
  */
 public class TestRenParticleGUI extends VariableTimestepGame {
 
@@ -218,7 +218,7 @@ public class TestRenParticleGUI extends VariableTimestepGame {
     manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
     manager.setEmissionMaximumAngle(0.2268928f);
-    manager.setFrequency(1.0f);
+    manager.setSpeed(1.0f);
     manager.setParticlesMinimumLifeTime(2000.0f);
     manager.setStartSize(10.0f);
     manager.setEndSize(10.0f);

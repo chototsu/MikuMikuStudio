@@ -177,7 +177,7 @@ public class RenParticleControlFrame extends JFrame {
    * <code>RenParticleControlFrame</code>
    *
    * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.20 2004-03-27 00:59:34 renanse Exp $
+   * @version $Id: RenParticleControlFrame.java,v 1.21 2004-03-27 01:05:07 renanse Exp $
    *
    */
 
@@ -288,7 +288,7 @@ public class RenParticleControlFrame extends JFrame {
     speedSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = speedSlider.getValue();
-        TestRenParticleGUI.manager.setFrequency( (float) val * .1f);
+        TestRenParticleGUI.manager.setSpeed( (float) val * .1f);
         updateSpeedLabels();
         regenCode();
       }
@@ -860,7 +860,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
       manager.setEmissionMaximumAngle(0.20943952f);
-      manager.setFrequency(1.0f);
+      manager.setSpeed(1.0f);
       manager.setParticlesMinimumLifeTime(1000.0f);
       manager.setStartSize(40.0f);
       manager.setEndSize(40.0f);
@@ -875,7 +875,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
       manager.setEmissionMaximumAngle(0.2268928f);
-      manager.setFrequency(1.0f);
+      manager.setSpeed(1.0f);
       manager.setParticlesMinimumLifeTime(1300.0f);
       manager.setStartSize(10.0f);
       manager.setEndSize(10.0f);
@@ -890,7 +890,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
       manager.setEmissionMaximumAngle(0.418f);
-      manager.setFrequency(1.0f);
+      manager.setSpeed(1.0f);
       manager.setParticlesMinimumLifeTime(1057.0f);
       manager.setStartSize(40.0f);
       manager.setEndSize(40.0f);
@@ -905,7 +905,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
       manager.setEmissionMaximumAngle(0.38397244f);
-      manager.setFrequency(0.1f);
+      manager.setSpeed(0.1f);
       manager.setParticlesMinimumLifeTime(1000.0f);
       manager.setStartSize(25.5f);
       manager.setEndSize(40.0f);
@@ -920,7 +920,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
       manager.setEmissionMaximumAngle(3.1415927f);
-      manager.setFrequency(0.5f);
+      manager.setSpeed(0.5f);
       manager.setParticlesMinimumLifeTime(1626.0f);
       manager.setStartSize(9.1f);
       manager.setEndSize(13.6f);
@@ -935,7 +935,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
       manager.setEmissionMaximumAngle(1.5707964f);
-      manager.setFrequency(0.2f);
+      manager.setSpeed(0.2f);
       manager.setParticlesMinimumLifeTime(1057.0f);
       manager.setStartSize(30.0f);
       manager.setEndSize(30.0f);
@@ -950,7 +950,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
       manager.setEmissionMaximumAngle(0.034906585f);
-      manager.setFrequency(1.0f);
+      manager.setSpeed(1.0f);
       manager.setParticlesMinimumLifeTime(100.0f);
       manager.setStartSize(6.6f);
       manager.setEndSize(30.0f);
@@ -965,7 +965,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
       manager.setEmissionMaximumAngle(3.1415927f);
-      manager.setFrequency(1.4f);
+      manager.setSpeed(1.4f);
       manager.setParticlesMinimumLifeTime(1000.0f);
       manager.setStartSize(40.0f);
       manager.setEndSize(40.0f);
@@ -1014,7 +1014,7 @@ public class RenParticleControlFrame extends JFrame {
     minAgeSlider.setValue( (int) (TestRenParticleGUI.manager.
                                   getParticlesMinimumLifeTime()));
     updateAgeLabels();
-    speedSlider.setValue( (int) (TestRenParticleGUI.manager.getFrequency() *
+    speedSlider.setValue( (int) (TestRenParticleGUI.manager.getSpeed() *
                                  10));
     updateSpeedLabels();
     gravXSlider.setValue( (int) (TestRenParticleGUI.manager.getGravityForce().x *
@@ -1078,7 +1078,7 @@ public class RenParticleControlFrame extends JFrame {
     TestRenParticleGUI.manager.setParticlesMinimumLifeTime( (float) val);
 
     val = speedSlider.getValue();
-    TestRenParticleGUI.manager.setFrequency( (float) val * .1f);
+    TestRenParticleGUI.manager.setSpeed( (float) val * .1f);
 
     val = gravXSlider.getValue();
     TestRenParticleGUI.manager.getGravityForce().x = (float) val * 0.001f;
@@ -1270,8 +1270,8 @@ public class RenParticleControlFrame extends JFrame {
                 ");\n");
     code.append("manager.setEmissionMaximumAngle(" +
                 TestRenParticleGUI.manager.getEmissionMaximumAngle() + "f);\n");
-    code.append("manager.setFrequency(" +
-                TestRenParticleGUI.manager.getFrequency() + "f);\n");
+    code.append("manager.setSpeed(" +
+                TestRenParticleGUI.manager.getSpeed() + "f);\n");
     code.append("manager.setParticlesMinimumLifeTime(" +
                 TestRenParticleGUI.manager.getParticlesMinimumLifeTime() +
                 "f);\n");

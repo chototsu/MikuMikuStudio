@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: SimpleGame.java,v 1.2 2004-03-25 19:25:48 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.3 2004-03-27 01:05:07 renanse Exp $
  */
 public abstract class SimpleGame extends AbstractGame {
 
@@ -82,13 +82,6 @@ public abstract class SimpleGame extends AbstractGame {
 
 		display.reset();
 		quit();
-	}
-
-	/**
-	 * <code>finish</code> is called to break out of the main game loop.
-	 */
-	public final void finish() {
-		finished = true;
 	}
 
 	/**

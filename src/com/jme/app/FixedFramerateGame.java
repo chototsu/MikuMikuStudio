@@ -48,7 +48,7 @@ import com.jme.util.Timer;
  * no frame rate is specified, the game will run at 60 frames per second.
  *
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.3 2004-03-25 19:25:47 renanse Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.4 2004-03-27 01:05:06 renanse Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
 
@@ -160,13 +160,6 @@ public abstract class FixedFramerateGame extends AbstractGame {
 
 		display.reset();
 		quit();
-	}
-
-	/**
-	 * <code>finish</code> is called to break out of the main game loop.
-	 */
-	public final void finish() {
-		finished = true;
 	}
 
 	/**

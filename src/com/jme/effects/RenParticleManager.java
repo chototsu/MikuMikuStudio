@@ -56,7 +56,7 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.10 2004-03-27 00:59:33 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.11 2004-03-27 01:05:08 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
@@ -122,7 +122,7 @@ public class RenParticleManager extends Controller {
     setMinTime(0);
     setMaxTime(Float.MAX_VALUE);
     setRepeatType(Controller.RT_WRAP);
-    setFrequency(1.0f);
+    setSpeed(1.0f);
 
     initialVelocity = 1.0f;
     minimumLifeTime = 2500f;
@@ -180,7 +180,7 @@ public class RenParticleManager extends Controller {
    * @param secondsPassed float
    */
   public void update(float secondsPassed) {
-    secondsPassed *= getFrequency();
+    secondsPassed *= getSpeed();
     if (isActive()) {
       currentTime += secondsPassed;
       if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
