@@ -1,0 +1,57 @@
+<project name="jME" default="compile" basedir="." >
+    <description>
+        Ant Build File for the jME project.
+    </description>
+
+  <property name="seg"      location="."/>
+
+  <property name="src"      location="${seg}/src"/>
+  <property name="class"    location="${seg}/build"/>
+  <property name="data"     location="${seg}/data"/>
+  <property name="doc"     location="${data}/doc"/>
+  
+  <target name="init">
+    <tstamp/>
+    <mkdir dir="${src}"/>
+    <mkdir dir="${class}"/>
+    <mkdir dir="${data}"/>
+    <mkdir dir="${doc}"/>
+  </target>
+
+  <target name="compile" depends="init" description="generate jme classes">
+    <mkdir dir="${class}"/>
+    <javac srcdir="${src}/jme" destdir="${class}" classpath="${seg}/lib/lwjgl.jar" listfiles="yes"/>
+  </target>
+<!-- ************************************************************************* -->		
+
+ <target name="exec" depends="compile" description="runs TestMain">
+    <java fork="true" classname="test.general.TestMain" classpath="${seg}/lib/lwjgl.jar:${class}"/>
+ </target>
+
+  <target name="dist" depends="init" description="generate jme package" >
+    <javac srcdir="${src}/jme" destdir="${seg}/target" classpath="${seg}/lib/lwjgl.jar" listfiles="yes"/>
+    <jar jarfile="${class}/jme.jar"  basedir="${src}" update="no" includes="contours/**/*.class" compress="false"/>
+  </target>
+
+<!-- java doc ************************************************************************* -->		
+  <target name="doc" depends="compile" description="generate the doc">
+     <javadoc destdir="${doc}" author="true" version="true" use="true" package="yes" windowtitle="Test API">
+       <fileset dir="${src}/jme">
+         <include name="**/*.java" />
+       </fileset>
+    </javadoc>
+  </target>
+
+  <target name="clean" description="clean up" >
+     <delete dir="${class}"/>
+     <delete dir="${doc}"/>
+     <delete>
+        <fileset dir="${src}" includes="**/*.class"/>
+     </delete>
+  </target>
+
+  <target name="rebuild" depends="clean" description="build from clean" >
+     <ant/>
+  </target>
+
+</project>
