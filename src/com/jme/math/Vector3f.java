@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.27 2004-08-17 22:21:34 cep21 Exp $
+ * @version $Id: Vector3f.java,v 1.28 2004-08-28 20:32:27 cep21 Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -723,6 +723,16 @@ public class Vector3f implements Externalizable{
      */
     public Object clone() {
         return new Vector3f(x, y, z);
+    }
+
+    /**
+     * Saves this Vector3f into the given float[] object.
+     * @param floats The float[] to take this vector3f
+     * @return The floats[] after saving.
+     */
+    public float[] toArray(float[] floats) {
+        floats[0]=x;floats[1]=y;floats[2]=z;
+        return floats;
     }
 
     /**
