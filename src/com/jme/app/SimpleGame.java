@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.13 2004-04-23 02:57:22 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.14 2004-04-28 00:03:31 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -149,8 +149,7 @@ public abstract class SimpleGame extends BaseGame {
       System.exit(1);
     }
 
-    ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-    display.getRenderer().setBackgroundColor(blackColor);
+    display.getRenderer().setBackgroundColor(ColorRGBA.black);
 
     // setup our camera
     cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
