@@ -50,7 +50,7 @@ import jme.geometry.primitive.Triangle;
  * You will can use this basic construct to build more complex jME applications
  *  
  * @author Samuel Wasson
- * @version $Id: TestPolygon.java,v 1.4 2003-09-03 16:20:51 mojomonkey Exp $
+ * @version $Id: TestPolygon.java,v 1.5 2003-09-05 15:43:12 mojomonkey Exp $
  */
 
 public class TestPolygon extends AbstractGame {
@@ -162,6 +162,7 @@ public class TestPolygon extends AbstractGame {
 
         // Instantiate a new Triangle object
         triangle = new Triangle(points);
+        triangle.setTexture("data/texture/Wood.bmp");
     }
 
     protected void reinit() {

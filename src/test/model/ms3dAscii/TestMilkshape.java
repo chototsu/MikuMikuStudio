@@ -31,7 +31,6 @@
  */
 package test.model.ms3dAscii;
 
-
 import org.lwjgl.Display;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLU;
@@ -40,6 +39,7 @@ import org.lwjgl.opengl.Window;
 import jme.AbstractGame;
 import jme.controller.BaseFPSController;
 import jme.entity.camera.Camera;
+import jme.geometry.hud.text.Font2D;
 import jme.geometry.model.Model;
 import jme.geometry.model.ms.MilkshapeModel;
 import jme.system.DisplaySystem;
@@ -52,23 +52,25 @@ import jme.utility.Timer;
  * Window - Preferences - Java - Code Generation - Code and Comments
  */
 public class TestMilkshape extends AbstractGame {
-    
+
     private Model model;
     private float yrot;
     private BaseFPSController cc;
     private Timer timer;
     private Camera camera;
-    
+    private Font2D font;
+
     /**
      * This is where we'll do any updating
      */
     protected void update() {
-        if(!cc.update(timer.getFrameRate())) { 
-          finish();
+        if (!cc.update(timer.getFrameRate())) {
+            finish();
         }
         timer.update();
+        model.update(10 / timer.getFrameRate());
     }
-    
+
     /**
      * Render is called once per frame to display the data.
      */
@@ -77,26 +79,27 @@ public class TestMilkshape extends AbstractGame {
         GL.glLoadIdentity();
         cc.render();
         model.render();
+        font.print(1, 1, "Frame Rate - " + timer.getFrameRate(), 0);
+
     }
-    
+
     /** 
      * This is where we create and initialize the window.
      */
     protected void initDisplay() {
-        
+
         DisplaySystem.createDisplaySystem(
-            "TestMilkshape", 
+            "TestMilkshape",
             "data/Images/Monkey.jpg",
-            true
-        );
+            true);
     }
-    
+
     protected void initGL() {
 
-         // Here we create the OpenGL bindings.
-         
+        // Here we create the OpenGL bindings.
+
         //Define the clear color to be black
-                
+
         GL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GL.glClearDepth(1.0);
         GL.glEnable(GL.GL_DEPTH_TEST);
@@ -105,10 +108,16 @@ public class TestMilkshape extends AbstractGame {
         GL.glMatrixMode(GL.GL_PROJECTION);
         GL.glLoadIdentity();
 
-        GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 100.0f, 2000.0f);
+        GLU.gluPerspective(
+            45.0f,
+            (float) Display.getWidth() / (float) Display.getHeight(),
+            100.0f,
+            2000.0f);
         GL.glMatrixMode(GL.GL_MODELVIEW);
 
         GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+        //      Blend the font together so it doesn't chop the letters off 
+        GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
     }
 
     /**
@@ -117,9 +126,11 @@ public class TestMilkshape extends AbstractGame {
     protected void initSystem() {
         initDisplay();
         initGL();
-        camera = new Camera(1,50, 0, 300, 0, 0, 0, 0, 1, 0);
+        camera = new Camera(1, 50, 0, 300, 0, 0, 0, 0, 1, 0);
         cc = new BaseFPSController(camera);
         timer = Timer.getTimer();
+        //Instantiate a font object
+        font = new Font2D("data/Font/font.png");
     }
     /** 
      * Nothing here yet.
@@ -145,10 +156,9 @@ public class TestMilkshape extends AbstractGame {
     /**
      * <code>main</code> entry point for application.
      * @param args comman line arguments, none used.
-     */ 
-    public static void main(String[] args) { 
-       TestMilkshape testApp = new TestMilkshape(); 
-       testApp.start(); 
-    }   
+     */
+    public static void main(String[] args) {
+        TestMilkshape testApp = new TestMilkshape();
+        testApp.start();
+    }
 }
-    

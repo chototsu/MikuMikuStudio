@@ -33,6 +33,7 @@
 package jme.geometry.hud.text;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.logging.Level;
 
 import org.lwjgl.opengl.GL;
@@ -59,7 +60,7 @@ import jme.utility.LoggingSystem;
  * 
  * 
  * @author Mark Powell
- * @version $Id: Font2D.java,v 1.3 2003-09-03 16:20:52 mojomonkey Exp $
+ * @version $Id: Font2D.java,v 1.4 2003-09-05 15:43:13 mojomonkey Exp $
  */
 public class Font2D {
     public static final int NORMAL = 0;
@@ -179,7 +180,8 @@ public class Font2D {
 
         //Put the string into a "pointer"
         ByteBuffer scratch =
-            ByteBuffer.allocateDirect(text.getBytes().length);
+            ByteBuffer.allocateDirect(text.getBytes().length).order(
+                ByteOrder.nativeOrder());
         scratch.put(text.getBytes());
         scratch.flip();
         GL.glColor4f(red, green, blue, alpha);

@@ -51,5 +51,7 @@ public interface Model {
      * Draw the model (to opengl).
      */
     public void render();
+    
+    public void update(float time);
 
 }

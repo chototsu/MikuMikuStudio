@@ -632,7 +632,7 @@ public class TextureManager {
 
         LoggingSystem.getLoggingSystem().getLogger().log(
             Level.INFO,
-            "Successfully loaded " + file);
+            "Successfully loaded " + file + " with ID " + buf.get(0));
         //add to our lists.
         textureList.put(file, new Integer(buf.get(0)));
         keyList.add(

@@ -48,7 +48,6 @@ import jme.geometry.model.Vertex;
 import jme.math.Matrix;
 import jme.math.Quaternion;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 import org.lwjgl.opengl.GL;
@@ -67,12 +66,17 @@ import org.lwjgl.opengl.GL;
  *
  * Bone animation is also supported.
  *
+ * EDIT: Mark Powell 9/5/03 - heavily updated class to make calls to exisiting
+ * jme math (Matrix, Vector, etc). Altered update to take a time interval to 
+ * allow for frame rate independant animation.
+ *
  * SPECIAL THANKS:
  * Animation method was ported by naj from a MSVC++ Model Viewer tutorial
  * written by Mete Ciragan (creator of Milkshape).
  *
  * @author naj
- * @version 0.1
+ * @author Mark Powell
+ * @version $Id: MilkshapeModel.java,v 1.7 2003-09-05 15:43:12 mojomonkey Exp $
  */
 public class MilkshapeModel implements Model {
 
@@ -127,8 +131,6 @@ public class MilkshapeModel implements Model {
      */
     private String absoluteFilePath;
 
-    
-
     public MilkshapeModel() {
         this.animated = false;
     }
@@ -142,26 +144,45 @@ public class MilkshapeModel implements Model {
      * frames along if there are animations for the model.
      */
     public void render() {
-        
-        if (animated) {
-            advanceFrame();
-        }
+
         boolean isTextureEnabled = GL.glIsEnabled(GL.GL_TEXTURE_2D);
 
         for (int meshIndex = 0; meshIndex < numberMeshes; meshIndex++) {
             int materialIndex = meshes[meshIndex].materialIndex;
 
             if (materialIndex >= 0) {
-                ByteBuffer buffer = ByteBuffer.allocateDirect(16).order(ByteOrder.nativeOrder());
+                ByteBuffer buffer =
+                    ByteBuffer.allocateDirect(16).order(
+                        ByteOrder.nativeOrder());
 
-                GL.glMaterial(GL.GL_FRONT, GL.GL_AMBIENT, buffer.asFloatBuffer().put(materials[materialIndex].ambient));
-                GL.glMaterial(GL.GL_FRONT, GL.GL_DIFFUSE, buffer.asFloatBuffer().put(materials[materialIndex].diffuse));
-                GL.glMaterial(GL.GL_FRONT, GL.GL_SPECULAR, buffer.asFloatBuffer().put(materials[materialIndex].specular));
-                GL.glMaterial(GL.GL_FRONT, GL.GL_EMISSION, buffer.asFloatBuffer().put(materials[materialIndex].emissive));
-                GL.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, materials[materialIndex].shininess);
+                GL.glMaterial(
+                    GL.GL_FRONT,
+                    GL.GL_AMBIENT,
+                    buffer.asFloatBuffer().put(
+                        materials[materialIndex].ambient));
+                GL.glMaterial(
+                    GL.GL_FRONT,
+                    GL.GL_DIFFUSE,
+                    buffer.asFloatBuffer().put(
+                        materials[materialIndex].diffuse));
+                GL.glMaterial(
+                    GL.GL_FRONT,
+                    GL.GL_SPECULAR,
+                    buffer.asFloatBuffer().put(
+                        materials[materialIndex].specular));
+                GL.glMaterial(
+                    GL.GL_FRONT,
+                    GL.GL_EMISSION,
+                    buffer.asFloatBuffer().put(
+                        materials[materialIndex].emissive));
+                GL.glMaterialf(
+                    GL.GL_FRONT,
+                    GL.GL_SHININESS,
+                    materials[materialIndex].shininess);
 
                 if (materials[materialIndex].glTextureAddress > 0) {
-                    GL.glBindTexture(GL.GL_TEXTURE_2D, materials[materialIndex].glTextureAddress);
+                    TextureManager.getTextureManager().bind(
+                        materials[materialIndex].glTextureAddress);
                     GL.glEnable(GL.GL_TEXTURE_2D);
                 } else {
                     GL.glDisable(GL.GL_TEXTURE_2D);
@@ -174,23 +195,35 @@ public class MilkshapeModel implements Model {
             Vertex[] vertices = meshes[meshIndex].vertices;
 
             GL.glBegin(GL.GL_TRIANGLES);
-            for (int triangleIndex = 0; triangleIndex < triangleCount; triangleIndex++) {
-                Triangle triangle = (meshes[meshIndex].triangles)[triangleIndex];
+            for (int triangleIndex = 0;
+                triangleIndex < triangleCount;
+                triangleIndex++) {
+                Triangle triangle =
+                    (meshes[meshIndex].triangles)[triangleIndex];
 
                 Vertex vertex = vertices[triangle.vertexIndex1];
-                float[] normals = (meshes[meshIndex].normals)[triangle.normalIndex1];
+                float[] normals =
+                    (meshes[meshIndex].normals)[triangle.normalIndex1];
                 if (!animated || vertex.boneIndex == -1) {
                     GL.glNormal3f(normals[0], normals[1], normals[2]);
                     GL.glTexCoord2f(vertex.u, vertex.v);
                     GL.glVertex3f(vertex.x, vertex.y, vertex.z);
                 } else {
-                    Vector animationVector = new Vector(vertex.x, vertex.y, vertex.z).rotate(joints[vertex.boneIndex].finalMatrix);
-                    animationVector.x += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
-                    animationVector.y += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
-                    animationVector.z += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
+                    Vector animationVector =
+                        new Vector(vertex.x, vertex.y, vertex.z).rotate(
+                            joints[vertex.boneIndex].finalMatrix);
+                    animationVector.x
+                        += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
+                    animationVector.y
+                        += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
+                    animationVector.z
+                        += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
                     GL.glNormal3f(normals[0], normals[1], normals[2]);
                     GL.glTexCoord2f(vertex.u, vertex.v);
-                    GL.glVertex3f(animationVector.x, animationVector.y, animationVector.z);
+                    GL.glVertex3f(
+                        animationVector.x,
+                        animationVector.y,
+                        animationVector.z);
                 }
 
                 vertex = vertices[triangle.vertexIndex2];
@@ -200,13 +233,21 @@ public class MilkshapeModel implements Model {
                     GL.glTexCoord2f(vertex.u, vertex.v);
                     GL.glVertex3f(vertex.x, vertex.y, vertex.z);
                 } else {
-                    Vector animationVector = new Vector(vertex.x, vertex.y, vertex.z).rotate(joints[vertex.boneIndex].finalMatrix);
-                    animationVector.x += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
-                    animationVector.y += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
-                    animationVector.z += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
+                    Vector animationVector =
+                        new Vector(vertex.x, vertex.y, vertex.z).rotate(
+                            joints[vertex.boneIndex].finalMatrix);
+                    animationVector.x
+                        += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
+                    animationVector.y
+                        += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
+                    animationVector.z
+                        += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
                     GL.glNormal3f(normals[0], normals[1], normals[2]);
                     GL.glTexCoord2f(vertex.u, vertex.v);
-                    GL.glVertex3f(animationVector.x, animationVector.y, animationVector.z);
+                    GL.glVertex3f(
+                        animationVector.x,
+                        animationVector.y,
+                        animationVector.z);
                 }
 
                 vertex = vertices[triangle.vertexIndex3];
@@ -216,13 +257,21 @@ public class MilkshapeModel implements Model {
                     GL.glTexCoord2f(vertex.u, vertex.v);
                     GL.glVertex3f(vertex.x, vertex.y, vertex.z);
                 } else {
-                    Vector animationVector = new Vector(vertex.x, vertex.y, vertex.z).rotate(joints[vertex.boneIndex].finalMatrix);
-                    animationVector.x += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
-                    animationVector.y += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
-                    animationVector.z += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
+                    Vector animationVector =
+                        new Vector(vertex.x, vertex.y, vertex.z).rotate(
+                            joints[vertex.boneIndex].finalMatrix);
+                    animationVector.x
+                        += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
+                    animationVector.y
+                        += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
+                    animationVector.z
+                        += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
                     GL.glNormal3f(normals[0], normals[1], normals[2]);
                     GL.glTexCoord2f(vertex.u, vertex.v);
-                    GL.glVertex3f(animationVector.x, animationVector.y, animationVector.z);
+                    GL.glVertex3f(
+                        animationVector.x,
+                        animationVector.y,
+                        animationVector.z);
                 }
             }
             GL.glEnd();
@@ -233,7 +282,156 @@ public class MilkshapeModel implements Model {
         } else {
             GL.glDisable(GL.GL_TEXTURE_2D);
         }
-        
+
+    }
+
+    /**
+     * Set the final matrix of all of the joints to be part way between the
+     * previous keyframe and the next keyframe, depending on how much time
+     * has passed since the last keyframe.
+     */
+    public void update(float time) {
+        if (!animated) {
+            return;
+        }
+        currentFrame += time;
+        if (currentFrame > totalFrames) {
+            currentFrame = 0.0f;
+        }
+
+        for (int meshIndex = 0; meshIndex < numberJoints; meshIndex++) {
+            Joint joint = joints[meshIndex];
+            int positionKeyframeCount = joint.numberPosistionKeyframes;
+            int rotationKeyframeCount = joint.numberRotationKeyframes;
+            if (positionKeyframeCount == 0 && rotationKeyframeCount == 0) {
+                joints[meshIndex].finalMatrix.copy(
+                    joints[meshIndex].absoluteMatrix);
+            } else {
+                Vector positionVector = new Vector();
+                Quaternion rotationVector = new Quaternion();
+                Keyframe lastPositionKeyframe = null;
+                Keyframe currentPositionKeyframe = null;
+                for (int keyframeIndex = 0;
+                    keyframeIndex < positionKeyframeCount;
+                    keyframeIndex++) {
+                    Keyframe positionKeyframe =
+                        joint.positionKeys[keyframeIndex];
+                    if (positionKeyframe.time >= currentFrame) {
+                        currentPositionKeyframe = positionKeyframe;
+                        break;
+                    }
+                    lastPositionKeyframe = positionKeyframe;
+                }
+                if (lastPositionKeyframe != null
+                    && currentPositionKeyframe != null) {
+                    float d =
+                        currentPositionKeyframe.time
+                            - lastPositionKeyframe.time;
+                    float s = (currentFrame - lastPositionKeyframe.time) / d;
+                    positionVector.x =
+                        lastPositionKeyframe.x
+                            + (currentPositionKeyframe.x
+                                - lastPositionKeyframe.x)
+                                * s;
+                    positionVector.y =
+                        lastPositionKeyframe.y
+                            + (currentPositionKeyframe.y
+                                - lastPositionKeyframe.y)
+                                * s;
+                    positionVector.z =
+                        lastPositionKeyframe.z
+                            + (currentPositionKeyframe.z
+                                - lastPositionKeyframe.z)
+                                * s;
+                } else if (lastPositionKeyframe == null) {
+                    currentPositionKeyframe.x = positionVector.x;
+                    currentPositionKeyframe.y = positionVector.y;
+                    currentPositionKeyframe.z = positionVector.z;
+                } else if (currentPositionKeyframe == null) {
+                    lastPositionKeyframe.x = positionVector.x;
+                    lastPositionKeyframe.y = positionVector.y;
+                    lastPositionKeyframe.z = positionVector.z;
+                }
+                Matrix slerpedMatrix = new Matrix();
+                Keyframe lastRotationKeyframe = null;
+                Keyframe currentRotationKeyframe = null;
+                for (int keyframeIndex = 0;
+                    keyframeIndex < rotationKeyframeCount;
+                    keyframeIndex++) {
+                    Keyframe rotationKeyframe =
+                        joint.rotationKeys[keyframeIndex];
+                    if (rotationKeyframe.time >= currentFrame) {
+                        currentRotationKeyframe = rotationKeyframe;
+                        break;
+                    }
+                    lastRotationKeyframe = rotationKeyframe;
+                }
+                if (lastRotationKeyframe != null
+                    && currentRotationKeyframe != null) {
+                    float d =
+                        currentRotationKeyframe.time
+                            - lastRotationKeyframe.time;
+                    float s = (currentFrame - lastRotationKeyframe.time) / d;
+                    Quaternion slerpedQuaternion = new Quaternion();
+                    Quaternion lastRotationQuaternion = new Quaternion();
+                    Quaternion currentRotationQuaternion = new Quaternion();
+                    lastRotationQuaternion.fromAngles(
+                        new float[] {
+                            lastRotationKeyframe.x,
+                            lastRotationKeyframe.y,
+                            lastRotationKeyframe.z });
+                    currentRotationQuaternion.fromAngles(
+                        new float[] {
+                            currentRotationKeyframe.x,
+                            currentRotationKeyframe.y,
+                            currentRotationKeyframe.z });
+                    slerpedQuaternion =
+                        slerpedQuaternion.slerp(
+                            lastRotationQuaternion,
+                            currentRotationQuaternion,
+                            s);
+                    slerpedMatrix.set(slerpedQuaternion);
+                } else if (lastRotationKeyframe == null) {
+                    rotationVector.x =
+                        currentRotationKeyframe.x * 180 / (float) Math.PI;
+                    rotationVector.y =
+                        currentRotationKeyframe.y * 180 / (float) Math.PI;
+                    rotationVector.z =
+                        currentRotationKeyframe.z * 180 / (float) Math.PI;
+                    slerpedMatrix.angleRotationDegrees(
+                        new Vector(
+                            rotationVector.x,
+                            rotationVector.y,
+                            rotationVector.z));
+                } else if (currentRotationKeyframe == null) {
+                    rotationVector.x =
+                        lastRotationKeyframe.x * 180 / (float) Math.PI;
+                    rotationVector.y =
+                        lastRotationKeyframe.y * 180 / (float) Math.PI;
+                    rotationVector.z =
+                        lastRotationKeyframe.z * 180 / (float) Math.PI;
+                    slerpedMatrix.angleRotationDegrees(
+                        new Vector(
+                            rotationVector.x,
+                            rotationVector.y,
+                            rotationVector.z));
+                }
+                slerpedMatrix.matrix[0][3] = positionVector.x;
+                slerpedMatrix.matrix[1][3] = positionVector.y;
+                slerpedMatrix.matrix[2][3] = positionVector.z;
+                joints[meshIndex].relativeFinalMatrix =
+                    joints[meshIndex].relativeMatrix.multiply(slerpedMatrix);
+                if (joint.parentIndex == -1) {
+                    joints[meshIndex].finalMatrix.copy(
+                        joints[meshIndex].relativeFinalMatrix);
+                } else {
+                    joints[meshIndex].finalMatrix =
+                        joints[joint.parentIndex].finalMatrix.multiply(
+                            joints[meshIndex].relativeFinalMatrix);
+                }
+            }
+        }
+
     }
 
     /**
@@ -244,10 +442,13 @@ public class MilkshapeModel implements Model {
         try {
             File file = new File(filename);
             absoluteFilePath = file.getAbsolutePath();
-            absoluteFilePath = absoluteFilePath.substring(0, absoluteFilePath.lastIndexOf(File.separator) + 1);
+            absoluteFilePath =
+                absoluteFilePath.substring(
+                    0,
+                    absoluteFilePath.lastIndexOf(File.separator) + 1);
             BufferedReader reader = new BufferedReader(new FileReader(file));
             String line;
-            while ( (line = getNextLine(reader)) != null) {
+            while ((line = getNextLine(reader)) != null) {
                 if (line.startsWith("Frames: ")) {
                     totalFrames = Integer.parseInt(line.substring(8));
                 }
@@ -285,8 +486,13 @@ public class MilkshapeModel implements Model {
             Mesh mesh = new Mesh();
             String line = getNextLine(reader);
             mesh.name = line.substring(1, line.lastIndexOf("\""));
-            mesh.flags = Integer.parseInt(line.substring(line.lastIndexOf("\"") + 2, line.lastIndexOf(" ")));
-            mesh.materialIndex = Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
+            mesh.flags =
+                Integer.parseInt(
+                    line.substring(
+                        line.lastIndexOf("\"") + 2,
+                        line.lastIndexOf(" ")));
+            mesh.materialIndex =
+                Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
 
             line = getNextLine(reader);
             mesh.numberVertices = Integer.parseInt(line);
@@ -294,7 +500,15 @@ public class MilkshapeModel implements Model {
             for (int j = 0; j < mesh.numberVertices; j++) {
                 line = getNextLine(reader);
                 String[] values = line.split(" ");
-                vertices[j] = new Vertex(Integer.parseInt(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]), Float.parseFloat(values[4]), Float.parseFloat(values[5]), Integer.parseInt(values[6]));
+                vertices[j] =
+                    new Vertex(
+                        Integer.parseInt(values[0]),
+                        Float.parseFloat(values[1]),
+                        Float.parseFloat(values[2]),
+                        Float.parseFloat(values[3]),
+                        Float.parseFloat(values[4]),
+                        Float.parseFloat(values[5]),
+                        Integer.parseInt(values[6]));
             }
             mesh.vertices = vertices;
 
@@ -304,8 +518,11 @@ public class MilkshapeModel implements Model {
             for (int j = 0; j < mesh.numberNormals; j++) {
                 line = getNextLine(reader);
                 String[] values = line.split(" ");
-                normals[j] = new float[] {
-                    Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2])};
+                normals[j] =
+                    new float[] {
+                        Float.parseFloat(values[0]),
+                        Float.parseFloat(values[1]),
+                        Float.parseFloat(values[2])};
             }
             mesh.normals = normals;
 
@@ -315,7 +532,16 @@ public class MilkshapeModel implements Model {
             for (int j = 0; j < mesh.numberTriangles; j++) {
                 line = getNextLine(reader);
                 String[] values = line.split(" ");
-                triangles[j] = new Triangle(Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]), Integer.parseInt(values[3]), Integer.parseInt(values[4]), Integer.parseInt(values[5]), Integer.parseInt(values[6]), Integer.parseInt(values[7]));
+                triangles[j] =
+                    new Triangle(
+                        Integer.parseInt(values[0]),
+                        Integer.parseInt(values[1]),
+                        Integer.parseInt(values[2]),
+                        Integer.parseInt(values[3]),
+                        Integer.parseInt(values[4]),
+                        Integer.parseInt(values[5]),
+                        Integer.parseInt(values[6]),
+                        Integer.parseInt(values[7]));
             }
             mesh.triangles = triangles;
             meshes[i] = mesh;
@@ -332,20 +558,36 @@ public class MilkshapeModel implements Model {
             material.name = line.substring(1, line.length() - 1);
             line = getNextLine(reader);
             String[] values = line.split(" ");
-            material.ambient = new float[] {
-                Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])};
+            material.ambient =
+                new float[] {
+                    Float.parseFloat(values[0]),
+                    Float.parseFloat(values[1]),
+                    Float.parseFloat(values[2]),
+                    Float.parseFloat(values[3])};
             line = getNextLine(reader);
             values = line.split(" ");
-            material.diffuse = new float[] {
-                Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])};
+            material.diffuse =
+                new float[] {
+                    Float.parseFloat(values[0]),
+                    Float.parseFloat(values[1]),
+                    Float.parseFloat(values[2]),
+                    Float.parseFloat(values[3])};
             line = getNextLine(reader);
             values = line.split(" ");
-            material.specular = new float[] {
-                Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])};
+            material.specular =
+                new float[] {
+                    Float.parseFloat(values[0]),
+                    Float.parseFloat(values[1]),
+                    Float.parseFloat(values[2]),
+                    Float.parseFloat(values[3])};
             line = getNextLine(reader);
             values = line.split(" ");
-            material.emissive = new float[] {
-                Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])};
+            material.emissive =
+                new float[] {
+                    Float.parseFloat(values[0]),
+                    Float.parseFloat(values[1]),
+                    Float.parseFloat(values[2]),
+                    Float.parseFloat(values[3])};
             line = getNextLine(reader);
             material.shininess = Float.parseFloat(line);
             line = getNextLine(reader);
@@ -379,20 +621,32 @@ public class MilkshapeModel implements Model {
             joint.rotz = Float.parseFloat(values[6]);
             line = getNextLine(reader);
             joint.numberPosistionKeyframes = Integer.parseInt(line);
-            Keyframe[] positionKeyframes = new Keyframe[joint.numberPosistionKeyframes];
+            Keyframe[] positionKeyframes =
+                new Keyframe[joint.numberPosistionKeyframes];
             for (int j = 0; j < joint.numberPosistionKeyframes; j++) {
                 line = getNextLine(reader);
                 values = line.split(" ");
-                positionKeyframes[j] = new Keyframe(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
+                positionKeyframes[j] =
+                    new Keyframe(
+                        Float.parseFloat(values[0]),
+                        Float.parseFloat(values[1]),
+                        Float.parseFloat(values[2]),
+                        Float.parseFloat(values[3]));
             }
             joint.positionKeys = positionKeyframes;
             line = getNextLine(reader);
             joint.numberRotationKeyframes = Integer.parseInt(line);
-            Keyframe[] rotationKeyframes = new Keyframe[joint.numberRotationKeyframes];
+            Keyframe[] rotationKeyframes =
+                new Keyframe[joint.numberRotationKeyframes];
             for (int j = 0; j < joint.numberRotationKeyframes; j++) {
                 line = getNextLine(reader);
                 values = line.split(" ");
-                rotationKeyframes[j] = new Keyframe(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
+                rotationKeyframes[j] =
+                    new Keyframe(
+                        Float.parseFloat(values[0]),
+                        Float.parseFloat(values[1]),
+                        Float.parseFloat(values[2]),
+                        Float.parseFloat(values[3]));
             }
             joint.rotationKeys = rotationKeyframes;
             joints[i] = joint;
@@ -400,7 +654,9 @@ public class MilkshapeModel implements Model {
             int parentIndex = -1;
             if (joints[i].parentName.length() > 0) {
                 for (int j = 0; j < numberJoints; j++) {
-                    if (joints[j].name.equalsIgnoreCase(joints[i].parentName)) {
+                    if (joints[j]
+                        .name
+                        .equalsIgnoreCase(joints[i].parentName)) {
                         parentIndex = j;
                         break;
                     }
@@ -427,16 +683,22 @@ public class MilkshapeModel implements Model {
             rotationVector.x = joint.rotx * 180 / (float) Math.PI;
             rotationVector.y = joint.roty * 180 / (float) Math.PI;
             rotationVector.z = joint.rotz * 180 / (float) Math.PI;
-            joints[jointIndex].relativeMatrix.angleRotationDegrees(rotationVector);
+            joints[jointIndex].relativeMatrix.angleRotationDegrees(
+                rotationVector);
             joints[jointIndex].relativeMatrix.matrix[0][3] = joint.posx;
             joints[jointIndex].relativeMatrix.matrix[1][3] = joint.posy;
             joints[jointIndex].relativeMatrix.matrix[2][3] = joint.posz;
             if (joint.parentIndex != -1) {
-                joints[jointIndex].absoluteMatrix = joints[joint.parentIndex].absoluteMatrix.multiply(joints[jointIndex].relativeMatrix);
-                joints[jointIndex].finalMatrix.copy(joints[jointIndex].absoluteMatrix);
+                joints[jointIndex].absoluteMatrix =
+                    joints[joint.parentIndex].absoluteMatrix.multiply(
+                        joints[jointIndex].relativeMatrix);
+                joints[jointIndex].finalMatrix.copy(
+                    joints[jointIndex].absoluteMatrix);
             } else {
-                joints[jointIndex].absoluteMatrix.copy(joints[jointIndex].relativeMatrix);
-                joints[jointIndex].finalMatrix.copy(joints[jointIndex].relativeMatrix);
+                joints[jointIndex].absoluteMatrix.copy(
+                    joints[jointIndex].relativeMatrix);
+                joints[jointIndex].finalMatrix.copy(
+                    joints[jointIndex].relativeMatrix);
             }
         }
 
@@ -445,11 +707,16 @@ public class MilkshapeModel implements Model {
             for (int j = 0; j < pMesh.numberVertices; j++) {
                 Vertex vertex = pMesh.vertices[j];
                 if (vertex.boneIndex != -1) {
-                    vertex.x -= joints[vertex.boneIndex].absoluteMatrix.matrix[0][3];
-                    vertex.y -= joints[vertex.boneIndex].absoluteMatrix.matrix[1][3];
-                    vertex.z -= joints[vertex.boneIndex].absoluteMatrix.matrix[2][3];
+                    vertex.x
+                        -= joints[vertex.boneIndex].absoluteMatrix.matrix[0][3];
+                    vertex.y
+                        -= joints[vertex.boneIndex].absoluteMatrix.matrix[1][3];
+                    vertex.z
+                        -= joints[vertex.boneIndex].absoluteMatrix.matrix[2][3];
                     Vector inverseRotationVector = new Vector();
-                    inverseRotationVector = new Vector(vertex.x, vertex.y, vertex.z).inverseRotate(joints[vertex.boneIndex].absoluteMatrix);
+                    inverseRotationVector =
+                        new Vector(vertex.x, vertex.y, vertex.z).inverseRotate(
+                            joints[vertex.boneIndex].absoluteMatrix);
                     vertex.x = inverseRotationVector.x;
                     vertex.y = inverseRotationVector.y;
                     vertex.z = inverseRotationVector.z;
@@ -459,108 +726,12 @@ public class MilkshapeModel implements Model {
     }
 
     /**
-     * Set the final matrix of all of the joints to be part way between the
-     * previous keyframe and the next keyframe, depending on how much time
-     * has passed since the last keyframe.
-     */
-    private void advanceFrame() {
-        /* FIXME: The current frame needs to be determined by what milkshape
-                  model defined, not a constant value as below... otherwise,
-                  animations are going to be out of synch on different fps
-                  systems and animations with different numbers of frames */
-        //currentFrame += ExampleModelLoader.dt;
-        currentFrame += 0.1f;
-        if (currentFrame > totalFrames) {
-            currentFrame = 0.0f;
-        }
-
-        for (int meshIndex = 0; meshIndex < numberJoints; meshIndex++) {
-            Joint joint = joints[meshIndex];
-            int positionKeyframeCount = joint.numberPosistionKeyframes;
-            int rotationKeyframeCount = joint.numberRotationKeyframes;
-            if (positionKeyframeCount == 0 && rotationKeyframeCount == 0) {
-                joints[meshIndex].finalMatrix.copy(joints[meshIndex].absoluteMatrix);
-            } else {
-                Vector positionVector = new Vector();
-                Quaternion rotationVector = new Quaternion();
-                Keyframe lastPositionKeyframe = null;
-                Keyframe currentPositionKeyframe = null;
-                for (int keyframeIndex = 0; keyframeIndex < positionKeyframeCount; keyframeIndex++) {
-                    Keyframe positionKeyframe = joint.positionKeys[keyframeIndex];
-                    if (positionKeyframe.time >= currentFrame) {
-                        currentPositionKeyframe = positionKeyframe;
-                        break;
-                    }
-                    lastPositionKeyframe = positionKeyframe;
-                }
-                if (lastPositionKeyframe != null && currentPositionKeyframe != null) {
-                    float d = currentPositionKeyframe.time - lastPositionKeyframe.time;
-                    float s = (currentFrame - lastPositionKeyframe.time) / d;
-                    positionVector.x = lastPositionKeyframe.x + (currentPositionKeyframe.x - lastPositionKeyframe.x) * s;
-                    positionVector.y = lastPositionKeyframe.y + (currentPositionKeyframe.y - lastPositionKeyframe.y) * s;
-                    positionVector.z = lastPositionKeyframe.z + (currentPositionKeyframe.z - lastPositionKeyframe.z) * s;
-                } else if (lastPositionKeyframe == null) {
-                    currentPositionKeyframe.x = positionVector.x;
-                    currentPositionKeyframe.y = positionVector.y;
-                    currentPositionKeyframe.z = positionVector.z;
-                } else if (currentPositionKeyframe == null) {
-                    lastPositionKeyframe.x = positionVector.x;
-                    lastPositionKeyframe.y = positionVector.y;
-                    lastPositionKeyframe.z = positionVector.z;
-                }
-                Matrix slerpedMatrix = new Matrix();
-                Keyframe lastRotationKeyframe = null;
-                Keyframe currentRotationKeyframe = null;
-                for (int keyframeIndex = 0; keyframeIndex < rotationKeyframeCount; keyframeIndex++) {
-                    Keyframe rotationKeyframe = joint.rotationKeys[keyframeIndex];
-                    if (rotationKeyframe.time >= currentFrame) {
-                        currentRotationKeyframe = rotationKeyframe;
-                        break;
-                    }
-                    lastRotationKeyframe = rotationKeyframe;
-                }
-                if (lastRotationKeyframe != null && currentRotationKeyframe != null) {
-                    float d = currentRotationKeyframe.time - lastRotationKeyframe.time;
-                    float s = (currentFrame - lastRotationKeyframe.time) / d;
-                    Quaternion slerpedQuaternion = new Quaternion();
-                    Quaternion lastRotationQuaternion = new Quaternion();
-                    Quaternion currentRotationQuaternion = new Quaternion();
-                    lastRotationQuaternion.fromAngles(new float[]{lastRotationKeyframe.x, lastRotationKeyframe.y, lastRotationKeyframe.z});
-                    currentRotationQuaternion.fromAngles(new float[] {currentRotationKeyframe.x, currentRotationKeyframe.y, currentRotationKeyframe.z});
-                    slerpedQuaternion = slerpedQuaternion.slerp(lastRotationQuaternion, currentRotationQuaternion, s);
-                    slerpedMatrix.set(slerpedQuaternion);
-                } else if (lastRotationKeyframe == null) {
-                    rotationVector.x = currentRotationKeyframe.x * 180 / (float) Math.PI;
-                    rotationVector.y = currentRotationKeyframe.y * 180 / (float) Math.PI;
-                    rotationVector.z = currentRotationKeyframe.z * 180 / (float) Math.PI;
-                    slerpedMatrix.angleRotationDegrees(new Vector(rotationVector.x, rotationVector.y, rotationVector.z));
-                } else if (currentRotationKeyframe == null) {
-                    rotationVector.x = lastRotationKeyframe.x * 180 / (float) Math.PI;
-                    rotationVector.y = lastRotationKeyframe.y * 180 / (float) Math.PI;
-                    rotationVector.z = lastRotationKeyframe.z * 180 / (float) Math.PI;
-                    slerpedMatrix.angleRotationDegrees(new Vector(rotationVector.x, rotationVector.y, rotationVector.z));
-                }
-                slerpedMatrix.matrix[0][3] = positionVector.x;
-                slerpedMatrix.matrix[1][3] = positionVector.y;
-                slerpedMatrix.matrix[2][3] = positionVector.z;
-                joints[meshIndex].relativeFinalMatrix = joints[meshIndex].relativeMatrix.multiply(slerpedMatrix);
-                if (joint.parentIndex == -1) {
-                    joints[meshIndex].finalMatrix.copy(joints[meshIndex].relativeFinalMatrix);
-                } else {
-                    joints[meshIndex].finalMatrix = joints[joint.parentIndex].finalMatrix.multiply(joints[meshIndex].relativeFinalMatrix);
-                }
-            }
-        }
-
-    }
-
-    /**
      * Returns the next line from the text file being parsed.  Removes
      * comments and trims the line of whitespace.
      */
     private String getNextLine(BufferedReader reader) throws Exception {
         String line = null;
-        while ( (line = reader.readLine()) != null) {
+        while ((line = reader.readLine()) != null) {
             line = line.trim();
             if (line.startsWith("//") || "".equals(line)) {
                 continue;
@@ -577,7 +748,8 @@ public class MilkshapeModel implements Model {
         for (int i = 0; i < numberMaterials; i++) {
             if (materials[i].name.length() > 0) {
                 try {
-                    materials[i].glTextureAddress = loadTexture(absoluteFilePath + materials[i].name);
+                    materials[i].glTextureAddress =
+                        loadTexture(absoluteFilePath + materials[i].name);
                 } catch (Exception e) {
                     materials[i].glTextureAddress = 0;
                 }
@@ -593,16 +765,14 @@ public class MilkshapeModel implements Model {
      * @return the image address in memory
      */
     private final int loadTexture(String file) throws Exception {
-        return TextureManager.getTextureManager().loadTexture(file, GL.GL_LINEAR_MIPMAP_LINEAR,
-        GL.GL_LINEAR,
-        true, false);
-        
+        return TextureManager.getTextureManager().loadTexture(
+            file,
+            GL.GL_LINEAR_MIPMAP_LINEAR,
+            GL.GL_LINEAR,
+            true,
+            false);
+
     }
-
-
-    /* FIXME: these methods do not change the state of opengl so they can not
-              be used on the fly to change between modes since the opengl
-              state is currently created in the init method */
 
     /**
      * Determine is the model is going to run animations, if it has them.
