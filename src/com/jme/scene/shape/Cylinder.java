@@ -43,161 +43,198 @@ import com.jme.scene.TriMesh;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.4 2004-09-14 21:52:21 mojomonkey Exp $
+ * @version $Id: Cylinder.java,v 1.5 2004-10-17 18:43:33 mojomonkey Exp $
  */
 public class Cylinder extends TriMesh {
 
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private int axisSamples;
+    private int axisSamples;
 
-	private int radialSamples;
+    private int radialSamples;
 
-	private float radius;
+    private float radius;
 
-	private float height;
+    private float height;
 
-	/**
-	 * Creates a new Cylinder. By default its center is the origin. Usually, a
-	 * higher sample number creates a better looking cylinder, but at the cost
-	 * of more vertex information.
-	 * 
-	 * @param name
-	 *            The name of this Cylinder.
-	 * @param axisSamples
-	 *            Number of triangle samples along the axis.
-	 * @param radialSamples
-	 *            Number of triangle samples along the radial.
-	 * @param radius
-	 *            The radius of the cylinder.
-	 * @param height
-	 *            The cylinder's height.
-	 */
-	public Cylinder(String name, int axisSamples, int radialSamples,
-			float radius, float height) {
+    /**
+     * Creates a new Cylinder. By default its center is the origin. Usually, a
+     * higher sample number creates a better looking cylinder, but at the cost
+     * of more vertex information.
+     * 
+     * @param name
+     *            The name of this Cylinder.
+     * @param axisSamples
+     *            Number of triangle samples along the axis.
+     * @param radialSamples
+     *            Number of triangle samples along the radial.
+     * @param radius
+     *            The radius of the cylinder.
+     * @param height
+     *            The cylinder's height.
+     */
+    public Cylinder(String name, int axisSamples, int radialSamples,
+            float radius, float height) {
 
-		super(name);
+        super(name);
 
-		this.axisSamples = axisSamples;
-		this.radialSamples = radialSamples;
-		this.radius = radius;
-		this.height = height;
+        this.axisSamples = axisSamples;
+        this.radialSamples = radialSamples;
+        this.radius = radius;
+        this.height = height;
 
-		//      allocate vertices
-		int quantity = axisSamples * (radialSamples + 1);
-		vertex = new Vector3f[quantity];
-		normal = new Vector3f[quantity];
-		color = new ColorRGBA[quantity];
-		texture[0] = new Vector2f[quantity];
-		int triQuantity = 2 * (axisSamples - 1) * radialSamples;
-		indices = new int[3 * triQuantity];
+        allocateVertices();
 
-		setGeometryData();
+    }
 
-		setIndexData();
+    /**
+     * @return Returns the height.
+     */
+    public float getHeight() {
+        return height;
+    }
 
-		setVertices(vertex);
-		setNormals(normal);
+    /**
+     * @param height
+     *            The height to set.
+     */
+    public void setHeight(float height) {
+        this.height = height;
+        allocateVertices();
+    }
 
-		setTextures(texture[0]);
+    /**
+     * @return Returns the radius.
+     */
+    public float getRadius() {
+        return radius;
+    }
 
-		setColorData();
+    /**
+     * @param radius
+     *            The radius to set.
+     */
+    public void setRadius(float radius) {
+        this.radius = radius;
+        allocateVertices();
+    }
 
-	}
+    private void allocateVertices() {
+        //      allocate vertices
+        int quantity = axisSamples * (radialSamples + 1);
+        vertex = new Vector3f[quantity];
+        normal = new Vector3f[quantity];
+        color = new ColorRGBA[quantity];
+        texture[0] = new Vector2f[quantity];
+        int triQuantity = 2 * (axisSamples - 1) * radialSamples;
+        indices = new int[3 * triQuantity];
 
-	private void setGeometryData() {
-		// generate geometry
-		float inverseRadial = 1.0f / (float) radialSamples;
-		float inverseAxisLess = 1.0f / (float) (axisSamples - 1);
-		float halfHeight = 0.5f * height;
+        setGeometryData();
 
-		// Generate points on the unit circle to be used in computing the mesh
-		// points on a cylinder slice.
-		float[] sin = new float[radialSamples + 1];
-		float[] cos = new float[radialSamples + 1];
+        setIndexData();
 
-		for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
-			float angle = FastMath.TWO_PI * inverseRadial * radialCount;
-			cos[radialCount] = FastMath.cos(angle);
-			sin[radialCount] = FastMath.sin(angle);
-		}
-		sin[radialSamples] = sin[0];
-		cos[radialSamples] = cos[0];
+        setVertices(vertex);
+        setNormals(normal);
 
-		// generate the cylinder itself
-		for (int axisCount = 0, i = 0; axisCount < axisSamples; axisCount++) {
-			float axisFraction = axisCount * inverseAxisLess; // in [0,1]
-			float z = -halfHeight + height * axisFraction;
+        setTextures(texture[0]);
 
-			// compute center of slice
-			Vector3f sliceCenter = new Vector3f(0, 0, z);
+        setColorData();
+    }
 
-			// compute slice vertices with duplication at end point
-			int save = i;
-			for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
-				float radialFraction = radialCount * inverseRadial; // in [0,1)
-				Vector3f tempNormal = new Vector3f(cos[radialCount],
-						sin[radialCount], 0);
-				vertex[i] = sliceCenter.add(tempNormal.mult(radius));
-				if (true) {
-					normal[i] = tempNormal;
-				} else {
-					normal[i] = tempNormal.negate();
-				}
-				if (texture[0][i] == null) {
-					texture[0][i] = new Vector2f();
-				}
-				texture[0][i].x = radialFraction;
-				texture[0][i].y = axisFraction;
-				i++;
-			}
+    private void setGeometryData() {
+        // generate geometry
+        float inverseRadial = 1.0f / (float) radialSamples;
+        float inverseAxisLess = 1.0f / (float) (axisSamples - 1);
+        float halfHeight = 0.5f * height;
 
-			vertex[i] = vertex[save];
-			normal[i] = normal[save];
-			if (texture[0][i] == null) {
-				texture[0][i] = new Vector2f();
-			}
-			texture[0][i].x = 1.0f;
-			texture[0][i].y = axisFraction;
-			i++;
-		}
-	}
+        // Generate points on the unit circle to be used in computing the mesh
+        // points on a cylinder slice.
+        float[] sin = new float[radialSamples + 1];
+        float[] cos = new float[radialSamples + 1];
 
-	private void setIndexData() {
-		// generate connectivity
-		int index = 0;
-		for (int axisCount = 0, axisStart = 0; axisCount < axisSamples - 1; axisCount++) {
-			int i0 = axisStart;
-			int i1 = i0 + 1;
-			axisStart += radialSamples + 1;
-			int i2 = axisStart;
-			int i3 = i2 + 1;
-			for (int i = 0; i < radialSamples; i++, index += 6) {
-				if (true) {
-					indices[index + 0] = i0++;
-					indices[index + 1] = i1;
-					indices[index + 2] = i2;
-					indices[index + 3] = i1++;
-					indices[index + 4] = i3++;
-					indices[index + 5] = i2++;
-				} else {
-					indices[index + 0] = i0++;
-					indices[index + 1] = i2;
-					indices[index + 2] = i1;
-					indices[index + 3] = i1++;
-					indices[index + 4] = i2++;
-					indices[index + 5] = i3++;
-				}
-			}
-		}
+        for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
+            float angle = FastMath.TWO_PI * inverseRadial * radialCount;
+            cos[radialCount] = FastMath.cos(angle);
+            sin[radialCount] = FastMath.sin(angle);
+        }
+        sin[radialSamples] = sin[0];
+        cos[radialSamples] = cos[0];
 
-		setIndices(indices);
-	}
+        // generate the cylinder itself
+        for (int axisCount = 0, i = 0; axisCount < axisSamples; axisCount++) {
+            float axisFraction = axisCount * inverseAxisLess; // in [0,1]
+            float z = -halfHeight + height * axisFraction;
 
-	private void setColorData() {
-		for (int x = 0; x < color.length; x++) {
-			color[x] = new ColorRGBA();
-		}
-		setColors(color);
-	}
+            // compute center of slice
+            Vector3f sliceCenter = new Vector3f(0, 0, z);
+
+            // compute slice vertices with duplication at end point
+            int save = i;
+            for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
+                float radialFraction = radialCount * inverseRadial; // in [0,1)
+                Vector3f tempNormal = new Vector3f(cos[radialCount],
+                        sin[radialCount], 0);
+                vertex[i] = sliceCenter.add(tempNormal.mult(radius));
+                if (true) {
+                    normal[i] = tempNormal;
+                } else {
+                    normal[i] = tempNormal.negate();
+                }
+                if (texture[0][i] == null) {
+                    texture[0][i] = new Vector2f();
+                }
+                texture[0][i].x = radialFraction;
+                texture[0][i].y = axisFraction;
+                i++;
+            }
+
+            vertex[i] = vertex[save];
+            normal[i] = normal[save];
+            if (texture[0][i] == null) {
+                texture[0][i] = new Vector2f();
+            }
+            texture[0][i].x = 1.0f;
+            texture[0][i].y = axisFraction;
+            i++;
+        }
+    }
+
+    private void setIndexData() {
+        // generate connectivity
+        int index = 0;
+        for (int axisCount = 0, axisStart = 0; axisCount < axisSamples - 1; axisCount++) {
+            int i0 = axisStart;
+            int i1 = i0 + 1;
+            axisStart += radialSamples + 1;
+            int i2 = axisStart;
+            int i3 = i2 + 1;
+            for (int i = 0; i < radialSamples; i++, index += 6) {
+                if (true) {
+                    indices[index + 0] = i0++;
+                    indices[index + 1] = i1;
+                    indices[index + 2] = i2;
+                    indices[index + 3] = i1++;
+                    indices[index + 4] = i3++;
+                    indices[index + 5] = i2++;
+                } else {
+                    indices[index + 0] = i0++;
+                    indices[index + 1] = i2;
+                    indices[index + 2] = i1;
+                    indices[index + 3] = i1++;
+                    indices[index + 4] = i2++;
+                    indices[index + 5] = i3++;
+                }
+            }
+        }
+
+        setIndices(indices);
+    }
+
+    private void setColorData() {
+        for (int x = 0; x < color.length; x++) {
+            color[x] = new ColorRGBA();
+        }
+        setColors(color);
+    }
+
 }
