@@ -32,37 +32,121 @@
 
 package jme.geometry.bounding;
 
+import jme.math.MathUtils;
+import jme.math.Vector;
+
 /**
- * <code>BoundingBox</code> defines a bounding volume that minimally contains
+ * <code>BoundingBox</code> defines a bounding volume that contains
  * all vertices that make up the geometry.
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: BoundingBox.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
  */
 public class BoundingBox {
-    private float halfSize;
-    
-    /**
-     * Constructor instantiates a new <code>BoundingBox</code> object.
-     * @param size the size of one side of the box.
-     */
-    public BoundingBox(float size) {
-        this.halfSize = size/2;
-    }
-    /**
-     * <code>getSize</code> returns the size of a side of the box.
-     * @return the size of a side of the box.
-     */
-    public float getSize() {
-        return halfSize * 2.0f;
-    }
+	private Vector center;
+	private Vector axis;
+	private Vector extent;
+	
+	
 
-    /**
-     * <code>setSize</code> sets the size of a side of the box.
-     * @param size the new size of the box.
-     */
-    public void setSize(float size) {
-        halfSize = size / 2;
-    }
+	/**
+	 * Default constructor instantiates a new <code>BoundingBox</code> 
+	 * object with default (0,0,0) vectors.
+	 *
+	 */
+	public BoundingBox() {
+		center = new Vector();
+		axis = new Vector();
+		extent = new Vector();
+	}
+	
+	/**
+	 * Constructor creates a new <code>BoundingBox</code> object
+	 * with the defined attributes.
+	 * @param center the center of the box.
+	 * @param axis the minimum point of the box.
+	 * @param extent the maximum point of the box.
+	 */
+	public BoundingBox(Vector center, Vector axis, Vector extent) {
+		if(null == center) {
+			center = new Vector();
+		} else {
+			this.center = center;
+		}
+		
+		if(null == axis) {
+			this.axis = new Vector();
+		} else {
+			this.axis = axis;
+		}
+		
+		if(null == extent) {
+			this.extent = new Vector();
+		} else {
+			this.extent = extent;
+		}
+	}
+	
+	/**
+	 * <code>getRadius</code> calculates the distance between
+	 * the center point and the axis point.
+	 * @return the distance between the center of the box and
+	 * 		the axis point.
+	 */
+	public double getRadius() {
+		return MathUtils.distance(center, axis);
+	}
+	
+	/**
+	 * <code>getAxis</code> returns the axis or minimum point of 
+	 * the bounding box.
+	 * @return the axis point of the box.
+	 */
+	public Vector getAxis() {
+		return axis;
+	}
 
+	/**
+	 * <code>setAxis</code> sets the axis or maximum point of the 
+	 * bounding box.
+	 * @param axis the new axis point of the box.
+	 */
+	public void setAxis(Vector axis) {
+		this.axis = axis;
+	}
+
+	/**
+	 * <code>getCenter</code> returns the center (in relation to the
+	 * parent entity) of the bounding box.
+	 * @return the center of the bounding box.
+	 */
+	public Vector getCenter() {
+		return center;
+	}
+
+	/**
+	 * <code>setCenter</code> sets the center of the bounding box.
+	 * @param center the new center of the bounding box.
+	 */
+	public void setCenter(Vector center) {
+		this.center = center;
+	}
+
+	/**
+	 * <code>getExtent</code> returns the extent of maximum point of 
+	 * the box.
+	 * @return the extent of the box.
+	 */
+	public Vector getExtent() {
+		return extent;
+	}
+
+	/**
+	 * <code>setExtent</code> sets the new maximum point of the box.
+	 * @param extent the new extent of the box.
+	 */
+	public void setExtent(Vector extent) {
+		this.extent = extent;
+	}
+	
 }

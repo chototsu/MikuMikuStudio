@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 import jme.utility.LoggingSystem;
 
@@ -51,7 +52,7 @@ import org.lwjgl.opengl.GLU;
  * determine the number of concentric rings around the center.
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: Disk.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
  */
 public class Disk extends Quadric {
     
@@ -95,8 +96,9 @@ public class Disk extends Quadric {
         this.loops = loops;
         
         //set up bounding volumes
-        boundingBox = new BoundingBox((float)outerRadius*2.0f);
-        boundingSphere = new BoundingSphere((float)outerRadius);
+        boundingBox = new BoundingBox(new Vector(), new Vector(-(float)outerRadius,-(float)outerRadius,-(float)outerRadius),
+        		new Vector((float)outerRadius,(float)outerRadius,(float)outerRadius));
+        boundingSphere = new BoundingSphere((float)outerRadius, null);
         
         glu = DisplaySystem.getDisplaySystem().getGLU();
         

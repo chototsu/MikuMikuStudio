@@ -338,7 +338,7 @@ public class Entity implements EntityInterface {
                 }
                 isVisible = 
                     frustum.containsCube(position.x, position.y, 
-                    position.z, geometry.getBoundingBox().getSize()/2);
+                    position.z, (float)geometry.getBoundingBox().getRadius());
                 break;
             default :
                 break;

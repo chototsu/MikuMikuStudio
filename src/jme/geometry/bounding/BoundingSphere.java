@@ -32,10 +32,12 @@
 
 package jme.geometry.bounding;
 
+import jme.math.Vector;
+
 /**
- * <code>BoundingSphere.java</code> defines a sphere that minimally contains all 
- * vertices of a particular piece of geometry. This sphere defines a radius
- * centered at (0,0,0). This origin is translated from the containing 
+ * <code>BoundingSphere.java</code> defines a sphere that defines a container 
+ * for a group of vertices of a particular piece of geometry. This sphere 
+ * defines a radius and a center. This origin is translated from the containing 
  * entity's position.
  * 
  * @author Mark Powell
@@ -43,12 +45,27 @@ package jme.geometry.bounding;
  */
 public class BoundingSphere {
     private float radius;
+    private Vector center;
+    
+    /**
+     * Default contstructor instantiates a new <code>BoundingSphere</code>
+     * object. 
+     */
+    public BoundingSphere() {
+    	center = new Vector();
+    }
     
     /**
      * Constructor instantiates a new <code>BoundingSphere</code> object.
      * @param radius the radius of the sphere.
+     * @param center the center of the sphere.
      */
-    public BoundingSphere(float radius) {
+    public BoundingSphere(float radius, Vector center) {
+    	if(null == center) {
+    		this.center = new Vector();
+    	} else {
+    		this.center = center;
+    	}
         this.radius = radius;
     }
     
@@ -61,6 +78,14 @@ public class BoundingSphere {
     }
     
     /**
+     * <code>getCenter</code> returns the center of the bounding sphere.
+     * @return the center of the bounding sphere.
+     */
+    public Vector getCenter() {
+    	return center;
+    }
+    
+    /**
      * <code>setRadius</code> sets the radius of this bounding sphere.
      * @param radius the new radius of the bounding sphere.
      */
@@ -68,4 +93,11 @@ public class BoundingSphere {
         this.radius = radius;
     }
 
+	/**
+	 * <code>setCenter</code> sets the center of the bounding sphere.
+	 * @param center the new center of the bounding sphere.
+	 */
+	public void setCenter(Vector center) {
+		this.center = center;
+	}
 }

@@ -54,6 +54,7 @@ import jme.geometry.model.Mesh;
 import jme.geometry.model.Triangle;
 import jme.geometry.model.Vertex;
 import jme.math.Matrix;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 import jme.utility.Conversion;
@@ -577,8 +578,11 @@ public class MilkshapeModel implements Geometry {
             }
         }
         distanceSqr *= scale.x;
-        boundingSphere = new BoundingSphere((float)Math.sqrt(distanceSqr));
-        boundingBox = new BoundingBox((float)Math.sqrt(distanceSqr));
+        float distance = (float)Math.sqrt(distanceSqr);
+        boundingSphere = new BoundingSphere(distance, null);
+        boundingBox = new BoundingBox(new Vector(), 
+        	new Vector(-distance, -distance, -distance),
+        	new Vector(distance, distance, distance));
     }
 
     /**

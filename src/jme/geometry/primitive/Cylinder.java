@@ -37,6 +37,7 @@ import java.util.logging.Level;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 import jme.utility.LoggingSystem;
 
@@ -52,7 +53,7 @@ import org.lwjgl.opengl.GLU;
  * image, but framerate will suffer.
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: Cylinder.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
  */
 public class Cylinder extends Quadric {
     
@@ -95,8 +96,9 @@ public class Cylinder extends Quadric {
         this.stacks = stacks;
         
         //set up bounding volumes
-        boundingSphere = new BoundingSphere((float)height);
-        boundingBox = new BoundingBox((float)height);
+        boundingSphere = new BoundingSphere((float)height, null);
+        boundingBox = new BoundingBox(new Vector(), new Vector(-(float)height,-(float)height,-(float)height),
+        	new Vector((float)height,(float)height,(float)height));
         
         glu = DisplaySystem.getDisplaySystem().getGLU();
         

@@ -259,8 +259,9 @@ public class Md3Model implements Geometry {
     public void initialize() {
         loadModel();
         loadWeapon();
-        boundingSphere = new BoundingSphere(10);
-        boundingBox = new BoundingBox(10);
+        boundingSphere = new BoundingSphere(10, null);
+        boundingBox = new BoundingBox(new Vector(), 
+        		new Vector(-5,-5,-5), new Vector(5,5,5));
     }
     
     /**

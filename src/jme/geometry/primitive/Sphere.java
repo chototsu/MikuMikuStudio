@@ -39,6 +39,7 @@ import org.lwjgl.opengl.GLU;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 import jme.utility.LoggingSystem;
 
@@ -51,7 +52,7 @@ import jme.utility.LoggingSystem;
  * However, frame rate will drop accordingly.
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: Sphere.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
  */
 public class Sphere extends Quadric {
 
@@ -95,8 +96,9 @@ public class Sphere extends Quadric {
         super.initialize();
         
         //build bounding volumes
-        boundingBox = new BoundingBox((float)radius*2.0f);
-        boundingSphere = new BoundingSphere((float)radius);
+        boundingBox = new BoundingBox(new Vector(), new Vector(-(float)radius,-(float)radius,-(float)radius),
+        	new Vector((float)radius,(float)radius,(float)radius));
+        boundingSphere = new BoundingSphere((float)radius, null);
         
         LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO,
                 "Sphere created.");

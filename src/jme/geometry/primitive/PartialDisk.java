@@ -34,6 +34,7 @@ package jme.geometry.primitive;
 
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
+import jme.math.Vector;
 
 
 /**
@@ -49,7 +50,7 @@ import jme.geometry.bounding.BoundingSphere;
  * the negative x-axis
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: PartialDisk.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
  */
 public class PartialDisk extends Disk {
     
@@ -79,8 +80,9 @@ public class PartialDisk extends Disk {
         this.endAngle = endAngle;
         
         //set up bounding volumes
-        boundingBox = new BoundingBox((float)outerRadius*2.0f);
-        boundingSphere = new BoundingSphere((float)outerRadius);
+        boundingBox = new BoundingBox(new Vector(), new Vector(-(float)outerRadius,-(float)outerRadius,-(float)outerRadius),
+        	new Vector((float)outerRadius,(float)outerRadius,(float)outerRadius));
+        boundingSphere = new BoundingSphere((float)outerRadius, null);
     }
      
     /**

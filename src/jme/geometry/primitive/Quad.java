@@ -35,6 +35,7 @@ package jme.geometry.primitive;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
@@ -54,7 +55,7 @@ import org.lwjgl.vector.Vector3f;
  * 3 - BottomLeft<br>
  * 
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: Quad.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
  */
 public class Quad extends Primitive {
     private GL gl;
@@ -152,8 +153,9 @@ public class Quad extends Primitive {
 			}
 		}
 		//set up bounding volumes.
-		boundingBox = new BoundingBox((float)size*2.0f);
-		boundingSphere = new BoundingSphere((float)size);
+		boundingBox = new BoundingBox(new Vector(), new Vector(-(float)size,-(float)size,-(float)size),
+			new Vector((float)size,(float)size,(float)size));
+		boundingSphere = new BoundingSphere((float)size, null);
     }
 
 	/**
