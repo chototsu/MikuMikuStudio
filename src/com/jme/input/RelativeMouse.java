@@ -32,72 +32,29 @@
 package com.jme.input;
 
 /**
- * <code>MouseInput</code> defines an interface to communicate with the mouse
- * input device. 
+ * <code>RelativeMouse</code> defines a mouse controller that only maintains
+ * the relative change from one poll to the next. This does not maintain the
+ * position of a mouse in a rendering window. This type of controller is 
+ * typically useful for a first person mouse look or similar.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.2 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: RelativeMouse.java,v 1.1 2003-10-23 21:24:18 mojomonkey Exp $
  */
-public interface MouseInput {
-    
+public class RelativeMouse extends Mouse {
     /**
-     * 
-     * <code>destroy</code> cleans up the native mouse interface.
+     * Constructor creates a new <code>RelativeMouse</code> object.
      *
      */
-    public void destroy();
+    public RelativeMouse() {
+        super();
+    }
     
     /**
-     * 
-     * <code>getButtonIndex</code> gets the button code for a given button
-     * name.
-     * @param buttonName the name to get the code for.
-     * @return the code for the given button name.
+     * <code>update</code> sets the translation vector to the change from the
+     * previous polling.
      */
-    public int getButtonIndex(String buttonName);
-    
-    /**
-     * 
-     * <code>getButtonName</code> gets the button name for a given button
-     * code.
-     * @param buttonIndex the code to get the name for.
-     * @return the name for the given button code.
-     */
-    public String getButtonName(int buttonIndex);
-    
-    /**
-     * 
-     * <code>isCreated</code> returns true if the mouse input is created, 
-     * false otherwise.
-     * @return true if the mouse input is created, false otherwise.
-     */
-    public boolean isCreated();
-    
-    /**
-     * 
-     * <code>poll</code> updates the mouse.
-     *
-     */
-    public void poll();
-    
-    /**
-     * 
-     * <code>getWheelDelta</code> gets the change in the mouse wheel.
-     * @return the change in the mouse wheel.
-     */
-    public int getWheelDelta();
-    
-    /**
-     * 
-     * <code>getXDelta</code> gets the change along the x axis.
-     * @return the change along the x axis.
-     */
-    public int getXDelta();
-    
-    /**
-     * 
-     * <code>getYDelta</code> gets the change along the y axis.
-     * @return the change along the y axis.
-     */
-    public int getYDelta();
-
+    public void update() {
+        mouse.poll();
+        localTranslation.x = mouse.getXDelta();
+        localTranslation.y = mouse.getYDelta();
+    }
 }

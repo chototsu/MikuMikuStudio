@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.2 2003-10-23 21:24:18 mojomonkey Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -227,6 +227,9 @@ public class BoundingSphere implements BoundingVolume {
      * @param volume the sphere to combine with this sphere.
      */
     public BoundingVolume merge(BoundingVolume volume) {
+        if(volume == null) {
+            return null;
+        }
         if (!(volume instanceof BoundingSphere)) {
             return null;
         } else {

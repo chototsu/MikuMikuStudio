@@ -32,72 +32,52 @@
 package com.jme.input;
 
 /**
- * <code>MouseInput</code> defines an interface to communicate with the mouse
- * input device. 
+ * <code>AbsoluteMouse</code> defines a mouse object that maintains a position
+ * within the window. Each call to update adjusts the current position by the
+ * change in position since the previous update. The mouse is forced to be
+ * contained within the values provided during construction (typically these
+ * correspond to the width and height of the window).
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.2 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.1 2003-10-23 21:24:18 mojomonkey Exp $
  */
-public interface MouseInput {
+public class AbsoluteMouse extends Mouse {
+    //position
+    private int width, height;
     
     /**
-     * 
-     * <code>destroy</code> cleans up the native mouse interface.
-     *
+     * Constructor instantiates a new <code>AbsoluteMouse</code> object. The
+     * limits of the mouse movements are provided.
+     * @param width the width of the mouse's limit.
+     * @param height the height of the mouse's limit.
      */
-    public void destroy();
+    public AbsoluteMouse(int width, int height) {
+        super();
+        this.width = width;
+        this.height = height;
+    }
     
     /**
-     * 
-     * <code>getButtonIndex</code> gets the button code for a given button
-     * name.
-     * @param buttonName the name to get the code for.
-     * @return the code for the given button name.
+     * <code>update</code> sets the mouse's current position within the window.
      */
-    public int getButtonIndex(String buttonName);
-    
-    /**
-     * 
-     * <code>getButtonName</code> gets the button name for a given button
-     * code.
-     * @param buttonIndex the code to get the name for.
-     * @return the name for the given button code.
-     */
-    public String getButtonName(int buttonIndex);
-    
-    /**
-     * 
-     * <code>isCreated</code> returns true if the mouse input is created, 
-     * false otherwise.
-     * @return true if the mouse input is created, false otherwise.
-     */
-    public boolean isCreated();
-    
-    /**
-     * 
-     * <code>poll</code> updates the mouse.
-     *
-     */
-    public void poll();
-    
-    /**
-     * 
-     * <code>getWheelDelta</code> gets the change in the mouse wheel.
-     * @return the change in the mouse wheel.
-     */
-    public int getWheelDelta();
-    
-    /**
-     * 
-     * <code>getXDelta</code> gets the change along the x axis.
-     * @return the change along the x axis.
-     */
-    public int getXDelta();
-    
-    /**
-     * 
-     * <code>getYDelta</code> gets the change along the y axis.
-     * @return the change along the y axis.
-     */
-    public int getYDelta();
+    public void update() {
+        mouse.poll();
+        localTranslation.x += mouse.getXDelta();
+        localTranslation.y += mouse.getYDelta();
 
+        if (localTranslation.x < 0) {
+            localTranslation.x = 0;
+        } else if (localTranslation.x > width) {
+            localTranslation.x = width;
+        }
+
+        if (localTranslation.y
+            < 0 - imageHeight) {
+            localTranslation.y = 0 - imageHeight;
+        } else if (
+            localTranslation.y
+                > height - imageHeight) {
+            localTranslation.y =
+                height - imageHeight;
+        }
+    }
 }

@@ -39,6 +39,7 @@ import java.util.logging.Level;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.Window;
 
+import com.jme.input.Mouse;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -71,7 +72,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.3 2003-10-17 20:45:04 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.4 2003-10-23 21:24:18 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -742,6 +743,46 @@ public class LWJGLRenderer implements Renderer {
             (int) t.getLocalTranslation().y,
             t.getText(),
             0);
+    }
+
+    /**
+     * <code>draw</code> renders a mouse object using a defined mouse texture.
+     * @see com.jme.renderer.Renderer#draw(com.jme.input.Mouse)
+     */
+    public void draw(Mouse m) {
+        if(!m.hasCursor()) {
+            return;
+        }
+        
+        GL.glMatrixMode(GL.GL_PROJECTION);
+        GL.glPushMatrix();
+        GL.glLoadIdentity();
+        GL.glOrtho(0, Window.getWidth(), 0, Window.getHeight(), -1, 1);
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glPushMatrix();
+        GL.glLoadIdentity();
+        GL.glTranslatef(m.getLocalTranslation().x, m.getLocalTranslation().y, 0);
+        
+        //render the cursor
+        int width = m.getImageWidth();
+        int height = m.getImageHeight();
+        
+        GL.glBegin(GL.GL_QUADS);
+        GL.glTexCoord2f(0, 0);
+        GL.glVertex2f(0,0);
+        
+        GL.glTexCoord2f(1, 0);
+        GL.glVertex2f(width,0);
+        GL.glTexCoord2f(1, 1);
+        GL.glVertex2f(width,height);
+        GL.glTexCoord2f(0, 1);
+        GL.glVertex2f(0,height);
+        GL.glEnd();
+        
+        GL.glMatrixMode(GL.GL_PROJECTION);
+        GL.glPopMatrix();
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glPopMatrix();
     }
 
 }

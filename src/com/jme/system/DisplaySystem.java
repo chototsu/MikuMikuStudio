@@ -54,9 +54,11 @@ import com.jme.renderer.Renderer;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.3 2003-10-23 21:24:18 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
+    protected int width, height;
+    
     /**
      * The list of current implemented rendering APIs that subclass Display.
      */
@@ -78,6 +80,14 @@ public abstract class DisplaySystem {
         }
         
         return null;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+    
+    public int getHeight() {
+        return height;
     }
 
     /**
@@ -135,4 +145,5 @@ public abstract class DisplaySystem {
      *
      */
     public abstract void reset();
+    
 }

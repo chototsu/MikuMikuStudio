@@ -45,23 +45,23 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and 
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.3 2003-10-17 20:45:04 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.4 2003-10-23 21:24:18 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
-    private Matrix3f localRotation;
+    protected Matrix3f localRotation;
     protected Matrix3f worldRotation;
 
     //translation vertex
-    private Vector3f localTranslation;
+    protected Vector3f localTranslation;
     protected Vector3f worldTranslation;
 
     //scale values
-    private float localScale;
+    protected float localScale;
     protected float worldScale;
 
     //flag to cull/show node
-    private boolean forceCull;
+    protected boolean forceCull;
     private boolean forceView;
 
     //bounding volume of the world.
@@ -71,7 +71,7 @@ public abstract class Spatial implements Serializable {
     private Node parent;
     
     //render states
-    RenderState[] renderStateList;
+    protected RenderState[] renderStateList;
 
     /**
      * Constructor instantiates a new <code>Spatial</code> object setting 
