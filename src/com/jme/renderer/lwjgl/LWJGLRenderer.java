@@ -113,7 +113,6 @@ import com.jme.scene.state.lwjgl.LWJGLZBufferState;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.WidgetRenderer;
-import com.jme.scene.state.RenderState;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the <code>Renderer</code>
@@ -122,7 +121,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.6 2004-04-20 17:43:05 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.7 2004-04-20 20:04:13 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -916,8 +915,8 @@ public class LWJGLRenderer implements Renderer {
 
     IntBuffer indices = t.getIndexAsBuffer();
     if (statisticsOn) {
-      int adder = t.getIndices().length;
-      int vertAdder = t.getVertices().length;
+      int adder = t.getIndexAsBuffer().capacity();
+      int vertAdder = t.getIndexAsBuffer().capacity();
       numberOfTris += adder / 3;
       numberOfVerts += vertAdder;
     }
@@ -1036,7 +1035,6 @@ public class LWJGLRenderer implements Renderer {
     if (statisticsOn) {
       int adder = indices.capacity();
       numberOfTris += adder / 3;
-      numberOfVerts += adder;
     }
 
     GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
