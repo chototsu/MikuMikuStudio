@@ -57,21 +57,26 @@ public class WidgetBoundingRectangle implements BoundingVolume {
      * Constructor instantiates a new <code>BoundingBox</code> object.
      *
      */
-    public WidgetBoundingRectangle() {}
+    public WidgetBoundingRectangle() {
+        initCheckPlanes();
+    }
 
     public WidgetBoundingRectangle(boolean lockMin) {
         setLockMin(lockMin);
+        initCheckPlanes();
         //calcVisiblity();
     }
 
     public WidgetBoundingRectangle(WidgetBoundingRectangle r) {
         set(r);
+        initCheckPlanes();
         //calcVisiblity();
     }
 
     public WidgetBoundingRectangle(WidgetBoundingRectangle r, boolean lockMin) {
         set(r);
         setLockMin(lockMin);
+        initCheckPlanes();
     }
 
     /**
@@ -84,6 +89,16 @@ public class WidgetBoundingRectangle implements BoundingVolume {
     protected WidgetBoundingRectangle(Vector2f min, Vector2f max, Vector2f center) {
         setMin(min);
         setMax(max);
+        initCheckPlanes();
+    }
+
+    public void initCheckPlanes() {
+        checkPlanes[0] = 0;
+        checkPlanes[1] = 1;
+        checkPlanes[2] = 2;
+        checkPlanes[3] = 3;
+        checkPlanes[4] = 4;
+        checkPlanes[5] = 5;
     }
 
     public void set(WidgetBoundingRectangle r) {
@@ -294,16 +309,31 @@ public class WidgetBoundingRectangle implements BoundingVolume {
     /**
      * <code>clone</code> creates a new BoundingSphere object containing the same
      * data as this one.
-     * @return the new BoundingSphere
+     * @param store where to store the cloned information.  if null or wrong class, a new store is created.
+     * @return the new WidgetBoundingRectangle
      */
-    public Object clone() {
-        WidgetBoundingRectangle rVal = new WidgetBoundingRectangle();
-        rVal.min = (Vector2f)min.clone();
-        rVal.max = (Vector2f)max.clone();
-        rVal.center = (Vector2f)center.clone();
-        rVal.points = new Vector2f[] { rVal.min, rVal.max };
-        rVal.lockMin = lockMin;
-        return rVal;
+    public Object clone(BoundingVolume store) {
+        if (store != null && store instanceof WidgetBoundingRectangle) {
+            WidgetBoundingRectangle rVal = (WidgetBoundingRectangle)store;
+            rVal.min.x = min.x;
+            rVal.min.y = min.y;
+            rVal.max.x = max.x;
+            rVal.max.y = max.y;
+            rVal.center.x = center.x;
+            rVal.center.y = center.y;
+            rVal.lockMin = lockMin;
+            rVal.points[0] = rVal.min;
+            rVal.points[1] = rVal.max;
+            return rVal;
+        } else {
+            WidgetBoundingRectangle rVal = new WidgetBoundingRectangle();
+            rVal.min = (Vector2f)min.clone();
+            rVal.max = (Vector2f)max.clone();
+            rVal.center = (Vector2f)center.clone();
+            rVal.points = new Vector2f[] { rVal.min, rVal.max };
+            rVal.lockMin = lockMin;
+            return rVal;
+        }
     }
 
     public void setMin(Vector2f min) {

@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.19 2004-03-09 00:06:22 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.20 2004-03-11 00:03:58 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -66,6 +66,7 @@ public class BoundingSphere implements BoundingVolume {
      */
     public BoundingSphere() {
         center = new Vector3f();
+        initCheckPlanes();
     }
 
     /**
@@ -80,6 +81,16 @@ public class BoundingSphere implements BoundingVolume {
             this.center = center;
         }
         this.radius = radius;
+        initCheckPlanes();
+    }
+
+    public void initCheckPlanes() {
+        checkPlanes[0] = 0;
+        checkPlanes[1] = 1;
+        checkPlanes[2] = 2;
+        checkPlanes[3] = 3;
+        checkPlanes[4] = 4;
+        checkPlanes[5] = 5;
     }
 
     /**
@@ -239,7 +250,7 @@ public class BoundingSphere implements BoundingVolume {
 
         if (distance <= -radius) {
             return Plane.NEGATIVE_SIDE;
-        } else if (distance > radius) {
+        } else if (distance >= radius) {
             return Plane.POSITIVE_SIDE;
         } else {
             return Plane.NO_SIDE;
@@ -300,7 +311,10 @@ public class BoundingSphere implements BoundingVolume {
             return this;
         } else {
             BoundingSphere sphere = (BoundingSphere) volume;
-            float lengthSquared = sphere.center.x * sphere.center.x + sphere.center.y * sphere.center.y + sphere.center.z * sphere.center.z;
+            float diffx = center.x - sphere.center.x;
+            float diffy = center.y - sphere.center.y;
+            float diffz = center.z - sphere.center.z;
+            float lengthSquared = diffx*diffx + diffy*diffy + diffz*diffz;
             float radiusDiff = sphere.getRadius() - radius;
             float diffSquared = radiusDiff * radiusDiff;
 
@@ -331,13 +345,25 @@ public class BoundingSphere implements BoundingVolume {
     /**
      * <code>clone</code> creates a new BoundingSphere object containing the same
      * data as this one.
+     * @param store where to store the cloned information.  if null or wrong class, a new store is created.
      * @return the new BoundingSphere
      */
-    public Object clone() {
-        BoundingSphere rVal = new BoundingSphere();
-        rVal.center = (Vector3f)center.clone();
-        rVal.radius = radius;
-        return rVal;
+    public Object clone(BoundingVolume store) {
+        if (store != null && store instanceof BoundingSphere) {
+            BoundingSphere rVal = (BoundingSphere)store;
+            rVal.center.x = center.x;
+            rVal.center.y = center.y;
+            rVal.center.z = center.z;
+            rVal.radius = radius;
+            rVal.checkPlanes[0] = checkPlanes[0];
+            rVal.checkPlanes[1] = checkPlanes[1];
+            rVal.checkPlanes[2] = checkPlanes[2];
+            rVal.checkPlanes[3] = checkPlanes[3];
+            rVal.checkPlanes[4] = checkPlanes[4];
+            rVal.checkPlanes[5] = checkPlanes[5];
+            return rVal;
+        } else
+            return new BoundingSphere(radius, (Vector3f)center.clone());
     }
 
     /**

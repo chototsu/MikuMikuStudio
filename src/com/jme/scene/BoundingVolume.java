@@ -39,9 +39,12 @@ import com.jme.math.Vector3f;
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points.
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.7 2004-03-02 03:56:40 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.8 2004-03-11 00:03:58 renanse Exp $
  */
 public interface BoundingVolume {
+
+    public int[] checkPlanes = new int[6];
+
     /**
      *
      * <code>transform</code> alters the location of the bounding volume by
@@ -108,7 +111,14 @@ public interface BoundingVolume {
     /**
      * <code>clone</code> creates a new BoundingVolume object containing the same
      * data as this one.
+     * @param store where to store the cloned information.  if null or wrong class, a new store is created.
      * @return the new BoundingVolume
      */
-    public Object clone();
+    public Object clone(BoundingVolume store);
+
+    /**
+     * <code>initCheckPlanes</code> resets the checkplanes to their standard order.
+     */
+    public void initCheckPlanes();
+
 }
