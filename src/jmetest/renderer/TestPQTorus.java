@@ -49,7 +49,7 @@ import com.jme.util.*;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.7 2004-04-02 15:52:18 mojomonkey Exp $
+ * @version $Id: TestPQTorus.java,v 1.8 2004-04-16 18:47:32 mojomonkey Exp $
  */
 public class TestPQTorus extends VariableTimestepGame {
 
@@ -183,6 +183,7 @@ public class TestPQTorus extends VariableTimestepGame {
         
         scene.setForceView(true);
         scene.updateGeometricState(0.0f, true);
+        scene.updateRenderState();
     }
     
     private void setUpLighting(){

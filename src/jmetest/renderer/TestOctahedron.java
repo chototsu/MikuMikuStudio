@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.4 2004-04-02 23:14:01 mojomonkey Exp $
+ * @version $Id: TestOctahedron.java,v 1.5 2004-04-16 18:47:32 mojomonkey Exp $
  */
 public class TestOctahedron extends SimpleGame {
     private Camera cam;
@@ -246,6 +246,7 @@ public class TestOctahedron extends SimpleGame {
         root.setForceView(true);
 
         root.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**

@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.3 2004-04-02 15:52:18 mojomonkey Exp $
+ * @version $Id: TestTorus.java,v 1.4 2004-04-16 18:47:32 mojomonkey Exp $
  */
 public class TestTorus extends SimpleGame {
 	private Camera cam;
@@ -190,16 +190,16 @@ public class TestTorus extends SimpleGame {
 		buf.setFunction(ZBufferState.CF_LEQUAL);
 
 		SpotLight am = new SpotLight();
-		am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
+		am.setDiffuse(new ColorRGBA(0.0f, 0.0f, 1.0f, 1.0f));
 		am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		am.setDirection(new Vector3f(0, 0, 0));
+		am.setDirection(new Vector3f(-250, -100, 0));
 		am.setLocation(new Vector3f(250, 100, 0));
 		am.setAngle(1);
 
 		SpotLight am2 = new SpotLight();
 		am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
 		am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		am2.setDirection(new Vector3f(0, 0, 0));
+		am2.setDirection(new Vector3f(250, -10, 0));
 		am2.setLocation(new Vector3f(-250, 10, 0));
 		am2.setAngle(1);
 
@@ -246,6 +246,7 @@ public class TestTorus extends SimpleGame {
         root.setForceView(true);
 
 		root.updateGeometricState(0.0f, true);
+		root.updateRenderState();
 
 	}
 	/**
