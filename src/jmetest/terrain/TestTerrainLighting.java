@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.16 2004-05-12 00:42:44 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.17 2004-05-13 23:34:28 mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -182,5 +182,6 @@ public class TestTerrainLighting extends SimpleGame {
     t2.setCombineScaleRGB(0);
     rootNode.setRenderState(ts);
     rootNode.attachChild(lightNode);
+    rootNode.attachChild(camNode);
   }
 }
