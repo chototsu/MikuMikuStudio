@@ -45,6 +45,8 @@ import java.util.logging.Level;
 
 import com.jme.bounding.*;
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.renderer.Renderer;
 import com.jme.util.LoggingSystem;
 import java.util.Stack;
@@ -57,7 +59,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.31 2004-10-04 14:53:48 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.32 2004-10-05 23:38:17 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -353,6 +355,16 @@ public class Node extends Spatial implements Serializable {
 
         return false;
     }
+    
+    public void doPick(Ray toTest, PickResults results){
+		if(getWorldBound().intersects(toTest)) {
+			//further checking needed.
+			for(int i = 0; i < getQuantity(); i++) {
+				((Spatial)children.get(i)).doPick(toTest, results);
+			}
+		}
+    }
+
 
     public Spatial putClone(Spatial store, CloneCreator properties) {
         Node toStore;

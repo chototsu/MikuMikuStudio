@@ -33,7 +33,7 @@ package jmetest.intersection;
 
 import com.jme.input.Mouse;
 import com.jme.input.action.MouseInputAction;
-import com.jme.intersection.Pick;
+import com.jme.intersection.BoundingPickResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.renderer.Camera;
@@ -69,16 +69,16 @@ public class MousePick implements MouseInputAction {
         if(mouse.getMouseInput().isButtonDown(0) && shotTime > 0.1f) {
             shotTime = 0;
             Ray ray = new Ray(camera.getLocation(), camera.getDirection());
-            PickResults results = new PickResults();
+            PickResults results = new BoundingPickResults();
 
-            Pick.doPick(scene,ray,results);
+            scene.doPick(ray,results);
 
 
             hits += results.getNumber();
             hitItems = "";
             if(results.getNumber() > 0) {
                 for(int i = 0; i < results.getNumber(); i++) {
-                    hitItems += results.getGeometry(i).getName();
+                    hitItems += results.getPickData(i).getTargetMesh().getName();
                     if(i != results.getNumber() -1) {
                         hitItems += ", ";
                     }

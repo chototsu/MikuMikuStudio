@@ -32,6 +32,8 @@
 package com.jme.widget.text;
 
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.AlphaState;
@@ -278,6 +280,14 @@ public class WidgetText extends WidgetAbstractImpl {
 	
 	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
+	 */
+	public void doPick(Ray toTest, PickResults results) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

@@ -33,6 +33,7 @@ package com.jme.intersection;
 
 import java.util.ArrayList;
 
+import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
 
 /**
@@ -44,15 +45,15 @@ import com.jme.scene.TriMesh;
  * @author Mark Powell
  */
 public class CollisionData {
-	private TriMesh targetMesh;
+	private Geometry targetMesh;
 
-	private TriMesh sourceMesh;
+	private Geometry sourceMesh;
 
 	private ArrayList sourceTris;
 
 	private ArrayList targetTris;
 	
-	public CollisionData(TriMesh sourceMesh, TriMesh targetMesh) {
+	public CollisionData(Geometry sourceMesh, Geometry targetMesh) {
 		this(sourceMesh, targetMesh, null, null);
 	}
 
@@ -66,7 +67,7 @@ public class CollisionData {
 	 * @param target
 	 *            the triangles of the second mesh that made contact.
 	 */
-	public CollisionData(TriMesh sourceMesh, TriMesh targetMesh,
+	public CollisionData(Geometry sourceMesh, Geometry targetMesh,
 			ArrayList sourceTris, ArrayList targetTris) {
 		this.targetMesh = targetMesh;
 		this.sourceMesh = sourceMesh;
@@ -77,11 +78,11 @@ public class CollisionData {
 	/**
 	 * @return Returns the source mesh.
 	 */
-	public TriMesh getSourceMesh() {
+	public Geometry getSourceMesh() {
 		return sourceMesh;
 	}
 	
-	public TriMesh getTargetMesh() {
+	public Geometry getTargetMesh() {
 		return targetMesh;
 	}
 
@@ -89,11 +90,11 @@ public class CollisionData {
 	 * @param mesh
 	 *            The mesh to set.
 	 */
-	public void setSourceMesh(TriMesh mesh) {
+	public void setSourceMesh(Geometry mesh) {
 		this.sourceMesh = mesh;
 	}
 	
-	public void setTargetMesh(TriMesh mesh) {
+	public void setTargetMesh(Geometry mesh) {
 		this.targetMesh = mesh;
 	}
 

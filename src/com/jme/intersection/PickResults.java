@@ -31,9 +31,11 @@
  */
 package com.jme.intersection;
 
-import com.jme.scene.Geometry;
 
 import java.util.ArrayList;
+
+import com.jme.math.Ray;
+import com.jme.scene.Geometry;
 
 /**
  * <code>PickResults</code> contains information resulting from a pick test.
@@ -41,9 +43,9 @@ import java.util.ArrayList;
  * pick test.
  *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.5 2004-09-02 18:02:02 mojomonkey Exp $
+ * @version $Id: PickResults.java,v 1.6 2004-10-05 23:38:16 mojomonkey Exp $
  */
-public class PickResults {
+public abstract class PickResults {
 
     private ArrayList nodeList;
 
@@ -60,8 +62,8 @@ public class PickResults {
      *
      * @param node the geometry to be placed in the results list.
      */
-    public void addGeometry(Geometry node) {
-        nodeList.add(node);
+    public void addPickData(PickData data) {
+        nodeList.add(data);
     }
 
     /**
@@ -80,8 +82,8 @@ public class PickResults {
      * @param i the index requested.
      * @return the Geometry at the specified index.
      */
-    public Geometry getGeometry(int i) {
-        return (Geometry) nodeList.get(i);
+    public PickData getPickData(int i) {
+        return (PickData) nodeList.get(i);
     }
 
     /**
@@ -90,4 +92,8 @@ public class PickResults {
     public void clear() {
         nodeList.clear();
     }
+    
+    public abstract void addPick(Ray ray,Geometry s);
+	
+	public abstract void processPick();
 }

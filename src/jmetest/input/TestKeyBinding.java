@@ -79,7 +79,11 @@ public class TestKeyBinding extends BaseGame {
         }
 
         if(KeyBindingManager.getKeyBindingManager().isValidCommand("Combo")) {
-            text.print("You pressed Right Shift and I");
+            text.print("You pressed Shift and I");
+        }
+        
+        if(KeyBindingManager.getKeyBindingManager().isValidCommand("single")) {
+        	text.print("You pressed I");
         }
     }
 
@@ -133,7 +137,10 @@ public class TestKeyBinding extends BaseGame {
         KeyBindingManager.getKeyBindingManager().set("one", KeyInput.KEY_1);
         KeyBindingManager.getKeyBindingManager().add("one", KeyInput.KEY_L);
         int[] keyCodes = {KeyInput.KEY_RSHIFT, KeyInput.KEY_I};
+        int[] keyCodes2 = {KeyInput.KEY_LSHIFT, KeyInput.KEY_I};
         KeyBindingManager.getKeyBindingManager().set("Combo", keyCodes);
+        KeyBindingManager.getKeyBindingManager().add("Combo", keyCodes2);
+        KeyBindingManager.getKeyBindingManager().set("single", KeyInput.KEY_I);
 
     }
 
@@ -142,7 +149,7 @@ public class TestKeyBinding extends BaseGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Text Label", "Press 0,1, or L");
+        text = new Text("Text Label", "Press I, Shift-I, 0, 1, or L");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
         TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);

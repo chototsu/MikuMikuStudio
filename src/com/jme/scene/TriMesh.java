@@ -40,6 +40,8 @@ import java.util.logging.Level;
 import java.util.ArrayList;
 
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.math.Matrix3f;
@@ -57,7 +59,7 @@ import com.jme.bounding.OBBTree;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.33 2004-10-04 14:53:48 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.34 2004-10-05 23:38:17 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -389,6 +391,14 @@ public class TriMesh extends Geometry implements Serializable {
             }
         }
     }
+    
+    public void doPick(Ray ray, PickResults results) {
+    	if (getWorldBound().intersects(ray)) {
+				//find the triangle that is being hit.
+				//add this node and the triangle to the PickResults list.
+				results.addPick(ray, this);
+		}
+    }
 
     /**
      * This function checks for intersection between this trimesh and the given
@@ -441,6 +451,19 @@ public class TriMesh extends Geometry implements Serializable {
                     otherIndex);
         }
     }
+    
+    public void doPickTriangles(Ray toTest,ArrayList results){
+		if (worldBound.intersects(toTest)) {
+            if (worldMatrot == null)
+                worldMatrot = worldRotation.toRotationMatrix();
+            else
+                worldRotation.toRotationMatrix(worldMatrot);
+            collisionTree.bounds.transform(worldMatrot, worldTranslation,
+                    worldScale, collisionTree.worldBounds);
+            collisionTree.intersect(toTest,results);
+        }
+    }
+
 
     /**
      * This function is <b>ONLY </b> to be used by the intersection testing

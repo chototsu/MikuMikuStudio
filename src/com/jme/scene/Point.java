@@ -34,6 +34,8 @@ package com.jme.scene;
 import java.util.logging.Level;
 
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -45,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.10 2004-09-23 22:47:05 mojomonkey Exp $
+ * @version $Id: Point.java,v 1.11 2004-10-05 23:38:17 mojomonkey Exp $
  */
 public class Point extends Geometry {
 
@@ -111,6 +113,14 @@ public class Point extends Geometry {
 	public void findCollisions(Spatial scene, CollisionResults results) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public void doPick(Ray ray, PickResults results) {
+		if (getWorldBound().intersects(ray)) {
+			//find the triangle that is being hit.
+			//add this node and the triangle to the PickResults list.
+			results.addPick(ray, this);
+	}
 	}
 	
 	public boolean hasCollision(Spatial scene, boolean checkTriangles) {

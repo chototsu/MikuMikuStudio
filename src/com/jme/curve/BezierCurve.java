@@ -32,7 +32,9 @@
 package com.jme.curve;
 
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
 import com.jme.math.Matrix3f;
+import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
@@ -45,7 +47,7 @@ import com.jme.scene.Spatial;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.13 2004-09-23 22:47:07 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.14 2004-10-05 23:38:21 mojomonkey Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -219,6 +221,14 @@ public class BezierCurve extends Curve {
 	
 	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
+	 */
+	public void doPick(Ray toTest, PickResults results) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

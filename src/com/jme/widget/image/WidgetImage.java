@@ -33,6 +33,8 @@ package com.jme.widget.image;
 
 import com.jme.image.Image;
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
@@ -60,7 +62,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
  *  Alignment code doesn't work properly.
  *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.10 2004-09-23 22:47:06 mojomonkey Exp $$
+ * @version $$Id: WidgetImage.java,v 1.11 2004-10-05 23:38:20 mojomonkey Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
@@ -266,6 +268,14 @@ public class WidgetImage extends WidgetAbstractImpl {
 	
 	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
 		return false;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
+	 */
+	public void doPick(Ray toTest, PickResults results) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

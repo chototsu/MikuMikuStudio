@@ -38,8 +38,10 @@ import java.util.Iterator;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
 import com.jme.math.Matrix3f;
 import com.jme.math.Quaternion;
+import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
@@ -54,7 +56,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.57 2004-10-04 14:53:48 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.58 2004-10-05 23:38:17 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -859,6 +861,9 @@ public abstract class Spatial implements Serializable {
     public abstract void findCollisions(Spatial scene, CollisionResults results);
 
     public abstract boolean hasCollision(Spatial scene, boolean checkTriangles);
+    
+    public abstract void doPick(Ray toTest, PickResults results);
+    
 
     /**
      * This method updates the exact bounding tree of any this Spatial. If this

@@ -31,44 +31,27 @@
  */
 package com.jme.intersection;
 
-import java.util.ArrayList;
-
+import com.jme.math.Ray;
 import com.jme.scene.Geometry;
-import com.jme.scene.TriMesh;
 
 /**
  * @author Mark Powell
  */
-public class TriangleCollisionResults extends CollisionResults {
+public class BoundingPickResults extends PickResults{
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.intersection.CollisionResults#addCollision(com.jme.scene.Geometry,
-	 *      com.jme.scene.Geometry)
+	/* (non-Javadoc)
+	 * @see com.jme.intersection.PickResults#addPick(com.jme.math.Ray, com.jme.scene.Geometry)
 	 */
-	public void addCollision(Geometry s, Geometry t) {
-		ArrayList a = new ArrayList();
-		ArrayList b = new ArrayList();
-		//find the triangle that is being hit.
-		//add this node and the triangle to the CollisionResults list.
-		if(!(s instanceof TriMesh) || !(t instanceof TriMesh)) {
-			CollisionData data = new CollisionData(s, t);
-			addCollisionData(data);
-		} else {
-			((TriMesh) s).findTriangleCollision((TriMesh) t, a, b);
-			CollisionData data = new CollisionData(s, t, a, b);
-			addCollisionData(data);
-		}
+	public void addPick(Ray ray, Geometry s) {
+		PickData data = new PickData(ray, s);
+		addPickData(data);
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.intersection.CollisionResults#processCollisions()
+	/* (non-Javadoc)
+	 * @see com.jme.intersection.PickResults#processPick()
 	 */
-	public void processCollisions() {
-
+	public void processPick() {
+		
 	}
 
 }

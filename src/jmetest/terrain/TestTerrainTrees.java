@@ -37,7 +37,10 @@ import javax.swing.ImageIcon;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
+import com.jme.scene.CloneCreator;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Pyramid;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
@@ -52,7 +55,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainTrees.java,v 1.5 2004-08-14 00:50:08 cep21 Exp $
+ * @version $Id: TestTerrainTrees.java,v 1.6 2004-10-05 23:38:18 mojomonkey Exp $
  */
 public class TestTerrainTrees extends SimpleGame {
 
@@ -153,16 +156,25 @@ public class TestTerrainTrees extends SimpleGame {
                 Texture.FM_LINEAR, true);
         treeTex.setTexture(tr);
 
+        Pyramid p = new Pyramid("Pyramid", 10, 20);
+        p.setModelBound(new BoundingBox());
+        p.updateModelBound();
+        p.setRenderState(treeTex);
+        p.setTextureCombineMode(TextureState.REPLACE);
+        
+        CloneCreator cc1 = new CloneCreator(p);
+        cc1.addProperty("vertices");
+        cc1.addProperty("normals");
+        cc1.addProperty("colors");
+        cc1.addProperty("texcoords");
+        cc1.addProperty("indices");
+        
         for (int i = 0; i < 500; i++) {
-            Pyramid p = new Pyramid("Pyramid" + i, 10, 20);
-            p.setModelBound(new BoundingBox());
-            p.updateModelBound();
-            p.setRenderState(treeTex);
-            p.setTextureCombineMode(TextureState.REPLACE);
+        	Spatial s1 = cc1.createCopy();
             float x = (float) Math.random() * 128 * 5;
             float z = (float) Math.random() * 128 * 5;
-            p.setLocalTranslation(new Vector3f(x, tb.getHeight(x, z), z));
-            rootNode.attachChild(p);
+            s1.setLocalTranslation(new Vector3f(x, tb.getHeight(x, z), z));
+            rootNode.attachChild(s1);
         }
 
     }

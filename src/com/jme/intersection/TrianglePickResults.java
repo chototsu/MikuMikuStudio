@@ -31,52 +31,40 @@
  */
 package com.jme.intersection;
 
+import java.util.ArrayList;
+
 import com.jme.math.Ray;
 import com.jme.scene.Geometry;
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
 
 /**
- * <code>Pick</code> provides functionality for determining if a ray has
- * intersected an object. This is useful for object selection, determining if a
- * weapon has hit it's target, calculating line of sight, etc. The methods of
- * <code>Pick</code> are static allowing for easy usage of the class.
- * 
  * @author Mark Powell
- * @version $Id: Pick.java,v 1.8 2004-09-10 22:36:08 mojomonkey Exp $
  */
-public class Pick {
+public class TrianglePickResults extends PickResults{
 
-	private Pick() {
+	/* (non-Javadoc)
+	 * @see com.jme.intersection.PickResults#addPick(com.jme.math.Ray, com.jme.scene.Geometry)
+	 */
+	public void addPick(Ray ray, Geometry s) {
+		ArrayList a = new ArrayList();
+		//find the triangle that is being hit.
+		//add this node and the triangle to the CollisionResults
+		// list.
+		if (!(s instanceof TriMesh)) {
+			PickData data = new PickData(ray, s);
+			addPickData(data);
+		} else {
+			((TriMesh) s).doPickTriangles(ray, a);
+			PickData data = new PickData(ray, s, a);
+			addPickData(data);
+		}
 	}
 
-	/**
-	 * <code>doPick</code> takes a ray object and a scene graph node. The
-	 * graph is traveled until it determines any leaf nodes have been hit, and
-	 * those leafs that have been hit are added to the results. Using the scene
-	 * graph allows for quick removal of branches, allowing for a quick and
-	 * efficient test.
-	 * 
-	 * @param node
-	 *            the scene graph.
-	 * @param ray
-	 *            the ray to test.
-	 * @param results
-	 *            contains the nodes that were hit by the ray.
+	/* (non-Javadoc)
+	 * @see com.jme.intersection.PickResults#processPick()
 	 */
-	public static void doPick(Spatial node, Ray ray, PickResults results) {
-		if (node.getWorldBound().intersects(ray)) {
-			if ((node instanceof Node)) {
-				Node parent = (Node) node;
-				for (int i = 0; i < parent.getQuantity(); i++) {
-					doPick(parent.getChild(i), ray, results);
-				}
-			} else {
-				//find the triangle that is being hit.
-				//add this node and the triangle to the PickResults list.
-				results.addGeometry((Geometry) node);
-			}
-		}
+	public void processPick() {
+		
 	}
 
 }

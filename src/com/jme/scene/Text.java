@@ -33,6 +33,8 @@
 package com.jme.scene;
 
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.ColorRGBA;
 
@@ -42,7 +44,7 @@ import com.jme.renderer.ColorRGBA;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.15 2004-09-23 22:47:05 mojomonkey Exp $
+ * @version $Id: Text.java,v 1.16 2004-10-05 23:38:17 mojomonkey Exp $
  */
 public class Text extends Geometry {
 	private static final long serialVersionUID = 1L;
@@ -157,6 +159,14 @@ public class Text extends Geometry {
 	 */
 	public void findCollisions(Spatial scene, CollisionResults results) {
 		//Do nothing.
+	}
+	
+	public void doPick(Ray ray, PickResults results) {
+		if (getWorldBound().intersects(ray)) {
+			//find the triangle that is being hit.
+			//add this node and the triangle to the PickResults list.
+			results.addPick(ray, this);
+	}
 	}
 	
 	public boolean hasCollision(Spatial scene, boolean checkTriangles) {

@@ -36,13 +36,39 @@ package com.jme.math;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.5 2004-07-30 23:15:58 cep21 Exp $
+ * @version $Id: Ray.java,v 1.6 2004-10-05 23:38:19 mojomonkey Exp $
  */
 public class Ray {
     /** The ray's begining point. */
     public Vector3f origin;
     /** The direction of the ray. */
     public Vector3f direction;
+    
+    private static final Vector3f tempVa=new Vector3f();
+    private static final Vector3f tempVb=new Vector3f();
+    private static final Vector3f tempVc=new Vector3f();
+    private static final Vector3f tempVd=new Vector3f();
+    private static final Vector3f tempVe=new Vector3f();
+
+    public boolean intersect(Vector3f v0,Vector3f v1,Vector3f v2){
+        Vector3f edge1=v1.subtract(v0,tempVa);
+        Vector3f edge2=v2.subtract(v0,tempVb);
+        Vector3f pvec=direction.cross(edge2,tempVc);
+        float det=edge1.dot(pvec);
+        if (det > -FastMath.FLT_EPSILON & det < FastMath.FLT_EPSILON)
+            return false;
+        det=1/det;
+        Vector3f tvec=origin.subtract(v0,tempVd);
+        float u=tvec.dot(pvec) *det;
+        if (u <0.0 || u>1.0)
+            return false;
+        Vector3f qvec=tvec.cross(edge1,tempVe);
+        float v=direction.dot(qvec) * det;
+        if (v <0.0 || v + u >1.0)
+            return false;
+        return true;
+    }
+
 
     /**
      * Constructor instantiates a new <code>Ray</code> object. As default, the

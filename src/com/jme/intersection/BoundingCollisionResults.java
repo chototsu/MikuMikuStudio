@@ -42,7 +42,7 @@ import com.jme.scene.TriMesh;
  * a processCollisions method, it is empty and should be further defined by
  * the user if so desired. 
  * @author Mark Powell
- * @version $Id: BoundingCollisionResults.java,v 1.1 2004-09-23 22:47:06 mojomonkey Exp $
+ * @version $Id: BoundingCollisionResults.java,v 1.2 2004-10-05 23:38:16 mojomonkey Exp $
  */
 public class BoundingCollisionResults extends CollisionResults {
 
@@ -53,7 +53,7 @@ public class BoundingCollisionResults extends CollisionResults {
 	 *      com.jme.scene.Geometry)
 	 */
 	public void addCollision(Geometry s, Geometry t) {
-		CollisionData data = new CollisionData((TriMesh) s, (TriMesh) t);
+		CollisionData data = new CollisionData(s, t);
 		addCollisionData(data);
 	}
 

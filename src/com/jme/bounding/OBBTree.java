@@ -1,8 +1,10 @@
 package com.jme.bounding;
 
+import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.math.Matrix3f;
 import com.jme.intersection.Intersection;
+import com.jme.intersection.PickResults;
 import com.jme.scene.TriMesh;
 
 import java.util.Arrays;
@@ -296,6 +298,47 @@ public class OBBTree {
 			}
 		}
 	}
+	
+	public void intersect(Ray toTest,ArrayList hits) {
+        if (!worldBounds.intersects(toTest))
+            return;
+
+        if (left!=null){
+            left.bounds.transform(
+                    myParent.findWorldRotMat(),
+                    myParent.getWorldTranslation(),
+                    myParent.getWorldScale(),
+                    left.worldBounds);
+            left.intersect(toTest,hits);
+        }
+
+        if (right!=null){
+            right.bounds.transform(
+                    myParent.findWorldRotMat(),
+                    myParent.getWorldTranslation(),
+                    myParent.getWorldScale(),
+                    right.worldBounds);
+            right.intersect(toTest,hits);
+        } else if (left==null){
+            Matrix3f roti = this.myParent.findWorldRotMat();
+            Vector3f scalei = this.myParent.getWorldScale();
+            Vector3f transi = this.myParent.getWorldTranslation();
+
+            TreeTriangle tempt;
+            for (int i = myStart; i < myEnd; i++) {
+                tempt=tris[i];
+                roti.mult(tempt.a, tempVa).multLocal(scalei).addLocal(
+                        transi);
+                roti.mult(tempt.b, tempVb).multLocal(scalei).addLocal(
+                        transi);
+                roti.mult(tempt.c, tempVc).multLocal(scalei).addLocal(
+                        transi);
+                if (toTest.intersect(tempVa,tempVb,tempVc))
+                    hits.add(new Integer(tris[i].index));
+            }
+        }
+    }
+
 
 	/**
 	 * This class is simply a container for a triangle.

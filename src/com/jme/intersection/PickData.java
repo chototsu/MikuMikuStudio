@@ -29,46 +29,78 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package com.jme.intersection;
 
 import java.util.ArrayList;
 
+import com.jme.math.Ray;
 import com.jme.scene.Geometry;
-import com.jme.scene.TriMesh;
 
 /**
+ * 
  * @author Mark Powell
  */
-public class TriangleCollisionResults extends CollisionResults {
+public class PickData {
+	private Ray ray;
+	
+	private Geometry targetMesh;
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.intersection.CollisionResults#addCollision(com.jme.scene.Geometry,
-	 *      com.jme.scene.Geometry)
-	 */
-	public void addCollision(Geometry s, Geometry t) {
-		ArrayList a = new ArrayList();
-		ArrayList b = new ArrayList();
-		//find the triangle that is being hit.
-		//add this node and the triangle to the CollisionResults list.
-		if(!(s instanceof TriMesh) || !(t instanceof TriMesh)) {
-			CollisionData data = new CollisionData(s, t);
-			addCollisionData(data);
-		} else {
-			((TriMesh) s).findTriangleCollision((TriMesh) t, a, b);
-			CollisionData data = new CollisionData(s, t, a, b);
-			addCollisionData(data);
-		}
+	private ArrayList targetTris;
+	
+	public PickData(Ray ray, Geometry targetMesh) {
+		this(ray, targetMesh, null);
 	}
 
-	/*
-	 * (non-Javadoc)
+	/**
+	 * instantiates a new PickData object.
 	 * 
-	 * @see com.jme.intersection.CollisionResults#processCollisions()
+	 * @param mesh
+	 *            the mesh the relevant TriMesh collided with.
+	 * @param source
+	 *            the triangles of the relevant TriMesh that made contact.
+	 * @param target
+	 *            the triangles of the second mesh that made contact.
 	 */
-	public void processCollisions() {
-
+	public PickData(Ray ray, Geometry targetMesh, ArrayList targetTris) {
+		this.ray = ray;
+		this.targetMesh = targetMesh;
+		this.targetTris = targetTris;
 	}
 
+	public Geometry getTargetMesh() {
+		return targetMesh;
+	}
+
+	
+	public void setTargetMesh(Geometry mesh) {
+		this.targetMesh = mesh;
+	}
+
+	/**
+	 * @return Returns the target.
+	 */
+	public ArrayList getTargetTris() {
+		return targetTris;
+	}
+
+	/**
+	 * @param target
+	 *            The target to set.
+	 */
+	public void setTargetTris(ArrayList target) {
+		this.targetTris = target;
+	}
+	/**
+	 * @return Returns the ray.
+	 */
+	public Ray getRay() {
+		return ray;
+	}
+	/**
+	 * @param ray The ray to set.
+	 */
+	public void setRay(Ray ray) {
+		this.ray = ray;
+	}
 }

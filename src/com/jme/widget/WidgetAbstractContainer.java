@@ -44,6 +44,8 @@ import com.jme.bounding.BoundingVolume;
 import com.jme.input.AbstractInputHandler;
 import com.jme.input.MouseInput;
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -110,6 +112,14 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 		public boolean hasCollision(Spatial scene, boolean checkTriangles) {
 			// TODO Auto-generated method stub
 			return false;
+		}
+
+		/* (non-Javadoc)
+		 * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
+		 */
+		public void doPick(Ray toTest, PickResults results) {
+			// TODO Auto-generated method stub
+			
 		}
 	}
 
