@@ -69,7 +69,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestTint</code>
  *
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.9 2004-04-16 19:21:42 renanse Exp $
+ * @version $Id: TestTint.java,v 1.10 2004-04-16 19:57:42 renanse Exp $
  */
 public class TestTint extends SimpleGame {
 
@@ -97,7 +97,6 @@ public class TestTint extends SimpleGame {
 			add(alphaValue, WidgetBorderLayoutConstraint.SOUTH);
 			add(instructions, WidgetBorderLayoutConstraint.NORTH);
 			doLayout();
-                        updateRenderState();
 		}
 
 		public void update(Observable o, Object obj) {

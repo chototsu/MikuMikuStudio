@@ -42,6 +42,9 @@ import com.jme.widget.WidgetAbstractImpl;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.font.WidgetFontManager;
 import com.jme.widget.renderer.WidgetRendererFactory;
+import java.util.Stack;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.Spatial;
 
 
 /**
@@ -61,6 +64,8 @@ public class WidgetText extends WidgetAbstractImpl {
     private float scale = 1f;
 
     private WidgetFont font;
+
+    RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
     public WidgetText() {
         this("", WidgetAlignmentType.ALIGN_NONE);
@@ -132,7 +137,25 @@ public class WidgetText extends WidgetAbstractImpl {
         super.onDraw(r);
     }
 
+    /**
+     *
+     * <code>setStates</code> applies all the render states for this
+     * particular geometry.
+     *
+     */
+    public void setStates() {
+      if (parent != null)
+        Spatial.clearCurrentStates();
+      for (int i = 0; i < states.length; i++) {
+        if (states[i] != currentStates[i]) {
+          states[i].apply();
+          currentStates[i] = states[i];
+        }
+      }
+    }
+
     public void draw(Renderer r) {
+      setStates();
         r.draw(getWidgetRenderer());
     }
 
@@ -217,6 +240,16 @@ public class WidgetText extends WidgetAbstractImpl {
      */
     public void initWidgetRenderer() {
         setWidgetRenderer(WidgetRendererFactory.getFactory().getRenderer(this));
+    }
+
+    protected void applyRenderState(Stack[] states) {
+      for (int x = 0; x < states.length; x++) {
+        if (states[x].size() > 0) {
+          this.states[x] = ((RenderState) states[x].peek()).extract(states[x], this);
+        } else {
+          this.states[x] = (RenderState) defaultStateList[x];
+        }
+      }
     }
 
 }

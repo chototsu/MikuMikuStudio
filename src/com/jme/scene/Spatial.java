@@ -33,16 +33,16 @@ package com.jme.scene;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Stack;
 
-import com.jme.bounding.*;
+import com.jme.bounding.BoundingVolume;
 import com.jme.math.Matrix3f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
-import com.jme.scene.state.RenderState;
-import java.util.Stack;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 
 /**
@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.34 2004-04-16 17:12:51 renanse Exp $
+ * @version $Id: Spatial.java,v 1.35 2004-04-16 19:57:42 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices

@@ -56,6 +56,7 @@ import com.jme.widget.layout.WidgetFlowLayout;
 import com.jme.widget.layout.WidgetLayoutManager;
 import com.jme.widget.layout.WidgetLayoutManager2;
 import com.jme.widget.util.WidgetNotifier;
+import java.util.Stack;
 
 /**
  * @author pattogo
@@ -80,6 +81,9 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 			//do nothing
 
 		}
+
+                protected void applyRenderState(Stack[] states) {
+                }
     }
 
     protected Vector2f panOffset = new Vector2f();
@@ -225,7 +229,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 
         updateChildrenViewports();
         updateWorldBound();
-
+        updateRenderState();
     }
 
     public void updateChildrenViewports() {
