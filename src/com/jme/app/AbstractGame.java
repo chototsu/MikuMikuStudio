@@ -37,8 +37,7 @@ import java.util.logging.Level;
 
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-//import com.jme.system.PropertiesDialog;
-import com.jme.system.PropertiesDialog2;
+import com.jme.system.LWJGLPropertiesDialog;
 import com.jme.system.PropertiesIO;
 import com.jme.util.LoggingSystem;
 
@@ -47,7 +46,7 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.17 2004-08-02 22:27:13 cep21 Exp $
+ * @version $Id: AbstractGame.java,v 1.18 2004-08-17 22:46:46 ericthered Exp $
  */
 public abstract class AbstractGame {
     /** Flag for running the system. */
@@ -178,7 +177,7 @@ public abstract class AbstractGame {
         if ((!loaded && dialogBehaviour == FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG)
             || dialogBehaviour == ALWAYS_SHOW_PROPS_DIALOG) {
 
-            PropertiesDialog2 dialog = new PropertiesDialog2(properties, dialogImage);
+            LWJGLPropertiesDialog dialog = new LWJGLPropertiesDialog(properties, dialogImage);
 
             while (dialog.isVisible()) {
                 try {
