@@ -47,7 +47,7 @@ import com.jme.math.Vector3f;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.14 2004-03-16 05:07:33 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.15 2004-03-17 23:16:53 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -221,11 +221,14 @@ public class BoundingBox extends Box implements BoundingVolume {
         if(volume == null) {
             return this;
         }
-        if (!(volume instanceof BoundingBox)) {
-            return this;
+        if (volume instanceof BoundingBox) {
+          BoundingBox vBox = (BoundingBox)volume;
+          return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent, new BoundingBox(new Vector3f(0,0,0), 0, 0, 0));
+        } else if (volume instanceof BoundingSphere) {
+          BoundingSphere vSphere = (BoundingSphere)volume;
+          return merge(vSphere.center, vSphere.radius, vSphere.radius, vSphere.radius, new BoundingBox(new Vector3f(0,0,0), 0, 0, 0));
         } else {
-            BoundingBox vBox = (BoundingBox)volume;
-            return merge(vBox, new BoundingBox(new Vector3f(0,0,0), 0, 0, 0));
+          return null;
         }
     }
 
@@ -239,28 +242,31 @@ public class BoundingBox extends Box implements BoundingVolume {
         if(volume == null) {
             return this;
         }
-        if (!(volume instanceof BoundingBox)) {
-            return this;
+        if (volume instanceof BoundingBox) {
+          BoundingBox vBox = (BoundingBox)volume;
+          return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent, this);
+        } else if (volume instanceof BoundingSphere) {
+          BoundingSphere vSphere = (BoundingSphere)volume;
+          return merge(vSphere.center, vSphere.radius, vSphere.radius, vSphere.radius, this);
         } else {
-            BoundingBox vBox = (BoundingBox)volume;
-            return merge(vBox, this);
+          return null;
         }
     }
 
-    private BoundingBox merge(BoundingBox vBox, BoundingBox rVal) {
+    private BoundingBox merge(Vector3f boxCenter, float boxX, float boxY, float boxZ, BoundingBox rVal) {
         minPnt.x = center.x-xExtent;
-        if (minPnt.x > vBox.center.x-vBox.xExtent) minPnt.x = vBox.center.x-vBox.xExtent;
+        if (minPnt.x > boxCenter.x-boxX) minPnt.x = boxCenter.x-boxX;
         minPnt.y = center.y-yExtent;
-        if (minPnt.y > vBox.center.y-vBox.yExtent) minPnt.y = vBox.center.y-vBox.yExtent;
+        if (minPnt.y > boxCenter.y-boxY) minPnt.y = boxCenter.y-boxY;
         minPnt.z = center.z-zExtent;
-        if (minPnt.z > vBox.center.z-vBox.zExtent) minPnt.z = vBox.center.z-vBox.zExtent;
+        if (minPnt.z > boxCenter.z-boxZ) minPnt.z = boxCenter.z-boxZ;
 
         maxPnt.x = center.x+xExtent;
-        if (maxPnt.x < vBox.center.x+vBox.xExtent) maxPnt.x = vBox.center.x+vBox.xExtent;
+        if (maxPnt.x < boxCenter.x+boxX) maxPnt.x = boxCenter.x+boxX;
         maxPnt.y = center.y+yExtent;
-        if (maxPnt.y < vBox.center.y+vBox.yExtent) maxPnt.y = vBox.center.y+vBox.yExtent;
+        if (maxPnt.y < boxCenter.y+boxY) maxPnt.y = boxCenter.y+boxY;
         maxPnt.z = center.z+zExtent;
-        if (maxPnt.z < vBox.center.z+vBox.zExtent) maxPnt.z = vBox.center.z+vBox.zExtent;
+        if (maxPnt.z < boxCenter.z+boxZ) maxPnt.z = boxCenter.z+boxZ;
 
         maxPnt.subtractLocal(minPnt).multLocal(0.5f);
         rVal.xExtent = maxPnt.x;

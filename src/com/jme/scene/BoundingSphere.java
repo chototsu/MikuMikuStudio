@@ -42,6 +42,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
 import com.jme.util.LoggingSystem;
+import com.jme.math.FastMath;
 
 /**
  * <code>BoundingSphere</code> defines a sphere that defines a container
@@ -54,7 +55,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.26 2004-03-17 16:16:27 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.27 2004-03-17 23:16:55 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -200,14 +201,16 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     }
 
-    /**
-     * <code>transform</code> modifies the center of the sphere to reflect the
-     * change made via a rotation, translation and scale.
-     * @param rotate the rotation change.
-     * @param translate the translation change.
-     * @param scale the size change.
-     */
-    public BoundingVolume transform(
+  /**
+   * <code>transform</code> modifies the center of the sphere to reflect the
+   * change made via a rotation, translation and scale.
+   *
+   * @param rotate the rotation change.
+   * @param translate the translation change.
+   * @param scale the size change.
+   * @return BoundingVolume
+   */
+  public BoundingVolume transform(
         Quaternion rotate,
         Vector3f translate,
         float scale) {
@@ -215,15 +218,18 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         return new BoundingSphere(scale * radius, newCenter);
     }
 
-    /**
-     * <code>transform</code> modifies the center of the sphere to reflect the
-     * change made via a rotation, translation and scale.
-     * @param rotate the rotation change.
-     * @param translate the translation change.
-     * @param scale the size change.
-     * @param store sphere to store result in
-     */
-    public BoundingVolume transform(
+  /**
+   * <code>transform</code> modifies the center of the sphere to reflect the
+   * change made via a rotation, translation and scale.
+   *
+   * @param rotate the rotation change.
+   * @param translate the translation change.
+   * @param scale the size change.
+   * @param store sphere to store result in
+   * @return BoundingVolume
+   * @return ref
+   */
+  public BoundingVolume transform(
         Quaternion rotate,
         Vector3f translate,
         float scale,
@@ -241,6 +247,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * <code>whichSide</code> takes a plane (typically provided by a view
      * frustum) to determine which side this bound is on.
      * @param plane the plane to check against.
+     * @return side
      */
     public int whichSide(Plane plane) {
         float distance = plane.pseudoDistance(center);
@@ -261,37 +268,24 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @return the new sphere
      */
     public BoundingVolume merge(BoundingVolume volume) {
-        if(volume == null) {
-            return this;
-        }
-        if (!(volume instanceof BoundingSphere)) {
-            return this;
-        } else {
-            BoundingSphere sphere = (BoundingSphere) volume;
-            Vector3f diff = sphere.getCenter().subtract(center);
-            float lengthSquared = diff.lengthSquared();
-            float radiusDiff = sphere.getRadius() - radius;
-            float diffSquared = radiusDiff * radiusDiff;
-
-            if (diffSquared >= lengthSquared) {
-                return (radiusDiff >= 0.0 ? volume : this);
-            }
-
-            float length = (float) Math.sqrt(lengthSquared);
-            float tolerance = 1e-06f;
-            BoundingSphere newSphere = new BoundingSphere();
-
-            if (length > tolerance) {
-                float coeff = (length + radiusDiff) / (2.0f * length);
-                newSphere.setCenter(center.addLocal(diff.multLocal(coeff)));
-            } else {
-                newSphere.setCenter(center);
-            }
-
-            newSphere.setRadius(0.5f * (length + radius + sphere.getRadius()));
-
-            return newSphere;
-        }
+      if (volume == null) {
+        return this;
+      }
+      if (volume instanceof BoundingSphere) {
+        BoundingSphere sphere = (BoundingSphere) volume;
+        float temp_radius = sphere.getRadius();
+        Vector3f temp_center = sphere.getCenter();
+        BoundingSphere rVal = new BoundingSphere();
+        return merge(volume, temp_radius, temp_center, rVal);
+      } else if (volume instanceof BoundingBox) {
+        BoundingBox box = (BoundingBox)volume;
+        Vector3f radVect = new Vector3f(box.xExtent, box.yExtent, box.zExtent);
+        Vector3f temp_center = box.getCenter();
+        BoundingSphere rVal = new BoundingSphere();
+        return merge(volume, radVect.length(), temp_center, rVal);
+      } else {
+        return null;
+      }
     }
 
     /**
@@ -301,42 +295,48 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @return this
      */
     public BoundingVolume mergeLocal(BoundingVolume volume) {
-        if(volume == null) {
-            return this;
-        }
-        if (!(volume instanceof BoundingSphere)) {
-            return this;
-        } else {
-            BoundingSphere sphere = (BoundingSphere) volume;
-            float diffx = center.x - sphere.center.x;
-            float diffy = center.y - sphere.center.y;
-            float diffz = center.z - sphere.center.z;
-            float lengthSquared = diffx*diffx + diffy*diffy + diffz*diffz;
-            float radiusDiff = sphere.getRadius() - radius;
-            float diffSquared = radiusDiff * radiusDiff;
+      if (volume == null) {
+        return this;
+      }
+      if (volume instanceof BoundingSphere) {
+        BoundingSphere sphere = (BoundingSphere) volume;
+        float temp_radius = sphere.getRadius();
+        Vector3f temp_center = sphere.getCenter();
+        return merge(volume, temp_radius, temp_center, this);
+      } else if (volume instanceof BoundingBox) {
+        BoundingBox box = (BoundingBox)volume;
+        Vector3f radVect = new Vector3f(box.xExtent, box.yExtent, box.zExtent);
+        Vector3f temp_center = box.getCenter();
+        return merge(volume, radVect.length(), temp_center, this);
+      } else {
+        return null;
+      }
+    }
 
-            if (diffSquared >= lengthSquared) {
-                if (radiusDiff >= 0.0) {
-                    center = sphere.center;
-                    radius = sphere.radius;
-                }
-                return this;
-            }
+    private BoundingVolume merge(BoundingVolume volume, float temp_radius,
+                                 Vector3f temp_center, BoundingSphere rVal) {
+      Vector3f diff = temp_center.subtract(center);
+      float lengthSquared = diff.lengthSquared();
+      float radiusDiff = temp_radius - radius;
+      float diffSquared = radiusDiff * radiusDiff;
 
-            float length = (float) Math.sqrt(lengthSquared);
-            float tolerance = 1e-06f;
+      if (diffSquared >= lengthSquared) {
+          return (radiusDiff >= 0.0 ? volume : this);
+      }
 
-            if (length > tolerance) {
-                float coeff = (length + radiusDiff) / (2.0f * length);
-                center.x = center.x+((sphere.center.x-center.x)*coeff);
-                center.y = center.y+((sphere.center.y-center.y)*coeff);
-                center.z = center.z+((sphere.center.z-center.z)*coeff);
-            }
+      float length = (float) Math.sqrt(lengthSquared);
+      float tolerance = 1e-06f;
 
-            radius = (0.5f * (length + radius + sphere.radius));
+      if (length > tolerance) {
+          float coeff = (length + radiusDiff) / (2.0f * length);
+          rVal.setCenter(center.addLocal(diff.multLocal(coeff)));
+      } else {
+          rVal.setCenter(center);
+      }
 
-            return this;
-        }
+      rVal.setRadius(0.5f * (length + radius + temp_radius));
+
+      return rVal;
     }
 
     /**
