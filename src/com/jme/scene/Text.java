@@ -41,7 +41,7 @@ import com.jme.renderer.ColorRGBA;
  * <code>Text</code> allows text to be displayed on the screen.  The renderstate of this Geometry must be a valid
  * font texture.
  * @author Mark Powell
- * @version $Id: Text.java,v 1.11 2004-08-21 06:18:34 cep21 Exp $
+ * @version $Id: Text.java,v 1.12 2004-08-21 06:21:42 cep21 Exp $
  */
 public class Text extends Geometry {
     private StringBuffer text;
@@ -72,6 +72,11 @@ public class Text extends Geometry {
         this.text.replace(0, this.text.length(), text);
     }
 
+    /**
+     * Sets the text to be rendered on the next render.  This function is a more efficient
+     * version of print(String).
+     * @param text The text to display.
+     */
     public void print(StringBuffer text) {
         this.text.setLength(0);
         this.text.append(text);
