@@ -31,6 +31,8 @@
  */
 package com.jme.widget;
 
+import com.jme.input.InputControllerAbstract;
+import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.widget.border.WidgetBorder;
@@ -105,6 +107,7 @@ public interface Widget extends WidgetMouseHandlerInterface {
     public abstract WidgetNotifier getNotifierMouseMove();
     public abstract Widget getMouseOwner();
     public abstract void setMouseOwner(Widget widget);
-
-
+    public MouseInput getMouseInput();
+    public InputControllerAbstract getInputController();
+    public void setInputController(InputControllerAbstract controller);
 }
