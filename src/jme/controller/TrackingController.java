@@ -35,7 +35,7 @@ import java.util.logging.Level;
 
 import jme.entity.Entity;
 import jme.entity.camera.Camera;
-import jme.locale.external.data.AbstractHeightMap;
+import jme.exception.MonkeyRuntimeException;
 import jme.math.MathUtils;
 import jme.physics.PhysicsModule;
 import jme.system.KeyBindingManager;
@@ -46,157 +46,183 @@ import org.lwjgl.input.Mouse;
 import org.lwjgl.vector.Vector3f;
 
 /**
- * <code>TrackingController</code> 
+ * <code>TrackingController</code> defines a controller that uses a camera
+ * to "follow" a given entity. It is intended to be used such that the user is
+ * directly controlling an entity. As that entity moves away, the camera trackings
+ * it by updating it's view. If the entity is getting too far away, the camera
+ * moves to maintain a minimal distance. 
+ * 
+ * Movement of the entity is handled by the entity's <code>PhysicsModule</code>.
+ * If no such module exists, the entity will not be moved via 
+ * <code>TrackingController</code>.
+ * 
  * @author Mark Powell
  */
 public class TrackingController extends AbstractGameController {
-    private double trackingDistance;
-    private int idleAnim;
-    private int currentAnimation;
-    private AbstractHeightMap hm;
-    private Camera camera;
-    private PhysicsModule physics;
-    //keybindings
-    protected KeyBindingManager key;
+	//the minimal distance the camera can be away from the entity.
+	private double trackingDistance;
+	private float trackingSpeed;
 
-    Vector3f newPos;
-    double distance;
+	//Camera system
+	private Camera camera;
 
-    public TrackingController(Entity entity, Camera camera) {
+	//Entity's physics module for movement. Can be null.
+	private PhysicsModule physics;
 
-        this.entity = entity;
-        this.camera = camera;
-        this.physics = entity.getPhysics();
-        try {
-            Mouse.create();
-            Keyboard.create();
-        } catch (Exception e) {
-            e.printStackTrace();
-            LoggingSystem.getLoggingSystem().getLogger().log(
-                Level.WARNING,
-                "Error creating Mouse and/or Keyboard");
+	//keybindings
+	protected KeyBindingManager key;
 
-        }
+	/**
+	 * Constructor instantiates a new <code>TrackingController</code>
+	 * object. During instantiation, it sets the input devices for
+	 * use and the key bindings are set.
+	 * @param entity the entity to track.
+	 * @param camera the camera to use for tracking.
+	 * @throws MonkeyRuntimeException if entity or camera are null.
+	 */
+	public TrackingController(Entity entity, Camera camera) {
+		if (null == entity || null == camera) {
+			throw new MonkeyRuntimeException(
+				"Entity and camera " + "may not be null.");
+		}
+		this.entity = entity;
+		this.camera = camera;
+		//physics MIGHT be null
+		this.physics = entity.getPhysics();
 
-        setDefaultKeyBindings();
-    }
+		try {
+			Mouse.create();
+			Keyboard.create();
+		} catch (Exception e) {
+			e.printStackTrace();
+			LoggingSystem.getLoggingSystem().getLogger().log(
+				Level.WARNING,
+				"Error creating Mouse and/or Keyboard");
 
-    /* (non-Javadoc)
-     * @see jme.controller.EntityController#render()
-     */
-    public void render() {
-        camera.render();
+		}
 
-    }
+		setDefaultKeyBindings();
+	}
 
-    public void setHeightMap(AbstractHeightMap hm) {
-        this.hm = hm;
-    }
+	/**
+	 * <code>render</code> calls the render method for the camera
+	 * updating the camera's viewport.
+	 */
+	public void render() {
+		camera.render();
+	}
 
-    public void setTrackingDistance(float trackingDistance) {
-        this.trackingDistance = trackingDistance;
-    }
+	/**
+	 * <code>update</code> refreshes the camera and checks the tracking
+	 * distance. Key presses are then checked and the entity is updated 
+	 * if needed.
+	 * 
+	 * @param time the time between updates.
+	 */
+	public boolean update(float time) {
+		Keyboard.poll();
 
-    /* (non-Javadoc)
-     * @see jme.controller.AbstractGameController#update(float)
-     */
-    public boolean update(float frameRate) {
-        Keyboard.poll();
-        camera.update(frameRate);
-        camera.updateFrustum();
-        //app specific
-        camera.setView(entity.getPosition());
+		camera.update(time);
+		camera.updateFrustum();
+		camera.setView(entity.getPosition());
 
-        distance =
-            MathUtils.distance(camera.getPosition(), entity.getPosition());
-        //make 30 a variable
-        if (distance > trackingDistance) {
-            Vector3f vec =
-                (
-                    Vector3f.sub(
-                        camera.getView(),
-                        camera.getPosition(),
-                        null)).normalise(
-                    null);
+		double distance =
+			MathUtils.distance(camera.getPosition(), entity.getPosition());
+		if (distance > trackingDistance) {
+			Vector3f vec =
+				(
+					Vector3f.sub(
+						camera.getView(),
+						camera.getPosition(),
+						null)).normalise(
+					null);
 
-            camera.getPosition().x += vec.x;
-            camera.getPosition().z += vec.z;
+			camera.getPosition().x += vec.x * trackingSpeed;
+			camera.getPosition().z += vec.z * trackingSpeed;
 
-            camera.getPosition().y = entity.getPosition().y;
+			camera.getPosition().y = entity.getPosition().y;
+		}
 
-            if (null != hm) {
-                if (camera.getPosition().y
-                    < hm.getInterpolatedHeight(
-                        camera.getPosition().x / 4,
-                        camera.getPosition().z / 4)
-                        + 8) {
+		if (null != physics) {
+			if (isKeyDown("forward")) {
+				physics.move(1);
+			}
 
-                    camera.getPosition().y =
-                        hm.getInterpolatedHeight(
-                            camera.getPosition().x / 4,
-                            camera.getPosition().z / 4)
-                            + 8;
+			if (isKeyDown("back")) {
+				physics.move(-0.5f);
+			}
 
-                }
-            }
-        }
+			if (isKeyDown("right")) {
+				physics.turn(-1);
+				entity.setYaw(physics.getCurrentAngle());
+			} else {
+				if (isKeyDown("left")) {
+					physics.turn(1);
+					entity.setYaw(physics.getCurrentAngle());
+				} else {
+					physics.turn(0);
+				}
+			}
+		}
+		return checkAdditionalKeys();
+	}
 
-        if (null != physics) {
-            if (isKeyDown("forward")) {
-                physics.move(1);
-            }
+	/**
+	 * <code>setTrackingDistance</code> sets the distance to follow
+	 * behind the entity. If the camera is further than this
+	 * tracking distance, the camera will move towards the entity. 
+	 * The speed at which the camera moves is dependant on the 
+	 * tracking speed.
+	 * 
+	 * @param trackingDistance the minimal distance the camera
+	 * 		is allowed to follow behind. 
+	 */
+	public void setTrackingDistance(float trackingDistance) {
+		this.trackingDistance = trackingDistance;
+	}
 
-            if (isKeyDown("back")) {
-                physics.move(-0.5f);
-            }
+	/**
+	 * <code>setTrackingSpeed</code> sets the speed at which the camera
+	 * follows the entity. 
+	 * @param trackingSpeed the speed at which the camera follows the
+	 * 		entity.
+	 */
+	public void setTrackingSpeed(float trackingSpeed) {
+		this.trackingSpeed = trackingSpeed;
+	}
 
-            if (isKeyDown("right")) {
-                physics.turn(-1);
-                entity.setYaw(physics.getCurrentAngle());
-            } else {
-                if (isKeyDown("left")) {
-                    physics.turn(1);
-                    entity.setYaw(physics.getCurrentAngle());
-                } else {
-                    physics.turn(0);
-                }
-            }
-        }
-        return checkAdditionalKeys();
-    }
+	/**
+	 * <code>checkAdditionalKeys</code> tests the keyboard for any additional
+	 * key bindings. It is recommended that this be overridden by any 
+	 * subclass to add additional key bindings. The method returns a boolean. 
+	 * This boolean notifies if the game should be stopped or not. Default false
+	 * is generated by hitting the escape key.
+	 * 
+	 * @param boolean true continue for another frame, false stop.
+	 */
+	protected boolean checkAdditionalKeys() {
+		if (isKeyDown("exit")) {
+			System.out.println("EXIT");
+			return false;
+		}
 
-    /**
-     * <code>checkAdditionalKeys</code> tests the keyboard for any additional
-     * key bindings. It is recommended that this be overridden by any 
-     * subclass to add additional key bindings. The method returns a boolean. 
-     * This boolean notifies if the game should be stopped or not. Default false
-     * is generated by hitting the escape key.
-     * 
-     * @param boolean true continue for another frame, false stop.
-     */
-    protected boolean checkAdditionalKeys() {
-        if (isKeyDown("exit")) {
-            System.out.println("EXIT");
-            return false;
-        }
+		return true;
+	}
 
-        return true;
-    }
-
-    /**
-     * <code>setDefaultKeyBindings</code> sets the default bindings for
-     * forward, backward, strafe left/right, turn left/right, rise and lower.
-     */
-    private void setDefaultKeyBindings() {
-        key = KeyBindingManager.getKeyBindingManager();
-        key.set("exit", Keyboard.KEY_ESCAPE);
-        key.set("forward", Keyboard.KEY_W);
-        key.set("right", Keyboard.KEY_D);
-        key.set("left", Keyboard.KEY_A);
-        key.set("back", Keyboard.KEY_S);
-        key.add("forward", Keyboard.KEY_UP);
-        key.add("right", Keyboard.KEY_RIGHT);
-        key.add("left", Keyboard.KEY_LEFT);
-    }
+	/**
+	 * <code>setDefaultKeyBindings</code> sets the default bindings for
+	 * forward, backward, strafe left/right, turn left/right, rise and lower.
+	 */
+	private void setDefaultKeyBindings() {
+		key = KeyBindingManager.getKeyBindingManager();
+		key.set("exit", Keyboard.KEY_ESCAPE);
+		key.set("forward", Keyboard.KEY_W);
+		key.set("right", Keyboard.KEY_D);
+		key.set("left", Keyboard.KEY_A);
+		key.set("back", Keyboard.KEY_S);
+		key.add("forward", Keyboard.KEY_UP);
+		key.add("right", Keyboard.KEY_RIGHT);
+		key.add("left", Keyboard.KEY_LEFT);
+	}
 
 }
