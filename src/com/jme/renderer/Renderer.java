@@ -77,7 +77,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.33 2004-06-17 16:31:18 renanse Exp $
+ * @version $Id: Renderer.java,v 1.34 2004-06-25 16:12:13 renanse Exp $
  */
 public interface Renderer {
 
@@ -416,4 +416,10 @@ public interface Renderer {
      * @return true if it was queued.
      */
     public boolean checkAndAdd(Spatial s);
+
+    /**
+     * Return true if the system running this supports VBO
+     * @return boolean
+     */
+    public boolean supportsVBO();
 }
