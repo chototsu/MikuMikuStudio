@@ -40,9 +40,9 @@ import jme.math.Vector;
  * all vertices that make up the geometry.
  * 
  * @author Mark Powell
- * @version $Id: BoundingBox.java,v 1.4 2003-08-18 22:25:02 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.5 2003-08-28 18:53:03 mojomonkey Exp $
  */
-public class BoundingBox {
+public class BoundingBox implements BoundingVolume {
 	private Vector center;
 	private Vector minPoint;
 	private Vector maxPoint;
