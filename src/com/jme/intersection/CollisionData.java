@@ -31,50 +31,67 @@
  */
 package com.jme.intersection;
 
-import com.jme.scene.Geometry;
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
+import java.util.ArrayList;
+
+import com.jme.scene.TriMesh;
 
 /**
- * <code>CollisionDetection</code> provides a system for calculating collisions
- * based on given criteria.
- *
+ * CollisionData contains information about a collision between two TriMesh
+ * objects. The mesh that was hit by the relevant TriMesh (the one making the
+ * collision check) is referenced as well as an ArrayList for the triangles
+ * that collided. 
  * @author Mark Powell
- * @version $Id: CollisionDetection.java,v 1.9 2004-09-02 18:02:00 mojomonkey Exp $
  */
-public class CollisionDetection {
-
-    private CollisionDetection() {
-    }
-
-    /**
-     * <code>hasCollision</code> determines if a static test Spatial is
-     * colliding with any scene objects.
-     *
-     * @param test    the node to test for collisions.
-     * @param scene   the world to test the node against.
-     * @param results the list of collisions.
-     */
-    public static void hasCollision(Spatial test,
-                                    Spatial scene,
-                                    CollisionResults results) {
-
-        if (test == scene) {
-            return;
-        }
-
-        if (Intersection
-                .intersection(test.getWorldBound(), scene.getWorldBound())) {
-            if ((scene instanceof Node)) {
-                Node parent = (Node) scene;
-                for (int i = 0; i < parent.getQuantity(); i++) {
-                    hasCollision(test, parent.getChild(i), results);
-                }
-            } else {
-                //find the triangle that is being hit.
-                //add this node and the triangle to the CollisionResults list.
-                results.addGeometry((Geometry) scene);
-            }
-        }
-    }
+public class CollisionData {
+	private TriMesh mesh;
+	private ArrayList source;
+	private ArrayList target;
+	
+	/**
+	 * instantiates a new CollisionData object.
+	 * @param mesh the mesh the relevant TriMesh collided with.
+	 * @param source the triangles of the relevant TriMesh that made contact.
+	 * @param target the triangles of the second mesh that made contact.
+	 */
+	public CollisionData(TriMesh mesh, ArrayList source, ArrayList target) {
+		this.mesh = mesh;
+		this.source = source;
+		this.target = target;
+	}
+	/**
+	 * @return Returns the mesh.
+	 */
+	public TriMesh getMesh() {
+		return mesh;
+	}
+	/**
+	 * @param mesh The mesh to set.
+	 */
+	public void setMesh(TriMesh mesh) {
+		this.mesh = mesh;
+	}
+	/**
+	 * @return Returns the source.
+	 */
+	public ArrayList getSource() {
+		return source;
+	}
+	/**
+	 * @param source The source to set.
+	 */
+	public void setSource(ArrayList source) {
+		this.source = source;
+	}
+	/**
+	 * @return Returns the target.
+	 */
+	public ArrayList getTarget() {
+		return target;
+	}
+	/**
+	 * @param target The target to set.
+	 */
+	public void setTarget(ArrayList target) {
+		this.target = target;
+	}
 }

@@ -36,452 +36,648 @@ import com.jme.scene.shape.*;
 import com.jme.math.*;
 
 /**
- * <code>BoundingBox</code> defines an axis-aligned cube that defines a container
- * for a group of vertices of a particular piece of geometry. This box
- * defines a center and extents from that center along the x, y and z axis.
- * <br><br>
- * A typical usage is to allow the class define the center and radius
- * by calling either <code>containAABB</code> or <code>averagePoints</code>.
- * A call to <code>computeFramePoint</code> in turn calls
- * <code>containAABB</code>.
- *
+ * <code>BoundingBox</code> defines an axis-aligned cube that defines a
+ * container for a group of vertices of a particular piece of geometry. This box
+ * defines a center and extents from that center along the x, y and z axis. <br>
+ * <br>
+ * A typical usage is to allow the class define the center and radius by calling
+ * either <code>containAABB</code> or <code>averagePoints</code>. A call to
+ * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
+ * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.19 2004-09-05 16:07:34 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.20 2004-09-10 22:36:11 mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
-    /** These define the array of planes that are check during view culling. */
-    public int[] checkPlanes = new int[6];
+	/** These define the array of planes that are check during view culling. */
+	public int[] checkPlanes = new int[6];
 
-    private Vector3f minPnt = new Vector3f();
-    private Vector3f maxPnt = new Vector3f();
+	private Vector3f minPnt = new Vector3f();
 
-    private float oldXExtent, oldYExtent, oldZExtent;
-    private Vector3f oldCenter = new Vector3f();
+	private Vector3f maxPnt = new Vector3f();
 
-    private Vector3f origCenter = new Vector3f();
-    private Vector3f origExtent = new Vector3f();
-    private static final Matrix3f tempMat=new Matrix3f();
-    private static final Vector3f tempVa=new Vector3f();
-    private static final Vector3f tempVb=new Vector3f();
+	private float oldXExtent, oldYExtent, oldZExtent;
 
-    /**
-     * Default contstructor instantiates a new <code>BoundingBox</code>
-     * object.
-     */
-    public BoundingBox() {
-        super("aabb");
-        initCheckPlanes();
-    }
+	private Vector3f oldCenter = new Vector3f();
 
-    /**
-     * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
-     */
-    public BoundingBox(String name) {
-        super(name);
-        initCheckPlanes();
-    }
+	private Vector3f origCenter = new Vector3f();
 
-    /**
-     * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
-     */
-    public BoundingBox(Vector3f center, float xExtent, float yExtent, float zExtent) {
-        super("aabb", center, xExtent, yExtent, zExtent);
-        initCheckPlanes();
-    }
+	private Vector3f origExtent = new Vector3f();
 
-    /**
-     * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
-     */
-    public BoundingBox(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
-        super(name, center, xExtent, yExtent, zExtent);
-        initCheckPlanes();
-    }
+	private static final Matrix3f tempMat = new Matrix3f();
 
-    /**
-     * Not to be called by users.  This function initializes the check planes for the AABB.
-     */
-    public void initCheckPlanes() {
-        checkPlanes[0] = 0;
-        checkPlanes[1] = 1;
-        checkPlanes[2] = 2;
-        checkPlanes[3] = 3;
-        checkPlanes[4] = 4;
-        checkPlanes[5] = 5;
-    }
+	private static final Vector3f tempVa = new Vector3f();
 
-    /**
-     * <code>computeFromPoints</code> creates a new Bounding Box from
-     * a given set of points. It uses the <code>containAABB</code> method
-     * as default.
-     * @param points the points to contain.
-     */
-    public void computeFromPoints(Vector3f[] points) {
-        containAABB(points);
-    }
+	private static final Vector3f tempVb = new Vector3f();
 
-    /**
-     * <code>containAABB</code> creates a minimum-volume axis-aligned
-     * bounding box of the points, then selects the smallest
-     * enclosing sphere of the box with the sphere centered at the
-     * boxes center.
-     * @param points the list of points.
-     */
-    public void containAABB(Vector3f[] points) {
-       if(points.length <= 0) {
-            return;
-        }
+	/**
+	 * Default contstructor instantiates a new <code>BoundingBox</code>
+	 * object.
+	 */
+	public BoundingBox() {
+		super("aabb");
+		initCheckPlanes();
+	}
 
-        Vector3f min = tempVa.set(points[0]);
-        Vector3f max = tempVb.set(min);
+	/**
+	 * Contstructor instantiates a new <code>BoundingBox</code> object with
+	 * given specs.
+	 */
+	public BoundingBox(String name) {
+		super(name);
+		initCheckPlanes();
+	}
 
-        for (int i = 1; i < points.length; i++) {
-            if (points[i].x < min.x)
-                min.x = points[i].x;
-            else if (points[i].x > max.x)
-                max.x = points[i].x;
+	/**
+	 * Contstructor instantiates a new <code>BoundingBox</code> object with
+	 * given specs.
+	 */
+	public BoundingBox(Vector3f center, float xExtent, float yExtent,
+			float zExtent) {
+		super("aabb", center, xExtent, yExtent, zExtent);
+		initCheckPlanes();
+	}
 
-            if (points[i].y < min.y)
-                min.y = points[i].y;
-            else if (points[i].y > max.y)
-                max.y = points[i].y;
+	/**
+	 * Contstructor instantiates a new <code>BoundingBox</code> object with
+	 * given specs.
+	 */
+	public BoundingBox(String name, Vector3f center, float xExtent,
+			float yExtent, float zExtent) {
+		super(name, center, xExtent, yExtent, zExtent);
+		initCheckPlanes();
+	}
 
-            if (points[i].z < min.z)
-                min.z = points[i].z;
-            else if (points[i].z > max.z)
-                max.z = points[i].z;
-        }
+	/**
+	 * Not to be called by users. This function initializes the check planes for
+	 * the AABB.
+	 */
+	public void initCheckPlanes() {
+		checkPlanes[0] = 0;
+		checkPlanes[1] = 1;
+		checkPlanes[2] = 2;
+		checkPlanes[3] = 3;
+		checkPlanes[4] = 4;
+		checkPlanes[5] = 5;
+	}
 
-        center.set(min.addLocal(max));
-        center.multLocal(0.5f);
+	/**
+	 * <code>computeFromPoints</code> creates a new Bounding Box from a given
+	 * set of points. It uses the <code>containAABB</code> method as default.
+	 * 
+	 * @param points
+	 *            the points to contain.
+	 */
+	public void computeFromPoints(Vector3f[] points) {
+		containAABB(points);
+	}
 
-        origExtent.x = xExtent = max.x - center.x;
-        origExtent.y = yExtent = max.y - center.y;
-        origExtent.z = zExtent = max.z - center.z;
-        origCenter.set(center);
-    }
+	/**
+	 * <code>containAABB</code> creates a minimum-volume axis-aligned bounding
+	 * box of the points, then selects the smallest enclosing sphere of the box
+	 * with the sphere centered at the boxes center.
+	 * 
+	 * @param points
+	 *            the list of points.
+	 */
+	public void containAABB(Vector3f[] points) {
+		if (points.length <= 0) {
+			return;
+		}
 
-    /**
-     * <code>transform</code> modifies the center of the box to reflect the
-     * change made via a rotation, translation and scale.
-     * @param rotate the rotation change.
-     * @param translate the translation change.
-     * @param scale the size change.
-     */
-    public BoundingVolume transform(
-        Quaternion rotate,
-        Vector3f translate,
-        Vector3f scale) {
-        return this.transform(rotate,translate,scale,null);
-    }
+		Vector3f min = tempVa.set(points[0]);
+		Vector3f max = tempVb.set(min);
 
-    /**
-     * <code>transform</code> modifies the center of the box to reflect the
-     * change made via a rotation, translation and scale.
-     * @param rotate the rotation change.
-     * @param translate the translation change.
-     * @param scale the size change.
-     * @param store box to store result in
-     */
-    public BoundingVolume transform(
-        Quaternion rotate,
-        Vector3f translate,
-        Vector3f scale,
-        BoundingVolume store) {
+		for (int i = 1; i < points.length; i++) {
+			if (points[i].x < min.x)
+				min.x = points[i].x;
+			else if (points[i].x > max.x)
+				max.x = points[i].x;
 
+			if (points[i].y < min.y)
+				min.y = points[i].y;
+			else if (points[i].y > max.y)
+				max.y = points[i].y;
 
+			if (points[i].z < min.z)
+				min.z = points[i].z;
+			else if (points[i].z > max.z)
+				max.z = points[i].z;
+		}
 
-        BoundingBox box = (BoundingBox)store;
-        if (box == null) box = new BoundingBox(new Vector3f(0,0,0), 1,1,1);
+		center.set(min.addLocal(max));
+		center.multLocal(0.5f);
 
-        box.origCenter.set(origCenter);
-        rotate.mult(origCenter, box.center);
-        box.center.multLocal(scale).addLocal(translate);
+		origExtent.x = xExtent = max.x - center.x;
+		origExtent.y = yExtent = max.y - center.y;
+		origExtent.z = zExtent = max.z - center.z;
+		origCenter.set(center);
+	}
 
-        Matrix3f transMatrix=tempMat;
-        transMatrix.set(rotate);
-        // Make the rotation matrix all positive to get the maximum x/y/z extent
-        if (transMatrix.m00<0) transMatrix.m00*=-1;
-        if (transMatrix.m01<0) transMatrix.m01*=-1;
-        if (transMatrix.m02<0) transMatrix.m02*=-1;
-        if (transMatrix.m10<0) transMatrix.m10*=-1;
-        if (transMatrix.m11<0) transMatrix.m11*=-1;
-        if (transMatrix.m12<0) transMatrix.m12*=-1;
-        if (transMatrix.m20<0) transMatrix.m20*=-1;
-        if (transMatrix.m21<0) transMatrix.m21*=-1;
-        if (transMatrix.m22<0) transMatrix.m22*=-1;
+	/**
+	 * <code>transform</code> modifies the center of the box to reflect the
+	 * change made via a rotation, translation and scale.
+	 * 
+	 * @param rotate
+	 *            the rotation change.
+	 * @param translate
+	 *            the translation change.
+	 * @param scale
+	 *            the size change.
+	 */
+	public BoundingVolume transform(Quaternion rotate, Vector3f translate,
+			Vector3f scale) {
+		return this.transform(rotate, translate, scale, null);
+	}
 
-        // (ab)use origExtent to do the multiplication resulting in the biggest extent
-        // values for a rotation.
-        transMatrix.mult(origExtent,box.origExtent);
-        // Assign the biggest rotations after scales.
-        box.xExtent=box.origExtent.x*scale.x;
-        box.yExtent=box.origExtent.y*scale.y;
-        box.zExtent=box.origExtent.z*scale.z;
-        // reset origExtent back to what it should be.
-        box.origExtent.set(origExtent);
+	/**
+	 * <code>transform</code> modifies the center of the box to reflect the
+	 * change made via a rotation, translation and scale.
+	 * 
+	 * @param rotate
+	 *            the rotation change.
+	 * @param translate
+	 *            the translation change.
+	 * @param scale
+	 *            the size change.
+	 * @param store
+	 *            box to store result in
+	 */
+	public BoundingVolume transform(Quaternion rotate, Vector3f translate,
+			Vector3f scale, BoundingVolume store) {
 
-        return box;
-    }
+		BoundingBox box = (BoundingBox) store;
+		if (box == null)
+			box = new BoundingBox(new Vector3f(0, 0, 0), 1, 1, 1);
 
-    /**
-     * <code>whichSide</code> takes a plane (typically provided by a view
-     * frustum) to determine which side this bound is on.
-     * @param plane the plane to check against.
-     */
-    public int whichSide(Plane plane) {
-        float radius = FastMath.abs(xExtent*plane.normal.x) +
-                       FastMath.abs(yExtent*plane.normal.y) +
-                       FastMath.abs(zExtent*plane.normal.z);
+		box.origCenter.set(origCenter);
+		rotate.mult(origCenter, box.center);
+		box.center.multLocal(scale).addLocal(translate);
 
-        float distance = plane.pseudoDistance(center);
+		Matrix3f transMatrix = tempMat;
+		transMatrix.set(rotate);
+		// Make the rotation matrix all positive to get the maximum x/y/z extent
+		if (transMatrix.m00 < 0)
+			transMatrix.m00 *= -1;
+		if (transMatrix.m01 < 0)
+			transMatrix.m01 *= -1;
+		if (transMatrix.m02 < 0)
+			transMatrix.m02 *= -1;
+		if (transMatrix.m10 < 0)
+			transMatrix.m10 *= -1;
+		if (transMatrix.m11 < 0)
+			transMatrix.m11 *= -1;
+		if (transMatrix.m12 < 0)
+			transMatrix.m12 *= -1;
+		if (transMatrix.m20 < 0)
+			transMatrix.m20 *= -1;
+		if (transMatrix.m21 < 0)
+			transMatrix.m21 *= -1;
+		if (transMatrix.m22 < 0)
+			transMatrix.m22 *= -1;
 
-        if (distance <= -radius) {
-            return Plane.NEGATIVE_SIDE;
-        } else if (distance >= radius) {
-            return Plane.POSITIVE_SIDE;
-        } else {
-            return Plane.NO_SIDE;
-        }
-    }
+		// (ab)use origExtent to do the multiplication resulting in the biggest
+		// extent
+		// values for a rotation.
+		transMatrix.mult(origExtent, box.origExtent);
+		// Assign the biggest rotations after scales.
+		box.xExtent = box.origExtent.x * scale.x;
+		box.yExtent = box.origExtent.y * scale.y;
+		box.zExtent = box.origExtent.z * scale.z;
+		// reset origExtent back to what it should be.
+		box.origExtent.set(origExtent);
 
-    /**
-     * <code>merge</code> combines this sphere with a second bounding sphere.
-     * This new sphere contains both bounding spheres and is returned.
-     * @param volume the sphere to combine with this sphere.
-     * @return the new sphere
-     */
-    public BoundingVolume merge(BoundingVolume volume) {
-        if(volume == null) {
-            return this;
-        }
-        if (volume instanceof BoundingBox) {
-          BoundingBox vBox = (BoundingBox)volume;
-          return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent, new BoundingBox(new Vector3f(0,0,0), 0, 0, 0));
-        } else if (volume instanceof BoundingSphere) {
-          BoundingSphere vSphere = (BoundingSphere)volume;
-          return merge(vSphere.center, vSphere.radius, vSphere.radius, vSphere.radius, new BoundingBox(new Vector3f(0,0,0), 0, 0, 0));
-        } else if (volume instanceof OrientedBoundingBox) {
-          OrientedBoundingBox box = (OrientedBoundingBox)volume;
-          BoundingBox rVal=(BoundingBox) this.clone(null);
-          return rVal.mergeOBB(box);
-        } else {
-          return null;
-        }
-    }
+		return box;
+	}
 
-    /**
-     * <code>mergeLocal</code> combines this sphere with a second bounding sphere locally.
-     * Altering this sphere to contain both the original and the additional sphere volumes;
-     * @param volume the sphere to combine with this sphere.
-     * @return this
-     */
-    public BoundingVolume mergeLocal(BoundingVolume volume) {
-        if(volume == null) {
-            return this;
-        }
-        if (volume instanceof BoundingBox) {
-          BoundingBox vBox = (BoundingBox)volume;
-          return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent, this);
-        } else if (volume instanceof BoundingSphere) {
-          BoundingSphere vSphere = (BoundingSphere)volume;
-          return merge(vSphere.center, vSphere.radius, vSphere.radius, vSphere.radius, this);
-        } else if (volume instanceof OrientedBoundingBox){
-          return mergeOBB((OrientedBoundingBox)volume);
-        } else {
-          return null;
-        }
-    }
+	/**
+	 * <code>whichSide</code> takes a plane (typically provided by a view
+	 * frustum) to determine which side this bound is on.
+	 * 
+	 * @param plane
+	 *            the plane to check against.
+	 */
+	public int whichSide(Plane plane) {
+		float radius = FastMath.abs(xExtent * plane.normal.x)
+				+ FastMath.abs(yExtent * plane.normal.y)
+				+ FastMath.abs(zExtent * plane.normal.z);
 
-    /**
-     * Merges this AABB with the given OBB.
-     * @param volume the OBB to merge this AABB with.
-     * @return This AABB extended to fit the given OBB.
-     */
-    private BoundingBox mergeOBB(OrientedBoundingBox volume) {
-        if (!volume.correctCorners)
-            volume.computeCorners();
+		float distance = plane.pseudoDistance(center);
 
-        Vector3f min = tempVa.set(center.x-xExtent,center.y-yExtent,center.z-zExtent);
-        Vector3f max = tempVb.set(center.x+xExtent,center.y+yExtent,center.z+zExtent);
+		if (distance <= -radius) {
+			return Plane.NEGATIVE_SIDE;
+		} else if (distance >= radius) {
+			return Plane.POSITIVE_SIDE;
+		} else {
+			return Plane.NO_SIDE;
+		}
+	}
 
-        for (int i = 1; i < volume.vectorStore.length; i++) {
-            Vector3f temp=volume.vectorStore[i];
-            if (temp.x < min.x)
-                min.x = temp.x;
-            else if (temp.x > max.x)
-                max.x = temp.x;
+	/**
+	 * <code>merge</code> combines this sphere with a second bounding sphere.
+	 * This new sphere contains both bounding spheres and is returned.
+	 * 
+	 * @param volume
+	 *            the sphere to combine with this sphere.
+	 * @return the new sphere
+	 */
+	public BoundingVolume merge(BoundingVolume volume) {
+		if (volume == null) {
+			return this;
+		}
+		if (volume instanceof BoundingBox) {
+			BoundingBox vBox = (BoundingBox) volume;
+			return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent,
+					new BoundingBox(new Vector3f(0, 0, 0), 0, 0, 0));
+		} else if (volume instanceof BoundingSphere) {
+			BoundingSphere vSphere = (BoundingSphere) volume;
+			return merge(vSphere.center, vSphere.radius, vSphere.radius,
+					vSphere.radius, new BoundingBox(new Vector3f(0, 0, 0), 0,
+							0, 0));
+		} else if (volume instanceof OrientedBoundingBox) {
+			OrientedBoundingBox box = (OrientedBoundingBox) volume;
+			BoundingBox rVal = (BoundingBox) this.clone(null);
+			return rVal.mergeOBB(box);
+		} else {
+			return null;
+		}
+	}
 
-            if (temp.y < min.y)
-                min.y = temp.y;
-            else if (temp.y > max.y)
-                max.y = temp.y;
+	/**
+	 * <code>mergeLocal</code> combines this sphere with a second bounding
+	 * sphere locally. Altering this sphere to contain both the original and the
+	 * additional sphere volumes;
+	 * 
+	 * @param volume
+	 *            the sphere to combine with this sphere.
+	 * @return this
+	 */
+	public BoundingVolume mergeLocal(BoundingVolume volume) {
+		if (volume == null) {
+			return this;
+		}
+		if (volume instanceof BoundingBox) {
+			BoundingBox vBox = (BoundingBox) volume;
+			return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent,
+					this);
+		} else if (volume instanceof BoundingSphere) {
+			BoundingSphere vSphere = (BoundingSphere) volume;
+			return merge(vSphere.center, vSphere.radius, vSphere.radius,
+					vSphere.radius, this);
+		} else if (volume instanceof OrientedBoundingBox) {
+			return mergeOBB((OrientedBoundingBox) volume);
+		} else {
+			return null;
+		}
+	}
 
-            if (temp.z < min.z)
-                min.z = temp.z;
-            else if (temp.z > max.z)
-                max.z = temp.z;
-        }
+	/**
+	 * Merges this AABB with the given OBB.
+	 * 
+	 * @param volume
+	 *            the OBB to merge this AABB with.
+	 * @return This AABB extended to fit the given OBB.
+	 */
+	private BoundingBox mergeOBB(OrientedBoundingBox volume) {
+		if (!volume.correctCorners)
+			volume.computeCorners();
 
-        center.set(min.addLocal(max));
-        center.multLocal(0.5f);
+		Vector3f min = tempVa.set(center.x - xExtent, center.y - yExtent,
+				center.z - zExtent);
+		Vector3f max = tempVb.set(center.x + xExtent, center.y + yExtent,
+				center.z + zExtent);
 
-        origExtent.x = xExtent = max.x - center.x;
-        origExtent.y = yExtent = max.y - center.y;
-        origExtent.z = zExtent = max.z - center.z;
-        origCenter.set(center);
-        return this;
-    }
+		for (int i = 1; i < volume.vectorStore.length; i++) {
+			Vector3f temp = volume.vectorStore[i];
+			if (temp.x < min.x)
+				min.x = temp.x;
+			else if (temp.x > max.x)
+				max.x = temp.x;
 
-    private BoundingBox merge(Vector3f boxCenter, float boxX, float boxY, float boxZ, BoundingBox rVal) {
+			if (temp.y < min.y)
+				min.y = temp.y;
+			else if (temp.y > max.y)
+				max.y = temp.y;
 
-        minPnt.x = center.x-xExtent;
-        if (minPnt.x > boxCenter.x-boxX) minPnt.x = boxCenter.x-boxX;
-        minPnt.y = center.y-yExtent;
-        if (minPnt.y > boxCenter.y-boxY) minPnt.y = boxCenter.y-boxY;
-        minPnt.z = center.z-zExtent;
-        if (minPnt.z > boxCenter.z-boxZ) minPnt.z = boxCenter.z-boxZ;
+			if (temp.z < min.z)
+				min.z = temp.z;
+			else if (temp.z > max.z)
+				max.z = temp.z;
+		}
 
-        maxPnt.x = center.x+xExtent;
-        if (maxPnt.x < boxCenter.x+boxX) maxPnt.x = boxCenter.x+boxX;
-        maxPnt.y = center.y+yExtent;
-        if (maxPnt.y < boxCenter.y+boxY) maxPnt.y = boxCenter.y+boxY;
-        maxPnt.z = center.z+zExtent;
-        if (maxPnt.z < boxCenter.z+boxZ) maxPnt.z = boxCenter.z+boxZ;
+		center.set(min.addLocal(max));
+		center.multLocal(0.5f);
 
-        rVal.setData(minPnt, maxPnt, false);
+		origExtent.x = xExtent = max.x - center.x;
+		origExtent.y = yExtent = max.y - center.y;
+		origExtent.z = zExtent = max.z - center.z;
+		origCenter.set(center);
+		return this;
+	}
 
-        return rVal;
-    }
+	private BoundingBox merge(Vector3f boxCenter, float boxX, float boxY,
+			float boxZ, BoundingBox rVal) {
 
-    /**
-     * <code>clone</code> creates a new BoundingBox object containing the same
-     * data as this one.
-     * @param store where to store the cloned information.  if null or wrong class, a new store is created.
-     * @return the new BoundingBox
-     */
-    public Object clone(BoundingVolume store) {
-        if (store != null && store instanceof BoundingBox) {
-            BoundingBox rVal = (BoundingBox)store;
-            rVal.center.set(center);
-            rVal.xExtent = xExtent;
-            rVal.yExtent = yExtent;
-            rVal.zExtent = zExtent;
-            rVal.checkPlanes[0] = checkPlanes[0];
-            rVal.checkPlanes[1] = checkPlanes[1];
-            rVal.checkPlanes[2] = checkPlanes[2];
-            rVal.checkPlanes[3] = checkPlanes[3];
-            rVal.checkPlanes[4] = checkPlanes[4];
-            rVal.checkPlanes[5] = checkPlanes[5];
-            rVal.origCenter.set(origCenter);
-            rVal.origExtent.set(origExtent);
-            return rVal;
-        } else{
-            BoundingBox rVal=new BoundingBox(name+"_clone", (center != null ? (Vector3f)center.clone() : null), xExtent, yExtent, zExtent);
-            rVal.origCenter.set(origCenter);
-            rVal.origExtent.set(origExtent);
-            return rVal;
-        }
-    }
+		minPnt.x = center.x - xExtent;
+		if (minPnt.x > boxCenter.x - boxX)
+			minPnt.x = boxCenter.x - boxX;
+		minPnt.y = center.y - yExtent;
+		if (minPnt.y > boxCenter.y - boxY)
+			minPnt.y = boxCenter.y - boxY;
+		minPnt.z = center.z - zExtent;
+		if (minPnt.z > boxCenter.z - boxZ)
+			minPnt.z = boxCenter.z - boxZ;
 
-    /**
-     * <code>getCheckPlane</code> returns a specific check plane. This plane identitifies the
-     * previous value of the visibility check.
-     */
-    public int getCheckPlane(int index) {
-        return checkPlanes[index];
-    }
+		maxPnt.x = center.x + xExtent;
+		if (maxPnt.x < boxCenter.x + boxX)
+			maxPnt.x = boxCenter.x + boxX;
+		maxPnt.y = center.y + yExtent;
+		if (maxPnt.y < boxCenter.y + boxY)
+			maxPnt.y = boxCenter.y + boxY;
+		maxPnt.z = center.z + zExtent;
+		if (maxPnt.z < boxCenter.z + boxZ)
+			maxPnt.z = boxCenter.z + boxZ;
 
-    /**
-     * <code>setCheckPlane</code> indentifies the value of one of the spheres
-     * checked planes. That is what plane of the view frustum has been checked
-     * for intersection.
-     */
-    public void setCheckPlane(int index, int value) {
-        checkPlanes[index] = value;
-    }
+		rVal.setData(minPnt, maxPnt, false);
 
-    /**
-     * <code>recomputeMesh</code> regenerates the <code>BoundingBox</code>
-     * based on new model information.
-     */
-    public void recomputeMesh() {
-        if (!center.equals(oldCenter) || xExtent != oldXExtent || yExtent != oldYExtent || zExtent != oldZExtent) {
-            setData(center, xExtent, yExtent, zExtent, true);
-            oldXExtent = xExtent;
-            oldYExtent = yExtent;
-            oldZExtent = zExtent;
-            oldCenter.set(center.x, center.y, center.z);
-        }
-    }
+		return rVal;
+	}
 
-    /**
-     * Find the distance from the center of this Bounding Volume to the given point.
-     *
-     * @param point The point to get the distance to
-     * @return distance
-     */
-    public float distanceTo(Vector3f point) {
-      return center.distance(point);
-    }
+	/**
+	 * <code>clone</code> creates a new BoundingBox object containing the same
+	 * data as this one.
+	 * 
+	 * @param store
+	 *            where to store the cloned information. if null or wrong class,
+	 *            a new store is created.
+	 * @return the new BoundingBox
+	 */
+	public Object clone(BoundingVolume store) {
+		if (store != null && store instanceof BoundingBox) {
+			BoundingBox rVal = (BoundingBox) store;
+			rVal.center.set(center);
+			rVal.xExtent = xExtent;
+			rVal.yExtent = yExtent;
+			rVal.zExtent = zExtent;
+			rVal.checkPlanes[0] = checkPlanes[0];
+			rVal.checkPlanes[1] = checkPlanes[1];
+			rVal.checkPlanes[2] = checkPlanes[2];
+			rVal.checkPlanes[3] = checkPlanes[3];
+			rVal.checkPlanes[4] = checkPlanes[4];
+			rVal.checkPlanes[5] = checkPlanes[5];
+			rVal.origCenter.set(origCenter);
+			rVal.origExtent.set(origExtent);
+			return rVal;
+		} else {
+			BoundingBox rVal = new BoundingBox(name + "_clone",
+					(center != null ? (Vector3f) center.clone() : null),
+					xExtent, yExtent, zExtent);
+			rVal.origCenter.set(origCenter);
+			rVal.origExtent.set(origExtent);
+			return rVal;
+		}
+	}
 
+	/**
+	 * <code>getCheckPlane</code> returns a specific check plane. This plane
+	 * identitifies the previous value of the visibility check.
+	 */
+	public int getCheckPlane(int index) {
+		return checkPlanes[index];
+	}
 
-    /**
-     * Stores the current center of this BoundingBox into the store vector.
-     * @param store The vector to store the center into.
-     * @return The store vector, after setting it's contents to the center
-     */ 
-    public Vector3f getCenter(Vector3f store) {
-        store.set(center);
-        return store;
-    }
+	/**
+	 * <code>setCheckPlane</code> indentifies the value of one of the spheres
+	 * checked planes. That is what plane of the view frustum has been checked
+	 * for intersection.
+	 */
+	public void setCheckPlane(int index, int value) {
+		checkPlanes[index] = value;
+	}
 
-    /**
-     * <code>toString</code> returns the string representation of this object.
-     * The form is: "Radius: RRR.SSSS Center: <Vector>".
-     * @return the string representation of this.
-     */
-    public String toString() {
-        return "com.jme.scene.BoundingBox [Center: "
-                + center
-                +"  xExtent: "+xExtent
-                +"  yExtent: "+yExtent
-                +"  zExtent: "+zExtent+"]";
-    }
+	/**
+	 * <code>recomputeMesh</code> regenerates the <code>BoundingBox</code>
+	 * based on new model information.
+	 */
+	public void recomputeMesh() {
+		if (!center.equals(oldCenter) || xExtent != oldXExtent
+				|| yExtent != oldYExtent || zExtent != oldZExtent) {
+			setData(center, xExtent, yExtent, zExtent, true);
+			oldXExtent = xExtent;
+			oldYExtent = yExtent;
+			oldZExtent = zExtent;
+			oldCenter.set(center.x, center.y, center.z);
+		}
+	}
 
-    /**
-     * Returns the original, unrotated center of the bounding box.
-     * @return The box's original center.
-     */
-    public Vector3f getOrigCenter() {
-        return origCenter;
-    }
+	/**
+	 * Find the distance from the center of this Bounding Volume to the given
+	 * point.
+	 * 
+	 * @param point
+	 *            The point to get the distance to
+	 * @return distance
+	 */
+	public float distanceTo(Vector3f point) {
+		return center.distance(point);
+	}
 
-    /**
-     * Sets the bounding box's original center.  In most cases, users will simply want to use
-     * computefrompoints
-     * @param origCenter New original center
-     * @see #computeFromPoints(com.jme.math.Vector3f[])
-     */
-    public void setOrigCenter(Vector3f origCenter) {
-        this.origCenter = origCenter;
-    }
+	/**
+	 * Stores the current center of this BoundingBox into the store vector.
+	 * 
+	 * @param store
+	 *            The vector to store the center into.
+	 * @return The store vector, after setting it's contents to the center
+	 */
+	public Vector3f getCenter(Vector3f store) {
+		store.set(center);
+		return store;
+	}
 
-    /**
-     * Gets the original, unrotated extent of the box.
-     * @return The box's original extent.
-     */
-    public Vector3f getOrigExtent() {
-        return origExtent;
-    }
+	/**
+	 * <code>toString</code> returns the string representation of this object.
+	 * The form is: "Radius: RRR.SSSS Center: <Vector>".
+	 * 
+	 * @return the string representation of this.
+	 */
+	public String toString() {
+		return "com.jme.scene.BoundingBox [Center: " + center + "  xExtent: "
+				+ xExtent + "  yExtent: " + yExtent + "  zExtent: " + zExtent
+				+ "]";
+	}
 
-    /**
-     * Sets the box's original extent.  In most cases, users will simply want to use
-     * computefrompoints.
-     * @param origExtent The new extent.
-     * @see #computeFromPoints(com.jme.math.Vector3f[])
-     */
-    public void setOrigExtent(Vector3f origExtent) {
-        this.origExtent = origExtent;
-    }
+	/**
+	 * Returns the original, unrotated center of the bounding box.
+	 * 
+	 * @return The box's original center.
+	 */
+	public Vector3f getOrigCenter() {
+		return origCenter;
+	}
+
+	/**
+	 * Sets the bounding box's original center. In most cases, users will simply
+	 * want to use computefrompoints
+	 * 
+	 * @param origCenter
+	 *            New original center
+	 * @see #computeFromPoints(com.jme.math.Vector3f[])
+	 */
+	public void setOrigCenter(Vector3f origCenter) {
+		this.origCenter = origCenter;
+	}
+
+	/**
+	 * Gets the original, unrotated extent of the box.
+	 * 
+	 * @return The box's original extent.
+	 */
+	public Vector3f getOrigExtent() {
+		return origExtent;
+	}
+
+	/**
+	 * Sets the box's original extent. In most cases, users will simply want to
+	 * use computefrompoints.
+	 * 
+	 * @param origExtent
+	 *            The new extent.
+	 * @see #computeFromPoints(com.jme.math.Vector3f[])
+	 */
+	public void setOrigExtent(Vector3f origExtent) {
+		this.origExtent = origExtent;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
+	 */
+	public boolean intersects(BoundingVolume bv) {
+		return bv.intersectsBoundingBox(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
+	 */
+	public boolean intersectsSphere(BoundingSphere bs) {
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox)
+	 */
+	public boolean intersectsBoundingBox(BoundingBox bb) {
+		if (center.x + xExtent < bb.center.x - bb.xExtent
+				|| center.x - xExtent > bb.center.x + bb.xExtent)
+			return false;
+		else if (center.y + yExtent < bb.center.y - bb.yExtent
+				|| center.y - yExtent > bb.center.y + bb.yExtent)
+			return false;
+		else if (center.z + zExtent < bb.center.z - bb.zExtent
+				|| center.z - zExtent > bb.center.z + bb.zExtent)
+			return false;
+		else
+			return true;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox)
+	 */
+	public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) {
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2)
+	 */
+	public boolean intersectsOBB2(OBB2 obb) {
+		return false;
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
+	 */
+	public boolean intersects(Ray ray) {
+		Vector3f diff = ray.origin.subtract(center);
+		// convert ray to box coordinates
+		Vector3f origin = new Vector3f(diff.x, diff.y, diff.z);
+		Vector3f direction = new Vector3f(ray.direction.x, ray.direction.y,
+				ray.direction.z);
+		float[] t = new float[2];
+		t[0] = 0f;
+		t[1] = Float.POSITIVE_INFINITY;
+		float[] extents = { xExtent, yExtent, zExtent };
+		return findIntersection(origin, direction, extents, t);
+	}
+
+	/**
+	 * <code>clip</code> determines if a line segment intersects the current
+	 * test plane.
+	 * 
+	 * @param denom
+	 *            the denominator of the line segment.
+	 * @param numer
+	 *            the numerator of the line segment.
+	 * @param t
+	 *            test values of the plane.
+	 * @return true if the line segment intersects the plane, false otherwise.
+	 */
+	private boolean clip(float denom, float numer, float[] t) {
+		// Return value is 'true' if line segment intersects the current test
+		// plane. Otherwise 'false' is returned in which case the line segment
+		// is entirely clipped.
+		if (denom > 0.0f) {
+			if (numer > denom * t[1])
+				return false;
+			if (numer > denom * t[0])
+				t[0] = numer / denom;
+			return true;
+		} else if (denom < 0.0f) {
+			if (numer > denom * t[0])
+				return false;
+			if (numer > denom * t[1])
+				t[1] = numer / denom;
+			return true;
+		} else {
+			return numer <= 0.0;
+		}
+	}
+
+	/**
+	 * <code>findIntersection</code> determines if any of the planes of the
+	 * box are intersected by a ray (defined by an origin and direction).
+	 * 
+	 * @param origin
+	 *            the origin of the ray.
+	 * @param direction
+	 *            the direction of the ray.
+	 * @param extent
+	 *            the extents of the box.
+	 * @param t
+	 *            the plane intersection values of the box.
+	 * @return true if an intersection occurs, false otherwise.
+	 */
+	private boolean findIntersection(Vector3f origin, Vector3f direction,
+			float[] extent, float[] t) {
+		float saveT0 = t[0], saveT1 = t[1];
+		boolean notEntirelyClipped = clip(+direction.x, -origin.x - extent[0],
+				t)
+				&& clip(-direction.x, +origin.x - extent[0], t)
+				&& clip(+direction.y, -origin.y - extent[1], t)
+				&& clip(-direction.y, +origin.y - extent[1], t)
+				&& clip(+direction.z, -origin.z - extent[2], t)
+				&& clip(-direction.z, +origin.z - extent[2], t);
+		return notEntirelyClipped && (t[0] != saveT0 || t[1] != saveT1);
+	}
 }

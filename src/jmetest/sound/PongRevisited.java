@@ -14,7 +14,6 @@ import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.action.AbstractInputAction;
-import com.jme.intersection.Intersection;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
@@ -60,7 +59,7 @@ public class PongRevisited extends SimpleGame {
 
     private static final int MISS_EVENT = 3;
 
-    private float ballXSpeed = -5f;
+    private float ballXSpeed = -1f;
 
     private float ballYSpeed = 0.0f;
 
@@ -331,8 +330,7 @@ public class PongRevisited extends SimpleGame {
     }
 
     private boolean checkPlayer() {
-        if (Intersection.intersection(ball.getWorldBound(), player
-                .getWorldBound())) {
+        if (ball.getWorldBound().intersects(player.getWorldBound())) {
 
             ballXSpeed = 0 - ballXSpeed;
 
@@ -346,8 +344,7 @@ public class PongRevisited extends SimpleGame {
     }
 
     public boolean checkComputer() {
-        if (Intersection.intersection(ball.getWorldBound(), computer
-                .getWorldBound())) {
+        if (ball.getWorldBound().intersects(computer.getWorldBound())) {
             ballXSpeed = 0 - ballXSpeed;
             ballSound.setPosition(cam.getLocation().x - 5, cam.getLocation().y,
                     cam.getLocation().z);
@@ -362,13 +359,11 @@ public class PongRevisited extends SimpleGame {
     }
 
     public boolean checkWalls() {
-        if (Intersection.intersection(ball.getWorldBound(), lowerWall
-                .getWorldBound())) {
+        if (ball.getWorldBound().intersects(lowerWall.getWorldBound())) {
             ballYSpeed = 0 - ballYSpeed;
             return true;
         }
-        if (Intersection.intersection(ball.getWorldBound(), upperWall
-                .getWorldBound())) {
+        if (ball.getWorldBound().intersects(upperWall.getWorldBound())) {
             ballYSpeed = 0 - ballYSpeed;
             return true;
         }
@@ -402,7 +397,7 @@ public class PongRevisited extends SimpleGame {
         ball.getLocalTranslation().y = 0;
         ball.getLocalTranslation().z = 0;
 
-        ballXSpeed = 5f;
+        ballXSpeed = 1f;
         ballYSpeed = 0;
     }
 

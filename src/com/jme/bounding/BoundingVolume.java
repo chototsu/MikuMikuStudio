@@ -33,126 +33,214 @@ package com.jme.bounding;
 
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
+import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 
 import java.io.Serializable;
 
 /**
- * <code>BoundingVolume</code> defines an interface for dealing with containment
- * of a collection of points.
+ * <code>BoundingVolume</code> defines an interface for dealing with
+ * containment of a collection of points.
+ * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.6 2004-08-20 02:42:54 cep21 Exp $
+ * @version $Id: BoundingVolume.java,v 1.7 2004-09-10 22:36:11 mojomonkey Exp $
  */
-public interface BoundingVolume extends Serializable{
+public interface BoundingVolume extends Serializable {
 
-    /**
-     *
-     * <code>transform</code> alters the location of the bounding volume by
-     * a rotation, translation and a scalar.
-     * @param rotate the rotation to affect the bound.
-     * @param translate the translation to affect the bound.
-     * @param scale the scale to resize the bound.
-     * @return the new bounding volume.
-     */
-    public BoundingVolume transform(Quaternion rotate,
-            Vector3f translate, Vector3f scale);
-    /**
-     *
-     * <code>transform</code> alters the location of the bounding volume by
-     * a rotation, translation and a scalar.
-     * @param rotate the rotation to affect the bound.
-     * @param translate the translation to affect the bound.
-     * @param scale the scale to resize the bound.
-     * @param store sphere to store result in
-     * @return the new bounding volume.
-     */
-    public BoundingVolume transform(
-        Quaternion rotate,
-        Vector3f translate,
-        Vector3f scale,
-        BoundingVolume store);
+	/**
+	 * 
+	 * <code>transform</code> alters the location of the bounding volume by a
+	 * rotation, translation and a scalar.
+	 * 
+	 * @param rotate
+	 *            the rotation to affect the bound.
+	 * @param translate
+	 *            the translation to affect the bound.
+	 * @param scale
+	 *            the scale to resize the bound.
+	 * @return the new bounding volume.
+	 */
+	public BoundingVolume transform(Quaternion rotate, Vector3f translate,
+			Vector3f scale);
 
-    /**
-     *
-     * <code>whichSide</code> returns the side on which the bounding volume
-     * lies on a plane. Possible values are POSITIVE_SIDE, NEGATIVE_SIDE, and
-     * NO_SIDE.
-     * @see com.jme.scene.Point
-     * @param plane the plane to check against this bounding volume.
-     * @return the side on which this bounding volume lies.
-     */
-    public int whichSide(Plane plane);
+	/**
+	 * 
+	 * <code>transform</code> alters the location of the bounding volume by a
+	 * rotation, translation and a scalar.
+	 * 
+	 * @param rotate
+	 *            the rotation to affect the bound.
+	 * @param translate
+	 *            the translation to affect the bound.
+	 * @param scale
+	 *            the scale to resize the bound.
+	 * @param store
+	 *            sphere to store result in
+	 * @return the new bounding volume.
+	 */
+	public BoundingVolume transform(Quaternion rotate, Vector3f translate,
+			Vector3f scale, BoundingVolume store);
 
-    /**
-     *
-     * <code>computeFromPoints</code> generates a bounding volume that
-     * encompasses a collection of points.
-     * @param points the points to contain.
-     */
-    public void computeFromPoints(Vector3f[] points);
+	/**
+	 * 
+	 * <code>whichSide</code> returns the side on which the bounding volume
+	 * lies on a plane. Possible values are POSITIVE_SIDE, NEGATIVE_SIDE, and
+	 * NO_SIDE.
+	 * 
+	 * @see com.jme.scene.Point
+	 * @param plane
+	 *            the plane to check against this bounding volume.
+	 * @return the side on which this bounding volume lies.
+	 */
+	public int whichSide(Plane plane);
 
-    /**
-     * <code>merge</code> combines two bounding volumes into a single bounding
-     * volume that contains both this bounding volume and the parameter volume.
-     * @param volume the volume to combine.
-     * @return the new merged bounding volume.
-     */
-    public BoundingVolume merge(BoundingVolume volume);
+	/**
+	 * 
+	 * <code>computeFromPoints</code> generates a bounding volume that
+	 * encompasses a collection of points.
+	 * 
+	 * @param points
+	 *            the points to contain.
+	 */
+	public void computeFromPoints(Vector3f[] points);
 
-    /**
-     * <code>mergeLocal</code> combines two bounding volumes into a single bounding
-     * volume that contains both this bounding volume and the parameter volume.
-     * The result is stored locally.
-     * @param volume the volume to combine.
-     * @return this
-     */
-    public BoundingVolume mergeLocal(BoundingVolume volume);
+	/**
+	 * <code>merge</code> combines two bounding volumes into a single bounding
+	 * volume that contains both this bounding volume and the parameter volume.
+	 * 
+	 * @param volume
+	 *            the volume to combine.
+	 * @return the new merged bounding volume.
+	 */
+	public BoundingVolume merge(BoundingVolume volume);
 
-    /**
-     * <code>clone</code> creates a new BoundingVolume object containing the same
-     * data as this one.
-     * @param store where to store the cloned information.  if null or wrong class, a new store is created.
-     * @return the new BoundingVolume
-     */
-    public Object clone(BoundingVolume store);
+	/**
+	 * <code>mergeLocal</code> combines two bounding volumes into a single
+	 * bounding volume that contains both this bounding volume and the parameter
+	 * volume. The result is stored locally.
+	 * 
+	 * @param volume
+	 *            the volume to combine.
+	 * @return this
+	 */
+	public BoundingVolume mergeLocal(BoundingVolume volume);
 
-    /**
-     * <code>initCheckPlanes</code> resets the checkplanes to their standard order.
-     */
-    public void initCheckPlanes();
+	/**
+	 * <code>clone</code> creates a new BoundingVolume object containing the
+	 * same data as this one.
+	 * 
+	 * @param store
+	 *            where to store the cloned information. if null or wrong class,
+	 *            a new store is created.
+	 * @return the new BoundingVolume
+	 */
+	public Object clone(BoundingVolume store);
 
-    /**
-     * get the value for a given index in the checkplanes
-     * @param index
-     * @return
-     */
-    public int getCheckPlane(int index);
+	/**
+	 * <code>initCheckPlanes</code> resets the checkplanes to their standard
+	 * order.
+	 */
+	public void initCheckPlanes();
 
-    /**
-     * set the value for a given index in the checkplanes
-     * @param index
-     * @param value
-     */
-    public void setCheckPlane(int index, int value);
+	/**
+	 * get the value for a given index in the checkplanes
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public int getCheckPlane(int index);
 
-    /**
-     * Reconstruct a visible mesh for the bound.
-     */
-    public void recomputeMesh();
+	/**
+	 * set the value for a given index in the checkplanes
+	 * 
+	 * @param index
+	 * @param value
+	 */
+	public void setCheckPlane(int index, int value);
 
-    /**
-     * Find the distance from the center of this Bounding Volume to the given point.
-     *
-     * @param point The point to get the distance to
-     * @return distance
-     */
-    public float distanceTo(Vector3f point);
+	/**
+	 * Reconstruct a visible mesh for the bound.
+	 */
+	public void recomputeMesh();
 
-    /**
-     * This function stores the approximate center of the bounding volume into the store vector.
-     * For easy function usage, the store vector should be returned when the function is complete.
-     * @param store The vector to store the center in.
-     */
-    public Vector3f getCenter(Vector3f store);
+	/**
+	 * Find the distance from the center of this Bounding Volume to the given
+	 * point.
+	 * 
+	 * @param point
+	 *            The point to get the distance to
+	 * @return distance
+	 */
+	public float distanceTo(Vector3f point);
+
+	/**
+	 * This function stores the approximate center of the bounding volume into
+	 * the store vector. For easy function usage, the store vector should be
+	 * returned when the function is complete.
+	 * 
+	 * @param store
+	 *            The vector to store the center in.
+	 */
+	public Vector3f getCenter(Vector3f store);
+
+	/**
+	 * determines if this bounding volume and a second given volume are
+	 * intersecting. Intersecting being: one volume contains another, one volume
+	 * overlaps another or one volume touches another.
+	 * 
+	 * @param bv
+	 *            the second volume to test against.
+	 * @return true if this volume intersects the given volume.
+	 */
+	public boolean intersects(BoundingVolume bv);
+
+	/**
+	 * determines if a ray intersects this bounding volume.
+	 * 
+	 * @param ray
+	 *            the ray to test.
+	 * @return true if this volume is intersected by a given ray.
+	 */
+	public boolean intersects(Ray ray);
+
+	/**
+	 * determines if this bounding volume and a given bounding sphere are
+	 * intersecting.
+	 * 
+	 * @param bs
+	 *            the bounding sphere to test against.
+	 * @return true if this volume intersects the given bounding sphere.
+	 */
+	public boolean intersectsSphere(BoundingSphere bs);
+
+	/**
+	 * determines if this bounding volume and a given bounding box are
+	 * intersecting.
+	 * 
+	 * @param bb
+	 *            the bounding box to test against.
+	 * @return true if this volume intersects the given bounding box.
+	 */
+	public boolean intersectsBoundingBox(BoundingBox bb);
+
+	/**
+	 * determines if this bounding volume and a given oriented bounding box are
+	 * intersecting.
+	 * 
+	 * @param obb
+	 *            the bounding box to test against.
+	 * @return true if this volume intersects the given oriented bounding box.
+	 */
+	public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb);
+
+	/**
+	 * determines if this bounding volume and a given oriented bounding box are
+	 * intersecting.
+	 * 
+	 * @param obb
+	 *            the bounding box to test against.
+	 * @return true if this volume intersects the given oriented bounding box.
+	 */
+	public boolean intersectsOBB2(OBB2 obb);
 
 }

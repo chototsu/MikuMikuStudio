@@ -8,7 +8,6 @@ import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
-import com.jme.intersection.Intersection;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -87,7 +86,7 @@ public class HelloMousePick extends SimpleGame {
             // Create a ray starting from the camera, and going in the direction of the mouse's location
             Ray mouseRay=new Ray(cam.getLocation(),worldCoords.subtractLocal(cam.getLocation()));
             // Does the mouse's ray intersect the box's world bounds?
-            if (Intersection.intersection(mouseRay, b.getWorldBound()))
+            if (b.getWorldBound().intersects(mouseRay))
                 b.setRandomColors();
         }
     }

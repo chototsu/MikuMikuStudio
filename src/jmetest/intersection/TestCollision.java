@@ -32,9 +32,8 @@
 package jmetest.intersection;
 
 import com.jme.app.SimpleGame;
-import com.jme.bounding.BoundingBox;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
-import com.jme.intersection.CollisionDetection;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -47,116 +46,123 @@ import com.jme.util.TextureManager;
 
 /**
  * <code>TestCollision</code>
+ * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.16 2004-08-14 00:50:03 cep21 Exp $
+ * @version $Id: TestCollision.java,v 1.17 2004-09-10 22:36:11 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
-  private TriMesh t;
-  private TriMesh t2;
-  private Text text;
-  private Node scene;
-  private Quaternion rotQuat = new Quaternion();
-  private float angle = 0;
-  private Vector3f axis = new Vector3f(1, 0, 0);
+	private TriMesh t;
 
-  private float tInc = -40.0f;
-  private float t2Inc = -10.0f;
+	private TriMesh t2;
 
-  /**
-   * Entry point for the test,
-   * @param args
-   */
-  public static void main(String[] args) {
-    TestCollision app = new TestCollision();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
+	private Text text;
 
-  protected void simpleUpdate() {
-    if (timer.getTimePerFrame() < 1) {
-      angle = angle + (timer.getTimePerFrame() * 1);
-      if (angle > 360) {
-        angle = 0;
-      }
-    }
+	private Node scene;
 
-    rotQuat.fromAngleAxis(angle, axis);
+	private Quaternion rotQuat = new Quaternion();
 
-    t.setLocalRotation(rotQuat);
+	private float angle = 0;
 
-    t.getLocalTranslation().y += tInc * timer.getTimePerFrame();
-    t2.getLocalTranslation().x += t2Inc * timer.getTimePerFrame();
+	private Vector3f axis = new Vector3f(1, 0, 0);
 
-    if (t.getLocalTranslation().y > 40) {
-      t.getLocalTranslation().y = 40;
-      tInc *= -1;
-    } else if (t.getLocalTranslation().y < -40) {
-      t.getLocalTranslation().y = -40;
-      tInc *= -1;
-    }
+	private float tInc = -40.0f;
 
-    if (t2.getLocalTranslation().x > 40) {
-      t2.getLocalTranslation().x = 40;
-      t2Inc *= -1;
-    } else if (t2.getLocalTranslation().x < -40) {
-      t2.getLocalTranslation().x = -40;
-      t2Inc *= -1;
-    }
+	private float t2Inc = -10.0f;
 
-    CollisionResults results = new CollisionResults();
+	/**
+	 * Entry point for the test,
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		TestCollision app = new TestCollision();
+		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.start();
+	}
 
-    CollisionDetection.hasCollision(t, scene, results);
+	protected void simpleUpdate() {
+		if (timer.getTimePerFrame() < 1) {
+			angle = angle + (timer.getTimePerFrame() * 1);
+			if (angle > 360) {
+				angle = 0;
+			}
+		}
 
-    if (results.getNumber() > 0) {
-      text.print("Collision: YES");
-    } else {
-      text.print("Collision: NO");
-    }
-  }
+		rotQuat.fromAngleAxis(angle, axis);
 
-  /**
-   * builds the trimesh.
-   * @see com.jme.app.SimpleGame#initGame()
-   */
-  protected void simpleInitGame() {
-    display.setTitle("Collision Detection");
-    cam.setLocation(new Vector3f(0.0f, 0.0f, 75.0f));
-    cam.update();
+		t.setLocalRotation(rotQuat);
 
-    text = new Text("Text Label", "Collision: No");
-    text.setLocalTranslation(new Vector3f(1, 60, 0));
-    fpsNode.attachChild(text);
+		t.getLocalTranslation().y += tInc * timer.getTimePerFrame();
+		t2.getLocalTranslation().x += t2Inc * timer.getTimePerFrame();
 
-    scene = new Node("3D Scene Root");
+		if (t.getLocalTranslation().y > 40) {
+			t.getLocalTranslation().y = 40;
+			tInc *= -1;
+		} else if (t.getLocalTranslation().y < -40) {
+			t.getLocalTranslation().y = -40;
+			tInc *= -1;
+		}
 
-    Vector3f max = new Vector3f(5, 5, 5);
-    Vector3f min = new Vector3f( -5, -5, -5);
+		if (t2.getLocalTranslation().x > 40) {
+			t2.getLocalTranslation().x = 40;
+			t2Inc *= -1;
+		} else if (t2.getLocalTranslation().x < -40) {
+			t2.getLocalTranslation().x = -40;
+			t2Inc *= -1;
+		}
 
-    t = new Box("Box 1", min, max);
-    t.setModelBound(new BoundingBox());
-    t.updateModelBound();
-    t.setLocalTranslation(new Vector3f(0, 30, 0));
+		CollisionResults results = new CollisionResults();
 
-    t2 = new Box("Box 2", min, max);
-    t2.setModelBound(new BoundingBox());
-    t2.updateModelBound();
-    t2.setLocalTranslation(new Vector3f(30, 0, 0));
+		t.hasCollision(scene, results);
 
-    scene.attachChild(t);
-    scene.attachChild(t2);
+		if (results.getNumber() > 0) {
+			text.print("Collision: YES");
+		} else {
+			text.print("Collision: NO");
+		}
+	}
 
-    TextureState ts = display.getRenderer().createTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestCollision.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+	/**
+	 * builds the trimesh.
+	 * 
+	 * @see com.jme.app.SimpleGame#initGame()
+	 */
+	protected void simpleInitGame() {
+		display.setTitle("Collision Detection");
+		cam.setLocation(new Vector3f(0.0f, 0.0f, 75.0f));
+		cam.update();
 
-    scene.setRenderState(ts);
-    rootNode.attachChild(scene);
-  }
+		text = new Text("Text Label", "Collision: No");
+		text.setLocalTranslation(new Vector3f(1, 60, 0));
+		fpsNode.attachChild(text);
+
+		scene = new Node("3D Scene Root");
+
+		Vector3f max = new Vector3f(5, 5, 5);
+		Vector3f min = new Vector3f(-5, -5, -5);
+
+		t = new Box("Box 1", min, max);
+		t.setModelBound(new OrientedBoundingBox());
+		t.updateModelBound();
+		t.setLocalTranslation(new Vector3f(0, 30, 0));
+
+		t2 = new Box("Box 2", min, max);
+		t2.setModelBound(new OrientedBoundingBox());
+		t2.updateModelBound();
+		t2.setLocalTranslation(new Vector3f(30, 0, 0));
+
+		scene.attachChild(t);
+		scene.attachChild(t2);
+
+		TextureState ts = display.getRenderer().createTextureState();
+		ts.setEnabled(true);
+		ts.setTexture(TextureManager.loadTexture(
+				TestCollision.class.getClassLoader().getResource(
+						"jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
+				Texture.FM_LINEAR, true));
+
+		scene.setRenderState(ts);
+		rootNode.attachChild(scene);
+	}
 }

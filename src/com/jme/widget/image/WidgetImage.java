@@ -32,8 +32,10 @@
 package com.jme.widget.image;
 
 import com.jme.image.Image;
+import com.jme.intersection.CollisionResults;
 import com.jme.math.Vector2f;
 import com.jme.renderer.Renderer;
+import com.jme.scene.Spatial;
 import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.WidgetAbstractImpl;
 import com.jme.widget.WidgetInsets;
@@ -58,7 +60,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
  *  Alignment code doesn't work properly.
  *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.7 2004-07-20 19:47:47 Mojomonkey Exp $$
+ * @version $$Id: WidgetImage.java,v 1.8 2004-09-10 22:36:13 mojomonkey Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
@@ -252,5 +254,13 @@ public class WidgetImage extends WidgetAbstractImpl {
 
         setWidgetRenderer(renderer);
     }
+
+	/* (non-Javadoc)
+	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial, com.jme.intersection.CollisionResults)
+	 */
+	public void hasCollision(Spatial scene, CollisionResults results) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

@@ -33,6 +33,7 @@ package com.jme.scene;
 
 import java.util.logging.Level;
 
+import com.jme.intersection.CollisionResults;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -42,62 +43,83 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>Line</code> subclasses geometry and defines a collection of lines.
  * For each two points, a line is created. The last point of the previous line
- * is the first point of the next line. Therefore, for N points there are
- * N-1 lines.
+ * is the first point of the next line. Therefore, for N points there are N-1
+ * lines.
+ * 
  * @author Mark Powell
- * @version $Id: Line.java,v 1.9 2004-07-31 18:57:18 cep21 Exp $
+ * @version $Id: Line.java,v 1.10 2004-09-10 22:36:10 mojomonkey Exp $
  */
 public class Line extends Geometry {
 
-    /**
-     * Constructs a new line with the given name.  By default, the line has no information.
-     * @param name The name of the line.
-     */ 
-    public Line(String name) {
-        super(name);
-    }
+	/**
+	 * Constructs a new line with the given name. By default, the line has no
+	 * information.
+	 * 
+	 * @param name
+	 *            The name of the line.
+	 */
+	public Line(String name) {
+		super(name);
+	}
 
-    /**
-     * Constructor instantiates a new <code>Line</code> object with a given
-     * set of data. Any data can be null except for the vertex list. If
-     * vertices are null an exception will be thrown.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     * @param vertex the vertices that make up the lines.
-     * @param normal the normals of the lines.
-     * @param color the color of each point of the lines.
-     * @param texture the texture coordinates of the lines.
-     */
-    public Line(
-    	String name,
-        Vector3f[] vertex,
-        Vector3f[] normal,
-        ColorRGBA[] color,
-        Vector2f[] texture) {
-        super(name, vertex, normal, color, texture);
-        LoggingSystem.getLogger().log(Level.INFO, "Line created.");
-    }
+	/**
+	 * Constructor instantiates a new <code>Line</code> object with a given
+	 * set of data. Any data can be null except for the vertex list. If vertices
+	 * are null an exception will be thrown.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 * @param vertex
+	 *            the vertices that make up the lines.
+	 * @param normal
+	 *            the normals of the lines.
+	 * @param color
+	 *            the color of each point of the lines.
+	 * @param texture
+	 *            the texture coordinates of the lines.
+	 */
+	public Line(String name, Vector3f[] vertex, Vector3f[] normal,
+			ColorRGBA[] color, Vector2f[] texture) {
+		super(name, vertex, normal, color, texture);
+		LoggingSystem.getLogger().log(Level.INFO, "Line created.");
+	}
 
-    /**
-     * <code>draw</code> calls super to set the render state then calls the
-     * renderer to display the collection of lines.
-     * @param r the renderer used to display the lines.
-     */
-    public void draw(Renderer r) {
-      if (!r.isProcessingQueue()) {
-        if (r.checkAndAdd(this))
-          return;
-      }
-        super.draw(r);
-        r.draw(this);
-    }
+	/**
+	 * <code>draw</code> calls super to set the render state then calls the
+	 * renderer to display the collection of lines.
+	 * 
+	 * @param r
+	 *            the renderer used to display the lines.
+	 */
+	public void draw(Renderer r) {
+		if (!r.isProcessingQueue()) {
+			if (r.checkAndAdd(this))
+				return;
+		}
+		super.draw(r);
+		r.draw(this);
+	}
 
-    /**
-     * <code>drawBounds</code> calls super to set the render state then passes itself
-     * to the renderer.
-     * @param r the renderer to display
-     */
-    public void drawBounds(Renderer r) {
-        r.drawBounds(this);
-    }
+	/**
+	 * <code>drawBounds</code> calls super to set the render state then passes
+	 * itself to the renderer.
+	 * 
+	 * @param r
+	 *            the renderer to display
+	 */
+	public void drawBounds(Renderer r) {
+		r.drawBounds(this);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
+	 *      com.jme.intersection.CollisionResults)
+	 */
+	public void hasCollision(Spatial scene, CollisionResults results) {
+		// TODO Auto-generated method stub
+
+	}
 }

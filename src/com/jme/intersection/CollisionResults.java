@@ -31,63 +31,66 @@
  */
 package com.jme.intersection;
 
-import com.jme.scene.Geometry;
+import com.jme.scene.TriMesh;
 
 import java.util.ArrayList;
 
 /**
- * <code>CollisionResults</code> stores the results of a collision test by storing an ArrayList
- * of Geometries.
- *
+ * <code>CollisionResults</code> stores the results of a collision test by
+ * storing an ArrayList of CollisionData.
+ * 
  * @author Mark Powell
- * @version $Id: CollisionResults.java,v 1.4 2004-09-02 18:02:01 mojomonkey Exp $
+ * @version $Id: CollisionResults.java,v 1.5 2004-09-10 22:36:09 mojomonkey Exp $
  */
 public class CollisionResults {
 
-    private ArrayList nodeList;
+	private ArrayList nodeList;
 
-    /**
-     * Constructor instantiates a new <code>PickResults</code> object.
-     */
-    public CollisionResults() {
-        nodeList = new ArrayList();
-    }
+	/**
+	 * Constructor instantiates a new <code>PickResults</code> object.
+	 */
+	public CollisionResults() {
+		nodeList = new ArrayList();
+	}
 
-    /**
-     * <code>addGeometry</code> places a new <code>Geometry</code> spatial into the
-     * results list.
-     *
-     * @param geo The geometry to be placed in the results list.
-     */
-    public void addGeometry(Geometry geo) {
-        nodeList.add(geo);
-    }
+	/**
+	 * <code>addCollisionData</code> places a new <code>CollisionData</code>
+	 * object into the results list.
+	 * 
+	 * @param col
+	 *            The collision data to be placed in the results list.
+	 */
+	public void addCollisionData(CollisionData col) {
+		nodeList.add(col);
+	}
 
-    /**
-     * <code>getNumber</code> retrieves the number of geometries that have been
-     * placed in the results.
-     *
-     * @return the number of nodes in the list.
-     */
-    public int getNumber() {
-        return nodeList.size();
-    }
+	/**
+	 * <code>getNumber</code> retrieves the number of collisions that have
+	 * been placed in the results.
+	 * 
+	 * @return the number of collisions in the list.
+	 */
+	public int getNumber() {
+		return nodeList.size();
+	}
 
-    /**
-     * <code>getGeometry</code> retrieves a geometry from a specific index.
-     *
-     * @param i the index requested.
-     * @return the node at the specified index.
-     */
-    public Geometry getGeometry(int i) {
-        return (Geometry) nodeList.get(i);
-    }
+	/**
+	 * <code>getCollisionData</code> retrieves a CollisionData from a specific
+	 * index.
+	 * 
+	 * @param i
+	 *            the index requested.
+	 * @return the CollisionData at the specified index.
+	 */
+	public CollisionData getCollisionData(int i) {
+		return (CollisionData) nodeList.get(i);
+	}
 
-    /**
-     * <code>clear</code> clears the list of all Geometry.
-     */
-    public void clear() {
-        nodeList.clear();
-    }
+	/**
+	 * <code>clear</code> clears the list of all CollisionData.
+	 */
+	public void clear() {
+		nodeList.clear();
+	}
 
 }

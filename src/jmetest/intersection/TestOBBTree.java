@@ -3,108 +3,135 @@ package jmetest.intersection;
 import com.jme.app.SimpleGame;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.PQTorus;
+import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.intersection.CollisionResults;
 import com.jme.math.Vector3f;
 import com.jme.animation.SpatialTransformer;
 import com.jme.bounding.BoundingBox;
 import com.jme.renderer.ColorRGBA;
 
-import java.util.ArrayList;
-
 /**
- * Started Date: Sep 6, 2004<br><br>
- *
+ * Started Date: Sep 6, 2004 <br>
+ * <br>
+ * 
  * @author Jack Lindamood
  */
 public class TestOBBTree extends SimpleGame {
-    ColorRGBA[] colorSpread={ColorRGBA.white,ColorRGBA.green,ColorRGBA.gray};
-    TriMesh s,r;
-    ArrayList a=new ArrayList();
-    ArrayList b=new ArrayList();
-    int count=0;
+	ColorRGBA[] colorSpread = { ColorRGBA.white, ColorRGBA.green,
+			ColorRGBA.gray };
 
-    public static void main(String[] args) {
-        TestOBBTree app = new TestOBBTree();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
-    }
-    protected void simpleInitGame() {
-        s=new Sphere("sphere",10,10,1);
-        s.updateCollisionTree();
-        s.setModelBound(new BoundingBox());
-        s.updateModelBound();
+	TriMesh s, r;
+	Node n, m;
 
-        r=new PQTorus("tort",5,4,2f,.5f,128,16);
-        r.updateCollisionTree();
-        r.setLocalTranslation(new Vector3f(0,0,0));
-        r.setModelBound(new BoundingBox());
-        r.updateModelBound();
+	CollisionResults results;
 
-        SpatialTransformer st=new SpatialTransformer(1);
-        st.setObject(r,0,-1);
-        st.setPosition(0,0,new Vector3f(10,10,0));
-        st.setPosition(0,4,new Vector3f(-10,-10,0));
-        st.setPosition(0,8,new Vector3f(10,10,0));
-        st.interpolateMissing();
-        r.addController(st);
+	int count = 0;
 
-        ColorRGBA[] color1=r.getColors();
-        for (int i=0;i<color1.length;i++){
-            color1[i]=colorSpread[i%3];
-        }
-        r.setColors(color1);
-        ColorRGBA[] color2=s.getColors();
-        for (int i=0;i<color2.length;i++){
-            color2[i]=colorSpread[i%3];
-        }
-        s.setColors(color2);
+	public static void main(String[] args) {
+		TestOBBTree app = new TestOBBTree();
+		app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.start();
+	}
 
-        rootNode.attachChild(r);
-        rootNode.attachChild(s);
+	protected void simpleInitGame() {
+		results = new CollisionResults();
+		s = new Sphere("sphere", 10, 10, 1);
+		s.updateCollisionTree();
+		s.setModelBound(new BoundingBox());
+		s.updateModelBound();
+		
+		n = new Node("sphere node");
 
-        lightState.detachAll();
-    }
+		r = new PQTorus("tort", 5, 4, 2f, .5f, 128, 16);
+		r.updateCollisionTree();
+		r.setLocalTranslation(new Vector3f(0, 0, 0));
+		r.setModelBound(new BoundingBox());
+		r.updateModelBound();
+		
+		m = new Node("tort node");
 
-    protected void simpleUpdate(){
-        count++;
-        if (count<3) return;
-        count=0;
+		SpatialTransformer st = new SpatialTransformer(1);
+		st.setObject(m, 0, -1);
+		st.setPosition(0, 0, new Vector3f(10, 10, 0));
+		st.setPosition(0, 4, new Vector3f(-10, -10, 0));
+		st.setPosition(0, 8, new Vector3f(10, 10, 0));
+		st.interpolateMissing();
+		r.addController(st);
 
-        ColorRGBA []color1=s.getColors();
-        ColorRGBA []color2=r.getColors();
-        int[] index1=s.getIndices();
-        int[] index2=r.getIndices();
+		ColorRGBA[] color1 = r.getColors();
+		for (int i = 0; i < color1.length; i++) {
+			color1[i] = colorSpread[i % 3];
+		}
+		r.setColors(color1);
+		ColorRGBA[] color2 = s.getColors();
+		for (int i = 0; i < color2.length; i++) {
+			color2[i] = colorSpread[i % 3];
+		}
+		s.setColors(color2);
 
-        for (int i=0;i<a.size();i++){
-            int triIndex=((Integer)a.get(i)).intValue();
-            color1[index1[triIndex*3+0]]=colorSpread[index1[triIndex*3+0]%3];
-            color1[index1[triIndex*3+1]]=colorSpread[index1[triIndex*3+1]%3];
-            color1[index1[triIndex*3+2]]=colorSpread[index1[triIndex*3+2]%3];
-        }
-        for (int i=0;i<b.size();i++){
-            int triIndex=((Integer)b.get(i)).intValue();
-            color2[index2[triIndex*3+0]]=colorSpread[index2[triIndex*3+0]%3];
-            color2[index2[triIndex*3+1]]=colorSpread[index2[triIndex*3+1]%3];
-            color2[index2[triIndex*3+2]]=colorSpread[index2[triIndex*3+2]%3];
-        }
-        a.clear();
-        b.clear();
+		n.attachChild(r);
+		m.attachChild(s);
+		
+		rootNode.attachChild(n);
+		rootNode.attachChild(m);
 
-        s.findIntersection(r,a,b);
+		lightState.detachAll();
+	}
 
-        for (int i=0;i<a.size();i++){
-            int triIndex=((Integer)a.get(i)).intValue();
-            color1[index1[triIndex*3+0]]=ColorRGBA.red;
-            color1[index1[triIndex*3+1]]=ColorRGBA.red;
-            color1[index1[triIndex*3+2]]=ColorRGBA.red;
-        }
-        s.setColors(color1);
-        for (int i=0;i<b.size();i++){
-            int triIndex=((Integer)b.get(i)).intValue();
-            color2[index2[triIndex*3+0]]=ColorRGBA.blue;
-            color2[index2[triIndex*3+1]]=ColorRGBA.blue;
-            color2[index2[triIndex*3+2]]=ColorRGBA.blue;
-        }
-        r.setColors(color2);
-    }
+	protected void simpleUpdate() {
+		count++;
+		if (count < 3)
+			return;
+		count = 0;
+
+		ColorRGBA[] color1 = s.getColors();
+		ColorRGBA[] color2 = r.getColors();
+		int[] index1 = s.getIndices();
+		int[] index2 = r.getIndices();
+
+		if (results.getNumber() > 0) {
+
+			for (int i = 0; i < results.getCollisionData(0).getSource().size(); i++) {
+				int triIndex = ((Integer) results.getCollisionData(0)
+						.getSource().get(i)).intValue();
+				color1[index1[triIndex * 3 + 0]] = colorSpread[index1[triIndex * 3 + 0] % 3];
+				color1[index1[triIndex * 3 + 1]] = colorSpread[index1[triIndex * 3 + 1] % 3];
+				color1[index1[triIndex * 3 + 2]] = colorSpread[index1[triIndex * 3 + 2] % 3];
+			}
+			for (int i = 0; i < results.getCollisionData(0).getTarget().size(); i++) {
+				int triIndex = ((Integer) results.getCollisionData(0)
+						.getTarget().get(i)).intValue();
+				color2[index2[triIndex * 3 + 0]] = colorSpread[index2[triIndex * 3 + 0] % 3];
+				color2[index2[triIndex * 3 + 1]] = colorSpread[index2[triIndex * 3 + 1] % 3];
+				color2[index2[triIndex * 3 + 2]] = colorSpread[index2[triIndex * 3 + 2] % 3];
+			}
+		}
+		//        a.clear();
+		//        b.clear();
+
+		results.clear();
+
+		//s.findIntersection(r,a,b);
+		m.hasCollision(n, results);
+
+		if (results.getNumber() > 0) {
+			for (int i = 0; i < results.getCollisionData(0).getSource().size(); i++) {
+				int triIndex = ((Integer) results.getCollisionData(0)
+						.getSource().get(i)).intValue();
+				color1[index1[triIndex * 3 + 0]] = ColorRGBA.red;
+				color1[index1[triIndex * 3 + 1]] = ColorRGBA.red;
+				color1[index1[triIndex * 3 + 2]] = ColorRGBA.red;
+			}
+			s.setColors(color1);
+			for (int i = 0; i < results.getCollisionData(0).getTarget().size(); i++) {
+				int triIndex = ((Integer) results.getCollisionData(0)
+						.getTarget().get(i)).intValue();
+				color2[index2[triIndex * 3 + 0]] = ColorRGBA.blue;
+				color2[index2[triIndex * 3 + 1]] = ColorRGBA.blue;
+				color2[index2[triIndex * 3 + 2]] = ColorRGBA.blue;
+			}
+			r.setColors(color2);
+		}
+	}
 }

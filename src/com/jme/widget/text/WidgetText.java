@@ -31,7 +31,7 @@
  */
 package com.jme.widget.text;
 
-
+import com.jme.intersection.CollisionResults;
 import com.jme.math.Vector2f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.AlphaState;
@@ -46,214 +46,232 @@ import java.util.Stack;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.Spatial;
 
-
 /**
  * @author Gregg Patton
- *
+ * 
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class WidgetText extends WidgetAbstractImpl {
 
-    private final static String FONT_NAME = "Default";
+	private final static String FONT_NAME = "Default";
 
-    protected TextureState textureState;
-    protected AlphaState alphaState;
+	protected TextureState textureState;
 
-    private String text = "";
-    private float scale = 1f;
+	protected AlphaState alphaState;
 
-    private WidgetFont font;
+	private String text = "";
 
-    RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
+	private float scale = 1f;
 
-    public WidgetText() {
-        this("", WidgetAlignmentType.ALIGN_NONE);
-    }
+	private WidgetFont font;
 
-    public WidgetText(String text) {
-        this(text, WidgetAlignmentType.ALIGN_NONE);
-    }
+	RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
-    public WidgetText(String text, WidgetAlignmentType alignment) {
-        super();
+	public WidgetText() {
+		this("", WidgetAlignmentType.ALIGN_NONE);
+	}
 
-        textureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
+	public WidgetText(String text) {
+		this(text, WidgetAlignmentType.ALIGN_NONE);
+	}
 
-        setText(text);
-        setAlignment(alignment);
+	public WidgetText(String text, WidgetAlignmentType alignment) {
+		super();
 
-        alphaState.setBlendEnabled(true);
-        alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		textureState = DisplaySystem.getDisplaySystem().getRenderer()
+				.createTextureState();
+		alphaState = DisplaySystem.getDisplaySystem().getRenderer()
+				.createAlphaState();
 
-        setRenderState(alphaState);
-        setRenderState(textureState);
-    }
+		setText(text);
+		setAlignment(alignment);
 
-    public String toString() {
-        return "[" + text + super.toString() + "]";
-    }
+		alphaState.setBlendEnabled(true);
+		alphaState.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+		alphaState.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
 
-    public String getText() {
-        return text;
-    }
+		setRenderState(alphaState);
+		setRenderState(textureState);
+	}
 
-    public void setText(String string) {
-        text = string;
+	public String toString() {
+		return "[" + text + super.toString() + "]";
+	}
 
-        if (text != null) {
+	public String getText() {
+		return text;
+	}
 
-            textureState.setEnabled(true);
-            alphaState.setEnabled(true);
+	public void setText(String string) {
+		text = string;
 
-            font = WidgetFontManager.getFont(getFontName());
+		if (text != null) {
 
-            Vector2f size = font.getStringSize(text);
+			textureState.setEnabled(true);
+			alphaState.setEnabled(true);
 
-            localBound.setSize(size);
+			font = WidgetFontManager.getFont(getFontName());
 
-            preferredSize.x = size.x;
-            preferredSize.y = size.y;
+			Vector2f size = font.getStringSize(text);
 
-            textureState.setTexture(font.getTexture());
+			localBound.setSize(size);
 
-        } else {
-            textureState.setEnabled(false);
-            alphaState.setEnabled(false);
-            setSize(0, 0);
-        }
-    }
+			preferredSize.x = size.x;
+			preferredSize.y = size.y;
 
-    /* (non-Javadoc)
-     * @see com.jme.scene.Spatial#onDraw(com.jme.renderer.Renderer)
-     */
-    public void onDraw(Renderer r) {
+			textureState.setTexture(font.getTexture());
 
-        font = WidgetFontManager.getFont(getFontName());
-        textureState.setTexture(font.getTexture());
+		} else {
+			textureState.setEnabled(false);
+			alphaState.setEnabled(false);
+			setSize(0, 0);
+		}
+	}
 
-        super.onDraw(r);
-    }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.scene.Spatial#onDraw(com.jme.renderer.Renderer)
+	 */
+	public void onDraw(Renderer r) {
 
-    /**
-     *
-     * <code>setStates</code> applies all the render states for this
-     * particular geometry.
-     *
-     */
-    public void applyStates() {
-      if (parent != null)
-        Spatial.clearCurrentStates();
-      for (int i = 0; i < states.length; i++) {
-        if (states[i] != currentStates[i]) {
-          states[i].apply();
-          currentStates[i] = states[i];
-        }
-      }
-    }
+		font = WidgetFontManager.getFont(getFontName());
+		textureState.setTexture(font.getTexture());
 
-    public void draw(Renderer r) {
-      applyStates();
-      r.draw(getWidgetRenderer());
-    }
+		super.onDraw(r);
+	}
 
-    public void drawBounds(Renderer r) {
-        //ignore
-    }
+	/**
+	 * 
+	 * <code>setStates</code> applies all the render states for this
+	 * particular geometry.
+	 *  
+	 */
+	public void applyStates() {
+		if (parent != null)
+			Spatial.clearCurrentStates();
+		for (int i = 0; i < states.length; i++) {
+			if (states[i] != currentStates[i]) {
+				states[i].apply();
+				currentStates[i] = states[i];
+			}
+		}
+	}
 
-    public float getScale() {
-        return scale;
-    }
+	public void draw(Renderer r) {
+		applyStates();
+		r.draw(getWidgetRenderer());
+	}
 
-    public void setScale(float f) {
-        scale = f;
-    }
+	public void drawBounds(Renderer r) {
+		//ignore
+	}
 
-    public void doMouseButtonDown() {
-    }
+	public float getScale() {
+		return scale;
+	}
 
-    public void doMouseButtonUp() {
-    }
+	public void setScale(float f) {
+		scale = f;
+	}
 
-    public void setSize(Vector2f size) {
-        updateWorldBound();
-    }
+	public void doMouseButtonDown() {
+	}
 
-    public void setSize(int width, int height) {
-        updateWorldBound();
-    }
+	public void doMouseButtonUp() {
+	}
 
-    public void setPreferredSize(Vector2f size) {
-    }
+	public void setSize(Vector2f size) {
+		updateWorldBound();
+	}
 
-    public String getFontName() {
-        return FONT_NAME;
-    }
+	public void setSize(int width, int height) {
+		updateWorldBound();
+	}
 
-    public void setLocation(int x, int y) {
-        float w = localBound.getWidth();
-        float h = localBound.getHeight();
+	public void setPreferredSize(Vector2f size) {
+	}
 
-        super.setLocation(x, y);
+	public String getFontName() {
+		return FONT_NAME;
+	}
 
-        localBound.setWidthHeight(w, h);
-        updateWorldBound();
-    }
+	public void setLocation(int x, int y) {
+		float w = localBound.getWidth();
+		float h = localBound.getHeight();
 
-    public void setLocation(Vector2f at) {
-        float w = localBound.getWidth();
-        float h = localBound.getHeight();
+		super.setLocation(x, y);
 
-        super.setLocation(at);
+		localBound.setWidthHeight(w, h);
+		updateWorldBound();
+	}
 
-        localBound.setWidthHeight(w, h);
-        updateWorldBound();
-    }
+	public void setLocation(Vector2f at) {
+		float w = localBound.getWidth();
+		float h = localBound.getHeight();
 
-    public void setX(int x) {
-        float w = localBound.getWidth();
-        super.setX(x);
-        localBound.setWidth(w);
-        updateWorldBound();
-    }
+		super.setLocation(at);
 
-    public void setY(int y) {
-        float h = localBound.getHeight();
-        super.setY(y);
-        localBound.setHeight(h);
-        updateWorldBound();
-    }
+		localBound.setWidthHeight(w, h);
+		updateWorldBound();
+	}
 
-    public WidgetFont getFont() {
-        return font;
-    }
+	public void setX(int x) {
+		float w = localBound.getWidth();
+		super.setX(x);
+		localBound.setWidth(w);
+		updateWorldBound();
+	}
 
-    public void setFont(WidgetFont font) {
-        this.font = font;
-    }
+	public void setY(int y) {
+		float h = localBound.getHeight();
+		super.setY(y);
+		localBound.setHeight(h);
+		updateWorldBound();
+	}
 
-    /** <code>initWidgetRenderer</code>
-     *
-     * @see com.jme.widget.Widget#initWidgetRenderer()
-     */
-    public void initWidgetRenderer() {
-        setWidgetRenderer(WidgetRendererFactory.getFactory().getRenderer(this));
-    }
+	public WidgetFont getFont() {
+		return font;
+	}
 
-    public void setForceView(boolean value) {
-    	forceView = value;
-    }
-    
-    protected void applyRenderState(Stack[] states) {
-      for (int x = 0; x < states.length; x++) {
-        if (states[x].size() > 0) {
-          this.states[x] = ((RenderState) states[x].peek()).extract(states[x], this);
-        } else {
-          this.states[x] = (RenderState) defaultStateList[x];
-        }
-      }
-    }
+	public void setFont(WidgetFont font) {
+		this.font = font;
+	}
+
+	/**
+	 * <code>initWidgetRenderer</code>
+	 * 
+	 * @see com.jme.widget.Widget#initWidgetRenderer()
+	 */
+	public void initWidgetRenderer() {
+		setWidgetRenderer(WidgetRendererFactory.getFactory().getRenderer(this));
+	}
+
+	public void setForceView(boolean value) {
+		forceView = value;
+	}
+
+	protected void applyRenderState(Stack[] states) {
+		for (int x = 0; x < states.length; x++) {
+			if (states[x].size() > 0) {
+				this.states[x] = ((RenderState) states[x].peek()).extract(
+						states[x], this);
+			} else {
+				this.states[x] = (RenderState) defaultStateList[x];
+			}
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
+	 *      com.jme.intersection.CollisionResults)
+	 */
+	public void hasCollision(Spatial scene, CollisionResults results) {
+		// TODO Auto-generated method stub
+
+	}
 
 }
