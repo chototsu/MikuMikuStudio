@@ -46,7 +46,7 @@ import com.jme.math.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.15 2004-08-22 02:00:32 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.16 2004-08-25 02:59:58 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -61,6 +61,8 @@ public class BoundingBox extends Box implements BoundingVolume {
     private Vector3f origCenter = new Vector3f();
     private Vector3f origExtent = new Vector3f();
     private static final Matrix3f tempMat=new Matrix3f();
+    private static final Vector3f tempVa=new Vector3f();
+    private static final Vector3f tempVb=new Vector3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
@@ -126,8 +128,8 @@ public class BoundingBox extends Box implements BoundingVolume {
             return;
         }
 
-        Vector3f min = (Vector3f)points[0].clone();
-        Vector3f max = (Vector3f)min.clone();
+        Vector3f min = tempVa.set(points[0]);
+        Vector3f max = tempVb.set(min);
 
         for (int i = 1; i < points.length; i++) {
             if (points[i].x < min.x)
@@ -146,7 +148,7 @@ public class BoundingBox extends Box implements BoundingVolume {
                 max.z = points[i].z;
         }
 
-        center.set(max.add(min));
+        center.set(min.addLocal(max));
         center.multLocal(0.5f);
 
         origExtent.x = xExtent = max.x - center.x;
