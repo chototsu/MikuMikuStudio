@@ -52,6 +52,8 @@ import java.awt.image.PixelGrabber;
 
 import com.jme.image.BitmapHeader;
 import com.jme.image.Texture;
+import com.jme.system.DisplaySystem;
+import com.jme.scene.state.TextureState;
 
 /**
  *
@@ -61,7 +63,7 @@ import com.jme.image.Texture;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.26 2004-09-07 07:13:29 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.27 2004-09-08 17:40:09 renanse Exp $
  */
 final public class TextureManager {
 
@@ -196,7 +198,12 @@ final public class TextureManager {
     TextureKey tkey = new TextureKey(file, minFilter, magFilter, anisoLevel, flipped);
     Texture texture = (Texture) m_tCache.get(tkey);
 
-    if (texture != null)return texture;
+    if (texture != null) {
+      // Uncomment if you want to see when this occurs.
+//      System.err.println("******** REUSING TEXTURE ********");
+      Texture tClone = texture.createSimpleClone();
+      return tClone;
+    }
 
     /*
      * // Debugging code; rename every texture request as a TGA file instead
@@ -249,6 +256,12 @@ final public class TextureManager {
     texture.setImage(imageData);
     texture.setMipmapState(minFilter);
     texture.setImageLocation(file.toString());
+
+    // apply new texture in a state so it will setup the OpenGL id.
+    TextureState state = DisplaySystem.getDisplaySystem().getRenderer().
+        createTextureState();
+    state.setTexture(texture);
+    state.apply();
 
     m_tCache.put(tkey, texture);
     return texture;

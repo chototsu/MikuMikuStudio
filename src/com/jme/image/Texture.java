@@ -47,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.16 2004-09-07 07:36:07 renanse Exp $
+ * @version $Id: Texture.java,v 1.17 2004-09-08 17:40:09 renanse Exp $
  */
 public class Texture {
 
@@ -783,5 +783,52 @@ public class Texture {
       if (this.getBlendColor() == null && that.getBlendColor() != null)return false;
     }
     return true;
+  }
+
+  /**
+   * Retreive a basic clone of this Texture (ie, clone everything but the image data, which is shared)
+   * @return Texture
+   */
+  public Texture createSimpleClone() {
+    Texture rVal = new Texture(anisoLevel);
+
+    if (blendColorBuffer != null) {
+      FloatBuffer color =
+          ByteBuffer
+          .allocateDirect(16)
+          .order(ByteOrder.nativeOrder())
+          .asFloatBuffer();
+      color.put(blendColorBuffer);
+      blendColorBuffer.flip();
+      color.flip();
+      rVal.setBlendColorBuffer(color);
+    }
+
+    rVal.setApply(apply);
+    rVal.setCombineFuncAlpha(combineFuncAlpha);
+    rVal.setCombineFuncRGB(combineFuncRGB);
+    rVal.setCombineOp0Alpha(combineOp0Alpha);
+    rVal.setCombineOp0RGB(combineOp0RGB);
+    rVal.setCombineOp1Alpha(combineOp1Alpha);
+    rVal.setCombineOp1RGB(combineOp1RGB);
+    rVal.setCombineOp2Alpha(combineOp2Alpha);
+    rVal.setCombineOp2RGB(combineOp2RGB);
+    rVal.setCombineScaleAlpha(combineScaleAlpha);
+    rVal.setCombineScaleRGB(combineScaleRGB);
+    rVal.setCombineSrc0Alpha(combineSrc0Alpha);
+    rVal.setCombineSrc0RGB(combineSrc0RGB);
+    rVal.setCombineSrc1Alpha(combineSrc1Alpha);
+    rVal.setCombineSrc1RGB(combineSrc1RGB);
+    rVal.setCombineSrc2Alpha(combineSrc2Alpha);
+    rVal.setCombineSrc2RGB(combineSrc2RGB);
+    rVal.setCorrection(correction);
+    rVal.setEnvironmentalMapMode(envMapMode);
+    rVal.setFilter(filter);
+    rVal.setImage(image);  // NOT CLONED.
+    rVal.setImageLocation(imageLocation);
+    rVal.setMipmapState(mipmapState);
+    rVal.setTextureId(textureId);
+    rVal.setWrap(wrap);
+    return rVal;
   }
 }
