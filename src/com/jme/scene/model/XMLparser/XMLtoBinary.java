@@ -136,21 +136,37 @@ public class XMLtoBinary {
                 } else{
                     writeString(value);
                 }
-            } else if ("scale".equals(att) || "translation".equals(att) || "trans".equals(att) || "localvec".equals(att)){
+            } else if ("loc".equals(att) || "dir".equals(att) || "scale".equals(att) || "translation".equals(att) || "trans".equals(att) || "localvec".equals(att)){
                 writeVec3f(value);
             } else if ("rotation".equals(att) || "rot".equals(att) || "localrot".equals(att)){
                 writeQuat(value);
             } else if ("alpha".equals(att) || "shiny".equals(att) || "time".equals(att)){
                 writeFloat(value);
+            } else if ("fconstant".equals(att) || "flinear".equals(att) || "fquadratic".equals(att) || "fangle".equals(att) || "fexponent".equals(att)){
+                writeFloat(value);
             } else if ("ambient".equals(att) || "diffuse".equals(att) || "emissive".equals(att) || "specular".equals(att)){
                 writeColor(value);
             } else if ("URL".equals(att)){
                 writeURL(value);
+            } else if ("isattenuate".equals(att)){
+                writeBoolean(value);
             } else if ("numJoints".equals(att) || "index".equals(att) || "parentindex".equals(att)){
                 writeInt(value);
             } else{
                 writeString(value);
             }
+        }
+
+        private void writeBoolean(String value) throws IOException {
+            boolean toWrite;
+            if ("true".equals(value))
+                toWrite=true;
+            else if ("false".equals(value))
+                toWrite=false;
+            else
+                throw new IOException("Parameter must be true or false, not " + value);
+            myOut.writeByte(BinaryFormatConstants.DATA_BOOLEAN);
+            myOut.writeBoolean(toWrite);
         }
 
         private void writeInt(String value) throws IOException {
