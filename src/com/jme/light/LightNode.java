@@ -46,7 +46,7 @@ import com.jme.scene.state.LightState;
  * location.
  * 
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.3 2004-04-26 14:42:36 mojomonkey Exp $
+ * @version $Id: LightNode.java,v 1.4 2004-04-26 14:51:03 mojomonkey Exp $
  */
 public class LightNode extends Node {
 
@@ -124,8 +124,8 @@ public class LightNode extends Node {
         case Light.LT_DIRECTIONAL:
             {
                 DirectionalLight dLight = (DirectionalLight) light;
-                dLight.direction = lightRotate.getRotationColumn(2,
-                        dLight.direction);
+                dLight.setDirection(lightRotate.getRotationColumn(2,
+                        dLight.getDirection()));
                 break;
             }
 
