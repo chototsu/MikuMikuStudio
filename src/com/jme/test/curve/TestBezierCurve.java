@@ -56,7 +56,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.2 2004-01-06 20:54:22 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.3 2004-01-06 21:02:26 mojomonkey Exp $
  */
 public class TestBezierCurve extends AbstractGame {
     private TriMesh t, t2, t3, t4;
@@ -86,7 +86,7 @@ public class TestBezierCurve extends AbstractGame {
     protected void update() {
         input.update(0.2f);
         box.setLocalTranslation(curve.getPoint(step));
-        box.setLocalRotation(curve.getOrientation(step, 0.1f));
+        box.setLocalRotation(curve.getOrientation(step, 0.1f, up));
         scene.updateWorldData(0.1f);
         step += mod;
         
