@@ -47,7 +47,7 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.28 2004-08-25 02:05:14 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.29 2004-08-26 23:46:02 cep21 Exp $
  */
 public class Quaternion implements Externalizable{
     public float x, y, z, w;
@@ -497,6 +497,21 @@ public class Quaternion implements Externalizable{
      */
     public Quaternion add(Quaternion q) {
         return new Quaternion(x + q.x, y + q.y, z + q.z, w + q.w);
+    }
+
+    /**
+     * <code>add</code> adds the values of this quaternion to those
+     * of the parameter quaternion. The result is stored in this
+     * Quaternion..
+     * @param q the quaternion to add to this.
+     * @return This Quaternion after addition.
+     */
+    public Quaternion addLocal(Quaternion q) {
+        this.x+=q.x;
+        this.y+=q.y;
+        this.z+=q.z;
+        this.w+=q.w;
+        return this;
     }
 
     /**

@@ -46,7 +46,7 @@ import com.jme.math.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.17 2004-08-25 22:15:06 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.18 2004-08-26 23:46:03 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -261,6 +261,10 @@ public class BoundingBox extends Box implements BoundingVolume {
         } else if (volume instanceof BoundingSphere) {
           BoundingSphere vSphere = (BoundingSphere)volume;
           return merge(vSphere.center, vSphere.radius, vSphere.radius, vSphere.radius, new BoundingBox(new Vector3f(0,0,0), 0, 0, 0));
+        } else if (volume instanceof OrientedBoundingBox) {
+          OrientedBoundingBox box = (OrientedBoundingBox)volume;
+          BoundingBox rVal=(BoundingBox) this.clone(null);
+          return rVal.mergeOBB(box);
         } else {
           return null;
         }
@@ -282,9 +286,51 @@ public class BoundingBox extends Box implements BoundingVolume {
         } else if (volume instanceof BoundingSphere) {
           BoundingSphere vSphere = (BoundingSphere)volume;
           return merge(vSphere.center, vSphere.radius, vSphere.radius, vSphere.radius, this);
+        } else if (volume instanceof OrientedBoundingBox){
+          return mergeOBB((OrientedBoundingBox)volume);
         } else {
           return null;
         }
+    }
+
+    /**
+     * Merges this AABB with the given OBB.
+     * @param volume the OBB to merge this AABB with.
+     * @return This AABB extended to fit the given OBB.
+     */
+    private BoundingBox mergeOBB(OrientedBoundingBox volume) {
+        if (!volume.correctCorners)
+            volume.computeCorners();
+
+        Vector3f min = tempVa.set(center.x-xExtent,center.y-yExtent,center.z-zExtent);
+        Vector3f max = tempVb.set(center.x+xExtent,center.y+yExtent,center.z+zExtent);
+
+        for (int i = 1; i < volume.vectorStore.length; i++) {
+            Vector3f temp=volume.vectorStore[i];
+            if (temp.x < min.x)
+                min.x = temp.x;
+            else if (temp.x > max.x)
+                max.x = temp.x;
+
+            if (temp.y < min.y)
+                min.y = temp.y;
+            else if (temp.y > max.y)
+                max.y = temp.y;
+
+            if (temp.z < min.z)
+                min.z = temp.z;
+            else if (temp.z > max.z)
+                max.z = temp.z;
+        }
+
+        center.set(min.addLocal(max));
+        center.multLocal(0.5f);
+
+        origExtent.x = xExtent = max.x - center.x;
+        origExtent.y = yExtent = max.y - center.y;
+        origExtent.z = zExtent = max.z - center.z;
+        origCenter.set(center);
+        return this;
     }
 
     private BoundingBox merge(Vector3f boxCenter, float boxX, float boxY, float boxZ, BoundingBox rVal) {

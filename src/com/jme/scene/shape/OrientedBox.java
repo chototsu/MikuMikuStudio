@@ -27,11 +27,12 @@ public class OrientedBox extends TriMesh{
     /** Texture coordintae values for the corners of the box. */
     protected Vector2f texTopRight,texTopLeft,texBotRight,texBotLeft;
     /** Vector array used to store the array of 8 corners the box has.*/
-    protected Vector3f [] vectorStore;
+    public Vector3f [] vectorStore;
     /** Vector array used to store the box's normals. */
     protected Vector3f [] normalStore;
+
     /** If true, the box's vectorStore array correctly represnts the box's corners.*/
-    protected boolean correctCorners;
+    public boolean correctCorners;
 
     private static final Vector3f tempVa=new Vector3f();
     private static final Vector3f tempVb=new Vector3f();
@@ -218,7 +219,7 @@ public class OrientedBox extends TriMesh{
     /**
      * Sets the vectorStore information to the 8 corners of the box.
      */
-    protected void computeCorners() {
+    public void computeCorners() {
         correctCorners=true;
         float xDotYcrossZ=xAxis.dot(yAxis.cross(zAxis,tempVa));
         Vector3f yCrossZmulX=yAxis.cross(zAxis,tempVa).multLocal(extent.x);
@@ -366,5 +367,13 @@ public class OrientedBox extends TriMesh{
      */
     public void setMeshColor(ColorRGBA meshColor) {
         this.meshColor = meshColor;
+    }
+
+    /**
+     * Returns if the corners are set corectly.
+     * @return True if the vectorStore is correct.
+     */
+    public boolean isCorrectCorners() {
+        return correctCorners;
     }
 }

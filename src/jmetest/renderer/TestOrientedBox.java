@@ -8,6 +8,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.FastMath;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.OrientedBoundingBox;
+import com.jme.bounding.BoundingSphere;
 
 
 
@@ -29,19 +30,23 @@ public class TestOrientedBox extends SimpleGame{
     Node AABBnode=new Node("AABBNode");
     Node OBBnode=new Node("OBBNode");
 
-    Quaternion smallrotation;
+    Quaternion smallrotationx;
+    Quaternion smallrotationy;
     Quaternion tempQ=new Quaternion();
 
     protected void simpleInitGame() {
         {
             Cylinder c=new Cylinder("cylinder",20,20,1,10);
             c.setModelBound(new BoundingBox());
+//            c.setModelBound(new OrientedBoundingBox());
             c.updateModelBound();
             AABBnode.attachChild(c);
         }
         {
             Cylinder c2=new Cylinder("cylinder2",20,20,1,10);
             c2.setLocalTranslation(new Vector3f(5,10,0));
+//            c2.setModelBound(new BoundingSphere());
+//            c2.setModelBound(new BoundingBox());
             c2.setModelBound(new OrientedBoundingBox());
             c2.updateModelBound();
             OBBnode.attachChild(c2);
@@ -51,33 +56,46 @@ public class TestOrientedBox extends SimpleGame{
         OBBnode.updateGeometricState(0,true);
         OBBnode.updateRenderState();
 
-        smallrotation=new Quaternion();
-        smallrotation.fromAngleNormalAxis(FastMath.PI/2,new Vector3f(0,1,0));
+        smallrotationy=new Quaternion();
+        smallrotationy.fromAngleNormalAxis(FastMath.PI/2,new Vector3f(0,1,0));
+
+        smallrotationx=new Quaternion();
+        smallrotationx.fromAngleNormalAxis(FastMath.PI/2,new Vector3f(0,0,1));
 
         Quaternion upright=new Quaternion();
         upright.fromAngleNormalAxis(FastMath.PI/2,new Vector3f(1,0,0));
         OBBnode.setLocalRotation(new Quaternion(upright));
         AABBnode.setLocalRotation(new Quaternion(upright));
+
+
+        rootNode.attachChild(AABBnode);
+        rootNode.attachChild(OBBnode);
     }
+    int frames;
+    float totalTime;
     protected void simpleUpdate(){
         tempQ.set(0,0,0,1);
-        tempQ.slerp(smallrotation,tpf);
+        tempQ.slerp(smallrotationx,tpf);
         AABBnode.getLocalRotation().multLocal(
                 tempQ);
         OBBnode.getLocalRotation().multLocal(
                 tempQ);
 
+        tempQ.set(0,0,0,1);
+        tempQ.slerp(smallrotationy,tpf);
+        AABBnode.getLocalRotation().multLocal(
+                tempQ);
 
-        AABBnode.updateGeometricState(tpf,true);
-        OBBnode.updateGeometricState(tpf,true);
-
-    }
-    protected void simpleRender(){
-        display.getRenderer().draw(AABBnode);
-        display.getRenderer().draw(OBBnode);
-        if (showBounds){
-            display.getRenderer().drawBounds(AABBnode);
-            display.getRenderer().drawBounds(OBBnode);
+        tempQ.set(0,0,0,1);
+        tempQ.slerp(smallrotationy,tpf/2);
+        OBBnode.getLocalRotation().multLocal(
+                tempQ);
+        frames++;
+        totalTime+=tpf;
+        if (totalTime>2.5f){
+            System.out.println("FPS:" + (frames/totalTime));
+            totalTime=0;
+            frames=0;
         }
     }
 }

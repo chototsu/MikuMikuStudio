@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.16 2004-08-22 02:00:32 cep21 Exp $
+ * @version $Id: BoundingSphere.java,v 1.17 2004-08-26 23:46:03 cep21 Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -64,6 +64,9 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     private static final Vector3f tempVeca=new Vector3f();
     private static final Vector3f tempVecb=new Vector3f();
+    private static final Vector3f []tempVarray={
+        new Vector3f(),new Vector3f(),new Vector3f(),new Vector3f(),new Vector3f(),new Vector3f(),new Vector3f(),new Vector3f()
+    };
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -437,6 +440,10 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             Vector3f temp_center = box.getCenter();
             BoundingSphere rVal = new BoundingSphere();
             return merge(radVect.length(), temp_center, rVal);
+        } else if (volume instanceof OrientedBoundingBox) {
+            OrientedBoundingBox box = (OrientedBoundingBox) volume;
+            BoundingSphere rVal = (BoundingSphere) this.clone(null);
+            return rVal.mergeOBB(box);
         } else {
             return null;
         }
@@ -464,9 +471,51 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
                     box.zExtent);
             Vector3f temp_center = box.getCenter();
             return merge(radVect.length(), temp_center, this);
+        } else if (volume instanceof OrientedBoundingBox) {
+            return mergeOBB((OrientedBoundingBox)volume);
         } else {
             return null;
         }
+    }
+
+    /**
+     * Merges this sphere with the given OBB.
+     * @param volume The OBB to merge.
+     * @return This sphere, after merging.
+     */
+    private BoundingSphere mergeOBB(OrientedBoundingBox volume) {
+        if (!volume.correctCorners)
+            volume.computeCorners();
+        Vector3f []mergeArray=new Vector3f[16];
+        for (int i=0;i<8;i++){
+            mergeArray[i]=volume.vectorStore[i];
+        }
+        mergeArray[8]=tempVarray[0].set(center).addLocal(
+                radius, radius, radius
+        );
+        mergeArray[9]=tempVarray[1].set(center).addLocal(
+                -radius, radius, radius
+        );
+        mergeArray[10]=tempVarray[2].set(center).addLocal(
+                radius, -radius, radius
+        );
+        mergeArray[11]=tempVarray[3].set(center).addLocal(
+                radius, radius, -radius
+        );
+        mergeArray[12]=tempVarray[4].set(center).addLocal(
+                -radius, -radius, radius
+        );
+        mergeArray[13]=tempVarray[5].set(center).addLocal(
+                -radius, radius, -radius
+        );
+        mergeArray[14]=tempVarray[6].set(center).addLocal(
+                radius, -radius, -radius
+        );
+        mergeArray[15]=tempVarray[7].set(center).addLocal(
+                -radius, -radius, -radius
+        );
+        computeFromPoints(mergeArray);
+        return this;
     }
 
     private BoundingVolume merge(float temp_radius,
