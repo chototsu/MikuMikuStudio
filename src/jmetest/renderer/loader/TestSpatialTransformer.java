@@ -48,9 +48,9 @@ public class TestSpatialTransformer extends SimpleGame{
         st.setRotation(0,3,x270);
         st.setRotation(0,4,x0);
 
-        st.setScale(0,0,new Vector3f(.5f,.5f,1));
+        st.setScale(0,0,new Vector3f(.25f,.25f,2));
         st.setScale(0,2,new Vector3f(2,2,2));
-        st.setScale(0,4,new Vector3f(.5f,.5f,1));
+        st.setScale(0,4,new Vector3f(.25f,.25f,2));
 
         st.setPosition(0,0,new Vector3f(0,10,0));
         st.setPosition(0,2,new Vector3f(0,0,0));
