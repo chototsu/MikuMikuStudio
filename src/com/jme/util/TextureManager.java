@@ -63,7 +63,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.32 2005-02-10 23:36:00 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.33 2005-02-15 00:43:04 renanse Exp $
  */
 final public class TextureManager {
     
@@ -162,7 +162,8 @@ final public class TextureManager {
      *            the filter for the far values.
      * @param imageType
      *            the image type to use.  if -1, the type is determined by jME.
-     *            If S3TC/DXT1[A] is available we use that.  
+     *            If S3TC/DXT1[A] is available we use that.  if -2, the type is
+     *            determined by jME without using S3TC, even if available.
      *            See com.jme.image.Image for possible types.
      * @param flipped
      *            If true, the images Y values are flipped.
@@ -227,8 +228,8 @@ final public class TextureManager {
         // will need to change.
         TextureState state = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 
-        if (imageType != -1) imageData.setType(imageType);
-        else if (state.isS3TCAvailable()) {  // We enable S3TC DXT1 compression by default if available.
+        if (imageType >= 0) imageData.setType(imageType);
+        else if (imageType != -2 && state.isS3TCAvailable()) {  // We enable S3TC DXT1 compression by default if available.
             if (imageData.getType() == com.jme.image.Image.RGB888)
                 imageData.setType(com.jme.image.Image.RGB888_DXT1);
             else if (imageData.getType() == com.jme.image.Image.RGBA8888)
