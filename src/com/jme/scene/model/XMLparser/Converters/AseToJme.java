@@ -59,7 +59,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.7 2004-08-17 18:13:11 cep21 Exp $
+     * @version $Id: AseToJme.java,v 1.8 2004-09-08 17:06:41 mojomonkey Exp $
      */
     private class ASEModelCopy extends Node{
 
@@ -130,7 +130,6 @@ public class AseToJme extends FormatConverter{
          * is created as a <code>TriMesh</code> and attached to this
          * <code>Model</code>. Animation is currently not supported.
          * @param is the InputStream of the ase file to load.
-         * @see com.jme.scene.model.Model#load(java.lang.String)
          */
         public void load(InputStream is) {
             if (null == is) {

@@ -31,6 +31,14 @@
  */
 package jmetest.renderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.URL;
+
+import jmetest.renderer.loader.TestMd2JmeWrite;
+
+import com.jme.animation.KeyframeController;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
@@ -38,8 +46,8 @@ import com.jme.scene.BillboardNode;
 import com.jme.scene.Controller;
 import com.jme.scene.ImposterNode;
 import com.jme.scene.Node;
-import com.jme.scene.model.Model;
-import com.jme.scene.model.md2.Md2Model;
+import com.jme.scene.model.XMLparser.JmeBinaryReader;
+import com.jme.scene.model.XMLparser.Converters.Md2ToJme;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
@@ -47,12 +55,12 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.14 2004-08-14 00:50:06 cep21 Exp $
+ * @version $Id: TestImposterNode.java,v 1.15 2004-09-08 17:06:40 mojomonkey Exp $
  */
 public class TestImposterNode extends SimpleGame {
   private Node fakeScene;
 
-  private Model model;
+  private Node freakmd2;
 
   private String FILE_NAME = "data/model/drfreak.md2";
   private String TEXTURE_NAME = "data/model/drfreak.jpg";
@@ -79,25 +87,54 @@ public class TestImposterNode extends SimpleGame {
     cam.update();
 
     // setup the scene to be 'impostered'
-    model = new Md2Model("Dr Freak");
-    model.load(TestImposterNode.class.getClassLoader().getResource("jmetest/" +
-        FILE_NAME));
-    model.getAnimationController().setSpeed(10);
-    model.getAnimationController().setRepeatType(Controller.RT_WRAP);
-    fakeScene = new Node("Fake node");
-    fakeScene.attachChild(model);
+    
+    Md2ToJme converter=new Md2ToJme();
+    ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
-    // apply the appropriate texture to the imposter scene
+    URL textu=TestMd2JmeWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.jpg");
+    URL freak=TestMd2JmeWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.md2");
+    freakmd2=null;
+
+    try {
+        long time = System.currentTimeMillis();
+        converter.convert(freak.openStream(),BO);
+        System.out.println("Time to convert from md2 to .jme:"+ ( System.currentTimeMillis()-time));
+    } catch (IOException e) {
+        System.out.println("damn exceptions:" + e.getMessage());
+    }
+    JmeBinaryReader jbr=new JmeBinaryReader();
+    try {
+        long time=System.currentTimeMillis();
+        freakmd2=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+        System.out.println("Time to convert from .jme to SceneGraph:"+ ( System.currentTimeMillis()-time));
+    } catch (IOException e) {
+        System.out.println("damn exceptions:" + e.getMessage());
+    }
+    
+    ((KeyframeController) freakmd2.getChild(0).getController(0)).setSpeed(10);
+    ((KeyframeController) freakmd2.getChild(0).getController(0)).setRepeatType(Controller.RT_WRAP);
+    fakeScene = new Node("Fake node");
+    fakeScene.attachChild(freakmd2);
     TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
+    TextureManager.loadTexture(
+        textu,
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true));
+    freakmd2.setRenderState(ts);
+    // apply the appropriate texture to the imposter scene
+    TextureState ts2 = display.getRenderer().createTextureState();
+    ts2.setEnabled(true);
+    ts2.setTexture(
         TextureManager.loadTexture(
         TestImposterNode.class.getClassLoader().getResource("jmetest/" +
         TEXTURE_NAME),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR,
         true));
-    fakeScene.setRenderState(ts);
+    fakeScene.setRenderState(ts2);
 
     ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);

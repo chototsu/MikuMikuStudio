@@ -31,7 +31,13 @@
  */
 package jmetest.renderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
+
+import jmetest.renderer.loader.TestASEJmeWrite;
 
 import com.jme.app.SimpleGame;
 import com.jme.app.VariableTimestepGame;
@@ -39,11 +45,13 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.AreaClodMesh;
-import com.jme.scene.model.Model;
-import com.jme.scene.model.ase.ASEModel;
-//import com.jme.scene.model.md2.Md2Model;
+import com.jme.scene.lod.ClodMesh;
+import com.jme.scene.model.XMLparser.JmeBinaryReader;
+import com.jme.scene.model.XMLparser.Converters.AseToJme;
 import com.jme.scene.shape.Disk;
 
 /**
@@ -55,11 +63,11 @@ import com.jme.scene.shape.Disk;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.7 2004-08-25 18:12:20 renanse Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.8 2004-09-08 17:06:39 mojomonkey Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {
-  private Model model;
+  private Node model;
 
   private AreaClodMesh iNode, iNode2;
   private boolean useModel = true;
@@ -99,15 +107,24 @@ public class TestAutoClodMesh extends SimpleGame {
 
     input.setKeySpeed(25);
 
-    model = new ASEModel("Statue of Liberty");
-    URL data = TestAutoClodMesh.class.getClassLoader()
-        .getResource("jmetest/data/model/Statue.ase");
-    model.load(data, "jmetest/data/model/");
-
-//    model = new Md2Model("Dr Freak");
-//    model.load(TestAutoClodMesh.class.getClassLoader()
-//               .getResource("jmetest/data/model/drfreak.md2"));
-
+    InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
+    URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
+    if (statue==null){
+        System.out.println("Unable to find statue file, did you include jme-test.jar in classpath?");
+        System.exit(0);
+    }
+    AseToJme i=new AseToJme();
+    ByteArrayOutputStream BO=new ByteArrayOutputStream();
+    try {
+        i.convert(statue,BO);
+        JmeBinaryReader jbr=new JmeBinaryReader();
+        jbr.setProperty("texurl",stateTextureDir);
+        model=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+        rootNode.attachChild(model);
+    } catch (IOException e) {
+        
+    }
+    
     model.updateGeometricState(0, true);
 
     iNode = new AreaClodMesh("model", new Disk("disc", 50, 50, 8), null);
@@ -116,8 +133,12 @@ public class TestAutoClodMesh extends SimpleGame {
     iNode.setModelBound(new BoundingSphere());
     iNode.updateModelBound();
 
-    TriMesh child = (TriMesh) model.getChild(0);
-    iNode2 = new AreaClodMesh("model", child, null);
+    Spatial child = model.getChild(0);
+    while(child instanceof Node) {
+    	child = ((Node)child).getChild(0);
+    }
+    
+    iNode2 = new AreaClodMesh("model", (TriMesh)child, null);
     rootNode.attachChild(iNode2);
     iNode2.setDistanceTolerance( 0.0f);
     iNode2.setForceCull(false);

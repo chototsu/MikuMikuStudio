@@ -31,9 +31,13 @@
  */
 package jmetest.renderer.loader;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URL;
 
-import com.jme.animation.DeformationJointController;
+import com.jme.animation.JointController;
+import com.jme.animation.KeyframeController;
 import com.jme.app.SimpleGame;
 import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
@@ -41,8 +45,9 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Geometry;
-import com.jme.scene.model.Model;
-import com.jme.scene.model.msascii.MilkshapeASCIIModel;
+import com.jme.scene.Node;
+import com.jme.scene.model.XMLparser.JmeBinaryReader;
+import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -56,8 +61,7 @@ import com.jme.scene.state.ZBufferState;
  * @version
  */
 public class TestFireMilk extends SimpleGame {
-  private Model model;
-
+  private Node i;
   public static void main(String[] args) {
     TestFireMilk app = new TestFireMilk();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
@@ -75,17 +79,32 @@ public class TestFireMilk extends SimpleGame {
     cam.update();
     input.setKeySpeed(100);
 
-    URL modelURL = null;
-    model = new MilkshapeASCIIModel("Milkshape Model");
-    modelURL = TestFireMilk.class.getClassLoader().getResource(
-        "jmetest/data/model/msascii/run.txt");
-    model.load(modelURL, "jmetest/data/model/msascii/");
-    model.getAnimationController().setSpeed(25.0f);
-    model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
-    ( (DeformationJointController) model.getAnimationController()).
-        setUpdateModelBounds(true);
-    model.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-    rootNode.attachChild(model);
+    MilkToJme converter=new MilkToJme();
+    URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+    "jmetest/data/model/msascii/run.ms3d");
+    ByteArrayOutputStream BO=new ByteArrayOutputStream();
+
+    try {
+        converter.convert(MSFile.openStream(),BO);
+    } catch (IOException e) {
+        System.out.println("IO problem writting the file!!!");
+        System.out.println(e.getMessage());
+        System.exit(0);
+    }
+    JmeBinaryReader jbr=new JmeBinaryReader();
+    URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
+            "jmetest/data/model/msascii/");
+    jbr.setProperty("texurl",TEXdir);
+    i=null;
+    try {
+        i=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+    } catch (IOException e) {
+        System.out.println("darn exceptions:" + e.getMessage());
+    }
+    ((JointController) i.getChild(0).getController(0)).setSpeed(1.0f);
+    ((JointController) i.getChild(0).getController(0)).setRepeatType(Controller.RT_WRAP);
+    i.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+    rootNode.attachChild(i);
 
     AlphaState as1 = display.getRenderer().createAlphaState();
     as1.setBlendEnabled(true);
@@ -118,7 +137,7 @@ public class TestFireMilk extends SimpleGame {
     manager.setRandomMod(4.5f);
     manager.setControlFlow(false);
     manager.setInitialVelocity(0.12f);
-    manager.setGeometry((Geometry)model.getChild(0));
+    manager.setGeometry((Geometry)((Node)i.getChild(0)).getChild(0));
 
     manager.warmUp(60);
     manager.getParticles().addController(manager);

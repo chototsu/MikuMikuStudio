@@ -31,16 +31,23 @@
  */
 package jmetest.intersection;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URL;
 
+import jmetest.renderer.loader.TestMilkJmeWrite;
+
+import com.jme.animation.JointController;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
+import com.jme.scene.Node;
 import com.jme.scene.Text;
-import com.jme.scene.model.Model;
-import com.jme.scene.model.msascii.MilkshapeASCIIModel;
+import com.jme.scene.model.XMLparser.JmeBinaryReader;
+import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.math.FastMath;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.LightState;
@@ -48,11 +55,11 @@ import com.jme.scene.state.LightState;
 /**
  * <code>TestPick</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.19 2004-06-23 19:15:59 renanse Exp $
+ * @version $Id: TestPick.java,v 1.20 2004-09-08 17:06:42 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
 
-  private Model model;
+  private Node model;
 
   /**
    * Entry point for the test,
@@ -82,12 +89,30 @@ public class TestPick extends SimpleGame {
 
     fpsNode.attachChild(text);
     fpsNode.attachChild(cross);
+    
+    MilkToJme converter=new MilkToJme();
+    URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+    "jmetest/data/model/msascii/run.ms3d");
+    ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
-    model = new MilkshapeASCIIModel("Milkshape Model");
-    URL modelURL = TestPick.class.getClassLoader().getResource(
-        "jmetest/data/model/msascii/run.txt");
-    model.load(modelURL, "jmetest/data/model/msascii/");
-    model.getAnimationController().setActive(false);
+    try {
+        converter.convert(MSFile.openStream(),BO);
+    } catch (IOException e) {
+        System.out.println("IO problem writting the file!!!");
+        System.out.println(e.getMessage());
+        System.exit(0);
+    }
+    JmeBinaryReader jbr=new JmeBinaryReader();
+    URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
+            "jmetest/data/model/msascii/");
+    jbr.setProperty("texurl",TEXdir);
+    model=null;
+    try {
+        model=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+    } catch (IOException e) {
+        System.out.println("darn exceptions:" + e.getMessage());
+    }
+    ((JointController) model.getChild(0).getController(0)).setActive(false);
 
     Vector3f[] vertex = new Vector3f[1000];
     ColorRGBA[] color = new ColorRGBA[1000];

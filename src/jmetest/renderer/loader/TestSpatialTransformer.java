@@ -24,6 +24,7 @@ public class TestSpatialTransformer extends SimpleGame{
     protected void simpleInitGame() {
         Box b=new Box("box",new Vector3f(-1,-1,-1),new Vector3f(1,1,1));
         b.setRandomColors();
+        b.setLocalTranslation(new Vector3f(0,5,0));
         Sphere s=new Sphere("sphere",new Vector3f(0,0,5),10,10,1);
         s.setRandomColors();
         SpatialTransformer st=new SpatialTransformer(2);

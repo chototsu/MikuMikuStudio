@@ -31,8 +31,14 @@
 */
 package jmetest.widget.viewport.scene;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URL;
 
+import jmetest.renderer.loader.TestMilkJmeWrite;
+
+import com.jme.animation.JointController;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -40,8 +46,8 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
-import com.jme.scene.model.Model;
-import com.jme.scene.model.msascii.MilkshapeASCIIModel;
+import com.jme.scene.model.XMLparser.JmeBinaryReader;
+import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -56,7 +62,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene4</code>
  * @author Gregg Patton
- * @version $Id: TestScene4.java,v 1.8 2004-08-14 00:50:11 cep21 Exp $
+ * @version $Id: TestScene4.java,v 1.9 2004-09-08 17:06:48 mojomonkey Exp $
  */
 public class TestScene4 extends TestAbstractScene {
 
@@ -70,7 +76,7 @@ public class TestScene4 extends TestAbstractScene {
 
     public void init(WidgetViewport vp, WidgetViewportCameraController cameraController) {
         vp.detachAllChildren();
-
+        Node model;
 
         if (scene == null) {
             DisplaySystem display = DisplaySystem.getDisplaySystem();
@@ -82,11 +88,32 @@ public class TestScene4 extends TestAbstractScene {
             zstate.setEnabled(true);
             scene = new Node("Scene Node");
             scene.setRenderState(zstate);
-            Model model = new MilkshapeASCIIModel("Milkshape Model");
-            URL modelURL = TestScene4.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
-            model.load(modelURL, "jmetest/data/model/msascii/");
-            model.getAnimationController().setSpeed(10.0f);
-            model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
+            
+            MilkToJme converter=new MilkToJme();
+            URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+            "jmetest/data/model/msascii/run.ms3d");
+            ByteArrayOutputStream BO=new ByteArrayOutputStream();
+
+            try {
+                converter.convert(MSFile.openStream(),BO);
+            } catch (IOException e) {
+                System.out.println("IO problem writting the file!!!");
+                System.out.println(e.getMessage());
+                System.exit(0);
+            }
+            JmeBinaryReader jbr=new JmeBinaryReader();
+            URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
+                    "jmetest/data/model/msascii/");
+            jbr.setProperty("texurl",TEXdir);
+            model=null;
+            try {
+                model=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            } catch (IOException e) {
+                System.out.println("darn exceptions:" + e.getMessage());
+            }
+            
+            ((JointController) model.getChild(0).getController(0)).setSpeed(1.0f);
+            ((JointController) model.getChild(0).getController(0)).setRepeatType(Controller.RT_CYCLE);
             scene.attachChild(model);
             SpotLight am = new SpotLight();
             am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));

@@ -37,7 +37,6 @@ import com.jme.input.NodeHandler;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.model.ase.ASEModel;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.shape.Torus;
 import com.jme.scene.state.TextureState;
@@ -47,11 +46,9 @@ import com.jme.util.TextureManager;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestEnvMap.java,v 1.4 2004-08-14 00:50:06 cep21 Exp $
+ * @version $Id: TestEnvMap.java,v 1.5 2004-09-08 17:06:39 mojomonkey Exp $
  */
 public class TestEnvMap extends SimpleGame {
-
-  private ASEModel model;
 
   public static void main(String[] args) {
     TestEnvMap app = new TestEnvMap();

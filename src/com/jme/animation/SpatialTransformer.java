@@ -126,6 +126,7 @@ public class SpatialTransformer extends Controller{
 
     public void setObject(Spatial objChange, int index, int parentIndex) {
         toChange[index]=objChange;
+        pivots[index].setTranslation(objChange.getLocalTranslation());
         parentIndexes[index]=parentIndex;
     }
 

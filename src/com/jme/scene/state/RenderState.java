@@ -39,128 +39,155 @@ import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 
 /**
- * <code>RenderState</code> is the base class for all states that affect
- * the rendering of a piece of geometry.  They aren't created directly, but are
- * created for users from the renderer.  The renderstate of a parent affects its children
- * and it is OK to assign to more than one Spatial the same render state.
+ * <code>RenderState</code> is the base class for all states that affect the
+ * rendering of a piece of geometry. They aren't created directly, but are
+ * created for users from the renderer. The renderstate of a parent affects its
+ * children and it is OK to assign to more than one Spatial the same render
+ * state.
+ * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.18 2004-08-28 20:41:29 cep21 Exp $
+ * @version $Id: RenderState.java,v 1.19 2004-09-08 17:06:47 mojomonkey Exp $
  */
 public abstract class RenderState implements Serializable {
 
-  /** The value returned by getType() for AlphaState. */
-  public final static int RS_ALPHA = 0;
-  /** The value returend by getType() for DitherState. */
-  public final static int RS_DITHER = 1;
-  /** The value returned by getType() for FogState. */
-  public final static int RS_FOG = 2;
-  /** The value returned by getType() for LightState. */
-  public final static int RS_LIGHT = 3;
-  /** The value returend by getType() for MaterialState. */
-  public final static int RS_MATERIAL = 4;
-  /** The value returned by getType() for ShadeState. */
-  public final static int RS_SHADE = 5;
-  /** The value returned by getType() for TextureState. */
-  public final static int RS_TEXTURE = 6;
-  /** The value returned by getType() for WireframeState. */
-  public final static int RS_WIREFRAME = 7;
-  /** The value returned by getType() for ZBufferState. */
-  public final static int RS_ZBUFFER = 8;
-  /** The value returned by getType() for CullState. */
-  public final static int RS_CULL = 9;
-  /** The value returned by getType() for VertexProgramState. */
-  public final static int RS_VERTEX_PROGRAM = 10;
-  /** The value returned by getType() for FragmentProgramState. */
-  public final static int RS_FRAGMENT_PROGRAM = 11;
-  /** The value returned by getType() for AttributeState. */
-  public final static int RS_ATTRIBUTE = 12;
-  /** The value returned by getType() for StencilState. */
-  public final static int RS_STENCIL = 13;
-  /** The total number of diffrent types of RenderState. */
-  public final static int RS_MAX_STATE = 14;
-  
+	/** The value returned by getType() for AlphaState. */
+	public final static int RS_ALPHA = 0;
 
-  /** Max number of Controller for each RenderState. */
-  public final static int MAX_CONTROLLERS = 10;
+	/** The value returend by getType() for DitherState. */
+	public final static int RS_DITHER = 1;
 
-//  private Controller[] controllers;
-    private ArrayList controllers;
-  private boolean enabled = true;
+	/** The value returned by getType() for FogState. */
+	public final static int RS_FOG = 2;
 
-  /**
-   * Construts a new RenderState.  The state is enabled by default.
-   */
-  public RenderState() {
-//    controllers = new Controller[MAX_CONTROLLERS];
-  }
+	/** The value returned by getType() for LightState. */
+	public final static int RS_LIGHT = 3;
 
-  /**
-   * Defined by the subclass, this returns an int identifying the renderstate.
-   * For example, RS_CULL or RS_TEXTURE.
-   * @return An int identifying this render state.
-   */
-  public abstract int getType();
+	/** The value returend by getType() for MaterialState. */
+	public final static int RS_MATERIAL = 4;
 
-  /**
-   * Returns if this render state is enabled during rendering.  Disabled states
-   * are ignored.
-   * @return True if this state is enabled.
-   */
-  public boolean isEnabled() {
-    return enabled;
-  }
+	/** The value returned by getType() for ShadeState. */
+	public final static int RS_SHADE = 5;
 
-  /**
-   * Sets if this render state is enabled during rendering.  Disabled states
-   * are ignored.
-   * @param value False if the state is to be disabled, true otherwise.
-   */
-  public void setEnabled(boolean value) {
-    this.enabled = value;
-  }
+	/** The value returned by getType() for TextureState. */
+	public final static int RS_TEXTURE = 6;
 
-  /**
-   * Returns an array of Controllers for this render state.
-   * @return The controllers for this render state.
-   */
-  public ArrayList getControllers() {
-    return controllers;
-  }
+	/** The value returned by getType() for WireframeState. */
+	public final static int RS_WIREFRAME = 7;
 
-  /**
-   * Adds the controller c at the specific index in this renderstate's
-   * controller array.
-   * @param index The index to add the controller too.
-   * @param c The controller to add.
-   */
-  public void addController(int index, Controller c) {
-//    controllers[index] = c;
-      if (controllers==null)
-        controllers=new ArrayList(10);
-      controllers.set(index,c);
-  }
+	/** The value returned by getType() for ZBufferState. */
+	public final static int RS_ZBUFFER = 8;
 
-  /**
-   * This function is defined in the RenderState that is actually used by the
-   * Renderer.  It contains the code that, when executed, applies the render state
-   * for the given render system.  This should only be called internally and not by users
-   * directly.
-   */
-  public abstract void apply();
+	/** The value returned by getType() for CullState. */
+	public final static int RS_CULL = 9;
 
-  /**
-   * Extracts from the stack the correct renderstate that should apply to the given
-   * spatial.  This is mainly used for RenderStates that can be cumulitive such as
-   * TextureState or LightState.  By default, the top of the static is returned.
-   * This function should not be called by users directly.
-   * @param stack The stack to extract render states from.
-   * @param spat The spatial to apply the render states too.
-   * @return The render state to use.
-   */
-  public RenderState extract(Stack stack, Spatial spat) {
-    // The default behavior is to return the top of the stack, the last item
-    // pushed during the recursive traveral.
-    return (RenderState) stack.peek();
-  }
+	/** The value returned by getType() for VertexProgramState. */
+	public final static int RS_VERTEX_PROGRAM = 10;
+
+	/** The value returned by getType() for FragmentProgramState. */
+	public final static int RS_FRAGMENT_PROGRAM = 11;
+
+	/** The value returned by getType() for AttributeState. */
+	public final static int RS_ATTRIBUTE = 12;
+
+	/** The value returned by getType() for StencilState. */
+	public final static int RS_STENCIL = 13;
+
+	/** The total number of diffrent types of RenderState. */
+	public final static int RS_MAX_STATE = 14;
+
+	/** Max number of Controller for each RenderState. */
+	public final static int MAX_CONTROLLERS = 10;
+
+	//  private Controller[] controllers;
+	private ArrayList controllers;
+
+	private boolean enabled = true;
+
+	/**
+	 * Construts a new RenderState. The state is enabled by default.
+	 */
+	public RenderState() {
+		//    controllers = new Controller[MAX_CONTROLLERS];
+	}
+
+	/**
+	 * Defined by the subclass, this returns an int identifying the renderstate.
+	 * For example, RS_CULL or RS_TEXTURE.
+	 * 
+	 * @return An int identifying this render state.
+	 */
+	public abstract int getType();
+
+	/**
+	 * Returns if this render state is enabled during rendering. Disabled states
+	 * are ignored.
+	 * 
+	 * @return True if this state is enabled.
+	 */
+	public boolean isEnabled() {
+		return enabled;
+	}
+
+	/**
+	 * Sets if this render state is enabled during rendering. Disabled states
+	 * are ignored.
+	 * 
+	 * @param value
+	 *            False if the state is to be disabled, true otherwise.
+	 */
+	public void setEnabled(boolean value) {
+		this.enabled = value;
+	}
+
+	/**
+	 * Returns an array of Controllers for this render state.
+	 * 
+	 * @return The controllers for this render state.
+	 */
+	public ArrayList getControllers() {
+		return controllers;
+	}
+
+	/**
+	 * Adds the controller c at the specific index in this renderstate's
+	 * controller array.
+	 * 
+	 * @param index
+	 *            The index to add the controller too.
+	 * @param c
+	 *            The controller to add.
+	 */
+	public void addController(int index, Controller c) {
+		//    controllers[index] = c;
+		if (controllers == null)
+			controllers = new ArrayList(10);
+		controllers.set(index, c);
+	}
+
+	/**
+	 * This function is defined in the RenderState that is actually used by the
+	 * Renderer. It contains the code that, when executed, applies the render
+	 * state for the given render system. This should only be called internally
+	 * and not by users directly.
+	 */
+	public abstract void apply();
+
+	/**
+	 * Extracts from the stack the correct renderstate that should apply to the
+	 * given spatial. This is mainly used for RenderStates that can be
+	 * cumulitive such as TextureState or LightState. By default, the top of the
+	 * static is returned. This function should not be called by users directly.
+	 * 
+	 * @param stack
+	 *            The stack to extract render states from.
+	 * @param spat
+	 *            The spatial to apply the render states too.
+	 * @return The render state to use.
+	 */
+	public RenderState extract(Stack stack, Spatial spat) {
+		// The default behavior is to return the top of the stack, the last item
+		// pushed during the recursive traveral.
+		return (RenderState) stack.peek();
+	}
 }

@@ -31,7 +31,12 @@
  */
 package jmetest.effects;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URL;
+
+import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
 import com.jme.effects.ParticleManager;
@@ -40,8 +45,8 @@ import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
-import com.jme.scene.model.Model;
-import com.jme.scene.model.msascii.MilkshapeASCIIModel;
+import com.jme.scene.model.XMLparser.JmeBinaryReader;
+import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -84,10 +89,29 @@ public class TestRigidSmoker extends SimpleGame {
     display.setTitle("Rigid Smoke box");
 
     // hijack the camera model for our own purposes
-    Model camBox = new MilkshapeASCIIModel("Camera Box");
-    URL camBoxUrl = TestRigidSmoker.class.getClassLoader().getResource(
-        "jmetest/data/model/msascii/camera.txt");
-    camBox.load(camBoxUrl, "jmetest/data/model/msascii/");
+    Node camBox;
+    MilkToJme converter=new MilkToJme();
+    URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+    "jmetest/data/model/msascii/camera.ms3d");
+    ByteArrayOutputStream BO=new ByteArrayOutputStream();
+
+    try {
+        converter.convert(MSFile.openStream(),BO);
+    } catch (IOException e) {
+        System.out.println("IO problem writting the file!!!");
+        System.out.println(e.getMessage());
+        System.exit(0);
+    }
+    JmeBinaryReader jbr=new JmeBinaryReader();
+    URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
+            "jmetest/data/model/msascii/");
+    jbr.setProperty("texurl",TEXdir);
+    camBox=null;
+    try {
+    	camBox=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+    } catch (IOException e) {
+        System.out.println("darn exceptions:" + e.getMessage());
+    }
     camBox.setLocalScale(5f);
     smokeNode.attachChild(camBox);
     rootNode.attachChild(smokeNode);

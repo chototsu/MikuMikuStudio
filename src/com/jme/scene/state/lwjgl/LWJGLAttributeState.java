@@ -38,10 +38,10 @@ import com.jme.scene.state.AttributeState;
 /**
  * <code>LWJGLAttributeState</code>
  * @author Mark Powell
- * @version $Id: LWJGLAttributeState.java,v 1.5 2004-08-31 05:13:35 mojomonkey Exp $
+ * @version $Id: LWJGLAttributeState.java,v 1.6 2004-09-08 17:06:47 mojomonkey Exp $
  */
 public class LWJGLAttributeState extends AttributeState {
-  private static int[] glAttributeState = {
+private static int[] glAttributeState = {
       GL11.GL_ALL_ATTRIB_BITS,
       GL11.GL_ACCUM_BUFFER_BIT,
       GL11.GL_COLOR_BUFFER_BIT,

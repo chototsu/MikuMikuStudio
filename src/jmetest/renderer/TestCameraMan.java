@@ -31,8 +31,14 @@
  */
 package jmetest.renderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.net.URL;
 
+import jmetest.renderer.loader.TestMilkJmeWrite;
+
+import com.jme.animation.JointController;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
@@ -44,8 +50,8 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
-import com.jme.scene.model.Model;
-import com.jme.scene.model.msascii.MilkshapeASCIIModel;
+import com.jme.scene.model.XMLparser.JmeBinaryReader;
+import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
@@ -57,7 +63,7 @@ import com.jme.scene.state.ZBufferState;
  * @author Joshua Slack
  */
 public class TestCameraMan extends SimpleGame {
-  private Model model;
+  private Node model;
   private Node monitorNode;
   private CameraNode camNode;
 
@@ -136,11 +142,30 @@ public class TestCameraMan extends SimpleGame {
 
     rootNode.setRenderState(state);
 
-    model = new MilkshapeASCIIModel("Milkshape Model");
-    URL modelURL = TestCameraMan.class.getClassLoader().getResource(
-        "jmetest/data/model/msascii/run.txt");
-    model.load(modelURL, "jmetest/data/model/msascii/");
-    model.getAnimationController().setActive(false);
+    MilkToJme converter=new MilkToJme();
+    URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+    "jmetest/data/model/msascii/run.ms3d");
+    ByteArrayOutputStream BO=new ByteArrayOutputStream();
+
+    try {
+        converter.convert(MSFile.openStream(),BO);
+    } catch (IOException e) {
+        System.out.println("IO problem writting the file!!!");
+        System.out.println(e.getMessage());
+        System.exit(0);
+    }
+    JmeBinaryReader jbr=new JmeBinaryReader();
+    URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
+            "jmetest/data/model/msascii/");
+    jbr.setProperty("texurl",TEXdir);
+    model=null;
+    try {
+        model=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+    } catch (IOException e) {
+        System.out.println("darn exceptions:" + e.getMessage());
+    }
+    ((JointController) model.getChild(0).getController(0)).setActive(false);
+
     rootNode.attachChild(model);
 
     CullState cs = display.getRenderer().createCullState();
@@ -154,10 +179,29 @@ public class TestCameraMan extends SimpleGame {
     cameraLight.setLight(sl);
     cameraLight.setTarget(model);
 
-    Model camBox = new MilkshapeASCIIModel("Camera Box");
-    URL camBoxUrl = TestCameraMan.class.getClassLoader().getResource(
-        "jmetest/data/model/msascii/camera.txt");
-    camBox.load(camBoxUrl, "jmetest/data/model/msascii/");
+    Node camBox;
+    MilkToJme converter2=new MilkToJme();
+    URL MSFile2=TestMilkJmeWrite.class.getClassLoader().getResource(
+    "jmetest/data/model/msascii/camera.ms3d");
+    ByteArrayOutputStream BO2=new ByteArrayOutputStream();
+
+    try {
+        converter2.convert(MSFile2.openStream(),BO2);
+    } catch (IOException e) {
+        System.out.println("IO problem writting the file!!!");
+        System.out.println(e.getMessage());
+        System.exit(0);
+    }
+    JmeBinaryReader jbr2=new JmeBinaryReader();
+    URL TEXdir2=TestMilkJmeWrite.class.getClassLoader().getResource(
+            "jmetest/data/model/msascii/");
+    jbr2.setProperty("texurl",TEXdir2);
+    camBox=null;
+    try {
+    	camBox=jbr2.loadBinaryFormat(new ByteArrayInputStream(BO2.toByteArray()));
+    } catch (IOException e) {
+        System.out.println("darn exceptions:" + e.getMessage());
+    }
     camNode.attachChild(camBox);
     camNode.attachChild(cameraLight);
     rootNode.attachChild(camNode);
