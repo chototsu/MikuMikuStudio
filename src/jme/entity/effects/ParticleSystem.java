@@ -40,18 +40,20 @@ import org.lwjgl.vector.Vector3f;
 import jme.entity.EntityInterface;
 import jme.system.DisplaySystem;
 import jme.entity.camera.Frustum;
+import jme.geometry.bounding.BoundingVolume;
 
 /**
  * <code>ParticleSystem</code> maintains a collection of
  * particle emitters. 
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: ParticleSystem.java,v 1.3 2003-08-31 19:49:49 mojomonkey Exp $
  */
 public class ParticleSystem implements EntityInterface {
     private ArrayList emitters;
     private Vector3f position;
     private GL gl;
+    private BoundingVolume boundingVolume;
     
     public ParticleSystem() {
         emitters = new ArrayList();
@@ -93,5 +95,23 @@ public class ParticleSystem implements EntityInterface {
     
     public void setPosition(Vector3f position) {
     	this.position = position;
+    }
+    
+    /**
+     * <code>setBoundingVolume</code> sets the volume that contains this
+     * entity.
+     * @param volume the volume that contains this entity.
+     */
+    public void setBoundingVolume(BoundingVolume volume) {
+        this.boundingVolume = volume;
+    }
+
+    /**
+     * <code>getBoundingVolume</code> returns the volume that contains this
+     * entity.
+     * @return the volume that contains this entity.
+     */
+    public BoundingVolume getBoundingVolume() {
+        return boundingVolume;
     }
 }

@@ -33,6 +33,7 @@
 package jme.entity;
 
 import jme.entity.camera.Frustum;
+import jme.geometry.bounding.BoundingVolume;
 
 /**
  * <code>EntityInterface</code> defines an interface for handling entities. 
@@ -68,5 +69,19 @@ public interface EntityInterface {
      * @param frustum the view frustum to check against.
      */
     public void checkVisibility(Frustum frustum);
+    
+    /**
+     * <code>setBoundingVolume</code> sets the volume that contains this
+     * entity.
+     * @param volume the volume that contains the entity.
+     */
+    public void setBoundingVolume(BoundingVolume volume);
+    
+    /**
+     * <code>getBoundingVolume</code> returns the volume that contains the
+     * entity.
+     * @return the volume that contains the entity.
+     */
+    public BoundingVolume getBoundingVolume();
     
 }

@@ -39,6 +39,7 @@ import java.util.logging.Level;
 import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.Geometry;
+import jme.geometry.bounding.BoundingVolume;
 import jme.math.Vector;
 import jme.physics.PhysicsModule; 
 import jme.system.DisplaySystem;
@@ -89,6 +90,9 @@ public class Entity implements EntityInterface {
     //The geometry of the entity. Not required to be set, no
     //rendering will be done if it is null.
     protected Geometry geometry = null;
+    
+    //Volume that contains this entity.
+    protected BoundingVolume boundingVolume = null;
 
     //Orientation and position of the entity.
     private Vector position = null;
@@ -177,6 +181,24 @@ public class Entity implements EntityInterface {
      */
     public void removeChild(Entity child) {
         children.remove(child);
+    }
+    
+    /**
+     * <code>setBoundingVolume</code> sets the volume that contains this
+     * entity.
+     * @param volume the volume that contains this entity.
+     */
+    public void setBoundingVolume(BoundingVolume volume) {
+        this.boundingVolume = volume;
+    }
+    
+    /**
+     * <code>getBoundingVolume</code> returns the volume that contains this
+     * entity.
+     * @return the volume that contains this entity.
+     */
+    public BoundingVolume getBoundingVolume() {
+        return boundingVolume;
     }
 
     /**
