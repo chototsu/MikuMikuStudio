@@ -39,7 +39,7 @@ import java.io.IOException;
  * <code>BitmapHeader</code> defines header information about a bitmap (BMP) image
  * file format.
  * @author Mark Powell
- * @version $Id: BitmapHeader.java,v 1.5 2004-02-22 21:26:07 mojomonkey Exp $
+ * @version $Id: BitmapHeader.java,v 1.6 2004-02-23 01:06:45 mojomonkey Exp $
  */
 public class BitmapHeader {
     public int size;
@@ -62,8 +62,11 @@ public class BitmapHeader {
         byte brgb[] = new byte[bh.width * 4 * bh.height];
         
         for(int i = 0; i < bh.width * 4 * bh.height; i++) {
-                    brgb[i] = data[i + 54];
-                }
+            if(i+54 >= data.length) {
+                break;
+            }
+            brgb[i] = data[i + 54];
+        }
         int nindex = 0;
 
         for (int j = 0; j < bh.height; j++) {
@@ -86,7 +89,10 @@ public class BitmapHeader {
         int npad = (bh.sizeimage / bh.height) - bh.width * 3;
         int ndata[] = new int[bh.height * bh.width];
         byte brgb[] = new byte[(bh.width + npad) * 3 * bh.height];
-        for(int i = 0; i < (bh.width + npad) * 3 * bh.height; i++) {
+        for(int i = 0; i < brgb.length; i++) {
+            if(i + 54>= data.length) {
+                break;
+            }
             brgb[i] = data[i + 54];
         }
         
