@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * class abstract. API specific classes are expected to extend this class and
  * handle renderer viewport setting.
  * @author Mark Powell
- * @version $Id: AbstractCamera.java,v 1.6 2004-02-24 01:32:17 mojomonkey Exp $
+ * @version $Id: AbstractCamera.java,v 1.7 2004-02-26 02:48:46 mojomonkey Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -566,13 +566,14 @@ public abstract class AbstractCamera implements Camera {
         if(bound == null) {
             return false;
         }
+        
         int planeCounter = planeQuantity - 1;
         int mask = 1 << planeCounter;
-
+        
         for (int i = 0; i < planeQuantity; i++, planeCounter--, mask >>= 1) {
             if ((planeState & mask) == 0) {
                 int side = bound.whichSide(worldPlane[planeCounter]);
-
+                
                 if (side == Plane.NEGATIVE_SIDE) {
                     //object is outside of frustum
                     return true;
@@ -581,7 +582,7 @@ public abstract class AbstractCamera implements Camera {
                 if (side == Plane.POSITIVE_SIDE) {
                     //object is visible on *this* plane, so mark this plane
                     //so that we don't check it for sub nodes.
-                    planeState &= ~mask;
+                    planeState |= mask;
                 }
             }
         }
