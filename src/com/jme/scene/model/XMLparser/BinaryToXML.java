@@ -143,6 +143,9 @@ public class BinaryToXML {
             case BinaryFormatConstants.DATA_INT:
                 currentLine.append(myIn.readInt());
                 break;
+            case BinaryFormatConstants.DATA_BOOLEAN:
+                currentLine.append(myIn.readBoolean());
+                break;
             default:
                 throw new IOException("Unknown data type:" + type);
         }
