@@ -35,6 +35,7 @@ import org.lwjgl.opengl.GL11;
 
 import com.jme.image.Image;
 import com.jme.widget.Widget;
+import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.image.WidgetImage;
 
 /**
@@ -42,7 +43,7 @@ import com.jme.widget.image.WidgetImage;
  * @author Mike Kienenberger
  *
  * @since 0.6
- * @version $$Id: WidgetLWJGLImage.java,v 1.2 2004-04-22 22:27:17 renanse Exp $$
+ * @version $$Id: WidgetLWJGLImage.java,v 1.3 2004-04-24 15:26:48 mojomonkey Exp $$
  */
 public class WidgetLWJGLImage extends WidgetLWJGLAbstractRenderer {
 
@@ -68,29 +69,110 @@ public class WidgetLWJGLImage extends WidgetLWJGLAbstractRenderer {
         int imageWidth = image.getWidth();
         int imageHeight = image.getHeight();
 
+        int widgetWidth = wt.getWidth();
+        int widgetHeight = wt.getHeight();
+
+        int newImageWidth = -1;
+        int newImageHeight = -1;
+
+        boolean needsAlignment = (wt.getAlignment() != WidgetAlignmentType.ALIGN_NONE);
+        
         if (WidgetImage.SCALE_MODE_SIZE_TO_FIT == wt.getScaleMode())
         {
-            int widgetWidth = wt.getWidth();
-            int widgetHeight = wt.getHeight();
             float xfactor = ((float)widgetWidth) / ((float)imageWidth);
             float yfactor = ((float)widgetHeight) / ((float)imageHeight);
             GL11.glPixelZoom(xfactor, yfactor);
+            newImageWidth = widgetWidth;
+            newImageHeight = widgetHeight;
         }
         else if (WidgetImage.SCALE_MODE_ABSOLUTE == wt.getScaleMode())
         {
             GL11.glPixelZoom(wt.getHorizontalScale(), wt.getVerticalScale());
+            newImageWidth = (int)(imageWidth * wt.getHorizontalScale());
+            newImageHeight = (int)(imageHeight * wt.getVerticalScale());
+        }
+        else if (WidgetImage.SCALE_MODE_NONE == wt.getScaleMode())
+        {
+            GL11.glPixelZoom(1f, 1f);
+            newImageWidth = imageWidth;
+            newImageHeight = imageHeight;
         }
         else if (WidgetImage.SCALE_MODE_RELATIVE == wt.getScaleMode())
         {
-            int widgetWidth = wt.getWidth();
-            int widgetHeight = wt.getHeight();
             float xfactor = ((float)widgetWidth) / ((float)imageWidth) * wt.getHorizontalScale();
             float yfactor = ((float)widgetHeight) / ((float)imageHeight) * wt.getVerticalScale();
             GL11.glPixelZoom(xfactor, yfactor);
+            newImageWidth = (int)(imageWidth * xfactor);
+            newImageHeight = (int)(imageHeight * yfactor);
+        }
+            
+        needsAlignment = needsAlignment && ((newImageWidth < widgetWidth) || (newImageHeight < widgetHeight));
+        
+        if (needsAlignment)
+        {
+            int xAdjustment = 0;
+            int yAdjustment = 0;
+            
+            if (WidgetAlignmentType.ALIGN_NORTHWEST == wt.getAlignment())
+            {
+                xAdjustment = 0;
+                yAdjustment = widgetHeight - newImageHeight;
+            }
+            else if (WidgetAlignmentType.ALIGN_NORTH == wt.getAlignment())
+            {
+                xAdjustment = (int) ((widgetWidth - newImageWidth) / 2);
+                yAdjustment = widgetHeight - newImageHeight;
+            }
+            else if (WidgetAlignmentType.ALIGN_NORTHEAST == wt.getAlignment())
+            {
+                xAdjustment = widgetWidth - newImageWidth;
+                yAdjustment = widgetHeight - newImageHeight;
+            }
+            else if (WidgetAlignmentType.ALIGN_WEST == wt.getAlignment())
+            {
+                xAdjustment = 0;
+                yAdjustment = (int) ((widgetHeight - newImageHeight) / 2);
+            }
+            if (WidgetAlignmentType.ALIGN_CENTER == wt.getAlignment())
+            {
+                xAdjustment = (int) ((widgetWidth - newImageWidth) / 2);
+                yAdjustment = (int) ((widgetHeight - newImageHeight) / 2);
+            }
+            else if (WidgetAlignmentType.ALIGN_EAST == wt.getAlignment())
+            {
+                xAdjustment = widgetWidth - newImageWidth;
+                yAdjustment = (int) ((widgetHeight - newImageHeight) / 2);
+            }
+            else if (WidgetAlignmentType.ALIGN_SOUTHWEST == wt.getAlignment())
+            {
+                xAdjustment = 0;
+                yAdjustment = 0;
+            }
+            if (WidgetAlignmentType.ALIGN_SOUTH == wt.getAlignment())
+            {
+                xAdjustment = (int) ((widgetWidth - newImageWidth) / 2);
+                yAdjustment = 0;
+            }
+            else if (WidgetAlignmentType.ALIGN_SOUTHEAST == wt.getAlignment())
+            {
+                xAdjustment = widgetWidth - newImageWidth;
+                yAdjustment = 0;
+            }
+            else if (WidgetAlignmentType.ALIGN_NONE == wt.getAlignment())
+            {
+                // should never get here
+            }
+            GL11.glRasterPos2i(wt.getX() + xAdjustment, wt.getY() + yAdjustment);
+        }
+        else
+        {
+            GL11.glRasterPos2i(wt.getX(), wt.getY());
         }
 
-        GL11.glRasterPos2i(wt.getX(), wt.getY());
-        GL11.glDrawPixels(imageWidth, imageHeight, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, image.getData());
+         GL11.glDrawPixels(imageWidth, imageHeight, GL11.GL_RGB, GL11.GL_UNSIGNED_BYTE, image.getData());
+        
+        // reset pixel zoom
+        GL11.glPixelZoom(1f, 1f);
 
         resetWidgetProjection();
 
