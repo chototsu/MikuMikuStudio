@@ -128,7 +128,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.27 2004-07-02 02:33:29 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.28 2004-07-02 23:52:14 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1036,7 +1036,7 @@ public class LWJGLRenderer implements Renderer {
     if (g.isVBOTextureEnabled()) {
       for (int i = 0; i < g.getNumberOfUnits(); i++) {
 
-        if (g.getVBOTextureID(i) <= 0) {
+        if (g.getVBOTextureID(i) <= 0 && g.getTextureAsFloatBuffer(i) != null) {
           GL15.glGenBuffers(buf);
           g.setVBOTextureID(i, buf.get(0));
           GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER,
