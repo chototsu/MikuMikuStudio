@@ -58,14 +58,14 @@ import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
- * <code>DemoGame</code> provides the simplest possible implementation
+ * <code>SimpleGame</code> provides the simplest possible implementation
  * of a main game loop. Both logic and graphics are updated as quickly as
  * possible, with no interpolation to account for shifting frame rates.
  * It is suggested that a more complex variant of AbstractGame be used
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.23 2004-07-07 16:08:10 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.24 2004-07-11 12:20:36 cep21 Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
