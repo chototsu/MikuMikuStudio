@@ -137,6 +137,24 @@ public class TransformMatrix {
         this.setRotationQuaternion(q1);
     }
 
+    /**
+     * Sets this transform to an interpolation between the start and end transforms.  Same as above but doesn't
+     * create 2 new Quaternions
+     * @param start Begining transform (delta=0)
+     * @param end Ending transform (delta=1)
+     * @param delta Value between 0.0 and 1.0 to show which side the transform leans towards
+     * @param q1 A temporary Quaternion
+     * @param q2 Another temporary Quaternion
+     */
+    public void interpolateTransforms(TransformMatrix start,TransformMatrix end,float delta,Quaternion q1,Quaternion q2){
+        this.translation.set(start.translation).interpolate(end.translation,delta);
+        this.scale.set(start.scale).interpolate(end.scale,delta);
+        start.getRotation(q1);
+        end.getRotation(q2);
+        q1.slerp(q2,delta);
+        this.setRotationQuaternion(q1);
+    }
+
 
     /**
      * <code>mult</code> multiplies a normal about a transform matrix and

@@ -48,6 +48,8 @@ public class SpatialTransformer extends Controller{
 
     /** Used internally in update to flag that a pivot has been updated*/
     private boolean[] haveChanged;
+    private float delta;
+    private TransformMatrix temp;
 
     /**
      * Constructs a new SpatialTransformer that will operate on <code>numObjects</code> Spatials
@@ -63,6 +65,7 @@ public class SpatialTransformer extends Controller{
         for (int i=0;i<numObjects;i++)
             pivots[i]=new TransformMatrix();
         keyframes=new ArrayList();
+        temp=new TransformMatrix();
     }
 
 
@@ -71,7 +74,8 @@ public class SpatialTransformer extends Controller{
         curTime+=time*getSpeed();
         setBeginAndEnd();
         Arrays.fill(haveChanged,false);
-
+        delta=endPointTime.time-beginPointTime.time;
+        if (delta!=0f) delta=(curTime-beginPointTime.time)/delta;
         for (int i=0;i<numObjects;i++){
             updatePivot(i);
         }
@@ -82,7 +86,7 @@ public class SpatialTransformer extends Controller{
      * @param objIndex The index to update.
      */
     private void updatePivot(int objIndex) {
-        Spatial thisSpatial=(Spatial) toChange[objIndex];
+        Spatial thisSpatial=toChange[objIndex];
         if (haveChanged[objIndex]){
             return;
         }
@@ -91,10 +95,7 @@ public class SpatialTransformer extends Controller{
             updatePivot(parentIndexes[objIndex]);
             pivots[objIndex].set(pivots[parentIndexes[objIndex]]);
         }
-        TransformMatrix temp=new TransformMatrix();
-        float delta=endPointTime.time-beginPointTime.time;
-        temp.interpolateTransforms(beginPointTime.look[objIndex],endPointTime.look[objIndex],
-                (delta==0f) ? 0 :  (curTime-beginPointTime.time)/delta);
+        temp.interpolateTransforms(beginPointTime.look[objIndex],endPointTime.look[objIndex],delta,unSyncbeginRot,unSyncendRot);
         pivots[objIndex].multLocal(temp);
         pivots[objIndex].applyToSpatial(thisSpatial);
 
