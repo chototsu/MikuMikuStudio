@@ -10,9 +10,7 @@ import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
 
 import java.net.URL;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.File;
+import java.io.*;
 
 
 /**
@@ -30,7 +28,9 @@ public class Md2ToXML {
      * @param o The stream to write it's XML equivalent to
      * @throws java.io.IOException If anything funky goes wrong with reading information
      */
-    public void writeFiletoStream(URL file,OutputStream o) throws IOException {
+    public void writeFiletoStream(URL file,Writer o) throws IOException {
+        if (file==null)
+            throw new NullPointerException("Unable to load null URL streams");
         new XMLWriter(o).writeScene(new Md2ConverterCopy(file));
     }
 
