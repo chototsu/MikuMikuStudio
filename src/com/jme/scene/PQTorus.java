@@ -34,27 +34,29 @@ package com.jme.scene;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.math.FastMath;
+import com.jme.math.Vector2f;
 
 /**
  * <code>PQTorus</code>
  *
  * @author MASTER
- * @version $Id: PQTorus.java,v 1.2 2004-03-20 07:15:18 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.3 2004-03-20 07:44:54 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 
   private float p, q;
-  private float radius;
+  private float radius, width;
 
   private int steps, radialSamples;
 
-  public PQTorus(String name, float p, float q, float radius, int steps,
-                 int radialSamples) {
+  public PQTorus(String name, float p, float q, float radius, float width,
+                 int steps, int radialSamples) {
     super(name);
 
     this.p = p;
     this.q = q;
     this.radius = radius;
+    this.width = width;
     this.steps = steps;
     this.radialSamples = radialSamples;
 
@@ -69,6 +71,7 @@ public class PQTorus extends TriMesh {
     Vector3f[] toruspoints = new Vector3f[steps];
     vertex = new Vector3f[radialSamples * steps];
     normal = new Vector3f[vertex.length];
+    texture[0] = new Vector2f[vertex.length];
 
     Vector3f pointB = new Vector3f(), T = new Vector3f(), N = new Vector3f(),
         B = new Vector3f();
@@ -79,6 +82,7 @@ public class PQTorus extends TriMesh {
     //Move along the length of the pq torus
     for (int i = 0; i < steps; i++) {
       theta += THETA_STEP;
+      float circleFraction = ((float)i) / (float)steps;
 
       //Find the point on the torus
       r = (float) (0.5f * (2.0f + FastMath.sin(q * theta)) * radius);
@@ -110,18 +114,24 @@ public class PQTorus extends TriMesh {
         beta += BETA_STEP;
         float cx = (float) FastMath.cos(beta);
         float cy = (float) FastMath.sin(beta);
+        float radialFraction = ((float)j) / radialSamples;
 
         vertex[nvertex] = new Vector3f();
-        vertex[nvertex].x = (cx * N.x + cy * B.x) + toruspoints[i].x;
-        vertex[nvertex].y = (cx * N.y + cy * B.y) + toruspoints[i].y;
-        vertex[nvertex].z = (cx * N.z + cy * B.z) + toruspoints[i].z;
+        vertex[nvertex].x = width * (cx * N.x + cy * B.x) + toruspoints[i].x;
+        vertex[nvertex].y = width * (cx * N.y + cy * B.y) + toruspoints[i].y;
+        vertex[nvertex].z = width * (cx * N.z + cy * B.z) + toruspoints[i].z;
         normal[nvertex] = vertex[nvertex].subtract(toruspoints[i]);
+        if (texture[0][nvertex] == null)
+          texture[0][nvertex] = new Vector2f();
+        texture[0][nvertex].x = radialFraction;
+        texture[0][nvertex].y = circleFraction;
         nvertex++;
       }
     }
 
     setVertices(vertex);
     setNormals(normal);
+    setTextures(texture[0]);
 
     int[] indices = new int[6 * vertex.length];
     int j = 0;
@@ -141,7 +151,6 @@ public class PQTorus extends TriMesh {
     setIndices(indices);
 
     //TODO:
-    // - calculate texture coordinates
     // - small optimizations (code for clarity to begin, then optimize! :)
     // - set color data
   }
