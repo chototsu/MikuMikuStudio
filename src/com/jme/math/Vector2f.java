@@ -40,7 +40,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.11 2004-07-06 21:34:31 renanse Exp $
+ * @version $Id: Vector2f.java,v 1.12 2004-07-12 21:41:29 renanse Exp $
  */
 public class Vector2f implements Externalizable{
     /**
@@ -79,6 +79,17 @@ public class Vector2f implements Externalizable{
     public Vector2f set(float x, float y) {
         this.x = x;
         this.y = y;
+        return this;
+    }
+
+    /**
+     * set the x and y values of the vector from another vector
+     * @param vec the vector to copy from
+     * @return this vector
+     */
+    public Vector2f set(Vector2f vec) {
+        this.x = vec.x;
+        this.y = vec.y;
         return this;
     }
 
@@ -133,8 +144,8 @@ public class Vector2f implements Externalizable{
     /**
      *
      * <code>add</code>
-     * @param vec
-     * @param result
+     * @param vec Vector2f
+     * @param result  Vector2f
      */
     public void add(Vector2f vec, Vector2f result) {
         if(null == vec) {
@@ -430,7 +441,7 @@ public class Vector2f implements Externalizable{
 
     /**
      * Used with serialization.  Not to be called manually.
-     * @param in
+     * @param in ObjectInput
      * @throws IOException
      * @throws ClassNotFoundException
      * @see java.io.Externalizable
@@ -442,7 +453,7 @@ public class Vector2f implements Externalizable{
 
     /**
      * Used with serialization.  Not to be called manually.
-     * @param out
+     * @param out ObjectOutput
      * @throws IOException
      * @see java.io.Externalizable
      */
