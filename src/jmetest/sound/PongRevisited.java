@@ -240,6 +240,7 @@ public class PongRevisited extends SimpleGame {
             manager.getParticles().setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
             reset();
             
+            
         }
         if (ball.getLocalTranslation().x > computer.getWorldTranslation().x) {
 
@@ -247,14 +248,12 @@ public class PongRevisited extends SimpleGame {
                     cam.getLocation().z);
             ballSound.fireEvent(MISS_EVENT);
             playerScoreText.setText("Player : " + (++playerScore));
-            
+            manager.setRepeatType(Controller.RT_WRAP);
+            manager.forceRespawn();
+            manager.getParticles().setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
             if(difficulty>2) difficulty--;
             reset();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-
-            }
+            
         }
         fps.print("");
         snode.updateGeometricState(tpf, true);
