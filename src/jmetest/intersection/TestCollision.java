@@ -42,7 +42,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
+import com.jme.scene.BoundingBox;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.5 2004-03-02 01:45:01 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.6 2004-03-09 03:26:23 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -235,13 +235,13 @@ public class TestCollision extends SimpleGame {
         Vector3f min = new Vector3f(-5, -5, -5);
 
         t = new Box("Box 1", min, max);
-        t.setModelBound(new BoundingSphere());
+        t.setModelBound(new BoundingBox());
         t.updateModelBound();
 
         t.setLocalTranslation(new Vector3f(0, 30, 0));
         
         t2 = new Box("Box 2", min, max);
-        t2.setModelBound(new BoundingSphere());
+        t2.setModelBound(new BoundingBox());
         t2.updateModelBound();
 
         t2.setLocalTranslation(new Vector3f(30, 0, 0));
@@ -260,7 +260,7 @@ public class TestCollision extends SimpleGame {
         am.setDirection(new Vector3f(0, 0, 75));
 
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingSphere());
+        scene.setWorldBound(new BoundingBox());
         cam.update();
 
         TextureState ts = display.getRenderer().getTextureState();

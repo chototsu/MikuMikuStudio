@@ -32,12 +32,9 @@
 
 package com.jme.scene;
 
-import java.util.logging.Level;
-
 import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>BoundingBox</code> defines an axis-aligned cube that defines a container
@@ -50,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.6 2004-03-09 00:06:22 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.7 2004-03-09 03:26:22 mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 

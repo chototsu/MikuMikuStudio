@@ -41,7 +41,6 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.LWJGLRenderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
