@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.2 2004-04-22 22:27:07 renanse Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.3 2004-05-09 04:31:50 renanse Exp $
  */
 public abstract class AbstractHeightMap {
 
@@ -304,7 +304,7 @@ public abstract class AbstractHeightMap {
      * @param tempBuffer
      *            the terrain to filter.
      */
-    protected void erodeTerrain(float[][] tempBuffer) {
+    public void erodeTerrain(float[][] tempBuffer) {
         //erode left to right
         float v;
 
