@@ -41,9 +41,19 @@ import java.util.Arrays;
  * The width and height must be greater than 0. The data is contained in a
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.6 2005-02-10 21:48:25 renanse Exp $
+ * @version $Id: Image.java,v 1.7 2005-02-15 00:50:58 renanse Exp $
  */
 public class Image {
+    /**
+     * When used in texture loading, this indicates to let jME guess 
+     * the format, but not to use S3TC compression, even if available.
+     */
+    public static final int GUESS_FORMAT_NO_S3TC = -2;
+    /**
+     * When used in texture loading, this indicates to let jME guess 
+     * the format.  jME will use S3TC compression, if available.
+     */
+    public static final int GUESS_FORMAT = -1;
     /**
      * 16-bit RGBA with 4 bits for each component.
      */

@@ -51,6 +51,7 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 
 import com.jme.image.BitmapHeader;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -63,7 +64,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.33 2005-02-15 00:43:04 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.34 2005-02-15 00:50:59 renanse Exp $
  */
 final public class TextureManager {
     
@@ -228,8 +229,11 @@ final public class TextureManager {
         // will need to change.
         TextureState state = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 
-        if (imageType >= 0) imageData.setType(imageType);
-        else if (imageType != -2 && state.isS3TCAvailable()) {  // We enable S3TC DXT1 compression by default if available.
+        // we've already guessed the format.  override if given.
+        if (imageType != Image.GUESS_FORMAT_NO_S3TC && imageType != Image.GUESS_FORMAT) 
+            imageData.setType(imageType);
+        else if (imageType == Image.GUESS_FORMAT && state.isS3TCAvailable()) {  
+            // Enable S3TC DXT1 compression if available and we're guessing format.
             if (imageData.getType() == com.jme.image.Image.RGB888)
                 imageData.setType(com.jme.image.Image.RGB888_DXT1);
             else if (imageData.getType() == com.jme.image.Image.RGBA8888)
