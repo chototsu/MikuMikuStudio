@@ -55,7 +55,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.12 2004-04-30 03:38:07 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.13 2004-04-30 14:42:11 mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -130,7 +130,7 @@ public class TestTerrainLighting extends SimpleGame {
 
     lightNode.setTarget(rootNode);
 
-    rootNode.attachChild(lightNode);
+    //rootNode.attachChild(lightNode);
     
     ProjectionState projState = display.getRenderer().getProjectionState();
     projState.setEnabled(true);
@@ -187,7 +187,7 @@ public class TestTerrainLighting extends SimpleGame {
     t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
     t2.setCombineScaleRGB(0);
     rootNode.setRenderState(ts);
-    //rootNode.attachChild(flare);
+    rootNode.attachChild(lightNode);
     rootNode.setForceView(true);
   }
 }
