@@ -13,17 +13,18 @@ import com.jme.animation.VertexKeyframeController;
 
 import java.io.OutputStream;
 import java.io.IOException;
+import java.io.Writer;
 import java.util.ArrayList;
 
 /**
  * Started Date: Jun 5, 2004
  *
- * Class to write a node to an OutputStream in XML format
+ * Class to write a node to a Writer in XML format
  *
  * @author Jack Lindamood
  */
 public class XMLWriter {
-    private OutputStream myStream;
+    private Writer myStream;
     private final static Vector3f defaultTranslation=new Vector3f(0,0,0);
     private final static Quaternion defaultRotation=new Quaternion(0,0,0,1);
     private final static float defaultScale=1;
@@ -31,23 +32,23 @@ public class XMLWriter {
     private StringBuffer currentLine=new StringBuffer();
 
     /**
-     * Creates a new XMLWriter that will write a node's contents to the given stream
-     * @param o OutputStream to write the XML to.
+     * Creates a new XMLWriter that will write a node's contents to the given Writer
+     * @param o Writer to write the XML to.
      */
-    public XMLWriter(OutputStream o){
+    public XMLWriter(Writer o){
         myStream=o;
     }
 
     /**
-     * Sets a new Stream to write a given node's contents to.
-     * @param o New OutputStream
+     * Sets a new Writer to write a given node's contents to.
+     * @param o New Writer
      */
-    public void setNewStream(OutputStream o){
+    public void setNewStream(Writer o){
         myStream=o;
     }
 
     /**
-     * Writes a node to the current OutputStream in XML format.  A .close() is called on the
+     * Writes a node to the current Writer in XML format.  A .close() is called on the
      * stream after the Node is written.
      * @param toWrite The node to write
      * @throws IOException If an exception happens during Node writting
@@ -62,7 +63,7 @@ public class XMLWriter {
     }
 
     /**
-     * Writes a Geometry to the current OutputStream in XML format.  A .close() is called on the
+     * Writes a Geometry to the current Writer in XML format.  A .close() is called on the
      * stream after the Geometry is written.
      * @param toWrite The node to write
      * @throws IOException If an exception happens during Node writting
@@ -478,8 +479,8 @@ public class XMLWriter {
 
 
     private void writeLine() throws IOException{
-        myStream.write(tabs.toString().getBytes());
-        myStream.write(currentLine.toString().getBytes());
+        myStream.write(tabs.toString());
+        myStream.write(currentLine.toString());
         myStream.write('\n');
         myStream.flush();
         currentLine.setLength(0);
