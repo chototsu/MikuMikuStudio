@@ -38,7 +38,7 @@ import java.util.Random;
  * <code>FastMath</code>
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.11 2004-05-24 17:08:19 renanse Exp $
+ * @version $Id: FastMath.java,v 1.12 2004-05-24 17:48:20 renanse Exp $
  */
 
 public class FastMath {
@@ -55,7 +55,7 @@ public class FastMath {
 
     public static final float INV_PI = 1.0f / PI;
 
-    public static final float INV_TWO_PI = 1.0f / PI;
+    public static final float INV_TWO_PI = 1.0f / TWO_PI;
 
     public static final float DEG_TO_RAD = PI / 180.0f;
 
