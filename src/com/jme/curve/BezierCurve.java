@@ -44,7 +44,7 @@ import com.jme.math.Vector3f;
  * [0,1] where 0 is the first control point and 1 is the second control
  * point.
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.6 2004-02-27 19:57:53 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.7 2004-03-12 17:36:47 mojomonkey Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -189,6 +189,10 @@ public class BezierCurve extends Curve {
         rotation.setColumn(2, binormal);
         
         return rotation;
+    }
+    
+    public void resetVertices() {
+        
     }
 
 }

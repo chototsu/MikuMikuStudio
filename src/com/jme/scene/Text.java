@@ -39,7 +39,7 @@ import com.jme.renderer.Renderer;
  * 
  * <code>Text</code>
  * @author Mark Powell
- * @version $Id: Text.java,v 1.3 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: Text.java,v 1.4 2004-03-12 17:37:32 mojomonkey Exp $
  */
 public class Text extends Geometry {
     private StringBuffer text;
@@ -88,6 +88,10 @@ public class Text extends Geometry {
     public void draw(Renderer r) {
         super.draw(r);
         r.draw(this);
+    }
+    
+    public void resetVertices() {
+        
     }
     
 }

@@ -98,6 +98,7 @@ import com.jme.scene.state.LWJGLZBufferState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.ShowBoundingState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
@@ -112,7 +113,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.34 2004-03-06 08:25:39 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.35 2004-03-12 17:36:48 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -292,6 +293,10 @@ public class LWJGLRenderer implements Renderer {
 
     public ZBufferState getZBufferState() {
         return new LWJGLZBufferState();
+    }
+    
+    public ShowBoundingState getShowBoundingState() {
+        return new ShowBoundingState();
     }
 
     /**

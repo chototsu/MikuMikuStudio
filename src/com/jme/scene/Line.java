@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * is the first point of the next line. Therefore, for N points there are
  * N-1 lines.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.3 2004-02-27 19:57:55 mojomonkey Exp $
+ * @version $Id: Line.java,v 1.4 2004-03-12 17:36:47 mojomonkey Exp $
  */
 public class Line extends Geometry {
     
@@ -82,5 +82,9 @@ public class Line extends Geometry {
     public void draw(Renderer r) {
         super.draw(r);
         r.draw(this);
+    }
+    
+    public void resetVertices() {
+        
     }
 }

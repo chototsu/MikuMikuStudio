@@ -29,45 +29,47 @@
  * POSSIBILITY OF SUCH DAMAGE. 
  * 
  */
-package com.jme.effects;
-
-import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
-import com.jme.scene.Geometry;
+package com.jme.scene.state;
 
 /**
- * <code>Tint</code>
- * @author Ahmed
- * @version $Id: Tint.java,v 1.3 2004-03-12 17:37:33 mojomonkey Exp $
+ * <code>ShowBoundingState</code>
+ * @author Mark Powell
+ * @version $Id: ShowBoundingState.java,v 1.1 2004-03-12 17:40:30 mojomonkey Exp $
  */
-public class Tint extends Geometry {
-	
-	private ColorRGBA tintColor;
-	
-	public Tint(String name, ColorRGBA c) {
-		super(name);
-		tintColor = c;
+public class ShowBoundingState extends RenderState {
+	private static boolean shown;
+
+	/** <code>getType</code> 
+	 * @return
+	 * @see com.jme.scene.state.RenderState#getType()
+	 */
+	public int getType() {
+		return RS_SHOW_BOUNDINGS;
 	}
-	
-	public Tint(String name) {
-		super(name);
-		tintColor = new ColorRGBA(0, 0, 0, 0);
+
+	/** <code>set</code> 
+	 * 
+	 * @see com.jme.scene.state.RenderState#set()
+	 */
+	public void set() {
+		if (isEnabled()) {
+			shown = true;
+		} else {
+			shown = false;
+		}
 	}
-	
-	public void draw(Renderer r) {
-		super.draw(r);
-		r.draw(this);
-	}
-	
-	public ColorRGBA getTintColor() {
-		return tintColor;
-	}
-	
-	public void setTintColor(ColorRGBA c) {
-		tintColor = c;
+
+	/** <code>unset</code> 
+	 * 
+	 * @see com.jme.scene.state.RenderState#unset()
+	 */
+	public void unset() {
+		if (isEnabled()) {
+			shown = false;
+		}
 	}
     
-    public void resetVertices() {
-        
+    public static boolean isShown() {
+        return shown;
     }
 }
