@@ -21,8 +21,7 @@ public class SimpleLightNode extends Node{
     private static final long serialVersionUID = 1L;
 	private Light light;
     private Quaternion lightRotate;
-    private Vector3f lightTranslate;
-
+    
     /**
      * Constructor creates a new <code>LightState</code> object. The light
      * state the node controls is required at construction time.
@@ -35,7 +34,6 @@ public class SimpleLightNode extends Node{
     public SimpleLightNode(String name,Light light) {
         super(name);
         this.light=light;
-        lightTranslate=new Vector3f();
     }
 
     /**
@@ -48,8 +46,6 @@ public class SimpleLightNode extends Node{
     public void updateWorldData(float time) {
         super.updateWorldData(time);
         lightRotate = worldRotation.mult(localRotation, lightRotate);
-        lightTranslate = worldRotation.mult(localTranslation, lightTranslate)
-                .multLocal(worldScale).addLocal(worldTranslation);
 
         switch (light.getType()) {
         case Light.LT_DIRECTIONAL:
@@ -63,14 +59,14 @@ public class SimpleLightNode extends Node{
         case Light.LT_POINT:
             {
                 PointLight pLight = (PointLight) light;
-                pLight.setLocation(lightTranslate);
+                pLight.setLocation(worldTranslation);
                 break;
             }
 
         case Light.LT_SPOT:
             {
                 SpotLight sLight = (SpotLight) light;
-                sLight.setLocation(lightTranslate);
+                sLight.setLocation(worldTranslation);
                 sLight.setDirection(lightRotate.getRotationColumn(2, sLight
                         .getDirection()));
                 break;
