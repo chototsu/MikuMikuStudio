@@ -60,26 +60,29 @@ public class TestPolygon extends AbstractGame {
 	private Triangle triangle;
 	private Vector[] points;
 
-	protected void update() {
 	/**
-	 * Update each frame to calculate the framerate
+	 * This is where we'll do any updating.
 	 */
+	protected void update() {
+	// Update each frame to calculate the framerate
 	timer.getFrameRate();
 	timer.update();
 	}
 	
+	/**
+	 * Render is called once per frame to display the data.
+	 */
 	protected void render() {
 		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 		gl.loadIdentity();
 		
-		/**
-		 * Enable texture mapping
-		 */
+
+		// Enable texture mapping
 		gl.enable(GL.TEXTURE_2D);
 
 		triangle.render();
 		
-		/**
+		/*
 		 * Print out the frame rate.
 		 * The print method takes 4 parameters 
 		 * (int, int, string, int). The first two 
@@ -94,11 +97,10 @@ public class TestPolygon extends AbstractGame {
 
 	}
 	
+	/** 
+	 * This is where we create and initialize the window.
+	 */
 	protected void initDisplay() {
-		
-		/** 
-		 * This is where we create and initialize the window.
-		 */
 		DisplaySystem.createDisplaySystem(
 			"TestApplication", 
 			"jme/data/Images/Monkey.jpg",
@@ -108,23 +110,18 @@ public class TestPolygon extends AbstractGame {
 	
 	protected void initGL() {
 
-		/**
-		 * Here we create the OpenGL bindings.
-		 */
+		// Here we create the OpenGL bindings.
 		gl = DisplaySystem.getDisplaySystem().getGL();
 		glu = DisplaySystem.getDisplaySystem().getGLU();
 		
-		/**
-		 * Define the clear color to be black
-		 */		
+
+		 // Define the clear color to be black
 		gl.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		gl.matrixMode(GL.PROJECTION);
 		gl.loadIdentity();
 		
-		/**
-		 * Calculate the aspect ratio
-		 */
+		// Calculate the aspect ratio
 		glu.perspective(
 			45.0f,
 			(float)Display.getWidth() / (float)Display.getHeight(),
@@ -141,56 +138,41 @@ public class TestPolygon extends AbstractGame {
 	}
 
 	protected void initGame() {
-		/**
-		 * Blend the font together so it doesn't chop the letters off 
-		 */
+
+		 // Blend the font together so it doesn't chop the letters off 
 		gl.blendFunc(GL.SRC_ALPHA, GL.ONE);
 		
-		/** 
-		 * Instantiate a font object
-		 */
+		 //Instantiate a font object
 		font = new Font2D("jme/data/Font/font.png");
 		
-		/**
-		 * Instantiate a new timer object
-		 */
+		 // Instantiate a new timer object
 		timer = Timer.getTimer();
 		
-		/**
-		 * Initiate a new Vector class
-		 */
+		 // Initiate a new Vector class
 		points = new Vector[3];
 		
-		/**
-		 * Initialize the Vector array
-		 */
+		 // Initialize the Vector array
 		for (int i = 0; i < 3; i++) {
 			points[i] = new Vector();
 		}
 		
-		/**
-		 * Add points to the Vector array
-		 */
+		 // Add points to the Vector array
 		points[0].x = 0.0f; points[0].y = 1.0f; points[0].z = -5.0f;
 		points[1].x = -1.0f; points[1].y = -1.0f; points[1].z = -5.0f;
 		points[2].x = 1.0f; points[2].y = -1.0f; points[2].z = -5.0f;
-				
-		/**
-		 * Instantiate a new Triangle object
-		 */
+		
+		 // Instantiate a new Triangle object
 		triangle = new Triangle(points);
 	}
 
 	protected void reinit() {
-		/** 
-		 * Nothing here yet.
-		 */
+		 // Nothing here yet.
 	}
 
+	/**
+	 * Clean up the OpenGL resources
+	 */
 	protected void cleanup() {
-		/**
-		 * Clean up the OpenGL resources
-		 */
 		gl.destroy();
 	}
 	
