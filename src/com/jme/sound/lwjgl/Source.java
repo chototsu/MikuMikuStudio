@@ -75,8 +75,9 @@ public class Source implements ISource {
      * @see com.jme.sound.ISource#play()
      */
     public void play() {
+        
         AL10.alSourcePlay(sourceNumber);
-
+        
     }
 
     /* (non-Javadoc)
@@ -396,7 +397,7 @@ public class Source implements ISource {
     }
 
     public boolean isPlaying(){
-        return (AL10.alGetSourcei(sourceNumber, AL10.AL_PLAYING)==AL10.AL_TRUE);
+        return (AL10.alGetSourcei(sourceNumber, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING);
     }
 
     /* (non-Javadoc)
