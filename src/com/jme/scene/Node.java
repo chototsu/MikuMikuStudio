@@ -55,10 +55,10 @@ import java.util.Stack;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.26 2004-07-20 19:56:27 Mojomonkey Exp $
+ * @version $Id: Node.java,v 1.27 2004-07-31 18:56:09 cep21 Exp $
  */
 public class Node extends Spatial implements Serializable {
-    //List to hold the children.
+    /** This node's children. */
     protected ArrayList children;
 
     /**
@@ -131,8 +131,9 @@ public class Node extends Spatial implements Serializable {
     /**
      *
      * <code>detachChild</code> removes a given child from the node's list.
-     * This child will no longe be maintained.
-     * @param child the child to remove.
+     * This child will no longe be maintained.  Only the first child with a matching
+     * name is removed.
+     * @param childName the child to remove.
      * @return the index the child was at. -1 if the child was not in the list.
      */
     public int detachChildNamed(String childName) {
@@ -249,6 +250,11 @@ public class Node extends Spatial implements Serializable {
         }
     }
 
+    /**
+     * Applies the stack of render states to each child by calling updateRenderState(states) on
+     * each child.
+     * @param states The Stack[] of render states to apply to each child.
+     */
     protected void applyRenderState(Stack[] states) {
       for (int i = 0, cSize = children.size(); i < cSize; i++) {
         Spatial pkChild = getChild(i);

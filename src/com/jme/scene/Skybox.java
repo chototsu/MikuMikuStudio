@@ -50,14 +50,21 @@ import com.jme.renderer.Renderer;
  * around your scene.  Either attach to a camera node or update on each frame to
  * set this skybox at the camera's position.
  * @author David Bitkowski
- * @version $Id: Skybox.java,v 1.1 2004-07-03 21:45:23 renanse Exp $
+ * @author Jack Lindamood (javadoc only)
+ * @version $Id: Skybox.java,v 1.2 2004-07-31 18:53:54 cep21 Exp $
  */
 public class Skybox extends Node {
+  /** The +Z side of the skybox. */
   public final static int NORTH = 0;
+  /** The -Z side of the skybox. */
   public final static int SOUTH = 1;
+  /** The -X side of the skybox. */
   public final static int EAST = 2;
+  /** The +X side of the skybox. */
   public final static int WEST = 3;
+  /** The +Y side of the skybox. */
   public final static int UP = 4;
+  /** The -Y side of the skybox. */
   public final static int DOWN = 5;
 
   private float xExtent;
@@ -65,6 +72,14 @@ public class Skybox extends Node {
   private float zExtent;
   private Quad[] skyboxQuads;
 
+  /**
+   * Creates a new skybox.  The size of the skybox and name is specified here.  By default,
+   * no textures are set.
+   * @param name The name of the skybox.
+   * @param xExtent The x size of the skybox in both directions from the center.
+   * @param yExtent The y size of the skybox in both directions from the center.
+   * @param zExtent The z size of the skybox in both directions from the center.
+   */
   public Skybox(String name, float xExtent, float yExtent, float zExtent) {
     super(name);
 
@@ -78,8 +93,8 @@ public class Skybox extends Node {
   /**
    * Set the texture to be displayed on the given side of the skybox.
    * Replaces any existing texture on that side.
-   * @param direction int
-   * @param texture Texture
+   * @param direction One of Skybox.NORTH, Skybox.SOUTH, and so on...
+   * @param texture The texture for that side to assume.
    */
   public void setTexture(int direction, Texture texture) {
     if (direction < 0 || direction > 5) {
@@ -94,9 +109,9 @@ public class Skybox extends Node {
   /**
    * Set the texture to be displayed on the given side of the skybox.  Only
    * replaces the texture at the index specified by textureUnit.
-   * @param direction int
-   * @param texture Texture
-   * @param textureUnit int
+   * @param direction One of Skybox.NORTH, Skybox.SOUTH, and so on...
+   * @param texture The texture for that side to assume.
+   * @param textureUnit The texture unite of the given side's TextureState the texture will assume.
    */
   public void setTexture(int direction, Texture texture, int textureUnit) {
     // Validate
@@ -187,11 +202,11 @@ public class Skybox extends Node {
   }
 
   /**
-   * Retrieve the quad indicated by side.
-   * @param side int
-   * @return Quad
+   * Retrieve the quad indicated by the given side.
+   * @param direction One of Skybox.NORTH, Skybox.SOUTH, and so on...
+   * @return The Quad that makes up that side of the Skybox.
    */
-  public Quad getSide(int side) {
-    return skyboxQuads[side];
+  public Quad getSide(int direction) {
+    return skyboxQuads[direction];
   }
 }
