@@ -32,8 +32,11 @@ class MaterialBlock extends ChunkerClass {
 
     protected void initializeVariables(){
         myMatState=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
+        myMatState.setEnabled(false);
         myWireState=DisplaySystem.getDisplaySystem().getRenderer().getWireframeState();
+        myWireState.setEnabled(false);
         myTexState=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+        myTexState.setEnabled(false);
     }
 
     protected boolean processChildChunk(ChunkHeader i) throws IOException {
