@@ -157,7 +157,7 @@ public class RenParticleControlFrame extends JFrame {
   * <code>RenParticleControlFrame</code>
   *
   * @author Joshua Slack
-  * @version $Id: RenParticleControlFrame.java,v 1.7 2004-03-24 20:09:43 renanse Exp $
+  * @version $Id: RenParticleControlFrame.java,v 1.8 2004-03-24 20:14:17 renanse Exp $
   *
   */
 
@@ -676,7 +676,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setParticlesMinimumLifeTime(4000f);
       manager.setGravityForce(new Vector3f(0f,0f,0f));
     }
-    manager.setEmissionDirection(new Vector3f(0f,0f,0f));
+    manager.setEmissionDirection(new Vector3f(0f,1f,0f));
     manager.warmup();
     updateFromManager();
   }

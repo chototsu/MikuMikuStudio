@@ -55,7 +55,7 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.5 2004-03-24 18:45:18 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.6 2004-03-24 20:09:44 renanse Exp $
  *
  */
 public class RenParticleManager {
@@ -161,9 +161,17 @@ public class RenParticleManager {
 
     updateParticles();
     previousTime = getTimerTic();
-    timeSinceLastUpdate = 10000d; // run the clock a bit to make sure the particles are flowing...
 
+    warmup();
   }
+
+  /**
+   * Runs the clock forward to ensure particles are all flowing.
+   */
+  public void warmup() {
+    timeSinceLastUpdate = 10000d; // run the clock a bit to make sure the particles are flowing...
+  }
+
 
   /**
    * Update the particles managed by this manager.  If any particles are "dead"
