@@ -32,10 +32,7 @@
 
 package jmetest.terrain;
 
-import javax.swing.ImageIcon;
-
 import com.jme.app.*;
-import com.jme.bounding.BoundingBox;
 import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.light.*;
@@ -46,12 +43,11 @@ import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
-import com.jme.terrain.util.MidPointHeightMap;
-
+import com.jme.terrain.util.FaultFractalHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.2 2004-04-16 21:32:39 mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.3 2004-04-18 20:15:37 mojomonkey Exp $
  */
 public class TestTerrainPage extends SimpleGame {
     private Camera cam;
@@ -88,7 +84,6 @@ public class TestTerrainPage extends SimpleGame {
                 + (int) timer.getFrameRate()
                 + " : "
                 + display.getRenderer().getStatistics());
-        //        System.out.println(timer.getFrameRate());
         display.getRenderer().clearStatistics();
     }
 
@@ -100,6 +95,7 @@ public class TestTerrainPage extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
+        //display.getRenderer().drawBounds(root);
 
     }
 
@@ -153,7 +149,7 @@ public class TestTerrainPage extends SimpleGame {
         Vector3f min = new Vector3f(-0.5f, -0.5f, -0.5f);
         
         WireframeState ws = display.getRenderer().getWireframeState();
-        ws.setEnabled(false);
+        ws.setEnabled(true);
         
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
@@ -177,7 +173,7 @@ public class TestTerrainPage extends SimpleGame {
         
         LightState lightstate = display.getRenderer().getLightState();
         lightstate.setTwoSidedLighting(true);
-        lightstate.setEnabled(true);
+        lightstate.setEnabled(false);
         lightstate.attach(dr);
         
         
@@ -186,11 +182,12 @@ public class TestTerrainPage extends SimpleGame {
         scene.setRenderState(lightstate);
         root = new Node("Root node");
         
-        MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
-        TerrainPage tb = new TerrainPage("Terrain", 32, heightMap.getSize(), 5, heightMap.getHeightMap(), false);
+        //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
+        FaultFractalHeightMap heightMap = new FaultFractalHeightMap(129, 32, 0, 255, 0.75f);
+        TerrainPage tb = new TerrainPage("Terrain", 17, heightMap.getSize(), 17, heightMap.getHeightMap(), false);
         tb.setDetailTexture(1, 4);
-        tb.setModelBound(new BoundingBox());
-        tb.updateModelBound();
+        //tb.setModelBound(new BoundingBox());
+        //tb.updateModelBound();
         scene.attachChild(tb);
         scene.setRenderState(cs);
         

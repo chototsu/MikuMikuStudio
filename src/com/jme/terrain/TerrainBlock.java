@@ -61,7 +61,7 @@ public class TerrainBlock extends AreaClodMesh {
         
         if(useClod) {
             this.create(null);
-            this.setTrisPerPixel(0.05f);
+            this.setTrisPerPixel(0.02f);
         }
     }
 
@@ -172,7 +172,11 @@ public class TerrainBlock extends AreaClodMesh {
         for (int i = 1; i < normal.length - 1; i++) {
             if (i % ((size * (i / size + 1)) - 1) == 0) {
                 //right hand normal
-                normal[i] = vertex[i + 1].cross(vertex[i + size]).normalize();
+                if(i - size < 0) {
+                    normal[i] = vertex[i+1].cross(vertex[i+size]).normalize();
+                } else {
+                    normal[i] = vertex[i + 1].cross(vertex[i - size]).normalize();
+                }
             } else if (i >= size * (size - 1)) {
                 //bottom row
                 normal[i] = vertex[i - 1].cross(vertex[i - size]).normalize();

@@ -31,6 +31,7 @@
  */
 package com.jme.terrain;
 
+import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingVolume;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
@@ -47,7 +48,7 @@ public class TerrainPage extends Node {
             int[] heightMap, boolean clod) {
         super(name);
         
-        split(blockSize, size, stepScale, heightMap, clod);
+        split(size, blockSize, stepScale, heightMap, clod);
     }
     
     public void setDetailTexture(int unit, int repeat) {
@@ -94,13 +95,12 @@ public class TerrainPage extends Node {
      * @param heightMap
      * @param clod
      */
-    private void split(int blockSize, int size, float stepScale, int[] heightMap, boolean clod) {
-        System.out.println(size + " " +  size / 4 + " " + blockSize);
-        //if(size/2 <= blockSize) {
+    private void split(int size, int blockSize, float stepScale, int[] heightMap, boolean clod) {
+        if(size/2 + 1 <= blockSize) {
             createQuadBlock(size, stepScale, heightMap, clod);
-        //} else {
-        //    createQuadPage(blockSize, size, stepScale, heightMap, clod);
-        //}
+        } else {
+            createQuadPage(size, blockSize, stepScale, heightMap, clod);
+        }
         
     }
 
@@ -109,58 +109,62 @@ public class TerrainPage extends Node {
      *
      * 
      */
-    private void createQuadPage(int blockSize, int size, float stepScale, int[] heightMap, boolean clod) {
+    private void createQuadPage(int size, int blockSize, float stepScale, int[] heightMap, boolean clod) {
 //      create 4 terrain pages
+        int split = (size + 1) / 2;
+        int newBlockSize = split * split;
         
+        System.out.println("Page split " + split);
+        System.out.println("Data size " + newBlockSize);
         //1 upper left
-        int[] heightBlock1 = new int[heightMap.length/4];
+        int[] heightBlock1 = new int[newBlockSize];
         int count = 0;
-        for(int i = 0; i < size/2; i++) {
-            for(int j = 0; j < size/2; j++) {
-                heightBlock1[count++] = heightMap[i + (j*size)];
+        for(int i = 0; i < split; i++) {
+            for(int j = 0; j < split; j++) {
+                heightBlock1[count++] = heightMap[j + (i*size)];
             }
         }
-        Vector3f origin1 = new Vector3f(-size/4 * stepScale, 0, size/4  * stepScale);
-        TerrainPage page1 = new TerrainPage(name+"Page1", blockSize, size/2, stepScale, heightBlock1, clod);
+        Vector3f origin1 = new Vector3f(-size/4 * stepScale, 0, -size/4  * stepScale);
+        TerrainPage page1 = new TerrainPage(name+"Page1", blockSize, split, stepScale, heightBlock1, clod);
         page1.setLocalTranslation(origin1);
         this.attachChild(page1);
         
         //2 lower left
-        int[] heightBlock2 = new int[heightMap.length/4];
+        int[] heightBlock2 = new int[newBlockSize];
         count = 0;
-        for(int i = size/2; i < size; i++) {
-            for(int j = 0; j < size/2; j++) {
-                heightBlock2[count++] = heightMap[i + (j*size)];
+        for(int i = split-1; i < size; i++) {
+            for(int j = 0; j < split; j++) {
+                heightBlock2[count++] = heightMap[j + (i*size)];
             }
         }
-        Vector3f origin2 = new Vector3f(-size/4  * stepScale, 0, -size/4  * stepScale);
-        TerrainPage page2 = new TerrainPage(name+"Page2", blockSize, size/2, stepScale, heightBlock2, clod);
+        Vector3f origin2 = new Vector3f(-size/4  * stepScale, 0, size/4  * stepScale);
+        TerrainPage page2 = new TerrainPage(name+"Page2", blockSize, split, stepScale, heightBlock2, clod);
         page2.setLocalTranslation(origin2);
         this.attachChild(page2);
         
         //3 lower right
-        int[] heightBlock3 = new int[heightMap.length/4];
+        int[] heightBlock3 = new int[newBlockSize];
         count = 0;
-        for(int i = 0; i < size/2; i++) {
-            for(int j = size/2; j < size; j++) {
-                heightBlock3[count++] = heightMap[i + (j*size)];
+        for(int i = 0; i < split; i++) {
+            for(int j = split-1; j < size; j++) {
+                heightBlock3[count++] = heightMap[j + (i*size)];
             }
         }
-        Vector3f origin3 = new Vector3f(size/4  * stepScale, 0, size/4  * stepScale);
-        TerrainPage page3 = new TerrainPage(name+"Page3", blockSize, size/2, stepScale, heightBlock3, clod);
+        Vector3f origin3 = new Vector3f(size/4  * stepScale, 0, -size/4  * stepScale);
+        TerrainPage page3 = new TerrainPage(name+"Page3", blockSize, split, stepScale, heightBlock3, clod);
         page3.setLocalTranslation(origin3);
         this.attachChild(page3);
-        
+////        
         //4 upper right
-        int[] heightBlock4 = new int[heightMap.length/4];
+        int[] heightBlock4 = new int[newBlockSize];
         count = 0;
-        for(int i = size/2; i < size; i++) {
-            for(int j = size/2; j < size; j++) {
-                heightBlock4[count++] = heightMap[i + (j*size)];
+        for(int i = split-1; i < size; i++) {
+            for(int j = split-1; j < size; j++) {
+                heightBlock4[count++] = heightMap[j + (i*size)];
             }
         }
-        Vector3f origin4 = new Vector3f(size/4  * stepScale, 0, -size/4  * stepScale);
-        TerrainPage page4 = new TerrainPage(name+"Page4", blockSize, size/2, stepScale, heightBlock4, clod);
+        Vector3f origin4 = new Vector3f(size/4  * stepScale, 0, size/4  * stepScale);
+        TerrainPage page4 = new TerrainPage(name+"Page4", blockSize, split, stepScale, heightBlock4, clod);
         page4.setLocalTranslation(origin4);
         this.attachChild(page4);
         
@@ -172,55 +176,65 @@ public class TerrainPage extends Node {
      * 
      */
     private void createQuadBlock(int size, float stepScale, int[] heightMap, boolean clod) {
+        System.out.println("Creating block: HM Size " + heightMap.length);
+        System.out.println("Block size: " + size);
         //create 4 terrain blocks
-        
-        //1 upper left
-        int[] heightBlock1 = new int[heightMap.length/4];
+        int split = (size + 1) / 2;
+        int newBlockSize = split * split;
+        int[] heightBlock1 = new int[newBlockSize];
         int count = 0;
-        for(int i = 0; i < size/2; i++) {
-            for(int j = 0; j < size/2; j++) {
-                heightBlock1[count++] = heightMap[i + (j*size)];
+        for(int i = 0; i < split; i++) {
+            for(int j = 0; j < split; j++) {
+                heightBlock1[count++] = heightMap[j + (i*size)];
             }
         }
-        Vector3f origin1 = new Vector3f(-size/4 * stepScale, 0, size/4  * stepScale);
-        TerrainBlock block1 = new TerrainBlock(name+"Block1", size/2, stepScale, heightBlock1, origin1, clod);
+        Vector3f origin1 = new Vector3f(-size/4 * stepScale, 0, -size/4  * stepScale);
+        TerrainBlock block1 = new TerrainBlock(name+"Block1", split, stepScale, heightBlock1, origin1, clod);
         this.attachChild(block1);
+        block1.setModelBound(new BoundingBox());
+        block1.updateModelBound();
         
         //2 lower left
-        int[] heightBlock2 = new int[heightMap.length/4];
+        int[] heightBlock2 = new int[newBlockSize];
         count = 0;
-        for(int i = size/2; i < size; i++) {
-            for(int j = 0; j < size/2; j++) {
-                heightBlock2[count++] = heightMap[i + (j*size)];
+        for(int i = split - 1; i < size; i++) {
+            for(int j = 0; j < split; j++) {
+                heightBlock2[count++] = heightMap[j + (i*size)];
             }
         }
-        Vector3f origin2 = new Vector3f(-size/4  * stepScale, 0, -size/4  * stepScale);
-        TerrainBlock block2 = new TerrainBlock(name+"Block2", size/2, stepScale, heightBlock2, origin2, clod);
+        Vector3f origin2 = new Vector3f(-size/4  * stepScale, 0, size/4  * stepScale);
+        TerrainBlock block2 = new TerrainBlock(name+"Block2", split, stepScale, heightBlock2, origin2, clod);
         this.attachChild(block2);
+        block2.setModelBound(new BoundingBox());
+        block2.updateModelBound();
         
         //3 lower right
-        int[] heightBlock3 = new int[heightMap.length/4];
+        int[] heightBlock3 = new int[newBlockSize];
         count = 0;
-        for(int i = 0; i < size/2; i++) {
-            for(int j = size/2; j < size; j++) {
-                heightBlock3[count++] = heightMap[i + (j*size)];
+        for(int i = 0; i < split; i++) {
+            for(int j = split - 1; j < size; j++) {
+                heightBlock3[count++] = heightMap[j + (i*size)];
             }
         }
-        Vector3f origin3 = new Vector3f(size/4  * stepScale, 0, size/4  * stepScale);
-        TerrainBlock block3 = new TerrainBlock(name+"Block3", size/2, stepScale, heightBlock3, origin3, clod);
+        Vector3f origin3 = new Vector3f(size/4  * stepScale, 0, -size/4  * stepScale);
+        TerrainBlock block3 = new TerrainBlock(name+"Block3", split, stepScale, heightBlock3, origin3, clod);
         this.attachChild(block3);
+        block3.setModelBound(new BoundingBox());
+        block3.updateModelBound();
         
         //4 upper right
-        int[] heightBlock4 = new int[heightMap.length/4];
+        int[] heightBlock4 = new int[newBlockSize];
         count = 0;
-        for(int i = size/2; i < size; i++) {
-            for(int j = size/2; j < size; j++) {
-                heightBlock4[count++] = heightMap[i + (j*size)];
+        for(int i = split - 1; i < size; i++) {
+            for(int j = split - 1; j < size; j++) {
+                heightBlock4[count++] = heightMap[j + (i*size)];
             }
         }
-        Vector3f origin4 = new Vector3f(size/4  * stepScale, 0, -size/4  * stepScale);
-        TerrainBlock block4 = new TerrainBlock(name+"Block4", size/2, stepScale, heightBlock4, origin4, clod);
+        Vector3f origin4 = new Vector3f(size/4  * stepScale, 0, size/4  * stepScale);
+        TerrainBlock block4 = new TerrainBlock(name+"Block4", split, stepScale, heightBlock4, origin4, clod);
         this.attachChild(block4);
+        block4.setModelBound(new BoundingBox());
+        block4.updateModelBound();
     
     }
     

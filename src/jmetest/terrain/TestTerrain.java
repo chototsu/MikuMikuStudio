@@ -46,13 +46,14 @@ import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
+import com.jme.terrain.util.FaultFractalHeightMap;
 import com.jme.terrain.util.MidPointHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.12 2004-04-16 17:34:48 renanse Exp $
+ * @version $Id: TestTerrain.java,v 1.13 2004-04-18 20:15:37 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -101,7 +102,7 @@ public class TestTerrain extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
-
+        display.getRenderer().drawBounds(root);
     }
 
     /**
@@ -156,6 +157,8 @@ public class TestTerrain extends SimpleGame {
         WireframeState ws = display.getRenderer().getWireframeState();
         ws.setEnabled(false);
 
+        FogState fs = display.getRenderer().getFogState();
+        
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -187,7 +190,8 @@ public class TestTerrain extends SimpleGame {
         scene.setRenderState(lightstate);
         root = new Node("Root node");
 
-        MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
+        //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
+        FaultFractalHeightMap heightMap = new FaultFractalHeightMap(129, 32, 0, 255, 0.75f);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0), true);
         tb.setDetailTexture(1, 4);
         tb.setModelBound(new BoundingBox());
