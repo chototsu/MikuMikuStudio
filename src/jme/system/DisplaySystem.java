@@ -423,7 +423,7 @@ public class DisplaySystem {
 
             if (fullscreen) {
                 Display.setDisplayMode(mode);
-                Window.create(title, bpp, 0, 16, 0);
+                Window.create(title, bpp, 0, 8, 0);
             } else {
                 int x, y;
                 x =
@@ -433,7 +433,7 @@ public class DisplaySystem {
                     (Toolkit.getDefaultToolkit().getScreenSize().height
                         - height)
                         / 2;
-                Window.create(title, x, y, width, height, bpp, 0, 16, 0);
+                Window.create(title, x, y, width, height, bpp, 0, 8, 0);
             }
 
             GLCaps.determineAvailableExtensions();

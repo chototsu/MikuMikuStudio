@@ -29,26 +29,90 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package jme.geometry.model;
 
 import jme.math.Matrix;
 
+
+
 /**
- * <code>Joint</code> defines a joint for a model. 
- * 
- * @author Mark Powell
+ * A Joint stores everything about an animated bone (a joint that knows
+ * about its parent joint - the two endpoints make up a bone).
+ *
+ * @author naj
+ * @version 0.1
  */
 public class Joint {
+
+    /**
+     * The name of the joint in MS3D.
+     */
     public String name;
+
+    /**
+     * The name of the parent joint in MS3D.
+     */
     public String parentName;
-    public float[] rotation = new float[3];
-    public float[] translation = new float[3];
-    public byte flags;
-    public Matrix absolute, relative;
-    public int numRotationKeyframes, numTranslationKeyframes;
-    public Keyframe[] translationKeyframes;
-    public Keyframe[] rotationKeyframes;
-    public int currentTranslationKeyframe, currentRotationKeyframe;
-    public Matrix finalMatrix;
-    public int parent;
+
+    /**
+     * The flags in MS3D.
+     */
+    public int flags;
+
+    /**
+     * The local translation of the joint in 3D space.
+     */
+    public float posx, posy, posz;
+
+    /**
+     * The local rotation of the joint in 3D space.
+     */
+    public float rotx, roty, rotz;
+
+    /**
+     * The number of position keyframes for the joint.
+     */
+    public int numberPosistionKeyframes;
+
+    /**
+     * The number of position keyframes for the joint.
+     */
+    public int numberRotationKeyframes;
+
+    /**
+     * The tranlation keyframes of the animation.
+     */
+    public Keyframe[] positionKeys;
+
+    /**
+     * The rotation keyframes of the animation.
+     */
+    public Keyframe[] rotationKeys;
+
+    /**
+     * The transformation of a joint from its parent.
+     */
+    public Matrix relativeMatrix = new Matrix();
+
+    /**
+     * The original transformation of the joint.
+     */
+    public Matrix absoluteMatrix = new Matrix();
+
+    /**
+     * The helper matrix for calculating the final matrix.
+     */
+    public Matrix relativeFinalMatrix = new Matrix();
+
+    /**
+     * The final result of all transformations in the skeleton.
+     */
+    public Matrix finalMatrix = new Matrix();
+
+    /**
+     * The parent joint index.
+     */
+    public int parentIndex;
+
 }

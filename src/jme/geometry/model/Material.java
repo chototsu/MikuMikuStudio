@@ -29,45 +29,66 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package jme.geometry.model;
 
 /**
- * <code>Material</code> maintains all standard lighting coeffecients 
- * for OpenGL based lighting as well as texture information. 
- * @author Mark Powell
+ * A Material is a texture map in MS3D.  Currently, as of version 0.1 of
+ * najgl, only bitmap (*.bmp) textures are supported.
+ *
+ * @author naj
+ * @version 0.1
  */
-
 public class Material {
+
+    /**
+     * The filename of the bitmap.  Must be relative to the loaded model file.
+     */
     public String name;
+
+    /**
+     * The filename of the color map.  Must be relative to the loaded model file.
+     */
+    public String colorMap;
+
+    /**
+     * The filename of the alpah map.  Must be relative to the loaded model file.
+     */
+    public String alphaMap;
+
+    /**
+     * A pointer to the memory address of the texture in opengl memory.
+     */
+    public int glTextureAddress;
+
+    /**
+     * An array of (r,g,b,a) color values for natural light.
+     */
+    public float[] ambient;
+
+    /**
+     * An array of (r,g,b,a) color values for indirect light.
+     */
+    public float[] diffuse;
+
+    /**
+     * An array of (r,g,b,a) color values for direct light.
+     */
+    public float[] specular;
+
+    /**
+     * An array of (r,g,b,a) color values for projected light.
+     */
+    public float[] emissive;
+
+    /**
+     * The ammount of light to be reflected off of the texture.
+     */
+    public float shininess;
+
+    /**
+     * The ammount of light to pass through the texture.
+     */
     public float transparency;
-    public byte mode;
-    public String alphaFilename;
-	/**
-	 * defines the color and intensity of the ambient or natural light.
-	 */
-	public float[] ambient = new float[4];
-	/**
-	 * defines the color and intensity of the diffuse or indirect light.
-	 */
-	public float[] diffuse = new float[4];
-	/**
-	 * defines the color and intensity of the specular or direct light.
-	 */
-	public float[] specular = new float[4];
-	/**
-	 * defines the color and intensity of the emissive or projected light.
-	 */
-	public float[] emissive = new float[4];
-	/**
-	 * defines the amount of light is reflected by the material.
-	 */
-	public float shininess;
-	/**
-	 * defines the id of the texture as assigned by OpenGL.
-	 */
-	public int texture;
-	/**
-	 * defines the name of the image file used to generate the texture.
-	 */
-	public String textureFilename;
+
 }

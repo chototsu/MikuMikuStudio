@@ -39,11 +39,11 @@ import jme.exception.MonkeyRuntimeException;
  * convinience methods for creating the matrix from a multitude of sources.
  * 
  * @author Mark Powell
- * @version $Id: Matrix.java,v 1.5 2003-08-28 18:48:21 mojomonkey Exp $
+ * @version $Id: Matrix.java,v 1.6 2003-09-04 21:17:51 mojomonkey Exp $
  */
 public class Matrix {
-    private float matrix[];
-
+    public float matrix[][];
+    
     /**
      * Constructor instantiates a new <code>Matrix</code> that is set to the
      * identity matrix.
@@ -64,9 +64,11 @@ public class Matrix {
     	if(null == mat) {
     		loadIdentity();
     	} else {
-	    	for(int i = 0; i < 16; i++) {
-	    		matrix[i] = mat.getMatrix()[i];
-	    	}
+	    	for(int i = 0; i < 4; i++) {
+                for(int j = 0; j < 4; j++) {
+	    		 matrix[i][j] = mat.getMatrix()[i][j];
+	    	  }
+            }
     	}
     }
 
@@ -76,8 +78,8 @@ public class Matrix {
      *
      */
     public void loadIdentity() {
-        matrix = new float[16];
-        matrix[0] = matrix[5] = matrix[10] = matrix[15] = 1;
+        matrix = new float[4][4];
+        matrix[0][0] = matrix[1][1] = matrix[2][2] = matrix[3][3] = 1;
     }
 
     /**
@@ -86,19 +88,62 @@ public class Matrix {
      * @param matrix the matrix to set the value to.
      * @throws MonkeyRuntimeException if the array is not of size 16.
      */
-    public void set(float[] matrix) {
-        if (matrix.length != 16) {
+    public void set(float[][] matrix) {
+        if (matrix.length != 4 || matrix[0].length != 4) {
             throw new MonkeyRuntimeException("Array must be of size 16.");
         }
 
-        for (int i = 0; i < 16; i++) {
-            this.matrix[i] = matrix[i];
+        for (int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++ ) {
+                this.matrix[i][j] = matrix[i][j];
+            }
         }
     }
     
+    public void set(float[] matrix) {
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                this.matrix[i][j] = matrix[j*4 + i];
+            }
+        }
+    }
+    
+    public void set(Quaternion quaternion) {
+        matrix[0][0] = (float) (1.0 - 2.0 * quaternion.y * quaternion.y - 2.0 * quaternion.z * quaternion.z);
+        matrix[1][0] = (float) (2.0 * quaternion.x * quaternion.y + 2.0 * quaternion.w * quaternion.z);
+        matrix[2][0] = (float) (2.0 * quaternion.x * quaternion.z - 2.0 * quaternion.w * quaternion.y);
+
+        matrix[0][1] = (float) (2.0 * quaternion.x * quaternion.y - 2.0 * quaternion.w * quaternion.z);
+        matrix[1][1] = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0 * quaternion.z * quaternion.z);
+        matrix[2][1] = (float) (2.0 * quaternion.y * quaternion.z + 2.0 * quaternion.w * quaternion.x);
+
+        matrix[0][2] = (float) (2.0 * quaternion.x * quaternion.z + 2.0 * quaternion.w * quaternion.y);
+        matrix[1][2] = (float) (2.0 * quaternion.y * quaternion.z - 2.0 * quaternion.w * quaternion.x);
+        matrix[2][2] = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0 * quaternion.y * quaternion.y);
+    
+    }
+    
+    public void copy(Matrix matrix) {
+        if(null == matrix) {
+            loadIdentity();
+        } else {
+            for(int i = 0; i < 4; i++) {
+                for(int j = 0; j < 4; j++) {
+                 this.matrix[i][j] = matrix.matrix[i][j];
+              }
+            }
+        }
+    }
+    
+    /**
+     * <code>add</code> adds the values of a parameter matrix to this matrix.
+     * @param matrix the matrix to add to this.
+     */
     public void add(Matrix matrix) {
-        for(int i = 0; i < 16; i++) {
-            this.matrix[i] += matrix.getMatrix()[i];
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                this.matrix[i][j] += matrix.getMatrix()[i][j];
+            }
         }
     }
     
@@ -107,81 +152,53 @@ public class Matrix {
      * @param scalar the scalar to multiply this matrix by.
      */
     public void multiply(float scalar) {
-        for(int i = 0; i < 16; i++) {
-            matrix[i] *= scalar;
+        for(int i = 0; i < 4; i++) {
+            for(int j = 0; j < 4; j++) {
+                matrix[i][j] *= scalar;
+            }
         }
     }
 
     /**
-     * <code>multiply</code> multiplies this matrix with another matrix.
+     * <code>multiply</code> multiplies this matrix with another matrix. The
+     * result matrix will then be returned.
      * This matrix will be on the left hand side, while the parameter matrix
      * will be on the right.
-     * @param matrix the matrix to multiply this matrix by.
+     * @param in2 the matrix to multiply this matrix by.
+     * @return the resultant matrix
      * @throws MonkeyRuntimeException if matrix is null.
      */
-    public void multiply(Matrix matrix) {
-        if(null == matrix) {
-            throw new MonkeyRuntimeException("Matrix may not be null.");
-        }
-        this.matrix[0] =
-            this.matrix[0] * matrix.getMatrix()[0]
-                + this.matrix[4] * matrix.getMatrix()[1]
-                + this.matrix[8] * matrix.getMatrix()[2];
-        this.matrix[1] =
-            this.matrix[1] * matrix.getMatrix()[0]
-                + this.matrix[5] * matrix.getMatrix()[1]
-                + this.matrix[9] * matrix.getMatrix()[2];
-        this.matrix[2] =
-            this.matrix[2] * matrix.getMatrix()[0]
-                + this.matrix[6] * matrix.getMatrix()[1]
-                + this.matrix[10] * matrix.getMatrix()[2];
-        this.matrix[3] = 0;
-
-        this.matrix[4] =
-            this.matrix[0] * matrix.getMatrix()[4]
-                + this.matrix[4] * matrix.getMatrix()[5]
-                + this.matrix[8] * matrix.getMatrix()[6];
-        this.matrix[5] =
-            this.matrix[1] * matrix.getMatrix()[4]
-                + this.matrix[5] * matrix.getMatrix()[5]
-                + this.matrix[9] * matrix.getMatrix()[6];
-        this.matrix[6] =
-            this.matrix[2] * matrix.getMatrix()[4]
-                + this.matrix[6] * matrix.getMatrix()[5]
-                + this.matrix[10] * matrix.getMatrix()[6];
-        this.matrix[7] = 0;
-
-        this.matrix[8] =
-            this.matrix[0] * matrix.getMatrix()[8]
-                + this.matrix[4] * matrix.getMatrix()[9]
-                + this.matrix[8] * matrix.getMatrix()[10];
-        this.matrix[9] =
-            this.matrix[1] * matrix.getMatrix()[8]
-                + this.matrix[5] * matrix.getMatrix()[9]
-                + this.matrix[9] * matrix.getMatrix()[10];
-        this.matrix[10] =
-            this.matrix[2] * matrix.getMatrix()[8]
-                + this.matrix[6] * matrix.getMatrix()[9]
-                + this.matrix[10] * matrix.getMatrix()[10];
-        this.matrix[11] = 0;
-
-        this.matrix[12] =
-            this.matrix[0] * matrix.getMatrix()[12]
-                + this.matrix[4] * matrix.getMatrix()[13]
-                + this.matrix[8] * matrix.getMatrix()[14]
-                + this.matrix[12];
-        this.matrix[13] =
-            this.matrix[1] * matrix.getMatrix()[12]
-                + this.matrix[5] * matrix.getMatrix()[13]
-                + this.matrix[9] * matrix.getMatrix()[14]
-                + this.matrix[13];
-        this.matrix[14] =
-            this.matrix[2] * matrix.getMatrix()[12]
-                + this.matrix[6] * matrix.getMatrix()[13]
-                + this.matrix[10] * matrix.getMatrix()[14]
-                + this.matrix[14];
-        this.matrix[15] = 1;
-
+    public Matrix multiply(Matrix in2) {
+        Matrix out = new Matrix();
+        out.matrix[0][0] = matrix[0][0] * in2.matrix[0][0] + matrix[0][1] * in2.matrix[1][0] + matrix[0][2] * in2.matrix[2][0];
+        out.matrix[0][1] = matrix[0][0] * in2.matrix[0][1] + matrix[0][1] * in2.matrix[1][1] + matrix[0][2] * in2.matrix[2][1];
+        out.matrix[0][2] = matrix[0][0] * in2.matrix[0][2] + matrix[0][1] * in2.matrix[1][2] + matrix[0][2] * in2.matrix[2][2];
+        out.matrix[0][3] = matrix[0][0] * in2.matrix[0][3] + matrix[0][1] * in2.matrix[1][3] + matrix[0][2] * in2.matrix[2][3] + matrix[0][3];
+        out.matrix[1][0] = matrix[1][0] * in2.matrix[0][0] + matrix[1][1] * in2.matrix[1][0] + matrix[1][2] * in2.matrix[2][0];
+        out.matrix[1][1] = matrix[1][0] * in2.matrix[0][1] + matrix[1][1] * in2.matrix[1][1] + matrix[1][2] * in2.matrix[2][1];
+        out.matrix[1][2] = matrix[1][0] * in2.matrix[0][2] + matrix[1][1] * in2.matrix[1][2] + matrix[1][2] * in2.matrix[2][2];
+        out.matrix[1][3] = matrix[1][0] * in2.matrix[0][3] + matrix[1][1] * in2.matrix[1][3] + matrix[1][2] * in2.matrix[2][3] + matrix[1][3];
+        out.matrix[2][0] = matrix[2][0] * in2.matrix[0][0] + matrix[2][1] * in2.matrix[1][0] + matrix[2][2] * in2.matrix[2][0];
+        out.matrix[2][1] = matrix[2][0] * in2.matrix[0][1] + matrix[2][1] * in2.matrix[1][1] + matrix[2][2] * in2.matrix[2][1];
+        out.matrix[2][2] = matrix[2][0] * in2.matrix[0][2] + matrix[2][1] * in2.matrix[1][2] + matrix[2][2] * in2.matrix[2][2];
+        out.matrix[2][3] = matrix[2][0] * in2.matrix[0][3] + matrix[2][1] * in2.matrix[1][3] + matrix[2][2] * in2.matrix[2][3] + matrix[2][3];
+        out.matrix[3][0] =
+                    this.matrix[0][0] * in2.getMatrix()[3][0]
+                        + this.matrix[1][0] * in2.getMatrix()[3][1]
+                        + this.matrix[2][0] * in2.getMatrix()[3][2]
+                        + this.matrix[3][0];
+                out.matrix[3][1] =
+                    this.matrix[0][1] * in2.getMatrix()[3][0]
+                        + this.matrix[1][1] * in2.getMatrix()[3][1]
+                        + this.matrix[2][1] * in2.getMatrix()[3][2]
+                        + this.matrix[3][1];
+                out.matrix[3][2] =
+                    this.matrix[0][2] * in2.getMatrix()[3][0]
+                        + this.matrix[1][2] * in2.getMatrix()[3][1]
+                        + this.matrix[2][2] * in2.getMatrix()[3][2]
+                        + this.matrix[3][2];
+                out.matrix[3][3] = 1;
+        return out;
     }
     
     /**
@@ -193,9 +210,9 @@ public class Matrix {
         if (translation.length != 3) {
             throw new MonkeyRuntimeException("Translation size must be 3.");
         }
-        matrix[12] = translation[0];
-        matrix[13] = translation[1];
-        matrix[14] = translation[2];
+        matrix[3][0] = translation[0];
+        matrix[3][1] = translation[1];
+        matrix[3][2] = translation[2];
     }
 
     /**
@@ -208,59 +225,63 @@ public class Matrix {
         if (translation.length != 3) {
             throw new MonkeyRuntimeException("Translation size must be 3.");
         }
-        matrix[12] = -translation[0];
-        matrix[13] = -translation[1];
-        matrix[14] = -translation[2];
+        matrix[3][0] = -translation[0];
+        matrix[3][1] = -translation[1];
+        matrix[3][2] = -translation[2];
     }
 
-    /**
-     * <code>setRotationRadians</code> builds a rotation from Euler angles that
-     * are in radians.
-     * @param angles the Euler angles in radians.
-     * @throws MonkeyRuntimeException if angles is not size 3.
-     */
-    public void setRotationRadians(float[] angles) {
-        if (angles.length != 3) {
-            throw new MonkeyRuntimeException("Angles must be of size 3.");
-        }
-        double cr = Math.cos(angles[0]);
-        double sr = Math.sin(angles[0]);
-        double cp = Math.cos(angles[1]);
-        double sp = Math.sin(angles[1]);
-        double cy = Math.cos(angles[2]);
-        double sy = Math.sin(angles[2]);
+    public void angleRotationRadians(Vector angles) {
+        float sr, sp, sy, cr, cp, cy;
 
-        matrix[0] = (float) (cp * cy);
-        matrix[1] = (float) (cp * sy);
-        matrix[2] = (float) (-sp);
+        sy = (float) java.lang.Math.sin(angles.z);
+        cy = (float) java.lang.Math.cos(angles.z);
+        sp = (float) java.lang.Math.sin(angles.y);
+        cp = (float) java.lang.Math.cos(angles.y);
+        sr = (float) java.lang.Math.sin(angles.x);
+        cr = (float) java.lang.Math.cos(angles.x);
 
-        double srsp = sr * sp;
-        double crsp = cr * sp;
-
-        matrix[4] = (float) (srsp * cy - cr * sy);
-        matrix[5] = (float) (srsp * sy + cr * cy);
-        matrix[6] = (float) (sr * cp);
-
-        matrix[8] = (float) (crsp * cy + sr * sy);
-        matrix[9] = (float) (crsp * sy - sr * cy);
-        matrix[10] = (float) (cr * cp);
+        // matrix = (Z * Y) * X
+        matrix[0][0] = cp * cy;
+        matrix[1][0] = cp * sy;
+        matrix[2][0] = -sp;
+        matrix[0][1] = sr * sp * cy + cr * -sy;
+        matrix[1][1] = sr * sp * sy + cr * cy;
+        matrix[2][1] = sr * cp;
+        matrix[0][2] = (cr * sp * cy + -sr * -sy);
+        matrix[1][2] = (cr * sp * sy + -sr * cy);
+        matrix[2][2] = cr * cp;
+        matrix[0][3] = 0.0f;
+        matrix[1][3] = 0.0f;
+        matrix[2][3] = 0.0f;
     }
+    
+    public void angleRotationDegrees(Vector angles) {
+        float angle;
+        float sr, sp, sy, cr, cp, cy;
 
-    /**
-    * <code>setRotationDegrees</code> builds a rotation from Euler angles that
-    * are in degrees.
-    * @param angles the Euler angles in degrees.
-    * @throws MonkeyRuntimeException if angles is not size 3.
-    */
-    public void setRotationDegrees(float[] angles) {
-        if (angles.length != 3) {
-            throw new MonkeyRuntimeException("Angles must be of size 3.");
-        }
-        float vec[] = new float[3];
-        vec[0] = (float) (angles[0] * 180.0 / Math.PI);
-        vec[1] = (float) (angles[1] * 180.0 / Math.PI);
-        vec[2] = (float) (angles[2] * 180.0 / Math.PI);
-        setRotationRadians(vec);
+        angle = (float) (angles.z * (Math.PI * 2 / 360));
+        sy = (float) java.lang.Math.sin(angle);
+        cy = (float) java.lang.Math.cos(angle);
+        angle = (float) (angles.y * (Math.PI * 2 / 360));
+        sp = (float) java.lang.Math.sin(angle);
+        cp = (float) java.lang.Math.cos(angle);
+        angle = (float) (angles.x * (Math.PI * 2 / 360));
+        sr = (float) java.lang.Math.sin(angle);
+        cr = (float) java.lang.Math.cos(angle);
+
+        // matrix = (Z * Y) * X
+        matrix[0][0] = cp * cy;
+        matrix[1][0] = cp * sy;
+        matrix[2][0] = -sp;
+        matrix[0][1] = sr * sp * cy + cr * -sy;
+        matrix[1][1] = sr * sp * sy + cr * cy;
+        matrix[2][1] = sr * cp;
+        matrix[0][2] = (cr * sp * cy + -sr * -sy);
+        matrix[1][2] = (cr * sp * sy + -sr * cy);
+        matrix[2][2] = cr * cp;
+        matrix[0][3] = 0.0f;
+        matrix[1][3] = 0.0f;
+        matrix[2][3] = 0.0f;
     }
 
     /**
@@ -273,19 +294,19 @@ public class Matrix {
         if(null == quat) {
             throw new MonkeyRuntimeException("Quat may not be null.");
         }
-        matrix[0] =
+        matrix[0][0] =
             (float) (1.0 - 2.0 * quat.y * quat.y - 2.0 * quat.z * quat.z);
-        matrix[1] = (float) (2.0 * quat.x * quat.y + 2.0 * quat.w * quat.z);
-        matrix[2] = (float) (2.0 * quat.x * quat.z - 2.0 * quat.w * quat.y);
+        matrix[0][1] = (float) (2.0 * quat.x * quat.y + 2.0 * quat.w * quat.z);
+        matrix[0][2] = (float) (2.0 * quat.x * quat.z - 2.0 * quat.w * quat.y);
 
-        matrix[4] = (float) (2.0 * quat.x * quat.y - 2.0 * quat.w * quat.z);
-        matrix[5] =
+        matrix[1][0] = (float) (2.0 * quat.x * quat.y - 2.0 * quat.w * quat.z);
+        matrix[1][1] =
             (float) (1.0 - 2.0 * quat.x * quat.x - 2.0 * quat.z * quat.z);
-        matrix[6] = (float) (2.0 * quat.y * quat.z + 2.0 * quat.w * quat.x);
+        matrix[1][2] = (float) (2.0 * quat.y * quat.z + 2.0 * quat.w * quat.x);
 
-        matrix[8] = (float) (2.0 * quat.x * quat.z + 2.0 * quat.w * quat.y);
-        matrix[9] = (float) (2.0 * quat.y * quat.z - 2.0 * quat.w * quat.x);
-        matrix[10] =
+        matrix[2][0] = (float) (2.0 * quat.x * quat.z + 2.0 * quat.w * quat.y);
+        matrix[2][1] = (float) (2.0 * quat.y * quat.z - 2.0 * quat.w * quat.x);
+        matrix[2][2] =
             (float) (1.0 - 2.0 * quat.x * quat.x - 2.0 * quat.y * quat.y);
     }
 
@@ -306,20 +327,20 @@ public class Matrix {
         double cy = Math.cos(angles[2]);
         double sy = Math.sin(angles[2]);
 
-        matrix[0] = (float) (cp * cy);
-        matrix[4] = (float) (cp * sy);
-        matrix[8] = (float) (-sp);
+        matrix[0][0] = (float) (cp * cy);
+        matrix[1][0] = (float) (cp * sy);
+        matrix[2][0] = (float) (-sp);
 
         double srsp = sr * sp;
         double crsp = cr * sp;
 
-        matrix[1] = (float) (srsp * cy - cr * sy);
-        matrix[5] = (float) (srsp * sy + cr * cy);
-        matrix[9] = (float) (sr * cp);
+        matrix[0][1] = (float) (srsp * cy - cr * sy);
+        matrix[1][1] = (float) (srsp * sy + cr * cy);
+        matrix[2][1] = (float) (sr * cp);
 
-        matrix[2] = (float) (crsp * cy + sr * sy);
-        matrix[6] = (float) (crsp * sy - sr * cy);
-        matrix[10] = (float) (cr * cp);
+        matrix[0][2] = (float) (crsp * cy + sr * sy);
+        matrix[1][2] = (float) (crsp * sy - sr * cy);
+        matrix[2][2] = (float) (cr * cp);
     }
 
     /**
@@ -344,7 +365,7 @@ public class Matrix {
      * floats. Size 16.
      * @return the array of floats that represent this matrix.
      */
-    public float[] getMatrix() {
+    public float[][] getMatrix() {
         return matrix;
     }
     
@@ -360,9 +381,9 @@ public class Matrix {
             throw new MonkeyRuntimeException("Vector must be of size 3.");
         }
 
-        vector[0] = vector[0] - matrix[12];
-        vector[1] = vector[1] - matrix[13];
-        vector[2] = vector[2] - matrix[14];
+        vector[0] = vector[0] - matrix[3][0];
+        vector[1] = vector[1] - matrix[3][1];
+        vector[2] = vector[2] - matrix[3][2];
     }
 
     /**
@@ -378,28 +399,28 @@ public class Matrix {
         }
 
         vector[0] =
-            vector[0] * matrix[0]
-                + vector[1] * matrix[1]
-                + vector[2] * matrix[2];
+            vector[0] * matrix[0][0]
+                + vector[1] * matrix[0][1]
+                + vector[2] * matrix[0][2];
         vector[1] =
-            vector[0] * matrix[4]
-                + vector[1] * matrix[5]
-                + vector[2] * matrix[6];
+            vector[0] * matrix[1][0]
+                + vector[1] * matrix[1][1]
+                + vector[2] * matrix[1][2];
         vector[2] =
-            vector[0] * matrix[8]
-                + vector[1] * matrix[9]
-                + vector[2] * matrix[10];
+            vector[0] * matrix[2][0]
+                + vector[1] * matrix[2][1]
+                + vector[2] * matrix[2][2];
     }
     
     public void tensorProduct (Vector u, Vector v) {
-        matrix[0] = u.x * v.x;
-        matrix[1] = u.x * v.y;
-        matrix[2] = u.x * v.z;
-        matrix[4] = u.y * v.x;
-        matrix[5] = u.y * v.y;
-        matrix[6] = u.y * v.z;
-        matrix[8] = u.z * v.x;
-        matrix[9] = u.z * v.y;
-        matrix[10] = u.z * v.z;
+        matrix[0][0] = u.x * v.x;
+        matrix[0][1] = u.x * v.y;
+        matrix[0][2] = u.x * v.z;
+        matrix[1][0] = u.y * v.x;
+        matrix[1][1] = u.y * v.y;
+        matrix[1][2] = u.y * v.z;
+        matrix[2][0] = u.z * v.x;
+        matrix[2][1] = u.z * v.y;
+        matrix[2][2] = u.z * v.z;
     }
 }

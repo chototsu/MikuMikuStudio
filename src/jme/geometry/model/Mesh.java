@@ -29,29 +29,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package jme.geometry.model;
 
 /**
- * <code>Mesh</code> defines a group of triangles that are all related in some way.
- * Typically a mesh will share a <code>Material</code> and a collection of meshes
- * will define a model.
- * @author Mark Powell
+ * A Mesh is a group of related triangles in MS3D.
  *
- *Special thanks to Chman's <a href="http://chman-area.tuxfamily.org">site</a> for help.
+ * @author naj
+ * @version 0.1
  */
 public class Mesh {
-    public byte flags;
+
+    /**
+     * The name of the mesh in MS3D.
+     */
     public String name;
-	/**
-	 * the index into an array of materials. 
-	 */
-	public int materialIndex;
-	/**
-	 * the number of triangles that make up the mesh.
-	 */
-	public int numTriangles;
-	/**
-	 * indices into the array of triangles.
-	 */
-	public int[] triangleIndices;
+
+    /**
+     * The flags in MS3D.
+     */
+    public int flags;
+
+    /**
+     * The index into the array of materials in the model.  -1 indicates that
+     * the mesh does not have a material assigned to it.
+     */
+    public int materialIndex;
+
+    /**
+     * The number of vertices in the mesh.
+     */
+    public int numberVertices;
+
+    /**
+     * The number of normal vectors in the mesh.
+     */
+    public int numberNormals;
+
+    /**
+     * The number of triangles in the mesh.
+     */
+    public int numberTriangles;
+
+    /**
+     * The vertices in the mesh.
+     */
+    public Vertex[] vertices;
+
+    /**
+     * The normals in the mesh.  Stores as an array of (x,y,z) arrays.
+     */
+    public float[][] normals;
+
+    /**
+     * The traingles in the mesh.
+     */
+    public Triangle[] triangles;
+
 }

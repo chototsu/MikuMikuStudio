@@ -29,644 +29,594 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package jme.geometry.model.ms;
 
+import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
-import java.util.logging.Level;
 
-import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.Window;
-
-import jme.exception.MonkeyGLException;
-import jme.geometry.*;
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
 import jme.geometry.model.Joint;
 import jme.geometry.model.Keyframe;
 import jme.geometry.model.Material;
 import jme.geometry.model.Mesh;
+import jme.geometry.model.Model;
 import jme.geometry.model.Triangle;
 import jme.geometry.model.Vertex;
 import jme.math.Matrix;
+import jme.math.Quaternion;
 import jme.math.Vector;
+import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
-import jme.utility.Conversion;
-import jme.utility.LoggingSystem;
+
+import org.lwjgl.opengl.GL;
 
 /**
- * 
- * <code>MilkshapeModel</code> defines a model created by the Milkshape 3D 
- * modeling package. The loader handles all aspects of the Milkshape model up
- * to version 3. Animation is not currently supported, but planned.
- * 
- * @author Mark Powell
- * @version $Id: MilkshapeModel.java,v 1.5 2003-09-03 16:20:52 mojomonkey Exp $
+ * A MilkshapeModel represents a Milkshape 3D model.  Currently, it can only
+ * load the exported ascii text version of an MD3D model.  In the future, the
+ * binary version may be supported, but there really is no need for it because
+ * it does not matter how long it takes to load the animation.  Loading should
+ * take place at game startup.  If speed becomes extremely important in the
+ * future, the binary loader may be an option, or serialized models is another
+ * option.  Unless someone contributes a binary loader or add the nehe lwjgl
+ * port of the binary loader that actually loads multiple texture correctly :)
+ *
+ * The model can also draw itself, fully textured, to OpenGL through lwjgl.
+ *
+ * Bone animation is also supported.
+ *
+ * SPECIAL THANKS:
+ * Animation method was ported by naj from a MSVC++ Model Viewer tutorial
+ * written by Mete Ciragan (creator of Milkshape).
+ *
+ * @author naj
+ * @version 0.1
  */
-public class MilkshapeModel implements Geometry {
-    //defines the bounding volumes of the model.
-    private BoundingSphere boundingSphere;
-    private BoundingBox boundingBox;
+public class MilkshapeModel implements Model {
 
-    //animation attributes
-    private float animationFPS;
-    private float currentTime;
+    /**
+     * Debugging variable to toggle animations.
+     */
+    private boolean animated;
+
+    /**
+     * The total number of frames in the animation.
+     */
     private int totalFrames;
 
-    //model data information
-    private String modelFile;
-    private ByteBuffer buffer;
-    private String id;
-    private String path;
-    private int version;
+    /**
+     * The current frame of the animation.
+     */
+    private float currentFrame;
 
     /**
-     * the color of the model. This color will be applied as a whole to the
-     * model and may be trumped by the material level.
+     * The number of meshes in the model.
      */
-    private float red, blue, green, alpha;
-    /**
-     * the scale of the model, where 1.0 is the standard size of the model.
-     */
-    private Vector scale;
-    /**
-     * the number of meshes that makes up the model.
-     */
-    private int numMeshes = 0;
-    /**
-     * the number of materials that makes up the model.
-     */
-    private int numMaterials = 0;
-    /**
-     * the number of triangles that makes up the model.
-     */
-    private int numTriangles = 0;
-    /**
-     * the number of vertices that makes up the model.
-     */
-    private int numVertices = 0;
-    /**
-     * the number of joints that make up the model.
-     */
-    private int numJoints = 0;
-    /**
-     * the total animation time.
-     */
-    private float totalTime = 0;
-    /**
-     * the array of meshes that build the model.
-     */
-    private Mesh meshes[] = null;
-    /**
-     * the array of materials that build the model.
-     */
-    private Material materials[] = null;
-    /**
-     * the array of triangles that build the model.
-     */
-    private Triangle triangles[] = null;
-    /**
-     * the array of vertices that build the model.
-     */
-    private Vertex vertices[] = null;
-    /**
-     * the array of Joints that build the model.
-     */
-    private Joint joints[] = null;
+    private int numberMeshes;
 
     /**
-     * Constructor instantiates a new <code>MilkshapeModel</code> object. 
-     * @param modelFile the Milkshape file.
-     * @throws MonkeyGLException if the OpenGL context has not been created.
+     * The number of materials or textures in the model.
      */
-    public MilkshapeModel(String modelFile) {
-        if (!Window.isCreated()) {
-            throw new MonkeyGLException(
-                "OpenGL context must be " + "created before MilkshapeModel.");
-        }
+    private int numberMaterials;
 
-        this.modelFile = modelFile;
+    /**
+     * The number of joints or bones in the model.
+     */
+    private int numberJoints;
 
-        red = 1.0f;
-        blue = 1.0f;
-        green = 1.0f;
-        alpha = 1.0f;
-        scale = new Vector(1.0f, 1.0f, 1.0f);
+    /**
+     * The meshes in the model.
+     */
+    private Mesh[] meshes;
 
-        initialize();
-        setBoundingVolumes();
+    /**
+     * The materials in the model.
+     */
+    private Material[] materials;
+
+    /**
+     * The joints in the model.
+     */
+    private Joint[] joints;
+
+    /**
+     * The absolute path to the directory containing the model file.  Used
+     * to load the texture files.
+     */
+    private String absoluteFilePath;
+
+    
+
+    public MilkshapeModel() {
+        this.animated = false;
+    }
+
+    public MilkshapeModel(boolean animated) {
+        this.animated = animated;
     }
 
     /**
-     * <code>initialize</code> reads the Milkshape model and sets the 
-     * structure for rendering.
+     * Draws the model to OpenGL via lwjgl.  Also advances the animation
+     * frames along if there are animations for the model.
      */
-    public void initialize() {
-        //read the byte data
-        byte data[] = null;
-        File file = new File(modelFile);
-        path =
-            file.getAbsolutePath().substring(
-                0,
-                file.getAbsolutePath().length() - file.getName().length());
-        int length = (int) file.length();
-        data = new byte[length];
-        FileInputStream fis;
+    public void render() {
+        
+        if (animated) {
+            advanceFrame();
+        }
+        boolean isTextureEnabled = GL.glIsEnabled(GL.GL_TEXTURE_2D);
+
+        for (int meshIndex = 0; meshIndex < numberMeshes; meshIndex++) {
+            int materialIndex = meshes[meshIndex].materialIndex;
+
+            if (materialIndex >= 0) {
+                ByteBuffer buffer = ByteBuffer.allocateDirect(16).order(ByteOrder.nativeOrder());
+
+                GL.glMaterial(GL.GL_FRONT, GL.GL_AMBIENT, buffer.asFloatBuffer().put(materials[materialIndex].ambient));
+                GL.glMaterial(GL.GL_FRONT, GL.GL_DIFFUSE, buffer.asFloatBuffer().put(materials[materialIndex].diffuse));
+                GL.glMaterial(GL.GL_FRONT, GL.GL_SPECULAR, buffer.asFloatBuffer().put(materials[materialIndex].specular));
+                GL.glMaterial(GL.GL_FRONT, GL.GL_EMISSION, buffer.asFloatBuffer().put(materials[materialIndex].emissive));
+                GL.glMaterialf(GL.GL_FRONT, GL.GL_SHININESS, materials[materialIndex].shininess);
+
+                if (materials[materialIndex].glTextureAddress > 0) {
+                    GL.glBindTexture(GL.GL_TEXTURE_2D, materials[materialIndex].glTextureAddress);
+                    GL.glEnable(GL.GL_TEXTURE_2D);
+                } else {
+                    GL.glDisable(GL.GL_TEXTURE_2D);
+                }
+            } else {
+                GL.glDisable(GL.GL_TEXTURE_2D);
+            }
+
+            int triangleCount = meshes[meshIndex].numberTriangles;
+            Vertex[] vertices = meshes[meshIndex].vertices;
+
+            GL.glBegin(GL.GL_TRIANGLES);
+            for (int triangleIndex = 0; triangleIndex < triangleCount; triangleIndex++) {
+                Triangle triangle = (meshes[meshIndex].triangles)[triangleIndex];
+
+                Vertex vertex = vertices[triangle.vertexIndex1];
+                float[] normals = (meshes[meshIndex].normals)[triangle.normalIndex1];
+                if (!animated || vertex.boneIndex == -1) {
+                    GL.glNormal3f(normals[0], normals[1], normals[2]);
+                    GL.glTexCoord2f(vertex.u, vertex.v);
+                    GL.glVertex3f(vertex.x, vertex.y, vertex.z);
+                } else {
+                    Vector animationVector = new Vector(vertex.x, vertex.y, vertex.z).rotate(joints[vertex.boneIndex].finalMatrix);
+                    animationVector.x += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
+                    animationVector.y += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
+                    animationVector.z += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
+                    GL.glNormal3f(normals[0], normals[1], normals[2]);
+                    GL.glTexCoord2f(vertex.u, vertex.v);
+                    GL.glVertex3f(animationVector.x, animationVector.y, animationVector.z);
+                }
+
+                vertex = vertices[triangle.vertexIndex2];
+                normals = (meshes[meshIndex].normals)[triangle.normalIndex2];
+                if (!animated || vertex.boneIndex == -1) {
+                    GL.glNormal3f(normals[0], normals[1], normals[2]);
+                    GL.glTexCoord2f(vertex.u, vertex.v);
+                    GL.glVertex3f(vertex.x, vertex.y, vertex.z);
+                } else {
+                    Vector animationVector = new Vector(vertex.x, vertex.y, vertex.z).rotate(joints[vertex.boneIndex].finalMatrix);
+                    animationVector.x += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
+                    animationVector.y += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
+                    animationVector.z += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
+                    GL.glNormal3f(normals[0], normals[1], normals[2]);
+                    GL.glTexCoord2f(vertex.u, vertex.v);
+                    GL.glVertex3f(animationVector.x, animationVector.y, animationVector.z);
+                }
+
+                vertex = vertices[triangle.vertexIndex3];
+                normals = (meshes[meshIndex].normals)[triangle.normalIndex3];
+                if (!animated || vertex.boneIndex == -1) {
+                    GL.glNormal3f(normals[0], normals[1], normals[2]);
+                    GL.glTexCoord2f(vertex.u, vertex.v);
+                    GL.glVertex3f(vertex.x, vertex.y, vertex.z);
+                } else {
+                    Vector animationVector = new Vector(vertex.x, vertex.y, vertex.z).rotate(joints[vertex.boneIndex].finalMatrix);
+                    animationVector.x += joints[vertex.boneIndex].finalMatrix.matrix[0][3];
+                    animationVector.y += joints[vertex.boneIndex].finalMatrix.matrix[1][3];
+                    animationVector.z += joints[vertex.boneIndex].finalMatrix.matrix[2][3];
+                    GL.glNormal3f(normals[0], normals[1], normals[2]);
+                    GL.glTexCoord2f(vertex.u, vertex.v);
+                    GL.glVertex3f(animationVector.x, animationVector.y, animationVector.z);
+                }
+            }
+            GL.glEnd();
+        }
+
+        if (isTextureEnabled) {
+            GL.glEnable(GL.GL_TEXTURE_2D);
+        } else {
+            GL.glDisable(GL.GL_TEXTURE_2D);
+        }
+        
+    }
+
+    /**
+     * Loads an ascii text model exported from MS3D.
+     * @param filename the file to load.
+     */
+    public void load(String filename) {
         try {
-            fis = new FileInputStream(file);
-            fis.read(data);
-            fis.close();
-        } catch (FileNotFoundException e) {
-            LoggingSystem.getLoggingSystem().getLogger().log(
-                Level.WARNING,
-                "Could not find model file " + modelFile);
-            return;
-        } catch (IOException e) {
-            LoggingSystem.getLoggingSystem().getLogger().log(
-                Level.WARNING,
-                "Could not read model file " + modelFile);
-            return;
+            File file = new File(filename);
+            absoluteFilePath = file.getAbsolutePath();
+            absoluteFilePath = absoluteFilePath.substring(0, absoluteFilePath.lastIndexOf(File.separator) + 1);
+            BufferedReader reader = new BufferedReader(new FileReader(file));
+            String line;
+            while ( (line = getNextLine(reader)) != null) {
+                if (line.startsWith("Frames: ")) {
+                    totalFrames = Integer.parseInt(line.substring(8));
+                }
+                if (line.startsWith("Frame: ")) {
+                    currentFrame = Integer.parseInt(line.substring(7));
+                }
+                if (line.startsWith("Meshes: ")) {
+                    numberMeshes = Integer.parseInt(line.substring(8));
+                    meshes = new Mesh[numberMeshes];
+                    parseMeshes(reader);
+                }
+                if (line.startsWith("Materials: ")) {
+                    numberMaterials = Integer.parseInt(line.substring(11));
+                    materials = new Material[numberMaterials];
+                    parseMaterials(reader);
+                }
+                if (line.startsWith("Bones: ")) {
+                    numberJoints = Integer.parseInt(line.substring(7));
+                    joints = new Joint[numberJoints];
+                    parseJoints(reader);
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
 
-        buffer = ByteBuffer.wrap(data).order(ByteOrder.nativeOrder());
+        reloadTextures();
+    }
 
-        //read header information
-        //the ID is 10 bytes
-        byte idBuffer[] = new byte[10];
-        for (int i = 0; i < 10; i++) {
-            idBuffer[i] = buffer.get();
+    /**
+     * Simple parser to extract the mesh information from the text file.
+     */
+    private void parseMeshes(BufferedReader reader) throws Exception {
+        for (int i = 0; i < numberMeshes; i++) {
+            Mesh mesh = new Mesh();
+            String line = getNextLine(reader);
+            mesh.name = line.substring(1, line.lastIndexOf("\""));
+            mesh.flags = Integer.parseInt(line.substring(line.lastIndexOf("\"") + 2, line.lastIndexOf(" ")));
+            mesh.materialIndex = Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1));
+
+            line = getNextLine(reader);
+            mesh.numberVertices = Integer.parseInt(line);
+            Vertex[] vertices = new Vertex[mesh.numberVertices];
+            for (int j = 0; j < mesh.numberVertices; j++) {
+                line = getNextLine(reader);
+                String[] values = line.split(" ");
+                vertices[j] = new Vertex(Integer.parseInt(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]), Float.parseFloat(values[4]), Float.parseFloat(values[5]), Integer.parseInt(values[6]));
+            }
+            mesh.vertices = vertices;
+
+            line = getNextLine(reader);
+            mesh.numberNormals = Integer.parseInt(line);
+            float[][] normals = new float[mesh.numberNormals][3];
+            for (int j = 0; j < mesh.numberNormals; j++) {
+                line = getNextLine(reader);
+                String[] values = line.split(" ");
+                normals[j] = new float[] {
+                    Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2])};
+            }
+            mesh.normals = normals;
+
+            line = getNextLine(reader);
+            mesh.numberTriangles = Integer.parseInt(line);
+            Triangle[] triangles = new Triangle[mesh.numberTriangles];
+            for (int j = 0; j < mesh.numberTriangles; j++) {
+                line = getNextLine(reader);
+                String[] values = line.split(" ");
+                triangles[j] = new Triangle(Integer.parseInt(values[0]), Integer.parseInt(values[1]), Integer.parseInt(values[2]), Integer.parseInt(values[3]), Integer.parseInt(values[4]), Integer.parseInt(values[5]), Integer.parseInt(values[6]), Integer.parseInt(values[7]));
+            }
+            mesh.triangles = triangles;
+            meshes[i] = mesh;
         }
-        id = Conversion.byte2String(idBuffer);
-        version = buffer.getInt();
+    }
 
-        if (!id.equals("MS3D000000")) {
-            LoggingSystem.getLoggingSystem().getLogger().log(
-                Level.WARNING,
-                modelFile + " is not a valid Milkshape3D model file.");
-            return;
+    /**
+     * Simple parser to extract the material information from the text file.
+     */
+    private void parseMaterials(BufferedReader reader) throws Exception {
+        for (int i = 0; i < numberMaterials; i++) {
+            String line = getNextLine(reader);
+            Material material = new Material();
+            material.name = line.substring(1, line.length() - 1);
+            line = getNextLine(reader);
+            String[] values = line.split(" ");
+            material.ambient = new float[] {
+                Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])};
+            line = getNextLine(reader);
+            values = line.split(" ");
+            material.diffuse = new float[] {
+                Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])};
+            line = getNextLine(reader);
+            values = line.split(" ");
+            material.specular = new float[] {
+                Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])};
+            line = getNextLine(reader);
+            values = line.split(" ");
+            material.emissive = new float[] {
+                Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3])};
+            line = getNextLine(reader);
+            material.shininess = Float.parseFloat(line);
+            line = getNextLine(reader);
+            material.transparency = Float.parseFloat(line);
+            line = getNextLine(reader);
+            material.colorMap = line.substring(1, line.length() - 1);
+            line = getNextLine(reader);
+            material.alphaMap = line.substring(1, line.length() - 1);
+            materials[i] = material;
         }
+    }
 
-        if (version < 3) {
-            LoggingSystem.getLoggingSystem().getLogger().log(
-                Level.WARNING,
-                "Bad " + modelFile + " version.");
-            return;
-        }
-
-        //Read the vertices
-        numVertices = buffer.getShort();
-        vertices = new Vertex[numVertices];
-        for (int i = 0; i < numVertices; i++) {
-            vertices[i] = new Vertex();
-            vertices[i].flags = buffer.get();
-            vertices[i].point[0] = buffer.getFloat();
-            vertices[i].point[1] = buffer.getFloat();
-            vertices[i].point[2] = buffer.getFloat();
-            vertices[i].boneId = buffer.get();
-            vertices[i].refCount = buffer.get();
-        }
-
-        //Read the Triangles
-        numTriangles = buffer.getShort();
-        triangles = new Triangle[numTriangles];
-        for (int i = 0; i < numTriangles; i++) {
-            triangles[i] = new Triangle();
-            triangles[i].flags = buffer.getShort();
-            for (int j = 0; j < 3; j++) {
-                triangles[i].vertexIndices[j] = buffer.getShort();
+    /**
+     * Simple parser to extract the joint information from the text file.
+     */
+    private void parseJoints(BufferedReader reader) throws Exception {
+        for (int i = 0; i < numberJoints; i++) {
+            String line = getNextLine(reader);
+            Joint joint = new Joint();
+            joint.name = line.substring(1, line.length() - 1);
+            line = getNextLine(reader);
+            joint.parentName = line.substring(1, line.length() - 1);
+            line = getNextLine(reader);
+            String[] values = line.split(" ");
+            joint.flags = Integer.parseInt(values[0]);
+            joint.posx = Float.parseFloat(values[1]);
+            joint.posy = Float.parseFloat(values[2]);
+            joint.posz = Float.parseFloat(values[3]);
+            joint.rotx = Float.parseFloat(values[4]);
+            joint.roty = Float.parseFloat(values[5]);
+            joint.rotz = Float.parseFloat(values[6]);
+            line = getNextLine(reader);
+            joint.numberPosistionKeyframes = Integer.parseInt(line);
+            Keyframe[] positionKeyframes = new Keyframe[joint.numberPosistionKeyframes];
+            for (int j = 0; j < joint.numberPosistionKeyframes; j++) {
+                line = getNextLine(reader);
+                values = line.split(" ");
+                positionKeyframes[j] = new Keyframe(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
             }
-
-            for (int j = 0; j < 3; j++) {
-                triangles[i].vertexNormals[j][0] = buffer.getFloat();
-                triangles[i].vertexNormals[j][1] = buffer.getFloat();
-                triangles[i].vertexNormals[j][2] = buffer.getFloat();
+            joint.positionKeys = positionKeyframes;
+            line = getNextLine(reader);
+            joint.numberRotationKeyframes = Integer.parseInt(line);
+            Keyframe[] rotationKeyframes = new Keyframe[joint.numberRotationKeyframes];
+            for (int j = 0; j < joint.numberRotationKeyframes; j++) {
+                line = getNextLine(reader);
+                values = line.split(" ");
+                rotationKeyframes[j] = new Keyframe(Float.parseFloat(values[0]), Float.parseFloat(values[1]), Float.parseFloat(values[2]), Float.parseFloat(values[3]));
             }
-
-            for (int j = 0; j < 3; j++) {
-                triangles[i].s[j] = buffer.getFloat();
-            }
-
-            for (int j = 0; j < 3; j++) {
-                triangles[i].t[j] = 1.0f - buffer.getFloat();
-            }
-
-            triangles[i].smoothingGroup = buffer.get();
-            triangles[i].groupIndex = buffer.get();
-        }
-
-        //Read the meshes
-        numMeshes = buffer.getShort();
-        meshes = new Mesh[numMeshes];
-        for (int i = 0; i < numMeshes; i++) {
-            meshes[i] = new Mesh();
-            meshes[i].flags = buffer.get();
-            //get the name 32 bytes
-            byte nameBuffer[] = new byte[32];
-            for (int j = 0; j < 32; j++) {
-                nameBuffer[j] = buffer.get();
-            }
-            meshes[i].name = Conversion.byte2String(nameBuffer);
-            meshes[i].numTriangles = buffer.getShort();
-            meshes[i].triangleIndices = new int[meshes[i].numTriangles];
-            for (int j = 0; j < meshes[i].numTriangles; j++) {
-                meshes[i].triangleIndices[j] = buffer.getShort();
-            }
-            meshes[i].materialIndex = buffer.get();
-
-        }
-
-        //read materials
-        numMaterials = buffer.getShort();
-        materials = new Material[numMaterials];
-        for (int i = 0; i < numMaterials; i++) {
-            materials[i] = new Material();
-
-            //read the material name 32 bytes
-            byte nameBuffer[] = new byte[32];
-            for (int j = 0; j < 32; j++) {
-                nameBuffer[j] = buffer.get();
-            }
-            materials[i].name = Conversion.byte2String(nameBuffer);
-
-            materials[i].ambient[0] = buffer.getFloat();
-            materials[i].ambient[1] = buffer.getFloat();
-            materials[i].ambient[2] = buffer.getFloat();
-            materials[i].ambient[3] = buffer.getFloat();
-
-            materials[i].diffuse[0] = buffer.getFloat();
-            materials[i].diffuse[1] = buffer.getFloat();
-            materials[i].diffuse[2] = buffer.getFloat();
-            materials[i].diffuse[3] = buffer.getFloat();
-
-            materials[i].specular[0] = buffer.getFloat();
-            materials[i].specular[1] = buffer.getFloat();
-            materials[i].specular[2] = buffer.getFloat();
-            materials[i].specular[3] = buffer.getFloat();
-
-            materials[i].emissive[0] = buffer.getFloat();
-            materials[i].emissive[1] = buffer.getFloat();
-            materials[i].emissive[2] = buffer.getFloat();
-            materials[i].emissive[3] = buffer.getFloat();
-
-            materials[i].shininess = buffer.getFloat();
-            materials[i].transparency = buffer.getFloat();
-            materials[i].mode = buffer.get();
-
-            //get texture
-            byte texBuffer[] = new byte[128];
-            for (int j = 0; j < 128; j++) {
-                texBuffer[j] = buffer.get();
-            }
-            materials[i].textureFilename = Conversion.byte2String(texBuffer);
-            byte alphaBuffer[] = new byte[128];
-            for (int j = 0; j < 128; j++) {
-                alphaBuffer[j] = buffer.get();
-            }
-            materials[i].alphaFilename = Conversion.byte2String(texBuffer);
-        }
-        loadTextures();
-
-        //Read key frames
-        animationFPS = buffer.getFloat();
-        currentTime = (buffer.getFloat() * 1000);
-        totalFrames = buffer.getInt();
-
-        numJoints = buffer.getShort();
-        joints = new Joint[numJoints];
-
-        for (int i = 0; i < numJoints; i++) {
-            joints[i] = new Joint();
-            joints[i].flags = buffer.get();
-            //get name 32 bytes
-            byte[] nameBuffer = new byte[32];
-            for (int j = 0; j < 32; j++) {
-                nameBuffer[j] = buffer.get();
-            }
-
-            joints[i].name = Conversion.byte2String(nameBuffer);
-            //get parent name 32 bytes
-            byte[] parentBuffer = new byte[32];
-            for (int j = 0; j < 32; j++) {
-                parentBuffer[j] = buffer.get();
-            }
-            joints[i].parentName = Conversion.byte2String(parentBuffer);
+            joint.rotationKeys = rotationKeyframes;
+            joints[i] = joint;
 
             int parentIndex = -1;
             if (joints[i].parentName.length() > 0) {
-                for (int j = 0; j < numJoints; j++) {
-                    if (joints[j]
-                        .name
-                        .equalsIgnoreCase(joints[i].parentName)) {
+                for (int j = 0; j < numberJoints; j++) {
+                    if (joints[j].name.equalsIgnoreCase(joints[i].parentName)) {
                         parentIndex = j;
                         break;
                     }
                 }
                 if (parentIndex == -1) {
-                    LoggingSystem.getLoggingSystem().getLogger().log(
-                        Level.WARNING,
-                        "Milkshape does not have a parent joint.");
-                    return;
+                    System.out.println("CRAP!");
+                    System.exit(1);
                 }
             }
-            joints[i].parent = parentIndex;
-            joints[i].rotation[0] = buffer.getFloat();
-            joints[i].rotation[1] = buffer.getFloat();
-            joints[i].rotation[2] = buffer.getFloat();
-
-            joints[i].translation[0] = buffer.getFloat();
-            joints[i].translation[1] = buffer.getFloat();
-            joints[i].translation[2] = buffer.getFloat();
-
-            joints[i].numRotationKeyframes = buffer.getShort();
-            joints[i].rotationKeyframes =
-                new Keyframe[joints[i].numRotationKeyframes];
-
-            joints[i].numTranslationKeyframes = buffer.getShort();
-            joints[i].translationKeyframes =
-                new Keyframe[joints[i].numTranslationKeyframes];
-
-            for (int j = 0; j < joints[i].numRotationKeyframes; j++) {
-                joints[i].rotationKeyframes[j] = new Keyframe();
-                joints[i].rotationKeyframes[j].time =
-                    (buffer.getFloat() * 1000);
-                joints[i].rotationKeyframes[j].parameter[0] = buffer.getFloat();
-                joints[i].rotationKeyframes[j].parameter[1] = buffer.getFloat();
-                joints[i].rotationKeyframes[j].parameter[2] = buffer.getFloat();
-            }
-
-            for (int j = 0; j < joints[i].numTranslationKeyframes; j++) {
-                joints[i].translationKeyframes[j] = new Keyframe();
-                joints[i].translationKeyframes[j].time =
-                    (buffer.getFloat() * 1000);
-                joints[i].translationKeyframes[j].parameter[0] =
-                    buffer.getFloat();
-                joints[i].translationKeyframes[j].parameter[1] =
-                    buffer.getFloat();
-                joints[i].translationKeyframes[j].parameter[2] =
-                    buffer.getFloat();
-            }
+            joints[i].parentIndex = parentIndex;
         }
-
-        //setupJoints();
-        //restart();
+        if (animated) {
+            setupJointAnimations();
+        }
     }
 
     /**
-     * <code>render</code> using the current mesh and material information to
-     * display the model to the screen.
+     * Calculate the initial absolute and relative matrices for the joints.
      */
-    public void render() {
-        Triangle currentTri;
-        int triangleIndex;
-        int index;
-        FloatBuffer temp =
-            ByteBuffer
-                .allocateDirect(16)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        GL.glColor4f(red, green, blue, alpha);
-        GL.glPushMatrix();
-        GL.glScalef(scale.x, scale.y, scale.z);
-
-        //go through each mesh and render them.
-        for (int i = 0; i < numMeshes; i++) {
-            int materialIndex = meshes[i].materialIndex;
-            //if the material is set, use it to set the texture and lighting.
-            if (materialIndex >= 0) {
-                temp.clear();
-                temp.put(materials[materialIndex].ambient);
-                temp.flip();
-                GL.glMaterial(GL.GL_FRONT, GL.GL_AMBIENT, temp);
-                
-                temp.clear();
-                temp.put(materials[materialIndex].diffuse);
-                temp.flip();
-                GL.glMaterial(GL.GL_FRONT, GL.GL_DIFFUSE, temp);
-                
-                temp.clear();
-                temp.put(materials[materialIndex].specular);
-                temp.flip();
-                GL.glMaterial(GL.GL_FRONT, GL.GL_SPECULAR, temp);
-                
-                temp.clear();
-                temp.put(materials[materialIndex].emissive);
-                temp.flip();
-                GL.glMaterial(GL.GL_FRONT, GL.GL_EMISSION, temp);
-                
-                GL.glMaterialf(
-                    GL.GL_FRONT,
-                    GL.GL_SHININESS,
-                    materials[materialIndex].shininess);
-
-                if (materials[materialIndex].texture > 0) {
-                    TextureManager.getTextureManager().bind(
-                        materials[materialIndex].texture);
-                    GL.glEnable(GL.GL_TEXTURE_2D);
-                } else
-                    GL.glDisable(GL.GL_TEXTURE_2D);
+    private void setupJointAnimations() {
+        for (int jointIndex = 0; jointIndex < numberJoints; jointIndex++) {
+            Joint joint = joints[jointIndex];
+            Vector rotationVector = new Vector();
+            rotationVector.x = joint.rotx * 180 / (float) Math.PI;
+            rotationVector.y = joint.roty * 180 / (float) Math.PI;
+            rotationVector.z = joint.rotz * 180 / (float) Math.PI;
+            joints[jointIndex].relativeMatrix.angleRotationDegrees(rotationVector);
+            joints[jointIndex].relativeMatrix.matrix[0][3] = joint.posx;
+            joints[jointIndex].relativeMatrix.matrix[1][3] = joint.posy;
+            joints[jointIndex].relativeMatrix.matrix[2][3] = joint.posz;
+            if (joint.parentIndex != -1) {
+                joints[jointIndex].absoluteMatrix = joints[joint.parentIndex].absoluteMatrix.multiply(joints[jointIndex].relativeMatrix);
+                joints[jointIndex].finalMatrix.copy(joints[jointIndex].absoluteMatrix);
             } else {
-                GL.glDisable(GL.GL_TEXTURE_2D);
+                joints[jointIndex].absoluteMatrix.copy(joints[jointIndex].relativeMatrix);
+                joints[jointIndex].finalMatrix.copy(joints[jointIndex].relativeMatrix);
             }
+        }
 
-            GL.glBegin(GL.GL_TRIANGLES);
-            int m = meshes[i].numTriangles;
-
-            //render all triangles defined for the current mesh.
-            for (int j = 0; j < m; j++) {
-                triangleIndex = meshes[i].triangleIndices[j];
-                currentTri = triangles[triangleIndex];
-
-                for (int k = 0; k < 3; k++) {
-                    index = currentTri.vertexIndices[k];
-
-                    GL.glNormal3f(
-                        currentTri.vertexNormals[k][0],
-                        currentTri.vertexNormals[k][1],
-                        currentTri.vertexNormals[k][2]);
-                    GL.glTexCoord2f(currentTri.s[k], currentTri.t[k]);
-                    GL.glVertex3f(
-                        vertices[index].point[0],
-                        vertices[index].point[1],
-                        vertices[index].point[2]);
+        for (int meshIndex = 0; meshIndex < numberMeshes; meshIndex++) {
+            Mesh pMesh = meshes[meshIndex];
+            for (int j = 0; j < pMesh.numberVertices; j++) {
+                Vertex vertex = pMesh.vertices[j];
+                if (vertex.boneIndex != -1) {
+                    vertex.x -= joints[vertex.boneIndex].absoluteMatrix.matrix[0][3];
+                    vertex.y -= joints[vertex.boneIndex].absoluteMatrix.matrix[1][3];
+                    vertex.z -= joints[vertex.boneIndex].absoluteMatrix.matrix[2][3];
+                    Vector inverseRotationVector = new Vector();
+                    inverseRotationVector = new Vector(vertex.x, vertex.y, vertex.z).inverseRotate(joints[vertex.boneIndex].absoluteMatrix);
+                    vertex.x = inverseRotationVector.x;
+                    vertex.y = inverseRotationVector.y;
+                    vertex.z = inverseRotationVector.z;
                 }
             }
-            GL.glEnd();
         }
-        GL.glPopMatrix();
-        GL.glDisable(GL.GL_TEXTURE_2D);
     }
 
     /**
-     * <code>setTexture</code> is not used for the model. Instead, the 
-     * material set up is responsible for defining the texture.
-     * @param filename not used.
+     * Set the final matrix of all of the joints to be part way between the
+     * previous keyframe and the next keyframe, depending on how much time
+     * has passed since the last keyframe.
      */
-    public void setTexture(String filename) {
-        //do nothing as textures are defined within the Milkshape MilkshapeModel.
-    }
-
-    /**
-     * <code>setColor</code> will define the color of the model. This overall
-     * color may be overridden by the defined material information of the
-     * model.
-     * @param red the red component of the color.
-     * @param green the green component of the color.
-     * @param blue the blue component of the color.
-     * @param alpha the transparency of the color.
-     */
-    public void setColor(float red, float green, float blue, float alpha) {
-        this.red = red;
-        this.green = green;
-        this.blue = blue;
-        this.alpha = alpha;
-    }
-
-    /**
-     * <code>setScale</code> sets the overall size of the model. The scale is
-     * used to decrease or increase the size of the model, where 1.0 is the 
-     * normal size of the model.
-     * @param scale the multiplier of the model's size.
-     */
-    public void setScale(Vector scale) {
-        this.scale = scale;
-    }
-
-    /**
-     * <code>getBoundingSphere</code> returns the bounding sphere that 
-     * contains the model.
-     * @return the bounding sphere of the model.
-     */
-    public BoundingSphere getBoundingSphere() {
-        return boundingSphere;
-    }
-
-    /**
-     * <code>getBoundingBox</code> returns the bounding box that contains the
-     * model.
-     * @return the bounding box of the model.
-     */
-    public BoundingBox getBoundingBox() {
-        return boundingBox;
-    }
-
-    /**
-     * <code>setBoundingVolumes</code> intializes the bounding sphere and box
-     * of the model.
-     *
-     */
-    private void setBoundingVolumes() {
-        float distanceSqr = 0;
-        float tempValue;
-        for (int i = 0; i < numVertices; i++) {
-            tempValue =
-                vertices[i].point[0] * vertices[i].point[0]
-                    + vertices[i].point[1] * vertices[i].point[1]
-                    + vertices[i].point[2] * vertices[i].point[2];
-            if (tempValue > distanceSqr) {
-                distanceSqr = tempValue;
-            }
+    private void advanceFrame() {
+        /* FIXME: The current frame needs to be determined by what milkshape
+                  model defined, not a constant value as below... otherwise,
+                  animations are going to be out of synch on different fps
+                  systems and animations with different numbers of frames */
+        //currentFrame += ExampleModelLoader.dt;
+        currentFrame += 0.1f;
+        if (currentFrame > totalFrames) {
+            currentFrame = 0.0f;
         }
-        distanceSqr *= scale.x;
-        float distance = (float) Math.sqrt(distanceSqr);
-        boundingSphere = new BoundingSphere(distance, null);
-        boundingBox =
-            new BoundingBox(
-                new Vector(),
-                new Vector(-distance, -distance, -distance),
-                new Vector(distance, distance, distance));
-    }
 
-    /**
-     * <code>setupJoints</code> initializes the joint information for
-     * animation.
-     */
-    private void setupJoints() {
-        for (int i = 0; i < numJoints; i++) {
-            joints[i].relative = new Matrix();
-            joints[i].absolute = new Matrix();
-            joints[i].finalMatrix = new Matrix();
-
-            joints[i].relative.setRotationRadians(joints[i].rotation);
-            joints[i].relative.setTranslation(joints[i].translation);
-
-            if (joints[i].parent != -1) {
-                joints[i].absolute.set(
-                    joints[joints[i].parent].absolute.getMatrix());
-                joints[i].absolute.multiply(joints[i].relative);
+        for (int meshIndex = 0; meshIndex < numberJoints; meshIndex++) {
+            Joint joint = joints[meshIndex];
+            int positionKeyframeCount = joint.numberPosistionKeyframes;
+            int rotationKeyframeCount = joint.numberRotationKeyframes;
+            if (positionKeyframeCount == 0 && rotationKeyframeCount == 0) {
+                joints[meshIndex].finalMatrix.copy(joints[meshIndex].absoluteMatrix);
             } else {
-                joints[i].absolute.set(joints[i].relative.getMatrix());
-            }
-        }
-
-        for (int i = 0; i < numVertices; i++) {
-            if (vertices[i].boneId != -1) {
-                joints[vertices[i].boneId].absolute.inverseTranslateVect(
-                    vertices[i].point);
-                joints[vertices[i].boneId].absolute.inverseRotateVect(
-                    vertices[i].point);
-            }
-        }
-
-        for (int i = 0; i < numTriangles; i++) {
-            Triangle tri = triangles[i];
-            for (int j = 0; j < 3; j++) {
-                Vertex vert = vertices[tri.vertexIndices[j]];
-                if (vert.boneId != -1) {
-                    joints[vert.boneId].absolute.inverseRotateVect(
-                        tri.vertexNormals[j]);
+                Vector positionVector = new Vector();
+                Quaternion rotationVector = new Quaternion();
+                Keyframe lastPositionKeyframe = null;
+                Keyframe currentPositionKeyframe = null;
+                for (int keyframeIndex = 0; keyframeIndex < positionKeyframeCount; keyframeIndex++) {
+                    Keyframe positionKeyframe = joint.positionKeys[keyframeIndex];
+                    if (positionKeyframe.time >= currentFrame) {
+                        currentPositionKeyframe = positionKeyframe;
+                        break;
+                    }
+                    lastPositionKeyframe = positionKeyframe;
+                }
+                if (lastPositionKeyframe != null && currentPositionKeyframe != null) {
+                    float d = currentPositionKeyframe.time - lastPositionKeyframe.time;
+                    float s = (currentFrame - lastPositionKeyframe.time) / d;
+                    positionVector.x = lastPositionKeyframe.x + (currentPositionKeyframe.x - lastPositionKeyframe.x) * s;
+                    positionVector.y = lastPositionKeyframe.y + (currentPositionKeyframe.y - lastPositionKeyframe.y) * s;
+                    positionVector.z = lastPositionKeyframe.z + (currentPositionKeyframe.z - lastPositionKeyframe.z) * s;
+                } else if (lastPositionKeyframe == null) {
+                    currentPositionKeyframe.x = positionVector.x;
+                    currentPositionKeyframe.y = positionVector.y;
+                    currentPositionKeyframe.z = positionVector.z;
+                } else if (currentPositionKeyframe == null) {
+                    lastPositionKeyframe.x = positionVector.x;
+                    lastPositionKeyframe.y = positionVector.y;
+                    lastPositionKeyframe.z = positionVector.z;
+                }
+                Matrix slerpedMatrix = new Matrix();
+                Keyframe lastRotationKeyframe = null;
+                Keyframe currentRotationKeyframe = null;
+                for (int keyframeIndex = 0; keyframeIndex < rotationKeyframeCount; keyframeIndex++) {
+                    Keyframe rotationKeyframe = joint.rotationKeys[keyframeIndex];
+                    if (rotationKeyframe.time >= currentFrame) {
+                        currentRotationKeyframe = rotationKeyframe;
+                        break;
+                    }
+                    lastRotationKeyframe = rotationKeyframe;
+                }
+                if (lastRotationKeyframe != null && currentRotationKeyframe != null) {
+                    float d = currentRotationKeyframe.time - lastRotationKeyframe.time;
+                    float s = (currentFrame - lastRotationKeyframe.time) / d;
+                    Quaternion slerpedQuaternion = new Quaternion();
+                    Quaternion lastRotationQuaternion = new Quaternion();
+                    Quaternion currentRotationQuaternion = new Quaternion();
+                    lastRotationQuaternion.fromAngles(new float[]{lastRotationKeyframe.x, lastRotationKeyframe.y, lastRotationKeyframe.z});
+                    currentRotationQuaternion.fromAngles(new float[] {currentRotationKeyframe.x, currentRotationKeyframe.y, currentRotationKeyframe.z});
+                    slerpedQuaternion = slerpedQuaternion.slerp(lastRotationQuaternion, currentRotationQuaternion, s);
+                    slerpedMatrix.set(slerpedQuaternion);
+                } else if (lastRotationKeyframe == null) {
+                    rotationVector.x = currentRotationKeyframe.x * 180 / (float) Math.PI;
+                    rotationVector.y = currentRotationKeyframe.y * 180 / (float) Math.PI;
+                    rotationVector.z = currentRotationKeyframe.z * 180 / (float) Math.PI;
+                    slerpedMatrix.angleRotationDegrees(new Vector(rotationVector.x, rotationVector.y, rotationVector.z));
+                } else if (currentRotationKeyframe == null) {
+                    rotationVector.x = lastRotationKeyframe.x * 180 / (float) Math.PI;
+                    rotationVector.y = lastRotationKeyframe.y * 180 / (float) Math.PI;
+                    rotationVector.z = lastRotationKeyframe.z * 180 / (float) Math.PI;
+                    slerpedMatrix.angleRotationDegrees(new Vector(rotationVector.x, rotationVector.y, rotationVector.z));
+                }
+                slerpedMatrix.matrix[0][3] = positionVector.x;
+                slerpedMatrix.matrix[1][3] = positionVector.y;
+                slerpedMatrix.matrix[2][3] = positionVector.z;
+                joints[meshIndex].relativeFinalMatrix = joints[meshIndex].relativeMatrix.multiply(slerpedMatrix);
+                if (joint.parentIndex == -1) {
+                    joints[meshIndex].finalMatrix.copy(joints[meshIndex].relativeFinalMatrix);
+                } else {
+                    joints[meshIndex].finalMatrix = joints[joint.parentIndex].finalMatrix.multiply(joints[meshIndex].relativeFinalMatrix);
                 }
             }
         }
+
     }
 
     /**
-     * 
-     * <code>restart</code> sets the animation to the initial key frame.
-     *
+     * Returns the next line from the text file being parsed.  Removes
+     * comments and trims the line of whitespace.
      */
-    private void restart() {
-        for (int i = 0; i < numJoints; i++) {
-            joints[i].currentRotationKeyframe =
-                joints[i].currentTranslationKeyframe = 0;
-            joints[i].finalMatrix.set(joints[i].absolute.getMatrix());
+    private String getNextLine(BufferedReader reader) throws Exception {
+        String line = null;
+        while ( (line = reader.readLine()) != null) {
+            line = line.trim();
+            if (line.startsWith("//") || "".equals(line)) {
+                continue;
+            }
+            break;
+        }
+        return line;
+    }
+
+    /**
+     * Reloads the textures.
+     */
+    private final void reloadTextures() {
+        for (int i = 0; i < numberMaterials; i++) {
+            if (materials[i].name.length() > 0) {
+                try {
+                    materials[i].glTextureAddress = loadTexture(absoluteFilePath + materials[i].name);
+                } catch (Exception e) {
+                    materials[i].glTextureAddress = 0;
+                }
+            } else {
+                materials[i].glTextureAddress = 0;
+            }
         }
     }
 
     /**
-     * <code>loadTextures</code> makes the appropriate call to have
-     * OpenGL load all needed textures for the given model.
-     *
+     * Loads a bitmap (*.bmp image file) texture in opengl memory
+     * @param the relative filename to the bmp
+     * @return the image address in memory
      */
-    private void loadTextures() {
-        for (int i = 0; i < numMaterials; i++) {
-            if (materials[i].textureFilename.length() > 0) {
-                String fullFilename = getPath(materials[i].textureFilename);
-                materials[i].texture =
-                    TextureManager.getTextureManager().loadTexture(
-                        fullFilename,
-                        GL.GL_LINEAR_MIPMAP_LINEAR,
-                        GL.GL_LINEAR,
-                        true);
-            } else
-                materials[i].texture = 0;
-        }
+    private final int loadTexture(String file) throws Exception {
+        return TextureManager.getTextureManager().loadTexture(file, GL.GL_LINEAR_MIPMAP_LINEAR,
+        GL.GL_LINEAR,
+        true, false);
+        
+    }
+
+
+    /* FIXME: these methods do not change the state of opengl so they can not
+              be used on the fly to change between modes since the opengl
+              state is currently created in the init method */
+
+    /**
+     * Determine is the model is going to run animations, if it has them.
+     * @return the animation mode.
+     */
+    public boolean isAnimated() {
+        return animated;
     }
 
     /**
-     * <code>getPath</code> returns the path of the file.
-     * @param name the file name.
-     * @return the full resolved file path.
+     * Set the new animation mode.
+     * @param animated the new animation mode.
      */
-    private String getPath(String name) {
-        if (name.indexOf(".\\") != -1) {
-            name = name.substring(1);
-        }
-        return path + name;
+    public void setAnimated(boolean animated) {
+        this.animated = animated;
     }
-
 }

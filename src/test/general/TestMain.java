@@ -235,23 +235,20 @@ public class TestMain extends AbstractGame {
 	}
 
 	private void initGL() {
-		GL.glShadeModel(GL.GL_SMOOTH);
+
         GL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         GL.glClearDepth(1.0);
         GL.glEnable(GL.GL_DEPTH_TEST);
-        GL.glDepthFunc(GL.GL_LESS);
+        GL.glDepthFunc(GL.GL_LEQUAL);
+
         GL.glMatrixMode(GL.GL_PROJECTION);
         GL.glLoadIdentity();
-		// Calculate The Aspect Ratio Of The Window
-        GLU.gluPerspective(
-			45.0f,
-			(float) Display.getWidth() / (float) Display.getHeight(),
-			0.1f,
-			500.0f);
-		GL.glMatrixMode(GL.GL_MODELVIEW);
-		GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
-		GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
-		DisplaySystem.getDisplaySystem().cullMode(GL.GL_BACK, true);
+
+        GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 1.0f, 750.0f);
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+
+        GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+        DisplaySystem.getDisplaySystem().cullMode(GL.GL_BACK, true);
 
 	}
 	protected void reinit() {

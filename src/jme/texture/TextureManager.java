@@ -130,14 +130,24 @@ public class TextureManager {
         keyList = new ArrayList();
         previousKeys = new ArrayList();
     }
+    
+    /**
+     * <code>reload</code> reloads all loaded textures after making a call
+     * to <code>saveKeys</code>. This is useful for
+     * reloading textures if the GL object has been recreated.
+     */
+    public void reload() {
+        reload(true);
+    }
 
     /**
      * <code>reload</code> reloads all loaded textures after making a call
      * to <code>saveKeys</code>. This is useful for
      * reloading textures if the GL object has been recreated.
-     * 
+     * @param flipped true flips the bits of the image, false does not. True
+     *      by default.
      */
-    public void reload() {
+    public void reload(boolean flipped) {
         saveKeys();
         deleteAll();
 
@@ -158,8 +168,20 @@ public class TextureManager {
                 tempData.image,
                 tempData.minFilter,
                 tempData.magFilter,
-                tempData.mipmapped);
+                tempData.mipmapped, flipped);
         }
+    }
+    
+    /**
+     * <code>batchLoad</code> loads a collection of textures defined by an
+     * <code>ArrayList</code>. 
+     * 
+     * @param keys the list of files to open.
+     * @param flipped true flips the bits of the image, false does not. True
+     *      by default.
+     */
+    public void batchLoad(ArrayList keys) {
+        batchLoad(keys, true);
     }
 
     /**
@@ -167,8 +189,10 @@ public class TextureManager {
      * <code>ArrayList</code>. 
      * 
      * @param keys the list of files to open.
+     * @param flipped true flips the bits of the image, false does not. True
+     *      by default.
      */
-    public void batchLoad(ArrayList keys) {
+    public void batchLoad(ArrayList keys, boolean flipped) {
 
         TextureData tempData;
         for (int i = 0; i < keys.size(); i++) {
@@ -178,7 +202,7 @@ public class TextureManager {
                 tempData.image,
                 tempData.minFilter,
                 tempData.magFilter,
-                tempData.mipmapped);
+                tempData.mipmapped, flipped);
         }
     }
 
@@ -192,7 +216,7 @@ public class TextureManager {
         previousKeys = (ArrayList) keyList.clone();
         return previousKeys;
     }
-
+    
     /**
      * <code>loadTexture</code> loads a new texture defined by a loaded 
      * ImageIcon. If a texture with the same filename has previously been loaded,
@@ -210,11 +234,35 @@ public class TextureManager {
      * @return an integer for the loaded texture id. If there is a problem
      *      loading the texture -1 is returned.
      */
+    public int loadTexture(ImageIcon image, int minFilter, int magFilter, boolean isMipMapped) {
+        return loadTexture(image, minFilter, magFilter, isMipMapped, true);
+    }
+
+    /**
+     * <code>loadTexture</code> loads a new texture defined by a loaded 
+     * ImageIcon. If a texture with the same filename has previously been loaded,
+     * that id is returned rather than reloading. Filter parameters are used
+     * to define the filtering of the texture. Whether the texture is to be
+     * mipmapped or not is denoted by the isMipmapped boolean flag. If there
+     * is an error loading the file, -1 is returned.
+     * 
+     * @param image the ImageIcon of the texture image.
+     * @param minFilter the filter for the near values.
+     * @param magFilter the filter for the far values.
+     * @param isMipmapped determines if we will load the texture mipmapped
+     *      or not. True load the texture mipmapped, false do not.
+     * @param flipped true flips the bits of the image, false does not. True
+     *      by default.
+     * 
+     * @return an integer for the loaded texture id. If there is a problem
+     *      loading the texture -1 is returned.
+     */
     public int loadTexture(
         ImageIcon image,
         int minFilter,
         int magFilter,
-        boolean isMipmapped) {
+        boolean isMipmapped,
+        boolean flipped) {
 
         //check if the texture is already loaded.  
         Object obj = textureList.get(image.getDescription());
@@ -228,8 +276,31 @@ public class TextureManager {
             image.getImage(),
             minFilter,
             magFilter,
-            isMipmapped);
+            isMipmapped, true);
 
+    }
+    
+    /**
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * string. If a texture with the same filename has previously been loaded,
+     * that id is returned rather than reloading. Filter parameters are used
+     * to define the filtering of the texture. Whether the texture is to be
+     * mipmapped or not is denoted by the isMipmapped boolean flag. If there
+     * is an error loading the file, -1 is returned.
+     * 
+     * @param file the filename of the texture image.
+     * @param minFilter the filter for the near values.
+     * @param magFilter the filter for the far values.
+     * @param isMipmapped determines if we will load the texture mipmapped
+     *      or not. True load the texture mipmapped, false do not.
+     * @param flipped true flips the bits of the image, false does not. True
+     *      by default.
+     * 
+     * @return an integer for the loaded texture id. If there is a problem
+     *      loading the texture -1 is returned.
+     */
+    public int loadTexture(String file, int minFilter, int magFilter, boolean isMipMapped) {
+        return loadTexture(file, minFilter, magFilter, isMipMapped, true);
     }
 
     /**
@@ -253,7 +324,8 @@ public class TextureManager {
         String file,
         int minFilter,
         int magFilter,
-        boolean isMipmapped) {
+        boolean isMipmapped,
+        boolean flipped) {
 
         //check if the texture is already loaded.  
         Object obj = textureList.get(file);
@@ -282,7 +354,7 @@ public class TextureManager {
             return -1;
         }
 
-        return loadImage(file, image, minFilter, magFilter, isMipmapped);
+        return loadImage(file, image, minFilter, magFilter, isMipmapped, flipped);
 
     }
 
@@ -468,7 +540,8 @@ public class TextureManager {
         Image image,
         int minFilter,
         int magFilter,
-        boolean isMipmapped) {
+        boolean isMipmapped,
+        boolean flipImage) {
         //      Obtain the image data.
         BufferedImage tex = null;
         try {
@@ -487,12 +560,14 @@ public class TextureManager {
         g.drawImage(image, null, null);
         g.dispose();
 
-        //Flip the image
-        AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-        tx.translate(0, -image.getHeight(null));
-        AffineTransformOp op =
-            new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-        tex = op.filter(tex, null);
+        if(flipImage) {
+            //Flip the image
+            AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+            tx.translate(0, -image.getHeight(null));
+            AffineTransformOp op =
+                new AffineTransformOp(tx, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            tex = op.filter(tex, null);
+        }
 
         //Get a pointer to the image memory
         ByteBuffer scratch =

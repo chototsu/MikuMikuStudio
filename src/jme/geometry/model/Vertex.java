@@ -29,51 +29,74 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 package jme.geometry.model;
 
-import jme.math.Vector;
-
-
 /**
- * <code>Vertex</code> provides an extension to <code>Vector</code> to handle
- * texture coordinates as well as positions. 
- * 
- * @author Mark Powell
+ * A Vertex is a 3D point (x,y,z) along with a 2D texture map point (u,v).
+ * It also knows which bone (Joint) it is associated with for animations.
+ *
+ * @author naj
+ * @version 0.1
  */
-public class Vertex extends Vector {
-    public byte refCount;
+public class Vertex {
+
+    /**
+     * The flags in MS3D.
+     */
+    public int flags;
+
+    /**
+     * The x value of the 3D point.
+     */
+    public float x;
+
+    /**
+     * The y value of the 3D point.
+     */
+    public float y;
+
+    /**
+     * The z value of the 3D point.
+     */
+    public float z;
+
+    /**
+     * The x value of the 2D texture point.
+     */
+    public float u;
+
+    /**
+     * The y value of the 2D texture point.
+     */
+    public float v;
+
+    /**
+     * The index into the array of bones (Joint) in the model.
+     */
+    public int boneIndex;
     
-    public byte flags;
-	/**
-	 * the u coordinate of the texture.
-	 */
-	public float u;
-	/**
-	 * the v coordinate of the texture.
-	 */
-	public float v;
-	/**
-	 * the red component of the color.
-	 */
-	public float r;
-	/**
-	 * the green component of the color.
-	 */
-	public float g;
-	/**
-	 * the blue component of the color.
-	 */
-	public float b;
-	/**
-	 * the alpha value of the point.
-	 */
-	public float a;
-	/**
-	 * the bone this point is connected to.
-	 */
-	public byte boneId;
-	/**
-	 * the position of the point.
-	 */
-	public float[] point = new float[3];
+    public Vertex() {}
+
+    /**
+     * Creates a Vertex with the given 3D point and texture coordinates, as
+     * well as a bone reference if used in animations.
+     * @param flags the flags in MS3D.
+     * @param x the x value of the 3D point.
+     * @param y the y value of the 3D point.
+     * @param z the z value of the 3D point.
+     * @param u the x value of the 2D texture point.
+     * @param v the y value of the 2D texture point.
+     * @param boneIndex the index into the array of bones (Joint) in the model.
+     */
+    public Vertex(int flags, float x, float y, float z, float u, float v, int boneIndex) {
+        this.flags = flags;
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.u = u;
+        this.v = v;
+        this.boneIndex = boneIndex;
+    }
+
 }

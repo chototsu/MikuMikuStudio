@@ -36,7 +36,7 @@ import jme.exception.MonkeyRuntimeException;
 /**
  * <code>Vector</code> defines a three dimensional vector of (x,y,z). 
  * @author Mark Powell
- * @version $Id: Vector.java,v 1.7 2003-08-22 02:26:48 mojomonkey Exp $
+ * @version $Id: Vector.java,v 1.8 2003-09-04 21:17:51 mojomonkey Exp $
  */
 public class Vector {
 	public float x;
@@ -181,6 +181,28 @@ public class Vector {
 			((z * v.x) - (x * v.z)),
 			((x * v.y) - (y * v.x)));
 	}
+    
+    /**
+     * <code>rotate</code> rotates a vector about a rotation matrix. The
+     * resulting vector is returned.
+     * @param m the rotation matrix.
+     * @return the rotated vector.
+     */
+    public Vector rotate(Matrix m) {
+       Vector out = new Vector();
+       out.x = dot(new Vector(m.matrix[0][0], m.matrix[0][1], m.matrix[0][2]));
+       out.y = dot(new Vector(m.matrix[1][0], m.matrix[1][1], m.matrix[1][2]));
+       out.z = dot(new Vector(m.matrix[2][0], m.matrix[2][1], m.matrix[2][2]));
+       return out;
+    }
+    
+    public Vector inverseRotate(Matrix m) {
+        Vector out = new Vector();
+        out.x = x * m.matrix[0][0] + y * m.matrix[1][0] + z * m.matrix[2][0];
+        out.y = x * m.matrix[0][1] + y * m.matrix[1][1] + z * m.matrix[2][1];
+        out.z = x * m.matrix[0][2] + y * m.matrix[1][2] + z * m.matrix[2][2];
+        return out;
+    }
 
 	/**
 	 * <code>negate</code> sets this vector to the negative (-x, -y, -z).

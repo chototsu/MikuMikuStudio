@@ -29,41 +29,44 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
-package test.model;
+package test.model.ms3dAscii;
 
-import org.lwjgl.Display; 
-import org.lwjgl.opengl.GL; 
+
+import org.lwjgl.Display;
+import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLU;
 import org.lwjgl.opengl.Window;
 
-import jme.AbstractGame; 
+import jme.AbstractGame;
 import jme.controller.BaseFPSController;
 import jme.entity.camera.Camera;
+import jme.geometry.model.Model;
 import jme.geometry.model.ms.MilkshapeModel;
 import jme.system.DisplaySystem;
 import jme.utility.Timer;
 
 /**
- * 
  * @author Mark Powell
+ *
+ * To change the template for this generated type comment go to
+ * Window - Preferences - Java - Code Generation - Code and Comments
  */
-
 public class TestMilkshape extends AbstractGame {
-    //our model object
-    private MilkshapeModel model;
     
-    BaseFPSController controller;
-    Timer timer;
-    Camera camera;
+    private Model model;
+    private float yrot;
+    private BaseFPSController cc;
+    private Timer timer;
+    private Camera camera;
+    
     /**
      * This is where we'll do any updating
      */
     protected void update() {
-        timer.update();
-        if(!controller.update(timer.getFrameRate())) { 
+        if(!cc.update(timer.getFrameRate())) { 
           finish();
         }
+        timer.update();
     }
     
     /**
@@ -72,7 +75,7 @@ public class TestMilkshape extends AbstractGame {
     protected void render() {
         GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
         GL.glLoadIdentity();
-        controller.render();
+        cc.render();
         model.render();
     }
     
@@ -95,20 +98,17 @@ public class TestMilkshape extends AbstractGame {
         //Define the clear color to be black
                 
         GL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GL.glClearDepth(1.0);
+        GL.glEnable(GL.GL_DEPTH_TEST);
+        GL.glDepthFunc(GL.GL_LEQUAL);
 
         GL.glMatrixMode(GL.GL_PROJECTION);
         GL.glLoadIdentity();
-        
-        
-         // Calculate the aspect ratio
-        GLU.gluPerspective(
-            45.0f,
-            (float)Display.getWidth() / (float)Display.getHeight(),
-            0.01f,
-            750.0f);
-        
+
+        GLU.gluPerspective(45.0f, (float) Display.getWidth() / (float) Display.getHeight(), 100.0f, 2000.0f);
         GL.glMatrixMode(GL.GL_MODELVIEW);
-        GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);     
+
+        GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
     }
 
     /**
@@ -117,15 +117,16 @@ public class TestMilkshape extends AbstractGame {
     protected void initSystem() {
         initDisplay();
         initGL();
+        camera = new Camera(1,50, 0, 300, 0, 0, 0, 0, 1, 0);
+        cc = new BaseFPSController(camera);
+        timer = Timer.getTimer();
     }
     /** 
      * Nothing here yet.
      */
     protected void initGame() {
-        model = new MilkshapeModel("./data/model/arab/ak47.ms3d");
-        camera = new Camera(1,0,0,100,0,10,0,0,1,0);
-        controller = new BaseFPSController(camera);
-        timer = Timer.getTimer();
+        model = new MilkshapeModel(true);
+        model.load("data/model/msascii/run.txt");
     }
 
     /** 

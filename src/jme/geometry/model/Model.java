@@ -33,40 +33,23 @@
 package jme.geometry.model;
 
 /**
- * A Keyframe is a point in time which defines when a joint will reach a
- * certain rotation or translation. To perform animation, you interpolate
- * the translation or rotation over the time frame.
+ * An interface for models.  Models should be able to load from a file and
+ * draw itself (animated if possible).
  *
  * @author naj
  * @version 0.1
  */
-public class Keyframe {
+public interface Model {
 
     /**
-     * The time in milliseconds after the start of the animation for which
-     * that keyframe occurs.
+     * Loads a model from a file that contains the model information.
+     * @param filename file that contains the model information.
      */
-    public float time;
+    public void load(String filename);
 
     /**
-     * For a position keyframe (x,y,z) are the coordinates to translate.
-     * For a rotation keyframe (x,y,z) are angles, in radians, to rotate.
+     * Draw the model (to opengl).
      */
-    public float x, y, z;
-
-    /**
-     * Create a keyframe at a given time and vector.
-     * @param time the time in milliseconds after the start of the animation
-     * for which that keyframe occurs.
-     * @param x the x value of the translation or rotation for the keyframe.
-     * @param y the y value of the translation or rotation for the keyframe.
-     * @param z the z value of the translation or rotation for the keyframe.
-     */
-    public Keyframe(float time, float x, float y, float z) {
-        this.time = time;
-        this.x = x;
-        this.y = y;
-        this.z = z;
-    }
+    public void render();
 
 }
