@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * <code>CollisionDetection</code> provides a system for calculating collisions
  * based on given criteria. 
  * @author Mark Powell
- * @version $Id: CollisionDetection.java,v 1.3 2004-02-19 03:52:49 mojomonkey Exp $
+ * @version $Id: CollisionDetection.java,v 1.4 2004-02-20 16:44:43 mojomonkey Exp $
  */
 public class CollisionDetection {
 
@@ -58,11 +58,6 @@ public class CollisionDetection {
         Spatial test,
         Spatial scene,
         CollisionResults results) {
-            
-        if(test.equals(scene)) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Cannot test " +                "collision against itself");
-            return;
-        }
         
         if (Intersection
             .intersection(test.getWorldBound(), scene.getWorldBound())) {
