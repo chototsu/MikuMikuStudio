@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * the positive left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeLeftAction.java,v 1.8 2004-05-08 02:48:28 renanse Exp $
+ * @version $Id: KeyNodeStrafeLeftAction.java,v 1.9 2004-05-12 20:51:11 mojomonkey Exp $
  */
 public class KeyNodeStrafeLeftAction extends AbstractInputAction {
 
@@ -64,6 +64,5 @@ public class KeyNodeStrafeLeftAction extends AbstractInputAction {
         Vector3f loc = node.getLocalTranslation();
         loc.addLocal(node.getLocalRotation().getRotationColumn(0).multLocal((speed * time)));
         node.setLocalTranslation(loc);
-        node.updateWorldData(0);
     }
 }
