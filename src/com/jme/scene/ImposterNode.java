@@ -47,7 +47,7 @@ import com.jme.renderer.Camera;
 /**
  * <code>ImposterNode</code>
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.6 2004-04-02 15:51:59 mojomonkey Exp $
+ * @version $Id: ImposterNode.java,v 1.7 2004-04-16 18:08:27 renanse Exp $
  */
 public class ImposterNode extends Node {
   private TextureRenderer tRenderer;
@@ -88,6 +88,8 @@ public class ImposterNode extends Node {
     redrawRate = elapsed = .05f; // 20x per sec
     cameraThreshold = 0; // off
     haveDrawn = false;
+    standIn.updateRenderState();
+
   }
 
   /**

@@ -56,7 +56,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.10 2004-04-16 17:56:17 mojomonkey Exp $
+ * @version $Id: TestImposterNode.java,v 1.11 2004-04-16 18:08:27 renanse Exp $
  */
 public class TestImposterNode extends VariableTimestepGame {
   private Camera cam;
@@ -189,6 +189,8 @@ public class TestImposterNode extends VariableTimestepGame {
 
     scene.setRenderState(buf);
     fakeScene.setRenderState(buf);
+    fakeScene.updateRenderState();
+
 
     // setup the imposter node...
     // we first determine a good texture size (must be equal to or less than the display size)
@@ -242,7 +244,7 @@ public class TestImposterNode extends VariableTimestepGame {
     cam.update();
     scene.updateGeometricState(0.0f, true);
     fpsNode.updateGeometricState(0.0f, true);
-    scene.updateRenderState();
+    root.updateRenderState();
     fpsNode.updateRenderState();
   }
 
