@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.33 2004-11-25 04:04:41 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.34 2005-01-07 23:17:46 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -119,7 +119,7 @@ public abstract class SimpleGame extends BaseGame {
 //              display.getRenderer().getStatistics());
     fps.print(updateBuffer);
 
-      /** If toggle_wire is a valid command (via key T), change wirestates. */
+      /** If toggle_pause is a valid command (via key p), change pause. */
 			if (KeyBindingManager
 					.getKeyBindingManager()
 					.isValidCommand("toggle_pause", false)) {
@@ -287,7 +287,6 @@ rootNode.updateGeometricState(tpf, true);
     ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);
     buf.setFunction(ZBufferState.CF_LEQUAL);
-
     rootNode.setRenderState(buf);
 
     // -- FPS DISPLAY
