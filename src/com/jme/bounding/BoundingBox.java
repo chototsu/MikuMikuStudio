@@ -48,7 +48,7 @@ import com.jme.scene.shape.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.3 2004-04-11 16:06:03 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.4 2004-04-12 21:15:26 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -269,7 +269,7 @@ public class BoundingBox extends Box implements BoundingVolume {
         maxPnt.z = center.z+zExtent;
         if (maxPnt.z < boxCenter.z+boxZ) maxPnt.z = boxCenter.z+boxZ;
 
-        rVal.setData(minPnt, maxPnt);
+        rVal.setData(minPnt, maxPnt, false);
 
         return rVal;
     }
@@ -323,7 +323,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      */
     public void recomputeMesh() {
         if (!center.equals(oldCenter) || xExtent != oldXExtent || yExtent != oldYExtent || zExtent != oldZExtent) {
-            setData(center, xExtent, yExtent, zExtent);
+            setData(center, xExtent, yExtent, zExtent, true);
             oldXExtent = xExtent;
             oldYExtent = yExtent;
             oldZExtent = zExtent;

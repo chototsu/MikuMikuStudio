@@ -42,7 +42,7 @@ import com.jme.scene.TriMesh;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.1 2004-04-02 15:52:05 mojomonkey Exp $
+ * @version $Id: Box.java,v 1.2 2004-04-12 21:15:27 renanse Exp $
  */
 public class Box extends TriMesh {
     public float xExtent, yExtent, zExtent;
@@ -75,25 +75,25 @@ public class Box extends TriMesh {
      */
     public Box(String name, Vector3f min, Vector3f max) {
         super(name);
-        setData(min, max);
+        setData(min, max, true);
     }
 
     public Box(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
         super(name);
-        setData(center, xExtent, yExtent, zExtent);
+        setData(center, xExtent, yExtent, zExtent, true);
     }
 
-    public void setData(Vector3f minPoint, Vector3f maxPoint) {
+    public void setData(Vector3f minPoint, Vector3f maxPoint, boolean updateBuffers) {
         Vector3f cPoint = maxPoint.add(minPoint);
         cPoint.multLocal(0.5f);
 
         float x = maxPoint.x - cPoint.x;
         float y = maxPoint.y - cPoint.y;
         float z = maxPoint.z - cPoint.z;
-        setData(cPoint, x, y, z);
+        setData(cPoint, x, y, z, updateBuffers);
     }
 
-    public void setData(Vector3f center, float xExtent, float yExtent, float zExtent) {
+    public void setData(Vector3f center, float xExtent, float yExtent, float zExtent, boolean updateBuffers) {
         if (center != null)
             this.center = center;
         else this.center = new Vector3f(0,0,0);
@@ -101,11 +101,13 @@ public class Box extends TriMesh {
         this.yExtent = yExtent;
         this.zExtent = zExtent;
 
-        setVertexData();
-        setNormalData();
-        setColorData();
-        setTextureData();
-        setIndexData();
+        if (updateBuffers) {
+          setVertexData();
+          setNormalData();
+          setColorData();
+          setTextureData();
+          setIndexData();
+        }
     }
 
     /**
