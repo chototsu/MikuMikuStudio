@@ -9,7 +9,6 @@ import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.scene.model.EmptyTriMesh;
-import com.jme.animation.VertexKeyframeController;
 import com.jme.animation.KeyframeController;
 
 import java.io.InputStream;

@@ -5,7 +5,6 @@ import com.jme.renderer.ColorRGBA;
 
 import java.io.DataInput;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
 
 /**

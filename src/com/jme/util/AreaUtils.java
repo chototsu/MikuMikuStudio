@@ -37,13 +37,12 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.math.FastMath;
-import com.jme.math.Vector3f;
 
 /**
  * <code>AreaUtils</code> is used to calculate the area of various objects, such as bounding volumes.  These
  * functions are very loose approximations.
  * @author Joshua Slack
- * @version $Id: AreaUtils.java,v 1.7 2004-08-25 22:19:13 cep21 Exp $
+ * @version $Id: AreaUtils.java,v 1.8 2004-08-30 04:38:13 mojomonkey Exp $
  */
 
 public class AreaUtils {

@@ -1,10 +1,7 @@
 package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
-import com.jme.math.Vector3f;
-
 import java.io.DataInput;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.ArrayList;
 
 /**

@@ -1,10 +1,8 @@
 package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
-import com.jme.renderer.Camera;
 
 import java.io.DataInput;
 import java.io.IOException;
-import java.util.ArrayList;
 
 /**
  * Started Date: Jul 2, 2004<br><br>

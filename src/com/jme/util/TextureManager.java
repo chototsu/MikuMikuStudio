@@ -48,7 +48,6 @@ import java.util.logging.Level;
 import javax.imageio.ImageIO;
 import com.jme.image.BitmapHeader;
 import com.jme.image.Texture;
-import com.jme.renderer.ColorRGBA;
 /**
  *
  * <code>TextureManager</code> provides static methods for building a
@@ -56,7 +55,7 @@ import com.jme.renderer.ColorRGBA;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.23 2004-08-02 22:05:09 cep21 Exp $
+ * @version $Id: TextureManager.java,v 1.24 2004-08-30 04:38:13 mojomonkey Exp $
  */
 final public class TextureManager {
 

@@ -1,7 +1,5 @@
 package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
-import com.jme.image.Texture;
-
 import java.io.DataInput;
 import java.io.IOException;
 

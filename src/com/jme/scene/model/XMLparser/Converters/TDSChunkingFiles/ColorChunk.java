@@ -1,7 +1,6 @@
 package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
 import com.jme.renderer.ColorRGBA;
-import com.jme.system.DisplaySystem;
 
 import java.io.DataInput;
 import java.io.IOException;

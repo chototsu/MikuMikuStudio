@@ -34,7 +34,6 @@ package com.jme.image;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
-import java.net.URL;
 
 import com.jme.renderer.ColorRGBA;
 
@@ -48,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.12 2004-07-06 00:31:03 renanse Exp $
+ * @version $Id: Texture.java,v 1.13 2004-08-30 04:39:13 mojomonkey Exp $
  */
 public class Texture {
 

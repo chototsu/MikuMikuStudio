@@ -38,7 +38,6 @@ package com.jme.ui;
 
 import com.jme.scene.Node;
 import com.jme.input.InputHandler;
-import com.jme.input.MouseButtonStateType;
 import com.jme.input.action.*;
 import com.jme.input.*;
 

@@ -1,7 +1,6 @@
 package com.jme.scene.model.XMLparser;
 
 import com.jme.scene.Node;
-import com.jme.system.JmeException;
 
 import java.net.URL;
 import java.util.HashMap;

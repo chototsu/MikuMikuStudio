@@ -32,7 +32,6 @@
 package com.jme.widget.bounds;
 
 import com.jme.bounding.BoundingVolume;
-import com.jme.bounding.BoundingSphere;
 import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector2f;

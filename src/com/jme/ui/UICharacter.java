@@ -37,11 +37,8 @@
 package com.jme.ui;
 
 import com.jme.math.Vector2f;
-import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
-import com.jme.system.DisplaySystem;
 
 /**
  * UICharacter is used by UIText to create text strings on screen.

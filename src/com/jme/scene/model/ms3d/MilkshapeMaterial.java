@@ -11,7 +11,6 @@ import com.jme.util.TextureManager;
 
 import java.net.URL;
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.io.File;
 import java.io.IOException;
 
