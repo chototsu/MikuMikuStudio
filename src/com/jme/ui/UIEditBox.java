@@ -36,10 +36,16 @@
  */
 package com.jme.ui;
 
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.input.InputHandler;
+import com.jme.input.KeyInput;
+import com.jme.input.MouseButtonStateType;
 import com.jme.input.action.*;
 import com.jme.input.*;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.scene.Line;
 
 /**
  * UIEditBox is a Node based aggrigation b/t a UIText and UIActiveArea
@@ -47,20 +53,31 @@ import com.jme.input.*;
  * @author schustej
  *
  */
-public class UIEditBox extends Node {
+public class UIEditBox extends UIActiveObject {
 
-    private static final long serialVersionUID = 1L;
-	protected UIActiveArea _hitArea = null;
     UIText _text = null;
-    protected InputHandler _inputHandler = null;
-
-    boolean _active = false;
-    boolean _activateOnHover = true;
+    UICharacter _cursor = null;
+    
+    boolean _focused = true;
 
     int _cursorPos = 0;
-    String _curText = "";
-    String _oldText = "";
+    
+    String _textBuffer = "";
+    
+    long blinkint = 300;
+    long lasttime = 0;
+    boolean cursoron = false;
+    
+    protected InputHandler _bufferedInput;
+    
+    boolean buffignore = false;
 
+    public abstract class EditBoxKeyInputAction extends KeyInputAction {
+        public EditBoxKeyInputAction() {
+            this.allowsRepeats = false;
+        }
+    };
+    
     /**
      * Constructor.
      * @param name
@@ -74,128 +91,226 @@ public class UIEditBox extends Node {
      * @param xtrim passed to the UIText
      * @param ytrim passed to the UIText
      */
-    public UIEditBox(String name, String fontFileName, int charsDisWidth, int charWidth,
-            InputHandler inputHandler, int x, int y, float scale, float xtrim, float ytrim) {
-        super(name);
+    public UIEditBox( String name, int x, int y, int width, int height, 
+            InputHandler inputHandler, InputHandler bufferedInputHandler,
+            UIColorScheme scheme, UIFonts fonts,
+            String fontName, String text, float xtrim, float ytrim,
+            int flags) {
+        super( name, x, y, width, height, inputHandler, scheme, flags);
 
         _inputHandler = inputHandler;
+        _bufferedInput = bufferedInputHandler;
 
-        _text = new UIText(name + "TEXT", fontFileName, x, y, scale, xtrim, ytrim);
-        _hitArea = new UIActiveArea(x, y, (int) (_text._texSizeX * charsDisWidth), (int) (_text._texSizeY),
-                inputHandler);
+        _text = new UIText( name + "TEXT", fonts, fontName, text, x, y, xtrim, ytrim, height, width, scheme, 0);
+        
+        _textBuffer = text;
 
-        _text.setText( _curText);
+        _cursor = fonts.createCharacter( name + "cursor",
+                    '|',
+                    fontName,
+                    (int) (_x - ( _text._texSizeX / 3)),
+                    _y,
+                    (int) _text._texSizeX,
+                    (int) _text._texSizeY,
+                    1.0f,
+                    _scheme);
+        
+        _cursor.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_SKIP);
 
-        this.attachChild(_text);
+        setupKeyBindings();
+        
+        setup();
+        this.attachChild( _text);
+        this.attachChild( _cursor);
+        
+        setCursorLocation();
+        
+    }
 
-        _inputHandler.addBufferedKeyAction( new KeyInputAction() {
-            public void performAction(InputActionEvent evt) {
-                if (_active)
-                    keyPress(this);
+    private void setupKeyBindings() {
+        
+        _inputHandler.addKeyboardAction( this.name + "backspc_action", KeyInput.KEY_BACK, new EditBoxKeyInputAction() {
+            public void performAction( InputActionEvent event) {
+                buffignore = true;
+                
+                if( _cursorPos > 0 && _textBuffer.length() > 0) {
+	                String before = _textBuffer.substring( 0, _cursorPos - 1);
+	                String after = _textBuffer.substring( _cursorPos);
+	                _textBuffer = before + after;
+	                _text.setText( _textBuffer);
+	                _cursorPos -= 1;
+	                setCursorLocation();
+                }
+                
             }
         });
-    }
+        _inputHandler.addKeyboardAction( this.name + "delete_action", KeyInput.KEY_DELETE, new EditBoxKeyInputAction() {
+            public void performAction( InputActionEvent event) {
+                buffignore = true;
 
-    /**
-     * This determines if the input listener cares about key presses to fill the control
-     * @param active
-     */
-    public void setActive(boolean active) {
-        _active = active;
-    }
-
-    /**
-     * Sets if the control will only be active when the mouse is over the control
-     * @param onHover
-     */
-    public void setActivateOnHover(boolean onHover) {
-        _activateOnHover = onHover;
-    }
-
-    /**
-     * Method that is called via inputHandler when a key is pressed
-     * @param key
-     */
-    protected void keyPress(KeyInputAction keyAction) {
-
-        int val = _inputHandler.getKeyBindingManager().getKeyInput().getKeyIndex(keyAction.getKey());
-
-        _oldText = _curText;
-
-        switch( val) {
-        	case KeyInput.KEY_BACK: {
-        	    if( _cursorPos > 0)
-        	        _curText = _curText.substring( 0, _cursorPos - 1) + _curText.substring( _cursorPos);
-        	    _cursorPos--;
-        	    break;
-        	}
-        	case KeyInput.KEY_LEFT: {
-        	    _cursorPos--;
-        	    break;
-        	}
-                case KeyInput.KEY_RIGHT: {
-                    _cursorPos++;
-                    break;
+                if( _cursorPos < _textBuffer.length() && _textBuffer.length() > 0) {
+	                String before = _textBuffer.substring( 0, _cursorPos);
+	                String after = _textBuffer.substring( _cursorPos + 1);
+	                _textBuffer = before + after;
+	                _text.setText( _textBuffer);
                 }
-                case KeyInput.KEY_LCONTROL:
-                case KeyInput.KEY_RCONTROL:
-                case KeyInput.KEY_LSHIFT:
-                case KeyInput.KEY_RSHIFT:
-                case KeyInput.KEY_LWIN:
-                case KeyInput.KEY_NUMLOCK:
-                case KeyInput.KEY_CAPITAL:
-                case KeyInput.KEY_ESCAPE:
-                case KeyInput.KEY_PGDN:
-                case KeyInput.KEY_PGUP:
-                case KeyInput.KEY_SCROLL:
-                case KeyInput.KEY_UP:
-                case KeyInput.KEY_DOWN:
-                    break;
-        	default: {
-        	    _curText = _curText.substring(0, _cursorPos) + keyAction.getKeyChar() + _curText.substring( _cursorPos);
-        	    _cursorPos++;
-        	    break;
-        	}
-        }
-        checkPos();
-    }
+                
+            }
+        });
+        _inputHandler.addKeyboardAction( this.name + "left_action", KeyInput.KEY_LEFT, new EditBoxKeyInputAction() {
+            public void performAction( InputActionEvent event) {
+                buffignore = true;
 
-    /**
-     * Checks the position of the cursor, making sure that it's not out-of-bounds
-     *
-     */
-    private void checkPos() {
-        if( _cursorPos < 0) {
-            _cursorPos = 0;
-        }
-        if( _cursorPos > _curText.length()) {
-            _cursorPos = _curText.length();
-        }
+                _cursorPos -= 1;
+                
+                if( _cursorPos < 0) {
+                    _cursorPos = 0;
+                }
+
+                setCursorLocation();
+                
+            }
+        });
+        _inputHandler.addKeyboardAction( this.name + "right_action", KeyInput.KEY_RIGHT, new EditBoxKeyInputAction() {
+            public void performAction( InputActionEvent event) {
+                buffignore = true;
+                
+                _cursorPos += 1;
+                
+                if( _cursorPos > _textBuffer.length()) {
+                    _cursorPos = _textBuffer.length();
+                }
+
+                
+                setCursorLocation();
+                
+            }
+        });
+        _inputHandler.addKeyboardAction( this.name + "end_action", KeyInput.KEY_END, new EditBoxKeyInputAction() {
+            public void performAction( InputActionEvent event) {
+                buffignore = true;
+                
+                _cursorPos = _textBuffer.length();
+                setCursorLocation();
+
+            }
+        });
+        
+        _inputHandler.addKeyboardAction( this.name + "home_action", KeyInput.KEY_HOME, new EditBoxKeyInputAction() {
+            public void performAction( InputActionEvent event) {
+                buffignore = true;
+
+                _cursorPos = 0;
+                setCursorLocation();
+            }
+        });
+        
+        _inputHandler.addKeyboardAction( this.name + "space_action", KeyInput.KEY_SPACE, new EditBoxKeyInputAction() {
+            public void performAction( InputActionEvent event) {
+                buffignore = true;
+
+                if( ( (_textBuffer.length() + 1) * ( _text._texSizeX * _text._xtrimFactor)) > _width ) {
+                    return;
+                }
+                
+                String before = _textBuffer.substring( 0, _cursorPos);
+                String after = _textBuffer.substring( _cursorPos);
+                before += ' ';
+                _textBuffer = before + after;
+                _text.setText( _textBuffer);
+                _cursorPos += 1;
+                setCursorLocation();
+                
+            }
+        });
+        
+        _bufferedInput.addBufferedKeyAction(new KeyInputAction() {
+            public void performAction(InputActionEvent event) {
+                
+                if( !buffignore) {
+                    
+                    if( ( (_textBuffer.length() + 1) * ( _text._texSizeX * _text._xtrimFactor)) > _width ) {
+                        return;
+                    }
+
+                
+	                String before = _textBuffer.substring( 0, _cursorPos);
+	                String after = _textBuffer.substring( _cursorPos);
+	                before += key;
+	                _textBuffer = before + after;
+	                _text.setText( _textBuffer);
+	                _cursorPos += 1;
+	                setCursorLocation();
+                }
+                
+                buffignore = false;
+                
+            }
+        });
+
     }
+        
+    private void setCursorLocation() {
+        
+        _cursor.getLocalTranslation().x = (_cursorPos * ( _text._texSizeX * _text._xtrimFactor));
+        
+        this.updateGeometricState(0.0f, true);
+        this.updateRenderState();
+    }
+    
 
     /**
      * used to update the active flag and the text in the box to be rendered
      * @return
      */
-    public boolean update() {
+    public boolean update( float time) {
 
         boolean retval = false;
-
-        if (_hitArea.hitTest()) {
-            if (_activateOnHover) {
-                _active = true;
+        
+        if (hitTest()) {
+            if ( _inputHandler.getMouse().getMouseInput().getButtonState().equals(
+                    MouseButtonStateType.MOUSE_BUTTON_1)) {
+                // button is down
+                
+                _focused = true;
+                
+                Vector3f mouseloc = _inputHandler.getMouse().getHotSpotPosition();
+                
+                mouseloc.x -= _x;
+                mouseloc.y -= _y;
+                
+                _cursorPos = (int) (mouseloc.x / ( _text._texSizeX * _text._xtrimFactor));
+                
+                if( _cursorPos > _textBuffer.length()) {
+                    _cursorPos = _textBuffer.length();
+                }
+                
+                setCursorLocation();
+                
             }
+            
         } else {
-            if (_activateOnHover) {
-                _active = false;
+            if (_inputHandler.getMouse().getMouseInput().getButtonState().equals(
+                    MouseButtonStateType.MOUSE_BUTTON_1)) {
+                // button is down
+                
+                _focused = false;
+                _cursor.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_SKIP);
             }
         }
 
-        if (_active && !_oldText.equals(_curText)) {
-          _oldText = _curText;
-          _text.setText( _curText);
+        if( _focused) {
+            if( System.currentTimeMillis() - lasttime > blinkint ) {
+                cursoron = !cursoron;
+                lasttime = System.currentTimeMillis();
+        	}
+            if( cursoron) {
+                _cursor.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_ORTHO);
+            } else {
+                _cursor.setRenderQueueMode( com.jme.renderer.Renderer.QUEUE_SKIP);
+            }
         }
-
+        
         return retval;
     }
 }

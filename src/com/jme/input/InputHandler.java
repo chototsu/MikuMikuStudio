@@ -46,7 +46,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.16 2004-10-26 22:37:44 mojomonkey Exp $
+ * @version $Id: InputHandler.java,v 1.17 2004-11-08 22:26:09 guurk Exp $
  */
 public class InputHandler {
 
@@ -201,6 +201,11 @@ public class InputHandler {
 	 *            value of the action will be changed dynamically
 	 */
 	public void addBufferedKeyAction(KeyInputAction keyInputAction) {
+	    if (keyboard == null) {
+			KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
+			keyboard.setKeyInput(InputSystem.getKeyInput());
+			setKeyBindingManager(keyboard);
+	    }
 		buffKeyActions.add(keyInputAction);
 		useBufferedKeyboard = true;
 	}
@@ -270,19 +275,14 @@ public class InputHandler {
 					boolean keyPressed = kInput.state();
 					if (keyPressed) {
 						for (int i = 0; i < buffKeyActions.size(); i++) {
-							((InputAction) buffKeyActions.get(i)).setKey(kInput
-									.getKeyName(kInput.key()));
-							((KeyInputAction) buffKeyActions.get(i))
-									.setKeyChar(kInput.keyChar());
-							eventList.add(((InputAction) buffKeyActions.get(i))
-									.getKey());
+							((InputAction) buffKeyActions.get(i)).setKey(kInput.getKeyName(kInput.key()));
+							((KeyInputAction) buffKeyActions.get(i)).setKeyChar(kInput.keyChar());
+							eventList.add(((InputAction) buffKeyActions.get(i)).getKey());
 							actionList.add(buffKeyActions.get(i));
-
 						}
 					}
 				}
 			} else {
-
 				for (int i = 0; i < keyActions.size(); i++) {
 					if (keyboard.isValidCommand(((InputAction) keyActions
 							.get(i)).getKey(), ((KeyInputAction) keyActions

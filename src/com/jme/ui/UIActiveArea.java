@@ -36,9 +36,12 @@
  */
 package com.jme.ui;
 
+import java.util.ArrayList;
+
 import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
-
+import com.jme.scene.*;
+import com.jme.scene.state.RenderState;
 /**
  * A rectangular screen area for handling mouse input and checking hit
  * tests.
@@ -46,7 +49,7 @@ import com.jme.math.Vector3f;
  * @author schustej
  *
  */
-public class UIActiveArea {
+public class UIActiveArea extends Node {
    
     protected int _x;
     protected int _y;
@@ -66,7 +69,9 @@ public class UIActiveArea {
      * @param height
      * @param inputHandler
      */
-    public UIActiveArea( int x, int y, int width, int height, InputHandler inputHandler) {
+    public UIActiveArea( String name, int x, int y, int width, int height, InputHandler inputHandler) {
+        super( name);
+        
         _x = x;
         _y = y;
         _width = width;

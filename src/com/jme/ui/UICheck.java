@@ -38,10 +38,12 @@ package com.jme.ui;
 
 import com.jme.image.Texture;
 import com.jme.input.MouseButtonStateType;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.input.*;
+import com.jme.math.Vector3f;
 
 /**
  * UIObject derrived object that adds another state beyond the UIButton, a
@@ -54,88 +56,85 @@ import com.jme.input.*;
  * @author schustej
  *
  */
-public class UICheck extends UIObject {
+public class UICheck extends UIActiveObject {
 
-    private static final long serialVersionUID = 1L;
-	protected boolean _selected = false;
+    protected boolean _selected = false;
+    
+    UIText _text = null;
 
+    public UICheck( String name, 
+            int x, int y, int width, int height,
+            InputHandler inputHandler, UIColorScheme scheme, int flags) {
+        this( name, x, y, width, height, inputHandler, scheme, null, null, null, null, flags, false );
     /**
      * Constructor, give unique name, inputhandler with the mouse attached to check for
      * hit tests, the files for the different states and location and scale. This will default
      * to using the classloader to get the resources by name
-     * @param name
-     * @param inputHandler
-     * @param upfile
-     * @param overfile
-     * @param downfile
-     * @param selectedfile
-     * @param x
-     * @param y
-     * @param scale - used for both x and y scale
      */
-    public UICheck(String name, InputHandler inputHandler, String upfile, String overfile, String downfile,
-            String selectedfile, int x, int y, float scale) {
-        this( name, inputHandler, upfile, overfile, downfile, selectedfile, x, y, scale, scale, true);
     }
-
+    
+    public UICheck(String name, int x, int y, int width, int height,
+        	InputHandler inputHandler,
+        	String upfile, String overfile, String downfile, String selectedfile,
+            int flags) {
+        this( name, x, y, width, height, inputHandler, null, upfile, overfile, downfile, selectedfile, flags, true);
+    }
     /**
      * Alternate constructer allow developer to load directly from file system
-     * @param name
-     * @param inputHandler
-     * @param upfile
-     * @param overfile
-     * @param downfile
-     * @param selectedfile
-     * @param x
-     * @param y
-     * @param scale
-     * @param useClassLoader
      */
-    public UICheck(String name, InputHandler inputHandler, String upfile, String overfile, String downfile,
-                String selectedfile, int x, int y, float xscale, float yscale, boolean useClassLoader) {
+    public UICheck(String name, int x, int y, int width, int height, 
+            	InputHandler inputHandler,
+            	UIColorScheme scheme,
+            	String upfile, String overfile, String downfile, String selectedfile,
+                int flags, boolean useClassLoader) {
+        super(name, x, y, width, height, inputHandler, scheme, flags);
 
-
-        super(name, inputHandler, x, y, xscale, yscale);
-
-        _textureStates = new TextureState[4];
-
-        for (int i = 0; i < 4; i++) {
-            _textureStates[i] = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-            _textureStates[i].setEnabled(true);
+        if( upfile != null && overfile != null && downfile != null && selectedfile != null) {
+	        
+	        TextureState[] textureStates = new TextureState[4];
+	
+	        for (int i = 0; i < 4; i++) {
+	            textureStates[i] = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+	            textureStates[i].setEnabled(true);
+	        }
+	
+	        if( useClassLoader) {
+		        textureStates[0].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
+		                upfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+		        textureStates[1].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
+		                overfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+		        textureStates[2].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
+		                downfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+		        textureStates[3].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
+		                selectedfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+	        } else {
+	            textureStates[0].setTexture(TextureManager.loadTexture(upfile, Texture.MM_NEAREST,
+	                    Texture.FM_NEAREST, true));
+	            textureStates[1].setTexture(TextureManager.loadTexture(overfile, Texture.MM_NEAREST,
+	                    Texture.FM_NEAREST, true));
+	            textureStates[2].setTexture(TextureManager.loadTexture(downfile, Texture.MM_NEAREST,
+	                    Texture.FM_NEAREST, true));
+	            textureStates[3].setTexture(TextureManager.loadTexture(selectedfile, Texture.MM_NEAREST,
+	                    Texture.FM_NEAREST, true));
+	        }
+	        textureStates[0].apply();
+	        textureStates[1].apply();
+	        textureStates[2].apply();
+	        textureStates[3].apply();
+        
+	        _textureStates.add( textureStates[0]);
+	        _textureStates.add( textureStates[1]);
+	        _textureStates.add( textureStates[2]);
+	        _textureStates.add( textureStates[3]);
         }
-
-        if( useClassLoader) {
-	        _textureStates[0].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
-	                upfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
-	        _textureStates[1].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
-	                overfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
-	        _textureStates[2].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
-	                downfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
-	        _textureStates[3].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
-	                selectedfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
-        } else {
-            _textureStates[0].setTexture(TextureManager.loadTexture(upfile, Texture.MM_NEAREST,
-                    Texture.FM_NEAREST, true));
-            _textureStates[1].setTexture(TextureManager.loadTexture(overfile, Texture.MM_NEAREST,
-                    Texture.FM_NEAREST, true));
-            _textureStates[2].setTexture(TextureManager.loadTexture(downfile, Texture.MM_NEAREST,
-                    Texture.FM_NEAREST, true));
-            _textureStates[3].setTexture(TextureManager.loadTexture(selectedfile, Texture.MM_NEAREST,
-                    Texture.FM_NEAREST, true));
-        }
-        _textureStates[0].apply();
-        _textureStates[1].apply();
-        _textureStates[2].apply();
-        _textureStates[3].apply();
-        this.setRenderState(_textureStates[0]);
-
+        
         setup();
     }
 
     /**
      * Checks the state of the mouse against the state of the control.
      */
-    public boolean update() {
+    public boolean update( float time) {
 
         boolean retval = false;
 
@@ -147,8 +146,22 @@ public class UICheck extends UIObject {
                 // button is down
                 if (_state != DOWN) {
                     if (!_selected) {
-                        this.setRenderState(_textureStates[DOWN]);
-                        this.updateRenderState();
+	                    if( usingTexture()) {
+	                        if( (DRAW_DOWN & _flags) == DRAW_DOWN) {
+	                            _quad.setRenderState(((TextureState)_textureStates.elementAt(DOWN)));
+	                            _quad.updateRenderState();
+	                        }
+	                    }
+	                    if( usingBorders()) {
+	                        if( (DRAW_DOWN & _flags) == DRAW_DOWN) {
+	                            setAltBorderColors();
+	                            if( _text != null && _state == OVER) {
+	                                _text.setLocalTranslation( new Vector3f( 1.0f, -1.0f, 0.0f));
+	                                _text.updateGeometricState(0.0f, true);
+	                                _text.updateRenderState();
+	                            }
+	                        }
+	                    }
                     }
                     _state = DOWN;
                 }
@@ -158,8 +171,10 @@ public class UICheck extends UIObject {
                     // Fire action. here
                     retval = true;
                     if (!_selected) {
-                        this.setRenderState(_textureStates[3]);
-                        this.updateRenderState();
+                        if( usingTexture()) {
+                            _quad.setRenderState(((TextureState)_textureStates.elementAt(SELECTED)));
+                            _quad.updateRenderState();
+                        }
                         _selected = true;
                         _state = OVER;
                     } else {
@@ -167,15 +182,39 @@ public class UICheck extends UIObject {
                     }
                 }
                 if (!_selected && _state != OVER) {
-                    this.setRenderState(_textureStates[OVER]);
-                    this.updateRenderState();
+                    if( usingTexture()) {
+                        if( (DRAW_OVER & _flags) == DRAW_OVER) {
+                            _quad.setRenderState(((TextureState)_textureStates.elementAt(OVER)));
+                            _quad.updateRenderState();
+                        }
+                    }
+                    if( usingBorders()) {
+                        setBaseBorderColors();
+                        if( (DRAW_OVER & _flags) == DRAW_OVER) {
+                            setHighlightColors();
+                            if( _text != null && _state == DOWN) {
+                                _text.setLocalTranslation( new Vector3f( -1.0f, 1.0f, 0.0f));
+                                _text.updateGeometricState(0.0f, true);
+                                _text.updateRenderState();
+                            }
+
+                        }
+                    }
                     _state = OVER;
                 }
             }
         } else {
             if (!_selected && _state != UP) {
-                this.setRenderState(_textureStates[UP]);
-                this.updateRenderState();
+                if( usingTexture()) {
+                    _quad.setRenderState(((TextureState)_textureStates.elementAt(UP)));
+                    _quad.updateRenderState();
+                }
+                if( usingBorders()) {
+                    setBaseBorderColors();
+                    if( (DRAW_OVER & _flags) == DRAW_OVER) {
+                        setBaseColors();
+                    }
+                }
                 _state = UP;
             }
         }
@@ -202,8 +241,19 @@ public class UICheck extends UIObject {
       _selected = sel;
       if (_state != newState) {
         _state = newState;
-        this.setRenderState(_textureStates[_state]);
+        this.setRenderState( (TextureState) _textureStates.elementAt(_state));
         this.updateRenderState();
       }
     }
+    
+    public void setText( UIFonts fonts, String fontName, String text) {
+        _text = new UIText( name+"text", fonts, fontName, text,
+                _x, _y, 65.0f, 0.0f, _height, _width, _scheme, 0);
+        
+        _text.setLocalTranslation( new Vector3f( (this.getWidth() - _text.getWidth()) / 2,
+                (this.getHeight() - _text.getHeight()) / 2, 0.0f ));
+        
+        this.attachChild( _text);
+    }
+    
 }

@@ -36,6 +36,8 @@
  */
 package jmetest.ui;
 
+import java.util.logging.Level;
+
 import com.jme.app.BaseGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -61,19 +63,23 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.ui.UIColorScheme;
 import com.jme.ui.UIBillboard;
 import com.jme.ui.UIButton;
 import com.jme.ui.UICheck;
 import com.jme.ui.UIText;
 import com.jme.ui.UIEditBox;
+import com.jme.ui.UIActiveObject;
+import com.jme.ui.UIObject;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import jmetest.input.TestAbsoluteMouse;
 import com.jme.util.*;
+import com.jme.ui.UIFonts;
 
 /**
  * @author schustej
- *
+ *  
  */
 public class TestUI extends BaseGame {
 
@@ -81,14 +87,20 @@ public class TestUI extends BaseGame {
      * Base application objects
      */
     protected Camera cam;
+
     protected Node rootNode;
 
     protected InputHandler input;
+
+    protected InputHandler bufferedInput;
+
     /*
      * Things to change the rootNode rendering
      */
     protected WireframeState wireState;
+
     protected LightState lightState;
+
     protected boolean showBounds = false;
 
     /*
@@ -97,14 +109,18 @@ public class TestUI extends BaseGame {
     protected Node debugNode;
 
     protected Timer timer;
+
     protected Text fpsText;
+
     protected float tpf;
+
     protected Text mouseText;
 
     /*
      * The Mouse and it's node
      */
     protected Node mouseNode;
+
     protected AbsoluteMouse mouse;
 
     /*
@@ -116,10 +132,22 @@ public class TestUI extends BaseGame {
      * UI Components
      */
 
-    UIButton _button = null;
-    UICheck  _check = null;
-    UIBillboard _bill = null;
+    UIColorScheme _scheme = new UIColorScheme();
+
+    UIButton _button1 = null;
+
+    UIButton _button2 = null;
+
+    UICheck _check1 = null;
+
+    UICheck _check2 = null;
+
+    UIBillboard _bill1 = null;
+
+    UIBillboard _bill2 = null;
+
     UIText _text = null;
+
     UIEditBox _edit = null;
 
     /*
@@ -129,20 +157,21 @@ public class TestUI extends BaseGame {
 
     /**
      * initializes the display and camera.
-     *
+     *  
      */
     protected void initSystem() {
 
         /*
-         * Setup display system and create the main
-         * window
+         * Setup display system and create the main window
          */
         try {
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(properties.getWidth(), properties.getHeight(), properties.getDepth(),
-                    properties.getFreq(), properties.getFullscreen());
+            display.createWindow(properties.getWidth(), properties.getHeight(),
+                    properties.getDepth(), properties.getFreq(), properties
+                            .getFullscreen());
 
-            cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
+            cam = display.getRenderer().createCamera(properties.getWidth(),
+                    properties.getHeight());
         } catch (JmeException e) {
             e.printStackTrace();
             System.exit(1);
@@ -159,15 +188,14 @@ public class TestUI extends BaseGame {
         display.getRenderer().setBackgroundColor(ColorRGBA.black);
 
         /*
-         * Create an input handler
-         * This is a specialized input handler
-         * for interacting with UI... you may of
-         * course add other input handlers
-         *
-         * Be sure to call the update method of the input handler
-         * during the update phase
+         * Create an input handler This is a specialized input handler for
+         * interacting with UI... you may of course add other input handlers
+         * 
+         * Be sure to call the update method of the input handler during the
+         * update phase
          */
         input = new InputHandler();
+        bufferedInput = new InputHandler();
 
         /*
          * really the camera settings for this whole app really shouldn't
@@ -197,10 +225,12 @@ public class TestUI extends BaseGame {
 
     /**
      * initializes the scene
-     *
+     * 
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
+
+        LoggingSystem.getLogger().setLevel(Level.SEVERE);
 
         /*
          * Init the nodes
@@ -245,8 +275,8 @@ public class TestUI extends BaseGame {
         lightState.attach(light);
 
         /*
-         * Alpha states for allowing 'black' to be transparent.
-         * This one is for the text font texture
+         * Alpha states for allowing 'black' to be transparent. This one is for
+         * the text font texture
          */
         AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
@@ -268,11 +298,14 @@ public class TestUI extends BaseGame {
         /*
          * The absolute mouse
          */
-        mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());
+        mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display
+                .getHeight());
         TextureState cursor = display.getRenderer().createTextureState();
         cursor.setEnabled(true);
-        cursor.setTexture(TextureManager.loadTexture(TestAbsoluteMouse.class.getClassLoader().getResource(
-                "jmetest/data/cursor/cursor1.png"), Texture.MM_LINEAR, Texture.FM_LINEAR, true));
+        cursor.setTexture(TextureManager.loadTexture(TestAbsoluteMouse.class
+                .getClassLoader()
+                .getResource("jmetest/data/cursor/cursor1.png"),
+                Texture.MM_LINEAR, Texture.FM_LINEAR, true));
 
         /*
          * Add the cursor texture to the mouse
@@ -281,25 +314,26 @@ public class TestUI extends BaseGame {
         /*
          * Add the alpha state to the mouse
          */
-        mouse.setRenderState( as2);
-        mouse.setMouseInput( InputSystem.getMouseInput());
+        mouse.setRenderState(as2);
+        mouse.setMouseInput(InputSystem.getMouseInput());
 
         /*
          * Set the speed of the mouse
          */
-        mouse.setSpeed( 2.0f);
+        mouse.setSpeed(2.0f);
         /*
-         * Set the mouse that the inputHandler is using
-         * so the UIObjects can retrieve it
+         * Set the mouse that the inputHandler is using so the UIObjects can
+         * retrieve it
          */
-        input.setMouse( mouse);
+        input.setMouse(mouse);
 
         /*
          * The texture for the font
          */
         TextureState font = display.getRenderer().createTextureState();
-        font.setTexture(TextureManager.loadTexture(SimpleGame.class.getClassLoader()
-                .getResource(fontLocation), Texture.MM_LINEAR, Texture.FM_LINEAR, true));
+        font.setTexture(TextureManager.loadTexture(SimpleGame.class
+                .getClassLoader().getResource(fontLocation), Texture.MM_LINEAR,
+                Texture.FM_LINEAR, true));
         font.setEnabled(true);
 
         /*
@@ -320,58 +354,82 @@ public class TestUI extends BaseGame {
         mouseText.setRenderState(as1);
         mouseText.setLocalTranslation(new Vector3f(1, 15, 0));
 
+        // Default is the standard grey 'windoze' look
+        // the following sets up a cool neon blue theme
+
+        //        _scheme._backgroundcolor = new ColorRGBA(0.0f, 0.0f, 0.3f, 0.5f);
+        //        _scheme._borderdarkcolor = new ColorRGBA(0.0f, 0.0f, 0.5f, 0.8f);
+        //        _scheme._borderlightcolor = new ColorRGBA(0.3f, 0.3f, 1.0f, 0.8f);
+        //        _scheme._foregroundcolor = ColorRGBA.white;//new ColorRGBA( 1.0f, 1.0f, 1.0f, 0.5f); //
+        //        _scheme._highlightbackgroundcolor = new ColorRGBA(0.1f, 0.1f, 0.6f, 0.5f);
+        //        _scheme._highlightforegroundcolor = ColorRGBA.blue;
+
+        String[] names = { "main", "nice" };
+        String[] locs = { fontLocation, "jmetest/data/font/conc_font.png" };
+
+        UIFonts _fonts = new UIFonts(names, locs);
+
         /*
          * UI Objects
          */
 
-        _button = new UIButton( "button",
-                					input,
-                					"jmetest/data/images/buttonup.png",
-                					"jmetest/data/images/buttonover.png",
-                					"jmetest/data/images/buttondown.png",
-                					100,
-                					100,
-                					1.0f);
+        /*
+         * Billboard
+         */
 
-        _check = new UICheck( "check",
-                					input,
-                					"jmetest/data/images/checkup.png",
-                					"jmetest/data/images/checkover.png",
-                					"jmetest/data/images/checkdown.png",
-                					"jmetest/data/images/checked.png",
-                					100,
-                					200,
-                					1.0f);
+        _bill1 = new UIBillboard("billboard with borders", 50, 50, ((display
+                .getWidth() - 100) / 2) - 10, display.getHeight() - 100,
+                _scheme);
 
-        _bill = new UIBillboard( "bill",
-                					"jmetest/data/images/Monkey.png",
-                					100,
-                					300,
-                					0.5f);
-        
-        _text = new UIText( "text",
-                			"jmetest/data/font/conc_font.png",
-                			400,
-                			100,
-                			1.0f,
-                			50.0f,
-                			5.0f);
+        _bill2 = new UIBillboard("billboard with texture",
+                ((display.getWidth() - 100) / 2) + 50 + 10, 50, (display
+                        .getWidth() - 100) / 2, display.getHeight() - 100,
+                "jmetest/data/images/Monkey.png");
 
-        _text.setText( "Test some Text!");
-                
-        _edit = new UIEditBox( "edit",
-                				"jmetest/data/font/conc_font.png",
-                				100,
-                				20,
-                				input,
-                				400,
-                				200,
-                				1.0f,
-                				50.0f,
-                				5.0f);
-        //_edit.setActivateOnHover( false);
-        //_edit.setActive( true);
-        
+        /*
+         * Button
+         */
+        _button1 = new UIButton("button with textures",
+                ((display.getWidth() - 100) / 2) + 100, 200, 128, 32, input,
+                "jmetest/data/images/buttonup.png",
+                "jmetest/data/images/buttonover.png",
+                "jmetest/data/images/buttondown.png", UIActiveObject.TEXTURE
+                        | UIActiveObject.DRAW_DOWN | UIActiveObject.DRAW_OVER);
+
+        _button2 = new UIButton("button with borders", 100, 200, 135, 30,
+                input, _scheme, UIActiveObject.BORDER
+                        | UIActiveObject.DRAW_DOWN | UIActiveObject.DRAW_OVER);
+        _button2.setText(_fonts, "nice", "Button");
+
+        /*
+         * Check mark
+         */
+
+        _check1 = new UICheck("check with textures",
+                ((display.getWidth() - 100) / 2) + 100, 300, 256, 64, input,
+                _scheme, "jmetest/data/images/checkup.png",
+                "jmetest/data/images/checkover.png",
+                "jmetest/data/images/checkdown.png",
+                "jmetest/data/images/checked.png", UIActiveObject.TEXTURE
+                        | UIActiveObject.DRAW_OVER | UIActiveObject.DRAW_DOWN,
+                true);
+
+        _check2 = new UICheck("check with borders", 100, 300, 270, 60, input,
+                _scheme, null, null, null, null, UIActiveObject.BORDER
+                        | UIActiveObject.DRAW_DOWN | UIActiveObject.DRAW_OVER,
+                true);
+        _check2.setText(_fonts, "nice", "Check");
+
+        /*
+         * Static Text
+         */
+
+        _text = new UIText("text", _fonts, "nice", "MMM Test! 000", 100, 100,
+                65.0f, 0.0f, 30, 550, _scheme, UIObject.INVERSE_BORDER);
+
+        _edit = new UIEditBox("edit", 100, 400, 300, 40, input, bufferedInput, _scheme,
+                _fonts, "nice", "", 65.0f, 0.0f, UIObject.INVERSE_BORDER);
+
         /*
          * Put everything together
          */
@@ -391,11 +449,14 @@ public class TestUI extends BaseGame {
          * UI Node
          */
 
-        uiNode.attachChild( _button);
-        uiNode.attachChild( _check);
-        uiNode.attachChild( _bill);
-        uiNode.attachChild( _text);
-        uiNode.attachChild( _edit);
+        uiNode.attachChild(_bill1);
+        uiNode.attachChild(_bill2);
+        uiNode.attachChild(_check1);
+        uiNode.attachChild(_check2);
+        uiNode.attachChild(_button1);
+        uiNode.attachChild(_button2);
+        uiNode.attachChild(_text);
+        uiNode.attachChild(_edit);
 
         /*
          * root Node
@@ -424,31 +485,44 @@ public class TestUI extends BaseGame {
         /*
          * Key bindings
          */
-		input.addKeyboardAction( "exit", KeyInput.KEY_ESCAPE, new KeyExitAction( this));
-		input.addKeyboardAction( "toggle_wire", KeyInput.KEY_T, new KeyToggleRenderState( wireState, rootNode));
-		input.addKeyboardAction( "toggle_lights", KeyInput.KEY_L, new KeyToggleRenderState( lightState, rootNode));
-		input.addKeyboardAction( "toggle_bounds", KeyInput.KEY_B, new KeyToggleBoolean( showBounds));
 
-		/*
-		 * tester for doing the bufferered reader
-		 */
-		
-		input.addBufferedKeyAction( new KeyInputAction() {
-            public void performAction(InputActionEvent evt) {
-                LoggingSystem.getLogger().log( java.util.logging.Level.FINE, this.key);
+        input.addKeyboardAction("exit", KeyInput.KEY_ESCAPE, new KeyExitAction(
+                this));
+        input.addKeyboardAction("toggle_wire", KeyInput.KEY_T,
+                new KeyToggleRenderState(wireState, rootNode));
+        input.addKeyboardAction("toggle_lights", KeyInput.KEY_L,
+                new KeyToggleRenderState(lightState, rootNode));
+        input.addKeyboardAction("toggle_bounds", KeyInput.KEY_B,
+                new KeyToggleBoolean(showBounds));
+
+        /*
+         * tester for doing the bufferered reader, This is only for testing.. you cannot use
+         * standard named keyboard actions and buffered actions at the same time in the same
+         * InputHandler.
+         * 
+         * This is important to remember, if you want to use both in your 
+         * application you'll need a separate input handler.
+         * 
+         * Note that this will only be fired for key presses.
+         * 
+         */
+
+        bufferedInput.addBufferedKeyAction(new KeyInputAction() {
+            public void performAction(InputActionEvent event) {
+                //System.out.println("KeyInputAction.key = " + this.key);
             }
         });
-		
-		/*
-		 * Set up logging filtering
-		 */
-		
-		LoggingSystem.getLogger().setLevel( java.util.logging.Level.SEVERE);
+
+        /*
+         * Set up logging filtering
+         */
+
+        LoggingSystem.getLogger().setLevel(java.util.logging.Level.SEVERE);
     }
 
     /**
      * Not used.
-     *
+     * 
      * @see com.jme.app.SimpleGame#update()
      */
     protected final void update(float interpolation) {
@@ -458,28 +532,33 @@ public class TestUI extends BaseGame {
         timer.update();
         tpf = timer.getTimePerFrame();
         input.update(tpf);
-        fpsText.print("FPS: " + (int) timer.getFrameRate() + " - " + display.getRenderer().getStatistics());
+        bufferedInput.update(tpf);
+
+        fpsText.print("FPS: " + (int) timer.getFrameRate() + " - "
+                + display.getRenderer().getStatistics());
 
         /*
-         * Update the mouse and the mouse location text
-         * This call updates the location of the mouse cursor
+         * Update the mouse and the mouse location text This call updates the
+         * location of the mouse cursor
          */
         mouse.update();
-        mouseText.print("Position: " + mouse.getLocalTranslation().x + " , " + mouse.getLocalTranslation().y);
-        
-        /*
-         * UI Object Updates, only need to call this for objects
-         * that interact with the mouse
-         */
-        _button.update();
-        _check.update();
-        _edit.update();
+        mouseText.print("Position: " + mouse.getLocalTranslation().x + " , "
+                + mouse.getLocalTranslation().y);
 
+        /*
+         * UI Object Updates, only need to call this for objects that interact
+         * with the mouse
+         */
+        _button1.update( tpf);
+        _button2.update(tpf);
+        _check1.update(tpf);
+        _check2.update(tpf);
+        _edit.update( tpf);
     }
 
     /**
      * draws the scene graph
-     *
+     * 
      * @see com.jme.app.SimpleGame#render()
      */
     protected void render(float interpolation) {
@@ -501,7 +580,7 @@ public class TestUI extends BaseGame {
 
     /**
      * not used.
-     *
+     * 
      * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
@@ -509,17 +588,18 @@ public class TestUI extends BaseGame {
     }
 
     /**
-     *
+     * 
      * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
         InputSystem.getMouseInput().destroy();
+        display.close();
         System.exit(0);
     }
 
     /**
      * Entry point for the test,
-     *
+     * 
      * @param args
      */
     public static void main(String[] args) {

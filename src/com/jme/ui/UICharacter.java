@@ -51,7 +51,7 @@ public class UICharacter extends UIObject {
 
     private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Constructs a single character UIObject based on a sub-texture location
      * for the needed character. tx,ty and tx2,ty2 are the texture coordinates
      * of the corners of the quad
@@ -63,12 +63,10 @@ public class UICharacter extends UIObject {
      * @param ty2
      * @param scale
      */
-    public UICharacter(String name, TextureState ts, float tx, float ty, float tx2, float ty2, float scale) {
-        super(name, null, 0, 0, scale);
-
-        _textureStates = new TextureState[1];
-        _textureStates[0] = ts;
-
+    public UICharacter(String name, 
+            float tx, float ty, float tx2, float ty2) {
+        super( name, 0, 0, 0, 0, null, UIObject.TEXTURE);
+        
         setup();
 
         Vector2f[] texCoords = new Vector2f[4];
@@ -78,10 +76,7 @@ public class UICharacter extends UIObject {
         texCoords[2] = new Vector2f(tx2, ty);
         texCoords[3] = new Vector2f(tx2, ty2);
 
-        setTextures(texCoords);
-
-        _xscale = scale;
-        _yscale = scale;
+        _quad.setTextures( texCoords);
     }
 
     /**
@@ -91,45 +86,35 @@ public class UICharacter extends UIObject {
      * We should convert this to using Clones if it makes sense.
      * @param tmp
      */
-    public UICharacter(String name, UICharacter tmp) {
-        super( name + tmp.getName(), null, 0, 0, tmp._xscale, tmp._yscale);
+    public UICharacter(String name, UICharacter tmp, 
+            int x, int y, int width, int height,
+            float scale, UIColorScheme scheme) {
+        super( name + tmp.getName(), x, y, width, height, scheme, UIObject.TEXTURE);
 
-        this._textureStates = tmp._textureStates;
-        this._width = tmp._width;
-        this._height = tmp._height;
-        this._x = tmp._x;
-        this._y = tmp._y;
-        this.renderStateList = tmp.renderStateList;
+        this._textureStates = null;
+        this._width = width;
+        this._height = height;
+        this._x = x;
+        this._y = y;
+        
+        Vector2f[] texCoords = tmp._quad.getTextures();
+        
+        super.setup();
 
-        setVertices(tmp.getVertices());
-        setNormals(tmp.getNormals());
-        setColors(tmp.getColors());
-        setTextures(tmp.getTextures());
-        setIndices(tmp.getIndices());
+        //System.out.println( "x: " + _x + " y: " + _y + " w: " + _width + " h:" + _height);
+        //System.out.println( _quad.getLocalTranslation());
+        
+        _quad.setTextures( texCoords);
+        
+        //getLocalScale().x = _xscale;
+        //getLocalScale().y = _yscale;
+        
+        _quad.setSolidColor( scheme._foregroundcolor);
 
-        getLocalScale().x = _xscale;
-        getLocalScale().y = _yscale;
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
-    }
-
-    /**
-     * Specialized override of UIObject setup that
-     * accounts for the 1/16 size of the subtexture
-     */
-    protected void setup() {
-
-        _width = ((TextureState) _textureStates[0]).getTexture().getImage().getWidth() / 16;
-        _height = ((TextureState) _textureStates[0]).getTexture().getImage().getHeight() / 16;
-
-        initialize(_width, _height);
-
-        getLocalScale().x = _xscale;
-        getLocalScale().y = _yscale;
-
-        /*
-         * doesn't seem to work right. It ends up being in the wrong place.
-         */
-        setRenderQueueMode(Renderer.QUEUE_ORTHO);
+        
+        this.updateGeometricState(0.0f, true);
+        this.updateRenderState();
     }
 
     /**

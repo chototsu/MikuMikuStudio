@@ -27,6 +27,9 @@ import com.jme.sound.SoundAPIController;
 import com.jme.sound.SoundPool;
 import com.jme.sound.scene.ProgrammableSound;
 import com.jme.sound.scene.SoundNode;
+import com.jme.ui.UIColorScheme;
+import com.jme.ui.UIFonts;
+import com.jme.ui.UIObject;
 import com.jme.ui.UIText;
 import com.jme.util.TextureManager;
 
@@ -80,12 +83,24 @@ public class PongRevisited extends SimpleGame {
 
         snode = new SoundNode();
         uiNode = new Node("UINODE");
-        playerScoreText = new UIText("UINODE", "jmetest/data/font/conc_font.png", 600,
-                0, 1.0f, 50.0f, 5.0f);
-        computerScoreText = new UIText("UINODE", "jmetest/data/font/conc_font.png",
-                100, 0, 1.0f, 50.0f, 5.0f);
-        playerScoreText.setText("Player : 0");
-        computerScoreText.setText("Computer : 0");
+        
+        String[] names = { "main", "nice" };
+        String[] locs = { fontLocation, "jmetest/data/font/conc_font.png" };
+
+        UIFonts _fonts = new UIFonts(names, locs);
+        UIColorScheme _scheme = new UIColorScheme();
+        
+        _scheme._foregroundcolor = ColorRGBA.white;
+        
+        playerScoreText = new UIText("UINODE", _fonts, "nice", "Player : 0", 600, 0,
+                50.0f, 0.0f, 30, 0, _scheme, 0);
+        
+        computerScoreText = new UIText( "UINODE", _fonts, "nice", "Computer : 0", 50, 0, 
+                50.0f, 0.0f, 30, 0, _scheme, 0);
+        
+        //playerScoreText.setText("Player : 0");
+        //computerScoreText.setText("Computer : 0");
+        
         uiNode.attachChild(playerScoreText);
         uiNode.attachChild(computerScoreText);
 

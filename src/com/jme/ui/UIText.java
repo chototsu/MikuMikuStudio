@@ -51,112 +51,74 @@ import com.jme.math.*;
  * @author schustej
  *
  */
-public class UIText extends Node {
+public class UIText extends UIObject {
 
-    private static final long serialVersionUID = 1L;
-	UICharacter[] _chars = new UICharacter[256];
+    UIFonts _fonts = null;
+    String _fontName = null;
+    
     String _text = "";
     
-    float _texSizeX = 0.0f;
-    float _texSizeY = 0.0f;
+    public float _texSizeX = 0.0f;
+    public float _texSizeY = 0.0f;
     
     int _x = 0;
     int _y = 0;
     
-    float _xtrim = 0.0f;
-    float _ytrim = 0.0f;
+    public float _xtrimFactor = 0.0f;
+    public float _ytrimFactor = 0.0f;
     
-    static final int CHAR_OFFSET = 16; 
+    int _targheight = 0;
+    int _targwidth = 0;
     
     /**
-     * Constructor
-     * @param nodeName unique name for the object
-     * @param fontFileName The filename for the font, this will be useing the classloader to load as a resource
-     * @param x location x
-     * @param y location y
-     * @param scale scale the UIObjects
-     * @param xtrim how much to trim, in %, from the sides of the characters. This scruches them together horizontally.
-     * @param ytrim how much to trim, in %, from the top and bottom of the characters. This scruches them together vertically
      */
-    public UIText( String nodeName, String fontFileName, int x, int y, float scale, float xtrim, float ytrim) {
-        this( nodeName, fontFileName, x, y, scale, xtrim, ytrim, true);
+    public UIText( String nodeName, UIFonts fonts,
+        String fontName, String text,
+        int x, int y, float xtrim, float ytrim,
+        int targheight,int targwidth,
+        UIColorScheme scheme, int flags ) {
+        this( nodeName, fonts, fontName, text, x, y, xtrim, ytrim, targheight, targwidth, scheme, flags, true);
     }
     
     /**
-     * Alternate constructor that allows the loading of the font file directly from the file system without using the classloader
-     * @param nodeName
-     * @param fontFileName
-     * @param x
-     * @param y
-     * @param scale
-     * @param xtrim
-     * @param ytrim
-     * @param useClassLoader
      */
-    public UIText( String nodeName, String fontFileName, int x, int y, float scale, float xtrim, float ytrim, boolean useClassLoader) {
-        super( nodeName);
+    public UIText( String nodeName, UIFonts fonts, String fontName, String text,
+        int x, int y, float xtrim, float ytrim,
+        int targheight, int targwidth, 
+        UIColorScheme scheme, int flags, 
+        boolean useClassLoader) {
+        super( nodeName, x, y, 1, 1, scheme, flags);
 
-        _xtrim = xtrim;
-        _ytrim = ytrim;
+        _xtrimFactor = xtrim / 100.0f;
+        _ytrimFactor = ytrim / 100.0f;
         
         _x = x;
         _y = y;
         
-        TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
-        ts.setEnabled(true);
-	
-        if( useClassLoader) {
-        ts.setTexture(TextureManager.loadTexture(UIText.class
-				.getClassLoader().getResource( fontFileName),
-				Texture.MM_NEAREST, Texture.FM_NEAREST, true));
-        } else {
-	        ts.setTexture(TextureManager.loadTexture( fontFileName, Texture.MM_NEAREST,
-	                Texture.FM_NEAREST, true));
-		}        
-        ts.apply();
+        _targheight = targheight;
+        _targwidth = targwidth;
         
-        _texSizeX = (ts.getTexture().getImage().getWidth()  / 16) * scale;
-        _texSizeX -= (_texSizeX * (_xtrim / 100.0f));
+        _fonts = fonts;
+        _fontName = fontName;
+        TextureState ts = _fonts.getFontTexture( fontName);
         
-        _texSizeY = (ts.getTexture().getImage().getHeight()  / 16) * scale;
-        _texSizeY -= (_texSizeY * (_ytrim / 100.0f));
+        _text = text;
         
-        float diff = 1.0f / 16.0f;
+        _texSizeX = ts.getTexture().getImage().getWidth()  / 16;
+        _texSizeY = ts.getTexture().getImage().getHeight()  / 16;
         
-        for( int fx = 0; fx < 16; fx++) {
-            for( int fy = 0; fy < 16; fy++) {
-                _chars[ (fy * 16) + fx] = new UICharacter( "UIC" + fx + fy,
-                        									ts,
-                        									(float) fx / 16.0f,
-                        									(float) fy / 16.0f,
-                        									(float) (fx + 1) / 16.0f,
-                        									(float) (fy + 1) / 16.0f,
-                        									scale);
-            }
+        float scalefactor = _targheight / _texSizeX;
+        
+        _texSizeX *= scalefactor;
+        _texSizeY *= scalefactor;
+        
+//        _xtrimFactor *= scalefactor;
+//        _ytrimFactor *= scalefactor;
+        
+        if( _text.length() > 0) {
+            setText( _text);
         }
         
-        this.setRenderState( ts);
-        
-		AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
-		as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-		as1.setTestEnabled(true);
-		as1.setTestFunction(AlphaState.TF_GREATER);
-
-		this.setRenderState(as1);
-    }
-    
-    /**
-     * simpler constructor without trim values
-     * @param nodeName
-     * @param fontFileName
-     * @param x
-     * @param y
-     * @param scale
-     */
-    public UIText( String nodeName, String fontFileName, int x, int y, float scale) {
-        this( nodeName, fontFileName, x, y, scale, 0.0f, 0.0f);
     }
     
     /**
@@ -168,18 +130,43 @@ public class UIText extends Node {
         _text = text;
         
         this.detachAllChildren();
+
+        if( _targwidth == 0) {
+            _width = (int) (( _text.length() * ( _texSizeX * _xtrimFactor)) + _texSizeX / 2);
+        } else {
+            _width = _targwidth;
+        }
+        
+        _height = (int) ( _texSizeY);
+        
+        setup();
+        
+        this.setLocalScale( 1.0f);
         
         for( int c = 0; c < _text.length(); c++) {
             
-            int charval = ((int) _text.charAt(c)) + CHAR_OFFSET;
-            int row = charval / 16;
-            int charnum = charval % 16;
+            int xloc = (int) (_x + ( c * ( _texSizeX * _xtrimFactor)));
+            int yloc = (int) (_y + ( _texSizeY * _ytrimFactor));
             
-            UICharacter uichar = new UICharacter( Integer.toString( c) , _chars[ (256 - (16 * row)) + charnum ]);
-            uichar.setLocalTranslation( new Vector3f( _x + (c * _texSizeX) + (_texSizeX / 2), _y + (_texSizeY / 2), 0.0f ));
+            //System.out.println( xloc);
+            
+            UICharacter uichar = _fonts.createCharacter( name + Integer.toString( c),
+                    _text.charAt(c),
+                    _fontName,
+                    xloc,
+                    yloc,
+                    (int) _texSizeX,
+                    (int) _texSizeY,
+                    1.0f,
+                    _scheme);
+            
+            if( ( xloc + _texSizeX) > (_width + _x) ) {
+                break;
+            }
+            
             this.attachChild( uichar);
         }
-        
+
         this.updateGeometricState(0.0f, true);
         this.updateRenderState();
     }
