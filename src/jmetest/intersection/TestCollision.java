@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
  * <code>TestCollision</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.19 2004-10-14 01:23:08 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.20 2004-10-27 22:50:45 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -72,6 +72,8 @@ public class TestCollision extends SimpleGame {
 	private float t2Inc = -10.0f;
 	
 	private CollisionResults results;
+	
+	private Node n1, n2;
 
 	/**
 	 * Entry point for the test,
@@ -117,7 +119,11 @@ public class TestCollision extends SimpleGame {
 
 		
 		results.clear();
-		t.calculateCollisions(scene, results);
+		n1.calculateCollisions(scene, results);
+		
+		if(n1.hasCollision(scene, false)) {
+			System.out.println("hasCollision also reports true");
+		}
 	}
 
 	/**
@@ -149,6 +155,9 @@ public class TestCollision extends SimpleGame {
 		Vector3f max = new Vector3f(5, 5, 5);
 		Vector3f min = new Vector3f(-5, -5, -5);
 
+		n1 = new Node("Node 1");
+		n2 = new Node("Node 2");
+		
 		t = new Box("Box 1", min, max);
 		t.setModelBound(new OrientedBoundingBox());
 		t.updateModelBound();
@@ -158,9 +167,10 @@ public class TestCollision extends SimpleGame {
 		t2.setModelBound(new OrientedBoundingBox());
 		t2.updateModelBound();
 		t2.setLocalTranslation(new Vector3f(30, 0, 0));
-
-		scene.attachChild(t);
-		scene.attachChild(t2);
+		n1.attachChild(t);
+		n2.attachChild(t2);
+		scene.attachChild(n1);
+		scene.attachChild(n2);
 
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
