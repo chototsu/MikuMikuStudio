@@ -47,7 +47,7 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.30 2004-09-14 21:52:20 mojomonkey Exp $
+ * @version $Id: Quaternion.java,v 1.31 2004-11-04 23:31:49 renanse Exp $
  */
 public class Quaternion implements Externalizable{
     private static final long serialVersionUID = 1L;
@@ -710,7 +710,7 @@ public class Quaternion implements Externalizable{
      * <code>normalize</code> normalizes the current <code>Quaternion</code>
      */
     public void normalize() {
-        double n = FastMath.sqrt(x*x + y*y + z*z + w*w);
+        double n = FastMath.sqrt(norm());
         x /= n;
         y /= n;
         z /= n;
@@ -726,7 +726,7 @@ public class Quaternion implements Externalizable{
      * 		does not exist.
      */
     public Quaternion inverse() {
-        float norm = w * w + x * x + y * y + z * z;
+        float norm = norm();
         if (norm > 0.0) {
             float invNorm = 1.0f / norm;
             return new Quaternion(
@@ -747,7 +747,7 @@ public class Quaternion implements Externalizable{
      * @return the inverse of this quaternion
      */
     public Quaternion inverseLocal() {
-        float norm = w * w + x * x + y * y + z * z;
+        float norm = norm();
         if (norm > 0.0) {
             float invNorm = 1.0f / norm;
             x*=-invNorm;
