@@ -20,7 +20,7 @@
 
   <target name="compile" depends="init" description="generate jme classes">
     <mkdir dir="${class}"/>
-    <javac srcdir="${src}/jme" destdir="${class}" classpath="${seg}/lib/lwjgl.jar" listfiles="no"/>
+    <javac srcdir="${src}/jme" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jl030.jar" listfiles="no"/>
   </target>
 <!-- ************************************************************************* -->		
 
