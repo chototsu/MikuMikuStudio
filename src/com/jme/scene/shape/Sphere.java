@@ -29,24 +29,25 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene;
+package com.jme.scene.shape;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>Sphere</code>
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.6 2004-03-31 17:56:55 renanse Exp $
+ * @version $Id: Sphere.java,v 1.1 2004-04-02 15:52:07 mojomonkey Exp $
  */
 public class Sphere extends TriMesh {
     private int zSamples;
     private int radialSamples;
 
-    protected float radius;
-    protected Vector3f center;
+    public float radius;
+    public Vector3f center;
 
     public Sphere(String name) {
         super(name);

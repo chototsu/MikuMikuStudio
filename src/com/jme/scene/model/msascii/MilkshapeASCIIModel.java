@@ -39,7 +39,6 @@ import java.net.URL;
 import java.util.logging.Level;
 
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingBox;
 import com.jme.scene.Controller;
 import com.jme.scene.model.*;
 import com.jme.scene.state.MaterialState;
@@ -49,6 +48,7 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.animation.*;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.14 2004-03-23 15:07:03 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.15 2004-04-02 15:52:05 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.

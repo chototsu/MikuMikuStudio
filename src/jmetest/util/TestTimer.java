@@ -34,6 +34,7 @@ package jmetest.util;
 import java.util.logging.Level;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -42,12 +43,11 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Node;
-import com.jme.scene.Pyramid;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Pyramid;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.4 2004-03-25 17:14:29 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.5 2004-04-02 15:52:22 mojomonkey Exp $
  */
 public class TestTimer extends SimpleGame {
     private TriMesh t;

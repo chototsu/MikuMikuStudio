@@ -37,7 +37,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
-import com.jme.scene.Torus;
+import com.jme.scene.shape.Torus;
 import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Eric Woroshow
- * @version $Id: TestVertexProgramState.java,v 1.3 2004-03-25 17:14:22 mojomonkey Exp $
+ * @version $Id: TestVertexProgramState.java,v 1.4 2004-04-02 15:52:20 mojomonkey Exp $
  */
 public class TestVertexProgramState extends VariableTimestepGame {
 

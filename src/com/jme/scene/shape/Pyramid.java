@@ -29,11 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene;
+package com.jme.scene.shape;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>Pyramid</code> provides an extension of <code>TriMesh</code>. A 
@@ -42,7 +43,7 @@ import com.jme.renderer.ColorRGBA;
  * with the peak being on the positive y axis and the base being in the x-z
  * plane.
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.4 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: Pyramid.java,v 1.1 2004-04-02 15:52:07 mojomonkey Exp $
  */
 public class Pyramid extends TriMesh {
     private float height;

@@ -32,10 +32,10 @@
 package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Camera;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.system.JmeException;
@@ -44,7 +44,7 @@ import com.jme.system.LWJGLDisplaySystem;
 /**
  * Test of the point renderer for the LWJGL renderer.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererPoint.java,v 1.3 2004-03-05 01:20:55 renanse Exp $
+ * @version $Id: TestLWJGLRendererPoint.java,v 1.4 2004-04-02 15:52:17 mojomonkey Exp $
  */
 public class TestLWJGLRendererPoint extends SimpleGame {
 

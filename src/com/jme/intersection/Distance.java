@@ -31,16 +31,16 @@
  */
 package com.jme.intersection;
 
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.scene.BoundingSphere;
 
 /**
  * <code>Distance</code> provides functional methods for determining the
  * distances between one object and another. These methods are static to allow
  * for easy calling.
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.3 2004-02-24 01:32:18 mojomonkey Exp $
+ * @version $Id: Distance.java,v 1.4 2004-04-02 15:51:53 mojomonkey Exp $
  */
 public class Distance {
 

@@ -35,9 +35,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.widget.Widget;
@@ -54,7 +54,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene1</code>
  * @author Gregg Patton
- * @version $Id: TestScene1.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestScene1.java,v 1.3 2004-04-02 15:52:23 mojomonkey Exp $
  */
 public class TestScene1 extends TestAbstractScene implements Observer {
     private WidgetButton shuffleButton;

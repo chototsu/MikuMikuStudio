@@ -29,17 +29,18 @@
  * POSSIBILITY OF SUCH DAMAGE. 
  * 
  */
-package com.jme.scene;
+package com.jme.scene.shape;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>Torus</code>
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.1 2004-03-12 03:23:00 mojomonkey Exp $
+ * @version $Id: Torus.java,v 1.1 2004-04-02 15:52:08 mojomonkey Exp $
  */
 public class Torus extends TriMesh {
 	private int circleSamples;

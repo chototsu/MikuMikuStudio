@@ -35,12 +35,12 @@ import java.util.ArrayList;
 import java.util.Observer;
 import java.util.logging.Level;
 
+import com.jme.bounding.BoundingVolume;
 import com.jme.input.AbstractInputHandler;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.BoundingVolume;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;

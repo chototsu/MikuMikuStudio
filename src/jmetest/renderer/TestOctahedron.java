@@ -33,6 +33,7 @@
 package jmetest.renderer;
 
 import com.jme.app.*;
+import com.jme.bounding.*;
 import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.light.*;
@@ -46,7 +47,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.2 2004-03-25 17:14:24 mojomonkey Exp $
+ * @version $Id: TestOctahedron.java,v 1.3 2004-04-02 15:52:17 mojomonkey Exp $
  */
 public class TestOctahedron extends SimpleGame {
     private Camera cam;

@@ -32,6 +32,7 @@
 package jmetest.intersection;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -42,12 +43,11 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingBox;
-import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.8 2004-03-25 17:14:34 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.9 2004-04-02 15:52:13 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 

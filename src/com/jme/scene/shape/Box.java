@@ -29,11 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene;
+package com.jme.scene.shape;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>Box</code> provides an extension of <code>TriMesh</code>. A
@@ -41,7 +42,7 @@ import com.jme.renderer.ColorRGBA;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.12 2004-03-31 17:56:55 renanse Exp $
+ * @version $Id: Box.java,v 1.1 2004-04-02 15:52:05 mojomonkey Exp $
  */
 public class Box extends TriMesh {
     public float xExtent, yExtent, zExtent;

@@ -32,12 +32,12 @@
 package jmetest.renderer.state;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.TextureState;

@@ -32,12 +32,12 @@
 package jmetest.input.action;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.input.NodeHandler;
 import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
@@ -50,7 +50,7 @@ import com.jme.system.JmeException;
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.3 2004-03-25 17:14:31 mojomonkey Exp $
+ * @version $Id: TestNodeController.java,v 1.4 2004-04-02 15:52:12 mojomonkey Exp $
  */
 public class TestNodeController extends SimpleGame {
     private Node scene;

@@ -34,13 +34,14 @@
  * EDIT:  02/09/2004 - Changed merge to return this instead of null. GOP
  */
 
-package com.jme.scene;
+package com.jme.bounding;
 
 import java.util.logging.Level;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
+import com.jme.scene.shape.*;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -54,7 +55,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.29 2004-03-31 17:56:55 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.1 2004-04-02 15:51:52 mojomonkey Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 

@@ -34,6 +34,7 @@ package jmetest.intersection;
 import java.net.URL;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -43,7 +44,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingBox;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.11 2004-03-25 17:14:34 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.12 2004-04-02 15:52:14 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
     private Camera cam;

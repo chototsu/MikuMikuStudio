@@ -33,6 +33,7 @@
 package jmetest.renderer;
 
 import com.jme.app.*;
+import com.jme.bounding.*;
 import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.light.*;
@@ -40,6 +41,7 @@ import com.jme.math.*;
 import com.jme.renderer.*;
 import com.jme.scene.*;
 import com.jme.scene.lod.*;
+import com.jme.scene.shape.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
@@ -47,7 +49,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.3 2004-04-01 20:25:09 mojomonkey Exp $
+ * @version $Id: TestDiscreteLOD.java,v 1.4 2004-04-02 15:52:16 mojomonkey Exp $
  */
 public class TestDiscreteLOD extends SimpleGame {
 	private Camera cam;

@@ -29,16 +29,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene;
+package com.jme.scene.shape;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>Quad</code>
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.3 2004-03-31 03:07:46 renanse Exp $
+ * @version $Id: Quad.java,v 1.1 2004-04-02 15:52:07 mojomonkey Exp $
  */
 public class Quad extends TriMesh {
 

@@ -36,11 +36,11 @@ import java.util.Observer;
 import java.util.Random;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.input.AbstractInputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.system.DisplaySystem;

@@ -33,12 +33,14 @@
 package jmetest.renderer;
 
 import com.jme.app.*;
+import com.jme.bounding.*;
 import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.light.*;
 import com.jme.math.*;
 import com.jme.renderer.*;
 import com.jme.scene.*;
+import com.jme.scene.shape.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
@@ -46,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestSphere.java,v 1.2 2004-03-25 17:14:24 mojomonkey Exp $
+ * @version $Id: TestSphere.java,v 1.3 2004-04-02 15:52:18 mojomonkey Exp $
  */
 public class TestSphere extends SimpleGame {
     private Camera cam;

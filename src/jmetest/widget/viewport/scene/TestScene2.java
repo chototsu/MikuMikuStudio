@@ -34,6 +34,7 @@ package jmetest.widget.viewport.scene;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.jme.bounding.BoundingSphere;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
@@ -43,11 +44,10 @@ import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -74,7 +74,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene2</code>
  * @author Gregg Patton
- * @version $Id: TestScene2.java,v 1.4 2004-03-04 03:08:09 greggpatton Exp $
+ * @version $Id: TestScene2.java,v 1.5 2004-04-02 15:52:23 mojomonkey Exp $
  */
 public class TestScene2 extends TestAbstractScene implements Observer {
 

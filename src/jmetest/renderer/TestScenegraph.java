@@ -32,6 +32,7 @@
 package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
@@ -42,11 +43,10 @@ import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Box;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;

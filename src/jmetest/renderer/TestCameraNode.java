@@ -32,6 +32,7 @@
 package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.InputHandler;
 import com.jme.input.NodeHandler;
@@ -40,13 +41,12 @@ import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.4 2004-03-25 17:14:26 mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.5 2004-04-02 15:52:16 mojomonkey Exp $
  */
 public class TestCameraNode extends SimpleGame {
     private TriMesh t;

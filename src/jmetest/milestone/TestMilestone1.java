@@ -32,10 +32,10 @@
 package jmetest.milestone;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Point;
@@ -53,7 +53,7 @@ import com.jme.system.JmeException;
  * Culling
  * 
  * @author Mark Powell
- * @version $Id: TestMilestone1.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestMilestone1.java,v 1.3 2004-04-02 15:52:14 mojomonkey Exp $
  */
 public class TestMilestone1 extends SimpleGame {
     private Node scene;

@@ -32,23 +32,23 @@
 package jmetest.milestone;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
+import com.jme.light.LightNode;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BezierMesh;
 import com.jme.scene.BezierPatch;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
 import com.jme.scene.Controller;
-import com.jme.scene.LightNode;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
@@ -62,7 +62,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone3.java,v 1.5 2004-03-25 17:14:36 mojomonkey Exp $
+ * @version $Id: TestMilestone3.java,v 1.6 2004-04-02 15:52:15 mojomonkey Exp $
  */
 public class TestMilestone3 extends SimpleGame {
     private TriMesh t;

@@ -32,6 +32,7 @@
 package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -41,10 +42,9 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.5 2004-03-25 17:14:25 mojomonkey Exp $
+ * @version $Id: TestMultitexture.java,v 1.6 2004-04-02 15:52:17 mojomonkey Exp $
  */
 public class TestMultitexture extends SimpleGame {
     private TriMesh t;

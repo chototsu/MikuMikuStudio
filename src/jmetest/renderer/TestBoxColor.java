@@ -32,6 +32,7 @@
 package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -39,22 +40,21 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
-import com.jme.scene.BoundingBox;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.7 2004-04-01 17:42:24 mojomonkey Exp $
+ * @version $Id: TestBoxColor.java,v 1.8 2004-04-02 15:52:16 mojomonkey Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;

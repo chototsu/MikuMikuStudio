@@ -31,11 +31,11 @@
  */
 package com.jme.widget.bounds;
 
+import com.jme.bounding.BoundingVolume;
 import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.scene.BoundingVolume;
 
 /**
  * @author Gregg Patton

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene;
+package com.jme.bounding;
 
 import com.jme.math.Quaternion;
 import com.jme.math.Plane;
@@ -39,7 +39,7 @@ import com.jme.math.Vector3f;
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points.
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.10 2004-03-13 03:07:37 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.1 2004-04-02 15:51:52 mojomonkey Exp $
  */
 public interface BoundingVolume {
 

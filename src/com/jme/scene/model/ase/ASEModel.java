@@ -40,11 +40,11 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 import com.jme.scene.model.Face;
@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  *
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.12 2004-02-26 17:05:03 renanse Exp $
+ * @version $Id: ASEModel.java,v 1.13 2004-04-02 15:52:04 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 

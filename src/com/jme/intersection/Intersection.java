@@ -31,20 +31,20 @@
  */
 package com.jme.intersection;
 
+import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingVolume;
 import com.jme.math.Line;
 import com.jme.math.Plane;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.scene.BoundingBox;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.BoundingVolume;
 
 /**
  * <code>Intersection</code> provides functional methods for calculating the
  * intersection of some objects. All the methods are static to allow for quick
  * and easy calls.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.9 2004-03-12 02:16:15 mojomonkey Exp $
+ * @version $Id: Intersection.java,v 1.10 2004-04-02 15:51:53 mojomonkey Exp $
  */
 public class Intersection {
     /**

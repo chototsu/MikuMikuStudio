@@ -40,6 +40,7 @@ import com.jme.light.SpotLight;
 import com.jme.math.*;
 import com.jme.renderer.*;
 import com.jme.scene.*;
+import com.jme.scene.shape.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
@@ -48,7 +49,7 @@ import com.jme.util.*;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.6 2004-03-26 00:22:57 ericthered Exp $
+ * @version $Id: TestPQTorus.java,v 1.7 2004-04-02 15:52:18 mojomonkey Exp $
  */
 public class TestPQTorus extends VariableTimestepGame {
 

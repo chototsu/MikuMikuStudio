@@ -37,6 +37,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
+import com.jme.bounding.*;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -51,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.23 2004-03-30 01:39:08 renanse Exp $
+ * @version $Id: Geometry.java,v 1.24 2004-04-02 15:51:59 mojomonkey Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;

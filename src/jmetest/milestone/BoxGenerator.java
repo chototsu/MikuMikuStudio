@@ -32,8 +32,8 @@
 package jmetest.milestone;
 
 import com.jme.math.Vector3f;
-import com.jme.scene.Box;
 import com.jme.scene.Spatial;
+import com.jme.scene.shape.Box;
 
 /**
  * <code>BoxGenerator</code>

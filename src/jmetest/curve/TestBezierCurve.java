@@ -32,6 +32,7 @@
 package jmetest.curve;
 
 import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
@@ -40,11 +41,10 @@ import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -55,7 +55,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.7 2004-03-26 19:48:03 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.8 2004-04-02 15:52:09 mojomonkey Exp $
  */
 public class TestBezierCurve extends SimpleGame {
     private TriMesh t, t2, t3, t4;

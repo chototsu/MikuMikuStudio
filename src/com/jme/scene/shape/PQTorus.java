@@ -29,10 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene;
+package com.jme.scene.shape;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 
@@ -41,7 +42,7 @@ import com.jme.math.Vector2f;
  * also known as a pq torus.
  *
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.5 2004-03-21 23:22:20 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.1 2004-04-02 15:52:06 mojomonkey Exp $
  */
 public class PQTorus extends TriMesh {
 

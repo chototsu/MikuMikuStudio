@@ -31,10 +31,10 @@
  */
 package com.jme.renderer;
 
+import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
 import com.jme.effects.Tint;
 import com.jme.input.Mouse;
-import com.jme.scene.BoundingVolume;
 import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
 import com.jme.scene.Geometry;
@@ -76,7 +76,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.23 2004-03-23 15:54:56 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.24 2004-04-02 15:51:55 mojomonkey Exp $
  */
 public interface Renderer {
     /**

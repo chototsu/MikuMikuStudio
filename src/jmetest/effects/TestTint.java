@@ -42,9 +42,9 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -69,7 +69,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestTint</code>
  * 
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.6 2004-03-25 17:14:28 mojomonkey Exp $
+ * @version $Id: TestTint.java,v 1.7 2004-04-02 15:52:10 mojomonkey Exp $
  */
 public class TestTint extends SimpleGame {
 

@@ -29,17 +29,18 @@
  * POSSIBILITY OF SUCH DAMAGE. 
  * 
  */
-package com.jme.scene;
+package com.jme.scene.shape;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>Disk</code>
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.1 2004-03-13 00:05:14 mojomonkey Exp $
+ * @version $Id: Disk.java,v 1.1 2004-04-02 15:52:06 mojomonkey Exp $
  */
 public class Disk extends TriMesh {
 

@@ -34,6 +34,7 @@ package com.jme.scene;
 import java.io.Serializable;
 import java.util.ArrayList;
 
+import com.jme.bounding.*;
 import com.jme.math.Matrix3f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -47,7 +48,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.29 2004-03-13 15:01:48 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.30 2004-04-02 15:52:02 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 	//rotation matrices

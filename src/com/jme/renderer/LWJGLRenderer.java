@@ -68,13 +68,13 @@ import javax.imageio.ImageIO;
 import org.lwjgl.opengl.*;
 import org.lwjgl.opengl.glu.*;
 
+import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
 import com.jme.effects.Tint;
 import com.jme.input.Mouse;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.scene.BoundingVolume;
 import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
 import com.jme.scene.Geometry;
@@ -118,7 +118,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.40 2004-03-23 15:54:57 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.41 2004-04-02 15:51:55 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 

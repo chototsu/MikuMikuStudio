@@ -29,14 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene;
+package com.jme.light;
 
-import com.jme.light.DirectionalLight;
-import com.jme.light.Light;
-import com.jme.light.PointLight;
-import com.jme.light.SpotLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
 
 /**
@@ -47,7 +45,7 @@ import com.jme.scene.state.LightState;
  * is a Directional light rotation determines it's direction. It has no
  * concept of location.
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.7 2004-03-02 16:40:10 renanse Exp $
+ * @version $Id: LightNode.java,v 1.1 2004-04-02 15:51:54 mojomonkey Exp $
  */
 public class LightNode extends Node {
     private Light light;

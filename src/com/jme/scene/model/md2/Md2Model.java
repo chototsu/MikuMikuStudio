@@ -36,9 +36,9 @@ import java.net.URL;
 import java.util.logging.Level;
 
 import com.jme.animation.VertexKeyframeController;
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 import com.jme.scene.model.Face;
@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * mesh.
  *
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.14 2004-04-01 16:21:25 renanse Exp $
+ * @version $Id: Md2Model.java,v 1.15 2004-04-02 15:52:04 mojomonkey Exp $
  */
 public class Md2Model extends Model {
     private BinaryFileReader bis = null;

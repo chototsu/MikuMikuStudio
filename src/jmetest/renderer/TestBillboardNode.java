@@ -42,8 +42,8 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BillboardNode;
 import com.jme.scene.Node;
-import com.jme.scene.Quad;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
@@ -57,7 +57,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.5 2004-03-31 03:08:11 renanse Exp $
+ * @version $Id: TestBillboardNode.java,v 1.6 2004-04-02 15:52:15 mojomonkey Exp $
  */
 public class TestBillboardNode extends SimpleGame {
     private TriMesh t;

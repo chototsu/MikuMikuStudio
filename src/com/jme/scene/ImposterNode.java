@@ -31,11 +31,13 @@
  */
 package com.jme.scene;
 
+import com.jme.bounding.*;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
+import com.jme.scene.shape.*;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
@@ -45,7 +47,7 @@ import com.jme.renderer.Camera;
 /**
  * <code>ImposterNode</code>
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.5 2004-04-01 17:32:35 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.6 2004-04-02 15:51:59 mojomonkey Exp $
  */
 public class ImposterNode extends Node {
   private TextureRenderer tRenderer;

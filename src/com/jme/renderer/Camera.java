@@ -38,9 +38,9 @@ package com.jme.renderer;
 
 import java.io.Serializable;
 
+import com.jme.bounding.BoundingVolume;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.BoundingVolume;
 
 /**
  * <code>Camera</code> defines an interface that encapsulates viewport
@@ -49,7 +49,7 @@ import com.jme.scene.BoundingVolume;
  * frustum culling.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.8 2004-03-31 03:05:52 renanse Exp $
+ * @version $Id: Camera.java,v 1.9 2004-04-02 15:51:55 mojomonkey Exp $
  */
 public interface Camera extends Serializable {
 

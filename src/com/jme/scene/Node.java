@@ -43,6 +43,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
+import com.jme.bounding.*;
 import com.jme.renderer.Renderer;
 import com.jme.util.LoggingSystem;
 
@@ -53,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.17 2004-03-13 03:07:38 renanse Exp $
+ * @version $Id: Node.java,v 1.18 2004-04-02 15:52:00 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
