@@ -52,7 +52,8 @@ public class Distance {
      */
     public static float distancePointPoint(Vector point1, Vector point2) {
         System.out.println("Checking: " + point1 + " " + point2);
-        float value = (float) Math.sqrt(distancePointPointSquared(point1, point2));
+        float value =
+            (float) Math.sqrt(distancePointPointSquared(point1, point2));
         System.out.println("RETURNING " + value);
         return value;
     }
@@ -138,13 +139,30 @@ public class Distance {
     }
 
     /**
-     * <code>distancePointRectangle</code> calculates the distance squared
+     * <code>distancePointRectangleSquared</code> calculates the distance squared
      * between a point and a rectangle.
      * @param point the point to check.
      * @param rect the rectangle to check.
      * @return the distance between the point and the rectangle.
      */
-    public static float distancePointRectangle(Vector point, Rectangle rect) {
+    public static float distancePointRectangleSquared(
+        Vector point,
+        Rectangle rect) {
+        return distancePointRectangleSquared(point, rect, null, null);
+    }
+
+    /**
+     * <code>distancePointRectangleSquared</code> calculates the distance squared
+     * between a point and a rectangle.
+     * @param point the point to check.
+     * @param rect the rectangle to check.
+     * @return the distance between the point and the rectangle.
+     */
+    public static float distancePointRectangleSquared(
+        Vector point,
+        Rectangle rect,
+        float[] pointParam,
+        float[] rectParam) {
         Vector diff = rect.getOrigin().subtract(point);
         float a00 = rect.getFirstEdge().lengthSquared();
         float a11 = rect.getSecondEdge().lengthSquared();
@@ -174,7 +192,11 @@ public class Distance {
             t = 1.0f;
             distanceSquared += a11 + 2.0 * b1;
         }
+        if (pointParam != null)
+            pointParam[0] = s;
 
+        if (rectParam != null)
+            rectParam[0] = t;
         return Math.abs(distanceSquared);
     }
 
@@ -275,6 +297,24 @@ public class Distance {
      * @return the distance squared between a line and a line segment.
      */
     public static float distanceLineSegmentSquared(Line line, Line seg) {
+        return distanceLineSegmentSquared(line, seg, null, null);
+    }
+
+    /**
+     * <code>distanceLineSegementSquared</code> calculates the distance
+     * squared between a line and a line segment.
+     * @param line the line to check.
+     * @param seg the line segment to check.
+     * @param lineParam storage for the line parameter.
+     * @param segParam storage for the segment parameter.
+     * @return the distance squared between a line and a line segment.
+     */
+    public static float distanceLineSegmentSquared(
+        Line line,
+        Line seg,
+        float[] lineParam,
+        float[] segParam) {
+
         Vector diff = line.getOrigin().subtract(seg.getOrigin());
         float a = line.getDirection().lengthSquared();
         float b = -line.getDirection().dot(seg.getDirection());
@@ -322,10 +362,229 @@ public class Distance {
             t = 0.0f;
             squareDistance = d * s + f;
         }
+        if (null != lineParam) {
+            lineParam[0] = s;
+        }
+        if (null != segParam) {
+            segParam[0] = t;
+        }
 
         return Math.abs(squareDistance);
     }
-    
+
+    /**
+     * <code>distanceLineRectangleSquared</code> calculates the distance squared
+     * between a line and a rectangle.
+     * @param line the line to check.
+     * @param rect the rectangle to check.
+     * @return the distance squared.
+     */
+    public static float distanceLineRectangleSquared(
+        Line line,
+        Rectangle rect) {
+
+        float[] r = new float[1];
+        float[] s = new float[1];
+        float[] t = new float[1];
+
+        float[] r0 = new float[1];
+        float[] s0 = new float[1];
+        float[] t0 = new float[1];
+
+        Vector diff = rect.getOrigin().subtract(line.getOrigin());
+        float a00 = line.getDirection().lengthSquared();
+        float a01 = -line.getDirection().dot(rect.getFirstEdge());
+        float a02 = -line.getDirection().dot(rect.getSecondEdge());
+        float a11 = rect.getFirstEdge().lengthSquared();
+        float a22 = rect.getSecondEdge().lengthSquared();
+
+        float b0 = -diff.dot(line.getDirection());
+        float b1 = diff.dot(rect.getFirstEdge());
+        float b2 = diff.dot(rect.getSecondEdge());
+
+        float cof00 = a11 * a22;
+        float cof01 = -a01 * a22;
+        float cof02 = -a02 * a11;
+
+        float determinate = a00 * cof00 + a01 * cof01 + a02 * cof02;
+
+        Line tempSegment = new Line();
+        Vector point;
+        float distanceSquared;
+        float distanceSquared0;
+
+        if (Math.abs(determinate) >= TOLERANCE) {
+            float cof11 = a00 * a22 - a02 * a02;
+            float cof12 = a02 * a01;
+            float cof22 = a00 * a11 - a01 * a01;
+            float inverseDeterminate = 1.0f / determinate;
+            float rhs0 = -b0 * inverseDeterminate;
+            float rhs1 = -b1 * inverseDeterminate;
+            float rhs2 = -b2 * inverseDeterminate;
+
+            r[0] = cof00 * rhs0 + cof01 * rhs1 + cof02 * rhs2;
+            s[0] = cof01 * rhs0 + cof11 * rhs1 + cof12 * rhs2;
+            t[0] = cof02 * rhs0 + cof12 * rhs1 + cof22 * rhs2;
+
+            if (s[0] < 0.0) {
+                if (t[0] < 0.0) {
+                    // min on face s=0 or t=0
+                    tempSegment.setOrigin(rect.getOrigin());
+                    tempSegment.setDirection(rect.getSecondEdge());
+                    distanceSquared =
+                        distanceLineSegmentSquared(line, tempSegment, null, t);
+                    s[0] = 0.0f;
+                    tempSegment.setOrigin(rect.getOrigin());
+                    tempSegment.setDirection(rect.getFirstEdge());
+                    distanceSquared0 =
+                        distanceLineSegmentSquared(line, tempSegment, null, s0);
+                    t0[0] = 0.0f;
+                    if (distanceSquared0 < distanceSquared) {
+                        distanceSquared = distanceSquared0;
+                        s[0] = s0[0];
+                        t[0] = t0[0];
+                    }
+                } else if (t[0] <= 1.0f) {
+                    // min on face s=0
+                    tempSegment.setOrigin(rect.getOrigin());
+                    tempSegment.setDirection(rect.getSecondEdge());
+                    distanceSquared =
+                        distanceLineSegmentSquared(line, tempSegment, null, t);
+                    s[0] = 0.0f;
+                } else {
+                    // min on face s=0 or t=1
+                    tempSegment.setOrigin(rect.getOrigin());
+                    tempSegment.setDirection(rect.getSecondEdge());
+                    distanceSquared =
+                        distanceLineSegmentSquared(line, tempSegment, null, t);
+                    s[0] = 0.0f;
+                    tempSegment.setOrigin(
+                        rect.getOrigin().add(rect.getSecondEdge()));
+                    tempSegment.setDirection(rect.getFirstEdge());
+                    distanceSquared0 =
+                        distanceLineSegmentSquared(line, tempSegment, null, s0);
+                    t0[0] = 1.0f;
+                    if (distanceSquared0 < distanceSquared) {
+                        distanceSquared = distanceSquared0;
+                        s[0] = s0[0];
+                        t[0] = t0[0];
+                    }
+                }
+            } else if (s[0] <= 1.0f) {
+                if (t[0] < 0.0f) {
+                    // min on face t=0
+                    tempSegment.setOrigin(rect.getOrigin());
+                    tempSegment.setDirection(rect.getFirstEdge());
+                    distanceSquared =
+                        distanceLineSegmentSquared(line, tempSegment, null, s);
+                    t[0] = 0.0f;
+                } else if (t[0] <= 1.0f) {
+                    // line intersects rectangle
+                    distanceSquared = 0.0f;
+                } else {
+                    // min on face t=1
+                    tempSegment.setOrigin(
+                        rect.getOrigin().add(rect.getSecondEdge()));
+                    tempSegment.setDirection(rect.getFirstEdge());
+                    distanceSquared =
+                        distanceLineSegmentSquared(line, tempSegment, null, s);
+                    t[0] = 1.0f;
+                }
+            } else {
+                if (t[0] < 0.0) {
+                    // min on face s=1 or t=0
+                    tempSegment.setOrigin(
+                        rect.getOrigin().add(rect.getFirstEdge()));
+                    tempSegment.setDirection(rect.getSecondEdge());
+                    distanceSquared =
+                        distanceLineSegmentSquared(line, tempSegment, null, t);
+                    s[0] = 1.0f;
+                    tempSegment.setOrigin(rect.getOrigin());
+                    tempSegment.setDirection(rect.getFirstEdge());
+                    distanceSquared0 =
+                        distanceLineSegmentSquared(line, tempSegment, null, s0);
+                    t0[0] = 0.0f;
+                    if (distanceSquared0 < distanceSquared) {
+                        distanceSquared = distanceSquared0;
+                        s[0] = s0[0];
+                        t[0] = t0[0];
+                    }
+                } else if (t[0] <= 1.0) {
+                    // min on face s=1
+                    tempSegment.setOrigin(
+                        rect.getOrigin().add(rect.getFirstEdge()));
+                    tempSegment.setDirection(rect.getSecondEdge());
+                    distanceSquared =
+                        distanceLineSegmentSquared(line, tempSegment, null, t);
+                    s[0] = 1.0f;
+                } else {
+                    // min on face s=1 or t=1
+                    tempSegment.setOrigin(
+                        rect.getOrigin().add(rect.getFirstEdge()));
+                    tempSegment.setDirection(rect.getSecondEdge());
+                    distanceSquared =
+                        distanceLineSegmentSquared(line, tempSegment, null, t);
+                    s[0] = 1.0f;
+                    tempSegment.setOrigin(
+                        rect.getOrigin().add(rect.getSecondEdge()));
+                    tempSegment.setDirection(rect.getFirstEdge());
+                    distanceSquared0 =
+                        distanceLineSegmentSquared(line, tempSegment, null, s0);
+                    t0[0] = 1.0f;
+                    if (distanceSquared0 < distanceSquared) {
+                        distanceSquared = distanceSquared0;
+                        s[0] = s0[0];
+                        t[0] = t0[0];
+                    }
+                }
+            }
+        } else {
+            // line and rectangle are parallel
+            tempSegment.setOrigin(rect.getOrigin());
+            tempSegment.setDirection(rect.getFirstEdge());
+            distanceSquared =
+                distanceLineSegmentSquared(line, tempSegment, r, s);
+            t[0] = 0.0f;
+
+            tempSegment.setDirection(rect.getSecondEdge());
+            distanceSquared0 =
+                distanceLineSegmentSquared(line, tempSegment, r0, t0);
+            s0[0] = 0.0f;
+            if (distanceSquared0 < distanceSquared) {
+                distanceSquared = distanceSquared0;
+                r = r0;
+                s = s0;
+                t = t0;
+            }
+
+            tempSegment.setOrigin(rect.getOrigin().add(rect.getSecondEdge()));
+            tempSegment.setDirection(rect.getFirstEdge());
+            distanceSquared0 =
+                distanceLineSegmentSquared(line, tempSegment, r0, s0);
+            t0[0] = 1.0f;
+            if (distanceSquared0 < distanceSquared) {
+                distanceSquared = distanceSquared0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+
+            tempSegment.setOrigin(rect.getOrigin().add(rect.getFirstEdge()));
+            tempSegment.setDirection(rect.getSecondEdge());
+            distanceSquared0 =
+                distanceLineSegmentSquared(line, tempSegment, r0, t0);
+            s0[0] = 1.0f;
+            if (distanceSquared0 < distanceSquared) {
+                distanceSquared = distanceSquared0;
+                r = r0;
+                s = s0;
+                t = t0;
+            }
+        }
+
+        return Math.abs(distanceSquared);
+    }
+
     /**
      * <code>distanceRayRaySquared</code> calculates the distance squared
      * between two rays.
@@ -434,13 +693,29 @@ public class Distance {
     }
 
     /**
+    * <code>distanceRaySegmentSquared</code> calculates the distance
+    * squared between a ray and a line segment. 
+    * @param ray the ray to check.
+    * @param seg the line segment to check.
+    * @return the distance between the ray and the line segment.
+    */
+    public static float distanceRaySegmentSquared(Line ray, Line seg) {
+        return distanceRaySegmentSquared(ray, seg, null, null);
+    }
+
+    /**
      * <code>distanceRaySegmentSquared</code> calculates the distance
      * squared between a ray and a line segment. 
      * @param ray the ray to check.
      * @param seg the line segment to check.
      * @return the distance between the ray and the line segment.
      */
-    public static float distanceRaySegmentSquared(Line ray, Line seg) {
+    public static float distanceRaySegmentSquared(
+        Line ray,
+        Line seg,
+        float[] rayParam,
+        float[] segParam) {
+
         Vector diff = ray.getOrigin().subtract(seg.getOrigin());
         float a = ray.getDirection().lengthSquared();
         float b = -ray.getDirection().dot(seg.getDirection());
@@ -577,7 +852,514 @@ public class Distance {
             }
         }
 
+        if (rayParam != null)
+            rayParam[0] = s;
+
+        if (segParam != null)
+            segParam[0] = t;
+
         return Math.abs(distanceSquared);
+    }
+
+    /**
+     * <code>distanceRayRectangleSquared</code> calculates the distance 
+     * squared between a ray and a rectangle.
+     * @param ray the ray to check.
+     * @param rect the rectangle to check.
+     * @return the distance squared between a ray and a rectangle.
+     */
+    public static float distanceRayRectangleSquared(Line ray, Rectangle rect) {
+        Vector diff = rect.getOrigin().subtract(ray.getOrigin());
+        float a00 = ray.getDirection().lengthSquared();
+        float a01 = -ray.getDirection().dot(rect.getFirstEdge());
+        float a02 = -ray.getDirection().dot(rect.getSecondEdge());
+        float a11 = rect.getFirstEdge().lengthSquared();
+        float a22 = rect.getSecondEdge().lengthSquared();
+        float b0 = -diff.dot(ray.getDirection());
+        float b1 = diff.dot(rect.getFirstEdge());
+        float b2 = diff.dot(rect.getSecondEdge());
+        float cof00 = a11 * a22;
+        float cof01 = -a01 * a22;
+        float cof02 = -a02 * a11;
+        float determinate = a00 * cof00 + a01 * cof01 + a02 * cof02;
+
+        Line tempSegment = new Line();
+        Vector point = new Vector();
+        float[] r = new float[1];
+        float[] s = new float[1];
+        float[] t = new float[1];
+        float[] r0 = new float[1];
+        float[] s0 = new float[1];
+        float[] t0 = new float[1];
+        float squaredDistance, squaredDistance0;
+
+        if (Math.abs(determinate) >= TOLERANCE) {
+            float cof11 = a00 * a22 - a02 * a02;
+            float cof12 = a02 * a01;
+            float cof22 = a00 * a11 - a01 * a01;
+            float inverseDeterminate = 1.0f / determinate;
+            float rhs0 = -b0 * inverseDeterminate;
+            float rhs1 = -b1 * inverseDeterminate;
+            float rhs2 = -b2 * inverseDeterminate;
+
+            r[0] = cof00 * rhs0 + cof01 * rhs1 + cof02 * rhs2;
+            s[0] = cof01 * rhs0 + cof11 * rhs1 + cof12 * rhs2;
+            t[0] = cof02 * rhs0 + cof12 * rhs1 + cof22 * rhs2;
+
+            if (r[0] <= 0.0) {
+                if (s[0] < 0.0) {
+                    if (t[0] < 0.0) {
+                        // min on face s=0 or t=0 or r=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(ray, tempSegment, r, t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceRaySegmentSquared(ray, tempSegment, r0, s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) {
+                        // min on face s=0 or r=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(ray, tempSegment, r, t);
+                        s[0] = 0.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else {
+                        // min on face s=0 or t=1 or r=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(ray, tempSegment, r, t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceRaySegmentSquared(ray, tempSegment, r0, s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                } else if (s[0] <= 1.0) {
+                    if (t[0] < 0.0) {
+                        // min on face t=0 or r=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(ray, tempSegment, r, s);
+                        t[0] = 0.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) {
+                        // min on face r=0
+                        squaredDistance =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s,
+                                t);
+                        r[0] = 0.0f;
+                    } else {
+                        // min on face t=1 or r=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(ray, tempSegment, r, s);
+                        t[0] = 1.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                } else {
+                    if (t[0] < 0.0) {
+                        // min on face s=1 or t=0 or r=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(ray, tempSegment, r, t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceRaySegmentSquared(ray, tempSegment, r0, s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) {
+                        // min on face s=1 or r=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(ray, tempSegment, r, t);
+                        s[0] = 1.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else {
+                        // min on face s=1 or t=1 or r=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(ray, tempSegment, r, t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceRaySegmentSquared(ray, tempSegment, r0, s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                ray.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                }
+            } else {
+                if (s[0] < 0.0) {
+                    if (t[0] < 0.0) {
+                        // min on face s=0 or t=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) {
+                        // min on face s=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                t);
+                        s[0] = 0.0f;
+                    } else {
+                        // min on face s=0 or t=1
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                } else if (s[0] <= 1.0) {
+                    if (t[0] < 0.0) {
+                        // min on face t=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                s);
+                        t[0] = 0.0f;
+                    } else if (t[0] <= 1.0) {
+                        // ray intersects the rectangle
+                        squaredDistance = 0.0f;
+                    } else {
+                        // min on face t=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                s);
+                        t[0] = 1.0f;
+                    }
+                } else {
+                    if (t[0] < 0.0) {
+                        // min on face s=1 or t=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) // region 1p
+                        {
+                        // min on face s=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                t);
+                        s[0] = 1.0f;
+                    } else {
+                        // min on face s=1 or t=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceRaySegmentSquared(
+                                ray,
+                                tempSegment,
+                                null,
+                                s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                }
+            }
+        } else {
+            // ray and rectangle are parallel
+            tempSegment.setOrigin(rect.getOrigin());
+            tempSegment.setDirection(rect.getFirstEdge());
+            squaredDistance = distanceRaySegmentSquared(ray, tempSegment, r, s);
+            t[0] = 0.0f;
+
+            tempSegment.setDirection(rect.getSecondEdge());
+            squaredDistance0 =
+                distanceRaySegmentSquared(ray, tempSegment, r0, t0);
+            s0[0] = 0.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+
+            tempSegment.setOrigin(rect.getOrigin().add(rect.getSecondEdge()));
+            tempSegment.setDirection(rect.getFirstEdge());
+            squaredDistance0 =
+                distanceRaySegmentSquared(ray, tempSegment, r0, s0);
+            t0[0] = 1.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+
+            tempSegment.setOrigin(rect.getOrigin().add(rect.getFirstEdge()));
+            tempSegment.setDirection(rect.getSecondEdge());
+            squaredDistance0 =
+                distanceRaySegmentSquared(ray, tempSegment, r0, t0);
+            s0[0] = 1.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+
+            squaredDistance0 =
+                distancePointRectangleSquared(ray.getOrigin(), rect, s0, t0);
+            r0[0] = 0.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+        }
+
+        return Math.abs(squaredDistance);
+    }
+    /**
+         * <code>distanceSegmentSegmentSquared</code> calculates the distance
+         * squared between two line segments.
+         * @param seg1 the first line segment to check.
+         * @param seg2 the second line segment to check.
+         * @return the distance between two line segments.
+         */
+    public static float distanceSegmentSegmentSquared(Line seg1, Line seg2) {
+        return distanceSegmentSegmentSquared(seg1, seg2, null, null);
     }
 
     /**
@@ -587,7 +1369,11 @@ public class Distance {
      * @param seg2 the second line segment to check.
      * @return the distance between two line segments.
      */
-    public static float distanceSegmentSegmentSquared(Line seg1, Line seg2) {
+    public static float distanceSegmentSegmentSquared(
+        Line seg1,
+        Line seg2,
+        float[] seg1Param,
+        float[] seg2Param) {
         Vector diff = seg1.getOrigin().subtract(seg2.getOrigin());
         float a = seg1.getDirection().lengthSquared();
         float b = -seg1.getDirection().dot(seg2.getDirection());
@@ -838,6 +1624,839 @@ public class Distance {
             }
         }
 
+        if (seg1Param != null)
+            seg1Param[0] = s;
+
+        if (seg2Param != null)
+            seg2Param[0] = t;
+
         return Math.abs(distanceSquared);
+    }
+
+    /**
+     * <code>distanceSegmentRectangleSquared</code> calculates the distance
+     * squared between a line segment and a rectangle.
+     * @param seg the line segment to check.
+     * @param rect the rectangle to check.
+     * @return the distance squared between a line segment and rectangle.
+     */
+    public static float distanceSegmentRectangleSquared(
+        Line seg,
+        Rectangle rect) {
+
+        Vector diff = rect.getOrigin().subtract(seg.getOrigin());
+        float a00 = seg.getDirection().lengthSquared();
+        float a01 = -seg.getDirection().dot(rect.getFirstEdge());
+        float a02 = -seg.getDirection().dot(rect.getSecondEdge());
+        float a11 = rect.getFirstEdge().lengthSquared();
+        float a22 = rect.getSecondEdge().lengthSquared();
+        float b0 = -diff.dot(seg.getDirection());
+        float b1 = diff.dot(rect.getFirstEdge());
+        float b2 = diff.dot(rect.getSecondEdge());
+        float cof00 = a11 * a22;
+        float cof01 = -a01 * a22;
+        float cof02 = -a02 * a11;
+        float determinate = a00 * cof00 + a01 * cof01 + a02 * cof02;
+
+        Line tempSegment = new Line();
+        Vector point = new Vector();
+        float[] r = new float[1];
+        float[] s = new float[1];
+        float[] t = new float[1];
+        float[] r0 = new float[1];
+        float[] s0 = new float[1];
+        float[] t0 = new float[1];
+        float squaredDistance, squaredDistance0;
+
+        if (Math.abs(determinate) >= TOLERANCE) {
+            float cof11 = a00 * a22 - a02 * a02;
+            float cof12 = a02 * a01;
+            float cof22 = a00 * a11 - a01 * a01;
+            float inverseDeterminate = 1.0f / determinate;
+            float rhs0 = -b0 * inverseDeterminate;
+            float rhs1 = -b1 * inverseDeterminate;
+            float rhs2 = -b2 * inverseDeterminate;
+
+            r[0] = cof00 * rhs0 + cof01 * rhs1 + cof02 * rhs2;
+            s[0] = cof01 * rhs0 + cof11 * rhs1 + cof12 * rhs2;
+            t[0] = cof02 * rhs0 + cof12 * rhs1 + cof22 * rhs2;
+
+            if (r[0] < 0.0) {
+                if (s[0] < 0.0) {
+                    if (t[0] < 0.0) {
+                        // min on face s=0 or t=0 or r=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) // region 5m
+                        {
+                        // min on face s=0 or r=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setDirection(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else {
+                        // min on face s=0 or t=1 or r=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                } else if (s[0] <= 1.0) {
+                    if (t[0] < 0.0) {
+                        // min on face t=0 or r=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                s);
+                        t[0] = 0.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) {
+                        // min on face r=0
+                        squaredDistance =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s,
+                                t);
+                        r[0] = 0.0f;
+                    } else {
+                        // min on face t=1 or r=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                s);
+                        t[0] = 1.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                } else {
+                    if (t[0] < 0.0) {
+                        // min on face s=1 or t=0 or r=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) {
+                        // min on face s=1 or r=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else // region 2m
+                        {
+                        // min on face s=1 or t=1 or r=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        r0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                }
+            } else if (r[0] <= 1.0) {
+                if (s[0] < 0.0) {
+                    if (t[0] < 0.0) {
+                        // min on face s=0 or t=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1) {
+                        // min on face s=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                    } else {
+                        // min on face s=0 or t=1
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                } else if (s[0] <= 1.0) {
+                    if (t[0] < 0.0) {
+                        // min on face t=0
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                s);
+                        t[0] = 0.0f;
+                    } else if (t[0] <= 1.0) {
+                        // global minimum is interior
+                        squaredDistance =
+                            r[0]
+                                * (a00 * r[0]
+                                    + a01 * s[0]
+                                    + a02 * t[0]
+                                    + 2.0f * b0)
+                                + s[0] * (a01 * r[0] + a11 * s[0] + 2.0f * b1)
+                                + t[0] * (a02 * r[0] + a22 * t[0] + 2.0f * b2)
+                                + diff.lengthSquared();
+                    } else {
+                        // min on face t=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                s);
+                        t[0] = 1.0f;
+                    }
+                } else {
+                    if (t[0] < 0.0) {
+                        // min on face s=1 or t=0
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) {
+                        // min on face s=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                    } else {
+                        // min on face s=1 or t=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                }
+            } else {
+                if (s[0] < 0.0) {
+                    if (t[0] < 0.0) {
+                        // min on face s=0 or t=0 or r=1
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance0 =
+                            distancePointRectangleSquared(point, rect, s0, t0);
+                        r0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) {
+                        // min on face s=0 or r=1
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                        squaredDistance0 =
+                            distancePointRectangleSquared(
+                                seg.getOrigin(),
+                                rect,
+                                s0,
+                                t0);
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance0 =
+                            distancePointRectangleSquared(point, rect, s0, t0);
+                        r0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else {
+                        // min on face s=0 or t=1 or r=1
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 0.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance0 =
+                            distancePointRectangleSquared(point, rect, s0, t0);
+                        r0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                } else if (s[0] <= 1.0) {
+                    if (t[0] < 0.0) // region 7p
+                        {
+                        // min on face t=0 or r=1
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                s);
+                        t[0] = 0.0f;
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance0 =
+                            distancePointRectangleSquared(point, rect, s0, t0);
+                        r0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) // region 0p
+                        {
+                        // min on face r=1
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance =
+                            distancePointRectangleSquared(point, rect, s, t);
+                        r[0] = 1.0f;
+                    } else // region 3p
+                        {
+                        // min on face t=1 or r=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                s);
+                        t[0] = 1.0f;
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance0 =
+                            distancePointRectangleSquared(point, rect, s0, t0);
+                        r0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                } else {
+                    if (t[0] < 0.0) // region 8p
+                        {
+                        // min on face s=1 or t=0 or r=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(rect.getOrigin());
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 0.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance0 =
+                            distancePointRectangleSquared(point, rect, s0, t0);
+                        r0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else if (t[0] <= 1.0) // region 1p
+                        {
+                        // min on face s=1 or r=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance0 =
+                            distancePointRectangleSquared(point, rect, s0, t0);
+                        r0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    } else // region 2p
+                        {
+                        // min on face s=1 or t=1 or r=1
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getFirstEdge()));
+                        tempSegment.setOrigin(rect.getSecondEdge());
+                        squaredDistance =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r,
+                                t);
+                        s[0] = 1.0f;
+                        tempSegment.setOrigin(
+                            rect.getOrigin().add(rect.getSecondEdge()));
+                        tempSegment.setOrigin(rect.getFirstEdge());
+                        squaredDistance0 =
+                            distanceSegmentSegmentSquared(
+                                seg,
+                                tempSegment,
+                                r0,
+                                s0);
+                        t0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                        point = seg.getOrigin().add(seg.getDirection());
+                        squaredDistance0 =
+                            distancePointRectangleSquared(point, rect, s0, t0);
+                        r0[0] = 1.0f;
+                        if (squaredDistance0 < squaredDistance) {
+                            squaredDistance = squaredDistance0;
+                            r[0] = r0[0];
+                            s[0] = s0[0];
+                            t[0] = t0[0];
+                        }
+                    }
+                }
+            }
+        } else {
+            // segment and rectangle are parallel
+            tempSegment.setOrigin(rect.getOrigin());
+            tempSegment.setOrigin(rect.getFirstEdge());
+            squaredDistance =
+                distanceSegmentSegmentSquared(seg, tempSegment, r, s);
+            t[0] = 0.0f;
+
+            tempSegment.setOrigin(rect.getSecondEdge());
+            squaredDistance0 =
+                distanceSegmentSegmentSquared(seg, tempSegment, r0, t0);
+            s0[0] = 0.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+
+            tempSegment.setOrigin(rect.getOrigin().add(rect.getSecondEdge()));
+            tempSegment.setOrigin(rect.getFirstEdge());
+            squaredDistance0 =
+                distanceSegmentSegmentSquared(seg, tempSegment, r0, s0);
+            t0[0] = 1.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+
+            tempSegment.setOrigin(rect.getOrigin().add(rect.getFirstEdge()));
+            tempSegment.setOrigin(rect.getSecondEdge());
+            squaredDistance0 =
+                distanceSegmentSegmentSquared(seg, tempSegment, r0, t0);
+            s0[0] = 1.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+
+            squaredDistance0 =
+                distancePointRectangleSquared(seg.getOrigin(), rect, s0, t0);
+            r0[0] = 0.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+
+            point = seg.getOrigin().add(seg.getDirection());
+            squaredDistance0 =
+                distancePointRectangleSquared(point, rect, s0, t0);
+            r0[0] = 1.0f;
+            if (squaredDistance0 < squaredDistance) {
+                squaredDistance = squaredDistance0;
+                r[0] = r0[0];
+                s[0] = s0[0];
+                t[0] = t0[0];
+            }
+        }
+
+        return Math.abs(squaredDistance);
     }
 }
