@@ -15,7 +15,7 @@ public class LittleEndien implements DataInput{
 
 
     public LittleEndien(InputStream in){
-        this.in = (BufferedInputStream) in;
+        this.in = new BufferedInputStream(in);
         inRead=new BufferedReader(new InputStreamReader(in));
     }
 
