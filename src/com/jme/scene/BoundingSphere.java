@@ -30,6 +30,10 @@
  *
  */
 
+/*
+ * EDIT:  02/09/2004 - Changed merge to return this instead of null. GOP
+ */ 
+
 package com.jme.scene;
 
 import java.util.logging.Level;
@@ -50,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.6 2004-01-26 21:44:37 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.7 2004-02-09 12:10:48 greggpatton Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -227,10 +231,10 @@ public class BoundingSphere implements BoundingVolume {
      */
     public BoundingVolume merge(BoundingVolume volume) {
         if(volume == null) {
-            return null;
+            return this;
         }
         if (!(volume instanceof BoundingSphere)) {
-            return null;
+            return this;
         } else {
             BoundingSphere sphere = (BoundingSphere) volume;
             Vector3f diff = sphere.getCenter().subtract(center);
