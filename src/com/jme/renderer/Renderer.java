@@ -77,7 +77,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.34 2004-06-25 16:12:13 renanse Exp $
+ * @version $Id: Renderer.java,v 1.35 2004-07-23 20:15:12 renanse Exp $
  */
 public interface Renderer {
 
@@ -364,13 +364,6 @@ public interface Renderer {
      * @param c the curve to be rendered.
      */
     public void draw(Curve c);
-
-    /**
-     *
-     * <code>draw</code> renders a mouse object.
-     * @param m the mouse to be rendered.
-     */
-    public void draw(Mouse m);
 
     /**
      *

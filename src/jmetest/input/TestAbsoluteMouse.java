@@ -64,6 +64,7 @@ public class TestAbsoluteMouse extends SimpleGame {
     }
 
     protected void simpleInitGame() {
+      lightState.setEnabled(false);
         InputSystem.createInputSystem(properties.getRenderer());
         display.getRenderer().setBackgroundColor(ColorRGBA.blue);
         mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());

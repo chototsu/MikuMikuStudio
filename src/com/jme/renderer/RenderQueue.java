@@ -116,7 +116,7 @@ public class RenderQueue {
 
   private void renderOrthoBucket() {
 //    System.err.println("drawing ortho. items: "+orthoBucket.size());
-    renderer.setOrthoCenter();
+    renderer.setOrtho();
     Iterator it = orthoBucket.iterator();
     while (it.hasNext()) {
       Spatial spat = (Spatial)it.next();

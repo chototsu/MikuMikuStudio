@@ -75,7 +75,6 @@ import org.lwjgl.opengl.glu.GLU;
 import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
 import com.jme.effects.Tint;
-import com.jme.input.Mouse;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -128,7 +127,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.32 2004-07-21 22:09:24 guurk Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.33 2004-07-23 20:15:12 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1209,48 +1208,6 @@ public class LWJGLRenderer implements Renderer {
     font.setColor(t.getTextColor());
     font.print( (int) t.getLocalTranslation().x, (int) t
                .getLocalTranslation().y, t.getLocalScale(), t.getText(), 0);
-  }
-
-  /**
-   * <code>draw</code> renders a mouse object using a defined mouse texture.
-   *
-   * @see com.jme.renderer.Renderer#draw(com.jme.input.Mouse)
-   */
-  public void draw(Mouse m) {
-    if (!m.hasCursor()) {return;
-    }
-
-    GL11.glMatrixMode(GL11.GL_PROJECTION);
-    GL11.glPushMatrix();
-    GL11.glLoadIdentity();
-    GL11.glOrtho(0, Window.getWidth(), 0, Window.getHeight(), -1, 1);
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glPushMatrix();
-    GL11.glLoadIdentity();
-    GL11.glTranslatef(m.getLocalTranslation().x, m.getLocalTranslation().y,
-                      0);
-    GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
-
-    //render the cursor
-    int width = m.getImageWidth();
-    int height = m.getImageHeight();
-
-    GL11.glBegin(GL11.GL_QUADS);
-    GL11.glTexCoord2f(0, 0);
-    GL11.glVertex2f(0, 0);
-
-    GL11.glTexCoord2f(1, 0);
-    GL11.glVertex2f(width, 0);
-    GL11.glTexCoord2f(1, 1);
-    GL11.glVertex2f(width, height);
-    GL11.glTexCoord2f(0, 1);
-    GL11.glVertex2f(0, height);
-    GL11.glEnd();
-
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glPopMatrix();
-    GL11.glMatrixMode(GL11.GL_PROJECTION);
-    GL11.glPopMatrix();
   }
 
   /**

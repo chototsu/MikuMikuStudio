@@ -13,48 +13,66 @@ import com.jme.input.*;
 
 /**
  * @author schustej
- *  
+ *
  */
 public class UIButton extends UIObject {
 
 	public UIButton(String name, InputHandler inputHandler,
 			String upfile, String overfile, String downfile, int x, int y,
 			float scale) {
-		super(name, inputHandler, x, y, scale);
-
-		_textureStates = new TextureState[3];
-
-		for (int i = 0; i < 3; i++) {
-			_textureStates[i] = DisplaySystem.getDisplaySystem().getRenderer()
-					.getTextureState();
-			_textureStates[i].setEnabled(true);
-		}
-
-		_textureStates[0].setTexture(TextureManager.loadTexture(UIObject.class
-				.getClassLoader().getResource(upfile), Texture.MM_NEAREST,
-				Texture.FM_NEAREST, true));
-		_textureStates[1].setTexture(TextureManager.loadTexture(UIObject.class
-				.getClassLoader().getResource(overfile), Texture.MM_NEAREST,
-				Texture.FM_NEAREST, true));
-		_textureStates[2].setTexture(TextureManager.loadTexture(UIObject.class
-				.getClassLoader().getResource(downfile), Texture.MM_NEAREST,
-				Texture.FM_NEAREST, true));
-
-		_textureStates[0].apply();
-		_textureStates[1].apply();
-		_textureStates[2].apply();
-
-		this.setRenderState(_textureStates[0]);
-
-		setup();
+          this(name,inputHandler,upfile,overfile,downfile,x,y,scale,true);
 	}
+
+        public UIButton(String name, InputHandler inputHandler,
+                        String upfile, String overfile, String downfile, int x, int y,
+                        float scale, boolean useClassloader) {
+                super(name, inputHandler, x, y, scale);
+
+                _textureStates = new TextureState[3];
+
+                for (int i = 0; i < 3; i++) {
+                        _textureStates[i] = DisplaySystem.getDisplaySystem().getRenderer()
+                                        .getTextureState();
+                        _textureStates[i].setEnabled(true);
+                }
+
+                if (useClassloader) {
+                  _textureStates[0].setTexture(TextureManager.loadTexture(UIObject.class
+                      .getClassLoader().getResource(upfile), Texture.MM_NEAREST,
+                      Texture.FM_NEAREST, true));
+                  _textureStates[1].setTexture(TextureManager.loadTexture(UIObject.class
+                      .getClassLoader().getResource(overfile), Texture.MM_NEAREST,
+                      Texture.FM_NEAREST, true));
+                  _textureStates[2].setTexture(TextureManager.loadTexture(UIObject.class
+                      .getClassLoader().getResource(downfile), Texture.MM_NEAREST,
+                      Texture.FM_NEAREST, true));
+                } else {
+                  _textureStates[0].setTexture(TextureManager.loadTexture(upfile,
+                      Texture.MM_NEAREST,
+                      Texture.FM_NEAREST, true));
+                  _textureStates[1].setTexture(TextureManager.loadTexture(overfile,
+                      Texture.MM_NEAREST,
+                      Texture.FM_NEAREST, true));
+                  _textureStates[2].setTexture(TextureManager.loadTexture(downfile,
+                      Texture.MM_NEAREST,
+                      Texture.FM_NEAREST, true));
+                }
+
+                _textureStates[0].apply();
+                _textureStates[1].apply();
+                _textureStates[2].apply();
+
+                this.setRenderState(_textureStates[0]);
+
+                setup();
+        }
 
 	public boolean update() {
 
 		boolean retval = false;
 
 		if( hitTest()) {
-		    
+
 			if ( _inputHandler.getMouse().getMouseInput().getButtonState()
 					.equals(MouseButtonStateType.MOUSE_BUTTON_1)) {
 				// button is down

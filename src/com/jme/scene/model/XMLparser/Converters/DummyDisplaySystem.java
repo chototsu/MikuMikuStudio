@@ -129,7 +129,6 @@ class DummyDisplaySystem extends DisplaySystem{
             public void draw(Point p) {}
             public void draw(Line l) {}
             public void draw(Curve c) {}
-            public void draw(Mouse m) {}
             public void draw(Text t) {}
             public void draw(TriMesh t) {}
             public void draw(CloneNode cn) {}

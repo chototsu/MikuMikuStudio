@@ -14,7 +14,7 @@ import com.jme.input.*;
 
 /**
  * @author schustej
- * 
+ *
  */
 public abstract class UIObject extends Quad {
 
@@ -57,23 +57,23 @@ public abstract class UIObject extends Quad {
 		as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
 		as1.setTestEnabled(true);
 		as1.setTestFunction(AlphaState.TF_GREATER);
-		
+
 		this.setRenderState(as1);
 
 		initialize(_width, _height);
 		setLocalTranslation(new Vector3f(_x + ( _width * _scale / 2), _y + ( _height * _scale / 2), 0.0f));
 		setLocalScale(_scale);
-		
+
 		/*
 		 * doesn't seem to work right. It ends up being in the wrong place.
 		 */
-		//setRenderQueueMode(Renderer.QUEUE_ORTHO);
+		setRenderQueueMode(Renderer.QUEUE_ORTHO);
 	}
 
 	public abstract boolean update();
 
 	protected boolean hitTest() {
-	    Vector3f mouseloc = _inputHandler.getMouse().getLocalTranslation();
+	    Vector3f mouseloc = _inputHandler.getMouse().getHotSpotPosition();
 		if (mouseloc.x >= _x
 				&& mouseloc.x <= _x + ( _width * _scale)
 				&& mouseloc.y + ( _inputHandler.getMouse().getImageHeight()) >= _y
@@ -84,14 +84,8 @@ public abstract class UIObject extends Quad {
 			return false;
 	}
 
-	public void draw(Renderer r) {
-		DisplaySystem.getDisplaySystem().getRenderer().setOrtho();
-		super.draw(r);
-		DisplaySystem.getDisplaySystem().getRenderer().unsetOrtho();
-	}
-	
 	public int getState() {
 		return _state;
 	}
-	
+
 }
