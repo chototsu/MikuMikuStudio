@@ -31,38 +31,26 @@
  */
 package jmetest.renderer.state;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Pyramid;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.WireframeState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.10 2004-04-22 22:27:44 renanse Exp $
+ * @version $Id: TestLightState.java,v 1.11 2004-04-23 03:21:21 renanse Exp $
  */
-public class TestLightState extends BaseGame {
+public class TestLightState extends SimpleGame {
     private TriMesh t;
-    private Camera cam;
-    private Node scene;
-    private InputHandler input;
 
     /**
      * Entry point for the test,
@@ -75,66 +63,14 @@ public class TestLightState extends BaseGame {
     }
 
     /**
-     * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
-        input.update(0.25f);
-    }
-
-    /**
-     * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-
-        display.getRenderer().draw(scene);
-
-    }
-
-    /**
-     * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
-                    properties.getHeight());
-
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 4.0f);
-        Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-        Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
-        cam.setFrame(loc, left, up, dir);
-        display.getRenderer().setCamera(cam);
-
-        input = new FirstPersonHandler(this, cam, "LWJGL");
-        display.setTitle("Light State Test");
-
-    }
-
-    /**
      * builds the trimesh.
      * @see com.jme.app.SimpleGame#initGame()
      */
-    protected void initGame() {
+    protected void simpleInitGame() {
+      display.setTitle("Light State Test");
+      cam.setLocation(new Vector3f(-10,0,40));
+      cam.update();
+
         Vector3f max = new Vector3f(10,10,10);
         Vector3f min = new Vector3f(0,0,0);
 
@@ -150,13 +86,8 @@ public class TestLightState extends BaseGame {
 
         t2.setLocalTranslation(new Vector3f(-20,0,0));
 
-        scene = new Node("Scene graph node");
-        scene.attachChild(t);
-        scene.attachChild(t2);
-
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+        rootNode.attachChild(t);
+        rootNode.attachChild(t2);
 
         SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
@@ -172,58 +103,29 @@ public class TestLightState extends BaseGame {
         am2.setLocation(new Vector3f(-25, 10, 0));
         am2.setAngle(15);
 
-
         DirectionalLight dr = new DirectionalLight();
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        //dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         dr.setDirection(new Vector3f(150, 0 , 150));
 
-        LightState state = display.getRenderer().getLightState();
-        state.setEnabled(true);
-        state.attach(am);
-        state.attach(dr);
-        state.attach(am2);
+        lightState.detachAll();
+        lightState.attach(am);
+        lightState.attach(dr);
+        lightState.attach(am2);
         am.setEnabled(true);
         am2.setEnabled(true);
         dr.setEnabled(true);
-        scene.setRenderState(state);
-        scene.setRenderState(buf);
-        cam.update();
 
         TextureState ts = display.getRenderer().getTextureState();
                 ts.setEnabled(true);
                 ts.setTexture(
                     TextureManager.loadTexture(
                         TestLightState.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                        Texture.MM_LINEAR,
+                        Texture.MM_LINEAR_LINEAR,
                         Texture.FM_LINEAR,
                         true));
 
-        WireframeState ws = display.getRenderer().getWireframeState();
-        ws.setEnabled(false);
-        //t2.setRenderState(ws);
-
-        scene.setRenderState(ts);
-
-
-        scene.updateGeometricState(0.0f, true);
-        scene.updateRenderState();
+        rootNode.setRenderState(ts);
     }
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-
-    }
-
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-
-    }
-
 }
