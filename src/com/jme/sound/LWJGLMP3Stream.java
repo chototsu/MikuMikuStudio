@@ -172,13 +172,7 @@ public class LWJGLMP3Stream implements SoundStream {
 		return ByteBuffer.allocateDirect(0);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.jme.sound.SoundStream#read(int)
-	 */
-	public ByteBuffer read(int nbOfBytes) throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 	protected byte[] toByteArray(short[] samples, int offs, int len) {
 		byte[] b = new byte[len * 2];

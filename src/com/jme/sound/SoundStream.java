@@ -88,16 +88,7 @@ public interface SoundStream {
 	 */
 	public ByteBuffer read() throws IOException;
 
-	/**
-	 * Reads the next nbOfbytes in the stream.
-	 * @param nbOfBytes Number of bytes to read.
-	 * @return the data in the stream as a direct <code>ByteBuffer</code>
-	 * The length is 0 if no more data is available in the Stream.
-	 * If there are less than nbOfBytes available the returned <code>ByteBuffer</code> size 
-	 * is the next number of bytes available in the Stream.
-	 */
-	public ByteBuffer read(int nbOfBytes) throws IOException;
-	
+		
 	
 	/**
 	 * 
