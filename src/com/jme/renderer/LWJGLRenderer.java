@@ -47,7 +47,6 @@ import org.lwjgl.opengl.GLU;
 import org.lwjgl.opengl.Window;
 
 import com.jme.curve.Curve;
-import com.jme.effects.Particle;
 import com.jme.effects.ParticleSystem;
 import com.jme.input.Mouse;
 import com.jme.math.Matrix3f;
@@ -92,7 +91,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.15 2004-01-26 23:15:15 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.16 2004-01-28 13:12:43 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
