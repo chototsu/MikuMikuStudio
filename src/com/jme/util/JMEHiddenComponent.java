@@ -32,13 +32,15 @@
 
 package com.jme.util;
 
+import java.awt.Graphics;
+
 /**
  * <code>JMEHiddenComponent</code> is an integration class allowing jME generated
  * graphics to be rendered and stored in this component for retrieval by other 
  * processes.
  *
  * @author Joshua Slack
- * @version $Id: JMEHiddenComponent.java,v 1.3 2005-04-04 19:10:57 renanse Exp $
+ * @version $Id: JMEHiddenComponent.java,v 1.4 2005-04-04 19:58:35 renanse Exp $
  */
 
 public class JMEHiddenComponent extends JMEComponent {
@@ -70,5 +72,9 @@ public class JMEHiddenComponent extends JMEComponent {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
+    }
+    
+    protected void useImage(Graphics g) {
+        // ignore.
     }
 }

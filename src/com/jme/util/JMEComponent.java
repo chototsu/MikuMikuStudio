@@ -49,7 +49,7 @@ import java.awt.image.DataBufferInt;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMEComponent.java,v 1.11 2005-04-04 19:10:56 renanse Exp $
+ * @version $Id: JMEComponent.java,v 1.12 2005-04-04 19:58:35 renanse Exp $
  */
 
 public class JMEComponent extends Component {
@@ -211,7 +211,7 @@ public class JMEComponent extends Component {
      * <code>useImage</code> - do something here with the image as desired.
      * @param g Graphics
      */
-    private void useImage(Graphics g) {
+    protected void useImage(Graphics g) {
         if (scaled)
         	g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(),
         							getBackground(), null);
