@@ -61,12 +61,12 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.5 2004-04-19 20:46:31 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.6 2004-04-19 21:04:22 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
   private Camera cam;
-  public Node rootNode;
+  protected Node rootNode;
   private InputHandler input;
   private Timer timer;
   private Node fpsNode;
@@ -74,6 +74,8 @@ public abstract class SimpleGame extends BaseGame {
 
   private WireframeState wireState;
   private LightState lightState;
+
+  public static String fontLocation = "jmetest/data/font/font.png";
 
   /**
    * @param interpolation unused in this implementation
@@ -196,7 +198,7 @@ public abstract class SimpleGame extends BaseGame {
      font.setTexture(
          TextureManager.loadTexture(
          SimpleGame.class.getClassLoader().getResource(
-         "jmetest/data/font/font.png"),
+         fontLocation),
          Texture.MM_LINEAR,
          Texture.FM_LINEAR,
          true));
