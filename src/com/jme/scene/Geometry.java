@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.43 2004-05-19 16:21:13 renanse Exp $
+ * @version $Id: Geometry.java,v 1.44 2004-05-20 17:13:07 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -891,7 +891,8 @@ public abstract class Geometry extends Spatial implements Serializable {
     public Vector3f randomVertice() {
         if (vertex == null) return null;
         int i = (int) (FastMath.nextRandomFloat() * vertQuantity);
-        return vertex[i].add(worldTranslation);
+
+        return worldRotation.mult(vertex[i]).addLocal(worldTranslation);
     }
 
 }
