@@ -25,6 +25,7 @@ class LightChunk extends ChunkerClass {
     float innerRange;
     float mult;
     SpotLightChunk spotInfo;
+    boolean attenuateOn;
 
     protected void initializeVariables() throws IOException {
         myLoc=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
@@ -51,6 +52,9 @@ class LightChunk extends ChunkerClass {
                 if (spotInfo!=null)
                     throw new IOException("logic error... spotInfo not null");
                 spotInfo = new SpotLightChunk(myIn,i);
+                return true;
+            case LIGHT_ATTENU_ON:
+                attenuateOn=true;
                 return true;
             default:
                 return false;

@@ -55,6 +55,7 @@ interface MaxChunkIDs {
     static final int MESH_TEXTURE_INFO=0x4170;
     static final int LIGHT_OBJ      =0x4600;
     static final int LIGHT_SPOTLIGHT=0x4610;
+    static final int LIGHT_ATTENU_ON=0x4625;
     static final int LIGHT_SPOT_SHADOWED=0x4630;
     static final int LIGHT_LOC_SHADOW=0x4641;
     static final int LIGHT_SEE_CONE=0x4650;
