@@ -41,7 +41,7 @@ import com.jme.light.Light;
  * be added to the light state. Each light is processed and used to modify
  * the color of the scene.
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.7 2004-06-23 19:15:53 renanse Exp $
+ * @version $Id: LightState.java,v 1.8 2004-06-26 18:46:33 cep21 Exp $
  */
 public abstract class LightState extends RenderState {
   /**
@@ -94,7 +94,7 @@ public abstract class LightState extends RenderState {
    *
    * <code>attach</code> places a light in the queue to be processed. If
    * there are already eight lights placed in the queue, the light is
-   * ignored and false ir returned. Otherwise, true is returned to indicate
+   * ignored and false is returned. Otherwise, true is returned to indicate
    * success.
    * @param light the light to add to the queue.
    * @return true if the light was added successfully, false if there are
