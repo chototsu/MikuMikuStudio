@@ -207,7 +207,8 @@ public class SoundSystem implements ISoundSystem {
 		tmp[0].configure(data, channels, (int) audioStream.getFormat()
 				.getSampleRate(), getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
 
-		System.out.println("Wav estimated time "+ getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
+        LoggingSystem.getLogger().log(Level.INFO,
+                "Wav estimated time "+ getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
 		//cleanup
 		data.clear();
 		data = null;
@@ -247,8 +248,8 @@ public class SoundSystem implements ISoundSystem {
 				try {
 					bytes = input.read(buffer, index, 4096);
 				} catch (Exception e) {
-					System.err.println(e);
-					System.exit(-1);
+                    LoggingSystem.getLogger().log(Level.SEVERE,e.getMessage());
+					
 				}
 				syncState.wrote(bytes);
 				if (syncState.pageout(page) != 1) {
@@ -308,7 +309,7 @@ public class SoundSystem implements ISoundSystem {
 					try {
 						bytes = input.read(buffer, index, 4096);
 					} catch (Exception e) {
-						System.err.println(e);
+                        LoggingSystem.getLogger().log(Level.INFO,e.getMessage());
 						return new Buffer(0);
 					}
 					if (bytes == 0 && i < 2) {
@@ -325,8 +326,8 @@ public class SoundSystem implements ISoundSystem {
 					for (int j = 0; j < ptr.length; j++) {
 						if (ptr[j] == null)
 							break;
-						System.err.println(new String(ptr[j], 0,
-								ptr[j].length - 1));
+						LoggingSystem.getLogger().log(Level.INFO,(new String(ptr[j], 0,
+								ptr[j].length - 1)));
 					}
 					LoggingSystem.getLogger().log(
 							Level.INFO,
@@ -410,7 +411,7 @@ public class SoundSystem implements ISoundSystem {
 						try {
 							bytes = input.read(buffer, index, 4096);
 						} catch (Exception e) {
-							System.err.println(e);
+                            LoggingSystem.getLogger().log(Level.SEVERE,e.getMessage());
 							return new Buffer(0);
 						}
 						syncState.wrote(bytes);
@@ -437,8 +438,9 @@ public class SoundSystem implements ISoundSystem {
 			float time = (buf.length) / (float)(rate * vorbisInfo.channels * 2);
 			tmp[0].configure(data, chans, rate, time);
 
-			System.err.println("Sample rate= " + vorbisInfo.rate);
-			System.err.println("Estimated Play Time " + time);
+			LoggingSystem.getLogger().log(Level.INFO,
+                    "Sample rate= " + vorbisInfo.rate);
+			LoggingSystem.getLogger().log(Level.INFO,"Estimated Play Time " + time);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
