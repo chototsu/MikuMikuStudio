@@ -96,7 +96,7 @@ public class JointController extends Controller {
 	/** If true, the model's bounding volume will update every frame. */
 	private boolean updatePerFrame = true;
 
-    private int startIndex;
+    private boolean movingForward = true;
 
 	/**
 	 * Constructs a new JointController that will hold the given number of
@@ -118,7 +118,6 @@ public class JointController extends Controller {
 			inverseChainMatrix[i] = new TransformMatrix();
 		}
 		movementInfo = new ArrayList();
-		movementInfo.add(0, new PointInTime()); // Add a time=0
 		curTime = 0;
 		curTimePoint = 1;
 		currentSkip = 0;
@@ -242,7 +241,10 @@ public class JointController extends Controller {
 	public void update(float time) {
 		if (!this.isActive() || numJoints == 0)
 			return;
-		curTime += time * this.getSpeed();
+        if (movingForward)
+		    curTime += time * this.getSpeed();
+        else
+            curTime -= time * this.getSpeed();
 		currentSkip += time;
 		if (currentSkip >= skipRate) {
 			currentSkip = 0;
@@ -250,25 +252,55 @@ public class JointController extends Controller {
 			return;
 		}
 
+        setCurTimePoint();
 		PointInTime now = (PointInTime) movementInfo.get(curTimePoint);
-		PointInTime then = null;
-        if (curTime>=getMaxTime()){
-            curTimePoint = startIndex;
-            curTime = getMinTime();
-            now = (PointInTime) movementInfo.get(startIndex);
-            then = (PointInTime) movementInfo.get(startIndex-1);
-        } else if (now.time < curTime) {
-			curTimePoint++;
-            then = now;
-            now = (PointInTime) movementInfo.get(curTimePoint);
-		} else
-			then = (PointInTime) movementInfo.get(curTimePoint - 1);
+		PointInTime then = (PointInTime) movementInfo.get(curTimePoint-1);
 
 		float delta = (curTime - then.time) / (now.time - then.time);
 		createJointTransforms(delta);
 		combineWithInverse();
 		updateData();
 	}
+
+    private void setCurTimePoint() {
+
+        int repeatType=getRepeatType();
+        // reset if too far
+        if (curTime > getMaxTime() ) {
+            if (repeatType==Controller.RT_WRAP)
+                curTime=getMinTime();
+            else if (repeatType==Controller.RT_CYCLE){
+                curTime=getMaxTime();
+                movingForward=false;
+            } else if(repeatType==Controller.RT_CLAMP){
+                setActive(false);
+                curTime=getMaxTime();
+            }
+        }
+
+        if (curTime < getMinTime()){
+            if (repeatType==Controller.RT_WRAP)
+                curTime=getMaxTime();
+            else if (repeatType==Controller.RT_CYCLE){
+                curTime=getMinTime();
+                movingForward=true;
+            } else if(repeatType==Controller.RT_CLAMP){
+                setActive(false);
+                curTime=getMinTime();
+            }
+        }
+
+        // if curTimePoint works then return
+        PointInTime p1=(PointInTime) movementInfo.get(curTimePoint);
+        PointInTime p2=(PointInTime) movementInfo.get(curTimePoint-1);
+        if (curTime<=p1.time && curTime>=p2.time)
+            return;
+        for (curTimePoint=1;curTimePoint<movementInfo.size();curTimePoint++){
+            p1=(PointInTime) movementInfo.get(curTimePoint);
+            if (p1.time >= curTime)
+                return;
+        }
+    }
 
     /**
      * Sets the frames the joint controller will animate from and to.  The frames are dependant upon the FPS.  Remember
@@ -277,23 +309,14 @@ public class JointController extends Controller {
      * @param end The ending frame number.
      */
     public void setTimes(int start,int end){
-        if (start<0 || start>end){
+        if (start<0 || start>end || ((PointInTime)movementInfo.get(movementInfo.size()-1)).time < end/FPS){
             throw new JmeException("Malformed times: start="+start+" end="+end);
         }
-        startIndex=findIndex(start);
         setMinTime(start/FPS);
         setMaxTime(end/FPS);
         curTime=getMinTime();
-    }
-
-    private int findIndex(float findTime) {
-        for (int i=0;i<movementInfo.size();i++){
-            PointInTime temp=(PointInTime) movementInfo.get(i);
-            float frameNum=temp.time*FPS;
-            if (frameNum==findTime) return i;
-            if (frameNum>findTime) return i-1;
-        }
-        return -1;
+        curTimePoint=1;
+        movingForward=true;
     }
 
     /**
@@ -344,11 +367,11 @@ public class JointController extends Controller {
 	public void processController() {
 		if (movementInfo.size() == 1) { // IE no times were added or only time 0
 										// was added
-			movementInfo.add(new PointInTime(1));
+			movementInfo.add(0,new PointInTime(0));
 		}
         setMinTime(((PointInTime)movementInfo.get(0)).time);
         setMaxTime(((PointInTime)movementInfo.get(movementInfo.size()-1)).time);
-        startIndex = 1;
+        curTime=getMinTime();
 		invertWithParents();
 		fillHoles();
 	}
@@ -451,13 +474,15 @@ public class JointController extends Controller {
 							unSyncbeginAngle);
 			}
 			int lastgood = start;
+            boolean allGood=true;
 			for (int i = start + 2; i < movementInfo.size(); i++) {
 				if (((PointInTime) movementInfo.get(i)).jointRotation[joint] != null) {
 					fillQuats(joint, lastgood, i); // fills gaps
 					lastgood = i;
+                    allGood=false;
 				}
 			}
-			if (lastgood != movementInfo.size() - 1) { // fills tail
+			if (!allGood && lastgood != movementInfo.size() - 1) { // fills tail
 				((PointInTime) movementInfo.get(movementInfo.size() - 1)).jointRotation[joint] = new Quaternion(
 						((PointInTime) movementInfo.get(lastgood)).jointRotation[joint]);
 				fillQuats(joint, lastgood, movementInfo.size() - 1); // fills
@@ -493,13 +518,15 @@ public class JointController extends Controller {
 							unSyncbeginPos);
 			}
 			int lastgood = start;
+            boolean allGood=true;
 			for (int i = start + 2; i < movementInfo.size(); i++) {
 				if (((PointInTime) movementInfo.get(i)).jointTranslation[joint] != null) {
 					fillPos(joint, lastgood, i); // fills gaps
 					lastgood = i;
+                    allGood=false;
 				}
 			}
-			if (lastgood != movementInfo.size() - 1) { // fills tail
+			if (!allGood && lastgood != movementInfo.size() - 1) { // fills tail
 				((PointInTime) movementInfo.get(movementInfo.size() - 1)).jointTranslation[joint] = new Vector3f(
 						((PointInTime) movementInfo.get(lastgood)).jointTranslation[joint]);
 				fillPos(joint, lastgood, movementInfo.size() - 1); // fills tail
@@ -565,6 +592,31 @@ public class JointController extends Controller {
 	public void addJointMesh(JointMesh child) {
 		movingMeshes.add(child);
 	}
+
+/*
+    public Controller putClone(Controller store,CloneCreator properties){
+        if (!properties.isSet("jointcontroller"))
+            return null;
+        super.putClone(store,properties);
+        JointController toReturn=new JointController(this.numJoints);
+
+        toReturn.parentIndex = parentIndex;
+        toReturn.localRefMatrix = localRefMatrix;
+        toReturn.jointMovements = jointMovements;
+        toReturn.inverseChainMatrix = inverseChainMatrix;
+        toReturn.movementInfo = movementInfo;
+        toReturn.movingMeshes = new ArrayList(movingMeshes);
+        toReturn.currentSkip = currentSkip;
+        toReturn.curTime = curTime;
+        toReturn.curTimePoint = curTimePoint;
+        toReturn.skipRate = skipRate;
+        toReturn.updatePerFrame = updatePerFrame;
+
+        properties.queueJointController(toReturn);
+
+        return toReturn;
+    }
+*/
 
 	/**
 	 * At a point in time is defined by <b>time </b>. JointController will
