@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.13 2005-01-04 16:33:54 renanse Exp $
+ * @version $Id: TestLightState.java,v 1.14 2005-01-04 16:35:10 renanse Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;
@@ -67,9 +67,9 @@ public class TestLightState extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void simpleInitGame() {
-      display.setTitle("Light State Test");
-      cam.setLocation(new Vector3f(-10,0,40));
-      cam.update();
+        display.setTitle("Light State Test");
+        cam.setLocation(new Vector3f(-10,0,40));
+        cam.update();
 
         Vector3f max = new Vector3f(10,10,10);
         Vector3f min = new Vector3f(0,0,0);
@@ -95,6 +95,7 @@ public class TestLightState extends SimpleGame {
         sp1.setDirection(new Vector3f(-1, -0.5f, 0));
         sp1.setLocation(new Vector3f(25, 10, 0));
         sp1.setAngle(15);
+        sp1.setEnabled(true);
 
         SpotLight sp2 = new SpotLight();
         sp2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
@@ -102,21 +103,19 @@ public class TestLightState extends SimpleGame {
         sp2.setDirection(new Vector3f(1, -0.5f, 0));
         sp2.setLocation(new Vector3f(-25, 10, 0));
         sp2.setAngle(15);
+        sp2.setEnabled(true);
 
         DirectionalLight dr = new DirectionalLight();
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         dr.setDirection(new Vector3f(150, 0 , 150));
+        dr.setEnabled(true);
 
         lightState.detachAll();
         lightState.attach(sp1);
         lightState.attach(dr);
         lightState.attach(sp2);
-        lightState.attach(sp2);
-        sp1.setEnabled(true);
-        sp2.setEnabled(true);
-        dr.setEnabled(true);
 
         TextureState ts = display.getRenderer().createTextureState();
                 ts.setEnabled(true);
