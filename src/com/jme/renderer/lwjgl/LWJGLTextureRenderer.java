@@ -50,7 +50,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.3 2004-07-03 20:02:09 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.4 2004-07-12 23:22:49 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -289,6 +289,12 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     public void updateCamera() {
       activate();
       camera.update();
+      deactivate();
+    }
+
+    public void cleanup() {
+      activate();
+      pbuffer.destroy();
       deactivate();
     }
 }

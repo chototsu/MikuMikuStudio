@@ -48,7 +48,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.25 2004-07-03 20:02:10 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.26 2004-07-12 23:22:49 renanse Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -74,8 +74,7 @@ public class TestRenderToTexture extends SimpleGame {
   }
 
   protected void cleanup() {
-    lastRend++;
-    simpleRender();
+    tRenderer.cleanup();
     super.cleanup();
   }
 
