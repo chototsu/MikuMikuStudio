@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a 
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.5 2004-02-01 07:52:00 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.6 2004-02-03 22:13:25 mojomonkey Exp $
  */
 public class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -104,10 +104,10 @@ public class Geometry extends Spatial implements Serializable {
         this.color = color;
         this.texture = texture;
 
-        setColorBuffer();
-        setNormalBuffer();
+        updateColorBuffer();
+        updateNormalBuffer();
         updateVertexBuffer();
-        setTextureBuffer();
+        updateTextureBuffer();
     }
 
     /**
@@ -124,8 +124,13 @@ public class Geometry extends Spatial implements Serializable {
      * @param color the new color array.
      */
     public void setColors(ColorRGBA[] color) {
+    	if(this.color != null) {
+	    	if(this.color.length != color.length) {
+	    		colorBuf = null;
+	    	}
+    	}
         this.color = color;
-        setColorBuffer();
+        updateColorBuffer();
     }
 
     /**
@@ -153,6 +158,9 @@ public class Geometry extends Spatial implements Serializable {
     public void setVertices(Vector3f[] vertex) {
         if (vertex == null) {
             throw new JmeException("Geometry must include vertex information.");
+        }
+        if(this.vertex.length != vertex.length) {
+        	vertBuf = null;
         }
         this.vertex = vertex;
         updateVertexBuffer();
@@ -189,8 +197,13 @@ public class Geometry extends Spatial implements Serializable {
      * @param normal the new normal values.
      */
     public void setNormals(Vector3f[] normal) {
+    	if(this.normal != null) {
+	    	if(this.normal.length != normal.length) {
+	    		normBuf = null;
+	    	}
+    	}
         this.normal = normal;
-        setNormalBuffer();
+        updateNormalBuffer();
     }
 
     /**
@@ -217,8 +230,13 @@ public class Geometry extends Spatial implements Serializable {
      * @param texture the new texture information for this geometry.
      */
     public void setTextures(Vector2f[] texture) {
+    	if(this.texture != null) {
+	    	if(this.texture.length != texture.length) {
+	    		texBuf = null;
+	    	}
+    	}
         this.texture = texture;
-        setTextureBuffer();
+        updateTextureBuffer();
     }
 
     /**
@@ -282,8 +300,7 @@ public class Geometry extends Spatial implements Serializable {
      */
     public void updateWorldBound() {
         if(bound != null) {
-            worldBound =
-                bound.transform(worldRotation, worldTranslation, worldScale);
+           worldBound = bound.transform(worldRotation, worldTranslation, worldScale);
         }  
     } 
     
@@ -292,17 +309,19 @@ public class Geometry extends Spatial implements Serializable {
      * that contains all the color information of this geometry.
      *
      */
-    private void setColorBuffer() {
+    public void updateColorBuffer() {
         if (color == null) {
             return;
         }
         float[] buffer = new float[vertex.length * 4];
 
-        colorBuf =
-            ByteBuffer
-                .allocateDirect(4 * buffer.length)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
+        if(colorBuf == null) {
+	        colorBuf =
+	            ByteBuffer
+	                .allocateDirect(4 * buffer.length)
+	                .order(ByteOrder.nativeOrder())
+	                .asFloatBuffer();
+        }
         for (int i = 0; i < vertex.length; i++) {
             buffer[i * 4] = color[i].r;
             buffer[i * 4 + 1] = color[i].g;
@@ -317,7 +336,7 @@ public class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * <code>setVertexBuffer</code> sets the float buffer that contains this
+     * <code>updateVertexBuffer</code> sets the float buffer that contains this
      * geometry's vertex information.
      *
      */
@@ -326,11 +345,14 @@ public class Geometry extends Spatial implements Serializable {
             return;
         }
         float[] buffer = new float[vertex.length * 3];
-        vertBuf =
-            ByteBuffer
-                .allocateDirect(4 * buffer.length)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
+        if(vertBuf == null) {
+	        vertBuf =
+	            ByteBuffer
+	                .allocateDirect(4 * buffer.length)
+	                .order(ByteOrder.nativeOrder())
+	                .asFloatBuffer();
+        }
+        
         for (int i = 0; i < vertex.length; i++) {
             buffer[i * 3] = vertex[i].x;
             buffer[i * 3 + 1] = vertex[i].y;
@@ -344,20 +366,22 @@ public class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * <code>setNormalBuffer</code> sets the float buffer that contains
+     * <code>updateNormalBuffer</code> sets the float buffer that contains
      * this geometry's normal information.
      *
      */
-    private void setNormalBuffer() {
+    public void updateNormalBuffer() {
         if (normal == null) {
             return;
         }
         float[] buffer = new float[vertex.length * 3];
-        normBuf =
-            ByteBuffer
-                .allocateDirect(4 * buffer.length)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
+        if(normBuf == null) {
+	        normBuf =
+	            ByteBuffer
+	                .allocateDirect(4 * buffer.length)
+	                .order(ByteOrder.nativeOrder())
+	                .asFloatBuffer();
+        }
         for (int i = 0; i < vertex.length; i++) {
             buffer[i * 3] = normal[i].x;
             buffer[i * 3 + 1] = normal[i].y;
@@ -371,25 +395,26 @@ public class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * <code>setTextureBuffer</code> sets the float buffer that contains
+     * <code>updateTextureBuffer</code> sets the float buffer that contains
      * this geometry's texture information.
      *
      */
-    private void setTextureBuffer() {
+    public void updateTextureBuffer() {
         if (texture == null) {
             return;
         }
         float[] buffer = new float[vertex.length * 2];
-        texBuf =
-            ByteBuffer
-                .allocateDirect(4 * buffer.length)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-        for (int i = 0; i < vertex.length; i++) {
-            buffer[i * 2] = texture[i].x;
-            buffer[i * 2 + 1] = texture[i].y;
+        if(texBuf == null) {
+	        texBuf =
+	            ByteBuffer
+	                .allocateDirect(4 * buffer.length)
+	                .order(ByteOrder.nativeOrder())
+	                .asFloatBuffer();
+	        for (int i = 0; i < vertex.length; i++) {
+	            buffer[i * 2] = texture[i].x;
+	            buffer[i * 2 + 1] = texture[i].y;
+	        }
         }
-
         texBuf.clear();
         texBuf.put(buffer);
         texBuf.flip();

@@ -38,7 +38,7 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>Vector3f</code> defines a Vector for a three float value tuple. 
  * @author Mark Powell
- * @version $Id: Vector3f.java,v 1.3 2004-01-07 21:00:40 mojomonkey Exp $
+ * @version $Id: Vector3f.java,v 1.4 2004-02-03 22:13:25 mojomonkey Exp $
  */
 public class Vector3f {
     /**
@@ -147,6 +147,16 @@ public class Vector3f {
      */
     public Vector3f mult(float scalar) {
         return new Vector3f(x*scalar, y*scalar, z*scalar);
+    }
+    
+    public void mult(float scalar, Vector3f product) {
+    	if(null == product) {
+    		product = new Vector3f();
+    	}
+    	
+    	product.x = x * scalar;
+    	product.y = y * scalar;
+    	product.z = z * scalar;
     }
     
     /**
