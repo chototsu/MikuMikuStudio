@@ -48,7 +48,7 @@ import com.jme.input.KeyInput;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestWaterSurface.java,v 1.2 2004-04-25 00:09:48 renanse Exp $
+ * @version $Id: TestWaterSurface.java,v 1.3 2004-04-25 20:33:19 mojomonkey Exp $
  */
 public class TestWaterSurface extends SimpleGame {
 
@@ -70,6 +70,7 @@ public class TestWaterSurface extends SimpleGame {
 
     display.setTitle("Water Surface");
     water = new WaterSurface("water", 64, 64, .1f);
+    water.copyTextureCoords(0,1);
     rootNode.attachChild(water);
 
     TextureState ts = display.getRenderer().getTextureState();
@@ -80,7 +81,17 @@ public class TestWaterSurface extends SimpleGame {
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true);
+    //Environmental Map (reflection of clouds)
+    Texture t = TextureManager.loadTexture(
+            TestWaterSurface.class.getClassLoader().getResource(
+            "jmetest/data/texture/clouds.png"),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true);
+    t.setApply(Texture.AM_DECAL);
+    t.setEnvironmentalMapMode(Texture.EM_SPHERE);
     ts.setTexture(t1);
+    ts.setTexture(t, 1);
     rootNode.setRenderState(ts);
   }
 }
