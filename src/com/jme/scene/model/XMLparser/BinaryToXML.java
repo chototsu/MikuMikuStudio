@@ -146,9 +146,22 @@ public class BinaryToXML {
             case BinaryFormatConstants.DATA_BOOLEAN:
                 currentLine.append(myIn.readBoolean());
                 break;
+            case BinaryFormatConstants.DATA_QUATARRAY:
+                readQuatArray();
+                break;
             default:
                 throw new IOException("Unknown data type:" + type);
         }
+    }
+
+    private void readQuatArray() throws IOException {
+        int length=myIn.readInt();
+        if (DEBUG) System.out.println("reading Quat[].length=" + length);
+        for (int i=0;i<length;i++)
+            for (int j=0;j<4;j++){
+                currentLine.append(Float.toString(myIn.readFloat()));
+                if (i!=length-1 || j!=3) currentLine.append(' ');
+            }
     }
 
     private void readColor() throws IOException {
