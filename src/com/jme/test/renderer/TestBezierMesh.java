@@ -35,24 +35,21 @@ import com.jme.app.AbstractGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
-import com.jme.light.DirectionalLight;
-import com.jme.light.Light;
 import com.jme.light.PointLight;
-import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.scene.BezierMesh;
 import com.jme.scene.BezierPatch;
 import com.jme.scene.BoundingSphere;
+import com.jme.scene.Box;
+import com.jme.scene.LightNode;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -62,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.3 2004-01-15 15:09:20 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.4 2004-01-15 15:40:23 mojomonkey Exp $
  */
 public class TestBezierMesh extends AbstractGame {
     private TriMesh t;
@@ -73,6 +70,7 @@ public class TestBezierMesh extends AbstractGame {
     private Thread thread;
     private LightState lightstate;
     private PointLight pl;
+    private LightNode lightNode;
     private Vector3f currentPos;
     private Vector3f newPos;
     private Timer timer;
@@ -102,9 +100,9 @@ public class TestBezierMesh extends AbstractGame {
          if ((int) currentPos.x == (int) newPos.x
              && (int) currentPos.y == (int) newPos.y
              && (int) currentPos.z == (int) newPos.z) {
-             newPos.x = (float) Math.random() * 100;
-             newPos.y = (float) Math.random() * 100;
-             newPos.z = (float) Math.random() * 100;
+             newPos.x = (float) Math.random() * 10 - 5;
+             newPos.y = (float) Math.random() * 10 - 5;
+             newPos.z = (float) Math.random() * 10 - 5;
          }
 
          currentPos.x -= (currentPos.x - newPos.x)
@@ -114,7 +112,8 @@ public class TestBezierMesh extends AbstractGame {
          currentPos.z -= (currentPos.z - newPos.z)
              / (timer.getFrameRate() / 2);
              
-         pl.setLocation(currentPos);
+         lightNode.setLocalTranslation(currentPos);
+         scene.updateWorldData(timer.getTimePerFrame());
     }
 
     /** 
@@ -124,7 +123,7 @@ public class TestBezierMesh extends AbstractGame {
     protected void render() {
         display.getRenderer().clearBuffers();
 
-        display.getRenderer().draw(root);
+        display.getRenderer().draw(scene);
 
     }
 
@@ -163,7 +162,6 @@ public class TestBezierMesh extends AbstractGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonController(this, cam, "LWJGL");
-        //display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         timer = Timer.getTimer("LWJGL");
     }
 
@@ -226,35 +224,6 @@ public class TestBezierMesh extends AbstractGame {
         ms.setShininess(1.0f);
         bez.setRenderState(ms);
 
-        SpotLight am = new SpotLight();
-        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 0));
-        am.setLocation(new Vector3f(25, 10, 0));
-        am.setAngle(15);
-
-        PointLight am2 = new PointLight();
-        am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-        am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        //am2.setDirection(new Vector3f(0, 0, 0));
-        am2.setLocation(new Vector3f(5, 10, -10));
-        //am2.setAngle(15);
-
-//        DirectionalLight dr = new DirectionalLight();
-//        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-//        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-//        dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-//        dr.setDirection(new Vector3f(0, 1, 0));
-//
-//        LightState state = display.getRenderer().getLightState();
-//        //state.attach(am);
-//        state.attach(dr);
-//        state.attach(am2);
-//        am.setEnabled(true);
-//        am2.setEnabled(true);
-//        dr.setEnabled(true);
-//        scene.setRenderState(state);
-
         pl = new PointLight();
         pl.setAmbient(new ColorRGBA(0, 0, 0, 1));
         pl.setDiffuse(new ColorRGBA(0, 1, 0, 1));
@@ -262,15 +231,21 @@ public class TestBezierMesh extends AbstractGame {
         pl.setEnabled(true);
 
         lightstate = display.getRenderer().getLightState();
-        lightstate.attach(pl);
         
-        scene.setRenderState(lightstate);
-
-        WireframeState wf = display.getRenderer().getWireframeState();
-        wf.setEnabled(true);
-
-        //scene.setRenderState(wf);
-
+        lightNode = new LightNode(lightstate);
+        lightNode.setLight(pl);
+        lightNode.setTarget(bez);
+        
+        Vector3f min = new Vector3f(-0.15f, -0.15f, -0.15f);
+        Vector3f max = new Vector3f(0.15f,0.15f,0.15f);
+        Box lightBox = new Box(min,max);
+        
+        
+        lightNode.attachChild(lightBox);
+        lightNode.setForceView(true);
+        
+        scene.attachChild(lightNode);
+        
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         ts.setTexture(
@@ -280,7 +255,7 @@ public class TestBezierMesh extends AbstractGame {
                 Texture.FM_LINEAR,
                 true));
 
-        scene.setRenderState(ts);
+        bez.setRenderState(ts);
 
         scene.updateGeometricState(0.0f, true);
 

@@ -47,7 +47,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and 
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.8 2004-01-07 21:00:40 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.9 2004-01-15 15:40:23 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -211,6 +211,12 @@ public abstract class Spatial implements Serializable {
         return forceCull;
     }
 
+    /**
+     * 
+     * <code>isForceView</code> returns true if the node will be rendered whether
+     * it's in the camera frustum or not.
+     * @return true if viewing is forced, false otherwise.
+     */
     public boolean isForceView() {
         return forceView;
     }
@@ -226,6 +232,12 @@ public abstract class Spatial implements Serializable {
         this.forceCull = forceCull;
     }
 
+    /**
+     * 
+     * <code>setForceView</code> will force the node to be rendered whether it's
+     * in the camera frustum or not.
+     * @param value true to force viewing, false otherwise.
+     */
     public void setForceView(boolean value) {
         forceView = value;
     }
