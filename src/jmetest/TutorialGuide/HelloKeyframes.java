@@ -90,7 +90,6 @@ public class HelloKeyframes extends SimpleGame {
         redgreen.setSpecular(ColorRGBA.green);
         // Make it very affected by the Specular color.
         redgreen.setShininess(10f);
-        redgreen.setEnabled(true);
         renderedObject.setRenderState(redgreen);
 
         // Add the controller to my object
