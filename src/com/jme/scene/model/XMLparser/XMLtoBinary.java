@@ -49,6 +49,9 @@ public class XMLtoBinary {
         }
     }
 
+    /**
+     * This class reads XML files in a SAX manner
+     */
     private class SAXConverter extends DefaultHandler{
         private static final boolean DEBUG = false;
 

@@ -111,118 +111,6 @@ public class JmeBinaryReader {
     }
 
     /**
-     * processes an END_TAG flag, which signals a tag has finished reading all children information
-     * @throws IOException If anything bad happens in reading the binary file
-     */
-    private void readEnd() throws IOException {
-        String tagName=myIn.readUTF();
-        if (DEBUG) System.out.println("reading endtag:" + tagName);
-        Node childNode,parentNode;
-        Spatial parentSpatial,childSpatial;
-        if (tagName.equals("scene")){
-            myScene=(Node) s.pop();
-        } else if (tagName.equals("node")){
-            childNode=(Node) s.pop();
-            parentNode=(Node) s.pop();
-            parentNode.attachChild(childNode);
-            s.push(parentNode);
-        } else if (tagName.equals("materialstate")){
-            MaterialState childMaterial=(MaterialState) s.pop();
-            parentSpatial=(Spatial) s.pop();
-            parentSpatial.setRenderState(childMaterial);
-            s.push(parentSpatial);
-        } else if (tagName.equals("texturestate")){
-            TextureState childMaterial=(TextureState) s.pop();
-            parentSpatial=(Spatial) s.pop();
-            parentSpatial.setRenderState(childMaterial);
-            s.push(parentSpatial);
-        } else if (tagName.equals("mesh") || tagName.equals("jointmesh")){
-            Geometry childMesh=(Geometry) s.pop();
-            if (childMesh.getModelBound()==null){
-                childMesh.setModelBound(new BoundingSphere());
-                childMesh.updateModelBound();
-            }
-            parentNode=(Node) s.pop();
-            parentNode.attachChild(childMesh);
-            s.push(parentNode);
-        } else if (tagName.equals("vertex")){
-        } else if (tagName.equals("normal")){
-        } else if (tagName.equals("color")){
-        } else if (tagName.equals("texturecoords")){
-        } else if (tagName.equals("index")){
-        } else if (tagName.equals("primitive")){
-            childSpatial=(Spatial) s.pop();
-            parentNode=(Node) s.pop();
-            parentNode.attachChild(childSpatial);
-            s.push(parentNode);
-        } else if (tagName.equals("sharedtypes") || tagName.equals("keyframe")){
-            // Nothing to do, these only identify XML areas
-        } else if (tagName.equals("xmlloadable")){
-            Object o=s.pop();
-            if (o instanceof RenderState){
-                parentSpatial=(Spatial) s.pop();
-                parentSpatial.setRenderState((RenderState) o);
-                s.push(parentSpatial);
-            } else if (o instanceof Controller){
-                parentSpatial=(Spatial) s.pop();
-                parentSpatial.addController((Controller) o);
-                s.push(parentSpatial);
-            } else if (o instanceof Spatial){
-                parentNode=(Node) s.pop();
-                parentNode.attachChild((Spatial) o);
-                s.push(parentNode);
-            }
-        } else if (tagName.equals("sharedrenderstate")){
-            XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
-            shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
-        } else if (tagName.equals("publicobject")){
-            Object o=s.pop();
-            if (o instanceof RenderState){
-                parentSpatial=(Spatial) s.pop();
-                parentSpatial.setRenderState((RenderState) o);
-                s.push(parentSpatial);
-            } else if (o instanceof Controller){
-                parentSpatial=(Spatial) s.pop();
-                parentSpatial.addController((Controller) o);
-                s.push(parentSpatial);
-            } else if (o instanceof Spatial){
-                parentNode=(Node) s.pop();
-                parentNode.attachChild((Spatial) o);
-                s.push(parentNode);
-            }
-        } else if (tagName.equals("jointcontroller")){
-            JointController jc=(JointController) s.pop();
-            parentNode=(Node) s.pop();
-            for (int i=0;i<parentNode.getQuantity();i++){
-                if (parentNode.getChild(i) instanceof JointMesh2)
-                    jc.addJointMesh((JointMesh2) parentNode.getChild(i));
-            }
-            jc.processController();
-            parentNode.addController(jc);
-            s.push(parentNode);
-        } else if (tagName.equals("joint")){
-            s.pop();    // remove unneeded information tag
-        } else if (tagName.equals("jointindex")){
-        } else if (tagName.equals("origvertex")){
-        } else if (tagName.equals("orignormal")){
-        } else if (tagName.equals("keyframecontroller")){
-            KeyframeController kc=(KeyframeController) s.pop();
-            TriMesh parentMesh=(TriMesh) s.pop();
-            parentMesh.addController(kc);
-            s.push(parentMesh);
-        } else if (tagName.equals("keyframepointintime")){
-            TriMesh parentMesh=(TriMesh) s.pop();
-            float time=((Float) s.pop()).floatValue();
-            KeyframeController kc=(KeyframeController)s.pop();
-            kc.setKeyframe(time,parentMesh);
-            s.push(kc);
-        } else {
-            throw new JmeException("Illegale Qualified name: " + tagName);
-        }
-    }
-
-
-    /**
      * Processes a BEGIN_TAG flag, which signals that a tag has begun.  Attributes for the
      * tag are read, and if needed an object is pushed on the stack
      * @throws IOException If anything wierd goes on in reading
@@ -344,6 +232,117 @@ public class JmeBinaryReader {
     }
 
     /**
+     * processes an END_TAG flag, which signals a tag has finished reading all children information
+     * @throws IOException If anything bad happens in reading the binary file
+     */
+    private void readEnd() throws IOException {
+        String tagName=myIn.readUTF();
+        if (DEBUG) System.out.println("reading endtag:" + tagName);
+        Node childNode,parentNode;
+        Spatial parentSpatial,childSpatial;
+        if (tagName.equals("scene")){
+            myScene=(Node) s.pop();
+        } else if (tagName.equals("node")){
+            childNode=(Node) s.pop();
+            parentNode=(Node) s.pop();
+            parentNode.attachChild(childNode);
+            s.push(parentNode);
+        } else if (tagName.equals("materialstate")){
+            MaterialState childMaterial=(MaterialState) s.pop();
+            parentSpatial=(Spatial) s.pop();
+            parentSpatial.setRenderState(childMaterial);
+            s.push(parentSpatial);
+        } else if (tagName.equals("texturestate")){
+            TextureState childMaterial=(TextureState) s.pop();
+            parentSpatial=(Spatial) s.pop();
+            parentSpatial.setRenderState(childMaterial);
+            s.push(parentSpatial);
+        } else if (tagName.equals("mesh") || tagName.equals("jointmesh")){
+            Geometry childMesh=(Geometry) s.pop();
+            if (childMesh.getModelBound()==null){
+                childMesh.setModelBound(new BoundingSphere());
+                childMesh.updateModelBound();
+            }
+            parentNode=(Node) s.pop();
+            parentNode.attachChild(childMesh);
+            s.push(parentNode);
+        } else if (tagName.equals("vertex")){
+        } else if (tagName.equals("normal")){
+        } else if (tagName.equals("color")){
+        } else if (tagName.equals("texturecoords")){
+        } else if (tagName.equals("index")){
+        } else if (tagName.equals("primitive")){
+            childSpatial=(Spatial) s.pop();
+            parentNode=(Node) s.pop();
+            parentNode.attachChild(childSpatial);
+            s.push(parentNode);
+        } else if (tagName.equals("sharedtypes") || tagName.equals("keyframe")){
+            // Nothing to do, these only identify XML areas
+        } else if (tagName.equals("xmlloadable")){
+            Object o=s.pop();
+            if (o instanceof RenderState){
+                parentSpatial=(Spatial) s.pop();
+                parentSpatial.setRenderState((RenderState) o);
+                s.push(parentSpatial);
+            } else if (o instanceof Controller){
+                parentSpatial=(Spatial) s.pop();
+                parentSpatial.addController((Controller) o);
+                s.push(parentSpatial);
+            } else if (o instanceof Spatial){
+                parentNode=(Node) s.pop();
+                parentNode.attachChild((Spatial) o);
+                s.push(parentNode);
+            }
+        } else if (tagName.equals("sharedrenderstate")){
+            XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
+            shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
+        } else if (tagName.equals("publicobject")){
+            Object o=s.pop();
+            if (o instanceof RenderState){
+                parentSpatial=(Spatial) s.pop();
+                parentSpatial.setRenderState((RenderState) o);
+                s.push(parentSpatial);
+            } else if (o instanceof Controller){
+                parentSpatial=(Spatial) s.pop();
+                parentSpatial.addController((Controller) o);
+                s.push(parentSpatial);
+            } else if (o instanceof Spatial){
+                parentNode=(Node) s.pop();
+                parentNode.attachChild((Spatial) o);
+                s.push(parentNode);
+            }
+        } else if (tagName.equals("jointcontroller")){
+            JointController jc=(JointController) s.pop();
+            parentNode=(Node) s.pop();
+            for (int i=0;i<parentNode.getQuantity();i++){
+                if (parentNode.getChild(i) instanceof JointMesh2)
+                    jc.addJointMesh((JointMesh2) parentNode.getChild(i));
+            }
+            jc.processController();
+            parentNode.addController(jc);
+            s.push(parentNode);
+        } else if (tagName.equals("joint")){
+            s.pop();    // remove unneeded information tag
+        } else if (tagName.equals("jointindex")){
+        } else if (tagName.equals("origvertex")){
+        } else if (tagName.equals("orignormal")){
+        } else if (tagName.equals("keyframecontroller")){
+            KeyframeController kc=(KeyframeController) s.pop();
+            TriMesh parentMesh=(TriMesh) s.pop();
+            parentMesh.addController(kc);
+            s.push(parentMesh);
+        } else if (tagName.equals("keyframepointintime")){
+            TriMesh parentMesh=(TriMesh) s.pop();
+            float time=((Float) s.pop()).floatValue();
+            KeyframeController kc=(KeyframeController)s.pop();
+            kc.setKeyframe(time,parentMesh);
+            s.push(kc);
+        } else {
+            throw new JmeException("Illegale Qualified name: " + tagName);
+        }
+    }
+
+    /**
      * Builds a primitive given attributes
      * @param atts Attributes to build with
      * @return The loaded primitive
@@ -373,7 +372,8 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Builds a texture with the given attributes
+     * Builds a texture with the given attributes.  Will use the "texurl" property if needed to
+     * help build the texture
      * @param atts The attributes of the Texture
      * @return The new texture
      */
