@@ -76,10 +76,11 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.36 2004-07-29 07:19:42 cep21 Exp $
+ * @version $Id: Renderer.java,v 1.37 2004-07-31 04:31:51 cep21 Exp $
  */
 public interface Renderer {
 
+    // TODO: Javadoc these
     public final static int QUEUE_INHERIT      = 0;
     public final static int QUEUE_SKIP         = 1;
     public final static int QUEUE_OPAQUE       = 2;
@@ -196,17 +197,40 @@ public interface Renderer {
      */
     public WireframeState getWireframeState();
 
+    /**
+     * Retrieves the Z buffer state object for the proper renderer.
+     * @return The <code>ZBufferState</code> object that can make use of the
+     *      proper renderer.
+     */
     public ZBufferState getZBufferState();
 
+    /**
+     * Retrieves the vertex program state object for the proper renderer.
+     * @return The <code>VertexProgramState</code> object that can make use of the
+     *      proper renderer.
+     */
     public VertexProgramState getVertexProgramState();
 
+    /**
+     * Retrieves the stencil state object for the proper renderer.
+     * @return The <code>StencilState</code> object that can make use of the
+     *      proper renderer.
+     */
     public StencilState getStencilState();
 
+    /**
+     * If true, statistical upkeep of information is done during rendering.
+     * @param value Should the renderer keep track of statistical information?
+     */
     public void enableStatistics(boolean value);
 
-    /** Reset rendering tracking information. */
+    /** Reset rendering tracking statistical information. */
     public void clearStatistics();
-
+    /**
+     * Returns statistical data as a String.  The data is renderer specific but usually contains
+     * triangle and vertex counts at a minimum.
+     * @return Statistical data for the renderer.
+     */
     public String getStatistics();
 
     /**
@@ -378,8 +402,16 @@ public interface Renderer {
      */
     public void draw(TriMesh t);
 
+    /**
+     * Draws a cloned node to the back buffer
+     * @param cn The node to be rendered.
+     */
     public void draw(CloneNode cn);
 
+    /**
+     * Draws a cloned object to the back buffer.
+     * @param c The clone to draw.
+     */
     public void draw(Clone c);
 
     /**

@@ -48,7 +48,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.6 2004-07-12 23:22:50 renanse Exp $
+ * @version $Id: TextureRenderer.java,v 1.7 2004-07-31 04:36:21 cep21 Exp $
  */
 public interface TextureRenderer {
 
@@ -142,5 +142,8 @@ public interface TextureRenderer {
      */
     public Texture setupTexture(int glTextureID);
 
+    /**
+     * Any wrapping up and cleaning up of TextureRenderer information is performed here.
+     */
     public void cleanup();
 }

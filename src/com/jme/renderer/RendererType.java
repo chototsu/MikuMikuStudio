@@ -34,9 +34,10 @@ package com.jme.renderer;
 import com.jme.util.JmeType;
 
 /**
- * <code>RendererType</code> contains the different RendererTypes jME supports, eg, LWJGL, JOGL, etc.
+ * <code>RendererType</code> contains the different RendererTypes jME
+ * supports, eg, LWJGL, JOGL, etc.
  * @author Gregg Patton
- * @version $Id: RendererType.java,v 1.2 2004-04-22 22:26:42 renanse Exp $
+ * @version $Id: RendererType.java,v 1.3 2004-07-31 04:34:18 cep21 Exp $
  */
 public class RendererType extends JmeType {
 
@@ -44,16 +45,18 @@ public class RendererType extends JmeType {
     public final static RendererType LWJGL = new RendererType("LWJGL");
 
     /**
-     * @param name
+     * Creates a new RenderType.
+     * @param name The string name of this render type.
      */
     private RendererType(String name) {
         super(name);
     }
 
-    /** <code>getType</code>
-     * @param name
-     * @return
-     * @see com.jme.test.util.JmeType#getType(java.lang.String)
+    /** <code>getType</code> returns a strongly typed enumeration of the given name for
+     * this type.
+     * @param name The name to get a type from (IE "LWJGL")
+     * @return The RenderType for the given name.
+     * @see com.jme.util.JmeType#getType(java.lang.String)
      */
     public JmeType getType(String name) {
         JmeType type = null;
