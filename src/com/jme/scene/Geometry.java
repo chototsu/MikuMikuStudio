@@ -57,30 +57,32 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.57 2004-07-24 03:00:08 cep21 Exp $
+ * @version $Id: Geometry.java,v 1.58 2004-08-01 02:38:07 cep21 Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
+    /** The local bounds of this Geometry object. */
     protected BoundingVolume bound;
 
-    //data that specifies how to render this leaf.
+    /** The geometry's vertex information. */
     protected Vector3f[] vertex;
 
+    /** The geometry's per vertex normal information. */
     protected Vector3f[] normal;
 
+    /** The geometry's per vertex color information. */
     protected ColorRGBA[] color;
 
+    /** The geometry's per Texture per vertex texture coordinate information. */
     protected Vector2f[][] texture;
 
+    /** The number of vertexes in this geometry. */
     protected int vertQuantity = -1;
 
     //buffers that allow for faster data processing.
     protected transient FloatBuffer colorBuf;
-
     protected transient FloatBuffer normBuf;
-
     protected transient FloatBuffer vertBuf;
-
     protected transient FloatBuffer[] texBuf;
 
     private RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
@@ -210,38 +212,75 @@ public abstract class Geometry extends Spatial implements Serializable {
         updateTextureBuffer();
     }
 
+    /**
+     * Returns true if VBO (Vertex Buffer) is enabled for vertex information.  This
+     * is used during rendering.
+     * @return If VBO is enabled for vertexes.
+     */
     public boolean isVBOVertexEnabled() {
         return useVBOVertex;
     }
 
+    /**
+     * Returns true if VBO (Vertex Buffer) is enabled for texture information.  This
+     * is used during rendering.
+     * @return If VBO is enabled for textures.
+     */
     public boolean isVBOTextureEnabled() {
         return useVBOTexture;
     }
 
+    /**
+     * Returns true if VBO (Vertex Buffer) is enabled for normal information.  This
+     * is used during rendering.
+     * @return If VBO is enabled for normals.
+     */
     public boolean isVBONormalEnabled() {
         return useVBONormal;
     }
 
+    /**
+     * Returns true if VBO (Vertex Buffer) is enabled for color information.  This
+     * is used during rendering.
+     * @return If VBO is enabled for colors.
+     */
     public boolean isVBOColorEnabled() {
         return useVBOColor;
     }
 
+    /**
+     * Enables or disables Vertex Buffer Objects for vertex information.
+     * @param enabled If true, VBO enabled for vertexes.
+     */
     public void setVBOVertexEnabled(boolean enabled) {
         useVBOVertex = enabled;
     }
 
+    /**
+     * Enables or disables Vertex Buffer Objects for texture coordinate information.
+     * @param enabled If true, VBO enabled for texture coordinates.
+     */
     public void setVBOTextureEnabled(boolean enabled) {
         useVBOTexture = enabled;
     }
 
+    /**
+     * Enables or disables Vertex Buffer Objects for normal information.
+     * @param enabled If true, VBO enabled for normals
+     */
     public void setVBONormalEnabled(boolean enabled) {
         useVBONormal = enabled;
     }
 
+    /**
+     * Enables or disables Vertex Buffer Objects for color information.
+     * @param enabled If true, VBO enabled for colors
+     */
     public void setVBOColorEnabled(boolean enabled) {
         useVBOColor = enabled;
     }
 
+    // TODO: Finish javadoc for VBO information.
     public int getVBOVertexID() {
         return vboVertexID;
     }
@@ -652,18 +691,34 @@ public abstract class Geometry extends Spatial implements Serializable {
         return texBuf.length;
     }
 
+    /**
+     * Returns the number of vertexes defined in this Geometry object.  Basicly, it
+     * is vertex.length.
+     * @return The number of vertexes in this Geometry object.
+     */
     public int getVertQuantity() {
         return vertQuantity;
     }
 
+    /**
+     * Sets all texture coordinates to those defined in the given array of arrays.
+     * @param texture The new texture coordinates.
+     */
     public void setAllTextures(Vector2f[][] texture) {
         this.texture = texture;
     }
 
+    /**
+     * Returns the geometry's texture coordinate information.
+     * @return The geometry's texture coordinate information.
+     */
     public Vector2f[][] getAllTextures() {
         return texture;
     }
 
+    /**
+     * Clears all vertex, normal, texture, and color buffers by setting them to null.
+     */
     public void clearBuffers() {
         int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
                 .getTextureState().getNumberOfUnits();
@@ -707,7 +762,12 @@ public abstract class Geometry extends Spatial implements Serializable {
     public void setModelBound(BoundingVolume modelBound) {
         this.bound = modelBound;
     }
-    
+
+    /**
+     * When true, this geometry object will always be rendered as long as its parent is
+     * rendered.
+     * @param value The new forced view flag for this object.
+     */
     public void setForceView(boolean value) {
     	forceView = value;
     }
