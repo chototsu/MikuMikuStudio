@@ -56,7 +56,8 @@ public class LWJGLListenerFilter extends ListenerFilter {
 	protected float airAbsorptionHF;
 	protected float airAbsorptionFactor;
 	protected EAXListenerProperties listenerProperties;
-
+	protected int environment;
+	
 	public LWJGLListenerFilter() {
 		super();
 		listenerProperties= new EAXListenerProperties();
@@ -74,7 +75,7 @@ public class LWJGLListenerFilter extends ListenerFilter {
 		listenerProperties.setEnvironmentDiffusion(EAXListenerProperties.EAXLISTENER_DEFAULTENVIRONMENTDIFFUSION);
 		setAirAbsorptionFactor(EAXListenerProperties.EAXLISTENER_DEFAULTAIRABSORPTIONHF);
 		listenerProperties.setFlags(EAXListenerProperties.EAXLISTENER_DEFAULTFLAGS);
-		//listenerProperties.setAutoCommit(true);	
+		listenerProperties.setAutoCommit(false);	
 	}
 
 
@@ -82,8 +83,11 @@ public class LWJGLListenerFilter extends ListenerFilter {
 	/**
 	 * @param sourceNumber
 	 */
-	public void applyOnSource(int sourceNumber) {
-		//listenerProperties.setCurrentSoure(sourceNumber);
+	public void enable() {
+		listenerProperties.setAutoCommit(true);		
+		listenerProperties.setEnvironment(environment);
+		listenerProperties.setAutoCommit(false);	
+		
 	}
 
 	/**
@@ -260,6 +264,16 @@ public class LWJGLListenerFilter extends ListenerFilter {
 	public void setAirAbsorptionFactor(float f) {
 		airAbsorptionFactor= f;
 		listenerProperties.setAirAbsorptionFactor(f);
+	}
+
+
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.filter.ListenerFilter#getPredefinedFilter(int)
+	 */
+	public ListenerFilter getPredefinedFilter(int filterName) {
+		environment=filterName;
+		return this;
 	}
 
 }

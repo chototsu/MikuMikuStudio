@@ -41,107 +41,134 @@ package com.jme.sound.filter;
  *
  */
 public abstract class ListenerFilter {
-	
 
-		/**
-		 * @return
-		 */
-		public abstract float getAirAbsorptionHF();
-
-		/**
-		 * @return
-		 */
-		public abstract float getDecayTimeHFRatio() ;
-
-		/**
-		 * @return
-		 */
-		public abstract float getDecayTime() ;
-
-		/**
-		 * @return
-		 */
-		public abstract int getReflections() ;
-		/**
-		 * @return
-		 */
-		public abstract float getReflectionsDelay() ;
-		/**
-		 * @return
-		 */
-		public abstract int getReverb();
-
-		/**
-		 * @return
-		 */
-		public abstract float getReverbDelay() ;
+	public static final int GENERIC= 0;
+	public static final int PADDEDCELL= 1;
+	public static final int ROOM= 2;
+	public static final int BATHROOM= 3;
+	public static final int LIVINGROOM= 4;
+	public static final int STONEROOM= 5;
+	public static final int AUDITORIUM= 6;
+	public static final int CONCERTHALL= 7;
+	public static final int CAVE= 8;
+	public static final int ARENA= 9;
+	public static final int HANGAR= 10;
+	public static final int CARPETEDHALLWAY= 11;
+	public static final int HALLWAY= 12;
+	public static final int STONECORRIDOR= 13;
+	public static final int ALLEY= 14;
+	public static final int FOREST= 15;
+	public static final int CITY= 16;
+	public static final int MOUNTAINS= 17;
+	public static final int QUARRY= 18;
+	public static final int PLAIN= 19;
+	public static final int PARKINGLOT= 20;
+	public static final int SEWERPIPE= 21;
+	public static final int UNDERWATER= 22;
+	public static final int DRUGGED= 23;
+	public static final int DIZZY= 24;
+	public static final int PSYCHOTIC= 25;
+	public static final int COUNT= 26;
 
 	/**
 	 * @return
 	 */
-	public abstract int getRoom() ;
+	public abstract float getAirAbsorptionHF();
 
-		/**
-		 * @return
-		 */
-		public abstract int getRoomHF();
+	/**
+	 * @return
+	 */
+	public abstract float getDecayTimeHFRatio();
 
-		/**
-		 * @return
-		 */
-		public abstract float getRoomRolloffFactor();
+	/**
+	 * @return
+	 */
+	public abstract float getDecayTime();
 
-		
-		
-		/**
-		 * 
-		 * @param f
-		 */
-		public abstract void setAirAbsorptionHF(float f);
-		
-		/**
-		 * @param f
-		 */
-		public abstract void setDecayTimeHFRatio(float f) ;
+	/**
+	 * @return
+	 */
+	public abstract int getReflections();
+	/**
+	 * @return
+	 */
+	public abstract float getReflectionsDelay();
+	/**
+	 * @return
+	 */
+	public abstract int getReverb();
 
-		/**
-		 * @param i
-		 */
-		public abstract void setDecayTime(float i);
+	/**
+	 * @return
+	 */
+	public abstract float getReverbDelay();
 
-		/**
-		 * @param i
-		 */
-		public abstract void setReflections(int i) ;
+	/**
+	 * @return
+	 */
+	public abstract int getRoom();
 
-		/**
-		 * @param i
-		 */
-		public abstract void setReflectionsDelay(float i) ;
+	/**
+	 * @return
+	 */
+	public abstract int getRoomHF();
 
-		/**
-		 * @param i
-		 */
-		public abstract void setReverb(int i) ;
+	/**
+	 * @return
+	 */
+	public abstract float getRoomRolloffFactor();
 
-		/**
-		 * @param i
-		 */
-		public abstract void setReverbDelay(float i) ;
+	/**
+	 * 
+	 * @param f
+	 */
+	public abstract void setAirAbsorptionHF(float f);
+
+	/**
+	 * @param f
+	 */
+	public abstract void setDecayTimeHFRatio(float f);
 
 	/**
 	 * @param i
 	 */
-	public abstract void setRoom(int i) ;
+	public abstract void setDecayTime(float i);
 
-		/**
-		 * @param i
-		 */
-		public abstract void setRoomHF(int i) ;
+	/**
+	 * @param i
+	 */
+	public abstract void setReflections(int i);
 
-		/**
-		 * @param i
-		 */
-		public abstract void setRoomRolloffFactor(float i) ;
+	/**
+	 * @param i
+	 */
+	public abstract void setReflectionsDelay(float i);
+
+	/**
+	 * @param i
+	 */
+	public abstract void setReverb(int i);
+
+	/**
+	 * @param i
+	 */
+	public abstract void setReverbDelay(float i);
+
+	/**
+	 * @param i
+	 */
+	public abstract void setRoom(int i);
+
+	/**
+	 * @param i
+	 */
+	public abstract void setRoomHF(int i);
+
+	/**
+	 * @param i
+	 */
+	public abstract void setRoomRolloffFactor(float i);
+	
+	public abstract ListenerFilter getPredefinedFilter(int filterName);
 
 }
