@@ -36,6 +36,7 @@
  */
 package com.jme.sound.scene;
 
+import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.sound.ISoundRenderer;
 import com.jme.sound.SoundAPIController;
@@ -76,7 +77,13 @@ public abstract class SoundSpatial {
 	public void updateWorldData(float time) {
 		SoundAPIController.getSoundSystem().getListener().setPosition(
 			SoundAPIController.getRenderer().getCamera().getLocation());
-
+		float[] orientation=SoundAPIController.getSoundSystem().getListener().getOrientation();
+		Vector3f dir = SoundAPIController.getRenderer().getCamera().getDirection();
+		orientation[0]=dir.x;
+		orientation[1]=dir.y;
+		orientation[2]=dir.z;
+		SoundAPIController.getSoundSystem().getListener().setOrientation(orientation);
+	
 	}
 
 	/**
@@ -114,6 +121,7 @@ public abstract class SoundSpatial {
 			return;
 		}
 		Camera camera= r.getCamera();
+		System.out.println("Camera dir" + camera.getDirection());
 		//check to see if we can cull this node
 		draw(r);
 
