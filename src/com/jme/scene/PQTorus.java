@@ -37,130 +37,135 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 
 /**
- * <code>PQTorus</code>
- *
- * @author MASTER
- * @version $Id: PQTorus.java,v 1.3 2004-03-20 07:44:54 renanse Exp $
+ * <code>PQTorus</code> generates the geometry of a parameterized torus,
+ * also known as a pq torus.
+ * 
+ * @author Joshua Slack, Eric Woroshow
+ * @version $Id: PQTorus.java,v 1.4 2004-03-20 20:02:42 ericthered Exp $
  */
 public class PQTorus extends TriMesh {
 
-  private float p, q;
-  private float radius, width;
+    private float p, q;
+    private float radius, width;
+    private int steps, radialSamples;
 
-  private int steps, radialSamples;
+    public PQTorus(String name, float p, float q, float radius, float width,
+            int steps, int radialSamples) {
+        super(name);
 
-  public PQTorus(String name, float p, float q, float radius, float width,
-                 int steps, int radialSamples) {
-    super(name);
+        this.p = p;
+        this.q = q;
+        this.radius = radius;
+        this.width = width;
+        this.steps = steps;
+        this.radialSamples = radialSamples;
 
-    this.p = p;
-    this.q = q;
-    this.radius = radius;
-    this.width = width;
-    this.steps = steps;
-    this.radialSamples = radialSamples;
-
-    setGeometryData();
-    setColorData();
-  }
-
-  private void setGeometryData() {
-    final float THETA_STEP = (float) (FastMath.PI * 2f / steps);
-    final float BETA_STEP = (float) (FastMath.PI * 2f / radialSamples);
-
-    Vector3f[] toruspoints = new Vector3f[steps];
-    vertex = new Vector3f[radialSamples * steps];
-    normal = new Vector3f[vertex.length];
-    texture[0] = new Vector2f[vertex.length];
-
-    Vector3f pointB = new Vector3f(), T = new Vector3f(), N = new Vector3f(),
-        B = new Vector3f();
-
-    float r, x, y, z, theta = 0.0f, beta = 0.0f;
-    int nvertex = 0;
-
-    //Move along the length of the pq torus
-    for (int i = 0; i < steps; i++) {
-      theta += THETA_STEP;
-      float circleFraction = ((float)i) / (float)steps;
-
-      //Find the point on the torus
-      r = (float) (0.5f * (2.0f + FastMath.sin(q * theta)) * radius);
-      x = (float) (r * FastMath.cos(p * theta) * radius);
-      y = (float) (r * FastMath.sin(p * theta) * radius);
-      z = (float) (r * FastMath.cos(q * theta) * radius);
-      toruspoints[i] = new Vector3f(x, y, z);
-
-      //Now find a point slightly farther along the torus
-      r = (float) (0.5f * (2.0f + FastMath.sin(q * (theta + 0.01f))) * radius);
-      x = (float) (r * FastMath.cos(p * (theta + 0.01f)) * radius);
-      y = (float) (r * FastMath.sin(p * (theta + 0.01f)) * radius);
-      z = (float) (r * FastMath.cos(q * (theta + 0.01f)) * radius);
-      pointB = new Vector3f(x, y, z);
-
-      //Approximate the Frenet Frame
-      T = pointB.subtract(toruspoints[i]);
-      N = toruspoints[i].add(pointB);
-      B = T.cross(N);
-      N = B.cross(T);
-
-      //Normalise the two vectors before use
-      N = N.normalize();
-      B = B.normalize();
-
-      //Create a circle oriented by these new vectors
-      beta = 0.0f;
-      for (int j = 0; j < radialSamples; j++) {
-        beta += BETA_STEP;
-        float cx = (float) FastMath.cos(beta);
-        float cy = (float) FastMath.sin(beta);
-        float radialFraction = ((float)j) / radialSamples;
-
-        vertex[nvertex] = new Vector3f();
-        vertex[nvertex].x = width * (cx * N.x + cy * B.x) + toruspoints[i].x;
-        vertex[nvertex].y = width * (cx * N.y + cy * B.y) + toruspoints[i].y;
-        vertex[nvertex].z = width * (cx * N.z + cy * B.z) + toruspoints[i].z;
-        normal[nvertex] = vertex[nvertex].subtract(toruspoints[i]);
-        if (texture[0][nvertex] == null)
-          texture[0][nvertex] = new Vector2f();
-        texture[0][nvertex].x = radialFraction;
-        texture[0][nvertex].y = circleFraction;
-        nvertex++;
-      }
+        setGeometryData();
+        setIndexData();
+        setColorData();
     }
 
-    setVertices(vertex);
-    setNormals(normal);
-    setTextures(texture[0]);
+    private void setGeometryData() {
+        final float THETA_STEP = (float)(FastMath.TWO_PI / steps);
+        final float BETA_STEP = (float)(FastMath.TWO_PI / radialSamples);
 
-    int[] indices = new int[6 * vertex.length];
-    int j = 0;
-    for (int i = 0; i < vertex.length; i++) {
-      indices[j++] = i;
-      indices[j++] = i + 1;
-      indices[j++] = i - radialSamples;
+        Vector3f[] toruspoints = new Vector3f[steps];
+        vertex = new Vector3f[radialSamples * steps];
+        normal = new Vector3f[vertex.length];
+        texture[0] = new Vector2f[vertex.length];
 
-      indices[j++] = i + 1;
-      indices[j++] = i - radialSamples;
-      indices[j++] = i - radialSamples + 1;
+        Vector3f pointB = new Vector3f(), T = new Vector3f(), N = new Vector3f(), B = new Vector3f();
+
+        float r, x, y, z, theta = 0.0f, beta = 0.0f;
+        int nvertex = 0;
+
+        //Move along the length of the pq torus
+        for (int i = 0; i < steps; i++) {
+            theta += THETA_STEP;
+            float circleFraction = ((float) i) / (float) steps;
+
+            //Find the point on the torus
+            r = (float)(0.5f * (2.0f + FastMath.sin(q * theta)) * radius);
+            x = (float)(r * FastMath.cos(p * theta) * radius);
+            y = (float)(r * FastMath.sin(p * theta) * radius);
+            z = (float)(r * FastMath.cos(q * theta) * radius);
+            toruspoints[i] = new Vector3f(x, y, z);
+
+            //Now find a point slightly farther along the torus
+            r = (float)(0.5f * (2.0f + FastMath.sin(q * (theta + 0.01f))) * radius);
+            x = (float)(r * FastMath.cos(p * (theta + 0.01f)) * radius);
+            y = (float)(r * FastMath.sin(p * (theta + 0.01f)) * radius);
+            z = (float)(r * FastMath.cos(q * (theta + 0.01f)) * radius);
+            pointB = new Vector3f(x, y, z);
+
+            //Approximate the Frenet Frame
+            T = pointB.subtract(toruspoints[i]);
+            N = toruspoints[i].add(pointB);
+            B = T.cross(N);
+            N = B.cross(T);
+
+            //Normalise the two vectors before use
+            N = N.normalize();
+            B = B.normalize();
+
+            //Create a circle oriented by these new vectors
+            beta = 0.0f;
+            for (int j = 0; j < radialSamples; j++) {
+                beta += BETA_STEP;
+                float cx = (float) FastMath.cos(beta) * width;
+                float cy = (float) FastMath.sin(beta) * width;
+                float radialFraction = ((float) j) / radialSamples;
+
+                vertex[nvertex] = new Vector3f();
+                vertex[nvertex].x = (cx * N.x + cy * B.x) + toruspoints[i].x;
+                vertex[nvertex].y = (cx * N.y + cy * B.y) + toruspoints[i].y;
+                vertex[nvertex].z = (cx * N.z + cy * B.z) + toruspoints[i].z;
+
+                normal[nvertex] = vertex[nvertex].subtract(toruspoints[i]);
+
+                if (texture[0][nvertex] == null)
+                	texture[0][nvertex] = new Vector2f(radialFraction, circleFraction);
+
+                nvertex++;
+            }
+        }
+
+        setVertices(vertex);
+        setNormals(normal);
+        setTextures(texture[0]);
+
+        //TODO:
+        // - small optimizations (code for clarity to begin, then optimize! :)
     }
-    for (int i = 0; i < indices.length; i++) {
-      if (indices[i] < 0) indices[i] += vertex.length;
-      if (indices[i] >= vertex.length) indices[i] -= vertex.length;
-    }
-    setIndices(indices);
 
-    //TODO:
-    // - small optimizations (code for clarity to begin, then optimize! :)
-    // - set color data
-  }
+    private void setIndexData() {
+        int[] indices = new int[6 * vertex.length];
+        int j = 0;
 
-  private void setColorData() {
-    color = new ColorRGBA[vertex.length];
-    //initialize colors to white
-    for (int x = 0; x < vertex.length; x++) {
-      color[x] = new ColorRGBA();
+        for (int i = 0; i < vertex.length; i++) {
+            indices[j++] = i;
+            indices[j++] = i + 1;
+            indices[j++] = i - radialSamples;
+
+            indices[j++] = i + 1;
+            indices[j++] = i - radialSamples;
+            indices[j++] = i - radialSamples + 1;
+        }
+
+        for (int i = 0; i < indices.length; i++) {
+            if (indices[i] < 0) indices[i] += vertex.length;
+            if (indices[i] >= vertex.length) indices[i] -= vertex.length;
+        }
+
+        setIndices(indices);
     }
-    setColors(color);
-  }
+
+    private void setColorData() {
+        color = new ColorRGBA[vertex.length];
+        //initialize colors to white
+        for (int x = 0; x < vertex.length; x++) {
+            color[x] = new ColorRGBA();
+        }
+        setColors(color);
+    }
 }
