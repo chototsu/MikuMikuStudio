@@ -136,11 +136,14 @@ public class XMLtoBinary {
                 } else{
                     writeString(value);
                 }
+            } else if ("index".equals(att)){
+                if("sptscale".equals(qName) || "sptrot".equals(qName) || "spttrans".equals(qName))
+                    writeIntArray(value);
             } else if ("loc".equals(att) || "dir".equals(att) || "scale".equals(att) || "translation".equals(att) || "trans".equals(att) || "localvec".equals(att)){
                 writeVec3f(value);
             } else if ("rotation".equals(att) || "rot".equals(att) || "localrot".equals(att)){
                 writeQuat(value);
-            } else if ("alpha".equals(att) || "shiny".equals(att) || "time".equals(att)){
+            } else if ("alpha".equals(att) || "shiny".equals(att) || "time".equals(att) || "width".equals(att)){
                 writeFloat(value);
             } else if ("fconstant".equals(att) || "flinear".equals(att) || "fquadratic".equals(att) || "fangle".equals(att) || "fexponent".equals(att)){
                 writeFloat(value);
@@ -152,14 +155,16 @@ public class XMLtoBinary {
                 writeBoolean(value);
             } else if ("numJoints".equals(att) || "index".equals(att) || "parentindex".equals(att)){
                 writeInt(value);
-            } else if ("v3farray".equals(att)){
+            } else if ("v3farray".equals(att) || "scalevalues".equals(att) || "transvalues".equals(att)){
                 writeVector3fArray(value);
-            } else if ("quatarray".equals(att)){
+            } else if ("quatarray".equals(att) || "rotvalues".equals(att)){
                 writeQuatArray(value);
             } else if ("q3norm".equals(att)){
                 writeShortArray(value);
             } else if ("q3vert".equals(att)){
                 writeByteArray(value);
+            } else if ("texnum".equals(att) || "wrap".equals(att) || "parnum".equals(att) || "obnum".equals(att) || "facetype".equals(att) || "numobjects".equals(att)){
+                writeInt(value);
             } else
                 writeString(value);
         }
@@ -216,10 +221,10 @@ public class XMLtoBinary {
             }
             myOut.writeInt(information.length/4);
             for (int i=0;i<information.length/4;i++){
-                myOut.writeFloat(Float.parseFloat(information[i*3+0]));
-                myOut.writeFloat(Float.parseFloat(information[i*3+1]));
-                myOut.writeFloat(Float.parseFloat(information[i*3+2]));
-                myOut.writeFloat(Float.parseFloat(information[i*3+3]));
+                myOut.writeFloat(Float.parseFloat(information[i*4+0]));
+			 	myOut.writeFloat(Float.parseFloat(information[i*4+1]));
+			 	myOut.writeFloat(Float.parseFloat(information[i*4+2]));
+			 	myOut.writeFloat(Float.parseFloat(information[i*4+3]));
             }
         }
 
