@@ -44,7 +44,7 @@ import com.jme.math.Ray;
  * the client application need not worry about what type of bounding volume is
  * being used.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.13 2004-04-22 22:26:36 renanse Exp $
+ * @version $Id: Intersection.java,v 1.14 2004-07-19 22:11:59 renanse Exp $
  */
 public class Intersection {
     /**
@@ -86,7 +86,7 @@ public class Intersection {
         BoundingVolume vol2) {
         if (vol1 instanceof BoundingSphere) {
             if (vol2 instanceof BoundingSphere) {
-                return intersection(
+                return IntersectionSphere.intersection(
                     (BoundingSphere) vol1,
                     (BoundingSphere) vol2);
             } else {

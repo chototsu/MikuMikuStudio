@@ -29,10 +29,6 @@
  *
  */
 
-/*
- * EDIT: 02/09/2004 - Changed merge to return this instead of null. GOP
- */
-
 package com.jme.bounding;
 
 import java.util.logging.Level;
@@ -54,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.10 2004-07-15 23:40:24 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.11 2004-07-19 22:11:58 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
