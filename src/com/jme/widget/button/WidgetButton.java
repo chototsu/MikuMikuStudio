@@ -41,17 +41,16 @@ import com.jme.widget.layout.WidgetFlowLayout;
 import com.jme.widget.text.WidgetLabel;
 
 /**
+ * <code>WidgetButton</code>
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: WidgetButton.java,v 1.6 2004-03-04 03:27:05 greggpatton Exp $
  */
 public class WidgetButton extends WidgetLabel {
 
     protected WidgetButtonStateType buttonState = WidgetButtonStateType.BUTTON_UP;
 
     public WidgetButton() {
-        super();
+        super("");
 
         init();
     }
@@ -89,8 +88,6 @@ public class WidgetButton extends WidgetLabel {
 
         }
 
-        updateChildrenViewports();
-
         super.onDraw(r);
 
         for (int i = 0; i < getQuantity(); i++) {
@@ -105,7 +102,8 @@ public class WidgetButton extends WidgetLabel {
 
             this.buttonState = WidgetButtonStateType.BUTTON_DOWN;
 
-            setBorder(new WidgetBorder(getBorder(), WidgetBorderType.LOWERED));
+            if (getBorder() != null)
+                setBorder(new WidgetBorder(getBorder(), WidgetBorderType.LOWERED));
 
             getNotifierMouseButtonDown().notifyObservers(this);
 
@@ -117,7 +115,8 @@ public class WidgetButton extends WidgetLabel {
 
             this.buttonState = WidgetButtonStateType.BUTTON_UP;
 
-            setBorder(new WidgetBorder(getBorder(), WidgetBorderType.RAISED));
+            if (getBorder() != null)
+                setBorder(new WidgetBorder(getBorder(), WidgetBorderType.RAISED));
 
             if (getMouseOwner() == this)
                 getNotifierMouseButtonUp().notifyObservers(this);
