@@ -29,6 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  02/09/2004 - Added getRendererType method. GOP
+ */ 
+ 
 package com.jme.system;
 
 import java.awt.Toolkit;
@@ -39,6 +44,7 @@ import org.lwjgl.opengl.Window;
 
 import com.jme.renderer.LWJGLRenderer;
 import com.jme.renderer.Renderer;
+import com.jme.renderer.RendererType;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
 
@@ -49,7 +55,8 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  * that gives a way of displaying data to the created window.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLDisplaySystem.java,v 1.9 2004-02-02 04:00:42 ericthered Exp $
+ * @author Gregg Patton
+ * @version $Id: LWJGLDisplaySystem.java,v 1.10 2004-02-09 12:17:03 greggpatton Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -226,4 +233,12 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 		WidgetFont f = new WidgetLWJGLFont("Default");
 		return f;
 	}
+
+    /** <code>getRendererType</code> 
+     * @return
+     * @see com.jme.system.DisplaySystem#getRendererType()
+     */
+    public RendererType getRendererType() {
+        return RendererType.LWJGL;
+    }
 }

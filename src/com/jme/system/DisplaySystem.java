@@ -29,11 +29,22 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  02/09/2004 - Added getRendererType method. GOP
+ */ 
+ 
 package com.jme.system;
 
 import com.jme.renderer.Renderer;
+import com.jme.renderer.RendererType;
 import com.jme.widget.font.WidgetFont;
 
+/**
+ * <code>DisplaySystem</code>
+ * @author Gregg Patton
+ * @version $Id: DisplaySystem.java,v 1.11 2004-02-09 12:15:40 greggpatton Exp $
+ */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
  * Specifically, any implementing class will create a window for rendering. 
@@ -55,7 +66,7 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.10 2004-02-02 04:00:42 ericthered Exp $
+ * @version $Id: DisplaySystem.java,v 1.11 2004-02-09 12:15:40 greggpatton Exp $
  */
 public abstract class DisplaySystem {
 	private static DisplaySystem display;
@@ -77,7 +88,9 @@ public abstract class DisplaySystem {
 	 */
 	public static DisplaySystem getDisplaySystem(String key) {
 		if ("LWJGL".equalsIgnoreCase(key)) {
-			display = new LWJGLDisplaySystem();
+			
+            display = new LWJGLDisplaySystem();
+            
 			return display;
 		}
 
@@ -151,6 +164,14 @@ public abstract class DisplaySystem {
 	 *      compatible with the used <code>DisplaySystem</code>.
 	 */
 	public abstract Renderer getRenderer();
+
+    /**
+     * <code>getRendererType</code> returns an instance of a strongly typed enumeration
+     * that can be used to determine the renderer that the DisplaySystem is currently using.
+     * @see com.jme.util.JmeType
+     * @return
+     */
+    public abstract RendererType getRendererType();
 
 	/**
 	 * <code>isCreated</code> returns the current status of the display
