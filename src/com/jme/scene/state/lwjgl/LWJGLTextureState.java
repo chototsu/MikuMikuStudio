@@ -58,7 +58,7 @@ import java.nio.FloatBuffer;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.21 2004-06-29 19:08:06 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.22 2004-07-02 23:51:36 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -84,9 +84,13 @@ public class LWJGLTextureState extends TextureState {
       GL13.GL_CONSTANT, GL13.GL_PREVIOUS};
 
   private int[] textureCombineOpRgb = {GL11.GL_SRC_COLOR,
-      GL11.GL_ONE_MINUS_SRC_COLOR};
+      GL11.GL_ONE_MINUS_SRC_COLOR, GL11.GL_SRC_ALPHA,
+      GL11.GL_ONE_MINUS_SRC_ALPHA};
 
+// first two entries are mostly dummy (except for def = 0) since our alpha's
+// only use 3 and 4
   private int[] textureCombineOpAlpha = {GL11.GL_SRC_ALPHA,
+      GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_SRC_ALPHA,
       GL11.GL_ONE_MINUS_SRC_ALPHA};
 
   private float[] textureCombineScale = {1.0f, 2.0f, 4.0f};
@@ -186,28 +190,92 @@ public class LWJGLTextureState extends TextureState {
           if (image == null) {
             LoggingSystem.getLogger().log(Level.WARNING,
                                           "Image data for texture is null.");
-            texture.setTextureId( -1);
-            return;
           }
 
           // Set up the anisotropic filter.
           GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
-                               EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                               EXTTextureFilterAnisotropic.
+                               GL_TEXTURE_MAX_ANISOTROPY_EXT,
                                texture.getAnisoLevel());
 
-          if (texture.getMipmap() == Texture.MM_NONE) {
-            GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0,
-                              imageComponents[image.getType()], image
-                              .getWidth(), image.getHeight(), 0,
-                              imageFormats[image.getType()],
-                              GL11.GL_UNSIGNED_BYTE, image.getData());
-          } else {
-            GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
-                                  imageComponents[image.getType()], image
-                                  .getWidth(), image.getHeight(),
-                                  imageFormats[image.getType()],
-                                  GL11.GL_UNSIGNED_BYTE, image.getData());
+          // Get texture image data.  Not all textures have image data.
+          // For example, AM_COMBINE modes can use primary colors,
+          // texture output, and constants to modify fragments via the
+          // texture units.
+          if (image != null) {
+            if (texture.getMipmap() == Texture.MM_NONE) {
+              GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0,
+                                imageComponents[image.getType()], image
+                                .getWidth(), image.getHeight(), 0,
+                                imageFormats[image.getType()],
+                                GL11.GL_UNSIGNED_BYTE, image.getData());
+            } else {
+              GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
+                                    imageComponents[image.getType()], image
+                                    .getWidth(), image.getHeight(),
+                                    imageFormats[image.getType()],
+                                    GL11.GL_UNSIGNED_BYTE, image.getData());
+            }
           }
+
+          // set up wrap mode
+          switch (texture.getWrap()) {
+            case Texture.WM_ECLAMP_S_ECLAMP_T:
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_S,
+                                   GL12.GL_CLAMP_TO_EDGE);
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_T,
+                                   GL12.GL_CLAMP_TO_EDGE);
+              break;
+            case Texture.WM_BCLAMP_S_BCLAMP_T:
+              GL11
+                  .glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_S,
+                                   GL13.GL_CLAMP_TO_BORDER);
+              GL11
+                  .glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_T,
+                                   GL13.GL_CLAMP_TO_BORDER);
+              break;
+            case Texture.WM_CLAMP_S_CLAMP_T:
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+              break;
+            case Texture.WM_CLAMP_S_WRAP_T:
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+              break;
+            case Texture.WM_WRAP_S_CLAMP_T:
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+              break;
+            case Texture.WM_WRAP_S_WRAP_T:
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+              GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                   GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+              break;
+          }
+
+          // set up filter mode
+          GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                               GL11.GL_TEXTURE_MAG_FILTER,
+                               textureFilter[texture
+                               .getFilter()]);
+
+          // set up mipmap mode
+          GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                               GL11.GL_TEXTURE_MIN_FILTER,
+                               textureMipmap[texture
+                               .getMipmap()]);
+
         } else {
           // texture already exists in OpenGL, just bind it
           GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture
@@ -262,25 +330,16 @@ public class LWJGLTextureState extends TextureState {
                          textureCombineOpRgb[texture.getCombineOp1RGB()]);
           GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_RGB,
                          textureCombineOpRgb[texture.getCombineOp2RGB()]);
-          GL11
-              .glTexEnvi(GL11.GL_TEXTURE_ENV,
-                         GL13.GL_OPERAND0_ALPHA,
-                         textureCombineOpAlpha[texture
-                         .getCombineOp0Alpha()]);
-          GL11
-              .glTexEnvi(GL11.GL_TEXTURE_ENV,
-                         GL13.GL_OPERAND1_ALPHA,
-                         textureCombineOpAlpha[texture
-                         .getCombineOp1Alpha()]);
-          GL11
-              .glTexEnvi(GL11.GL_TEXTURE_ENV,
-                         GL13.GL_OPERAND2_ALPHA,
-                         textureCombineOpAlpha[texture
-                         .getCombineOp2Alpha()]);
+          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA,
+                         textureCombineOpAlpha[texture.getCombineOp0Alpha()]);
+          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_ALPHA,
+                         textureCombineOpAlpha[texture.getCombineOp1Alpha()]);
+          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_ALPHA,
+                         textureCombineOpAlpha[texture.getCombineOp2Alpha()]);
           GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_RGB_SCALE,
                          textureCombineScale[texture.getCombineScaleRGB()]);
           GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE,
-                         textureCombineScale[texture.getCombineScaleRGB()]);
+                         textureCombineScale[texture.getCombineScaleAlpha()]);
 
         } else if (texture.getEnvironmentalMapMode() == Texture.EM_NONE) {
           // turn off anything that other maps might have turned on
@@ -309,60 +368,6 @@ public class LWJGLTextureState extends TextureState {
 
         GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
                       texture.getBlendColor());
-
-        // set up wrap mode
-        switch (texture.getWrap()) {
-          case Texture.WM_ECLAMP_S_ECLAMP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
-            break;
-          case Texture.WM_BCLAMP_S_BCLAMP_T:
-            GL11
-                .glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S,
-                                 GL13.GL_CLAMP_TO_BORDER);
-            GL11
-                .glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T,
-                                 GL13.GL_CLAMP_TO_BORDER);
-            break;
-          case Texture.WM_CLAMP_S_CLAMP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-            break;
-          case Texture.WM_CLAMP_S_WRAP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-            break;
-          case Texture.WM_WRAP_S_CLAMP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
-            break;
-          case Texture.WM_WRAP_S_WRAP_T:
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
-            GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                                 GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
-            break;
-        }
-
-        // set up filter mode
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                             GL11.GL_TEXTURE_MAG_FILTER, textureFilter[texture
-                             .getFilter()]);
-
-        // set up mipmap mode
-        GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                             GL11.GL_TEXTURE_MIN_FILTER, textureMipmap[texture
-                             .getMipmap()]);
       }
     }
   }
