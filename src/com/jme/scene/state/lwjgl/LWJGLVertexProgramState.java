@@ -51,13 +51,13 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLVertexProgramState</code>
  *
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.3 2004-04-17 00:35:43 ericthered Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.4 2004-04-21 18:53:19 renanse Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 
     private byte[] program;
     private int programID = -1;
-    
+
     /**
      * Determines if the current OpenGL context supports the
      * GL_ARB_vertex_program extension.
@@ -86,11 +86,11 @@ public class LWJGLVertexProgramState extends VertexProgramState {
         	for (int i = 0; i < program.length; i++)
                 program[i] = ((Byte)bytes.get(i)).byteValue();
 
-        } catch (IOException e) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Could not load vertex program");
+        } catch (Exception e) {
+            LoggingSystem.getLogger().throwing(getClass().getName(), "load(URL)", e);
         }
 	}
-	
+
     private void create() {
         IntBuffer buf = BufferUtils.createIntBuffer(1);
 
@@ -108,32 +108,37 @@ public class LWJGLVertexProgramState extends VertexProgramState {
     }
 
     public void apply() {
+      if (isSupported()) {
         if (isEnabled()) {
 
-            //Vertex program not yet loaded
-            if (programID == -1)
-                create();
+          //Vertex program not yet loaded
+          if (programID == -1)
+            create();
 
-            ARBVertexProgram.glBindProgramARB(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, programID);
-            GL11.glEnable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
-            
-            //load environmental parameters...
-            for (int i = 0; i < envparameters.length; i++)
-                if (envparameters[i] != null)
-                    ARBVertexProgram.glProgramEnvParameter4fARB(
-                            ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
-                            envparameters[i][0], envparameters[i][1], envparameters[i][2], envparameters[i][3]);
+          ARBVertexProgram.glBindProgramARB(ARBVertexProgram.
+                                            GL_VERTEX_PROGRAM_ARB, programID);
+          GL11.glEnable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
 
-            //load local parameters...
-            if (usingParameters) //No sense checking array if we are sure no parameters are used
-	            for (int i = 0; i < parameters.length; i++)
-	                if (parameters[i] != null)
-	                    ARBVertexProgram.glProgramLocalParameter4fARB(
-	                            ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
-	                            parameters[i][0], parameters[i][1], parameters[i][2], parameters[i][3]);
+          //load environmental parameters...
+          for (int i = 0; i < envparameters.length; i++)
+            if (envparameters[i] != null)
+              ARBVertexProgram.glProgramEnvParameter4fARB(
+                  ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
+                  envparameters[i][0], envparameters[i][1], envparameters[i][2],
+                  envparameters[i][3]);
+
+              //load local parameters...
+          if (usingParameters) //No sense checking array if we are sure no parameters are used
+            for (int i = 0; i < parameters.length; i++)
+              if (parameters[i] != null)
+                ARBVertexProgram.glProgramLocalParameter4fARB(
+                    ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
+                    parameters[i][0], parameters[i][1], parameters[i][2],
+                    parameters[i][3]);
 
         } else {
           GL11.glDisable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
         }
+      }
     }
 }
