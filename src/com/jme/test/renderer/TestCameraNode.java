@@ -33,11 +33,10 @@ package com.jme.test.renderer;
 
 import com.jme.app.AbstractGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
+import com.jme.input.NodeController;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -61,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.1 2003-12-03 19:57:31 mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.2 2004-01-27 23:59:22 mojomonkey Exp $
  */
 public class TestCameraNode extends AbstractGame {
     private TriMesh t;
@@ -73,10 +72,7 @@ public class TestCameraNode extends AbstractGame {
     private InputController input;
     private Thread thread;
     private Timer timer;
-    private Quaternion rotQuat;
-    private float angle = 0;
-    private Vector3f axis;
-
+    
     /**
      * Entry point for the test, 
      * @param args
@@ -99,21 +95,11 @@ public class TestCameraNode extends AbstractGame {
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
-        if(timer.getTimePerFrame() < 1) {
-            angle = angle + (timer.getTimePerFrame() * 1);
-            if(angle > 360) {
-                angle = 0;
-            }
-        }
         
-        rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
         text.print("Frame Rate: " + timer.getFrameRate());
         
-        t.setLocalRotation(rotQuat);
-        rotQuat.inverse();
-        camNode.setLocalRotation(rotQuat);
         scene.updateGeometricState(0.0f, true);
         
        
@@ -161,16 +147,14 @@ public class TestCameraNode extends AbstractGame {
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
-
-        input = new FirstPersonController(this, cam, "LWJGL");
+        camNode = new CameraNode(cam);
+        input = new NodeController(this, camNode, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");
         
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
-        rotQuat = new Quaternion();
-        axis = new Vector3f(1,1,1);
-
+        
     }
 
     /** 
@@ -195,6 +179,7 @@ public class TestCameraNode extends AbstractGame {
         as1.setDstFunction(AlphaState.DB_ONE);
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setEnabled(true);
         text.setRenderState(as1);
         scene = new Node();
         scene.attachChild(text);
@@ -209,6 +194,9 @@ public class TestCameraNode extends AbstractGame {
         t.updateModelBound();
         
         t.setLocalTranslation(new Vector3f(0,0,0));
+        
+        Box t2 = new Box(min.divide(4), max.divide(4));
+        t2.setLocalTranslation(new Vector3f(-5,0,10));
         
         scene = new Node();
         scene.attachChild(t);
@@ -250,8 +238,9 @@ public class TestCameraNode extends AbstractGame {
         //scene.setRenderState(state);
         scene.setRenderState(buf);
         
-        camNode = new CameraNode(cam);
+        
         camNode.setLocalTranslation(new Vector3f(0,0,-75));
+        camNode.attachChild(t2);
         scene.attachChild(camNode);
         
         //cam.update();
