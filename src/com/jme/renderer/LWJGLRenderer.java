@@ -81,7 +81,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.9 2004-01-07 03:52:53 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.10 2004-01-07 14:40:27 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -774,21 +774,29 @@ public class LWJGLRenderer implements Renderer {
 
         // render the object
         GL.glBegin(GL.GL_LINE_STRIP);
-
-        GL.glColor4f(
-            c.getColors()[0].r,
-            c.getColors()[0].g,
-            c.getColors()[0].b,
-            c.getColors()[0].a);
-        float colorInterval = 1f / c.getColors().length;
-        float colorModifier = colorInterval;
+    
+        ColorRGBA[] color = c.getColors();
+        float colorInterval = 0;
+        float colorModifier = 0;
         int colorCounter = 0;
+        if(null != color) {
+            GL.glColor4f(
+                color[0].r,
+                color[0].g,
+                color[0].b,
+                color[0].a);
+        
+            colorInterval = 1f / c.getColors().length;
+            colorModifier = colorInterval;
+            colorCounter = 0;
+        }
+        
         Vector3f point;
         for (float t = 0;
             t <= (1 + (1.0f / c.getSteps()));
             t += 1.0f / c.getSteps()) {
                 
-            if (t >= colorInterval) {
+            if (t >= colorInterval && color != null) {
                 
                 colorInterval += colorModifier;
                 GL.glColor4f(
