@@ -52,7 +52,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilkshapeASCII.java,v 1.1 2004-01-22 21:48:55 mojomonkey Exp $
+ * @version $Id: TestMilkshapeASCII.java,v 1.2 2004-01-29 20:52:01 mojomonkey Exp $
  */
 public class TestMilkshapeASCII extends AbstractGame {
     private TriMesh t;
@@ -189,6 +189,7 @@ public class TestMilkshapeASCII extends AbstractGame {
         pl.setEnabled(true);
 
         lightstate = display.getRenderer().getLightState();
+        lightstate.setEnabled(true);
         
         lightNode = new LightNode(lightstate);
         lightNode.setLight(pl);
