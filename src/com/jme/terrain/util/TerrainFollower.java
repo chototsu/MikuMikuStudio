@@ -6,6 +6,9 @@ import com.jme.scene.TriMesh;
 import com.jme.math.Vector3f;
 import com.jme.math.FastMath;
 import com.jme.util.MemPool;
+import com.jme.util.LoggingSystem;
+
+import java.util.logging.Level;
 
 /**
  * Started Date: Aug 17, 2004<br><br>
@@ -71,7 +74,8 @@ public class TerrainFollower {
         if (terrain instanceof Node){
             Node parent=(Node) terrain;
             for (int i=parent.getQuantity()-1;i>=0;i--){
-                System.out.println("begining to fill " + parent.getChild(i).getName());
+                LoggingSystem.getLogger().log(Level.INFO,
+                    "Begining to fill " + parent.getChild(i).getName());
                 fillValues(parent.getChild(i));
             }
             return;
