@@ -92,6 +92,7 @@ public class TestRenderToTexture extends SimpleGame {
         rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
+        display.setTitle("Render to Texture - FPS:"+(int)timer.getFrameRate()+" - "+display.getRenderer().getStatistics());
 
 //        t.setLocalRotation(rotQuat);
         t2.setLocalRotation(rotQuat);
@@ -119,6 +120,7 @@ public class TestRenderToTexture extends SimpleGame {
      * @see com.jme.app.SimpleGame#render()
      */
     protected void render(float interpolation) {
+        display.getRenderer().clearStatistics();
 
         try {
 
@@ -134,7 +136,7 @@ public class TestRenderToTexture extends SimpleGame {
             scene.unsetStates();
             display.getRenderer().draw(fake);
             GL.glBindTexture(GL.GL_TEXTURE_2D, tex_handle);
-            GL.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_COMPRESSED_RGB, 0, 0, 512, 512, 0);
+            GL.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, 512, 512);
             pbuffer.releaseContext();
         } catch (Exception e) {
             System.err.println("ouch");
@@ -213,6 +215,7 @@ public class TestRenderToTexture extends SimpleGame {
         GL.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
 //        GL.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_GENERATE_MIPMAP, GL.GL_TRUE);
 
+        display.getRenderer().enableStatistics(true);
         initPbuffer();
     }
 
