@@ -42,10 +42,13 @@ import com.jme.renderer.RendererType;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>AbstractInputController</code>
+ * <code>AbstractInputController</code> defines a super abstract class for
+ * input controlling. It maintains a list of actions and mouse actions. These
+ * actions are then processed during every update cycle. Subclasses are required
+ * to defined to setMouse and setActions methods for custom InputControllers.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbstractInputController.java,v 1.1 2004-02-09 11:54:07 greggpatton Exp $
+ * @version $Id: AbstractInputController.java,v 1.2 2004-02-28 04:41:58 mojomonkey Exp $
  */
 public abstract class AbstractInputController {
     
@@ -59,14 +62,27 @@ public abstract class AbstractInputController {
     protected boolean updateKeyboardActionsEnabled = true;
     protected boolean updateMouseActionsEnabled = true;
 
+    /**
+     * Constructor creates a default <code>AbstractInputController</code>.
+     *
+     */
     public AbstractInputController() {
         init(null, null);
     }
     
+    /**
+     * Constructor instantiates a new <code>AbstractInputController</code>
+     * defining the camera that defines the viewing.
+     * @param camera the camera that defines the viewport frame.
+     */
     public AbstractInputController(Camera camera) {
         init(null, camera);
     }
     
+    /**
+     * 
+     * @param app
+     */
     public AbstractInputController(AbstractGame app) {
         init(app, null);
     }

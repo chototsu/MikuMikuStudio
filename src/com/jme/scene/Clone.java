@@ -36,27 +36,46 @@ import java.nio.IntBuffer;
 import com.jme.renderer.Renderer;
 
 /**
- * <code>Clone</code>
+ * <code>Clone</code> defines a scene node that takes it's geometry data from
+ * a set <code>TriMesh</code> from a parent <code>CloneNode</code>. 
+ * <code>Clone</code> has no real data of it's own, only a position, orientation
+ * and render states. This allows for a more efficient system for reusing loaded
+ * model data. It is intended to be a child of the <code>CloneNode</code>, and
+ * this is where it obtains the relevant information needed to render. The
+ * clone builds it's bounding volume by transforming the cloned geometry's 
+ * model bounds by it's current position, orientation and scale.
  * @author Mark Powell
- * @version $Id: Clone.java,v 1.2 2004-02-27 23:51:42 renanse Exp $
+ * @version $Id: Clone.java,v 1.3 2004-02-28 04:41:59 mojomonkey Exp $
  */
 public class Clone extends Spatial {
 
     private IntBuffer indexBuffer;
 
+    /**
+     * Constructor instantiates a new <code>Clone</code> object. The name of
+     * the object is supplied during construction.
+     * @param name the name of the cloned object.
+     */
     public Clone(String name) {
         super(name);
     }
 
-    /** <code>draw</code>
-     * @param r
+    /** <code>draw</code> render's this clone. It is assumed, maintained by
+     * a <code>CloneNode</code> that the relevent Geometry data is already
+     * supplied to the graphics card, and a call to render the data will 
+     * produce the desired results. Using <code>Clone</code> without 
+     * <code>CloneNode</code> will produce unpredictable results.
+     * @param r the renderer used to draw this object.
      * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
      */
     public void draw(Renderer r) {
         r.draw(this);
     }
 
-    /** <code>updateWorldBound</code>
+    /** <code>updateWorldBound</code> updates the bounding volume of this
+     * object. The geometry maintained by <code>CloneNode</code> is transformed
+     * by this object's rotation, translation and scale. If the parent is 
+     * not a <code>CloneNode</code> the worldBound will not be updated.
      *
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
@@ -68,10 +87,21 @@ public class Clone extends Spatial {
         }
     }
 
+    /**
+     * 
+     * <code>setIndexBuffer</code> sets the indices that define how the
+     * currently set geometry should be displayed.
+     * @param indexBuffer the indices of the geometry.
+     */
     public void setIndexBuffer(IntBuffer indexBuffer) {
         this.indexBuffer = indexBuffer;
     }
 
+    /**
+     * 
+     * <code>getIndexBuffer</code> returns the indices of the geometry.
+     * @return the indices of the geometry.
+     */
     public IntBuffer getIndexBuffer() {
         return indexBuffer;
     }
