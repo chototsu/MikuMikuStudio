@@ -29,6 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  03/30/2004 - Added default constructor. GOP
+ */
+
 package com.jme.widget;
 
 import java.util.Observable;
@@ -58,20 +63,19 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
     private static Timer timer;
     private static WidgetFrameRate frameRate;
 
+    public WidgetAbstractFrame() {
+        super();
+        init();
+    }
+    
     /**
      * @param ic
      */
     public WidgetAbstractFrame(AbstractInputHandler ic) {
-        super();
-
-        WidgetAbstractFrame.timer =
-            Timer.getTimer(DisplaySystem.getDisplaySystem().getRendererType().getName());
-
-        frameRate = new WidgetFrameRate(timer);
+        this();
 
         setInputController(ic);
 
-        init();
     }
 
     /**
@@ -115,6 +119,11 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
      * 
      */
     public void init() {
+
+        WidgetAbstractFrame.timer =
+            Timer.getTimer(DisplaySystem.getDisplaySystem().getRendererType().getName());
+
+        frameRate = new WidgetFrameRate(timer);
 
         WidgetFontManager.init();
 
