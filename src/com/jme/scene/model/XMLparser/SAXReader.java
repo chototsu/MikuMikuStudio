@@ -9,12 +9,10 @@ import javax.xml.parsers.SAXParser;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
 
 import java.util.logging.Level;
 import java.io.File;
 import java.io.InputStream;
-import java.awt.*;
 
 /**
  * XML file format parser for jME
