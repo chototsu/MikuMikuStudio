@@ -34,12 +34,11 @@ package com.jme.widget.scroller;
 import java.util.Observable;
 import java.util.Observer;
 
+import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetImpl;
-import com.jme.widget.input.mouse.WidgetMouseStateAbstract;
 import com.jme.widget.layout.WidgetFlowLayout;
 import com.jme.widget.panel.WidgetPanel;
 import com.jme.widget.util.WidgetRepeater;
@@ -197,11 +196,14 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
     }
 
     public void update(Observable o, Object arg) {
-		WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
+		//WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
+        MouseInput mi = getMouseInput();
+
 
         if (type == WidgetScrollerType.VERTICAL) {
 
-            thumbPos -= mouseState.dy;
+            //thumbPos -= mouseState.dy;
+            thumbPos -= mi.getYDelta();
 
             clampThumbPos();
 
@@ -210,7 +212,8 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
         } else if (type == WidgetScrollerType.HORIZONTAL) {
 
-            thumbPos += mouseState.dx;
+            //thumbPos += mouseState.dx;
+            thumbPos += mi.getXDelta();
 
             clampThumbPos();
 
@@ -307,18 +310,19 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
     }
 
     public void doMouseButtonDown() {
-		WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
+        //WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
+        MouseInput mi = getMouseInput();
 
         if (this.type == WidgetScrollerType.VERTICAL) {
             Vector2f l = thumb.getAbsoluteLocation();
 
-            if (mouseState.y > l.y + thumbSize) {
+            if (mi.getYAbsolute() > l.y + thumbSize) {
 
                 pageUpLeft();
                 this.pagingUpLeft = true;
                 repeat.start();
 
-            } else if (mouseState.y < l.y) {
+            } else if (mi.getYAbsolute() < l.y) {
                 pageDownRight();
                 this.pagingDownRight = true;
                 repeat.start();
@@ -327,13 +331,13 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
         } else if (this.type == WidgetScrollerType.HORIZONTAL) {
             Vector2f l = thumb.getAbsoluteLocation();
 
-            if (mouseState.x > l.x + thumbSize) {
+            if (mi.getXAbsolute() > l.x + thumbSize) {
 
                 pageDownRight();
                 this.pagingDownRight = true;
                 repeat.start();
 
-            } else if (mouseState.x < l.x) {
+            } else if (mi.getXAbsolute() < l.x) {
                 pageUpLeft();
                 this.pagingUpLeft = true;
                 repeat.start();
