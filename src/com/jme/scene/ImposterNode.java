@@ -45,7 +45,7 @@ import com.jme.renderer.Camera;
 /**
  * <code>ImposterNode</code>
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.4 2004-04-01 00:42:09 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.5 2004-04-01 17:32:35 renanse Exp $
  */
 public class ImposterNode extends Node {
   private TextureRenderer tRenderer;
@@ -98,10 +98,10 @@ public class ImposterNode extends Node {
     if (!haveDrawn || shouldDoUpdate(r.getCamera())) {
       updateCamera(r.getCamera().getLocation());
       if (byTime) {
-        updateTexture(redrawRate);
+        updateScene(redrawRate);
         elapsed -= redrawRate;
       } else if (byCamera) {
-        updateTexture(0);
+        updateScene(0);
       }
       renderTexture();
       haveDrawn = true;
@@ -110,7 +110,9 @@ public class ImposterNode extends Node {
   }
 
   /**
-   * updateCamera
+   * Force the texture camera to update its position and direction based on the
+   * given eyeLocation
+   * @param eyeLocation The location the viewer is looking from in the real world.
    */
   public void updateCamera(Vector3f eyeLocation) {
     float vDist = eyeLocation.distance(standIn.getCenter());
@@ -122,8 +124,10 @@ public class ImposterNode extends Node {
   }
 
   /**
-   * shouldDoUpdate
+   * Check to see if the texture needs updating based on the params set for
+   * redraw rate and camera threshold.
    *
+   * @param cam The camera we check angles against.
    * @return boolean
    */
   private boolean shouldDoUpdate(Camera cam) {
@@ -136,7 +140,7 @@ public class ImposterNode extends Node {
       float camChange = FastMath.abs(getCameraChange(cam));
       if (camChange >= cameraThreshold) {
         byCamera = true;
-        resetCameraChange();
+        oldAngle = lastAngle;
         return true;
       }
     }
@@ -144,15 +148,10 @@ public class ImposterNode extends Node {
   }
 
   /**
-   * resetCameraChange
-   */
-  private void resetCameraChange() {
-    oldAngle = lastAngle;
-  }
-
-  /**
-   * getCameraChange
+   * Get the different in radians that the camera angle has changed
+   * since last update.
    *
+   * @param cam The camera we check angles against.
    * @return float
    */
   private float getCameraChange(Camera cam) {
@@ -190,45 +189,91 @@ public class ImposterNode extends Node {
     return quadScene.attachChild(child);
   }
 
+  /**
+   * Set the Underlying texture renderer used by this imposter.
+   * Automatically calls resetTexture()
+   * @param tRenderer TextureRenderer
+   */
   public void setTextureRenderer(TextureRenderer tRenderer) {
     this.tRenderer = tRenderer;
     resetTexture();
   }
 
+  /**
+   * Get the Underlying texture renderer used by this imposter.
+   * @return TextureRenderer
+   */
   public TextureRenderer getTextureRenderer() {
     return tRenderer;
   }
 
+  /**
+   * Get the distance we want the render camera to stay away from the render
+   * scene.
+   * @return float
+   */
   public float getCameraDistance() {
     return cameraDistance;
   }
 
+  /**
+   * Set the distance we want the render camera to stay away from the render
+   * scene.
+   * @param cameraDistance float
+   */
   public void setCameraDistance(float cameraDistance) {
     this.cameraDistance = cameraDistance;
   }
 
+  /**
+   * Get how often (in seconds) we want the texture updated.
+   * example: .02 = every 20 ms or 50 times a sec.
+   * 0.0 = do not update based on time.
+   * @return float
+   */
   public float getRedrawRate() {
     return redrawRate;
   }
 
+  /**
+   * Set the redraw rate (see <code>getRedrawRate()</code>)
+   * @param rate float
+   */
   public void setRedrawRate(float rate) {
     this.redrawRate = rate;
     this.elapsed = rate;
   }
 
+  /**
+   * Get the Quad used as a standin for the scene being faked.
+   * @return Quad
+   */
   public Quad getStandIn() {
     return standIn;
   }
 
+  /**
+   * Set how much the viewers camera position has to change (in terms of angle
+   * to the imposter) before an update is called.
+   * @param threshold angle in radians
+   */
   public void setCameraThreshold(float threshold) {
     this.cameraThreshold = threshold;
     this.oldAngle = cameraThreshold + threshold;
   }
 
+  /**
+   * Get the camera threshold (see <code>setCameraThreshold()</code>)
+   * @param rate float
+   */
   public float getCameraThreshold() {
     return cameraThreshold;
   }
 
+  /**
+   * Resets and applies the texture, texture state and alpha state on
+   * the standin Quad.
+   */
   public void resetTexture() {
     if (texture != null)
       texture = tRenderer.setupTexture(texture.getTextureId());
@@ -252,10 +297,20 @@ public class ImposterNode extends Node {
     standIn.setRenderState(as1);
   }
 
-  public void updateTexture(float timePassed) {
+  /**
+   * Updates the scene the texture represents.
+   * @param timePassed float
+   */
+  public void updateScene(float timePassed) {
     quadScene.updateGeometricState(timePassed, true);
   }
 
+  /**
+   * force the underlying texture renderer to render the scene.
+   * Could be useful for imposters that do not use time or camera angle
+   * to update the scene.  (In which case, updateCamera and updateScene would
+   * likely be called prior to calling this.)
+   */
   public void renderTexture() {
     tRenderer.render(quadScene, texture);
   }

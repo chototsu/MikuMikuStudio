@@ -35,7 +35,6 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
-import com.jme.math.Quaternion;
 
 /**
  * <code>BillboardNode</code> defines a node that always orients towards the camera. However, it
@@ -47,7 +46,7 @@ import com.jme.math.Quaternion;
  * is the only camera setting compatible with <code>BillboardNode</code>.
  *
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.4 2004-03-31 03:07:12 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.5 2004-04-01 17:32:35 renanse Exp $
  */
 public class BillboardNode extends Node {
   private float lastTime;
@@ -56,9 +55,9 @@ public class BillboardNode extends Node {
   private Vector3f loc;
   private int type;
 
-//  public static final int WORLD_ORIENTED = 0;
-  public static final int SCREEN_ALIGNED = 1;
-  public static final int AXIAL = 2;
+  public static final int SCREEN_ALIGNED = 0;
+  public static final int AXIAL = 1;
+//  public static final int WORLD_ORIENTED = 2;
 
   /**
    * Constructor instantiates a new <code>BillboardNode</code>. The name of the node is supplied
@@ -70,7 +69,7 @@ public class BillboardNode extends Node {
     orient = new Matrix3f();
     loc = new Vector3f();
     diff = new Vector3f();
-    type = AXIAL;
+    type = SCREEN_ALIGNED;
   }
 
 
@@ -99,6 +98,10 @@ public class BillboardNode extends Node {
     super.draw(r);
   }
 
+  /**
+   * rotate the billboard based on the type set
+   * @param cam Camera
+   */
   public void rotateBillboard(Camera cam) {
     //get the scale, translation and rotation of the node in world space
     if (parent != null) {
@@ -133,7 +136,7 @@ public class BillboardNode extends Node {
       }
     }
   }
-//
+
 //  /**
 //   * rotateWorldAligned
 //   *
@@ -145,7 +148,7 @@ public class BillboardNode extends Node {
 
 
   /**
-   * rotateScreenAligned
+   * Rotate the billboard so it points directly towards the camera
    *
    * @param camera Camera
    */
@@ -156,7 +159,7 @@ public class BillboardNode extends Node {
   }
 
   /**
-   * rotateAxial
+   * Rotate the billboard towards the camera, but keeping the y axis fixed.
    *
    * @param camera Camera
    */

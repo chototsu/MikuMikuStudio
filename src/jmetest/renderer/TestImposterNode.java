@@ -54,8 +54,9 @@ import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
- * <code>TestImposterNode</code>
+ * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
+ * @version $Id: TestImposterNode.java,v 1.9 2004-04-01 17:32:36 renanse Exp $
  */
 public class TestImposterNode extends VariableTimestepGame {
   private Camera cam;
@@ -71,7 +72,6 @@ public class TestImposterNode extends VariableTimestepGame {
   private ImposterNode iNode;
   private Node fpsNode;
   private Text fps;
-
 
   /**
    * Entry point for the test,
@@ -161,14 +161,26 @@ public class TestImposterNode extends VariableTimestepGame {
     root = new Node("Root Scene Node");
     root.attachChild(scene);
 
-    fakeScene = new Node("Fake node");
-
+    // setup the scene to be 'impostered'
     model = new Md2Model("Dr Freak");
-    model.load(TestImposterNode.class.getClassLoader().getResource("jmetest/"+FILE_NAME));
+    model.load(TestImposterNode.class.getClassLoader().getResource("jmetest/" +
+        FILE_NAME));
     model.getAnimationController().setSpeed(10);
     model.getAnimationController().setRepeatType(Controller.RT_WRAP);
+    fakeScene = new Node("Fake node");
     fakeScene.attachChild(model);
 
+    // apply the appropriate texture to the imposter scene
+    TextureState ts = display.getRenderer().getTextureState();
+    ts.setEnabled(true);
+    ts.setTexture(
+        TextureManager.loadTexture(
+        TestImposterNode.class.getClassLoader().getResource("jmetest/" +
+        TEXTURE_NAME),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true));
+    fakeScene.setRenderState(ts);
 
     // Setup our params for the depth buffer
     ZBufferState buf = display.getRenderer().getZBufferState();
@@ -178,16 +190,8 @@ public class TestImposterNode extends VariableTimestepGame {
     scene.setRenderState(buf);
     fakeScene.setRenderState(buf);
 
-    TextureState ts = display.getRenderer().getTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-            TextureManager.loadTexture(
-                TestImposterNode.class.getClassLoader().getResource("jmetest/"+TEXTURE_NAME),
-                    Texture.MM_LINEAR,
-                    Texture.FM_LINEAR,
-                    true));
-    fakeScene.setRenderState(ts);
-
+    // setup the imposter node...
+    // we first determine a good texture size (must be equal to or less than the display size)
     int tSize = 256;
     if (display.getHeight() > 512)
       tSize = 512;
@@ -196,11 +200,15 @@ public class TestImposterNode extends VariableTimestepGame {
     iNode.setCameraDistance(100);
     iNode.setRedrawRate(.05f); // .05 = update texture 20 times a second on average
 //    iNode.setCameraThreshold(15*FastMath.DEG_TO_RAD);
+
+    // Now add the imposter to a Screen Aligned billboard so the deception is complete.
     BillboardNode bnode = new BillboardNode("imposter bbnode");
     bnode.setType(BillboardNode.SCREEN_ALIGNED);
     bnode.attachChild(iNode);
     scene.attachChild(bnode);
 
+    //This code is all for the FPS display...
+    // First setup alpha state
     AlphaState as1 = display.getRenderer().getAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -209,6 +217,7 @@ public class TestImposterNode extends VariableTimestepGame {
     as1.setTestFunction(AlphaState.TF_GREATER);
     as1.setEnabled(true);
 
+    // Now setup font texture
     TextureState font = display.getRenderer().getTextureState();
     font.setTexture(
         TextureManager.loadTexture(
@@ -219,11 +228,13 @@ public class TestImposterNode extends VariableTimestepGame {
         true));
     font.setEnabled(true);
 
+    // Then our font Text object.
     fps = new Text("FPS label", "");
     fps.setRenderState(font);
     fps.setRenderState(as1);
     fps.setForceView(true);
 
+    // Finally, a stand alone node (not attached to root on purpose)
     fpsNode = new Node("FPS node");
     fpsNode.attachChild(fps);
     fpsNode.setForceView(true);
