@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.16 2004-05-27 20:02:56 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.17 2004-05-27 20:08:22 cep21 Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -348,15 +348,15 @@ public class Quaternion {
      * between two other quaternions.
      * @param q1 the first quaternion.
      * @param q2 the second quaternion.
-     * @param interp the amount to interpolate between the two quaternions.
+     * @param t the amount to interpolate between the two quaternions.
      */
     public Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
         // Create a local quaternion to store the interpolated quaternion
         Quaternion interpolated = new Quaternion();
 
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
-            interpolated.set(q1.x, q1.y, q1.z, q1.w);
-            this.set(q1.x, q1.y, q1.z, q1.w);
+            interpolated.set(q1);
+            this.set(q1);
             return interpolated; 
         }
 
@@ -547,7 +547,7 @@ public class Quaternion {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter
      * scalar. The result is returned as a new quaternion.
-     * @param q the quaternion to multiply this quaternion by.
+     * @param scalar the quaternion to multiply this quaternion by.
      * @return the new quaternion.
      */
     public Quaternion mult(float scalar) {
@@ -557,7 +557,7 @@ public class Quaternion {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter
      * scalar. The result is stored locally.
-     * @param q the quaternion to multiply this quaternion by.
+     * @param scalar the quaternion to multiply this quaternion by.
      * @return this.
      */
     public Quaternion multLocal(float scalar) {
@@ -587,6 +587,9 @@ public class Quaternion {
         return w * w + x * x + y * y + z * z;
     }
 
+    /**
+     * <code>normalize</code> normalizes the current <code>Quaternion</code>
+     */
     public void normalize() {
         double n = FastMath.sqrt(x*x + y*y + z*z + w*w);
         x /= n;
