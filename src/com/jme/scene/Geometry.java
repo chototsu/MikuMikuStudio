@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.34 2004-05-07 22:03:24 renanse Exp $
+ * @version $Id: Geometry.java,v 1.35 2004-05-07 23:17:54 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -74,13 +74,13 @@ public abstract class Geometry extends Spatial implements Serializable {
     protected int vertQuantity = -1;
 
     //buffers that allow for faster data processing.
-    private FloatBuffer colorBuf;
+    private transient FloatBuffer colorBuf;
 
-    private FloatBuffer normBuf;
+    private transient FloatBuffer normBuf;
 
-    private FloatBuffer vertBuf;
+    private transient FloatBuffer vertBuf;
 
-    private FloatBuffer[] texBuf;
+    private transient FloatBuffer[] texBuf;
 
     //float arrays for update phase
     private float[] colorArray;
