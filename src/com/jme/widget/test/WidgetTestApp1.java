@@ -1,0 +1,289 @@
+/*
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this 
+ * list of conditions and the following disclaimer. 
+ * 
+ * Redistributions in binary form must reproduce the above copyright notice, 
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution. 
+ * 
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
+ * names of its contributors may be used to endorse or promote products derived 
+ * from this software without specific prior written permission. 
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+package com.jme.widget.test;
+
+import com.jme.app.AbstractGame;
+import com.jme.input.InputSystem;
+import com.jme.input.KeyInput;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.LWJGLCamera;
+import com.jme.renderer.Renderer;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.system.LWJGLDisplaySystem;
+import com.jme.util.Timer;
+import com.jme.widget.WidgetAlignmentType;
+import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetFillType;
+import com.jme.widget.WidgetFrameAbstract;
+import com.jme.widget.WidgetInsets;
+import com.jme.widget.button.WidgetButton;
+import com.jme.widget.impl.lwjgl.WidgetLWJGLDisplaySystem;
+import com.jme.widget.impl.lwjgl.WidgetLWJGLMouseState;
+import com.jme.widget.input.mouse.WidgetMouseStateAbstract;
+import com.jme.widget.layout.WidgetBorderLayout;
+import com.jme.widget.layout.WidgetBorderLayoutConstraint;
+import com.jme.widget.layout.WidgetFlowLayout;
+import com.jme.widget.panel.WidgetPanel;
+import com.jme.widget.panel.WidgetScrollPanel;
+import com.jme.widget.panel.rollout.WidgetRolloutPanel;
+import com.jme.widget.panel.rollout.WidgetRolloutPanelContainer;
+
+/**
+ * @author Gregg Patton
+ *
+ * To change the template for this generated type comment go to
+ * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ */
+public class WidgetTestApp1 extends AbstractGame {
+
+    class TestFrame extends WidgetFrameAbstract {
+
+        static final int TOTAL_BUTTONS = 30;
+        static final int TOTAL_BUNNIES = 2;
+        static final int TOTAL_ROLLOUTS = 4;
+
+        static final boolean ADD_CENTER_BUTTON = false;
+        static final boolean ADD_NORTH_BUTTON = true;
+        static final boolean ADD_SOUTH_BUTTON = false;
+        static final boolean ADD_EAST_BUTTON = true;
+        static final boolean ADD_WEST_BUTTON = true;
+
+        static final boolean PANEL = false;
+        static final boolean SCROLL_PANEL = false;
+        static final boolean SCROLL_PANEL_FILL_HORIZONTAL = false;
+        static final boolean ROLLOUT_CONTAINER = true;
+
+        WidgetButton north;
+
+        TestFrame(DisplaySystem ds, WidgetMouseStateAbstract mouseState, Timer timer) {
+            super(ds, mouseState, timer);
+
+            setLayout(new WidgetBorderLayout());
+            setInsets(new WidgetInsets());
+
+            north = new WidgetButton("North", WidgetAlignmentType.ALIGN_WEST);
+            north.setInsets(new WidgetInsets(5, 5, 5, 5));
+            if (ADD_NORTH_BUTTON)
+                add(north, WidgetBorderLayoutConstraint.NORTH);
+
+            WidgetButton south = new WidgetButton("South", WidgetAlignmentType.ALIGN_CENTER);
+            if (ADD_SOUTH_BUTTON)
+                add(south, WidgetBorderLayoutConstraint.SOUTH);
+
+            WidgetButton east = new WidgetButton("East                      East", WidgetAlignmentType.ALIGN_CENTER);
+            if (ADD_EAST_BUTTON)
+                add(east, WidgetBorderLayoutConstraint.EAST);
+
+            WidgetButton west = new WidgetButton("West                      West", WidgetAlignmentType.ALIGN_CENTER);
+            if (ADD_WEST_BUTTON)
+                add(west, WidgetBorderLayoutConstraint.WEST);
+
+            if (ADD_CENTER_BUTTON) {
+
+                WidgetButton center = new WidgetButton("Center", WidgetAlignmentType.ALIGN_CENTER);
+                add(center, WidgetBorderLayoutConstraint.CENTER);
+
+            } else {
+
+                if (SCROLL_PANEL || SCROLL_PANEL_FILL_HORIZONTAL) {
+
+                    WidgetScrollPanel scrollPanel = new WidgetScrollPanel();
+
+                    if (SCROLL_PANEL_FILL_HORIZONTAL)
+                        scrollPanel.setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_WEST, WidgetFillType.HORIZONTAL));
+
+                    add(scrollPanel, WidgetBorderLayoutConstraint.CENTER);
+                    addWidgets(scrollPanel);
+
+                } else if (PANEL) {
+
+                    WidgetPanel panel = new WidgetPanel();
+
+                    add(panel, WidgetBorderLayoutConstraint.CENTER);
+                    addWidgets(panel);
+
+                } else {
+
+                    WidgetRolloutPanelContainer rpc = new WidgetRolloutPanelContainer();
+
+                    for (int i = 0; i < TOTAL_ROLLOUTS; i++) {
+                        addWidgets(rpc, "Rollout " + (i + 1));
+                    }
+
+                    add(rpc, WidgetBorderLayoutConstraint.CENTER);
+                }
+            }
+
+            doLayout();
+        }
+
+        void addWidgets(WidgetContainerAbstract c) {
+            addWidgets(c, null);
+        }
+
+        void addWidgets(WidgetContainerAbstract c, String t) {
+            String title;
+
+            if (t == null)
+                title = "";
+            else
+                title = t + ":  ";
+
+            WidgetRolloutPanel rollout = null;
+
+            if (ROLLOUT_CONTAINER == true) {
+                rollout = new WidgetRolloutPanel(title);
+            }
+
+            StringBuffer buf = new StringBuffer();
+
+            for (int cnt = 0; cnt < TOTAL_BUNNIES; cnt++) {
+                buf.append("(-:=");
+            }
+
+            for (int cnt = 0; cnt < TOTAL_BUTTONS; cnt++) {
+
+                WidgetButton button = new WidgetButton(title + "Happy Bunny Button " + (cnt + 1) + " " + buf);
+                button.setInsets(new WidgetInsets(10, 3, 12, 2));
+
+                if (rollout != null)
+                    rollout.add(button);
+                else
+                    c.add(button);
+
+            }
+
+            if (rollout != null)
+                c.add(rollout);
+        }
+
+        public void init() {
+            super.init();
+
+            setForceView(true);
+        }
+
+        public void onDraw(Renderer r) {
+            super.onDraw(r);
+
+            north.setTitle("FPS:  " + getFrameRate().toString());
+        }
+
+    }
+
+    private TestFrame frame;
+    private KeyInput key;
+
+    /* (non-Javadoc)
+     * @see com.jme.app.AbstractGame#update()
+     */
+    protected void update() {
+        key.update();
+
+        if (key.isKeyDown(KeyInput.KEY_ESCAPE)) {
+            finish();
+        }
+
+        frame.handleMouse();
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.app.AbstractGame#render()
+     */
+    protected void render() {
+        display.getRenderer().clearBuffers();
+        display.getRenderer().draw(frame);
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.app.AbstractGame#initSystem()
+     */
+    protected void initSystem() {
+        try {
+
+            display = new WidgetLWJGLDisplaySystem();
+            display.createWindow(
+                properties.getWidth(),
+                properties.getHeight(),
+                properties.getDepth(),
+                properties.getFreq(),
+                properties.getFullscreen());
+
+        } catch (JmeException e) {
+            e.printStackTrace();
+            System.exit(1);
+        }
+
+        ColorRGBA background = new ColorRGBA(.5f, .5f, .5f, 1);
+        display.getRenderer().setBackgroundColor(background);
+
+        display.getRenderer().setCamera(new LWJGLCamera(display.getWidth(), display.getHeight()));
+
+        InputSystem.createInputSystem(properties.getRenderer());
+        key = InputSystem.getKeyInput();
+
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.app.AbstractGame#initGame()
+     */
+    protected void initGame() {
+        frame = new TestFrame(display, new WidgetLWJGLMouseState(), Timer.getTimer(properties.getRenderer()));
+
+        frame.updateGeometricState(0.0f, true);
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.app.AbstractGame#reinit()
+     */
+    protected void reinit() {
+        WidgetFrameAbstract.destroy();
+
+        frame.init();
+
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.app.AbstractGame#cleanup()
+     */
+    protected void cleanup() {
+        WidgetFrameAbstract.destroy();
+    }
+
+    public static void main(String[] args) {
+        WidgetTestApp1 app = new WidgetTestApp1();
+        app.useDialogAlways(true);
+        app.start();
+    }
+
+}
