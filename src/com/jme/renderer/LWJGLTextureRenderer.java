@@ -47,7 +47,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.12 2004-03-08 17:20:51 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.13 2004-03-08 17:36:46 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -78,10 +78,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
 
         if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
-            System.err.println("Render to Texture Pbuffer supported!");
+            LoggingSystem.getLogger().log(Level.INFO, "Render to Texture Pbuffer supported!");
             if (texture == null)
-                System.err.println("No RenderTexture used in init, falling back to Copy Texture PBuffer.");
-            LoggingSystem.getLogger().log(Level.INFO, "Copy Texture Pbuffer supported!");
+                LoggingSystem.getLogger().log(Level.INFO, "No RenderTexture used in init, falling back to Copy Texture PBuffer.");
             else useDirectRender = true;
         } else {
             LoggingSystem.getLogger().log(Level.INFO, "Copy Texture Pbuffer supported!");
