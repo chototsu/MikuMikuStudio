@@ -44,9 +44,7 @@ import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
-import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -56,12 +54,12 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestBezierCurve.java,v 1.2 2004-02-19 03:59:49 mojomonkey Exp $
  */
 public class TestBezierCurve extends SimpleGame {
     private TriMesh t, t2, t3, t4;
 
-    private Text text;
+   // private Text text;
     private TriMesh box;
     private Node scene, root;
     private static final float MAX_STEPS = 25;
@@ -121,7 +119,7 @@ public class TestBezierCurve extends SimpleGame {
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 15.0f, 5.0f);
+        Vector3f loc = new Vector3f(0.0f, 0.0f, 15.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
@@ -129,6 +127,7 @@ public class TestBezierCurve extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonController(this, cam, "LWJGL");
+        display.setTitle("Bezier Curve Test");
 
     }
 
@@ -136,26 +135,6 @@ public class TestBezierCurve extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Timer");
-        text.setLocalTranslation(new Vector3f(1,60,0));
-        TextureState textImage = display.getRenderer().getTextureState();
-        textImage.setEnabled(true);
-        textImage.setTexture(
-            TextureManager.loadTexture(
-                TestBezierCurve.class.getClassLoader().getResource("jmetest/data/font/font.png"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-        text.setRenderState(textImage);
-        
-        AlphaState as1 = display.getRenderer().getAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        text.setRenderState(as1);
-        
         //create control Points
         Vector3f[] points = new Vector3f[4];
         points[0] = new Vector3f(-4, 0, 0);
@@ -230,7 +209,6 @@ public class TestBezierCurve extends SimpleGame {
         scene.attachChild(t3);
         scene.attachChild(t4);
         scene.attachChild(box);
-        scene.attachChild(text);
         scene.attachChild(curve);
         root = new Node();
         root.attachChild(scene);
