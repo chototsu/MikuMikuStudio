@@ -40,7 +40,7 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.14 2005-03-17 23:02:54 renanse Exp $
+ * @version $Id: Particle.java,v 1.15 2005-03-28 17:56:02 renanse Exp $
  */
 public class Particle {
 
@@ -208,4 +208,8 @@ public class Particle {
     currentAge = 0;
   }
 
+  public Vector3f getPosition() {
+      return location;
+  }
+  
 }
