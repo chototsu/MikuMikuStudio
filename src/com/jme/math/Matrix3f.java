@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.2 2003-10-27 21:27:21 mojomonkey Exp $
  */
 public class Matrix3f {
     private float[][] matrix;
@@ -67,7 +67,9 @@ public class Matrix3f {
      */
     public float get(int i, int j) {
         if (i < 0 || i > 2 || j < 0 || j > 2) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Invalid matrix index.");
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Invalid matrix index.");
             throw new JmeException("Invalid indices into matrix.");
         }
         return matrix[i][j];
@@ -81,8 +83,10 @@ public class Matrix3f {
      * @return the column specified by the index.
      */
     public Vector3f getColumn(int i) {
-        if(i < 0 || i > 2) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Invalid column index.");
+        if (i < 0 || i > 2) {
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Invalid column index.");
             throw new JmeException("Invalid column index. " + i);
         }
         return new Vector3f(matrix[0][i], matrix[1][i], matrix[2][i]);
@@ -98,7 +102,9 @@ public class Matrix3f {
      */
     public void set(int i, int j, float value) {
         if (i < 0 || i > 2 || j < 0 || j > 2) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Invalid matrix index.");
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Invalid matrix index.");
             throw new JmeException("Invalid indices into matrix.");
         }
         matrix[i][j] = value;
@@ -112,17 +118,21 @@ public class Matrix3f {
      * @return the result matrix.
      */
     public Matrix3f mult(Matrix3f mat) {
-        if(null == mat) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Source matrix is " +                "null, null result returned.");
+        if (null == mat) {
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Source matrix is " + "null, null result returned.");
             return null;
         }
         Matrix3f product = new Matrix3f();
         for (int iRow = 0; iRow < 3; iRow++) {
             for (int iCol = 0; iCol < 3; iCol++) {
-                product.set(iRow,iCol,
-                    matrix[iRow][0] * mat.get(0,iCol)
-                        + matrix[iRow][1] * mat.get(1,iCol)
-                        + matrix[iRow][2] * mat.get(2,iCol));
+                product.set(
+                    iRow,
+                    iCol,
+                    matrix[iRow][0] * mat.get(0, iCol)
+                        + matrix[iRow][1] * mat.get(1, iCol)
+                        + matrix[iRow][2] * mat.get(2, iCol));
             }
         }
         return product;
@@ -136,8 +146,10 @@ public class Matrix3f {
      * @return the result vector.
      */
     public Vector3f mult(Vector3f vec) {
-        if(null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Source vector is" +                " null, null result returned.");
+        if (null == vec) {
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Source vector is" + " null, null result returned.");
             return null;
         }
         Vector3f product = new Vector3f();
@@ -168,7 +180,32 @@ public class Matrix3f {
             }
         }
     }
-    
+
+    public void fromAxisAngle(Vector3f axis, float radian) {
+        float fCos = (float)Math.cos(radian);
+        float fSin = (float)Math.sin(radian);
+        float fOneMinusCos = 1.0f - fCos;
+        float fX2 = axis.x * axis.x;
+        float fY2 = axis.y * axis.y;
+        float fZ2 = axis.z * axis.z;
+        float fXYM = axis.x * axis.y * fOneMinusCos;
+        float fXZM = axis.x * axis.z * fOneMinusCos;
+        float fYZM = axis.y * axis.z * fOneMinusCos;
+        float fXSin = axis.x * fSin;
+        float fYSin = axis.y * fSin;
+        float fZSin = axis.z * fSin;
+
+        matrix[0][0] = fX2 * fOneMinusCos + fCos;
+        matrix[0][1] = fXYM - fZSin;
+        matrix[0][2] = fXZM + fYSin;
+        matrix[1][0] = fXYM + fZSin;
+        matrix[1][1] = fY2 * fOneMinusCos + fCos;
+        matrix[1][2] = fYZM - fXSin;
+        matrix[2][0] = fXZM - fYSin;
+        matrix[2][1] = fYZM + fXSin;
+        matrix[2][2] = fZ2 * fOneMinusCos + fCos;
+    }
+
     /**
      * <code>toString</code> returns the string representation of this object.
      * It is in a format of a 3x3 matrix. For example, an identity matrix would
@@ -184,8 +221,8 @@ public class Matrix3f {
      */
     public String toString() {
         String result = "com.jme.math.Matrix3f\n[\n";
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
                 result += " " + matrix[i][j] + " ";
             }
             result += "\n";
