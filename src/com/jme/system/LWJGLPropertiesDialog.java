@@ -35,14 +35,29 @@ package com.jme.system;
 import java.awt.BorderLayout;
 import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
-import java.awt.event.*;
-import java.net.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.logging.Level;
 
-import javax.swing.*;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.UIManager;
 
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
@@ -58,7 +73,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.1 2004-06-27 01:54:49 ericthered Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.2 2004-07-02 21:08:59 ericthered Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
@@ -376,6 +391,10 @@ public final class LWJGLPropertiesDialog extends JDialog {
     private static String[] getDepths(String resolution, DisplayMode[] modes) {
         ArrayList depths = new ArrayList(4);
         for (int i = 0; i < modes.length; i++) {
+            //Filter out all bit depths lower than 16 - Java incorrectly reports
+            //them as valid depths though the monitor does not support them
+            if (modes[i].bpp < 16) continue;
+            
             String res = modes[i].width + " x " + modes[i].height;
             String depth = String.valueOf(modes[i].bpp) + " bpp";
             if (res.equals(resolution) && !depths.contains(depth))
@@ -426,8 +445,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
             if (a.bpp != b.bpp)
                 return (a.bpp > b.bpp) ?  1 : -1;
             //Refresh rate
-            if (a.freq != b.freq)
-                return (a.freq > b.freq) ?  1 : -1;
+            if (a.bpp != b.bpp)
+                return (a.bpp > b.bpp) ?  1 : -1;
             //All fields are equal
             return 0;
         }
