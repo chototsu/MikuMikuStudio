@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.2 2004-04-22 22:26:21 renanse Exp $
+ * @version $Id: BaseGame.java,v 1.3 2004-05-26 13:33:30 mojomonkey Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 
@@ -77,9 +77,8 @@ public abstract class BaseGame extends AbstractGame {
     catch (Throwable t) {
       t.printStackTrace();
     }
-    finally {
-      cleanup();
-    }
+    
+    cleanup();
     LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
 
     display.reset();
@@ -91,6 +90,7 @@ public abstract class BaseGame extends AbstractGame {
    * @see AbstractGame#quit()
    */
   protected void quit() {
+  	display.close();
     System.exit(0);
   }
 

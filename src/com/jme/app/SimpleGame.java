@@ -32,9 +32,12 @@
 
 package com.jme.app;
 
+import java.util.logging.Level;
+
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
+import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.light.PointLight;
@@ -50,6 +53,7 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
@@ -61,7 +65,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.20 2004-05-15 19:19:49 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.21 2004-05-26 13:33:31 mojomonkey Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -275,9 +279,12 @@ public abstract class SimpleGame extends BaseGame {
   }
 
   /**
-   * unused -- recommend you kill the mouse and keyboard...
+   * Cleans up the keyboard.
    * @see AbstractGame#cleanup()
    */
   protected void cleanup() {
+  	LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
+  	input.getKeyBindingManager().getKeyInput().destroy();
+  	InputSystem.getMouseInput().destroy();
   }
 }
