@@ -41,7 +41,7 @@ import com.jme.system.JmeException;
  * curve the surface of the mesh will take. The patch also contains information
  * about it's detail level, which defines how smooth the mesh will be.
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.8 2004-02-26 05:37:45 renanse Exp $
+ * @version $Id: BezierMesh.java,v 1.9 2004-02-27 19:05:24 renanse Exp $
  */
 public class BezierMesh extends TriMesh {
     private BezierPatch patch;
@@ -165,34 +165,31 @@ public class BezierMesh extends TriMesh {
                         if (j < (detailLevel * 2)) {
                             //right cross up
                             normal[normalIndex] =
-                                vertex[normalIndex
-                                    + 1]
-                                        .cross(vertex[normalIndex + 2])
-                                        .normalize();
+                                vertex[normalIndex + 1].subtract(vertex[normalIndex])
+                                        .cross(vertex[normalIndex + 2].subtract(vertex[normalIndex]))
+                                        .normalizeLocal();
                         } else {
                             //down cross right
                             normal[normalIndex] =
-                                vertex[normalIndex
-                                    - 2]
-                                        .cross(vertex[normalIndex + 1])
-                                        .normalize();
+                                vertex[normalIndex - 2].subtract(vertex[normalIndex])
+                                        .cross(vertex[normalIndex + 1].subtract(vertex[normalIndex]))
+                                        .normalizeLocal();
                         }
                     } else {
-                        normal[normalIndex] =
-                            normal[normalIndex
-                                - (detailLevel * 2 + 1)].normalize();
+                        normal[normalIndex] = (Vector3f)
+                            normal[normalIndex - (detailLevel * 2 + 1)].clone();
                     }
                 } else {
                     if (j < (detailLevel * 2) + 1) {
                         //up cross left
                         normal[normalIndex] =
-                            vertex[normalIndex
-                                + 2].cross(vertex[normalIndex - 1]).normalize();
+                            vertex[normalIndex + 2].subtract(vertex[normalIndex])
+                                .cross(vertex[normalIndex - 1].subtract(vertex[normalIndex])).normalizeLocal();
                     } else {
                         //left cross down
                         normal[normalIndex] =
-                            vertex[normalIndex
-                                - 1].cross(vertex[normalIndex - 2]).normalize();
+                            vertex[normalIndex - 1].subtract(vertex[normalIndex])
+                                .cross(vertex[normalIndex - 2].subtract(vertex[normalIndex])).normalizeLocal();
                     }
                 }
                 normalIndex++;
