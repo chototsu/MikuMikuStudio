@@ -36,13 +36,15 @@ import java.util.Random;
 
 /**
  * <code>FastMath</code> provides 'fast' math approximations and float equivalents of Math
- * functions
+ * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.13 2004-07-30 23:10:43 cep21 Exp $
+ * @version $Id: FastMath.java,v 1.14 2004-08-02 22:36:06 cep21 Exp $
  */
 
-public class FastMath {
+final public class FastMath {
+
+    private FastMath(){}
 
     /** A "close to zero" double epsilon value for use*/
     public static final double DBL_EPSILON = 2.220446049250313E-16d;
