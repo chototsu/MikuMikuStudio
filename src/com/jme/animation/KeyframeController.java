@@ -83,6 +83,8 @@ public class KeyframeController extends Controller{
     transient private float tempNewBeginTime;
     transient private float tempNewEndTime;
 
+    /** If true, the model's bounding volume will update every frame. */
+    private boolean updatePerFrame;
 
     /**
      * Default constructor.  Speed is 1, MinTime is 0 MaxTime is 0.  Both MinTime and MaxTime are automatically
@@ -97,6 +99,7 @@ public class KeyframeController extends Controller{
         movingForward=true;
         this.setMinTime(0);
         this.setMaxTime(0);
+        updatePerFrame=true;
     }
 
 
@@ -349,6 +352,7 @@ public class KeyframeController extends Controller{
         if (hitnorms) morphMesh.updateNormalBuffer();
         if (hittexts) morphMesh.updateTextureBuffer();
         if (hitcolors) morphMesh.updateColorBuffer();
+        if (updatePerFrame) morphMesh.updateModelBound();
 //          Both methods seem equivalent in speed
         // Renanse says : depends on machine, update***Buffer will have less of a hit on some machines.
     }
@@ -365,6 +369,22 @@ public class KeyframeController extends Controller{
         if (getRepeatType()==RT_CLAMP && (curTime> getMaxTime() || curTime < getMinTime()))
             return true;
         return false;
+    }
+
+    /**
+     * If true, the model's bounding volume will be updated every frame.  If false, it will not.
+     * @param update The new update model volume per frame value.
+     */
+    public void setModelUpdate(boolean update){
+        updatePerFrame=update;
+    }
+
+    /**
+     * Returns true if the model's bounding volume is being updated every frame.
+     * @return True if bounding volume is updating.
+     */
+    public boolean getModelUpdate(){
+        return updatePerFrame;
     }
 
     /**
@@ -453,7 +473,5 @@ public class KeyframeController extends Controller{
             out.writeObject(prevKeyframes);
         else
             out.writeObject(keyframes);
-
-
     }
 }

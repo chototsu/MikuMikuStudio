@@ -13,8 +13,9 @@ import java.util.BitSet;
 /**
  * Started Date: Jun 9, 2004<br>
  *
- * This controller animates a Node's JointMesh2 children acording to the joints stored inside <code>movementInfo</code>.
- * 
+ * This controller animates a Node's JointMesh2 children
+ * acording to the joints stored inside <code>movementInfo</code>.
+ *
  * @author Jack Lindamood
  */
 public class JointController extends Controller {
@@ -80,6 +81,9 @@ public class JointController extends Controller {
      * Used with skipRate internally.
      */
     private float currentSkip;
+
+    /** If true, the model's bounding volume will update every frame. */
+    private boolean updatePerFrame=true;
 
     /**
      * Constructs a new JointController that will hold the given number of joints.
@@ -227,14 +231,21 @@ public class JointController extends Controller {
         for (int currentGroup=0;currentGroup<movingMeshes.size();currentGroup++){
             JointMesh2 updatingGroup=(JointMesh2) movingMeshes.get(currentGroup);
             int currentBoneIndex;
-            for (int j=0;j<updatingGroup.jointIndex.length;j++){
+            Vector3f[] vertexes=updatingGroup.getVertices();
+            Vector3f[] normals=updatingGroup.getNormals();
+            int j;
+            for (j=0;j<updatingGroup.jointIndex.length;j++){
                 currentBoneIndex=updatingGroup.jointIndex[j];
                 unSyncbeginPos.set(updatingGroup.originalVertex[j]);
-                updatingGroup.setVertex(j,jointMovements[currentBoneIndex].multPoint(unSyncbeginPos));
+                vertexes[j].set(jointMovements[currentBoneIndex].multPoint(unSyncbeginPos));
                 unSyncbeginPos.set(updatingGroup.originalNormal[j]);
-                updatingGroup.setNormal(j,jointMovements[currentBoneIndex].multNormal(unSyncbeginPos));
+                normals[j].set(jointMovements[currentBoneIndex].multNormal(unSyncbeginPos));
             }
-//            updatingGroup.updateModelBound();   //TODO: Why won't this work?
+            if (j!=0){
+                updatingGroup.updateVertexBuffer();
+                updatingGroup.updateNormalBuffer();
+                if (updatePerFrame) updatingGroup.updateModelBound();
+            }
         }
     }
 
@@ -257,6 +268,22 @@ public class JointController extends Controller {
         }
         invertWithParents();
         fillHoles();
+    }
+
+    /**
+     * If true, the model's bounding volume will be updated every frame.  If false, it will not.
+     * @param update The new update model volume per frame value.
+     */
+    public void setModelUpdate(boolean update){
+        updatePerFrame=update;
+    }
+
+    /**
+     * Returns true if the model's bounding volume is being updated every frame.
+     * @return True if bounding volume is updating.
+     */
+    public boolean getModelUpdate(){
+        return updatePerFrame;
     }
 
     /**
