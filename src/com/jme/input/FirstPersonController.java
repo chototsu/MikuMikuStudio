@@ -58,10 +58,13 @@ public class FirstPersonController extends InputController {
         keyboard.set("exit", KeyInput.KEY_ESCAPE);
 
         setKeyBindingManager(keyboard);
-        setMouse(InputSystem.getMouseInput());
+        
+        RelativeMouse mouse = new RelativeMouse();
+        mouse.setMouseInput(InputSystem.getMouseInput());
+        setMouse(mouse);
 
         MouseLook mouseLook =
-            new MouseLook(InputSystem.getMouseInput(), cam, 0.1f);
+            new MouseLook(mouse, cam, 0.1f);
         mouseLook.setLockAxis(cam.getUp());
         addAction(mouseLook);
 

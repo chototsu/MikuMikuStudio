@@ -39,13 +39,13 @@ import com.jme.input.action.MouseInputAction;
 /**
  * <code>InputController</code>
  * @author Mark Powell
- * @version $Id: InputController.java,v 1.1 2003-10-27 21:18:17 mojomonkey Exp $
+ * @version $Id: InputController.java,v 1.2 2003-10-29 18:02:14 mojomonkey Exp $
  */
 public class InputController {
     private ArrayList actions;
     private ArrayList mouseActions;
     private KeyBindingManager keyboard;
-    private MouseInput mouse;
+    private Mouse mouse;
 
     public InputController() {
         actions = new ArrayList();
@@ -60,11 +60,11 @@ public class InputController {
         return keyboard;
     }
     
-    public void setMouse(MouseInput mouse) {
+    public void setMouse(Mouse mouse) {
         this.mouse = mouse;
     }
     
-    public MouseInput getMouse() {
+    public Mouse getMouse() {
         return mouse;
     }
 
@@ -96,7 +96,7 @@ public class InputController {
         }
 
         if(mouse != null) {
-            mouse.poll();
+            mouse.update();
             for(int i = 0; i < mouseActions.size(); i++) {
                 ((MouseInputAction)mouseActions.get(i)).performAction(time);
             }

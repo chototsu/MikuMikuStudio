@@ -34,6 +34,7 @@ package com.jme.test.input.action;
 import com.jme.app.AbstractGame;
 import com.jme.input.InputController;
 import com.jme.input.InputSystem;
+import com.jme.input.RelativeMouse;
 import com.jme.input.action.MouseLook;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -115,8 +116,11 @@ public class TestMouseLook extends AbstractGame {
         
         input = new InputController();
         InputSystem.createInputSystem("LWJGL");
-        input.setMouse(InputSystem.getMouseInput());
-        MouseLook mouseLook = new MouseLook(InputSystem.getMouseInput(), cam, 0.1f);
+        
+        RelativeMouse mouse = new RelativeMouse();
+        mouse.setMouseInput(InputSystem.getMouseInput());
+        input.setMouse(mouse);
+        MouseLook mouseLook = new MouseLook(mouse, cam, 0.1f);
         mouseLook.setLockAxis(up);
         input.addAction(mouseLook);
         

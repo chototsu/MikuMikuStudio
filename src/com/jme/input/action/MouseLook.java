@@ -31,9 +31,11 @@
  */
 package com.jme.input.action;
 
-import com.jme.input.MouseInput;
+import com.jme.input.Mouse;
+import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
+import com.jme.system.JmeException;
 
 /**
  * <code>MouseLook</code>
@@ -42,7 +44,7 @@ import com.jme.renderer.Camera;
  */
 public class MouseLook implements MouseInputAction {
     public static final int MOUSE_BUFFER = 1;
-    private MouseInput mouse;
+    private RelativeMouse mouse;
     private KeyLookDownAction lookDown;
     private KeyLookUpAction lookUp;
     private KeyRotateLeftAction rotateLeft;
@@ -53,8 +55,12 @@ public class MouseLook implements MouseInputAction {
     private float speed;
     private Camera camera;
 
-    public MouseLook(MouseInput mouse, Camera camera, float speed) {
-        this.mouse = mouse;
+    public MouseLook(Mouse mouse, Camera camera, float speed) {
+        if(mouse instanceof RelativeMouse) {
+            this.mouse = (RelativeMouse)mouse;
+        } else {
+            throw new JmeException("MouseLook must take a RelativeMouse.");
+        }
         this.speed = speed;
         this.camera = camera;
 
@@ -86,27 +92,31 @@ public class MouseLook implements MouseInputAction {
      * @see com.jme.input.action.MouseInputAction#performAction(float)
      */
     public void performAction(float time) {
-        if (mouse.getXDelta() > 0) {
+        if (mouse.getLocalTranslation().x > 0) {
             rotateRight.performAction(
-                time * ((float) mouse.getXDelta() / MOUSE_BUFFER));
-        } else if (mouse.getXDelta() < 0) {
+                time * (mouse.getLocalTranslation().x / MOUSE_BUFFER));
+        } else if (mouse.getLocalTranslation().x < 0) {
             rotateLeft.performAction(
-                time * ((float) mouse.getXDelta() / MOUSE_BUFFER) * -1);
+                time * (mouse.getLocalTranslation().x / MOUSE_BUFFER) * -1);
         }
-        if (mouse.getYDelta() > 0) {
+        if (mouse.getLocalTranslation().y > 0) {
             lookUp.performAction(
-                time * ((float) mouse.getYDelta() / MOUSE_BUFFER));
-        } else if (mouse.getYDelta() < 0) {
+                time * (mouse.getLocalTranslation().y / MOUSE_BUFFER));
+        } else if (mouse.getLocalTranslation().y < 0) {
             lookDown.performAction(
-                time * ((float) mouse.getYDelta() / MOUSE_BUFFER) * -1);
+                time * (mouse.getLocalTranslation().y / MOUSE_BUFFER) * -1);
         }
 
     }
     /* (non-Javadoc)
      * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
      */
-    public void setMouse(MouseInput mouse) {
-        this.mouse = mouse;
+    public void setMouse(Mouse mouse) {
+        if(mouse instanceof RelativeMouse) {
+            this.mouse = (RelativeMouse)mouse;
+        } else {
+            throw new JmeException("MouseLook must take a RelativeMouse.");
+        }
     }
 
 }

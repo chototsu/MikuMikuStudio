@@ -31,7 +31,7 @@
  */
 package com.jme.input.action;
 
-import com.jme.input.MouseInput;
+import com.jme.input.Mouse;
 
 /**
  * <code>MouseInputAction</code>
@@ -41,5 +41,5 @@ import com.jme.input.MouseInput;
 public interface MouseInputAction {
     public void performAction(float time);
     
-    public void setMouse(MouseInput mouse);
+    public void setMouse(Mouse mouse);
 }
