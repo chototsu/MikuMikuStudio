@@ -39,7 +39,7 @@ import com.jme.scene.state.AlphaState;
  * <code>LWJGLAlphaState</code> subclasses the AlphaState using the LWJGL API
  * to set OpenGL's alpha state.
  * @author Mark Powell
- * @version $Id: LWJGLAlphaState.java,v 1.3 2004-04-22 22:26:57 renanse Exp $
+ * @version $Id: LWJGLAlphaState.java,v 1.4 2004-08-02 22:35:19 cep21 Exp $
  */
 public class LWJGLAlphaState extends AlphaState {
     //gl alpha values
@@ -90,7 +90,7 @@ public class LWJGLAlphaState extends AlphaState {
      * <code>set</code> is called to set the alpha state. If blending is
      * enabled, the blend function is set up and if alpha testing is enabled
      * the alpha functions are set.
-     * @see com.jme.scene.state.RenderState#set()
+     * @see com.jme.scene.state.RenderState#apply()
      */
     public void apply() {
         if (blendEnabled) {

@@ -39,7 +39,7 @@ package com.jme.scene.state;
  * the rendering of green glass. Where you could see all objects behind this
  * green glass but they would be tinted green.
  * @author Mark Powell
- * @version $Id: AlphaState.java,v 1.2 2004-04-22 22:26:54 renanse Exp $
+ * @version $Id: AlphaState.java,v 1.3 2004-08-02 22:35:00 cep21 Exp $
  */
 public abstract class AlphaState extends RenderState {
     //source functions
@@ -144,11 +144,17 @@ public abstract class AlphaState extends RenderState {
     public final static int TF_ALWAYS = 7;
 
     //attributes
+    /** The current value of if blend is enabled. */
     protected boolean blendEnabled;
+    /** The current source blend function. */
     protected int srcBlend;
+    /** The current destiantion blend function. */
     protected int dstBlend;
+    /** If enabled, alpha testing done. */
     protected boolean testEnabled;
+    /** Alpha test value. */
     protected int test;
+    /** The reference value to which incoming alpha values are compared. */
     protected float reference;
 
     /**
