@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class WidgetAbstractFont implements WidgetFont {
-    private static String FONT_DIRECTORY = "jmetest/data/font/";
+    private static String FONT_DIRECTORY = "com/jme/widget/lookandfeel/data/";
     private static String FONT_EXT = "glf";
 
     protected WidgetFontHeader header;
@@ -71,10 +71,8 @@ public abstract class WidgetAbstractFont implements WidgetFont {
     }
 
     public void create(String filename) {
-    	URL url = null;
-    	
+       URL url = null;
     	url = WidgetAbstractFont.class.getClassLoader().getResource(FONT_DIRECTORY+name+"."+FONT_EXT);
-    	
     	if(url != null) {
     		create(url);
     	} else {
