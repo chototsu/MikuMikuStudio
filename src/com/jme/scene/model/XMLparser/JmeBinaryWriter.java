@@ -33,7 +33,16 @@ import java.net.URL;
 public class JmeBinaryWriter {
     private DataOutputStream myOut;
     private static final boolean DEBUG=false;
+
+    /**
+     * These are the Spatial,RenderState,Controller that occur twice in the file.  They
+     * are saved as shares to better reflect how the file currently is
+     */
     private IdentityHashMap sharedObjects=new IdentityHashMap(20);
+
+    /** Contains the address of every Spatial, RenderState, Controller in the scene.  Whenever
+     * an address is entered twice, it is sent to sharedObjects
+     */
     private IdentityHashMap entireScene=new IdentityHashMap(256);
 
     private static final Quaternion DEFAULT_ROTATION=new Quaternion();
@@ -65,6 +74,10 @@ public class JmeBinaryWriter {
         myOut.close();
     }
 
+    /**
+     * All objects that are twice in the file are written as shared types
+     * @throws IOException
+     */
     private void writeDuplicates() throws IOException {
         if (sharedObjects.size()==0)
             return;
@@ -89,6 +102,12 @@ public class JmeBinaryWriter {
         sharedObjects=temp;
     }
 
+    /**
+     * Looks to see if the given Spatial is already contained in the entireScene.
+     * If it is, then place it in sharedObjects.  If not, then look thru its Controllers/RenderStates
+     * and also look thru its children if it is a Node
+     * @param n Spatial to look at
+     */
     private void findDuplicates(Spatial n) {
         if (n==null) return;
         if (entireScene.containsKey(n)){
@@ -104,6 +123,11 @@ public class JmeBinaryWriter {
         }
     }
 
+    /**
+     * Looks for duplicate RenderStates and Controllers in a Spatial.  If they are there,
+     * place them in then sharedObjects
+     * @param s The spatial to examine.
+     */
     private void evaluateSpatialChildren(Spatial s) {
         if (s==null) return;
         for (int i=0;i<s.getControllers().size();i++){
@@ -200,7 +224,7 @@ public class JmeBinaryWriter {
 
     /**
      * Writes a JointMesh2 to binary format
-     * @param jointMesh
+     * @param jointMesh The JointMesh to write
      * @throws IOException
      */
     private void writeJointMesh(JointMesh2 jointMesh) throws IOException {
