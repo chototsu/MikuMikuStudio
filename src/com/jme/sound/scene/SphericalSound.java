@@ -150,32 +150,40 @@ public class SphericalSound extends SoundSpatial implements ISource {
     }
 
     /**
-     * @param activeSource
-     *            The activeSource to set.
+     * Used to override the actual playing sound sequence.
+     * using a number higher than the number of samples-1 will have no effect
+     * @param number The sequence to activate. Remark that the sample numbering starts at 0
      */
-    public void setActiveSource(int activeSource) {
-        this.activeSource = activeSource;
+    public void setActiveSource(int number) {
+        if(number < sequence.length)
+            activeSource = number;
     }
 
     /**
-     * @return Returns the sequenced.
+     * Detects if this SphericalSound is sequence playing enabled.
+     * @return Returns true if there are more than 2 samples inside this SphericalSound.
      */
     public boolean isSequenced() {
         return sequenced;
     }
 
+    
+    /**
+     * Gets the number of samples 
+     * @return the number of sequences
+     */
     public int getSequenceSize() {
         return sequence.length;
     }
 
-    public void updateWorldData(float time) {
-        super.updateWorldData(time);
+    public void updateWorldData(float timeInSeconds) {
+        super.updateWorldData(timeInSeconds);
         if (playTime != null) {
             if (activeSource < sequence.length) {
-                if (sequenceStartTime == 0) sequenceStartTime = time;
-                if ((time - sequenceStartTime) > playTime[activeSource]/1000) {
-                    stop();
-                    sequenceStartTime = time;
+                if (sequenceStartTime == 0) sequenceStartTime = timeInSeconds;
+                if ((timeInSeconds - sequenceStartTime) > playTime[activeSource]/1000) {
+                    stop(activeSource);
+                    sequenceStartTime = timeInSeconds;
                     activeSource++;
                 }
             } else {
