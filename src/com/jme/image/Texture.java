@@ -47,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.6 2004-05-15 02:06:55 renanse Exp $
+ * @version $Id: Texture.java,v 1.7 2004-05-23 21:23:08 mojomonkey Exp $
  */
 public class Texture {
 
@@ -166,6 +166,8 @@ public class Texture {
     public static final int ACF_ADD_SIGNED = 3;
     public static final int ACF_SUBTRACT = 4;
     public static final int ACF_INTERPOLATE = 5;
+    public static final int ACF_DOT3_RGB = 6;
+    public static final int ACF_DOT3_RGBA = 7;
 
     public static final int ACS_TEXTURE = 0;
     public static final int ACS_PRIMARY_COLOR = 1;
@@ -404,7 +406,7 @@ public class Texture {
     public FloatBuffer getBlendColor() {
         return blendColorBuffer;
     }
-
+    
     /**
      * <code>getWrap</code> returns the wrap mode for the texture.
      * @return the wrap mode of the texture.
