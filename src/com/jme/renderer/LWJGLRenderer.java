@@ -100,7 +100,7 @@ import com.jme.widget.text.WidgetText;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.26 2004-03-02 14:57:58 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.27 2004-03-02 15:02:48 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -428,6 +428,10 @@ public class LWJGLRenderer implements Renderer {
         Vector3f[] normal = p.getNormals();
         ColorRGBA[] color = p.getColors();
         Vector2f[] texture = p.getTextures();
+        
+        if(statisticsOn) {
+        	numberOfVerts += vertex.length;
+        }
 
         if (normal != null) {
             if (color != null) {
@@ -545,6 +549,10 @@ public class LWJGLRenderer implements Renderer {
         Vector3f[] normal = l.getNormals();
         ColorRGBA[] color = l.getColors();
         Vector2f[] texture = l.getTextures();
+        
+        if(statisticsOn) {
+        	numberOfVerts += vertex.length;
+        }
 
         if (normal != null) {
             if (color != null) {
@@ -717,9 +725,8 @@ public class LWJGLRenderer implements Renderer {
         }
 
         Vector3f point;
-        for (float t = 0;
-            t <= (1 + (1.0f / c.getSteps()));
-            t += 1.0f / c.getSteps()) {
+        float limit = (1 + (1.0f / c.getSteps()));
+        for (float t = 0; t <= limit; t += 1.0f / c.getSteps()) {
 
             if (t >= colorInterval && color != null) {
 
@@ -734,6 +741,10 @@ public class LWJGLRenderer implements Renderer {
 
             point = c.getPoint(t);
             GL.glVertex3f(point.x, point.y, point.z);
+        }
+        
+        if(statisticsOn) {
+        	numberOfVerts += limit;
         }
 
         GL.glEnd();
