@@ -179,15 +179,15 @@ public class XMLtoBinary {
         private void writeIntArray(String data) throws IOException {
             myOut.writeByte(BinaryFormatConstants.DATA_INTARRAY);
             if (data==null || data.length()==0) {
-                myOut.writeShort(0);
+                myOut.writeInt(0);
                 return;
             }
             String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
             if (information.length==1 && information[0].equals("")){
-                myOut.writeShort(0);
+                myOut.writeInt(0);
                 return;
             }
-            myOut.writeShort(information.length);
+            myOut.writeInt(information.length);
             for (int i=0;i<information.length;i++){
                 myOut.writeInt(Integer.parseInt(information[i]));
             }
@@ -197,18 +197,18 @@ public class XMLtoBinary {
         private void writeVector2fArray(String data) throws IOException {
             myOut.writeByte(BinaryFormatConstants.DATA_V2FARRAY);
             if (data==null || data.length()==0){
-                myOut.writeShort(0);
+                myOut.writeInt(0);
                 return;
             };
             String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
             if (information.length==1 && information[0].equals("")){
-                myOut.writeShort(0);
+                myOut.writeInt(0);
                 return;
             }
             if (information.length%2!=0){
                 throw new IOException("Vector2f length not modulus of 2: " + information.length);
             }
-            myOut.writeShort(information.length/2);
+            myOut.writeInt(information.length/2);
             for (int i=0;i<information.length/2;i++){
                 myOut.writeFloat(Float.parseFloat(information[i*2+0]));
                 myOut.writeFloat(Float.parseFloat(information[i*2+1]));
@@ -218,18 +218,18 @@ public class XMLtoBinary {
         public void writeColorArray(String data) throws IOException {
             myOut.writeByte(BinaryFormatConstants.DATA_COLORARRAY);
             if (data == null || data.length()==0){
-                myOut.writeShort(0);
+                myOut.writeInt(0);
                 return;
             }
             String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
             if (information.length==1 && information[0].equals("")){
-                myOut.writeShort(0);
+                myOut.writeInt(0);
                 return;
             }
             if (information.length%4!=0){
                 throw new IOException("Color length not modulus of 4: " + information.length);
             }
-            myOut.writeShort(information.length/4);
+            myOut.writeInt(information.length/4);
             for (int i=0;i<information.length/4;i++){
                 myOut.writeFloat(Float.parseFloat(information[i*4+0]));
                 myOut.writeFloat(Float.parseFloat(information[i*4+1]));
@@ -242,18 +242,18 @@ public class XMLtoBinary {
         private void writeVector3fArray(String data) throws IOException{
             myOut.writeByte(BinaryFormatConstants.DATA_V3FARRAY);
             if (data==null || data.length()==0){
-                myOut.writeShort(0);
+                myOut.writeInt(0);
                 return;
             }
             String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
             if (information.length==1 && information[0].equals("")){
-                myOut.writeShort(0);
+                myOut.writeInt(0);
                 return;
             };
             if (information.length%3!=0){
                 throw new IOException("Vector3f length not modulus of 3: " + information.length);
             }
-            myOut.writeShort(information.length/3);
+            myOut.writeInt(information.length/3);
             for (int i=0;i<information.length/3;i++){
                 myOut.writeFloat(Float.parseFloat(information[i*3+0]));
                 myOut.writeFloat(Float.parseFloat(information[i*3+1]));
