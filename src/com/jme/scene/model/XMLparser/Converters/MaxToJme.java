@@ -1,4 +1,4 @@
-package com.jme.scene.model.XMLparser;
+package com.jme.scene.model.XMLparser.Converters;
 
 import com.jme.util.LittleEndien;
 import com.jme.util.TextureManager;
@@ -9,6 +9,8 @@ import com.jme.math.Matrix3f;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.model.XMLparser.Converters.MaxChunkIDs;
+import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.MaterialState;
@@ -35,10 +37,10 @@ import java.util.BitSet;
  * @author Jack Lindamood
  */
 public class MaxToJme implements MaxChunkIDs{
-    LittleEndien myIn;
-    private static boolean DEBUG=false;
+    private LittleEndien myIn;
+    private static boolean DEBUG=true;
     private static boolean DEBUG_SEVERE=true;
-    private static boolean DEBUG_LIGHT=true;
+    private static boolean DEBUG_LIGHT=false;
 
     private Stack s=new Stack();
     private HashMap readObject=new HashMap();
@@ -66,7 +68,7 @@ public class MaxToJme implements MaxChunkIDs{
             length-=6;
             if (DEBUG) System.out.println("Read in readFile chunk ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
             switch(i.type){
-                case M3D_VERSION:
+                case TDS_VERSION:
                     readVersion();
                     break;
                 case EDIT_3DS:
@@ -230,6 +232,9 @@ public class MaxToJme implements MaxChunkIDs{
                 case KEY_FALLOFF_TRACK:
                     readFalloffTrack();
                     break;
+                case BOUNDING_BOX:
+                    readBoundingBox();
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readKeyframeObj");
@@ -239,6 +244,12 @@ public class MaxToJme implements MaxChunkIDs{
             if (DEBUG) System.out.println("length left in KeyframeObj:" + length);
 
         }
+    }
+
+    private void readBoundingBox() throws IOException {
+        Vector3f boxMin=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
+        Vector3f boxMax=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
+        
     }
 
     private void readFalloffTrack() throws IOException {
@@ -852,6 +863,12 @@ public class MaxToJme implements MaxChunkIDs{
                     value=myIn.readShort()/100f;
                     if (DEBUG) System.out.println("Texture bump percent:"+value);
                     break;
+                case TEXTURE_V_SCALE:
+                    readVScale();
+                    break;
+                case TEXTURE_U_SCALE:
+                    readUScale();
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readMapInfo");
@@ -862,6 +879,26 @@ public class MaxToJme implements MaxChunkIDs{
         }
         if (DEBUG_LIGHT) System.out.println("Finished mapInfo");
         return (Texture) s.pop();
+    }
+
+    private void readUScale() throws IOException {
+        float uScale=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("U Scale:" + uScale);
+        Texture temp=(Texture) s.pop();
+        MaterialBlock mb=(MaterialBlock) s.pop();
+        mb.uScale=uScale;
+        s.push(mb);
+        s.push(temp);
+    }
+
+    private void readVScale() throws IOException {
+        float vScale=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("V scale:" + vScale);
+        Texture temp=(Texture) s.pop();
+        MaterialBlock mb=(MaterialBlock) s.pop();
+        mb.vScale=vScale;
+        s.push(mb);
+        s.push(temp);
     }
 
     private void readTextureMapOne(int length) throws IOException {
@@ -1116,6 +1153,9 @@ public class MaxToJme implements MaxChunkIDs{
                 case LIGHT_SPOT_BIAS:
                     readLightBias();
                     break;
+                case LIGHT_LOC_SHADOW:
+                    readLightShadow();
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readSpotLight");
@@ -1125,6 +1165,13 @@ public class MaxToJme implements MaxChunkIDs{
             if (DEBUG) System.out.println("length left in readSpotLight:" + length);
         }
         if (DEBUG_LIGHT) System.out.println("Finished spotlight");
+    }
+
+    private void readLightShadow() throws IOException {
+        float bias=myIn.readFloat();
+        float filter=myIn.readFloat();
+        short shadowSize=myIn.readShort();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Light shadow bias " + bias +" filter " + filter +" shadowSize " + shadowSize);
     }
 
     private void readLightBias() throws IOException {
@@ -1226,6 +1273,10 @@ public class MaxToJme implements MaxChunkIDs{
             if (DEBUG) System.out.println("length left in readTriMesh:" + length);
         }
         TriMesh finishedMesh=(TriMesh) s.pop();
+        if (finishedMesh.getVertices()==null || finishedMesh.getVertices().length==0){
+            if (DEBUG_LIGHT) System.out.println("Not attaching a TriMesh");
+            return;
+        }
         finishedMesh.setModelBound(new BoundingSphere());
         finishedMesh.updateModelBound();
 //        finishedMesh.setSolidColor(ColorRGBA.randomColor());
@@ -1403,6 +1454,11 @@ public class MaxToJme implements MaxChunkIDs{
         TriMesh tm=(TriMesh) s.pop();
         tm.setRenderState(mb.mat);
         tm.setRenderState(mb.tex);
+//        Vector2f[] texCoords=tm.getTextures();
+//        for (int i=0;i<texCoords.length;i++)
+//            if (texCoords[i]!=null)
+//                texCoords[i].set(texCoords[i].x*mb.uScale,texCoords[i].y*mb.vScale);
+//        tm.setTextures(texCoords);
         s.push(tm);
     }
 
@@ -1480,7 +1536,7 @@ public class MaxToJme implements MaxChunkIDs{
         return new Chunk(myIn.readUnsignedShort(),myIn.readInt());
     }
 
-    private class Chunk{
+    private static class Chunk{
         Chunk(int t,int l){
             type=t;
             length=l;
@@ -1489,9 +1545,11 @@ public class MaxToJme implements MaxChunkIDs{
         int length;
     }
 
-    private class MaterialBlock{
+    private static class MaterialBlock{
         public MaterialState mat;
         public TextureState tex;
+        float uScale=1;
+        float vScale=1;
         public String name;
         public MaterialBlock(){
             mat=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();

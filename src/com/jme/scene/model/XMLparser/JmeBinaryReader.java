@@ -17,6 +17,10 @@ import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
+import com.jme.animation.JointController;
+import com.jme.animation.KeyframeController;
+import com.jme.scene.model.JointMesh2;
+import com.jme.scene.model.EmptyTriMesh;
 
 import java.io.InputStream;
 import java.io.DataInputStream;
@@ -42,7 +46,7 @@ public class JmeBinaryReader {
     /**
      * Holds a list of objects that have encountered a being_tag but not an end_tag yet
      */
-    Stack s=new Stack();
+    private Stack s=new Stack();
 
     /**
      * Holds already loaded objects that are to be shared at various locations in the file
@@ -57,7 +61,7 @@ public class JmeBinaryReader {
     /**
      * Holds properties that modify how JmeBinaryReader loads a file
      */
-    HashMap properties=new HashMap();
+    private HashMap properties=new HashMap();
 
     /**
      * The scene that was last loaded
@@ -65,9 +69,9 @@ public class JmeBinaryReader {
     private Node myScene;
 
     private Renderer renderer;
-    DataInputStream myIn;
+    private DataInputStream myIn;
 
-    final static boolean DEBUG=false;
+    private final static boolean DEBUG=false;
 
     /**
      * Constructs a new JmeBinaryReader.  This must be called after a DisplaySystem
@@ -191,8 +195,8 @@ public class JmeBinaryReader {
             JointController jc=(JointController) s.pop();
             parentNode=(Node) s.pop();
             for (int i=0;i<parentNode.getQuantity();i++){
-                if (parentNode.getChild(i) instanceof JointMesh)
-                    jc.addJointMesh((JointMesh) parentNode.getChild(i));
+                if (parentNode.getChild(i) instanceof JointMesh2)
+                    jc.addJointMesh((JointMesh2) parentNode.getChild(i));
             }
             jc.processController();
             parentNode.addController(jc);
@@ -259,15 +263,15 @@ public class JmeBinaryReader {
             m.setIndices((int[]) attributes.get("data"));
             s.push(m);
         } else if (tagName.equals("origvertex")){
-            JointMesh jm=(JointMesh) s.pop();
+            JointMesh2 jm=(JointMesh2) s.pop();
             jm.originalVertex=(Vector3f[]) attributes.get("data");
             s.push(jm);
         } else if (tagName.equals("orignormal")){
-            JointMesh jm=(JointMesh) s.pop();
+            JointMesh2 jm=(JointMesh2) s.pop();
             jm.originalNormal=(Vector3f[]) attributes.get("data");
             s.push(jm);
         } else if (tagName.equals("jointindex")){
-            JointMesh jm=(JointMesh) s.pop();
+            JointMesh2 jm=(JointMesh2) s.pop();
             jm.jointIndex=(int[]) attributes.get("data");
             s.push(jm);
         } else if (tagName.equals("sharedtypes")){
@@ -322,7 +326,7 @@ public class JmeBinaryReader {
             s.push(jc);
             s.push(attributes.get("index"));
         } else if (tagName.equals("jointmesh")){
-            s.push(processSpatial(new JointMesh((String) attributes.get("name")),attributes));
+            s.push(processSpatial(new JointMesh2((String) attributes.get("name")),attributes));
         } else if (tagName.equals("keyframecontroller")){
             KeyframeController kc=new KeyframeController();
             kc.setActive(true);
@@ -349,7 +353,7 @@ public class JmeBinaryReader {
         String parameters=(String) atts.get("params");
         String type=(String) atts.get("type");
         if (parameters==null) throw new JmeException("Must specify parameters");
-        Spatial toReturn=null;
+        Spatial toReturn;
         String[] parts=parameters.trim().split(" ");
         if (type.equalsIgnoreCase("box")){
             if (parts.length!=7) throw new JmeException("Box must have 7 parameters");

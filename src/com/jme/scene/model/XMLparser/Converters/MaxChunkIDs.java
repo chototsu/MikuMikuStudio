@@ -1,4 +1,4 @@
-package com.jme.scene.model.XMLparser;
+package com.jme.scene.model.XMLparser.Converters;
 
 /**
  * Started Date: Jun 26, 2004<br><br>
@@ -10,7 +10,7 @@ public interface MaxChunkIDs {
 
     // These must all be diffrent values
     static final int MAIN_3DS     =0x4D4D;
-    static final int M3D_VERSION  =0x0002;
+    static final int TDS_VERSION  =0x0002;
     static final int NULL_CHUNK   =0x0000;
     static final int MASTER_SCALE =0x0100;
     static final int NAMED_OBJECT =0x4000;
@@ -120,6 +120,10 @@ public interface MaxChunkIDs {
     static final int KEY_HOTSPOT_TRACK=0xb027;
     static final int KEY_FALLOFF_TRACK=0xb028;
     static final int UNKNOWN1       =0x0001;
+    static final int TEXTURE_V_SCALE=0xa354;
+    static final int TEXTURE_U_SCALE=0xa356;
+    static final int LIGHT_LOC_SHADOW=0x4641;
+    static final int BOUNDING_BOX   =0xb014;
 
 
 }

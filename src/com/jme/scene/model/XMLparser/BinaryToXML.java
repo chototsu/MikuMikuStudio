@@ -14,14 +14,14 @@ import java.io.IOException;
  * @author Jack Lindamood
  */
 public class BinaryToXML {
-    DataInputStream myIn;
-    Writer XMLFile;
-    short tabCount;
+    private DataInputStream myIn;
+    private Writer XMLFile;
+    private short tabCount;
     
     /**
      * <code>currentLine</code> contains the String that will be finally written to the XML file via writeLine
      */
-    StringBuffer currentLine;
+    private StringBuffer currentLine;
     private static final boolean DEBUG = false;
 
     public BinaryToXML(){

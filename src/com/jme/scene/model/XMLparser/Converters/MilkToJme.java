@@ -1,4 +1,4 @@
-package com.jme.scene.model.XMLparser;
+package com.jme.scene.model.XMLparser.Converters;
 
 import com.jme.util.LittleEndien;
 import com.jme.system.JmeException;
@@ -7,10 +7,14 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.scene.model.XMLparser.JmeBinaryWriter;
+import com.jme.animation.JointController;
+import com.jme.scene.model.JointMesh2;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.renderer.ColorRGBA;
 import com.jme.image.Texture;
+import com.jme.animation.JointController;
 
 import java.io.*;
 
@@ -22,18 +26,18 @@ import java.io.*;
  * @author Jack Lindamood
  */
 public class MilkToJme {
-    DataInput inFile;
-    byte[] tempChar=new byte[128];
-    int nNumVertices;
-    MilkVertex[] myVerts;
-    int nNumTriangles;
-    MilkTriangle[] myTris;
-    int[] materialIndexes;
+    private DataInput inFile;
+    private byte[] tempChar=new byte[128];
+    private int nNumVertices;
+    private MilkVertex[] myVerts;
+    private int nNumTriangles;
+    private MilkTriangle[] myTris;
+    private int[] materialIndexes;
 
     /**
      * The node that represents the .ms3d file.  It's chidren are MS meshes
      */
-    Node finalNode;
+    private Node finalNode;
 
     /**
      * This class's only public function.  It creates a node from a .ms3d file and then writes that node to the given
@@ -164,7 +168,7 @@ public class MilkToJme {
             Vector2f[] meshTexCoords=new Vector2f[numTriLocal*3];
             int[] meshIndex=new int[numTriLocal*3];
             int[] jointIndex=new int[numTriLocal*3];
-            JointMesh theMesh=new JointMesh(cutAtNull(tempChar));
+            JointMesh2 theMesh=new JointMesh2(cutAtNull(tempChar));
 
             for (int j=0;j<numTriLocal;j++){
                 int triIndex=inFile.readUnsignedShort();
@@ -236,16 +240,16 @@ public class MilkToJme {
         if (inFile.readInt()!=4) throw new JmeException("Wrong file version: Not 4");   // version
     }
 
-    private class MilkVertex{
+    private static class MilkVertex{
         Vector3f vertex;
         byte boneID;
     }
-    private class MilkTriangle{
+    private static class MilkTriangle{
         int[] vertIndicies=new int[3];              // 3 ints
         Vector3f[] vertNormals=new Vector3f[3];     // 3 Vector3fs
         Vector2f[] vertTexCoords=new Vector2f[3];   // 3 Texture Coords
     }
-    private String cutAtNull(byte[] inString) {
+    private static String cutAtNull(byte[] inString) {
         for (int i=0;i<inString.length;i++)
             if (inString[i]==0) return new String(inString,0,i);
         return new String(inString);

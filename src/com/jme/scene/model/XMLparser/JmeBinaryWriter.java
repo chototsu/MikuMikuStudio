@@ -1,6 +1,7 @@
 package com.jme.scene.model.XMLparser;
 
 import com.jme.scene.*;
+import com.jme.scene.model.JointMesh2;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
@@ -9,6 +10,9 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.animation.VertexKeyframeController;
+import com.jme.animation.JointController;
+import com.jme.animation.KeyframeController;
+
 
 import java.io.OutputStream;
 import java.io.DataOutputStream;
@@ -27,8 +31,8 @@ import java.net.URL;
  * @author Jack Lindamood
  */
 public class JmeBinaryWriter {
-    DataOutputStream myOut;
-    private final static boolean DEBUG=false;
+    private DataOutputStream myOut;
+    private static final boolean DEBUG=false;
     private IdentityHashMap sharedObjects=new IdentityHashMap(20);
     private IdentityHashMap entireScene=new IdentityHashMap(256);
 
@@ -70,9 +74,10 @@ public class JmeBinaryWriter {
 
         writeTag("sharedtypes",null);
         List l=new ArrayList(temp.keySet());
+        HashMap atts=new HashMap();
         for (int i=0;i<l.size();i++){
+            atts.clear();
             String name=(String) temp.get(l.get(i));
-            HashMap atts=new HashMap();
             atts.put("ident",name);
             if (l.get(i) instanceof RenderState){
                 writeTag("sharedrenderstate",atts);
@@ -170,8 +175,8 @@ public class JmeBinaryWriter {
     private void writeSpatial(Spatial s) throws IOException {
         if (s instanceof XMLloadable)
             writeXMLloadable((XMLloadable)s);
-        else if (s instanceof JointMesh)
-            writeJointMesh((JointMesh)s);
+        else if (s instanceof JointMesh2)
+            writeJointMesh((JointMesh2)s);
         else if (s instanceof Node)
             writeNode((Node) s);
         else if (s instanceof TriMesh)
@@ -194,11 +199,11 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a JointMesh to binary format
+     * Writes a JointMesh2 to binary format
      * @param jointMesh
      * @throws IOException
      */
-    private void writeJointMesh(JointMesh jointMesh) throws IOException {
+    private void writeJointMesh(JointMesh2 jointMesh) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
         putSpatialAtts(jointMesh,atts);
@@ -209,11 +214,11 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes the inner tags of a JointMesh to binary format
+     * Writes the inner tags of a JointMesh2 to binary format
      * @param jointMesh Mesh who's tags are to be written
      * @throws IOException
      */
-    private void writeJointMeshTags(JointMesh jointMesh) throws IOException {
+    private void writeJointMeshTags(JointMesh2 jointMesh) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
         atts.put("data",jointMesh.jointIndex);

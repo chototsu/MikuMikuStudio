@@ -1,10 +1,13 @@
-package com.jme.scene.model.XMLparser;
+package com.jme.scene.model.XMLparser.Converters;
 
 import com.jme.util.BinaryFileReader;
 import com.jme.scene.Node;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 import com.jme.scene.model.Face;
+import com.jme.scene.model.XMLparser.JmeBinaryWriter;
+import com.jme.animation.KeyframeController;
+import com.jme.scene.model.EmptyTriMesh;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
@@ -44,7 +47,7 @@ public class Md2ToJme {
      * @author Mark Powell
      * @author Jack Lindamood
      */
-    private class Md2ConverterCopy extends TriMesh{
+    private static class Md2ConverterCopy extends TriMesh{
         private BinaryFileReader bis = null;
 
         private Header header;

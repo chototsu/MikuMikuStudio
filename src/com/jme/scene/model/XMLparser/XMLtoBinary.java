@@ -20,7 +20,7 @@ import java.io.DataOutputStream;
  * @author Jack Lindamood
  */
 public class XMLtoBinary {
-    DataOutputStream myOut;
+    private DataOutputStream myOut;
 
     public XMLtoBinary(){
 
@@ -56,7 +56,7 @@ public class XMLtoBinary {
             try {
                 myOut.writeLong(BinaryFormatConstants.BEGIN_FILE);
             } catch (IOException e) {
-                throw new SAXException("Unable to write header");
+                throw new SAXException("Unable to write header:" + e);
             }
         }
 
@@ -65,7 +65,7 @@ public class XMLtoBinary {
                 myOut.writeByte(BinaryFormatConstants.END_FILE);
                 myOut.close();
             } catch (IOException e) {
-                throw new SAXException("Unable to close binFile outStream");
+                throw new SAXException("Unable to close binFile outStream:"+e);
             }
         }
 
@@ -81,7 +81,7 @@ public class XMLtoBinary {
                     processWrite(qName,currentAtt,atts.getValue(i));
                 }
             } catch (IOException e) {
-                throw new SAXException("Unable to write start element: " + qName);
+                throw new SAXException("Unable to write start element: " + qName + " " + e);
             }
         }
 
@@ -102,7 +102,7 @@ public class XMLtoBinary {
                     writeColorArray(value);
                 } else if ("texturecoords".equals(qName)){
                     writeVector2fArray(value);
-                } else if ("index".equals(qName) || ("jointindex".equals(qName))){
+                } else if ("index".equals(qName) || "jointindex".equals(qName)){
                     writeIntArray(value);
                 } else{
                     writeString(value);
@@ -183,7 +183,7 @@ public class XMLtoBinary {
                 return;
             }
             String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
-            if (information.length==1 && information[0].equals("")){
+            if (information.length==1 && "".equals(information[0])){
                 myOut.writeInt(0);
                 return;
             }
@@ -199,9 +199,9 @@ public class XMLtoBinary {
             if (data==null || data.length()==0){
                 myOut.writeInt(0);
                 return;
-            };
+            }
             String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
-            if (information.length==1 && information[0].equals("")){
+            if (information.length==1 && "".equals(information[0])){
                 myOut.writeInt(0);
                 return;
             }
@@ -222,7 +222,7 @@ public class XMLtoBinary {
                 return;
             }
             String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
-            if (information.length==1 && information[0].equals("")){
+            if (information.length==1 && "".equals(information[0])){
                 myOut.writeInt(0);
                 return;
             }
@@ -246,10 +246,10 @@ public class XMLtoBinary {
                 return;
             }
             String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
-            if (information.length==1 && information[0].equals("")){
+            if (information.length==1 && "".equals(information[0])){
                 myOut.writeInt(0);
                 return;
-            };
+            }
             if (information.length%3!=0){
                 throw new IOException("Vector3f length not modulus of 3: " + information.length);
             }
@@ -287,7 +287,7 @@ public class XMLtoBinary {
                 myOut.writeByte(BinaryFormatConstants.END_TAG);
                 myOut.writeUTF(qName);
             } catch (IOException e) {
-                throw new SAXException("Unable to write end element: " + qName);
+                throw new SAXException("Unable to write end element: " + qName + " " + e);
             }
 
         }
