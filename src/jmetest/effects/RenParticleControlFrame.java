@@ -41,7 +41,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
@@ -83,7 +82,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.25 2004-03-28 18:32:30 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.26 2004-04-01 19:16:53 mojomonkey Exp $
  *
  */
 
