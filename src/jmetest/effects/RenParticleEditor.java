@@ -59,7 +59,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.4 2004-04-22 22:27:31 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.5 2004-04-22 23:18:03 renanse Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -219,7 +219,7 @@ public class RenParticleEditor extends VariableTimestepGame {
     manager.setStartColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 1.0f));
     manager.setEndColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 0.0f));
     manager.setRandomMod(1.0f);
-    manager.warmUp(1000);
+    manager.warmUp(120);
 
     root.setRenderState(ts);
     main.setRenderState(as1);

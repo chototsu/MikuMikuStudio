@@ -31,47 +31,27 @@
  */
 package jmetest.effects;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.InputHandler;
-import com.jme.input.InputSystem;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
-import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.17 2004-04-22 22:27:31 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.18 2004-04-22 23:18:03 renanse Exp $
  */
-public class TestParticleSystem extends BaseGame {
+public class TestParticleSystem extends SimpleGame {
 
   private ParticleManager manager;
-
-  private Node root;
-  private Node main;
-
-  private Camera cam;
-
-  private Timer timer;
-  private InputHandler input;
-
-  private Text fps;
-
-  private Vector3f currentPos = new Vector3f();
-  private Vector3f newPos = new Vector3f();
-  private Node fpsNode;
+  private Vector3f currentPos = new Vector3f(), newPos = new Vector3f();
+  private float tpf = 0;
 
   public static void main(String[] args) {
     TestParticleSystem app = new TestParticleSystem();
@@ -79,19 +59,17 @@ public class TestParticleSystem extends BaseGame {
     app.start();
   }
 
-  float tpf = 0;
-  protected void update(float interpolation) {
-    timer.update();
+  protected void simpleUpdate(float interpolation) {
+
     tpf = timer.getTimePerFrame();
     if (tpf > 1f) tpf = 1.0f; // do this to prevent a long pause at start
-    input.update(tpf * 10f);
 
     if ( (int) currentPos.x == (int) newPos.x
         && (int) currentPos.y == (int) newPos.y
         && (int) currentPos.z == (int) newPos.z) {
       newPos.x = (float) Math.random() * 50 - 25;
       newPos.y = (float) Math.random() * 50 - 25;
-      newPos.z = (float) Math.random() * 50 - 25;
+      newPos.z = (float) Math.random() * 50 - 150;
     }
 
     currentPos.x -= (currentPos.x - newPos.x)
@@ -103,66 +81,11 @@ public class TestParticleSystem extends BaseGame {
 
     manager.setParticlesOrigin(currentPos);
 
-    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
-              display.getRenderer().getStatistics());
-    main.updateGeometricState(tpf, true);
   }
 
-  protected void render(float interpolation) {
-    display.getRenderer().clearStatistics();
-    display.getRenderer().clearBuffers();
-    display.getRenderer().draw(main);
-    display.getRenderer().draw(fpsNode);
-  }
-
-  protected void initSystem() {
-    LoggingSystem.getLogger().setLevel(java.util.logging.Level.WARNING);
-    try {
-      display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-      display.createWindow(
-          properties.getWidth(),
-          properties.getHeight(),
-          properties.getDepth(),
-          properties.getFreq(),
-          properties.getFullscreen());
-
-      cam =
-          display.getRenderer().getCamera(
-          properties.getWidth(),
-          properties.getHeight());
-    }
-    catch (JmeException e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-
-    display.getRenderer().setBackgroundColor(new ColorRGBA(0, 0, 0, 0));
-
-    cam.setFrustum(1f, 1000F, -0.55f, 0.55f, 0.4125f, -0.4125f);
-
-    Vector3f loc = new Vector3f(-100, 0, 0);
-    Vector3f left = new Vector3f(0, 0, -1);
-    Vector3f up = new Vector3f(0, 1, 0f);
-    Vector3f dir = new Vector3f(1, 0, 0);
-    cam.setFrame(loc, left, up, dir);
-
-    display.getRenderer().setCamera(cam);
-
-    timer = Timer.getTimer(properties.getRenderer());
-    input = new FirstPersonHandler(this, cam, properties.getRenderer());
-    input.setMouseSpeed(0.2f);
-    input.setKeySpeed(1f);
-
-    InputSystem.createInputSystem(properties.getRenderer());
+  protected void simpleInitGame() {
     display.setTitle("Particle System");
-    display.getRenderer().enableStatistics(true);
-  }
-
-  protected void initGame() {
-    root = new Node("Scene graph root");
-    root.setForceView(true);
-    main = new Node("Main node");
-    main.setForceView(true);
+    lightState.setEnabled(false);
 
     AlphaState as1 = display.getRenderer().getAlphaState();
     as1.setBlendEnabled(true);
@@ -182,29 +105,10 @@ public class TestParticleSystem extends BaseGame {
         true));
     ts.setEnabled(true);
 
-    TextureState font = display.getRenderer().getTextureState();
-    font.setTexture(
-        TextureManager.loadTexture(
-        TestParticleSystem.class.getClassLoader().getResource(
-        "jmetest/data/font/font.png"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
-    font.setEnabled(true);
-
-    fps = new Text("FPS label", "");
-    fps.setRenderState(font);
-    fps.setRenderState(as1);
-    fps.setForceView(true);
-
-    fpsNode = new Node("FPS node");
-    fpsNode.attachChild(fps);
-    fpsNode.setForceView(true);
-
     manager = new ParticleManager(300, display.getRenderer().getCamera());
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0,0,0));
-    manager.setParticlesOrigin(new Vector3f(-50,0,0));
+    manager.setParticlesOrigin(new Vector3f(0,0,0));
     manager.setInitialVelocity(.006f);
     manager.setStartSize(2.5f);
     manager.setEndSize(.5f);
@@ -216,21 +120,12 @@ public class TestParticleSystem extends BaseGame {
     manager.setRandomMod(0f);
     manager.warmUp(60);
 
-    root.setRenderState(ts);
-    root.setRenderState(as1);
+    rootNode.setRenderState(ts);
+    rootNode.setRenderState(as1);
+    rootNode.clearRenderState(RenderState.RS_ZBUFFER);
     manager.getParticles().addController(manager);
-    root.attachChild(manager.getParticles());
-    main.attachChild(root);
-    root.updateGeometricState(0.0f, true);
-    main.updateRenderState();
-    fpsNode.updateGeometricState(0.0f, true);
-    fpsNode.updateRenderState();
-
-  }
-
-  protected void reinit() {
-  }
-
-  protected void cleanup() {
+    manager.getParticles().setModelBound(new BoundingSphere());
+    manager.getParticles().updateModelBound();
+    rootNode.attachChild(manager.getParticles());
   }
 }

@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.28 2004-04-22 22:27:30 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.29 2004-04-22 23:18:02 renanse Exp $
  *
  */
 
@@ -983,7 +983,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setRepeatType(Controller.RT_CLAMP);
     }
 
-    manager.warmUp(1000);
+    manager.warmUp(120);
     updateFromManager();
   }
 

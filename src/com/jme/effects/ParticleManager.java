@@ -57,7 +57,7 @@ import com.jme.scene.TriMesh;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.4 2004-04-22 22:26:25 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.5 2004-04-22 23:18:01 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
@@ -176,7 +176,7 @@ public class ParticleManager extends Controller {
     }
     particlesGeometry.updateTextureBuffer();
 
-    warmUp(1000);
+    warmUp(60);
   }
 
   /**
@@ -250,6 +250,9 @@ public class ParticleManager extends Controller {
 
         particlesGeometry.setVertices(geometryCoordinates);
         particlesGeometry.setColors(appearanceColors);
+      }
+      if (particlesGeometry.getModelBound() != null) {
+        particlesGeometry.getModelBound().computeFromPoints(particlesGeometry.getVertices());
       }
     }
   }
@@ -804,7 +807,8 @@ public class ParticleManager extends Controller {
    * @param iterations int
    */
   public void warmUp(int iterations) {
-    for (int i = iterations; --i>= iterations; )
-      update(1f);
+    iterations *= 10;
+    for (int i = iterations; --i>= 0; )
+      update(.1f);
   }
 }
