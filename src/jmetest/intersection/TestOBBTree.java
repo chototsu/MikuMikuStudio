@@ -5,7 +5,6 @@ import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.TriMesh;
 import com.jme.math.Vector3f;
-import com.jme.math.Quaternion;
 import com.jme.animation.SpatialTransformer;
 import com.jme.bounding.BoundingBox;
 import com.jme.renderer.ColorRGBA;
