@@ -27,8 +27,16 @@
   <target name="dist" depends="compile" description="generate jme package" >
     <jar jarfile="${seg}/target/jme.jar"  basedir="${class}" update="no" compress="false"/>
   </target>
+  
+  <target name="webdist" depends="compile" description="sign JARs for JNLP distribution" >
+    <signjar jar="${seg}/target/jme.jar"
+      alias="jme"
+      keystore="${seg}/jnlp/jmeKeyStore"
+      storepass="..."
+    />
+  </target>
 
-<!-- java doc ************************************************************************* -->		
+<!-- java doc ************************************************************************* -->
   <target name="doc" depends="compile" description="generate the doc">
      <javadoc destdir="${doc}" author="true" version="true" use="true" package="yes" windowtitle="jME API">
        <fileset dir="${src}/com">
@@ -48,5 +56,4 @@
   <target name="rebuild" depends="clean" description="build from clean" >
      <ant/>
   </target>
-
 </project>
