@@ -49,7 +49,7 @@ import com.jme.scene.state.TextureState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.7 2004-06-03 01:25:42 guurk Exp $
+ * @version $Id: Mouse.java,v 1.8 2004-06-04 00:41:42 renanse Exp $
  */
 public abstract class Mouse extends Geometry {
 	/**
@@ -94,9 +94,7 @@ public abstract class Mouse extends Geometry {
 				((TextureState) rs).getTexture().getImage().getHeight();
 			imageWidth = ((TextureState) rs).getTexture().getImage().getWidth();
 		}
-		RenderState oldState = renderStateList[rs.getType()];
-		renderStateList[rs.getType()] = rs;
-		return oldState;
+                return super.setRenderState(rs);
 	}
 
 	/**
