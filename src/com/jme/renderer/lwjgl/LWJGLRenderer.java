@@ -126,7 +126,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.42 2004-09-01 05:16:25 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.43 2004-09-01 05:21:22 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -228,10 +228,6 @@ public class LWJGLRenderer implements Renderer {
     return new LWJGLCamera(width, height, this);
   }
 
-    public Camera getCamera(int width, int height) {
-        return createCamera(width,height);
-    }
-
     /**
    * <code>createAlphaState</code> returns a new LWJGLAlphaState object as a
    * regular AlphaState.
@@ -242,10 +238,6 @@ public class LWJGLRenderer implements Renderer {
     return new LWJGLAlphaState();
   }
 
-    public AlphaState getAlphaState() {
-        return createAlphaState();
-    }
-
     /**
    * <code>createAttributeState</code> returns a new LWJGLAttributeState object
    * as a regular AttributeState.
@@ -255,10 +247,6 @@ public class LWJGLRenderer implements Renderer {
   public AttributeState createAttributeState() {
     return new LWJGLAttributeState();
   }
-
-    public AttributeState getAttributeState() {
-        return createAttributeState();
-    }
 
     /**
    * <code>createCullState</code> returns a new LWJGLCullState object as a
@@ -271,10 +259,6 @@ public class LWJGLRenderer implements Renderer {
     return new LWJGLCullState();
   }
 
-    public CullState getCullState() {
-        return createCullState();
-    }
-
     /**
    * <code>createDitherState</code> returns a new LWJGLDitherState object as a
    * regular DitherState.
@@ -284,10 +268,6 @@ public class LWJGLRenderer implements Renderer {
   public DitherState createDitherState() {
     return new LWJGLDitherState();
   }
-
-    public DitherState getDitherState() {
-        return createDitherState();
-    }
 
     /**
    * <code>createFogState</code> returns a new LWJGLFogState object as a
@@ -299,10 +279,6 @@ public class LWJGLRenderer implements Renderer {
     return new LWJGLFogState();
   }
 
-    public FogState getFogState() {
-        return createFogState();
-    }
-
     /**
    * <code>createLightState</code> returns a new LWJGLLightState object as a
    * regular LightState.
@@ -312,10 +288,6 @@ public class LWJGLRenderer implements Renderer {
   public LightState createLightState() {
     return new LWJGLLightState();
   }
-
-    public LightState getLightState() {
-        return createLightState();
-    }
 
     /**
    * <code>createMaterialState</code> returns a new LWJGLMaterialState object
@@ -327,10 +299,6 @@ public class LWJGLRenderer implements Renderer {
     return new LWJGLMaterialState();
   }
 
-    public MaterialState getMaterialState() {
-        return createMaterialState();
-    }
-
     /**
    * <code>createShadeState</code> returns a new LWJGLShadeState object as a
    * regular ShadeState.
@@ -340,10 +308,6 @@ public class LWJGLRenderer implements Renderer {
   public ShadeState createShadeState() {
     return new LWJGLShadeState();
   }
-
-    public ShadeState getShadeState() {
-        return createShadeState();
-    }
 
     /**
    * <code>createTextureState</code> returns a new LWJGLTextureState object as
@@ -355,10 +319,6 @@ public class LWJGLRenderer implements Renderer {
     return new LWJGLTextureState();
   }
 
-    public TextureState getTextureState() {
-        return createTextureState();
-    }
-
     /**
    * <code>createWireframeState</code> returns a new LWJGLWireframeState object
    * as a regular WireframeState.
@@ -368,10 +328,6 @@ public class LWJGLRenderer implements Renderer {
   public WireframeState createWireframeState() {
     return new LWJGLWireframeState();
   }
-
-    public WireframeState getWireframeState() {
-        return createWireframeState();
-    }
 
     /**
    * <code>createZBufferState</code> returns a new LWJGLZBufferState object as
@@ -383,10 +339,6 @@ public class LWJGLRenderer implements Renderer {
     return new LWJGLZBufferState();
   }
 
-    public ZBufferState getZBufferState() {
-        return createZBufferState();
-    }
-
     /**
    * <code>createVertexProgramState</code> returns a new
    * LWJGLVertexProgramState object as a regular VertexProgramState.
@@ -395,10 +347,6 @@ public class LWJGLRenderer implements Renderer {
    */
   public VertexProgramState createVertexProgramState() {
     return new LWJGLVertexProgramState();
-  }
-
-  public FragmentProgramState getFragmentProgramState() {
-      return createFragmentProgramState();
   }
 
   /**
@@ -411,10 +359,6 @@ public class LWJGLRenderer implements Renderer {
       return new LWJGLFragmentProgramState();
   }
 
-    public VertexProgramState getVertexProgramState() {
-        return createVertexProgramState();
-    }
-
     /**
    * <code>createStencilState</code> returns a new LWJGLStencilState object as
    * a regular StencilState.
@@ -424,10 +368,6 @@ public class LWJGLRenderer implements Renderer {
   public StencilState createStencilState() {
     return new LWJGLStencilState();
   }
-
-    public StencilState getStencilState() {
-        return createStencilState();
-    }
 
     /**
    * <code>setBackgroundColor</code> sets the OpenGL clear color to the

@@ -75,7 +75,7 @@ import java.nio.IntBuffer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.44 2004-09-01 05:16:25 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.45 2004-09-01 05:21:21 mojomonkey Exp $
  */
 public interface Renderer {
 
@@ -113,12 +113,6 @@ public interface Renderer {
     public Camera createCamera(int width, int height);
 
     /**
-     * @deprecated Use createCamera.
-     * @see #createCamera(int, int)
-     */
-    public Camera getCamera(int width, int height);
-
-    /**
      *
      * <code>createAlphaState</code> retrieves the alpha state object for the
      * proper renderer.
@@ -126,13 +120,6 @@ public interface Renderer {
      *      proper renderer.
      */
     public AlphaState createAlphaState();
-
-    /**
-     * @deprecated Use createAlphaState.
-     * @see #createAlphaState()
-     *
-     */
-    public AlphaState getAlphaState();
 
     /**
      *
@@ -144,12 +131,6 @@ public interface Renderer {
     public AttributeState createAttributeState();
 
     /**
-     * @deprecated Use createAttributeState.
-     * @see #createAttributeState()
-     */
-    public AttributeState getAttributeState();
-
-    /**
      *
      * <code>createCullState</code> retrieves the cull state object for the
      * proper renderer.
@@ -157,12 +138,6 @@ public interface Renderer {
      *      proper renderer.
      */
     public CullState createCullState();
-
-    /**
-     * @deprecated Use createCullState.
-     * @see #createCullState()
-     */
-    public CullState getCullState();
     /**
      *
      * <code>createDitherState</code> retrieves the dither state object for the
@@ -171,12 +146,6 @@ public interface Renderer {
      *      proper renderer.
      */
     public DitherState createDitherState();
-
-    /**
-     * @deprecated Use createDitherState.
-     * @see #createDitherState()
-     */
-    public DitherState getDitherState();
 
     /**
      *
@@ -188,12 +157,6 @@ public interface Renderer {
     public FogState createFogState();
 
     /**
-     * @deprecated Use createFogState.
-     * @see #createFogState()
-     */
-    public FogState getFogState();
-
-    /**
      *
      * <code>createLightState</code> retrieves the light state object for the
      * proper renderer.
@@ -203,12 +166,6 @@ public interface Renderer {
     public LightState createLightState();
 
     /**
-     * @deprecated Use createLightState
-     * @see #createLightState()
-     */
-    public LightState getLightState();
-
-    /**
      *
      * <code>createMaterialState</code> retrieves the material state object for the
      * proper renderer.
@@ -216,13 +173,6 @@ public interface Renderer {
      *      proper renderer.
      */
     public MaterialState createMaterialState();
-
-
-    /**
-     * @deprecated Use createMaterialState.
-     * @see #createMaterialState()
-     */
-    public MaterialState getMaterialState();
 
     /**
      *
@@ -234,12 +184,6 @@ public interface Renderer {
     public ShadeState createShadeState();
 
     /**
-     * @deprecated Use createShadeState.
-     * @see #createShadeState()
-     */
-    public ShadeState getShadeState();
-
-    /**
      *
      * <code>createTextureState</code> retrieves the texture state object for the
      * proper renderer.
@@ -247,12 +191,6 @@ public interface Renderer {
      *      proper renderer.
      */
     public TextureState createTextureState();
-
-    /**
-     * @deprecated Use createTextureState.
-     * @see #createTextureState()
-     */
-    public TextureState getTextureState();
 
     /**
      *
@@ -264,12 +202,6 @@ public interface Renderer {
     public WireframeState createWireframeState();
 
     /**
-     * @deprecated Use createWireframeState.
-     * @see #createWireframeState()
-     */
-    public WireframeState getWireframeState();
-
-    /**
      * Retrieves the Z buffer state object for the proper renderer.
      * @return The <code>ZBufferState</code> object that can make use of the
      *      proper renderer.
@@ -277,29 +209,11 @@ public interface Renderer {
     public ZBufferState createZBufferState();
 
     /**
-     * @deprecated Use createZBufferState.
-     * @see #createZBufferState()
-     */
-    public ZBufferState getZBufferState();
-
-    /**
      * Retrieves the vertex program state object for the proper renderer.
      * @return The <code>VertexProgramState</code> object that can make use of the
      *      proper renderer.
      */
     public VertexProgramState createVertexProgramState();
-
-    /**
-     * @deprecated Use createVertexProgramState.
-     * @see #createVertexProgramState()
-     */
-    public VertexProgramState getVertexProgramState();
-
-    /**
-     * @deprecated Use createFragmentProgramState.
-     * @see #createFragmentProgramState()
-     */
-    public FragmentProgramState getFragmentProgramState();
 
     /**
      * Retrieves the fragment program state object for the proper renderer.
@@ -314,12 +228,6 @@ public interface Renderer {
      *      proper renderer.
      */
     public StencilState createStencilState();
-
-    /**
-     * @deprecated Use createStencilState
-     * @see #createStencilState()
-     */
-    public StencilState getStencilState();
 
     /**
      * If true, statistical upkeep of information is done during rendering.
