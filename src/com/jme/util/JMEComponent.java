@@ -48,31 +48,31 @@ import java.awt.image.DataBufferInt;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMEComponent.java,v 1.8 2005-03-08 01:30:07 renanse Exp $
+ * @version $Id: JMEComponent.java,v 1.9 2005-03-30 01:37:08 renanse Exp $
  */
 
 public class JMEComponent extends Component {
     private static final long serialVersionUID = 1L;
 
 /** The buffer that holds our render results in anticipation of converting it to an image */
-	private IntBuffer buf;
+	protected IntBuffer buf;
 
 /** The image currently displayed in the Component. */
-	private BufferedImage img;
+	protected BufferedImage img;
 
 /** Temporary storage used when converting the IntBuffer to the BufferedImage. */
-	private int[] ibuf;
+	protected int[] ibuf;
 
 /** Rate in MS the component refreshes itself.  50ms by default. */
-	private int refresh = 50;
+	protected int refresh = 50;
 
 /** Width and Height of the OpenGL context.  Note: Not neccesarily the width
 	 * and height of the component itself. */
-	private int width, height;
+	protected int width, height;
 
 /** Whether to scale the OpenGL image to the current dimensions of the Component.
 	 * true by default. */
-	private boolean scaled = true;
+	protected boolean scaled = true;
 
 	/**
 	 * Main Constructor.  Must be set with the width and height of the underlying
@@ -97,7 +97,15 @@ public class JMEComponent extends Component {
 		img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		ibuf = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
 
-		try {
+		setupPaintThread();
+	}
+
+	/**
+     * <code>setupPaintThread</code>
+     * 
+     */
+    protected void setupPaintThread() {
+        try {
 			new Thread() {
 				public void run() {
 					while (true) {
@@ -111,9 +119,9 @@ public class JMEComponent extends Component {
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
-	}
+    }
 
-	/**
+    /**
 	 * Get this component's IntBuffer.  Used when OpenGL needs to copy it's
 	 * contents to the JMEComponent.
 	 * @return IntBuffer
@@ -132,7 +140,7 @@ public class JMEComponent extends Component {
 	public boolean isScaled() {
 		return scaled;
 	}
-
+	
 	/**
 	 * Sets the scale param.  See <code>isScaled()</code>
 	 * @param shouldScale boolean
@@ -157,7 +165,28 @@ public class JMEComponent extends Component {
 	public void setRefreshRate(int rate) {
 		refresh = rate;
 	}
-
+	
+	public IntBuffer getBuf() {
+	    return buf;
+	}
+	public void setBuf(IntBuffer buf) {
+	    this.buf = buf;
+	}
+	
+	public int[] getIbuf() {
+	    return ibuf;
+	}
+	public void setIbuf(int[] ibuf) {
+	    this.ibuf = ibuf;
+	}
+	
+	public BufferedImage getImg() {
+	    return img;
+	}
+	public void setImg(BufferedImage img) {
+	    this.img = img;
+	}
+	
 	/**
 	 * Overriden paint(Graphics) method.  Does not call super method.
 	 * Clears the component to the current background color (getBackground()).
