@@ -38,23 +38,22 @@ import com.jme.renderer.ColorRGBA;
 
 /**
  *
- * <code>Text</code>
+ * <code>Text</code> allows text to be displayed on the screen.  The renderstate of this Geometry must be a valid
+ * font texture.
  * @author Mark Powell
- * @version $Id: Text.java,v 1.9 2004-07-09 02:03:38 renanse Exp $
+ * @version $Id: Text.java,v 1.10 2004-07-27 18:28:32 cep21 Exp $
  */
 public class Text extends Geometry {
     private StringBuffer text;
     private ColorRGBA textColor = new ColorRGBA();
 
     /**
-     * Constructor takes a path to the texture to use of the font base. This
-     * image format must be compatible with <code>TextureManager</code>'s
-     * image types.
+     * Creates a texture object that starts with the given text.
      *
-     * @see jme.texture.TextureManager
+     * @see com.jme.util.TextureManager
      * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
-     * @param texture the path to the image that defines the fonts.
+     * @param text The text to show.
      */
     public Text(String name,String text) {
         super(name);
@@ -106,10 +105,18 @@ public class Text extends Geometry {
         r.drawBounds(this);
     }
 
+    /**
+     * Sets the color of the text.
+     * @param color Color to set.
+     */
     public void setTextColor(ColorRGBA color) {
       textColor.set(color);
     }
 
+    /**
+     * Returns the current text color.
+     * @return Current text color.
+     */
     public ColorRGBA getTextColor() {
       return textColor;
     }
