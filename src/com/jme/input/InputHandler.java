@@ -39,7 +39,7 @@ import com.jme.input.action.MouseInputAction;
 /**
  * <code>InputHandler</code>
  * @author Mark Powell
- * @version $Id: InputHandler.java,v 1.5 2004-07-21 21:19:42 guurk Exp $
+ * @version $Id: InputHandler.java,v 1.6 2004-07-29 07:18:24 cep21 Exp $
  */
 public class InputHandler {
     protected ArrayList actions;
@@ -107,6 +107,11 @@ public class InputHandler {
         mouseActions.remove(mouseAction);
     }
 
+    /**
+     * Checks all key and mouse actions to see if they are valid commands.  If so,
+     * performAction is called on the command with the given time.
+     * @param time The time to pass to every key and mouse action that is active.
+     */
     public void update(float time) {
       if (keyboard != null) {
         keyboard.update();

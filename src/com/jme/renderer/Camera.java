@@ -50,7 +50,7 @@ import com.jme.math.Vector3f;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.12 2004-05-10 21:56:24 mojomonkey Exp $
+ * @version $Id: Camera.java,v 1.13 2004-07-29 07:18:43 cep21 Exp $
  */
 public interface Camera extends Serializable {
 
@@ -176,6 +176,14 @@ public interface Camera extends Serializable {
     public void setFrustum(float near, float far, float left, float right,
             float top, float bottom);
 
+    /**
+     * <code>setFrustumPerspective</code> defines the frustum for the camera.  This
+     * frustum is defined by a viewing angle, aspect ratio, and near/far planes
+     * @param fovY Frame of view angle along the Y.
+     * @param aspect Width:Height ratio
+     * @param near Near view plane distance
+     * @param far Far view plane distance
+     */
     public void setFrustumPerspective(float fovY, float aspect, float near, float far);
     
     /**

@@ -34,7 +34,6 @@ package com.jme.renderer;
 import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
 import com.jme.effects.Tint;
-import com.jme.input.Mouse;
 import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
 import com.jme.scene.Geometry;
@@ -77,7 +76,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.35 2004-07-23 20:15:12 renanse Exp $
+ * @version $Id: Renderer.java,v 1.36 2004-07-29 07:19:42 cep21 Exp $
  */
 public interface Renderer {
 
@@ -205,6 +204,7 @@ public interface Renderer {
 
     public void enableStatistics(boolean value);
 
+    /** Reset rendering tracking information. */
     public void clearStatistics();
 
     public String getStatistics();
@@ -385,7 +385,7 @@ public interface Renderer {
     /**
      * <code>draw</code> renders a Widget that is associated
      * with the WidgetRenderer object to the back buffer.
-     * @param wp the WidgetPanel to be rendered.
+     * @param wr the WidgetPanel to be rendered.
      */
     public void draw(WidgetRenderer wr);
 
