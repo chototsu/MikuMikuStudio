@@ -42,7 +42,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.10 2004-04-24 23:06:48 renanse Exp $
+ * @version $Id: TestBillboardNode.java,v 1.11 2004-04-24 23:09:37 renanse Exp $
  */
 public class TestBillboardNode extends SimpleGame {
 
@@ -62,30 +62,28 @@ public class TestBillboardNode extends SimpleGame {
    */
   protected void simpleInitGame() {
     display.setTitle("Billboard test");
-    cam.setLocation(new Vector3f(0.0f, 0.0f, 75.0f));
+    cam.setLocation(new Vector3f(0.0f, 0.0f, 40.0f));
     cam.update();
-    lightState.setEnabled(false);
-
-    BillboardNode billboard = new BillboardNode("Billboard");
-    billboard.setType(BillboardNode.AXIAL);
+    lightState.setEnabled(false); // we don't want lighting by default.
 
     Quad q = new Quad("Quad");
-    q.initialize(1, 1);
-    q.setLocalScale(3.0f);
-
-    billboard.attachChild(q);
-    rootNode.attachChild(billboard);
+    q.initialize(3, 3);
 
     TextureState ts = display.getRenderer().getTextureState();
     ts.setEnabled(true);
     Texture t1 = TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true);
     ts.setTexture(t1);
-    rootNode.setRenderState(ts);
+    q.setRenderState(ts);
 
+    BillboardNode billboard = new BillboardNode("Billboard");
+    billboard.setType(BillboardNode.AXIAL);
+    billboard.attachChild(q);
+
+    rootNode.attachChild(billboard);
   }
 }
