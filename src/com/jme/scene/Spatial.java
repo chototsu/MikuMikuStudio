@@ -48,7 +48,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.31 2004-04-02 21:03:12 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.32 2004-04-08 23:16:15 Mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 	//rotation matrices
@@ -76,7 +76,7 @@ public abstract class Spatial implements Serializable {
 
 	//render states
 	protected RenderState[] renderStateList;
-	protected RenderState[] parentStateList;
+	//protected RenderState[] parentStateList;
 
 	protected ArrayList geometricalControllers = new ArrayList();
 
@@ -94,7 +94,6 @@ public abstract class Spatial implements Serializable {
 	public Spatial(String name) {
 		this.name = name;
 		renderStateList = new RenderState[RenderState.RS_MAX_STATE];
-		parentStateList = new RenderState[RenderState.RS_MAX_STATE];
 		localRotation = new Quaternion();
 		worldRotation = new Quaternion();
 		localTranslation = new Vector3f();
@@ -505,7 +504,20 @@ public abstract class Spatial implements Serializable {
 	public void clearRenderState(int renderStateType) {
 		renderStateList[renderStateType] = null;
 	}
-
+        
+        public boolean resetState(int state) {
+            if(renderStateList[state] != null) {
+                if(state == RenderState.RS_LIGHT) {
+                    renderStateList[state].unset();
+                }
+                renderStateList[state].set();
+                return true;
+            } else if(parent != null) {
+                return parent.resetState(state);
+            } else {
+                return false;
+            }
+        }
 	/**
 	 *
 	 * <code>setStates</code> activates all the render states for this
@@ -514,10 +526,7 @@ public abstract class Spatial implements Serializable {
 	 *
 	 */
 	public void setStates() {
-	    if (parent != null) {
-			parentStateList = parent.getRenderStateList();
-		}
-		for (int i = 0; i < renderStateList.length; i++) {
+	    	for (int i = 0; i < renderStateList.length; i++) {
 			if (renderStateList[i] != null && renderStateList[i].isEnabled()) {
 				renderStateList[i].set();
 			}
@@ -536,16 +545,10 @@ public abstract class Spatial implements Serializable {
 		    if (renderStateList[i] != null) {
 		        if(isRoot) {
 		            renderStateList[i].unset();
-		        } else if (parentStateList[i] != null) {
-				    renderStateList[i].unset();
-				    if(i == RenderState.RS_LIGHT) {
-				        parentStateList[i].unset();
-				    }
-					parentStateList[i].set();
-				} else {
-					renderStateList[i].unset();
-				}
-			}
+                        } else if (!parent.resetState(i)) {
+                            renderStateList[i].unset();
+                        }
 		}
-	}
+            }
+        }
 }
