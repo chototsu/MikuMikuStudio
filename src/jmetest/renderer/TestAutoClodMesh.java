@@ -63,7 +63,7 @@ import com.jme.scene.shape.Disk;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.8 2004-09-08 17:06:39 mojomonkey Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.9 2004-11-22 16:28:18 renanse Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {
@@ -120,11 +120,10 @@ public class TestAutoClodMesh extends SimpleGame {
         JmeBinaryReader jbr=new JmeBinaryReader();
         jbr.setProperty("texurl",stateTextureDir);
         model=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-        rootNode.attachChild(model);
     } catch (IOException e) {
-        
+
     }
-    
+
     model.updateGeometricState(0, true);
 
     iNode = new AreaClodMesh("model", new Disk("disc", 50, 50, 8), null);
@@ -137,7 +136,7 @@ public class TestAutoClodMesh extends SimpleGame {
     while(child instanceof Node) {
     	child = ((Node)child).getChild(0);
     }
-    
+
     iNode2 = new AreaClodMesh("model", (TriMesh)child, null);
     rootNode.attachChild(iNode2);
     iNode2.setDistanceTolerance( 0.0f);
