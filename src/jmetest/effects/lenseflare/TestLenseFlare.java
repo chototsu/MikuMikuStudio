@@ -51,7 +51,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLenseFlare.java,v 1.1 2004-04-22 19:12:15 darkprophet Exp $
+ * @version $Id: TestLenseFlare.java,v 1.2 2004-04-22 20:36:21 darkprophet Exp $
  */
 public class TestLenseFlare extends BaseGame {
     private Camera cam;
@@ -85,6 +85,7 @@ public class TestLenseFlare extends BaseGame {
         input.update(timer.getTimePerFrame());
         
 //      update individual sprites
+        /*
         if ((int) currentPos.x == (int) newPos.x
             && (int) currentPos.z == (int) newPos.z) {
             newPos.x = (float) Math.random() * 128 * 5;
@@ -96,7 +97,14 @@ public class TestLenseFlare extends BaseGame {
         currentPos.y = 255;
         currentPos.z -= (currentPos.z - newPos.z)
             / (timer.getFrameRate() / 2);
-        lf.setLocalTranslation(currentPos);
+        */
+        currentPos = new Vector3f(0, 250, -20);
+        Vector3f temp = new Vector3f();
+        temp.x = currentPos.x;
+		temp.y = currentPos.y;
+        temp.z = 1f;
+        Vector2f f = display.getScreenCoordinates(temp);
+        System.out.println("SC: " + f.toString());
         lightNode.setLocalTranslation(currentPos);
 
         root.updateGeometricState(timer.getTimePerFrame(), true);
