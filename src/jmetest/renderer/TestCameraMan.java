@@ -146,7 +146,7 @@ public class TestCameraMan extends SimpleGame {
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
-        tRenderer = display.createTextureRenderer(false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
+        tRenderer = display.createTextureRenderer(256, 256, false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
         camNode = new CameraNode("Camera Node", tRenderer.getCamera());
         camNode.setLocalTranslation(new Vector3f(0,50,-50));
         camNode.updateGeometricState(0,true);
