@@ -65,7 +65,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.26 2004-07-23 17:18:09 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.27 2004-07-23 17:20:58 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -91,7 +91,7 @@ public abstract class SimpleGame extends BaseGame {
     timer.update();
     tpf = timer.getTimePerFrame();
     input.update(tpf);
-    fps.print("FPS: " + (int) tpf + " - " +
+    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
               display.getRenderer().getStatistics());
 
     simpleUpdate();
@@ -118,7 +118,8 @@ public abstract class SimpleGame extends BaseGame {
     if (KeyBindingManager
         .getKeyBindingManager()
         .isValidCommand("camera_out", false)) {
-      System.err.println("Camera at: "+display.getRenderer().getCamera().getLocation());
+      System.err.println("Camera at: " +
+                         display.getRenderer().getCamera().getLocation());
     }
 
   }
@@ -163,7 +164,9 @@ public abstract class SimpleGame extends BaseGame {
     display.getRenderer().setBackgroundColor(ColorRGBA.black);
 
     // setup our camera
-    cam.setFrustumPerspective(45.0f,(float)display.getWidth()/(float)display.getHeight(), 1,1000);
+    cam.setFrustumPerspective(45.0f,
+                              (float) display.getWidth() /
+                              (float) display.getHeight(), 1, 1000);
     Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
     Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f);
     Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
@@ -199,76 +202,77 @@ public abstract class SimpleGame extends BaseGame {
    * @see AbstractGame#initGame()
    */
   protected final void initGame() {
-     rootNode = new Node("rootNode");
+    rootNode = new Node("rootNode");
 
-     // -- WIRESTATE
-     wireState = display.getRenderer().getWireframeState();
-     wireState.setEnabled(false);
-     rootNode.setRenderState(wireState);
+    // -- WIRESTATE
+    wireState = display.getRenderer().getWireframeState();
+    wireState.setEnabled(false);
+    rootNode.setRenderState(wireState);
 
-     // -- ZBUFFER
-     ZBufferState buf = display.getRenderer().getZBufferState();
-     buf.setEnabled(true);
-     buf.setFunction(ZBufferState.CF_LEQUAL);
+    // -- ZBUFFER
+    ZBufferState buf = display.getRenderer().getZBufferState();
+    buf.setEnabled(true);
+    buf.setFunction(ZBufferState.CF_LEQUAL);
 
-     rootNode.setRenderState(buf);
+    rootNode.setRenderState(buf);
 
-     // -- FPS DISPLAY
-     // First setup alpha state
-     AlphaState as1 = display.getRenderer().getAlphaState();
-     as1.setBlendEnabled(true);
-     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-     as1.setDstFunction(AlphaState.DB_ONE);
-     as1.setTestEnabled(true);
-     as1.setTestFunction(AlphaState.TF_GREATER);
-     as1.setEnabled(true);
+    // -- FPS DISPLAY
+    // First setup alpha state
+    AlphaState as1 = display.getRenderer().getAlphaState();
+    as1.setBlendEnabled(true);
+    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+    as1.setDstFunction(AlphaState.DB_ONE);
+    as1.setTestEnabled(true);
+    as1.setTestFunction(AlphaState.TF_GREATER);
+    as1.setEnabled(true);
 
-     // Now setup font texture
-     TextureState font = display.getRenderer().getTextureState();
-     font.setTexture(
-         TextureManager.loadTexture(
-         SimpleGame.class.getClassLoader().getResource(
-         fontLocation),
-         Texture.MM_LINEAR,
-         Texture.FM_LINEAR,
-         true));
-     font.setEnabled(true);
+    // Now setup font texture
+    TextureState font = display.getRenderer().getTextureState();
+    font.setTexture(
+        TextureManager.loadTexture(
+        SimpleGame.class.getClassLoader().getResource(
+        fontLocation),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true));
+    font.setEnabled(true);
 
-     // Then our font Text object.
-     fps = new Text("FPS label", "");
-     fps.setForceView(true);
-     fps.setTextureCombineMode(TextureState.REPLACE);
+    // Then our font Text object.
+    fps = new Text("FPS label", "");
+    fps.setForceView(true);
+    fps.setTextureCombineMode(TextureState.REPLACE);
 
-     // Finally, a stand alone node (not attached to root on purpose)
-     fpsNode = new Node("FPS node");
-     fpsNode.attachChild(fps);
-     fpsNode.setRenderState(font);
-     fpsNode.setRenderState(as1);
-     fpsNode.setForceView(true);
+    // Finally, a stand alone node (not attached to root on purpose)
+    fpsNode = new Node("FPS node");
+    fpsNode.attachChild(fps);
+    fpsNode.setRenderState(font);
+    fpsNode.setRenderState(as1);
+    fpsNode.setForceView(true);
 
-     // ---- LIGHTS
-     PointLight light = new PointLight();
-     light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-     light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-     light.setLocation(new Vector3f(100, 100, 100));
-     light.setEnabled(true);
+    // ---- LIGHTS
+    PointLight light = new PointLight();
+    light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+    light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+    light.setLocation(new Vector3f(100, 100, 100));
+    light.setEnabled(true);
 
-     lightState = display.getRenderer().getLightState();
-     lightState.setEnabled(true);
-     lightState.attach(light);
-     rootNode.setRenderState(lightState);
+    lightState = display.getRenderer().getLightState();
+    lightState.setEnabled(true);
+    lightState.attach(light);
+    rootNode.setRenderState(lightState);
 
-     simpleInitGame();
+    simpleInitGame();
 
-     rootNode.updateGeometricState(0.0f, true);
-     rootNode.updateRenderState();
-     fpsNode.updateGeometricState(0.0f, true);
-     fpsNode.updateRenderState();
+    rootNode.updateGeometricState(0.0f, true);
+    rootNode.updateRenderState();
+    fpsNode.updateGeometricState(0.0f, true);
+    fpsNode.updateRenderState();
   }
 
   protected abstract void simpleInitGame();
 
   protected void simpleUpdate() {}
+
   protected void simpleRender() {}
 
   /**
@@ -283,8 +287,8 @@ public abstract class SimpleGame extends BaseGame {
    * @see AbstractGame#cleanup()
    */
   protected void cleanup() {
-  	LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
-  	input.getKeyBindingManager().getKeyInput().destroy();
-  	InputSystem.getMouseInput().destroy();
+    LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
+    input.getKeyBindingManager().getKeyInput().destroy();
+    InputSystem.getMouseInput().destroy();
   }
 }
