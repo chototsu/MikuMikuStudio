@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.50 2004-06-17 16:31:11 renanse Exp $
+ * @version $Id: Geometry.java,v 1.51 2004-06-25 19:13:42 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -152,7 +152,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         if (vertex == null) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Geometry must" + " include vertex information.");
-            throw new JmeException("Geometry must include vertex information.");
+            throw new JmeException("Geometry must include vertex information. (100)");
         }
 
         int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
@@ -191,7 +191,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         if (vertex == null) {
             LoggingSystem.getLogger().log(Level.WARNING,
                     "Geometry must" + " include vertex information.");
-            throw new JmeException("Geometry must include vertex information.");
+            throw new JmeException("Geometry must include vertex information. (101)");
         }
 
         int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
@@ -360,7 +360,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void setVertices(Vector3f[] vertex) {
         if (vertex == null) { throw new JmeException(
-                "Geometry must include vertex information."); }
+                "Geometry must include vertex information. (102)"); }
         if (this.vertex.length != vertex.length) {
             vertBuf = null;
         }
