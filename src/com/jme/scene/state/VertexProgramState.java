@@ -37,7 +37,7 @@ import java.net.URL;
  * <code>ProgramState</code>
  * 
  * @author Eric Woroshow
- * @version $Id: VertexProgramState.java,v 1.2 2004-04-17 00:35:30 ericthered Exp $
+ * @version $Id: VertexProgramState.java,v 1.3 2004-04-17 21:27:16 ericthered Exp $
  */
 public abstract class VertexProgramState extends RenderState {
 
@@ -46,6 +46,12 @@ public abstract class VertexProgramState extends RenderState {
     protected boolean usingParameters = false;
     protected float[][] parameters;
 
+    /**
+     * <code>setEnvParameter</code> sets an environmental vertex program
+     * parameter that is accessable by all vertex programs in memory.
+     * @param param four-element array of floating point numbers
+     * @param paramID identity number of the parameter, ranging from 0 to 95
+     */
     public static void setEnvParameter(float[] param, int paramID){
         if (paramID < 0 || paramID > 95)
             throw new IllegalArgumentException("Invalid parameter ID");
