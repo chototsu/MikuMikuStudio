@@ -49,7 +49,7 @@ import java.util.Iterator;
 /**
  * <code>WidgetLWJGLAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.6 2004-04-16 21:23:25 mojomonkey Exp $
+ * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.7 2004-04-16 21:24:35 mojomonkey Exp $
  */
 public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer {
 
@@ -285,11 +285,11 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         int w = (int) v.getWidth();
         int h = (int) v.getHeight();
         
-        if(w == 0) {
+        if(w <= 0) {
             w = 1;
         }
         
-        if(h == 0) {
+        if(h <= 0) {
             h = 1;
         }
 
