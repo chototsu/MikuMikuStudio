@@ -55,7 +55,7 @@ import java.util.Stack;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.23 2004-06-17 16:31:12 renanse Exp $
+ * @version $Id: Node.java,v 1.24 2004-07-09 02:03:08 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -200,7 +200,7 @@ public class Node extends Spatial implements Serializable {
     public void updateWorldData(float time) {
         super.updateWorldData(time);
 
-        for (int i = 0, cSize = children.size(); i < cSize; i++) {
+        for (int i = 0; i < children.size(); i++) {
             Spatial child = (Spatial) children.get(i);
             if (child != null) {
                 child.updateGeometricState(time, false);
