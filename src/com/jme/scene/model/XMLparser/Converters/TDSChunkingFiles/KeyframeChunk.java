@@ -3,6 +3,7 @@ package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -20,12 +21,13 @@ class KeyframeChunk extends ChunkerClass{
     int animationLen;
     int begin;
     int end;
-    ArrayList objKeyframes;
+    //ArrayList objKeyframes;
+    HashMap objKeyframes;
     ArrayList cameraKeyframes;
     ArrayList lightKeyframes;
 
     protected void initializeVariables() throws IOException {
-        objKeyframes=new ArrayList();
+        objKeyframes=new HashMap ();
         cameraKeyframes=new ArrayList();
         lightKeyframes=new ArrayList();
     }
@@ -45,7 +47,9 @@ class KeyframeChunk extends ChunkerClass{
                 skipSize(i.length); // Ignore changing viewports, not relevant
                 return true;
             case KEY_OBJECT:
-                objKeyframes.add(new KeyframeInfoChunk(myIn,i));
+                KeyframeInfoChunk it=new KeyframeInfoChunk(myIn,i);
+                objKeyframes.put(it.name,it);
+//                objKeyframes.add(new KeyframeInfoChunk(myIn,i));
                 return true;
             case KEY_CAM_TARGET:
             case KEY_CAMERA_OBJECT:
