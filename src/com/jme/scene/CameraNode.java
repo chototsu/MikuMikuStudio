@@ -38,11 +38,11 @@ import com.jme.renderer.Camera;
  * allows a camera to be controlled by any other node, and allows the camera to
  * be attached to any node. A call to <code>updateWorldData</code> will adjust
  * the camera's frame by the world translation and the world rotation. 
- * The column 0 of the world ratation matrix is used for the camera left vector,
+ * The column 0 of the world rotation matrix is used for the camera left vector,
  * column 1 is used for the camera up vector, column 2 is used for the 
  * camera direction vector.
  * @author Mark Powell
- * @version $Id: CameraNode.java,v 1.1 2003-12-01 13:18:26 mojomonkey Exp $
+ * @version $Id: CameraNode.java,v 1.2 2004-02-19 03:51:03 mojomonkey Exp $
  */
 public class CameraNode extends Node {
     private Camera camera;
