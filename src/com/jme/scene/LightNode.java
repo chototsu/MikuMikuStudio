@@ -47,7 +47,7 @@ import com.jme.scene.state.LightState;
  * is a Directional light rotation determines it's direction. It has no
  * concept of location.
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.6 2004-03-02 03:56:41 renanse Exp $
+ * @version $Id: LightNode.java,v 1.7 2004-03-02 16:40:10 renanse Exp $
  */
 public class LightNode extends Node {
     private Light light;
@@ -114,7 +114,7 @@ public class LightNode extends Node {
             case Light.LT_DIRECTIONAL :
                 {
                     DirectionalLight dLight = (DirectionalLight) light;
-                    dLight.direction = lightRotate.toRotationMatrix().getColumn(2, dLight.direction);
+                    dLight.direction = lightRotate.getRotationColumn(2, dLight.direction);
                     break;
                 }
 
@@ -129,7 +129,7 @@ public class LightNode extends Node {
                 {
                     SpotLight sLight = (SpotLight) light;
                     sLight.setLocation(lightTranslate);
-                    sLight.direction = lightRotate.toRotationMatrix().getColumn(2, sLight.direction);
+                    sLight.direction = lightRotate.getRotationColumn(2, sLight.direction);
                     break;
                 }
 

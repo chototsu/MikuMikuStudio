@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * towards the worlds positive y-axis. The rotation is along the node's left
  * vector (the first column of it's rotation matrix).
  * @author Mark Powell
- * @version $Id: KeyNodeLookUpAction.java,v 1.3 2004-03-02 03:56:45 renanse Exp $
+ * @version $Id: KeyNodeLookUpAction.java,v 1.4 2004-03-02 16:40:09 renanse Exp $
  */
 public class KeyNodeLookUpAction implements InputAction {
     private Matrix3f incr;
@@ -77,7 +77,7 @@ public class KeyNodeLookUpAction implements InputAction {
      */
     public void performAction(float time) {
         incr.loadIdentity();
-        incr.fromAxisAngle(node.getLocalRotation().toRotationMatrix().getColumn(0), -speed * time);
+        incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(0), -speed * time);
         node.getLocalRotation().fromRotationMatrix(incr.mult(node.getLocalRotation().toRotationMatrix()));
         node.updateWorldData(time);
     }

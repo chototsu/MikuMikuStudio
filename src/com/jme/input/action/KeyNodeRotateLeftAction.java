@@ -44,7 +44,7 @@ import com.jme.scene.Spatial;
  * rotate about the world. The locking of the axis is particularly useful for
  * control schemes similar to first person shooters.
  * @author Mark Powell
- * @version $Id: KeyNodeRotateLeftAction.java,v 1.3 2004-03-02 03:56:46 renanse Exp $
+ * @version $Id: KeyNodeRotateLeftAction.java,v 1.4 2004-03-02 16:40:09 renanse Exp $
  */
 public class KeyNodeRotateLeftAction implements InputAction {
     private Matrix3f incr;
@@ -97,7 +97,7 @@ public class KeyNodeRotateLeftAction implements InputAction {
     public void performAction(float time) {
         incr.loadIdentity();
         if(lockAxis == null) {
-            incr.fromAxisAngle(node.getLocalRotation().toRotationMatrix().getColumn(1), speed * time);
+            incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(1), speed * time);
         } else {
             incr.fromAxisAngle(lockAxis, speed * time);
         }

@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.9 2004-03-02 03:56:35 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.10 2004-03-02 16:40:08 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -370,12 +370,10 @@ public abstract class AbstractCamera implements Camera {
      * @param axes the matrix that defines the orientation of the camera.
      */
     public void setAxes(Quaternion axes) {
-        Matrix3f rotMat = axes.toRotationMatrix();
-        left = rotMat.getColumn(0, left);
-        up = rotMat.getColumn(1, up);
-        direction = rotMat.getColumn(2, direction);
+        left = axes.getRotationColumn(0, left);
+        up = axes.getRotationColumn(1, up);
+        direction = axes.getRotationColumn(2, direction);
         onFrameChange();
-
     }
 
     /**
@@ -434,11 +432,10 @@ public abstract class AbstractCamera implements Camera {
      * @param axes the orientation of the camera.
      */
     public void setFrame(Vector3f location, Quaternion axes) {
-        Matrix3f rotMat = axes.toRotationMatrix();
         this.location = location;
-        left = rotMat.getColumn(0, left);
-        up = rotMat.getColumn(1, up);
-        direction = rotMat.getColumn(2, direction);
+        left = axes.getRotationColumn(0, left);
+        up = axes.getRotationColumn(1, up);
+        direction = axes.getRotationColumn(2, direction);
         onFrameChange();
     }
 

@@ -42,7 +42,8 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.15 2004-03-02 14:38:29 mojomonkey Exp $
+ * @author Joshua Slack -- Optimization
+ * @version $Id: Matrix3f.java,v 1.16 2004-03-02 16:39:44 renanse Exp $
  */
 public class Matrix3f {
     public float m00, m01, m02;
@@ -491,32 +492,32 @@ public class Matrix3f {
     public String toString() {
         StringBuffer result = new StringBuffer("com.jme.math.Matrix3f\n[\n");
         result.append(" ");
-		result.append(m00);
-		result.append(" ");
+        result.append(m00);
         result.append(" ");
-		result.append(m01);
-		result.append(" ");
         result.append(" ");
-		result.append(m02);
-		result.append(" \n");
+        result.append(m01);
         result.append(" ");
-		result.append(m10);
-		result.append(" ");
         result.append(" ");
-		result.append(m11);
-		result.append(" ");
+        result.append(m02);
+        result.append(" \n");
         result.append(" ");
-		result.append(m12);
-		result.append(" \n");
+        result.append(m10);
         result.append(" ");
-		result.append(m20);
-		result.append(" ");
         result.append(" ");
-		result.append(m21);
-		result.append(" ");
+        result.append(m11);
         result.append(" ");
-		result.append(m22);
-		result.append(" \n]");
+        result.append(" ");
+        result.append(m12);
+        result.append(" \n");
+        result.append(" ");
+        result.append(m20);
+        result.append(" ");
+        result.append(" ");
+        result.append(m21);
+        result.append(" ");
+        result.append(" ");
+        result.append(m22);
+        result.append(" \n]");
         return result.toString();
     }
 }
