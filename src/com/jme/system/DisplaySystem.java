@@ -31,8 +31,6 @@
  */
 package com.jme.system;
 
-import java.util.HashSet;
-
 import com.jme.renderer.Renderer;
 
 /**
@@ -56,7 +54,7 @@ import com.jme.renderer.Renderer;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.4 2003-10-28 17:46:28 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.5 2003-10-28 19:59:05 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
     protected int width, height;
@@ -124,14 +122,6 @@ public abstract class DisplaySystem {
      *      compatible with the used <code>DisplaySystem</code>.
      */
     public abstract Renderer getRenderer();
-    
-    /**
-     * 
-     * <code>getExtensions</code> retrieves the HashSet that contains the 
-     * available extensions of the graphics chip.
-     * @return the available extensions for the graphics chip.
-     */
-    public abstract HashSet getExtensions();
     
     /**
      * <code>isCreated</code> returns the current status of the display

@@ -32,11 +32,9 @@
 package com.jme.system;
 
 import java.awt.Toolkit;
-import java.util.HashSet;
 
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
-import org.lwjgl.opengl.GLCaps;
 import org.lwjgl.opengl.Window;
 
 import com.jme.renderer.LWJGLRenderer;
@@ -49,7 +47,7 @@ import com.jme.renderer.Renderer;
  * that gives a way of displaying data to the created window.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLDisplaySystem.java,v 1.4 2003-10-28 17:46:28 mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.5 2003-10-28 19:59:05 mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -59,7 +57,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     private boolean fs;
     private boolean created;
     private LWJGLRenderer renderer;
-    private HashSet extensions;
     
     /**
      * Constructor instantiates a new <code>LWJGLDisplaySystem</code> object. 
@@ -73,8 +70,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         } catch (UnsatisfiedLinkError e) {
             throw new JmeException("LWJGL library not set.");
         }
-        
-        extensions = new HashSet();
         
     }
 
@@ -113,16 +108,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     public Renderer getRenderer() {
         return renderer;
-    }
-    
-    /**
-     * 
-     * <code>getExtensions</code> retrieves the HashSet that contains the 
-     * available extensions of the graphics chip.
-     * @return the available extensions for the graphics chip.
-     */
-    public HashSet getExtensions() {
-        return extensions;
     }
 
     /**
@@ -215,8 +200,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                         / 2;
                 Window.create(title, x, y, width, height, bpp, 0, 8, 0);
             }
-
-            GLCaps.determineAvailableExtensions(extensions);
 
         } catch (Exception e) {
             System.exit(1);
