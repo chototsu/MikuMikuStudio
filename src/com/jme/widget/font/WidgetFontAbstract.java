@@ -51,7 +51,7 @@ import com.jme.renderer.ColorRGBA;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class WidgetFontAbstract implements WidgetFont {
-    private static String FONT_DIRECTORY = "data/font/";
+    private static String FONT_DIRECTORY = "data/Font/";
     private static String FONT_EXT = "glf";
 
     protected WidgetFontHeader header;
