@@ -3,6 +3,7 @@ package com.jme.scene.model.XMLparser;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
@@ -23,19 +24,34 @@ import java.io.IOException;
  */
 public class XMLWriter {
     private OutputStream myStream;
-    final static Vector3f defaultTranslation=new Vector3f(0,0,0);
-    final static Quaternion defaultRotation=new Quaternion(0,0,0,1);
-    final static float defaultScale=1;
-    StringBuffer tabs=new StringBuffer();
-    StringBuffer currentLine=new StringBuffer();
+    private final static Vector3f defaultTranslation=new Vector3f(0,0,0);
+    private final static Quaternion defaultRotation=new Quaternion(0,0,0,1);
+    private final static float defaultScale=1;
+    private StringBuffer tabs=new StringBuffer();
+    private StringBuffer currentLine=new StringBuffer();
+
+    /**
+     * Creates a new XMLWriter that will write a node's contents to the given stream
+     * @param o OutputStream to write the XML to.
+     */
     public XMLWriter(OutputStream o){
         myStream=o;
     }
 
+    /**
+     * Sets a new Stream to write a given node's contents to.
+     * @param o New OutputStream
+     */
     public void setNewStream(OutputStream o){
         myStream=o;
     }
 
+    /**
+     * Writes a node to the current OutputStream in XML format.  A .close() is called on the
+     * stream after the Node is written.
+     * @param toWrite The node to write
+     * @throws IOException If an exception happens during Node writting
+     */
     public void writeScene(Node toWrite) throws IOException {
         writeHeader();
         increaseTabSize();
@@ -105,9 +121,10 @@ public class XMLWriter {
     }
 
     private void writeTextureState(TextureState textureState) throws IOException {
-        currentLine.append("<texturestate URL=\"");
-        currentLine.append(textureState.loadedFile);
-        currentLine.append("\"/>");
+        currentLine.append("<texturestate ");
+        if (textureState.getTexture()!=null)
+            currentLine.append("URL=\"").append(textureState.getTexture().getImageLocation()).append("\" ");
+        currentLine.append("/>");
         writeLine();
     }
 
@@ -210,7 +227,7 @@ public class XMLWriter {
     private void writeIntArray(int[] indexes) throws IOException {
         for (int i=0;i<indexes.length;i++){
             currentLine.append(indexes[i]).append(" ");
-            if (i%3==0) writeLine();
+            if ((i+1)%9==0) writeLine();
         }
     }
 
