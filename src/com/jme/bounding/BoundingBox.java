@@ -46,7 +46,7 @@ import com.jme.math.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.18 2004-08-26 23:46:03 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.19 2004-09-05 16:07:34 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -447,5 +447,41 @@ public class BoundingBox extends Box implements BoundingVolume {
                 +"  xExtent: "+xExtent
                 +"  yExtent: "+yExtent
                 +"  zExtent: "+zExtent+"]";
+    }
+
+    /**
+     * Returns the original, unrotated center of the bounding box.
+     * @return The box's original center.
+     */
+    public Vector3f getOrigCenter() {
+        return origCenter;
+    }
+
+    /**
+     * Sets the bounding box's original center.  In most cases, users will simply want to use
+     * computefrompoints
+     * @param origCenter New original center
+     * @see #computeFromPoints(com.jme.math.Vector3f[])
+     */
+    public void setOrigCenter(Vector3f origCenter) {
+        this.origCenter = origCenter;
+    }
+
+    /**
+     * Gets the original, unrotated extent of the box.
+     * @return The box's original extent.
+     */
+    public Vector3f getOrigExtent() {
+        return origExtent;
+    }
+
+    /**
+     * Sets the box's original extent.  In most cases, users will simply want to use
+     * computefrompoints.
+     * @param origExtent The new extent.
+     * @see #computeFromPoints(com.jme.math.Vector3f[])
+     */
+    public void setOrigExtent(Vector3f origExtent) {
+        this.origExtent = origExtent;
     }
 }
