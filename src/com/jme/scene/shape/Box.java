@@ -45,7 +45,7 @@ import com.jme.bounding.BoundingBox;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.5 2004-06-08 22:08:48 cep21 Exp $
+ * @version $Id: Box.java,v 1.6 2004-06-24 20:37:10 renanse Exp $
  */
 public class Box extends TriMesh implements XMLloadable{
     public float xExtent, yExtent, zExtent;
@@ -95,13 +95,12 @@ public class Box extends TriMesh implements XMLloadable{
     }
 
     public void setData(Vector3f minPoint, Vector3f maxPoint, boolean updateBuffers) {
-        Vector3f cPoint = maxPoint.add(minPoint);
-        cPoint.multLocal(0.5f);
+        center.set(maxPoint).addLocal(minPoint).multLocal(0.5f);
 
-        float x = maxPoint.x - cPoint.x;
-        float y = maxPoint.y - cPoint.y;
-        float z = maxPoint.z - cPoint.z;
-        setData(cPoint, x, y, z, updateBuffers);
+        float x = maxPoint.x - center.x;
+        float y = maxPoint.y - center.y;
+        float z = maxPoint.z - center.z;
+        setData(center, x, y, z, updateBuffers);
     }
 
     public void setData(Vector3f center, float xExtent, float yExtent, float zExtent, boolean updateBuffers) {

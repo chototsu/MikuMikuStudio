@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.19 2004-06-23 19:15:54 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.20 2004-06-24 20:38:08 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -93,7 +93,7 @@ public class LWJGLTextureState extends TextureState {
   private int[] imageFormats = {GL11.GL_RGBA, GL11.GL_RGB, GL11.GL_RGBA,
       GL11.GL_RGBA, GL11.GL_LUMINANCE_ALPHA};
 
-  private static int numTexUnits = 0;
+  private IntBuffer id = BufferUtils.createIntBuffer(1);
 
   /**
    * Constructor instantiates a new <code>LWJGLTextureState</code> object.
@@ -108,7 +108,6 @@ public class LWJGLTextureState extends TextureState {
       if (GLContext.GL_ARB_multitexture) {
         IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
         GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
-
         numTexUnits = buf.get(0);
       } else {
         numTexUnits = 1;
@@ -129,7 +128,7 @@ public class LWJGLTextureState extends TextureState {
    */
   public void apply() {
 
-    for (int i = 0; i < getNumberOfUnits(); i++) {
+    for (int i = 0; i < numTexUnits; i++) {
       if (!isEnabled() || getTexture(i) == null) {
         if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
           GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
@@ -141,7 +140,7 @@ public class LWJGLTextureState extends TextureState {
     if (isEnabled()) {
       int index;
       Texture texture;
-      for (int i = 0; i < getNumberOfUnits(); i++) {
+      for (int i = 0; i < numTexUnits; i++) {
         index = GL13.GL_TEXTURE0 + i;
         texture = getTexture(i);
         if (texture == null) {
@@ -156,14 +155,14 @@ public class LWJGLTextureState extends TextureState {
         //texture not yet loaded.
         if (texture.getTextureId() == 0) {
           // Create A IntBuffer For Image Address In Memory
-          IntBuffer buf = BufferUtils.createIntBuffer(1); //ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
 
           //Create the texture
-          GL11.glGenTextures(buf);
+          id.clear();
+          GL11.glGenTextures(id);
 
-          GL11.glBindTexture(GL11.GL_TEXTURE_2D, buf.get(0));
+          GL11.glBindTexture(GL11.GL_TEXTURE_2D, id.get(0));
 
-          texture.setTextureId(buf.get(0));
+          texture.setTextureId(id.get(0));
 
           // pass image data to OpenGL
           Image image = texture.getImage();
@@ -367,7 +366,7 @@ public class LWJGLTextureState extends TextureState {
               continue;
           } else
             foundEnabled = true;
-          for (int i = 0, maxT = pkTState.getNumberOfUnits(); i < maxT; i++) {
+          for (int i = 0; i < numTexUnits; i++) {
             Texture pkText = pkTState.getTexture(i);
             if (newTState.getTexture(i) == null) {
               newTState.setTexture(pkText, i);
@@ -382,7 +381,7 @@ public class LWJGLTextureState extends TextureState {
             continue;
           else
             foundEnabled = true;
-          for (int i = 0, maxT = pkTState.getNumberOfUnits(); i < maxT; i++) {
+          for (int i = 0; i < numTexUnits; i++) {
             Texture pkText = pkTState.getTexture(i);
             if (newTState.getTexture(i) == null) {
               newTState.setTexture(pkText, i);
@@ -401,8 +400,8 @@ public class LWJGLTextureState extends TextureState {
    * @see com.jme.scene.state.TextureState#delete(int)
    */
   public void delete(int unit) {
-    if (unit < 0 || unit >= texture.length || texture[unit] == null)return;
-    IntBuffer id = BufferUtils.createIntBuffer(1);
+    if (unit < 0 || unit >= numTexUnits || texture[unit] == null)return;
+    id.clear();
     id.put(texture[unit].getTextureId());
     id.rewind();
     texture[unit].setTextureId(0);
@@ -413,8 +412,7 @@ public class LWJGLTextureState extends TextureState {
    * @see com.jme.scene.state.TextureState#deleteAll()
    */
   public void deleteAll() {
-    IntBuffer id = BufferUtils.createIntBuffer(1);
-    for (int i = 0; i < texture.length; i++) {
+    for (int i = 0; i < numTexUnits; i++) {
       if (texture[i] == null)continue;
       id.clear();
       id.put(texture[i].getTextureId());

@@ -41,7 +41,7 @@ import com.jme.image.Texture;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.10 2004-06-23 19:15:53 renanse Exp $
+ * @version $Id: TextureState.java,v 1.11 2004-06-24 20:38:08 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -65,6 +65,9 @@ public abstract class TextureState extends RenderState {
 
     //the texture
     protected Texture[] texture;
+
+    protected static int numTexUnits = 0;
+
 
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
@@ -115,7 +118,7 @@ public abstract class TextureState extends RenderState {
      * @param textureUnit the texture unit this texture will fill.
      */
     public void setTexture(Texture texture, int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < this.texture.length) {
+        if(textureUnit >= 0 && textureUnit < numTexUnits) {
             this.texture[textureUnit] = texture;
         }
     }
@@ -129,7 +132,7 @@ public abstract class TextureState extends RenderState {
      *      is invalid, null is returned.
      */
     public Texture getTexture(int textureUnit) {
-        if(textureUnit >= 0 && textureUnit < this.texture.length) {
+        if(textureUnit >= 0 && textureUnit < numTexUnits) {
             return texture[textureUnit];
         } else {
             return null;
@@ -143,7 +146,7 @@ public abstract class TextureState extends RenderState {
      * @return the number of texture units supported by the graphics card.
      */
     public int getNumberOfUnits() {
-        return texture.length;
+        return numTexUnits;
     }
 
     public abstract void delete(int unit);

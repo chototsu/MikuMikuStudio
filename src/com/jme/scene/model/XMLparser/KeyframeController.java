@@ -220,31 +220,32 @@ public class KeyframeController extends Controller{
         Vector2f[] newtexts=newShape.getTextures();
         ColorRGBA[] newcolors=newShape.getColors();
         if (verts==null || oldverts==null || newverts==null) return;
-//        boolean hitnorms=false,hittexts=false,hitcolors=false;
+        boolean hitnorms=false,hittexts=false,hitcolors=false;
         for (int i=0;i<verts.length;i++){
             verts[i].interpolate(oldverts[i],newverts[i],delta);
-            morphMesh.setVertex(i,verts[i]);
+//            morphMesh.setVertex(i,verts[i]);
             if (norms!=null && oldnorms!=null && newnorms!=null){
                 norms[i].interpolate(oldnorms[i],newnorms[i],delta);
-//                hitnorms=true;
-                morphMesh.setNormal(i,norms[i]);
+                hitnorms=true;
+//                morphMesh.setNormal(i,norms[i]);
             }
             if (texts!=null && oldtexts!=null && newtexts!=null){
                 texts[i].interpolate(oldtexts[i],newtexts[i],delta);
-//                hittexts=true;
-                morphMesh.setTexture(i,texts[i]);
+                hittexts=true;
+//                morphMesh.setTexture(i,texts[i]);
             }
             if (colors!=null && oldcolors!=null && newcolors!=null){
                 colors[i].interpolate(oldcolors[i],newcolors[i],delta);
-//                hitcolors=true;
-                morphMesh.setColor(i,colors[i]);
+                hitcolors=true;
+//                morphMesh.setColor(i,colors[i]);
             }
         }
-//        morphMesh.updateVertexBuffer();
-//        if (hitnorms) morphMesh.updateNormalBuffer();
-//        if (hittexts) morphMesh.updateTextureBuffer();
-//        if (hitcolors) morphMesh.updateColorBuffer();
+        morphMesh.updateVertexBuffer();
+        if (hitnorms) morphMesh.updateNormalBuffer();
+        if (hittexts) morphMesh.updateTextureBuffer();
+        if (hitcolors) morphMesh.updateColorBuffer();
 //          Both methods seem equivalent in speed
+        // Renanse says : depends on machine, update***Buffer will have less of a hit on some machines.
     }
 
     /**
