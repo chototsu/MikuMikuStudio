@@ -34,6 +34,7 @@
   * EDIT:  02/05/2004 - Added detachAllChildren method. GOP
   * EDIT:  02/05/2004 - Added check for null on first child before setting 
   *                     firstBound to true in updateWorldBound method.  GOP
+  * EDIT: 02/14/2004 - Made children protected rather than private. MAP
   */
   
 package com.jme.scene;
@@ -52,11 +53,11 @@ import com.jme.util.LoggingSystem;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.7 2004-02-09 12:12:19 greggpatton Exp $
+ * @version $Id: Node.java,v 1.8 2004-02-14 17:34:24 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
-    private ArrayList children;
+    protected ArrayList children;
 
     /**
      * Constructor instantiates a new <code>Node</code> with a default empty
