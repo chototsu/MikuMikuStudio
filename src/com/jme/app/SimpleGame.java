@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.31 2004-08-27 07:38:40 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.32 2004-09-20 17:17:10 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -365,7 +365,10 @@ public abstract class SimpleGame extends BaseGame {
    */
   protected void cleanup() {
     LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
-    input.getKeyBindingManager().getKeyInput().destroy();
-    InputSystem.getMouseInput().destroy();
+
+    if (InputSystem.getKeyInput() != null)
+      InputSystem.getKeyInput().destroy();
+    if (InputSystem.getMouseInput() != null)
+      InputSystem.getMouseInput().destroy();
   }
 }
