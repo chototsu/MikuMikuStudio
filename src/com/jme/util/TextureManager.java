@@ -60,7 +60,7 @@ import com.jme.renderer.ColorRGBA;
  * properties.
  * 
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.11 2004-03-23 15:07:02 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.12 2004-03-23 17:27:08 mojomonkey Exp $
  */
 public class TextureManager {
 
@@ -504,10 +504,15 @@ public class TextureManager {
 
 		try {
 			pixelGrabber.grabPixels();
+			ColorModel colorModel = pixelGrabber.getColorModel();
+			if(colorModel != null) {
+				return colorModel.hasAlpha();
+			} else {
+				return false;
+			}
 		} catch (InterruptedException e) {
 		}
 
-		ColorModel colorModel = pixelGrabber.getColorModel();
-		return colorModel.hasAlpha();
+		return false;
 	}
 }
