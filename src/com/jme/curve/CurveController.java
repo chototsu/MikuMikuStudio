@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * curve), the orientation precision defines how accurate the orientation of the
  * spatial will be.
  * @author Mark Powell
- * @version $Id: CurveController.java,v 1.2 2004-01-15 20:19:52 mojomonkey Exp $
+ * @version $Id: CurveController.java,v 1.3 2004-02-23 20:57:03 mojomonkey Exp $
  */
 public class CurveController extends Controller {
     private Spatial mover;
@@ -129,7 +129,7 @@ public class CurveController extends Controller {
      */
     public void update(float time) {
         if (isActive()) {
-            currentTime += time;
+            currentTime += time * getFrequency();
 
             if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
 
