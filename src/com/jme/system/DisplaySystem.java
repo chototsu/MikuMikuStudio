@@ -32,6 +32,7 @@
 package com.jme.system;
 
 import com.jme.renderer.Renderer;
+import com.jme.widget.font.WidgetFont;
 
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -54,7 +55,7 @@ import com.jme.renderer.Renderer;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.6 2004-01-18 22:46:23 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.7 2004-01-20 12:51:24 greggpatton Exp $
  */
 public abstract class DisplaySystem {
     protected int width, height;
@@ -147,5 +148,12 @@ public abstract class DisplaySystem {
      *
      */
     public abstract void reset();
+
+    /**
+     * @param fontName - name of the font to loaded
+     * @return an instance of the requested font, null of 
+     *      the isn't loaded.
+     */
+    public abstract WidgetFont getFont(String fontName);
     
 }
