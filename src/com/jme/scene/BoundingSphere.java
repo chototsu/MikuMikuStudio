@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.14 2004-02-27 23:51:41 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.15 2004-02-28 02:52:57 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -203,7 +203,7 @@ public class BoundingSphere implements BoundingVolume {
         Vector3f translate,
         float scale) {
 
-        Vector3f newCenter = ((rotate.mult(center)).multLocal(scale)).addLocal(translate);
+        Vector3f newCenter = rotate.mult(center).multLocal(scale).addLocal(translate);
         return new BoundingSphere(scale * radius, newCenter);
     }
 
@@ -223,7 +223,8 @@ public class BoundingSphere implements BoundingVolume {
 
         BoundingSphere sphere = (BoundingSphere)store;
         if (sphere == null) sphere = new BoundingSphere();
-        sphere.center = ((rotate.mult(center)).multLocal(scale)).addLocal(translate);
+        rotate.mult(center, sphere.center);
+        sphere.center.multLocal(scale).addLocal(translate);
         sphere.radius = scale*radius;
         return sphere;
     }
@@ -274,7 +275,7 @@ public class BoundingSphere implements BoundingVolume {
 
             if (length > tolerance) {
                 float coeff = (length + radiusDiff) / (2.0f * length);
-                newSphere.setCenter(center.add(diff.mult(coeff)));
+                newSphere.setCenter(center.addLocal(diff.multLocal(coeff)));
             } else {
                 newSphere.setCenter(center);
             }
@@ -299,8 +300,7 @@ public class BoundingSphere implements BoundingVolume {
             return this;
         } else {
             BoundingSphere sphere = (BoundingSphere) volume;
-            Vector3f diff = sphere.getCenter().subtract(center);
-            float lengthSquared = diff.lengthSquared();
+            float lengthSquared = sphere.center.x * sphere.center.x + sphere.center.y * sphere.center.y + sphere.center.z * sphere.center.z;
             float radiusDiff = sphere.getRadius() - radius;
             float diffSquared = radiusDiff * radiusDiff;
 
@@ -317,7 +317,7 @@ public class BoundingSphere implements BoundingVolume {
 
             if (length > tolerance) {
                 float coeff = (length + radiusDiff) / (2.0f * length);
-                center = center.add(diff.mult(coeff));
+                center.addLocal(sphere.getCenter().subtract(center).multLocal(coeff));
             }
 
             radius = (0.5f * (length + radius + sphere.radius));

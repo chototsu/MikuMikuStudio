@@ -42,10 +42,10 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.11 2004-02-26 05:37:46 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.12 2004-02-28 02:54:59 renanse Exp $
  */
 public class Matrix3f {
-    private float[][] matrix;
+    public float[][] matrix;
 
     /**
      * Constructor instantiates a new <code>Matrix3f</code> object. The
@@ -275,26 +275,53 @@ public class Matrix3f {
      * @param mat the matrix to multiply this matrix by.
      * @param product the matrix to store the result in.
      */
-    public void mult(Matrix3f mat, Matrix3f product) {
+    public Matrix3f mult(Matrix3f mat, Matrix3f product) {
         if (null == mat) {
             LoggingSystem.getLogger().log(
                     Level.WARNING,
                     "Source matrix is " + "null, null result returned.");
-            return;
+            return null;
         }
 
-        float matR0, matR1, matR2;
-        for (int iRow = 0; iRow < 3; iRow++) {
-            matR0 = matrix[iRow][0];
-            matR1 = matrix[iRow][1];
-            matR2 = matrix[iRow][2];
-            for (int iCol = 0; iCol < 3; iCol++) {
-                product.matrix[iRow][iCol] =
-                         (matR0 * mat.matrix[0][iCol]
-                        + matR1 * mat.matrix[1][iCol]
-                        + matR2 * mat.matrix[2][iCol]);
-            }
-        }
+        if (product == null) product = new Matrix3f();
+
+        product.matrix[0][0] =
+                 (matrix[0][0] * mat.matrix[0][0]
+                + matrix[0][1] * mat.matrix[1][0]
+                + matrix[0][2] * mat.matrix[2][0]);
+        product.matrix[0][1] =
+                 (matrix[0][0] * mat.matrix[0][1]
+                + matrix[0][1] * mat.matrix[1][1]
+                + matrix[0][2] * mat.matrix[2][1]);
+        product.matrix[0][2] =
+                 (matrix[0][0] * mat.matrix[0][2]
+                + matrix[0][1] * mat.matrix[1][2]
+                + matrix[0][2] * mat.matrix[2][2]);
+        product.matrix[1][0] =
+                 (matrix[1][0] * mat.matrix[0][0]
+                + matrix[1][1] * mat.matrix[1][0]
+                + matrix[1][2] * mat.matrix[2][0]);
+        product.matrix[1][1] =
+                 (matrix[1][0] * mat.matrix[0][1]
+                + matrix[1][1] * mat.matrix[1][1]
+                + matrix[1][2] * mat.matrix[2][1]);
+        product.matrix[1][2] =
+                 (matrix[1][0] * mat.matrix[0][2]
+                + matrix[1][1] * mat.matrix[1][2]
+                + matrix[1][2] * mat.matrix[2][2]);
+        product.matrix[2][0] =
+                 (matrix[2][0] * mat.matrix[0][0]
+                + matrix[2][1] * mat.matrix[1][0]
+                + matrix[2][2] * mat.matrix[2][0]);
+        product.matrix[2][1] =
+                 (matrix[2][0] * mat.matrix[0][1]
+                + matrix[2][1] * mat.matrix[1][1]
+                + matrix[2][2] * mat.matrix[2][1]);
+        product.matrix[2][2] =
+                 (matrix[2][0] * mat.matrix[0][2]
+                + matrix[2][1] * mat.matrix[1][2]
+                + matrix[2][2] * mat.matrix[2][2]);
+        return product;
     }
 
     /**
@@ -305,32 +332,18 @@ public class Matrix3f {
      * @return the result vector.
      */
     public Vector3f mult(Vector3f vec) {
-        if (null == vec) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Source vector is" + " null, null result returned.");
-            return null;
-        }
-        Vector3f product = new Vector3f();
-        product.x =
-            matrix[0][0] * vec.x + matrix[0][1] * vec.y + matrix[0][2] * vec.z;
-        product.y =
-            matrix[1][0] * vec.x + matrix[1][1] * vec.y + matrix[1][2] * vec.z;
-        product.z =
-            matrix[2][0] * vec.x + matrix[2][1] * vec.y + matrix[2][2] * vec.z;
-
-        return product;
+        return mult(vec, null);
     }
 
-    public void mult(Vector3f vec, Vector3f product) {
+    public Vector3f mult(Vector3f vec, Vector3f product) {
         if(null == vec) {
             LoggingSystem.getLogger().log(
                     Level.WARNING,
                     "Source vector is" + " null, null result returned.");
-            return;
+            return null;
         }
 
-        if(null == product) {
+        if (null == product) {
             product = new Vector3f();
         }
 
@@ -344,7 +357,7 @@ public class Matrix3f {
             matrix[1][0] * x + matrix[1][1] * y + matrix[1][2] * z;
         product.z =
             matrix[2][0] * x + matrix[2][1] * y + matrix[2][2] * z;
-
+        return product;
     }
 
     /**
