@@ -37,6 +37,7 @@ import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -45,6 +46,7 @@ import com.jme.renderer.LWJGLTextureRenderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -194,6 +196,8 @@ public class TestRenderToTexture extends SimpleGame {
         root.attachChild(scene);
 
         // Make a monkey box -- some geometry that will be rendered onto a flat texture.
+        // First, we'd like the box to be bigger, so...
+        min.multLocal(3); max.multLocal(3);
         monkeyBox = new Box("Fake Monkey Box", min,max);
         monkeyBox.setModelBound(new BoundingSphere());
         monkeyBox.updateModelBound();
@@ -242,8 +246,29 @@ public class TestRenderToTexture extends SimpleGame {
         // Now add that texture to the "real" cube.
         ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
-        ts.setTexture(fakeTex);
+        ts.setTexture(fakeTex, 0);
+
+        // Heck, while we're at it, why not add another texture to blend with.
+        ts.setTexture(
+                TextureManager.loadTexture(
+                    TestRenderToTexture.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
+                    Texture.MM_LINEAR_LINEAR,
+                    Texture.FM_LINEAR,
+                    true), 1);
         scene.setRenderState(ts);
+
+        // Since we have 2 textures, the geometry needs to know how to split up the coords.
+        Vector2f[] dirtCoords = realBox.getTextures(0);
+        realBox.setTextures(dirtCoords, 1);
+
+        // Add a blending mode...  This is for multi texturing to work, not needed for render to texture.
+        AlphaState as1 = display.getRenderer().getAlphaState();
+        as1.setBlendEnabled(true);
+        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setTestEnabled(true);
+        as1.setTestFunction(AlphaState.TF_GREATER);
+        scene.setRenderState(as1);
 
         cam.update();
         scene.updateGeometricState(0.0f, true);
