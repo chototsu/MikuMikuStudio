@@ -42,7 +42,7 @@ import com.jme.renderer.ColorRGBA;
  * with the peak being on the positive y axis and the base being in the x-z
  * plane.
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.2 2003-12-01 13:18:58 mojomonkey Exp $
+ * @version $Id: Pyramid.java,v 1.3 2003-12-11 21:04:56 mojomonkey Exp $
  */
 public class Pyramid extends TriMesh {
     private float height;
@@ -129,17 +129,17 @@ public class Pyramid extends TriMesh {
         normals[2] = bottom;
         normals[3] = bottom;
         
-        normals[4] = front;
-        normals[5] = front;
-        normals[6] = front;
+        normals[4] = back;
+        normals[5] = back;
+        normals[6] = back;
         
         normals[7] = right;
         normals[8] = right;
         normals[9] = right;
         
-        normals[10] = back;
-        normals[11] = back;
-        normals[12] = back;
+        normals[10] = front;
+        normals[11] = front;
+        normals[12] = front;
         
         normals[13] = left;
         normals[14] = left;

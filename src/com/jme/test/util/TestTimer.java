@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.7 2003-12-04 02:43:36 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.8 2003-12-11 21:00:09 mojomonkey Exp $
  */
 public class TestTimer extends AbstractGame {
     private TriMesh t;
@@ -164,7 +164,7 @@ public class TestTimer extends AbstractGame {
         
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
-        axis = new Vector3f(1,1,0.5f);
+        axis = new Vector3f(1,1,1);
 
     }
 
@@ -216,12 +216,12 @@ public class TestTimer extends AbstractGame {
         DirectionalLight am = new DirectionalLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 75));
+        am.setDirection(new Vector3f(0, 0, -1));
         
         LightState state = display.getRenderer().getLightState();
         state.attach(am);
         am.setEnabled(true);
-        //scene.setRenderState(state);
+        scene.setRenderState(state);
         scene.setRenderState(buf);
         cam.update();
         
