@@ -39,32 +39,36 @@ import jme.AbstractGame;
 import jme.system.DisplaySystem;
 
 /**
- * <code>TestApplication.java</code> provides a very basic jME OpenGL construct
+ * <code>TestApplication</code> provides a very basic jME OpenGL construct
  * This code generates a basic OpenGL window with a black background.
  * You will can use this basic construct to build more complex jME applications
  *  
  * @author Samuel Wasson
- * @version 0.1.0
+ * @version $Id: TestApplication.java,v 1.2 2003-08-08 02:16:56 mojomonkey Exp $
  */
 
+//Edit: Mark Powell - altered comments slightly. 8/7/03
+
 public class TestApplication extends AbstractGame {
-	
-	protected void update() {
-	/**
-	 * This is where we'll do any updating
-	 */
+    /**
+     * This is where we'll do any updating
+     */
+    protected void update() {
 	}
 	
+    /**
+     * Render is called once per frame to display the data.
+     */
 	protected void render() {
 		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
 		gl.loadIdentity();
 	}
 	
+    /** 
+     * This is where we create and initialize the window.
+     */
 	protected void initDisplay() {
 		
-		/** 
-		 * This is where we create and initialize the window.
-		 */
 		DisplaySystem.createDisplaySystem(
 			"TestApplication", 
 			"jme/data/Images/Monkey.jpg",
@@ -74,23 +78,21 @@ public class TestApplication extends AbstractGame {
 	
 	protected void initGL() {
 
-		/**
-		 * Here we create the OpenGL bindings.
-		 */
+		 // Here we create the OpenGL bindings.
+		 
 		gl = DisplaySystem.getDisplaySystem().getGL();
 		glu = DisplaySystem.getDisplaySystem().getGLU();
 		
-		/**
-		 * Define the clear color to be black
-		 */		
+		
+		//Define the clear color to be black
+				
 		gl.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
 		gl.matrixMode(GL.PROJECTION);
 		gl.loadIdentity();
 		
-		/**
-		 * Calculate the aspect ratio
-		 */
+		
+		 // Calculate the aspect ratio
 		glu.perspective(
 			45.0f,
 			(float)Display.getWidth() / (float)Display.getHeight(),
@@ -101,30 +103,36 @@ public class TestApplication extends AbstractGame {
 		gl.hint(GL.PERSPECTIVE_CORRECTION_HINT, GL.NICEST);		
 	}
 
+    /**
+     * Called first to initialize system attributes.
+     */
 	protected void initSystem() {
 		initDisplay();
 		initGL();
 	}
-
+    /** 
+     * Nothing here yet.
+     */
 	protected void initGame() {
-		/** 
-		 * Nothing here yet.
-		 */
 	}
 
+    /** 
+     * Nothing here yet.
+     */
 	protected void reinit() {
-		/** 
-		 * Nothing here yet.
-		 */
 	}
 
+    /**
+     * Clean up the OpenGL resources
+     */
 	protected void cleanup() {
-		/**
-		 * Clean up the OpenGL resources
-		 */
 		gl.destroy();
 	}
-	
+
+    /**
+     * <code>main</code> entry point for application.
+     * @param args comman line arguments, none used.
+     */	
 	public static void main(String[] args) { 
 	   TestApplication testApp = new TestApplication(); 
 	   testApp.start(); 
