@@ -39,7 +39,7 @@ import java.io.IOException;
  * <code>BitmapHeader</code> defines header information about a bitmap (BMP) image
  * file format.
  * @author Mark Powell
- * @version $Id: BitmapHeader.java,v 1.10 2004-07-29 19:29:45 cep21 Exp $
+ * @version $Id: BitmapHeader.java,v 1.11 2005-01-08 17:35:57 renanse Exp $
  */
 public class BitmapHeader {
     /**
@@ -288,7 +288,7 @@ public class BitmapHeader {
         planes = constructShort(bi, 12);
         bitcount = constructShort(bi, 14);
         compression = constructInt(bi, 16);
-        sizeimage = constructInt(bi, 20);
+        sizeimage = (constructInt(bi, 20) == 0 ? size - constructInt(bf,10) : constructInt(bi, 20));
         xpm = constructInt(bi, 24);
         ypm = constructInt(bi, 28);
         clrused = constructInt(bi, 32);
