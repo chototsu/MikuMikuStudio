@@ -45,7 +45,7 @@ import com.jme.scene.state.ZBufferState;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.25 2005-02-10 21:48:27 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.26 2005-03-17 23:06:17 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -105,7 +105,7 @@ public class TestParticleSystem extends SimpleGame {
 
     manager = new ParticleManager(300, display.getRenderer().getCamera());
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
-    manager.setEmissionDirection(new Vector3f(0,0,0));
+    manager.setEmissionDirection(new Vector3f(0,1,0));
     manager.setParticlesOrigin(new Vector3f(0,0,0));
     manager.setInitialVelocity(.006f);
     manager.setStartSize(2.5f);
