@@ -30,7 +30,6 @@ import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
@@ -65,15 +64,14 @@ public class TestMotionBlur extends VariableTimestepGame {
 		if (firstFrame == false) {
 			tRenderer.updateCamera();
 			tRenderer.render(rootNode, fakeTex);
+		} else {
+			firstFrame = false;
 		}
 
 		rootNode.updateGeometricState(time, false);
 	}
 
 	protected void render(float timeD) {
-		if (firstFrame == true) {
-			firstFrame = false;
-		}
 		display.getRenderer().clearBuffers();
 		display.getRenderer().draw(rootNode);
 	}
@@ -149,7 +147,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 		blurTS.setEnabled(true);
 
 		Quad quad = new Quad("Blur Quad", 10, 10);
-		quad.setSolidColor(new ColorRGBA(1, 1, 1, 0.18f));
+		quad.setSolidColor(new ColorRGBA(1, 1, 1, 0.99f));
 		quad.setRenderState(blurTS);
 		quad.setRenderState(as);
 
