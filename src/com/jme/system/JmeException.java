@@ -33,35 +33,61 @@
 package com.jme.system;
 
 /**
- * <code>JmeException</code> handles all exceptions that could be thrown
- * and should be handled in the client software. By
- * extending <code>RuntimeException</code> all functionality of the built-in
- * exception system is kept, but by applying the jME name it will be easier to
- * visualize what is causing the exception.
- *
+ * <code>JmeException</code> handles all exceptions that could be thrown and
+ * should be handled in the client software. By extending
+ * <code>RuntimeException</code> all functionality of the built-in exception
+ * system is kept, but by applying the jME name it will be easier to visualize
+ * what is causing the exception.
+ * 
  * @author Mark Powell
- * @version $Id: JmeException.java,v 1.3 2004-09-14 21:52:26 mojomonkey Exp $
+ * @version $Id: JmeException.java,v 1.4 2004-12-31 18:28:04 mojomonkey Exp $
  */
 public class JmeException extends RuntimeException {
 
     private static final long serialVersionUID = 1L;
 
-	/**
-     * Default constructor creates a new <code>JmeException</code> with
-     * out any description of what caused the exception.
+    /**
+     * Default constructor creates a new <code>JmeException</code> with out
+     * any description of what caused the exception.
      */
     public JmeException() {
         super();
     }
 
     /**
-     * Constructor creates a new <code>JmeException</code> with a
-     * description of the exception that will be displayed when it's thrown.
-     *
-     * @param desc the description of this exception.
+     * Constructor creates a new <code>JmeException</code> with a description
+     * of the exception that will be displayed when it's thrown.
+     * 
+     * @param desc
+     *            the description of this exception.
      */
     public JmeException(String desc) {
         super(desc);
+    }
+
+    /**
+     * Constructor creates a new <code>JmeException</code> with the cause of
+     * this exception.
+     * 
+     * @param cause
+     *            the cause of this exception.
+     */
+    public JmeException(Throwable cause) {
+        super(cause);
+    }
+
+    /**
+     * Constructor creates a new <code>JmeException</code> with a description
+     * of the exception that will be displayed when it's thrown and the cause of
+     * this exception.
+     * 
+     * @param desc
+     *            the description of this exception.
+     * @param cause
+     *            the cause of this exception
+     */
+    public JmeException(String desc, Throwable cause) {
+        super(desc, cause);
     }
 }
 
