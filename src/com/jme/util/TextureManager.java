@@ -58,7 +58,7 @@ import com.jme.renderer.ColorRGBA;
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.5 2004-02-24 18:00:34 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.6 2004-02-24 22:01:13 mojomonkey Exp $
  */
 public class TextureManager {
    
@@ -195,11 +195,11 @@ public class TextureManager {
     	
     	java.awt.Image image = null;
     	String fileName = file.getFile();
-        if (".TGA".equalsIgnoreCase(fileName.substring(file.getFile().lastIndexOf('.')))) {
+        if (".TGA".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.')))) {
             //Load the TGA file
             image = loadTGAImage(file);
         } else if (
-            ".BMP".equalsIgnoreCase(fileName.substring(file.getFile().lastIndexOf('.')))) {
+            ".BMP".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.')))) {
             image = loadBMPImage(file);
         } else {
             //Load the new image.
