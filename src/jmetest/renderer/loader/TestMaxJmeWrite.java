@@ -6,13 +6,18 @@ import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.model.XMLparser.Converters.MaxToJme;
 import com.jme.scene.Node;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.MaterialState;
 import com.jme.scene.shape.Box;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
+import com.jme.math.FastMath;
 import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingBox;
 import com.jme.renderer.ColorRGBA;
 import com.jme.light.DirectionalLight;
 import com.jme.light.PointLight;
+import com.jme.light.Light;
 import com.jme.system.DisplaySystem;
 
 
@@ -29,6 +34,7 @@ import java.net.URL;
  */
 public class TestMaxJmeWrite extends SimpleGame{
     public static void main(String[] args) {
+
         TestMaxJmeWrite app=new TestMaxJmeWrite();
         app.setDialogBehaviour(SimpleGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
@@ -41,14 +47,23 @@ public class TestMaxJmeWrite extends SimpleGame{
 
         try {
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
-//            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/cubeColoured.3DS");
-            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/cutsphere.3DS");
+//            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/cutsphere.3DS");
+            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
 //            URL maxFile = new File("3dsmodels/sphere.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/cobra.3DS").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/movedpivot.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/Character.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/test1.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/cutsphere.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/cube.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/face.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/pitbull.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/tpot.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/europe.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/sphere.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/cow.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/growingcube.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/simpani.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/tank.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/simpmovement.3DS").toURI().toURL();
 
@@ -58,38 +73,51 @@ public class TestMaxJmeWrite extends SimpleGame{
             StringWriter SW=new StringWriter();
             btx.sendBinarytoXML(new ByteArrayInputStream(BO.toByteArray()),SW);
             System.out.println(SW);
-//            jbr.setProperty("texurl",new File("3dsmodels").toURI().toURL());
+
+            jbr.setProperty("bound","box");
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-            rootNode.setLocalTranslation(new Vector3f(0,0,10));
+            r.setLocalScale(.1f);
+            r.getChild(0).getController(0).setSpeed(10);
+            Quaternion temp=new Quaternion();
+            temp.fromAngleAxis(FastMath.PI/2,new Vector3f(-1,0,0));
+            rootNode.setLocalRotation(temp);
             rootNode.attachChild(r);
-//            lightState.detachAll();
-            PointLight DL=new PointLight();
-            DL.setLocation(new Vector3f(1000,0,1000));
-            DL.setEnabled(true);
-            DL.setAmbient(new ColorRGBA(.1f,.1f,.1f,.1f));
-            DL.setDiffuse(ColorRGBA.white);
-            DL.setSpecular(ColorRGBA.white);
-//            lightState.attach(DL);
-            rootNode.updateRenderState();
-            //drawAxis();
+            rootNode.setForceView(true);
+            drawAxis();
         } catch (IOException e) {
             System.out.println("Damn exceptions:"+e);
+            e.printStackTrace();
         }
     }
 
     private void drawAxis() {
         Box Xaxis=new Box("axisX",new Vector3f(5,0,0),5f,.1f,.1f);
-        Xaxis.setModelBound(new BoundingSphere());
+        Xaxis.setModelBound(new BoundingBox());
         Xaxis.updateModelBound();
-        Xaxis.setSolidColor(ColorRGBA.blue);
+        Xaxis.setSolidColor(ColorRGBA.red);
+        MaterialState red=display.getRenderer().getMaterialState();
+        red.setEmissive(ColorRGBA.red);
+        red.setEnabled(true);
+        Xaxis.setRenderState(red);
+
         Box Yaxis=new Box("axisY",new Vector3f(0,5,0),.1f,5f,.1f);
-        Yaxis.setModelBound(new BoundingSphere());
+        Yaxis.setModelBound(new BoundingBox());
         Yaxis.updateModelBound();
-        Yaxis.setSolidColor(ColorRGBA.red);
+        Yaxis.setSolidColor(ColorRGBA.green);
+        MaterialState green=display.getRenderer().getMaterialState();
+        green.setEmissive(ColorRGBA.green);
+        green.setEnabled(true);
+        Yaxis.setRenderState(green);
+
         Box Zaxis=new Box("axisZ",new Vector3f(0,0,5),.1f,.1f,5f);
-        Zaxis.setSolidColor(ColorRGBA.green);
-        Zaxis.setModelBound(new BoundingSphere());
+        Zaxis.setSolidColor(ColorRGBA.blue);
+        Zaxis.setModelBound(new BoundingBox());
         Zaxis.updateModelBound();
+        MaterialState blue=display.getRenderer().getMaterialState();
+        blue.setEmissive(ColorRGBA.blue);
+        blue.setEnabled(true);
+        Zaxis.setRenderState(blue);
+
         rootNode.attachChild(Xaxis);
         rootNode.attachChild(Yaxis);
         rootNode.attachChild(Zaxis);
