@@ -62,7 +62,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone3.java,v 1.3 2004-02-26 23:10:50 mojomonkey Exp $
+ * @version $Id: TestMilestone3.java,v 1.4 2004-02-27 00:15:24 mojomonkey Exp $
  */
 public class TestMilestone3 extends SimpleGame {
     private TriMesh t;
@@ -231,7 +231,7 @@ public class TestMilestone3 extends SimpleGame {
         pl.setEnabled(true);
 
         lightstate = display.getRenderer().getLightState();
-
+        lightstate.setEnabled(true);
         lightNode = new LightNode("Light Node", lightstate);
         lightNode.setLight(pl);
         lightNode.setTarget(bez);
