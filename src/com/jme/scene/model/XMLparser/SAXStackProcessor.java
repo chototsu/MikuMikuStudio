@@ -243,7 +243,6 @@ class SAXStackProcessor {
                     jc.addJointMesh((JointMesh) parentNode.getChild(i));
             }
             jc.processController();
-            jc.setActive(false);
             parentNode.addController(jc);
             s.push(parentNode);
         } else if (qName.equals("joint")){
