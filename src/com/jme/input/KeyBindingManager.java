@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.1 2003-10-23 21:24:43 mojomonkey Exp $
+ * @version $Id: KeyBindingManager.java,v 1.2 2003-10-27 21:18:17 mojomonkey Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -171,7 +171,6 @@ public class KeyBindingManager {
         }
         
         ArrayList keyList = (ArrayList)keyMap.get(command);
-        
         if(null == keyList) {
             return false;
         }
@@ -202,6 +201,15 @@ public class KeyBindingManager {
 	public void remove(String command) {
 		keyMap.remove(command);
 	}
+    
+    /**
+     * 
+     * <code>update</code> updates the status of the keyboard.
+     *
+     */
+    public void update() {
+        keyInput.update();
+    }
 	
     /**
      * <code>getInstance</code> gets the static singleton instance of
