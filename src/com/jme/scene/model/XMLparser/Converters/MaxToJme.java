@@ -11,6 +11,7 @@ import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
 import com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.ChunkerClass;
+import com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.MaxChunkIDs;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
@@ -37,7 +38,7 @@ import java.util.BitSet;
  *
  * @author Jack Lindamood
  */
-public class MaxToJme extends FormatConverter{
+public class MaxToJme extends FormatConverter implements MaxChunkIDs {
     private LittleEndien myIn;
     private static boolean DEBUG=true;
     private static boolean DEBUG_SEVERE=true;
@@ -69,7 +70,7 @@ public class MaxToJme extends FormatConverter{
 //        Node totalScene=(Node) s.pop();
 //        new JmeBinaryWriter().writeScene(totalScene,bin);
     }
-/*
+
     private void readFile(int length) throws IOException {
         if (DEBUG_LIGHT) System.out.println("Reading file");
         while (length>0){
@@ -1331,7 +1332,6 @@ public class MaxToJme extends FormatConverter{
     private void readMeshVersion() throws IOException {
         int i=myIn.readInt();
         if (DEBUG || DEBUG_LIGHT) System.out.println("Mesh version:" + i);
-
     }
 
     private void readSmoothing(short nFaces,Vector3f[] faceNormals) throws IOException{
@@ -1565,5 +1565,5 @@ public class MaxToJme extends FormatConverter{
             mat=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
             tex=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
         }
-    }*/
+    }
 }
