@@ -37,7 +37,7 @@ import com.jme.system.JmeException;
 /**
  * <code>BezierPatch</code>
  * @author Mark Powell
- * @version 
+ * @version $Id: BezierPatch.java,v 1.2 2004-01-14 02:27:24 mojomonkey Exp $
  */
 public class BezierPatch {
     private Vector3f[][] anchors;

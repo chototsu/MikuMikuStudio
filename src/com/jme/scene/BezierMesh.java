@@ -38,7 +38,7 @@ import com.jme.system.JmeException;
 /**
  * <code>BezierMesh</code>
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.3 2004-01-11 01:58:12 mojomonkey Exp $
+ * @version $Id: BezierMesh.java,v 1.4 2004-01-14 02:27:24 mojomonkey Exp $
  */
 public class BezierMesh extends TriMesh {
     private BezierPatch patch;
@@ -118,6 +118,8 @@ public class BezierMesh extends TriMesh {
             indices[(i + 4)] = (2 * index) + 2;
             indices[(i + 5)] = (2 * index) + 1;
         }
+
+        
 
         setVertices(vertex);
         setTextures(texture);
