@@ -44,7 +44,7 @@ import com.jme.scene.Geometry;
 public class ParticleSystem extends Geometry {
 
 	// the television set
-	private ArrayList particles;
+	private Particle[] particles;
 
 	// the remote control 
 	private ParticleController partController;
@@ -94,11 +94,11 @@ public class ParticleSystem extends Geometry {
 		random = false;
 		randomness = new Vector3f();
 
-		particles = new ArrayList(numOfParticles);
+		particles = new Particle[numOfParticles];
 		positionsOfParticles = new Vector3f[numOfParticles];
 
 		for (int i = 0; i < numOfParticles; i++) {
-			particles.add(new Particle());
+			particles[i]= new Particle();
 			positionsOfParticles[i] = new Vector3f();
 		}
 	}
@@ -144,7 +144,7 @@ public class ParticleSystem extends Geometry {
 	public Vector3f getPosition() {
 		return position;
 	}
-	public ArrayList getParticles() {
+	public Particle[] getParticles() {
 		return particles;
 	}
 	public boolean getRandom() {

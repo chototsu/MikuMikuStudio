@@ -92,7 +92,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.14 2004-01-26 21:44:37 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.15 2004-01-26 23:15:15 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -583,12 +583,12 @@ public class LWJGLRenderer implements Renderer {
         ColorRGBA color;
         float particleSizeX, particleSizeY;
 
-        for (int i = 0; i < p.getParticles().size(); i++) {
+        for (int i = 0; i < p.getParticles().length; i++) {
 
-            center = ((Particle) p.getParticles().get(i)).position;
+            center = p.getParticles()[i].position;
 
-            particleSizeX = ((Particle) p.getParticles().get(i)).size.x;
-            particleSizeY = ((Particle) p.getParticles().get(i)).size.y;
+            particleSizeX = p.getParticles()[i].size.x;
+            particleSizeY = p.getParticles()[i].size.y;
             scaledUpLeft = upperLeft.mult(particleSizeX);
             scaledUpRight = upperRight.mult(particleSizeY);
             cpp = center.add(scaledUpLeft);
@@ -597,10 +597,10 @@ public class LWJGLRenderer implements Renderer {
             cmm = center.subtract(scaledUpLeft);
 
             GL.glColor4f(
-                ((Particle) p.getParticles().get(i)).color.r,
-                ((Particle) p.getParticles().get(i)).color.g,
-                ((Particle) p.getParticles().get(i)).color.b,
-                ((Particle) p.getParticles().get(i)).color.a);
+                p.getParticles()[i].color.r,
+                p.getParticles()[i].color.g,
+                p.getParticles()[i].color.b,
+                p.getParticles()[i].color.a);
 
             GL.glTexCoord2f(0.0f, 0.0f);
             GL.glVertex3f(cmm.x, cmm.y, cmm.z);

@@ -51,9 +51,9 @@ public class ParticleController extends Controller {
 	public void update(float time) {
 		float timeF = time * ps.getSpeed();
 
-		for (int i = 0; i < ps.getParticles().size(); i++) {
+		for (int i = 0; i < ps.getParticles().length; i++) {
 			// check life
-			currentP = (Particle) ps.getParticles().get(i);
+			currentP = ps.getParticles()[i];
 			if (isFirst || (this.getRepeatType() == RT_WRAP)) {
 				if (currentP.life <= 0.0f) {
 					regenerateParticle();
@@ -105,10 +105,10 @@ public class ParticleController extends Controller {
 						+ (ps.getEndSize().z * (1 - currentP.life));
 
 				// set the new Particle
-				ps.getParticles().set(i, currentP);
+				ps.getParticles()[i]= currentP;
 				ps.setParticlePosition(currentP.position, i);
 			} else if (this.getRepeatType() == RT_CLAMP) {
-				currentP = (Particle) ps.getParticles().get(i);
+				currentP = ps.getParticles()[i];
 				if (isFirst == true) {
 					regenerateParticle();
 					continue;
@@ -164,7 +164,7 @@ public class ParticleController extends Controller {
 						+ (ps.getEndSize().z * (1 - currentP.life));
 
 				// set the new Particle...again!
-				ps.getParticles().set(i, currentP);
+				ps.getParticles()[i]= currentP;
 				ps.setParticlePosition(currentP.position, i);
 			} else if (getRepeatType() == RT_CYCLE) {
 				// if the repeat type is cycle, change it to wrap!

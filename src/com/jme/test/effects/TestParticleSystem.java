@@ -76,6 +76,7 @@ public class TestParticleSystem extends AbstractGame {
 
 	protected void update() {
 		timer.update();
+        System.out.println(timer.getFrameRate());
         input.update(timer.getTimePerFrame() * 10);
 		ps.update(10f / timer.getFrameRate());
 		cam.update();
@@ -158,11 +159,11 @@ public class TestParticleSystem extends AbstractGame {
 				true));
 		ts.setEnabled(true);
 
-		ps = new ParticleSystem(1000);
+		ps = new ParticleSystem(100);
 		ps.setStartColor(
 			new ColorRGBA(1f, 1f, 0f, 1f));
 		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0f));
-		ps.setStartSize(new Vector3f(1f, 1f, 1f));
+		ps.setStartSize(new Vector3f(10f, 10f, 10f));
 		ps.setEndSize(new Vector3f(1f, 1f, 1f));
 		ps.setGravity(new Vector3f(0, 0, 40));
 		ps.setSpeed(1f);
