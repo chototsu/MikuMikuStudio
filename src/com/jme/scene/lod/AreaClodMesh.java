@@ -47,7 +47,7 @@ import com.jme.system.DisplaySystem;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: AreaClodMesh.java,v 1.4 2004-04-16 23:16:03 renanse Exp $
+ * @version $Id: AreaClodMesh.java,v 1.5 2004-04-19 20:42:58 renanse Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   float trisPerPixel = 1f;
@@ -84,12 +84,12 @@ public class AreaClodMesh extends ClodMesh {
       return 0;
     }
     float newDistance = getWorldBound().distanceTo(r.getCamera().getLocation());
+    if (Math.abs(newDistance - lastDistance) <= distTolerance)
+      return targetRecord; // we haven't moved relative to the model, send the old measurement back.
     if (lastDistance > newDistance && targetRecord == 0)
       return targetRecord; // we're already at the lowest setting and we just got closer to the model, no need to keep trying.
     if (lastDistance < newDistance && targetRecord == records.length-1)
       return targetRecord; // we're already at the highest setting and we just got further from the model, no need to keep trying.
-    if (Math.abs(newDistance - lastDistance) <= distTolerance)
-      return targetRecord; // we haven't moved, send the old measurement back.
 
 
     lastDistance = newDistance;
