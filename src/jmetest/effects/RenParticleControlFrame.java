@@ -51,16 +51,11 @@ import com.jme.system.*;
 import java.io.*;
 
 public class RenParticleControlFrame extends JFrame {
-  BorderLayout borderLayout1 = new BorderLayout();
   JTabbedPane mainTabbedPane1 = new JTabbedPane();
   JPanel appPanel = new JPanel();
   JPanel emitPanel = new JPanel();
   JPanel worldPanel = new JPanel();
-  GridBagLayout gridBagLayout1 = new GridBagLayout();
-  GridBagLayout gridBagLayout2 = new GridBagLayout();
-  GridBagLayout gridBagLayout3 = new GridBagLayout();
   JPanel colorPanel = new JPanel();
-  GridBagLayout gridBagLayout4 = new GridBagLayout();
   JLabel startColorLabel = new JLabel();
   JLabel colorLabel = new JLabel();
   JLabel endColorLabel = new JLabel();
@@ -76,32 +71,27 @@ public class RenParticleControlFrame extends JFrame {
   JPanel sizePanel = new JPanel();
   JLabel startSizeLabel = new JLabel();
   JSlider startSizeSlider = new JSlider();
-  GridBagLayout gridBagLayout5 = new GridBagLayout();
   TitledBorder sizeBorder;
   JLabel endSizeLabel = new JLabel();
   JSlider endSizeSlider = new JSlider();
   TitledBorder ageBorder;
   JPanel speedPanel = new JPanel();
-  GridBagLayout gridBagLayout7 = new GridBagLayout();
   TitledBorder speedBorder;
   JLabel speedLabel = new JLabel();
   JSlider speedSlider = new JSlider();
   JPanel texturePanel = new JPanel();
   TitledBorder textureBorder;
-  GridBagLayout gridBagLayout8 = new GridBagLayout();
   JLabel textureLabel = new JLabel();
   JButton changeTextureButton = new JButton();
   JLabel imageLabel = new JLabel();
   JPanel gravityPanel = new JPanel();
   TitledBorder gravityBorder;
   JSlider gravYSlider = new JSlider();
-  GridBagLayout gridBagLayout9 = new GridBagLayout();
   JSlider gravZSlider = new JSlider();
   JSlider gravXSlider = new JSlider();
   JLabel gravXLabel = new JLabel();
   JLabel gravYLabel = new JLabel();
   JLabel gravZLabel = new JLabel();
-  GridBagLayout gridBagLayout6 = new GridBagLayout();
   JPanel agePanel = new JPanel();
   JLabel minAgeLabel = new JLabel();
   JSlider minAgeSlider = new JSlider();
@@ -114,24 +104,19 @@ public class RenParticleControlFrame extends JFrame {
   JPanel directionPanel = new JPanel();
   TitledBorder emitBorder;
   JPanel anglePanel = new JPanel();
-  GridBagLayout gridBagLayout10 = new GridBagLayout();
   TitledBorder angleBorder;
-  GridBagLayout gridBagLayout11 = new GridBagLayout();
   JLabel angleLabel = new JLabel();
   JSlider angleSlider = new JSlider();
   JPanel randomPanel = new JPanel();
   TitledBorder randomBorder;
-  GridBagLayout gridBagLayout12 = new GridBagLayout();
   JLabel randomLabel = new JLabel();
   JSlider randomSlider = new JSlider();
   JPanel examplesPanel = new JPanel();
-  GridBagLayout gridBagLayout13 = new GridBagLayout();
   JScrollPane exampleSP = new JScrollPane();
   JList exampleList = null;
   JLabel examplesLabel = new JLabel();
   JButton exampleButton = new JButton();
   JPanel codePanel = new JPanel();
-  GridBagLayout gridBagLayout14 = new GridBagLayout();
   JLabel codeLabel = new JLabel();
   JScrollPane codeSP = new JScrollPane();
   JTextArea codeTextArea = new JTextArea();
@@ -140,13 +125,13 @@ public class RenParticleControlFrame extends JFrame {
   TitledBorder countBorder;
   JLabel countLabel = new JLabel();
   JButton countButton = new JButton();
-  GridBagLayout gridBagLayout15 = new GridBagLayout();
+  File lastDir = null;
 
   /**
    * <code>RenParticleControlFrame</code>
    *
    * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.14 2004-03-25 17:17:40 renanse Exp $
+   * @version $Id: RenParticleControlFrame.java,v 1.15 2004-03-25 17:36:45 renanse Exp $
    *
    */
 
@@ -162,21 +147,21 @@ public class RenParticleControlFrame extends JFrame {
   private void jbInit() throws Exception {
     setTitle("Particle System Editor");
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    colorBorder = new TitledBorder("");
-    sizeBorder = new TitledBorder("");
+    colorBorder = new TitledBorder(" PARTICLE COLOR ");
+    sizeBorder = new TitledBorder(" PARTICLE SIZE ");
     ageBorder = new TitledBorder(" PARTICLE AGE ");
     speedBorder = new TitledBorder(" PARTICLE SPEED ");
     textureBorder = new TitledBorder(" PARTICLE TEXTURE ");
     gravityBorder = new TitledBorder(" GRAVITY ");
     emitBorder = new TitledBorder(" EMISSION DIRECTION ");
-    angleBorder = new TitledBorder("");
-    randomBorder = new TitledBorder("");
-    countBorder = new TitledBorder("");
-    this.getContentPane().setLayout(borderLayout1);
-    appPanel.setLayout(gridBagLayout1);
-    emitPanel.setLayout(gridBagLayout2);
-    worldPanel.setLayout(gridBagLayout3);
-    colorPanel.setLayout(gridBagLayout4);
+    angleBorder = new TitledBorder(" ANGLE ");
+    randomBorder = new TitledBorder(" SYSTEM RANDOMNESS ");
+    countBorder = new TitledBorder(" PARTICLE COUNT ");
+    this.getContentPane().setLayout(new BorderLayout());
+    appPanel.setLayout(new GridBagLayout());
+    emitPanel.setLayout(new GridBagLayout());
+    worldPanel.setLayout(new GridBagLayout());
+    colorPanel.setLayout(new GridBagLayout());
     startColorLabel.setFont(new java.awt.Font("Arial", 1, 13));
     startColorLabel.setRequestFocusEnabled(true);
     startColorLabel.setText("Starting Color:");
@@ -206,7 +191,6 @@ public class RenParticleControlFrame extends JFrame {
     colorPanel.setOpaque(false);
     colorBorder.setTitleColor(Color.black);
     colorBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
-    colorBorder.setTitle(" PARTICLE COLOR ");
     colorBorder.setBorder(BorderFactory.createEtchedBorder());
     startAlphaLabel.setFont(new java.awt.Font("Arial", 0, 11));
     startAlphaLabel.setText("alpha:");
@@ -214,11 +198,10 @@ public class RenParticleControlFrame extends JFrame {
     endAlphaLabel.setText("alpha:");
     startSizeLabel.setFont(new java.awt.Font("Arial", 1, 13));
     startSizeLabel.setText("Start Size:  0.0");
-    sizePanel.setLayout(gridBagLayout5);
+    sizePanel.setLayout(new GridBagLayout());
     sizePanel.setBorder(sizeBorder);
     sizePanel.setOpaque(false);
     sizeBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
-    sizeBorder.setTitle(" PARTICLE SIZE ");
     endSizeLabel.setFont(new java.awt.Font("Arial", 1, 13));
     endSizeLabel.setText("End Size: 0.0");
     endSizeSlider.setMaximum(400);
@@ -241,7 +224,7 @@ public class RenParticleControlFrame extends JFrame {
     });
     ageBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
     ageBorder.setBorder(BorderFactory.createEtchedBorder());
-    speedPanel.setLayout(gridBagLayout7);
+    speedPanel.setLayout(new GridBagLayout());
     speedPanel.setBorder(speedBorder);
     speedPanel.setOpaque(false);
     speedLabel.setFont(new java.awt.Font("Arial", 1, 13));
@@ -257,7 +240,7 @@ public class RenParticleControlFrame extends JFrame {
       }
     });
     texturePanel.setBorder(textureBorder);
-    texturePanel.setLayout(gridBagLayout8);
+    texturePanel.setLayout(new GridBagLayout());
     textureBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
     textureLabel.setFont(new java.awt.Font("Arial", 1, 13));
     textureLabel.setText("Texture Image:");
@@ -279,7 +262,7 @@ public class RenParticleControlFrame extends JFrame {
     imageLabel.setIcon(icon);
 
     gravityPanel.setBorder(gravityBorder);
-    gravityPanel.setLayout(gridBagLayout9);
+    gravityPanel.setLayout(new GridBagLayout());
     gravityBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
 
     gravXLabel.setText("X");
@@ -342,7 +325,7 @@ public class RenParticleControlFrame extends JFrame {
       }
     });
 
-    agePanel.setLayout(gridBagLayout6);
+    agePanel.setLayout(new GridBagLayout());
     agePanel.setBorder(ageBorder);
     minAgeLabel.setFont(new java.awt.Font("Arial", 1, 13));
     minAgeLabel.setText("Minimum Age: 1000ms");
@@ -360,7 +343,7 @@ public class RenParticleControlFrame extends JFrame {
     });
 
     directionPanel.setBorder(emitBorder);
-    directionPanel.setLayout(gridBagLayout10);
+    directionPanel.setLayout(new GridBagLayout());
     emitBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
     emitBorder.setTitle(" DIRECTION ");
     emitZSlider.setOrientation(JSlider.VERTICAL);
@@ -424,9 +407,8 @@ public class RenParticleControlFrame extends JFrame {
     emitZLabel.setFont(new java.awt.Font("Arial", 1, 13));
     emitZLabel.setText("Z");
     anglePanel.setBorder(angleBorder);
-    anglePanel.setLayout(gridBagLayout11);
+    anglePanel.setLayout(new GridBagLayout());
     angleBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
-    angleBorder.setTitle(" ANGLE ");
     angleLabel.setText("Degrees Off Direction:  0");
     angleLabel.setFont(new java.awt.Font("Arial", 1, 13));
     angleSlider.setValue(0);
@@ -442,9 +424,8 @@ public class RenParticleControlFrame extends JFrame {
       }
     });
     randomPanel.setBorder(randomBorder);
-    randomPanel.setLayout(gridBagLayout12);
+    randomPanel.setLayout(new GridBagLayout());
     randomBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
-    randomBorder.setTitle(" SYSTEM RANDOMNESS ");
     randomLabel.setFont(new java.awt.Font("Arial", 1, 13));
     randomLabel.setText("Random Factor: 0.0");
     randomSlider.setValue(0);
@@ -457,7 +438,7 @@ public class RenParticleControlFrame extends JFrame {
         regenCode();
       }
     });
-    examplesPanel.setLayout(gridBagLayout13);
+    examplesPanel.setLayout(new GridBagLayout());
     examplesLabel.setFont(new java.awt.Font("Arial", 1, 13));
     examplesLabel.setText("Prebuilt Examples:");
     exampleButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -481,7 +462,7 @@ public class RenParticleControlFrame extends JFrame {
       }
     });
     codePanel.setFont(new java.awt.Font("Arial", 0, 13));
-    codePanel.setLayout(gridBagLayout14);
+    codePanel.setLayout(new GridBagLayout());
     appPanel.setFont(new java.awt.Font("Arial", 0, 13));
     emitPanel.setFont(new java.awt.Font("Arial", 0, 13));
     worldPanel.setFont(new java.awt.Font("Arial", 0, 13));
@@ -495,9 +476,8 @@ public class RenParticleControlFrame extends JFrame {
     codeTextArea.setAutoscrolls(true);
     countPanel.setFont(new java.awt.Font("Arial", 0, 13));
     countPanel.setBorder(countBorder);
-    countPanel.setLayout(gridBagLayout15);
+    countPanel.setLayout(new GridBagLayout());
     countBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
-    countBorder.setTitle(" PARTICLE COUNT ");
     countLabel.setFont(new java.awt.Font("Arial", 1, 13));
     countLabel.setText("Particles: 300");
     countButton.setFont(new java.awt.Font("Arial", 1, 12));
@@ -765,9 +745,6 @@ public class RenParticleControlFrame extends JFrame {
     manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
     manager.warmup();
     updateFromManager();
-    ImageIcon icon = new ImageIcon(TestRenParticleGUI.class.getClassLoader().getResource(
-        "jmetest/data/texture/flaresmall.jpg"));
-    imageLabel.setIcon(icon);
   }
 
   /**
@@ -1069,7 +1046,7 @@ public class RenParticleControlFrame extends JFrame {
   private void changeTexture() {
     TestRenParticleGUI.noUpdate = true;
     try {
-      JFileChooser chooser = new JFileChooser();
+      JFileChooser chooser = new JFileChooser(lastDir);
       chooser.setMultiSelectionEnabled(false);
       int result = chooser.showOpenDialog(this);
       if (result == JFileChooser.CANCEL_OPTION) {
@@ -1077,6 +1054,7 @@ public class RenParticleControlFrame extends JFrame {
         return;
       }
       File textFile = chooser.getSelectedFile();
+      lastDir = textFile.getParentFile();
 
       TestRenParticleGUI.root.clearRenderState(RenderState.RS_TEXTURE);
       TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().
@@ -1088,6 +1066,7 @@ public class RenParticleControlFrame extends JFrame {
           Texture.FM_LINEAR,
           true));
       ts.setEnabled(true);
+      TestRenParticleGUI.root.setRenderState(ts);
       ImageIcon icon = new ImageIcon(textFile.getAbsolutePath());
       imageLabel.setIcon(icon);
       validate();
