@@ -62,11 +62,13 @@ public class EffectRepository {
 	}
 
 	public void bind(String name, ISound source) {
+		
 		repository.put(name, source);
 
 	}
 	
 	public ISound getSource(String name) {
+		
 		return (ISound)repository.get(name);		
 	}
 	

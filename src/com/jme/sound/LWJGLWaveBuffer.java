@@ -52,6 +52,7 @@ public class LWJGLWaveBuffer extends WaveBuffer {
 	public LWJGLWaveBuffer(){
 		buffer=ByteBuffer.allocateDirect(4 ).order(ByteOrder.nativeOrder()).asIntBuffer();
 		AL.alGenBuffers(buffer);
+		buffer.rewind();
 	}
 	
 	public int getBufferNumber() {

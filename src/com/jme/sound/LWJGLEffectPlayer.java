@@ -37,7 +37,8 @@
 package com.jme.sound;
 
 import org.lwjgl.openal.AL;
-//import org.lwjgl.openal.eax.BaseEAX;
+
+import org.lwjgl.openal.eax.EAX;
 
 import com.jme.math.Vector3f;
 import com.jme.sound.filter.*;
@@ -65,9 +66,11 @@ public class LWJGLEffectPlayer implements IPlayer {
 
 	public void play(String name) {
 		ISound effect= EffectRepository.getRepository().getSource(name);
-		if (effect == null)
+		if (effect == null) {
 			return;
+		}
 		status= PLAYING;
+
 		AL.alGetError();
 		if (AL.alGetError() != AL.AL_NO_ERROR) {
 			System.err.println("Error generating audio source.");
@@ -87,8 +90,11 @@ public class LWJGLEffectPlayer implements IPlayer {
 	 */
 	public void loop(String name) {
 		ISound effect= EffectRepository.getRepository().getSource(name);
-		if (effect == null)
+
+		if (effect == null) {
+			System.err.println("NULL DETECTED");
 			return;
+		}
 		status= LOOPING;
 		AL.alGetError();
 		if (AL.alGetError() != AL.AL_NO_ERROR) {
@@ -181,20 +187,20 @@ public class LWJGLEffectPlayer implements IPlayer {
 	 * @param the buffer filter for this player
 	 */
 	public void applyFilter(BufferFilter f) {
-		// (BaseEAX.isCreated()) {
+		if (EAX.isCreated()) {
 			if (f instanceof LWJGLBufferFilter) {
 				((LWJGLBufferFilter)f).applyOnSource(sourceNumber);
 			}
-		//
+		}
 
 	}
 
 	public void applyFilter(ListenerFilter f) {
-		//if (BaseEAX.isCreated()) {
+		if (EAX.isCreated()) {
 		if (f instanceof LWJGLListenerFilter) {
-			((LWJGLListenerFilter)f).applyOnSource(sourceNumber);
+			((LWJGLListenerFilter)f).enable();
 		}
-		//}
+		}
 	}
 
 }

@@ -36,15 +36,20 @@
  */
 package com.jme.sound.utils;
 
-import java.util.ArrayList;
+import java.util.Vector;
+
+import java.util.logging.Level;
 
 import org.lwjgl.openal.AL;
+
 
 import com.jme.sound.ISound;
 import com.jme.sound.ISoundBuffer;
 import com.jme.sound.LWJGLMP3Buffer;
 import com.jme.sound.LWJGLWaveBuffer;
 import com.jme.sound.SoundEffect;
+
+import com.jme.util.LoggingSystem;
 
 /**
  * @author Arman Ozcelik
@@ -53,12 +58,12 @@ import com.jme.sound.SoundEffect;
 public class OnDemandSoundLoader extends Thread {
 
 	private boolean killed;
-	private ArrayList batchList= new ArrayList();
-	private ArrayList output= new ArrayList();
+	private Vector batchList= new Vector();
+	private Vector output= new Vector();
 	private long waitTime;
 
 	public OnDemandSoundLoader(long wait) {
-		waitTime=wait;
+		waitTime= wait;
 	}
 
 	public synchronized OnDemandSoundLoader queueSound(String name, String file) {
@@ -66,9 +71,9 @@ public class OnDemandSoundLoader extends Thread {
 		batchList.add(file);
 		return this;
 	}
-	
-	public void impale(){
-		killed=true;
+
+	public void impale() {
+		killed= true;
 	}
 
 	public void run() {
@@ -81,14 +86,16 @@ public class OnDemandSoundLoader extends Thread {
 					file= (String)batchList.remove(0);
 
 				}
+				//SoundSystem.getSoundEffectSystem("LWJGL").load(file, name);
+				
+				
 				ISoundBuffer buffer= null;
+				LoggingSystem.getLogger().log(Level.INFO, "Loading " + file + " as " + name);
 				if (file.endsWith(".wav")) {
-					System.out.println("Loading " + file + " as " + name);
 					buffer= new LWJGLWaveBuffer();
 					buffer.load(file);
 				}
 				if (file.endsWith(".mp3")) {
-					System.out.println("Loading " + file + " as " + name);
 					buffer= new LWJGLMP3Buffer();
 					buffer.load(file);
 				}
@@ -99,25 +106,25 @@ public class OnDemandSoundLoader extends Thread {
 					buffer.getBufferData().capacity(),
 					buffer.getSampleRate());
 				if (AL.alGetError() != AL.AL_NO_ERROR) {
-					System.err.println("Error generating audio buffer");
+					LoggingSystem.getLogger().log(Level.WARNING, "Error generating audio buffer");
 				}
+				
 				SoundEffect effect= new SoundEffect(buffer.getBufferNumber(), ISound.SOUND_TYPE_EFFECT);
-				EffectRepository rep=EffectRepository.getRepository();
-				synchronized(rep){
+				EffectRepository rep= EffectRepository.getRepository();
+				synchronized (rep) {
 					rep.bind(name, effect);
 				}
 				buffer.release();
-				
+				LoggingSystem.getLogger().log(Level.INFO, "Loaded file "+file);
+
 			}
-			try{
+			try {
 				Thread.sleep(waitTime);
-			}catch(InterruptedException ie){
+			} catch (InterruptedException ie) {
 			}
 
 		}
 
 	}
-	
-
 
 }

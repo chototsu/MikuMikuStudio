@@ -31,18 +31,23 @@
  */
 package com.jme.sound;
 
+import java.util.logging.Level;
+
+import com.jme.util.LoggingSystem;
+
 /**
  * @author Arman Ozcelik
- * @version $Id: SoundSystem.java,v 1.5 2004-01-17 17:56:08 Anakan Exp $
+ * @version $Id: SoundSystem.java,v 1.6 2004-01-19 23:06:46 Anakan Exp $
  */
 public abstract class SoundSystem {
 	/**
 		* The list of current implemented rendering APIs that subclass SoundSystem.
 		*/
 	public static final String[] rendererNames= { "LWJGL" };
-	
+
 	protected static boolean created;
-	
+	protected static boolean eaxSupported;
+
 	/**
 		 * 
 		 * <code>getSoundSystem</code> is a factory method that creates the
@@ -55,12 +60,23 @@ public abstract class SoundSystem {
 		 */
 	public static SoundSystem getSoundEffectSystem(String key) {
 		if ("LWJGL".equalsIgnoreCase(key)) {
+			LoggingSystem.getLogger().log(Level.INFO, "Initializing Sound System");
 			return new LWJGLSoundSystem();
 		}
+		LoggingSystem.getLogger().log(Level.INFO, "Unknown Sound System key");
 		return null;
 	}
-
 	
+	
+	public static SoundSystem getSoundEffectSystem(String key, boolean enableEAX) {
+			if ("LWJGL".equalsIgnoreCase(key)) {
+				LoggingSystem.getLogger().log(Level.INFO, "Initializing Sound System");
+				return new LWJGLSoundSystem(enableEAX);
+			}
+			LoggingSystem.getLogger().log(Level.INFO, "Unknown Sound System key");
+			return null;
+	}
+
 	/**
 	* <code>isCreated</code> returns the current status of the sound
 	* system. If the sound system and  the sound renderer are created, true is returned,
@@ -70,23 +86,29 @@ public abstract class SoundSystem {
 	*/
 
 	public abstract boolean isCreated();
-	
+
+	/**
+		* <code>isEAXSupported</code> returns the current status of the sound
+		* system's EAX support. 
+		* 
+		* @return whether the sound system supports EAX.
+		*/
+	public abstract boolean isEAXSupported();
+
 	/**
 	 * Adds a sound sample playing source.
 	 * @param name The object that should play the sound, but can also be any object.
 	 */
-	
-	
+
 	public abstract void addSource(Object name);
-	
+
 	/**
 	 * Loads a sound sample.
 	 * @param file The file from which the sound should be loaded.
 	 * @param name The sample unique name.
 	 */
 	public abstract void load(String file, String name);
-	
-	
+
 	/**
 	 * Retrieves the "sound player" attached to an object. This object is generally an <code>Entity</code> object.
 	 * @param name the object that is attached to the source player
