@@ -33,7 +33,6 @@ public class Md2ToJme extends FormatConverter{
     }
 
 
-    private Node nodeToReturn;
     /**
      * It creates a node from a .md2 stream and then writes that
      * node to the given OutputStream in jME's binary format
