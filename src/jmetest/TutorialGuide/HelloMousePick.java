@@ -84,7 +84,7 @@ public class HelloMousePick extends SimpleGame {
         if (thisMouse.isButtonDown(0)){
             Vector2f screenPos=new Vector2f();
             // Get the position that the mouse is pointing
-            screenPos.set(thisMouse.getXAbsolute(),thisMouse.getYAbsolute()+am.getImageHeight());
+            screenPos.set(am.getHotSpotPosition().x,am.getHotSpotPosition().y);
             // Get the world location of that X,Y value
             Vector3f worldCoords=display.getWorldCoordinates(screenPos,0);
             // Create a ray starting from the camera, and going in the direction of the mouse's location
