@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.23 2004-06-29 07:13:58 cep21 Exp $
+ * @version $Id: Matrix3f.java,v 1.24 2004-07-14 22:46:23 cep21 Exp $
  */
 public class Matrix3f {
 	public float m00, m01, m02;
@@ -477,7 +477,13 @@ public class Matrix3f {
 		return mult(vec, null);
 	}
 
-	public Vector3f mult(Vector3f vec, Vector3f product) {
+	/**
+     * Multiplies this 3x3 matrix by the 1x3 Vector vec and stores the result in product.
+     * @param vec The Vector3f to multiply.
+     * @param product The Vector3f to store the result.
+     * @return The given product vector.
+     */
+    public Vector3f mult(Vector3f vec, Vector3f product) {
 		if (null == vec) {
 			LoggingSystem.getLogger().log(Level.WARNING,
 					"Source vector is" + " null, null result returned.");
