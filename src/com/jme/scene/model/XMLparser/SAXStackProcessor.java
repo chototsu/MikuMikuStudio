@@ -26,6 +26,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
+import com.jme.util.Vector3fPool;
 
 /**
  * Started Date: May 31, 2004
@@ -38,8 +39,19 @@ import com.jme.util.LoggingSystem;
  */
 class SAXStackProcessor {
 
+    /**
+     * The final node of the loaded scene
+     */
     Node myScene;
+
+    /**
+     * used internally to keep track of the location within the XML file
+     */
     private Stack s=new Stack();
+
+    /**
+     * Hashtable for shared XML elements
+     */
     private Hashtable shares=new Hashtable();
     private Renderer renderer;
     HashMap properties;
@@ -48,6 +60,12 @@ class SAXStackProcessor {
         properties=new HashMap();
     }
 
+    /**
+     * Called each time a new element is reached in the XML file
+     * @param qName Name of element
+     * @param atts It's attributes
+     * @throws SAXException If anything funky goes on
+     */
     void increaseStack(String qName, Attributes atts) throws SAXException{
 
         if (qName.equalsIgnoreCase("Scene")){
@@ -135,17 +153,32 @@ class SAXStackProcessor {
         return;
     }
 
-    private Vector3f getVec(String value) {
+    /**
+     * Turns a string to a Vector3f
+     * @param value The String <i>Example:</i> "1 3 4"
+     * @return The new vector <i>Example:</i>new Vector3f(1,3,4)
+     */
+    private static Vector3f getVec(String value) {
         String[] sp=value.split(" ");
         return new Vector3f(Float.parseFloat(sp[0]),Float.parseFloat(sp[1]),Float.parseFloat(sp[2]));
     }
 
-    private Quaternion getQuat(String value) {
+    /**
+     * Turns a string into a Quaternion
+     * @param value The String <i>Example </i> "1 2 3 4"
+     * @return The new quat <i>Example</i>new Quaternion(1,2,3,4)
+     */
+    private static Quaternion getQuat(String value) {
         String[] sp=value.split(" ");
         return new Quaternion(Float.parseFloat(sp[0]),Float.parseFloat(sp[1]),Float.parseFloat(sp[2]),Float.parseFloat(sp[3]));
     }
 
-
+    /**
+     * Called when an end element is reached in the XML file
+     * @param qName The name of the element
+     * @param data The data between tags
+     * @throws SAXException If anything funky goes on
+     */
     void decreaseStack(String qName,StringBuffer data) throws SAXException {
         Node childNode,parentNode;
         Spatial parentSpatial,childSpatial;
@@ -275,6 +308,12 @@ class SAXStackProcessor {
         }
     }
 
+    /**
+     * Builds a texture with the given XML attributes
+     * @param atts The attributes of the Texture
+     * @return The new texture
+     * @throws SAXException If anything funky goes on
+     */
     private TextureState buildTexture(Attributes atts) throws SAXException {
         TextureState t=renderer.getTextureState();
         try {
@@ -304,6 +343,12 @@ class SAXStackProcessor {
         return t;
     }
 
+    /**
+     * Builds a MaterialState with the given attributes from an XML file
+     * @param atts The attributes
+     * @return A new material state
+     * @throws SAXException If anything funky goes on
+     */
     private MaterialState buildMaterial(Attributes atts) throws SAXException {
         MaterialState m=renderer.getMaterialState();
         m.setAlpha(Float.parseFloat(atts.getValue("alpha")));
@@ -316,6 +361,12 @@ class SAXStackProcessor {
         return m;
     }
 
+    /**
+     * Changes a Spatial's parameters acording to the XML attributes
+     * @param toAdd The spatial to change
+     * @param atts The attributes
+     * @return The given (<code>toAdd</code>) Spatial
+     */
     private Spatial processSpatial(Spatial toAdd, Attributes atts) {
         if (atts.getValue("name")!=null){
             toAdd.setName(atts.getValue("name"));
@@ -344,6 +395,12 @@ class SAXStackProcessor {
     }
 
 
+    /**
+     * Loads a primitive tag given attributes from an XML file
+     * @param atts Attributes
+     * @return The loaded primitive
+     * @throws SAXException If anything funky goes on
+     */
     private Spatial processPrimitive(Attributes atts) throws SAXException {
         String parameters=atts.getValue("params");
         String type=atts.getValue("type");
@@ -369,6 +426,12 @@ class SAXStackProcessor {
     }
 
 
+    /**
+     * Creates a ColorRGBA from a string data
+     * @param data The color in string format <i>Example:</i>".4 .4 .5 1"
+     * @return The new string <i>Example:</i>new ColorRGBA(.4f,.4f,.5f,1)
+     * @throws SAXException If the string is malformated
+     */
     private static ColorRGBA createSingleColor(String data) throws SAXException {
         if (data==null || data.length()==0) return null;
         String[] information=data.toString().trim().split(" ");
@@ -383,7 +446,13 @@ class SAXStackProcessor {
         );
     }
 
-    private static Vector2f[] createVector2f(StringBuffer data) throws SAXException {
+    /**
+     * Turns a string into a Vector2f array
+     * @param data The string <i>Example:</i>"1 3 3 4 "
+     * @return The new Vector2f array
+     * @throws SAXException If the string is malformated
+     */
+    public static Vector2f[] createVector2f(StringBuffer data) throws SAXException {
         if (data.length()==0) return null;
         String [] information=data.toString().trim().split(" ");
         if (information.length==1 && information[0].equals("")) return null;
@@ -398,7 +467,13 @@ class SAXStackProcessor {
         return vecs;
     }
 
-    private static Vector3f[] createVector3f(StringBuffer data) throws SAXException {
+    /**
+     * Turns a String into a Vector3f array
+     * @param data The String data
+     * @return The new Vector3f array
+     * @throws SAXException
+     */
+    public static Vector3f[] createVector3f(StringBuffer data) throws SAXException {
         if (data.length()==0) return null;
         String [] information=data.toString().trim().split(" ");
         if (information.length==1 && information[0].equals("")) return null;
@@ -414,7 +489,12 @@ class SAXStackProcessor {
         return vecs;
     }
 
-    private static int[] createIntArray(StringBuffer data) {
+    /**
+     * Turns a String into an integer array
+     * @param data The string data <i>Example:</i>"1 2 5 1 2"
+     * @return The new integer array
+     */
+    public static int[] createIntArray(StringBuffer data) {
         if (data.length()==0) return null;
         String [] information=data.toString().trim().split("\\p{Space}");
         if (information.length==1 && information[0].equals("")) return null;
@@ -432,7 +512,13 @@ class SAXStackProcessor {
         return indexes;
     }
 
-    private static ColorRGBA[] createColors(StringBuffer data) throws SAXException {
+    /**
+     * Turns a string into a ColorRGBA array
+     * @param data The string data
+     * @return The new ColorRGBA array
+     * @throws SAXException  If the string is malformated
+     */
+    public static ColorRGBA[] createColors(StringBuffer data) throws SAXException {
         if (data.length()==0) return null;
         String [] information=data.toString().trim().split(" ");
         if (information.length==1 && information[0].equals("")) return null;
@@ -449,14 +535,26 @@ class SAXStackProcessor {
         return colors;
     }
 
+    /**
+     * Returns a copy of the loaded node
+     * @return The copy
+     */
     public Node fetchCopy() {
         return myScene; // cloning would go on here.
     }
+
+    /**
+     * Returns the original node
+     * @return The original
+     */
 
     public Node fetchOriginal() {
         return myScene;
     }
 
+    /**
+     * Resets the SAXStackProcessor to load another XML
+     */
     public void reInitialize() {
         myScene=null;
         s.clear();
