@@ -114,44 +114,55 @@ public class XMLWriter {
         currentLine.append("<vertex>");
         writeLine();
         Vector3f[] theVerts=toWrite.getVertices();
+        increaseTabSize();
         if (theVerts!=null)
             writeVec3fArray(theVerts);
         writeLine();
+        decreaseTabSize();
         currentLine.append("</vertex>");
         writeLine();
 
         currentLine.append("<normal>");
         writeLine();
         Vector3f[] theNorms=toWrite.getNormals();
+        increaseTabSize();
         if (theNorms!=null)
             writeVec3fArray(theNorms);
         writeLine();
+        decreaseTabSize();
         currentLine.append("</normal>");
         writeLine();
 
         currentLine.append("<color>");
         writeLine();
         ColorRGBA[] theColors=toWrite.getColors();
+        increaseTabSize();
         if (theColors!=null)
             writeColorRGBAArray(theColors);
         writeLine();
+        decreaseTabSize();
         currentLine.append("</color>");
         writeLine();
 
         currentLine.append("<texturecoords>");
         writeLine();
         Vector2f[] theTexCoords=toWrite.getTextures();
+        increaseTabSize();
         if (theTexCoords!=null)
             writeVec2fArray(theTexCoords);
         writeLine();
+        decreaseTabSize();
         currentLine.append("</texturecoords>");
         writeLine();
 
         currentLine.append("<index>");
+        writeLine();
         int[] indexes=toWrite.getIndices();
+        increaseTabSize();
         if (indexes!=null)
             writeIntArray(indexes);
         writeLine();
+        decreaseTabSize();
         currentLine.append("</index>");
         writeLine();
         decreaseTabSize();
@@ -162,13 +173,20 @@ public class XMLWriter {
     private void writeIntArray(int[] indexes) throws IOException {
         for (int i=0;i<indexes.length;i++){
             currentLine.append(indexes[i]).append(" ");
+            if (i%3==0) writeLine();
         }
     }
 
     private void writeVec2fArray(Vector2f[] theTexCoords) throws IOException {
+        int counter=0;
         for (int i=0;i<theTexCoords.length;i++){
-            if (theTexCoords[i]!=null)
+            if (theTexCoords[i]!=null){
                 writeVector2f(theTexCoords[i]);
+                if (++counter==3){
+                    writeLine();
+                    counter=0;
+                }
+            }
         }
     }
 
@@ -177,9 +195,15 @@ public class XMLWriter {
     }
 
     private void writeColorRGBAArray(ColorRGBA[] theColors) throws IOException {
+        int counter=0;
         for (int i=0;i<theColors.length;i++){
-            if (theColors[i]!=null)
+            if (theColors[i]!=null){
                 appendColorRGBA(theColors[i]);
+                if (++counter==3){
+                    counter=0;
+                    writeLine();
+                }
+            }
         }
 
     }
@@ -189,9 +213,15 @@ public class XMLWriter {
     }
 
     private void writeVec3fArray(Vector3f[] vecs) throws IOException {
+        int counter=0;
         for (int i=0;i<vecs.length;i++){
-            if (vecs[i]!=null)
+            if (vecs[i]!=null){
                 writeVector3f(vecs[i]);
+                if (++counter==3){
+                    counter=0;
+                    writeLine();
+                }
+            }
         }
     }
 
