@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector3f</code> defines a Vector for a three float value tuple.
  * @author Mark Powell
  * @author Joshua Slack -- Added *Local methods to cut down on object creation
- * @version $Id: Vector3f.java,v 1.11 2004-03-13 17:17:54 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.12 2004-03-19 18:15:48 renanse Exp $
  */
 public class Vector3f {
     /**
@@ -88,6 +88,18 @@ public class Vector3f {
         this.x = x;
         this.y = y;
         this.z = z;
+        return this;
+    }
+
+    /**
+     * set the x,y,z values of the vector by copying the supplied vector
+     * @param vect the vector to copy.
+     * @return this vector
+     */
+    public Vector3f set(Vector3f vect) {
+        this.x = vect.x;
+        this.y = vect.y;
+        this.z = vect.z;
         return this;
     }
 
@@ -145,20 +157,15 @@ public class Vector3f {
     /**
      *
      * <code>add</code>
-     * @param vec
-     * @param result
+     * @param vec the vector to add to this
+     * @param result the vector to store the result in
+     * @return result
      */
-    public void add(Vector3f vec, Vector3f result) {
-        if(null == vec) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Provided vector is " +
-            "null, null returned.");
-            return;
-        }
-
-
+    public Vector3f add(Vector3f vec, Vector3f result) {
         result.x = x + vec.x;
         result.y = y + vec.y;
         result.z = z + vec.z;
+        return result;
     }
 
     /**
@@ -220,6 +227,31 @@ public class Vector3f {
      */
     public float lengthSquared() {
         return x * x + y * y + z * z;
+    }
+
+    /**
+     *
+     * <code>scaleAdd</code> multiplies this vector by a scalar then adds the given Vector3f.
+     * @param scalar the value to multiply this vector by.
+     * @param add the value to add
+     */
+    public void scaleAdd(float scalar, Vector3f add) {
+      x = x*scalar + add.x;
+      y = y*scalar + add.y;
+      z = z*scalar + add.z;
+    }
+
+    /**
+     *
+     * <code>scaleAdd</code> multiplies the given vector by a scalar then adds the given vector.
+     * @param scalar the value to multiply this vector by.
+     * @param mult the value to multiply the scalar by
+     * @param add the value to add
+     */
+    public void scaleAdd(float scalar, Vector3f mult, Vector3f add) {
+      this.x = mult.x*scalar + add.x;
+      this.y = mult.y*scalar + add.y;
+      this.z = mult.z*scalar + add.z;
     }
 
     /**
@@ -352,6 +384,20 @@ public class Vector3f {
         y -= vec.y;
         z -= vec.z;
         return this;
+    }
+
+    /**
+     *
+     * <code>subtract</code>
+     * @param vec the vector to subtract from this
+     * @param result the vector to store the result in
+     * @return result
+     */
+    public Vector3f subtract(Vector3f vec, Vector3f result) {
+        result.x = x - vec.x;
+        result.y = y - vec.y;
+        result.z = z - vec.z;
+        return result;
     }
 
     /**
