@@ -31,7 +31,6 @@
  */
 package com.jme.effects;
 
-import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
@@ -39,36 +38,20 @@ import com.jme.scene.Geometry;
 /**
  * <code>Tint</code>
  * @author Ahmed
- * @version $Id: Tint.java,v 1.1 2004-03-02 19:40:32 darkprophet Exp $
+ * @version $Id: Tint.java,v 1.2 2004-03-03 17:09:10 darkprophet Exp $
  */
 public class Tint extends Geometry {
 	
 	private ColorRGBA tintColor;
-	private ColorRGBA textureColor;
-	private boolean useTexture;
-	private Vector2f location, size;
 	
 	public Tint(String name, ColorRGBA c) {
 		super(name);
 		tintColor = c;
-		useTexture = false;
-	}
-	public Tint(String name, ColorRGBA c, ColorRGBA t) {
-		super(name);
-		tintColor = new ColorRGBA(0, 0, 0, 0);
-		tintColor.r = c.r;
-		tintColor.g = c.g;
-		tintColor.b = c.b;
-		tintColor.a = c.a;
-		textureColor = t;
-		useTexture = true;
 	}
 	
 	public Tint(String name) {
 		super(name);
 		tintColor = new ColorRGBA(0, 0, 0, 0);
-		textureColor = new ColorRGBA(0, 0, 0, 0);
-		useTexture = false;
 	}
 	
 	public void draw(Renderer r) {
@@ -79,32 +62,8 @@ public class Tint extends Geometry {
 	public ColorRGBA getTintColor() {
 		return tintColor;
 	}
-	public ColorRGBA getTextureColor() {
-		return textureColor;
-	}
-	public Vector2f getTextureLocation() {
-		return location;
-	}
-	public Vector2f getTextureSize() {
-		return size;
-	}
-	public boolean useTexture() {
-		return useTexture;
-	}
 	
 	public void setTintColor(ColorRGBA c) {
 		tintColor = c;
-	}
-	public void setTextureColor(ColorRGBA t) {
-		textureColor = t;
-		useTexture = true;
-	}
-	public void setTextureLocation(Vector2f loc) {
-		location = loc;
-		useTexture = true;
-	}
-	public void setTextureSize(Vector2f s) {
-		this.size = s;
-		useTexture = true;
 	}
 }
