@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.1 2003-12-04 20:39:49 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.2 2003-12-04 21:39:57 mojomonkey Exp $
  */
 public class TestPick extends AbstractGame {
     private TriMesh t;
@@ -106,7 +106,6 @@ public class TestPick extends AbstractGame {
         rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
-        text.print("Frame Rate: " + timer.getFrameRate());
         
         t.setLocalRotation(rotQuat);
         scene.updateGeometricState(0.0f, true);
@@ -174,7 +173,7 @@ public class TestPick extends AbstractGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Timer");
+        text = new Text("Hits: 0 Shots: 0");
         text.setLocalTranslation(new Vector3f(1,60,0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
@@ -238,7 +237,7 @@ public class TestPick extends AbstractGame {
         
 
         scene.updateGeometricState(0.0f, true);
-        MousePick pick = new MousePick(cam, scene);
+        MousePick pick = new MousePick(cam, scene, text);
                 pick.setMouse(input.getMouse());
                 input.addAction(pick);
 

@@ -43,6 +43,7 @@ import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.Text;
 
 /**
  * <code>MousePick</code>
@@ -55,10 +56,15 @@ public class MousePick implements MouseInputAction {
     private Camera camera;
     private Node scene;
     private float shotTime = 0;
+    private int hits = 0;
+    private int shots = 0;
+    private Text text;
+    private Line l;
 
-    public MousePick(Camera camera, Node scene) {
+    public MousePick(Camera camera, Node scene, Text text) {
         this.camera = camera;
         this.scene = scene;
+        this.text = text;
     }
     /* (non-Javadoc)
      * @see com.jme.input.action.MouseInputAction#performAction(float)
@@ -78,15 +84,18 @@ public class MousePick implements MouseInputAction {
             colors[0] = new ColorRGBA(1,0,0,1);
             colors[1] = new ColorRGBA(1,0,0,1);
             
-            Line l = new Line(vertex, null, colors, null);
+            l = new Line(vertex, null, colors, null);
             
             scene.attachChild(l);
             scene.updateGeometricState(0.0f, true);
             
             Pick.doPick(scene,ray,results);
             
-            System.out.println("Number of objects hit: " + results.getNumber());
+            
+            hits += results.getNumber();
+            shots++;
             results.clear();
+            text.print("Hits: " + hits + " Shots: " + shots);
         }
     }
 

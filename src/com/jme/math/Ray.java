@@ -32,37 +32,69 @@
 package com.jme.math;
 
 /**
- * <code>Ray</code> 
+ * <code>Ray</code> defines a line segment which has an origin and a direction. 
+ * That is, a point and an infinite ray is cast from this point. The ray is 
+ * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.1 2003-12-04 20:39:49 mojomonkey Exp $
+ * @version $Id: Ray.java,v 1.2 2003-12-04 21:39:57 mojomonkey Exp $
  */
 public class Ray {
-    //// Ray is R(t) = P+t*D for t >= 0.  D is not necessarily unit length.
     private Vector3f origin;
     private Vector3f direction;
     
+    /**
+     * Constructor instantiates a new <code>Ray</code> object. As default, the
+     * origin is (0,0,0) and the direction is (0,0,0).
+     *
+     */
     public Ray() {
         origin = new Vector3f();
         direction = new Vector3f();
     }
     
+    /**
+     * Constructor instantiates a new <code>Ray</code> object. The origin and
+     * direction are given.
+     * @param origin the origin of the ray.
+     * @param direction the direction the ray travels in.
+     */
     public Ray(Vector3f origin, Vector3f direction) {
         this.origin = origin;
         this.direction = direction;
     }
 
+    /**
+     * 
+     * <code>getOrigin</code> retrieves the origin point of the ray.
+     * @return the origin of the ray.
+     */
     public Vector3f getOrigin() {
         return origin;
     }
     
+    /**
+     * 
+     * <code>setOrigin</code> sets the origin of the ray.
+     * @param origin the origin of the ray.
+     */
     public void setOrigin(Vector3f origin) {
         this.origin = origin;
     }
     
+    /**
+     * 
+     * <code>getDirection</code> retrieves the direction vector of the ray.
+     * @return the direction of the ray.
+     */
     public Vector3f getDirection() {
         return direction;
     }
     
+    /**
+     * 
+     * <code>setDirection</code> sets the direction vector of the ray.
+     * @param direction the direction of the ray.
+     */
     public void setDirection(Vector3f direction) {
         this.direction = direction;
     }
