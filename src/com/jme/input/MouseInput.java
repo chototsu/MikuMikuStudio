@@ -31,13 +31,26 @@
  */
 package com.jme.input;
 
+import com.jme.widget.input.mouse.WidgetMouseButtonType;
+
 /**
  * <code>MouseInput</code> defines an interface to communicate with the mouse
  * input device. 
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.3 2003-10-26 17:56:36 mojomonkey Exp $
+ * @version $Id: MouseInput.java,v 1.4 2004-01-25 00:56:25 greggpatton Exp $
  */
 public interface MouseInput {
+    
+    public final static int BUTTON_1 = 1;
+    public final static int BUTTON_2 = 2;
+    public final static int BUTTON_3 = 4;
+
+    public final static int BUTTON_1_2 = BUTTON_1 | BUTTON_2;
+    public final static int BUTTON_1_3 = BUTTON_1 | BUTTON_3;
+    public final static int BUTTON_2_3 = BUTTON_2 | BUTTON_3;
+
+    public final static int BUTTON_1_2_3 = BUTTON_1 | BUTTON_2 | BUTTON_3;
+
     
     /**
      * 
@@ -109,4 +122,44 @@ public interface MouseInput {
      */
     public int getYDelta();
 
+    /**
+     * 
+     * <code>getXAbsolute</code> gets the absolute x axis value.
+     * @return the absolute x axis value.
+     */
+    public int getXAbsolute();
+    
+    /**
+     * 
+     * <code>getYAbsolute</code> gets the absolute y axis value.
+     * @return the absolute y axis value.
+     */
+    public int getYAbsolute();
+    
+    /**
+     * <code>updateState</code> updates the mouse state.
+     */
+    public void updateState();
+
+    /**
+     * <code>setCursorVisible</code> sets the visiblity of the hardware cursor.
+     * @param v true turns the cursor on false turns it off
+     */
+    public void setCursorVisible(boolean v);
+    
+    /**
+     * <code>isCursorVisible</code>
+     * @return the visibility of the hardware cursor
+     */
+    public boolean isCursorVisible();
+
+    /**
+     * @return the state of the mouse buttons.
+     */
+    public WidgetMouseButtonType getButtonState();
+
+    /**
+     * @return the previous state of the mouse buttons.
+     */
+    public WidgetMouseButtonType getPreviousButtonState();
 }

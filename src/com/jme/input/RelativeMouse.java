@@ -37,7 +37,7 @@ package com.jme.input;
  * position of a mouse in a rendering window. This type of controller is 
  * typically useful for a first person mouse look or similar.
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.1 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: RelativeMouse.java,v 1.2 2004-01-25 00:56:25 greggpatton Exp $
  */
 public class RelativeMouse extends Mouse {
     /**
@@ -53,7 +53,7 @@ public class RelativeMouse extends Mouse {
      * previous polling.
      */
     public void update() {
-        mouse.poll();
+        mouse.updateState();
         localTranslation.x = mouse.getXDelta();
         localTranslation.y = mouse.getYDelta();
     }
