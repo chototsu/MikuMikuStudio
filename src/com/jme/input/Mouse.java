@@ -49,128 +49,139 @@ import com.jme.scene.state.TextureState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.6 2004-04-22 22:26:30 renanse Exp $
+ * @version $Id: Mouse.java,v 1.7 2004-06-03 01:25:42 guurk Exp $
  */
 public abstract class Mouse extends Geometry {
-    /**
-     * the input device.
-     */
-    protected MouseInput mouse;
-    /**
-     * the cursor's texture.
-     */
-    protected TextureState cursor;
+	/**
+	 * the input device.
+	 */
+	protected MouseInput mouse;
+	/**
+	 * the cursor's texture.
+	 */
+	protected TextureState cursor;
 
-    protected boolean hasCursor = false;
+	protected boolean hasCursor = false;
 
-    protected int imageWidth, imageHeight;
+	protected int imageWidth, imageHeight;
 
-    /**
-     * Constructor creates a new <code>Mouse</code> object.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     */
-    public Mouse(String name) {
-    	super(name);
-        setForceView(true);
-    }
+	protected float _speed = 1.0f;
 
-    /**
-     *
-     * <code>setRenderState</code> sets a render state for this node. Note,
-     * there can only be one render state per type per node. That is, there
-     * can only be a single AlphaState a single TextureState, etc. If there
-     * is already a render state for a type set the old render state will
-     * be rendered. Otherwise, null is returned.
-     * @param rs the render state to add.
-     * @return the old render state.
-     */
-    public RenderState setRenderState(RenderState rs) {
-        if(rs.getType() == RenderState.RS_TEXTURE) {
-            hasCursor = true;
-            imageHeight = ((TextureState)rs).getTexture().getImage().getHeight();
-            imageWidth = ((TextureState)rs).getTexture().getImage().getWidth();
-        }
-        RenderState oldState = renderStateList[rs.getType()];
-        renderStateList[rs.getType()] = rs;
-        return oldState;
-    }
+	/**
+	 * Constructor creates a new <code>Mouse</code> object.
+	 * @param name the name of the scene element. This is required for identification and
+	 * 		comparision purposes.
+	 */
+	public Mouse(String name) {
+		super(name);
+		setForceView(true);
+	}
 
-    /**
-     *
-     * <code>getImageHeight</code> retrieves the height of the cursor image.
-     * @return the height of the cursor image.
-     */
-    public int getImageHeight() {
-        return imageHeight;
-    }
+	/**
+	 *
+	 * <code>setRenderState</code> sets a render state for this node. Note,
+	 * there can only be one render state per type per node. That is, there
+	 * can only be a single AlphaState a single TextureState, etc. If there
+	 * is already a render state for a type set the old render state will
+	 * be rendered. Otherwise, null is returned.
+	 * @param rs the render state to add.
+	 * @return the old render state.
+	 */
+	public RenderState setRenderState(RenderState rs) {
+		if (rs.getType() == RenderState.RS_TEXTURE) {
+			hasCursor = true;
+			imageHeight =
+				((TextureState) rs).getTexture().getImage().getHeight();
+			imageWidth = ((TextureState) rs).getTexture().getImage().getWidth();
+		}
+		RenderState oldState = renderStateList[rs.getType()];
+		renderStateList[rs.getType()] = rs;
+		return oldState;
+	}
 
-    /**
-     *
-     * <code>getImageWidth</code> retrieves the width of the cursor image.
-     * @return the width of the cursor image.
-     */
-    public int getImageWidth() {
-        return imageWidth;
-    }
+	/**
+	 *
+	 * <code>getImageHeight</code> retrieves the height of the cursor image.
+	 * @return the height of the cursor image.
+	 */
+	public int getImageHeight() {
+		return imageHeight;
+	}
 
-    /**
-     *
-     * <code>hasCursor</code> returns true if there is a texture associated
-     * with the mouse.
-     * @return true if there is a texture for the mouse, false otherwise.
-     */
-    public boolean hasCursor() {
-        return hasCursor;
-    }
+	/**
+	 *
+	 * <code>getImageWidth</code> retrieves the width of the cursor image.
+	 * @return the width of the cursor image.
+	 */
+	public int getImageWidth() {
+		return imageWidth;
+	}
 
-    /**
-     *
-     * <code>setMouseInput</code> sets the input device for the mouse.
-     * @param mouse the input device for the mouse.
-     */
-    public void setMouseInput(MouseInput mouse) {
-        this.mouse = mouse;
-    }
+	/**
+	 *
+	 * <code>hasCursor</code> returns true if there is a texture associated
+	 * with the mouse.
+	 * @return true if there is a texture for the mouse, false otherwise.
+	 */
+	public boolean hasCursor() {
+		return hasCursor;
+	}
 
-    /**
-     *
-     * <code>getMouseInput</code> retrieves the input device for the mouse.
-     * @return the input device for the mouse.
-     */
-    public MouseInput getMouseInput() {
-        return mouse;
-    }
+	/**
+	 *
+	 * <code>setMouseInput</code> sets the input device for the mouse.
+	 * @param mouse the input device for the mouse.
+	 */
+	public void setMouseInput(MouseInput mouse) {
+		this.mouse = mouse;
+	}
 
-    /**
-     * <code>draw</code> renders the mouse cursor using the supplied
-     * renderer.
-     * @param r the renderer to use to display the mouse.
-     */
-    public void draw(Renderer r) {
-        super.draw(r);
-        r.draw(this);
-    }
+	/**
+	 *
+	 * <code>getMouseInput</code> retrieves the input device for the mouse.
+	 * @return the input device for the mouse.
+	 */
+	public MouseInput getMouseInput() {
+		return mouse;
+	}
 
-    /**
-     * <code>drawBounds</code> calls super to set the render state then passes itself
-     * to the renderer.
-     * @param r the renderer to display
-     */
-    public void drawBounds(Renderer r) {
-        r.drawBounds(this);
-    }
+	/**
+	 * <code>draw</code> renders the mouse cursor using the supplied
+	 * renderer.
+	 * @param r the renderer to use to display the mouse.
+	 */
+	public void draw(Renderer r) {
+		super.draw(r);
+		r.draw(this);
+	}
 
-    /**
-     *
-     * <code>update</code> updates the mouse input object.
-     *
-     */
-    public abstract void update();
+	/**
+	 * <code>drawBounds</code> calls super to set the render state then passes itself
+	 * to the renderer.
+	 * @param r the renderer to display
+	 */
+	public void drawBounds(Renderer r) {
+		r.drawBounds(this);
+	}
 
-    /**
-     * <code>update</code> updates the mouse input object.
-     * @param updateState indicates if the mouse's state should be updated
-     */
-    public abstract void update(boolean updateState);
+	/**
+	 *
+	 * <code>update</code> updates the mouse input object.
+	 *
+	 */
+	public abstract void update();
+
+	/**
+	 * <code>update</code> updates the mouse input object.
+	 * @param updateState indicates if the mouse's state should be updated
+	 */
+	public abstract void update(boolean updateState);
+
+	/**
+	 * Sets the speed multiplier for updating the cursor position
+	 * @param speed
+	 */
+	public void setSpeed(float speed) {
+		_speed = speed;
+	}
 }
