@@ -46,6 +46,8 @@ import com.jme.util.LoggingSystem;
 import com.jme.system.JmeException;
 import org.lwjgl.opengl.*;
 import org.lwjgl.LWJGLException;
+import com.jme.system.lwjgl.LWJGLDisplaySystem;
+import com.jme.system.DisplaySystem;
 
 /**
  * This class is used by LWJGL to render textures. Users should <b>not </b>
@@ -53,7 +55,7 @@ import org.lwjgl.LWJGLException;
  * you.
  *
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.9 2004-09-15 21:29:40 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.10 2004-11-09 19:58:24 renanse Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean,
  *      boolean, boolean, boolean, int, int)
  */
@@ -77,6 +79,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     private LWJGLRenderer parentRenderer;
 
     private RenderTexture texture;
+
+    private LWJGLDisplaySystem display;
+
+    private boolean headless = false;
 
     public LWJGLTextureRenderer(int width, int height,
             LWJGLRenderer parentRenderer, RenderTexture texture) {
@@ -111,6 +117,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
 
         this.parentRenderer = parentRenderer;
+        this.display = (LWJGLDisplaySystem)DisplaySystem.getDisplaySystem();
         this.texture = texture;
         initPbuffer();
     }
@@ -319,7 +326,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     public void deactivate() {
         if (active == 1) {
             try {
+              if (!headless)
                 Display.makeCurrent();
+              else
+                display.getHeadlessDisplay().makeCurrent();
             } catch (LWJGLException e) {
                 e.printStackTrace(); //To change body of catch statement use
                                      // File | Settings | File Templates.
