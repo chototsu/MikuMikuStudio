@@ -64,7 +64,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.34 2005-02-15 00:50:59 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.35 2005-02-25 03:10:18 renanse Exp $
  */
 final public class TextureManager {
     
@@ -122,6 +122,22 @@ final public class TextureManager {
         }
         return loadTexture(url, minFilter, magFilter, -1, anisoLevel, flipped);
     }
+   
+    public static com.jme.image.Texture loadTexture(String file, int minFilter,
+            int magFilter,
+            int imageType,
+            float anisoLevel,
+            boolean flipped) {
+        URL url = null;
+        try {
+            url = new URL("file:" + file);
+        }
+        catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return loadTexture(url, minFilter, magFilter, imageType, anisoLevel, flipped);
+    }
+
     
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
