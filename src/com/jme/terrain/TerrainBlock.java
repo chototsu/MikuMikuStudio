@@ -49,20 +49,22 @@ public class TerrainBlock extends AreaClodMesh {
     
     private int totalSize;
     private Vector2f offset;
+    private int offsetAmount;
 
     /** Creates a new instance of TerrainBlock */
     public TerrainBlock(String name, int size, float stepScale,
             int[] heightMap, Vector3f origin, boolean clod) {
-        this(name, size, stepScale, heightMap, origin, clod, size, new Vector2f());
+        this(name, size, stepScale, heightMap, origin, clod, size, new Vector2f(), 0);
     }
     
     public TerrainBlock(String name, int size, float stepScale,
-            int[] heightMap, Vector3f origin, boolean clod, int totalSize, Vector2f offset) {
+            int[] heightMap, Vector3f origin, boolean clod, int totalSize, Vector2f offset, int offsetAmount) {
         super(name);
         this.useClod = clod;
         this.size = size;
         this.stepScale = stepScale;
         this.totalSize = totalSize;
+        this.offsetAmount = offsetAmount;
         this.offset = offset;
         
         setLocalTranslation(origin);
@@ -154,8 +156,8 @@ public class TerrainBlock extends AreaClodMesh {
      *  
      */
     private void buildTextureCoordinates() {
-        offset.x += (int)(size/2 * stepScale);
-        offset.y += (int)(size/2 * stepScale);
+        offset.x += (int)(offsetAmount * stepScale);
+        offset.y += (int)(offsetAmount * stepScale);
         
         texture[0] = new Vector2f[vertex.length];
 
