@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * <code>CollisionDetection</code> provides a system for calculating collisions
  * based on given criteria.
  * @author Mark Powell
- * @version $Id: CollisionDetection.java,v 1.6 2004-04-22 22:26:35 renanse Exp $
+ * @version $Id: CollisionDetection.java,v 1.7 2004-07-30 22:24:20 cep21 Exp $
  */
 public class CollisionDetection {
 
@@ -70,7 +70,7 @@ public class CollisionDetection {
             } else {
                 //find the triangle that is being hit.
                 //add this node and the triangle to the CollisionResults list.
-                results.addNode((Geometry) scene);
+                results.addGeometry((Geometry) scene);
             }
         }
     }
