@@ -31,6 +31,7 @@
  */
 package com.jme.animation;
 
+import com.jme.scene.CloneCreator;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Controller;
 import com.jme.scene.model.EmptyTriMesh;
@@ -69,7 +70,7 @@ import java.io.*;
  * 
  * @author Jack Lindamood
  * Parts by kevglass
- * @version $Id: KeyframeController.java,v 1.10 2005-02-27 07:22:39 renanse Exp $
+ * @version $Id: KeyframeController.java,v 1.11 2005-03-27 18:58:08 Mojomonkey Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -634,5 +635,39 @@ public class KeyframeController extends Controller {
     public TriMesh getMorphMesh() {
         return morphMesh;
     }
+    
+    /**
+     * This function should be overridden by any Spatial objects that want their
+     * Controller cloned by a CloneCreator. It stores into "store" the
+     * properties of this Controller.
+     *
+     * @param store
+     *            The Controller to store properties into. If null, null is
+     *            returned.
+     * @param properties
+     *            The CloneCreator controlling how things should be copied into
+     *            the store Controller.
+     * @return The store controller, after a copy.
+     */
+    public Controller putClone(Controller store, CloneCreator properties) {
+       KeyframeController toStore;
+        if (store == null) {
+           toStore = new KeyframeController();
+        } else {
+           toStore = (KeyframeController) store;
+        }
+       
+        super.putClone(toStore,properties);
+       
+        toStore.keyframes = new ArrayList(keyframes);
+        toStore.morphMesh = morphMesh;
+        if (prevKeyframes != null) {
+           toStore.prevKeyframes = new ArrayList(prevKeyframes);
+        }
+       
+        properties.queueKeyframeController(toStore);
+       
+        return toStore;
+    } 
 
 }
