@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.6 2004-05-03 21:54:41 renanse Exp $
+ * @version $Id: KeyBindingManager.java,v 1.7 2004-05-13 18:09:50 mojomonkey Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -78,6 +78,10 @@ public class KeyBindingManager {
      */
     public void setKeyInput(KeyInput keyInput) {
         this.keyInput = keyInput;
+    }
+    
+    public KeyInput getKeyInput() {
+        return keyInput;
     }
 
 	/**
