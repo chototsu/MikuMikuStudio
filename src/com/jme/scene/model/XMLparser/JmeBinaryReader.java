@@ -16,6 +16,7 @@ import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
 import com.jme.animation.SpatialTransformer;
@@ -399,6 +400,8 @@ public class JmeBinaryReader {
             if (childMesh.getModelBound()==null){
                 if ("box".equals(properties.get("bound")))
                     childMesh.setModelBound(new BoundingBox());
+                else if ("obb".equals(properties.get("bound")))
+                    childMesh.setModelBound(new OrientedBoundingBox());
                 else
                     childMesh.setModelBound(new BoundingSphere());
                 childMesh.updateModelBound();
@@ -883,7 +886,7 @@ public class JmeBinaryReader {
      * The only keys currently used are:<br>
      * key -> PropertyDataType<br>
      * "texurl" --> (URL) When loading a texture, will use this directory as the base texture directory <br>
-     * "bound" --> "box","sphere"  "box" uses BoundingBoxes, "sphere" uses boundingspheres.  "sphere" is default
+     * "bound" --> "box","sphere","obb" ; Type of bounding Volume.  "sphere" is default
      *
      * @param key Key to add (For example "texdir")
      * @param property Property for that key to have (For example "c:\\blarg\\")
