@@ -5,8 +5,12 @@ import com.jme.scene.Controller;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.LoggingSystem;
 
 import java.util.ArrayList;
+import java.util.TreeSet;
+import java.util.logging.Level;
+import java.lang.reflect.Array;
 
 /**
  * Started Date: Jun 12, 2004<br><br>
@@ -31,12 +35,14 @@ public class KeyframeController extends Controller{
      * An array of <code>PointInTime</code>s
      */
     ArrayList keyframes;
+    ArrayList prevKeyframes;
 
     /**
      * The mesh that is actually morphed
      */
     TriMesh morphMesh;
     float curTime;
+    float tempTime;
     int curFrame;
     int direction;
 
@@ -59,6 +65,10 @@ public class KeyframeController extends Controller{
      */
     boolean movingForward;
 
+    private boolean isSmooth;
+    private float tempMinTime;
+    private float tempMaxTime;
+
     /**
      * Default constructor.  Speed is 1, MinTime is 0 MaxTime is 0.  Both MinTime and MaxTime are automatically
      * adjusted by setKeyframe if the setKeyframe time is less than MinTime or greater than MaxTime.  Default RepeatType
@@ -72,6 +82,7 @@ public class KeyframeController extends Controller{
         movingForward=true;
         this.setMinTime(0);
         this.setMaxTime(0);
+        isSmooth=false;
     }
 
 
@@ -111,6 +122,73 @@ public class KeyframeController extends Controller{
         keyframes.add(new PointInTime(time,shape));
         if (time > this.getMaxTime()) this.setMaxTime(time);
         if (time < this.getMinTime()) this.setMinTime(time);
+    }
+
+    /**
+     * Does a smooth transform from the current state of the keyframe animation to the new minimum time.
+     * The duration of the transform is transformLength (which is affected by this.getSpeed()).  The new maximum time
+     * sets the new animation boundaries after the new minimum time is reached.  This function does nothing if it is
+     * already running or if the controller isn't active.
+     * @param newMinTime The time to transform towards
+     * @param newMaxTime The new time to reach
+     * @param transformLength The length of the duration (in seconds) between the current state and the new minimum time
+     */
+    public void smoothTransform(float newMinTime,float newMaxTime,float transformLength){
+        if (!isActive()) return;
+        if (isSmooth) return;
+        tempMinTime=newMinTime;
+        tempMaxTime=newMaxTime;
+        EmptyTriMesh before=new EmptyTriMesh();
+        getCurrent(before);
+        curFrame=0;
+        curTime=newMinTime;
+        update(0);
+        EmptyTriMesh after=new EmptyTriMesh();
+        getCurrent(after);
+
+        prevKeyframes=keyframes;
+        keyframes=new ArrayList();
+        this.setMinTime(0);
+        this.setMaxTime(0);
+        movingForward=true;
+        setKeyframe(0,before);
+        setKeyframe(transformLength,after);
+        curTime=0;
+        curFrame=0;
+        isSmooth=true;
+    }
+
+
+    private void getCurrent(TriMesh dataCopy) {
+        if (morphMesh.getColors()!=null){
+            ColorRGBA[] newColors=new ColorRGBA[morphMesh.getColors().length];
+            for (int i=0;i<newColors.length;i++)
+                newColors[i]=new ColorRGBA(morphMesh.getColors()[i]);
+            dataCopy.setColors(newColors);
+        }
+        if (morphMesh.getVertices()!=null){
+            Vector3f[] newVerts=new Vector3f[morphMesh.getVertices().length];
+            for (int i=0;i<newVerts.length;i++)
+                newVerts[i]=new Vector3f(morphMesh.getVertices()[i]);
+            dataCopy.setVertices(newVerts);
+        }
+        if (morphMesh.getNormals()!=null){
+            Vector3f[] newNorms=new Vector3f[morphMesh.getNormals().length];
+            for (int i=0;i<newNorms.length;i++)
+                newNorms[i]=new Vector3f(morphMesh.getNormals()[i]);
+            dataCopy.setNormals(newNorms);
+        }
+        if (morphMesh.getIndices()!=null){
+            int[] newInds=new int[morphMesh.getIndices().length];
+            System.arraycopy(morphMesh.getIndices(),0,newInds,0,newInds.length);
+            dataCopy.setIndices(newInds);
+        }
+        if (morphMesh.getTextures()!=null){
+            Vector2f[] newTex=new Vector2f[morphMesh.getTextures().length];
+            for (int i=0;i<newTex.length;i++)
+                newTex[i]=new Vector2f(morphMesh.getTextures()[i]);
+            dataCopy.setTextures(newTex);
+        }
     }
 
     /**
@@ -176,6 +254,18 @@ public class KeyframeController extends Controller{
      */
     private void findFrame() {
         if (curTime>this.getMaxTime()){
+            if (isSmooth){
+                keyframes=prevKeyframes;
+                prevKeyframes=null;
+                curTime = tempMinTime;
+                this.setMinTime(tempMinTime);
+                this.setMaxTime(tempMaxTime);
+                movingForward=true;
+                curFrame=0;
+                isSmooth=false;
+                findFrame();
+                return;
+            }
             if (this.getRepeatType()==Controller.RT_WRAP){
                 curTime=this.getMinTime();
                 curFrame=0;
