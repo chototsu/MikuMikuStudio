@@ -43,54 +43,70 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.Pbuffer;
-import org.lwjgl.opengl.RenderTexture;
-import org.lwjgl.opengl.Window;
+import com.jme.system.JmeException;
+import org.lwjgl.opengl.*;
+import org.lwjgl.LWJGLException;
 
 /**
- * This class is used by LWJGL to render textures.  Users should <b>not</b> create this
- * class directly.  Instead, allow DisplaySystem to create it for you.
+ * This class is used by LWJGL to render textures. Users should <b>not </b>
+ * create this class directly. Instead, allow DisplaySystem to create it for
+ * you.
+ * 
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.7 2004-09-07 07:13:28 renanse Exp $
- * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int)
+ * @version $Id: LWJGLTextureRenderer.java,v 1.8 2004-09-10 17:47:20 renanse Exp $
+ * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean,
+ *      boolean, boolean, boolean, int, int)
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
     private LWJGLCamera camera;
-    private ColorRGBA backgroundColor = new ColorRGBA(1,1,1,1);
+
+    private ColorRGBA backgroundColor = new ColorRGBA(1, 1, 1, 1);
 
     private int PBUFFER_WIDTH = 256;
+
     private int PBUFFER_HEIGHT = 256;
 
-    /** Pbuffer instance */
+    /* Pbuffer instance */
     private Pbuffer pbuffer;
+
     private int active, caps;
+
     private boolean useDirectRender = false;
 
     private LWJGLRenderer parentRenderer;
+
     private RenderTexture texture;
 
-    public LWJGLTextureRenderer(int width, int height, LWJGLRenderer parentRenderer, RenderTexture texture) {
-      if (width > 0) PBUFFER_WIDTH = width;
-      if (height > 0) PBUFFER_HEIGHT = height;
+    public LWJGLTextureRenderer(int width, int height,
+            LWJGLRenderer parentRenderer, RenderTexture texture) {
+        if (width > 0) PBUFFER_WIDTH = width;
+        if (height > 0) PBUFFER_HEIGHT = height;
         caps = Pbuffer.getPbufferCaps();
-        if (width != height && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
-          width = height = Math.max(width,height);
+        if (width != height
+                && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
+            width = height = Math.max(width, height);
         }
 
         if (((caps & Pbuffer.PBUFFER_SUPPORTED) == 0)) {
-            LoggingSystem.getLogger().log(Level.SEVERE, "No Pbuffer support detected, exiting!");
-            System.exit(1);  // Clean this up?
+            LoggingSystem.getLogger().log(Level.SEVERE,
+                    "No Pbuffer support detected, exiting!");
+            System.exit(1); // Clean this up?
         }
 
         if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
-            LoggingSystem.getLogger().log(Level.INFO, "Render to Texture Pbuffer supported!");
+            LoggingSystem.getLogger().log(Level.INFO,
+                    "Render to Texture Pbuffer supported!");
             if (texture == null)
-                LoggingSystem.getLogger().log(Level.INFO, "No RenderTexture used in init, falling back to Copy Texture PBuffer.");
-            else useDirectRender = true;
+                LoggingSystem
+                        .getLogger()
+                        .log(Level.INFO,
+                                "No RenderTexture used in init, falling back to Copy Texture PBuffer.");
+            else
+                useDirectRender = true;
         } else {
-            LoggingSystem.getLogger().log(Level.INFO, "Copy Texture Pbuffer supported!");
+            LoggingSystem.getLogger().log(Level.INFO,
+                    "Copy Texture Pbuffer supported!");
             texture = null;
         }
 
@@ -101,6 +117,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /**
      * <code>getCamera</code> retrieves the camera this renderer is using.
+     * 
      * @return the camera this renderer is using.
      */
     public Camera getCamera() {
@@ -109,17 +126,19 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /**
      * <code>setCamera</code> sets the camera this renderer should use.
-     * @param camera the camera this renderer should use.
+     * 
+     * @param camera
+     *            the camera this renderer should use.
      */
     public void setCamera(Camera camera) {
 
-        this.camera = (LWJGLCamera)camera;
+        this.camera = (LWJGLCamera) camera;
     }
 
     /**
      * <code>setBackgroundColor</code> sets the OpenGL clear color to the
      * color specified.
-     *
+     * 
      * @see com.jme.renderer.TextureRenderer#setBackgroundColor(com.jme.renderer.ColorRGBA)
      * @param c
      *            the color to set the background color to.
@@ -136,18 +155,15 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
 
         activate();
-        GL11.glClearColor(
-            backgroundColor.r,
-            backgroundColor.g,
-            backgroundColor.b,
-            backgroundColor.a);
+        GL11.glClearColor(backgroundColor.r, backgroundColor.g,
+                backgroundColor.b, backgroundColor.a);
         deactivate();
     }
 
     /**
      * <code>getBackgroundColor</code> retrieves the clear color of the
      * current OpenGL context.
-     *
+     * 
      * @see com.jme.renderer.Renderer#getBackgroundColor()
      * @return the current clear color.
      */
@@ -157,15 +173,13 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /**
      * <code>setupTexture</code> generates a new Texture object for use with
-     * TextureRenderer.  Generates a valid gl texture id for this texture.
+     * TextureRenderer. Generates a valid gl texture id for this texture.
+     * 
      * @return the new Texture
      */
     public Texture setupTexture() {
-        IntBuffer ibuf =
-            ByteBuffer
-                .allocateDirect(4)
-                .order(ByteOrder.nativeOrder())
-                .asIntBuffer();
+        IntBuffer ibuf = ByteBuffer.allocateDirect(4).order(
+                ByteOrder.nativeOrder()).asIntBuffer();
 
         //Create the texture
         GL11.glGenTextures(ibuf);
@@ -177,12 +191,15 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     /**
      * <code>setupTexture</code> generates a new Texture object for use with
      * TextureRenderer.
-     * @param glTextureID a valid gl texture id to use
+     * 
+     * @param glTextureID
+     *            a valid gl texture id to use
      * @return the new Texture
      */
     public Texture setupTexture(int glTextureID) {
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, glTextureID);
-        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
+        GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 0, 0,
+                PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
 
         Texture rVal = new Texture();
         rVal.setTextureId(glTextureID);
@@ -191,18 +208,22 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of
-     * <code>Spatial</code> the renderer hands off management of the
-     * scene to spatial for it to determine when a <code>Geometry</code>
-     * leaf is reached.  All of this is done in the context of the underlying
-     * texture buffer.
-     * @param spat the scene to render.
-     * @param tex the Texture to render it to.
+     * <code>Spatial</code> the renderer hands off management of the scene to
+     * spatial for it to determine when a <code>Geometry</code> leaf is
+     * reached. All of this is done in the context of the underlying texture
+     * buffer.
+     * 
+     * @param spat
+     *            the scene to render.
+     * @param tex
+     *            the Texture to render it to.
      */
     public void render(Spatial spat, Texture tex) {
         spat.setIsRoot(true);
         try {
             if (pbuffer.isBufferLost()) {
-                LoggingSystem.getLogger().log(Level.WARNING, "PBuffer contents lost - will recreate the buffer");
+                LoggingSystem.getLogger().log(Level.WARNING,
+                        "PBuffer contents lost - will recreate the buffer");
                 deactivate();
                 pbuffer.destroy();
                 initPbuffer();
@@ -221,32 +242,41 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 parentRenderer.clearBuffers();
                 spat.onDraw(parentRenderer);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
-                GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
+                GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0,
+                        PBUFFER_WIDTH, PBUFFER_HEIGHT);
                 deactivate();
             }
             tex.setNeedsFilterRefresh(true);
 
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(), "render(Spatial, Texture)", e);
+            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+                    "render(Spatial, Texture)", e);
         }
         spat.setIsRoot(false);
     }
 
-
     private void initPbuffer() {
 
         try {
-            pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0, 0, texture);
+            pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT,
+                    new PixelFormat(32, 0, 8, 0, 0), texture);
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(this.getClass().toString(), "initPbuffer()", e);
+            LoggingSystem.getLogger().throwing(this.getClass().toString(),
+                    "initPbuffer()", e);
             if (texture != null && useDirectRender) {
-                LoggingSystem.getLogger().log(Level.WARNING, "LWJGL reports this card supports Render to Texture, but fails to enact it.  Please report this to the LWJGL team.");
-                LoggingSystem.getLogger().log(Level.WARNING, "Attempting to fall back to Copy Texture.");
+                LoggingSystem
+                        .getLogger()
+                        .log(
+                                Level.WARNING,
+                                "LWJGL reports this card supports Render to Texture, but fails to enact it.  Please report this to the LWJGL team.");
+                LoggingSystem.getLogger().log(Level.WARNING,
+                        "Attempting to fall back to Copy Texture.");
                 texture = null;
                 useDirectRender = false;
                 initPbuffer();
                 return;
-            } else return;
+            } else
+                return;
         }
         try {
             activate();
@@ -254,7 +284,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             PBUFFER_WIDTH = pbuffer.getWidth();
             PBUFFER_HEIGHT = pbuffer.getHeight();
 
-            GL11.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+            GL11.glClearColor(backgroundColor.r, backgroundColor.g,
+                    backgroundColor.b, backgroundColor.a);
 
             if (camera == null) initCamera();
             camera.update();
@@ -267,14 +298,26 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     public void activate() {
         if (active == 0) {
-            pbuffer.makeCurrent();
+            try {
+                pbuffer.makeCurrent();
+            } catch (LWJGLException e) {
+                e.printStackTrace(); //To change body of catch statement use
+                                     // File | Settings | File Templates.
+                throw new JmeException();
+            }
         }
         active++;
     }
 
     public void deactivate() {
         if (active == 1) {
-            Window.makeCurrent();
+            try {
+                Display.makeCurrent();
+            } catch (LWJGLException e) {
+                e.printStackTrace(); //To change body of catch statement use
+                                     // File | Settings | File Templates.
+                throw new JmeException();
+            }
         }
         active--;
     }
@@ -290,14 +333,14 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     public void updateCamera() {
-      activate();
-      camera.update();
-      deactivate();
+        activate();
+        camera.update();
+        deactivate();
     }
 
     public void cleanup() {
-      activate();
-      pbuffer.destroy();
-      deactivate();
+        activate();
+        pbuffer.destroy();
+        deactivate();
     }
 }

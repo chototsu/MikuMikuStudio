@@ -35,36 +35,40 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.Window;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 
 /**
  * <code>Font2D</code> maintains display lists for each ASCII character
- * defined by an image. <code>Font2D</code> assumes that the texture is 256x256
- * and that the characters are 16 pixels high by 16 pixels wide. The order of
- * the characters is also important:<br>
- *
- * <img src ="fonttable.gif"><br>
- *
+ * defined by an image. <code>Font2D</code> assumes that the texture is
+ * 256x256 and that the characters are 16 pixels high by 16 pixels wide. The
+ * order of the characters is also important: <br>
+ * 
+ * <img src ="fonttable.gif"> <br>
+ * 
  * After the font is loaded, it can be used with a call to <code>print</code>.
- * The <code>Font2D</code> class is also printed in Ortho mode and billboarded,
- * as well as depth buffering turned off. This means that the font will be
- * placed at a two dimensional coordinate that corresponds to screen coordinates.
- *
+ * The <code>Font2D</code> class is also printed in Ortho mode and
+ * billboarded, as well as depth buffering turned off. This means that the font
+ * will be placed at a two dimensional coordinate that corresponds to screen
+ * coordinates.
+ * 
  * The users is assumed to set a TextureState to the Text Geometry calling this
  * class.
- *
+ * 
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.10 2004-08-25 02:05:13 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.11 2004-09-10 17:47:20 renanse Exp $
  */
 public class LWJGLFont {
+
     /**
      * Sets the style of the font to normal.
      */
     public static final int NORMAL = 0;
+
     /**
      * Sets the style of the font to italics.
      */
@@ -75,49 +79,56 @@ public class LWJGLFont {
 
     //buffer that holds the text.
     private ByteBuffer scratch;
-//    private char[] charbuf;
 
     //Color to render the font.
     private ColorRGBA fontColor;
 
-  /**
+    private DisplayMode mode = Display.getDisplayMode();
+
+    /**
      * Constructor instantiates a new <code>LWJGLFont</code> object. The
      * initial color is set to white.
-     *
+     *  
      */
     public LWJGLFont() {
-        fontColor = new ColorRGBA(1,1,1,1);
-        scratch = BufferUtils.createByteBuffer(1);//ByteBuffer.allocateDirect(1).order(ByteOrder.nativeOrder());
-//        charbuf = new char[1];
+        fontColor = new ColorRGBA(1, 1, 1, 1);
+        scratch = BufferUtils.createByteBuffer(1);
         buildDisplayList();
     }
 
     /**
-     * <code>deleteFont</code> deletes the current display list of font objects.
-     * The font will be useless until a call to <code>buildDisplayLists</code>
-     * is made.
+     * <code>deleteFont</code> deletes the current display list of font
+     * objects. The font will be useless until a call to
+     * <code>buildDisplayLists</code> is made.
      */
     public void deleteFont() {
         GL11.glDeleteLists(base, 256);
     }
+
     /**
-     * <code>setColor</code> sets the RGBA values to render the font as.
-     * By default the color is white with no transparency.
-     *
-     * @param color the color to set.
+     * <code>setColor</code> sets the RGBA values to render the font as. By
+     * default the color is white with no transparency.
+     * 
+     * @param color
+     *            the color to set.
      */
     public void setColor(ColorRGBA color) {
         fontColor.set(color);
     }
+
     /**
-     * <code>print</code> renders the specified string to a given (x,y) location.
-     * The x, y location is in terms of screen coordinates. There are currently
-     * two sets of fonts supported: NORMAL and ITALICS.
-     *
-     * @param x the x screen location to start the string render.
-     * @param y the y screen location to start the string render.
-     * @param text the String to render.
-     * @param set the mode of font: NORMAL or ITALICS.
+     * <code>print</code> renders the specified string to a given (x,y)
+     * location. The x, y location is in terms of screen coordinates. There are
+     * currently two sets of fonts supported: NORMAL and ITALICS.
+     * 
+     * @param x
+     *            the x screen location to start the string render.
+     * @param y
+     *            the y screen location to start the string render.
+     * @param text
+     *            the String to render.
+     * @param set
+     *            the mode of font: NORMAL or ITALICS.
      */
     public void print(int x, int y, Vector3f scale, StringBuffer text, int set) {
         if (set > 1) {
@@ -129,7 +140,7 @@ public class LWJGLFont {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
-        GL11.glOrtho(0, Window.getWidth(), 0, Window.getHeight(), -1, 1);
+        GL11.glOrtho(0, mode.getWidth(), 0, mode.getHeight(), -1, 1);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -138,17 +149,15 @@ public class LWJGLFont {
         GL11.glListBase(base - 32 + (128 * set));
 
         //Put the string into a "pointer"
-        if(text.length() > scratch.capacity()) {
-	        scratch = BufferUtils.createByteBuffer(text.length()); //ByteBuffer.allocateDirect(text.length()).order(ByteOrder.nativeOrder());
-//                charbuf = new char[text.length()];
+        if (text.length() > scratch.capacity()) {
+            scratch = BufferUtils.createByteBuffer(text.length()); //ByteBuffer.allocateDirect(text.length()).order(ByteOrder.nativeOrder());
         } else {
             scratch.clear();
         }
-//        text.getChars(0, charbuf.length, charbuf, 0);
-
-        int charLen=text.length();
+       
+        int charLen = text.length();
         for (int z = 0; z < charLen; z++)
-          scratch.put((byte)text.charAt(z));
+            scratch.put((byte) text.charAt(z));
         scratch.flip();
         GL11.glColor4f(fontColor.r, fontColor.g, fontColor.b, fontColor.a);
         //call the list for each letter in the string.
@@ -192,11 +201,12 @@ public class LWJGLFont {
     }
 
     /**
-     * <code>toString</code> returns the string representation of this
-     * font object in the Format:<br><br>
-     * jme.geometry.hud.text.Font2D@1c282a1<br>
-     * Color: {RGBA COLOR}<br>
-     *
+     * <code>toString</code> returns the string representation of this font
+     * object in the Format: <br>
+     * <br>
+     * jme.geometry.hud.text.Font2D@1c282a1 <br>
+     * Color: {RGBA COLOR} <br>
+     * 
      * @return the string representation of this object.
      */
     public String toString() {

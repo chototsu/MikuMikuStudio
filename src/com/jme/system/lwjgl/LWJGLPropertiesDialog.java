@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding 
  * All rights reserved. 
  * 
@@ -58,8 +58,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
-import org.lwjgl.Display;
-import org.lwjgl.DisplayMode;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -75,7 +75,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.1 2004-08-30 04:36:11 mojomonkey Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.2 2004-09-10 17:47:19 renanse Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
@@ -378,7 +378,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
     private static String[] getResolutions(DisplayMode[] modes) {
         ArrayList resolutions = new ArrayList(16);
         for (int i = 0; i < modes.length; i++) {
-            String res = modes[i].width + " x " + modes[i].height;
+            String res = modes[i].getWidth() + " x " + modes[i].getHeight();
             if (!resolutions.contains(res))
                 resolutions.add(res);
         }
@@ -396,10 +396,10 @@ public final class LWJGLPropertiesDialog extends JDialog {
         for (int i = 0; i < modes.length; i++) {
             //Filter out all bit depths lower than 16 - Java incorrectly reports
             //them as valid depths though the monitor does not support them
-            if (modes[i].bpp < 16) continue;
+            if (modes[i].getBitsPerPixel() < 16) continue;
             
-            String res = modes[i].width + " x " + modes[i].height;
-            String depth = String.valueOf(modes[i].bpp) + " bpp";
+            String res = modes[i].getWidth() + " x " + modes[i].getHeight();
+            String depth = String.valueOf(modes[i].getBitsPerPixel()) + " bpp";
             if (res.equals(resolution) && !depths.contains(depth))
                 depths.add(depth);
         }
@@ -415,8 +415,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
     private static String[] getFrequencies(String resolution, DisplayMode[] modes) {
         ArrayList freqs = new ArrayList(4);
         for (int i = 0; i < modes.length; i++) {
-            String res = modes[i].width + " x " + modes[i].height;
-            String freq = String.valueOf(modes[i].freq) + " Hz";
+            String res = modes[i].getWidth() + " x " + modes[i].getHeight();
+            String freq = String.valueOf(modes[i].getFrequency()) + " Hz";
             if (res.equals(resolution) && !freqs.contains(freq))
                 freqs.add(freq);
         }
@@ -439,17 +439,17 @@ public final class LWJGLPropertiesDialog extends JDialog {
             DisplayMode b = (DisplayMode)o2;
             
             //Width
-            if (a.width != b.width)
-                return (a.width > b.width) ?  1 : -1;
+            if (a.getWidth() != b.getWidth())
+                return (a.getWidth() > b.getWidth()) ?  1 : -1;
             //Height
-            if (a.height != b.height)
-                return (a.height > b.height) ?  1 : -1;
+            if (a.getHeight() != b.getHeight())
+                return (a.getHeight() > b.getHeight()) ?  1 : -1;
             //Bit depth
-            if (a.bpp != b.bpp)
-                return (a.bpp > b.bpp) ?  1 : -1;
+            if (a.getBitsPerPixel()!= b.getBitsPerPixel())
+                return (a.getBitsPerPixel() > b.getBitsPerPixel()) ?  1 : -1;
             //Refresh rate
-            if (a.bpp != b.bpp)
-                return (a.bpp > b.bpp) ?  1 : -1;
+            if (a.getFrequency()!= b.getFrequency())
+                return (a.getFrequency()> b.getFrequency()) ?  1 : -1;
             //All fields are equal
             return 0;
         }

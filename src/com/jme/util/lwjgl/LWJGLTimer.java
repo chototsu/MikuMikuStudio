@@ -42,22 +42,27 @@ import com.jme.util.Timer;
 /**
  * <code>Timer</code> handles the system's time related functionality. This
  * allows the calculation of the framerate. To keep the framerate calculation
- * accurate, a call to update each frame is required. <code>Timer</code> is
- * a singleton object and must be created via the <code>getTimer</code>
- * method.
- *
+ * accurate, a call to update each frame is required. <code>Timer</code> is a
+ * singleton object and must be created via the <code>getTimer</code> method.
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.6 2004-08-02 22:09:17 cep21 Exp $
+ * @version $Id: LWJGLTimer.java,v 1.7 2004-09-10 17:47:20 renanse Exp $
  */
 public class LWJGLTimer extends Timer {
+
     private long frameDiff;
-//    private static LWJGLTimer instance = null;
+
     //frame rate parameters.
     private long oldTime = 0;
+
     private long newTime = 0;
+
     private final static int TIMER_SMOOTHNESS = 16;
+
     private float[] fps = new float[TIMER_SMOOTHNESS];
+
     private int smoothIndex = TIMER_SMOOTHNESS - 1;
+
     private final static long timerRez = Sys.getTimerResolution();
 
     /**
@@ -66,67 +71,59 @@ public class LWJGLTimer extends Timer {
      */
     public LWJGLTimer() {
         //reset time
-        Sys.setTime(0);
+        oldTime = Sys.getTime();
 
-        // set fps...  Using 60 to begin with...
-        for (int i = TIMER_SMOOTHNESS; --i>=0; ) fps[i]=60f;
+        // set fps... Using 60 to begin with...
+        for (int i = TIMER_SMOOTHNESS; --i >= 0;)
+            fps[i] = 60f;
 
         //set priority of this process
         Sys.setProcessPriority(Sys.LOW_PRIORITY);
 
         //print timer resolution info
-        LoggingSystem.getLogger().log(
-            Level.INFO,
-            "Timer resolution: "
-                + timerRez
-                + " ticks per second");
+        LoggingSystem.getLogger().log(Level.INFO,
+                "Timer resolution: " + timerRez + " ticks per second");
     }
 
     /**
      * @see com.jme.util.Timer#getTime()
      */
-    public long getTime(){
+    public long getTime() {
         return Sys.getTime();
     }
 
     /**
      * @see com.jme.util.Timer#getResolution()
      */
-    public long getResolution(){
+    public long getResolution() {
         return timerRez;
     }
 
     /**
-     * <code>getFrameRate</code> returns the current frame rate since the
-     * last call to <code>update</code>.
+     * <code>getFrameRate</code> returns the current frame rate since the last
+     * call to <code>update</code>.
+     * 
      * @return the current frame rate.
      */
     public float getFrameRate() {
         float rVal = 0f;
-        for (int i = TIMER_SMOOTHNESS; --i>=0; ) rVal+=fps[i];
-        return rVal/((float)TIMER_SMOOTHNESS);
+        for (int i = TIMER_SMOOTHNESS; --i >= 0;)
+            rVal += fps[i];
+        return rVal / ((float) TIMER_SMOOTHNESS);
     }
 
     public float getTimePerFrame() {
-        return 1f/getFrameRate();
+        return 1f / getFrameRate();
     }
 
     /**
      * <code>setProcessPriority</code> sets the priority of this application.
-     *
-     * @param priority the application's priority level.
+     * 
+     * @param priority
+     *            the application's priority level.
      */
     public void setProcessPriority(int priority) {
         Sys.setProcessPriority(priority);
-    }
-
-    /**
-     * <code>setTime</code> sets the time of the timer.
-     *
-     * @param time the new time of the timer.
-     */
-    public void setTime(long time) {
-        Sys.setTime(time);
     }
 
     /**
@@ -136,8 +133,8 @@ public class LWJGLTimer extends Timer {
     public void update() {
         newTime = Sys.getTime();
         frameDiff = newTime - oldTime;
-        if(frameDiff == 0) {
-        	frameDiff = 1;
+        if (frameDiff == 0) {
+            frameDiff = 1;
         }
         fps[smoothIndex] = timerRez / frameDiff;
         oldTime = newTime;
@@ -147,11 +144,12 @@ public class LWJGLTimer extends Timer {
 
     /**
      * <code>toString</code> returns the string representation of this timer
-     * in the format:<br><br>
-     * jme.utility.Timer@1db699b<br>
-     * Time: {LONG}<br>
-     * FPS: {LONG}<br>
-     *
+     * in the format: <br>
+     * <br>
+     * jme.utility.Timer@1db699b <br>
+     * Time: {LONG} <br>
+     * FPS: {LONG} <br>
+     * 
      * @return the string representation of this object.
      */
     public String toString() {

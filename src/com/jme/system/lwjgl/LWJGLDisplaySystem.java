@@ -40,16 +40,13 @@ import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
 
-import java.awt.Toolkit;
-
 import org.lwjgl.BufferUtils;
-import org.lwjgl.Display;
-import org.lwjgl.DisplayMode;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.RenderTexture;
-import org.lwjgl.opengl.Window;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.glu.GLU;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -81,8 +78,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     private int frq;
 
-    private String title = "";
-
     private boolean fs;
 
     private boolean created;
@@ -112,7 +107,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @see com.jme.system.DisplaySystem#setVSyncEnabled(boolean)
      */
     public void setVSyncEnabled(boolean enabled) {
-        Window.setVSyncEnabled(enabled);
+        Display.setVSyncEnabled(enabled);
     }
 
     /**
@@ -122,7 +117,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      *            the title.
      */
     public void setTitle(String title) {
-        Window.setTitle(title);
+        Display.setTitle(title);
     }
 
     /**
@@ -183,7 +178,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @return true if a close request is active.
      */
     public boolean isClosing() {
-        return Window.isCloseRequested();
+        return Display.isCloseRequested();
     }
 
     /**
@@ -192,11 +187,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @see com.jme.system.DisplaySystem#reset()
      */
     public void reset() {
-        Display.resetDisplayMode();
     }
 
     public void close() {
-    	Window.destroy();
+        Display.destroy();
     }
 
     /*
@@ -244,11 +238,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>getScreenCoordinates</code> translate world to screen coordinates.
+     * Written by Marius, rewritten for LWJGL .9 by Joshua Slack.
      *
      * @param worldPosition the world position to translate.
      * @return the screen position.
-     * @author Marius
-     * @author Joshua Slack -- rewritten for lwjgl .9
      */
     public Vector3f getScreenCoordinates(Vector3f worldPosition) {
       return getScreenCoordinates(worldPosition, null);
@@ -256,11 +249,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>getScreenCoordinates</code> translate world to screen coordinates.
+     * Written by Marius, rewritten for LWJGL .9 by Joshua Slack.
      *
      * @param worldPosition the world position to translate.
      * @return the screen position.
-     * @author Marius
-     * @author Joshua Slack -- rewritten for lwjgl .9
      */
     public Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store) {
         if (store == null) store = new Vector3f();
@@ -300,12 +292,11 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>getWorldCoordinates</code> translate screen to world coordinates.
+     * Written by Marius, rewritten for lwjgl .9 by Joshua Slack.
      *
      * @param screenPosition the screen coordinates to translate.
      * @param zPos between 0 and 1.
      * @return world position pointed to by screen coordinate.
-     * @author Marius
-     * @author Joshua Slack -- rewritten for lwjgl .9
      */
     public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos) {
       return getWorldCoordinates(screenPosition, zPos, null);
@@ -314,12 +305,11 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
       /**
        * <code>getWorldCoordinates</code> translate screen to world coordinates.
+       * Written by Marius, rewritten for lwjgl .9 by Jashua Slack.
        *
        * @param screenPosition the screen coordinates to translate.
        * @param zPos between 0 and 1.
        * @return world position pointed to by screen coordinate.
-       * @author Marius
-       * @author Joshua Slack -- rewritten for lwjgl .9
        */
       public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos, Vector3f store) {
         if (store == null) store = new Vector3f();
@@ -379,8 +369,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         //Make sure that we find the mode that uses our current monitor freq.
 
         for (int i = 0; i < modes.length; i++) {
-            if (modes[i].width == width && modes[i].height == height
-                    && modes[i].bpp == bpp && modes[i].freq == freq) {
+            if (modes[i].getWidth() == width && modes[i].getHeight() == height
+                    && modes[i].getBitsPerPixel() == bpp && modes[i].getFrequency()== freq) {
 
             return modes[i]; }
         }
@@ -400,18 +390,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         if (null == mode) { throw new JmeException("Bad display mode"); }
 
         try {
-            if (fs) {
-                Display.setDisplayMode(mode);
-                Window.create(title, bpp, alphaBits, depthBits, stencilBits,
-                        samples);
-            } else {
-                int x, y;
-                x = (Toolkit.getDefaultToolkit().getScreenSize().width - width) >> 1;
-                y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) >> 1;
-                Window.create(title, x, y, width, height, bpp, alphaBits,
-                        depthBits, stencilBits, samples);
-            }
-
+            Display.setFullscreen(fs);
+            Display.setDisplayMode(mode);
+            Display.create();
             // kludge added here...  LWJGL does not properly clear their
             // keyboard and mouse buffers when you call the destroy method,
             // so if you run two jme programs in the same jvm back to back
