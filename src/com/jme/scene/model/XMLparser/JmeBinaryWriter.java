@@ -13,6 +13,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.animation.VertexKeyframeController;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
+import com.jme.animation.SpatialTransformer;
 import com.jme.light.Light;
 import com.jme.light.SpotLight;
 import com.jme.light.PointLight;
@@ -86,24 +87,45 @@ public class JmeBinaryWriter {
         if (sharedObjects.size()==0)
             return;
 
-        IdentityHashMap temp=sharedObjects;
-        sharedObjects=new IdentityHashMap();
+//        IdentityHashMap temp=sharedObjects;
+//        sharedObjects=new IdentityHashMap();
 
         writeTag("sharedtypes",null);
-        List l=new ArrayList(temp.keySet());
+        List l=new ArrayList(sharedObjects.keySet());
         HashMap atts=new HashMap();
-        for (int i=0;i<l.size();i++){
+
+        for (int i=0;i<l.size();i++){   // write renderstates first
             atts.clear();
-            String name=(String) temp.get(l.get(i));
+            Object thisType=l.get(i);
+            String name=(String) sharedObjects.get(thisType);
             atts.put("ident",name);
-            if (l.get(i) instanceof RenderState){
+
+            if (thisType instanceof RenderState){
                 writeTag("sharedrenderstate",atts);
-                writeRenderState((RenderState) l.get(i));
+                sharedObjects.remove(thisType);
+                writeRenderState((RenderState) thisType);
+                sharedObjects.put(thisType,name);
                 writeEndTag("sharedrenderstate");
             }
         }
+
+        for (int i=0;i<l.size();i++){   // write spatials second
+            atts.clear();
+            Object thisType=l.get(i);
+            String name=(String) sharedObjects.get(thisType);
+            atts.put("ident",name);
+
+            if (thisType instanceof TriMesh){
+                writeTag("sharedtrimesh",atts);
+                sharedObjects.remove(thisType);
+                writeMesh((TriMesh) thisType);
+                sharedObjects.put(thisType,name);
+                writeEndTag("sharedtrimesh");
+            }
+        }
+
         writeEndTag("sharedtypes");
-        sharedObjects=temp;
+//        sharedObjects=temp;
     }
 
     /**
@@ -117,9 +139,11 @@ public class JmeBinaryWriter {
         if (entireScene.containsKey(n)){
             sharedObjects.put(n,entireScene.get(n));
             return;
+        } else{
+            entireScene.put(n,n.getName());
         }
-        entireScene.put(n,n.getName());
-        evaluateSpatialChildren(n);
+
+        evaluateSpatialChildrenDuplicates(n);
         if (n instanceof Node){
             Node newN=(Node)n;
             for (int i=0;i<newN.getQuantity();i++)
@@ -132,11 +156,16 @@ public class JmeBinaryWriter {
      * place them in then sharedObjects
      * @param s The spatial to examine.
      */
-    private void evaluateSpatialChildren(Spatial s) {
+    private void evaluateSpatialChildrenDuplicates(Spatial s) {
         if (s==null) return;
         for (int i=0;i<s.getControllers().size();i++){
             Controller evaluCont=s.getController(i);
             if (evaluCont==null) continue;
+            if (evaluCont instanceof SpatialTransformer){
+                for (int j=0;j<((SpatialTransformer)evaluCont).toChange.length;j++){
+                    findDuplicateObjects(((SpatialTransformer)evaluCont).toChange[j]);
+                }
+            }
             if (entireScene.containsKey(evaluCont))
                 sharedObjects.put(evaluCont,entireScene.get(evaluCont));
             else
@@ -151,6 +180,11 @@ public class JmeBinaryWriter {
             else
                 entireScene.put(evaluRend,"RenderState"+(s.hashCode()*evaluRend.hashCode()));
         }
+    }
+
+    private void findDuplicateObjects(Object n) {
+        if (n instanceof Spatial)
+            findDuplicates((Spatial)n);
     }
 
     /**
@@ -201,6 +235,10 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeSpatial(Spatial s) throws IOException {
+        if (sharedObjects.containsKey(s)){
+            writePublicObject(s);
+            return;
+        }
         if (s instanceof XMLloadable)
             writeXMLloadable((XMLloadable)s);
         else if (s instanceof LoaderNode)
@@ -234,6 +272,12 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeMesh(TriMesh triMesh) throws IOException {
+        if (triMesh==null) return;
+        if (sharedObjects.containsKey(triMesh)){
+            writePublicObject(triMesh);
+            return;
+        }
+
         HashMap atts=new HashMap();
         atts.clear();
         putSpatialAtts(triMesh,atts);
@@ -324,12 +368,93 @@ public class JmeBinaryWriter {
             Controller r=(Controller) conts.get(i);
             if (r instanceof JointController){
                 writeJointController((JointController)r);
-            } else if (r instanceof VertexKeyframeController){
-
+            } else if (r instanceof SpatialTransformer){
+                writeSpatialTransformer((SpatialTransformer)r);
             } else if (r instanceof KeyframeController){
                 writeKeyframeController((KeyframeController)r);
             }
         }
+    }
+
+    private void writeSpatialTransformer(SpatialTransformer st) throws IOException {
+        HashMap atts=new HashMap();
+        atts.clear();
+        atts.put("numobjects",new Integer(st.getNumObjects()));
+        writeTag("spatialtransformer",atts);
+        for (int i=0;i<st.toChange.length;i++){
+            atts.clear();
+            atts.put("obnum",new Integer(i));
+            atts.put("parnum",new Integer(st.parentIndexes[i]));
+            writeTag("stobj",atts);
+            writeObject(st.toChange[i]);
+            writeEndTag("stobj");
+        }
+
+        ArrayList keyframes=st.keyframes;
+        for (int i=0;i<keyframes.size();i++){
+            writeSpatialTransformerPointInTime((SpatialTransformer.PointInTime)keyframes.get(i));
+        }
+        writeEndTag("spatialtransformer");
+    }
+
+    private void writeObject(Object o) throws IOException {
+        if (o instanceof TriMesh){
+            writeMesh((TriMesh) o);
+        }
+    }
+
+    private void writeSpatialTransformerPointInTime(SpatialTransformer.PointInTime pointInTime) throws IOException {
+        HashMap atts=new HashMap();
+        atts.clear();
+        atts.put("time",new Float(pointInTime.time));
+        writeTag("spatialpointtime",atts);
+        BitSet thisSet;
+
+        thisSet=pointInTime.usedScale;
+        int [] setScales=new int[thisSet.cardinality()];
+        Vector3f[] scaleValues=new Vector3f[thisSet.cardinality()];
+        for (int i=thisSet.nextSetBit(0),j=0;i>=0;i=thisSet.nextSetBit(i+1),j++){
+            setScales[j]=i;
+            scaleValues[j]=new Vector3f();
+            pointInTime.look[i].getScale(scaleValues[j]);
+        }
+        atts.clear();
+        atts.put("index",setScales);
+        atts.put("scalevalues",scaleValues);
+        writeTag("sptscale",atts);
+        writeEndTag("sptscale");
+
+        thisSet=pointInTime.usedRot;
+        int [] setRots=new int[thisSet.cardinality()];
+        Quaternion[] rotValues=new Quaternion[thisSet.cardinality()];
+        for (int i=thisSet.nextSetBit(0),j=0;i>=0;i=thisSet.nextSetBit(i+1),j++){
+            setRots[j]=i;
+            rotValues[j]=new Quaternion();
+            pointInTime.look[i].getRotation(rotValues[j]);
+        }
+        atts.clear();
+        atts.put("index",setRots);
+        atts.put("rotvalues",rotValues);
+        writeTag("sptrot",atts);
+        writeEndTag("sptrot");
+
+        thisSet=pointInTime.usedTrans;
+        int [] setTrans=new int[thisSet.cardinality()];
+        Vector3f[] transValues=new Vector3f[thisSet.cardinality()];
+        for (int i=thisSet.nextSetBit(0),j=0;i>=0;i=thisSet.nextSetBit(i+1),j++){
+            setTrans[j]=i;
+            transValues[j]=new Vector3f();
+            pointInTime.look[i].getTranslation(transValues[j]);
+        }
+        atts.clear();
+        atts.put("index",setTrans);
+        atts.put("transvalues",transValues);
+        writeTag("spttrans",atts);
+        writeEndTag("spttrans");
+
+
+        writeEndTag("spatialpointtime");
+
     }
 
     /**
@@ -621,9 +746,22 @@ public class JmeBinaryWriter {
                 writeInt((Integer) attrib);
             else if (attrib instanceof Boolean)
                 writeBoolean((Boolean)attrib);
+            else if (attrib instanceof Quaternion[])
+                writeQuatArray((Quaternion[])attrib);
             else
                 throw new IOException("unknown class type for " + attrib + " of " + attrib.getClass());
             i.remove();
+        }
+    }
+
+    private void writeQuatArray(Quaternion[] array) throws IOException {
+        myOut.writeByte(BinaryFormatConstants.DATA_QUATARRAY);
+        myOut.writeInt(array.length);
+        for (int i=0;i<array.length;i++){
+            myOut.writeFloat(array[i].x);
+            myOut.writeFloat(array[i].y);
+            myOut.writeFloat(array[i].z);
+            myOut.writeFloat(array[i].w);
         }
     }
 
