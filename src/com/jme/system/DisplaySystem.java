@@ -49,7 +49,7 @@ import com.jme.math.Vector2f;
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.23 2004-04-22 22:27:05 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.24 2004-04-25 21:04:44 mojomonkey Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -72,7 +72,7 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.23 2004-04-22 22:27:05 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.24 2004-04-25 21:04:44 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;
@@ -301,6 +301,7 @@ public abstract class DisplaySystem {
         Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM] = r.getVertexProgramState();
         Spatial.defaultStateList[RenderState.RS_WIREFRAME] = r.getWireframeState();
         Spatial.defaultStateList[RenderState.RS_ZBUFFER] = r.getZBufferState();
+        Spatial.defaultStateList[RenderState.RS_STENCIL] = r.getStencilState();
 
     }
 
