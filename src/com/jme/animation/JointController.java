@@ -5,10 +5,9 @@ import com.jme.scene.model.JointMesh;
 import com.jme.math.TransformMatrix;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.system.JmeException;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.BitSet;
+import java.util.*;
 
 /**
  * Started Date: Jun 9, 2004 <br>
@@ -96,6 +95,8 @@ public class JointController extends Controller {
 
 	/** If true, the model's bounding volume will update every frame. */
 	private boolean updatePerFrame = true;
+
+    private int startIndex;
 
 	/**
 	 * Constructs a new JointController that will hold the given number of
@@ -251,26 +252,51 @@ public class JointController extends Controller {
 
 		PointInTime now = (PointInTime) movementInfo.get(curTimePoint);
 		PointInTime then = null;
-		if (now.time < curTime) {
+        if (curTime>=getMaxTime()){
+            curTimePoint = startIndex;
+            curTime = getMinTime();
+            now = (PointInTime) movementInfo.get(startIndex);
+            then = (PointInTime) movementInfo.get(startIndex-1);
+        } else if (now.time < curTime) {
 			curTimePoint++;
-			if (curTimePoint == movementInfo.size()) {
-				curTimePoint = 1;
-				curTime = 0;
-				now = (PointInTime) movementInfo.get(1);
-				then = (PointInTime) movementInfo.get(0);
-			} else {
-				then = now;
-				now = (PointInTime) movementInfo.get(curTimePoint);
-			}
+            then = now;
+            now = (PointInTime) movementInfo.get(curTimePoint);
 		} else
 			then = (PointInTime) movementInfo.get(curTimePoint - 1);
+
 		float delta = (curTime - then.time) / (now.time - then.time);
 		createJointTransforms(delta);
 		combineWithInverse();
 		updateData();
 	}
 
-	/**
+    /**
+     * Sets the frames the joint controller will animate from and to.  The frames are dependant upon the FPS.  Remember
+     * that the first frame starts at 1, <b>NOT</b> 0.
+     * @param start The starting frame number.
+     * @param end The ending frame number.
+     */
+    public void setTimes(int start,int end){
+        if (start<0 || start>end){
+            throw new JmeException("Malformed times: start="+start+" end="+end);
+        }
+        startIndex=findIndex(start);
+        setMinTime(start/FPS);
+        setMaxTime(end/FPS);
+        curTime=getMinTime();
+    }
+
+    private int findIndex(float findTime) {
+        for (int i=0;i<movementInfo.size();i++){
+            PointInTime temp=(PointInTime) movementInfo.get(i);
+            float frameNum=temp.time*FPS;
+            if (frameNum==findTime) return i;
+            if (frameNum>findTime) return i-1;
+        }
+        return -1;
+    }
+
+    /**
 	 * Used with update(float). <code>updateData</code> moves every normal and
 	 * vertex acording to its jointIndex
 	 */
@@ -320,6 +346,9 @@ public class JointController extends Controller {
 										// was added
 			movementInfo.add(new PointInTime(1));
 		}
+        setMinTime(((PointInTime)movementInfo.get(0)).time);
+        setMaxTime(((PointInTime)movementInfo.get(movementInfo.size()-1)).time);
+        startIndex = 1;
 		invertWithParents();
 		fillHoles();
 	}
