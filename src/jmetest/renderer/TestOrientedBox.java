@@ -29,6 +29,9 @@ public class TestOrientedBox extends SimpleGame{
     Node AABBnode=new Node("AABBNode");
     Node OBBnode=new Node("OBBNode");
 
+    Quaternion smallrotation;
+    Quaternion tempQ=new Quaternion();
+
     protected void simpleInitGame() {
         {
             Cylinder c=new Cylinder("cylinder",20,20,1,10);
@@ -56,14 +59,13 @@ public class TestOrientedBox extends SimpleGame{
         OBBnode.setLocalRotation(new Quaternion(upright));
         AABBnode.setLocalRotation(new Quaternion(upright));
     }
-    Quaternion smallrotation;
     protected void simpleUpdate(){
-        Quaternion q=new Quaternion();
-        q.slerp(smallrotation,tpf);
+        tempQ.set(0,0,0,1);
+        tempQ.slerp(smallrotation,tpf);
         AABBnode.getLocalRotation().multLocal(
-                q);
+                tempQ);
         OBBnode.getLocalRotation().multLocal(
-                q);
+                tempQ);
 
 
         AABBnode.updateGeometricState(tpf,true);
