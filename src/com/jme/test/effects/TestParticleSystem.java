@@ -42,7 +42,6 @@ import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.state.AlphaState;
@@ -163,16 +162,13 @@ public class TestParticleSystem extends SimpleGame {
 		ps.setStartColor(
 			new ColorRGBA(1f, 1f, 0f, 1f));
 		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0f));
-		ps.setStartSize(new Vector3f(10f, 10f, 10f));
-		ps.setEndSize(new Vector3f(1f, 1f, 1f));
+		ps.setStartSize(10);
+		ps.setEndSize(1);
 		ps.setGravity(new Vector3f(0, 0, 40));
 		ps.setSpeed(1f);
 		ps.setFriction(1f);
 		ps.setFade(0.03f);
-		ps.setPlane(true, new Vector3f(0, 100, 0));
-		ps.setPosition(new Vector3f(-50, 0, 0));
-		ps.setModelBound(new BoundingSphere());
-		ps.updateModelBound();
+		ps.setStartPosition(new Vector3f(-50, 0, 0));
 
 		pc = new ParticleController(ps);
 		pc.setRepeatType(Controller.RT_WRAP);
