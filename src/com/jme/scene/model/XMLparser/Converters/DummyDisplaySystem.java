@@ -129,6 +129,15 @@ public class DummyDisplaySystem extends DisplaySystem{
                 };
             }
             public VertexProgramState getVertexProgramState() {return createVertexProgramState();}
+            
+            public FragmentProgramState createFragmentProgramState() {
+                return new FragmentProgramState(){
+                    public boolean isSupported() {return false;}
+                    public void load(URL file) {}
+                    public void apply() {}
+                };
+            }
+            public FragmentProgramState getFragmentProgramState() {return createFragmentProgramState();}
 
             public StencilState createStencilState() {
                 return new StencilState(){

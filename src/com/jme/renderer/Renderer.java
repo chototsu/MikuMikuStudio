@@ -47,6 +47,7 @@ import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
+import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
@@ -76,7 +77,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.38 2004-08-14 00:49:56 cep21 Exp $
+ * @version $Id: Renderer.java,v 1.39 2004-08-20 23:21:21 ericthered Exp $
  */
 public interface Renderer {
 
@@ -290,7 +291,20 @@ public interface Renderer {
      * @deprecated Use createVertexProgramState.
      * @see #createVertexProgramState()
      */
-    public VertexProgramState getVertexProgramState();
+    public VertexProgramState getVertexProgramState();    
+    
+    /**
+     * @deprecated Use createFragmentProgramState.
+     * @see #createFragmentProgramState()
+     */
+    public FragmentProgramState getFragmentProgramState();
+    
+    /**
+     * Retrieves the fragment program state object for the proper renderer.
+     * @return The <code>VertexProgramState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public FragmentProgramState createFragmentProgramState();
 
     /**
      * Retrieves the stencil state object for the proper renderer.

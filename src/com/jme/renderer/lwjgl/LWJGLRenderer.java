@@ -95,6 +95,7 @@ import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
+import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
@@ -108,6 +109,7 @@ import com.jme.scene.state.lwjgl.LWJGLAttributeState;
 import com.jme.scene.state.lwjgl.LWJGLCullState;
 import com.jme.scene.state.lwjgl.LWJGLDitherState;
 import com.jme.scene.state.lwjgl.LWJGLFogState;
+import com.jme.scene.state.lwjgl.LWJGLFragmentProgramState;
 import com.jme.scene.state.lwjgl.LWJGLLightState;
 import com.jme.scene.state.lwjgl.LWJGLMaterialState;
 import com.jme.scene.state.lwjgl.LWJGLShadeState;
@@ -127,7 +129,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.35 2004-08-14 00:49:56 cep21 Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.36 2004-08-20 23:21:20 ericthered Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -390,10 +392,24 @@ public class LWJGLRenderer implements Renderer {
    * <code>createVertexProgramState</code> returns a new
    * LWJGLVertexProgramState object as a regular VertexProgramState.
    *
-   * @return a VertexProgramState object.
+   * @return a LWJGLVertexProgramState object.
    */
   public VertexProgramState createVertexProgramState() {
     return new LWJGLVertexProgramState();
+  }
+  
+  public FragmentProgramState getFragmentProgramState() {
+      return createFragmentProgramState();
+  }
+  
+  /**
+   * <code>createFragmentProgramState</code> returns a new
+   * LWJGLFragmentProgramState object as a regular FragmentProgramState.
+   *
+   * @return a LWJGLFragmentProgramState object.
+   */
+  public FragmentProgramState createFragmentProgramState() {
+      return new LWJGLFragmentProgramState();
   }
 
     public VertexProgramState getVertexProgramState() {

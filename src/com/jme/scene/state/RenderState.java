@@ -44,9 +44,9 @@ import com.jme.scene.Spatial;
  * and it is OK to assign to more than one Spatial the same render state.
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.15 2004-08-02 00:05:16 cep21 Exp $
+ * @version $Id: RenderState.java,v 1.16 2004-08-20 23:21:19 ericthered Exp $
  */
-public abstract class RenderState implements Serializable{
+public abstract class RenderState implements Serializable {
 
   /** The value returned by getType() for AlphaState. */
   public final static int RS_ALPHA = 0;
@@ -70,12 +70,15 @@ public abstract class RenderState implements Serializable{
   public final static int RS_CULL = 9;
   /** The value returned by getType() for VertexProgramState. */
   public final static int RS_VERTEX_PROGRAM = 10;
+  /** The value returned by getType() for FragmentProgramState. */
+  public final static int RS_FRAGMENT_PROGRAM = 11;
   /** The value returned by getType() for AttributeState. */
-  public final static int RS_ATTRIBUTE = 11;
+  public final static int RS_ATTRIBUTE = 12;
   /** The value returned by getType() for StencilState. */
-  public final static int RS_STENCIL = 12;
+  public final static int RS_STENCIL = 13;
   /** The total number of diffrent types of RenderState. */
-  public final static int RS_MAX_STATE = 13;
+  public final static int RS_MAX_STATE = 14;
+  
 
   /** Max number of Controller for each RenderState. */
   public final static int MAX_CONTROLLERS = 10;
