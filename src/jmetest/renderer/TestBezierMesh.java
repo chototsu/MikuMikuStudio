@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.7 2004-02-27 00:18:09 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.8 2004-02-27 19:21:04 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -155,10 +155,10 @@ public class TestBezierMesh extends SimpleGame {
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(4.0f, 0.0f, 0.0f);
-        Vector3f left = new Vector3f(0.0f, -1.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 0.0f, 1.0f);
-        Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
+        Vector3f loc = new Vector3f(0.0f, 0.0f, 5.0f);
+        Vector3f left = new Vector3f(1.0f, 0.0f, 0.0f);
+        Vector3f up = new Vector3f(0.0f, -1.0f, 0.0f);
+        Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
