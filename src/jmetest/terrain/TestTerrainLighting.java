@@ -50,22 +50,25 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.6 2004-04-12 16:31:19 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.1 2004-04-12 16:31:18 mojomonkey Exp $
  */
-public class TestTerrain extends SimpleGame {
+public class TestTerrainLighting extends SimpleGame {
     private Camera cam;
     private CameraNode camNode;
     private Node root;
     private InputHandler input;
     private Timer timer;
     private Text fps;
+    private Vector3f currentPos;
+    private Vector3f newPos;
+    private LightNode lightNode;
     /**
      * Entry point for the test,
      * @param args
      */
     public static void main(String[] args) {
         LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
-        TestTerrain app = new TestTerrain();
+        TestTerrainLighting app = new TestTerrainLighting();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
@@ -79,7 +82,20 @@ public class TestTerrain extends SimpleGame {
         timer.update();
         input.update(timer.getTimePerFrame());
         
+//      update individual sprites
+        if ((int) currentPos.x == (int) newPos.x
+            && (int) currentPos.z == (int) newPos.z) {
+            newPos.x = (float) Math.random() * 128 * 5;
+            newPos.z = (float) Math.random() * 128 * 5;
+        }
 
+        currentPos.x -= (currentPos.x - newPos.x)
+            / (timer.getFrameRate() / 2);
+        currentPos.y = 255;
+        currentPos.z -= (currentPos.z - newPos.z)
+            / (timer.getFrameRate() / 2);
+            
+        lightNode.setLocalTranslation(currentPos);
 
         root.updateGeometricState(timer.getTimePerFrame(), true);
         fps.print(
@@ -107,6 +123,8 @@ public class TestTerrain extends SimpleGame {
      * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
+        currentPos = new Vector3f();
+        newPos = new Vector3f();
         try {
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
             display.createWindow(
@@ -162,11 +180,11 @@ public class TestTerrain extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         as1.setEnabled(true);
         
-        DirectionalLight dr = new DirectionalLight();
+        PointLight dr = new PointLight();
         dr.setEnabled(true);
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
+        dr.setLocation(new Vector3f(0.5f, -0.5f, 0));
         
         
 
@@ -177,10 +195,21 @@ public class TestTerrain extends SimpleGame {
         LightState lightstate = display.getRenderer().getLightState();
         lightstate.setTwoSidedLighting(true);
         lightstate.setEnabled(true);
-        lightstate.attach(dr);
+        //lightstate.attach(dr);
+        
+        lightNode = new LightNode("light", lightstate );
+        
+        lightNode.setLight(dr);
+        Vector3f min2 = new Vector3f(-0.5f, -0.5f, -0.5f);
+        Vector3f max2 = new Vector3f(0.5f,0.5f,0.5f);
+        Box lightBox = new Box("box", min2,max2);
+        lightBox.setForceView(true);
+        lightNode.attachChild(lightBox);
         
         
         Node scene = new Node("scene");
+        lightNode.setTarget(scene);
+        scene.attachChild(lightNode);
         scene.setRenderState(ws);
         scene.setRenderState(lightstate);
         root = new Node("Root node");
@@ -192,7 +221,7 @@ public class TestTerrain extends SimpleGame {
         scene.setRenderState(cs);
         
         TextureState ts = display.getRenderer().getTextureState();
-        ts.setEnabled(true);
+        ts.setEnabled(false);
         Texture t1 = TextureManager.loadTexture(
         		TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png"),
 				Texture.MM_LINEAR,
