@@ -70,7 +70,7 @@ public class TestDynamicSmoker extends SimpleGame {
   }
 
   public void simpleUpdate() {
-    manager.setEmissionDirection(smokeNode.getLocalRotation().multLocal(new Vector3f(0,0,1)));
+    manager.setEmissionDirection(smokeNode.getLocalRotation().mult(new Vector3f(0,0,1)));
   }
 
   /**
