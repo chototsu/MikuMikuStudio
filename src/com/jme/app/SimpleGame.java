@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.18 2004-05-10 22:01:04 mojomonkey Exp $
+ * @version $Id: SimpleGame.java,v 1.19 2004-05-10 23:09:37 mojomonkey Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -159,7 +159,7 @@ public abstract class SimpleGame extends BaseGame {
     display.getRenderer().setBackgroundColor(ColorRGBA.black);
 
     // setup our camera
-    cam.setFrustumPerspective(45.0f,display.getWidth()/display.getHeight(), 1,1000);
+    cam.setFrustumPerspective(45.0f,(float)display.getWidth()/(float)display.getHeight(), 1,1000);
     Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
     Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f);
     Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
