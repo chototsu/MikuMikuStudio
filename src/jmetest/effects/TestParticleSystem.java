@@ -61,6 +61,7 @@ public class TestParticleSystem extends SimpleGame {
 	private ParticleController pc;
 
 	private Node root;
+    private Node main;
 
 	private Camera cam;
 
@@ -113,7 +114,7 @@ public class TestParticleSystem extends SimpleGame {
 
 	protected void render(float interpolation) {
 		display.getRenderer().clearBuffers();
-		display.getRenderer().draw(root);
+		display.getRenderer().draw(main);
 	}
 
 	protected void initSystem() {
@@ -163,6 +164,9 @@ public class TestParticleSystem extends SimpleGame {
 
 	protected void initGame() {
 		root = new Node("Scene graph root");
+        main = new Node("Main node");
+        main.setForceView(true);
+        
 		AlphaState as1 = display.getRenderer().getAlphaState();
 		as1.setBlendEnabled(true);
 		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -192,7 +196,7 @@ public class TestParticleSystem extends SimpleGame {
         worldToParticle.setRenderState(ts);
         worldToParticle.setRenderState(as1);
 
-		ps = new ParticleSystem("Particle System", worldToParticle,100);
+		ps = new ParticleSystem("Particle System", worldToParticle,300);
 		ps.setStartColor(
 			new ColorRGBA(1f, 0f, 0f, 1f));
 		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0f));
@@ -201,7 +205,7 @@ public class TestParticleSystem extends SimpleGame {
 		ps.setGravity(new Vector3f(0, 0, 0));
 		ps.setSpeed(1f);
 		ps.setFriction(1f);
-		ps.setFade(0.05f);
+		ps.setFade(0.01f);
 		ps.setStartPosition(new Vector3f(-50, 0, 0));
         
         
@@ -209,16 +213,16 @@ public class TestParticleSystem extends SimpleGame {
 		pc = new ParticleController(ps);
 		pc.setRepeatType(Controller.RT_WRAP);
 		ps.addController(pc);
-		//ps.setRenderState(as1);
-		//ps.setRenderState(ts);
 		
 		fps = new Text("FPS label","");
 		fps.setRenderState(as1);
 		fps.setRenderState(font);
+        fps.setForceView(true);
 		
 		root.attachChild(ps);
-		root.attachChild(fps);
+		main.attachChild(fps);
         root.attachChild(worldToParticle);
+        main.attachChild(root);
 		root.updateGeometricState(0.0f, true);
 
 	}
