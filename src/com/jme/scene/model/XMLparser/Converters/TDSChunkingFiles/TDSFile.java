@@ -33,6 +33,7 @@ public class TDSFile extends ChunkerClass{
     ArrayList spatialNodes;
     ArrayList spatialNodesNames;
     private SpatialTransformer st;
+    private ArrayList spatialLights;
 
     public TDSFile(DataInput myIn) throws IOException {
         super(myIn);
@@ -77,25 +78,29 @@ public class TDSFile extends ChunkerClass{
             if (spatialNodes.get(i) instanceof Spatial){
                 Spatial toAttach=(Spatial)spatialNodes.get(i);
                 uberNode.attachChild(toAttach);
-            } else if (spatialNodes.get(i) instanceof Light){
-                if (ls==null){
+            }
+        }
+        for (int i=0;i<spatialLights.size();i++){
+            if (ls==null){
                     ls=DisplaySystem.getDisplaySystem().getRenderer().getLightState();
                     ls.setEnabled(true);
-                }
-                ls.attach((Light) spatialNodes.get(i));
             }
+            ls.attach((Light) spatialLights.get(i));
         }
         if (ls!=null)
             uberNode.setRenderState(ls);
-        if (st.keyframes.size()==1)
-            st.setTimeFrame(0);
-        else
-            uberNode.addController(st);
-        st.setActive(true);
+        if (keyframes!=null){
+            if (st.keyframes.size()==1)
+                st.setTimeFrame(0);
+            else
+                uberNode.addController(st);
+            st.setActive(true);
+        }
         return uberNode;
     }
 
     private void putTranslations() {
+        if (keyframes==null) return;
         int spatialCount=0;
         for (int i=0;i<spatialNodes.size();i++)
             if (spatialNodes.get(i) instanceof Spatial) spatialCount++;
@@ -149,24 +154,29 @@ public class TDSFile extends ChunkerClass{
 
     private void buildObject() throws IOException {
         spatialNodes=new ArrayList();   // An ArrayList of Nodes
+        spatialLights=new ArrayList();
         spatialNodesNames=new ArrayList();   // Their names
         Iterator i=objects.namedObjects.keySet().iterator();
+        int b=3;
         while (i.hasNext()){
             String objectKey=(String) i.next();
             NamedObjectChunk noc=(NamedObjectChunk) objects.namedObjects.get(objectKey);
-            spatialNodesNames.add(noc.name);
             if (noc.whatIAm instanceof TriMeshChunk){
+                spatialNodesNames.add(noc.name);
                 Node parentNode=new Node(objectKey);
-                putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm,((KeyframeInfoChunk)keyframes.objKeyframes.get(objectKey)).pivot);
+                if (keyframes ==null || keyframes.objKeyframes==null || keyframes.objKeyframes.get(objectKey)==null)
+                    putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm,new Vector3f(0,0,0));
+                else
+                    putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm,((KeyframeInfoChunk)keyframes.objKeyframes.get(objectKey)).pivot);
+
+
                 if (parentNode.getQuantity()==1){
                     spatialNodes.add(parentNode.getChild(0));
                     ((Spatial)parentNode.getChild(0)).setName(parentNode.getName());
                 } else
                     spatialNodes.add(parentNode);
             } else if (noc.whatIAm instanceof LightChunk){
-                spatialNodes.add(createChildLight((LightChunk)noc.whatIAm));
-            } else{
-                spatialNodes.add(null);
+                spatialLights.add(createChildLight((LightChunk)noc.whatIAm));
             }
         }
     }
@@ -201,12 +211,16 @@ public class TDSFile extends ChunkerClass{
 
     private void putChildMeshes(Node parentNode, TriMeshChunk whatIAm,Vector3f pivotLoc) throws IOException {
         FacesChunk myFace=whatIAm.face;
+        if (myFace==null) return;
+        System.out.println(parentNode.getName());
         boolean[] faceHasMaterial=new boolean[myFace.nFaces];
         int noMaterialCount=myFace.nFaces;
         ArrayList normals=new ArrayList(myFace.nFaces);
         ArrayList vertexes=new ArrayList(myFace.nFaces);
         Vector3f tempNormal=new Vector3f();
         ArrayList texCoords=new ArrayList(myFace.nFaces);
+        if (whatIAm.coordSystem==null)
+            whatIAm.coordSystem=new TransformMatrix();
         whatIAm.coordSystem.inverse();
         for (int i=0;i<whatIAm.vertexes.length;i++){
             whatIAm.coordSystem.multPoint(whatIAm.vertexes[i]);
