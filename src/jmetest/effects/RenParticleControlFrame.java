@@ -131,7 +131,7 @@ public class RenParticleControlFrame extends JFrame {
    * <code>RenParticleControlFrame</code>
    *
    * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.15 2004-03-25 17:36:45 renanse Exp $
+   * @version $Id: RenParticleControlFrame.java,v 1.16 2004-03-25 17:54:52 renanse Exp $
    *
    */
 
@@ -711,6 +711,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setParticlesSpeed(2.96f);
       manager.setParticlesMinimumLifeTime(800f);
       manager.setGravityForce(new Vector3f(0f, 0f, 0f));
+      manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
     } else if ("FOUNTAIN".equalsIgnoreCase(examType)) {
       manager.setStartColor(new ColorRGBA(0f, .0625f, 1f, 1));
       manager.setEndColor(new ColorRGBA(0f, .0625f, 1f, 0));
@@ -721,6 +722,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setParticlesSpeed(7.5f);
       manager.setParticlesMinimumLifeTime(2000f);
       manager.setGravityForce(new Vector3f(0f, -4e-3f, 0f));
+      manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
     } else if ("LAVA".equalsIgnoreCase(examType)) {
       manager.setStartColor(new ColorRGBA(1f, .18f, 0.125f, 1));
       manager.setEndColor(new ColorRGBA(1f, .18f, 0.125f, 0));
@@ -731,6 +733,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setParticlesSpeed(3.0f);
       manager.setParticlesMinimumLifeTime(2400f);
       manager.setGravityForce(new Vector3f(0f, -4e-3f, 0f));
+      manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
     } else if ("SMOKE".equalsIgnoreCase(examType)) {
       manager.setStartColor(new ColorRGBA(.375f, .375f, .375f, 1));
       manager.setEndColor(new ColorRGBA(.375f, .375f, .375f, 0));
@@ -741,8 +744,42 @@ public class RenParticleControlFrame extends JFrame {
       manager.setParticlesSpeed(.9f);
       manager.setParticlesMinimumLifeTime(4000f);
       manager.setGravityForce(new Vector3f(0f, 0f, 0f));
+      manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
+    } else if ("RAIN".equalsIgnoreCase(examType)) {
+      manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+      manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
+      manager.setEmissionMaximumAngle(3.1415927f);
+      manager.setParticlesSpeed(3.5f);
+      manager.setParticlesMinimumLifeTime(3496.0f);
+      manager.setStartSize(9.1f);
+      manager.setEndSize(13.6f);
+      manager.setStartColor(new ColorRGBA(0.16078432f, 0.16078432f, 1.0f, 1.0f));
+      manager.setEndColor(new ColorRGBA(0.16078432f, 0.16078432f, 1.0f, 0.15686275f));
+      manager.setRandomMod(0.0f);
+    } else if ("SNOW".equalsIgnoreCase(examType)) {
+      manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+      manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
+      manager.setEmissionMaximumAngle(3.1415927f);
+      manager.setParticlesSpeed(0.6f);
+      manager.setParticlesMinimumLifeTime(8211.0f);
+      manager.setStartSize(20.0f);
+      manager.setEndSize(40.0f);
+      manager.setStartColor(new ColorRGBA(0.3764706f, 0.3764706f, 0.3764706f, 1.0f));
+      manager.setEndColor(new ColorRGBA(0.3764706f, 0.3764706f, 0.3764706f, 0.15686275f));
+      manager.setRandomMod(1.0f);
+    } else if ("JET".equalsIgnoreCase(examType)) {
+      manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
+      manager.setEmissionDirection(new Vector3f(-0.1f, 0.0f, 0.0f));
+      manager.setEmissionMaximumAngle(0.08726646f);
+      manager.setParticlesSpeed(10.0f);
+      manager.setParticlesMinimumLifeTime(100.0f);
+      manager.setStartSize(6.6f);
+      manager.setEndSize(30.0f);
+      manager.setStartColor(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+      manager.setEndColor(new ColorRGBA(0.6f, 0.2f, 0.0f, 0.0f));
+      manager.setRandomMod(10.0f);
     }
-    manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
+
     manager.warmup();
     updateFromManager();
   }
@@ -755,8 +792,9 @@ public class RenParticleControlFrame extends JFrame {
     exampleModel.addElement("Fountain");
     exampleModel.addElement("Lava");
     exampleModel.addElement("Smoke");
-//    exampleModel.addElement("Rain");
-//    exampleModel.addElement("Snow");
+    exampleModel.addElement("Jet");
+    exampleModel.addElement("Snow");
+    exampleModel.addElement("Rain");
   }
 
   /**
