@@ -53,7 +53,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleSystem.java,v 1.2 2004-03-19 23:48:55 renanse Exp $
+ * @version $Id: TestRenParticleSystem.java,v 1.3 2004-03-20 00:03:17 renanse Exp $
  */
 public class TestRenParticleSystem extends SimpleGame {
 
@@ -177,7 +177,7 @@ public class TestRenParticleSystem extends SimpleGame {
     ts.setTexture(
         TextureManager.loadTexture(
         TestRenParticleSystem.class.getClassLoader().getResource(
-        "jmetest/data/texture/star2.png"),
+        "jmetest/data/texture/flaresmall.jpg"),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR,
         true));

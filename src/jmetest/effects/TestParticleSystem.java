@@ -187,7 +187,7 @@ public class TestParticleSystem
     ts.setTexture(
         TextureManager.loadTexture(
         TestParticleSystem.class.getClassLoader().getResource(
-        "jmetest/data/texture/star2.png"),
+        "jmetest/data/texture/flaresmall.jpg"),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR,
         true));
