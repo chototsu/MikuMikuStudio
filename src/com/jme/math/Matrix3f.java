@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.3 2003-10-30 20:41:24 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.4 2003-11-24 15:07:44 mojomonkey Exp $
  */
 public class Matrix3f {
     private float[][] matrix;
@@ -108,6 +108,44 @@ public class Matrix3f {
             throw new JmeException("Invalid indices into matrix.");
         }
         matrix[i][j] = value;
+    }
+    
+    /**
+     * 
+     * <code>set</code> sets the values of the matrix to those supplied by
+     * the 3x3 two dimenion array. 
+     * @param matrix the new values of the matrix.
+     */
+    public void set(float[][] matrix) {
+        if(matrix.length != 3 || matrix[0].length != 3) {
+            return;
+        }
+        
+        this.matrix = matrix;
+    }
+    
+    /**
+     * 
+     * <code>set</code> defines the values of the matrix based on a supplied
+     * <code>Quaternion</code>. It should be noted that all previous values
+     * will be overridden.
+     * @param quat the quaternion to create a rotational matrix from.
+     */
+    public void set(Quaternion quat) {
+        float[] matrix = new float[16];
+        matrix[0] = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
+        matrix[1] = 2.0f * (quat.x * quat.y - quat.w * quat.z);
+        matrix[2] = 2.0f * (quat.x * quat.z + quat.w * quat.y);
+        
+        // Second row
+        matrix[3] = 2.0f * (quat.x * quat.y + quat.w * quat.z);
+        matrix[4] = 1.0f - 2.0f * (quat.x * quat.x + quat.z * quat.z);
+        matrix[5] = 2.0f * (quat.y * quat.z - quat.w * quat.x);
+        
+        // Third row
+        matrix[6] = 2.0f * (quat.x * quat.z - quat.w * quat.y);
+        matrix[7] = 2.0f * (quat.y * quat.z + quat.w * quat.x);
+        matrix[8] = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
     }
 
     /**
