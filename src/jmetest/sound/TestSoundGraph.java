@@ -166,6 +166,7 @@ public class TestSoundGraph extends SimpleGame {
 
 		scene.updateGeometricState(0.0f, true);
 		snode.updateGeometricState(0.0f, true);
+                scene.updateRenderState();
 
 	}
 

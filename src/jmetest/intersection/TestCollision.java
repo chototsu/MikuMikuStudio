@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.10 2004-04-02 16:28:10 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.11 2004-04-16 19:32:11 renanse Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -275,7 +275,8 @@ public class TestCollision extends SimpleGame {
 
         root.attachChild(text);
 
-        scene.updateGeometricState(0.0f, true);
+        root.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**
