@@ -35,8 +35,8 @@ import com.jme.renderer.ColorRGBA;
 
 /**
  * <code>Light</code> defines the attributes of a light element. This class
- * is abstract and intended to be subclasses by specific lighting types. A
- * light will illumniate portions of the scene by assigning it's properties
+ * is abstract and intended to be subclassed by specific lighting types. A
+ * light will illuminate portions of the scene by assigning its properties
  * to the objects in the scene. This will affect the objects color values, 
  * depending on the color of the ambient, diffuse and specular light 
  * components.
@@ -49,7 +49,7 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  * 
  * @author Mark Powell
- * @version $Id: Light.java,v 1.1 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: Light.java,v 1.2 2004-04-02 21:09:19 mojomonkey Exp $
  */
 public abstract class Light {
 
@@ -92,7 +92,7 @@ public abstract class Light {
         diffuse = new ColorRGBA();
         specular = new ColorRGBA();
     }
-
+    
     /**
      * 
      * <code>getType</code> returns the type of the light that has been
