@@ -43,11 +43,12 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
+import com.jme.renderer.Renderer;
 
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.24 2004-04-23 02:57:24 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.25 2004-07-03 20:02:10 renanse Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -70,6 +71,12 @@ public class TestRenderToTexture extends SimpleGame {
     TestRenderToTexture app = new TestRenderToTexture();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
+  }
+
+  protected void cleanup() {
+    lastRend++;
+    simpleRender();
+    super.cleanup();
   }
 
   protected void simpleUpdate() {
@@ -117,6 +124,7 @@ public class TestRenderToTexture extends SimpleGame {
     realBox.setModelBound(new BoundingSphere());
     realBox.updateModelBound();
     realBox.setLocalTranslation(new Vector3f(0, 0, 0));
+    realBox.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 
     rootNode.attachChild(realBox);
 
@@ -131,6 +139,7 @@ public class TestRenderToTexture extends SimpleGame {
 
     // add the monkey box to a node.  This node is a root node, not part of the "real world" tree.
     fakeScene = new Node("Fake node");
+    fakeScene.setRenderQueueMode(Renderer.QUEUE_SKIP);
     fakeScene.attachChild(monkeyBox);
 
     // Setup our params for the depth buffer
@@ -142,13 +151,13 @@ public class TestRenderToTexture extends SimpleGame {
     // Lets add a monkey texture to the geometry we are going to rendertotexture...
     TextureState ts = display.getRenderer().getTextureState();
     ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
+    Texture tex = TextureManager.loadTexture(
         TestRenderToTexture.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
-        true));
+        true);
+    ts.setTexture(tex);
     fakeScene.setRenderState(ts);
 
     // Ok, now lets create the Texture object that our monkey cube will be rendered to.
@@ -157,6 +166,7 @@ public class TestRenderToTexture extends SimpleGame {
                                               0);
     tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
     fakeTex = tRenderer.setupTexture();
+    fakeTex.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
     tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
     tRenderer.updateCamera();
 
@@ -166,13 +176,13 @@ public class TestRenderToTexture extends SimpleGame {
     ts.setTexture(fakeTex, 0);
 
     // Heck, while we're at it, why not add another texture to blend with.
-    ts.setTexture(
-        TextureManager.loadTexture(
+    Texture tex2 = TextureManager.loadTexture(
         TestRenderToTexture.class.getClassLoader().getResource(
         "jmetest/data/texture/dirt.jpg"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
-        true), 1);
+        true);
+    ts.setTexture(tex2, 1);
     rootNode.setRenderState(ts);
 
     // Since we have 2 textures, the geometry needs to know how to split up the coords for the second state.

@@ -50,7 +50,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.2 2004-04-22 22:26:43 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.3 2004-07-03 20:02:09 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -172,8 +172,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     /**
-     * <code>setupTexture</code> retrieves the color used for the
-     * window background.
+     * <code>setupTexture</code> generates a new Texture object for use with
+     * TextureRenderer.
      * @param glTextureID a valid gl texture id to use
      * @return the new Texture
      */
@@ -183,7 +183,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         Texture rVal = new Texture();
         rVal.setTextureId(glTextureID);
-        rVal.setBlendColor(new ColorRGBA(1, 1, 1, 1f));
         return rVal;
     }
 
@@ -222,6 +221,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
                 deactivate();
             }
+            tex.setNeedsRefresh(true);
 
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(), "render(Spatial, Texture)", e);

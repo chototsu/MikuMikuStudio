@@ -63,6 +63,7 @@ public class TestCameraMan extends SimpleGame {
 
   private TextureRenderer tRenderer;
   private Texture fakeTex;
+  private float lastRend = 1;
 
   /**
    * Entry point for the test,
@@ -74,12 +75,22 @@ public class TestCameraMan extends SimpleGame {
     app.start();
   }
 
+  protected void cleanup() {
+    lastRend++;
+    simpleRender();
+    super.cleanup();
+  }
+
   protected void simpleUpdate() {
     monitorNode.updateGeometricState(0.0f, true);
   }
 
   protected void simpleRender() {
-    tRenderer.render(model, fakeTex);
+    lastRend += timer.getTimePerFrame();
+    if (lastRend > .03f) {
+      tRenderer.render(model, fakeTex);
+      lastRend = 0;
+    }
     display.getRenderer().draw(monitorNode);
   }
 
@@ -169,9 +180,7 @@ public class TestCameraMan extends SimpleGame {
 
     monitorNode.setRenderState(buf);
 
-    // Ok, now lets create the Texture object that our monkey cube will be rendered to.
-
-//        tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
+    // Ok, now lets create the Texture object that our scene will be rendered to.
     tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
     fakeTex = tRenderer.setupTexture();
     TextureState screen = display.getRenderer().getTextureState();

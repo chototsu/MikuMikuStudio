@@ -48,7 +48,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.10 2004-06-29 19:08:07 renanse Exp $
+ * @version $Id: Texture.java,v 1.11 2004-07-03 20:02:11 renanse Exp $
  */
 public class Texture {
 
@@ -223,6 +223,8 @@ public class Texture {
     private int combineScaleRGB;
     private int combineScaleAlpha;
 
+    private boolean needsRefresh = false;
+
     /**
      * Constructor instantiates a new <code>Texture</code> object with
      * default attributes.
@@ -234,6 +236,7 @@ public class Texture {
         apply = AM_MODULATE;
         correction = CM_AFFINE;
         wrap = WM_ECLAMP_S_ECLAMP_T;
+        setBlendColor(new ColorRGBA(0,0,0,0));
     }
 
     /**
@@ -678,5 +681,13 @@ public class Texture {
 
     public void setAnisoLevel(float level) {
       anisoLevel = level;
+    }
+
+    public void setNeedsRefresh(boolean needed) {
+      needsRefresh = needed;
+    }
+
+    public boolean needsRefresh() {
+      return needsRefresh;
     }
 }

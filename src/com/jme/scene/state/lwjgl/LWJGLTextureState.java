@@ -58,7 +58,7 @@ import java.nio.FloatBuffer;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.22 2004-07-02 23:51:36 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.23 2004-07-03 20:02:10 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -264,6 +264,17 @@ public class LWJGLTextureState extends TextureState {
               break;
           }
 
+        } else {
+          // texture already exists in OpenGL, just bind it
+          GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture
+                             .getTextureId());
+        }
+
+        // If texture data was changed, (eg. render to texture) the
+        // filtering needs to be redone.
+        if (texture.needsRefresh()) {
+          texture.setNeedsRefresh(false);
+
           // set up filter mode
           GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
                                GL11.GL_TEXTURE_MAG_FILTER,
@@ -275,12 +286,8 @@ public class LWJGLTextureState extends TextureState {
                                GL11.GL_TEXTURE_MIN_FILTER,
                                textureMipmap[texture
                                .getMipmap()]);
-
-        } else {
-          // texture already exists in OpenGL, just bind it
-          GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture
-                             .getTextureId());
         }
+
 
         // set up correction mode
         GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT,

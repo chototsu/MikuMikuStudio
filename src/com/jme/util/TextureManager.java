@@ -56,7 +56,7 @@ import com.jme.renderer.ColorRGBA;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.21 2004-06-12 23:51:14 cep21 Exp $
+ * @version $Id: TextureManager.java,v 1.22 2004-07-03 20:02:11 renanse Exp $
  */
 public class TextureManager {
 	// For TGA loading
@@ -236,21 +236,17 @@ public class TextureManager {
 			return null;
 		}
 		Texture texture = new Texture();
-		texture.setApply(Texture.AM_MODULATE);
-		texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
 		texture.setCorrection(Texture.CM_PERSPECTIVE);
 		texture.setFilter(magFilter);
 		texture.setImage(imageData);
 		texture.setMipmapState(minFilter);
-        texture.setImageLocation(file.toString());
+                texture.setImageLocation(file.toString());
 		return texture;
 	}
 	public static com.jme.image.Texture loadTexture(java.awt.Image image,
 			int minFilter, int magFilter, boolean isMipmapped, boolean flipped) {
 		com.jme.image.Image imageData = loadImage(image, flipped);
 		Texture texture = new Texture();
-		texture.setApply(Texture.AM_MODULATE);
-		texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
 		texture.setCorrection(Texture.CM_PERSPECTIVE);
 		texture.setFilter(magFilter);
 		texture.setImage(imageData);
