@@ -47,7 +47,7 @@ import java.io.*;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.13 2004-07-06 21:34:31 renanse Exp $
+ * @version $Id: ColorRGBA.java,v 1.14 2004-07-31 04:25:29 cep21 Exp $
  */
 public class ColorRGBA implements Externalizable{
 
@@ -97,7 +97,7 @@ public class ColorRGBA implements Externalizable{
      */
     public float b;
     /**
-     * the alpha component of the color.
+     * the alpha component of the color.  0 is transparent and 1 is opaque
      */
     public float a;
 
@@ -266,10 +266,22 @@ public class ColorRGBA implements Externalizable{
       return rVal;
     }
 
+    /**
+     * Multiplies each r/g/b/a of this color by the r/g/b/a of the given color and
+     * returns the result as a new ColorRGBA.  Used as a way of combining colors and lights.
+     * @param c The color to multiply.
+     * @return The new ColorRGBA.  this*c
+     */
     public ColorRGBA mult(ColorRGBA c) {
     	return new ColorRGBA(c.r * r, c.g * g, c.b * b, c.a * a);
     }
 
+    /**
+     * Adds each r/g/b/a of this color by the r/g/b/a of the given color and
+     * returns the result as a new ColorRGBA.
+     * @param c The color to add.
+     * @return The new ColorRGBA.  this+c
+     */
     public ColorRGBA add(ColorRGBA c) {
     	return new ColorRGBA(c.r + r, c.g + g, c.b + b, c.a + a);
     }
