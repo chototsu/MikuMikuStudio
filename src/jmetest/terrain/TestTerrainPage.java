@@ -54,7 +54,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.21 2004-07-21 21:19:50 guurk Exp $
+ * @version $Id: TestTerrainPage.java,v 1.22 2004-07-21 22:15:50 guurk Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -113,10 +113,9 @@ public class TestTerrainPage extends SimpleGame {
     lightState.setTwoSidedLighting(true);
     lightState.attach(dr);
 
-    //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
-    //FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255,
-    //    0.75f);
-    RawHeightMap heightMap = new RawHeightMap( "C:/dev/workspace/jme/src/jmetest/data/images/germany.raw", 513);
+//    MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
+    FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255,
+        0.75f);
     Vector3f terrainScale = new Vector3f(10,1,10);
     heightMap.setHeightScale( 0.001f);
     TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), terrainScale,
