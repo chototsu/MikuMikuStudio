@@ -94,10 +94,8 @@ public class JmeBinaryReader {
      */
     public Node loadBinaryFormat(Node storeNode, InputStream binaryJme) throws IOException {
         if (DEBUG) System.out.println("Begining read");
-        myScene=null;
-        s.clear();
-        shares.clear();
-        attributes.clear();
+        clearValues();
+        myScene=storeNode;
         myIn=new DataInputStream(binaryJme);
         readHeader();
         s.push(storeNode);  // This will be pop'd off when </scene> is encountered and saved into myScene
@@ -113,7 +111,15 @@ public class JmeBinaryReader {
             flag=myIn.readByte();
         }
         if (DEBUG) System.out.println("Done reading");
+        clearValues();
         return myScene;
+    }
+
+    private void clearValues() {
+        s.clear();
+        shares.clear();
+        attributes.clear();
+        myIn=null;
     }
 
     /**
@@ -717,21 +723,26 @@ public class JmeBinaryReader {
                     break;
                 case BinaryFormatConstants.DATA_V3F:
                     atribMap.put(name,getVec3f());
+                    if (DEBUG) System.out.println("readvec:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_QUAT:
                     atribMap.put(name,getQuat());
+                    if (DEBUG) System.out.println("readquat:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_FLOAT:
                     atribMap.put(name,new Float(myIn.readFloat()));
+                    if (DEBUG) System.out.println("readfloat:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_COLOR:
                     atribMap.put(name,getColor());
+                    if (DEBUG) System.out.println("readcolor:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_URL:
                     atribMap.put(name,new URL(myIn.readUTF()));
                     break;
                 case BinaryFormatConstants.DATA_INT:
                     atribMap.put(name,new Integer(myIn.readInt()));
+                    if (DEBUG) System.out.println("readint:"+atribMap.get(name));
                     break;
                 case BinaryFormatConstants.DATA_BOOLEAN:
                     atribMap.put(name,new Boolean(myIn.readBoolean()));
