@@ -39,7 +39,7 @@ import com.jme.renderer.Camera;
  * move along the negative left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyStrafeRightAction.java,v 1.6 2004-04-23 16:39:13 renanse Exp $
+ * @version $Id: KeyStrafeRightAction.java,v 1.7 2004-07-30 21:29:22 cep21 Exp $
  */
 public class KeyStrafeRightAction extends AbstractInputAction {
 
@@ -58,7 +58,7 @@ public class KeyStrafeRightAction extends AbstractInputAction {
     /**
      * <code>performAction</code> moves the camera along the negative left
      * vector for a given distance of speed * time.
-     * @see com.jme.input.action.InputAction#performAction(float)
+     * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(float time) {
         Vector3f loc = camera.getLocation();

@@ -51,7 +51,7 @@ import com.jme.scene.state.LightState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.13 2004-07-30 21:08:23 cep21 Exp $
+ * @version $Id: Mouse.java,v 1.14 2004-07-30 21:18:05 cep21 Exp $
  */
 public abstract class Mouse extends Quad {
   /**
@@ -164,14 +164,17 @@ public abstract class Mouse extends Quad {
 
   /**
    *
-   * <code>update</code> updates the mouse input object.
+   * <code>update</code> updates the mouse input object.  This is normally a call to
+   * update(true).
+   * @see #update(boolean)
    *
    */
   public abstract void update();
 
   /**
-   * <code>update</code> updates the mouse input object.
-   * @param updateState indicates if the mouse's state should be updated
+   * <code>update</code> updates the mouse input object.  This is where the mouse location
+   * and button press states are updated.
+   * @param updateState indicates if the mouse's state (buttons) should be updated
    */
   public abstract void update(boolean updateState);
 

@@ -40,7 +40,7 @@ import com.jme.input.Mouse;
  *
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: MouseInputAction.java,v 1.6 2004-04-22 22:26:34 renanse Exp $
+ * @version $Id: MouseInputAction.java,v 1.7 2004-07-30 21:30:50 cep21 Exp $
  */
 public interface MouseInputAction {
     /**
@@ -50,6 +50,12 @@ public interface MouseInputAction {
      * @param time the time between frames.
      */
     public void performAction(float time);
+    /**
+     * Sets a subclass specific speed value that may or may not, depending upon the implimentation,
+     * be used during performAction(float)
+     * @param speed
+     * @see #performAction(float)
+     */
     public void setSpeed(float speed);
     /**
      *

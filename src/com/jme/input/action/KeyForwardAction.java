@@ -41,7 +41,7 @@ import com.jme.renderer.Camera;
  * of the camera can be thought of as how many units per second the camera
  * can travel.
  * @author Mark Powell
- * @version $Id: KeyForwardAction.java,v 1.5 2004-04-23 16:39:10 renanse Exp $
+ * @version $Id: KeyForwardAction.java,v 1.6 2004-07-30 21:24:54 cep21 Exp $
  */
 public class KeyForwardAction extends AbstractInputAction {
 
@@ -61,7 +61,7 @@ public class KeyForwardAction extends AbstractInputAction {
      * <code>performAction</code> moves the camera along it's positive
      * direction vector at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
-     * @see com.jme.input.action.InputAction#performAction(float)
+     * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(float time) {
 

@@ -44,7 +44,7 @@ import com.jme.scene.Spatial;
  * rotate about the world. The locking of the axis is particularly useful for
  * control schemes similar to first person shooters.
  * @author Mark Powell
- * @version $Id: KeyNodeRotateRightAction.java,v 1.9 2004-05-12 20:51:12 mojomonkey Exp $
+ * @version $Id: KeyNodeRotateRightAction.java,v 1.10 2004-07-30 21:27:36 cep21 Exp $
  */
 public class KeyNodeRotateRightAction extends AbstractInputAction {
     private Matrix3f incr;
@@ -80,7 +80,7 @@ public class KeyNodeRotateRightAction extends AbstractInputAction {
      * <code>performAction</code> rotates the camera about it's up vector or
      * lock axis at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
-     * @see com.jme.input.action.InputAction#performAction(float)
+     * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(float time) {
         incr.loadIdentity();

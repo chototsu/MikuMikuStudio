@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * towards the worlds negative y-axis. The rotation is along the node's left
  * vector (the first column of it's rotation matrix).
  * @author Mark Powell
- * @version $Id: KeyNodeLookDownAction.java,v 1.9 2004-05-12 20:51:11 mojomonkey Exp $
+ * @version $Id: KeyNodeLookDownAction.java,v 1.10 2004-07-30 21:26:21 cep21 Exp $
  */
 public class KeyNodeLookDownAction extends AbstractInputAction {
     private Matrix3f incr;
@@ -61,7 +61,7 @@ public class KeyNodeLookDownAction extends AbstractInputAction {
      * <code>performAction</code> rotates the node towards the world's negative
      * y-axis at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
-     * @see com.jme.input.action.InputAction#performAction(float)
+     * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(float time) {
         incr.loadIdentity();

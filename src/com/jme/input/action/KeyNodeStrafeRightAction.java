@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * the negative left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeRightAction.java,v 1.9 2004-05-12 20:51:11 mojomonkey Exp $
+ * @version $Id: KeyNodeStrafeRightAction.java,v 1.10 2004-07-30 21:28:08 cep21 Exp $
  */
 public class KeyNodeStrafeRightAction extends AbstractInputAction {
 
@@ -58,7 +58,7 @@ public class KeyNodeStrafeRightAction extends AbstractInputAction {
     /**
      * <code>performAction</code> moves the camera along the negative left
      * vector for a given distance of speed * time.
-     * @see com.jme.input.action.InputAction#performAction(float)
+     * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(float time) {
         Vector3f loc = node.getLocalTranslation();

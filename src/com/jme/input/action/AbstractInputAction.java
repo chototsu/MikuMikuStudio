@@ -40,12 +40,15 @@ package com.jme.input.action;
  *
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: AbstractInputAction.java,v 1.2 2004-04-23 20:20:22 renanse Exp $
+ * @version $Id: AbstractInputAction.java,v 1.3 2004-07-30 21:23:52 cep21 Exp $
  */
 public abstract class AbstractInputAction {
 
+  /** If true, a single button press results in multiple calls to this class's performAction(float) */
   protected boolean allowsRepeats = true;
+  /** A speed value that, if desired, can change how actions are performed. */
   protected float speed = 0;
+  /** A name that identifies this action. */
   protected String key;
 
     /**
@@ -57,6 +60,10 @@ public abstract class AbstractInputAction {
         this.speed = speed;
     }
 
+    /**
+     * Returns the currently set speed.  Speed is 0 by default.
+     * @return The current speed.
+     */
     public float getSpeed() {
       return speed;
     }
@@ -65,7 +72,7 @@ public abstract class AbstractInputAction {
     /**
      *
      * <code>performAction</code> defines the appropriate action to take when
-     * called. The action is completely class specific.
+     * called. The action is completely class specific..
      * @param time the time value for the action.
      */
     public abstract void performAction(float time);
@@ -88,10 +95,18 @@ public abstract class AbstractInputAction {
         this.key = key;
     }
 
+    /**
+     * Returns true if a single key press is set to allow repeated performAction calls.
+     * @return The current repeat state.
+     */
     public boolean allowsRepeats() {
       return allowsRepeats;
     }
 
+    /**
+     * Sets if a single key press allows repeated performAction calls.
+     * @param allow If true, a single key press allows fo repeated performAction calls.
+     */
     public void setAllowsRepeats(boolean allow) {
       allowsRepeats = allow;
     }

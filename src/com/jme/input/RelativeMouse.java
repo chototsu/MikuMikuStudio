@@ -45,7 +45,7 @@ package com.jme.input;
  * position of a mouse in a rendering window. This type of controller is
  * typically useful for a first person mouse look or similar.
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.10 2004-07-23 20:15:09 renanse Exp $
+ * @version $Id: RelativeMouse.java,v 1.11 2004-07-30 21:20:23 cep21 Exp $
  */
 public class RelativeMouse extends Mouse {
     /**
@@ -65,7 +65,10 @@ public class RelativeMouse extends Mouse {
         update(true);
     }
 
-    /** <code>update</code>
+    /** <code>update</code> updates the mouse's position by simply adding to the current location
+     * the mouse's X and Y movement delta.  Unlike AbsoluteMouse, no checks are made for moving
+     * outside a paticular bounds because this class is used only for frame to frame
+     * relative movements.
      * @param updateState
      * @see com.jme.input.Mouse#update(boolean)
      */

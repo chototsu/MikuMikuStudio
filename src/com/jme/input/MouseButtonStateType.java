@@ -35,9 +35,9 @@ import com.jme.util.JmeType;
 
 
 /**
- * <code>MouseButtonStateType</code>
+ * <code>MouseButtonStateType</code> is a strongly typed enumeration of mouse button clicks.
  * @author Gregg Patton
- * @version $Id: MouseButtonStateType.java,v 1.2 2004-04-22 22:26:30 renanse Exp $
+ * @version $Id: MouseButtonStateType.java,v 1.3 2004-07-30 21:14:48 cep21 Exp $
  */
 public class MouseButtonStateType extends JmeType {
 
@@ -52,10 +52,16 @@ public class MouseButtonStateType extends JmeType {
 
     public final static MouseButtonStateType MOUSE_BUTTON_1_2_3 = new MouseButtonStateType ("MOUSE_BUTTON_1_2_3");
 
-    public MouseButtonStateType(String name) {
+    private MouseButtonStateType(String name) {
         super(name);
     }
 
+    /**
+     * Given a string name defining a button type, returns the MouseButtonStateType enumeration that is defined
+     * as that string.
+     * @param name The name defining a button setting.  IE "MOUSE_BUTTON_2_3"
+     * @return The MouseButtonStateType that is defined by the given string.
+     */
     public JmeType getType(String name) {
         JmeType type = null;
 
