@@ -37,51 +37,55 @@ import com.jme.scene.Spatial;
 
 /**
  * <code>KeyNodeLookDownAction</code> defines an action to tilt the node
- * towards the worlds negative y-axis. The rotation is along the node's left
+ * towards the node's negative up axis. The rotation is along the node's left
  * vector (the first column of it's rotation matrix).
  * 
  * @author Mark Powell
- * @version $Id: KeyNodeLookDownAction.java,v 1.13 2004-10-14 01:23:01 mojomonkey Exp $
+ * @version $Id: KeyNodeLookDownAction.java,v 1.13 2004/10/14 01:23:01
+ *          mojomonkey Exp $
  */
 public class KeyNodeLookDownAction extends KeyInputAction {
-    //temporary variables to handle rotation
-    private static final Matrix3f incr = new Matrix3f();
+	//temporary variables to handle rotation
+	private static final Matrix3f incr = new Matrix3f();
 
-    private static final Matrix3f tempMa = new Matrix3f();
+	private static final Matrix3f tempMa = new Matrix3f();
 
-    private static final Matrix3f tempMb = new Matrix3f();
+	private static final Matrix3f tempMb = new Matrix3f();
 
-    private static final Vector3f tempV = new Vector3f();
-    //the node to manipulate
-    private Spatial node;
+	private static final Vector3f tempV = new Vector3f();
 
-    /**
-     * Constructor instatiates a new <code>KeyNodeLookDownAction</code> object
-     * using the supplied node and speed for it's attributes.
-     * 
-     * @param node
-     *            the node that will be affected by this action.
-     * @param speed
-     *            the speed at which the node can move.
-     */
-    public KeyNodeLookDownAction(Spatial node, float speed) {
-        this.node = node;
-        this.speed = speed;
-    }
+	//the node to manipulate
+	private Spatial node;
 
-    /**
-     * <code>performAction</code> rotates the node towards the world's
-     * negative y-axis at a speed of movement speed * time. Where time is the
-     * time between frames and 1 corresponds to 1 second.
-     * 
-     * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
-     */
-    public void performAction(InputActionEvent evt) {
-        incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(0, tempV),
-                speed * evt.getTime());
-        node.getLocalRotation().fromRotationMatrix(
-                incr.mult(node.getLocalRotation().toRotationMatrix(tempMa),
-                        tempMb));
-        node.getLocalRotation().normalize();
-    }
+	/**
+	 * Constructor instatiates a new <code>KeyNodeLookDownAction</code> object
+	 * using the supplied node and speed for it's rotation. Speed is multiplied
+	 * by the time per frame, providing a frame rate independant speed. Thus,
+	 * speed should be considered in (unit/second).
+	 * 
+	 * @param node
+	 *            the node that will be affected by this action.
+	 * @param speed
+	 *            the speed at which the node can move.
+	 */
+	public KeyNodeLookDownAction(Spatial node, float speed) {
+		this.node = node;
+		this.speed = speed;
+	}
+
+	/**
+	 * <code>performAction</code> rotates the node towards the nodes'
+	 * negative up axis at a speed of movement speed * time. Where time is the
+	 * time between frames and 1 corresponds to 1 second.
+	 * 
+	 * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
+	 */
+	public void performAction(InputActionEvent evt) {
+		incr.fromAxisAngle(node.getLocalRotation().getRotationColumn(0, tempV),
+				speed * evt.getTime());
+		node.getLocalRotation().fromRotationMatrix(
+				incr.mult(node.getLocalRotation().toRotationMatrix(tempMa),
+						tempMb));
+		node.getLocalRotation().normalize();
+	}
 }
