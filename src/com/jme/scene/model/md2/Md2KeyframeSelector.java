@@ -43,7 +43,7 @@ import com.jme.system.JmeException;
  * end. Calling the <code>setAnimation</code> method, this class sets the
  * start and end frames of the controller.
  * @author Mark Powell
- * @version $Id: Md2KeyframeSelector.java,v 1.2 2004-04-22 22:26:52 renanse Exp $
+ * @version $Id: Md2KeyframeSelector.java,v 1.3 2004-04-25 21:36:09 mojomonkey Exp $
  */
 public class Md2KeyframeSelector {
 	private VertexKeyframeController controller;
@@ -149,7 +149,6 @@ public class Md2KeyframeSelector {
 		int animationCounter = 0;
 		for (int i = 0; i < frames.length; i++) {
 			String name = frames[i].getName();
-			System.out.println(i + "  " + name);
 			name = name.substring(0, name.length() - 2);
 			temp[i] = new Md2Animations();
 			temp[i].name = name;
