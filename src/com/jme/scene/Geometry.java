@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.36 2004-05-12 00:15:27 renanse Exp $
+ * @version $Id: Geometry.java,v 1.37 2004-05-12 19:01:49 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -97,7 +97,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     private int vboNormalID = -1;
     private int[] vboTextureIDs;
 
-    /**
+  /**
      * Empty Constructor to be used internally only.
      */
     public Geometry() {}
@@ -510,6 +510,10 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public int getNumberOfUnits() {
         return texBuf.length;
+    }
+
+    public int getVertQuantity() {
+      return vertQuantity;
     }
 
     /**

@@ -101,7 +101,7 @@ import org.lwjgl.BufferUtils;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.17 2004-05-12 00:15:27 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.18 2004-05-12 19:01:50 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -959,7 +959,7 @@ public class LWJGLRenderer implements Renderer {
         ARBBufferObject.glGenBuffersARB(buf);
         g.setVBOVertexID(buf.get(0));
         ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, g.getVBOVertexID() );
-        ARBBufferObject.glBufferDataARB( GL15.GL_ARRAY_BUFFER, g.getVertices().length*3*4, g.getVerticeAsFloatBuffer(), ARBBufferObject.GL_STATIC_DRAW_ARB);
+        ARBBufferObject.glBufferDataARB( GL15.GL_ARRAY_BUFFER, g.getVertQuantity()*3*4, g.getVerticeAsFloatBuffer(), ARBBufferObject.GL_STATIC_DRAW_ARB);
         buf.clear();
       }
       if (g.isVBONormalEnabled() && g.getVBONormalID() <= 0) {

@@ -43,7 +43,7 @@ import com.jme.scene.TriMesh;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.12 2004-05-07 22:03:23 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.13 2004-05-12 19:01:49 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int currentRecord, targetRecord;
@@ -198,11 +198,19 @@ public class ClodMesh extends TriMesh {
     return targetRecord;
   }
 
+  public CollapseRecord[] getRecords() {
+    return records;
+  }
+
   public void setTargetRecord(int target) {
     targetRecord = target;
     if (targetRecord < 0)
       targetRecord = 0;
     else if (targetRecord > records.length - 1)
       targetRecord = records.length - 1;
+  }
+
+  public void setRecords(CollapseRecord[] records) {
+    this.records = records;
   }
 }
