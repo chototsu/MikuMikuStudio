@@ -36,6 +36,7 @@
  */
 package com.jme.ui;
 
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.state.TextureState;
@@ -55,23 +56,28 @@ import com.jme.util.TextureManager;
  */
 public class UIBillboard extends UIObject {
 
+    private static final long serialVersionUID = 1L;
+
     /**
      * Specific the image file to be shown. Just like all objects in jME, name
      * it with a unique name.
-     *  
+     * 
      */
     public UIBillboard(String name, int x, int y, int width, int height, String imgfile) {
-        this(name, x, y, width, height, null, imgfile, UIObject.TEXTURE, true);
+        this(name, x, y, width, height, null, imgfile, UIObject.TEXTURE, true, Image.GUESS_FORMAT_NO_S3TC);
     }
 
     public UIBillboard(String name, int x, int y, int width, int height, UIColorScheme scheme) {
-        this(name, x, y, width, height, scheme, null, UIObject.BORDER, true);
+        this(name, x, y, width, height, scheme, null, UIObject.BORDER, true, Image.GUESS_FORMAT_NO_S3TC);
     }
 
+    public UIBillboard(String name, int x, int y, int width, int height, String imgfile, int imageType) {
+        this(name, x, y, width, height, null, imgfile, UIObject.TEXTURE, true, imageType);
+    }
     /**
      */
     public UIBillboard(String name, int x, int y, int width, int height, UIColorScheme scheme,
-            String imgfile, int flags, boolean useClassLoader) {
+            String imgfile, int flags, boolean useClassLoader, int imageType) {
         super(name, x, y, width, height, scheme, flags);
 
         if ((TEXTURE & _flags) == TEXTURE) {
@@ -81,9 +87,9 @@ public class UIBillboard extends UIObject {
             if (useClassLoader) {
                 ts.setTexture(TextureManager.loadTexture(
                         UIObject.class.getClassLoader().getResource(imgfile), Texture.MM_NEAREST,
-                        Texture.FM_NEAREST));
+                        Texture.FM_NEAREST, imageType, 1.0f, true));
             } else {
-                ts.setTexture(TextureManager.loadTexture(imgfile, Texture.MM_NEAREST, Texture.FM_NEAREST));
+                ts.setTexture(TextureManager.loadTexture(imgfile, Texture.MM_NEAREST, Texture.FM_NEAREST, imageType, 1.0f, true));
             }
             ts.apply();
 
@@ -96,7 +102,7 @@ public class UIBillboard extends UIObject {
 
     /**
      * Easy method that will center the image within the display.
-     *  
+     * 
      */
     public void center() {
         _x = DisplaySystem.getDisplaySystem().getWidth() / 2 - _width / 2;
@@ -121,4 +127,4 @@ public class UIBillboard extends UIObject {
     public boolean update() {
         return false;
     }
-}
+} 
