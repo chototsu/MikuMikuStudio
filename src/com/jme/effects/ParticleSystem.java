@@ -30,8 +30,6 @@
  */
 package com.jme.effects;
 
-import java.util.ArrayList;
-
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
