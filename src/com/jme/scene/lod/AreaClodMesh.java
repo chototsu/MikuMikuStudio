@@ -47,13 +47,13 @@ import com.jme.system.DisplaySystem;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: AreaClodMesh.java,v 1.3 2004-04-14 02:30:20 mojomonkey Exp $
+ * @version $Id: AreaClodMesh.java,v 1.4 2004-04-16 23:16:03 renanse Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   float trisPerPixel = 1f;
   float distTolerance = 1f;
   float lastDistance = 0f;
-  
+
   public AreaClodMesh(String name) {
       super(name);
   }
@@ -78,12 +78,12 @@ public class AreaClodMesh extends ClodMesh {
   }
 
   public int chooseTargetRecord(Renderer r) {
-    if (getModelBound() == null) {
+    if (getWorldBound() == null) {
       LoggingSystem.getLogger().log(Level.WARNING,
                                     "AreaClodMesh found with no Bounds.");
       return 0;
     }
-    float newDistance = getModelBound().distanceTo(r.getCamera().getLocation());
+    float newDistance = getWorldBound().distanceTo(r.getCamera().getLocation());
     if (lastDistance > newDistance && targetRecord == 0)
       return targetRecord; // we're already at the lowest setting and we just got closer to the model, no need to keep trying.
     if (lastDistance < newDistance && targetRecord == records.length-1)
@@ -95,7 +95,7 @@ public class AreaClodMesh extends ClodMesh {
     lastDistance = newDistance;
 
     // estimate area of polygon via bounding volume
-    float area = AreaUtils.calcScreenArea(getModelBound(), lastDistance, DisplaySystem.getDisplaySystem().getWidth());
+    float area = AreaUtils.calcScreenArea(getWorldBound(), lastDistance, DisplaySystem.getDisplaySystem().getWidth());
     float trisToDraw = area * trisPerPixel;
     if (records == null || records.length == 0) {
       LoggingSystem.getLogger().log(Level.WARNING,
