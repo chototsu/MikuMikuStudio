@@ -40,7 +40,7 @@ import java.nio.ByteBuffer;
  * The width and height must be greater than 0. The data is contained in a 
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.1 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: Image.java,v 1.2 2003-12-05 20:39:31 mojomonkey Exp $
  */
 public class Image {
     /**
@@ -61,10 +61,10 @@ public class Image {
     public static final int RGBA8888 = 3;
 
     //image attributes
-    private int type;
-    private int width;
-    private int height;
-    private ByteBuffer data;
+    protected int type;
+    protected int width;
+    protected int height;
+    protected ByteBuffer data;
     
     /**
      * Constructor instantiates a new <code>Image</code> object. All values are
