@@ -36,7 +36,7 @@ public abstract class UIObject extends Quad {
 
 	protected InputHandler _inputHandler = null;
 
-	public UIObject(String name, InputHandler inputHandler, int x, int y, float scale) {
+  public UIObject(String name, InputHandler inputHandler, int x, int y, float scale) {
 		super(name);
 		_inputHandler = inputHandler;
 		_x = x;
@@ -88,4 +88,17 @@ public abstract class UIObject extends Quad {
 		return _state;
 	}
 
+        public int getWidth() {
+          return _width;
+        }
+
+        public int getHeight() {
+          return _height;
+        }
+
+        public void centerAt(int x, int y) {
+          this.localTranslation.set(x,y,0);
+          _x = (int)(x - _width/2);
+          _y = (int)(y - _height/2);
+        }
 }
