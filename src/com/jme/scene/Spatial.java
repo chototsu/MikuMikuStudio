@@ -47,7 +47,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and 
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.12 2004-01-26 21:44:37 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.13 2004-01-28 13:11:50 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -168,9 +168,7 @@ public abstract class Spatial implements Serializable {
             setStates();
             draw(r);
             unsetStates();
-        } else {
-            System.out.println("CULLED");
-        }
+        } 
         camera.setPlaneState(state);
     }
 
