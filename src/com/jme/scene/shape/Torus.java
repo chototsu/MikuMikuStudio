@@ -38,9 +38,10 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Torus</code>
+ * <code>Torus</code> is um ... a Torus :)  The center is by default
+ * the origin.
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.2 2004-04-22 22:26:54 renanse Exp $
+ * @version $Id: Torus.java,v 1.3 2004-08-01 07:12:51 cep21 Exp $
  */
 public class Torus extends TriMesh {
 	private int circleSamples;
@@ -49,6 +50,14 @@ public class Torus extends TriMesh {
 	private float innerRadius;
 	private float outerRadius;
 
+    /**
+     * Constructs a new Torus.  Center is the origin, but the Torus may be transformed.
+     * @param name The name of the Torus.
+     * @param circleSamples The number of samples along the circles.
+     * @param radialSamples The number of samples along the radial.
+     * @param innerRadius The radius of the inner begining of the Torus.
+     * @param outerRadius The radius of the outter end of the Torus.
+     */
 	public Torus(
 		String name,
 		int circleSamples,
