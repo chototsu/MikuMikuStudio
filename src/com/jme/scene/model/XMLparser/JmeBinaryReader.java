@@ -16,6 +16,7 @@ import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
 
 import java.io.InputStream;
 import java.io.DataInputStream;
@@ -135,7 +136,7 @@ public class JmeBinaryReader {
         } else if (tagName.equals("mesh") || tagName.equals("jointmesh")){
             Geometry childMesh=(Geometry) s.pop();
             if (childMesh.getModelBound()==null){
-                childMesh.setModelBound(new BoundingBox());
+                childMesh.setModelBound(new BoundingSphere());
                 childMesh.updateModelBound();
             }
             parentNode=(Node) s.pop();
@@ -359,7 +360,7 @@ public class JmeBinaryReader {
                     new Vector3f(Float.parseFloat(parts[4]),
                     Float.parseFloat(parts[5]),
                     Float.parseFloat(parts[6])));
-            box.setModelBound(new BoundingBox());
+            box.setModelBound(new BoundingSphere());
             box.updateModelBound();
             toReturn=box;
         }else{
@@ -431,7 +432,7 @@ public class JmeBinaryReader {
         m.setAmbient((ColorRGBA) atts.get("ambient"));
         m.setDiffuse((ColorRGBA) atts.get("diffuse"));
         m.setEmissive((ColorRGBA) atts.get("emissive"));
-        m.setShininess(((Float)atts.get("alpha")).floatValue());
+        m.setShininess(((Float)atts.get("shiny")).floatValue());
         m.setSpecular((ColorRGBA) atts.get("specular"));
         m.setEnabled(true);
         return m;
