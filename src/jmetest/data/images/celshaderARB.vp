@@ -2,28 +2,27 @@
 
 OPTION ARB_position_invariant;
 
-ATTRIB normal = vertex.normal;
-
 PARAM lightPos = program.local[0];
 PARAM modelview_invtrans[4] = { state.matrix.modelview.invtrans };
 
-TEMP transnormal, shade;
+TEMP transnrml, transnrmlN, shade;
 
 # rotate the normal vector by the inverse trasposed modelview matrix
-DP3  transnormal.x, normal, modelview_invtrans[0];
-DP3  transnormal.y, normal, modelview_invtrans[1];
-DP3  transnormal.z, normal, modelview_invtrans[2];
+DP3  transnrml.x, vertex.normal, modelview_invtrans[0];
+DP3  transnrml.y, vertex.normal, modelview_invtrans[1];
+DP3  transnrml.z, vertex.normal, modelview_invtrans[2];
 
 # normalize this new vector
-DP3  transnormal.w, transnormal, transnormal;
-RSQ  transnormal.w, transnormal.w;
-MUL  transnormal, transnormal, transnormal.w;
+# transnrmlN = normalize( transnrml )
+DP3 transnrmlN.w, transnrml, transnrml;
+RSQ transnrmlN.w, transnrmlN.w;
+MUL transnrmlN.xyz, transnrml, transnrmlN.w;
 
 # calculate the shade value
-DP3  shade.x, transnormal, lightPos;      
-MAX  shade.x, shade.x, 0.0;
+DP3  shade.x, transnrmlN, lightPos;      
+#MAX  shade.x, shade.x, 0.0;
 
 MOV result.color, vertex.color;
-MOV result.texcoord[0].x, shade.x;
+MOV result.texcoord[0].x, transnrmlN.x;
 
 END
