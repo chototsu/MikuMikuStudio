@@ -97,7 +97,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.22 2004-02-28 02:52:59 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.23 2004-02-29 23:49:06 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -857,12 +857,17 @@ public class LWJGLRenderer implements Renderer {
             GL.glDisableClientState(GL.GL_COLOR_ARRAY);
         }
 
-        FloatBuffer textures = t.getTextureAsFloatBuffer();
-        if (textures != null) {
-            GL.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-            GL.glTexCoordPointer(2, 0, textures);
-        } else {
-            GL.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+        for(int i = 0; i < t.getNumberOfUnits(); i++) {
+            FloatBuffer textures = t.getTextureAsFloatBuffer(i);
+            if(textures != null) {
+                GL.glClientActiveTextureARB(GL.GL_TEXTURE0_ARB+i);
+                if (textures != null) {
+                    GL.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+                    GL.glTexCoordPointer(2, 0, textures);
+                } else {
+                    GL.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
+                }
+            }
         }
 
         GL.glDrawElements(GL.GL_TRIANGLES, t.getIndexAsBuffer());
@@ -871,6 +876,13 @@ public class LWJGLRenderer implements Renderer {
         GL.glPopMatrix();
     }
 
+    /**
+     *  <code>draw</code> draws a clone node object. The data for the
+     * geometry defined in the clone node is set but not rendered. The
+     * rendering occurs by the clone node's children (Clones).
+     * @param cn the clone node to render.
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.CloneNode)
+     */
     public void draw(CloneNode cn) {
         TriMesh t = cn.getGeometry();
 
@@ -904,6 +916,13 @@ public class LWJGLRenderer implements Renderer {
         }
     }
 
+    /**
+     *  <code>draw</code> renders a clone object. The depends on the
+     * data for geometry previously being set by a clone node. The
+     * world transformations are then made and the geometry is rendered.
+     * @param c the clone object.
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.Clone)
+     */
     public void draw(Clone c) {
         //set world matrix
         Matrix3f rotation = c.getWorldRotation();

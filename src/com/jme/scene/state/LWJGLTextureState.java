@@ -47,188 +47,221 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.5 2004-02-24 17:24:32 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.6 2004-02-29 23:49:07 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
-    //OpenGL texture attributes.
-    private int[] textureCorrection = { GL.GL_FASTEST, GL.GL_NICEST };
+	//OpenGL texture attributes.
+	private int[] textureCorrection = { GL.GL_FASTEST, GL.GL_NICEST };
 
-    private int[] textureApply =
-        { GL.GL_REPLACE, GL.GL_DECAL, GL.GL_MODULATE, GL.GL_BLEND };
+	private int[] textureApply =
+		{ GL.GL_REPLACE, GL.GL_DECAL, GL.GL_MODULATE, GL.GL_BLEND };
 
-    private int[] textureFilter = { GL.GL_NEAREST, GL.GL_LINEAR };
+	private int[] textureFilter = { GL.GL_NEAREST, GL.GL_LINEAR };
 
-    private int[] textureMipmap = { GL.GL_NEAREST, // MM_NONE (no mipmap)
-        GL.GL_NEAREST,
-            GL.GL_LINEAR,
-            GL.GL_NEAREST_MIPMAP_NEAREST,
-            GL.GL_NEAREST_MIPMAP_LINEAR,
-            GL.GL_LINEAR_MIPMAP_NEAREST,
-            GL.GL_LINEAR_MIPMAP_LINEAR };
+	private int[] textureMipmap = { GL.GL_NEAREST, // MM_NONE (no mipmap)
+		GL.GL_NEAREST,
+			GL.GL_LINEAR,
+			GL.GL_NEAREST_MIPMAP_NEAREST,
+			GL.GL_NEAREST_MIPMAP_LINEAR,
+			GL.GL_LINEAR_MIPMAP_NEAREST,
+			GL.GL_LINEAR_MIPMAP_LINEAR };
 
-    private int[] imageComponents =
-        { GL.GL_RGBA4, GL.GL_RGB8, GL.GL_RGB5_A1, GL.GL_RGBA8, GL.GL_LUMINANCE8_ALPHA8 };
+	private int[] imageComponents =
+		{
+			GL.GL_RGBA4,
+			GL.GL_RGB8,
+			GL.GL_RGB5_A1,
+			GL.GL_RGBA8,
+			GL.GL_LUMINANCE8_ALPHA8 };
 
-    private int[] imageFormats = { GL.GL_RGBA, GL.GL_RGB, GL.GL_RGBA, GL.GL_RGBA, GL.GL_LUMINANCE_ALPHA };
+	private int[] imageFormats =
+		{
+			GL.GL_RGBA,
+			GL.GL_RGB,
+			GL.GL_RGBA,
+			GL.GL_RGBA,
+			GL.GL_LUMINANCE_ALPHA };
 
-    /**
-     * <code>unset</code> disables texture mapping.
-     * @see com.jme.scene.state.RenderState#set()
-     */
-    public void unset() {
-        if(isEnabled()) {
-            GL.glDisable(GL.GL_TEXTURE_2D);
-        }
+	/**
+	 * Constructor instantiates a new <code>LWJGLTextureState</code> object.
+	 * The number of textures that can be combined is determined during 
+	 * construction. This equates the number of texture units supported by
+	 * the graphics card.
+	 *
+	 */
+	public LWJGLTextureState() {
+		super();
+		IntBuffer buf = ByteBuffer
+            .allocateDirect(4)
+            .order(ByteOrder.nativeOrder())
+            .asIntBuffer();
+		GL.glGetInteger(GL.GL_MAX_TEXTURE_UNITS_ARB, buf);
+		int numTexUnits = buf.get(0);
+		texture = new Texture[numTexUnits];
+	}
 
-    }
+	/**
+	 * <code>unset</code> disables texture mapping.
+	 * @see com.jme.scene.state.RenderState#set()
+	 */
+	public void unset() {
+		if (isEnabled()) {
+			for (int i = 0; i < getNumberOfUnits(); i++) {
+				GL.glActiveTextureARB(GL.GL_TEXTURE0_ARB + i);
+				GL.glDisable(GL.GL_TEXTURE_2D);
+			}
+		}
 
-    /**
-     * <code>set</code> manages the texture being described by the state. If
-     * the texture has not been loaded yet, it is generated and loaded using
-     * OpenGL. This means the initial pass to set will be longer than subsequent
-     * calls.
-     * @see com.jme.scene.state.RenderState#unset()
-     */
-    public void set() {
-    	if(getTexture() == null) {
-    		return;
-    	}
-    	
-        if (isEnabled()) {
-            
-            GL.glEnable(GL.GL_TEXTURE_2D);
+	}
 
-            Texture texture = getTexture();
-            if (texture == null) {
-                GL.glDisable(GL.GL_TEXTURE_2D);
-                return;
-            }
+	/**
+	 * <code>set</code> manages the textures being described by the state. If
+	 * the texture has not been loaded yet, it is generated and loaded using
+	 * OpenGL. This means the initial pass to set will be longer than subsequent
+	 * calls. The multitexture extension is used to define the multiple texture
+	 * states, with the number of units being determined at construction time.
+	 * @see com.jme.scene.state.RenderState#unset()
+	 */
+	public void set() {
+		if (isEnabled()) {
+			for (int i = 0; i < getNumberOfUnits(); i++) {
+				if (getTexture(i) == null) {
+					continue;
+				}
+				GL.glActiveTextureARB(GL.GL_TEXTURE0_ARB + i);
 
-            //texture not yet loaded.
-            if (texture.getTextureId() == 0) {
-                // Create A IntBuffer For Image Address In Memory   
-                IntBuffer buf =
-                    ByteBuffer
-                        .allocateDirect(4)
-                        .order(ByteOrder.nativeOrder())
-                        .asIntBuffer();
+				GL.glEnable(GL.GL_TEXTURE_2D);
 
-                //Create the texture
-                GL.glGenTextures(buf);
+				Texture texture = getTexture(i);
+				if (texture == null) {
+					GL.glDisable(GL.GL_TEXTURE_2D);
+					return;
+				}
 
-                GL.glBindTexture(GL.GL_TEXTURE_2D, buf.get(0));
+				//texture not yet loaded.
+				if (texture.getTextureId() == 0) {
+					// Create A IntBuffer For Image Address In Memory   
+					IntBuffer buf =
+						ByteBuffer
+							.allocateDirect(4)
+							.order(ByteOrder.nativeOrder())
+							.asIntBuffer();
 
-                texture.setTextureId(buf.get(0));
-                
-                // pass image data to OpenGL
-                Image image = texture.getImage();
-                if(image == null) {
-                	LoggingSystem.getLogger().log(Level.WARNING, "Image data for texture is null.");
-                	texture.setTextureId(-1);
-                	return;
-                }
-                if (texture.getMipmap() == Texture.MM_NONE) {
-                    GL.glTexImage2D(
-                        GL.GL_TEXTURE_2D,
-                        0,
-                        imageComponents[image.getType()],
-                        image.getWidth(),
-                        image.getHeight(),
-                        0,
-                        imageFormats[image.getType()],
-                        GL.GL_UNSIGNED_BYTE,
-                        image.getData());
-                } else {
-                    GLU.gluBuild2DMipmaps(
-                        GL.GL_TEXTURE_2D,
-                        imageComponents[image.getType()],
-                        image.getWidth(),
-                        image.getHeight(),
-                        imageFormats[image.getType()],
-                        GL.GL_UNSIGNED_BYTE,
-                        image.getData());
-                }
-            } else {
-                // texture already exists in OpenGL, just bind it
-                GL.glBindTexture(GL.GL_TEXTURE_2D, texture.getTextureId());
-            }
+					//Create the texture
+					GL.glGenTextures(buf);
 
-            // set up correction mode
-            GL.glHint(
-                GL.GL_PERSPECTIVE_CORRECTION_HINT,
-                textureCorrection[texture.getCorrection()]);
+					GL.glBindTexture(GL.GL_TEXTURE_2D, buf.get(0));
 
-            // set up apply mode
-            GL.glTexEnvi(
-                GL.GL_TEXTURE_ENV,
-                GL.GL_TEXTURE_ENV_MODE,
-                textureApply[texture.getApply()]);
+					texture.setTextureId(buf.get(0));
 
-            GL.glTexEnv(
-                GL.GL_TEXTURE_ENV,
-                GL.GL_TEXTURE_ENV_COLOR,
-                texture.getBlendColor());
+					// pass image data to OpenGL
+					Image image = texture.getImage();
+					if (image == null) {
+						LoggingSystem.getLogger().log(
+							Level.WARNING,
+							"Image data for texture is null.");
+						texture.setTextureId(-1);
+						return;
+					}
+					if (texture.getMipmap() == Texture.MM_NONE) {
+						GL.glTexImage2D(
+							GL.GL_TEXTURE_2D,
+							0,
+							imageComponents[image.getType()],
+							image.getWidth(),
+							image.getHeight(),
+							0,
+							imageFormats[image.getType()],
+							GL.GL_UNSIGNED_BYTE,
+							image.getData());
+					} else {
+						GLU.gluBuild2DMipmaps(
+							GL.GL_TEXTURE_2D,
+							imageComponents[image.getType()],
+							image.getWidth(),
+							image.getHeight(),
+							imageFormats[image.getType()],
+							GL.GL_UNSIGNED_BYTE,
+							image.getData());
+					}
+				} else {
+					// texture already exists in OpenGL, just bind it
+					GL.glBindTexture(GL.GL_TEXTURE_2D, texture.getTextureId());
+				}
 
-            // set up wrap mode
-            switch (texture.getWrap()) {
-                case Texture.WM_CLAMP_S_CLAMP_T :
-                    GL.glTexParameteri(
-                        GL.GL_TEXTURE_2D,
-                        GL.GL_TEXTURE_WRAP_S,
-                        GL.GL_CLAMP);
-                    GL.glTexParameteri(
-                        GL.GL_TEXTURE_2D,
-                        GL.GL_TEXTURE_WRAP_T,
-                        GL.GL_CLAMP);
-                    break;
-                case Texture.WM_CLAMP_S_WRAP_T :
-                    GL.glTexParameteri(
-                        GL.GL_TEXTURE_2D,
-                        GL.GL_TEXTURE_WRAP_S,
-                        GL.GL_CLAMP);
-                    GL.glTexParameteri(
-                        GL.GL_TEXTURE_2D,
-                        GL.GL_TEXTURE_WRAP_T,
-                        GL.GL_REPEAT);
-                    break;
-                case Texture.WM_WRAP_S_CLAMP_T :
-                    GL.glTexParameteri(
-                        GL.GL_TEXTURE_2D,
-                        GL.GL_TEXTURE_WRAP_S,
-                        GL.GL_REPEAT);
-                    GL.glTexParameteri(
-                        GL.GL_TEXTURE_2D,
-                        GL.GL_TEXTURE_WRAP_T,
-                        GL.GL_CLAMP);
-                    break;
-                case Texture.WM_WRAP_S_WRAP_T :
-                    GL.glTexParameteri(
-                        GL.GL_TEXTURE_2D,
-                        GL.GL_TEXTURE_WRAP_S,
-                        GL.GL_REPEAT);
-                    GL.glTexParameteri(
-                        GL.GL_TEXTURE_2D,
-                        GL.GL_TEXTURE_WRAP_T,
-                        GL.GL_REPEAT);
-                    break;
-            }
+				// set up correction mode
+				GL.glHint(
+					GL.GL_PERSPECTIVE_CORRECTION_HINT,
+					textureCorrection[texture.getCorrection()]);
 
-            // set up filter mode
-            GL.glTexParameteri(
-                GL.GL_TEXTURE_2D,
-                GL.GL_TEXTURE_MAG_FILTER,
-                textureFilter[texture.getFilter()]);
+				// set up apply mode
+				GL.glTexEnvi(
+					GL.GL_TEXTURE_ENV,
+					GL.GL_TEXTURE_ENV_MODE,
+					textureApply[texture.getApply()]);
 
-            // set up mipmap mode
-            GL.glTexParameteri(
-                GL.GL_TEXTURE_2D,
-                GL.GL_TEXTURE_MIN_FILTER,
-                textureMipmap[texture.getMipmap()]);
+				GL.glTexEnv(
+					GL.GL_TEXTURE_ENV,
+					GL.GL_TEXTURE_ENV_COLOR,
+					texture.getBlendColor());
 
-        } else {
-            GL.glDisable(GL.GL_TEXTURE_2D);
-        }
+				// set up wrap mode
+				switch (texture.getWrap()) {
+					case Texture.WM_CLAMP_S_CLAMP_T :
+						GL.glTexParameteri(
+							GL.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_WRAP_S,
+							GL.GL_CLAMP);
+						GL.glTexParameteri(
+							GL.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_WRAP_T,
+							GL.GL_CLAMP);
+						break;
+					case Texture.WM_CLAMP_S_WRAP_T :
+						GL.glTexParameteri(
+							GL.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_WRAP_S,
+							GL.GL_CLAMP);
+						GL.glTexParameteri(
+							GL.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_WRAP_T,
+							GL.GL_REPEAT);
+						break;
+					case Texture.WM_WRAP_S_CLAMP_T :
+						GL.glTexParameteri(
+							GL.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_WRAP_S,
+							GL.GL_REPEAT);
+						GL.glTexParameteri(
+							GL.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_WRAP_T,
+							GL.GL_CLAMP);
+						break;
+					case Texture.WM_WRAP_S_WRAP_T :
+						GL.glTexParameteri(
+							GL.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_WRAP_S,
+							GL.GL_REPEAT);
+						GL.glTexParameteri(
+							GL.GL_TEXTURE_2D,
+							GL.GL_TEXTURE_WRAP_T,
+							GL.GL_REPEAT);
+						break;
+				}
 
-    }
+				// set up filter mode
+				GL.glTexParameteri(
+					GL.GL_TEXTURE_2D,
+					GL.GL_TEXTURE_MAG_FILTER,
+					textureFilter[texture.getFilter()]);
 
+				// set up mipmap mode
+				GL.glTexParameteri(
+					GL.GL_TEXTURE_2D,
+					GL.GL_TEXTURE_MIN_FILTER,
+					textureMipmap[texture.getMipmap()]);
+
+			}
+		}
+	}
 }

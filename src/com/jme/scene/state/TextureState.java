@@ -41,18 +41,18 @@ import com.jme.image.Texture;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.1 2003-10-13 18:30:08 mojomonkey Exp $
+ * @version $Id: TextureState.java,v 1.2 2004-02-29 23:49:07 mojomonkey Exp $
  */
 public abstract class TextureState extends RenderState {
     //the texture 
-    private Texture texture;
+    protected Texture[] texture;
     
     /**
      * Constructor instantiates a new <code>TextureState</code> object. 
      *
      */
     public TextureState() {
-        texture = new Texture();
+        texture = new Texture[0];
     }
 
     /**
@@ -66,21 +66,64 @@ public abstract class TextureState extends RenderState {
     
     /**
      * 
-     * <code>setTexture</code> sets the texture object to be used by the
-     * state.
-     * @param texture the texture to be used by the state.
+     * <code>setTexture</code> sets a single texture to the first
+     * texture unit.
+     * @param texture the texture to set.
      */
     public void setTexture(Texture texture) {
-        this.texture = texture;
+        this.texture[0] = texture;
+    }
+    
+    /**
+     * 
+     * <code>getTexture</code> gets the texture that is assigned to the
+     * first texture unit.
+     * @return the texture in the first texture unit.
+     */
+    public Texture getTexture() {
+        return texture[0];
+    }
+    
+    
+    /**
+     * 
+     * <code>setTexture</code> sets the texture object to be used by the
+     * state. The texture unit that this texture uses is set, if the
+     * unit is not valid, i.e. less than zero or greater than the 
+     * number of texture units supported by the graphics card, it is
+     * ignored.
+     * @param texture the texture to be used by the state.
+     * @param textureUnit the texture unit this texture will fill.
+     */
+    public void setTexture(Texture texture, int textureUnit) {
+        if(textureUnit >= 0 && textureUnit < this.texture.length) {
+            this.texture[textureUnit] = texture;
+        }
     }
     
     /**
      * 
      * <code>getTexture</code> retrieves the texture being used by the 
-     * state.
-     * @return the texture being used by the state.
+     * state in a particular texture unit.
+     * @param textureUnit the texture unit to retrieve the texture from.
+     * @return the texture being used by the state. If the texture unit
+     *      is invalid, null is returned.
      */
-    public Texture getTexture() {
-        return texture;
+    public Texture getTexture(int textureUnit) {
+        if(textureUnit >= 0 && textureUnit < this.texture.length) {
+            return texture[textureUnit];
+        } else {
+            return null;
+        }
+    }
+    
+    /**
+     * 
+     * <code>getNumberOfUnits</code> returns the number of texture units
+     * the computer's graphics card supports.
+     * @return the number of texture units supported by the graphics card.
+     */
+    public int getNumberOfUnits() {
+        return texture.length;
     }
 }
