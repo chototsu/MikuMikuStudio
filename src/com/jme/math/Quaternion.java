@@ -47,7 +47,7 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.25 2004-07-18 18:26:16 ericthered Exp $
+ * @version $Id: Quaternion.java,v 1.26 2004-07-20 16:41:56 renanse Exp $
  */
 public class Quaternion implements Externalizable{
     public float x, y, z, w;
@@ -352,12 +352,9 @@ public class Quaternion implements Externalizable{
      */
     public Quaternion slerp(Quaternion q1, Quaternion q2, float t) {
         // Create a local quaternion to store the interpolated quaternion
-        Quaternion interpolated = new Quaternion();
-
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
-            interpolated.set(q1);
             this.set(q1);
-            return interpolated;
+            return this;
         }
 
         float result =
@@ -388,17 +385,13 @@ public class Quaternion implements Externalizable{
 
         // Calculate the x, y, z and w values for the quaternion by using a special
         // form of linear interpolation for quaternions.
-        interpolated.x = (scale0 * q1.x) + (scale1 * q2.x);
-        interpolated.y = (scale0 * q1.y) + (scale1 * q2.y);
-        interpolated.z = (scale0 * q1.z) + (scale1 * q2.z);
-        interpolated.w = (scale0 * q1.w) + (scale1 * q2.w);
+        this.x = (scale0 * q1.x) + (scale1 * q2.x);
+        this.y = (scale0 * q1.y) + (scale1 * q2.y);
+        this.z = (scale0 * q1.z) + (scale1 * q2.z);
+        this.w = (scale0 * q1.w) + (scale1 * q2.w);
 
         // Return the interpolated quaternion
-        x = interpolated.x;
-        y = interpolated.y;
-        z = interpolated.z;
-        w = interpolated.w;
-        return interpolated;
+        return this;
     }
 
     /**
