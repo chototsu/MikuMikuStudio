@@ -36,14 +36,14 @@ import java.util.logging.Level;
 import com.jme.util.LoggingSystem;
 
 /**
- * <code>SimpleGame</code> provides the simplest possible implementation
+ * <code>BaseGame</code> provides the simplest possible implementation
  * of a main game loop. Both logic and graphics are updated as quickly as
  * possible, with no interpolation to account for shifting frame rates.
  * It is suggested that a more complex variant of AbstractGame be used
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.4 2004-10-02 20:40:46 renanse Exp $
+ * @version $Id: BaseGame.java,v 1.5 2004-11-09 03:11:22 renanse Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 
@@ -77,7 +77,7 @@ public abstract class BaseGame extends AbstractGame {
     catch (Throwable t) {
       t.printStackTrace();
     }
-    
+
     cleanup();
     LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
 
