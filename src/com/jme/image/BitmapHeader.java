@@ -39,7 +39,7 @@ import java.io.IOException;
  * <code>BitmapHeader</code> defines header information about a bitmap (BMP) image
  * file format.
  * @author Mark Powell
- * @version $Id: BitmapHeader.java,v 1.9 2004-04-22 22:26:28 renanse Exp $
+ * @version $Id: BitmapHeader.java,v 1.10 2004-07-29 19:29:45 cep21 Exp $
  */
 public class BitmapHeader {
     /**
@@ -195,9 +195,12 @@ public class BitmapHeader {
         return image;
     }
 
-    /* Builds an int from a byte array - convert little to big endian.
-         */
-
+    /**
+     * Builds an int from a byte array - convert little to big endian.
+     * @param in Byte array to convert
+     * @param offset offset in byte array
+     * @return Big endian int from in[offset]-in[offset+3]
+     */
     private int constructInt(byte[] in, int offset) {
         int ret = (in[offset + 3] & 0xff);
         ret = (ret << 8) | (in[offset + 2] & 0xff);
@@ -206,10 +209,13 @@ public class BitmapHeader {
         return (ret);
     }
 
-    /* Builds an int from a byte array - convert little to big endian
-     * set high order bytes to 0xfff.
+    /**
+     * Builds an int from a byte array - convert little to big endian
+     * set high order bytes to 0xfff..
+     * @param in Byte array to convert.
+     * @param offset Offset in byte array.
+     * @return Big endian int from in[offset]-in[offset+2] with higher order of 0xff
      */
-
     private int constructInt3(byte[] in, int offset) {
         int ret = 0xff;
         ret = (ret << 8) | (in[offset + 2] & 0xff);
@@ -218,9 +224,12 @@ public class BitmapHeader {
         return (ret);
     }
 
-    /* Builds an int from a byte array - convert little to big endian.
+    /**
+     * Builds a long from a byte array - convert little to big endian.
+     * @param in Byte array to convert.
+     * @param offset Offset in byte array.
+     * @return Big endian long from in[offset]-in[offset+7]
      */
-
     private long constructLong(byte[] in, int offset) {
         long ret = ((long) in[offset + 7] & 0xff);
         ret |= (ret << 8) | ((long) in[offset + 6] & 0xff);
@@ -233,23 +242,33 @@ public class BitmapHeader {
         return (ret);
     }
 
-    /* Builds an double from a byte array - convert little to big endian.
+    /**
+     * Builds an double from a byte array - convert little to big endian.
+     * @param in Byte array to convert.
+     * @param offset Offset in byte array.
+     * @return Big endian double from in[offset]-in[offset+7]
      */
-
     private double constructDouble(byte[] in, int offset) {
         long ret = constructLong(in, offset);
         return (Double.longBitsToDouble(ret));
     }
 
-    /* Builds an short from a byte array - convert little to big endian.
+    /**
+     * Builds an short from a byte array - convert little to big endian.
+     * @param in Byte array to convert.
+     * @param offset Offset in byte array.
+     * @return Big endian short from in[offset]-in[offset+1]
      */
-
     private short constructShort(byte[] in, int offset) {
         short ret = (short) (in[offset + 1] & 0xff);
         ret = (short) ((ret << 8) | (short) (in[offset + 0] & 0xff));
         return (ret);
     }
 
+    /**
+     * Reads in a bitmap header from the byte[] and chops it up into BitemapHeader variables
+     * @param data The byte[] to read.
+     */
     public final void read(byte[] data){
         final int bflen = 14;
         byte bf[] = new byte[bflen];
