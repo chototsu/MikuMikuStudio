@@ -41,7 +41,9 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.logging.Level;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -202,6 +204,16 @@ public class SoundSystem implements ISoundSystem {
 		ByteBuffer data = BufferUtils.createByteBuffer(length);//ByteBuffer.allocateDirect(length);
 		data.put(temp);
 		data.rewind();
+		
+		  // On Mac we need to convert this to big endian
+		if (audioStream.getFormat().getSampleSizeInBits() == 16 && ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
+		{
+		    ShortBuffer tmp = data.duplicate().order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+		    while(tmp.hasRemaining())
+		        data.putShort(tmp.get());
+		    data.rewind();
+		} 
+		 
 		int channels = getChannels(audioStream.getFormat());
 		IBuffer[] tmp = generateBuffers(1);
 		tmp[0].configure(data, channels, (int) audioStream.getFormat()
