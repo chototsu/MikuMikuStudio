@@ -29,6 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  02/08/2004 - Added update(boolean updateState) to allow for a 
+ *                      WidgetViewport to update an AbstractInputController 
+ *                      without polling the mouse.  GOP
+ */
+
+ 
 package com.jme.input;
 
 /**
@@ -37,7 +45,7 @@ package com.jme.input;
  * position of a mouse in a rendering window. This type of controller is 
  * typically useful for a first person mouse look or similar.
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.2 2004-01-25 00:56:25 greggpatton Exp $
+ * @version $Id: RelativeMouse.java,v 1.3 2004-02-09 11:56:18 greggpatton Exp $
  */
 public class RelativeMouse extends Mouse {
     /**
@@ -53,7 +61,17 @@ public class RelativeMouse extends Mouse {
      * previous polling.
      */
     public void update() {
-        mouse.updateState();
+        update(true);
+    }
+
+    /** <code>update</code> 
+     * @param updateState
+     * @see com.jme.input.Mouse#update(boolean)
+     */
+    public void update(boolean updateState) {
+        if (updateState)
+            mouse.updateState();
+
         localTranslation.x = mouse.getXDelta();
         localTranslation.y = mouse.getYDelta();
     }

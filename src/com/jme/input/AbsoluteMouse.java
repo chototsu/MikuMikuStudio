@@ -29,6 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  02/08/2004 - Added update(boolean updateState) to allow for a 
+ *                      WidgetViewport to update an AbstractInputController 
+ *                      without polling the mouse.  GOP
+ */
+ 
 package com.jme.input;
 
 /**
@@ -38,7 +45,8 @@ package com.jme.input;
  * contained within the values provided during construction (typically these
  * correspond to the width and height of the window).
  * @author Mark Powell
- * @version $Id: AbsoluteMouse.java,v 1.1 2003-10-23 21:24:18 mojomonkey Exp $
+ * @author Gregg Patton
+ * @version $Id: AbsoluteMouse.java,v 1.2 2004-02-09 11:51:28 greggpatton Exp $
  */
 public class AbsoluteMouse extends Mouse {
     //position
@@ -60,7 +68,17 @@ public class AbsoluteMouse extends Mouse {
      * <code>update</code> sets the mouse's current position within the window.
      */
     public void update() {
-        mouse.poll();
+        update(true);
+    }
+
+    /** <code>update</code> 
+     * @param updateState
+     * @see com.jme.input.Mouse#update(boolean)
+     */
+    public void update(boolean updateState) {
+        if (updateState)
+            mouse.poll();
+            
         localTranslation.x += mouse.getXDelta();
         localTranslation.y += mouse.getYDelta();
 

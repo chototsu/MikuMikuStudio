@@ -29,6 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  02/08/2004 - Added update(boolean updateState) to allow for a 
+ *                      WidgetViewport to update an AbstractInputController 
+ *                      without polling the mouse.  GOP
+ */
+
 package com.jme.input;
 
 import com.jme.renderer.Renderer;
@@ -41,7 +48,8 @@ import com.jme.scene.state.TextureState;
  * of a mouse input device. If a cursor is set, this cursor is desplayed in
  * the position defined by the device.
  * @author Mark Powell
- * @version $Id: Mouse.java,v 1.1 2003-10-23 21:24:18 mojomonkey Exp $
+ * @author Gregg Patton
+ * @version $Id: Mouse.java,v 1.2 2004-02-09 11:55:25 greggpatton Exp $
  */
 public abstract class Mouse extends Geometry {
     /**
@@ -148,4 +156,10 @@ public abstract class Mouse extends Geometry {
      *
      */
     public abstract void update();
+
+    /**
+     * <code>update</code> updates the mouse input object.
+     * @param updateState indicates if the mouse's state should be updated
+     */
+    public abstract void update(boolean updateState);
 }
