@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.4 2004-02-22 20:50:05 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.5 2004-02-22 23:47:00 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -96,23 +96,23 @@ public class TestBezierMesh extends SimpleGame {
         input.update(timer.getTimePerFrame() * 10);
         
         
-//        //update individual sprites
-//         if ((int) currentPos.x == (int) newPos.x
-//             && (int) currentPos.y == (int) newPos.y
-//             && (int) currentPos.z == (int) newPos.z) {
-//             newPos.x = (float) Math.random() * 10 - 5;
-//             newPos.y = (float) Math.random() * 10 - 5;
-//             newPos.z = (float) Math.random() * 10 - 5;
-//         }
-//
-//         currentPos.x -= (currentPos.x - newPos.x)
-//             / (timer.getFrameRate() / 2);
-//         currentPos.y -= (currentPos.y - newPos.y)
-//             / (timer.getFrameRate() / 2);
-//         currentPos.z -= (currentPos.z - newPos.z)
-//             / (timer.getFrameRate() / 2);
-//             
-//         lightNode.setLocalTranslation(currentPos);
+        //update individual sprites
+         if ((int) currentPos.x == (int) newPos.x
+             && (int) currentPos.y == (int) newPos.y
+             && (int) currentPos.z == (int) newPos.z) {
+             newPos.x = (float) Math.random() * 10 - 5;
+             newPos.y = (float) Math.random() * 10 - 5;
+             newPos.z = (float) Math.random() * 10 - 5;
+         }
+
+         currentPos.x -= (currentPos.x - newPos.x)
+             / (timer.getFrameRate() / 2);
+         currentPos.y -= (currentPos.y - newPos.y)
+             / (timer.getFrameRate() / 2);
+         currentPos.z -= (currentPos.z - newPos.z)
+             / (timer.getFrameRate() / 2);
+             
+         lightNode.setLocalTranslation(currentPos);
 
             lightNode.setLocalTranslation(new Vector3f(100, 100, 0));
          scene.updateGeometricState(timer.getTimePerFrame(), true);
