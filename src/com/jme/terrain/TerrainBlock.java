@@ -1,20 +1,21 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- *
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
+ * reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * 
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
+ * 
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  */
 
 package com.jme.terrain;
@@ -37,7 +38,20 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 
 /**
+ * <code>TerrainBlock</code> defines the lowest level of the terrain system. 
+ * <code>TerrainBlock</code> is the actual part of the terrain system that
+ * renders to the screen. The terrain is built from a heightmap defined by
+ * a one dimenensional int array. The step scale is used to define the
+ * amount of units each block line will extend. Clod can be used to allow for 
+ * level of detail control.
+ * 
+ * By directly creating a <code>TerrainBlock</code> yourself, you can generate
+ * a brute force terrain. This is many times sufficient for small terrains on
+ * modern hardware. If terrain is to be large, it is recommended that you make
+ * use of the <code>TerrainPage</code> class.
+ * 
  * @author Mark Powell
+ * @version $Id: TerrainBlock.java,v 1.14 2004-04-25 03:57:13 mojomonkey Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -48,17 +62,21 @@ public class TerrainBlock extends AreaClodMesh {
     private boolean useClod;
 
     private int totalSize;
+
     private Vector2f offset;
+
     private int offsetAmount;
 
     /** Creates a new instance of TerrainBlock */
     public TerrainBlock(String name, int size, float stepScale,
             int[] heightMap, Vector3f origin, boolean clod) {
-        this(name, size, stepScale, heightMap, origin, clod, size, new Vector2f(), 0);
+        this(name, size, stepScale, heightMap, origin, clod, size,
+                new Vector2f(), 0);
     }
 
     public TerrainBlock(String name, int size, float stepScale,
-            int[] heightMap, Vector3f origin, boolean clod, int totalSize, Vector2f offset, int offsetAmount) {
+            int[] heightMap, Vector3f origin, boolean clod, int totalSize,
+            Vector2f offset, int offsetAmount) {
         super(name);
         this.useClod = clod;
         this.size = size;
@@ -72,25 +90,25 @@ public class TerrainBlock extends AreaClodMesh {
         buildTextureCoordinates();
         buildNormals();
 
-        if(useClod) {
+        if (useClod) {
             this.create(null);
             this.setTrisPerPixel(0.02f);
         }
     }
 
     public int chooseTargetRecord(Renderer r) {
-    	if(useClod) {
-    	    return super.chooseTargetRecord(r);
-    	} else {
-    	    return 0;
-    	}
+        if (useClod) {
+            return super.chooseTargetRecord(r);
+        } else {
+            return 0;
+        }
     }
 
     /**
-     *
+     * 
      * <code>setDetailTexture</code> sets the detail texture unit's repeat
      * value.
-     *
+     * 
      * @param unit
      * @param repeat
      */
@@ -106,7 +124,7 @@ public class TerrainBlock extends AreaClodMesh {
     /**
      * <code>buildVertices</code> sets up the vertex and index arrays of the
      * TriMesh.
-     *
+     * 
      * @param heightMap
      *            the raw data.
      */
@@ -154,65 +172,73 @@ public class TerrainBlock extends AreaClodMesh {
     /**
      * <code>buildTextureCoordinates</code> calculates the texture coordinates
      * of the terrain.
-     *
+     *  
      */
     private void buildTextureCoordinates() {
-        offset.x += (int)(offsetAmount * stepScale);
-        offset.y += (int)(offsetAmount * stepScale);
+        offset.x += (int) (offsetAmount * stepScale);
+        offset.y += (int) (offsetAmount * stepScale);
 
         texture[0] = new Vector2f[vertex.length];
 
         for (int i = 0; i < texture[0].length; i++) {
-            texture[0][i] = new Vector2f(
-                    (vertex[i].x + offset.x) / (stepScale * (totalSize - 1)),
-                    (vertex[i].z + offset.y) / (stepScale * (totalSize - 1)));
+            texture[0][i] = new Vector2f((vertex[i].x + offset.x)
+                    / (stepScale * (totalSize - 1)), (vertex[i].z + offset.y)
+                    / (stepScale * (totalSize - 1)));
         }
 
         setTextures(texture[0]);
     }
 
-        /**
-     *
+    /**
+     * 
      * <code>buildNormals</code> calculates the normals of each vertex that
      * makes up the block of terrain.
-     *
-     *
+     * 
+     *  
      */
     private void buildNormals() {
-      Vector3f[] normal = new Vector3f[vertex.length];
+        Vector3f[] normal = new Vector3f[vertex.length];
 
-      int normalIndex = 0;
-      for (int row = 0; row < size; row++) {
-        for (int col = 0; col < size; col++) {
-          if (row == size - 1) {
-            if (col == size - 1) { // last row, last col
-              // up cross left
-              normal[normalIndex] = vertex[normalIndex -
-                  size].subtract(vertex[normalIndex]).cross(vertex[normalIndex -
-                  1].subtract(vertex[normalIndex])).normalize();
-            } else { // last row, except for last col
-              // right cross up
-              normal[normalIndex] = vertex[normalIndex +
-                  1].subtract(vertex[normalIndex]).cross(vertex[normalIndex -
-                  size].subtract(vertex[normalIndex])).normalize();
+        int normalIndex = 0;
+        for (int row = 0; row < size; row++) {
+            for (int col = 0; col < size; col++) {
+                if (row == size - 1) {
+                    if (col == size - 1) { // last row, last col
+                        // up cross left
+                        normal[normalIndex] = vertex[normalIndex - size]
+                                .subtract(vertex[normalIndex]).cross(
+                                        vertex[normalIndex - 1]
+                                                .subtract(vertex[normalIndex]))
+                                .normalize();
+                    } else { // last row, except for last col
+                        // right cross up
+                        normal[normalIndex] = vertex[normalIndex + 1].subtract(
+                                vertex[normalIndex]).cross(
+                                vertex[normalIndex - size]
+                                        .subtract(vertex[normalIndex]))
+                                .normalize();
+                    }
+                } else {
+                    if (col == size - 1) { // last column except for last row
+                        // left cross down
+                        normal[normalIndex] = vertex[normalIndex - 1].subtract(
+                                vertex[normalIndex]).cross(
+                                vertex[normalIndex + size]
+                                        .subtract(vertex[normalIndex]))
+                                .normalize();
+                    } else { // most cases
+                        // down cross right
+                        normal[normalIndex] = vertex[normalIndex + size]
+                                .subtract(vertex[normalIndex]).cross(
+                                        vertex[normalIndex + 1]
+                                                .subtract(vertex[normalIndex]))
+                                .normalizeLocal();
+                    }
+                }
+                normalIndex++;
             }
-          } else {
-            if (col == size - 1) { // last column except for last row
-              // left cross down
-              normal[normalIndex] = vertex[normalIndex -
-                  1].subtract(vertex[normalIndex]).cross(vertex[normalIndex +
-                  size].subtract(vertex[normalIndex])).normalize();
-            } else { // most cases
-              // down cross right
-              normal[normalIndex] = vertex[normalIndex +
-                  size].subtract(vertex[normalIndex]).cross(vertex[normalIndex +
-                  1].subtract(vertex[normalIndex])).normalizeLocal();
-            }
-          }
-          normalIndex++;
         }
-      }
 
-      setNormals(normal);
+        setNormals(normal);
     }
 }
