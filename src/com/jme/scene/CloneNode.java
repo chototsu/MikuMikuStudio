@@ -40,14 +40,21 @@ import com.jme.scene.state.RenderState;
 import java.util.Stack;
 
 /**
- * <code>CloneNode</code>
+ * <code>CloneNode</code> is a node that maintains a list of only Clone
+ * children, and a TriMesh geometry.  Each Clone child will have the information
+ * of the geometry, but may have its own position, orientation, and render states.
+ *
  * @author Mark Powell
- * @version $Id: CloneNode.java,v 1.6 2004-06-17 16:31:11 renanse Exp $
+ * @version $Id: CloneNode.java,v 1.7 2004-08-01 02:56:12 cep21 Exp $
  */
 public class CloneNode extends Node {
     private TriMesh geometry;
     RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
+    /**
+     * Creates a new CloneNode with the given name.
+     * @param name The name of the CloneNode.
+     */
     public CloneNode(String name) {
         super(name);
     }
@@ -68,6 +75,11 @@ public class CloneNode extends Node {
       super.draw(r);
     }
 
+    /**
+     * Applies the stack of render states to each child by calling updateRenderState(states) on
+     * each child.
+     * @param states The Stack[] of render states to apply to each child.
+     */
     protected void applyRenderState(Stack[] states) {
       for (int x = 0; x < states.length; x++) {
         if (states[x].size() > 0) {
@@ -137,6 +149,11 @@ public class CloneNode extends Node {
         return children.size();
     }
 
+    /**
+     * Sets the geometry that defines how each child of this CloneNode will look.  This
+     * may be called before or after children are added.
+     * @param geometry The new geometry of each child.
+     */
     public void setGeometry(TriMesh geometry) {
         this.geometry = geometry;
         for (int i = 0; i < this.getQuantity(); i++) {
@@ -144,6 +161,11 @@ public class CloneNode extends Node {
         }
     }
 
+    /**
+     * Returns the current geometry that defines how this CloneNode's children
+     * will look.
+     * @return The CloneNode's current geometry.
+     */
     public TriMesh getGeometry() {
         return geometry;
     }

@@ -36,7 +36,7 @@ import java.nio.IntBuffer;
 import com.jme.renderer.Renderer;
 
 /**
- * <code>Clone</code> defines a scene node that takes it's geometry data from
+ * <code>Clone</code> defines a scene spatial that takes it's geometry data from
  * a set <code>TriMesh</code> from a parent <code>CloneNode</code>.
  * <code>Clone</code> has no real data of it's own, only a position, orientation
  * and render states. This allows for a more efficient system for reusing loaded
@@ -45,7 +45,7 @@ import com.jme.renderer.Renderer;
  * clone builds it's bounding volume by transforming the cloned geometry's
  * model bounds by it's current position, orientation and scale.
  * @author Mark Powell
- * @version $Id: Clone.java,v 1.7 2004-07-20 19:47:48 Mojomonkey Exp $
+ * @version $Id: Clone.java,v 1.8 2004-08-01 02:57:12 cep21 Exp $
  */
 public class Clone extends Spatial {
 
@@ -105,7 +105,13 @@ public class Clone extends Spatial {
     public void setIndexBuffer(IntBuffer indexBuffer) {
         this.indexBuffer = indexBuffer;
     }
-    
+
+  /**
+   *
+   * <code>setForceView</code> will force the Clone to be rendered whether it's
+   * in the camera frustum or not.
+   * @param value true to force viewing, false otherwise.
+   */
     public void setForceView(boolean value) {
     	forceView = value;
     }
