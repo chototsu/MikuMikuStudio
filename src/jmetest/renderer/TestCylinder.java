@@ -39,13 +39,12 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Cylinder;
 import com.jme.scene.state.TextureState;
-import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
- * <code>TestLightState</code>
+ * <code>TestCylinder</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.7 2004-04-23 00:33:02 renanse Exp $
+ * @version $Id: TestCylinder.java,v 1.8 2004-04-23 00:33:41 renanse Exp $
  */
 public class TestCylinder extends SimpleGame {
 
