@@ -128,7 +128,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.29 2004-07-08 05:26:44 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.30 2004-07-09 02:03:38 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1206,7 +1206,7 @@ public class LWJGLRenderer implements Renderer {
     if (font == null) {
       font = new LWJGLFont();
     }
-
+    font.setColor(t.getTextColor());
     font.print( (int) t.getLocalTranslation().x, (int) t
                .getLocalTranslation().y, t.getLocalScale(), t.getText(), 0);
   }

@@ -37,6 +37,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Window;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 
 /**
  * <code>Font2D</code> maintains display lists for each ASCII character
@@ -57,7 +58,7 @@ import com.jme.math.Vector3f;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.7 2004-07-08 20:37:06 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.8 2004-07-09 02:03:37 renanse Exp $
  */
 public class LWJGLFont {
     /**
@@ -72,12 +73,12 @@ public class LWJGLFont {
     //display list offset.
     private int base;
 
-    //Color to render the font.
-    private float red, green, blue, alpha;
-
     //buffer that holds the text.
     private ByteBuffer scratch;
     private char[] charbuf;
+
+    //Color to render the font.
+    private ColorRGBA fontColor;
 
   /**
      * Constructor instantiates a new <code>LWJGLFont</code> object. The
@@ -85,10 +86,7 @@ public class LWJGLFont {
      *
      */
     public LWJGLFont() {
-        red = 1.0f;
-        green = 1.0f;
-        blue = 1.0f;
-        alpha = 1.0f;
+        fontColor = new ColorRGBA(1,1,1,1);
         scratch = BufferUtils.createByteBuffer(1);//ByteBuffer.allocateDirect(1).order(ByteOrder.nativeOrder());
         charbuf = new char[1];
         buildDisplayList();
@@ -106,16 +104,10 @@ public class LWJGLFont {
      * <code>setColor</code> sets the RGBA values to render the font as.
      * By default the color is white with no transparency.
      *
-     * @param r the red component of the color.
-     * @param g the green component of the color.
-     * @param b the blue component of the color.
-     * @param a the alpha component of the color.
+     * @param color the color to set.
      */
-    public void setColor(float r, float g, float b, float a) {
-        red = r;
-        green = g;
-        blue = b;
-        alpha = a;
+    public void setColor(ColorRGBA color) {
+        fontColor.set(color);
     }
     /**
      * <code>print</code> renders the specified string to a given (x,y) location.
@@ -156,7 +148,7 @@ public class LWJGLFont {
         for (int z = 0; z < charbuf.length; z++)
           scratch.put((byte)charbuf[z]);
         scratch.flip();
-        GL11.glColor4f(red, green, blue, alpha);
+        GL11.glColor4f(fontColor.r, fontColor.g, fontColor.b, fontColor.a);
         //call the list for each letter in the string.
         GL11.glCallLists(scratch);
 
@@ -207,7 +199,7 @@ public class LWJGLFont {
      */
     public String toString() {
         String string = super.toString();
-        string += "\nColor: " + red + " " + green + " " + blue + " " + alpha;
+        string += "\nColor: " + fontColor.toString();
 
         return string;
     }

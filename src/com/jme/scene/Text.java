@@ -33,16 +33,18 @@
 package com.jme.scene;
 
 import com.jme.renderer.Renderer;
+import com.jme.renderer.ColorRGBA;
 
 
 /**
  *
  * <code>Text</code>
  * @author Mark Powell
- * @version $Id: Text.java,v 1.8 2004-06-17 16:31:13 renanse Exp $
+ * @version $Id: Text.java,v 1.9 2004-07-09 02:03:38 renanse Exp $
  */
 public class Text extends Geometry {
     private StringBuffer text;
+    private ColorRGBA textColor = new ColorRGBA();
 
     /**
      * Constructor takes a path to the texture to use of the font base. This
@@ -104,4 +106,11 @@ public class Text extends Geometry {
         r.drawBounds(this);
     }
 
+    public void setTextColor(ColorRGBA color) {
+      textColor.set(color);
+    }
+
+    public ColorRGBA getTextColor() {
+      return textColor;
+    }
 }
