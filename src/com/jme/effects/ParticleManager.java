@@ -61,7 +61,7 @@ import com.jme.scene.state.TextureState;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.19 2005-03-14 18:27:03 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.20 2005-03-17 21:41:42 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -612,7 +612,8 @@ public class ParticleManager extends Controller {
     
     /**
      * Set the general direction that particles are emitted in.
-     * This will be modified by the emission angle.
+     * This will be modified by the emission angle.  You need to use
+     * a non-zero normalized direction.
      *
      * @param direction Vector3f
      */
