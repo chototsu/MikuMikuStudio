@@ -53,6 +53,8 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.sound.ISource;
+import com.jme.sound.SoundAPIController;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
@@ -75,14 +77,17 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.3 2004-01-25 02:15:19 mojomonkey Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.4 2004-01-26 00:08:24 Anakan Exp $
  */
 public class TestWidgetButtonLightSwitch extends AbstractGame {
-    static String STARTED_STATE_STRING = " Stop ";
+    private ISource clickSource;
+	static String STARTED_STATE_STRING = " Stop ";
     static String STOPPED_STATE_STRING = "Start";
 
     static String ON_STATE_STRING = "Off";
     static String OFF_STATE_STRING = "On";
+    
+    
 
     class TestFrame extends WidgetFrameAbstract implements Observer {
 
@@ -249,6 +254,7 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
 
             if (getMouseInput().getButtonState() != WidgetMouseButtonType.MOUSE_BUTTON_2) {
                 super.handleMouseButtonDown();
+                
             }
         }
 
@@ -262,8 +268,10 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
         public void update(Observable o, Object arg) {
             if (arg == startStopButton) {
                 toggleStartStop();
+				clickSource.play();
             } else if (arg == onOffButton) {
                 toggleOnOff();
+				clickSource.play();
             }
 
         }
@@ -351,6 +359,7 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
 
         input = new WidgetMouseTestControllerFirstPerson(this, display.getRenderer().getCamera(), properties.getRenderer());
 
+    	SoundAPIController.getSoundSystem("LWJGL");
     }
 
     /* (non-Javadoc)
@@ -476,6 +485,8 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
         frame = new TestFrame(display, input, Timer.getTimer(properties.getRenderer()));
 
         root.attachChild(frame);
+        
+        clickSource=SoundAPIController.getSoundSystem().loadSource("data/sound/click.mp3");
 
     }
 
