@@ -5,6 +5,9 @@ import com.jme.scene.model.ms3d.MilkLoader;
 import com.jme.scene.model.XMLparser.XMLWriter;
 import com.jme.scene.model.XMLparser.SAXReader;
 import com.jme.scene.Node;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.shape.Box;
+import com.jme.math.Vector3f;
 
 import java.net.URL;
 import java.io.IOException;
@@ -37,6 +40,7 @@ public class TestXMLWriter extends SimpleGame{
         } catch (IOException e) {
             System.out.println("Error writting");
         }
+        System.out.println(BO);
         SAXReader sr=new SAXReader();
         Node qq=sr.loadXML(new ByteArrayInputStream(BO.toByteArray()));
         rootNode.attachChild(qq);
