@@ -274,4 +274,13 @@ public class MilkToJme extends FormatConverter{
             if (inString[i]==0) return new String(inString,0,i);
         return new String(inString);
     }
+
+    /**
+     * This function returns the controller of a loaded Milkshape3D model.
+     * @param model The model that was loaded.
+     * @return The controller for that milkshape model.
+     */
+    public static JointController findController(Node model){
+        return (JointController) (model.getChild(0)).getController(0);
+    }
 }
