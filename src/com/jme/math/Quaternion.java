@@ -47,7 +47,7 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.22 2004-07-06 05:03:41 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.23 2004-07-14 22:46:47 cep21 Exp $
  */
 public class Quaternion implements Externalizable{
     public float x, y, z, w;
@@ -654,14 +654,32 @@ public class Quaternion implements Externalizable{
         if (norm > 0.0) {
             float invNorm = 1.0f / norm;
             return new Quaternion(
-                w * invNorm,
                 -x * invNorm,
                 -y * invNorm,
-                -z * invNorm);
+                -z * invNorm,
+                w * invNorm);
         } else {
             // return an invalid result to flag the error
             return null;
         }
+    }
+
+    /**
+     * <code>inverse</code> calculates the inverse of this quaternion
+     * and returns this quaternion after it is calculated. If this quaternion does not have an inverse
+     * (if it's norma is 0 or less), nothing happens
+     * @return the inverse of this quaternion
+     */
+    public Quaternion inverseLocal() {
+        float norm = w * w + x * x + y * y + z * z;
+        if (norm > 0.0) {
+            float invNorm = 1.0f / norm;
+            x*=-invNorm;
+            y*=-invNorm;
+            z*=-invNorm;
+            w*=invNorm;
+        }
+        return this;
     }
 
     /**
