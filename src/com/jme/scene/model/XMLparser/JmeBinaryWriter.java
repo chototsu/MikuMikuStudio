@@ -7,7 +7,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.animation.VertexKeyframeController;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
 import com.jme.animation.SpatialTransformer;
