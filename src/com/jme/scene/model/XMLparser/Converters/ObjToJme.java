@@ -149,7 +149,7 @@ public class ObjToJme extends FormatConverter{
             addNormalToList(parts);
             return;
         } else if ("g".equals(parts[0])){
-            if (materialNames.get(parts[1])!=null)
+            if (materialNames.get(parts[1])!=null && materialNames.get(parts[1])!=null)
                 curGroup=(MaterialGrouping) materialNames.get(parts[1]);
             else
                 setDefaultGroup();
@@ -164,7 +164,10 @@ public class ObjToJme extends FormatConverter{
             addMaterial(parts);
             return;
         } else if ("usemtl".equals(parts[0])){
-            curGroup=(MaterialGrouping) materialNames.get(parts[1]);
+            if (materialNames.get(parts[1])!=null)
+                curGroup=(MaterialGrouping) materialNames.get(parts[1]);
+            else
+                setDefaultGroup();
             return;
         } else if ("Ka".equals(parts[0])){
             curGroup.m.setAmbient(new ColorRGBA(Float.parseFloat(parts[1]),Float.parseFloat(parts[2]),Float.parseFloat(parts[3]),1));
