@@ -36,18 +36,37 @@ import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
 
 /**
- * <code>Curve</code>
+ * <code>Curve</code> defines a collection of points that make up a curve.
+ * How this curve is constructed is undefined, and the job of a subclass.
+ * <code>Curve</code> is abstract only maintaining the point collection. It
+ * defines <code>getPoint</code> and <code>getOrientation</code>. Extending
+ * classes are responsible for implementing these methods in the appropriate
+ * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.4 2004-01-06 20:54:22 mojomonkey Exp $
+ * @version $Id: Curve.java,v 1.5 2004-01-07 02:49:38 mojomonkey Exp $
  */
 public abstract class Curve {
 
+    /**
+     * The array of control points.
+     */
     protected Vector3f[] controlPoints;
 
+    /**
+     * Constructor creates a default <code>Curve</code> object with a
+     * zero size array for the points.
+     *
+     */
     public Curve() {
         controlPoints = new Vector3f[0];
     }
 
+    /**
+     * Constructor creates a <code>Curve</code> object. The control
+     * point list is set during creation. If the control point list is
+     * null or has fewer than 2 points, an exception is thrown.
+     * @param controlPoints the points that define the curve.
+     */
     public Curve(Vector3f[] controlPoints) {
         if (null == controlPoints) {
             throw new JmeException("Control Points may not be null.");
@@ -60,6 +79,13 @@ public abstract class Curve {
         this.controlPoints = controlPoints;
     }
 
+    /**
+     * 
+     * <code>setControlPoints</code> sets the control point list that 
+     * defines the curve. If the control point list is null or has 
+     * fewer than 2 points, an exception is thrown.
+     * @param controlPoints the points that define the curve.
+     */
     public void setControlPoints(Vector3f[] controlPoints) {
         if (null == controlPoints) {
             throw new JmeException("Control Points may not be null.");
@@ -72,12 +98,52 @@ public abstract class Curve {
         this.controlPoints = controlPoints;
     }
     
+    /**
+     * 
+     * <code>getControlPoints</code> retrieves the list of points that
+     * defines the curve.
+     * @return the point list that defines the curve.
+     */
     public Vector3f[] getControlPoints() {
         return controlPoints;
     }
 
+    /**
+     * 
+     * <code>getPoint</code> calculates a point on the curve based on 
+     * the time, where time is [0, 1]. How the point is calculated is
+     * defined by the subclass. 
+     * @param time the time frame on the curve, [0, 1].
+     * @return the point on the curve at a specified time.
+     */
     public abstract Vector3f getPoint(float time);
     
+    /**
+     * 
+     * <code>getOrientation</code> calculates a rotation matrix that 
+     * defines the orientation along a curve. How the matrix is 
+     * calculated is defined by the subclass.
+     * @param time the time frame on the curve, [0, 1].
+     * @param precision the accuracy of the orientation (lower is more
+     *      precise). Recommended (0.1).
+     * @return the rotational matrix that defines the orientation of
+     *      along a curve.
+     */
     public abstract Matrix3f getOrientation(float time, float precision);
+    
+    /**
+     * 
+     * <code>getOrientation</code> calculates a rotation matrix that 
+     * defines the orientation along a curve. The up vector is provided
+     * keeping the orientation from "rolling" along the curve. This is
+     * useful for camera tracks. How the matrix is calculated is defined 
+     * by the subclass.
+     * @param time the time frame on the curve, [0, 1].
+     * @param precision the accuracy of the orientation (lower is more
+     *      precise). Recommended (0.1).
+     * @param up the up vector to lock.
+     * @return the rotational matrix that defines the orientation of
+     *      along a curve.
+     */
     public abstract Matrix3f getOrientation(float time, float precision, Vector3f up);
 }
