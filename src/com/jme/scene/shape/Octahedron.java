@@ -29,17 +29,18 @@
  * POSSIBILITY OF SUCH DAMAGE. 
  * 
  */
-package com.jme.scene;
+package com.jme.scene.shape;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>Octahedron</code>
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.1 2004-03-13 17:23:07 mojomonkey Exp $
+ * @version $Id: Octahedron.java,v 1.1 2004-04-02 23:13:59 mojomonkey Exp $
  */
 public class Octahedron extends TriMesh {
 	private static final int NUM_POINTS = 6;
