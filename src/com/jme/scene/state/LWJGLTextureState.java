@@ -34,18 +34,20 @@ package com.jme.scene.state;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLU;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.4 2004-02-15 20:10:14 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.5 2004-02-24 17:24:32 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.
@@ -120,6 +122,11 @@ public class LWJGLTextureState extends TextureState {
                 
                 // pass image data to OpenGL
                 Image image = texture.getImage();
+                if(image == null) {
+                	LoggingSystem.getLogger().log(Level.WARNING, "Image data for texture is null.");
+                	texture.setTextureId(-1);
+                	return;
+                }
                 if (texture.getMipmap() == Texture.MM_NONE) {
                     GL.glTexImage2D(
                         GL.GL_TEXTURE_2D,
