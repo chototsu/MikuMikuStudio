@@ -40,7 +40,7 @@ import com.jme.scene.TriMesh;
 /**
  * <code>Sphere</code>
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.3 2004-04-22 22:26:54 renanse Exp $
+ * @version $Id: Sphere.java,v 1.4 2004-07-03 21:19:13 renanse Exp $
  */
 public class Sphere extends TriMesh {
     private int zSamples;
@@ -141,8 +141,8 @@ public class Sphere extends TriMesh {
                 vertex[i] = kSliceCenter.add(kRadial.mult(fSliceRadius));
 
                 kNormal = vertex[i].subtract(center);
-                kNormal.normalize();
-                if (true)
+                kNormal.normalizeLocal();
+                if (true) // later we may allow interior texture vs. exterior
                     normal[i] = kNormal;
                 else
                     normal[i] = kNormal.negate();
