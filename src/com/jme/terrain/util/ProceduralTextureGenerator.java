@@ -45,7 +45,6 @@ import javax.swing.ImageIcon;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import com.jme.math.Vector2f;
 
 /**
  * <code>ProceduralTexture</code> generates an <code>ImageIcon</code>
@@ -63,7 +62,7 @@ import com.jme.math.Vector2f;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.4 2004-05-03 18:10:59 renanse Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.5 2004-05-04 02:17:31 mojomonkey Exp $
  */
 public class ProceduralTextureGenerator {
   //output image

@@ -148,7 +148,7 @@ public class TestKeyBinding extends BaseGame {
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
-                TestAbsoluteMouse.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                TestKeyBinding.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR,
                 true));
