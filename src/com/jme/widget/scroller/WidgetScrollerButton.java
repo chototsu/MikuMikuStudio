@@ -35,7 +35,6 @@ import com.jme.math.Vector2f;
 import com.jme.renderer.Renderer;
 import com.jme.widget.WidgetExpander;
 import com.jme.widget.button.WidgetButton;
-import com.jme.widget.renderer.WidgetRenderer;
 
 /**
  * @author Gregg Patton
@@ -94,8 +93,8 @@ public class WidgetScrollerButton extends WidgetButton {
         expander.setRight(right);
     }
 
-    public void draw(Renderer renderer) {
-		((WidgetRenderer)renderer).draw(this);
+    public void draw(Renderer r) {
+		r.draw(this);
     }
 
     public WidgetExpander getExpander() {
