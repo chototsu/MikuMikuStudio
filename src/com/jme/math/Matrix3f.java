@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.21 2004-05-24 18:20:28 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.22 2004-05-27 22:10:22 cep21 Exp $
  */
 public class Matrix3f {
 	public float m00, m01, m02;
@@ -497,6 +497,61 @@ public class Matrix3f {
 		product.z = m20 * x + m21 * y + m22 * z;
 		return product;
 	}
+
+    /**
+     * <code>multLocal</code> multiplies this matrix by a given <code>Vector3f</code>
+     * object. The result vector is stored inside the passed vector, then returned
+     * . If the given vector is null, null will be returned.
+     * @param vec the vector to multiply this matrix by.
+     * @return The passed vector after multiplication
+     */
+    public Vector3f multLocal(Vector3f vec) {
+        if (vec==null) return null;
+        float x = vec.x;
+        float y = vec.y;
+        vec.x =
+            m00 * x + m01 * y + m02 * vec.z;
+        vec.y =
+            m10 * x + m11 * y + m12 * vec.z;
+        vec.z =
+            m20 * x + m21 * y + m22 * vec.z;
+        return vec;
+    }
+
+    /**
+     * <code>mult</code> multiplies this matrix by a given matrix. The
+     * result matrix is saved in the current matrix. If the given matrix is null,
+     * nothing happens.  The current matrix is returned.  This is equivalent to this*=mat
+     * @param mat the matrix to multiply this matrix by.
+     * @return This matrix, after the multiplication
+     */
+    public Matrix3f multLocal(Matrix3f mat) {
+        if (mat == null) {
+            LoggingSystem.getLogger().log(
+                    Level.WARNING,
+                    "Source matrix is " + "null, null result returned.");
+            return null;
+        }
+        float f00 = m00 * mat.m00 + m01 * mat.m10 + m02 * mat.m20;
+        float f01 = m00 * mat.m01 + m01 * mat.m11 + m02 * mat.m21;
+        this.m02  = m00 * mat.m02 + m01 * mat.m12 + m02 * mat.m22;
+        float f10 = m10 * mat.m00 + m11 * mat.m10 + m12 * mat.m20;
+        float f11 = m10 * mat.m01 + m11 * mat.m11 + m12 * mat.m21;
+        this.m12  = m10 * mat.m02 + m11 * mat.m12 + m12 * mat.m22;
+
+        float f20 = m20 * mat.m00 + m21 * mat.m10 + m22 * mat.m20;
+        float f21 = m20 * mat.m01 + m21 * mat.m11 + m22 * mat.m21;
+        this.m22  = m20 * mat.m02 + m21 * mat.m12 + m22 * mat.m22;
+
+        m00=f00;
+        m01=f01;
+        m10=f10;
+        m11=f11;
+        m20=f20;
+        m21=f21;
+
+        return this;
+    }
 
 	/**
 	 * <code>add</code> adds the values of a parameter matrix to this matrix.
