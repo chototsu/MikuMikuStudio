@@ -68,7 +68,7 @@ import com.jme.scene.state.AlphaState;
 public class TestCameraMan extends SimpleGame {
     private Model model;
     private Camera cam;
-    private Node root, scene;
+    private Node root, scene, monitorNode;
     private InputHandler input;
     private Timer timer;
     private CameraNode camNode;
@@ -99,6 +99,7 @@ public class TestCameraMan extends SimpleGame {
                   display.getRenderer().getStatistics());
         input.update(timer.getTimePerFrame());
         scene.updateGeometricState(0.0f, true);
+        monitorNode.updateGeometricState(0.0f, true);
     }
 
     /**
@@ -112,6 +113,7 @@ public class TestCameraMan extends SimpleGame {
         //display scene
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
+        display.getRenderer().draw(monitorNode);
         display.getRenderer().draw(fpsNode);
     }
 
@@ -207,7 +209,7 @@ public class TestCameraMan extends SimpleGame {
 
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
-        cs.setEnabled(false);
+        cs.setEnabled(true);
         scene.setRenderState(cs);
         model.setRenderState(cs);
 
@@ -222,6 +224,7 @@ public class TestCameraMan extends SimpleGame {
         camNode.attachChild(cameraLight);
 
 
+        monitorNode = new Node("Monitor Node");
         Quad quad = new Quad("Monitor");
         quad.initialize(3,3);
         quad.setLocalTranslation(new Vector3f(3.75f,52.5f,90));
@@ -237,8 +240,9 @@ public class TestCameraMan extends SimpleGame {
 
         model.setRenderState(buf);
         scene.setRenderState(buf);
-        scene.attachChild(quad);
-        scene.attachChild(quad2);
+        monitorNode.setRenderState(buf);
+        monitorNode.attachChild(quad);
+        monitorNode.attachChild(quad2);
         scene.attachChild(camNode);
 
 
@@ -290,6 +294,7 @@ public class TestCameraMan extends SimpleGame {
         cam.update();
         scene.updateGeometricState(0.0f, true);
         fpsNode.updateGeometricState(0.0f, true);
+        monitorNode.updateGeometricState(0.0f, true);
     }
 
     /**
