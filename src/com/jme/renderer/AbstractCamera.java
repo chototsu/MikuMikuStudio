@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.21 2004-05-24 21:04:00 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.22 2004-07-31 04:18:46 cep21 Exp $
  */
 public abstract class AbstractCamera implements Camera {
   //planes of the frustum
@@ -97,17 +97,26 @@ public abstract class AbstractCamera implements Camera {
   public static final int MAX_WORLD_PLANES = 32;
 
   //the location and orientation of the camera.
+  /** Camera's location */
   protected Vector3f location;
+  /** Direction of camera's 'left' */
   protected Vector3f left;
+  /**Direction of 'up' for camera.*/
   protected Vector3f up;
+  /** Direction the camera is facing. */
   protected Vector3f direction;
 
-  //frustum plane distances
+  /** Distance from camera to near frustum plane. */
   protected float frustumNear;
+  /** Distance from camera to far frustum plane. */
   protected float frustumFar;
+  /** Distance from camera to left frustum plane. */
   protected float frustumLeft;
+  /** Distance from camera to right frustum plane. */
   protected float frustumRight;
+  /** Distance from camera to top frustum plane. */
   protected float frustumTop;
+  /** Distance from camera to bottom frustum plane. */
   protected float frustumBottom;
 
   //Temporary values computed in onFrustumChange that are needed if a
@@ -117,18 +126,26 @@ public abstract class AbstractCamera implements Camera {
   protected float coeffBottom[];
   protected float coeffTop[];
 
-  //frustum planes always processed for culling
+  /* Frustum planes always processed for culling.  Seems to simply always be 6. */
   protected int planeQuantity;
 
   //view port coordinates
+  /** Percent value on display where horizontal viewing starts for this camera.  Default is 0.*/
   protected float viewPortLeft;
+  /** Percent value on display where horizontal viewing ends for this camera.  Default is 1.*/
   protected float viewPortRight;
+  /** Percent value on display where vertical viewing ends for this camera.  Default is 1.*/
   protected float viewPortTop;
+  /** Percent value on display where vertical viewing begins for this camera.  Default is 0.*/
   protected float viewPortBottom;
 
+  /** Array holding the planes that this camera will check for culling. */
   protected Plane[] worldPlane;
+  /** Optional Vector3f representing a point this camera is looking at. */
   protected Vector3f lookAt = new Vector3f();
+  /** If true, the lookAt vector is used.  Normally false. */
   protected boolean overrideLookAt;
+  /** A mask value set during contains() that allows fast culling of a Node's children. */
   private int planeState;
 
   /**
@@ -374,7 +391,6 @@ public abstract class AbstractCamera implements Camera {
   /**
    * <code>setAxes</code> uses a rotational matrix to set the axes of the
    * camera.
-   * @see com.jme.renderer.Camera#setAxes(com.jme.math.Matrix3f)
    * @param axes the matrix that defines the orientation of the camera.
    */
   public void setAxes(Quaternion axes) {
@@ -460,7 +476,6 @@ public abstract class AbstractCamera implements Camera {
 
   /**
    * <code>setFrame</code> sets the orientation and location of the camera.
-   * @see com.jme.renderer.Camera#setFrame(com.jme.math.Vector3f, com.jme.math.Matrix3f)
    * @param location the point position of the camera.
    * @param axes the orientation of the camera.
    */
