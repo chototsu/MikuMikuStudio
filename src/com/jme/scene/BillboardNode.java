@@ -48,7 +48,7 @@ import com.jme.renderer.Renderer;
  * camera setting compatible with <code>BillboardNode</code>.
  * 
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.14 2004-11-22 19:26:18 mojomonkey Exp $
+ * @version $Id: BillboardNode.java,v 1.15 2004-11-22 19:51:42 mojomonkey Exp $
  */
 public class BillboardNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -96,7 +96,6 @@ public class BillboardNode extends Node {
 	 * @see com.jme.scene.Spatial#updateWorldData(float)
 	 */
 	public void updateWorldData(float time) {
-		super.updateWorldData(time);
 		lastTime = time;
 		updateWorldBound();
 	}
