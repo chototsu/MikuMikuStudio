@@ -154,7 +154,6 @@ public class HelloIntersection extends SimpleGame {
         //        programSound.setNextProgram(programid);
         snode.attachChild(laserSound);
         snode.attachChild(targetSound);
-        //... repeat above 3 lines to register other sounds.
     }
 
     class FireBullet extends AbstractInputAction {
