@@ -35,13 +35,15 @@ import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 
+import java.io.Serializable;
+
 /**
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points.
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.4 2004-06-23 18:14:16 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.5 2004-07-06 05:06:28 cep21 Exp $
  */
-public interface BoundingVolume {
+public interface BoundingVolume extends Serializable{
 
     /**
      *
