@@ -186,8 +186,6 @@ public class JointController extends Controller {
         return storedNext;
     }
 
-    int DEBUG;      // TODO: REMOVE
-
     /**
      * Updates the <code>movingMeshes</code> by updating their joints +=time
      * @param time Time from last update
@@ -379,7 +377,7 @@ public class JointController extends Controller {
                 ((PointInTime)movementInfo.get(movementInfo.size()-1)).jointTranslation[joint]=
                         new Vector3f(((PointInTime)movementInfo.get(lastgood)).jointTranslation[joint]);
                 fillPos(joint,lastgood,movementInfo.size()-1);  // fills tail
-            }            
+            }
         }
     }
 
