@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.8 2004-03-03 18:13:57 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.9 2004-03-08 23:42:43 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -461,6 +461,31 @@ public class Quaternion {
         w = -oldX * tempX - oldY * tempY - oldZ * tempZ + oldW * tempW;
     }
 
+    public void fromAxes (Vector3f[] axis) {
+        Matrix3f tempMat = new Matrix3f();
+
+        tempMat.m00 = axis[0].x;
+        tempMat.m10 = axis[0].y;
+        tempMat.m20 = axis[0].z;
+
+        tempMat.m01 = axis[1].x;
+        tempMat.m11 = axis[1].y;
+        tempMat.m21 = axis[1].z;
+
+        tempMat.m02 = axis[2].x;
+        tempMat.m12 = axis[2].y;
+        tempMat.m22 = axis[2].z;
+
+        fromRotationMatrix(tempMat);
+    }
+
+    public void toAxes (Vector3f axis[]) {
+        Matrix3f tempMat = toRotationMatrix();
+        axis[0] = tempMat.getColumn(0, axis[0]);
+        axis[1] = tempMat.getColumn(1, axis[1]);
+        axis[2] = tempMat.getColumn(2, axis[2]);
+    }
+
     /**
      * <code>mult</code> multiplies this quaternion by a parameter
      * vector. The result is returned as a new vector.
@@ -509,6 +534,20 @@ public class Quaternion {
      */
     public Quaternion mult(float scalar) {
         return new Quaternion(scalar * w, scalar * x, scalar * y, scalar * z);
+    }
+
+    /**
+     * <code>mult</code> multiplies this quaternion by a parameter
+     * scalar. The result is stored locally.
+     * @param q the quaternion to multiply this quaternion by.
+     * @return this.
+     */
+    public Quaternion multLocal(float scalar) {
+        w*=scalar;
+        x*=scalar;
+        y*=scalar;
+        z*=scalar;
+        return this;
     }
 
     /**

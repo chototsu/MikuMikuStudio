@@ -41,7 +41,7 @@ import com.jme.util.LoggingSystem;
  * The distance is pseudo due to the fact that it can be negative if the point
  * is on the non-normal side of the plane.
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.3 2004-03-03 18:13:57 renanse Exp $
+ * @version $Id: Plane.java,v 1.4 2004-03-08 23:42:43 renanse Exp $
  */
 public class Plane {
     /**
@@ -58,8 +58,8 @@ public class Plane {
     public static final int NEGATIVE_SIDE = 2;
 
     //attributes of the plane.
-    private Vector3f normal;
-    private float constant;
+    public Vector3f normal;
+    public float constant;
 
     /**
      * Constructor instantiates a new <code>Plane</code> object. This is the

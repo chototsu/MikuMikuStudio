@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -36,16 +36,19 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 
 /**
- * <code>Box</code> provides an extension of <code>TriMesh</code>. A 
+ * <code>Box</code> provides an extension of <code>TriMesh</code>. A
  * <code>Box</code> is defined by a minimal point and a maximum point. The
  * eight vertices that make the box are then computed. They are computed in
- * such a way as to generate an axis-aligned box. 
+ * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.6 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: Box.java,v 1.7 2004-03-08 23:42:42 renanse Exp $
  */
 public class Box extends TriMesh {
-    private Vector3f min;
-    private Vector3f max;
+    public float xExtent, yExtent, zExtent;
+    public Vector3f center;
+    public final static Vector3f AXIS_X = new Vector3f(1,0,0);
+    public final static Vector3f AXIS_Y = new Vector3f(0,1,0);
+    public final static Vector3f AXIS_Z = new Vector3f(0,0,1);
 
     /**
      * Constructor instantiates a new <code>Box</code> object. The minimum and
@@ -59,9 +62,14 @@ public class Box extends TriMesh {
      * @param max the maximum point that defines the box.
      */
     public Box(String name, Vector3f min, Vector3f max) {
-    	super(name);
-        this.min = min;
-        this.max = max;
+        super(name);
+
+        center = max.add(min);
+        center.multLocal(0.5f);
+
+        xExtent = max.x - center.x;
+        yExtent = max.y - center.y;
+        zExtent = max.z - center.z;
 
         setVertexData();
         setNormalData();
@@ -70,8 +78,16 @@ public class Box extends TriMesh {
         setIndexData();
     }
 
+    public Box(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
+        super(name);
+        this.center = center;
+        this.xExtent = xExtent;
+        this.yExtent = yExtent;
+        this.zExtent = zExtent;
+    }
+
     /**
-     * 
+     *
      * <code>setVertexData</code> sets the vertex positions that define the
      * box. These eight points are determined from the minimum and maximum
      * point.
@@ -79,58 +95,51 @@ public class Box extends TriMesh {
      */
     private void setVertexData() {
         Vector3f[] verts = new Vector3f[24];
-        Vector3f vert0 = min;
-        Vector3f vert1 = new Vector3f(max.x, min.y, min.z);
-        Vector3f vert2 = new Vector3f(max.x, max.y, min.z);
-        Vector3f vert3 = new Vector3f(min.x, max.y, min.z);
-        Vector3f vert4 = new Vector3f(max.x, min.y, max.z);
-        Vector3f vert5 = new Vector3f(min.x, min.y, max.z);
-        Vector3f vert6 = max;
-        Vector3f vert7 = new Vector3f(min.x, max.y, max.z);
+        Vector3f[] vert = computeVertices(); // returns 8
 
         //Front
-        verts[0] = vert0;
-        verts[1] = vert1;
-        verts[2] = vert2;
-        verts[3] = vert3;
+        verts[0] = vert[0];
+        verts[1] = vert[1];
+        verts[2] = vert[2];
+        verts[3] = vert[3];
 
         //Right
-        verts[4] = vert1;
-        verts[5] = vert4;
-        verts[6] = vert6;
-        verts[7] = vert2;
+        verts[4] = vert[1];
+        verts[5] = vert[4];
+        verts[6] = vert[6];
+        verts[7] = vert[2];
 
         //Back
-        verts[8] = vert4;
-        verts[9] = vert5;
-        verts[10] = vert7;
-        verts[11] = vert6;
+        verts[8] = vert[4];
+        verts[9] = vert[5];
+        verts[10] = vert[7];
+        verts[11] = vert[6];
 
         //Left
-        verts[12] = vert5;
-        verts[13] = vert0;
-        verts[14] = vert3;
-        verts[15] = vert7;
+        verts[12] = vert[5];
+        verts[13] = vert[0];
+        verts[14] = vert[3];
+        verts[15] = vert[7];
 
         //Top
-        verts[16] = vert2;
-        verts[17] = vert6;
-        verts[18] = vert7;
-        verts[19] = vert3;
+        verts[16] = vert[2];
+        verts[17] = vert[6];
+        verts[18] = vert[7];
+        verts[19] = vert[3];
 
         //Bottom
-        verts[20] = vert0;
-        verts[21] = vert5;
-        verts[22] = vert4;
-        verts[23] = vert1;
+        verts[20] = vert[0];
+        verts[21] = vert[5];
+        verts[22] = vert[4];
+        verts[23] = vert[1];
         setVertices(verts);
 
     }
 
     /**
-     * 
+     *
      * <code>setNormalData</code> sets the normals of each of the box's planes.
-     * 
+     *
      *
      */
     private void setNormalData() {
@@ -183,9 +192,9 @@ public class Box extends TriMesh {
     }
 
     /**
-     * 
+     *
      * <code>setTextureData</code> sets the points that define the texture of
-     * the box. It's a one-to-one ratio, where each plane of the box has it's 
+     * the box. It's a one-to-one ratio, where each plane of the box has it's
      * own copy of the texture. That is, the texture is repeated one time for
      * each six faces.
      *
@@ -232,7 +241,7 @@ public class Box extends TriMesh {
     }
 
     /**
-     * 
+     *
      * <code>setColorData</code> sets the color values for each vertex of the
      * box. Currently, these are set to white.
      *
@@ -246,7 +255,7 @@ public class Box extends TriMesh {
     }
 
     /**
-     * 
+     *
      * <code>setIndexData</code> sets the indices into the list of vertices,
      * defining all triangles that constitute the box.
      *
@@ -292,5 +301,39 @@ public class Box extends TriMesh {
                 20 };
         setIndices(indices);
 
+    }
+
+    /**
+     * <code>clone</code> creates a new Box object containing the same
+     * data as this one.
+     * @return the new Box
+     */
+    public Object clone() {
+        Box rVal = new Box(name+"_clone", (Vector3f)center.clone(), xExtent, yExtent, zExtent);
+        return rVal;
+    }
+
+    /**
+     *
+     * @return a size 8 array of Vectors representing the 8 points of the box.
+     */
+    public Vector3f[] computeVertices() {
+
+        Vector3f akEAxis[] = {
+            AXIS_X.mult(xExtent),
+            AXIS_Y.mult(yExtent),
+            AXIS_Z.mult(zExtent)
+        };
+
+        Vector3f rVal[] = new Vector3f[8];
+        rVal[0] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1]).subtractLocal(akEAxis[2]);
+        rVal[1] = center.add(akEAxis[0]).subtractLocal(akEAxis[1]).subtractLocal(akEAxis[2]);
+        rVal[2] = center.add(akEAxis[0]).addLocal(akEAxis[1]).subtractLocal(akEAxis[2]);
+        rVal[3] = center.subtract(akEAxis[0]).addLocal(akEAxis[1]).subtractLocal(akEAxis[2]);
+        rVal[4] = center.add(akEAxis[0]).subtractLocal(akEAxis[1]).addLocal(akEAxis[2]);
+        rVal[5] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1]).addLocal(akEAxis[2]);
+        rVal[6] = center.add(akEAxis[0]).addLocal(akEAxis[1]).addLocal(akEAxis[2]);
+        rVal[7] = center.subtract(akEAxis[0]).addLocal(akEAxis[1]).addLocal(akEAxis[2]);
+        return rVal;
     }
 }

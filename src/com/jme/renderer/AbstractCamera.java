@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.11 2004-03-02 19:38:54 darkprophet Exp $
+ * @version $Id: AbstractCamera.java,v 1.12 2004-03-08 23:42:41 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -633,39 +633,39 @@ public abstract class AbstractCamera implements Camera {
         float dirDotLocation = direction.dot(location);
 
         // left plane
-        Vector3f leftPlaneNormal = worldPlane[LEFT_PLANE].getNormal();
+        Vector3f leftPlaneNormal = worldPlane[LEFT_PLANE].normal;
         leftPlaneNormal.x = left.x; leftPlaneNormal.y = left.y; leftPlaneNormal.z = left.z;
         worldPlane[LEFT_PLANE].setNormal(leftPlaneNormal.multLocal(coeffLeft[0]).addLocal(direction.x*coeffLeft[1], direction.y*coeffLeft[1], direction.z*coeffLeft[1]));
         worldPlane[LEFT_PLANE].setConstant(
             location.dot(leftPlaneNormal));
 
         // right plane
-        Vector3f rightPlaneNormal = worldPlane[RIGHT_PLANE].getNormal();
+        Vector3f rightPlaneNormal = worldPlane[RIGHT_PLANE].normal;
         rightPlaneNormal.x = left.x; rightPlaneNormal.y = left.y; rightPlaneNormal.z = left.z;
         worldPlane[RIGHT_PLANE].setNormal(rightPlaneNormal.multLocal(coeffRight[0]).addLocal(direction.x*coeffRight[1], direction.y*coeffRight[1], direction.z*coeffRight[1]));
         worldPlane[RIGHT_PLANE].setConstant(
             location.dot(rightPlaneNormal));
 
         // bottom plane
-        Vector3f bottomPlaneNormal = worldPlane[BOTTOM_PLANE].getNormal();
+        Vector3f bottomPlaneNormal = worldPlane[BOTTOM_PLANE].normal;
         bottomPlaneNormal.x = up.x; bottomPlaneNormal.y = up.y; bottomPlaneNormal.z = up.z;
         worldPlane[BOTTOM_PLANE].setNormal(bottomPlaneNormal.multLocal(coeffBottom[0]).addLocal(direction.x*coeffBottom[1], direction.y*coeffBottom[1], direction.z*coeffBottom[1]));
         worldPlane[BOTTOM_PLANE].setConstant(
             location.dot(bottomPlaneNormal));
 
         // top plane
-        Vector3f topPlaneNormal = worldPlane[TOP_PLANE].getNormal();
+        Vector3f topPlaneNormal = worldPlane[TOP_PLANE].normal;
         topPlaneNormal.x = up.x; topPlaneNormal.y = up.y; topPlaneNormal.z = up.z;
         worldPlane[TOP_PLANE].setNormal(topPlaneNormal.multLocal(coeffTop[0]).addLocal(direction.x*coeffTop[1], direction.y*coeffTop[1], direction.z*coeffTop[1]));
         worldPlane[TOP_PLANE].setConstant(
             location.dot(topPlaneNormal));
 
         // far plane
-        worldPlane[FAR_PLANE].setNormal(worldPlane[FAR_PLANE].getNormal().negateLocal());
+        worldPlane[FAR_PLANE].normal.negateLocal();
         worldPlane[FAR_PLANE].setConstant(- (dirDotLocation + frustumFar));
 
         // near plane
-        worldPlane[NEAR_PLANE].setNormal(direction);
+        worldPlane[NEAR_PLANE].normal = direction;
         worldPlane[NEAR_PLANE].setConstant(dirDotLocation + frustumNear);
     }
 

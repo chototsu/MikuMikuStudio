@@ -30,10 +30,6 @@
  *
  */
 
-/*
- * EDIT:  02/09/2004 - Changed merge to return this instead of null. GOP
- */
-
 package com.jme.scene;
 
 import java.util.logging.Level;
@@ -44,78 +40,51 @@ import com.jme.math.Vector3f;
 import com.jme.util.LoggingSystem;
 
 /**
- * <code>BoundingSphere</code> defines a sphere that defines a container
- * for a group of vertices of a particular piece of geometry. This sphere
- * defines a radius and a center.
+ * <code>BoundingBox</code> defines an axis-aligned cube that defines a container
+ * for a group of vertices of a particular piece of geometry. This box
+ * defines a center and extents from that center along the x, y and z axis.
  * <br><br>
  * A typical usage is to allow the class define the center and radius
  * by calling either <code>containAABB</code> or <code>averagePoints</code>.
  * A call to <code>computeFramePoint</code> in turn calls
  * <code>containAABB</code>.
  *
- * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.18 2004-03-08 23:42:42 renanse Exp $
+ * @author Joshua Slack
+ * @version $Id: BoundingBox.java,v 1.5 2004-03-08 23:42:41 renanse Exp $
  */
-public class BoundingSphere implements BoundingVolume {
-    private float radius;
-    private Vector3f center;
+public class BoundingBox extends Box implements BoundingVolume {
 
     /**
-     * Default contstructor instantiates a new <code>BoundingSphere</code>
+     * Default contstructor instantiates a new <code>BoundingBox</code>
      * object.
      */
-    public BoundingSphere() {
-        center = new Vector3f();
+    public BoundingBox() {
+        super("aabb", new Vector3f(0,0,0), 1, 1, 1);
     }
 
     /**
-     * Constructor instantiates a new <code>BoundingSphere</code> object.
-     * @param radius the radius of the sphere.
-     * @param center the center of the sphere.
+     * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
      */
-    public BoundingSphere(float radius, Vector3f center) {
-        if (null == center) {
-            this.center = new Vector3f();
-        } else {
-            this.center = center;
-        }
-        this.radius = radius;
+    public BoundingBox(String name) {
+        super(name, new Vector3f(0,0,0), 1, 1, 1);
     }
 
     /**
-     * <code>getRadius</code> returns the radius of the bounding sphere.
-     * @return the radius of the bounding sphere.
+     * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
      */
-    public float getRadius() {
-        return radius;
+    public BoundingBox(Vector3f center, float xExtent, float yExtent, float zExtent) {
+        super("aabb", new Vector3f(0,0,0), xExtent, yExtent, zExtent);
     }
 
     /**
-     * <code>getCenter</code> returns the center of the bounding sphere.
-     * @return the center of the bounding sphere.
+     * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
      */
-    public Vector3f getCenter() {
-        return center;
+    public BoundingBox(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
+        super(name, new Vector3f(0,0,0), xExtent, yExtent, zExtent);
     }
 
     /**
-     * <code>setRadius</code> sets the radius of this bounding sphere.
-     * @param radius the new radius of the bounding sphere.
-     */
-    public void setRadius(float radius) {
-        this.radius = radius;
-    }
-
-    /**
-     * <code>setCenter</code> sets the center of the bounding sphere.
-     * @param center the new center of the bounding sphere.
-     */
-    public void setCenter(Vector3f center) {
-        this.center = center;
-    }
-
-    /**
-     * <code>computeFromPoints</code> creates a new Bounding Sphere from
+     * <code>computeFromPoints</code> creates a new Bounding Box from
      * a given set of points. It uses the <code>containAABB</code> method
      * as default.
      * @param points the points to contain.
@@ -159,41 +128,13 @@ public class BoundingSphere implements BoundingVolume {
         center = max.add(min);
         center.multLocal(0.5f);
 
-        Vector3f halfDiagonal = max.subtract(min);
-        halfDiagonal.multLocal(0.5f);
-        radius = halfDiagonal.length();
+        xExtent = max.x - center.x;
+        yExtent = max.y - center.y;
+        zExtent = max.z - center.z;
     }
 
     /**
-     * <code>averagePoints</code> selects the sphere center to be
-     * the average of the points and the sphere radius to be the
-     * smallest value to enclose all points.
-     * @param points the list of points to contain.
-     */
-    public void averagePoints(Vector3f[] points) {
-        LoggingSystem.getLogger().log(Level.INFO, "Bounding Sphere calculated " +
-                    "using average points.");
-        center = points[0];
-
-        for (int i = 1; i < points.length; i++)
-            center.addLocal(points[i]);
-        float quantity = 1.0f / points.length;
-        center.multLocal(quantity);
-
-        float maxRadiusSqr = 0;
-        for (int i = 0; i < points.length; i++) {
-            Vector3f diff = points[i].subtract(center);
-            float radiusSqr = diff.lengthSquared();
-            if (radiusSqr > maxRadiusSqr)
-                maxRadiusSqr = radiusSqr;
-        }
-
-        radius = (float) Math.sqrt(maxRadiusSqr);
-
-    }
-
-    /**
-     * <code>transform</code> modifies the center of the sphere to reflect the
+     * <code>transform</code> modifies the center of the box to reflect the
      * change made via a rotation, translation and scale.
      * @param rotate the rotation change.
      * @param translate the translation change.
@@ -204,16 +145,16 @@ public class BoundingSphere implements BoundingVolume {
         Vector3f translate,
         float scale) {
         Vector3f newCenter = rotate.mult(center).multLocal(scale).addLocal(translate);
-        return new BoundingSphere(scale * radius, newCenter);
+        return new BoundingBox(newCenter, scale * xExtent, scale * yExtent, scale * zExtent);
     }
 
     /**
-     * <code>transform</code> modifies the center of the sphere to reflect the
+     * <code>transform</code> modifies the center of the box to reflect the
      * change made via a rotation, translation and scale.
      * @param rotate the rotation change.
      * @param translate the translation change.
      * @param scale the size change.
-     * @param store sphere to store result in
+     * @param store box to store result in
      */
     public BoundingVolume transform(
         Quaternion rotate,
@@ -221,12 +162,14 @@ public class BoundingSphere implements BoundingVolume {
         float scale,
         BoundingVolume store) {
 
-        BoundingSphere sphere = (BoundingSphere)store;
-        if (sphere == null) sphere = new BoundingSphere();
-        rotate.mult(center, sphere.center);
-        sphere.center.multLocal(scale).addLocal(translate);
-        sphere.radius = scale*radius;
-        return sphere;
+        BoundingBox box = (BoundingBox)store;
+        if (box == null) box = new BoundingBox();
+        rotate.mult(center, box.center);
+        box.center.multLocal(scale).addLocal(translate);
+        box.xExtent = scale*xExtent;
+        box.yExtent = scale*yExtent;
+        box.zExtent = scale*zExtent;
+        return box;
     }
 
     /**
@@ -235,6 +178,11 @@ public class BoundingSphere implements BoundingVolume {
      * @param plane the plane to check against.
      */
     public int whichSide(Plane plane) {
+
+        float radius = Math.abs(xExtent*plane.normal.x) +
+                       Math.abs(yExtent*plane.normal.y) +
+                       Math.abs(zExtent*plane.normal.z);
+
         float distance = plane.pseudoDistance(center);
 
         if (distance <= -radius) {
@@ -256,33 +204,30 @@ public class BoundingSphere implements BoundingVolume {
         if(volume == null) {
             return this;
         }
-        if (!(volume instanceof BoundingSphere)) {
+        if (!(volume instanceof BoundingBox)) {
             return this;
         } else {
-            BoundingSphere sphere = (BoundingSphere) volume;
-            Vector3f diff = sphere.getCenter().subtract(center);
-            float lengthSquared = diff.lengthSquared();
-            float radiusDiff = sphere.getRadius() - radius;
-            float diffSquared = radiusDiff * radiusDiff;
+            BoundingBox vBox = (BoundingBox)volume;
+            BoundingBox rVal = new BoundingBox(new Vector3f(0,0,0), 0, 0, 0);
+            rVal.center.add(this.center).add(vBox.center).multLocal(.5f);
 
-            if (diffSquared >= lengthSquared) {
-                return (radiusDiff >= 0.0 ? volume : this);
-            }
+        // check first box for extents
+            rVal.xExtent = Math.max(Math.abs(center.x - xExtent - rVal.center.x), rVal.xExtent);
+            rVal.xExtent = Math.max(Math.abs(center.x + xExtent - rVal.center.x), rVal.xExtent);
+            rVal.yExtent = Math.max(Math.abs(center.y - yExtent - rVal.center.y), rVal.yExtent);
+            rVal.yExtent = Math.max(Math.abs(center.y + yExtent - rVal.center.y), rVal.yExtent);
+            rVal.zExtent = Math.max(Math.abs(center.z - zExtent - rVal.center.z), rVal.zExtent);
+            rVal.zExtent = Math.max(Math.abs(center.z + zExtent - rVal.center.z), rVal.zExtent);
 
-            float length = (float) Math.sqrt(lengthSquared);
-            float tolerance = 1e-06f;
-            BoundingSphere newSphere = new BoundingSphere();
+        // check second box for extents
+            rVal.xExtent = Math.max(Math.abs(vBox.center.x - vBox.xExtent - rVal.center.x), rVal.xExtent);
+            rVal.xExtent = Math.max(Math.abs(vBox.center.x + vBox.xExtent - rVal.center.x), rVal.xExtent);
+            rVal.yExtent = Math.max(Math.abs(vBox.center.y - vBox.yExtent - rVal.center.y), rVal.yExtent);
+            rVal.yExtent = Math.max(Math.abs(vBox.center.y + vBox.yExtent - rVal.center.y), rVal.yExtent);
+            rVal.zExtent = Math.max(Math.abs(vBox.center.z - vBox.zExtent - rVal.center.z), rVal.zExtent);
+            rVal.zExtent = Math.max(Math.abs(vBox.center.z + vBox.zExtent - rVal.center.z), rVal.zExtent);
 
-            if (length > tolerance) {
-                float coeff = (length + radiusDiff) / (2.0f * length);
-                newSphere.setCenter(center.addLocal(diff.multLocal(coeff)));
-            } else {
-                newSphere.setCenter(center);
-            }
-
-            newSphere.setRadius(0.5f * (length + radius + sphere.getRadius()));
-
-            return newSphere;
+            return rVal;
         }
     }
 
@@ -296,47 +241,43 @@ public class BoundingSphere implements BoundingVolume {
         if(volume == null) {
             return this;
         }
-        if (!(volume instanceof BoundingSphere)) {
+        if (!(volume instanceof BoundingBox)) {
             return this;
         } else {
-            BoundingSphere sphere = (BoundingSphere) volume;
-            float lengthSquared = sphere.center.x * sphere.center.x + sphere.center.y * sphere.center.y + sphere.center.z * sphere.center.z;
-            float radiusDiff = sphere.getRadius() - radius;
-            float diffSquared = radiusDiff * radiusDiff;
+            float oldcenterX = center.x;
+            float oldcenterY = center.y;
+            float oldcenterZ = center.z;
+            BoundingBox vBox = (BoundingBox)volume;
+            this.center.addLocal(vBox.center).multLocal(.5f);
 
-            if (diffSquared >= lengthSquared) {
-                if (radiusDiff >= 0.0) {
-                    center = sphere.center;
-                    radius = sphere.radius;
-                }
-                return this;
-            }
+        // check this box for new extents
+            this.xExtent = Math.max(Math.abs(oldcenterX - xExtent - this.center.x), Math.abs(oldcenterX + xExtent - this.center.x));
+            this.yExtent = Math.max(Math.abs(oldcenterY - yExtent - this.center.y), Math.abs(oldcenterY + yExtent - this.center.y));
+            this.zExtent = Math.max(Math.abs(oldcenterZ - zExtent - this.center.z), Math.abs(oldcenterZ + zExtent - this.center.z));
 
-            float length = (float) Math.sqrt(lengthSquared);
-            float tolerance = 1e-06f;
-
-            if (length > tolerance) {
-                float coeff = (length + radiusDiff) / (2.0f * length);
-                center.x = center.x+((sphere.center.x-center.x)*coeff);
-                center.y = center.y+((sphere.center.y-center.y)*coeff);
-                center.z = center.z+((sphere.center.z-center.z)*coeff);
-            }
-
-            radius = (0.5f * (length + radius + sphere.radius));
+        // check second box for new extents
+            this.xExtent = Math.max(Math.abs(vBox.center.x - vBox.xExtent - this.center.x), this.xExtent);
+            this.xExtent = Math.max(Math.abs(vBox.center.x + vBox.xExtent - this.center.x), this.xExtent);
+            this.yExtent = Math.max(Math.abs(vBox.center.y - vBox.yExtent - this.center.y), this.yExtent);
+            this.yExtent = Math.max(Math.abs(vBox.center.y + vBox.yExtent - this.center.y), this.yExtent);
+            this.zExtent = Math.max(Math.abs(vBox.center.z - vBox.zExtent - this.center.z), this.zExtent);
+            this.zExtent = Math.max(Math.abs(vBox.center.z + vBox.zExtent - this.center.z), this.zExtent);
 
             return this;
         }
     }
 
     /**
-     * <code>clone</code> creates a new BoundingSphere object containing the same
+     * <code>clone</code> creates a new BoundingBox object containing the same
      * data as this one.
-     * @return the new BoundingSphere
+     * @return the new BoundingBox
      */
     public Object clone() {
-        BoundingSphere rVal = new BoundingSphere();
+        BoundingBox rVal = new BoundingBox();
         rVal.center = (Vector3f)center.clone();
-        rVal.radius = radius;
+        rVal.xExtent = xExtent;
+        rVal.yExtent = yExtent;
+        rVal.zExtent = zExtent;
         return rVal;
     }
 
@@ -346,7 +287,7 @@ public class BoundingSphere implements BoundingVolume {
      * @return the string representation of this.
      */
     public String toString() {
-        return "com.jme.scene.BoundingSphere [Radius: " + radius + " Center: "
-                + center +"]";
+        return "com.jme.scene.BoundingBox [Center: "
+                + center +"  Vertices: "+computeVertices()+"]";
     }
 }
