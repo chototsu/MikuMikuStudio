@@ -46,10 +46,11 @@ import com.jme.math.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.16 2004-08-25 02:59:58 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.17 2004-08-25 22:15:06 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
+    /** These define the array of planes that are check during view culling. */
     public int[] checkPlanes = new int[6];
 
     private Vector3f minPnt = new Vector3f();
@@ -97,6 +98,9 @@ public class BoundingBox extends Box implements BoundingVolume {
         initCheckPlanes();
     }
 
+    /**
+     * Not to be called by users.  This function initializes the check planes for the AABB.
+     */
     public void initCheckPlanes() {
         checkPlanes[0] = 0;
         checkPlanes[1] = 1;
@@ -171,7 +175,6 @@ public class BoundingBox extends Box implements BoundingVolume {
         return this.transform(rotate,translate,scale,null);
     }
 
-    int DEBUG=0;
     /**
      * <code>transform</code> modifies the center of the box to reflect the
      * change made via a rotation, translation and scale.
