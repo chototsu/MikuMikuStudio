@@ -75,6 +75,7 @@ public class TestScenegraph extends SimpleGame {
     private TextureState ts, ts2, ts3;
 
     private KeyInput key;
+    private boolean drawBounds = false;
 
     /**
      * Entry point for the test,
@@ -121,6 +122,12 @@ public class TestScenegraph extends SimpleGame {
                 .isValidCommand("notex")) {
             selectedNode.clearRenderState(RenderState.RS_TEXTURE);
         }
+
+        if (KeyBindingManager
+                .getKeyBindingManager()
+                .isValidCommand("tog_bounds")) {
+            drawBounds = !drawBounds;
+        }
     }
 
     /**
@@ -130,6 +137,8 @@ public class TestScenegraph extends SimpleGame {
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
+        if (drawBounds)
+            display.getRenderer().drawBounds(root);
     }
 
     /**
@@ -179,6 +188,11 @@ public class TestScenegraph extends SimpleGame {
         InputSystem.createInputSystem(properties.getRenderer());
         key = InputSystem.getKeyInput();
         KeyBindingManager.getKeyBindingManager().setKeyInput(key);
+
+        KeyBindingManager.getKeyBindingManager().set(
+                "notex",
+                KeyInput.KEY_7);
+
         KeyBindingManager.getKeyBindingManager().set(
                 "tex1",
                 KeyInput.KEY_8);
@@ -190,10 +204,10 @@ public class TestScenegraph extends SimpleGame {
         KeyBindingManager.getKeyBindingManager().set(
                 "tex3",
                 KeyInput.KEY_0);
-        KeyBindingManager.getKeyBindingManager().set(
-                "notex",
-                KeyInput.KEY_7);
 
+        KeyBindingManager.getKeyBindingManager().set(
+                "tog_bounds",
+                KeyInput.KEY_B);
     }
 
     /**

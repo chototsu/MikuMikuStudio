@@ -37,11 +37,13 @@ import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
+import com.jme.scene.BoundingBox;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
@@ -59,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.9 2004-03-12 21:35:16 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.10 2004-03-13 03:17:15 renanse Exp $
  */
 public class TestPick extends SimpleGame {
     private Camera cam;
@@ -74,6 +76,8 @@ public class TestPick extends SimpleGame {
     private Vector3f axis;
 
     private Model model;
+
+    private boolean drawBounds = false;
 
     /**
      * Entry point for the test,
@@ -101,7 +105,11 @@ public class TestPick extends SimpleGame {
         input.update(timer.getTimePerFrame());
         scene.updateGeometricState(timer.getTimePerFrame(), true);
 
-
+        if (KeyBindingManager
+                .getKeyBindingManager()
+                .isValidCommand("tog_bounds")) {
+            drawBounds = !drawBounds;
+        }
     }
 
     /**
@@ -112,6 +120,8 @@ public class TestPick extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
+        if (drawBounds)
+            display.getRenderer().drawBounds(root);
 
     }
 
@@ -158,6 +168,9 @@ public class TestPick extends SimpleGame {
 
         display.setTitle("Mouse Pick");
 
+        KeyBindingManager.getKeyBindingManager().set(
+                "tog_bounds",
+                KeyInput.KEY_B);
     }
 
     /**
@@ -202,7 +215,7 @@ public class TestPick extends SimpleGame {
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingSphere());
+        scene.setWorldBound(new BoundingBox());
         cam.update();
 
         root.attachChild(text);
@@ -229,7 +242,7 @@ public class TestPick extends SimpleGame {
         }
 
         Line l = new Line("Line Group",vertex, null, color, null);
-        l.setModelBound(new BoundingSphere());
+        l.setModelBound(new BoundingBox());
         l.updateModelBound();
 
         scene.attachChild(l);
