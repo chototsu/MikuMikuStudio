@@ -38,9 +38,10 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Disk</code>
+ * <code>Disk</code> is a flat circle.  It is simply defined with a radius.  It
+ * starts out flat along the Z, with center at the origin.
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.2 2004-04-22 22:26:53 renanse Exp $
+ * @version $Id: Disk.java,v 1.3 2004-08-01 06:21:58 cep21 Exp $
  */
 public class Disk extends TriMesh {
 
@@ -48,6 +49,15 @@ public class Disk extends TriMesh {
 	private int radialSamples;
 	private float radius;
 
+    /**
+     * Creates a flat disk (circle) at the origin flat along the Z.  Usually,
+     * a higher sample number creates a better looking cylinder, but at the
+     * cost of more vertex information.
+     * @param name The name of the disk.
+     * @param shellSamples The number of shell samples.
+     * @param radialSamples The number of radial samples.
+     * @param radius The radius of the disk.
+     */
 	public Disk(
 		String name,
 		int shellSamples,
