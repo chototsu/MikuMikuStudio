@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * the negative left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeRightAction.java,v 1.7 2004-04-23 16:39:12 renanse Exp $
+ * @version $Id: KeyNodeStrafeRightAction.java,v 1.8 2004-05-08 02:48:28 renanse Exp $
  */
 public class KeyNodeStrafeRightAction extends AbstractInputAction {
 
@@ -64,6 +64,6 @@ public class KeyNodeStrafeRightAction extends AbstractInputAction {
         Vector3f loc = node.getLocalTranslation();
         loc = loc.addLocal(node.getLocalRotation().getRotationColumn(0).multLocal((-speed * time)));
         node.setLocalTranslation(loc);
-        node.updateWorldData(time);
+        node.updateWorldData(0);
     }
 }
