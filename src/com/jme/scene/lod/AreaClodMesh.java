@@ -47,7 +47,7 @@ import com.jme.system.DisplaySystem;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: AreaClodMesh.java,v 1.8 2004-07-21 21:19:44 guurk Exp $
+ * @version $Id: AreaClodMesh.java,v 1.9 2004-07-21 22:12:02 guurk Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   float trisPerPixel = 1f;
@@ -86,7 +86,6 @@ public class AreaClodMesh extends ClodMesh {
     if (getWorldBound() == null) {
       LoggingSystem.getLogger().log(Level.WARNING,
                                     "AreaClodMesh found with no Bounds.");
-      System.out.println( "NO BOUNDS");
       return 0;
     }
     
