@@ -29,6 +29,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+/*
+ * EDIT:  04/05/2004 - Added check to see if we already have an input system initialized. GOP
+ */
  
 package com.jme.input;
 
@@ -48,7 +52,7 @@ import com.jme.system.DisplaySystem;
  * to defined to setMouse and setActions methods for custom InputControllers.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbstractInputHandler.java,v 1.1 2004-03-25 17:14:40 mojomonkey Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.2 2004-04-05 11:33:49 greggpatton Exp $
  */
 public abstract class AbstractInputHandler {
     
@@ -215,8 +219,10 @@ public abstract class AbstractInputHandler {
     
     protected void setKeyBindings(RendererType rendererType) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
-        
-        InputSystem.createInputSystem(rendererType.getName());
+    
+        //Check to see if we already have an input system, we only need one.    
+        if (InputSystem.getKeyInput() == null)
+            InputSystem.createInputSystem(rendererType.getName());
 
         keyboard.setKeyInput(InputSystem.getKeyInput());
 
