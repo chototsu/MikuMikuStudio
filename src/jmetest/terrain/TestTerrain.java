@@ -48,7 +48,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.2 2004-04-12 00:31:21 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.3 2004-04-12 02:44:22 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -150,7 +150,7 @@ public class TestTerrain extends SimpleGame {
         Vector3f min = new Vector3f(-0.5f, -0.5f, -0.5f);
         
         WireframeState ws = display.getRenderer().getWireframeState();
-        ws.setEnabled(true);
+        ws.setEnabled(false);
         
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
@@ -182,20 +182,42 @@ public class TestTerrain extends SimpleGame {
         
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0));
-        
+        tb.setDetailTexture(1, 8);
         scene.attachChild(tb);
         scene.setRenderState(cs);
         
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
-        ts.setTexture(
-            TextureManager.loadTexture(
-                TestTerrain.class.getClassLoader().getResource(
-                    "jmetest/data/texture/dirt.jpg"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-
+        Texture t1 = TextureManager.loadTexture(
+        		TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png"),
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true);
+        ts.setTexture(t1 ,0);
+        
+        
+        Texture t2 = TextureManager.loadTexture(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/Detail.jpg"),
+		        Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true);
+        ts.setTexture( t2,1);
+        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
+      
+//        glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB_EXT,GL_INTERPOLATE_EXT);
+//        glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB_EXT,GL_PREVIOUS_EXT);
+//        glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND0_RGB_EXT,GL_SRC_COLOR);
+//        glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB_EXT,GL_TEXTURE);
+//        glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND1_RGB_EXT,GL_SRC_COLOR);
+//        glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE2_RGB_EXT,GL_TEXTURE);
+//        glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND2_RGB_EXT,GL_SRC_ALPHA);
+        t2.setCombineFuncRGB(Texture.ACF_ADD);
+//        t2.setCombineSrc0RGB(Texture.ACS_PREVIOUS);
+//        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
+//        t2.setCombineSrc1RGB(Texture.ACS_TEXTURE);
+//        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
+//        t2.setCombineSrc2RGB(Texture.ACS_TEXTURE);
+//        t2.setCombineOp2RGB(Texture.ACO_SRC_ALPHA);
+        
         scene.setRenderState(ts);
 
         ZBufferState buf = display.getRenderer().getZBufferState();

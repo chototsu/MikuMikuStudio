@@ -55,6 +55,15 @@ public class TerrainBlock extends TriMesh {
         buildTextureCoordinates();
         buildNormals();
     }
+    
+    public void setDetailTexture(int unit, int repeat) {
+        texture[unit] = new Vector2f[texture[0].length];
+        for(int i = 0; i < texture[0].length; i++) {
+            texture[unit][i] = texture[0][i].mult(repeat);
+        }
+        
+        setTextures(texture[unit], unit);
+    }
 
     /**
      * <code>buildVertices</code> sets up the vertex and index arrays of the
