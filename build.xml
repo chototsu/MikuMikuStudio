@@ -9,7 +9,7 @@
   <property name="class"    location="${seg}/build"/>
   <property name="data"     location="${seg}/data"/>
   <property name="doc"     location="${data}/doc"/>
-  
+
   <target name="init">
     <tstamp/>
     <mkdir dir="${src}"/>
@@ -20,14 +20,20 @@
 
   <target name="compile" depends="init" description="generate jme classes">
     <mkdir dir="${class}"/>
+    <mkdir dir="${class}/com"/>
+    <copy todir="${class}/com">
+        <fileset dir="${src}/com">
+            <exclude name="**/*.java" />
+        </fileset>
+    </copy>
     <javac srcdir="${src}/com" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jl030.jar" listfiles="no"/>
   </target>
-<!-- ************************************************************************* -->		
+<!-- ************************************************************************* -->
 
   <target name="dist" depends="compile" description="generate jme package" >
     <jar jarfile="${seg}/target/jme.jar"  basedir="${class}" update="no" compress="false"/>
   </target>
-  
+
   <target name="webdist" depends="compile" description="sign JARs for JNLP distribution" >
     <signjar jar="${seg}/target/jme.jar"
       alias="jme"
