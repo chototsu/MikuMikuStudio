@@ -76,8 +76,8 @@ public abstract class UIObject extends Quad {
 	    Vector3f mouseloc = _inputHandler.getMouse().getHotSpotPosition();
 		if (mouseloc.x >= _x
 				&& mouseloc.x <= _x + ( _width * _scale)
-				&& mouseloc.y + ( _inputHandler.getMouse().getImageHeight()) >= _y
-				&& mouseloc.y + ( _inputHandler.getMouse().getImageHeight()) <= _y
+				&& mouseloc.y  >= _y
+				&& mouseloc.y  <= _y
 						+ ( _height * _scale)) {
 			return true;
 		} else

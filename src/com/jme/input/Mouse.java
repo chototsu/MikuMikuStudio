@@ -43,6 +43,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.LightState;
 
 /**
  * <code>Mouse</code> defines a node that handles the rendering and updating
@@ -50,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.11 2004-07-23 20:16:55 renanse Exp $
+ * @version $Id: Mouse.java,v 1.12 2004-07-24 18:53:57 renanse Exp $
  */
 public abstract class Mouse extends Quad {
   /**
@@ -79,6 +80,8 @@ public abstract class Mouse extends Quad {
     setForceView(true);
     setRenderQueueMode(Renderer.QUEUE_ORTHO);
     setZOrder(Integer.MIN_VALUE);
+    setLightCombineMode(LightState.OFF);
+    setTextureCombineMode(TextureState.REPLACE);
   }
 
   /**
@@ -98,7 +101,7 @@ public abstract class Mouse extends Quad {
           ( (TextureState) rs).getTexture().getImage().getHeight();
       imageWidth = ( (TextureState) rs).getTexture().getImage().getWidth();
       initialize(imageWidth, imageHeight);
-      _hotSpotOffset = new Vector3f(-imageWidth/2, -imageHeight/2, 0);
+      _hotSpotOffset = new Vector3f(-imageWidth/2, imageHeight/2, 0);
     }
     return super.setRenderState(rs);
   }

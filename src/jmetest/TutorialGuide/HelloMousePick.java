@@ -1,27 +1,27 @@
 package jmetest.TutorialGuide;
 
+import java.net.URL;
+
 import com.jme.app.SimpleGame;
-import com.jme.scene.shape.Box;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.AlphaState;
-import com.jme.math.Vector3f;
-import com.jme.math.Ray;
-import com.jme.math.Vector2f;
 import com.jme.bounding.BoundingBox;
+import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
-import com.jme.image.Texture;
-import com.jme.util.TextureManager;
 import com.jme.intersection.Intersection;
-
-import java.net.URL;
+import com.jme.math.Ray;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.scene.shape.Box;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
 
 /**
  * Started Date: Jul 22, 2004<br><br>
  *
  * Demonstrates picking with the mouse.
- * 
+ *
  * @author Jack Lindamood
  */
 public class HelloMousePick extends SimpleGame {
@@ -74,6 +74,7 @@ public class HelloMousePick extends SimpleGame {
 
         // Update the mouse's newly added render states
         am.updateRenderState();
+//        rootNode.attachChild(am);  // If you do this, NO NEED to render mouse seperately.
     }
 
     // This is called every frame.  Do changing of values here.
@@ -83,8 +84,8 @@ public class HelloMousePick extends SimpleGame {
         // Is button 0 down?  Button 0 is left click
         if (thisMouse.isButtonDown(0)){
             Vector2f screenPos=new Vector2f();
-            // Get the position that the mouse is pointing
-            screenPos.set(am.getHotSpotPosition().x,am.getHotSpotPosition().y+am.getImageHeight());
+            // Get the position that the mouse is pointing to
+            screenPos.set(am.getHotSpotPosition().x,am.getHotSpotPosition().y);
             // Get the world location of that X,Y value
             Vector3f worldCoords=display.getWorldCoordinates(screenPos,0);
             // Create a ray starting from the camera, and going in the direction of the mouse's location

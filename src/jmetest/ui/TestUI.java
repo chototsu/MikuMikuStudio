@@ -6,21 +6,16 @@
  */
 package jmetest.ui;
 
-import java.util.logging.Level;
-
-import jmetest.input.TestAbsoluteMouse;
-
 import com.jme.app.BaseGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
-import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.action.KeyExitAction;
-import com.jme.input.action.KeyToggleRenderState;
 import com.jme.input.action.KeyToggleBoolean;
+import com.jme.input.action.KeyToggleRenderState;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -34,10 +29,12 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
+import com.jme.ui.UIBillboard;
+import com.jme.ui.UIButton;
+import com.jme.ui.UICheck;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
-import com.jme.ui.*;
+import jmetest.input.TestAbsoluteMouse;
 
 /**
  * @author schustej
