@@ -56,7 +56,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.62 2005-02-24 07:00:50 renanse Exp $
+ * @version $Id: Spatial.java,v 1.63 2005-03-01 00:21:39 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -610,6 +610,7 @@ public abstract class Spatial implements Serializable {
 		if (localRotation == null)
 			localRotation = new Quaternion();
 		localRotation.fromRotationMatrix(rotation);
+		this.worldRotation.set(this.localRotation);
 	}
 
 	/**
@@ -622,6 +623,7 @@ public abstract class Spatial implements Serializable {
 	 */
 	public void setLocalRotation(Quaternion quaternion) {
 		localRotation = quaternion;
+		this.worldRotation.set(this.localRotation);
 	}
 
 	/**
@@ -643,6 +645,7 @@ public abstract class Spatial implements Serializable {
 		this.localScale.x = localScale;
 		this.localScale.y = localScale;
 		this.localScale.z = localScale;
+		this.worldScale.set(this.localScale);
 	}
 
 	/**
@@ -653,6 +656,7 @@ public abstract class Spatial implements Serializable {
 	 */
 	public void setLocalScale(Vector3f localScale) {
 		this.localScale = localScale;
+		this.worldScale.set(this.localScale);
 	}
 
 	/**
@@ -674,6 +678,7 @@ public abstract class Spatial implements Serializable {
 	 */
 	public void setLocalTranslation(Vector3f localTranslation) {
 		this.localTranslation = localTranslation;
+		this.worldTranslation.set(this.localTranslation);
 	}
 
 	/**
