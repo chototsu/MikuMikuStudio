@@ -71,10 +71,7 @@ public class TestMilkshapeASCII extends SimpleGame {
     protected void update(float interpolation) {
     	timer.update();
         input.update(timer.getTimePerFrame() * 100);
-        //System.out.println(timer.getFrameRate());
-        scene.updateWorldData(timer.getTimePerFrame());
-        System.out.println("Scene bound: " + scene.getWorldBound());
-        System.out.println("Model bound: " + model.getWorldBound());
+        scene.updateGeometricState(timer.getTimePerFrame(), true);
     }
 
     /**
