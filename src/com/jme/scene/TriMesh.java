@@ -56,7 +56,7 @@ import com.jme.bounding.OBBTree;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.26 2004-09-07 04:33:01 cep21 Exp $
+ * @version $Id: TriMesh.java,v 1.27 2004-09-07 07:10:28 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -327,8 +327,11 @@ public class TriMesh extends Geometry implements Serializable {
         if (collisionTree==null || toCheck.collisionTree==null)
             return false;
         else{
-            collisionTree.bounds.transform(worldRotation,worldTranslation,worldScale,collisionTree.worldBounds);
-            worldMatrot=worldRotation.toRotationMatrix();
+            if (worldMatrot==null)
+                worldMatrot=worldRotation.toRotationMatrix();
+            else
+                worldMatrot=worldRotation.toRotationMatrix(worldMatrot);
+            collisionTree.bounds.transform(worldMatrot,worldTranslation,worldScale,collisionTree.worldBounds);
             toCheck.worldMatrot=toCheck.worldRotation.toRotationMatrix();
             return collisionTree.intersect(toCheck.collisionTree);
         }
@@ -345,8 +348,11 @@ public class TriMesh extends Geometry implements Serializable {
         if (collisionTree==null || toCheck.collisionTree==null)
             return ;
         else{
-            collisionTree.bounds.transform(worldRotation,worldTranslation,worldScale,collisionTree.worldBounds);
-            worldMatrot=worldRotation.toRotationMatrix();
+            if (worldMatrot==null)
+                worldMatrot=worldRotation.toRotationMatrix();
+            else
+                worldMatrot=worldRotation.toRotationMatrix(worldMatrot);
+            collisionTree.bounds.transform(worldMatrot,worldTranslation,worldScale,collisionTree.worldBounds);
             toCheck.worldMatrot=toCheck.worldRotation.toRotationMatrix();
             collisionTree.intersect(toCheck.collisionTree,thisIndex,otherIndex);
         }
