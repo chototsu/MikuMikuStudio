@@ -1,21 +1,21 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
- * All rights reserved.
- *
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
+ * reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * 
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
+ * 
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,294 +27,137 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  */
-
 package jmetest.effects.lenseflare;
-
-import com.jme.app.*;
-import com.jme.bounding.BoundingBox;
-import com.jme.effects.lenseflare.LenseFlare;
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.light.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.shape.Box;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
-import com.jme.terrain.*;
-import com.jme.terrain.util.MidPointHeightMap;
-
+import java.util.ArrayList;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.glu.GLU;
+import com.jme.app.VariableTimestepGame;
+import com.jme.math.Vector2f;
+import com.jme.scene.Text;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.util.LoggingSystem;
+import com.jme.util.Timer;
 /**
- * <code>TestLightState</code>
- * @author Mark Powell
- * @version $Id: TestLenseFlare.java,v 1.3 2004-04-22 22:27:32 renanse Exp $
+ * <code>TestLenseFlare</code>
+ * 
+ * @author Ahmed Al-Hindawi
+ * @version $Id: TestLenseFlare.java,v 1.4 2004-04-27 14:55:33 darkprophet Exp $
  */
-public class TestLenseFlare extends BaseGame {
-    private Camera cam;
-    private CameraNode camNode;
-    private Node root;
-    private InputHandler input;
-    private Timer timer;
-    private Text fps;
-    private Vector3f currentPos;
-    private Vector3f newPos;
-    private LightNode lightNode;
-    private LenseFlare lf;
-    /**
-     * Entry point for the test,
-     * @param args
-     */
-    public static void main(String[] args) {
-        LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
-        TestLenseFlare app = new TestLenseFlare();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
-    }
-
-    /**
-     * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
-
-        timer.update();
-        input.update(timer.getTimePerFrame());
-
-//      update individual sprites
-        /*
-        if ((int) currentPos.x == (int) newPos.x
-            && (int) currentPos.z == (int) newPos.z) {
-            newPos.x = (float) Math.random() * 128 * 5;
-            newPos.z = (float) Math.random() * 128 * 5;
-        }
-
-        currentPos.x -= (currentPos.x - newPos.x)
-            / (timer.getFrameRate() / 2);
-        currentPos.y = 255;
-        currentPos.z -= (currentPos.z - newPos.z)
-            / (timer.getFrameRate() / 2);
-        */
-        currentPos = new Vector3f(0, 250, -20);
-        Vector3f temp = new Vector3f();
-        temp.x = currentPos.x;
-		temp.y = currentPos.y;
-        temp.z = 1f;
-        Vector2f f = display.getScreenCoordinates(temp);
-        System.out.println("SC: " + f.toString());
-        lightNode.setLocalTranslation(currentPos);
-
-        root.updateGeometricState(timer.getTimePerFrame(), true);
-        fps.print(
-            "FPS: "
-                + (int) timer.getFrameRate()
-                + " : "
-                + display.getRenderer().getStatistics());
-        //        System.out.println(timer.getFrameRate());
-        display.getRenderer().clearStatistics();
-    }
-
-    /**
-     * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-
-        display.getRenderer().draw(root);
-        //display.getRenderer().drawBounds(root);
-
-    }
-
-    /**
-     * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        currentPos = new Vector3f();
-        newPos = new Vector3f();
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
-                    properties.getHeight());
-
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-
-        display.getRenderer().setCamera(cam);
-
-        camNode = new CameraNode("Camera Node", cam);
-        camNode.setLocalTranslation(new Vector3f(0, 250, -20));
-        camNode.updateWorldData(0);
-        //camNode.setLocalTranslation(new Vector3f();
-        input = new NodeHandler(this, camNode, "LWJGL");
-        input.setKeySpeed(50f);
-        input.setMouseSpeed(1f);
-        display.setTitle("Terrain Test");
-        display.getRenderer().enableStatistics(true);
-        timer = Timer.getTimer(properties.getRenderer());
-
-    }
-
-    /**
-     * builds the trimesh.
-     * @see com.jme.app.SimpleGame#initGame()
-     */
-    protected void initGame() {
-        Vector3f max = new Vector3f(0.5f, 0.5f, 0.5f);
-        Vector3f min = new Vector3f(-0.5f, -0.5f, -0.5f);
-
-        WireframeState ws = display.getRenderer().getWireframeState();
-        ws.setEnabled(false);
-
-        AlphaState as1 = display.getRenderer().getAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        as1.setEnabled(true);
-
-        PointLight dr = new PointLight();
-        dr.setEnabled(true);
-        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        dr.setLocation(new Vector3f(0.5f, -0.5f, 0));
-
-
-
-        CullState cs = display.getRenderer().getCullState();
-        cs.setCullMode(CullState.CS_BACK);
-        cs.setEnabled(true);
-
-        LightState lightstate = display.getRenderer().getLightState();
-        lightstate.setTwoSidedLighting(true);
-        lightstate.setEnabled(true);
-        //lightstate.attach(dr);
-
-        lightNode = new LightNode("light", lightstate );
-
-        lightNode.setLight(dr);
-        Vector3f min2 = new Vector3f(-0.5f, -0.5f, -0.5f);
-        Vector3f max2 = new Vector3f(0.5f,0.5f,0.5f);
-        Box lightBox = new Box("box", min2,max2);
-        //lightBox.setForceView(true);
-        lightBox.setModelBound(new BoundingBox());
-        lightBox.updateModelBound();
-        lightNode.attachChild(lightBox);
-
-
-        Node scene = new Node("scene");
-        lightNode.setTarget(scene);
-        scene.attachChild(lightNode);
-        scene.setRenderState(ws);
-        scene.setRenderState(lightstate);
-        root = new Node("Root node");
-
-        MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
-        TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0), false);
-        tb.setDetailTexture(1, 4);
-        tb.setModelBound(new BoundingBox());
-        tb.updateModelBound();
-        scene.attachChild(tb);
-        scene.setRenderState(cs);
-
-        TextureState ts = display.getRenderer().getTextureState();
-        ts.setEnabled(false);
-        Texture t1 = TextureManager.loadTexture(
-        		TestLenseFlare.class.getClassLoader().getResource("jmetest/data/texture/grassb.png"),
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true);
-        ts.setTexture(t1 ,0);
-
-
-        Texture t2 = TextureManager.loadTexture(TestLenseFlare.class.getClassLoader().getResource("jmetest/data/texture/Detail.jpg"),
-		        Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true);
-        ts.setTexture( t2,1);
-        t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
-
-        t1.setApply(Texture.AM_COMBINE);
-        t1.setCombineFuncRGB(Texture.ACF_MODULATE);
-        t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
-        t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t1.setCombineScaleRGB(0);
-
-        t2.setApply(Texture.AM_COMBINE);
-        t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
-        t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
-        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
-        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-        t2.setCombineScaleRGB(0);
-        scene.setRenderState(ts);
-
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
-
-        TextureState font = display.getRenderer().getTextureState();
-        font.setTexture(
-            TextureManager.loadTexture(
-                TestLenseFlare.class.getClassLoader().getResource(
-                    "jmetest/data/font/font.png"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-        font.setEnabled(true);
-
-        fps = new Text("FPS counter", "");
-        fps.setRenderState(font);
-        fps.setRenderState(as1);
-
-        lf = new LenseFlare("LenseFlare", 0.005f);
-        lf.addType(TestLenseFlare.class.getClassLoader().getResource("jmetest/data/texture/halo.jpg"), new Vector2f(1, 1));
-        lf.addType(TestLenseFlare.class.getClassLoader().getResource("jmetest/data/texture/streaks.jpg"));
-
-        scene.setRenderState(buf);
-        root.attachChild(scene);
-        root.attachChild(fps);
-        root.attachChild(lf);
-        root.setForceView(true);
-
-        root.updateGeometricState(0.0f, true);
-        root.updateRenderState();
-
-    }
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-
-    }
-
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-
-    }
-
+public class TestLenseFlare extends VariableTimestepGame {
+	private Timer timer;
+	private Text fps;
+	private Vector2f bigGlowPos;
+	private ArrayList lenseFlarePos;
+	private int numOfLF = 4;
+	public static void main(String[] args) {
+		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
+		TestLenseFlare app = new TestLenseFlare();
+		app.setDialogBehaviour(FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+		app.start();
+	}
+	protected void update(float interpolation) {
+		timer.update();
+		//recalculateLenseFlare();
+	}
+	private void recalculateLenseFlare() {
+		float diffX = bigGlowPos.x;
+		float diffY = bigGlowPos.y;
+		for (int i = numOfLF; i > 0; i--) {
+			float temp = i / ((float) numOfLF);
+			float x = diffX * temp;
+			float y = diffY * temp;
+			Vector2f v = new Vector2f(x, y);
+			lenseFlarePos.add(v);
+		}
+		for (int i = 0; i < numOfLF; i++) {
+			float temp = i / ((float) numOfLF * -1);
+			float x = diffX * temp;
+			float y = diffY * temp;
+			Vector2f v = new Vector2f(x, y);
+			lenseFlarePos.add(i + numOfLF, v);
+		}
+	}
+	protected void render(float interpolation) {
+		display.getRenderer().clearBuffers();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glPushMatrix();
+		GL11.glLoadIdentity();
+		GLU.gluOrtho2D(-(properties.getWidth() / 2), properties.getWidth() / 2,
+				-(properties.getHeight() / 2), properties.getHeight() / 2);
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glPushMatrix();
+		GL11.glLoadIdentity();
+		// draw crap
+		GL11.glColor4f(0, 0, 1, 1);
+		GL11.glBegin(GL11.GL_QUADS);
+		{
+			Vector2f pos;
+			for (int i = 0; i < lenseFlarePos.size(); i++) {
+				pos = (Vector2f) lenseFlarePos.get(i);
+				GL11.glVertex2f(pos.x - (i * 3), pos.y - (i * 3));
+				GL11.glVertex2f(pos.x - (i * 3), pos.y + (i * 3));
+				GL11.glVertex2f(pos.x + (i * 3), pos.y + (i * 3));
+				GL11.glVertex2f(pos.x + (i * 3), pos.y - (i * 3));
+				System.out.println("I: " + i + ", Size: " + (i * 2));
+			}
+		}
+		GL11.glEnd();
+		GL11.glColor4f(1, 0, 0, 1);
+		GL11.glBegin(GL11.GL_QUADS);
+		{
+			GL11.glVertex2f(-2, -2);
+			GL11.glVertex2f(-2, 2);
+			GL11.glVertex2f(2, 2);
+			GL11.glVertex2f(2, -2);
+		}
+		GL11.glEnd();
+		// pop crap
+		GL11.glMatrixMode(GL11.GL_MODELVIEW);
+		GL11.glPopMatrix();
+		GL11.glMatrixMode(GL11.GL_PROJECTION);
+		GL11.glPopMatrix();
+	}
+	protected void initSystem() {
+		try {
+			display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+			display.createWindow(properties.getWidth(), properties.getHeight(),
+					properties.getDepth(), properties.getFreq(), properties
+							.getFullscreen());
+		} catch (JmeException e) {
+			e.printStackTrace();
+			System.exit(1);
+		}
+		display.setTitle("Test Lense Flare");
+		timer = Timer.getTimer(properties.getRenderer());
+	}
+	protected void initGame() {
+		lenseFlarePos = new ArrayList();
+		bigGlowPos = new Vector2f(200, 200);
+		lenseFlarePos.add(bigGlowPos);
+		float diffX = bigGlowPos.x;
+		float diffY = bigGlowPos.y;
+		for (int i = numOfLF; i > 0; i--) {
+			float temp = i / ((float) numOfLF);
+			float x = diffX * temp;
+			float y = diffY * temp;
+			System.out.println("X" + i + ": " + x + "\tY" + i + ": " + y);
+			Vector2f v = new Vector2f(x, y);
+			lenseFlarePos.add(v);
+		}
+		for (int i = 0; i < numOfLF; i++) {
+			float temp = i / ((float) numOfLF * -1);
+			float x = diffX * temp;
+			float y = diffY * temp;
+			System.out.println("X" + i + ": " + x + "\tY" + i + ": " + y);
+			Vector2f v = new Vector2f(x, y);
+			lenseFlarePos.add(v);
+		}
+	}
+	protected void reinit() {
+	}
+	protected void cleanup() {
+	}
 }
