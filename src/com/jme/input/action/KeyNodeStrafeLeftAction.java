@@ -35,21 +35,28 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>KeyNodeStrafeLeftAction</code> defines an action that moves a node along
- * the positive left vector. The speed at which it moves is set and
- * of the form units per second.
+ * <code>KeyNodeStrafeLeftAction</code> defines an action that moves a node
+ * along the positive left vector. The speed at which it moves is set and of the
+ * form units per second.
+ * 
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeLeftAction.java,v 1.12 2004-08-22 02:00:34 cep21 Exp $
+ * @version $Id: KeyNodeStrafeLeftAction.java,v 1.12 2004/08/22 02:00:34 cep21
+ *          Exp $
  */
-public class KeyNodeStrafeLeftAction extends AbstractInputAction {
-
+public class KeyNodeStrafeLeftAction extends KeyInputAction {
+    //the node to manipulate
     private Spatial node;
-    private static final Vector3f tempVa=new Vector3f();
+    //temporary vector for translation
+    private static final Vector3f tempVa = new Vector3f();
 
     /**
-     * Constructor instantiates a new <code>KeyNodeStrafeLeftAction</code> object.
-     * @param node the node to move along the left vector.
-     * @param speed the speed at which to move the node.
+     * Constructor instantiates a new <code>KeyNodeStrafeLeftAction</code>
+     * object.
+     * 
+     * @param node
+     *            the node to move along the left vector.
+     * @param speed
+     *            the speed at which to move the node.
      */
     public KeyNodeStrafeLeftAction(Spatial node, float speed) {
         this.node = node;
@@ -57,13 +64,15 @@ public class KeyNodeStrafeLeftAction extends AbstractInputAction {
     }
 
     /**
-     * <code>performAction</code> moves the node along the left vector for
-     * a given distance of speed * time.
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * <code>performAction</code> moves the node along the left vector for a
+     * given distance of speed * time.
+     * 
+     * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
-    public void performAction(float time) {
+    public void performAction(InputActionEvent evt) {
         Vector3f loc = node.getLocalTranslation();
-        loc.addLocal(node.getLocalRotation().getRotationColumn(0,tempVa).multLocal(speed * time));
+        loc.addLocal(node.getLocalRotation().getRotationColumn(0, tempVa)
+                .multLocal(speed * evt.getTime()));
         node.setLocalTranslation(loc);
     }
 }

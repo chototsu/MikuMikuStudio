@@ -37,38 +37,49 @@ import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
 
 /**
+ * TriangleCollisionResults creates a CollisionResults object that calculates
+ * collisions to the triangle accuracy. CollisionData objects are added to the
+ * collision list as they happen, these data objects only refer to the two
+ * meshes, not their triangle lists. While TriangleCollisionResults defines a
+ * processCollisions method, it is empty and should be further defined by the
+ * user if so desired.
+ * 
+ * NOTE: Only TriMesh objects may obtain triangle accuracy, all others will 
+ * result in Bounding accuracy.
+ * 
  * @author Mark Powell
+ * @version $Id: TriangleCollisionResults.java,v 1.3 2004-10-14 01:23:12 mojomonkey Exp $
  */
 public class TriangleCollisionResults extends CollisionResults {
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.intersection.CollisionResults#addCollision(com.jme.scene.Geometry,
-	 *      com.jme.scene.Geometry)
-	 */
-	public void addCollision(Geometry s, Geometry t) {
-		ArrayList a = new ArrayList();
-		ArrayList b = new ArrayList();
-		//find the triangle that is being hit.
-		//add this node and the triangle to the CollisionResults list.
-		if(!(s instanceof TriMesh) || !(t instanceof TriMesh)) {
-			CollisionData data = new CollisionData(s, t);
-			addCollisionData(data);
-		} else {
-			((TriMesh) s).findTriangleCollision((TriMesh) t, a, b);
-			CollisionData data = new CollisionData(s, t, a, b);
-			addCollisionData(data);
-		}
-	}
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.intersection.CollisionResults#addCollision(com.jme.scene.Geometry,
+     *      com.jme.scene.Geometry)
+     */
+    public void addCollision(Geometry s, Geometry t) {
+        ArrayList a = new ArrayList();
+        ArrayList b = new ArrayList();
+        //find the triangle that is being hit.
+        //add this node and the triangle to the CollisionResults list.
+        if (!(s instanceof TriMesh) || !(t instanceof TriMesh)) {
+            CollisionData data = new CollisionData(s, t);
+            addCollisionData(data);
+        } else {
+            ((TriMesh) s).findTriangleCollision((TriMesh) t, a, b);
+            CollisionData data = new CollisionData(s, t, a, b);
+            addCollisionData(data);
+        }
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.intersection.CollisionResults#processCollisions()
-	 */
-	public void processCollisions() {
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.intersection.CollisionResults#processCollisions()
+     */
+    public void processCollisions() {
 
-	}
+    }
 
 }

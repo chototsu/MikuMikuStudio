@@ -40,19 +40,25 @@ import com.jme.scene.Spatial;
  * of the node is defined by the speed and the value set in the
  * <code>performAction</code> method. The speed is set with construction or
  * the <code>setSpeed</code> method. This can be thought as units/second.
+ * 
  * @author Mark Powell
- * @version $Id: KeyNodeBackwardAction.java,v 1.13 2004-08-22 02:00:33 cep21 Exp $
+ * @version $Id: KeyNodeBackwardAction.java,v 1.14 2004-10-14 01:22:58 mojomonkey Exp $
  */
-public class KeyNodeBackwardAction extends AbstractInputAction {
+public class KeyNodeBackwardAction extends KeyInputAction {
+    //the node to manipulate
     private Spatial node;
-    private static final Vector3f tempVa=new Vector3f();
+    //temporary vector for multiplications
+    private static final Vector3f tempVa = new Vector3f();
 
     /**
      * Constructor creates a new <code>KeyNodeBackwardAction</code> object.
-     * During construction, the node to direct and the speed at which to
-     * move the node is set.
-     * @param node the node that will be affected by this action.
-     * @param speed the speed at which the camera can move.
+     * During construction, the node to direct and the speed at which to move
+     * the node is set.
+     * 
+     * @param node
+     *            the node that will be affected by this action.
+     * @param speed
+     *            the speed at which the camera can move.
      */
     public KeyNodeBackwardAction(Spatial node, float speed) {
         this.node = node;
@@ -60,14 +66,16 @@ public class KeyNodeBackwardAction extends AbstractInputAction {
     }
 
     /**
-     * <code>performAction</code> moves the node along it's negative
-     * direction vector at a speed of movement speed * time. Where time is
-     * the time between frames and 1 corresponds to 1 second.
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * <code>performAction</code> moves the node along it's negative direction
+     * vector at a speed of movement speed * time. Where time is the time
+     * between frames and 1 corresponds to 1 second.
+     * 
+     * @see com.jme.input.action.KeyInputAction#performAction(float)
      */
-    public void performAction(float time) {
+    public void performAction(InputActionEvent evt) {
         Vector3f loc = node.getLocalTranslation();
-        loc.subtractLocal(node.getLocalRotation().getRotationColumn(2,tempVa).multLocal(speed*time));
+        loc.subtractLocal(node.getLocalRotation().getRotationColumn(2, tempVa)
+                .multLocal(speed * evt.getTime()));
         node.setLocalTranslation(loc);
     }
 }

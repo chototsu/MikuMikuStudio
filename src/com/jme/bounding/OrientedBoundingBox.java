@@ -71,8 +71,10 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 
 	public BoundingVolume transform(Quaternion rotate, Vector3f translate,
 			Vector3f scale, BoundingVolume store) {
-		if (store == null)
+		if (store == null || !(store instanceof OrientedBoundingBox)) {
 			store = new OrientedBoundingBox();
+		}
+		
 		OrientedBoundingBox toReturn = (OrientedBoundingBox) store;
 		toReturn.extent.set(extent.x * scale.x, extent.y * scale.y, extent.z
 				* scale.z);

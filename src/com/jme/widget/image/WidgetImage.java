@@ -62,7 +62,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
  *  Alignment code doesn't work properly.
  *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.11 2004-10-05 23:38:20 mojomonkey Exp $$
+ * @version $$Id: WidgetImage.java,v 1.12 2004-10-14 01:23:08 mojomonkey Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
@@ -273,7 +273,7 @@ public class WidgetImage extends WidgetAbstractImpl {
 	/* (non-Javadoc)
 	 * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
 	 */
-	public void doPick(Ray toTest, PickResults results) {
+	public void findPick(Ray toTest, PickResults results) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -40,7 +40,7 @@ import com.jme.scene.Geometry;
  * storing an ArrayList of CollisionData.
  * 
  * @author Mark Powell
- * @version $Id: CollisionResults.java,v 1.7 2004-09-23 22:47:06 mojomonkey Exp $
+ * @version $Id: CollisionResults.java,v 1.8 2004-10-14 01:23:12 mojomonkey Exp $
  */
 public abstract class CollisionResults {
 
@@ -93,8 +93,25 @@ public abstract class CollisionResults {
 		nodeList.clear();
 	}
 	
+	/**
+	 * 
+	 * <code>addCollision</code> is an abstract method whose intent is the 
+	 * subclass determines what to do when two Geometry object's bounding
+	 * volumes are determined to intersect.
+	 * 
+	 * @param s the first Geometry that intersects.
+	 * @param t the second Geometry that intersects.
+	 */
 	public abstract void addCollision(Geometry s, Geometry t);
 	
+	/**
+	 * 
+	 * <code>processCollisions</code> is an abstract method whose intent is
+	 * the subclass defines how to process the collision data that has been
+	 * collected since the last clear.
+	 *
+	 *
+	 */
 	public abstract void processCollisions();
 
 }

@@ -38,7 +38,18 @@ import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
 
 /**
+ * TrianglePickResults creates a PickResults object that calculates
+ * picking to the triangle accuracy. PickData objects are added to the
+ * pick list as they happen, these data objects only refer to the two
+ * meshes, not their triangle lists. While TrianglePickResults defines a
+ * processPick method, it is empty and should be further defined by the
+ * user if so desired.
+ * 
+ * NOTE: Only TriMesh objects may obtain triangle accuracy, all others will 
+ * result in Bounding accuracy.
+ * 
  * @author Mark Powell
+ * @version $Id: TrianglePickResults.java,v 1.2 2004-10-14 01:23:12 mojomonkey Exp $
  */
 public class TrianglePickResults extends PickResults{
 
@@ -54,7 +65,7 @@ public class TrianglePickResults extends PickResults{
 			PickData data = new PickData(ray, s);
 			addPickData(data);
 		} else {
-			((TriMesh) s).doPickTriangles(ray, a);
+			((TriMesh) s).findTrianglePick(ray, a);
 			PickData data = new PickData(ray, s, a);
 			addPickData(data);
 		}

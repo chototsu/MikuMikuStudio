@@ -37,18 +37,23 @@ import com.jme.renderer.Camera;
 /**
  * <code>KeyLookUpAction</code> tilts a camera up a given angle. This angle
  * should be represented as a radian.
+ * 
  * @author Mark Powell
- * @version $Id: KeyLookUpAction.java,v 1.10 2004-08-22 02:00:33 cep21 Exp $
+ * @version $Id: KeyLookUpAction.java,v 1.11 2004-10-14 01:22:58 mojomonkey Exp $
  */
-public class KeyLookUpAction extends AbstractInputAction {
-
-    private static final Matrix3f incr=new Matrix3f();
+public class KeyLookUpAction extends KeyInputAction {
+    //the rotation matrix
+    private static final Matrix3f incr = new Matrix3f();
+    //the camera to manipulate
     private Camera camera;
 
     /**
      * Constructor instantiates a new <code>KeyLookUpAction</code> object.
-     * @param camera the camera to tilt.
-     * @param speed the speed at which the camera tilts.
+     * 
+     * @param camera
+     *            the camera to tilt.
+     * @param speed
+     *            the speed at which the camera tilts.
      */
     public KeyLookUpAction(Camera camera, float speed) {
         this.camera = camera;
@@ -56,13 +61,14 @@ public class KeyLookUpAction extends AbstractInputAction {
     }
 
     /**
-     * <code>performAction</code> adjusts the view of the camera to tilt up
-     * a given angle. This angle is determined by the camera's speed and the
-     * time which has passed.
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * <code>performAction</code> adjusts the view of the camera to tilt up a
+     * given angle. This angle is determined by the camera's speed and the time
+     * which has passed.
+     * 
+     * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
-    public void performAction(float time) {
-        incr.fromAxisAngle(camera.getLeft(), -speed * time);
+    public void performAction(InputActionEvent evt) {
+        incr.fromAxisAngle(camera.getLeft(), -speed * evt.getTime());
         incr.mult(camera.getLeft(), camera.getLeft());
         incr.mult(camera.getDirection(), camera.getDirection());
         incr.mult(camera.getUp(), camera.getUp());

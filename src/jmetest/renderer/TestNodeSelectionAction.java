@@ -31,9 +31,10 @@
  */
  package jmetest.renderer;
 
-import com.jme.input.action.AbstractInputAction;
+import com.jme.input.action.KeyInputAction;
+import com.jme.input.action.InputActionEvent;
 
-public class TestNodeSelectionAction extends AbstractInputAction {
+public class TestNodeSelectionAction extends KeyInputAction {
     private int node;
     private TestScenegraph app;
 
@@ -46,7 +47,7 @@ public class TestNodeSelectionAction extends AbstractInputAction {
      * @param time
      * @see com.jme.input.action.InputAction#performAction(float)
      */
-    public void performAction(float time) {
+    public void performAction(InputActionEvent evt) {
         app.setSelectedNode(node);
     }
 }

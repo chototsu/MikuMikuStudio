@@ -34,54 +34,55 @@ package com.jme.input.action;
 /**
  * <code>InputAction</code> defines an interface for creating input actions.
  * These actions can correspond to any event defined by a key value. The
- * <code>InputHandler</code> class typically maintains a collection of
- * the actions and when required calls the actions <code>performAction</code>
+ * <code>InputHandler</code> class typically maintains a collection of the
+ * actions and when required calls the actions <code>performAction</code>
  * method.
- *
+ * 
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: AbstractInputAction.java,v 1.4 2004-08-24 19:04:43 renanse Exp $
+ * @version $Id: KeyInputAction.java,v 1.1 2004-10-14 01:22:59 mojomonkey Exp $
  */
-public abstract class AbstractInputAction {
+public abstract class KeyInputAction implements InputAction {
 
-  /** If true, a single button press results in multiple calls to this class's performAction(float) */
-  protected boolean allowsRepeats = true;
-  /** A speed value that, if desired, can change how actions are performed. */
-  protected float speed = 0;
-  /** A name that identifies this action. */
-  protected String key;
-  /** The char associated with this event. */
-  protected char keyChar;
+    /**
+     * If true, a single button press results in multiple calls to this class's
+     * performAction(float)
+     */
+    protected boolean allowsRepeats = true;
 
-  /**
-     *
+    /** A speed value that, if desired, can change how actions are performed. */
+    protected float speed = 0;
+
+    /** A name that identifies this action. */
+    protected String key;
+
+    /** The char associated with this event. */
+    protected char keyChar;
+
+    /**
+     * 
      * <code>setSpeed</code> defines the speed at which this action occurs.
-     * @param speed the speed at which this action occurs.
+     * 
+     * @param speed
+     *            the speed at which this action occurs.
      */
     public void setSpeed(float speed) {
         this.speed = speed;
     }
 
     /**
-     * Returns the currently set speed.  Speed is 0 by default.
+     * Returns the currently set speed. Speed is 0 by default.
+     * 
      * @return The current speed.
      */
     public float getSpeed() {
-      return speed;
+        return speed;
     }
 
-
     /**
-     *
-     * <code>performAction</code> defines the appropriate action to take when
-     * called. The action is completely class specific..
-     * @param time the time value for the action.
-     */
-    public abstract void performAction(float time);
-
-    /**
-     *
+     * 
      * <code>getKey</code> retrieves the key associated with this action.
+     * 
      * @return the key associated with the action.
      */
     public String getKey() {
@@ -89,17 +90,20 @@ public abstract class AbstractInputAction {
     }
 
     /**
-     *
+     * 
      * <code>setKey</code> sets the key associated with this action.
-     * @param key the key associated with the action.
+     * 
+     * @param key
+     *            the key associated with the action.
      */
     public void setKey(String key) {
         this.key = key;
     }
 
     /**
-     *
+     * 
      * <code>getKey</code> retrieves the key associated with this action.
+     * 
      * @return the key associated with the action.
      */
     public char getKeyChar() {
@@ -107,27 +111,34 @@ public abstract class AbstractInputAction {
     }
 
     /**
-     *
+     * 
      * <code>setKey</code> sets the key associated with this action.
-     * @param key the key associated with the action.
+     * 
+     * @param key
+     *            the key associated with the action.
      */
     public void setKeyChar(char keyChar) {
         this.keyChar = keyChar;
     }
 
     /**
-     * Returns true if a single key press is set to allow repeated performAction calls.
+     * Returns true if a single key press is set to allow repeated performAction
+     * calls.
+     * 
      * @return The current repeat state.
      */
     public boolean allowsRepeats() {
-      return allowsRepeats;
+        return allowsRepeats;
     }
 
     /**
      * Sets if a single key press allows repeated performAction calls.
-     * @param allow If true, a single key press allows fo repeated performAction calls.
+     * 
+     * @param allow
+     *            If true, a single key press allows fo repeated performAction
+     *            calls.
      */
     public void setAllowsRepeats(boolean allow) {
-      allowsRepeats = allow;
+        allowsRepeats = allow;
     }
 }

@@ -31,6 +31,7 @@
  */
 package com.jme.input.action;
 
+import com.jme.input.KeyBindingManager;
 import com.jme.input.Mouse;
 import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
@@ -39,45 +40,60 @@ import com.jme.renderer.Camera;
 /**
  * <code>MouseLook</code> defines a mouse action that detects mouse movement
  * and converts it into camera rotations and camera tilts.
+ * 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.9 2004-07-30 21:33:40 cep21 Exp $
+ * @version $Id: MouseLook.java,v 1.10 2004-10-14 01:23:02 mojomonkey Exp $
  */
 public class MouseLook implements MouseInputAction {
+    //mouse that detects relative movements.
     private RelativeMouse mouse;
+    //actions to handle looking up down left and right.
     private KeyLookDownAction lookDown;
+
     private KeyLookUpAction lookUp;
+
     private KeyRotateLeftAction rotateLeft;
+
     private KeyRotateRightAction rotateRight;
-
+    //the axis to lock.
     private Vector3f lockAxis;
-
+    //the event to distribute to the looking actions.
+    private InputActionEvent event;
+    //the speed to look
     private float speed;
-//    private Camera camera;
+    private String key;
 
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
      * mouse, camera and speed of the looking.
-     * @param mouse the mouse to calculate view changes.
-     * @param camera the camera to move.
-     * @param speed the speed at which to alter the camera.
+     * 
+     * @param mouse
+     *            the mouse to calculate view changes.
+     * @param camera
+     *            the camera to move.
+     * @param speed
+     *            the speed at which to alter the camera.
      */
     public MouseLook(Mouse mouse, Camera camera, float speed) {
-        this.mouse = (RelativeMouse)mouse;
+        this.mouse = (RelativeMouse) mouse;
         this.speed = speed;
-//        this.camera = camera;
 
         lookDown = new KeyLookDownAction(camera, speed);
         lookUp = new KeyLookUpAction(camera, speed);
         rotateLeft = new KeyRotateLeftAction(camera, speed);
         rotateRight = new KeyRotateRightAction(camera, speed);
+
+        event = new InputActionEvent();
     }
 
     /**
-     *
+     * 
      * <code>setLockAxis</code> sets the axis that should be locked down. This
-     * prevents "rolling" about a particular axis. Typically, this is set to
-     * the mouse's up vector.  Note this is only a shallow copy.
-     * @param lockAxis the axis that should be locked down to prevent rolling.
+     * prevents "rolling" about a particular axis. Typically, this is set to the
+     * mouse's up vector. Note this is only a shallow copy.
+     * 
+     * @param lockAxis
+     *            the axis that should be locked down to prevent rolling.
      */
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
@@ -87,17 +103,20 @@ public class MouseLook implements MouseInputAction {
 
     /**
      * Returns the axis that is currently locked.
+     * 
      * @return The currently locked axis
      * @see #setLockAxis(com.jme.math.Vector3f)
      */
-    public Vector3f getLockAxis(){
+    public Vector3f getLockAxis() {
         return lockAxis;
     }
 
     /**
-     *
+     * 
      * <code>setSpeed</code> sets the speed of the mouse look.
-     * @param speed the speed of the mouse look.
+     * 
+     * @param speed
+     *            the speed of the mouse look.
      */
     public void setSpeed(float speed) {
         this.speed = speed;
@@ -109,8 +128,9 @@ public class MouseLook implements MouseInputAction {
     }
 
     /**
-     *
+     * 
      * <code>getSpeed</code> retrieves the speed of the mouse look.
+     * 
      * @return the speed of the mouse look.
      */
     public float getSpeed() {
@@ -121,32 +141,53 @@ public class MouseLook implements MouseInputAction {
      * <code>performAction</code> checks for any movement of the mouse, and
      * calls the appropriate method to alter the camera's orientation when
      * applicable.
-     * @see com.jme.input.action.MouseInputAction#performAction(float)
+     * 
+     * @see com.jme.input.action.MouseInputAction#performAction(InputActionEvent)
      */
-    public void performAction(float time) {
-        time *= speed;
+    public void performAction(InputActionEvent evt) {
+        float time = evt.getTime() * speed;
+
+        event.setEventList(evt.getEventList());
+        event.setKeys(KeyBindingManager.getKeyBindingManager().getKeyInput());
+
         if (mouse.getLocalTranslation().x > 0) {
-            rotateRight.performAction(
-                time * mouse.getLocalTranslation().x);
+            event.setTime(time * mouse.getLocalTranslation().x);
+            rotateRight.performAction(event);
         } else if (mouse.getLocalTranslation().x < 0) {
-            rotateLeft.performAction(
-                time * mouse.getLocalTranslation().x * -1);
+            event.setTime(time * mouse.getLocalTranslation().x * -1);
+            rotateLeft.performAction(event);
         }
         if (mouse.getLocalTranslation().y > 0) {
-            lookUp.performAction(
-                time * mouse.getLocalTranslation().y);
+            event.setTime(time * mouse.getLocalTranslation().y);
+            lookUp.performAction(event);
         } else if (mouse.getLocalTranslation().y < 0) {
-            lookDown.performAction(
-                time * mouse.getLocalTranslation().y * -1);
+            event.setTime(time * mouse.getLocalTranslation().y * -1);
+            lookDown.performAction(event);
         }
 
     }
+
     /**
      * <code>setMouse</code> sets the mouse used to check for movement.
+     * 
      * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
      */
     public void setMouse(Mouse mouse) {
-        this.mouse = (RelativeMouse)mouse;
+        this.mouse = (RelativeMouse) mouse;
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
+     */
+    public void setKey(String key) {
+       this.key = key;
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.input.action.InputAction#getKey()
+     */
+    public String getKey() {
+        return key;
     }
 
 }

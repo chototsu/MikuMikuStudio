@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
  * <code>TestCollision</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.18 2004-09-23 22:47:04 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.19 2004-10-14 01:23:08 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -117,8 +117,7 @@ public class TestCollision extends SimpleGame {
 
 		
 		results.clear();
-		t.findCollisions(scene, results);
-		results.processCollisions();
+		t.calculateCollisions(scene, results);
 	}
 
 	/**

@@ -47,7 +47,7 @@ import com.jme.scene.Spatial;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.14 2004-10-05 23:38:21 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.15 2004-10-14 01:23:13 mojomonkey Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -226,7 +226,7 @@ public class BezierCurve extends Curve {
 	/* (non-Javadoc)
 	 * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
 	 */
-	public void doPick(Ray toTest, PickResults results) {
+	public void findPick(Ray toTest, PickResults results) {
 		// TODO Auto-generated method stub
 		
 	}

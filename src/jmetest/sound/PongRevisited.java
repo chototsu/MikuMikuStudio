@@ -13,7 +13,8 @@ import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.action.AbstractInputAction;
+import com.jme.input.action.KeyInputAction;
+import com.jme.input.action.InputActionEvent;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
@@ -401,27 +402,27 @@ public class PongRevisited extends SimpleGame {
         ballYSpeed = 0;
     }
 
-    class MoveUpAction extends AbstractInputAction {
+    class MoveUpAction extends KeyInputAction {
         int numBullets;
 
         MoveUpAction() {
             setAllowsRepeats(true);
         }
 
-        public void performAction(float time) {
+        public void performAction(InputActionEvent evt) {
             player.getLocalTranslation().y += 5;
 
         }
     }
 
-    class MoveDownAction extends AbstractInputAction {
+    class MoveDownAction extends KeyInputAction {
         int numBullets;
 
         MoveDownAction() {
             setAllowsRepeats(true);
         }
 
-        public void performAction(float time) {
+        public void performAction(InputActionEvent evt) {
             player.getLocalTranslation().y -= 5;
 
         }

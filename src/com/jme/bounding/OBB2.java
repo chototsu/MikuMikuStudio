@@ -104,8 +104,9 @@ public class OBB2 implements BoundingVolume {
 
 	public BoundingVolume transform(Matrix3f rotate, Vector3f translate,
 			Vector3f scale, BoundingVolume store) {
-		if (store == null)
+		if (store == null || !(store instanceof OBB2)) {
 			store = new OBB2();
+		}
 		OBB2 toReturn = (OBB2) store;
 		toReturn.extent.set(extent.x * scale.x, extent.y * scale.y, extent.z
 				* scale.z);

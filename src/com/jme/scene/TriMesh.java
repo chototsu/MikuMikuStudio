@@ -40,7 +40,6 @@ import java.util.logging.Level;
 import java.util.ArrayList;
 
 import com.jme.intersection.CollisionResults;
-import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -59,7 +58,7 @@ import com.jme.bounding.OBBTree;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.34 2004-10-05 23:38:17 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.35 2004-10-14 01:23:10 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -391,14 +390,6 @@ public class TriMesh extends Geometry implements Serializable {
             }
         }
     }
-    
-    public void doPick(Ray ray, PickResults results) {
-    	if (getWorldBound().intersects(ray)) {
-				//find the triangle that is being hit.
-				//add this node and the triangle to the PickResults list.
-				results.addPick(ray, this);
-		}
-    }
 
     /**
      * This function checks for intersection between this trimesh and the given
@@ -451,19 +442,30 @@ public class TriMesh extends Geometry implements Serializable {
                     otherIndex);
         }
     }
-    
-    public void doPickTriangles(Ray toTest,ArrayList results){
-		if (worldBound.intersects(toTest)) {
-            if (worldMatrot == null)
+
+    /**
+     * 
+     * <code>findTrianglePick</code> determines the triangles of this trimesh
+     * that are being touched by the ray. The indices of the triangles are
+     * stored in the provided ArrayList.
+     * 
+     * @param toTest
+     *            the ray to test.
+     * @param results
+     *            the indices to the triangles.
+     */
+    public void findTrianglePick(Ray toTest, ArrayList results) {
+        if (worldBound.intersects(toTest)) {
+            if (worldMatrot == null) {
                 worldMatrot = worldRotation.toRotationMatrix();
-            else
+            } else {
                 worldRotation.toRotationMatrix(worldMatrot);
-            collisionTree.bounds.transform(worldMatrot, worldTranslation,
-                    worldScale, collisionTree.worldBounds);
-            collisionTree.intersect(toTest,results);
+                collisionTree.bounds.transform(worldMatrot, worldTranslation,
+                        worldScale, collisionTree.worldBounds);
+                collisionTree.intersect(toTest, results);
+            }
         }
     }
-
 
     /**
      * This function is <b>ONLY </b> to be used by the intersection testing
@@ -476,6 +478,13 @@ public class TriMesh extends Geometry implements Serializable {
         return worldMatrot;
     }
 
+    /**
+     * sets the attributes of this TriMesh into a given spatial. What is to be
+     * stored is contained in the properties parameter.
+     * 
+     * @param store the Spatial to clone to.
+     * @param properties the CloneCreator object that defines what is to be cloned.
+     */
     public Spatial putClone(Spatial store, CloneCreator properties) {
         TriMesh toStore;
         if (store == null) {

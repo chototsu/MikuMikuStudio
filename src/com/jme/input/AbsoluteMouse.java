@@ -44,22 +44,29 @@ package com.jme.input;
  * change in position since the previous update. The mouse is forced to be
  * contained within the values provided during construction (typically these
  * correspond to the width and height of the window).
+ * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.14 2004-09-14 21:52:19 mojomonkey Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.15 2004-10-14 01:23:06 mojomonkey Exp $
  */
 public class AbsoluteMouse extends Mouse {
+
     private static final long serialVersionUID = 1L;
-	//position
+
+    //position
     private int width, height;
 
     /**
      * Constructor instantiates a new <code>AbsoluteMouse</code> object. The
      * limits of the mouse movements are provided.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     * @param width the width of the mouse's limit.
-     * @param height the height of the mouse's limit.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     * @param width
+     *            the width of the mouse's limit.
+     * @param height
+     *            the height of the mouse's limit.
      */
     public AbsoluteMouse(String name, int width, int height) {
         super(name);
@@ -68,47 +75,53 @@ public class AbsoluteMouse extends Mouse {
     }
 
     /**
-     * <code>update</code> sets the mouse's current position within the window.
+     * <code>update</code> sets the mouse's current position within the
+     * window.
      */
     public void update() {
         update(true);
     }
 
-    /** <code>update</code> updates the mouse's information with the last known mouse
-     * movement and button presses.  If updateState is true, the mouse is polled for new
-     * movement and button press information
-     * @param updateState Mouse information is updated if true
+    /**
+     * <code>update</code> updates the mouse's information with the last known
+     * mouse movement and button presses. If updateState is true, the mouse is
+     * polled for new movement and button press information
+     * 
+     * @param updateState
+     *            Mouse information is updated if true
      * @see com.jme.input.Mouse#update(boolean)
      */
     public void update(boolean updateState) {
-        if (updateState)
-            mouse.updateState();
+        if (updateState) mouse.updateState();
 
         localTranslation.x += mouse.getXDelta() * _speed;
         localTranslation.y += mouse.getYDelta() * _speed;
 
-        if (localTranslation.x  + _hotSpotOffset.x < 0) {
-            localTranslation.x = -_hotSpotOffset.x;
-        } else if (localTranslation.x + _hotSpotOffset.x > width) {
-            localTranslation.x = width - _hotSpotOffset.x;
+        if (localTranslation.x + hotSpotOffset.x < 0) {
+            localTranslation.x = -hotSpotOffset.x;
+        } else if (localTranslation.x + hotSpotOffset.x > width) {
+            localTranslation.x = width - hotSpotOffset.x;
         }
 
-        if (localTranslation.y + _hotSpotOffset.y < 0 - imageHeight) {
-            localTranslation.y = 0 - imageHeight - _hotSpotOffset.y;
-        } else if (localTranslation.y  + _hotSpotOffset.y > height) {
-            localTranslation.y = height - _hotSpotOffset.y;
+        if (localTranslation.y + hotSpotOffset.y < 0 - imageHeight) {
+            localTranslation.y = 0 - imageHeight - hotSpotOffset.y;
+        } else if (localTranslation.y + hotSpotOffset.y > height) {
+            localTranslation.y = height - hotSpotOffset.y;
         }
         worldTranslation.set(localTranslation);
-        _hotSpotLocation.set(localTranslation).addLocal(_hotSpotOffset);
+        hotSpotLocation.set(localTranslation).addLocal(hotSpotOffset);
     }
 
     /**
      * set the mouse's limit.
-     * @param width the width of the mouse's limit.
-     * @param height the height of the mouse's limit.
+     * 
+     * @param width
+     *            the width of the mouse's limit.
+     * @param height
+     *            the height of the mouse's limit.
      */
     public void setLimit(int width, int height) {
-      this.width = width;
-      this.height = height;
+        this.width = width;
+        this.height = height;
     }
 }

@@ -47,170 +47,196 @@ import com.jme.scene.state.LightState;
 
 /**
  * <code>Mouse</code> defines a node that handles the rendering and updating
- * of a mouse input device. If a cursor is set, this cursor is desplayed in
- * the position defined by the device.
+ * of a mouse input device. If a cursor is set, this cursor is desplayed in the
+ * position defined by the device.
+ * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.14 2004-07-30 21:18:05 cep21 Exp $
+ * @version $Id: Mouse.java,v 1.15 2004-10-14 01:23:07 mojomonkey Exp $
  */
 public abstract class Mouse extends Quad {
-  /**
-   * the input device.
-   */
-  protected MouseInput mouse;
 
-  /**
-   * the cursor's texture.
-   */
-  protected boolean hasCursor = false;
+    /**
+     * the input device.
+     */
+    protected MouseInput mouse;
 
-  /**
-   * Width of this mouse's texture.
-   */
-  protected int imageWidth;
-  /** Height of this mouse's texture.
-   *
-   */
-  protected int imageHeight;
+    /**
+     * the cursor's texture.
+     */
+    protected boolean hasCursor = false;
 
-  protected float _speed = 1.0f;
-  /** This mouse's actual location after hotspot offset is taken into account. */
-  protected Vector3f _hotSpotLocation = new Vector3f();
-  /** This mouse's hotspot location.  The location on the texture where
-   * the mouse is actually clicking, relative to the bottom left.*/
-  protected Vector3f _hotSpotOffset = new Vector3f();
+    /**
+     * Width of this mouse's texture.
+     */
+    protected int imageWidth;
 
-  /**
-   * Constructor creates a new <code>Mouse</code> object.
-   * @param name the name of the scene element. This is required for identification and
-   * 		comparision purposes.
-   */
-  public Mouse(String name) {
-    super(name, 32, 32);
-    setForceView(true);
-    setRenderQueueMode(Renderer.QUEUE_ORTHO);
-    setZOrder(Integer.MIN_VALUE);
-    setLightCombineMode(LightState.OFF);
-    setTextureCombineMode(TextureState.REPLACE);
-  }
+    /**
+     * Height of this mouse's texture.
+     *  
+     */
+    protected int imageHeight;
 
-  /**
-   *
-   * <code>setRenderState</code> sets a render state for this node. Note,
-   * there can only be one render state per type per node. That is, there
-   * can only be a single AlphaState a single TextureState, etc. If there
-   * is already a render state for a type set the old render state will
-   * be rendered. Otherwise, null is returned.
-   * @param rs the render state to add.
-   * @return the old render state.
-   */
-  public RenderState setRenderState(RenderState rs) {
-    if (rs.getType() == RenderState.RS_TEXTURE) {
-      hasCursor = true;
-      imageHeight =
-          ( (TextureState) rs).getTexture().getImage().getHeight();
-      imageWidth = ( (TextureState) rs).getTexture().getImage().getWidth();
-      initialize(imageWidth, imageHeight);
-      _hotSpotOffset = new Vector3f(-imageWidth/2, imageHeight/2, 0);
+    protected float _speed = 1.0f;
+
+    /** This mouse's actual location after hotspot offset is taken into account. */
+    protected Vector3f hotSpotLocation = new Vector3f();
+
+    /**
+     * This mouse's hotspot location. The location on the texture where the
+     * mouse is actually clicking, relative to the bottom left.
+     */
+    protected Vector3f hotSpotOffset = new Vector3f();
+
+    /**
+     * Constructor creates a new <code>Mouse</code> object.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     */
+    public Mouse(String name) {
+        super(name, 32, 32);
+        setForceView(true);
+        setRenderQueueMode(Renderer.QUEUE_ORTHO);
+        setZOrder(Integer.MIN_VALUE);
+        setLightCombineMode(LightState.OFF);
+        setTextureCombineMode(TextureState.REPLACE);
     }
-    return super.setRenderState(rs);
-  }
 
-  /**
-   *
-   * <code>getImageHeight</code> retrieves the height of the cursor image.
-   * @return the height of the cursor image.
-   */
-  public int getImageHeight() {
-    return imageHeight;
-  }
+    /**
+     * 
+     * <code>setRenderState</code> sets a render state for this node. Note,
+     * there can only be one render state per type per node. That is, there can
+     * only be a single AlphaState a single TextureState, etc. If there is
+     * already a render state for a type set the old render state will be
+     * rendered. Otherwise, null is returned.
+     * 
+     * @param rs
+     *            the render state to add.
+     * @return the old render state.
+     */
+    public RenderState setRenderState(RenderState rs) {
+        if (rs.getType() == RenderState.RS_TEXTURE) {
+            hasCursor = true;
+            imageHeight = ((TextureState) rs).getTexture().getImage()
+                    .getHeight();
+            imageWidth = ((TextureState) rs).getTexture().getImage().getWidth();
+            initialize(imageWidth, imageHeight);
+            hotSpotOffset = new Vector3f(-imageWidth / 2, imageHeight / 2, 0);
+        }
+        return super.setRenderState(rs);
+    }
 
-  /**
-   *
-   * <code>getImageWidth</code> retrieves the width of the cursor image.
-   * @return the width of the cursor image.
-   */
-  public int getImageWidth() {
-    return imageWidth;
-  }
+    /**
+     * 
+     * <code>getImageHeight</code> retrieves the height of the cursor image.
+     * 
+     * @return the height of the cursor image.
+     */
+    public int getImageHeight() {
+        return imageHeight;
+    }
 
-  /**
-   *
-   * <code>hasCursor</code> returns true if there is a texture associated
-   * with the mouse.
-   * @return true if there is a texture for the mouse, false otherwise.
-   */
-  public boolean hasCursor() {
-    return hasCursor;
-  }
+    /**
+     * 
+     * <code>getImageWidth</code> retrieves the width of the cursor image.
+     * 
+     * @return the width of the cursor image.
+     */
+    public int getImageWidth() {
+        return imageWidth;
+    }
 
-  /**
-   *
-   * <code>setMouseInput</code> sets the input device for the mouse.
-   * @param mouse the input device for the mouse.
-   */
-  public void setMouseInput(MouseInput mouse) {
-    this.mouse = mouse;
-  }
+    /**
+     * 
+     * <code>hasCursor</code> returns true if there is a texture associated
+     * with the mouse.
+     * 
+     * @return true if there is a texture for the mouse, false otherwise.
+     */
+    public boolean hasCursor() {
+        return hasCursor;
+    }
 
-  /**
-   *
-   * <code>getMouseInput</code> retrieves the input device for the mouse.
-   * @return the input device for the mouse.
-   */
-  public MouseInput getMouseInput() {
-    return mouse;
-  }
+    /**
+     * 
+     * <code>setMouseInput</code> sets the input device for the mouse.
+     * 
+     * @param mouse
+     *            the input device for the mouse.
+     */
+    public void setMouseInput(MouseInput mouse) {
+        this.mouse = mouse;
+    }
 
-  /**
-   *
-   * <code>update</code> updates the mouse input object.  This is normally a call to
-   * update(true).
-   * @see #update(boolean)
-   *
-   */
-  public abstract void update();
+    /**
+     * 
+     * <code>getMouseInput</code> retrieves the input device for the mouse.
+     * 
+     * @return the input device for the mouse.
+     */
+    public MouseInput getMouseInput() {
+        return mouse;
+    }
 
-  /**
-   * <code>update</code> updates the mouse input object.  This is where the mouse location
-   * and button press states are updated.
-   * @param updateState indicates if the mouse's state (buttons) should be updated
-   */
-  public abstract void update(boolean updateState);
+    /**
+     * 
+     * <code>update</code> updates the mouse input object. This is normally a
+     * call to update(true).
+     * 
+     * @see #update(boolean)
+     *  
+     */
+    public abstract void update();
 
-  /**
-   * Sets the speed multiplier for updating the cursor position
-   * @param speed
-   */
-  public void setSpeed(float speed) {
-    _speed = speed;
-  }
+    /**
+     * <code>update</code> updates the mouse input object. This is where the
+     * mouse location and button press states are updated.
+     * 
+     * @param updateState
+     *            indicates if the mouse's state (buttons) should be updated
+     */
+    public abstract void update(boolean updateState);
 
-  /**
-   * Returns this mouse's location relative to the hotspot offset.  Basicly, where
-   * the mouse is on the screen.
-   * @return The mouse's location.
-   */
-  public Vector3f getHotSpotPosition() {
-    return _hotSpotLocation;
-  }
+    /**
+     * Sets the speed multiplier for updating the cursor position
+     * 
+     * @param speed
+     */
+    public void setSpeed(float speed) {
+        _speed = speed;
+    }
 
-  /**
-   * Returns the currently set hotspot of the mouse.  This is the spot relative
-   * to the bottom left of the texture where the mouse is actually pointed.
-   * @return The mouse's hotspot offset.
-   */
-  public Vector3f getHotSpotOffset() {
-    return _hotSpotOffset;
-  }
+    /**
+     * Returns this mouse's location relative to the hotspot offset. Basicly,
+     * where the mouse is on the screen.
+     * 
+     * @return The mouse's location.
+     */
+    public Vector3f getHotSpotPosition() {
+        return hotSpotLocation;
+    }
 
-  /**
-   * Sets the mouse's hotspot offset.  The hotspot is the spot relative to the
-   * bottom left of the texture where the mouse is actually pointed.  Note that this
-   * is a shallow copy, not a deep copy.
-   * @param offset The new hotspot for this mouse.
-   */
-  public void setHotSpotOffset(Vector3f offset) {
-    _hotSpotOffset = offset;
-  }
+    /**
+     * Returns the currently set hotspot of the mouse. This is the spot relative
+     * to the bottom left of the texture where the mouse is actually pointed.
+     * 
+     * @return The mouse's hotspot offset.
+     */
+    public Vector3f getHotSpotOffset() {
+        return hotSpotOffset;
+    }
+
+    /**
+     * Sets the mouse's hotspot offset. The hotspot is the spot relative to the
+     * bottom left of the texture where the mouse is actually pointed. Note that
+     * this is a shallow copy, not a deep copy.
+     * 
+     * @param offset
+     *            The new hotspot for this mouse.
+     */
+    public void setHotSpotOffset(Vector3f offset) {
+        hotSpotOffset = offset;
+    }
 }

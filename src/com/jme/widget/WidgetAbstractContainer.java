@@ -117,7 +117,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 		/* (non-Javadoc)
 		 * @see com.jme.scene.Spatial#doPick(com.jme.math.Ray, com.jme.intersection.PickResults)
 		 */
-		public void doPick(Ray toTest, PickResults results) {
+		public void findPick(Ray toTest, PickResults results) {
 			// TODO Auto-generated method stub
 			
 		}

@@ -34,7 +34,6 @@ package com.jme.intersection;
 import java.util.ArrayList;
 
 import com.jme.scene.Geometry;
-import com.jme.scene.TriMesh;
 
 /**
  * CollisionData contains information about a collision between two TriMesh
@@ -45,86 +44,95 @@ import com.jme.scene.TriMesh;
  * @author Mark Powell
  */
 public class CollisionData {
-	private Geometry targetMesh;
 
-	private Geometry sourceMesh;
+    private Geometry targetMesh;
 
-	private ArrayList sourceTris;
+    private Geometry sourceMesh;
 
-	private ArrayList targetTris;
-	
-	public CollisionData(Geometry sourceMesh, Geometry targetMesh) {
-		this(sourceMesh, targetMesh, null, null);
-	}
+    private ArrayList sourceTris;
 
-	/**
-	 * instantiates a new CollisionData object.
-	 * 
-	 * @param mesh
-	 *            the mesh the relevant TriMesh collided with.
-	 * @param source
-	 *            the triangles of the relevant TriMesh that made contact.
-	 * @param target
-	 *            the triangles of the second mesh that made contact.
-	 */
-	public CollisionData(Geometry sourceMesh, Geometry targetMesh,
-			ArrayList sourceTris, ArrayList targetTris) {
-		this.targetMesh = targetMesh;
-		this.sourceMesh = sourceMesh;
-		this.targetTris = targetTris;
-		this.sourceTris = sourceTris;
-	}
+    private ArrayList targetTris;
 
-	/**
-	 * @return Returns the source mesh.
-	 */
-	public Geometry getSourceMesh() {
-		return sourceMesh;
-	}
-	
-	public Geometry getTargetMesh() {
-		return targetMesh;
-	}
+    public CollisionData(Geometry sourceMesh, Geometry targetMesh) {
+        this(sourceMesh, targetMesh, null, null);
+    }
 
-	/**
-	 * @param mesh
-	 *            The mesh to set.
-	 */
-	public void setSourceMesh(Geometry mesh) {
-		this.sourceMesh = mesh;
-	}
-	
-	public void setTargetMesh(Geometry mesh) {
-		this.targetMesh = mesh;
-	}
+    /**
+     * instantiates a new CollisionData object.
+     * 
+     * @param mesh
+     *            the mesh the relevant TriMesh collided with.
+     * @param source
+     *            the triangles of the relevant TriMesh that made contact.
+     * @param target
+     *            the triangles of the second mesh that made contact.
+     */
+    public CollisionData(Geometry sourceMesh, Geometry targetMesh,
+            ArrayList sourceTris, ArrayList targetTris) {
+        this.targetMesh = targetMesh;
+        this.sourceMesh = sourceMesh;
+        this.targetTris = targetTris;
+        this.sourceTris = sourceTris;
+    }
 
-	/**
-	 * @return Returns the source.
-	 */
-	public ArrayList getSourceTris() {
-		return sourceTris;
-	}
+    /**
+     * @return Returns the source mesh.
+     */
+    public Geometry getSourceMesh() {
+        return sourceMesh;
+    }
 
-	/**
-	 * @param source
-	 *            The source to set.
-	 */
-	public void setSourceTris(ArrayList source) {
-		this.sourceTris = source;
-	}
+    public Geometry getTargetMesh() {
+        return targetMesh;
+    }
 
-	/**
-	 * @return Returns the target.
-	 */
-	public ArrayList getTargetTris() {
-		return targetTris;
-	}
+    /**
+     * @param mesh
+     *            The mesh to set.
+     */
+    public void setSourceMesh(Geometry mesh) {
+        this.sourceMesh = mesh;
+    }
 
-	/**
-	 * @param target
-	 *            The target to set.
-	 */
-	public void setTargetTris(ArrayList target) {
-		this.targetTris = target;
-	}
+    /**
+     * 
+     * <code>setTargetMesh</code> sets the mesh that is hit by the source
+     * mesh.
+     * 
+     * @param mesh
+     *            the mesh that was hit by the source mesh.
+     */
+    public void setTargetMesh(Geometry mesh) {
+        this.targetMesh = mesh;
+    }
+
+    /**
+     * @return Returns the source.
+     */
+    public ArrayList getSourceTris() {
+        return sourceTris;
+    }
+
+    /**
+     * @param source
+     *            The source to set.
+     */
+    public void setSourceTris(ArrayList source) {
+        this.sourceTris = source;
+    }
+
+    /**
+     * @return Returns the target.
+     */
+    public ArrayList getTargetTris() {
+        return targetTris;
+    }
+
+    /**
+     * @param target
+     *            The target to set.
+     */
+    public void setTargetTris(ArrayList target) {
+        this.targetTris = target;
+    }
 }

@@ -35,22 +35,26 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 /**
- * <code>KeyStrafeLeftAction</code> defines an action that causes the camera to
- * move along the positive left vector. The speed at which it moves is set and
- * of the form units per second.
+ * <code>KeyStrafeLeftAction</code> defines an action that causes the camera
+ * to move along the positive left vector. The speed at which it moves is set
+ * and of the form units per second.
+ * 
  * @author Mark Powell
- * @version $Id: KeyStrafeLeftAction.java,v 1.9 2004-08-22 02:00:34 cep21 Exp $
+ * @version $Id: KeyStrafeLeftAction.java,v 1.10 2004-10-14 01:22:57 mojomonkey Exp $
  */
-public class KeyStrafeLeftAction extends AbstractInputAction {
-
+public class KeyStrafeLeftAction extends KeyInputAction {
+    //the camera to manipulate
     private Camera camera;
-    
-    private static final Vector3f tempVa=new Vector3f();
+    //temporary vector to store translation
+    private static final Vector3f tempVa = new Vector3f();
 
     /**
      * Constructor instantiates a new <code>KeyStrafeLeftAction</code> object.
-     * @param camera the camera to move along the left vector.
-     * @param speed the speed at which to move the camera.
+     * 
+     * @param camera
+     *            the camera to move along the left vector.
+     * @param speed
+     *            the speed at which to move the camera.
      */
     public KeyStrafeLeftAction(Camera camera, float speed) {
         this.camera = camera;
@@ -58,13 +62,14 @@ public class KeyStrafeLeftAction extends AbstractInputAction {
     }
 
     /**
-     * <code>performAction</code> moves the camera along the left vector for
-     * a given distance of speed * time.
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * <code>performAction</code> moves the camera along the left vector for a
+     * given distance of speed * time.
+     * 
+     * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
-    public void performAction(float time) {
+    public void performAction(InputActionEvent evt) {
         Vector3f loc = camera.getLocation();
-        loc.addLocal(camera.getLeft().mult(speed * time,tempVa));
+        loc.addLocal(camera.getLeft().mult(speed * evt.getTime(), tempVa));
         camera.setLocation(loc);
         camera.update();
     }

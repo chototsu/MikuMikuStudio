@@ -39,68 +39,89 @@ import com.jme.scene.Geometry;
 
 /**
  * 
+ * PickData contains information about a picking operation (or Ray/Volume
+ * intersection). This data contains the mesh the ray hit, the triangles it hit,
+ * and the ray itself.
+ * 
  * @author Mark Powell
  */
 public class PickData {
-	private Ray ray;
-	
-	private Geometry targetMesh;
 
-	private ArrayList targetTris;
-	
-	public PickData(Ray ray, Geometry targetMesh) {
-		this(ray, targetMesh, null);
-	}
+    private Ray ray;
 
-	/**
-	 * instantiates a new PickData object.
-	 * 
-	 * @param mesh
-	 *            the mesh the relevant TriMesh collided with.
-	 * @param source
-	 *            the triangles of the relevant TriMesh that made contact.
-	 * @param target
-	 *            the triangles of the second mesh that made contact.
-	 */
-	public PickData(Ray ray, Geometry targetMesh, ArrayList targetTris) {
-		this.ray = ray;
-		this.targetMesh = targetMesh;
-		this.targetTris = targetTris;
-	}
+    private Geometry targetMesh;
 
-	public Geometry getTargetMesh() {
-		return targetMesh;
-	}
+    private ArrayList targetTris;
 
-	
-	public void setTargetMesh(Geometry mesh) {
-		this.targetMesh = mesh;
-	}
+    public PickData(Ray ray, Geometry targetMesh) {
+        this(ray, targetMesh, null);
+    }
 
-	/**
-	 * @return Returns the target.
-	 */
-	public ArrayList getTargetTris() {
-		return targetTris;
-	}
+    /**
+     * instantiates a new PickData object.
+     * 
+     * @param mesh
+     *            the mesh the relevant TriMesh collided with.
+     * @param source
+     *            the triangles of the relevant TriMesh that made contact.
+     * @param target
+     *            the triangles of the second mesh that made contact.
+     */
+    public PickData(Ray ray, Geometry targetMesh, ArrayList targetTris) {
+        this.ray = ray;
+        this.targetMesh = targetMesh;
+        this.targetTris = targetTris;
+    }
 
-	/**
-	 * @param target
-	 *            The target to set.
-	 */
-	public void setTargetTris(ArrayList target) {
-		this.targetTris = target;
-	}
-	/**
-	 * @return Returns the ray.
-	 */
-	public Ray getRay() {
-		return ray;
-	}
-	/**
-	 * @param ray The ray to set.
-	 */
-	public void setRay(Ray ray) {
-		this.ray = ray;
-	}
+    /**
+     * 
+     * <code>getTargetMesh</code> returns the geometry that was hit by the
+     * ray.
+     * 
+     * @return the geometry hit by the ray.
+     */
+    public Geometry getTargetMesh() {
+        return targetMesh;
+    }
+
+    /**
+     * 
+     * <code>setTargetMesh</code> sets the geometry hit by the ray.
+     * 
+     * @param mesh
+     *            the geometry hit by the ray.
+     */
+    public void setTargetMesh(Geometry mesh) {
+        this.targetMesh = mesh;
+    }
+
+    /**
+     * @return Returns the target.
+     */
+    public ArrayList getTargetTris() {
+        return targetTris;
+    }
+
+    /**
+     * @param target
+     *            The target to set.
+     */
+    public void setTargetTris(ArrayList target) {
+        this.targetTris = target;
+    }
+
+    /**
+     * @return Returns the ray.
+     */
+    public Ray getRay() {
+        return ray;
+    }
+
+    /**
+     * @param ray
+     *            The ray to set.
+     */
+    public void setRay(Ray ray) {
+        this.ray = ray;
+    }
 }

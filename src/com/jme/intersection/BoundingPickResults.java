@@ -35,21 +35,37 @@ import com.jme.math.Ray;
 import com.jme.scene.Geometry;
 
 /**
+ * BoundingPickResults creates a PickResults object that only cares
+ * about bounding volume accuracy. PickData objects are added to the
+ * pick list as they happen, these data objects only refer to the two
+ * meshes, not their triangle lists. While BoundingPickResults defines a
+ * processPick method, it is empty and should be further defined by the
+ * user if so desired.
+ * 
  * @author Mark Powell
+ * @version $Id: BoundingCollisionResults.java,v 1.2 2004/10/05 23:38:16
+ *          mojomonkey Exp $
  */
 public class BoundingPickResults extends PickResults{
 
-	/* (non-Javadoc)
-	 * @see com.jme.intersection.PickResults#addPick(com.jme.math.Ray, com.jme.scene.Geometry)
-	 */
+    /**
+     * adds a PickData object to this results list, the objects only refer
+     * to the picked meshes, not the triangles.
+     * 
+     * @see com.jme.intersection.PickResults#addCollision(com.jme.math.Ray,
+     *      com.jme.scene.Geometry)
+     */
 	public void addPick(Ray ray, Geometry s) {
 		PickData data = new PickData(ray, s);
 		addPickData(data);
 	}
 
-	/* (non-Javadoc)
-	 * @see com.jme.intersection.PickResults#processPick()
-	 */
+	/**
+     * empty implementation, it is highly recommended that you override this
+     * method to handle any picks as needed.
+     * 
+     * @see com.jme.intersection.PickResults#processCollisions()
+     */
 	public void processPick() {
 		
 	}

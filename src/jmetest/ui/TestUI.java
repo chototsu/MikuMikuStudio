@@ -43,7 +43,8 @@ import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
-import com.jme.input.action.AbstractInputAction;
+import com.jme.input.action.KeyInputAction;
+import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyExitAction;
 import com.jme.input.action.KeyToggleBoolean;
 import com.jme.input.action.KeyToggleRenderState;
@@ -432,8 +433,8 @@ public class TestUI extends BaseGame {
 		 * tester for doing the bufferered reader
 		 */
 		
-		input.addBufferedKeyAction( new AbstractInputAction() {
-            public void performAction(float time) {
+		input.addBufferedKeyAction( new KeyInputAction() {
+            public void performAction(InputActionEvent evt) {
                 LoggingSystem.getLogger().log( java.util.logging.Level.FINE, this.key);
             }
         });

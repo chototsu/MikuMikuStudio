@@ -7,7 +7,8 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.KeyInput;
-import com.jme.input.action.AbstractInputAction;
+import com.jme.input.action.KeyInputAction;
+import com.jme.input.action.InputActionEvent;
 import com.jme.intersection.Intersection;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -155,14 +156,14 @@ public class HelloIntersection extends SimpleGame {
 		snode.attachChild(targetSound);
 	}
 
-	class FireBullet extends AbstractInputAction {
+	class FireBullet extends KeyInputAction {
 		int numBullets;
 
 		FireBullet() {
 			setAllowsRepeats(false);
 		}
 
-		public void performAction(float time) {
+		public void performAction(InputActionEvent evt) {
 			System.out.println("BANG");
 			/** Create bullet */
 			Sphere bullet = new Sphere("bullet" + numBullets++, 8, 8, .25f);

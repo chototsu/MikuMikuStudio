@@ -88,8 +88,8 @@ public class UIEditBox extends Node {
 
         this.attachChild(_text);
 
-        _inputHandler.addBufferedKeyAction( new AbstractInputAction() {
-            public void performAction(float time) {
+        _inputHandler.addBufferedKeyAction( new KeyInputAction() {
+            public void performAction(InputActionEvent evt) {
                 if (_active)
                     keyPress(this);
             }
@@ -116,7 +116,7 @@ public class UIEditBox extends Node {
      * Method that is called via inputHandler when a key is pressed
      * @param key
      */
-    protected void keyPress(AbstractInputAction keyAction) {
+    protected void keyPress(KeyInputAction keyAction) {
 
         int val = _inputHandler.getKeyBindingManager().getKeyInput().getKeyIndex(keyAction.getKey());
 

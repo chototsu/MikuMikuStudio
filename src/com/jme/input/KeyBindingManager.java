@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.8 2004-07-30 21:02:23 cep21 Exp $
+ * @version $Id: KeyBindingManager.java,v 1.9 2004-10-14 01:23:07 mojomonkey Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -278,7 +278,7 @@ public class KeyBindingManager {
      * will be used to insure all keys are pressed for which ever command
      * this uses.
      */
-    private class KeyCodes {
+    public class KeyCodes {
         public int[] keys;
     }
 }

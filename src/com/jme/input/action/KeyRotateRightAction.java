@@ -39,18 +39,25 @@ import com.jme.renderer.Camera;
  * <code>KeyRotateRightAction</code> performs the action of rotating a camera
  * a certain angle. This angle is determined by the speed at which the camera
  * can turn and the time between frames.
+ * 
  * @author Mark Powell
- * @version $Id: KeyRotateRightAction.java,v 1.11 2004-08-22 02:00:34 cep21 Exp $
+ * @version $Id: KeyRotateRightAction.java,v 1.12 2004-10-14 01:23:02 mojomonkey Exp $
  */
-public class KeyRotateRightAction extends AbstractInputAction {
-    private static final Matrix3f incr=new Matrix3f();
+public class KeyRotateRightAction extends KeyInputAction {
+    //temporary matrix to hold rotation
+    private static final Matrix3f incr = new Matrix3f();
+    //camera to manipulate
     private Camera camera;
+    //the axis to lock
     private Vector3f lockAxis;
 
     /**
      * Constructor instantiates a new <code>KeyRotateLeftAction</code> object.
-     * @param camera the camera to rotate.
-     * @param speed the speed at which to rotate.
+     * 
+     * @param camera
+     *            the camera to rotate.
+     * @param speed
+     *            the speed at which to rotate.
      */
     public KeyRotateRightAction(Camera camera, float speed) {
         this.camera = camera;
@@ -58,13 +65,14 @@ public class KeyRotateRightAction extends AbstractInputAction {
     }
 
     /**
-     *
+     * 
      * <code>setLockAxis</code> allows a certain axis to be locked, meaning
      * the camera will always be within the plane of the locked axis. For
-     * example, if the camera is a first person camera, the user might lock
-     * the camera's up vector. This will keep the camera vertical of the
-     * ground.
-     * @param lockAxis the axis to lock.
+     * example, if the camera is a first person camera, the user might lock the
+     * camera's up vector. This will keep the camera vertical of the ground.
+     * 
+     * @param lockAxis
+     *            the axis to lock.
      */
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
@@ -72,13 +80,14 @@ public class KeyRotateRightAction extends AbstractInputAction {
 
     /**
      * <code>performAction</code> rotates the camera a certain angle.
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * 
+     * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
-    public void performAction(float time) {
-        if(lockAxis == null) {
-            incr.fromAxisAngle(camera.getUp(), -speed * time);
+    public void performAction(InputActionEvent evt) {
+        if (lockAxis == null) {
+            incr.fromAxisAngle(camera.getUp(), -speed * evt.getTime());
         } else {
-            incr.fromAxisAngle(lockAxis, -speed * time);
+            incr.fromAxisAngle(lockAxis, -speed * evt.getTime());
         }
         incr.mult(camera.getUp(), camera.getUp());
         incr.mult(camera.getLeft(), camera.getLeft());

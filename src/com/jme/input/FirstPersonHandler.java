@@ -43,7 +43,7 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
  * the camera.
  * @author Mark Powell
- * @version $Id: FirstPersonHandler.java,v 1.4 2004-07-30 20:29:47 cep21 Exp $
+ * @version $Id: FirstPersonHandler.java,v 1.5 2004-10-14 01:23:07 mojomonkey Exp $
  */
 public class FirstPersonHandler extends InputHandler {
 
@@ -86,7 +86,8 @@ public class FirstPersonHandler extends InputHandler {
         mouse.setMouseInput(InputSystem.getMouseInput());
         setMouse(mouse);
 
-        MouseLook mouseLook = new MouseLook(mouse, cam, 0.1f);
+        MouseLook mouseLook = new MouseLook(mouse, cam, 1.0f);
+        mouseLook.setKey("mouselook");
         mouseLook.setLockAxis(new Vector3f(cam.getUp().x, cam.getUp().y, 
                 	cam.getUp().z));
         addAction(mouseLook);

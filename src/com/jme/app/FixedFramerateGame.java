@@ -36,170 +36,191 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 
 /**
- * <code>FixedFramerateGame</code> attempts to run the game at a fixed frame rate.
- * The main loop makes every effort to render at the specified rate, however it is
- * not guaranteed that the frame rate will not dip below the desired value. Game
- * logic is updated at the same rate as the rendering. For example, if the rendering
- * is running at 60 frames per second, the logic will also be updated 60 times per
- * second.
- *
+ * <code>FixedFramerateGame</code> attempts to run the game at a fixed frame
+ * rate. The main loop makes every effort to render at the specified rate,
+ * however it is not guaranteed that the frame rate will not dip below the
+ * desired value. Game logic is updated at the same rate as the rendering. For
+ * example, if the rendering is running at 60 frames per second, the logic will
+ * also be updated 60 times per second.
+ * 
  * Note that <code>setFrameRate(int)</code> cannot be called prior to calling
- * <code>start()</code> or a <code>NullPointerException</code> will be thrown. If
- * no frame rate is specified, the game will run at 60 frames per second.
- *
+ * <code>start()</code> or a <code>NullPointerException</code> will be
+ * thrown. If no frame rate is specified, the game will run at 60 frames per
+ * second.
+ * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.5 2004-04-22 22:26:22 renanse Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.6 2004-10-14 01:23:11 mojomonkey Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
 
-	//Frame-rate managing stuff
-	private Timer timer;
-	private int frames = 0;
-	private long startTime;
-	private long preferredTicksPerFrame;
-	private long frameStartTick;
-	private long frameDurationTicks;
+    //Frame-rate managing stuff
+    private Timer timer;
 
-	/**
-	 * Set preferred frame rate. The main loop will make every attempt to
-	 * maintain the given frame rate. This should not be called prior to
-	 * the application being <code>start()</code>-ed.
-	 * @param fps the desired frame rate in frames per second
-	 */
-	public void setFrameRate(int fps) {
-		if (fps <= 0)
-			throw new IllegalArgumentException("Frames per second cannot be less than one.");
+    private int frames = 0;
 
-		LoggingSystem.getLogger().log(Level.INFO, "Attempting to run at " + fps + " fps.");
-		preferredTicksPerFrame = timer.getResolution() / fps;
-	}
+    private long startTime;
 
-	/**
-	 * Gets the current frame rate.
-	 * @return the current number of frames rendering per second
-	 */
-	public float getFramesPerSecond() {
-		float time =  (timer.getTime() - startTime) / (float)timer.getResolution();
-		float fps  = frames / time;
+    private long preferredTicksPerFrame;
 
-		startTime = timer.getTime();
-		frames = 0;
+    private long frameStartTick;
 
-		return fps;
-	}
+    private long frameDurationTicks;
 
-	/**
-	 * <code>startFrame</code> begin monitoring the current frame. This method
-	 * should be called every frame before update and drawing code.
-	 */
-	private void startFrame() {
-		frameStartTick = timer.getTime();
-	}
+    /**
+     * Set preferred frame rate. The main loop will make every attempt to
+     * maintain the given frame rate. This should not be called prior to the
+     * application being <code>start()</code> -ed.
+     * 
+     * @param fps
+     *            the desired frame rate in frames per second
+     */
+    public void setFrameRate(int fps) {
+        if (fps <= 0) {
+                throw new IllegalArgumentException(
+                        "Frames per second cannot be less than one.");
+        }
 
-	/**
-	 * <code>endFrame</code> ends the current frame.  Pads any excess time in the
-	 * frame by sleep()-ing the thread in order to maintain the desired frame rate.
-	 * No attempt is made to rectify frames which have taken too much time.
-	 */
-	private void endFrame() {
-		frames++;
+        LoggingSystem.getLogger().log(Level.INFO,
+                "Attempting to run at " + fps + " fps.");
+        preferredTicksPerFrame = timer.getResolution() / fps;
+    }
 
-		frameDurationTicks = timer.getTime() - frameStartTick;
+    /**
+     * Gets the current frame rate.
+     * 
+     * @return the current number of frames rendering per second
+     */
+    public float getFramesPerSecond() {
+        float time = (timer.getTime() - startTime)
+                / (float) timer.getResolution();
+        float fps = frames / time;
 
-		while (frameDurationTicks < preferredTicksPerFrame){
-			long sleepTime =  ((preferredTicksPerFrame - frameDurationTicks) * 1000) / timer.getResolution();
+        startTime = timer.getTime();
+        frames = 0;
 
-			try {
-				Thread.sleep(sleepTime);
-			} catch (InterruptedException e){
-				LoggingSystem.getLogger().log(Level.WARNING, "Error sleeping during main loop.");
-			}
+        return fps;
+    }
 
-			frameDurationTicks = timer.getTime() - frameStartTick;
-		}
-	}
+    /**
+     * <code>startFrame</code> begin monitoring the current frame. This method
+     * should be called every frame before update and drawing code.
+     */
+    private void startFrame() {
+        frameStartTick = timer.getTime();
+    }
 
-	/**
-	 * Render and update logic at a specified fixed rate.
-	 */
-	public final void start() {
-		LoggingSystem.getLogger().log(Level.INFO, "Application started.");
-		try {
-			getAttributes();
-			timer = Timer.getTimer(properties.getRenderer());
-			setFrameRate(60); //default to 60 fps
+    /**
+     * <code>endFrame</code> ends the current frame. Pads any excess time in
+     * the frame by sleep()-ing the thread in order to maintain the desired
+     * frame rate. No attempt is made to rectify frames which have taken too
+     * much time.
+     */
+    private void endFrame() {
+        frames++;
 
-			initSystem();
+        frameDurationTicks = timer.getTime() - frameStartTick;
 
-			assertDisplayCreated();
+        while (frameDurationTicks < preferredTicksPerFrame) {
+            long sleepTime = ((preferredTicksPerFrame - frameDurationTicks) * 1000)
+                    / timer.getResolution();
 
-			initGame();
+            try {
+                Thread.sleep(sleepTime);
+            } catch (InterruptedException e) {
+                LoggingSystem.getLogger().log(Level.WARNING,
+                        "Error sleeping during main loop.");
+            }
 
-			//main loop
-			while (!finished && !display.isClosing()) {
-				startFrame();
+            frameDurationTicks = timer.getTime() - frameStartTick;
+        }
+    }
 
-				//update game state, do not use interpolation parameter
-				update(-1.0f);
+    /**
+     * Render and update logic at a specified fixed rate.
+     */
+    public final void start() {
+        LoggingSystem.getLogger().log(Level.INFO, "Application started.");
+        try {
+            getAttributes();
+            timer = Timer.getTimer(properties.getRenderer());
+            setFrameRate(60); //default to 60 fps
 
-				//render, do not use interpolation parameter
-				render(-1.0f);
+            initSystem();
 
-				//swap buffers
-				display.getRenderer().displayBackBuffer();
+            assertDisplayCreated();
 
-				endFrame();
-			}
+            initGame();
 
-		} catch (Throwable t) {
-			t.printStackTrace();
-		} finally {
-			cleanup();
-		}
-		LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+            //main loop
+            while (!finished && !display.isClosing()) {
+                startFrame();
 
-		display.reset();
-		quit();
-	}
+                //update game state, do not use interpolation parameter
+                update(-1.0f);
 
-	/**
-	 * Quits the program abruptly using <code>System.exit</code>.
-	 *
-	 * @see AbstractGame#quit()
-	 */
-	protected void quit() {
-		System.exit(0);
-	}
+                //render, do not use interpolation parameter
+                render(-1.0f);
 
-	/**
-	 * @param interpolation unused in this implementation
-	 * @see AbstractGame#update(float interpolation)
-	 */
-	protected abstract void update(float interpolation);
+                //swap buffers
+                display.getRenderer().displayBackBuffer();
 
-	/**
-	 * @param interpolation unused in this implementation
-	 * @see AbstractGame#render(float interpolation)
-	 */
-	protected abstract void render(float interpolation);
+                endFrame();
+            }
 
-	/**
-	 * @see AbstractGame#initSystem()
-	 */
-	protected abstract void initSystem();
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
+            cleanup();
+        }
+        LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
 
-	/**
-	 * @see AbstractGame#initGame()
-	 */
-	protected abstract void initGame();
+        display.reset();
+        quit();
+    }
 
-	/**
-	 * @see AbstractGame#reinit()
-	 */
-	protected abstract void reinit();
+    /**
+     * Quits the program abruptly using <code>System.exit</code>.
+     * 
+     * @see AbstractGame#quit()
+     */
+    protected void quit() {
+        if (display != null) {
+            display.close();
+        }
+        System.exit(0);
+    }
 
-	/**
-	 * @see AbstractGame#cleanup()
-	 */
-	protected abstract void cleanup();
+    /**
+     * @param interpolation
+     *            unused in this implementation
+     * @see AbstractGame#update(float interpolation)
+     */
+    protected abstract void update(float interpolation);
+
+    /**
+     * @param interpolation
+     *            unused in this implementation
+     * @see AbstractGame#render(float interpolation)
+     */
+    protected abstract void render(float interpolation);
+
+    /**
+     * @see AbstractGame#initSystem()
+     */
+    protected abstract void initSystem();
+
+    /**
+     * @see AbstractGame#initGame()
+     */
+    protected abstract void initGame();
+
+    /**
+     * @see AbstractGame#reinit()
+     */
+    protected abstract void reinit();
+
+    /**
+     * @see AbstractGame#cleanup()
+     */
+    protected abstract void cleanup();
 }

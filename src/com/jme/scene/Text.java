@@ -33,8 +33,6 @@
 package com.jme.scene;
 
 import com.jme.intersection.CollisionResults;
-import com.jme.intersection.PickResults;
-import com.jme.math.Ray;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.ColorRGBA;
 
@@ -44,132 +42,124 @@ import com.jme.renderer.ColorRGBA;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.16 2004-10-05 23:38:17 mojomonkey Exp $
+ * @version $Id: Text.java,v 1.17 2004-10-14 01:23:10 mojomonkey Exp $
  */
 public class Text extends Geometry {
-	private static final long serialVersionUID = 1L;
 
-	private StringBuffer text;
+    private static final long serialVersionUID = 1L;
 
-	private ColorRGBA textColor = new ColorRGBA();
+    private StringBuffer text;
 
-	/**
-	 * Creates a texture object that starts with the given text.
-	 * 
-	 * @see com.jme.util.TextureManager
-	 * @param name
-	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
-	 * @param text
-	 *            The text to show.
-	 */
-	public Text(String name, String text) {
-		super(name);
-		setForceView(true);
-		this.text = new StringBuffer(text);
-		setRenderQueueMode(Renderer.QUEUE_ORTHO);
-	}
+    private ColorRGBA textColor = new ColorRGBA();
 
-	/**
-	 * 
-	 * <code>print</code> sets the text to be rendered on the next render
-	 * pass.
-	 * 
-	 * @param text
-	 *            the text to display.
-	 */
-	public void print(String text) {
-		this.text.replace(0, this.text.length(), text);
-	}
+    /**
+     * Creates a texture object that starts with the given text.
+     * 
+     * @see com.jme.util.TextureManager
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     * @param text
+     *            The text to show.
+     */
+    public Text(String name, String text) {
+        super(name);
+        setForceView(true);
+        this.text = new StringBuffer(text);
+        setRenderQueueMode(Renderer.QUEUE_ORTHO);
+    }
 
-	/**
-	 * Sets the text to be rendered on the next render. This function is a more
-	 * efficient version of print(String).
-	 * 
-	 * @param text
-	 *            The text to display.
-	 */
-	public void print(StringBuffer text) {
-		this.text.setLength(0);
-		this.text.append(text);
-	}
+    /**
+     * 
+     * <code>print</code> sets the text to be rendered on the next render
+     * pass.
+     * 
+     * @param text
+     *            the text to display.
+     */
+    public void print(String text) {
+        this.text.replace(0, this.text.length(), text);
+    }
 
-	/**
-	 * 
-	 * <code>getText</code> retrieves the text string of this
-	 * <code>Text</code> object.
-	 * 
-	 * @return the text string of this object.
-	 */
-	public StringBuffer getText() {
-		return text;
-	}
+    /**
+     * Sets the text to be rendered on the next render. This function is a more
+     * efficient version of print(String).
+     * 
+     * @param text
+     *            The text to display.
+     */
+    public void print(StringBuffer text) {
+        this.text.setLength(0);
+        this.text.append(text);
+    }
 
-	/**
-	 * <code>draw</code> calls super to set the render state then calls the
-	 * renderer to display the text string.
-	 * 
-	 * @param r
-	 *            the renderer used to display the text.
-	 */
-	public void draw(Renderer r) {
-		if (!r.isProcessingQueue()) {
-			if (r.checkAndAdd(this))
-				return;
-		}
-		super.draw(r);
-		r.draw(this);
-	}
+    /**
+     * 
+     * <code>getText</code> retrieves the text string of this
+     * <code>Text</code> object.
+     * 
+     * @return the text string of this object.
+     */
+    public StringBuffer getText() {
+        return text;
+    }
 
-	/**
-	 * <code>drawBounds</code> calls super to set the render state then passes
-	 * itself to the renderer.
-	 * 
-	 * @param r
-	 *            the renderer to display
-	 */
-	public void drawBounds(Renderer r) {
-		r.drawBounds(this);
-	}
+    /**
+     * <code>draw</code> calls super to set the render state then calls the
+     * renderer to display the text string.
+     * 
+     * @param r
+     *            the renderer used to display the text.
+     */
+    public void draw(Renderer r) {
+        if (!r.isProcessingQueue()) {
+            if (r.checkAndAdd(this)) return;
+        }
+        super.draw(r);
+        r.draw(this);
+    }
 
-	/**
-	 * Sets the color of the text.
-	 * 
-	 * @param color
-	 *            Color to set.
-	 */
-	public void setTextColor(ColorRGBA color) {
-		textColor.set(color);
-	}
+    /**
+     * <code>drawBounds</code> calls super to set the render state then passes
+     * itself to the renderer.
+     * 
+     * @param r
+     *            the renderer to display
+     */
+    public void drawBounds(Renderer r) {
+        r.drawBounds(this);
+    }
 
-	/**
-	 * Returns the current text color.
-	 * 
-	 * @return Current text color.
-	 */
-	public ColorRGBA getTextColor() {
-		return textColor;
-	}
+    /**
+     * Sets the color of the text.
+     * 
+     * @param color
+     *            Color to set.
+     */
+    public void setTextColor(ColorRGBA color) {
+        textColor.set(color);
+    }
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
-	 *      com.jme.intersection.CollisionResults)
-	 */
-	public void findCollisions(Spatial scene, CollisionResults results) {
-		//Do nothing.
-	}
-	
-	public void doPick(Ray ray, PickResults results) {
-		if (getWorldBound().intersects(ray)) {
-			//find the triangle that is being hit.
-			//add this node and the triangle to the PickResults list.
-			results.addPick(ray, this);
-	}
-	}
-	
-	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-		return false;
-	}
+    /**
+     * Returns the current text color.
+     * 
+     * @return Current text color.
+     */
+    public ColorRGBA getTextColor() {
+        return textColor;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
+     *      com.jme.intersection.CollisionResults)
+     */
+    public void findCollisions(Spatial scene, CollisionResults results) {
+        //Do nothing.
+    }
+
+    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+        return false;
+    }
 }

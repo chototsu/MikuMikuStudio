@@ -59,7 +59,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.32 2004-10-05 23:38:17 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.33 2004-10-14 01:23:09 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -356,11 +356,11 @@ public class Node extends Spatial implements Serializable {
         return false;
     }
     
-    public void doPick(Ray toTest, PickResults results){
+    public void findPick(Ray toTest, PickResults results){
 		if(getWorldBound().intersects(toTest)) {
 			//further checking needed.
 			for(int i = 0; i < getQuantity(); i++) {
-				((Spatial)children.get(i)).doPick(toTest, results);
+				((Spatial)children.get(i)).findPick(toTest, results);
 			}
 		}
     }

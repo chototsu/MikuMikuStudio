@@ -32,38 +32,41 @@
 package com.jme.intersection;
 
 import com.jme.scene.Geometry;
-import com.jme.scene.TriMesh;
 
 /**
  * BoundingCollisionResults creates a CollisionResults object that only cares
- * about bounding volume accuracy. CollisionData objects are added to the 
- * collision list as they happen, these data objects only refer to the two 
- * meshes, not their triangle lists. While BoundingCollisionResults defines
- * a processCollisions method, it is empty and should be further defined by
- * the user if so desired. 
+ * about bounding volume accuracy. CollisionData objects are added to the
+ * collision list as they happen, these data objects only refer to the two
+ * meshes, not their triangle lists. While BoundingCollisionResults defines a
+ * processCollisions method, it is empty and should be further defined by the
+ * user if so desired.
+ * 
  * @author Mark Powell
- * @version $Id: BoundingCollisionResults.java,v 1.2 2004-10-05 23:38:16 mojomonkey Exp $
+ * @version $Id: BoundingCollisionResults.java,v 1.2 2004/10/05 23:38:16
+ *          mojomonkey Exp $
  */
 public class BoundingCollisionResults extends CollisionResults {
 
-	/**
-	 * adds a CollisionData object to this results list, the objects only refer
-	 * to the collision meshes, not the triangles.
-	 * @see com.jme.intersection.CollisionResults#addCollision(com.jme.scene.Geometry,
-	 *      com.jme.scene.Geometry)
-	 */
-	public void addCollision(Geometry s, Geometry t) {
-		CollisionData data = new CollisionData(s, t);
-		addCollisionData(data);
-	}
+    /**
+     * adds a CollisionData object to this results list, the objects only refer
+     * to the collision meshes, not the triangles.
+     * 
+     * @see com.jme.intersection.CollisionResults#addCollision(com.jme.scene.Geometry,
+     *      com.jme.scene.Geometry)
+     */
+    public void addCollision(Geometry s, Geometry t) {
+        CollisionData data = new CollisionData(s, t);
+        addCollisionData(data);
+    }
 
-	/**
-	 * empty implementation, it is highly recommended that you override this
-	 * method to handle any collisions as needed.
-	 * @see com.jme.intersection.CollisionResults#processCollisions()
-	 */
-	public void processCollisions() {
+    /**
+     * empty implementation, it is highly recommended that you override this
+     * method to handle any collisions as needed.
+     * 
+     * @see com.jme.intersection.CollisionResults#processCollisions()
+     */
+    public void processCollisions() {
 
-	}
+    }
 
 }

@@ -36,7 +36,6 @@
  *                      without polling the mouse.  GOP
  */
 
-
 package com.jme.input;
 
 /**
@@ -44,16 +43,20 @@ package com.jme.input;
  * the relative change from one poll to the next. This does not maintain the
  * position of a mouse in a rendering window. This type of controller is
  * typically useful for a first person mouse look or similar.
+ * 
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.12 2004-09-14 21:52:19 mojomonkey Exp $
+ * @version $Id: RelativeMouse.java,v 1.13 2004-10-14 01:23:06 mojomonkey Exp $
  */
 public class RelativeMouse extends Mouse {
+
     private static final long serialVersionUID = 1L;
 
-	/**
+    /**
      * Constructor creates a new <code>RelativeMouse</code> object.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
      */
     public RelativeMouse(String name) {
         super(name);
@@ -67,20 +70,21 @@ public class RelativeMouse extends Mouse {
         update(true);
     }
 
-    /** <code>update</code> updates the mouse's position by simply adding to the current location
-     * the mouse's X and Y movement delta.  Unlike AbsoluteMouse, no checks are made for moving
-     * outside a paticular bounds because this class is used only for frame to frame
-     * relative movements.
+    /**
+     * <code>update</code> updates the mouse's position by simply adding to
+     * the current location the mouse's X and Y movement delta. Unlike
+     * AbsoluteMouse, no checks are made for moving outside a paticular bounds
+     * because this class is used only for frame to frame relative movements.
+     * 
      * @param updateState
      * @see com.jme.input.Mouse#update(boolean)
      */
     public void update(boolean updateState) {
-        if (updateState)
-            mouse.updateState();
+        if (updateState) mouse.updateState();
 
         localTranslation.x = mouse.getXDelta() * _speed;
         localTranslation.y = mouse.getYDelta() * _speed;
         worldTranslation.set(localTranslation);
-        _hotSpotLocation.set(localTranslation).addLocal(_hotSpotOffset);
+        hotSpotLocation.set(localTranslation).addLocal(hotSpotOffset);
     }
 }

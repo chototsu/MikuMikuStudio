@@ -31,38 +31,60 @@
  */
 package com.jme.input.action;
 
+import com.jme.input.KeyBindingManager;
 import com.jme.input.Mouse;
 import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>NodeMouseLook</code> defines a mouse action that detects mouse movement
- * and converts it into node rotations and node tilts.
+ * <code>NodeMouseLook</code> defines a mouse action that detects mouse
+ * movement and converts it into node rotations and node tilts.
+ * 
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.5 2004-07-30 21:34:49 cep21 Exp $
+ * @version $Id: NodeMouseLook.java,v 1.6 2004-10-14 01:22:58 mojomonkey Exp $
  */
 public class NodeMouseLook implements MouseInputAction {
+
+    //the mouse that handles relative movements.
     private RelativeMouse mouse;
+
+    //the actions that handle looking up, down, left and right.
     private KeyNodeLookDownAction lookDown;
+
     private KeyNodeLookUpAction lookUp;
+
     private KeyNodeRotateLeftAction rotateLeft;
+
     private KeyNodeRotateRightAction rotateRight;
 
+    //the axis to lock
     private Vector3f lockAxis;
 
+    //the speed to look
     private float speed;
+
+    //the node to control
     private Spatial node;
 
+    private String key;
+
+    //the event to distribute to the look actions.
+    private static InputActionEvent event;
+
     /**
-     * Constructor creates a new <code>NodeMouseLook</code> object. It takes the
-     * mouse, node and speed of the looking.
-     * @param mouse the mouse to calculate view changes.
-     * @param node the node to move.
-     * @param speed the speed at which to alter the camera.
+     * Constructor creates a new <code>NodeMouseLook</code> object. It takes
+     * the mouse, node and speed of the looking.
+     * 
+     * @param mouse
+     *            the mouse to calculate view changes.
+     * @param node
+     *            the node to move.
+     * @param speed
+     *            the speed at which to alter the camera.
      */
     public NodeMouseLook(Mouse mouse, Spatial node, float speed) {
-        this.mouse = (RelativeMouse)mouse;
+        this.mouse = (RelativeMouse) mouse;
         this.speed = speed;
         this.node = node;
 
@@ -73,11 +95,13 @@ public class NodeMouseLook implements MouseInputAction {
     }
 
     /**
-     *
+     * 
      * <code>setLockAxis</code> sets the axis that should be locked down. This
-     * prevents "rolling" about a particular axis. Typically, this is set to
-     * the mouse's up vector.
-     * @param lockAxis the axis that should be locked down to prevent rolling.
+     * prevents "rolling" about a particular axis. Typically, this is set to the
+     * mouse's up vector.
+     * 
+     * @param lockAxis
+     *            the axis that should be locked down to prevent rolling.
      */
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
@@ -87,17 +111,20 @@ public class NodeMouseLook implements MouseInputAction {
 
     /**
      * Returns the axis that is currently locked.
+     * 
      * @return The currently locked axis
      * @see #setLockAxis(com.jme.math.Vector3f)
      */
-    public Vector3f getLockAxis(){
+    public Vector3f getLockAxis() {
         return lockAxis;
     }
 
     /**
-     *
+     * 
      * <code>setSpeed</code> sets the speed of the mouse look.
-     * @param speed the speed of the mouse look.
+     * 
+     * @param speed
+     *            the speed of the mouse look.
      */
     public void setSpeed(float speed) {
         this.speed = speed;
@@ -109,8 +136,9 @@ public class NodeMouseLook implements MouseInputAction {
     }
 
     /**
-     *
+     * 
      * <code>getSpeed</code> retrieves the speed of the mouse look.
+     * 
      * @return the speed of the mouse look.
      */
     public float getSpeed() {
@@ -121,32 +149,56 @@ public class NodeMouseLook implements MouseInputAction {
      * <code>performAction</code> checks for any movement of the mouse, and
      * calls the appropriate method to alter the node's orientation when
      * applicable.
+     * 
      * @see com.jme.input.action.MouseInputAction#performAction(float)
      */
-    public void performAction(float time) {
-        time *= speed;
+    public void performAction(InputActionEvent evt) {
+        float time = evt.getTime() * speed;
+
+        event.setEventList(evt.getEventList());
+        event.setKeys(KeyBindingManager.getKeyBindingManager().getKeyInput());
+
         if (mouse.getLocalTranslation().x > 0) {
-            rotateRight.performAction(
-                time * mouse.getLocalTranslation().x);
+            event.setTime(time * mouse.getLocalTranslation().x);
+            rotateRight.performAction(event);
         } else if (mouse.getLocalTranslation().x < 0) {
-            rotateLeft.performAction(
-                time * mouse.getLocalTranslation().x * -1);
+            event.setTime(time * mouse.getLocalTranslation().x * -1);
+            rotateLeft.performAction(event);
         }
         if (mouse.getLocalTranslation().y > 0) {
-            lookUp.performAction(
-                time * mouse.getLocalTranslation().y);
+            event.setTime(time * mouse.getLocalTranslation().y);
+            lookUp.performAction(event);
         } else if (mouse.getLocalTranslation().y < 0) {
-            lookDown.performAction(
-                time * mouse.getLocalTranslation().y * -1);
+            event.setTime(time * mouse.getLocalTranslation().y * -1);
+            lookDown.performAction(event);
         }
-
     }
+
     /**
      * <code>setMouse</code> sets the mouse used to check for movement.
+     * 
      * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
      */
     public void setMouse(Mouse mouse) {
-        this.mouse = (RelativeMouse)mouse;
+        this.mouse = (RelativeMouse) mouse;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.input.action.InputAction#getKey()
+     */
+    public String getKey() {
+        return key;
     }
 
 }

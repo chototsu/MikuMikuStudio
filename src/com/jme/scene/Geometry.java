@@ -40,6 +40,8 @@ import java.util.Stack;
 import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
+import com.jme.intersection.PickResults;
+import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -57,7 +59,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  * 
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.63 2004-10-04 14:53:48 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.64 2004-10-14 01:23:09 mojomonkey Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -789,6 +791,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      *            the bounding object for this geometry.
      */
     public void setModelBound(BoundingVolume modelBound) {
+        this.worldBound = null;
         this.bound = modelBound;
     }
 
@@ -1023,6 +1026,14 @@ public abstract class Geometry extends Spatial implements Serializable {
         int i = (int) (FastMath.nextRandomFloat() * vertQuantity);
 
         return worldRotation.mult(vertex[i]).addLocal(worldTranslation);
+    }
+    
+    public void findPick(Ray ray, PickResults results) {
+    	if (getWorldBound().intersects(ray)) {
+				//find the triangle that is being hit.
+				//add this node and the triangle to the PickResults list.
+				results.addPick(ray, this);
+		}
     }
 
     /**

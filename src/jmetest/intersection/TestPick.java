@@ -55,7 +55,7 @@ import com.jme.scene.state.LightState;
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.21 2004-09-10 22:36:10 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.22 2004-10-14 01:23:08 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -136,6 +136,7 @@ public class TestPick extends SimpleGame {
 		rootNode.attachChild(model);
 
 		MousePick pick = new MousePick(cam, rootNode, text);
+		pick.setKey("mousepick");
 		pick.setMouse(input.getMouse());
 		input.addAction(pick);
 	}

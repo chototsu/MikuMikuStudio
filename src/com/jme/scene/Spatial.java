@@ -56,7 +56,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.58 2004-10-05 23:38:17 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.59 2004-10-14 01:23:09 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -850,6 +850,21 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
+     * 
+     * <code>calculateCollisions</code> calls findCollisions to populate the
+     * CollisionResults object then processes the collision results.
+     * 
+     * @param scene
+     *            the scene to test against.
+     * @param results
+     *            the results object.
+     */
+    public void calculateCollisions(Spatial scene, CollisionResults results) {
+        findCollisions(scene, results);
+        results.processCollisions();
+    }
+
+    /**
      * checks this spatial against a second spatial, any collisions are stored
      * in the results object.
      * 
@@ -861,9 +876,13 @@ public abstract class Spatial implements Serializable {
     public abstract void findCollisions(Spatial scene, CollisionResults results);
 
     public abstract boolean hasCollision(Spatial scene, boolean checkTriangles);
-    
-    public abstract void doPick(Ray toTest, PickResults results);
-    
+
+    public void calculatePick(Ray ray, PickResults results) {
+        findPick(ray, results);
+        results.processPick();
+    }
+
+    public abstract void findPick(Ray toTest, PickResults results);
 
     /**
      * This method updates the exact bounding tree of any this Spatial. If this

@@ -32,6 +32,7 @@
 package jmetest.intersection;
 
 import com.jme.input.Mouse;
+import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
 import com.jme.intersection.BoundingPickResults;
 import com.jme.intersection.PickResults;
@@ -55,6 +56,7 @@ public class MousePick implements MouseInputAction {
     private int shots = 0;
     private Text text;
     private String hitItems;
+    private String key;
 
     public MousePick(Camera camera, Node scene, Text text) {
         this.camera = camera;
@@ -64,14 +66,14 @@ public class MousePick implements MouseInputAction {
     /* (non-Javadoc)
      * @see com.jme.input.action.MouseInputAction#performAction(float)
      */
-    public void performAction(float time) {
-        shotTime += time;
+    public void performAction(InputActionEvent evt) {
+        shotTime += evt.getTime();
         if(mouse.getMouseInput().isButtonDown(0) && shotTime > 0.1f) {
             shotTime = 0;
             Ray ray = new Ray(camera.getLocation(), camera.getDirection());
             PickResults results = new BoundingPickResults();
 
-            scene.doPick(ray,results);
+            scene.findPick(ray,results);
 
 
             hits += results.getNumber();
@@ -96,12 +98,28 @@ public class MousePick implements MouseInputAction {
     public void setSpeed(float speed) {
 
     }
+    
+    public float getSpeed() {
+        return 0;
+    }
 
     /* (non-Javadoc)
      * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
      */
     public void setMouse(Mouse mouse) {
         this.mouse = mouse;
+    }
+    /* (non-Javadoc)
+     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
+     */
+    public void setKey(String key) {
+        this.key = key;
+    }
+    /* (non-Javadoc)
+     * @see com.jme.input.action.InputAction#getKey()
+     */
+    public String getKey() {
+        return key;
     }
 
 }

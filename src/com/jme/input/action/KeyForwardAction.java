@@ -36,22 +36,28 @@ import com.jme.renderer.Camera;
 
 /**
  * <code>KeyForwardAction</code> provides the action of moving a camera along
- * it's direction vector. How fast the camera moves in a single frame is
- * defined by the speed of the camera times the time between frames. The speed
- * of the camera can be thought of as how many units per second the camera
- * can travel.
+ * it's direction vector. How fast the camera moves in a single frame is defined
+ * by the speed of the camera times the time between frames. The speed of the
+ * camera can be thought of as how many units per second the camera can travel.
+ * 
  * @author Mark Powell
- * @version $Id: KeyForwardAction.java,v 1.8 2004-08-22 02:00:33 cep21 Exp $
+ * @version $Id: KeyForwardAction.java,v 1.9 2004-10-14 01:23:02 mojomonkey Exp $
  */
-public class KeyForwardAction extends AbstractInputAction {
-    private static final Vector3f tempVa=new Vector3f();
+public class KeyForwardAction extends KeyInputAction {
+
+    //temp holder for the multiplication of the direction and time
+    private static final Vector3f tempVa = new Vector3f();
+    //the camera to manipulate
     private Camera camera;
 
     /**
-    * Constructor instantiates a new <code>KeyForwardAction</code> object.
-    * @param camera the camera that will be affected by this action.
-    * @param speed the speed at which the camera can move.
-    */
+     * Constructor instantiates a new <code>KeyForwardAction</code> object.
+     * 
+     * @param camera
+     *            the camera that will be affected by this action.
+     * @param speed
+     *            the speed at which the camera can move.
+     */
     public KeyForwardAction(Camera camera, float speed) {
         this.camera = camera;
         this.speed = speed;
@@ -59,14 +65,15 @@ public class KeyForwardAction extends AbstractInputAction {
 
     /**
      * <code>performAction</code> moves the camera along it's positive
-     * direction vector at a speed of movement speed * time. Where time is
-     * the time between frames and 1 corresponds to 1 second.
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * direction vector at a speed of movement speed * time. Where time is the
+     * time between frames and 1 corresponds to 1 second.
+     * 
+     * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
      */
-    public void performAction(float time) {
+    public void performAction(InputActionEvent evt) {
 
         Vector3f loc = camera.getLocation();
-        loc.addLocal(camera.getDirection().mult(speed*time,tempVa));
+        loc.addLocal(camera.getDirection().mult(speed * evt.getTime(), tempVa));
         camera.setLocation(loc);
         camera.update();
     }

@@ -34,58 +34,69 @@ package com.jme.input.action;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>KeyScreenShotAction</code> allows the user to press a key to take
- * a screenshot of the current display. This screenshot is saved in the
- * current running directory with a supplied filename.png. If no filename is
- * supplied it is saved as screenshot.png.
+ * <code>KeyScreenShotAction</code> allows the user to press a key to take a
+ * screenshot of the current display. This screenshot is saved in the current
+ * running directory with a supplied filename.png. If no filename is supplied it
+ * is saved as screenshot.png.
+ * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: KeyScreenShotAction.java,v 1.4 2004-07-30 21:43:18 cep21 Exp $
+ * @version $Id: KeyScreenShotAction.java,v 1.5 2004-10-14 01:23:02 mojomonkey Exp $
  */
-public class KeyScreenShotAction extends AbstractInputAction {
+public class KeyScreenShotAction extends KeyInputAction {
+    //the name of the file to save the screenshot as.
+    private String filename;
 
-  private String filename;
+    /**
+     * A call to KeyScreenShotAction("screenshot")
+     * 
+     * @see #KeyScreenShotAction(java.lang.String)
+     */
+    public KeyScreenShotAction() {
+        this("screenshot");
+    }
 
-  /**
-   * A call to KeyScreenShotAction("screenshot")
-   * @see #KeyScreenShotAction(java.lang.String)
-    */
-  public KeyScreenShotAction() {
-    this("screenshot");
-  }
+    /**
+     * Creates a screenshot action that saves to the given filename. Usually, an
+     * extention is appended to the filename signaling the screenshot image
+     * type. The file is accessed with the <code>File</code> class
+     * 
+     * @param filename
+     *            The filename to save the current renderer screen to.
+     * @see java.io.File
+     */
+    public KeyScreenShotAction(String filename) {
+        this.filename = filename;
+    }
 
-  /**
-   * Creates a screenshot action that saves to the given filename.  Usually,
-   * an extention is appended to the filename signaling the screenshot image type.
-   * The file is accessed with the <code>File</code> class
-   * @param filename The filename to save the current renderer screen to.
-   * @see java.io.File
-   */
-  public KeyScreenShotAction(String filename) {
-    this.filename = filename;
-  }
+    /**
+     * <code>performAction</code> saves the current renderer screen to the
+     * filename as an image.
+     * 
+     * @param time
+     *            Ignored.
+     * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
+     */
+    public void performAction(InputActionEvent evt) {
+        DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot(filename);
+    }
 
-  /** <code>performAction</code> saves the current renderer screen to the filename as an image.
-   * @param time Ignored.
-   * @see com.jme.input.action.AbstractInputAction#performAction(float)
-   */
-  public void performAction(float time) {
-    DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot(filename);
-  }
+    /**
+     * Sets the name of the file to save screenshots too.
+     * 
+     * @param filename
+     *            The filename to save too.
+     */
+    public void setFilename(String filename) {
+        this.filename = filename;
+    }
 
-  /**
-   * Sets the name of the file to save screenshots too.
-   * @param filename The filename to save too.
-   */
-  public void setFilename(String filename) {
-    this.filename = filename;
-  }
-
-  /**
-   * Returns the currently set filename that screenshots are saved too.
-   * @return The current filename where screenshots are saved.
-   */
-  public String getFilename() {
-    return filename;
-  }
+    /**
+     * Returns the currently set filename that screenshots are saved too.
+     * 
+     * @return The current filename where screenshots are saved.
+     */
+    public String getFilename() {
+        return filename;
+    }
 }

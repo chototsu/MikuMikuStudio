@@ -41,114 +41,121 @@ import com.jme.util.Timer;
  * variable framerate, every frame the update method is passed the amount of
  * elapsed time, in seconds, since the previous update. The game should execute
  * the logic based on the time elapsed.
- *
+ * 
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.9 2004-08-02 22:28:40 cep21 Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.10 2004-10-14 01:23:11 mojomonkey Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 
-	//Timing stuff
-	private Timer timer;
-	private float frametime;
+    //Timing stuff
+    private Timer timer;
 
-	/**
-	 * <code>getFramesPerSecond</code> gets the current frame rate.
-	 * @return the current number of frames rendering per second
-	 */
-	public float getFramesPerSecond() {
-		return 1 / frametime;
-	}
+    private float frametime;
+
+    /**
+     * <code>getFramesPerSecond</code> gets the current frame rate.
+     * 
+     * @return the current number of frames rendering per second
+     */
+    public float getFramesPerSecond() {
+        return 1 / frametime;
+    }
 
     /**
      * <code>updateTime</code> calculates the start and stop time of the
      * frame.
      */
-	private void updateTime() {
-	    timer.update();
-		//time1 = timer.getTime();
-		frametime = timer.getTimePerFrame(); //(time1 - time0) / (float)timer.getResolution();
-		//time0 = time1;
-	}
+    private void updateTime() {
+        timer.update();
+        frametime = timer.getTimePerFrame(); 
+    }
 
-	/**
-	 * Renders and updates logic as fast as possible, but keeps track
-     * of time elapsed between frames.
-	 */
-	public final void start() {
-		LoggingSystem.getLogger().log(Level.INFO, "Application started.");
-		try {
-			getAttributes();
-			timer = Timer.getTimer(properties.getRenderer());
+    /**
+     * Renders and updates logic as fast as possible, but keeps track of time
+     * elapsed between frames.
+     */
+    public final void start() {
+        LoggingSystem.getLogger().log(Level.INFO, "Application started.");
+        try {
+            getAttributes();
+            timer = Timer.getTimer(properties.getRenderer());
 
-			initSystem();
+            initSystem();
 
-			assertDisplayCreated();
+            assertDisplayCreated();
 
-			initGame();
+            initGame();
 
-			//main loop
-			while (!finished && !display.isClosing()) {
-				//determine time elapsed since last frame
-				updateTime();
+            //main loop
+            while (!finished && !display.isClosing()) {
+                //determine time elapsed since last frame
+                updateTime();
 
-				//update game state, pass amount of elapsed time
-				update(frametime);
+                //update game state, pass amount of elapsed time
+                update(frametime);
 
-				//render, do not use interpolation parameter
-				render(-1.0f);
+                //render, do not use interpolation parameter
+                render(-1.0f);
 
-				//swap buffers
-				display.getRenderer().displayBackBuffer();
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-		} finally {
-			cleanup();
-		}
-		LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+                //swap buffers
+                display.getRenderer().displayBackBuffer();
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+        } finally {
+            cleanup();
+        }
+        LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
 
-                if (display != null)
-                  display.reset();
-		quit();
-	}
+        if (display != null) {
+            display.reset();
+        }
+        quit();
+    }
 
-	/**
-	 * Quits the program abruptly using <code>System.exit</code>.
-	 * @see AbstractGame#quit()
-	 */
-	protected void quit() {
-		System.exit(0);
-	}
+    /**
+     * Quits the program abruptly using <code>System.exit</code>.
+     * 
+     * @see AbstractGame#quit()
+     */
+    protected void quit() {
+        if (display != null) {
+            display.close();
+        }
+        System.exit(0);
+    }
 
-	/**
-	 * @param deltaTime the time elapsed since the last frame, in seconds
-	 * @see AbstractGame#update(float interpolation)
-	 */
-	protected abstract void update(float deltaTime);
+    /**
+     * @param deltaTime
+     *            the time elapsed since the last frame, in seconds
+     * @see AbstractGame#update(float interpolation)
+     */
+    protected abstract void update(float deltaTime);
 
-	/**
-	 * @param interpolation unused in this implementation
-	 * @see AbstractGame#render(float interpolation)
-	 */
-	protected abstract void render(float interpolation);
+    /**
+     * @param interpolation
+     *            unused in this implementation
+     * @see AbstractGame#render(float interpolation)
+     */
+    protected abstract void render(float interpolation);
 
-	/**
-	 * @see AbstractGame#initSystem()
-	 */
-	protected abstract void initSystem();
+    /**
+     * @see AbstractGame#initSystem()
+     */
+    protected abstract void initSystem();
 
-	/**
-	 * @see AbstractGame#initGame()
-	 */
-	protected abstract void initGame();
+    /**
+     * @see AbstractGame#initGame()
+     */
+    protected abstract void initGame();
 
-	/**
-	 * @see AbstractGame#reinit()
-	 */
-	protected abstract void reinit();
+    /**
+     * @see AbstractGame#reinit()
+     */
+    protected abstract void reinit();
 
-	/**
-	 * @see AbstractGame#cleanup()
-	 */
-	protected abstract void cleanup();
+    /**
+     * @see AbstractGame#cleanup()
+     */
+    protected abstract void cleanup();
 }

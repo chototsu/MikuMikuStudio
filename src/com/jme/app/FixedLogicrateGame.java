@@ -60,7 +60,8 @@ import com.jme.util.Timer;
  * rate and a fixed frame rate.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedLogicrateGame.java,v 1.6 2004-04-26 18:56:01 mojomonkey Exp $
+ * @version $Id: FixedLogicrateGame.java,v 1.6 2004/04/26 18:56:01 mojomonkey
+ *          Exp $
  */
 public abstract class FixedLogicrateGame extends AbstractGame {
 
@@ -86,9 +87,10 @@ public abstract class FixedLogicrateGame extends AbstractGame {
      *            the desired logic rate in ticks per second
      */
     public void setLogicTicksPerSecond(int tps) {
-        if (tps < 0)
+        if (tps < 0) {
                 throw new IllegalArgumentException(
                         "Ticks per second cannot be less than zero.");
+        }
 
         logicTPS = tps;
         tickTime = timer.getResolution() / logicTPS;
@@ -151,6 +153,9 @@ public abstract class FixedLogicrateGame extends AbstractGame {
      * @see AbstractGame#quit()
      */
     protected void quit() {
+        if (display != null) {
+            display.close();
+        }
         System.exit(0);
     }
 

@@ -39,46 +39,64 @@ package com.jme.input;
 import java.util.ArrayList;
 
 import com.jme.app.AbstractGame;
-import com.jme.input.action.AbstractInputAction;
+import com.jme.input.action.KeyInputAction;
+import com.jme.input.action.InputAction;
+import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
 import com.jme.renderer.Camera;
 import com.jme.renderer.RendererType;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>AbstractInputHandler</code> defines a super abstract class for
- * input controlling. It maintains a list of actions and mouse actions. These
- * actions are then processed during every update cycle. Subclasses are required
- * to defined to setMouse and setActions methods for custom InputControllers.
+ * <code>AbstractInputHandler</code> defines a super abstract class for input
+ * controlling. It maintains a list of actions and mouse actions. These actions
+ * are then processed during every update cycle. Subclasses are required to
+ * defined to setMouse and setActions methods for custom InputControllers.
+ * 
  * @author Mark Powell
  * @author Gregg Patton
  * @author Jack Lindamood - (Javadoc only)
- * @version $Id: AbstractInputHandler.java,v 1.6 2004-07-30 20:33:55 cep21 Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.7 2004-10-14 01:23:07 mojomonkey Exp $
  */
 public abstract class AbstractInputHandler {
 
-    /** Optional.  The game controlling this InputHandler.*/
+    /** Optional. The game controlling this InputHandler. */
     protected AbstractGame app;
-    /** Optional.  The camera controlled by this InputHandler. */
+
+    /** Optional. The camera controlled by this InputHandler. */
     protected Camera camera;
-    /** List of keyboard actions.  They are performed in update if valid.*/
+
+    /** List of keyboard actions. They are performed in update if valid. */
     protected ArrayList keyActions;
-    /** List of mouse actions.  They are performed in update. */
+
+    /** List of mouse actions. They are performed in update. */
     protected ArrayList mouseActions;
+
     /** The keyboard where valid key actions are taken from in update. */
     protected KeyBindingManager keyboard;
+
     /** The mouse where valid mouse actions are taken from in update. */
     protected Mouse mouse;
 
-    /** If false, keyboard actions are not done.*/
+    /** If false, keyboard actions are not done. */
     protected boolean updateKeyboardActionsEnabled = true;
-    /** If false, mouse actions are not done.*/
+
+    /** If false, mouse actions are not done. */
     protected boolean updateMouseActionsEnabled = true;
 
+    /** the event to send to all actions in a single frame */
+    private InputActionEvent event;
+
+    /** list that holds the actions that will be executed this frame */
+    private ArrayList actionList;
+
+    /** list of the names of all actions that will be executed this frame */
+    private ArrayList eventList;
+
     /**
-     * Constructor creates a default <code>AbstractInputHandler</code>.  It has
-     * no set AbstractGame or Camera.
-     *
+     * Constructor creates a default <code>AbstractInputHandler</code>. It
+     * has no set AbstractGame or Camera.
+     *  
      */
     public AbstractInputHandler() {
         init(null, null);
@@ -86,9 +104,11 @@ public abstract class AbstractInputHandler {
 
     /**
      * Constructor instantiates a new <code>AbstractInputHandler</code>
-     * defining the camera that defines the viewing.  The AbstractGame app is by default
-     * null.
-     * @param camera the camera that defines the viewport frame.
+     * defining the camera that defines the viewing. The AbstractGame app is by
+     * default null.
+     * 
+     * @param camera
+     *            the camera that defines the viewport frame.
      */
     public AbstractInputHandler(Camera camera) {
         init(null, camera);
@@ -96,9 +116,11 @@ public abstract class AbstractInputHandler {
 
     /**
      * Constructor instantiates a new <code>AbstractInputHandler</code>
-     * defining the app that defines the application actions.  The Camera cam is by default
-     * null.
-     * @param app The AbstractGame that will take application actions.
+     * defining the app that defines the application actions. The Camera cam is
+     * by default null.
+     * 
+     * @param app
+     *            The AbstractGame that will take application actions.
      */
     public AbstractInputHandler(AbstractGame app) {
         init(app, null);
@@ -106,11 +128,13 @@ public abstract class AbstractInputHandler {
 
     /**
      * Constructor instantiates a new <code>AbstractInputHandler</code>
-     * defining the app that defines the application actions and the camera that will
-     * define viewing.
-     *
-     * @param app The AbstractGame that will take application actions.
-     * @param camera The camera that defines the viewport frame.
+     * defining the app that defines the application actions and the camera that
+     * will define viewing.
+     * 
+     * @param app
+     *            The AbstractGame that will take application actions.
+     * @param camera
+     *            The camera that defines the viewport frame.
      */
     public AbstractInputHandler(AbstractGame app, Camera camera) {
 
@@ -118,10 +142,13 @@ public abstract class AbstractInputHandler {
     }
 
     /**
-     * Called internally after the constructor.  Sets up mouse and key inputs to be
-     * received by update.
-     * @param app The game controlling this handler.
-     * @param camera The camera controlled by this handler.
+     * Called internally after the constructor. Sets up mouse and key inputs to
+     * be received by update.
+     * 
+     * @param app
+     *            The game controlling this handler.
+     * @param camera
+     *            The camera controlled by this handler.
      */
     private void init(AbstractGame app, Camera camera) {
         this.app = app;
@@ -138,6 +165,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * <code>getApp</code> returns the AbstractGame controlling this handler.
+     * 
      * @return This handler's AbstractGame.
      */
     public AbstractGame getApp() {
@@ -146,14 +174,18 @@ public abstract class AbstractInputHandler {
 
     /**
      * <code>setApp</code> sets the AbstractGame controlling this handler.
-     * @param game The game to set.
+     * 
+     * @param game
+     *            The game to set.
      */
     public void setApp(AbstractGame game) {
         app = game;
     }
 
     /**
-     * <code>getCamera</code> returns the camera that defines the viewing for this handler.
+     * <code>getCamera</code> returns the camera that defines the viewing for
+     * this handler.
+     * 
      * @return This handler's camera.
      */
     public Camera getCamera() {
@@ -161,8 +193,11 @@ public abstract class AbstractInputHandler {
     }
 
     /**
-     * <code>setCamera</code> sets this handler's camera that will define viewing.
-     * @param camera The new camera.
+     * <code>setCamera</code> sets this handler's camera that will define
+     * viewing.
+     * 
+     * @param camera
+     *            The new camera.
      */
     public void setCamera(Camera camera) {
         this.camera = camera;
@@ -170,7 +205,9 @@ public abstract class AbstractInputHandler {
 
     /**
      * Sets the keyboard that will receive key inputs by this handler.
-     * @param keyboard The keyboard to receive key inputs.
+     * 
+     * @param keyboard
+     *            The keyboard to receive key inputs.
      */
     public void setKeyBindingManager(KeyBindingManager keyboard) {
         this.keyboard = keyboard;
@@ -178,6 +215,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Returns the currently assigned keybard to receive key inputs.
+     * 
      * @return This handler's keyboard.
      */
     public KeyBindingManager getKeyBindingManager() {
@@ -186,7 +224,9 @@ public abstract class AbstractInputHandler {
 
     /**
      * Sets the mouse to receive mouse inputs from.
-     * @param mouse This handler's new mouse.
+     * 
+     * @param mouse
+     *            This handler's new mouse.
      */
     public void setMouse(Mouse mouse) {
         this.mouse = mouse;
@@ -194,6 +234,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Returns the mouse currently receiving inputs by this handler.
+     * 
      * @return This handler's mouse.
      */
     public Mouse getMouse() {
@@ -201,58 +242,70 @@ public abstract class AbstractInputHandler {
     }
 
     /**
-     * Sets the speed of all key actions currently defined by this handler to the
-     * given value.
-     * @param speed The new speed for all currently defined key actions.
-     * @see com.jme.input.action.AbstractInputAction#setSpeed(float)
+     * Sets the speed of all key actions currently defined by this handler to
+     * the given value.
+     * 
+     * @param speed
+     *            The new speed for all currently defined key actions.
+     * @see com.jme.input.action.KeyInputAction#setSpeed(float)
      */
     public void setKeySpeed(float speed) {
-        for(int i = 0; i < keyActions.size(); i++) {
-            ((AbstractInputAction)keyActions.get(i)).setSpeed(speed);
+        for (int i = 0; i < keyActions.size(); i++) {
+            ((KeyInputAction) keyActions.get(i)).setSpeed(speed);
         }
     }
 
     /**
-     * Sets the speed of all mouse actions currently defined by this handler to the
-     * given value.
-     * @param speed The new speed for all currently defined mouse actions.
+     * Sets the speed of all mouse actions currently defined by this handler to
+     * the given value.
+     * 
+     * @param speed
+     *            The new speed for all currently defined mouse actions.
      * @see com.jme.input.action.MouseInputAction#setSpeed(float)
      */
     public void setMouseSpeed(float speed) {
-        for(int i = 0; i < mouseActions.size(); i++) {
-            ((MouseInputAction)mouseActions.get(i)).setSpeed(speed);
+        for (int i = 0; i < mouseActions.size(); i++) {
+            ((MouseInputAction) mouseActions.get(i)).setSpeed(speed);
         }
     }
 
     /**
      * Adds a keyboard input action to be polled by this handler during update.
-     * @param inputAction The input action to be added
+     * 
+     * @param inputAction
+     *            The input action to be added
      */
-    public void addAction(AbstractInputAction inputAction) {
+    public void addAction(KeyInputAction inputAction) {
         keyActions.add(inputAction);
     }
 
     /**
      * Adds a mouse input action to be polled by this handler during update.
-     * @param mouseAction The input action to be added
+     * 
+     * @param mouseAction
+     *            The input action to be added
      */
     public void addAction(MouseInputAction mouseAction) {
         mouseActions.add(mouseAction);
     }
 
     /**
-     * Removes a keyboard input action from the list of keyActions that are polled
-     * during update.
-     * @param inputAction The action to remove.
+     * Removes a keyboard input action from the list of keyActions that are
+     * polled during update.
+     * 
+     * @param inputAction
+     *            The action to remove.
      */
-    public void removeAction(AbstractInputAction inputAction) {
+    public void removeAction(KeyInputAction inputAction) {
         keyActions.remove(inputAction);
     }
 
     /**
-     * Removes a mouse input action from the list of mouseActions that are polled
-     * during update.
-     * @param mouseAction The action to remove.
+     * Removes a mouse input action from the list of mouseActions that are
+     * polled during update.
+     * 
+     * @param mouseAction
+     *            The action to remove.
      */
     public void removeAction(MouseInputAction mouseAction) {
         mouseActions.remove(mouseAction);
@@ -260,7 +313,9 @@ public abstract class AbstractInputHandler {
 
     /**
      * Equivalent to <code>update(true,true,time)</code>
-     * @param time The time to pass to update.
+     * 
+     * @param time
+     *            The time to pass to update.
      * @see #update(boolean, boolean, float)
      */
     public void update(float time) {
@@ -268,46 +323,69 @@ public abstract class AbstractInputHandler {
     }
 
     /**
-     * Updates and calls actions on mice and keyboard inputs.  If <code>updateKeyboard</code>
-     * is true, the keyboard is updated for inputs.  If updating of keyboard actions is enabled,
-     * all key actions that are active are performed.  The same is true for mouse inputs.
-     * @param updateMouseState If true, the mouse state is updated.
-     * @param updateKeyboard If true, the keyboard state is updated.
-     * @param time The time value to pass to all performed actions.
-     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     * Updates and calls actions on mice and keyboard inputs. If
+     * <code>updateKeyboard</code> is true, the keyboard is updated for
+     * inputs. If updating of keyboard actions is enabled, all key actions that
+     * are active are performed. The same is true for mouse inputs.
+     * 
+     * @param updateMouseState
+     *            If true, the mouse state is updated.
+     * @param updateKeyboard
+     *            If true, the keyboard state is updated.
+     * @param time
+     *            The time value to pass to all performed actions.
+     * @see com.jme.input.action.KeyInputAction#performAction(float)
      * @see com.jme.input.action.MouseInputAction#performAction(float)
      */
-    public void update(boolean updateMouseState, boolean updateKeyboard, float time) {
+    public void update(boolean updateMouseState, boolean updateKeyboard,
+            float time) {
+
+        actionList.clear();
+        eventList.clear();
         if (keyboard != null) {
 
-            if (updateKeyboard)
-                keyboard.update();
+            if (updateKeyboard) keyboard.update();
 
             if (updateKeyboardActionsEnabled) {
                 for (int i = 0; i < keyActions.size(); i++) {
-                    if (keyboard
-                        .isValidCommand(((AbstractInputAction) keyActions.get(i)).getKey(), ((AbstractInputAction) keyActions.get(i)).allowsRepeats())) {
-                        ((AbstractInputAction) keyActions.get(i)).performAction(time);
+                    if (keyboard.isValidCommand(((InputAction) keyActions
+                            .get(i)).getKey(), ((KeyInputAction) keyActions
+                            .get(i)).allowsRepeats())) {
+                        eventList.add(((InputAction) keyActions.get(i))
+                                .getKey());
+                        actionList.add(keyActions.get(i));
                     }
                 }
             }
         }
 
-        if(mouse != null) {
+        if (mouse != null) {
 
             mouse.update(updateMouseState);
 
             if (updateMouseActionsEnabled) {
-                for(int i = 0; i < mouseActions.size(); i++) {
-                    ((MouseInputAction)mouseActions.get(i)).performAction(time);
+                for (int i = 0; i < mouseActions.size(); i++) {
+                    eventList
+                            .add(((InputAction) mouseActions.get(i)).getKey());
+                    actionList.add(mouseActions.get(i));
                 }
             }
+        }
+
+        event.setTime(time);
+        event.setKeys(keyboard.getKeyInput());
+        event.setMouse(mouse.getMouseInput());
+        event.setEventList(eventList);
+        for (int i = 0; i < actionList.size(); i++) {
+            ((InputAction) actionList.get(i)).performAction(event);
         }
     }
 
     /**
      * Sets up a keyboard to receive inputs acording to the RenderType.
-     * @param rendererType The render type to create a keyboard input from.
+     * 
+     * @param rendererType
+     *            The render type to create a keyboard input from.
      * @see #setKeyBindingManager(com.jme.input.KeyBindingManager)
      */
     protected void setKeyBindings(RendererType rendererType) {
@@ -315,7 +393,7 @@ public abstract class AbstractInputHandler {
 
         //Check to see if we already have an input system, we only need one.
         if (InputSystem.getKeyInput() == null)
-            InputSystem.createInputSystem(rendererType.getName());
+                InputSystem.createInputSystem(rendererType.getName());
 
         keyboard.setKeyInput(InputSystem.getKeyInput());
 
@@ -324,6 +402,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Returns if keyboard actions are performed during update.
+     * 
      * @return True if update will perform keyboard actions.
      * @see #update(boolean, boolean, float)
      */
@@ -333,7 +412,9 @@ public abstract class AbstractInputHandler {
 
     /**
      * Keyboard actions are performed during update only if this value is true.
-     * @param b If true, keyboard actions are performed during update.
+     * 
+     * @param b
+     *            If true, keyboard actions are performed during update.
      * @see #update(boolean, boolean, float)
      */
     public void setUpdateKeyboardActionsEnabled(boolean b) {
@@ -342,6 +423,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Returns if mouse actions are performed during update.
+     * 
      * @return True if update will perform mouse actions.
      * @see #update(boolean, boolean, float)
      */
@@ -351,7 +433,9 @@ public abstract class AbstractInputHandler {
 
     /**
      * Mouse actions are performed during update only if this value is true.
-     * @param b If true, mouse actions are performed during update.
+     * 
+     * @param b
+     *            If true, mouse actions are performed during update.
      * @see #update(boolean, boolean, float)
      */
     public void setUpdateMouseActionsEnabled(boolean b) {
@@ -359,14 +443,16 @@ public abstract class AbstractInputHandler {
     }
 
     /**
-     * Defined by subclasses, this function should set the appropriate, default mouse for this handler.
-     * <code>setMouse</code> is called after the constructor.
+     * Defined by subclasses, this function should set the appropriate, default
+     * mouse for this handler. <code>setMouse</code> is called after the
+     * constructor.
      */
     protected abstract void setMouse();
 
     /**
-     * Defined by subclasses, this function should set the appropriate, default keyboard actions
-     * for this handler.  <code>setActions</code> is called after the constructor.
+     * Defined by subclasses, this function should set the appropriate, default
+     * keyboard actions for this handler. <code>setActions</code> is called
+     * after the constructor.
      */
     protected abstract void setActions();
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -31,51 +31,42 @@
  */
 package com.jme.input.action;
 
-import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 
 /**
- * <code>KeyBackwardAction</code> defines an action for moving a camera along
- * it's negative direction. How fast the camera moves in a single frame is
- * defined by the speed of the camera times the time between frames. The speed
- * of the camera can be thought of as how many units per second the camera can
- * travel.
- * 
+ * <code>InputAction</code> defines an interface that sets the criteria for 
+ * input actions, the speed of the action is definable and a single method 
+ * (performAction) is supplied to execute the action itself.
  * @author Mark Powell
- * @version $Id: KeyBackwardAction.java,v 1.9 2004-10-14 01:22:57 mojomonkey Exp $
+ * @version $Id: InputAction.java,v 1.7 2004-10-14 01:22:58 mojomonkey Exp $
  */
-public class KeyBackwardAction extends KeyInputAction {
-
-    //the camera to manipulate
-    private Camera camera;
-
-    private static final Vector3f tempVa = new Vector3f();
-
+public interface InputAction {
     /**
-     * Constructor instantiates a new <code>KeyBackwardAction</code> object.
      * 
-     * @param camera
-     *            the camera that will be affected by this action.
-     * @param speed
-     *            the speed at which the camera can move.
+     * <code>performAction</code> executes the action. The InputActionEvent
+     * is supplied to define what keys are pressed, what other actions were
+     * called and the time of the event.
+     *
+     * @param evt the event that triggered the perform action method.
      */
-    public KeyBackwardAction(Camera camera, float speed) {
-        this.camera = camera;
-        this.speed = speed;
-    }
-
+    public void performAction(InputActionEvent evt);
+    
     /**
-     * <code>performAction</code> moves the camera along it's negative
-     * direction vector at a speed of movement speed * time. Where time is the
-     * time between frames and 1 corresponds to 1 second.
      * 
-     * @see com.jme.input.action.KeyInputAction#performAction(InputActionEvent)
+     * <code>setSpeed</code> sets the speed modifier of this action.
+     *
+     * @param speed the speed modifier of the action.
      */
-    public void performAction(InputActionEvent evt) {
-        Vector3f loc = camera.getLocation();
-        loc.subtractLocal(camera.getDirection().mult(speed * evt.getTime(),
-                tempVa));
-        camera.setLocation(loc);
-        camera.update();
-    }
+    public void setSpeed(float speed);
+    
+    /**
+     * 
+     * <code>getSpeed</code> returns the speed modifier of the action.
+     * 
+     * @return the speed modifier of the action.
+     */
+    public float getSpeed();
+    
+    public void setKey(String key);
+    
+    public String getKey();
 }
