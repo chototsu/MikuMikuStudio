@@ -48,7 +48,7 @@ import java.util.*;
 
 /**
  * @author schustej
- *  
+ *
  */
 public abstract class UIObject extends Quad {
 
@@ -72,13 +72,13 @@ public abstract class UIObject extends Quad {
     protected float _scale = 1.0f;
 
     protected int _state = UP;
-    
+
     protected TextureState[] _textureStates = null;
-    
+
     protected InputHandler _inputHandler = null;
 
     protected UIActiveArea _hitArea = null;
-    
+
     protected Vector _actions = null;
 
     /**
@@ -100,7 +100,7 @@ public abstract class UIObject extends Quad {
 
     /**
      * This is used in all extention constructors.
-     * 
+     *
      * Note that a Quad's vertexes are based on the center of the quad, so we have to
      * account for that in the translations. However, the hitarea is from the lower left corner.
      *
@@ -172,10 +172,14 @@ public abstract class UIObject extends Quad {
      */
     public void centerAt(int x, int y) {
         this.localTranslation.set(x, y, 0);
+
         _x = (int) (x - _width / 2);
         _y = (int) (y - _height / 2);
+
+        _hitArea._x = _x;
+        _hitArea._y = _y;
     }
-    
+
     /**
      * Add an inputaction that will be fired when
      * the control changes state
@@ -184,7 +188,7 @@ public abstract class UIObject extends Quad {
     public void addAction( UIInputAction action) {
         _actions.add( action);
     }
-    
+
     /**
      * removes a given input action
      * @param action
@@ -192,7 +196,7 @@ public abstract class UIObject extends Quad {
     public void removeAction( UIInputAction action) {
         _actions.remove( action);
     }
-    
+
     protected void fireActions() {
         Iterator actionIter = _actions.iterator();
 		while (actionIter.hasNext()) {
@@ -202,7 +206,7 @@ public abstract class UIObject extends Quad {
     /**
      * After loading the image this method may be called to resize the image to
      * any on-screen size. Note that this WILL cause distortion of the images.
-     * 
+     *
      * @param w
      * @param h
      */
@@ -214,15 +218,19 @@ public abstract class UIObject extends Quad {
         setLocalTranslation(new Vector3f(_x + _width / 2, _y + _height / 2, 0.0f));
     }
 
-	/**
-	 * Moves the quad around the screen
-	 */
-	public void setLocation( int x, int y) {
-	    _x = x;
-	    _y = y;
-		setLocalTranslation(new Vector3f(_x + _width / 2, _y + _height / 2,
-				0.0f));
-	}
-	
+
+    /**
+     * Moves the quad around the screen, properly setting local params at the
+     * same time.
+     */
+    public void setLocation(int x, int y) {
+      _x = x;
+      _y = y;
+      setLocalTranslation(new Vector3f(_x + _width / 2, _y + _height / 2,
+                                       0.0f));
+      _hitArea._x = _x;
+      _hitArea._y = _y;
+    }
+
 
 }

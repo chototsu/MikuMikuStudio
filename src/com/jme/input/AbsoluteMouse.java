@@ -46,7 +46,7 @@ package com.jme.input;
  * correspond to the width and height of the window).
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.11 2004-07-30 20:29:26 cep21 Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.12 2004-08-06 21:03:06 renanse Exp $
  */
 public class AbsoluteMouse extends Mouse {
     //position
@@ -92,14 +92,10 @@ public class AbsoluteMouse extends Mouse {
             localTranslation.x = width - _hotSpotOffset.x;
         }
 
-        if (localTranslation.y + _hotSpotOffset.y
-            < 0 - imageHeight) {
+        if (localTranslation.y + _hotSpotOffset.y < 0 - imageHeight) {
             localTranslation.y = 0 - imageHeight - _hotSpotOffset.y;
-        } else if (
-            localTranslation.y  + _hotSpotOffset.y
-                > height - imageHeight) {
-            localTranslation.y =
-                height - imageHeight - _hotSpotOffset.y;
+        } else if (localTranslation.y  + _hotSpotOffset.y > height) {
+            localTranslation.y = height - _hotSpotOffset.y;
         }
         worldTranslation.set(localTranslation);
         _hotSpotLocation.set(localTranslation).addLocal(_hotSpotOffset);
