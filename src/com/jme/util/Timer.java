@@ -36,7 +36,7 @@ import com.jme.util.lwjgl.*;
 /**
  * <code>Timer</code>
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.6 2004-04-22 22:27:10 renanse Exp $
+ * @version $Id: Timer.java,v 1.7 2004-07-29 07:13:44 cep21 Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -70,8 +70,18 @@ public abstract class Timer {
 
     public abstract float getTimePerFrame();
 
+    /**
+     * <code>update</code> recalulates the frame rate based on the previous
+     * call to update. It is assumed that update is called each frame.
+     */
     public abstract void update();
 
+    /**
+     * Returns the high resolution timer.  Timer is a singleton class so only one
+     * instance of Timer is allowed.
+     * @param version The version of the rendering enviroment.
+     * @return The high resolution timer.
+     */
     public static Timer getTimer(String version) {
         if("LWJGL".equalsIgnoreCase(version)) {
             if(instance == null || !(instance instanceof LWJGLTimer)) {
