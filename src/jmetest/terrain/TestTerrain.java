@@ -52,7 +52,7 @@ import com.jme.terrain.util.ProceduralTextureGenerator;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.11 2004-04-15 02:56:39 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.12 2004-04-16 17:34:48 renanse Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -80,7 +80,7 @@ public class TestTerrain extends SimpleGame {
 
         timer.update();
         input.update(timer.getTimePerFrame());
-        
+
 
 
         root.updateGeometricState(timer.getTimePerFrame(), true);
@@ -152,10 +152,10 @@ public class TestTerrain extends SimpleGame {
     protected void initGame() {
         Vector3f max = new Vector3f(0.5f, 0.5f, 0.5f);
         Vector3f min = new Vector3f(-0.5f, -0.5f, -0.5f);
-        
+
         WireframeState ws = display.getRenderer().getWireframeState();
         ws.setEnabled(false);
-        
+
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -163,30 +163,30 @@ public class TestTerrain extends SimpleGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         as1.setEnabled(true);
-        
+
         DirectionalLight dr = new DirectionalLight();
         dr.setEnabled(true);
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
-        
-        
+
+
 
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
-        
+
         LightState lightstate = display.getRenderer().getLightState();
         lightstate.setTwoSidedLighting(true);
         lightstate.setEnabled(true);
         lightstate.attach(dr);
-        
-        
+
+
         Node scene = new Node("scene");
         scene.setRenderState(ws);
         scene.setRenderState(lightstate);
         root = new Node("Root node");
-        
+
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0), true);
         tb.setDetailTexture(1, 4);
@@ -194,14 +194,14 @@ public class TestTerrain extends SimpleGame {
         tb.updateModelBound();
         scene.attachChild(tb);
         scene.setRenderState(cs);
-        
+
         ProceduralTextureGenerator pt = new ProceduralTextureGenerator(heightMap);
         pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png")), -128, 0, 128);
         pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg")), 0, 128, 255);
         pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/highest.jpg")), 128, 255, 384);
-        
+
         pt.createTexture(512);
-        
+
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(
@@ -211,15 +211,15 @@ public class TestTerrain extends SimpleGame {
 				true,
 				true);
         ts.setTexture(t1 ,0);
-        
-        
+
+
         Texture t2 = TextureManager.loadTexture(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/Detail.jpg"),
 		        Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true);
         ts.setTexture( t2,1);
         t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        
+
         t1.setApply(Texture.AM_COMBINE);
         t1.setCombineFuncRGB(Texture.ACF_MODULATE);
         t1.setCombineSrc0RGB(Texture.ACS_TEXTURE);
@@ -227,7 +227,7 @@ public class TestTerrain extends SimpleGame {
         t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
         t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
         t1.setCombineScaleRGB(0);
-        
+
         t2.setApply(Texture.AM_COMBINE);
         t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
         t2.setCombineSrc0RGB(Texture.ACS_TEXTURE);
@@ -255,13 +255,14 @@ public class TestTerrain extends SimpleGame {
         fps.setRenderState(font);
         fps.setRenderState(as1);
 
-        
+
         scene.setRenderState(buf);
         root.attachChild(scene);
         root.attachChild(fps);
         root.setForceView(true);
 
         root.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**

@@ -122,7 +122,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.3 2004-04-16 17:12:54 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.4 2004-04-16 17:34:47 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -144,6 +144,7 @@ public class LWJGLRenderer implements Renderer {
   private long numberOfVerts;
   private long numberOfTris;
   private boolean statisticsOn;
+  private LWJGLWireframeState boundsWireState = new LWJGLWireframeState();
 
   /**
    * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -934,14 +935,7 @@ public class LWJGLRenderer implements Renderer {
   public void drawBounds(Geometry g) {
     // get the bounds
     if (! (g.getWorldBound() instanceof TriMesh))return;
-    g.getWorldBound().recomputeMesh();
-    com.jme.scene.state.lwjgl.LWJGLWireframeState bs =
-        new com.jme.scene.state.lwjgl.LWJGLWireframeState();
-    bs.setEnabled(true);
-    bs.apply();
-    draw( (TriMesh) g.getWorldBound());
-    bs.setEnabled(false);
-    bs.apply();
+    drawBounds(g.getWorldBound());
   }
 
   /**
@@ -956,13 +950,11 @@ public class LWJGLRenderer implements Renderer {
     // get the bounds
     if (! (bv instanceof TriMesh))return;
     bv.recomputeMesh();
-    com.jme.scene.state.lwjgl.LWJGLWireframeState bs =
-        new com.jme.scene.state.lwjgl.LWJGLWireframeState();
-    bs.setEnabled(true);
-    bs.apply();
+    boundsWireState.setEnabled(true);
+    boundsWireState.apply();
     draw( (TriMesh) bv);
-    bs.setEnabled(false);
-    bs.apply();
+    boundsWireState.setEnabled(false);
+    boundsWireState.apply();
   }
 
   /**

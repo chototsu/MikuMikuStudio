@@ -48,7 +48,7 @@ import com.jme.scene.shape.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.4 2004-04-12 21:15:26 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.5 2004-04-16 17:34:47 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -283,6 +283,9 @@ public class BoundingBox extends Box implements BoundingVolume {
     public Object clone(BoundingVolume store) {
         if (store != null && store instanceof BoundingBox) {
             BoundingBox rVal = (BoundingBox)store;
+            if (null == rVal.center) {
+                rVal.center = new Vector3f();
+            }
             rVal.center.x = center.x;
             rVal.center.y = center.y;
             rVal.center.z = center.z;
