@@ -184,6 +184,10 @@ public class JointController extends Controller {
         return storedNext;
     }
 
+    /**
+     * Updates the <code>movingMeshes</code> by updating their joints +=time
+     * @param time Time from last update
+     */
     public void update(float time) {
         if (!this.isActive()) return;
         curTime+=time*this.getSpeed();

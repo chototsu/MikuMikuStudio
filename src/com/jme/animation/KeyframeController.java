@@ -49,6 +49,10 @@ public class KeyframeController extends Controller{
      * The current time in the animation
      */
     float curTime;
+
+    /**
+     * The current frame of the animation
+     */
     int curFrame;
 
     Vector3f tempV3f=new Vector3f();
@@ -76,6 +80,9 @@ public class KeyframeController extends Controller{
     private boolean isSmooth;
 
 
+    /**
+     * Used with SmoothTransform to hold the new beinging and ending time once the transform is complete
+     */
     private float tempNewBeginTime;
     private float tempNewEndTime;
 
@@ -99,7 +106,7 @@ public class KeyframeController extends Controller{
 
     /**
      * Sets the Mesh that will be physically changed by this KeyframeController
-     * @param morph
+     * @param morph The new mesh to morph
      */
     public void setMorphingMesh(TriMesh morph){
         morphMesh=morph;
