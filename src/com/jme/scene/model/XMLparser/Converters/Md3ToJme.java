@@ -1,6 +1,5 @@
 package com.jme.scene.model.XMLparser.Converters;
 
-import com.jme.util.LittleEndien;
 import com.jme.util.BinaryFileReader;
 import com.jme.math.Vector3f;
 import com.jme.math.Matrix3f;
@@ -9,6 +8,9 @@ import com.jme.math.FastMath;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
+import com.jme.scene.model.EmptyTriMesh;
+import com.jme.animation.VertexKeyframeController;
+import com.jme.animation.KeyframeController;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -25,7 +27,7 @@ public class Md3ToJme extends FormatConverter{
     BinaryFileReader file;
     MD3Header head;
     MD3Frame[] frames;
-    MD3Tag[] tags;
+    MD3Tag[][] tags;
     MD3Surface[] surfaces;
 
     public void convert(InputStream format, OutputStream jMEFormat) throws IOException {
@@ -41,6 +43,7 @@ public class Md3ToJme extends FormatConverter{
     private Node constructMesh() {
         Node toReturn=new Node("MD3 File");
         for (int i=0;i<head.numSurface;i++){
+            KeyframeController vkc=new KeyframeController();
             MD3Surface thisSurface=surfaces[i];
             TriMesh object=new TriMesh(thisSurface.name);
             object.setIndices(thisSurface.triIndexes);
@@ -48,6 +51,15 @@ public class Md3ToJme extends FormatConverter{
             object.setNormals(thisSurface.norms[0]);
             object.setTextures(thisSurface.texCoords);
             toReturn.attachChild(object);
+            vkc.setMorphingMesh(object);
+            for (int j=0;j<head.numFrames;j++){
+                EmptyTriMesh etm=new EmptyTriMesh();
+                etm.setVertices(thisSurface.verts[j]);
+                etm.setNormals(thisSurface.norms[j]);
+                vkc.setKeyframe(j,etm);
+            }
+            vkc.setActive(true);
+            object.addController(vkc);
         }
         return toReturn;
     }
@@ -63,10 +75,13 @@ public class Md3ToJme extends FormatConverter{
 
     private void readTags() {
         file.setOffset(head.tagOffset);
-        tags=new MD3Tag[head.numTags];
-        for (int i=0;i<head.numTags;i++){
-            tags[i]=new MD3Tag();
-            tags[i].readMe();
+        tags=new MD3Tag[head.numFrames][];
+        for (int i=0;i<head.numFrames;i++){
+            tags[i]=new MD3Tag[head.numTags];
+            for (int j=0;j<head.numTags;j++){
+                tags[i][j]=new MD3Tag();
+                tags[i][j].readMe();
+            }
         }
 
     }
@@ -207,8 +222,6 @@ public class Md3ToJme extends FormatConverter{
             vector3f.z = file.readSignedShort()*XYZ_SCALE;
             vector3f.x = file.readSignedShort()*XYZ_SCALE;
             vector3f.y = file.readSignedShort()*XYZ_SCALE;
-
-
         }
 
         private void readNormal(Vector3f norm) {
