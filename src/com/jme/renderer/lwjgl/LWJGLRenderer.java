@@ -128,7 +128,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.47 2004-09-20 17:17:29 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.48 2004-09-27 22:30:41 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -472,8 +472,10 @@ public class LWJGLRenderer implements Renderer {
         // render queue if needed
         processingQueue = true;
         queue.renderBuckets();
-        if (!((ZBufferState)Spatial.getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
-          Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
+        if (Spatial.getCurrentState(RenderState.RS_ZBUFFER) != null &&
+            !((ZBufferState)Spatial.getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
+          if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
+            Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
           Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
         }
         processingQueue = false;
