@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * a weapon has hit it's target, calculating line of sight, etc. The methods
  * of <code>Pick</code> are static allowing for easy usage of the class.
  * @author Mark Powell
- * @version $Id: Pick.java,v 1.2 2003-12-04 22:15:58 mojomonkey Exp $
+ * @version $Id: Pick.java,v 1.3 2003-12-12 21:56:03 mojomonkey Exp $
  */
 public class Pick {
 
@@ -71,4 +71,5 @@ public class Pick {
             }
         }
     }
+   
 }

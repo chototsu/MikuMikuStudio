@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.test.intersection;
+package com.jme.test.renderer;
 
 import com.jme.app.AbstractGame;
 import com.jme.image.Texture;
@@ -44,10 +44,12 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingBox;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
+import com.jme.scene.Pyramid;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -58,10 +60,10 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.5 2003-12-12 21:56:02 mojomonkey Exp $
+ * @version $Id: TestBoundingBox.java,v 1.1 2003-12-12 21:56:02 mojomonkey Exp $
  */
-public class TestPick extends AbstractGame {
-    private TriMesh t;
+public class TestBoundingBox extends AbstractGame {
+    private TriMesh t,t2;
     private Camera cam;
     private Text text;
     private Node root;
@@ -78,7 +80,7 @@ public class TestPick extends AbstractGame {
      * @param args
      */
     public static void main(String[] args) {
-        TestPick app = new TestPick();
+        TestBoundingBox app = new TestBoundingBox();
         app.useDialogAlways(true);
         app.start();
         
@@ -95,18 +97,19 @@ public class TestPick extends AbstractGame {
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
-//        if(timer.getTimePerFrame() < 1) {
-//            angle = angle + (timer.getTimePerFrame() * 1);
-//            if(angle > 360) {
-//                angle = 0;
-//            }
-//        }
-//        
-//        rotQuat.fromAngleAxis(angle, axis);
+        if(timer.getTimePerFrame() < 1) {
+            angle = angle + (timer.getTimePerFrame() * 1);
+            if(angle > 360) {
+                angle = 0;
+            }
+        }
+        
+        rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
+        //text.print("Frame Rate: " + timer.getFrameRate());
         
-        //t.setLocalRotation(rotQuat);
+        t.setLocalRotation(rotQuat);
         scene.updateGeometricState(0.0f, true);
         
        
@@ -158,12 +161,11 @@ public class TestPick extends AbstractGame {
         input = new FirstPersonController(this, cam, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
-        
         timer = Timer.getTimer("LWJGL");
         
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
-        axis = new Vector3f(1,0,0);
+        axis = new Vector3f(1,1,1);
 
     }
 
@@ -172,7 +174,7 @@ public class TestPick extends AbstractGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Hits: 0 Shots: 0");
+        text = new Text("Timer");
         text.setLocalTranslation(new Vector3f(1,60,0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
@@ -198,14 +200,27 @@ public class TestPick extends AbstractGame {
         Vector3f min = new Vector3f(-5,-5,-5);
         
         
+        t2 = new Box(min,max);
+        t2.setModelBound(new BoundingBox());
+        t2.updateModelBound();
+        t2.setLocalTranslation(new Vector3f( 20,0,0));
         
-        t = new Box(min,max);
+        t = new Pyramid(10,20);
         t.setModelBound(new BoundingBox());
         t.updateModelBound();
         
-        t.setLocalTranslation(new Vector3f(0,10,0));
+        t.setLocalTranslation(new Vector3f(0,0,0));
+        
+        System.out.println("t min " + ((BoundingBox)t.getModelBound()).getMin());
+        System.out.println("t max " + ((BoundingBox)t.getModelBound()).getMax());
+        
+        System.out.println("t2 min " + ((BoundingBox)t2.getModelBound()).getMin());
+        System.out.println("t2 max " + ((BoundingBox)t2.getModelBound()).getMax());
         
         scene.attachChild(t);
+        scene.attachChild(t2);
+        scene.setWorldBound(new BoundingBox());
+        
         root.attachChild(scene);
         
         ZBufferState buf = display.getRenderer().getZBufferState();
@@ -215,10 +230,13 @@ public class TestPick extends AbstractGame {
         DirectionalLight am = new DirectionalLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 75));
+        am.setDirection(new Vector3f(0, 0, -1));
         
+        LightState state = display.getRenderer().getLightState();
+        state.attach(am);
+        am.setEnabled(true);
+        scene.setRenderState(state);
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingBox());
         cam.update();
         
         TextureState ts = display.getRenderer().getTextureState();
@@ -236,9 +254,8 @@ public class TestPick extends AbstractGame {
         
 
         scene.updateGeometricState(0.0f, true);
-        MousePick pick = new MousePick(cam, scene, text);
-                pick.setMouse(input.getMouse());
-                input.addAction(pick);
+        System.out.println("root min " + ((BoundingBox)scene.getWorldBound()).getMin());
+        System.out.println("root max " + ((BoundingBox)scene.getWorldBound()).getMax());
 
     }
     /**

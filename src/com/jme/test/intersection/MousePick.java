@@ -79,19 +79,25 @@ public class MousePick implements MouseInputAction {
             vertex[1] = new Vector3f();
             vertex[1] = ray.getDirection();
             ColorRGBA[] colors = new ColorRGBA[2];
-            colors[0] = new ColorRGBA(1,0,0,1);
-            colors[1] = new ColorRGBA(1,0,0,1);
             
-            l = new Line(vertex, null, colors, null);
             
-            scene.attachChild(l);
-            scene.updateGeometricState(0.0f, true);
             
             Pick.doPick(scene,ray,results);
             
             
             hits += results.getNumber();
             shots++;
+            if(results.getNumber() > 0) {
+            
+                colors[0] = new ColorRGBA(1,0,0,1);
+                colors[1] = new ColorRGBA(1,0,0,1);
+            } else {
+                colors[0] = new ColorRGBA(0,0,1,1);
+                colors[1] = new ColorRGBA(0,0,1,1);
+            }
+            l = new Line(vertex, null, colors, null);
+            scene.attachChild(l);
+                        scene.updateGeometricState(0.0f, true);
             results.clear();
             text.print("Hits: " + hits + " Shots: " + shots);
         }

@@ -43,7 +43,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.BoundingSphere;
+import com.jme.scene.BoundingBox;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.3 2003-12-10 01:05:36 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.4 2003-12-12 21:56:02 mojomonkey Exp $
  */
 public class TestCollision extends AbstractGame {
 
@@ -234,13 +234,13 @@ public class TestCollision extends AbstractGame {
         Vector3f min = new Vector3f(-5, -5, -5);
 
         t = new Box(min, max);
-        t.setModelBound(new BoundingSphere());
+        t.setModelBound(new BoundingBox());
         t.updateModelBound();
 
         t.setLocalTranslation(new Vector3f(0, 30, 0));
         
         t2 = new Box(min, max);
-        t2.setModelBound(new BoundingSphere());
+        t2.setModelBound(new BoundingBox());
         t2.updateModelBound();
 
         t2.setLocalTranslation(new Vector3f(30, 0, 0));
@@ -259,7 +259,7 @@ public class TestCollision extends AbstractGame {
         am.setDirection(new Vector3f(0, 0, 75));
 
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingSphere());
+        scene.setWorldBound(new BoundingBox());
         cam.update();
 
         TextureState ts = display.getRenderer().getTextureState();
