@@ -44,7 +44,9 @@ import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -55,11 +57,12 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.1 2003-11-13 21:02:56 mojomonkey Exp $
+ * @version $Id: TestMilestone2.java,v 1.2 2003-11-13 21:22:47 mojomonkey Exp $
  */
 public class TestMilestone2 extends AbstractGame {
     private TriMesh t;
     private Camera cam;
+    private Node root;
     private Node scene;
     private InputController input;
     private BoxGenerator gen;
@@ -106,7 +109,7 @@ public class TestMilestone2 extends AbstractGame {
     protected void render() {
         display.getRenderer().clearBuffers();
 
-        display.getRenderer().draw(scene);
+        display.getRenderer().draw(root);
 
     }
 
@@ -151,6 +154,26 @@ public class TestMilestone2 extends AbstractGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
+        Text text = new Text("Random boxes. Milestone 2");
+        text.setLocalTranslation(new Vector3f(1,60,0));
+        TextureState textImage = display.getRenderer().getTextureState();
+        textImage.setEnabled(true);
+        textImage.setTexture(
+            TextureManager.loadTexture(
+                "data/Font/font.png",
+                Texture.MM_LINEAR,
+                Texture.FM_LINEAR,
+                true));
+        text.setRenderState(textImage);
+        AlphaState as1 = display.getRenderer().getAlphaState();
+        as1.setBlendEnabled(true);
+        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setTestEnabled(true);
+        as1.setTestFunction(AlphaState.TF_GREATER);
+        text.setRenderState(as1);
+        scene = new Node();
+        scene.attachChild(text);
         
         Vector3f max = new Vector3f(10,10,10);
         Vector3f min = new Vector3f(0,0,0);
@@ -165,6 +188,8 @@ public class TestMilestone2 extends AbstractGame {
         
         scene = new Node();
         scene.attachChild(t);
+        root = new Node();
+        root.attachChild(scene);
         
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
@@ -212,6 +237,8 @@ public class TestMilestone2 extends AbstractGame {
                         true));
                         
         scene.setRenderState(ts);
+        
+        root.attachChild(text);
         
 
         scene.updateGeometricState(0.0f, true);
