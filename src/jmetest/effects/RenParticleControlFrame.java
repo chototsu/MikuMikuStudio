@@ -135,7 +135,7 @@ public class RenParticleControlFrame extends JFrame {
   * <code>RenParticleControlFrame</code>
   *
   * @author Joshua Slack
-  * @version $Id: RenParticleControlFrame.java,v 1.3 2004-03-24 01:04:13 renanse Exp $
+  * @version $Id: RenParticleControlFrame.java,v 1.4 2004-03-24 01:08:21 renanse Exp $
   *
   */
 
@@ -278,7 +278,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravXSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.001f;
+          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.025f;
       }
     });
 
@@ -297,7 +297,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravYSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.001f;
+          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.025f;
       }
     });
 
@@ -316,7 +316,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravZSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.001f;
+          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.025f;
       }
     });
 
@@ -555,9 +555,9 @@ public class RenParticleControlFrame extends JFrame {
     updateAgeLabels();
     speedSlider.setValue((int)(TestRenParticleGUI.manager.getParticlesSpeed() * 1000));
     updateSpeedLabels();
-    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 1000));
-    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 1000));
-    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 1000));
+    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 250));
+    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 250));
+    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 250));
     emitXSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().x * 10));
     emitYSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().y * 10));
     emitZSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().z * 10));

@@ -30,13 +30,15 @@
  */
 package jmetest.effects;
 
+import java.util.Observer;
+
+import javax.swing.UIManager;
+
 import com.jme.app.SimpleGame;
 import com.jme.effects.RenParticleManager;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.AbstractInputController;
 import com.jme.input.InputSystem;
-import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -50,15 +52,13 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
-import javax.swing.*;
-import java.util.*;
-import com.jme.widget.*;
-import com.jme.input.*;
-import com.jme.widget.input.mouse.*;
+import com.jme.widget.WidgetAbstractFrame;
+import com.jme.widget.input.mouse.WidgetMouseButtonType;
+import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.1 2004-03-23 23:46:15 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.2 2004-03-24 01:04:13 renanse Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
