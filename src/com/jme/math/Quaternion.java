@@ -47,7 +47,7 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.24 2004-07-16 12:19:46 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.25 2004-07-18 18:26:16 ericthered Exp $
  */
 public class Quaternion implements Externalizable{
     public float x, y, z, w;
@@ -109,10 +109,12 @@ public class Quaternion implements Externalizable{
     /**
      * Constructor instantiates a new <code>Quaternion</code> object from
      * a collection of rotation angles.
-     * @param angles the angles of rotation that will define the
+     * @param angles the angles of rotation (x, y, z) that will define the
      *      <code>Quaternion</code>.
      */
     public Quaternion(float[] angles) {
+        if (angles.length != 3)
+            throw new IllegalArgumentException("Angles array must have three elements");
         fromAngles(angles);
     }
 
