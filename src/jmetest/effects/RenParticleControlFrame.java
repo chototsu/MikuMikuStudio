@@ -32,8 +32,6 @@
 
 package jmetest.effects;
 
-import java.io.File;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -45,6 +43,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
+
 import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
@@ -69,21 +69,16 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
 import com.jme.effects.ParticleManager;
-import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
-import com.jme.system.DisplaySystem;
-import com.jme.util.TextureManager;
 
 /**
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.35 2005-03-08 01:30:56 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.36 2005-03-15 17:08:12 renanse Exp $
  *
  */
 
@@ -1408,17 +1403,8 @@ public class RenParticleControlFrame extends JFrame {
       File textFile = chooser.getSelectedFile();
       lastDir = textFile.getParentFile();
 
-      RenParticleEditor.root.clearRenderState(RenderState.RS_TEXTURE);
-      TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().
-              createTextureState();
-      ts.setTexture(
-          TextureManager.loadTexture(
-          textFile.getAbsolutePath(),
-          Texture.MM_LINEAR,
-          Texture.FM_LINEAR));
-      ts.setEnabled(true);
-      RenParticleEditor.root.setRenderState(ts);
-      RenParticleEditor.root.updateRenderState();
+      RenParticleEditor.newTexture = textFile;
+      
       ImageIcon icon = new ImageIcon(textFile.getAbsolutePath());
       imageLabel.setIcon(icon);
       validate();

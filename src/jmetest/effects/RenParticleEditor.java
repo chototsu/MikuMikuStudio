@@ -31,6 +31,7 @@
  */
 package jmetest.effects;
 
+import java.io.File;
 import java.util.Observer;
 
 import javax.swing.JOptionPane;
@@ -48,6 +49,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -59,7 +61,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.10 2005-03-08 01:30:55 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.11 2005-03-15 17:08:12 renanse Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -81,6 +83,7 @@ public class RenParticleEditor extends VariableTimestepGame {
   public static boolean noUpdate = false;
 
   private GUIFrame frame;
+  public static File newTexture = null;
 
   public static void main(String[] args) {
     try {
@@ -103,6 +106,10 @@ public class RenParticleEditor extends VariableTimestepGame {
   protected void update(float interpolation) {
     if (quit) finish();
     if (noUpdate) return;
+    
+    if (newTexture != null) {
+        loadApplyTexture();
+    }
 
     frame.handleInput(interpolation*10f);
 
@@ -111,7 +118,20 @@ public class RenParticleEditor extends VariableTimestepGame {
     main.updateGeometricState(interpolation, true);
   }
 
-  protected void render(float interpolation) {
+  private void loadApplyTexture() {
+      TextureState ts = (TextureState)root.getRenderStateList()[RenderState.RS_TEXTURE];
+      ts.setTexture(
+              TextureManager.loadTexture(
+                      newTexture.getAbsolutePath(),
+                      Texture.MM_LINEAR,
+                      Texture.FM_LINEAR));
+      ts.setEnabled(true);
+      root.setRenderState(ts);
+      root.updateRenderState();
+      newTexture = null;
+  }
+
+protected void render(float interpolation) {
     if (noUpdate) return;
     display.getRenderer().clearStatistics();
     display.getRenderer().clearBuffers();
