@@ -28,7 +28,7 @@ public interface XMLloadable {
     public String writeToXML();
     /**
      * Given a String from a previous object of the same class, <code>loadFromXML</code> will
-     * duplicate that class
+     * duplicate that class.
      * @param args The string args given to reconstruct this class
      * @return The object that <code>JmeBinaryReader</code> will use.  This can either be the same object that
      * loadFromXML was called on, or a new object.  Only the returned object will be used. 

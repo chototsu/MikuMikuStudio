@@ -50,14 +50,14 @@ public class JmeBinaryWriter {
     private static final Vector3f DEFAULT_SCALE = new Vector3f(1,1,1);
 
     /**
-     * Creates a new Binary Writer
+     * Creates a new Binary Writer.
      */
     public JmeBinaryWriter(){
 
     }
 
     /**
-     * Converts a given node to jME's binary format
+     * Converts a given node to jME's binary format.
      * @param scene The node to save
      * @param bin The OutputStream that will store the binary format
      * @throws IOException If anything wierd happens.
@@ -75,7 +75,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * All objects that are twice in the file are written as shared types
+     * All objects that are twice in the file are written as shared types.
      * @throws IOException
      */
     private void writeDuplicates() throws IOException {
@@ -150,7 +150,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Converts a given Geometry to jME's binary format
+     * Converts a given Geometry to jME's binary format.
      * @param geo The Geometry to save
      * @param bin The OutputStream that will store the binary format
      * @throws IOException If anything wierd happens.
@@ -167,7 +167,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a node to binary format
+     * Writes a node to binary format.
      * @param node The node to write
      * @throws IOException If anything bad happens.
      */
@@ -192,7 +192,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a Spatial to binary format
+     * Writes a Spatial to binary format.
      * @param s The spatial to write
      * @throws IOException
      */
@@ -208,7 +208,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a mesh to binary format
+     * Writes a mesh to binary format.
      * @param triMesh The mesh to write
      * @throws IOException
      */
@@ -223,7 +223,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a JointMesh2 to binary format
+     * Writes a JointMesh2 to binary format.
      * @param jointMesh The JointMesh to write
      * @throws IOException
      */
@@ -238,7 +238,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes the inner tags of a JointMesh2 to binary format
+     * Writes the inner tags of a JointMesh2 to binary format.
      * @param jointMesh Mesh who's tags are to be written
      * @throws IOException
      */
@@ -262,7 +262,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes an XMLloadable class to binary format
+     * Writes an XMLloadable class to binary format.
      * @param xmlloadable The class to write
      * @throws IOException
      */
@@ -281,7 +281,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a spatial's children (RenderStates and Controllers) to binary format
+     * Writes a spatial's children (RenderStates and Controllers) to binary format.
      * @param spatial Spatial to write
      * @throws IOException
      */
@@ -312,7 +312,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a KeyframeController to binary format
+     * Writes a KeyframeController to binary format.
      * @param kc KeyframeControlelr to write
      * @throws IOException
      */
@@ -327,7 +327,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a PointInTime for a KeyframeController
+     * Writes a PointInTime for a KeyframeController.
      * @param pointInTime Which point in time to write
      * @throws IOException
      */
@@ -341,7 +341,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes the inner tags of a TriMesh (Verticies, Normals, ect) to binary format
+     * Writes the inner tags of a TriMesh (Verticies, Normals, ect) to binary format.
      * @param triMesh The TriMesh whos tags are to be written
      * @throws IOException
      */
@@ -472,7 +472,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Replaces "%20" with " " to convert from a URL to a file
+     * Replaces "%20" with " " to convert from a URL to a file.
      * @param s String to look at
      * @return A replaced string.
      */
@@ -482,7 +482,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a MaterialState to binary format
+     * Writes a MaterialState to binary format.
      * @param state The state to write
      * @throws IOException
      */
@@ -501,7 +501,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes an END_TAG flag for the given tag
+     * Writes an END_TAG flag for the given tag.
      * @param name The name of the tag whos end has come
      * @throws IOException
      */
@@ -512,7 +512,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Given the tag's name and it's attributes, the tag is written to the file
+     * Given the tag's name and it's attributes, the tag is written to the file.
      * @param name The name of the tag
      * @param atts The tag's attributes
      * @throws IOException
@@ -648,7 +648,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Looks at a spatial and puts its attributes into the HashMap
+     * Looks at a spatial and puts its attributes into the HashMap.
      * @param spatial The spatial to look at
      * @param atts The HashMap to put the attributes into
      */
@@ -663,7 +663,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes the end of the file by writting the end of scene, then the END_FILE flag
+     * Writes the end of the file by writting the end of scene, then the END_FILE flag.
      * @throws IOException
      */
     private void writeClosing() throws IOException {
@@ -673,7 +673,7 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes the be BEGIN_FILE tag to a file, then the scene tag
+     * Writes the be BEGIN_FILE tag to a file, then the scene tag.
      * @throws IOException
      */
     private void writeHeader() throws IOException {

@@ -45,7 +45,13 @@ public class MaxToJme implements MaxChunkIDs{
     private Stack s=new Stack();
     private HashMap readObject=new HashMap();
 
-    public Node convert(InputStream max,OutputStream bin) throws IOException {
+    /**
+     * Converts a .3ds file (represented by the InputStream) to jME format.
+     * @param max The .3ds file as an InputStream
+     * @param bin The place to put the jME format
+     * @throws IOException If read/write goes wrong.
+     */
+    public void convert(InputStream max,OutputStream bin) throws IOException {
         s.clear();
         myIn=new LittleEndien(max);
         Chunk mainPart=readChunk();
@@ -57,7 +63,6 @@ public class MaxToJme implements MaxChunkIDs{
         readFile(mainPart.length);
         Node totalScene=(Node) s.pop();
         new JmeBinaryWriter().writeScene(totalScene,bin);
-        return totalScene;
     }
 
     private void readFile(int length) throws IOException {

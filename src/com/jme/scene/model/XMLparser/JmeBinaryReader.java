@@ -43,27 +43,27 @@ import java.net.MalformedURLException;
 public class JmeBinaryReader {
 
     /**
-     * Holds a list of objects that have encountered a being_tag but not an end_tag yet
+     * Holds a list of objects that have encountered a being_tag but not an end_tag yet.
      */
     private Stack s=new Stack();
 
     /**
-     * Holds already loaded objects that are to be shared at various locations in the file
+     * Holds already loaded objects that are to be shared at various locations in the file.
      */
     private Hashtable shares=new Hashtable();
 
     /**
-     * Holds the attributes of a tag for processing
+     * Holds the attributes of a tag for processing.
      */
     private HashMap attributes=new HashMap();
 
     /**
-     * Holds properties that modify how JmeBinaryReader loads a file
+     * Holds properties that modify how JmeBinaryReader loads a file.
      */
     private HashMap properties=new HashMap();
 
     /**
-     * The scene that was last loaded
+     * The scene that was last loaded.
      */
     private Node myScene;
 
@@ -232,7 +232,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * processes an END_TAG flag, which signals a tag has finished reading all children information
+     * processes an END_TAG flag, which signals a tag has finished reading all children information.
      * @throws IOException If anything bad happens in reading the binary file
      */
     private void readEnd() throws IOException {
@@ -343,7 +343,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Builds a primitive given attributes
+     * Builds a primitive given attributes.
      * @param atts Attributes to build with
      * @return The loaded primitive
      */
@@ -412,7 +412,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Changes a Spatial's parameters acording to the attributes
+     * Changes a Spatial's parameters acording to the attributes.
      * @param toAdd The spatial to change
      * @param atts The attributes
      * @return The given (<code>toAdd</code>) Spatial
@@ -430,7 +430,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Builds a MaterialState with the given attributes
+     * Builds a MaterialState with the given attributes.
      * @param atts The attributes
      * @return A new material state
      */
@@ -572,7 +572,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Removes a property
+     * Removes a property.
      * @param key The property to remove
      */
     public void clearProperty(String key){

@@ -9,7 +9,7 @@ import java.io.IOException;
 /**
  * Started Date: Jun 23, 2004<br><br>
  *
- * This class converts jME's binary format to human readable XML
+ * This class converts jME's binary format to human readable XML.
  *
  * @author Jack Lindamood
  */
@@ -19,20 +19,18 @@ public class BinaryToXML {
     private short tabCount;
     
     /**
-     * <code>currentLine</code> contains the String that will be finally written to the XML file via writeLine
+     * <code>currentLine</code> contains the String that will be finally written to the XML file via writeLine.
      */
     private StringBuffer currentLine;
     private static final boolean DEBUG = false;
 
-    public BinaryToXML(){
-
-    }
 
     /**
      * The only function a user needs to use.  Pass in an inputstream that represents jME's binary format,
      * and <code>BinaryToXML.sendBinarytoXML</code> will write the stream to XML format.
-     * @param binFile The input stream of the jME file
+     * @param binFile The input stream of the jME file.
      * @param XML Where to write the XML format too.
+     * @throws IOException If unable to read or write either file.
      */
     public void sendBinarytoXML (InputStream binFile,Writer XML) throws IOException {
         myIn=new DataInputStream(binFile);

@@ -22,6 +22,9 @@ import java.io.DataOutputStream;
 public class XMLtoBinary {
     private DataOutputStream myOut;
 
+    /**
+     * Creates a new XMl -> Binary object.
+     */
     public XMLtoBinary(){
 
     }
@@ -50,7 +53,7 @@ public class XMLtoBinary {
     }
 
     /**
-     * This class reads XML files in a SAX manner
+     * This class reads XML files in a SAX manner.
      */
     private class SAXConverter extends DefaultHandler{
         private static final boolean DEBUG = false;
@@ -264,7 +267,7 @@ public class XMLtoBinary {
             }
         }
         /**
-         * Whenever two or more whitespaces are next to each other, they are removed and replaced by ' '
+         * Whenever two or more whitespaces are next to each other, they are removed and replaced by ' '.
          * @param data The string to remove from
          * @return A new, removed string
          */

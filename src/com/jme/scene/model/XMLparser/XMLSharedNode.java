@@ -7,7 +7,7 @@ import com.jme.scene.state.RenderState;
 
 /**
  * Started Date: Jun 5, 2004
- * Dummy class only for use with jME's file system
+ * Dummy class only for use with jME's file system.
  * 
  * @author Jack Lindamood
  */

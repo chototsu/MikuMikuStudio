@@ -21,6 +21,8 @@ import java.net.MalformedURLException;
 
 /**
  * Started Date: Jul 1, 2004<br><br>
+ *
+ * Converts .ase files to .jme format.  Loads models but not animations.
  * 
  * @author Jack Lindamood
  */
@@ -57,7 +59,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.4 2004-07-02 07:16:36 cep21 Exp $
+     * @version $Id: AseToJme.java,v 1.5 2004-07-02 07:28:42 cep21 Exp $
      */
     private class ASEModelCopy extends Node{
 

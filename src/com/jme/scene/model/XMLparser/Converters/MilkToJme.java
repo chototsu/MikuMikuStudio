@@ -32,8 +32,8 @@ public class MilkToJme extends FormatConverter{
     private int[] materialIndexes;
 
     /**
-     * Converts a MS3D file to jME format.  The syntax is: MilkToJme runner.ms3d out.jme
-     * @param args
+     * Converts a MS3D file to jME format.  The syntax is: "MilkToJme runner.ms3d out.jme".
+     * @param args The array of parameters
      */
     public static void main(String[] args){
         new DummyDisplaySystem();

@@ -15,11 +15,11 @@ import java.io.*;
  */
 abstract public class FormatConverter {
 
-    /**Contains a map of properties that tell the converter how to convert the format */
+    /**Contains a map of properties that tell the converter how to convert the format. */
     HashMap properties=new HashMap();
 
     /**
-     * Reads a given <code>format</code> and writes it to <code>jMEFormat</code> in the jME binary format
+     * Reads a given <code>format</code> and writes it to <code>jMEFormat</code> in the jME binary format.
      * @param format InputStream representing the format to read
      * @param jMEFormat OutputStream to write the jME binary equivalent too
      * @throws IOException If anything goes wrong during the writting

@@ -3,7 +3,7 @@ package com.jme.scene.model.XMLparser.Converters;
 /**
  * Started Date: Jun 26, 2004<br><br>
  *
- * List of 3ds Chunk ID #'s
+ * List of 3ds Chunk ID #'s.
  * @author Jack Lindamood
  */
 interface MaxChunkIDs {
