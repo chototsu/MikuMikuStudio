@@ -46,7 +46,7 @@ import com.jme.renderer.Renderer;
  * is the only camera setting compatible with <code>BillboardNode</code>.
  *
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.8 2004-04-22 22:26:44 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.9 2004-04-28 17:31:57 renanse Exp $
  */
 public class BillboardNode extends Node {
   private float lastTime;
@@ -166,7 +166,7 @@ public class BillboardNode extends Node {
   private void rotateAxial(Camera camera) {
     // Inverse-transform the camera to the model space of the billboard.
     Vector3f kDiff = camera.getLocation().subtract(worldTranslation);
-    Vector3f kCLoc = worldRotation.mult(kDiff).mult(1.0f/worldScale);
+    Vector3f kCLoc = worldRotation.mult(kDiff).multLocal(1.0f/worldScale);
 
     // To align the billboard, the projection of the camera to the
     // xz-plane of the billboard's model space determines the angle of
