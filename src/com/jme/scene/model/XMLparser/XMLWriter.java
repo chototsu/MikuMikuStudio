@@ -14,8 +14,6 @@ import com.jme.renderer.ColorRGBA;
 import java.io.OutputStream;
 import java.io.IOException;
 
-import org.apache.crimson.tree.XmlWritable;
-
 /**
  * Started Date: Jun 5, 2004
  *
@@ -107,7 +105,7 @@ public class XMLWriter {
     }
 
     private void writeTextureState(TextureState textureState) throws IOException {
-        currentLine.append("<texturestate file=\"");
+        currentLine.append("<texturestate URL=\"");
         currentLine.append(textureState.loadedFile);
         currentLine.append("\"/>");
         writeLine();
@@ -220,7 +218,7 @@ public class XMLWriter {
         int counter=0;
         for (int i=0;i<theTexCoords.length;i++){
             if (theTexCoords[i]!=null){
-                writeVector2f(theTexCoords[i]);
+                appendVector2f(theTexCoords[i]);
                 if (++counter==3){
                     writeLine();
                     counter=0;
@@ -229,7 +227,7 @@ public class XMLWriter {
         }
     }
 
-    private void writeVector2f(Vector2f theVec) throws IOException {
+    private void appendVector2f(Vector2f theVec){
         currentLine.append(Float.toString(theVec.x)).append(" ").append(Float.toString(theVec.y)).append(" ");
     }
 
@@ -247,7 +245,7 @@ public class XMLWriter {
 
     }
 
-    private void appendColorRGBA(ColorRGBA theColor) throws IOException {
+    private void appendColorRGBA(ColorRGBA theColor){
         currentLine.append(Float.toString(theColor.r)).append(" ").append(Float.toString(theColor.g)).append(" ").append(Float.toString(theColor.b)).append(" ").append(Float.toString(theColor.a)).append(' ');
     }
 
@@ -255,7 +253,7 @@ public class XMLWriter {
         int counter=0;
         for (int i=0;i<vecs.length;i++){
             if (vecs[i]!=null){
-                writeVector3f(vecs[i]);
+                appendVector3f(vecs[i]);
                 if (++counter==3){
                     counter=0;
                     writeLine();
@@ -264,7 +262,7 @@ public class XMLWriter {
         }
     }
 
-    private void writeVector3f(Vector3f vec) throws IOException {
+    private void appendVector3f(Vector3f vec){
         currentLine.append(Float.toString(vec.x)).append(" ").append(Float.toString(vec.y)).append(" ").append(Float.toString(vec.z)).append(" " );
     }
 
