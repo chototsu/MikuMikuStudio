@@ -372,4 +372,58 @@ public class FastMath {
   public static float nextRandomFloat() {
     return rand.nextFloat();
   }
+
+
+
+
+
+
+
+
+  /**
+   * FastTrig
+   *
+   * @Author Erikd
+   */
+  static public class FastTrig {
+
+    public static int PRECISION = 0x100000;
+
+    private static float RAD_SLICE = TWO_PI / PRECISION,
+        sinTable[] = null,
+        cosTable[] = null,
+        tanTable[] = null;
+
+    static {
+
+      RAD_SLICE = TWO_PI / PRECISION;
+      sinTable = new float[PRECISION];
+      cosTable = new float[PRECISION];
+      tanTable = new float[PRECISION];
+      float rad = 0;
+
+      for (int i = 0; i < PRECISION; i++) {
+        rad = (float) i * RAD_SLICE;
+        sinTable[i] = (float) java.lang.Math.sin(rad);
+        cosTable[i] = (float) java.lang.Math.cos(rad);
+        tanTable[i] = (float) java.lang.Math.tan(rad);
+      }
+    }
+
+    private static final int radToIndex(float radians) {
+      return (int) ( (radians / TWO_PI) * (float) PRECISION) & (PRECISION - 1);
+    }
+
+    public static float sin(float radians) {
+      return sinTable[radToIndex(radians)];
+    }
+
+    public static float cos(float radians) {
+      return cosTable[radToIndex(radians)];
+    }
+
+    public static float tan(float radians) {
+      return tanTable[radToIndex(radians)];
+    }
+  }
 }
