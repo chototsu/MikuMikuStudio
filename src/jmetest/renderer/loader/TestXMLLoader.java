@@ -26,13 +26,14 @@ public class TestXMLLoader extends SimpleGame{
         lightState.get(0).setSpecular(new ColorRGBA(1,1,1,1));
 
         SAXReader r=new SAXReader();
+        Node mi1=null;
         try {
-            r.loadXML(new File("CVS root/data/XML docs/newSampleScene.xml").toURL().openStream());
+            mi1=r.loadXML(new File("data/XML docs/newSampleScene.xml").toURL().openStream());
         } catch (IOException e) {
             System.out.println("bad File exception" + e.getCause() + "*" + e.getMessage());
         }
-        Node mi1=r.fetchCopy();
 //        rootNode.attachChild(mi1);
+
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         XMLWriter rr=new XMLWriter(BO);
         try {
@@ -40,9 +41,10 @@ public class TestXMLLoader extends SimpleGame{
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.print(BO);
         r.loadXML(new ByteArrayInputStream(BO.toByteArray()));
         Node mi2=r.fetchCopy();
         rootNode.attachChild(mi2);
-        System.out.print(BO);
+
     }
 }
