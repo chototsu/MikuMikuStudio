@@ -74,7 +74,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.6 2003-12-01 13:18:58 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.7 2003-12-02 20:08:09 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -689,6 +689,7 @@ public class LWJGLRenderer implements Renderer {
         Matrix3f rotation = t.getWorldRotation();
         Vector3f translation = t.getWorldTranslation();
         float scale = t.getWorldScale();
+        
         float[] modelToWorld =
             {
                 scale * rotation.get(0, 0),

@@ -34,6 +34,7 @@ package com.jme.scene;
 import java.io.Serializable;
 
 import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
@@ -45,7 +46,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and 
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.4 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.5 2003-12-02 20:08:09 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -307,6 +308,16 @@ public abstract class Spatial implements Serializable {
      */
     public void setLocalRotation(Matrix3f localRotation) {
         this.localRotation = localRotation;
+    }
+    
+    /**
+     * 
+     * <code>setLocalRotation</code> sets the local rotation of this node, using
+     * a quaterion to build the matrix.
+     * @param quaternion the quaternion that defines the matrix.
+     */
+    public void setLocalRotation(Quaternion quaternion) {
+        this.localRotation = quaternion.toRotationMatrix();
     }
 
     /**

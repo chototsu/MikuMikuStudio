@@ -41,7 +41,7 @@ package com.jme.math;
  * {x y z w}.
  * 
  * @author Mark Powell
- * @version $Id: Quaternion.java,v 1.1 2003-11-24 15:07:44 mojomonkey Exp $
+ * @version $Id: Quaternion.java,v 1.2 2003-12-02 20:08:09 mojomonkey Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -216,6 +216,33 @@ public class Quaternion {
             }
         }
 
+    }
+    
+    /**
+     * 
+     * <code>toRotationMatrix</code> converts this quaternion to a rotational
+     * matrix.
+     * @return the rotation matrix representation of this quaternion.
+     */
+    public Matrix3f toRotationMatrix( ) {
+        
+        Matrix3f matrix = new Matrix3f();
+        matrix.set(0, 0, (1.0f - 2.0f * (y * y + z * z)));
+        matrix.set(0, 1, (2.0f * (x * y - w * z)));
+        matrix.set(0, 2, (2.0f * (x * z + w * y)));
+        
+        // Second row
+        matrix.set(1, 0, (2.0f * (x * y + w * z)));
+        matrix.set(1, 1, (1.0f - 2.0f * (x * x + z * z)));
+        matrix.set(1, 2, (2.0f * (y * z - w * x)));
+       
+        // Third row
+        matrix.set(2, 0, (2.0f * (x * z - w * y)));
+        matrix.set(2, 1, (2.0f * (y * z + w * x)));
+        matrix.set(2, 2, (1.0f - 2.0f * (x * x + y * y)));
+        
+        return matrix;
+            
     }
 
     /**

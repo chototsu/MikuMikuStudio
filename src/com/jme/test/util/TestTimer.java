@@ -37,6 +37,7 @@ import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -59,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.3 2003-12-01 13:18:58 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.4 2003-12-02 20:08:09 mojomonkey Exp $
  */
 public class TestTimer extends AbstractGame {
     private TriMesh t;
@@ -70,6 +71,9 @@ public class TestTimer extends AbstractGame {
     private InputController input;
     private Thread thread;
     private Timer timer;
+    private Quaternion rotQuat;
+    private float angle = 0;
+    private Vector3f axis;
 
     /**
      * Entry point for the test, 
@@ -93,9 +97,18 @@ public class TestTimer extends AbstractGame {
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
+        if(timer.getTimePerFrame() < 1) {
+            angle = angle + (timer.getTimePerFrame() * 1);
+            if(angle > 360) {
+                angle = 0;
+            }
+        }
+        rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
         text.print("Frame Rate: " + timer.getFrameRate());
+        scene.setLocalRotation(rotQuat);
+        scene.updateGeometricState(0.0f, true);
         
        
     }
@@ -136,7 +149,7 @@ public class TestTimer extends AbstractGame {
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 4.0f);
+        Vector3f loc = new Vector3f(0.0f, 0.0f, 75.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
@@ -149,6 +162,8 @@ public class TestTimer extends AbstractGame {
         timer = Timer.getTimer("LWJGL");
         
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
+        rotQuat = new Quaternion();
+        axis = new Vector3f(1,1,1);
 
     }
 
