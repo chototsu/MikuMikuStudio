@@ -1,33 +1,32 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without 
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
  * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
  * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
  * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  */
 
 package com.jme.system;
@@ -60,7 +59,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.5 2004-01-25 02:14:38 mojomonkey Exp $
+ * @version $Id: PropertiesDialog.java,v 1.6 2004-02-01 02:16:54 ericthered Exp $
  */
 public class PropertiesDialog extends JDialog {
 
@@ -76,6 +75,7 @@ public class PropertiesDialog extends JDialog {
 	private JComboBox colorDepthCombo = null;
 	private JComboBox displayFreqCombo = null;
 	private JComboBox rendererCombo = null;
+	private JLabel icon = null;
 
 	//flag to denote if the dialog has finished being used.
 	private boolean done = false;
@@ -83,12 +83,14 @@ public class PropertiesDialog extends JDialog {
 	/**
 	 * Constructor builds the interface for the <code>PropertiesDialog</code>.
 	 * 
-	 * @param source the <code>PropertiesIO</code> object to use for working
-	 *      with the properties file.
-	 * @param imageFile the file to use as the title of the dialog. Null will
-	 *      result in now picture being used.
-	 * 
-	 * @throws MonkeyRuntimeException if the source is null.
+	 * @param source
+	 *            the <code>PropertiesIO</code> object to use for working
+	 *            with the properties file.
+	 * @param imageFile
+	 *            the file to use as the title of the dialog. Null will result
+	 *            in no picture being used.
+	 * @throws MonkeyRuntimeException
+	 *             if the source is null.
 	 */
 	public PropertiesDialog(PropertiesIO source, String imageFile) {
 		try {
@@ -126,17 +128,43 @@ public class PropertiesDialog extends JDialog {
 	}
 
 	/**
-	 * 
 	 * <code>setImage</code> sets the background image of the dialog.
+	 * 
 	 * @param image the image file.
 	 */
 	public void setImage(String image) {
-		imageFile = image;
+		//ImageIcon dies extremely messily if we pass it null, so we
+		//must convert it to an empty String.
+		String file = (image == null) ? "" : image;
+		
+		icon.setIcon(new ImageIcon(file));
+		pack(); //Resize to accomodate the new image
+		center();
 	}
 
 	/**
-	 * <code>init</code> creates the components to use the dialog.
-	 *
+	 * <code>showDialog</code> sets the dialog as visble, and
+	 * brings it to the front.
+	 */
+	private void showDialog() {
+		setVisible(true);
+		toFront();
+	}
+
+	
+	/**
+	 * <code>center</code> places this <code>PropertiesDialog</code> in
+	 * the center of the screen.
+	 */
+	private void center(){
+		int x, y;
+		x = (Toolkit.getDefaultToolkit().getScreenSize().width - this.getWidth()) / 2;
+		y = (Toolkit.getDefaultToolkit().getScreenSize().height - this.getHeight()) / 2;
+		this.setLocation(x, y);
+	}
+	
+	/**
+	 * <code>init</code> creates the components to use the dialog.  
 	 */
 	private void init() {
 		this.setTitle("Select Display Settings");
@@ -147,14 +175,19 @@ public class PropertiesDialog extends JDialog {
 		JPanel optionsPanel = new JPanel();
 		JPanel buttonPanel = new JPanel();
 
-		//The buttons...  
+		//The buttons...
 		JButton ok = new JButton("Ok");
 		JButton cancel = new JButton("Cancel");
 
 		mainPanel.setLayout(new BorderLayout());
 		centerPanel.setLayout(new BorderLayout());
 
-		centerPanel.add(new JLabel(new ImageIcon(imageFile)), BorderLayout.NORTH);
+		//ImageIcon dies extremely messily if we pass it null, so we
+		//must convert it to an empty String.
+		String file = (imageFile == null) ? "" : imageFile;
+		
+		icon = new JLabel(new ImageIcon(file));
+		centerPanel.add(icon, BorderLayout.NORTH);
 
 		displayResCombo = setUpResolutionChooser();
 		colorDepthCombo = setUpColorDepthChooser();
@@ -198,20 +231,15 @@ public class PropertiesDialog extends JDialog {
 		this.getContentPane().add(mainPanel);
 
 		pack();
-
-		int x, y;
-		x = (Toolkit.getDefaultToolkit().getScreenSize().width - this.getWidth()) / 2;
-		y = (Toolkit.getDefaultToolkit().getScreenSize().height - this.getHeight()) / 2;
-		this.setLocation(x, y);
-
-		show();
-		toFront();
+		center();
+		showDialog();
 	}
 
 	/**
-	 * <code>verifyAndSaveCurrentSelection</code> first verifies that
-	 * the display mode is valid for this system, and then saves the
-	 * current selection as a properties.cfg file.
+	 * <code>verifyAndSaveCurrentSelection</code> first verifies that the
+	 * display mode is valid for this system, and then saves the current
+	 * selection as a properties.cfg file.
+	 * 
 	 * @return if the selection is valid
 	 */
 	private boolean verifyAndSaveCurrentSelection() {
@@ -280,6 +308,7 @@ public class PropertiesDialog extends JDialog {
 	/**
 	 * 
 	 * <code>setUpFreqChooser</code> sets available display frequencys.
+	 * 
 	 * @return the combo box that contains the display frequencys.
 	 */
 	private JComboBox setUpFreqChooser() {
@@ -291,9 +320,9 @@ public class PropertiesDialog extends JDialog {
 
 	/**
 	 * 
-	 * <code>setUpRendererChooser</code> sets the list of available 
-	 * renderers. This is obtained from the <code>DisplaySystem</code>
-	 * class.
+	 * <code>setUpRendererChooser</code> sets the list of available
+	 * renderers. This is obtained from the <code>DisplaySystem</code> class.
+	 * 
 	 * @return the list of renderers.
 	 */
 	private JComboBox setUpRendererChooser() {
