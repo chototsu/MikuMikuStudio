@@ -37,10 +37,10 @@ import com.jme.math.Vector3f;
 
 /**
  * <code>Intersection</code> provides functional methods for calculating the
- * intersection of some objects. All the methods are static to allow for quick
+ * intersection of box objects. All the methods are static to allow for quick
  * and easy calls.
  * @author Mark Powell
- * @version $Id: IntersectionBox.java,v 1.5 2004-04-02 15:51:53 mojomonkey Exp $
+ * @version $Id: IntersectionBox.java,v 1.6 2004-04-02 16:27:32 mojomonkey Exp $
  */
 public class IntersectionBox {
     /**
