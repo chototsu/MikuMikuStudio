@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * a given set of values.
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.16 2004-03-02 16:39:44 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.17 2004-03-31 03:06:41 renanse Exp $
  */
 public class Matrix3f {
     public float m00, m01, m02;
@@ -278,6 +278,26 @@ public class Matrix3f {
         m20 = matrix[2][0];
         m21 = matrix[2][1];
         m22 = matrix[2][2];
+    }
+
+    /**
+     * Recreate Matrix using the provided axis.
+     * @param uAxis Vector3f
+     * @param vAxis Vector3f
+     * @param wAxis Vector3f
+     */
+    public void fromAxes (Vector3f uAxis, Vector3f vAxis, Vector3f wAxis) {
+      m00 = uAxis.x;
+      m10 = uAxis.y;
+      m20 = uAxis.z;
+
+      m01 = vAxis.x;
+      m11 = vAxis.y;
+      m21 = vAxis.z;
+
+      m02 = wAxis.x;
+      m12 = wAxis.y;
+      m22 = wAxis.z;
     }
 
     /**
