@@ -34,7 +34,6 @@ package com.jme.bounding;
 
 import com.jme.scene.shape.*;
 import com.jme.math.*;
-import com.jme.util.MemPool;
 
 /**
  * <code>BoundingBox</code> defines an axis-aligned cube that defines a container
@@ -47,7 +46,7 @@ import com.jme.util.MemPool;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.13 2004-08-20 02:42:54 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.14 2004-08-21 02:39:11 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -61,6 +60,7 @@ public class BoundingBox extends Box implements BoundingVolume {
 
     private Vector3f origCenter = new Vector3f();
     private Vector3f origExtent = new Vector3f();
+    private static Matrix3f tempMat=new Matrix3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
@@ -193,7 +193,7 @@ public class BoundingBox extends Box implements BoundingVolume {
         rotate.mult(origCenter, box.center);
         box.center.multLocal(scale).addLocal(translate);
 
-        Matrix3f transMatrix=MemPool.m3a;
+        Matrix3f transMatrix=tempMat;
         transMatrix.set(rotate);
         // Make the rotation matrix all positive to get the maximum x/y/z extent
         if (transMatrix.m00<0) transMatrix.m00*=-1;

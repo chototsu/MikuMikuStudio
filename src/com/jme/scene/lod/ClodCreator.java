@@ -40,7 +40,6 @@ import java.util.Vector;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.util.MemPool;
 
 /**
  * <code>ClodCreator</code>
@@ -50,7 +49,7 @@ import com.jme.util.MemPool;
  * The reason for lack of documentation is that it should have little use to someone
  * outside the API, unless they already know how to use it.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.12 2004-08-21 00:32:22 cep21 Exp $
+ * @version $Id: ClodCreator.java,v 1.13 2004-08-21 02:39:27 cep21 Exp $
  */
 
 public class ClodCreator extends VETMesh {
@@ -74,6 +73,10 @@ public class ClodCreator extends VETMesh {
   TreeSet deletedVertices; // <int>
   Vector deletedEdges; // <CollapseRecord>
   CollapseRecord[] records;
+
+    private static Vector3f tempVa=new Vector3f();
+    private static Vector3f tempVb=new Vector3f();
+    private static Vector3f tempVc=new Vector3f();
 
   protected class HeapRecord {
     public HeapRecord() {
@@ -287,7 +290,7 @@ public class ClodCreator extends VETMesh {
       // length contribution
       Vector3f rkEnd0 = vertices[pkE.vert[0]];
       Vector3f rkEnd1 = vertices[pkE.vert[1]];
-      Vector3f kDiff = rkEnd1.subtract(rkEnd0,MemPool.v3a);
+      Vector3f kDiff = rkEnd1.subtract(rkEnd0,tempVa);
       float fMetric = fLengthWeight * kDiff.length();
 
       // angle/area contribution
@@ -295,19 +298,19 @@ public class ClodCreator extends VETMesh {
       Vector3f kV0 = vertices[kT.vert[0]];
       Vector3f kV1 = vertices[kT.vert[1]];
       Vector3f kV2 = vertices[kT.vert[2]];
-      Vector3f kE0 = kV1.subtract(kV0,MemPool.v3a);
-      Vector3f kE1 = kV2.subtract(kV0,MemPool.v3b);
-      Vector3f kN0 = kE0.cross(kE1,MemPool.v3c);
+      Vector3f kE0 = kV1.subtract(kV0,tempVa);
+      Vector3f kE1 = kV2.subtract(kV0,tempVb);
+      Vector3f kN0 = kE0.cross(kE1,tempVc);
 
       kT = (Triangle) pkEA.triangleSet.toArray()[1];
       kV0 = vertices[kT.vert[0]];
       kV1 = vertices[kT.vert[1]];
       kV2 = vertices[kT.vert[2]];
-      kE0 = kV1.subtract(kV0,MemPool.v3a);
-      kE1 = kV2.subtract(kV0,MemPool.v3b);
+      kE0 = kV1.subtract(kV0,tempVa);
+      kE1 = kV2.subtract(kV0,tempVb);
       Vector3f kN1 = kE0.crossLocal(kE1);
 
-      Vector3f kCross = kN0.cross(kN1,MemPool.v3a);
+      Vector3f kCross = kN0.cross(kN1,tempVa);
       fMetric += fAngleWeight * kCross.length();
 
       return fMetric;

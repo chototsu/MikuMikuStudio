@@ -12,11 +12,11 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
+import com.jme.math.Matrix3f;
 import com.jme.curve.CurveController;
 import com.jme.curve.BezierCurve;
 import com.jme.input.KeyInput;
 import com.jme.input.action.KeyExitAction;
-import com.jme.util.MemPool;
 
 import java.net.URL;
 import java.io.ByteArrayOutputStream;
@@ -147,20 +147,29 @@ public class HelloLOD extends SimpleGame {
         return clodNode;
     }
 
+    Vector3f up=new Vector3f(0,1,0);
+    Vector3f left=new Vector3f(1,0,0);
+
+    private static Vector3f tempVa=new Vector3f();
+    private static Vector3f tempVb=new Vector3f();
+    private static Vector3f tempVc=new Vector3f();
+    private static Vector3f tempVd=new Vector3f();
+    private static Matrix3f tempMa=new Matrix3f();
+
     protected void simpleUpdate(){
         // Get the center of root's bound.
-        Vector3f objectCenter=rootNode.getWorldBound().getCenter(MemPool.v3a);
+        Vector3f objectCenter=rootNode.getWorldBound().getCenter(tempVa);
 
         // My direction is the place I want to look minus the location of the camera.
-        Vector3f lookAtObject=new Vector3f(objectCenter).subtractLocal(cam.getLocation()).normalizeLocal();
+        Vector3f lookAtObject=tempVb.set(objectCenter).subtractLocal(cam.getLocation()).normalizeLocal();
 
         // Left vector
-        MemPool.m3a.setColumn(0,new Vector3f(0,1,0).crossLocal(lookAtObject).normalizeLocal());
+        tempMa.setColumn(0,up.cross(lookAtObject,tempVc).normalizeLocal());
         // Up vector
-        MemPool.m3a.setColumn(1,new Vector3f(1,0,0).crossLocal(lookAtObject).normalizeLocal());
+        tempMa.setColumn(1,left.cross(lookAtObject,tempVd).normalizeLocal());
         // Direction vector
-        MemPool.m3a.setColumn(2,lookAtObject);
+        tempMa.setColumn(2,lookAtObject);
 
-        cn.setLocalRotation(MemPool.m3a);
+        cn.setLocalRotation(tempMa);
     }
 }
