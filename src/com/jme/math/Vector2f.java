@@ -40,7 +40,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.12 2004-07-12 21:41:29 renanse Exp $
+ * @version $Id: Vector2f.java,v 1.13 2004-07-30 23:26:40 cep21 Exp $
  */
 public class Vector2f implements Externalizable{
     /**
@@ -52,11 +52,19 @@ public class Vector2f implements Externalizable{
      */
     public float y;
 
+    /**
+     * Creates a Vector2f with the given initial x and y values.
+     * @param x The x value of this Vector2f.
+     * @param y The y value of this Vector2f.
+     */
     public Vector2f(float x, float y) {
         this.x = x;
         this.y = y;
     }
 
+    /**
+     * Creates a Vector2f with x and y set to 0.  Equivalent to Vector2f(0,0).
+     */
     public Vector2f() {
         x=y=0;
     }
@@ -142,21 +150,21 @@ public class Vector2f implements Externalizable{
     }
 
     /**
-     *
-     * <code>add</code>
-     * @param vec Vector2f
-     * @param result  Vector2f
+     * <code>add</code> adds this vector by <code>vec</code> and stores the result in <code>result</code>.
+     * @param vec The vector to add.
+     * @param result The vector to store the result in.
+     * @return The result vector, after adding.
      */
-    public void add(Vector2f vec, Vector2f result) {
+    public Vector2f add(Vector2f vec, Vector2f result) {
         if(null == vec) {
             LoggingSystem.getLogger().log(Level.WARNING, "Provided vector is " +
             "null, null returned.");
-            return;
+            return null;
         }
-
-
+        if (result==null) result=new Vector2f();
         result.x = x + vec.x;
         result.y = y + vec.y;
+        return result;
     }
 
     /**
@@ -268,13 +276,21 @@ public class Vector2f implements Externalizable{
         return this;
     }
 
-    public void mult(float scalar, Vector2f product) {
+    /**
+     * Multiplies this Vector2f's x and y by the scalar and stores the result in product.  The
+     * result is returned for chaining.  Similar to product=this*scalar;
+     * @param scalar The scalar to multiply by.
+     * @param product The vector2f to store the result in.
+     * @return product, after multiplication.
+     */
+    public Vector2f mult(float scalar, Vector2f product) {
         if(null == product) {
             product = new Vector2f();
         }
 
         product.x = x * scalar;
         product.y = y * scalar;
+        return product;
     }
 
     /**
