@@ -54,7 +54,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestAse.java,v 1.3 2004-03-25 17:14:35 mojomonkey Exp $
+ * @version $Id: TestAse.java,v 1.4 2004-04-02 21:23:49 mojomonkey Exp $
  */
 public class TestAse extends SimpleGame {
 	LightState state;
@@ -163,16 +163,16 @@ public class TestAse extends SimpleGame {
 		SpotLight am = new SpotLight();
 		am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
 		am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		am.setDirection(new Vector3f(0, 0, 0));
+		am.setDirection(new Vector3f(-1, -0.5f, 0));
 		am.setLocation(new Vector3f(25, 10, 10));
-		am.setAngle(5);
+		am.setAngle(25);
 
 		SpotLight am2 = new SpotLight();
 		am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
 		am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		am2.setDirection(new Vector3f(0, 0, 0));
+		am2.setDirection(new Vector3f(1, -0.5f, 0));
 		am2.setLocation(new Vector3f(-25, 10, 0));
-		am2.setAngle(5);
+		am2.setAngle(25);
 
 		DirectionalLight dr = new DirectionalLight();
 		dr.setDiffuse(new ColorRGBA(0.5f, 0.0f, 1.0f, 1.0f));
