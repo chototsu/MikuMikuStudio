@@ -34,18 +34,31 @@ package com.jme.util;
 /**
  * <code>Timer</code>
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.3 2004-03-08 01:37:39 renanse Exp $
+ * @version $Id: Timer.java,v 1.4 2004-04-01 01:40:33 ericthered Exp $
  */
 public abstract class Timer {
     private static Timer instance;
 
     /**
-     * @return a long value representing the current time.
+     * Returns the current time in ticks. A tick is an arbitrary measure
+     * of time defined by the timer implementation. The number of ticks
+     * per second is given by <code>getResolution()</code>.
+     * @return a long value representing the current time
      */
     public abstract long getTime();
-
+    
     /**
-     * @return the number of times per second the timer is updated
+     * Returns the time in seconds. There is no guarantee that the timer
+     * starts at 0.0 seconds.
+     * @return the current time in seconds
+     */
+    public float getTimeInSeconds(){
+        return getTime() / (float)getResolution();
+    }
+    
+    /**
+     * Returns the resolution of the timer.
+     * @return the number of timer ticks per second
      */
     public abstract long getResolution();
 
