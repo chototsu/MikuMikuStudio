@@ -62,16 +62,19 @@ public class MilkToJme extends FormatConverter{
         readTriangles();
         readGroups();
         readMats();
-        readJoints();
         JmeBinaryWriter jbw=new JmeBinaryWriter();
+        if (!readJoints()){
+            jbw.setProperty("jointmesh","astrimesh");
+        }
         jbw.writeScene(finalNode,o);
     }
 
-    private void readJoints() throws IOException {
+    private boolean readJoints() throws IOException {
         float fAnimationFPS=inFile.readFloat();
         float curTime=inFile.readFloat();     // Ignore currentTime
         int iTotalFrames=inFile.readInt();      // Ignore total Frames
         int nNumJoints=inFile.readUnsignedShort();
+        if (nNumJoints==0) return false;
         String[] jointNames=new String[nNumJoints];
         String[] parentNames=new String[nNumJoints];
         JointController jc=new JointController(nNumJoints);
@@ -99,9 +102,10 @@ public class MilkToJme extends FormatConverter{
                 if (parentNames[i].equals(jointNames[j])) jc.parentIndex[i]=j;
             }
         }
-        jc.processController();
+//        jc.processController();
 
         finalNode.addController(jc);
+        return true;
     }
 
     private void readMats() throws IOException {
