@@ -76,7 +76,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.24 2004-04-02 15:51:55 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.25 2004-04-13 01:27:46 renanse Exp $
  */
 public interface Renderer {
     /**
@@ -109,10 +109,10 @@ public interface Renderer {
      *      proper renderer.
      */
     public AlphaState getAlphaState();
-    
+
     /**
-     * 
-     * <code>getAttributeState</code> retrieves the attribute saving state 
+     *
+     * <code>getAttributeState</code> retrieves the attribute saving state
      * object for the proper renderer.
      * @return the <code>AttributeState</code> object that can make use of
      * 		the proper renderer.
@@ -190,7 +190,7 @@ public interface Renderer {
     public WireframeState getWireframeState();
 
     public ZBufferState getZBufferState();
-    
+
     public VertexProgramState getVertexProgramState();
 
     public void enableStatistics(boolean value);
@@ -276,7 +276,7 @@ public interface Renderer {
      * <code>Geometry</code> the renderer hands off management of the
      * scene to spatial for it to determine when a <code>Geometry</code>
      * leaf is reached.
-     * @param g the Geometry to render.
+     * @param s the Spatial to render bounds for.
      */
     public void drawBounds(Spatial s);
 
