@@ -31,33 +31,38 @@
  */
 package com.jme.sound;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
+
 import org.lwjgl.openal.AL;
+
+import com.jme.sound.utils.EffectPlayerRepository;
+import com.jme.sound.utils.EffectRepository;
 
 
 /**
  * @author Arman Ozcelik
- * @version $Id: LWJGLSoundSystem.java,v 1.5 2003-11-01 23:28:10 Anakan Exp $
+ * @version $Id: LWJGLSoundSystem.java,v 1.6 2004-01-17 17:56:08 Anakan Exp $
  */
 public class LWJGLSoundSystem extends SoundSystem {
 
-	private LWJGLSoundRenderer renderer;	
+	
+	private float[] listenerPos= { 0.0f, 0.0f, 0.0f };
+	//Velocity of the listener.
+	private float[] listenerVel= { 0.0f, 0.0f, 0.0f };
+	//Orientation of the listener. (first 3 elements are "at", second 3 are "up")
+	private float[] listenerOri= { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };	
 	
 	public LWJGLSoundSystem(){
 		if(!created){
 			initOpenAL();
 		}
-		renderer=new LWJGLSoundRenderer();
 		created = true;
 		
 	}
 
-	/**
-	 * TODO Comment
-	 */
-	public IRenderer getRenderer() {
-		return renderer;
-	}
-
+	
 	/**
 	 * TODO Comment
 	 */
@@ -76,6 +81,50 @@ public class LWJGLSoundSystem extends SoundSystem {
 			e.printStackTrace();
 		}
 	}
+	
+	
+	private void setListenerValues() {
+		AL.alListener3f(AL.AL_POSITION, listenerPos[0], listenerPos[1], listenerPos[2]);
+		AL.alListener3f(AL.AL_VELOCITY, listenerVel[0], listenerVel[1], listenerVel[2]);
+		AL.alListener3f(AL.AL_ORIENTATION, listenerOri[0], listenerOri[1], listenerOri[2]);
+	}
+
+	public void addSource(Object name) {
+		IntBuffer source= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		AL.alGenSources(source);
+		EffectPlayerRepository.getRepository().bind(name, new LWJGLEffectPlayer(source.get(0)));
+	}
+
+	public void load(String file, String name) {
+		ISoundBuffer buffer= null;
+		if (file.endsWith(".wav")) {
+			System.out.println("Loading " + file + " as " + name);
+			buffer= new LWJGLWaveBuffer();
+			buffer.load(file);
+		}
+		if (file.endsWith(".mp3")) {
+			System.out.println("Loading " + file + " as " + name);
+			buffer= new LWJGLMP3Buffer();
+			buffer.load(file);
+		}
+		AL.alBufferData(
+			buffer.getBufferNumber(),
+			buffer.getChannels(),
+			buffer.getBufferData(),
+			buffer.getBufferData().capacity(),
+			buffer.getSampleRate());
+		if (AL.alGetError() != AL.AL_NO_ERROR) {
+			System.err.println("Error generating audio buffer");
+		}
+		SoundEffect effect= new SoundEffect(buffer.getBufferNumber(), ISound.SOUND_TYPE_EFFECT);
+		EffectRepository.getRepository().bind(name, effect);
+		buffer.release();
+	}
+
+	public IPlayer getPlayer(Object name) {
+		return EffectPlayerRepository.getRepository().getSource(name);
+	}
+
 
 	
 

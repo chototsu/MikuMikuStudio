@@ -38,8 +38,8 @@ package com.jme.sound.action;
 
 import com.jme.input.action.KeyRotateRightAction;
 import com.jme.renderer.Camera;
-import com.jme.sound.IEffectPlayer;
-import com.jme.sound.utils.EffectRepository;
+import com.jme.sound.IPlayer;
+
 
 /**
  * @author Arman Ozcelik
@@ -47,12 +47,12 @@ import com.jme.sound.utils.EffectRepository;
  */
 public class SoundRotateRightAction extends KeyRotateRightAction {
 	private String sound;
-	private IEffectPlayer player;
+	private IPlayer player;
 	/**
 	 * @param camera
 	 * @param speed
 	 */
-	public SoundRotateRightAction(Camera camera, float speed, IEffectPlayer soundPlayer, String soundName) {
+	public SoundRotateRightAction(Camera camera, float speed, IPlayer soundPlayer, String soundName) {
 		super(camera, speed);
 		player= soundPlayer;
 		sound= soundName;
@@ -63,8 +63,8 @@ public class SoundRotateRightAction extends KeyRotateRightAction {
 	*/
 	public void performAction(float time) {
 		super.performAction(time);
-		if (player != null && player.getStatus() != IEffectPlayer.PLAYING) {
-			player.play(EffectRepository.getRepository().getSource(sound));
+		if (player != null && player.getStatus() != IPlayer.PLAYING) {
+			player.play(sound);
 		}
 	}
 }

@@ -33,7 +33,7 @@ package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: SoundSystem.java,v 1.4 2003-11-01 23:28:11 Anakan Exp $
+ * @version $Id: SoundSystem.java,v 1.5 2004-01-17 17:56:08 Anakan Exp $
  */
 public abstract class SoundSystem {
 	/**
@@ -61,27 +61,37 @@ public abstract class SoundSystem {
 	}
 
 	
-
 	/**
-		* <code>getRenderer</code> returns the <code>SoundRenderer</code> implementation
-		* that is compatible with the chosen <code>SoundSystem</code>. For 
-		* example, if <code>LWJGLSoundSystem</code> is used, the returned 
-		* <code>SoundRenderer</code> will be </code>LWJGLSoundRenderer</code>.
-		* @see com.jme.sound.SoundRenderer
-		* @return the appropriate <code>SoundRenderer</code> implementation that is
-		*      compatible with the used <code>SoundSystem</code>.
-		*/
-
-	public abstract IRenderer getRenderer();
-
-	/**
-		* <code>isCreated</code> returns the current status of the sound
-		* system. If the sound system and  the sound renderer are created, true is returned,
-		* otherwise false.
-		* 
-		* @return whether the sound system is created.
-		*/
+	* <code>isCreated</code> returns the current status of the sound
+	* system. If the sound system and  the sound renderer are created, true is returned,
+	* otherwise false.
+	* 
+	* @return whether the sound system is created.
+	*/
 
 	public abstract boolean isCreated();
+	
+	/**
+	 * Adds a sound sample playing source.
+	 * @param name The object that should play the sound, but can also be any object.
+	 */
+	
+	
+	public abstract void addSource(Object name);
+	
+	/**
+	 * Loads a sound sample.
+	 * @param file The file from which the sound should be loaded.
+	 * @param name The sample unique name.
+	 */
+	public abstract void load(String file, String name);
+	
+	
+	/**
+	 * Retrieves the "sound player" attached to an object. This object is generally an <code>Entity</code> object.
+	 * @param name the object that is attached to the source player
+	 * @return the sound player
+	 */
+	public abstract IPlayer getPlayer(Object name);
 
 }

@@ -37,14 +37,17 @@
 package com.jme.sound;
 
 import org.lwjgl.openal.AL;
+//import org.lwjgl.openal.eax.BaseEAX;
 
 import com.jme.math.Vector3f;
+import com.jme.sound.filter.*;
+import com.jme.sound.utils.EffectRepository;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class LWJGLEffectPlayer implements IEffectPlayer {
+public class LWJGLEffectPlayer implements IPlayer {
 
 	private int sourceNumber;
 	private int status;
@@ -60,7 +63,8 @@ public class LWJGLEffectPlayer implements IEffectPlayer {
 		velocity= new Vector3f(0, 0, .1f);
 	}
 
-	public void play(ISound effect) {
+	public void play(String name) {
+		ISound effect= EffectRepository.getRepository().getSource(name);
 		if (effect == null)
 			return;
 		status= PLAYING;
@@ -71,10 +75,9 @@ public class LWJGLEffectPlayer implements IEffectPlayer {
 		AL.alSourcei(sourceNumber, AL.AL_BUFFER, effect.getID());
 		AL.alSourcef(sourceNumber, AL.AL_PITCH, getPitch());
 		AL.alSourcef(sourceNumber, AL.AL_GAIN, getVolume());
-		AL.alSource3f(sourceNumber, AL.AL_POSITION, getPosition().x, getPosition().y, getPosition().z);
-		AL.alSource3f(sourceNumber, AL.AL_VELOCITY, getVelocity().x, getVelocity().y, getVelocity().z);
+		AL.alSource3f(sourceNumber, AL.AL_POSITION, position.x, position.y, position.z);
+		AL.alSource3f(sourceNumber, AL.AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 		AL.alSourcei(sourceNumber, AL.AL_LOOPING, AL.AL_FALSE);
-
 		AL.alSourcePlay(sourceNumber);
 
 	}
@@ -82,7 +85,8 @@ public class LWJGLEffectPlayer implements IEffectPlayer {
 	/* (non-Javadoc)
 	 * @see com.jme.sound.IEffectPlayer#loop(com.jme.sound.IEffect, int)
 	 */
-	public void loop(ISound effect) {
+	public void loop(String name) {
+		ISound effect= EffectRepository.getRepository().getSource(name);
 		if (effect == null)
 			return;
 		status= LOOPING;
@@ -93,8 +97,8 @@ public class LWJGLEffectPlayer implements IEffectPlayer {
 		AL.alSourcei(sourceNumber, AL.AL_BUFFER, effect.getID());
 		AL.alSourcef(sourceNumber, AL.AL_PITCH, getPitch());
 		AL.alSourcef(sourceNumber, AL.AL_GAIN, getVolume());
-		AL.alSource3f(sourceNumber, AL.AL_POSITION, getPosition().x, getPosition().y, getPosition().z);
-		AL.alSource3f(sourceNumber, AL.AL_VELOCITY, getVelocity().x, getVelocity().y, getVelocity().z);
+		AL.alSource3f(sourceNumber, AL.AL_POSITION, position.x, position.y, position.z);
+		AL.alSource3f(sourceNumber, AL.AL_VELOCITY, velocity.x, velocity.y, velocity.z);
 		AL.alSourcei(sourceNumber, AL.AL_LOOPING, AL.AL_TRUE);
 
 		AL.alSourcePlay(sourceNumber);
@@ -133,16 +137,7 @@ public class LWJGLEffectPlayer implements IEffectPlayer {
 		position.x= pos.x;
 		position.y= pos.y;
 		position.z= pos.z;
-		//float length= position.length();
 		if ((status == PLAYING || status == LOOPING) && status != PAUSED)
-			/*
-			 AL.alSource3f(
-				sourceNumber,
-				AL.AL_POSITION,
-				position.x / length,
-				position.y / length,
-				position.z / length);
-			*/
 			AL.alSource3f(sourceNumber, AL.AL_POSITION, position.x, position.y, position.z);
 	}
 
@@ -179,6 +174,27 @@ public class LWJGLEffectPlayer implements IEffectPlayer {
 
 	public void setMaxDistance(float maxDistance) {
 		AL.alSourcef(sourceNumber, AL.AL_MAX_DISTANCE, maxDistance);
+	}
+
+	/**
+	 * 
+	 * @param the buffer filter for this player
+	 */
+	public void applyFilter(BufferFilter f) {
+		// (BaseEAX.isCreated()) {
+			if (f instanceof LWJGLBufferFilter) {
+				((LWJGLBufferFilter)f).applyOnSource(sourceNumber);
+			}
+		//
+
+	}
+
+	public void applyFilter(ListenerFilter f) {
+		//if (BaseEAX.isCreated()) {
+		if (f instanceof LWJGLListenerFilter) {
+			((LWJGLListenerFilter)f).applyOnSource(sourceNumber);
+		}
+		//}
 	}
 
 }

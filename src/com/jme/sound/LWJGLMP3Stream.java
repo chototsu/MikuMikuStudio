@@ -43,7 +43,6 @@ package com.jme.sound;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -84,13 +83,9 @@ public class LWJGLMP3Stream implements SoundStream {
 
 	public LWJGLMP3Stream(String file) {
 		this.file = file;
-		try {
-
-			InputStream in = new FileInputStream(file);
-			BufferedInputStream bin = new BufferedInputStream(in);
+		try {			
 			decoder = new Decoder();
-			stream = new Bitstream(bin);
-
+			stream = new Bitstream( new BufferedInputStream( new FileInputStream(file)));			
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
 		}
@@ -101,7 +96,11 @@ public class LWJGLMP3Stream implements SoundStream {
 	 * @see com.jme.sound.SoundStream#close()
 	 */
 	public void close() {
-		// TODO Auto-generated method stub
+		try {
+			stream.close();
+		} catch (BitstreamException e) {
+			e.printStackTrace();
+		}
 
 	}
 
@@ -116,7 +115,8 @@ public class LWJGLMP3Stream implements SoundStream {
 	 * @see com.jme.sound.SoundStream#getFormat()
 	 */
 	public AudioFormat getFormat() {
-		// TODO Auto-generated method stub
+		
+		
 		return null;
 	}
 
@@ -124,7 +124,7 @@ public class LWJGLMP3Stream implements SoundStream {
 	 * @see com.jme.sound.SoundStream#getLength()
 	 */
 	public int getLength() {
-		// TODO Auto-generated method stub
+		
 		return 0;
 	}
 
@@ -140,7 +140,6 @@ public class LWJGLMP3Stream implements SoundStream {
 		try {
 			Header header = stream.readFrame();
 			if (header == null) {
-				//TODO reload?
 				return ByteBuffer.allocateDirect(0);
 			}
 			if (sampleBuf == null) {
@@ -155,7 +154,6 @@ public class LWJGLMP3Stream implements SoundStream {
 			if (sampleRate == 0) {
 				sampleRate = header.frequency();
 			}
-			//sampleBuf = (SampleBuffer) decoder.decodeFrame(header, stream);
 			decoder.decodeFrame(header, stream);
 			stream.closeFrame();
 			byte[] obuf = toByteArray(sampleBuf.getBuffer(), 0, sampleBuf.getBufferLength());

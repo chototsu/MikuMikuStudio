@@ -36,11 +36,11 @@
  */
 package com.jme.sound;
 
-import java.io.File;
+
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -63,7 +63,7 @@ public abstract class WaveBuffer implements ISoundBuffer {
 
 	public void load(String file) {
 		try {
-			audioStream = AudioSystem.getAudioInputStream(new File(file));
+			audioStream= AudioSystem.getAudioInputStream(new FileInputStream(file));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedAudioFileException e) {
@@ -71,22 +71,22 @@ public abstract class WaveBuffer implements ISoundBuffer {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		format = audioStream.getFormat();
-		sampleRate = (int) format.getSampleRate();
-		System.out.println("Sample Rate "+sampleRate);
+		format= audioStream.getFormat();
+		sampleRate= (int)format.getSampleRate();
+		System.out.println("Sample Rate " + sampleRate);
 		initChannels();
-		int length =
-			format.getChannels() * (int) audioStream.getFrameLength() * format.getSampleSizeInBits() / 8;
-		byte[] temp = new byte[length];
+		int length=
+			format.getChannels() * (int)audioStream.getFrameLength() * format.getSampleSizeInBits() / 8;
+		byte[] temp= new byte[length];
 		try {
 			audioStream.read(temp, 0, length);
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		data = ByteBuffer.allocateDirect(length);
+		data= ByteBuffer.allocateDirect(length);
 		data.put(temp);
 		data.rewind();
-		System.out.println("Data length "+data.capacity());	
+		System.out.println("Data length " + data.capacity());
 	}
 
 	public int getSampleRate() {
@@ -99,31 +99,31 @@ public abstract class WaveBuffer implements ISoundBuffer {
 
 	public void release() {
 		data.clear();
-		data = null;
+		data= null;
 	}
 
 	private void initChannels() {
 		//		get channels
 		if (format.getChannels() == 1) {
 			if (format.getSampleSizeInBits() == 8) {
-				channels = MONO8;
+				channels= MONO8;
 			} else if (format.getSampleSizeInBits() == 16) {
-				channels = MONO16;
+				channels= MONO16;
 			} else {
 				throw new JmeException("Illegal sample size");
 			}
 		} else if (format.getChannels() == 2) {
 			if (format.getSampleSizeInBits() == 8) {
-				channels = STEREO8;
+				channels= STEREO8;
 			} else if (format.getSampleSizeInBits() == 16) {
-				channels = STEREO16;
+				channels= STEREO16;
 			} else {
-                throw new JmeException("Illegal sample size");
+				throw new JmeException("Illegal sample size");
 			}
 		} else {
-            throw new JmeException("Only mono or stereo is supported");
+			throw new JmeException("Only mono or stereo is supported");
 		}
-		System.out.println("Channels "+ channels);
+		System.out.println("Channels " + channels);
 
 	}
 

@@ -38,6 +38,7 @@ package com.jme.sound;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -70,6 +71,7 @@ public abstract class MP3Buffer implements ISoundBuffer {
 
 	public void load(String file) {
 		try {
+			
 			InputStream in= new FileInputStream(file);
 			BufferedInputStream bin= new BufferedInputStream(in);
 			decoder= new Decoder();

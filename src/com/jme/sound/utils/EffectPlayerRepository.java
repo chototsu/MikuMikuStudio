@@ -38,7 +38,7 @@ package com.jme.sound.utils;
 
 import java.util.Hashtable;
 
-import com.jme.sound.IEffectPlayer;
+import com.jme.sound.IPlayer;
 
 /**
  * @author Arman Ozcelik
@@ -60,13 +60,13 @@ public class EffectPlayerRepository {
 		return instance;
 	}
 
-	public void bind(Object player, IEffectPlayer source) {
+	public void bind(Object player, IPlayer source) {
 		repository.put(player, source);
 
 	}
 
-	public IEffectPlayer getSource(Object player) {
-		return (IEffectPlayer) repository.get(player);
+	public IPlayer getSource(Object player) {
+		return (IPlayer) repository.get(player);
 	}
 
 }

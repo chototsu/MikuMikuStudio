@@ -31,40 +31,117 @@
  */
 
 /*
- * Created on 29 oct. 2003
+ * Created on 17 janv. 2004
  *
  */
-package com.jme.sound.action;
-
-import com.jme.input.action.KeyRotateLeftAction;
-import com.jme.renderer.Camera;
-import com.jme.sound.IPlayer;
+package com.jme.sound.filter;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class SoundRotateLeftAction extends KeyRotateLeftAction {
+public abstract class ListenerFilter {
+	
 
-	private String sound;
-	private IPlayer player;
+		/**
+		 * @return
+		 */
+		public abstract float getAirAbsorptionHF();
+
+		/**
+		 * @return
+		 */
+		public abstract float getDecayTimeHFRatio() ;
+
+		/**
+		 * @return
+		 */
+		public abstract float getDecayTime() ;
+
+		/**
+		 * @return
+		 */
+		public abstract int getReflections() ;
+		/**
+		 * @return
+		 */
+		public abstract float getReflectionsDelay() ;
+		/**
+		 * @return
+		 */
+		public abstract int getReverb();
+
+		/**
+		 * @return
+		 */
+		public abstract float getReverbDelay() ;
+
 	/**
-	 * @param camera
-	 * @param speed
+	 * @return
 	 */
-	public SoundRotateLeftAction(Camera camera, float speed, IPlayer soundPlayer, String soundName) {
-		super(camera, speed);
-		player= soundPlayer;
-		sound= soundName;
-	}
+	public abstract int getRoom() ;
+
+		/**
+		 * @return
+		 */
+		public abstract int getRoomHF();
+
+		/**
+		 * @return
+		 */
+		public abstract float getRoomRolloffFactor();
+
+		
+		
+		/**
+		 * 
+		 * @param f
+		 */
+		public abstract void setAirAbsorptionHF(float f);
+		
+		/**
+		 * @param f
+		 */
+		public abstract void setDecayTimeHFRatio(float f) ;
+
+		/**
+		 * @param i
+		 */
+		public abstract void setDecayTime(float i);
+
+		/**
+		 * @param i
+		 */
+		public abstract void setReflections(int i) ;
+
+		/**
+		 * @param i
+		 */
+		public abstract void setReflectionsDelay(float i) ;
+
+		/**
+		 * @param i
+		 */
+		public abstract void setReverb(int i) ;
+
+		/**
+		 * @param i
+		 */
+		public abstract void setReverbDelay(float i) ;
 
 	/**
-	* @see com.jme.input.action.InputAction#performAction(float)
-	*/
-	public void performAction(float time) {
-		super.performAction(time);
-		if (player != null && player.getStatus() != IPlayer.PLAYING) {
-			player.play(sound);
-		}
-	}
+	 * @param i
+	 */
+	public abstract void setRoom(int i) ;
+
+		/**
+		 * @param i
+		 */
+		public abstract void setRoomHF(int i) ;
+
+		/**
+		 * @param i
+		 */
+		public abstract void setRoomRolloffFactor(float i) ;
+
 }

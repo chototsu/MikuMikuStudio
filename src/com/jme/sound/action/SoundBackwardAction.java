@@ -38,8 +38,8 @@ package com.jme.sound.action;
 
 import com.jme.input.action.KeyBackwardAction;
 import com.jme.renderer.Camera;
-import com.jme.sound.IEffectPlayer;
-import com.jme.sound.utils.EffectRepository;
+import com.jme.sound.IPlayer;
+
 
 
 /**
@@ -49,13 +49,13 @@ import com.jme.sound.utils.EffectRepository;
 public class SoundBackwardAction extends KeyBackwardAction {
 
 	private String sound;
-	private IEffectPlayer player;
+	private IPlayer player;
 
 	/**
 	 * @param camera
 	 * @param speed
 	 */
-	public SoundBackwardAction(Camera camera, float speed, IEffectPlayer soundPlayer, String soundName) {
+	public SoundBackwardAction(Camera camera, float speed, IPlayer soundPlayer, String soundName) {
 		super(camera, speed);
 		player = soundPlayer;
 		sound = soundName;
@@ -66,8 +66,8 @@ public class SoundBackwardAction extends KeyBackwardAction {
 	*/
 	public void performAction(float time) {
 		super.performAction(time);
-		if (player != null && player.getStatus() !=IEffectPlayer.PLAYING) {
-			player.play(EffectRepository.getRepository().getSource(sound));
+		if (player != null && player.getStatus() !=IPlayer.PLAYING) {
+			player.play(sound);
 		}
 	}
 }
