@@ -46,7 +46,7 @@ import com.jme.util.LoggingSystem;
  * class abstract. API specific classes are expected to extend this class and
  * handle renderer viewport setting.
  * @author Mark Powell
- * @version $Id: AbstractCamera.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: AbstractCamera.java,v 1.2 2003-10-27 21:34:06 mojomonkey Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -262,6 +262,16 @@ public abstract class AbstractCamera implements Camera {
         this.frustumTop = frustumTop;
         onFrustumChange();
     }
+    
+    /**
+     * 
+     * <code>getLocation</code> retrieves the location vector of the camera.
+     * @see com.jme.renderer.Camera#getLocation()
+     * @return the position of the camera.
+     */
+    public Vector3f getLocation() {
+        return location;
+    }
 
     /** 
      * <code>getDirection</code> retrieves the direction vector the camera is
@@ -288,6 +298,17 @@ public abstract class AbstractCamera implements Camera {
      */
     public Vector3f getUp() {
         return up;
+    }
+    
+    /**
+     * 
+     * <code>setLocation</code> sets the position of the camera.
+     * @see com.jme.renderer.Camera#setLocation(com.jme.math.Vector3f)
+     * @param location the position of the camera.
+     */
+    public void setLocation(Vector3f location) {
+        this.location = location;
+        onFrameChange();
     }
 
     /**
