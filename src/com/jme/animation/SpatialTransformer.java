@@ -11,12 +11,14 @@ import java.util.BitSet;
 
 /**
  * Started Date: Jul 9, 2004<br><br>
- * 
+ *
+ *
+ *
  * @author Jack Lindamood
  */
 public class SpatialTransformer extends Controller{
     private int numObjects;
-    public Object[] toChange;
+    public Spatial[] toChange;
     private TransformMatrix[] pivots;
     public int[] parentIndexes;
 
@@ -31,7 +33,7 @@ public class SpatialTransformer extends Controller{
 
     public SpatialTransformer(int numObjects){
         this.numObjects=numObjects;
-        toChange=new Object[numObjects];
+        toChange=new Spatial[numObjects];
         pivots=new TransformMatrix[numObjects];
         parentIndexes=new int[numObjects];
         for (int i=0;i<numObjects;i++){
@@ -93,7 +95,7 @@ public class SpatialTransformer extends Controller{
         curTime=((PointInTime)keyframes.get(0)).time;
     }
 
-    public void setObject(Object objChange, int index, int parentIndex) {
+    public void setObject(Spatial objChange, int index, int parentIndex) {
         toChange[index]=objChange;
         parentIndexes[index]=parentIndex;
     }

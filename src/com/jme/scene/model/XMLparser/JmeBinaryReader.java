@@ -495,7 +495,7 @@ public class JmeBinaryReader {
             int parNum=((Integer)s.pop()).intValue();
             int obNum=((Integer)s.pop()).intValue();
             SpatialTransformer parentST=(SpatialTransformer) s.pop();
-            parentST.setObject(xsn.whatIReallyAm,obNum,parNum);
+            parentST.setObject((Spatial) xsn.whatIReallyAm,obNum,parNum);
             s.push(parentST);
         } else if (tagName.equals("spatialpointtime")){
             s.pop();

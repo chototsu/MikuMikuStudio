@@ -28,10 +28,10 @@ import java.util.Iterator;
  * @author Jack Lindamood
  */
 public class TDSFile extends ChunkerClass{
-    EditableObjectChunk objects=null;
-    KeyframeChunk keyframes=null;
-    ArrayList spatialNodes;
-    ArrayList spatialNodesNames;
+    private EditableObjectChunk objects=null;
+    private KeyframeChunk keyframes=null;
+    private ArrayList spatialNodes;
+    private ArrayList spatialNodesNames;
     private SpatialTransformer st;
     private ArrayList spatialLights;
 
@@ -108,7 +108,7 @@ public class TDSFile extends ChunkerClass{
         spatialCount=0;
         for (int i=0;i<spatialNodes.size();i++){
             if (spatialNodes.get(i) instanceof Spatial){
-                st.setObject(spatialNodes.get(i),spatialCount++,getParentIndex(i));
+                st.setObject((Spatial) spatialNodes.get(i),spatialCount++,getParentIndex(i));
             }
         }
         Object[] keysetKeyframe=keyframes.objKeyframes.keySet().toArray();

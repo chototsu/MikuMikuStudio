@@ -18,9 +18,17 @@ import java.io.IOException;
  */
 public class MaxToJme extends FormatConverter {
     private LittleEndien myIn;
-    private Node lastLoad;
 
     private TDSFile chunkedTDS=null;
+
+    /**
+     * Converts a .3ds file to .jme via command prompt
+     * @param args The array of parameters.  args="file1.3ds file2.jme" will convert file1.3ds to jme and save it to file2.jme.
+     */
+    public static void main(String[] args){
+        new DummyDisplaySystem();
+        new MaxToJme().attemptFileConvert(args);
+    }
 
     /**
      * Converts a .3ds file (represented by the InputStream) to jME format.
@@ -33,14 +41,5 @@ public class MaxToJme extends FormatConverter {
         chunkedTDS=new TDSFile(myIn);
         Node toReturn=chunkedTDS.buildScene();
         new JmeBinaryWriter().writeScene(toReturn,bin);
-        lastLoad=toReturn;
-    }
-
-    /**
-     * Returns the last loaded node which was used as a dummy to convert
-     * @return The last node that was loaded
-     */
-    public Node getLastLoad(){
-        return lastLoad;
     }
 }
