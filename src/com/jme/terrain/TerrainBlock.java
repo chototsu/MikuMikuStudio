@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.24 2004-05-12 00:15:28 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.25 2004-05-12 19:07:11 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -77,7 +77,7 @@ public class TerrainBlock extends AreaClodMesh {
     // heightmap values used to create this block
     private int[] heightMap;
 
-    /**
+  /**
      * Empty Constructor to be used internally only.
      */
     public TerrainBlock() {}
@@ -157,6 +157,14 @@ public class TerrainBlock extends AreaClodMesh {
             this.create(null);
             this.setTrisPerPixel(0.02f);
         }
+    }
+
+    public void setOffset(Vector2f offset) {
+      this.offset = offset;
+    }
+
+    public Vector2f getOffset() {
+      return offset;
     }
 
     /**
