@@ -20,6 +20,7 @@ class KeyframeInfoChunk extends ChunkerClass{
     String name;
     short parent;
     short myID;
+    /** pivot location relative to object origin*/
     Vector3f pivot;
     ArrayList track;
     float morphSmoothAngle;
@@ -150,7 +151,8 @@ class KeyframeInfoChunk extends ChunkerClass{
         for (int i=0;i<keys;i++){
             int trackPosition=myIn.readInt();
             short accData=myIn.readShort(); // acceleration data
-            locateTrack(trackPosition).scale=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
+            Vector3f scale=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
+            locateTrack(trackPosition).scale=scale;
         }
     }
 
@@ -158,15 +160,20 @@ class KeyframeInfoChunk extends ChunkerClass{
         short flags=myIn.readShort();
         long temp=myIn.readLong();    // unknown
         int keys=myIn.readInt();
+        Vector3f axis=new Vector3f();
         for (int i=0;i<keys;i++){
             int trackPosition=myIn.readInt();
             short accData=myIn.readShort(); // acceleration data
-            Quaternion tempQ=new Quaternion();
-            tempQ.w =myIn.readFloat();
-            tempQ.x =myIn.readFloat();
-            tempQ.y =myIn.readFloat();
-            tempQ.z =myIn.readFloat();
-            locateTrack(trackPosition).rot=new Quaternion(tempQ);
+
+            float angle =myIn.readFloat();
+            angle*=-1;  // Opposite correction
+            axis.x =myIn.readFloat();
+            axis.y =myIn.readFloat();
+            axis.z =myIn.readFloat();
+            Quaternion toAdd=new Quaternion();
+            toAdd.fromAngleAxis(angle,axis);
+            locateTrack(trackPosition).rot=toAdd;
+
         }
     }
 
@@ -216,7 +223,7 @@ class KeyframeInfoChunk extends ChunkerClass{
         name=readcStr();
         short flag1=myIn.readShort();   // ignored
         short flag2=myIn.readShort();   // ignored
-        short parent=myIn.readShort();
+        parent=myIn.readShort();
         if (DEBUG || DEBUG_LIGHT) System.out.println("Name:" + name + " with parent:"+ parent);
     }
 
