@@ -143,7 +143,8 @@ public class BinaryToXML {
 
 
     private void readIntArray() throws IOException{
-        short length=myIn.readShort();
+        int length=myIn.readInt();
+        if (DEBUG) System.out.println("reading int[].length=" + length);
         for (int i=0;i<length;i++){
             currentLine.append(Integer.toString(myIn.readInt()));
             if (i!=length-1) currentLine.append(' ');
@@ -151,7 +152,8 @@ public class BinaryToXML {
     }
 
     private void readVec2fArray() throws IOException {
-        short length=myIn.readShort();
+        int length=myIn.readInt();
+        if (DEBUG) System.out.println("reading Vec2f[].length=" + length);
         for (int i=0;i<length;i++)
             for (int j=0;j<2;j++){
                 currentLine.append(Float.toString(myIn.readFloat()));
@@ -160,7 +162,8 @@ public class BinaryToXML {
     }
 
     private void readColorArray() throws IOException {
-        short length=myIn.readShort();
+        int length=myIn.readInt();
+        if (DEBUG) System.out.println("reading ColorRGBA.length=" + length);
         for (int i=0;i<length;i++)
             for (int j=0;j<4;j++){
                 currentLine.append(Float.toString(myIn.readFloat()));
@@ -169,7 +172,8 @@ public class BinaryToXML {
     }
 
     private void readVec3fArray() throws IOException {
-        short length=myIn.readShort();
+        int length=myIn.readInt();
+        if (DEBUG) System.out.println("reading Vec3f[].length=" + length);
         for (int i=0;i<length;i++){
             for (int j=0;j<3;j++){
                 currentLine.append(Float.toString(myIn.readFloat()));
