@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.43 2004-07-04 06:14:42 cep21 Exp $
+ * @version $Id: Spatial.java,v 1.44 2004-07-07 11:11:03 cep21 Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices
@@ -490,7 +490,7 @@ public abstract class Spatial implements Serializable {
 
   /**
    * <code>setLocalRotation</code> sets the local rotation of this node.
-   * @param localRotation the new local rotation.
+   * @param rotation the new local rotation.
    */
   public void setLocalRotation(Matrix3f rotation) {
     if (localRotation == null)
