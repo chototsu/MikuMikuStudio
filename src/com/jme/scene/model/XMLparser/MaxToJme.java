@@ -1,6 +1,7 @@
 package com.jme.scene.model.XMLparser;
 
 import com.jme.util.LittleEndien;
+import com.jme.util.TextureManager;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Quaternion;
@@ -8,8 +9,12 @@ import com.jme.math.Matrix3f;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.TextureState;
 import com.jme.bounding.BoundingSphere;
 import com.jme.renderer.ColorRGBA;
+import com.jme.system.DisplaySystem;
+import com.jme.image.Texture;
 
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -17,6 +22,7 @@ import java.io.IOException;
 import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.Stack;
+import java.util.HashMap;
 
 /**
  * Started Date: Jun 26, 2004<br><br>
@@ -27,9 +33,12 @@ import java.util.Stack;
  */
 public class MaxToJme implements MaxChunkIDs{
     LittleEndien myIn;
-    private static boolean DEBUG=true;
+    private static boolean DEBUG=false;
     private static boolean DEBUG_SEVERE=true;
-    Stack s=new Stack();
+    private static boolean DEBUG_LIGHT=true;
+
+    private Stack s=new Stack();
+    private HashMap readObject=new HashMap();
 
     public Node convert(InputStream max,OutputStream bin) throws IOException {
         s.clear();
@@ -47,6 +56,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readFile(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading file");
         while (length>0){
             Chunk i=readChunk();
             i.length-=6;
@@ -73,6 +83,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readKeyframes(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading Keyframes");
         while (length>0){
             Chunk i=readChunk();
             i.length-=6;
@@ -106,6 +117,12 @@ public class MaxToJme implements MaxChunkIDs{
                 case KEY_AMBIENT_NODE:
                     readAmbientNodeKeyframeInfo(i.length);
                     break;
+                case KEY_SPOT_TARGET:
+                    readSpotLightTarget(i.length);
+                    break;
+                case KEY_SPOT_INFO:
+                    readKeySpotLightInfo(i.length);
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readKeyframes");
@@ -117,38 +134,57 @@ public class MaxToJme implements MaxChunkIDs{
 
     }
 
+    private void readKeySpotLightInfo(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading keyspotlightinfo");
+        if (DEBUG) System.out.println("Reading info about spot light");
+        readKeyframeObj(length);
+    }
+
+    private void readSpotLightTarget(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading spotlighttarget");
+        if (DEBUG) System.out.println("Reading info about spot light target");
+        readKeyframeObj(length);
+    }
+
     private void readAmbientNodeKeyframeInfo(int length) throws IOException {
-        System.out.println("Reading info about Ambient light");
+        if (DEBUG_LIGHT) System.out.println("Reading ambientnodekeyframe");
+        if (DEBUG) System.out.println("Reading info about Ambient light");
         readKeyframeObj(length);
     }
 
     private void readOmniLightKeyframeInfo(int length) throws IOException {
-        System.out.println("Reading info about omni light");
+        if (DEBUG_LIGHT) System.out.println("Reading omnilightkeyframe");
+        if (DEBUG) System.out.println("Reading info about omni light");
         readKeyframeObj(length);
     }
 
     private void readCamTargetInfoTag(int length) throws IOException {
-        System.out.println("Reading info about camera target");
+        if (DEBUG_LIGHT) System.out.println("Reading camtargetinfotag");
+        if (DEBUG) System.out.println("Reading info about camera target");
         readKeyframeObj(length);
     }
 
     private void readCamInfoTag(int length) throws IOException{
-        System.out.println("Reading info about camera");
+        if (DEBUG_LIGHT) System.out.println("Reading caminfotag");
+        if (DEBUG) System.out.println("Reading info about camera");
         readKeyframeObj(length);
     }
 
     private void readCurTime() throws IOException{
         int curFrame=myIn.readInt();
-        System.out.println("Current frame is " + curFrame);
+        if (DEBUG_LIGHT) System.out.println("Reading curTime");
+        if (DEBUG) System.out.println("Current frame is " + curFrame);
     }
 
     private void readSegment() throws IOException {
         int begin=myIn.readInt();
         int end=myIn.readInt();
-        System.out.println("Segment begins at " + begin + " and ends at " + end);
+        if (DEBUG_LIGHT) System.out.println("Reading segment");
+        if (DEBUG) System.out.println("Segment begins at " + begin + " and ends at " + end);
     }
 
     private void readKeyframeObj(int length) throws IOException{
+        if (DEBUG_LIGHT) System.out.println("Reading readingkeyframeobject");
         while (length>0){
             Chunk i=readChunk();
             i.length-=6;
@@ -185,6 +221,12 @@ public class MaxToJme implements MaxChunkIDs{
                 case KEY_COLOR_TRACK:
                     readColorTrack();
                     break;
+                case KEY_HOTSPOT_TRACK:
+                    readHotspotTrack();
+                    break;
+                case KEY_FALLOFF_TRACK:
+                    readFalloffTrack();
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readKeyframeObj");
@@ -196,7 +238,36 @@ public class MaxToJme implements MaxChunkIDs{
         }
     }
 
+    private void readFalloffTrack() throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading FalloffTrack");
+        short flags=myIn.readShort();
+        long temp=myIn.readLong();    // unknown
+        int keys=myIn.readInt();
+        float[] falloff=new float[keys];
+        for (int i=0;i<keys;i++){
+            int trackRot=myIn.readInt();
+            short accData=myIn.readShort(); // acceleration data
+            falloff[i]=myIn.readFloat();
+            if (DEBUG) System.out.println("Track " + trackRot + " has falloff angle " + falloff[i]);
+        }
+    }
+
+    private void readHotspotTrack() throws IOException{
+        if (DEBUG_LIGHT) System.out.println("Reading Hotspot track");
+        short flags=myIn.readShort();
+        long temp=myIn.readLong();    // unknown
+        int keys=myIn.readInt();
+        float[] hotspot=new float[keys];
+        for (int i=0;i<keys;i++){
+            int trackRot=myIn.readInt();
+            short accData=myIn.readShort(); // acceleration data
+            hotspot[i]=myIn.readFloat();
+            if (DEBUG) System.out.println("Track " + trackRot + " has hotspot angle " + hotspot[i]);
+        }
+    }
+
     private void readColorTrack() throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading Colortrack");
         short flags=myIn.readShort();
         long temp=myIn.readLong();    // unknown
         int keys=myIn.readInt();
@@ -210,6 +281,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readRollTrack() throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading roll track");
         short flags=myIn.readShort();
         long temp=myIn.readLong();    // unknown
         int keys=myIn.readInt();
@@ -223,6 +295,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readFOVTrack() throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading FOV track");
         short flags=myIn.readShort();
         long temp=myIn.readLong();    // unknown
         int keys=myIn.readInt();
@@ -236,11 +309,13 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readSmoothMorph() throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading smoothmorph");
         float smoothAngle=myIn.readFloat();
         if (DEBUG) System.out.println("Smooth morph angle:" + smoothAngle);
     }
 
     private void readScaleTrackTag() throws IOException{
+        if (DEBUG_LIGHT) System.out.println("Reading scaletrack");
         short flags=myIn.readShort();
         long temp=myIn.readLong();    // unknown
         int keys=myIn.readInt();
@@ -254,6 +329,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readRotTrackTag() throws IOException{
+        if (DEBUG_LIGHT) System.out.println("Reading rottrack");
         short flags=myIn.readShort();
         long temp=myIn.readLong();    // unknown
         int keys=myIn.readInt();
@@ -271,6 +347,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readPosTrackTag() throws IOException{
+        if (DEBUG_LIGHT) System.out.println("Reading Postrack");
         short flags=myIn.readShort();
         long temp=myIn.readLong();    // unknown
         int keys=myIn.readInt();
@@ -284,11 +361,13 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readTrackPivot() throws IOException{
+        if (DEBUG_LIGHT) System.out.println("Reading trackpivot");
         Vector3f pivot=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
         if (DEBUG) System.out.println("Pivot of:" + pivot);
     }
 
     private void readTrackHeader() throws IOException{
+        if (DEBUG_LIGHT) System.out.println("Reading trackheader");
         String name=readcStr();
         short flag1=myIn.readShort();
         short flag2=myIn.readShort();
@@ -297,11 +376,13 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readNodeID() throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading NodeID");
         short ID=myIn.readShort();
         if (DEBUG) System.out.println("Reading node id#" + ID);
     }
 
     private void readKeyframeHeader() throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading keyframeHeader");
         short revision=myIn.readShort();
         String flname=readcStr();
         int animLen=myIn.readInt();
@@ -310,6 +391,7 @@ public class MaxToJme implements MaxChunkIDs{
 
     // Parent readFile() This=3d3d
     private void readEditableObject(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading editableObject");
         s.push(new Node("3ds editable object"));
         while (length>0){
             Chunk i=readChunk();
@@ -374,6 +456,9 @@ public class MaxToJme implements MaxChunkIDs{
                 case DEFAULT_VIEW:
                     readDefaultView(i.length);
                     break;
+                case UNKNOWN1:
+                    myIn.readFloat();   // Unknown
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readEditableObject");
@@ -386,9 +471,11 @@ public class MaxToJme implements MaxChunkIDs{
         Node parentNode=(Node) s.pop();
         parentNode.attachChild(finishedNode);
         s.push(parentNode);
+        if (DEBUG_LIGHT) System.out.println("Finished Editable object");
     }
 
     private void readFog(int length) throws IOException{
+        if (DEBUG_LIGHT) System.out.println("Reading Fog");
         float nearPlane=myIn.readFloat();
         float nearDensity=myIn.readFloat();
         float farPlane=myIn.readFloat();
@@ -421,6 +508,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readLayeredFogOptions(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading LayeredFogOptions");
         float nearZ=myIn.readFloat();
         float farZ=myIn.readFloat();
         float density=myIn.readFloat();
@@ -448,6 +536,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readDistanceQueue(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading distanceQueue");
         float nearPlane=myIn.readFloat();
         float nearDensity=myIn.readFloat();
         float farPlane=myIn.readFloat();
@@ -474,6 +563,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readDefaultView(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading defaultView");
         if (DEBUG) System.out.println("Reading default view");
         while (length > 0){
             Chunk i=readChunk();
@@ -496,49 +586,49 @@ public class MaxToJme implements MaxChunkIDs{
 
     private void readCamera() throws IOException {
         String s=readcStr();
-        if (DEBUG) System.out.println("Reading camera for view with name " + s);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading camera for view with name " + s);
 
     }
 
     private void useBackColor() {
-        if (DEBUG) System.out.println("Background color use flag located");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Background color use flag located");
     }
 
     private void readGradient(int length) throws IOException{
         float midpoint=myIn.readFloat();
-        System.out.println("Reading gradient with midpoint of " + midpoint);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading gradient with midpoint of " + midpoint);
         readColors(length-4);
     }
 
     private void readBackGroundBitMap() throws IOException {
         String bit=readcStr();
-        if (DEBUG) System.out.println("Bitmap name:" + bit);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Bitmap name:" + bit);
 
     }
 
     private void readBackGroundColor(int length) throws IOException {
-        if (DEBUG) System.out.println("Reading background colors");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading background colors");
         readColors(length);
     }
 
     private void readGenAmbColor(int length) throws IOException {
-        if (DEBUG) System.out.println("Reading general ambient color");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading general ambient color");
         readColors(length);
     }
 
     private void readOConst() throws IOException{
         Vector3f planes=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
-        if (DEBUG) System.out.println("Planes:" + planes);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Planes:" + planes);
     }
 
     private void readRayTraceBias() throws IOException{
         float bias=myIn.readFloat();
-        if (DEBUG) System.out.println("Raytrace bias:" + bias);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Raytrace bias:" + bias);
     }
 
     private void readShadowRange() throws IOException{
         float range=myIn.readFloat();
-        if (DEBUG) System.out.println("Shadow map range:" + range);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Shadow map range:" + range);
     }
 
     private void readViewLayout(int length) throws IOException {
@@ -549,8 +639,8 @@ public class MaxToJme implements MaxChunkIDs{
         myIn.readShort(); // Uknown
         int swapPrior=myIn.readShort();
         int swapView=myIn.readShort();
-        if (DEBUG){
-            System.out.println("style:" + style+":active:"+active+":swap:"+swap+":swapPrior:"+swapPrior+":swapView"+swapView);
+        if (DEBUG || DEBUG_LIGHT){
+            System.out.println("ViewLayout style:" + style+":active:"+active+":swap:"+swap+":swapPrior:"+swapPrior+":swapView"+swapView);
         }
         length-=14;
         while (length > 0){
@@ -578,12 +668,12 @@ public class MaxToJme implements MaxChunkIDs{
 
     private void readShadowMapSize() throws IOException{
         short size=myIn.readShort();
-        if (DEBUG) System.out.println("Shadow map siz:" + size);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Shadow map siz:" + size);
     }
 
     private void readShadowBias() throws IOException {
         float bias=myIn.readFloat();
-        if (DEBUG) System.out.println("Bias:" + bias);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Bias:" + bias);
     }
 
     private void readViewPortData() throws IOException{
@@ -601,8 +691,8 @@ public class MaxToJme implements MaxChunkIDs{
         byte[] name=new byte[11];
         myIn.readFully(name);
         String camName=new String(name);
-        if (DEBUG){
-            System.out.println("flags:" + flags + " axisLockout:" + axisLockout + " X:" + X + " Y:" + Y + " width:" + width +
+        if (DEBUG || DEBUG_LIGHT){
+            System.out.println("ViewportData flags:" + flags + " axisLockout:" + axisLockout + " X:" + X + " Y:" + Y + " width:" + width +
                     " height:" + height + " type:" + type + " zoom:" + zoom + " center:" + cent +
                     " horizAng:" + horizAng + " vertAng:" + vertAng + " Name:" + camName);
         }
@@ -613,11 +703,13 @@ public class MaxToJme implements MaxChunkIDs{
         short y=myIn.readShort();
         short width=myIn.readShort();
         short height=myIn.readShort();
-        if (DEBUG) System.out.println("X:" + x + " Y:" + y + " Width:" + width + " Height:" + height);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("X:" + x + " Y:" + y + " Width:" + width + " Height:" + height);
 
     }
 
     private void readMatBlock(int length) throws IOException{
+        s.push(new MaterialBlock());
+        if (DEBUG_LIGHT) System.out.println("reading MatBlock");
         while (length > 0){
             Chunk i=readChunk();
             i.length-=6;
@@ -660,6 +752,45 @@ public class MaxToJme implements MaxChunkIDs{
                 case MAT_WIRE_SIZE:
                     readMatWireSize();
                     break;
+                case IN_TRANC_FLAG:
+                    if (DEBUG) System.out.println("In tranc (???) flag is true");
+                    break;
+                case TEXMAP_ONE:
+                    readTextureMapOne(i.length);
+                    break;
+                case MAT_TEX_BUMPMAP:
+                    readTextureBumpMap(i.length);
+                    break;
+                case MAT_SOFTEN:
+                    if (DEBUG) System.out.println("Material soften is true");
+                    break;
+                case MAT_SXP_TEXT_DATA:
+                    myIn.skipBytes(i.length);   // unknown
+                    break;
+                case MAT_REFL_BLUR:
+                    if (DEBUG) System.out.println("Material blur present");
+                    break;
+                case MAT_WIRE_ABS:
+                    if (DEBUG) System.out.println("Using absolute wire in units");
+                    break;
+                case MAT_REFLECT_MAP:
+                    readReflectMap(i.length);
+                    break;
+                case MAT_SXP_BUMP_DATA:
+                    myIn.skipBytes(i.length);   // unknown
+                    break;
+                case MAT_TWO_SIDED:
+                    if (DEBUG) System.out.println("Material two sided indicated");
+                    break;
+                case MAT_FALLOFF:
+                    if (DEBUG) System.out.println("Using material falloff");
+                    break;
+                case MAT_WIREFRAME_ON:
+                    if (DEBUG) System.out.println("Material wireframe is active");
+                    break;
+                case MAT_TEX2MAP:
+                    readTextureMapTwo(i.length);
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readMatBlock");
@@ -668,55 +799,148 @@ public class MaxToJme implements MaxChunkIDs{
             length-=i.length;
             if (DEBUG) System.out.println("length left in readNamedObject:" + length);
         }
+        if (DEBUG_LIGHT) System.out.println("Finished Mat block");
+        MaterialBlock mb=(MaterialBlock) s.pop();
+        mb.mat.setEnabled(false);
+        mb.tex.setEnabled(true);
+        readObject.put(mb.name,mb);
+    }
+
+    private void readTextureMapTwo(int length) throws IOException {
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading texture map TWO info");
+        readMapInfo(length);
+    }
+
+    private void readReflectMap(int length) throws IOException {
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Reflection info");
+        readMapInfo(length);
+    }
+
+    private void readTextureBumpMap(int length) throws IOException{
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading texture bumpMap info");
+        readMapInfo(length);
+    }
+
+    private Texture readMapInfo(int length)throws IOException{
+        Texture t=null;
+        s.push(t);
+        if (DEBUG_LIGHT) System.out.println("Reading map info");
+        while (length > 0){
+            Chunk i=readChunk();
+            i.length-=6;
+            length-=6;
+            float value;
+            if (DEBUG) System.out.println("Read in readMapInfo object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
+            switch (i.type){
+                case PRCT_INT_FRMT:
+                    value=myIn.readShort()/100f;
+                    if (DEBUG) System.out.println("Texture percent:"+value);
+                    break;
+                case MAT_TEXNAME:
+                    readMatFileName();
+                    break;
+                case MAT_TEX_FLAGS:
+                    readMatMapFlags();
+                    break;
+                case MAT_TEX_BLUR:
+                    readTextureBlur();
+                    break;
+                case MAT_TEX_BUMP_PER:
+                    value=myIn.readShort()/100f;
+                    if (DEBUG) System.out.println("Texture bump percent:"+value);
+                    break;
+                default:
+                    if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
+                    if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readMapInfo");
+                    return (Texture) s.pop();
+            }
+            length-=i.length;
+            if (DEBUG) System.out.println("length left in readMapInfo:" + length);
+        }
+        if (DEBUG_LIGHT) System.out.println("Finished mapInfo");
+        return (Texture) s.pop();
+    }
+
+    private void readTextureMapOne(int length) throws IOException {
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading texture map one info");
+        Texture t=readMapInfo(length);
+        if (t!=null){
+            MaterialBlock mb=(MaterialBlock) s.pop();
+            mb.tex.setTexture(t);
+            s.push(mb);
+        }
+    }
+
+    private void readTextureBlur() throws IOException {
+        float blur=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Texture blur is " + blur);
+    }
+
+    private void readMatMapFlags() throws IOException {
+        short flags=myIn.readShort();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Material Map flags are " + flags);
+    }
+
+    private void readMatFileName() throws IOException {
+        String name=readcStr();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Texture filename:"+name);
+        Texture t=(Texture) s.pop();    // ignore old texture
+        s.push(TextureManager.loadTexture(name,Texture.FM_LINEAR,Texture.MM_NEAREST,false));
     }
 
     private void readMatWireSize() throws IOException {
         float wireSize=myIn.readFloat();
-        if (DEBUG) System.out.println("Reading Material wiresize " + wireSize);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Material wiresize " + wireSize);
     }
 
     private void readMatSelfIlum() throws IOException{
-        if (DEBUG) System.out.println("Reading Material self Illumination");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Material self Illumination");
         readPercent();
     }
 
     private void readMatShading() throws IOException{
         short matShadeVal=myIn.readShort();
-        if (DEBUG) System.out.println("Reading Material shading value:" + matShadeVal);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Material shading value:" + matShadeVal);
     }
 
     private void readMatRefBlur() throws IOException{
-        if (DEBUG) System.out.println("Reading Material reflective blur");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Material reflective blur");
         readPercent();
     }
 
     private void readMatAlphaFallout() throws IOException{
-        if (DEBUG) System.out.println("Reading Material alpha Fallout");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Material alpha Fallout");
         readPercent();
     }
 
     private void readMatAlpha() throws IOException{
-        if (DEBUG) System.out.println("Reading Material alpha");
-        readPercent();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Material alpha");
+        float alpha=readPercent();
+        MaterialBlock m=(MaterialBlock) s.pop();
+        m.mat.setAlpha(alpha);
+        s.push(m);
     }
 
     private void readMatStrShine() throws IOException {
-        if (DEBUG) System.out.println("Reading shinniness strength");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading shinniness strength");
         readPercent();
     }
 
     private void readMatShine() throws IOException {
-        if (DEBUG) System.out.println("Reading shinniness");
-        readPercent();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading shinniness");
+        float percent=readPercent();
+        MaterialBlock m=(MaterialBlock) s.pop();
+        m.mat.setShininess(percent*128f);
+        s.push(m);
     }
 
-    private void readPercent() throws IOException{
+    private float readPercent() throws IOException{
         Chunk i=readChunk();
         float value=0;
         if (DEBUG) System.out.println("Read in readPercent ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
         switch (i.type){
             case PRCT_INT_FRMT:
-                value=myIn.readShort();
+                value=myIn.readShort()/100f;
                 break;
             case PRCT_FLT_FRMT:
                 value=myIn.readFloat();
@@ -724,64 +948,81 @@ public class MaxToJme implements MaxChunkIDs{
             default:
                 if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                 if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readPercent");
-                return;
+                return -1;
         }
-        if (DEBUG) System.out.println("have read percent " + value);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Have read percent " + value);
+        return value;
     }
 
     private void readMatSpec(int length) throws IOException {
-        if (DEBUG) System.out.println("Reading Specular color");
-        readColors(length);
+        ColorRGBA color=readColors(length);
+        MaterialBlock m=(MaterialBlock) s.pop();
+        m.mat.setAmbient(color);
+        s.push(m);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Specular color " + color);
     }
 
     private void readMatDiffuse(int length) throws IOException {
-        if (DEBUG) System.out.println("Reading Diffuse color");
-        readColors(length);
+        ColorRGBA color=readColors(length);
+        MaterialBlock m=(MaterialBlock) s.pop();
+        m.mat.setDiffuse(color);
+        s.push(m);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Diffuse color " + color);
     }
 
     private void readMatAmbient(int length) throws IOException {
-        if (DEBUG) System.out.println("Reading ambient");
-        readColors(length);
+        ColorRGBA color=readColors(length);
+        MaterialBlock m=(MaterialBlock) s.pop();
+        m.mat.setAmbient(color);
+        s.push(m);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading ambient color " + color);
     }
 
-    private void readColors(int length) throws IOException {
+    private ColorRGBA readColors(int length) throws IOException {
+        ColorRGBA color1=null;
+        ColorRGBA color2=null;
         while (length > 0){
             Chunk i=readChunk();
-            ColorRGBA color=null;
             if (DEBUG) System.out.println("Read in readColor ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
             switch (i.type){
                 case COLOR_BYTE:
-                    color=new ColorRGBA(myIn.readByte()/255f,myIn.readByte()/255f,myIn.readByte()/255f,1);
+                    if (color1==null) color1=new ColorRGBA(myIn.readUnsignedByte()/255f,myIn.readUnsignedByte()/255f,myIn.readUnsignedByte()/255f,1);
                     break;
                 case CLR_BYTE_GAMA:
-                    color=new ColorRGBA(myIn.readByte()/255f,myIn.readByte()/255f,myIn.readByte()/255f,1);
+                    if (color2==null) color2=new ColorRGBA(myIn.readUnsignedByte()/255f,myIn.readUnsignedByte()/255f,myIn.readUnsignedByte()/255f,1);
                     break;
                 case COLOR_FLOAT:
-                    color=new ColorRGBA(myIn.readFloat(),myIn.readFloat(),myIn.readFloat(),1);
+                    if (color1==null) color1=new ColorRGBA(myIn.readFloat(),myIn.readFloat(),myIn.readFloat(),1);
                     break;
                 case CLR_FLOAT_GAMA:
-                    color=new ColorRGBA(myIn.readFloat(),myIn.readFloat(),myIn.readFloat(),1);
+                    if (color2==null) color2=new ColorRGBA(myIn.readFloat(),myIn.readFloat(),myIn.readFloat(),1);
                     break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readMatAmb");
-                    return;
+                    myIn.skipBytes(i.length-6);
+                    return null;
             }
             length-=i.length;
-            if (DEBUG) System.out.println("have read color " + color + " and length left " + length);
+            if (DEBUG) System.out.println("Have read colors and length left " + length);
         }
+        return (color1==null) ? color2 : color1;
     }
 
 
     private void readMatName() throws IOException{
         String name=readcStr();
-        System.out.println("read material name:" + name);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("read material name:" + name);
+        MaterialBlock i=(MaterialBlock) s.pop();
+        i.name=name;
+        s.push(i);
     }
 
     private void readNamedObject(int length) throws IOException {
         String name=readcStr();
         length-=name.length()+1;
         s.push(new Node(name));
+        if (DEBUG_LIGHT) System.out.println("Reading named object " + name);
         while (length > 0){
             Chunk i=readChunk();
             i.length-=6;
@@ -809,11 +1050,12 @@ public class MaxToJme implements MaxChunkIDs{
         Node parentNode=(Node) s.pop();
         parentNode.attachChild(finishedNode);
         s.push(parentNode);
+        if (DEBUG_LIGHT) System.out.println("Finished named object " + name);
     }
 
     private void readLightObject(int length) throws IOException{
         Vector3f lightPos=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
-        if (DEBUG) System.out.println("Light found with position " + lightPos);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Light with position " + lightPos);
         length-=4*3;
         while (length > 0){
             Chunk i=readChunk();
@@ -834,6 +1076,9 @@ public class MaxToJme implements MaxChunkIDs{
                 case LIGHT_MULTIPLIER:
                     readLightMultiplier();
                     break;
+                case LIGHT_SPOTLIGHT:
+                    readSpotLight(i.length);
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readLightObject");
@@ -842,21 +1087,66 @@ public class MaxToJme implements MaxChunkIDs{
             length-=i.length;
             if (DEBUG) System.out.println("length left in readLightObject:" + length);
         }
+        if (DEBUG_LIGHT) System.out.println("Finished light");
+    }
+
+    private void readSpotLight(int length) throws IOException{
+        Vector3f targetPos=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
+        float hotSpot=myIn.readFloat();
+        float fallOff=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT){
+            System.out.println("Spotlight pointed at " + targetPos + " with hotspot " + hotSpot + " and falloff " + fallOff);
+        }
+        length-=4*5;
+        while (length > 0){
+            Chunk i=readChunk();
+            i.length-=6;
+            length-=6;
+            if (DEBUG) System.out.println("Read in readSpotLight object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
+            switch (i.type){
+                case LIGHT_SPOT_ROLL:
+                    readSpotlightRollAngles();
+                    break;
+                case LIGHT_SPOT_SHADOWED:
+                    if (DEBUG) System.out.println("Spotlight is now shadowed");
+                    break;
+                case LIGHT_SPOT_BIAS:
+                    readLightBias();
+                    break;
+                default:
+                    if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
+                    if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readSpotLight");
+                    return;
+            }
+            length-=i.length;
+            if (DEBUG) System.out.println("length left in readSpotLight:" + length);
+        }
+        if (DEBUG_LIGHT) System.out.println("Finished spotlight");
+    }
+
+    private void readLightBias() throws IOException {
+        float bias=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Light bias is " + bias);
+    }
+
+    private void readSpotlightRollAngles() throws IOException{
+        float roll=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Spotlight rollangle:"+ roll);
     }
 
     private void readLightMultiplier() throws IOException {
         float mult=myIn.readFloat();
-        if (DEBUG) System.out.println("Light multiplier is " + mult);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Light multiplier is " + mult);
     }
 
     private void readInnerLightRange() throws IOException {
         float range=myIn.readFloat();
-        if (DEBUG) System.out.println("Light inner range is " + range);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Light inner range is " + range);
     }
 
     private void readOuterLightRange() throws IOException {
         float range=myIn.readFloat();
-        if (DEBUG) System.out.println("Light outter range is " + range);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Light outter range is " + range);
     }
 
     private void readCameraFlag(int length) throws IOException {
@@ -864,7 +1154,7 @@ public class MaxToJme implements MaxChunkIDs{
         Vector3f targetLoc=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
         float bankAngle=myIn.readFloat();
         float focus=myIn.readFloat();
-        if (DEBUG)
+        if (DEBUG || DEBUG_LIGHT)
             System.out.println("Camera Position:" + camPos+" TargetLoc:"+targetLoc+" bankAngle:"+bankAngle+" focus:"+focus);
         length-=8*4;
         while (length > 0){
@@ -884,15 +1174,17 @@ public class MaxToJme implements MaxChunkIDs{
             length-=i.length;
             if (DEBUG) System.out.println("length left in readCameraFlag:" + length);
         }
+        if (DEBUG_LIGHT) System.out.println("Finished camera flags");
     }
 
     private void readRanges() throws IOException {
         float nearRange=myIn.readFloat();
         float farRange=myIn.readFloat();
-        if (DEBUG) System.out.println("Near range:"+ nearRange + " Far range:" + farRange);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Near range:"+ nearRange + " Far range:" + farRange);
     }
 
     private void readTriMesh(int length) throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading triMesh");
         TriMesh me=new TriMesh("Mesh Object");
         s.push(me);
         while (length > 0){
@@ -919,6 +1211,9 @@ public class MaxToJme implements MaxChunkIDs{
                 case MESH_COLOR:
                     readMeshColor();
                     break;
+                case MESH_TEXTURE_INFO:
+                    readMeshTextureInfo();
+                    break;
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readTriMesh");
@@ -934,11 +1229,29 @@ public class MaxToJme implements MaxChunkIDs{
         Node parentNode=(Node) s.pop();
         parentNode.attachChild(finishedMesh);
         s.push(parentNode);
+        if (DEBUG_LIGHT) System.out.println("Finished reading trimesh");
+    }
+
+    private void readMeshTextureInfo() throws IOException{
+        short type=myIn.readShort();
+        float xTiling=myIn.readFloat();
+        float yTiling=myIn.readFloat();;
+        float Xicon=myIn.readFloat();
+        float Yicon=myIn.readFloat();
+        float Zicon=myIn.readFloat();
+        float matrix[][]=new float[4][3];
+        for (int i=0;i<4;i++)
+            for (int j=0;j<3;j++)
+                matrix[i][j]=myIn.readFloat();
+        float scaling=myIn.readFloat();
+        float planIconW=myIn.readFloat();
+        float planIconH=myIn.readFloat();
+        float cylIconH=myIn.readFloat();;
     }
 
     private void readMeshColor() throws IOException {
         byte color=myIn.readByte();
-        if (DEBUG) System.out.println("Mesh color read as " + color);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Mesh color read as " + color);
     }
 
     private void readOptions() throws IOException {
@@ -946,17 +1259,17 @@ public class MaxToJme implements MaxChunkIDs{
         for (int i=0;i<numVert;i++){
             short option=myIn.readShort();
         }
-        if (DEBUG) System.out.println("Options read");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Options read");
     }
 
     private void readMeshVersion() throws IOException {
         int i=myIn.readInt();
-        if (DEBUG) System.out.println("Mesh version:" + i);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Mesh version:" + i);
 
     }
 
     private void readSmoothing(short nFaces) throws IOException{
-        if (DEBUG) System.out.println("Reading smoothing");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading smoothing");
         for (int i=0;i<nFaces;i++){
             short part=myIn.readShort();
             part=myIn.readShort();
@@ -966,9 +1279,8 @@ public class MaxToJme implements MaxChunkIDs{
 
     private void readFaces(int length) throws IOException{
 
-        if (DEBUG) System.out.println("Reading faces");
         short nFaces=myIn.readShort();
-        if (DEBUG) System.out.println("nFaces:" + nFaces);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading faces #=" + nFaces);
         int[] indexes=new int[nFaces*3];
         for (int i=0;i<nFaces;i++){
             short[] parts=new short[3];
@@ -1003,19 +1315,26 @@ public class MaxToJme implements MaxChunkIDs{
             length-=i.length;
             if (DEBUG) System.out.println("length left in readNamedObject:" + length);
         }
+        if (DEBUG_LIGHT) System.out.println("Finished reading faces");
     }
 
     private void readMeshMaterialGroup() throws IOException {
         String name=readcStr();
         short numFace=myIn.readShort();
-        if (DEBUG) System.out.println("Material " + name + " is applied to " + numFace + " faces");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Material " + name + " is applied to " + numFace + " faces");
         for (int i=0;i<numFace;i++){
             int faceApplied=myIn.readShort();
         }
+        // Wrongly assume only one texture can be applied to one TriMesh
+        MaterialBlock mb=(MaterialBlock) readObject.get(name);
+        TriMesh tm=(TriMesh) s.pop();
+        tm.setRenderState(mb.mat);
+        tm.setRenderState(mb.tex);
+        s.push(tm);
     }
 
     private void readCoordSystem() throws IOException{
-        if (DEBUG) System.out.println("reading local coords");
+        if (DEBUG || DEBUG_LIGHT) System.out.println("reading local coords");
         float[] parts=new float[9];
         Matrix3f rot=new Matrix3f();
         for (int i=0;i<9;i++)
@@ -1031,9 +1350,8 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readTexCoords() throws IOException{
-        if (DEBUG) System.out.println("Reading texCoords");
         short nPoints=myIn.readShort();
-        if (DEBUG) System.out.println("NumPoints:"+ nPoints);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading texCoords #="+ nPoints);
         Vector2f[] verts=new Vector2f[nPoints];
         for (int i=0;i<nPoints;i++){
             verts[i]=new Vector2f(myIn.readFloat(),myIn.readFloat());
@@ -1045,9 +1363,8 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private void readVerts() throws IOException{
-        if (DEBUG) System.out.println("Verts read");
         short nPoints=myIn.readShort();
-        if (DEBUG) System.out.println("NumPoints:"+ nPoints);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Verts #="+ nPoints);
         Vector3f[] verts=new Vector3f[nPoints];
         for (int i=0;i<nPoints;i++){
             verts[i]=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
@@ -1077,25 +1394,35 @@ public class MaxToJme implements MaxChunkIDs{
 
     private void readMasterScale() throws IOException {
         float scale=myIn.readFloat();
-        if (DEBUG) System.out.println("Master scale:" + scale);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Master scale:" + scale);
 
     }
 
     private void readVersion() throws IOException {
         int i=myIn.readInt();
-        if (DEBUG) System.out.println("Version:" + i);
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Version:" + i);
     }
 
     private Chunk readChunk() throws IOException {
         return new Chunk(myIn.readUnsignedShort(),myIn.readInt());
     }
 
-    class Chunk{
+    private class Chunk{
         Chunk(int t,int l){
             type=t;
             length=l;
         }
         int type;
         int length;
+    }
+
+    private class MaterialBlock{
+        public MaterialState mat;
+        public TextureState tex;
+        public String name;
+        public MaterialBlock(){
+            mat=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
+            tex=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+        }
     }
 }
