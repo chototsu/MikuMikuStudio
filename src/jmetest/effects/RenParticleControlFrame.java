@@ -33,6 +33,35 @@ package jmetest.effects;
 
 import java.io.File;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JColorChooser;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -44,13 +73,11 @@ import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import java.awt.*;
-import javax.swing.*;
-import java.awt.event.*;
 
 public class RenParticleControlFrame extends JFrame {
   JTabbedPane mainTabbedPane1 = new JTabbedPane();
@@ -140,12 +167,17 @@ public class RenParticleControlFrame extends JFrame {
   JSlider rateVarSlider = new JSlider();
   JSlider rateSlider = new JSlider();
   JCheckBox rateBox = new JCheckBox();
+  JPanel velocityPanel = new JPanel();
+  GridBagLayout gridBagLayout1 = new GridBagLayout();
+  TitledBorder velocityBorder;
+  JLabel velocityLabel = new JLabel();
+  JSlider velocitySlider = new JSlider();
 
   /**
    * <code>RenParticleControlFrame</code>
    *
    * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.19 2004-03-26 17:58:54 renanse Exp $
+   * @version $Id: RenParticleControlFrame.java,v 1.20 2004-03-27 00:59:34 renanse Exp $
    *
    */
 
@@ -178,6 +210,7 @@ public class RenParticleControlFrame extends JFrame {
     countBorder = new TitledBorder(" PARTICLE COUNT ");
     rateBorder = new TitledBorder(" RATE ");
     spawnBorder = new TitledBorder(" SPAWN s");
+    velocityBorder = new TitledBorder(" VELOCITY ");
     this.getContentPane().setLayout(new BorderLayout());
     appPanel.setLayout(new GridBagLayout());
     emitPanel.setLayout(new GridBagLayout());
@@ -255,7 +288,7 @@ public class RenParticleControlFrame extends JFrame {
     speedSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = speedSlider.getValue();
-        TestRenParticleGUI.manager.setParticlesSpeed( (float) val * .1f);
+        TestRenParticleGUI.manager.setFrequency( (float) val * .1f);
         updateSpeedLabels();
         regenCode();
       }
@@ -525,7 +558,10 @@ public class RenParticleControlFrame extends JFrame {
     spawnBox.setText("Respawn \'dead\' particles.");
     spawnBox.addActionListener(new ActionListener() {
       public void actionPerformed(ActionEvent e) {
-        TestRenParticleGUI.manager.setRespawnsParticles(spawnBox.isSelected());
+        if (spawnBox.isSelected())
+          TestRenParticleGUI.manager.setRepeatType(Controller.RT_WRAP);
+        else
+          TestRenParticleGUI.manager.setRepeatType(Controller.RT_CLAMP);
       }
     });
     spawnButton.setFont(new java.awt.Font("Arial", 0, 12));
@@ -568,10 +604,25 @@ public class RenParticleControlFrame extends JFrame {
         updateRateLabels();
       }
     });
+    velocityPanel.setLayout(gridBagLayout1);
+    velocityPanel.setBorder(velocityBorder);
+    velocityBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
+    velocityBorder.setBorder(BorderFactory.createEtchedBorder(new Color(240, 217, 205),new Color(117, 106, 100)));
+    velocityLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    velocityLabel.setText("Initial Velocity: .0001");
+    velocitySlider.setMaximum(1000);
+    velocitySlider.setValue(10);
+    velocitySlider.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int val = velocitySlider.getValue();
+        TestRenParticleGUI.manager.setInitialVelocity( (float) val * .01f);
+        updateVelocityLabels();
+        regenCode();
+      }
+    });
     this.getContentPane().add(mainTabbedPane1, BorderLayout.CENTER);
-    emitPanel.add(directionPanel, new GridBagConstraints(0, 0, 1, 2, 0.5, 1.0
-        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-        new Insets(10, 10, 10, 5), 0, 0));
+    emitPanel.add(directionPanel,     new GridBagConstraints(0, 0, 1, 1, 0.5, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 5, 5), 0, 0));
     directionPanel.add(emitXSlider, new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
         , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(10, 10, 5, 0), 0, 0));
@@ -720,15 +771,15 @@ public class RenParticleControlFrame extends JFrame {
     worldPanel.add(randomPanel, new GridBagConstraints(0, 2, 1, 1, 0.5, 0.0
         , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(5, 10, 10, 5), 0, 0));
-    emitPanel.add(anglePanel, new GridBagConstraints(1, 0, 1, 1, 0.5, 0.0
-        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-        new Insets(10, 5, 5, 10), 0, 0));
-    anglePanel.add(angleLabel, new GridBagConstraints(0, 0, 1, 1, 0.5, 0.0
-        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-        new Insets(10, 5, 5, 10), 0, 0));
+    emitPanel.add(anglePanel,     new GridBagConstraints(0, 1, 1, 1, 0.5, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 10, 5), 0, 0));
+    anglePanel.add(angleLabel,   new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 5, 10), 0, 0));
     anglePanel.add(angleSlider, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
         , GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
         new Insets(5, 10, 5, 10), 0, 0));
+    emitPanel.add(velocityPanel,    new GridBagConstraints(1, 1, 1, 1, 0.5, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 10, 10), 0, 0));
     anglePanel.add(angleLabel, null);
     randomPanel.add(randomLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
         , GridBagConstraints.WEST, GridBagConstraints.NONE,
@@ -790,6 +841,10 @@ public class RenParticleControlFrame extends JFrame {
             ,GridBagConstraints.WEST, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 10, 10), 0, 0));
     ratePanel.add(rateBox,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 5, 10), 0, 0));
+    velocityPanel.add(velocityLabel,   new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 5, 10), 0, 0));
+    velocityPanel.add(velocitySlider,   new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 10, 10), 0, 0));
 
     setSize(new Dimension(450, 330));
   }
@@ -804,8 +859,8 @@ public class RenParticleControlFrame extends JFrame {
     if ("FIRE".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
-      manager.setEmissionMaximumAngle(0.17453292f);
-      manager.setParticlesSpeed(3.5f);
+      manager.setEmissionMaximumAngle(0.20943952f);
+      manager.setFrequency(1.0f);
       manager.setParticlesMinimumLifeTime(1000.0f);
       manager.setStartSize(40.0f);
       manager.setEndSize(40.0f);
@@ -813,73 +868,89 @@ public class RenParticleControlFrame extends JFrame {
       manager.setEndColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 0.0f));
       manager.setRandomMod(6.0f);
       manager.setControlFlow(true);
-      manager.setReleaseRate(manager.getParticlesNumber());
+      manager.setReleaseRate(300);
       manager.setReleaseVariance(0.0f);
+      manager.setInitialVelocity(0.3f);
     } else if ("FOUNTAIN".equalsIgnoreCase(examType)) {
-      manager.setStartColor(new ColorRGBA(0f, .0625f, 1f, 1));
-      manager.setEndColor(new ColorRGBA(0f, .0625f, 1f, 0));
-      manager.setStartSize(10f);
-      manager.setEndSize(10f);
-      manager.setEmissionMaximumAngle(.244f);
+      manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+      manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
+      manager.setEmissionMaximumAngle(0.2268928f);
+      manager.setFrequency(1.0f);
+      manager.setParticlesMinimumLifeTime(1300.0f);
+      manager.setStartSize(10.0f);
+      manager.setEndSize(10.0f);
+      manager.setStartColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 1.0f));
+      manager.setEndColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 0.0f));
       manager.setRandomMod(1.0f);
-      manager.setParticlesSpeed(7.5f);
-      manager.setParticlesMinimumLifeTime(2000f);
-      manager.setGravityForce(new Vector3f(0f, -4e-3f, 0f));
-      manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
       manager.setControlFlow(false);
+      manager.setReleaseRate(300);
+      manager.setReleaseVariance(0.0f);
+      manager.setInitialVelocity(1.1f);
     } else if ("LAVA".equalsIgnoreCase(examType)) {
-      manager.setStartColor(new ColorRGBA(1f, .18f, 0.125f, 1));
-      manager.setEndColor(new ColorRGBA(1f, .18f, 0.125f, 0));
-      manager.setStartSize(40f);
-      manager.setEndSize(40f);
-      manager.setEmissionMaximumAngle(.418f);
-      manager.setRandomMod(1.0f);
-      manager.setParticlesSpeed(3.0f);
-      manager.setParticlesMinimumLifeTime(2400f);
-      manager.setGravityForce(new Vector3f(0f, -4e-3f, 0f));
-      manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
+      manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+      manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
+      manager.setEmissionMaximumAngle(0.418f);
+      manager.setFrequency(1.0f);
+      manager.setParticlesMinimumLifeTime(1057.0f);
+      manager.setStartSize(40.0f);
+      manager.setEndSize(40.0f);
+      manager.setStartColor(new ColorRGBA(1.0f, 0.18f, 0.125f, 1.0f));
+      manager.setEndColor(new ColorRGBA(1.0f, 0.18f, 0.125f, 0.0f));
+      manager.setRandomMod(2.0f);
       manager.setControlFlow(false);
+      manager.setReleaseRate(300);
+      manager.setReleaseVariance(0.0f);
+      manager.setInitialVelocity(1.1f);
     } else if ("SMOKE".equalsIgnoreCase(examType)) {
-      manager.setStartColor(new ColorRGBA(.375f, .375f, .375f, 1));
-      manager.setEndColor(new ColorRGBA(.375f, .375f, .375f, 0));
-      manager.setStartSize(20f);
-      manager.setEndSize(40f);
-      manager.setEmissionMaximumAngle(.331f);
-      manager.setRandomMod(2.6f);
-      manager.setParticlesSpeed(.9f);
-      manager.setParticlesMinimumLifeTime(4000f);
-      manager.setGravityForce(new Vector3f(0f, 0f, 0f));
-      manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
+      manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
+      manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
+      manager.setEmissionMaximumAngle(0.38397244f);
+      manager.setFrequency(0.1f);
+      manager.setParticlesMinimumLifeTime(1000.0f);
+      manager.setStartSize(25.5f);
+      manager.setEndSize(40.0f);
+      manager.setStartColor(new ColorRGBA(0.375f, 0.375f, 0.375f, 1.0f));
+      manager.setEndColor(new ColorRGBA(0.375f, 0.375f, 0.375f, 0.0f));
+      manager.setRandomMod(0.1f);
       manager.setControlFlow(false);
+      manager.setReleaseRate(300);
+      manager.setReleaseVariance(0.0f);
+      manager.setInitialVelocity(0.75f);
     } else if ("RAIN".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
       manager.setEmissionMaximumAngle(3.1415927f);
-      manager.setParticlesSpeed(3.5f);
-      manager.setParticlesMinimumLifeTime(3496.0f);
+      manager.setFrequency(0.5f);
+      manager.setParticlesMinimumLifeTime(1626.0f);
       manager.setStartSize(9.1f);
       manager.setEndSize(13.6f);
       manager.setStartColor(new ColorRGBA(0.16078432f, 0.16078432f, 1.0f, 1.0f));
       manager.setEndColor(new ColorRGBA(0.16078432f, 0.16078432f, 1.0f, 0.15686275f));
       manager.setRandomMod(0.0f);
       manager.setControlFlow(false);
+      manager.setReleaseRate(300);
+      manager.setReleaseVariance(0.0f);
+      manager.setInitialVelocity(0.58f);
     } else if ("SNOW".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
       manager.setEmissionMaximumAngle(1.5707964f);
-      manager.setParticlesSpeed(1.5f);
-      manager.setParticlesMinimumLifeTime(2195.0f);
+      manager.setFrequency(0.2f);
+      manager.setParticlesMinimumLifeTime(1057.0f);
       manager.setStartSize(30.0f);
       manager.setEndSize(30.0f);
       manager.setStartColor(new ColorRGBA(0.3764706f, 0.3764706f, 0.3764706f, 1.0f));
       manager.setEndColor(new ColorRGBA(0.3764706f, 0.3764706f, 0.3764706f, 0.1882353f));
       manager.setRandomMod(1.0f);
       manager.setControlFlow(false);
+      manager.setReleaseRate(300);
+      manager.setReleaseVariance(0.0f);
+      manager.setInitialVelocity(0.59999996f);
     } else if ("JET".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
-      manager.setEmissionDirection(new Vector3f(-0.1f, 0.0f, 0.0f));
-      manager.setEmissionMaximumAngle(0.08726646f);
-      manager.setParticlesSpeed(10.0f);
+      manager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
+      manager.setEmissionMaximumAngle(0.034906585f);
+      manager.setFrequency(1.0f);
       manager.setParticlesMinimumLifeTime(100.0f);
       manager.setStartSize(6.6f);
       manager.setEndSize(30.0f);
@@ -887,9 +958,25 @@ public class RenParticleControlFrame extends JFrame {
       manager.setEndColor(new ColorRGBA(0.6f, 0.2f, 0.0f, 0.0f));
       manager.setRandomMod(10.0f);
       manager.setControlFlow(false);
+      manager.setReleaseRate(300);
+      manager.setReleaseVariance(0.0f);
+      manager.setInitialVelocity(1.4599999f);
+    } else if ("EXPLOSION".equalsIgnoreCase(examType)) {
+      manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
+      manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
+      manager.setEmissionMaximumAngle(3.1415927f);
+      manager.setFrequency(1.4f);
+      manager.setParticlesMinimumLifeTime(1000.0f);
+      manager.setStartSize(40.0f);
+      manager.setEndSize(40.0f);
+      manager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
+      manager.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
+      manager.setRandomMod(0.0f);
+      manager.setControlFlow(false);
+      manager.setRepeatType(Controller.RT_CLAMP);
     }
 
-    manager.warmup();
+    manager.warmUp(1000);
     updateFromManager();
   }
 
@@ -904,6 +991,7 @@ public class RenParticleControlFrame extends JFrame {
     exampleModel.addElement("Jet");
     exampleModel.addElement("Snow");
     exampleModel.addElement("Rain");
+    exampleModel.addElement("Explosion");
   }
 
   /**
@@ -926,7 +1014,7 @@ public class RenParticleControlFrame extends JFrame {
     minAgeSlider.setValue( (int) (TestRenParticleGUI.manager.
                                   getParticlesMinimumLifeTime()));
     updateAgeLabels();
-    speedSlider.setValue( (int) (TestRenParticleGUI.manager.getParticlesSpeed() *
+    speedSlider.setValue( (int) (TestRenParticleGUI.manager.getFrequency() *
                                  10));
     updateSpeedLabels();
     gravXSlider.setValue( (int) (TestRenParticleGUI.manager.getGravityForce().x *
@@ -954,7 +1042,10 @@ public class RenParticleControlFrame extends JFrame {
     rateVarSlider.setValue( (int) (TestRenParticleGUI.manager.
                                    getReleaseVariance() * 100));
     updateRateLabels();
-    spawnBox.setSelected(TestRenParticleGUI.manager.getRespawnsParticles());
+    spawnBox.setSelected(TestRenParticleGUI.manager.getRepeatType() == Controller.RT_WRAP);
+    velocitySlider.setValue( (int) (TestRenParticleGUI.manager.
+                                   getInitialVelocity() * 100));
+    updateVelocityLabels();
     regenCode();
     validate();
   }
@@ -987,7 +1078,7 @@ public class RenParticleControlFrame extends JFrame {
     TestRenParticleGUI.manager.setParticlesMinimumLifeTime( (float) val);
 
     val = speedSlider.getValue();
-    TestRenParticleGUI.manager.setParticlesSpeed( (float) val * .1f);
+    TestRenParticleGUI.manager.setFrequency( (float) val * .1f);
 
     val = gravXSlider.getValue();
     TestRenParticleGUI.manager.getGravityForce().x = (float) val * 0.001f;
@@ -1016,16 +1107,30 @@ public class RenParticleControlFrame extends JFrame {
     val = rateVarSlider.getValue();
     TestRenParticleGUI.manager.setReleaseVariance( (float) val * .01f);
 
-    TestRenParticleGUI.manager.setRespawnsParticles(spawnBox.isSelected());
-
-    TestRenParticleGUI.root.attachChild(TestRenParticleGUI.manager.getParticles());
+    TestRenParticleGUI.manager.setRepeatType(spawnBox.isSelected() ? Controller.RT_WRAP : Controller.RT_CLAMP);
 
     TestRenParticleGUI.manager.setControlFlow(rateBox.isSelected());
     rateSlider.setMaximum(particles * 5);
     rateSlider.setValue(particles);
+
+    TestRenParticleGUI.manager.getParticles().addController(TestRenParticleGUI.manager);
+
+    val = velocitySlider.getValue();
+    TestRenParticleGUI.manager.setInitialVelocity( (float) val * .01f);
+    updateVelocityLabels();
+
+    TestRenParticleGUI.root.attachChild(TestRenParticleGUI.manager.getParticles());
     regenCode();
     validate();
     TestRenParticleGUI.noUpdate = false;
+  }
+
+  /**
+   * updateVelocityLabels
+   */
+  private void updateVelocityLabels() {
+    int val = velocitySlider.getValue();
+    velocityLabel.setText("Initial Velocity: " + (val / 100f));
   }
 
   /**
@@ -1165,8 +1270,8 @@ public class RenParticleControlFrame extends JFrame {
                 ");\n");
     code.append("manager.setEmissionMaximumAngle(" +
                 TestRenParticleGUI.manager.getEmissionMaximumAngle() + "f);\n");
-    code.append("manager.setParticlesSpeed(" +
-                TestRenParticleGUI.manager.getParticlesSpeed() + "f);\n");
+    code.append("manager.setFrequency(" +
+                TestRenParticleGUI.manager.getFrequency() + "f);\n");
     code.append("manager.setParticlesMinimumLifeTime(" +
                 TestRenParticleGUI.manager.getParticlesMinimumLifeTime() +
                 "f);\n");
@@ -1186,6 +1291,11 @@ public class RenParticleControlFrame extends JFrame {
                 TestRenParticleGUI.manager.getReleaseRate() + ");\n");
     code.append("manager.setReleaseVariance(" +
                 TestRenParticleGUI.manager.getReleaseVariance() + "f);\n");
+    code.append("manager.setInitialVelocity(" +
+                TestRenParticleGUI.manager.getInitialVelocity() + "f);\n");
+    code.append("\n");
+    code.append("manager.warmUp(1000);\n");
+    code.append("manager.getParticles().addController(manager);\n");
     code.append("\n");
     code.append("Node myNode = new Node(\"Particle Nodes\")\n");
     code.append("myNode.setRenderState(YOUR TEXTURE STATE);\n");

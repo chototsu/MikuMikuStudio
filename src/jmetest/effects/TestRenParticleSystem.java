@@ -52,7 +52,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleSystem.java,v 1.5 2004-03-25 17:14:28 mojomonkey Exp $
+ * @version $Id: TestRenParticleSystem.java,v 1.6 2004-03-27 00:59:34 renanse Exp $
  */
 public class TestRenParticleSystem extends SimpleGame {
 
@@ -101,7 +101,6 @@ public class TestRenParticleSystem extends SimpleGame {
         / (timer.getFrameRate() / 2);
 
     manager.setParticlesOrigin(currentPos);
-    manager.updateParticles();
 
     fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
               display.getRenderer().getStatistics());
@@ -202,18 +201,23 @@ public class TestRenParticleSystem extends SimpleGame {
     fpsNode.setForceView(true);
 
     manager = new RenParticleManager(300, display.getRenderer().getCamera());
+    manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0,0,0));
     manager.setParticlesOrigin(new Vector3f(-50,0,0));
-    manager.setParticlesSpeed(.06f);
+    manager.setInitialVelocity(.006f);
     manager.setStartSize(2.5f);
     manager.setEndSize(.5f);
     manager.setParticlesMinimumLifeTime(1200f);
     manager.setStartColor(new ColorRGBA(1, 0, 0, 1));
     manager.setEndColor(new ColorRGBA(0, 1, 0, 0));
     manager.setEmissionMaximumAngle(360f * FastMath.DEG_TO_RAD);
+    manager.setControlFlow(false);
+    manager.setRandomMod(0f);
+    manager.warmUp(60);
 
     root.setRenderState(ts);
     root.setRenderState(as1);
+    manager.getParticles().addController(manager);
     root.attachChild(manager.getParticles());
     main.attachChild(root);
     root.updateGeometricState(0.0f, true);

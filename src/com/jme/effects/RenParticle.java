@@ -40,17 +40,18 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: RenParticle.java,v 1.4 2004-03-26 17:58:53 renanse Exp $
+ * @version $Id: RenParticle.java,v 1.5 2004-03-27 00:59:33 renanse Exp $
  */
 public class RenParticle {
 
   Vector3f verts[];
-  Vector3f location;
+  Vector3f initialLocation, location;
   ColorRGBA color;
 
   private float currentSize;
   private float lifeSpan;
-  private float currentAge;
+  private float lifeRatio;
+  private float currentAge, halfAge;
   private Vector3f speed;
   private Vector3f randomPoint;
   private RenParticleManager parent;
@@ -65,14 +66,15 @@ public class RenParticle {
    * RenParticle constructor
    * @param parent RenParticleManager parent of this particle
    * @param speed initial velocity of the particle in the x,y and z directions
-   * @param location initial location of the particle
+   * @param iLocation initial location of the particle
    * @param lifeSpan how long the particle should live for
    */
   public RenParticle(RenParticleManager parent, Vector3f speed,
-                     Vector3f location, float lifeSpan) {
+                     Vector3f iLocation, float lifeSpan) {
     this.lifeSpan = lifeSpan;
     this.speed = (Vector3f) speed.clone();
-    this.location = (Vector3f) location.clone();
+    this.initialLocation = (Vector3f) iLocation.clone();
+    this.location = new Vector3f();
     this.parent = parent;
 
     color = (ColorRGBA) parent.getStartColor().clone();
@@ -97,7 +99,7 @@ public class RenParticle {
    */
   public void recreateParticle(Vector3f speed, float lifeSpan) {
     this.lifeSpan = lifeSpan;
-    this.speed.set(speed.x, speed.y, speed.z);
+    this.speed.set(speed);
 
     this.color.set(parent.getStartColor().r, parent.getStartColor().g,
                    parent.getStartColor().b, parent.getStartColor().a);
@@ -116,10 +118,10 @@ public class RenParticle {
     bbX.set(cam.getLeft()).multLocal(currentSize);
     bbY.set(cam.getUp()).multLocal(currentSize);
 
-    location.subtract(bbX, verts[0]).subtractLocal(bbY);
     location.add(bbX, verts[1]).subtractLocal(bbY);
     location.add(bbX, verts[2]).addLocal(bbY);
     location.subtract(bbX, verts[3]).addLocal(bbY);
+    location.subtract(bbX, verts[0]).subtractLocal(bbY);
   }
 
   /**
@@ -131,49 +133,52 @@ public class RenParticle {
    *
    * if this particle's age is greater than its lifespan, it is considered dead.
    *
-   * @return true if this particle is not ACTIVE
+   * @return true if this particle is not ALIVE
    */
-  public boolean updateAndCheck() {
+  public boolean updateAndCheck(float secondsPassed) {
 
     if (status != ALIVE) {
       return true;
     }
-    currentAge += 10f; // add 10ms to age
+    currentAge += secondsPassed * 1000f; // add 10ms to age
+    halfAge = currentAge*.5f;
     if (currentAge > lifeSpan) {
       status = DEAD;
       color.a = 0;
       return true;
     }
+    location.x = currentAge * ((halfAge*parent.getGravityForce().x) + speed.x) + initialLocation.x;
+    location.y = currentAge * ((halfAge*parent.getGravityForce().y) + speed.y) + initialLocation.y;
+    location.z = currentAge * ((halfAge*parent.getGravityForce().z) + speed.z) + initialLocation.z;
 
-    speed.scaleAdd(parent.getParticlesSpeed(), parent.getGravityForce(), speed);
-    location.scaleAdd(parent.getParticlesSpeed(), speed, location);
     if (parent.getRandomMod() != 0.0f) {
       randomPoint.set(parent.getRandomMod() *
-                      ( -FastMath.nextRandomFloat() + FastMath.nextRandomFloat()),
+                      2*( FastMath.nextRandomFloat() - .5f),
                       0.0f,
                       parent.getRandomMod() *
-                      ( -FastMath.nextRandomFloat() + FastMath.nextRandomFloat()));
+                      2*( FastMath.nextRandomFloat() - .5f));
       location.addLocal(randomPoint);
     }
 
-    float lifeRatio = currentAge / lifeSpan;
+    lifeRatio = currentAge / lifeSpan;
 
     // update the size, currently, the size
     // updates both the x and y values. So you always
     // get a square
-    currentSize =
-        parent.getStartSize() -
-        ( (parent.getStartSize() - parent.getEndSize()) * lifeRatio);
+    currentSize = parent.getStartSize();
+    currentSize -=
+        ( (currentSize - parent.getEndSize()) * lifeRatio);
 
     // interpolate colors
-    color.r = parent.getStartColor().r -
-        ( (parent.getStartColor().r - parent.getEndColor().r) * lifeRatio);
-    color.g = parent.getStartColor().g -
-        ( (parent.getStartColor().g - parent.getEndColor().g) * lifeRatio);
-    color.b = parent.getStartColor().b -
-        ( (parent.getStartColor().b - parent.getEndColor().b) * lifeRatio);
-    color.a = parent.getStartColor().a -
-        ( (parent.getStartColor().a - parent.getEndColor().a) * lifeRatio);
+    color.set(parent.getStartColor());
+    color.r -=
+        ( (color.r - parent.getEndColor().r) * lifeRatio);
+    color.g -=
+        ( (color.g - parent.getEndColor().g) * lifeRatio);
+    color.b -=
+        ( (color.b - parent.getEndColor().b) * lifeRatio);
+    color.a -=
+        ( (color.a - parent.getEndColor().a) * lifeRatio);
 
     updateVerts();
 

@@ -32,9 +32,10 @@ package jmetest.effects;
 
 import java.util.Observer;
 
+import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.VariableTimestepGame;
 import com.jme.effects.RenParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.AbstractInputHandler;
@@ -54,13 +55,12 @@ import com.jme.util.Timer;
 import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.input.mouse.WidgetMouseButtonType;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
-import javax.swing.JOptionPane;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.11 2004-03-26 17:58:54 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.12 2004-03-27 00:59:34 renanse Exp $
  */
-public class TestRenParticleGUI extends SimpleGame {
+public class TestRenParticleGUI extends VariableTimestepGame {
 
   public static RenParticleManager manager;
   public static boolean quit = false;
@@ -111,8 +111,6 @@ public class TestRenParticleGUI extends SimpleGame {
     if (tpf > 1f) tpf = 1.0f; // do this to prevent a long pause at start
 
     frame.handleInput(tpf*10f);
-
-    manager.updateParticles();
 
     fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
               display.getRenderer().getStatistics());
@@ -220,16 +218,18 @@ public class TestRenParticleGUI extends SimpleGame {
     manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
     manager.setEmissionMaximumAngle(0.2268928f);
-    manager.setParticlesSpeed(7.5f);
+    manager.setFrequency(1.0f);
     manager.setParticlesMinimumLifeTime(2000.0f);
     manager.setStartSize(10.0f);
     manager.setEndSize(10.0f);
     manager.setStartColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 1.0f));
     manager.setEndColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 0.0f));
     manager.setRandomMod(1.0f);
+    manager.warmUp(1000);
 
     root.setRenderState(ts);
     main.setRenderState(as1);
+    manager.getParticles().addController(manager);
     root.attachChild(manager.getParticles());
     main.attachChild(root);
     root.updateGeometricState(0.0f, true);

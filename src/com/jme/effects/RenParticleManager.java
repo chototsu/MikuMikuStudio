@@ -38,6 +38,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 
 /**
@@ -55,13 +56,13 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.9 2004-03-26 17:58:53 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.10 2004-03-27 00:59:33 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
  * @todo Particle motion models
  */
-public class RenParticleManager {
+public class RenParticleManager extends Controller {
 
   private final static Vector2f sharedTextureData[] = {
       new Vector2f(0.0f, 0.0f), new Vector2f(1.0f, 0.0f),
@@ -72,6 +73,7 @@ public class RenParticleManager {
   private int noParticles;
   private int releaseRate; // particles per second
   private int released;
+  private int particlesToCreate = 0;
   private Vector3f upVector;
   private Vector3f gravityForce;
   private Vector3f emissionDirection;
@@ -82,20 +84,15 @@ public class RenParticleManager {
   private ColorRGBA appearanceColors[];
   private ColorRGBA startColor;
   private ColorRGBA endColor;
-  private float particleSpeed;
   private float releaseVariance;
+  private float initialVelocity;
   private float minimumLifeTime;
   private float maximumAngle;
   private float startSize, endSize;
   private float randomMod;
-  private long currentTime;
-  private long previousTime;
-  private long releaseTime;
-  private double timePassed;
-  private double timeSinceLastUpdate;
-  private boolean respawnParticles;
+  private float currentTime;
+  private float releaseTime;
   private boolean controlFlow;
-  private boolean firstRun;
 
   private int geoToUse;
   private Line psLine;
@@ -121,8 +118,13 @@ public class RenParticleManager {
     emissionDirection = new Vector3f(0.0f, 1.0f, 0.0f);
     startColor = new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f);
     endColor = new ColorRGBA(1.0f, 1.0f, 0.0f, 0.0f);
-    firstRun = true;
-    particleSpeed = 1.0f;
+
+    setMinTime(0);
+    setMaxTime(Float.MAX_VALUE);
+    setRepeatType(Controller.RT_WRAP);
+    setFrequency(1.0f);
+
+    initialVelocity = 1.0f;
     minimumLifeTime = 2500f;
     maximumAngle = 0.7853982f;
     startSize = 20f;
@@ -130,7 +132,6 @@ public class RenParticleManager {
     randomMod = 1.0f;
     releaseRate = noParticles;
     releaseVariance = 0;
-    respawnParticles = true;
     controlFlow = false;
 
     geometryCoordinates = new Vector3f[noParticles << 2];
@@ -157,7 +158,7 @@ public class RenParticleManager {
     updateRotationMatrix();
     for (int k = 0; k < noParticles; k++) {
       float life = getRandomLifeSpan();
-      getRandomSpeed(location);
+      getRandomSpeed(speed);
       particles[k] = new RenParticle(this, speed, location, life);
       for (int a = 3; a >= 0; a--) {
         particlesGeometry.setTextureCoord(0, (k << 2) + a, sharedTextureData[a]);
@@ -168,97 +169,78 @@ public class RenParticleManager {
     }
     particlesGeometry.updateTextureBuffer();
 
-    warmup();
-
-    updateParticles();
-    previousTime = getTimerTic();
+    warmUp(1000);
   }
-
-  /**
-   * Runs the clock forward to ensure particles are all flowing.
-   */
-  public void warmup() {
-    firstRun=true;
-    timeSinceLastUpdate = 5000d; // run the clock a bit to make sure the particles are flowing...
-  }
-
 
   /**
    * Update the particles managed by this manager.  If any particles are "dead"
    * recreate them at the origin position (which may be a point, line or
    * rectangle.)
+   * See com.jme.scene.Controller.update(float)
+   * @param secondsPassed float
    */
-  public void updateParticles() {
+  public void update(float secondsPassed) {
+    secondsPassed *= getFrequency();
+    if (isActive()) {
+      currentTime += secondsPassed;
+      if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
 
-    Vector3f speed = new Vector3f();
-    RenParticle particle;
-    boolean flag = false;
-    currentTime = getTimerTic();
-    if (controlFlow && currentTime - releaseTime > 1000.0) {
-      released = 0;
-      releaseTime = currentTime;
-    }
-    timePassed = currentTime - previousTime;
-    timeSinceLastUpdate += timePassed;
-    int particlesToCreate = 0;
-    if (controlFlow)
-      particlesToCreate = (int) ( (float) releaseRate * timeSinceLastUpdate *
-                                 .001f
-                                 *
-                                 (1.0f +
-                                  releaseVariance *
-                                  (FastMath.nextRandomFloat() - 0.5f)));
-
-    if (controlFlow && particlesToCreate <= 0) particlesToCreate = 1;
-
-    if (controlFlow && releaseRate - released <= 0) particlesToCreate = 0;
-
-    for (; timeSinceLastUpdate > 10d; ) {
-      timeSinceLastUpdate -= 10d;
-      flag = true;
-      if (firstRun) {
-        timeSinceLastUpdate = 0.0d;
-        firstRun = false;
-      }
-
-      int i = 0;
-      while (i < noParticles) {
-        if (particles[i].updateAndCheck() && (!controlFlow || particlesToCreate > 0)) {
-          if (particles[i].status == RenParticle.DEAD && !respawnParticles) {
-            ;
-          } else {
-            if (controlFlow) {
-              released++;
-              particlesToCreate--;
-            }
-            particle = particles[i];
-            getRandomSpeed(speed);
-            particle.recreateParticle(speed, getRandomLifeSpan());
-            particle.status = RenParticle.ALIVE;
-
-            switch (getGeometry()) {
-              case 1:
-                particle.location.set(getLine().random());
-                break;
-              case 2:
-                particle.location.set(getRectangle().random());
-                break;
-              default:
-                particle.location.set(originCenter);
-                break;
-            }
-            particle.updateVerts();
+        Vector3f speed = new Vector3f();
+        if (controlFlow) {
+          if (currentTime - releaseTime > 1000.0) {
+            released = 0;
+            releaseTime = currentTime;
           }
+          particlesToCreate = (int) ( (float) releaseRate * secondsPassed *
+                                     (1.0f +
+                                      releaseVariance *
+                                      (FastMath.nextRandomFloat() - 0.5f)));
+         if (particlesToCreate <= 0)
+           particlesToCreate = 1;
+         if (releaseRate - released <= 0)
+           particlesToCreate = 0;
         }
-        i++;
+
+
+
+        int i = 0;
+        while (i < noParticles) {
+          if (particles[i].updateAndCheck(secondsPassed) &&
+              (!controlFlow || particlesToCreate > 0)) {
+            if (particles[i].status == RenParticle.DEAD &&
+                getRepeatType() == RT_CLAMP) {
+              ;
+            } else {
+              if (controlFlow) {
+                released++;
+                particlesToCreate--;
+              }
+              getRandomSpeed(speed);
+              particles[i].recreateParticle(speed, getRandomLifeSpan());
+              particles[i].status = RenParticle.ALIVE;
+
+              switch (getGeometry()) {
+                case 1:
+                  particles[i].initialLocation.set(getLine().random());
+                  break;
+                case 2:
+                  particles[i].initialLocation.set(getRectangle().random());
+                  break;
+                default:
+                  particles[i].initialLocation.set(originCenter);
+                  break;
+              }
+              particles[i].location.set(particles[i].initialLocation);
+              particles[i].updateVerts();
+            }
+          }
+          i++;
+        }
+
+        particlesGeometry.setVertices(geometryCoordinates);
+        particlesGeometry.setColors(appearanceColors);
       }
     }
-
-    if (flag) {
-      particlesGeometry.setVertices(geometryCoordinates);
-      particlesGeometry.setColors(appearanceColors);
-    }
-    previousTime = currentTime;
   }
 
   /**
@@ -369,6 +351,7 @@ public class RenParticleManager {
     speed.y = (float) FastMath.cos(clampAngle);
     speed.z = (float) (FastMath.sin(randDir) * FastMath.sin(clampAngle));
     rotateVectorSpeed(speed);
+    speed.multLocal(initialVelocity);
   }
 
   /**
@@ -407,20 +390,20 @@ public class RenParticleManager {
   private void rotateVectorSpeed(Vector3f speed) {
 
     float x = speed.x,
-          y = speed.y,
-          z = speed.z;
+        y = speed.y,
+        z = speed.z;
 
-    speed.x = -1*((rotMatrix.m00 * x) +
-                  (rotMatrix.m10 * y) +
-                  (rotMatrix.m20 * z));
+    speed.x = -1 * ( (rotMatrix.m00 * x) +
+                    (rotMatrix.m10 * y) +
+                    (rotMatrix.m20 * z));
 
-    speed.y =     (rotMatrix.m01 * x) +
-                  (rotMatrix.m11 * y) +
-                  (rotMatrix.m21 * z);
+    speed.y = (rotMatrix.m01 * x) +
+        (rotMatrix.m11 * y) +
+        (rotMatrix.m21 * z);
 
-    speed.z = -1*((rotMatrix.m02 * x) +
-                  (rotMatrix.m12 * y) +
-                  (rotMatrix.m22 * z));
+    speed.z = -1 * ( (rotMatrix.m02 * x) +
+                    (rotMatrix.m12 * y) +
+                    (rotMatrix.m22 * z));
   }
 
   /**
@@ -441,6 +424,24 @@ public class RenParticleManager {
    */
   public Vector3f getParticlesOrigin() {
     return originCenter;
+  }
+
+  /**
+   * Set the acceleration for any new particles created (or recreated) by this manager.
+   *
+   * @param velocity particle v0
+   */
+  public void setInitialVelocity(float velocity) {
+    this.initialVelocity = velocity;
+  }
+
+  /**
+   * Get the acceleration set in this manager.
+   *
+   * @return initialVelocity
+   */
+  public float getInitialVelocity() {
+    return initialVelocity;
   }
 
   /**
@@ -478,28 +479,6 @@ public class RenParticleManager {
    */
   public ColorRGBA getEndColor() {
     return endColor;
-  }
-
-  /**
-   * Set the speed modifier of the particle flow.  This modifier speeds up
-   * or slows down the particle's velocity and the affect of gravity.
-   *
-   * The default value is 1.0f (i.e. 100%)
-   *
-   * @param speedMod new value of the speed modifier (should be >= zero)
-   */
-  public void setParticlesSpeed(float speedMod) {
-    particleSpeed = speedMod;
-  }
-
-  /**
-   * Get the current speed modifier.
-   *
-   * @see setParticlesSpeed(float)
-   * @return the speed modifier.
-   */
-  public float getParticlesSpeed() {
-    return particleSpeed;
   }
 
   /**
@@ -704,24 +683,6 @@ public class RenParticleManager {
   }
 
   /**
-   * Does this manager respawn particles?
-   *
-   * @return true if this manager recreates 'dead' particles.
-   */
-  public boolean getRespawnsParticles() {
-    return respawnParticles;
-  }
-
-  /**
-   * Set the respawn property on the manager.
-   *
-   * @param respawn recreate particles when they expire.
-   */
-  public void setRespawnsParticles(boolean respawn) {
-    this.respawnParticles = respawn;
-  }
-
-  /**
    * Does this manager regulate the particle flow?
    *
    * @return true if this manager regulates how many particles per sec are emitted.
@@ -811,5 +772,15 @@ public class RenParticleManager {
    */
   public Rectangle getRectangle() {
     return psRect;
+  }
+
+  /**
+   * warmUp
+   *
+   * @param iterations int
+   */
+  public void warmUp(int iterations) {
+    for (int i = iterations; --i>= iterations; )
+      update(1f);
   }
 }
