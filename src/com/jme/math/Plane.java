@@ -41,7 +41,7 @@ import com.jme.util.LoggingSystem;
  * The distance is pseudo due to the fact that it can be negative if the point
  * is on the non-normal side of the plane.
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Plane.java,v 1.2 2003-12-08 20:29:54 mojomonkey Exp $
  */
 public class Plane {
     /**
@@ -113,6 +113,15 @@ public class Plane {
      */
     public void setConstant(float constant) {
         this.constant = constant;
+    }
+    
+    /**
+     * 
+     * <code>getConstant</code> returns the constant of the plane.
+     * @return the constant of the plane.
+     */
+    public float getConstant() {
+        return constant;
     }
     
     /**
