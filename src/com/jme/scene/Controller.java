@@ -31,6 +31,8 @@
  */
 package com.jme.scene;
 
+import java.io.Serializable;
+
 /**
  * <code>Controller</code> provides a base class for creation of controllers to
  * modify nodes and render states over time. The base controller provides a
@@ -38,9 +40,9 @@ package com.jme.scene;
  * of this will provide the update method that takes the time between the last
  * call and the current one and modifies an object in a application specific way.
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.7 2004-06-16 20:22:23 cep21 Exp $
+ * @version $Id: Controller.java,v 1.8 2004-07-06 04:55:49 cep21 Exp $
  */
-public abstract class Controller {
+public abstract class Controller implements Serializable{
 
     /**
      * A clamped repeat type signals that the controller should look like its final state when it's done<br>
