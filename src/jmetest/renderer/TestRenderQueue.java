@@ -56,7 +56,7 @@ import com.jme.scene.state.RenderState;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.3 2004-06-17 19:05:27 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.4 2004-06-18 17:55:09 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -89,6 +89,15 @@ public class TestRenderQueue extends SimpleGame {
         useQueue = !useQueue;
     }
 
+  }
+
+  protected void simpleRender() {
+    display.getRenderer().setOrthoCenter();
+    display.getRenderer().draw(orthos);
+    display.getRenderer().unsetOrtho();
+
+    display.getRenderer().draw(transps);
+    display.getRenderer().draw(opaques);
   }
 
   protected void simpleInitGame() {
@@ -226,7 +235,7 @@ public class TestRenderQueue extends SimpleGame {
     orthos.setRenderState(zstate);
 
     orthos.setRenderState(Spatial.defaultStateList[RenderState.RS_LIGHT]);
-    rootNode.setForceView(true);
+    rootNode.setForceCull(true);
     orthos.setForceView(true);
   }
 }
