@@ -40,16 +40,16 @@ import com.jme.scene.Node;
 import com.jme.system.JmeException;
 
 /**
- * <code>TerrainPage</code> is used to build a quad tree of terrain blocks. The
- * <code>TerrainPage</code> will have four children, either four pages or 
+ * <code>TerrainPage</code> is used to build a quad tree of terrain blocks.
+ * The <code>TerrainPage</code> will have four children, either four pages or
  * four blocks. The size of the page must be (2^N + 1), to allow for even
- * splitting of the blocks. Organization of the page into a quad tree allows
- * for very fast culling of the terrain. In some instances, using Clod will
- * also improve rendering speeds. The total size of the heightmap is provided,
- * as well as the desired end size for a block. Appropriate values for the
- * end block size is completely dependant on the application. In some cases, 
- * a large size will give performance gains, in others, a small size is the
- * best option. It is recommended that different combinations are tried.
+ * splitting of the blocks. Organization of the page into a quad tree allows for
+ * very fast culling of the terrain. In some instances, using Clod will also
+ * improve rendering speeds. The total size of the heightmap is provided, as
+ * well as the desired end size for a block. Appropriate values for the end
+ * block size is completely dependant on the application. In some cases, a large
+ * size will give performance gains, in others, a small size is the best option.
+ * It is recommended that different combinations are tried.
  * 
  * @author Mark Powell
  * @version $id$
@@ -62,24 +62,77 @@ public class TerrainPage extends Node {
 
     private int offsetAmount;
 
+    /**
+     * Constructor instantiates a new <code>TerrainPage</code> object. The
+     * data is then split into either 4 new <code>TerrainPages</code> or 4 new
+     * <code>TerrainBlock</code>.
+     * 
+     * @param name
+     *            the name of the page.
+     * @param blockSize
+     *            the size of the leaf nodes. This is used to determine if four
+     *            new <code>TerrainPage</code> objects should be the child or
+     *            four new <code>TerrainBlock</code> objects.
+     * @param size
+     *            the size of the heightmap for this page.
+     * @param stepScale
+     *            the scale of the x/z axes.
+     * @param heightMap
+     *            the height data.
+     * @param clod true will use level of detail, false will not.
+     */
     public TerrainPage(String name, int blockSize, int size, float stepScale,
             int[] heightMap, boolean clod) {
         this(name, blockSize, size, stepScale, heightMap, clod, size,
                 new Vector2f(), 0);
     }
 
+    /**
+     * Constructor instantiates a new <code>TerrainPage</code> object. The
+     * data is then split into either 4 new <code>TerrainPages</code> or 4 new
+     * <code>TerrainBlock</code>.
+     * 
+     * @param name
+     *            the name of the page.
+     * @param blockSize
+     *            the size of the leaf nodes. This is used to determine if four
+     *            new <code>TerrainPage</code> objects should be the child or
+     *            four new <code>TerrainBlock</code> objects.
+     * @param size
+     *            the size of the heightmap for this page.
+     * @param stepScale
+     *            the scale of the x/z axes.
+     * @param heightMap
+     *            the height data.
+     * @param clod true will use level of detail, false will not.
+     * @param totalSize the total terrain size, used if the page is an internal
+     * 		node of a terrain system.
+     * @param offset the texture offset for the page.
+     * @param offsetAmount the amount of the offset.
+     */
     public TerrainPage(String name, int blockSize, int size, float stepScale,
             int[] heightMap, boolean clod, int totalSize, Vector2f offset,
             int offsetAmount) {
         super(name);
-        if (!FastMath.isPowerOfTwo(size - 1)) { throw new JmeException(
-                "Terrain page sizes may only be (2^N + 1)"); }
+        if (!FastMath.isPowerOfTwo(size - 1)) { 
+            throw new JmeException(
+                "Terrain page sizes may only be (2^N + 1)"); 
+        }
+        
         this.offset = offset;
         this.offsetAmount = offsetAmount;
         this.totalSize = totalSize;
         split(size, blockSize, stepScale, heightMap, clod);
     }
 
+    /**
+     * 
+     * <code>setDetailTexture</code> sets the detail texture coordinates to be 
+     * applied on top of the normal terrain texture.
+     *
+     * @param unit the texture unit to set the coordinates.
+     * @param repeat the number of tiling for the texture.
+     */
     public void setDetailTexture(int unit, int repeat) {
         for (int i = 0; i < this.getQuantity(); i++) {
             if (this.getChild(i) instanceof TerrainPage) {
@@ -91,6 +144,12 @@ public class TerrainPage extends Node {
         }
     }
 
+    /**
+     * 
+     * <code>setModelBound</code> sets the model bounds for the terrain blocks.
+     * 
+     * @param v the bounding volume to set for the terrain blocks.
+     */
     public void setModelBound(BoundingVolume v) {
         for (int i = 0; i < this.getQuantity(); i++) {
             if (this.getChild(i) instanceof TerrainPage) {
@@ -104,6 +163,13 @@ public class TerrainPage extends Node {
         }
     }
 
+    /**
+     * 
+     * <code>updateModelBound</code> updates the model bounds (generates the
+     * bounds from the current vertices).
+     *
+     *
+     */
     public void updateModelBound() {
         for (int i = 0; i < this.getQuantity(); i++) {
             if (this.getChild(i) instanceof TerrainPage) {
@@ -116,13 +182,16 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * <code>split</code>
+     * <code>split</code> divides the heightmap data for four children. The
+     * children are either pages or blocks. This is dependent on the size of
+     * the children. If the child's size is less than or equal to the set
+     * block size, then blocks are created, otherwise, pages are created.
      * 
-     * @param blockSize
-     * @param size
-     * @param stepScale
-     * @param heightMap
-     * @param clod
+     * @param blockSize the blocks size to test against.
+     * @param size the size of this page.
+     * @param stepScale the scale of the x/z axes.
+     * @param heightMap the height data.
+     * @param clod true if level of detail is used, false otherwise.
      */
     private void split(int size, int blockSize, float stepScale,
             int[] heightMap, boolean clod) {
@@ -135,7 +204,7 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * <code>createQuadPage</code>
+     * <code>createQuadPage</code> generates four new pages from this page.
      * 
      *  
      */
@@ -239,7 +308,7 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * <code>createQuadBlock</code>
+     * <code>createQuadBlock</code> creates four child blocks from this page.
      * 
      *  
      */
