@@ -178,7 +178,7 @@ public class TestParticleSystem extends SimpleGame {
 		TextureState ts = display.getRenderer().getTextureState();
 		ts.setTexture(
 			TextureManager.loadTexture(
-				"data/texture/star.png",
+				TestParticleSystem.class.getClassLoader().getResource("jmetest/data/texture/star.png"),
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
@@ -187,7 +187,7 @@ public class TestParticleSystem extends SimpleGame {
 		TextureState font = display.getRenderer().getTextureState();
 		font.setTexture(
 				TextureManager.loadTexture(
-						"data/Font/font.png",
+						TestParticleSystem.class.getClassLoader().getResource("jmetest/data/font/font.png"),
 						Texture.MM_LINEAR,
 						Texture.FM_LINEAR,
 						true));
