@@ -41,13 +41,14 @@ import java.awt.Graphics;
 import java.awt.image.BufferedImage;
 
 import com.jme.system.DisplaySystem;
+import java.awt.image.DataBufferInt;
 
 /**
  * <code>JMEComponent</code> is an integration class allowing jME generated
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMEComponent.java,v 1.3 2004-11-10 00:06:04 renanse Exp $
+ * @version $Id: JMEComponent.java,v 1.4 2004-11-10 01:26:25 renanse Exp $
  */
 
 public class JMEComponent extends Component {
@@ -93,7 +94,7 @@ public class JMEComponent extends Component {
 		buf = ByteBuffer.allocateDirect(width * height * 4)
 				.order(ByteOrder.nativeOrder()).asIntBuffer();
 		img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		ibuf = new int[width * height];
+		ibuf = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
 
 		try {
 			new Thread() {
@@ -175,7 +176,7 @@ public class JMEComponent extends Component {
 					buf.get(ibuf, x * width, width);
 				}
 				buf.clear();
-				img.getRaster().setDataElements(0, 0, width, height, ibuf);
+//				img.getRaster().setDataElements(0, 0, width, height, ibuf);
 				if (scaled)
 					g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(),
 											getBackground(), null);
