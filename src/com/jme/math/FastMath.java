@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.14 2004-08-02 22:36:06 cep21 Exp $
+ * @version $Id: FastMath.java,v 1.15 2004-08-18 20:52:15 cep21 Exp $
  */
 
 final public class FastMath {
@@ -522,6 +522,65 @@ final public class FastMath {
         fResult *= iSign;
         return fResult;
     }
+
+    /**
+     * Given 3 points in a 2d plane, this function computes if the points going from A-B-C
+     * are moving counter clock wise.
+     * @param p0 Point 0.
+     * @param p1 Point 1.
+     * @param p2 Point 2.
+     * @return 1 If they are CCW, -1 if they are not CCW, 0 if p2 is between p0 and p1.
+     */
+    public static int ccw(Vector2f p0,Vector2f p1,Vector2f p2){
+        float dx1,dx2,dy1,dy2;
+        dx1=p1.x-p0.x;
+        dy1=p1.y-p0.y;
+        dx2=p2.x-p0.x;
+        dy2=p2.y-p0.y;
+        if (dx1*dy2>dy1*dx2) return 1;
+        if (dx1*dy2<dy1*dx2) return -1;
+        if ((dx1*dx2 < 0) || (dy1*dy2 <0)) return -1;
+        if ((dx1*dx1+dy1*dy1) < (dx2*dx2+dy2*dy2)) return 1;
+        return 0;
+    }
+
+    /**
+     * Test if a point is inside a triangle.  1 if the point is on the ccw side,
+     * -1 if the point is on the cw side, and 0 if it is on neither.
+     * @param t0 First point of the triangle.
+     * @param t1 Second point of the triangle.
+     * @param t2 Third point of the triangle.
+     * @param p The point to test.
+     * @return Value 1 or -1 if inside triangle, 0 otherwise.
+     */
+    public static int pointInsideTriangle(Vector2f t0,Vector2f t1,Vector2f t2,Vector2f p){
+        int val1=ccw(t0,t1,p);
+        if (val1==0) return 1;
+        int val2=ccw(t1,t2,p);
+        if (val2==0) return 1;
+        if (val2!=val1) return 0;
+        int val3=ccw(t2,t0,p);
+        if (val3==0) return 1;
+        if (val3!=val1) return 0;
+        return val3;
+    }
+
+
+    /**
+     * Returns the determinant of a 4x4 matrix.
+     */ 
+    public static float determinant(double m00,double m01,double m02,double m03, double m10,double m11,double m12,double m13,
+                                    double m20,double m21,double m22,double m23,double m30,double m31,double m32,double m33) {
+        double value;
+        value =
+            m03 * m12 * m21 * m30-m02 * m13 * m21 * m30-m03 * m11 * m22 * m30+m01 * m13 * m22 * m30+
+            m02 * m11 * m23 * m30-m01 * m12 * m23 * m30-m03 * m12 * m20 * m31+m02 * m13 * m20 * m31+
+            m03 * m10 * m22 * m31-m00 * m13 * m22 * m31-m02 * m10 * m23 * m31+m00 * m12 * m23 * m31+
+            m03 * m11 * m20 * m32-m01 * m13 * m20 * m32-m03 * m10 * m21 * m32+m00 * m13 * m21 * m32+
+            m01 * m10 * m23 * m32-m00 * m11 * m23 * m32-m02 * m11 * m20 * m33+m01 * m12 * m20 * m33+
+            m02 * m10 * m21 * m33-m00 * m12 * m21 * m33-m01 * m10 * m22 * m33+m00 * m11 * m22 * m33;
+        return (float) value;
+  }
 
     /**
      * Returns a random float between 0 and 1.
