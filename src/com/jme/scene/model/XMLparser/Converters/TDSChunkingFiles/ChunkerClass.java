@@ -12,7 +12,7 @@ import java.util.ArrayList;
 abstract public class ChunkerClass implements MaxChunkIDs{
     static boolean DEBUG_LIGHT=true;
     static boolean DEBUG=true;
-    static boolean DEBUG_SEVERE=false;
+    static boolean DEBUG_SEVERE=true;
 
     public DataInput myIn;
     private ChunkHeader header;
@@ -105,7 +105,7 @@ abstract public class ChunkerClass implements MaxChunkIDs{
     protected final String readcStr(int byteLen) throws IOException {
         byte[] inByte=new byte[byteLen];
         myIn.readFully(inByte);
-        String cStr=new String(inByte);
+        String cStr=new String(inByte,0,byteLen-1);
         return cStr;
     }
 

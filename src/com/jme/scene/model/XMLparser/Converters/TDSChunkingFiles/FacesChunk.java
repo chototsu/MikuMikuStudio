@@ -1,8 +1,11 @@
 package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
+import com.jme.math.Vector3f;
+
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.ArrayList;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -14,9 +17,11 @@ import java.util.HashMap;
  */
 public class FacesChunk extends ChunkerClass{
     int nFaces;
-    int[] indexes;
+    int[][] faces;
     int [] smoothingGroups;
-    HashMap materialNamesToIndexes;
+    ArrayList materialNames;
+    ArrayList materialIndexes;
+
 
     public FacesChunk(DataInput myIn, ChunkHeader i) throws IOException {
         super(myIn,i);
@@ -25,14 +30,13 @@ public class FacesChunk extends ChunkerClass{
     protected void initializeVariables() throws IOException {
         nFaces=myIn.readUnsignedShort();
         if (DEBUG || DEBUG_LIGHT) System.out.println("Reading faces #=" + nFaces);
-        indexes=new int[nFaces*3];
+        faces=new int[nFaces][];
         smoothingGroups=new int[nFaces];
-        materialNamesToIndexes=new HashMap();
-
+        materialNames=new ArrayList();
+        materialIndexes=new ArrayList();
 
         for (int i=0;i<nFaces;i++){
-            for (int j=0;j<3;j++)
-                indexes[i*3+j]=myIn.readShort();
+            faces[i]=new int[]{myIn.readUnsignedShort(),myIn.readUnsignedShort(),myIn.readUnsignedShort()};
             short flag=myIn.readShort();
         }
         decrHeaderLen(2 + nFaces*(3*2+2));
@@ -54,13 +58,14 @@ public class FacesChunk extends ChunkerClass{
 
     private void readMeshMaterialGroup() throws IOException {
         String name=readcStr();
-        short numFace=myIn.readShort();
+        int numFace=myIn.readUnsignedShort();
         int[] appliedFacesIndexes=new int[numFace];
         if (DEBUG || DEBUG_LIGHT) System.out.println("Material " + name + " is applied to " + numFace + " faces");
         for (int i=0;i<numFace;i++){
-            appliedFacesIndexes[i]=myIn.readShort();
+            appliedFacesIndexes[i]=myIn.readUnsignedShort();
         }
-        materialNamesToIndexes.put(name,appliedFacesIndexes);
+        materialIndexes.add(appliedFacesIndexes);
+        materialNames.add(name);
     }
 
     private void readSmoothing() throws IOException {

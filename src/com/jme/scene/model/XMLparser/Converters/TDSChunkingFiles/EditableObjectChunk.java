@@ -1,5 +1,8 @@
 package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -18,16 +21,29 @@ import java.util.HashMap;
 public class EditableObjectChunk extends ChunkerClass{
 
 
-    ArrayList materialBlocks;
-    ArrayList namedObjects;
+    HashMap materialBlocks;
+    HashMap namedObjects;
     float masterScale;
+    float shadowMapRange;
+    float rayTraceBias;
+    Vector3f oConstPlanes;
+    ColorRGBA genAmbientColor;
+    ColorRGBA backGroundColor;
+    String backGroundBigMap;
+    boolean useBackColor;
+    float shadowBias;
+    short shadowMapSize;
+    LayeredFogChunk fogOptions;
+    FogChunk myFog;
+    DistanceQueueChunk distanceQueue;
+
     public EditableObjectChunk(DataInput myIn, ChunkHeader header) throws IOException {
         super(myIn,header);
     }
 
     protected void initializeVariables(){
-        materialBlocks=new ArrayList();
-        namedObjects=new ArrayList();
+        materialBlocks=new HashMap();
+        namedObjects=new HashMap();
     }
 
     protected boolean processChildChunk(ChunkHeader i) throws IOException {
@@ -36,7 +52,8 @@ public class EditableObjectChunk extends ChunkerClass{
                     readMeshVersion();
                     return true;
                 case MAT_BLOCK:
-                    materialBlocks.add(new MaterialBlock(myIn,i));
+                    MaterialBlock tempMat=new MaterialBlock(myIn,i);
+                    materialBlocks.put(tempMat.name,tempMat);
                     return true;
 
                 case MASTER_SCALE:
@@ -44,61 +61,81 @@ public class EditableObjectChunk extends ChunkerClass{
                     return true;
 
                 case NAMED_OBJECT:
-                    namedObjects.add(new NamedObjectChunk(myIn,i));
+                    NamedObjectChunk tempOb=new NamedObjectChunk(myIn,i);
+                    namedObjects.put(tempOb.name,tempOb);
                     return true;
-/*
-                case KEY_VIEWPORT:
-                    readViewLayout(i.length);
-                    break;
+                case KEY_VIEWPORT:  // Viewport layout is unneeded so is ignored
+                    skipSize(i.length);
+//                    readViewLayout(i.length);
+                    return true;
+
                 case SHADOW_MAP_RANGE:
                     readShadowRange();
-                    break;
+                    return true;
+
                 case RAYTRACE_BIAS:
                     readRayTraceBias();
-                    break;
+                    return true;
+
                 case O_CONSTS:
                     readOConst();
-                    break;
+                    return true;
+
                 case GEN_AMB_COLOR:
-                    readGenAmbColor(i.length);
-                    break;
+                    genAmbientColor=new ColorChunk(myIn,i).getBestColor();
+                    return true;
+
                 case BACKGRD_COLOR:
-                    readBackGroundColor(i.length);
-                    break;
+                    backGroundColor=new ColorChunk(myIn,i).getBestColor();
+                    return true;
                 case BACKGRD_BITMAP:
-                    readBackGroundBitMap();
-                    break;
+                    backGroundBigMap=readcStr();
+                    return true;
                 case V_GRADIENT:
-                    readGradient(i.length);
-                    break;
+                    skipSize(i.length); // ignored/unneeded
+                    return true;
                 case USE_BCK_COLOR:
-                    useBackColor();
-                    break;
+                    useBackColor=true;
+                    return true;
                 case FOG_FLAG:
-                    readFog(i.length);
-                    break;
+                    myFog=new FogChunk(myIn,i);
+                    return true;
                 case SHADOW_BIAS:
                     readShadowBias();
-                    break;
+                    return true;
                 case SHADOW_MAP_SIZE:
                     readShadowMapSize();
-                    break;
+                    return true;
                 case LAYERED_FOG_OPT:
-                    readLayeredFogOptions(i.length);
-                    break;
+                    fogOptions=new LayeredFogChunk(myIn,i);
+                    return true;
                 case DISTANCE_QUEUE:
-                    readDistanceQueue(i.length);
-                    break;
+                    distanceQueue=new DistanceQueueChunk(myIn,i);
+                    return true;
                 case DEFAULT_VIEW:
-                    readDefaultView(i.length);
-                    break;
+                    skipSize(i.length); // view ignored
+                    return true;
                 case UNKNOWN1:
-                    myIn.readFloat();   // Unknown
-                    break;
-*/
+                    skipSize(i.length);   // Unknown
+                    return true;
                 default:
                     return false;
             }
+    }
+
+    private void readOConst() throws IOException{
+        oConstPlanes=new Vector3f(myIn.readFloat(), myIn.readFloat(), myIn.readFloat());
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Planes:" + oConstPlanes);
+    }
+
+    private void readRayTraceBias() throws IOException{
+        rayTraceBias=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Raytrace bias:" + rayTraceBias);
+    }
+
+    private void readShadowRange() throws IOException {
+        shadowMapRange=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Shadow map range:" + shadowMapRange);
     }
 
     private void readMasterScale() throws IOException{
@@ -110,4 +147,15 @@ public class EditableObjectChunk extends ChunkerClass{
         int i=myIn.readInt();
         if (DEBUG || DEBUG_LIGHT) System.out.println("Mesh version:" + i);
     }
+
+    private void readShadowBias() throws IOException {
+        shadowBias=myIn.readFloat();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Bias:" + shadowBias);
+    }
+
+    private void readShadowMapSize() throws IOException{
+        shadowMapSize=myIn.readShort();
+        if (DEBUG || DEBUG_LIGHT) System.out.println("Shadow map siz:" + shadowMapSize);
+    }
+
 }

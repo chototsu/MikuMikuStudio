@@ -41,11 +41,10 @@ public class NamedObjectChunk extends ChunkerClass{
                 whatIAm=new TriMeshChunk(myIn,i);
                 return true;
             case CAMERA_FLAG:
-//                cameraList.add(createCamera());
                 if (whatIAm!=null)
                     throw new IOException("logic error whatIAm in Named Object isn't null");
-                whatIAm="new camera here";
-                return false;
+                whatIAm=new CameraChunk(myIn,i);
+                return true;
             case LIGHT_OBJ:
                 if (whatIAm!=null)
                     throw new IOException("logic error whatIAm in Named Object isn't null");

@@ -178,7 +178,7 @@ public class KeyframeInfoChunk extends ChunkerClass{
             int trackPosition=myIn.readInt();
             short accData=myIn.readShort(); // acceleration data
             locateTrack(trackPosition).position=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
-            System.out.println("trackPos#"+trackPosition+"Pos#i"+locateTrack(trackPosition).position);
+            if (DEBUG) System.out.println("trackPos#"+trackPosition+"Pos#i"+locateTrack(trackPosition).position);
         }
     }
 

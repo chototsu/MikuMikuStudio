@@ -57,6 +57,8 @@ public interface MaxChunkIDs {
     static final int LIGHT_SPOTLIGHT=0x4610;
     static final int LIGHT_SPOT_SHADOWED=0x4630;
     static final int LIGHT_LOC_SHADOW=0x4641;
+    static final int LIGHT_SEE_CONE=0x4650;
+    static final int LIGHT_SPOT_OVERSHOOT=0x4652;
     static final int LIGHT_SPOT_ROLL=0x4656;
     static final int LIGHT_SPOT_BIAS=0x4658;
     static final int LIGHT_IN_RANGE =0x4659;
