@@ -63,7 +63,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.31 2005-02-10 21:48:26 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.32 2005-02-10 23:36:00 renanse Exp $
  */
 final public class TextureManager {
     
@@ -232,7 +232,7 @@ final public class TextureManager {
             if (imageData.getType() == com.jme.image.Image.RGB888)
                 imageData.setType(com.jme.image.Image.RGB888_DXT1);
             else if (imageData.getType() == com.jme.image.Image.RGBA8888)
-                imageData.setType(com.jme.image.Image.RGBA8888_DXT1A);
+                imageData.setType(com.jme.image.Image.RGBA8888_DXT5);
         }
 
         texture = new Texture(anisoLevel);
