@@ -7,7 +7,6 @@ import com.jme.scene.*;
 import com.jme.bounding.BoundingVolume;
 import com.jme.effects.Tint;
 import com.jme.curve.Curve;
-import com.jme.input.Mouse;
 import com.jme.widget.WidgetRenderer;
 import com.jme.widget.font.WidgetFont;
 import com.jme.math.Vector3f;
