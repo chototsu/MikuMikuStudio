@@ -32,7 +32,6 @@
 package com.jme.renderer;
 
 import com.jme.curve.Curve;
-import com.jme.effects.ParticleSystem;
 import com.jme.input.Mouse;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
@@ -71,7 +70,7 @@ import com.jme.widget.text.WidgetText;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.11 2004-01-26 21:44:37 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.12 2004-02-03 22:44:48 darkprophet Exp $
  */
 public interface Renderer {
     /**
@@ -262,12 +261,6 @@ public interface Renderer {
      * @param p the point to be rendered.
      */
     public void draw(Point p);
-    
-    /**
-     * <code>draw</code> renders a particle system object to the buffer.
-     * @param p the ParticleSystem object to be renderer
-     */
-    public void draw(ParticleSystem p);
     
     /**
      * <code>draw</code> renders a line to the back buffer.
