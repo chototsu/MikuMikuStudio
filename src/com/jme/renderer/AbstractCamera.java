@@ -53,7 +53,7 @@ import com.jme.math.FastMath;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.26 2004-09-18 19:22:51 mojomonkey Exp $
+ * @version $Id: AbstractCamera.java,v 1.27 2005-02-25 19:34:04 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -511,7 +511,7 @@ public abstract class AbstractCamera implements Camera {
 
     public void setFrustumPerspective(float fovY, float aspect, float near,
             float far) {
-        float h = FastMath.tan(fovY / 180 * FastMath.PI) * near / 2f;
+        float h = FastMath.tan(fovY * FastMath.DEG_TO_RAD) * near * .5f;
         float w = h * aspect;
         frustumLeft = -w;
         frustumRight = w;
