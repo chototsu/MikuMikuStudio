@@ -224,7 +224,7 @@ public class OrientedBox extends TriMesh{
         Vector3f yCrossZmulX=yAxis.cross(zAxis,tempVa).multLocal(extent.x);
         Vector3f zCrossXmulY=zAxis.cross(xAxis,tempVb).multLocal(extent.y);
         Vector3f xCrossYmulZ=xAxis.cross(yAxis,tempVc).multLocal(extent.z);
-        
+
         vectorStore[0].set(
                 ((yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ)+center.x,
                 ((yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ)+center.y,
@@ -302,5 +302,69 @@ public class OrientedBox extends TriMesh{
      */
     public void setExtent(Vector3f extent) {
         this.extent = extent;
+    }
+
+    /**
+     * Returns the x axis of this box.
+     * @return This OB's x axis.
+     */
+    public Vector3f getxAxis() {
+        return xAxis;
+    }
+
+    /**
+     * Sets the x axis of this OB.  Shallow copy.
+     * @param xAxis The new x axis.
+     */
+    public void setxAxis(Vector3f xAxis) {
+        this.xAxis = xAxis;
+    }
+
+    /**
+     * Gets the Y axis of this OB.
+     * @return This OB's Y axis.
+     */
+    public Vector3f getyAxis() {
+        return yAxis;
+    }
+
+    /**
+     * Sets the Y axis of this OB.  Shallow copy.
+     * @param yAxis The new Y axis.
+     */
+    public void setyAxis(Vector3f yAxis) {
+        this.yAxis = yAxis;
+    }
+
+    /**
+     * Returns the Z axis of this OB.
+     * @return The Z axis.
+     */
+    public Vector3f getzAxis() {
+        return zAxis;
+    }
+
+    /**
+     * Sets the Z axis of this OB.  Shallow copy.
+     * @param zAxis The new Z axis.
+     */
+    public void setzAxis(Vector3f zAxis) {
+        this.zAxis = zAxis;
+    }
+
+    /**
+     * Returns this OB's per vertex color.
+     * @return This OB's per vertex color.
+     */
+    public ColorRGBA getMeshColor() {
+        return meshColor;
+    }
+
+    /**
+     * Sets the per vertex color of this OB.  Shallow copy.
+     * @param meshColor The new per vertex color.
+     */
+    public void setMeshColor(ColorRGBA meshColor) {
+        this.meshColor = meshColor;
     }
 }
