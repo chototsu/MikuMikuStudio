@@ -192,7 +192,10 @@ public class TestImposterNode extends VariableTimestepGame {
                     true));
     fakeScene.setRenderState(ts);
 
-    iNode = new ImposterNode("model imposter", 10, 512, 512);
+    int tSize = 256;
+    if (display.getHeight() > 512)
+      tSize = 512;
+    iNode = new ImposterNode("model imposter", 10, tSize, tSize);
     iNode.attachChild(fakeScene);
     iNode.setCameraDistance(100);
     iNode.setRedrawRate(.05f); // .05 = update texture 20 times a second on average
