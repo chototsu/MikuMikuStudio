@@ -16,6 +16,8 @@ import java.util.logging.Level;
  * ending element is encountered
  * 
  * @author Jack Lindamood
+ *
+ * @deprecated This file will soon be deleted.  It is replaced by jME's binary format
  */
 class JMESAXHandler extends DefaultHandler{
     private StringBuffer currentData;

@@ -16,13 +16,14 @@ import org.xml.sax.SAXParseException;
 /**
  * XML file format parser for jME
  *
+ * @deprecated Will soon be deleted.  Replaced by jME's binary format.
  * @author Jack Lindamood
  */
 public class SAXReader{
     private SAXStackProcessor computer;
     private JMESAXHandler myHandler;
     long time;
-    private static boolean DEBUG=true;
+    private static boolean DEBUG=false;
 
 
     /**
