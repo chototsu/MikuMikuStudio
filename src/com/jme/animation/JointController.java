@@ -23,6 +23,8 @@ public class JointController extends Controller {
      */
     public int numJoints;
 
+    int b;
+
     /**
      * movementInfo[i] contains a float value time and an array of TransformMatrix.  At time <code>time</code>
      * the joint i is at movement <code>jointChange[i]</code>
@@ -189,7 +191,7 @@ public class JointController extends Controller {
      * @param time Time from last update
      */
     public void update(float time) {
-        if (!this.isActive()) return;
+        if (!this.isActive() || numJoints==0) return;
         curTime+=time*this.getSpeed();
         currentSkip+=time;
         if (currentSkip>=skipRate){
@@ -251,6 +253,9 @@ public class JointController extends Controller {
      * JointController object lifetime
      */
     public void processController(){
+        if (movementInfo.size()==1){    // IE no times were added or only time 0 was added
+            movementInfo.add(new PointInTime(1));
+        }
         invertWithParents();
         fillHoles();
     }
@@ -318,7 +323,7 @@ public class JointController extends Controller {
             if (start==movementInfo.size()){    // if they are all null then fill with identity
                 for (int i=0;i<movementInfo.size();i++)
                     ((PointInTime)movementInfo.get(i)).jointRotation[joint]=new Quaternion();
-                break;  // we're done so lets break
+                continue;  // we're done with this joint so lets continue
             }
             if (start!=0){  // if there -are- null elements at the begining, then fill with first non-null
                 unSyncbeginAngle.set( ((PointInTime)movementInfo.get(start)).jointRotation[joint]);
@@ -350,7 +355,7 @@ public class JointController extends Controller {
             if (start==movementInfo.size()){    // if they are all null then fill with identity
                 for (int i=0;i<movementInfo.size();i++)
                     ((PointInTime)movementInfo.get(i)).jointTranslation[joint]=new Vector3f(0,0,0);
-                break;  // we're done so lets break
+                continue;  // we're done with this joint so lets continue
             }
             if (start!=0){  // if there -are- null elements at the begining, then fill with first non-null
                 unSyncbeginPos.set( ((PointInTime)movementInfo.get(start)).jointTranslation[joint]);
@@ -429,6 +434,12 @@ public class JointController extends Controller {
             usedTrans=new BitSet(numJoints);
             jointRotation=new Quaternion[numJoints];
         }
+
+        public PointInTime(int time) {
+            this();
+            this.time=time;
+        }
+
         void setRotation(int jointIndex,float x,float y,float z){
             if (jointRotation[jointIndex]==null) jointRotation[jointIndex]=new Quaternion();
             jointRotation[jointIndex].fromAngles(new float[]{x,y,z});
