@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.1 2003-12-09 20:34:48 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.2 2003-12-09 20:38:27 mojomonkey Exp $
  */
 public class TestCollision extends AbstractGame {
 
@@ -136,7 +136,7 @@ public class TestCollision extends AbstractGame {
         
         CollisionResults results = new CollisionResults();
         
-        CollisionDetection.hasCollision(t, t2, results);
+        CollisionDetection.hasCollision(t, scene, results);
         
         if(results.getNumber() > 0) {
             text.print("Collision: YES");

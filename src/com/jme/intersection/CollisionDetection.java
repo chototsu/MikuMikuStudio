@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
  * <code>CollisionDetection</code> provides a system for calculating collisions
  * based on given criteria. 
  * @author Mark Powell
- * @version $Id: CollisionDetection.java,v 1.1 2003-12-09 20:34:48 mojomonkey Exp $
+ * @version $Id: CollisionDetection.java,v 1.2 2003-12-09 20:38:27 mojomonkey Exp $
  */
 public class CollisionDetection {
 
@@ -55,6 +55,10 @@ public class CollisionDetection {
         Spatial test,
         Spatial scene,
         CollisionResults results) {
+            
+        if(test.equals(scene)) {
+            return;
+        }
             
         if (Intersection
             .intersection(test.getWorldBound(), scene.getWorldBound())) {
