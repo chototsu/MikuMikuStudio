@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.19 2004-07-06 04:43:20 cep21 Exp $
+ * @version $Id: TriMesh.java,v 1.20 2004-07-08 13:40:54 guurk Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -169,7 +169,7 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	public void getTriangle(int i, Vector3f[] vertices) {
-	    System.out.println(i + ", " + triangleQuantity);
+	    //System.out.println(i + ", " + triangleQuantity);
 		if (i < triangleQuantity) {
 		    int iBase = 3 * i;
 		    vertices[0] = vertex[indices[iBase++]];
