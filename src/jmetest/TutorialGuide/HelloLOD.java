@@ -8,14 +8,18 @@ import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Controller;
+import com.jme.scene.shape.Box;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.MaterialState;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.curve.CurveController;
 import com.jme.curve.BezierCurve;
 import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
 import com.jme.input.KeyInput;
 import com.jme.input.action.KeyExitAction;
 
@@ -95,9 +99,6 @@ public class HelloLOD extends SimpleGame {
             // Attach clod node.
             clodNode.attachChild(acm);
         }
-        // Speed up key movement.
-        input.setKeySpeed(100);
-
         // Attach the clod mesh at the origin.
         clodNode.setLocalScale(.1f);
         rootNode.attachChild(clodNode);
@@ -111,36 +112,65 @@ public class HelloLOD extends SimpleGame {
         input.addKeyboardAction("exit",KeyInput.KEY_ESCAPE,new KeyExitAction(this));
 
         Vector3f[]cameraPoints=new Vector3f[]{
-            new Vector3f(0,0,0),
             new Vector3f(0,5,20),
-            new Vector3f(0,10,40),
             new Vector3f(0,20,90),
-            new Vector3f(0,25,150),
-            new Vector3f(0,30,200)
+            new Vector3f(0,30,200),
+            new Vector3f(0,150,300)
         };
         BezierCurve bc=new BezierCurve("camera path",cameraPoints);
         cn=new CameraNode("camera node",display.getRenderer().getCamera());
+
 
         CurveController cc=new CurveController(bc,cn);
         cc.setActive(true);
         cc.setUpVector(new Vector3f(0,1,0));
         cc.setAutoRotation(false);
         cc.setRepeatType(Controller.RT_CYCLE);
-        cc.setSpeed(.1f);
+        cc.setSpeed(.5f);
 
         cn.addController(cc);
 
+        drawAxis();
 //        rootNode.setForceView(true);
+    }
+
+    private void drawAxis() {
+        Box xAxis=new Box("x axis",new Vector3f(10,0,0),10,.5f,.5f);
+        MaterialState green=display.getRenderer().createMaterialState();
+        green.setEmissive(ColorRGBA.green);
+        xAxis.setRenderState(green);
+
+        Box yAxis=new Box("y axis",new Vector3f(0,10,0),.5f,10,.5f);
+        MaterialState blue=display.getRenderer().createMaterialState();
+        blue.setEmissive(ColorRGBA.blue);
+        yAxis.setRenderState(blue);
+
+        Box zAxis=new Box("z axis",new Vector3f(0,0,10),.5f,.5f,10);
+        MaterialState red=display.getRenderer().createMaterialState();
+        red.setEmissive(ColorRGBA.red);
+        zAxis.setRenderState(red);
+
+
+        rootNode.attachChild(xAxis);
+        rootNode.attachChild(yAxis);
+        rootNode.attachChild(zAxis);
     }
 
     protected void simpleUpdate(){
         cn.updateGeometricState(tpf,true);
         Camera c=display.getRenderer().getCamera();
-
         Vector3f objectCenter=((BoundingSphere)rootNode.getWorldBound()).center;
-        Vector3f lookAtObject=new Vector3f(objectCenter).subtractLocal(c.getLocation());
+        Vector3f lookAtObject=new Vector3f(objectCenter).subtractLocal(c.getLocation()).normalizeLocal();
 
-        c.setDirection(lookAtObject);
+//        c.setFrame(c.getLocation(),
+//                lookAtObject.cross(new Vector3f(-1,0,0)).normalizeLocal(),
+//                lookAtObject.cross(new Vector3f(0,1,0)).normalizeLocal(),
+//                lookAtObject);
+        c.setFrame(c.getLocation(),
+                new Vector3f(-1,0,0).crossLocal(lookAtObject).normalizeLocal(),
+                new Vector3f(0,1,0).crossLocal(lookAtObject).normalizeLocal(),
+                lookAtObject);
+
         c.update();
     }
 }
