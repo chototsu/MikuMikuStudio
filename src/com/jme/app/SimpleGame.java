@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.7 2004-04-22 02:18:26 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.8 2004-04-22 21:47:08 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -71,6 +71,7 @@ public abstract class SimpleGame extends BaseGame {
   protected Timer timer;
   protected Node fpsNode;
   protected Text fps;
+  protected boolean showBounds = false;
 
   protected WireframeState wireState;
   protected LightState lightState;
@@ -93,15 +94,20 @@ public abstract class SimpleGame extends BaseGame {
 
     if (KeyBindingManager
         .getKeyBindingManager()
-        .isValidCommand("toggle_wire")) {
+        .isValidCommand("toggle_wire", false)) {
       wireState.setEnabled(!wireState.isEnabled());
       rootNode.updateRenderState();
     }
     if (KeyBindingManager
         .getKeyBindingManager()
-        .isValidCommand("toggle_lights")) {
+        .isValidCommand("toggle_lights", false)) {
       lightState.setEnabled(!lightState.isEnabled());
       rootNode.updateRenderState();
+    }
+    if (KeyBindingManager
+        .getKeyBindingManager()
+        .isValidCommand("toggle_bounds", false)) {
+      showBounds = !showBounds;
     }
 
   }
@@ -114,6 +120,8 @@ public abstract class SimpleGame extends BaseGame {
     display.getRenderer().clearStatistics();
     display.getRenderer().clearBuffers();
     display.getRenderer().draw(rootNode);
+    if (showBounds)
+      display.getRenderer().drawBounds(rootNode);
     display.getRenderer().draw(fpsNode);
     simpleRender(interpolation);
   }
@@ -168,6 +176,9 @@ public abstract class SimpleGame extends BaseGame {
     KeyBindingManager.getKeyBindingManager().set(
         "toggle_lights",
         KeyInput.KEY_L);
+    KeyBindingManager.getKeyBindingManager().set(
+        "toggle_bounds",
+        KeyInput.KEY_B);
   }
 
   /**
