@@ -59,7 +59,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.33 2004-10-14 01:23:09 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.34 2004-10-27 22:36:02 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -349,7 +349,7 @@ public class Node extends Spatial implements Serializable {
         if (getWorldBound().intersects(scene.getWorldBound())) {
             //further checking needed.
             for (int i = 0; i < getQuantity(); i++) {
-                if (getChild(i).hasCollision(scene, checkTriangles)) { return false; }
+                if (getChild(i).hasCollision(scene, checkTriangles)) { return true; }
             }
         }
 
