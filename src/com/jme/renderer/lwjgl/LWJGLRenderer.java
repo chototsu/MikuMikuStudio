@@ -55,18 +55,23 @@
 
 package com.jme.renderer.lwjgl;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
-
 import javax.imageio.ImageIO;
 
-import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.glu.*;
+import java.awt.image.BufferedImage;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GLContext;
+import org.lwjgl.opengl.Window;
+import org.lwjgl.opengl.glu.GLU;
 import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
 import com.jme.effects.Tint;
@@ -76,6 +81,7 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
@@ -85,13 +91,35 @@ import com.jme.scene.Point;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
-import com.jme.scene.state.*;
-import com.jme.scene.state.lwjgl.*;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.DitherState;
+import com.jme.scene.state.FogState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.StencilState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.VertexProgramState;
+import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.lwjgl.LWJGLAlphaState;
+import com.jme.scene.state.lwjgl.LWJGLAttributeState;
+import com.jme.scene.state.lwjgl.LWJGLCullState;
+import com.jme.scene.state.lwjgl.LWJGLDitherState;
+import com.jme.scene.state.lwjgl.LWJGLFogState;
+import com.jme.scene.state.lwjgl.LWJGLLightState;
+import com.jme.scene.state.lwjgl.LWJGLMaterialState;
+import com.jme.scene.state.lwjgl.LWJGLShadeState;
+import com.jme.scene.state.lwjgl.LWJGLStencilState;
+import com.jme.scene.state.lwjgl.LWJGLTextureState;
+import com.jme.scene.state.lwjgl.LWJGLVertexProgramState;
+import com.jme.scene.state.lwjgl.LWJGLWireframeState;
+import com.jme.scene.state.lwjgl.LWJGLZBufferState;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.WidgetRenderer;
-import org.lwjgl.BufferUtils;
-import com.jme.renderer.RenderQueue;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -100,7 +128,7 @@ import com.jme.renderer.RenderQueue;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.24 2004-06-25 16:12:12 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.25 2004-06-26 17:01:55 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -893,26 +921,26 @@ public class LWJGLRenderer implements Renderer {
     // render the object
 
     GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-    if (t.isVBOVertexEnabled() && GLContext.GL_ARB_vertex_buffer_object) {
+    if (t.isVBOVertexEnabled() && GLContext.OpenGL15) {
       usingVBO = true;
-      ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, t.getVBOVertexID());
+      GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOVertexID());
       GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
     } else {
       if (usingVBO)
-        ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, 0);
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
       GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
     }
 
     FloatBuffer normals = t.getNormalAsFloatBuffer();
     if (normals != null || t.getVBONormalID() > 0) {
       GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-      if (t.isVBONormalEnabled() && GLContext.GL_ARB_vertex_buffer_object) {
+      if (t.isVBONormalEnabled() && GLContext.OpenGL15) {
         usingVBO = true;
-        ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, t.getVBONormalID());
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBONormalID());
         GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
       } else {
         if (usingVBO)
-          ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, 0);
+          GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         GL11.glNormalPointer(0, normals);
       }
     } else {
@@ -922,13 +950,13 @@ public class LWJGLRenderer implements Renderer {
     FloatBuffer colors = t.getColorAsFloatBuffer();
     if (colors != null || t.getVBOColorID() > 0) {
       GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-      if (t.isVBOColorEnabled() && GLContext.GL_ARB_vertex_buffer_object) {
+      if (t.isVBOColorEnabled() && GLContext.OpenGL15) {
         usingVBO = true;
-        ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, t.getVBOColorID());
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOColorID());
         GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
       } else {
         if (usingVBO)
-          ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, 0);
+          GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         GL11.glColorPointer(4, 0, colors);
       }
     } else {
@@ -944,14 +972,14 @@ public class LWJGLRenderer implements Renderer {
         if (textures != null || t.getVBOTextureID(i) > 0) {
 
           GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-          if (t.isVBOTextureEnabled() && GLContext.GL_ARB_vertex_buffer_object) {
+          if (t.isVBOTextureEnabled() && GLContext.OpenGL15) {
             usingVBO = true;
-            ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER,
+            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER,
                                             t.getVBOTextureID(i));
             GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
           } else {
             if (usingVBO)
-              ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, 0);
+              GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
             GL11.glTexCoordPointer(2, 0, textures);
           }
         } else {
@@ -975,67 +1003,67 @@ public class LWJGLRenderer implements Renderer {
 
   IntBuffer buf = BufferUtils.createIntBuffer(16);
   public void prepVBO(Geometry g) {
-    if (!GLContext.GL_ARB_vertex_buffer_object)return;
+    if (!GLContext.OpenGL15)return;
     int verts = g.getVertQuantity();
     if (verts < 0) verts = g.getVertices().length;
     if (g.isVBOVertexEnabled() && g.getVBOVertexID() <= 0) {
-      ARBBufferObject.glGenBuffersARB(buf);
+      GL15.glGenBuffers(buf);
       g.setVBOVertexID(buf.get(0));
-      ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, g.getVBOVertexID());
-      ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
+      GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOVertexID());
+      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
                                       (FloatBuffer)null,
-                                      ARBBufferObject.GL_STATIC_DRAW_ARB);
-      ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
+                                      GL15.GL_STATIC_DRAW);
+      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
                                       g.getVerticeAsFloatBuffer(),
-                                      ARBBufferObject.GL_STATIC_DRAW_ARB);
+                                      GL15.GL_STATIC_DRAW);
       buf.clear();
     }
     if (g.isVBONormalEnabled() && g.getVBONormalID() <= 0) {
-      ARBBufferObject.glGenBuffersARB(buf);
+      GL15.glGenBuffers(buf);
       g.setVBONormalID(buf.get(0));
-      ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, g.getVBONormalID());
-      ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
+      GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBONormalID());
+      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
                                       (FloatBuffer)null,
-                                      ARBBufferObject.GL_STATIC_DRAW_ARB);
-      ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
+                                      GL15.GL_STATIC_DRAW);
+      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4,
                                       g.getNormalAsFloatBuffer(),
-                                      ARBBufferObject.GL_STATIC_DRAW_ARB);
+                                      GL15.GL_STATIC_DRAW);
       buf.clear();
     }
     if (g.isVBOColorEnabled() && g.getVBOColorID() <= 0) {
-      ARBBufferObject.glGenBuffersARB(buf);
+      GL15.glGenBuffers(buf);
       g.setVBOColorID(buf.get(0));
-      ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
-      ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER, verts * 4 * 4,
+      GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
+      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 4 * 4,
                                       (FloatBuffer)null,
-                                      ARBBufferObject.GL_STATIC_DRAW_ARB);
-      ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER, verts * 4 * 4,
+                                      GL15.GL_STATIC_DRAW);
+      GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 4 * 4,
                                       g.getColorAsFloatBuffer(),
-                                      ARBBufferObject.GL_STATIC_DRAW_ARB);
+                                      GL15.GL_STATIC_DRAW);
       buf.clear();
     }
     if (g.isVBOTextureEnabled()) {
       for (int i = 0; i < g.getNumberOfUnits(); i++) {
 
         if (g.getVBOTextureID(i) <= 0) {
-          ARBBufferObject.glGenBuffersARB(buf);
+          GL15.glGenBuffers(buf);
           g.setVBOTextureID(i, buf.get(0));
-          ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER,
+          GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER,
                                           g.getVBOTextureID(i));
-          ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER,
+          GL15.glBufferData(GL15.GL_ARRAY_BUFFER,
                                           verts * 2 * 4,
                                           (FloatBuffer)null,
-                                          ARBBufferObject.GL_STATIC_DRAW_ARB);
-          ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER,
+                                          GL15.GL_STATIC_DRAW);
+          GL15.glBufferData(GL15.GL_ARRAY_BUFFER,
                                           verts * 2 * 4,
                                           g.getTextureAsFloatBuffer(i),
-                                          ARBBufferObject.GL_STATIC_DRAW_ARB);
+                                          GL15.GL_STATIC_DRAW);
           buf.clear();
         }
       }
     }
     buf.clear();
-    ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER, 0);
+    GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
   }
 
   /**
@@ -1312,6 +1340,6 @@ public class LWJGLRenderer implements Renderer {
   }
 
   public boolean supportsVBO() {
-    return GLContext.GL_ARB_vertex_buffer_object;
+    return GLContext.OpenGL15;
   }
 }
