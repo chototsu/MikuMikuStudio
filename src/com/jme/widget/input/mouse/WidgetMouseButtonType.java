@@ -42,6 +42,7 @@ import com.jme.widget.util.WidgetType;
  */
 public class WidgetMouseButtonType extends WidgetType {
 
+    public final static WidgetMouseButtonType MOUSE_BUTTON_NONE = new WidgetMouseButtonType ("MOUSE_BUTTON_NONE");
     public final static WidgetMouseButtonType MOUSE_BUTTON_1 = new WidgetMouseButtonType ("MOUSE_BUTTON_1");
     public final static WidgetMouseButtonType MOUSE_BUTTON_2 = new WidgetMouseButtonType ("MOUSE_BUTTON_2");
     public final static WidgetMouseButtonType MOUSE_BUTTON_3 = new WidgetMouseButtonType ("MOUSE_BUTTON_3");
@@ -59,7 +60,9 @@ public class WidgetMouseButtonType extends WidgetType {
     public WidgetType getType(String name) {
         WidgetType type = null;
 
-        if (MOUSE_BUTTON_1.name.equals(name)) {
+        if (MOUSE_BUTTON_NONE.name.equals(name)) {
+            type = MOUSE_BUTTON_NONE;
+        } else if (MOUSE_BUTTON_1.name.equals(name)) {
             type = MOUSE_BUTTON_1;
         } else if (MOUSE_BUTTON_2.name.equals(name)) {
             type = MOUSE_BUTTON_2;
