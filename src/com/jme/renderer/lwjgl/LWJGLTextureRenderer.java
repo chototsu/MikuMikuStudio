@@ -51,9 +51,9 @@ import org.lwjgl.LWJGLException;
  * This class is used by LWJGL to render textures. Users should <b>not </b>
  * create this class directly. Instead, allow DisplaySystem to create it for
  * you.
- * 
+ *
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.8 2004-09-10 17:47:20 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.9 2004-09-15 21:29:40 renanse Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean,
  *      boolean, boolean, boolean, int, int)
  */
@@ -117,7 +117,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /**
      * <code>getCamera</code> retrieves the camera this renderer is using.
-     * 
+     *
      * @return the camera this renderer is using.
      */
     public Camera getCamera() {
@@ -126,7 +126,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /**
      * <code>setCamera</code> sets the camera this renderer should use.
-     * 
+     *
      * @param camera
      *            the camera this renderer should use.
      */
@@ -138,7 +138,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     /**
      * <code>setBackgroundColor</code> sets the OpenGL clear color to the
      * color specified.
-     * 
+     *
      * @see com.jme.renderer.TextureRenderer#setBackgroundColor(com.jme.renderer.ColorRGBA)
      * @param c
      *            the color to set the background color to.
@@ -163,7 +163,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     /**
      * <code>getBackgroundColor</code> retrieves the clear color of the
      * current OpenGL context.
-     * 
+     *
      * @see com.jme.renderer.Renderer#getBackgroundColor()
      * @return the current clear color.
      */
@@ -174,7 +174,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     /**
      * <code>setupTexture</code> generates a new Texture object for use with
      * TextureRenderer. Generates a valid gl texture id for this texture.
-     * 
+     *
      * @return the new Texture
      */
     public Texture setupTexture() {
@@ -191,7 +191,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     /**
      * <code>setupTexture</code> generates a new Texture object for use with
      * TextureRenderer.
-     * 
+     *
      * @param glTextureID
      *            a valid gl texture id to use
      * @return the new Texture
@@ -212,14 +212,16 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * spatial for it to determine when a <code>Geometry</code> leaf is
      * reached. All of this is done in the context of the underlying texture
      * buffer.
-     * 
+     *
      * @param spat
      *            the scene to render.
      * @param tex
      *            the Texture to render it to.
      */
     public void render(Spatial spat, Texture tex) {
-        spat.setIsRoot(true);
+      // clear the current states since we are renderering into a new location
+      // and can not rely on states still being set.
+      Spatial.clearCurrentStates();
         try {
             if (pbuffer.isBufferLost()) {
                 LoggingSystem.getLogger().log(Level.WARNING,
@@ -230,6 +232,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             }
 
             if (useDirectRender) {
+              // setup and render directly to a 2d texture.
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
                 activate();
@@ -238,6 +241,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 deactivate();
                 pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
             } else {
+              // render and copy to a texture
                 activate();
                 parentRenderer.clearBuffers();
                 spat.onDraw(parentRenderer);
@@ -252,7 +256,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
                     "render(Spatial, Texture)", e);
         }
-        spat.setIsRoot(false);
+        // Clear the states again since we will be moving back to the old
+        // location and don't want the states bleeding over causing things
+        // *not* to be set when they should be.
+        Spatial.clearCurrentStates();
     }
 
     private void initPbuffer() {
