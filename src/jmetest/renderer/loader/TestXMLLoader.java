@@ -15,13 +15,13 @@ import java.io.IOException;
  */
 public class TestXMLLoader extends SimpleGame{
 
-    SAXReader r=new SAXReader();
 
     public static void main(String[] args){
         new TestXMLLoader().start();
     }
 
     protected void simpleInitGame() {
+        SAXReader r=new SAXReader();
         try {
             r.loadXML(new File("CVS root/data/XML docs/SampleXMLScene.xml").toURL().openStream());
         } catch (IOException e) {
