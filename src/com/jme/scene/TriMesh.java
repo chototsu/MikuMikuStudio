@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.20 2004-07-08 13:40:54 guurk Exp $
+ * @version $Id: TriMesh.java,v 1.21 2004-07-31 17:16:41 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -158,7 +158,13 @@ public class TriMesh extends Geometry implements Serializable {
 		return indexBuffer;
 	}
 
-	public void getTriangle(int i, int[] storage) {
+	/**
+     * Stores in the <code>storage</code> array the indices of triangle <code>i</code>.  If
+     * <code>i</code> is an invalid index, or if <code>storage.length!=3</code>, then nothing happens
+     * @param i The index of the triangle to get.
+     * @param storage The array that will hold the i's indexes.
+     */
+    public void getTriangle(int i, int[] storage) {
 		if (i < triangleQuantity && storage.length == 3) {
 
 			int iBase = 3 * i;
@@ -168,9 +174,15 @@ public class TriMesh extends Geometry implements Serializable {
 		}
 	}
 
+    /**
+     * Stores in the <code>vertices</code> array the vertex values of triangle <code>i</code>.
+     * If <code>i</code> is an invalid triangle index, nothing happens.
+     * @param i
+     * @param vertices
+     */
 	public void getTriangle(int i, Vector3f[] vertices) {
 	    //System.out.println(i + ", " + triangleQuantity);
-		if (i < triangleQuantity) {
+		if (i < triangleQuantity && i>=0) {
 		    int iBase = 3 * i;
 		    vertices[0] = vertex[indices[iBase++]];
 		    vertices[1] = vertex[indices[iBase++]];
@@ -178,7 +190,11 @@ public class TriMesh extends Geometry implements Serializable {
 		}
 	}
 
-	public int getTriangleQuantity() {
+	/**
+     * Returns the number of triangles this TriMesh contains.  Is basicly indices.length/3
+     * @return The current number of triangles.
+     */
+    public int getTriangleQuantity() {
 		return indices.length / 3;
 	}
 
@@ -246,6 +262,10 @@ public class TriMesh extends Geometry implements Serializable {
 		indexBuffer.flip();
 	}
 
+    /**
+     * Clears the buffers of this TriMesh.  The buffers include its indexBuffer, and all Geometry
+     * buffers.
+     */
 	public void clearBuffers() {
 		super.clearBuffers();
 		indexBuffer = null;

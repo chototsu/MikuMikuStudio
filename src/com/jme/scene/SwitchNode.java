@@ -39,7 +39,7 @@ import com.jme.renderer.Renderer;
  * be set depending on the distance from the camera.
  *
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.2 2004-04-22 22:26:46 renanse Exp $
+ * @version $Id: SwitchNode.java,v 1.3 2004-07-31 17:20:18 cep21 Exp $
  */
 public class SwitchNode extends Node {
 	/**
@@ -59,10 +59,19 @@ public class SwitchNode extends Node {
 		super(name);
 	}
 
+    /**
+     * Returns the index of the currently rendered child for this Node.
+     * @return The currently active child.
+     */
 	public int getActiveChild() {
 		return activeChild;
 	}
 
+    /**
+     * Sets the index of the child of this Node that will be rendered.  If
+     * the index is <0 or >getQuantity then nothing is rendered.
+     * @param child The child index of this node it should render.
+     */
 	public void setActiveChild(int child) {
 		if(child < 0 || child > getQuantity()) {
 			activeChild = SN_INVALID_CHILD;
@@ -72,10 +81,18 @@ public class SwitchNode extends Node {
 		}
 	}
 
+    /**
+     * Marks the node to render nothing on a draw.
+     */
 	public void disableAllChildren() {
 		activeChild = SN_INVALID_CHILD;
 	}
 
+    /**
+     * If a valid active child is set, that child is rendered and none others.
+     * This function should be called internally only.
+     * @param r The render system to draw the child.
+     */
 	public void draw(Renderer r) {
 		if (activeChild != SN_INVALID_CHILD) {
 			if (activeChildData != null) {
