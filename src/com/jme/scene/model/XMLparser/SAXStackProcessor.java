@@ -39,7 +39,7 @@ class SAXStackProcessor {
     }
 
     void increaseStack(String qName, Attributes atts) throws SAXException{
-        
+
         new TriMesh();
         if (qName.equalsIgnoreCase("Scene")){
             s.push(new Node("XML Scene"));
@@ -194,7 +194,8 @@ class SAXStackProcessor {
 //                Texture.FM_LINEAR,
 //                true));
         try {
-            t.loadFromFile(new File(atts.getValue("file")),Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+            if (!atts.getValue("file").equals("null"))
+                t.loadFromFile(new File(atts.getValue("file")),Texture.MM_LINEAR,Texture.FM_LINEAR,true);
         } catch (MalformedURLException e) {
             throw new SAXException("Bad file name: " + atts.getValue("file"));
         }
