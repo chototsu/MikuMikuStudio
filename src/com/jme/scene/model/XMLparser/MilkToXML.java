@@ -97,11 +97,8 @@ public class MilkToXML {
         int nNumMaterials=inFile.readUnsignedShort();
         for (int i=0;i<nNumMaterials;i++){
             inFile.skipBytes(32);   // Skip the name, unused
-//            if (!inArray(materialIndexes,i)){
+//            if (!inArray(materialIndexes,i)){ //TODO: Make this work
 //                inFile.skipBytes(329);
-//                int j=inFile.skipBytes(4*4*4+4+4+1);
-//                inFile.readFully(tempChar,0,128);
-//                inFile.readFully(tempChar,0,128);
 //                continue;
 //            }
             MaterialState matState=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
@@ -120,7 +117,7 @@ public class MilkToXML {
                 texState=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
                 Texture tempTex=new Texture();
 //                tempTex.setImageLocation(new URL("file:///./"+texFile));
-                tempTex.setImageLocation(new File(texFile).toURI().toURL());
+                tempTex.setImageLocation("file:/"+texFile);
                 // TODO: Work on proper image locaion
                 texState.setTexture(tempTex);
             }
