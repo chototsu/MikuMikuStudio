@@ -32,9 +32,8 @@ public class TestXMLLoader extends SimpleGame{
         } catch (IOException e) {
             System.out.println("bad File exception" + e.getCause() + "*" + e.getMessage());
         }
-//        rootNode.attachChild(mi1);
 
-        ByteArrayOutputStream BO=new ByteArrayOutputStream();
+        StringWriter BO=new StringWriter();
         XMLWriter rr=new XMLWriter(BO);
         try {
             rr.writeScene(mi1);
@@ -42,7 +41,7 @@ public class TestXMLLoader extends SimpleGame{
             e.printStackTrace();
         }
         System.out.print(BO);
-        r.loadXML(new ByteArrayInputStream(BO.toByteArray()));
+        r.loadXML(new ByteArrayInputStream(BO.toString().getBytes()));
         Node mi2=r.fetchCopy();
         rootNode.attachChild(mi2);
 
