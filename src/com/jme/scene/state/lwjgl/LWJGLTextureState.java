@@ -55,7 +55,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.13 2004-05-23 21:24:21 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.14 2004-05-23 23:54:05 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -74,7 +74,8 @@ public class LWJGLTextureState extends TextureState {
 
 	private int[] textureCombineFunc = {GL11.GL_REPLACE, GL11.GL_MODULATE,
 			GL11.GL_ADD, GL13.GL_ADD_SIGNED, GL13.GL_SUBTRACT,
-			GL13.GL_INTERPOLATE};
+			GL13.GL_INTERPOLATE, GL13.GL_DOT3_RGB,
+		    GL13.GL_DOT3_RGBA};
 
 	private int[] textureCombineSrc = {GL11.GL_TEXTURE, GL13.GL_PRIMARY_COLOR,
 			GL13.GL_CONSTANT, GL13.GL_PREVIOUS};
