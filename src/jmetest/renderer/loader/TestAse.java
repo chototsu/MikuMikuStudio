@@ -34,17 +34,14 @@ import java.net.URL;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
-import com.jme.light.DirectionalLight;
-import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.model.ase.ASEModel;
 
 /**
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestAse.java,v 1.8 2004-04-23 05:06:44 renanse Exp $
+ * @version $Id: TestAse.java,v 1.9 2004-04-25 03:03:31 mojomonkey Exp $
  */
 public class TestAse extends SimpleGame {
 

@@ -55,7 +55,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestScenegraph</code>
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.15 2004-04-23 04:15:12 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.16 2004-04-25 03:03:30 mojomonkey Exp $
  */
 public class TestScenegraph extends SimpleGame {
   private Node scene;
@@ -188,7 +188,7 @@ public class TestScenegraph extends SimpleGame {
     selectionBox.setRenderState(as1);
     selectionBox.setModelBound(new BoundingSphere());
     selectionBox.updateModelBound();
-    selectionBox.setRenderState(selectionBox.defaultStateList[RenderState.
+    selectionBox.setRenderState(Box.defaultStateList[RenderState.
                                 RS_LIGHT]);
     selectionBox.setLightCombineMode(LightState.REPLACE);
 
@@ -246,7 +246,7 @@ public class TestScenegraph extends SimpleGame {
         node2.getWorldTranslation(), node5.getWorldTranslation(),
         node3.getWorldTranslation(), node6.getWorldTranslation()};
     Line line = new Line("Connection", lines, null, null, null);
-    line.setRenderState(line.defaultStateList[RenderState.RS_LIGHT]);
+    line.setRenderState(Line.defaultStateList[RenderState.RS_LIGHT]);
     line.setLightCombineMode(LightState.REPLACE);
 
     ts = display.getRenderer().getTextureState();

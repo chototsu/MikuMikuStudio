@@ -35,13 +35,11 @@ import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.InputHandler;
 import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.LightNode;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CameraNode;
@@ -53,12 +51,6 @@ import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
-import com.jme.util.Timer;
-import com.jme.scene.Text;
-import com.jme.util.TextureManager;
-import com.jme.scene.state.AlphaState;
 
 /**
  * <code>TestRenderToTexture</code>

@@ -36,22 +36,17 @@ import org.lwjgl.input.Keyboard;
 
 import com.jme.app.*;
 import com.jme.image.Texture;
-import com.jme.input.*;
-import com.jme.light.DirectionalLight;
-import com.jme.light.SpotLight;
 import com.jme.math.*;
-import com.jme.renderer.*;
 import com.jme.scene.*;
 import com.jme.scene.shape.*;
 import com.jme.scene.state.*;
-import com.jme.system.*;
 import com.jme.util.*;
 
 /**
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.13 2004-04-23 02:57:24 renanse Exp $
+ * @version $Id: TestPQTorus.java,v 1.14 2004-04-25 03:03:30 mojomonkey Exp $
  */
 public class TestPQTorus extends SimpleGame {
 

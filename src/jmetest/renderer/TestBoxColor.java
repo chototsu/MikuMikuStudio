@@ -41,13 +41,12 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.12 2004-04-23 03:53:34 renanse Exp $
+ * @version $Id: TestBoxColor.java,v 1.13 2004-04-25 03:03:31 mojomonkey Exp $
  */
 public class TestBoxColor extends SimpleGame {
   private TriMesh t;
