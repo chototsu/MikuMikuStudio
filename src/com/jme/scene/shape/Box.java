@@ -33,8 +33,11 @@ package com.jme.scene.shape;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.math.Quaternion;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.scene.model.XMLparser.XMLloadable;
+import com.jme.bounding.BoundingBox;
 
 /**
  * <code>Box</code> provides an extension of <code>TriMesh</code>. A
@@ -42,15 +45,22 @@ import com.jme.scene.TriMesh;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.3 2004-04-22 22:26:53 renanse Exp $
+ * @version $Id: Box.java,v 1.4 2004-06-06 08:13:22 cep21 Exp $
  */
-public class Box extends TriMesh {
+public class Box extends TriMesh implements XMLloadable{
     public float xExtent, yExtent, zExtent;
     public Vector3f center;
 
     public final static Vector3f AXIS_X = new Vector3f(1,0,0);
     public final static Vector3f AXIS_Y = new Vector3f(0,1,0);
     public final static Vector3f AXIS_Z = new Vector3f(0,0,1);
+
+    /**
+     * instantiates a new <code>Box</code> object.  All information must be applies later.
+     * For internal usage only
+     */
+    public Box(){
+    }
 
     /**
      * Constructor instantiates a new <code>Box</code> object.  Center and vertice
@@ -368,4 +378,24 @@ public class Box extends TriMesh {
 	public void setCenter(Vector3f aCenter){
 		center = aCenter;
 	}
+
+    public String writeToXML() {
+        StringBuffer returnedValue=new StringBuffer();
+        returnedValue.append(center.x).append(' ').append(center.y).append(' ').append(center.z).append(' ');
+        returnedValue.append(xExtent).append(' ').append(yExtent).append(' ').append(zExtent).append(' ');
+        return returnedValue.toString();
+    }
+
+    public Object loadFromXML(String args) {
+        String[] parts=args.split(" ");
+        Box toReturn=new Box("temp",
+                new Vector3f(Float.parseFloat(parts[0]),Float.parseFloat(parts[1]),Float.parseFloat(parts[2])),
+                Float.parseFloat(parts[3]),
+                Float.parseFloat(parts[4]),
+                Float.parseFloat(parts[5])
+                );
+        toReturn.setModelBound(new BoundingBox());
+        toReturn.updateModelBound();
+        return toReturn;
+    }
 }
