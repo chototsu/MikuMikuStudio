@@ -42,10 +42,12 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.13 2004-02-28 16:33:06 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.14 2004-03-02 03:56:47 renanse Exp $
  */
 public class Matrix3f {
-    public float[][] matrix;
+    public float m00, m01, m02;
+    public float m10, m11, m12;
+    public float m20, m21, m22;
 
     /**
      * Constructor instantiates a new <code>Matrix3f</code> object. The
@@ -53,7 +55,6 @@ public class Matrix3f {
      *
      */
     public Matrix3f() {
-        matrix = new float[3][3];
         loadIdentity();
     }
 
@@ -76,11 +77,15 @@ public class Matrix3f {
         if(null == matrix) {
             loadIdentity();
         } else {
-            for(int i = 0; i < 3; i++) {
-                for(int j = 0; j < 3; j++) {
-                 this.matrix[i][j] = matrix.matrix[i][j];
-              }
-            }
+            m00 = matrix.m00;
+            m01 = matrix.m01;
+            m02 = matrix.m02;
+            m10 = matrix.m10;
+            m11 = matrix.m11;
+            m12 = matrix.m12;
+            m20 = matrix.m20;
+            m21 = matrix.m21;
+            m22 = matrix.m22;
         }
     }
 
@@ -93,13 +98,36 @@ public class Matrix3f {
      * @return the value at (i, j).
      */
     public float get(int i, int j) {
-        if (i < 0 || i > 2 || j < 0 || j > 2) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Invalid matrix index.");
-            throw new JmeException("Invalid indices into matrix.");
+        if (i == 0) {
+            if (j == 0) {
+                return m00;
+            } else if (j == 1) {
+                return m01;
+            } else if (j == 2) {
+                return m02;
+            }
+        } else if (i == 1) {
+            if (j == 0) {
+                return m10;
+            } else if (j == 1) {
+                return m11;
+            } else if (j == 2) {
+                return m12;
+            }
+        } else if (i == 2) {
+            if (j == 0) {
+                return m20;
+            } else if (j == 1) {
+                return m21;
+            } else if (j == 2) {
+                return m22;
+            }
         }
-        return matrix[i][j];
+
+        LoggingSystem.getLogger().log(
+            Level.WARNING,
+            "Invalid matrix index.");
+        throw new JmeException("Invalid indices into matrix.");
     }
 
     /**
@@ -122,16 +150,29 @@ public class Matrix3f {
      * @return the column specified by the index.
      */
     public Vector3f getColumn(int i, Vector3f store) {
-        if (i < 0 || i > 2) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Invalid column index.");
-            throw new JmeException("Invalid column index. " + i);
-        }
         if (store == null) store = new Vector3f();
-        store.x = matrix[0][i];
-        store.y = matrix[1][i];
-        store.z = matrix[2][i];
+        switch (i) {
+            case 0:
+                store.x = m00;
+                store.y = m10;
+                store.z = m20;
+                break;
+            case 1:
+                store.x = m01;
+                store.y = m11;
+                store.z = m21;
+                break;
+            case 2:
+                store.x = m02;
+                store.y = m12;
+                store.z = m22;
+                break;
+            default:
+                LoggingSystem.getLogger().log(
+                    Level.WARNING,
+                    "Invalid column index.");
+                throw new JmeException("Invalid column index. " + i);
+        }
         return store;
     }
 
@@ -143,23 +184,35 @@ public class Matrix3f {
      * @param column the data to set.
      */
     public void setColumn(int i, Vector3f column) {
-        if(i < 0 || i > 2) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Invalid column index.");
-            throw new JmeException("Invalid column index. " + i);
-        }
 
-        if(column == null) {
+        if (column == null) {
             LoggingSystem.getLogger().log(
                 Level.WARNING,
                 "Column is null. Ignoring.");
             return;
         }
-
-        matrix[0][i] = column.x;
-        matrix[1][i] = column.y;
-        matrix[2][i] = column.z;
+        switch (i) {
+            case 0:
+                m00 = column.x;
+                m10 = column.y;
+                m20 = column.z;
+                break;
+            case 1:
+                m01 = column.x;
+                m11 = column.y;
+                m21 = column.z;
+                break;
+            case 2:
+                m02 = column.x;
+                m12 = column.y;
+                m22 = column.z;
+                break;
+            default:
+                LoggingSystem.getLogger().log(
+                    Level.WARNING,
+                    "Invalid column index.");
+                throw new JmeException("Invalid column index. " + i);
+        }
     }
 
     /**
@@ -177,7 +230,31 @@ public class Matrix3f {
                 "Invalid matrix index.");
             throw new JmeException("Invalid indices into matrix.");
         }
-        matrix[i][j] = value;
+        if (i == 0) {
+            if (j == 0) {
+                m00 = value;
+            } else if (j == 1) {
+                m01 = value;
+            } else if (j == 2) {
+                m02 = value;
+            }
+        } else if (i == 1) {
+            if (j == 0) {
+                m10 = value;
+            } else if (j == 1) {
+                m11 = value;
+            } else if (j == 2) {
+                m12 = value;
+            }
+        } else if (i == 2) {
+            if (j == 0) {
+                m20 = value;
+            } else if (j == 1) {
+                m21 = value;
+            } else if (j == 2) {
+                m22 = value;
+            }
+        }
     }
 
     /**
@@ -191,7 +268,15 @@ public class Matrix3f {
             return;
         }
 
-        this.matrix = matrix;
+        m00 = matrix[0][0];
+        m01 = matrix[0][1];
+        m02 = matrix[0][2];
+        m10 = matrix[1][0];
+        m11 = matrix[1][1];
+        m12 = matrix[1][2];
+        m20 = matrix[2][0];
+        m21 = matrix[2][1];
+        m22 = matrix[2][2];
     }
 
     /**
@@ -203,11 +288,16 @@ public class Matrix3f {
         if (matrix.length != 9) {
             throw new JmeException("Array must be of size 9.");
         }
-        for(int i = 0; i < 3; i++) {
-            for(int j = 0; j < 3; j++) {
-                this.matrix[i][j] = matrix[j*3 + i];
-            }
-        }
+
+        m00 = matrix[0];
+        m01 = matrix[1];
+        m02 = matrix[2];
+        m10 = matrix[3];
+        m11 = matrix[4];
+        m12 = matrix[5];
+        m20 = matrix[6];
+        m21 = matrix[7];
+        m22 = matrix[8];
     }
 
     /**
@@ -219,17 +309,17 @@ public class Matrix3f {
      */
     public void set(Quaternion quaternion) {
         loadIdentity();
-        matrix[0][0] = (float) (1.0 - 2.0 * quaternion.y * quaternion.y - 2.0 * quaternion.z * quaternion.z);
-        matrix[1][0] = (float) (2.0 * quaternion.x * quaternion.y + 2.0 * quaternion.w * quaternion.z);
-        matrix[2][0] = (float) (2.0 * quaternion.x * quaternion.z - 2.0 * quaternion.w * quaternion.y);
+        m00 = (float) (1.0 - 2.0 * quaternion.y * quaternion.y - 2.0 * quaternion.z * quaternion.z);
+        m10 = (float) (2.0 * quaternion.x * quaternion.y + 2.0 * quaternion.w * quaternion.z);
+        m20 = (float) (2.0 * quaternion.x * quaternion.z - 2.0 * quaternion.w * quaternion.y);
 
-        matrix[0][1] = (float) (2.0 * quaternion.x * quaternion.y - 2.0 * quaternion.w * quaternion.z);
-        matrix[1][1] = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0 * quaternion.z * quaternion.z);
-        matrix[2][1] = (float) (2.0 * quaternion.y * quaternion.z + 2.0 * quaternion.w * quaternion.x);
+        m01 = (float) (2.0 * quaternion.x * quaternion.y - 2.0 * quaternion.w * quaternion.z);
+        m11 = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0 * quaternion.z * quaternion.z);
+        m21 = (float) (2.0 * quaternion.y * quaternion.z + 2.0 * quaternion.w * quaternion.x);
 
-        matrix[0][2] = (float) (2.0 * quaternion.x * quaternion.z + 2.0 * quaternion.w * quaternion.y);
-        matrix[1][2] = (float) (2.0 * quaternion.y * quaternion.z - 2.0 * quaternion.w * quaternion.x);
-        matrix[2][2] = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0 * quaternion.y * quaternion.y);
+        m02 = (float) (2.0 * quaternion.x * quaternion.z + 2.0 * quaternion.w * quaternion.y);
+        m12 = (float) (2.0 * quaternion.y * quaternion.z - 2.0 * quaternion.w * quaternion.x);
+        m22 = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0 * quaternion.y * quaternion.y);
 
     }
 
@@ -240,8 +330,8 @@ public class Matrix3f {
      *
      */
     public void loadIdentity() {
-        matrix[0][1] = matrix[0][2] = matrix[1][0] = matrix[1][2] = matrix[2][0] = matrix[2][1] = 0;
-        matrix[0][0] = matrix[1][1] = matrix[2][2] = 1;
+        m01 = m02 = m10 = m12 = m20 = m21 = 0;
+        m00 = m11 = m22 = 1;
     }
 
     /**
@@ -249,11 +339,15 @@ public class Matrix3f {
      * @param scalar the scalar to multiply this matrix by.
      */
     public void multiply(float scalar) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                matrix[i][j] *= scalar;
-            }
-        }
+        m00 *= scalar;
+        m01 *= scalar;
+        m02 *= scalar;
+        m10 *= scalar;
+        m11 *= scalar;
+        m12 *= scalar;
+        m20 *= scalar;
+        m21 *= scalar;
+        m22 *= scalar;
     }
 
     /**
@@ -264,24 +358,7 @@ public class Matrix3f {
      * @return the result matrix.
      */
     public Matrix3f mult(Matrix3f mat) {
-        if (null == mat) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Source matrix is " + "null, null result returned.");
-            return null;
-        }
-        Matrix3f product = new Matrix3f();
-        for (int iRow = 0; iRow < 3; iRow++) {
-            for (int iCol = 0; iCol < 3; iCol++) {
-                product.set(
-                    iRow,
-                    iCol,
-                    matrix[iRow][0] * mat.get(0, iCol)
-                        + matrix[iRow][1] * mat.get(1, iCol)
-                        + matrix[iRow][2] * mat.get(2, iCol));
-            }
-        }
-        return product;
+        return mult(mat, null);
     }
 
     /**
@@ -301,43 +378,15 @@ public class Matrix3f {
         }
 
         if (product == null) product = new Matrix3f();
-
-        product.matrix[0][0] =
-                 (matrix[0][0] * mat.matrix[0][0]
-                + matrix[0][1] * mat.matrix[1][0]
-                + matrix[0][2] * mat.matrix[2][0]);
-        product.matrix[0][1] =
-                 (matrix[0][0] * mat.matrix[0][1]
-                + matrix[0][1] * mat.matrix[1][1]
-                + matrix[0][2] * mat.matrix[2][1]);
-        product.matrix[0][2] =
-                 (matrix[0][0] * mat.matrix[0][2]
-                + matrix[0][1] * mat.matrix[1][2]
-                + matrix[0][2] * mat.matrix[2][2]);
-        product.matrix[1][0] =
-                 (matrix[1][0] * mat.matrix[0][0]
-                + matrix[1][1] * mat.matrix[1][0]
-                + matrix[1][2] * mat.matrix[2][0]);
-        product.matrix[1][1] =
-                 (matrix[1][0] * mat.matrix[0][1]
-                + matrix[1][1] * mat.matrix[1][1]
-                + matrix[1][2] * mat.matrix[2][1]);
-        product.matrix[1][2] =
-                 (matrix[1][0] * mat.matrix[0][2]
-                + matrix[1][1] * mat.matrix[1][2]
-                + matrix[1][2] * mat.matrix[2][2]);
-        product.matrix[2][0] =
-                 (matrix[2][0] * mat.matrix[0][0]
-                + matrix[2][1] * mat.matrix[1][0]
-                + matrix[2][2] * mat.matrix[2][0]);
-        product.matrix[2][1] =
-                 (matrix[2][0] * mat.matrix[0][1]
-                + matrix[2][1] * mat.matrix[1][1]
-                + matrix[2][2] * mat.matrix[2][1]);
-        product.matrix[2][2] =
-                 (matrix[2][0] * mat.matrix[0][2]
-                + matrix[2][1] * mat.matrix[1][2]
-                + matrix[2][2] * mat.matrix[2][2]);
+        product.m00 = m00 * mat.m00 + m01 * mat.m10 + m02 * mat.m20;
+        product.m01 = m00 * mat.m01 + m01 * mat.m11 + m02 * mat.m21;
+        product.m02 = m00 * mat.m02 + m01 * mat.m12 + m02 * mat.m22;
+        product.m10 = m10 * mat.m00 + m11 * mat.m10 + m12 * mat.m20;
+        product.m11 = m10 * mat.m01 + m11 * mat.m11 + m12 * mat.m21;
+        product.m12 = m10 * mat.m02 + m11 * mat.m12 + m12 * mat.m22;
+        product.m20 = m20 * mat.m00 + m21 * mat.m10 + m22 * mat.m20;
+        product.m21 = m20 * mat.m01 + m21 * mat.m11 + m22 * mat.m21;
+        product.m22 = m20 * mat.m02 + m21 * mat.m12 + m22 * mat.m22;
         return product;
     }
 
@@ -369,24 +418,28 @@ public class Matrix3f {
         float z = vec.z;
 
         product.x =
-            matrix[0][0] * x + matrix[0][1] * y + matrix[0][2] * z;
+            m00 * x + m01 * y + m02 * z;
         product.y =
-            matrix[1][0] * x + matrix[1][1] * y + matrix[1][2] * z;
+            m10 * x + m11 * y + m12 * z;
         product.z =
-            matrix[2][0] * x + matrix[2][1] * y + matrix[2][2] * z;
+            m20 * x + m21 * y + m22 * z;
         return product;
     }
 
     /**
      * <code>add</code> adds the values of a parameter matrix to this matrix.
-     * @param matrix the matrix to add to this.
+     * @param mat the matrix to add to this.
      */
-    public void add(Matrix3f matrix) {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                this.matrix[i][j] += matrix.get(i,j);
-            }
-        }
+    public void add(Matrix3f mat) {
+        m00 += mat.m00;
+        m01 += mat.m01;
+        m02 += mat.m02;
+        m10 += mat.m10;
+        m11 += mat.m11;
+        m12 += mat.m12;
+        m20 += mat.m20;
+        m21 += mat.m21;
+        m22 += mat.m22;
     }
 
     /**
@@ -411,15 +464,15 @@ public class Matrix3f {
         float ySin = normAxis.y * sin;
         float zSin = normAxis.z * sin;
 
-        matrix[0][0] = x2 * oneMinusCos + cos;
-        matrix[0][1] = xym - zSin;
-        matrix[0][2] = xzm + ySin;
-        matrix[1][0] = xym + zSin;
-        matrix[1][1] = y2 * oneMinusCos + cos;
-        matrix[1][2] = yzm - xSin;
-        matrix[2][0] = xzm - ySin;
-        matrix[2][1] = yzm + xSin;
-        matrix[2][2] = z2 * oneMinusCos + cos;
+        m00 = x2 * oneMinusCos + cos;
+        m01 = xym - zSin;
+        m02 = xzm + ySin;
+        m10 = xym + zSin;
+        m11 = y2 * oneMinusCos + cos;
+        m12 = yzm - xSin;
+        m20 = xzm - ySin;
+        m21 = yzm + xSin;
+        m22 = z2 * oneMinusCos + cos;
     }
 
     /**
@@ -436,14 +489,16 @@ public class Matrix3f {
      * @return the string representation of this object.
      */
     public String toString() {
-        String result = "com.jme.math.Matrix3f\n[\n";
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                result += " " + matrix[i][j] + " ";
-            }
-            result += "\n";
-        }
-        result += "]";
-        return result;
+        StringBuffer result = new StringBuffer("com.jme.math.Matrix3f\n[\n");
+        result.append(" ").append(m00).append(" ");
+        result.append(" ").append(m01).append(" ");
+        result.append(" ").append(m02).append(" \n");
+        result.append(" ").append(m10).append(" ");
+        result.append(" ").append(m11).append(" ");
+        result.append(" ").append(m12).append(" \n");
+        result.append(" ").append(m20).append(" ");
+        result.append(" ").append(m21).append(" ");
+        result.append(" ").append(m22).append(" \n]");
+        return result.toString();
     }
 }

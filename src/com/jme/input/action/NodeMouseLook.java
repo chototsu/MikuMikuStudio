@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -38,9 +38,9 @@ import com.jme.scene.Spatial;
 
 /**
  * <code>NodeMouseLook</code> defines a mouse action that detects mouse movement
- * and converts it into node rotations and node tilts. 
+ * and converts it into node rotations and node tilts.
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
+ * @version $Id: NodeMouseLook.java,v 1.3 2004-03-02 03:56:46 renanse Exp $
  */
 public class NodeMouseLook implements MouseInputAction {
     private RelativeMouse mouse;
@@ -73,9 +73,9 @@ public class NodeMouseLook implements MouseInputAction {
     }
 
     /**
-     * 
+     *
      * <code>setLockAxis</code> sets the axis that should be locked down. This
-     * prevents "rolling" about a particular axis. Typically, this is set to 
+     * prevents "rolling" about a particular axis. Typically, this is set to
      * the mouse's up vector.
      * @param lockAxis the axis that should be locked down to prevent rolling.
      */
@@ -86,7 +86,7 @@ public class NodeMouseLook implements MouseInputAction {
     }
 
     /**
-     * 
+     *
      * <code>setSpeed</code> sets the speed of the mouse look.
      * @param speed the speed of the mouse look.
      */
@@ -100,14 +100,14 @@ public class NodeMouseLook implements MouseInputAction {
     }
 
     /**
-     * 
+     *
      * <code>getSpeed</code> retrieves the speed of the mouse look.
      * @return the speed of the mouse look.
      */
     public float getSpeed() {
         return speed;
     }
-    
+
     /**
      * <code>performAction</code> checks for any movement of the mouse, and
      * calls the appropriate method to alter the node's orientation when

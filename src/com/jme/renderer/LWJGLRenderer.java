@@ -54,6 +54,7 @@ import org.lwjgl.opengl.Window;
 import com.jme.curve.Curve;
 import com.jme.input.Mouse;
 import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Clone;
@@ -99,7 +100,8 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.24 2004-03-02 01:44:50 mojomonkey Exp $
+ * @author Joshua Slack - Optimizations
+ * @version $Id: LWJGLRenderer.java,v 1.25 2004-03-02 04:00:34 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -109,6 +111,7 @@ public class LWJGLRenderer implements Renderer {
     private int height;
 
     private FloatBuffer worldBuffer;
+    private Vector3f vRot = new Vector3f();
 
     private LWJGLCamera camera;
     private LWJGLFont font;
@@ -181,7 +184,7 @@ public class LWJGLRenderer implements Renderer {
     public AlphaState getAlphaState() {
         return new LWJGLAlphaState();
     }
-    
+
     /**
      *  <code>getCullState</code> returns a new LWJGLCullState object as
      * a regular CullState.
@@ -403,33 +406,16 @@ public class LWJGLRenderer implements Renderer {
      */
     public void draw(Point p) {
         // set world matrix
-        Matrix3f rotation = p.getWorldRotation();
+        Quaternion rotation = p.getWorldRotation();
         Vector3f translation = p.getWorldTranslation();
         float scale = p.getWorldScale();
-
-        modelToWorld[0] = scale * rotation.get(0, 0);
-        modelToWorld[1] = scale * rotation.get(1, 0);
-        modelToWorld[2] = scale * rotation.get(2, 0);
-        modelToWorld[3] = 0.0f;
-        modelToWorld[4] = scale * rotation.get(0, 1);
-        modelToWorld[5] = scale * rotation.get(1, 1);
-        modelToWorld[6] = scale * rotation.get(2, 1);
-        modelToWorld[7] = 0.0f;
-        modelToWorld[8] = scale * rotation.get(0, 2);
-        modelToWorld[9] = scale * rotation.get(1, 2);
-        modelToWorld[10] = scale * rotation.get(2, 2);
-        modelToWorld[11] = 0.0f;
-        modelToWorld[12] = translation.x;
-        modelToWorld[13] = translation.y;
-        modelToWorld[14] = translation.z;
-        modelToWorld[15] = 1.0f;
-
+        float rot = rotation.toAngleAxis(vRot);
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPushMatrix();
-        worldBuffer.clear();
-        worldBuffer.put(modelToWorld);
-        worldBuffer.flip();
-        GL.glMultMatrixf(worldBuffer);
+
+        GL.glTranslatef(translation.x,translation.y,translation.z);
+        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL.glScalef(scale, scale, scale);
 
         // render the object
         GL.glBegin(GL.GL_POINTS);
@@ -537,33 +523,16 @@ public class LWJGLRenderer implements Renderer {
      */
     public void draw(Line l) {
         // set world matrix
-        Matrix3f rotation = l.getWorldRotation();
+        Quaternion rotation = l.getWorldRotation();
         Vector3f translation = l.getWorldTranslation();
         float scale = l.getWorldScale();
-
-        modelToWorld[0] = scale * rotation.get(0, 0);
-        modelToWorld[1] = scale * rotation.get(1, 0);
-        modelToWorld[2] = scale * rotation.get(2, 0);
-        modelToWorld[3] = 0.0f;
-        modelToWorld[4] = scale * rotation.get(0, 1);
-        modelToWorld[5] = scale * rotation.get(1, 1);
-        modelToWorld[6] = scale * rotation.get(2, 1);
-        modelToWorld[7] = 0.0f;
-        modelToWorld[8] = scale * rotation.get(0, 2);
-        modelToWorld[9] = scale * rotation.get(1, 2);
-        modelToWorld[10] = scale * rotation.get(2, 2);
-        modelToWorld[11] = 0.0f;
-        modelToWorld[12] = translation.x;
-        modelToWorld[13] = translation.y;
-        modelToWorld[14] = translation.z;
-        modelToWorld[15] = 1.0f;
-
+        float rot = rotation.toAngleAxis(vRot);
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPushMatrix();
-        worldBuffer.clear();
-        worldBuffer.put(modelToWorld);
-        worldBuffer.flip();
-        GL.glMultMatrixf(worldBuffer);
+
+        GL.glTranslatef(translation.x,translation.y,translation.z);
+        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL.glScalef(scale, scale, scale);
 
         // render the object
         GL.glBegin(GL.GL_LINES);
@@ -718,33 +687,16 @@ public class LWJGLRenderer implements Renderer {
      */
     public void draw(Curve c) {
         //      set world matrix
-        Matrix3f rotation = c.getWorldRotation();
+        Quaternion rotation = c.getWorldRotation();
         Vector3f translation = c.getWorldTranslation();
         float scale = c.getWorldScale();
-
-        modelToWorld[0] = scale * rotation.get(0, 0);
-        modelToWorld[1] = scale * rotation.get(1, 0);
-        modelToWorld[2] = scale * rotation.get(2, 0);
-        modelToWorld[3] = 0.0f;
-        modelToWorld[4] = scale * rotation.get(0, 1);
-        modelToWorld[5] = scale * rotation.get(1, 1);
-        modelToWorld[6] = scale * rotation.get(2, 1);
-        modelToWorld[7] = 0.0f;
-        modelToWorld[8] = scale * rotation.get(0, 2);
-        modelToWorld[9] = scale * rotation.get(1, 2);
-        modelToWorld[10] = scale * rotation.get(2, 2);
-        modelToWorld[11] = 0.0f;
-        modelToWorld[12] = translation.x;
-        modelToWorld[13] = translation.y;
-        modelToWorld[14] = translation.z;
-        modelToWorld[15] = 1.0f;
-
+        float rot = rotation.toAngleAxis(vRot);
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPushMatrix();
-        worldBuffer.clear();
-        worldBuffer.put(modelToWorld);
-        worldBuffer.flip();
-        GL.glMultMatrixf(worldBuffer);
+
+        GL.glTranslatef(translation.x,translation.y,translation.z);
+        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL.glScalef(scale, scale, scale);
 
         // render the object
         GL.glBegin(GL.GL_LINE_STRIP);
@@ -794,33 +746,16 @@ public class LWJGLRenderer implements Renderer {
      */
     public void draw(TriMesh t) {
         // set world matrix
-        Matrix3f rotation = t.getWorldRotation();
+        Quaternion rotation = t.getWorldRotation();
         Vector3f translation = t.getWorldTranslation();
         float scale = t.getWorldScale();
-
-        modelToWorld[0] = scale * rotation.matrix[0][0];
-        modelToWorld[1] = scale * rotation.matrix[1][0];
-        modelToWorld[2] = scale * rotation.matrix[2][0];
-        modelToWorld[3] = 0.0f;
-        modelToWorld[4] = scale * rotation.matrix[0][1];
-        modelToWorld[5] = scale * rotation.matrix[1][1];
-        modelToWorld[6] = scale * rotation.matrix[2][1];
-        modelToWorld[7] = 0.0f;
-        modelToWorld[8] = scale * rotation.matrix[0][2];
-        modelToWorld[9] = scale * rotation.matrix[1][2];
-        modelToWorld[10] = scale * rotation.matrix[2][2];
-        modelToWorld[11] = 0.0f;
-        modelToWorld[12] = translation.x;
-        modelToWorld[13] = translation.y;
-        modelToWorld[14] = translation.z;
-        modelToWorld[15] = 1.0f;
-
+        float rot = rotation.toAngleAxis(vRot);
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPushMatrix();
-        worldBuffer.clear();
-        worldBuffer.put(modelToWorld);
-        worldBuffer.flip();
-        GL.glMultMatrixf(worldBuffer);
+
+        GL.glTranslatef(translation.x,translation.y,translation.z);
+        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL.glScalef(scale, scale, scale);
 
         // render the object
 
@@ -911,33 +846,16 @@ public class LWJGLRenderer implements Renderer {
      */
     public void draw(Clone c) {
         //set world matrix
-        Matrix3f rotation = c.getWorldRotation();
+        Quaternion rotation = c.getWorldRotation();
         Vector3f translation = c.getWorldTranslation();
         float scale = c.getWorldScale();
-
-        modelToWorld[0] = scale * rotation.matrix[0][0];
-        modelToWorld[1] = scale * rotation.matrix[1][0];
-        modelToWorld[2] = scale * rotation.matrix[2][0];
-        modelToWorld[3] = 0.0f;
-        modelToWorld[4] = scale * rotation.matrix[0][1];
-        modelToWorld[5] = scale * rotation.matrix[1][1];
-        modelToWorld[6] = scale * rotation.matrix[2][1];
-        modelToWorld[7] = 0.0f;
-        modelToWorld[8] = scale * rotation.matrix[0][2];
-        modelToWorld[9] = scale * rotation.matrix[1][2];
-        modelToWorld[10] = scale * rotation.matrix[2][2];
-        modelToWorld[11] = 0.0f;
-        modelToWorld[12] = translation.x;
-        modelToWorld[13] = translation.y;
-        modelToWorld[14] = translation.z;
-        modelToWorld[15] = 1.0f;
-
+        float rot = rotation.toAngleAxis(vRot);
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPushMatrix();
-        worldBuffer.clear();
-        worldBuffer.put(modelToWorld);
-        worldBuffer.flip();
-        GL.glMultMatrixf(worldBuffer);
+
+        GL.glTranslatef(translation.x,translation.y,translation.z);
+        GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
+        GL.glScalef(scale, scale, scale);
 
         GL.glDrawElements(GL.GL_TRIANGLES, c.getIndexBuffer());
 

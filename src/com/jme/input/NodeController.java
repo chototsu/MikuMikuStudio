@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -36,13 +36,13 @@ import com.jme.input.action.*;
 import com.jme.scene.Spatial;
 
 /**
- * <code>NodeController</code> defines an InputController that sets 
+ * <code>NodeController</code> defines an InputController that sets
  * a node that can be controlled via keyboard and mouse inputs. By default the
- * commands are, WSAD moves the node forward, backward and strafes. The 
+ * commands are, WSAD moves the node forward, backward and strafes. The
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeController.java,v 1.3 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: NodeController.java,v 1.4 2004-03-02 03:56:48 renanse Exp $
  */
 public class NodeController extends InputController {
 
@@ -63,7 +63,7 @@ public class NodeController extends InputController {
     }
 
     /**
-     * 
+     *
      * <code>setKeyBindings</code> binds the keys to use for the actions.
      * @param api the api to use for the input.
      */
@@ -83,10 +83,11 @@ public class NodeController extends InputController {
         keyboard.set("exit", KeyInput.KEY_ESCAPE);
 
         setKeyBindingManager(keyboard);
+
     }
 
     /**
-     * 
+     *
      * <code>setUpMouse</code> sets the mouse look object.
      * @param node the node to use for rotations.
      */
@@ -96,12 +97,12 @@ public class NodeController extends InputController {
         setMouse(mouse);
 
         NodeMouseLook mouseLook = new NodeMouseLook(mouse, node, 0.1f);
-        mouseLook.setLockAxis(node.getLocalRotation().getColumn(1));
+        mouseLook.setLockAxis(node.getLocalRotation().toRotationMatrix().getColumn(1));
         addAction(mouseLook);
     }
 
     /**
-     * 
+     *
      * <code>setActions</code> sets the keyboard actions with the corresponding
      * key command.
      * @param node the node to control.
@@ -131,9 +132,11 @@ public class NodeController extends InputController {
         addAction(lookDown);
         KeyNodeRotateRightAction rotateRight = new KeyNodeRotateRightAction(node, 0.01f);
         rotateRight.setKey("turnRight");
+        rotateRight.setLockAxis(node.getLocalRotation().toRotationMatrix().getColumn(1));
         addAction(rotateRight);
         KeyNodeRotateLeftAction rotateLeft = new KeyNodeRotateLeftAction(node, 0.01f);
         rotateLeft.setKey("turnLeft");
+        rotateLeft.setLockAxis(node.getLocalRotation().toRotationMatrix().getColumn(1));
         addAction(rotateLeft);
     }
 }

@@ -37,6 +37,7 @@ package com.jme.renderer;
 
 import java.util.logging.Level;
 
+import com.jme.math.Quaternion;
 import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
@@ -50,7 +51,8 @@ import com.jme.util.LoggingSystem;
  * class abstract. API specific classes are expected to extend this class and
  * handle renderer viewport setting.
  * @author Mark Powell
- * @version $Id: AbstractCamera.java,v 1.8 2004-02-28 16:30:31 renanse Exp $
+ * @author Joshua Slack -- Quats
+ * @version $Id: AbstractCamera.java,v 1.9 2004-03-02 03:56:35 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -367,10 +369,11 @@ public abstract class AbstractCamera implements Camera {
      * @see com.jme.renderer.Camera#setAxes(com.jme.math.Matrix3f)
      * @param axes the matrix that defines the orientation of the camera.
      */
-    public void setAxes(Matrix3f axes) {
-        left = axes.getColumn(0, left);
-        up = axes.getColumn(1, up);
-        direction = axes.getColumn(2, direction);
+    public void setAxes(Quaternion axes) {
+        Matrix3f rotMat = axes.toRotationMatrix();
+        left = rotMat.getColumn(0, left);
+        up = rotMat.getColumn(1, up);
+        direction = rotMat.getColumn(2, direction);
         onFrameChange();
 
     }
@@ -430,14 +433,13 @@ public abstract class AbstractCamera implements Camera {
      * @param location the point position of the camera.
      * @param axes the orientation of the camera.
      */
-    public void setFrame(Vector3f location, Matrix3f axes) {
-
+    public void setFrame(Vector3f location, Quaternion axes) {
+        Matrix3f rotMat = axes.toRotationMatrix();
         this.location = location;
-        left = axes.getColumn(0, left);
-        up = axes.getColumn(1, up);
-        direction = axes.getColumn(2, direction);
+        left = rotMat.getColumn(0, left);
+        up = rotMat.getColumn(1, up);
+        direction = rotMat.getColumn(2, direction);
         onFrameChange();
-
     }
 
     /**
@@ -570,7 +572,7 @@ public abstract class AbstractCamera implements Camera {
         int planeCounter = planeQuantity - 1;
         int mask = 1 << planeCounter;
 
-        for (int i = 0; i < planeQuantity; i++, planeCounter--, mask >>= 1) {
+        for (; planeCounter >= 0; planeCounter--, mask >>= 1) {
             if ((planeState & mask) == 0) {
                 int side = bound.whichSide(worldPlane[planeCounter]);
 

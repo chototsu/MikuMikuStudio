@@ -38,7 +38,7 @@ package com.jme.scene;
 
 import java.util.logging.Level;
 
-import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
 import com.jme.util.LoggingSystem;
@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.15 2004-02-28 02:52:57 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.16 2004-03-02 03:56:40 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -199,10 +199,9 @@ public class BoundingSphere implements BoundingVolume {
      * @param scale the size change.
      */
     public BoundingVolume transform(
-        Matrix3f rotate,
+        Quaternion rotate,
         Vector3f translate,
         float scale) {
-
         Vector3f newCenter = rotate.mult(center).multLocal(scale).addLocal(translate);
         return new BoundingSphere(scale * radius, newCenter);
     }
@@ -216,7 +215,7 @@ public class BoundingSphere implements BoundingVolume {
      * @param store sphere to store result in
      */
     public BoundingVolume transform(
-        Matrix3f rotate,
+        Quaternion rotate,
         Vector3f translate,
         float scale,
         BoundingVolume store) {

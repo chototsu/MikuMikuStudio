@@ -31,7 +31,7 @@
  */
 package com.jme.widget.bounds;
 
-import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -528,12 +528,12 @@ public class WidgetBoundingRectangle implements BoundingVolume {
     /* (non-Javadoc)
      * @see com.jme.scene.BoundingVolume#transform(com.jme.math.Matrix3f, com.jme.math.Vector3f, float)
      */
-    public BoundingVolume transform(Matrix3f rotate, Vector3f translate, float scale) {
+    public BoundingVolume transform(Quaternion rotate, Vector3f translate, float scale) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public BoundingVolume transform(Matrix3f rotate, Vector3f translate, float scale, BoundingVolume bv) {
+    public BoundingVolume transform(Quaternion rotate, Vector3f translate, float scale, BoundingVolume bv) {
         // TODO Auto-generated method stub
         return null;
     }

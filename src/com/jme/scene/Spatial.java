@@ -47,12 +47,12 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.22 2004-02-28 15:44:14 renanse Exp $
+ * @version $Id: Spatial.java,v 1.23 2004-03-02 03:56:41 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
-    protected Matrix3f localRotation;
-    protected Matrix3f worldRotation;
+    protected Quaternion localRotation;
+    protected Quaternion worldRotation;
 
     //translation vertex
     protected Vector3f localTranslation;
@@ -90,8 +90,8 @@ public abstract class Spatial implements Serializable {
         this.name = name;
         renderStateList = new RenderState[RenderState.RS_MAX_STATE];
         parentStateList = new RenderState[RenderState.RS_MAX_STATE];
-        localRotation = new Matrix3f();
-        worldRotation = new Matrix3f();
+        localRotation = new Quaternion();
+        worldRotation = new Quaternion();
         localTranslation = new Vector3f();
         worldTranslation = new Vector3f();
         localScale = 1.0f;
@@ -189,7 +189,7 @@ public abstract class Spatial implements Serializable {
      * world.
      * @return the world's rotation matrix.
      */
-    public Matrix3f getWorldRotation() {
+    public Quaternion getWorldRotation() {
         return worldRotation;
     }
 
@@ -306,7 +306,7 @@ public abstract class Spatial implements Serializable {
             if (parent != null) {
                 worldScale = parent.getWorldScale() * localScale;
                 parent.getWorldRotation().mult(localRotation, worldRotation);
-                parent.getWorldRotation().mult(localTranslation, worldTranslation)
+                worldTranslation = parent.getWorldRotation().mult(localTranslation, worldTranslation)
                         .multLocal(parent.getWorldScale())
                         .addLocal(parent.getWorldTranslation());
             } else {
@@ -361,7 +361,7 @@ public abstract class Spatial implements Serializable {
      * node.
      * @return the local rotation of this node.
      */
-    public Matrix3f getLocalRotation() {
+    public Quaternion getLocalRotation() {
         return localRotation;
     }
 
@@ -369,8 +369,10 @@ public abstract class Spatial implements Serializable {
      * <code>setLocalRotation</code> sets the local rotation of this node.
      * @param localRotation the new local rotation.
      */
-    public void setLocalRotation(Matrix3f localRotation) {
-        this.localRotation = localRotation;
+    public void setLocalRotation(Matrix3f rotation) {
+        if (localRotation == null)
+            localRotation = new Quaternion();
+        localRotation.fromRotationMatrix(rotation);
     }
 
     /**
@@ -380,7 +382,7 @@ public abstract class Spatial implements Serializable {
      * @param quaternion the quaternion that defines the matrix.
      */
     public void setLocalRotation(Quaternion quaternion) {
-        this.localRotation = quaternion.toRotationMatrix();
+        localRotation = quaternion;
     }
 
     /**

@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -35,18 +35,18 @@ import com.jme.math.Matrix3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>KeyNodeLookDownAction</code> defines an action to tilt the node 
+ * <code>KeyNodeLookDownAction</code> defines an action to tilt the node
  * towards the worlds negative y-axis. The rotation is along the node's left
- * vector (the first column of it's rotation matrix). 
+ * vector (the first column of it's rotation matrix).
  * @author Mark Powell
- * @version $Id: KeyNodeLookDownAction.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
+ * @version $Id: KeyNodeLookDownAction.java,v 1.3 2004-03-02 03:56:45 renanse Exp $
  */
 public class KeyNodeLookDownAction implements InputAction {
     private Matrix3f incr;
     private Spatial node;
     private float speed;
     private String key;
-    
+
     /**
      * Constructor instatiates a new <code>KeyNodeLookDownAction</code> object
      * using the supplied node and speed for it's attributes.
@@ -60,15 +60,15 @@ public class KeyNodeLookDownAction implements InputAction {
     }
 
     /**
-     * 
-     * <code>setSpeed</code> sets the speed in units/second that the 
+     *
+     * <code>setSpeed</code> sets the speed in units/second that the
      * node can move.
      * @param movementSpeed the units/second of the node.
      */
     public void setSpeed(float movementSpeed) {
         this.speed = movementSpeed;
     }
-    
+
     /**
      * <code>performAction</code> rotates the node towards the world's negative
      * y-axis at a speed of movement speed * time. Where time is
@@ -77,8 +77,8 @@ public class KeyNodeLookDownAction implements InputAction {
      */
     public void performAction(float time) {
         incr.loadIdentity();
-        incr.fromAxisAngle(node.getLocalRotation().getColumn(0), speed * time);
-        node.setLocalRotation(incr.mult(node.getLocalRotation()));
+        incr.fromAxisAngle(node.getLocalRotation().toRotationMatrix().getColumn(0), speed * time);
+        node.getLocalRotation().fromRotationMatrix(incr.mult(node.getLocalRotation().toRotationMatrix()));
         node.updateWorldData(time);
 
     }

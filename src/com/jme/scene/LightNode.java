@@ -35,7 +35,7 @@ import com.jme.light.DirectionalLight;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
-import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.state.LightState;
 
@@ -47,12 +47,12 @@ import com.jme.scene.state.LightState;
  * is a Directional light rotation determines it's direction. It has no
  * concept of location.
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.5 2004-02-28 16:31:48 renanse Exp $
+ * @version $Id: LightNode.java,v 1.6 2004-03-02 03:56:41 renanse Exp $
  */
 public class LightNode extends Node {
     private Light light;
     private LightState lightState;
-    private Matrix3f lightRotate;
+    private Quaternion lightRotate;
     private Vector3f lightTranslate;
 
     /**
@@ -114,7 +114,7 @@ public class LightNode extends Node {
             case Light.LT_DIRECTIONAL :
                 {
                     DirectionalLight dLight = (DirectionalLight) light;
-                    dLight.direction = lightRotate.getColumn(2, dLight.direction);
+                    dLight.direction = lightRotate.toRotationMatrix().getColumn(2, dLight.direction);
                     break;
                 }
 
@@ -129,7 +129,7 @@ public class LightNode extends Node {
                 {
                     SpotLight sLight = (SpotLight) light;
                     sLight.setLocation(lightTranslate);
-                    sLight.direction = lightRotate.getColumn(2, sLight.direction);
+                    sLight.direction = lightRotate.toRotationMatrix().getColumn(2, sLight.direction);
                     break;
                 }
 

@@ -31,7 +31,7 @@
  */
 package com.jme.scene;
 
-import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
 
@@ -39,7 +39,7 @@ import com.jme.math.Vector3f;
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points.
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.6 2004-02-27 23:51:42 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.7 2004-03-02 03:56:40 renanse Exp $
  */
 public interface BoundingVolume {
     /**
@@ -51,7 +51,7 @@ public interface BoundingVolume {
      * @param scale the scale to resize the bound.
      * @return the new bounding volume.
      */
-    public BoundingVolume transform(Matrix3f rotate,
+    public BoundingVolume transform(Quaternion rotate,
             Vector3f translate, float scale);
     /**
      *
@@ -64,7 +64,7 @@ public interface BoundingVolume {
      * @return the new bounding volume.
      */
     public BoundingVolume transform(
-        Matrix3f rotate,
+        Quaternion rotate,
         Vector3f translate,
         float scale,
         BoundingVolume store);
