@@ -39,10 +39,10 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.ReadableByteChannel;
 
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.widget.image.WidgetImage;
 
 /**
  * @author Gregg Patton
@@ -122,8 +122,8 @@ public abstract class WidgetFontAbstract implements WidgetFont {
 
             }
 
-            WidgetImage textureImage = new WidgetImage();
-            textureImage.setType(WidgetImage.RA88);
+            Image textureImage = new Image();
+            textureImage.setType(Image.RA88);
             textureImage.setWidth(header.getTexWidth());
             textureImage.setHeight(header.getTexHeight());
 
