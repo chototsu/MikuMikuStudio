@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.22 2004-09-14 21:52:11 mojomonkey Exp $
+ * @version $Id: TerrainPage.java,v 1.23 2005-02-09 16:41:06 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -320,7 +320,7 @@ public class TerrainPage extends Node {
      */
     private void split(int size, int blockSize, Vector3f stepScale,
             int[] heightMap, boolean clod) {
-        if (size >> 1 + 1 <= blockSize) {
+        if ((size >> 1) + 1 <= blockSize) {
             createQuadBlock(size, stepScale, heightMap, clod);
         } else {
             createQuadPage(size, blockSize, stepScale, heightMap, clod);
