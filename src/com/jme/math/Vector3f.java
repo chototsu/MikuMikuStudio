@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.20 2004-05-27 20:18:11 cep21 Exp $
+ * @version $Id: Vector3f.java,v 1.21 2004-05-27 22:13:27 cep21 Exp $
  */
 public class Vector3f {
 
@@ -90,6 +90,15 @@ public class Vector3f {
         this.x = x;
         this.y = y;
         this.z = z;
+    }
+
+    /**
+     * Constructor instantiates a new <code>Vector3f</code> that is a copy
+     * of the provided vector 
+     * @param copy The Vector3f to copy
+     */
+    public Vector3f(Vector3f copy) {
+        this.set(copy);
     }
 
     /**
