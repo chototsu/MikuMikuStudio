@@ -43,7 +43,7 @@ import com.jme.scene.TriMesh;
  * the peak being on the positive y axis and the base being in the x-z plane.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.3 2004-09-14 21:52:22 mojomonkey Exp $
+ * @version $Id: Pyramid.java,v 1.4 2005-03-16 15:28:25 renanse Exp $
  */
 public class Pyramid extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -128,7 +128,7 @@ public class Pyramid extends TriMesh {
 	 *  
 	 */
 	private void setNormalData() {
-		Vector3f[] normals = new Vector3f[24];
+		Vector3f[] normals = new Vector3f[16];
 		Vector3f front = new Vector3f(0, 1, 1);
 		Vector3f right = new Vector3f(1, 1, 0);
 		Vector3f back = new Vector3f(0, 1, -1);
