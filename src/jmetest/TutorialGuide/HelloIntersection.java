@@ -34,6 +34,7 @@ public class HelloIntersection extends SimpleGame {
     URL laserURL;
     Random r=new Random();
     SphericalSound laserSound;
+    boolean playLaser;
     public static void main(String[] args) {
         HelloIntersection app = new HelloIntersection();
         app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
@@ -100,7 +101,7 @@ public class HelloIntersection extends SimpleGame {
             bullet.addController(new BulletMover(bullet,new Vector3f(cam.getDirection())));
             rootNode.attachChild(bullet);
             rootNode.updateRenderState();
-            SoundAPIController.getRenderer().draw(laserSound);
+            playLaser=true;
         }
     }
     class BulletMover extends Controller{
@@ -129,5 +130,14 @@ public class HelloIntersection extends SimpleGame {
                 lifeTime=0;
             }
         }
+    }
+    protected void simpleRender(){
+        if (playLaser){
+            SoundAPIController.getRenderer().draw(laserSound);
+            playLaser=false;
+        }
+    }
+    protected void simpleUpdate(){
+        laserSound.updateGeometricState(timer.getTimeInSeconds(),true);
     }
 }
