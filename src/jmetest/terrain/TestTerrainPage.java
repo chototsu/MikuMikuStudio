@@ -51,7 +51,7 @@ import com.jme.terrain.util.ProceduralTextureGenerator;
  * <code>TestLightState</code>
  * 
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.7 2004-04-20 19:01:20 mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.8 2004-04-20 20:21:24 mojomonkey Exp $
  */
 public class TestTerrainPage extends BaseGame {
     private Camera cam;
@@ -125,7 +125,7 @@ public class TestTerrainPage extends BaseGame {
             e.printStackTrace();
             System.exit(1);
         }
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
+        ColorRGBA blackColor = new ColorRGBA(0.5f, 0.5f, 0.5f, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
 
@@ -183,10 +183,10 @@ public class TestTerrainPage extends BaseGame {
         scene.setRenderState(lightstate);
         root = new Node("Root node");
         //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
-        FaultFractalHeightMap heightMap = new FaultFractalHeightMap(129, 32, 0, 255, 0.75f);
-        TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), 5, heightMap.getHeightMap(), false);
+        FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255, 0.75f);
+        TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), 10, heightMap.getHeightMap(), true);
 
-        tb.setDetailTexture(1, 4);
+        tb.setDetailTexture(1, 16);
         scene.attachChild(tb);
         scene.setRenderState(cs);
 
@@ -250,6 +250,16 @@ public class TestTerrainPage extends BaseGame {
         root.attachChild(scene);
         root.attachChild(fps);
         root.setForceView(true);
+        
+        FogState fs = display.getRenderer().getFogState();
+        fs.setDensity(0.5f);
+        fs.setEnabled(true);
+        fs.setColor(new ColorRGBA(0.5f,0.5f,0.5f,0.5f));
+        fs.setEnd(1000);
+        fs.setStart(500);
+        fs.setDensityFunction(FogState.DF_LINEAR);
+        fs.setApplyFunction(FogState.AF_PER_VERTEX);
+        scene.setRenderState(fs);
 
         root.updateGeometricState(0.0f, true);
         root.updateRenderState();
