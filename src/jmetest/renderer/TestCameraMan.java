@@ -42,8 +42,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.LWJGLRenderer;
-import com.jme.renderer.LWJGLTextureRenderer;
+import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
 import com.jme.scene.Quad;
@@ -75,7 +74,7 @@ public class TestCameraMan extends SimpleGame {
     private Vector3f axis;
     private CameraNode camNode;
 
-    LWJGLTextureRenderer tRenderer;
+    TextureRenderer tRenderer;
     Texture fakeTex;
 
     /**
@@ -147,7 +146,7 @@ public class TestCameraMan extends SimpleGame {
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
-        tRenderer = new LWJGLTextureRenderer((LWJGLRenderer)display.getRenderer());
+        tRenderer = display.createTextureRenderer(false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
         camNode = new CameraNode("Camera Node", tRenderer.getCamera());
         camNode.setLocalTranslation(new Vector3f(0,50,-50));
         camNode.updateGeometricState(0,true);
@@ -173,30 +172,30 @@ public class TestCameraMan extends SimpleGame {
 
         scene = new Node("3D Scene Node");
         root = new Node("Root Scene Node");
-        
+
         DirectionalLight am = new DirectionalLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.95f, 0.95f, 0.95f, 1.0f));
         am.setDirection(new Vector3f(1, 0, 0));
-        
+
         DirectionalLight am2 = new DirectionalLight();
         am2.setDiffuse(new ColorRGBA(1.0f,1.0f,1.0f,1.0f));
         am2.setDirection(new Vector3f(0,0,-1));
-        
+
         LightState state = display.getRenderer().getLightState();
         state.setEnabled(true);
         state.attach(am);
         state.attach(am2);
         am.setEnabled(true);
         am2.setEnabled(true);
-        
+
         root.setRenderState(state);
 
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
         scene.setRenderState(cs);
-        
+
         model = new MilkshapeASCIIModel("Milkshape Model");
         URL modelURL = TestCameraMan.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
         model.load(modelURL, "jmetest/data/model/msascii/");

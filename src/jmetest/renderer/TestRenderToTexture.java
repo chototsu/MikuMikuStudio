@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.LWJGLRenderer;
-import com.jme.renderer.LWJGLTextureRenderer;
+import com.jme.renderer.TextureRenderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
@@ -73,7 +73,7 @@ public class TestRenderToTexture extends SimpleGame {
     private float angle2 = 0;
     private Vector3f axis;
 
-    LWJGLTextureRenderer tRenderer;
+    TextureRenderer tRenderer;
     Texture fakeTex;
 
     /**
@@ -239,7 +239,7 @@ public class TestRenderToTexture extends SimpleGame {
         fakeScene.setRenderState(ts);
 
         // Ok, now lets create the Texture object that our monkey cube will be rendered to.
-        tRenderer = new LWJGLTextureRenderer((LWJGLRenderer)display.getRenderer());
+        tRenderer = display.createTextureRenderer(false, true, false, false, TextureRenderer.RENDER_TEXTURE_2D, 0);
         tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
         fakeTex = tRenderer.setupTexture();
         tRenderer.getCamera().setLocation(new Vector3f(0,0,75f));
