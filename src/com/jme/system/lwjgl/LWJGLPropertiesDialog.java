@@ -78,7 +78,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.4 2005-02-24 07:02:08 renanse Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.5 2005-03-30 08:45:55 renanse Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
@@ -205,8 +205,9 @@ public final class LWJGLPropertiesDialog extends JDialog {
         //The buttons...
         JButton ok = new JButton("Ok");
         JButton cancel = new JButton("Cancel");
-        
+        try {
         icon = new JLabel(new ImageIcon(imageFile));
+        } catch (Exception ex) { }
 
         mainPanel.setLayout(new BorderLayout());
         
