@@ -47,7 +47,7 @@ import com.jme.renderer.Camera;
 /**
  * <code>ImposterNode</code>
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.8 2004-04-22 22:26:45 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.9 2004-04-23 05:06:43 renanse Exp $
  */
 public class ImposterNode extends Node {
   private TextureRenderer tRenderer;
@@ -72,7 +72,7 @@ public class ImposterNode extends Node {
         TextureRenderer.RENDER_TEXTURE_2D, 0);
 
     tRenderer.getCamera().setLocation(new Vector3f(0, 0, 75f));
-    tRenderer.getCamera().update();
+    tRenderer.updateCamera();
     tRenderer.setBackgroundColor(new ColorRGBA(1, 0, 0, 0f));
 
     quadScene = new Node("imposter_scene_" + inode_val);

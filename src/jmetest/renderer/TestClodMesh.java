@@ -33,33 +33,18 @@ package jmetest.renderer;
 
 import java.net.URL;
 
+import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.app.VariableTimestepGame;
-import com.jme.image.Texture;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
-import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.model.Model;
 import com.jme.scene.model.ase.ASEModel;
 //import com.jme.scene.model.md2.Md2Model;
 import com.jme.scene.shape.Disk;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.WireframeState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
-import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 
 /**
  * <code>TestClodMesh</code> shows off the use of the ClodMesh in jME.
@@ -71,23 +56,16 @@ import com.jme.util.Timer;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.11 2004-04-22 22:27:39 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.12 2004-04-23 05:06:44 renanse Exp $
  */
 
-public class TestClodMesh extends VariableTimestepGame {
-  private Camera cam;
-  private Node root, scene;
-  private InputHandler input;
-  private Timer timer;
+public class TestClodMesh extends SimpleGame {
+
   private Model model;
 
-  private ClodMesh iNode, iNode2;
-  private Node fpsNode;
-  private Text fps;
-  private long lastPress = 0;
-  private WireframeState wireState;
-  private LightState lightState;
+  private ClodMesh cNode, cNode2;
   private boolean useModel = true;
+  private long lastPress = 0;
 
   /**
    * Entry point for the test,
@@ -99,112 +77,46 @@ public class TestClodMesh extends VariableTimestepGame {
     app.start();
   }
 
-  /**
-   * Not used in this test.
-   * @see com.jme.app.SimpleGame#update()
-   */
-  protected void update(float interpolation) {
-    input.update(timer.getTimePerFrame());
-    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
-              display.getRenderer().getStatistics());
-    scene.updateGeometricState(interpolation, true);
+  protected void simpleUpdate() {
 
     if (System.currentTimeMillis() - lastPress > 100) {
       if (KeyBindingManager
           .getKeyBindingManager()
           .isValidCommand("detail_down")) {
         if (useModel)
-          iNode2.setTargetRecord( (iNode2.getTargetRecord()) + 10);
+          cNode2.setTargetRecord( (cNode2.getTargetRecord()) + 10);
         else
-          iNode.setTargetRecord( (iNode.getTargetRecord()) + 25);
+          cNode.setTargetRecord( (cNode.getTargetRecord()) + 25);
         lastPress = System.currentTimeMillis();
       }
       if (KeyBindingManager
           .getKeyBindingManager()
           .isValidCommand("detail_up")) {
         if (useModel)
-          iNode2.setTargetRecord( (iNode2.getTargetRecord()) - 10);
+          cNode2.setTargetRecord( (cNode2.getTargetRecord()) - 10);
         else
-          iNode.setTargetRecord( (iNode.getTargetRecord()) - 25);
+          cNode.setTargetRecord( (cNode.getTargetRecord()) - 25);
         lastPress = System.currentTimeMillis();
       }
-      if (KeyBindingManager
-          .getKeyBindingManager()
-          .isValidCommand("toggle_wire")) {
-        wireState.setEnabled(!wireState.isEnabled());
-      }
-      if (KeyBindingManager
-          .getKeyBindingManager()
-          .isValidCommand("toggle_lights")) {
-        lightState.setEnabled(!lightState.isEnabled());
-        root.updateRenderState();
-      }
-      if (KeyBindingManager
-          .getKeyBindingManager()
-          .isValidCommand("switch_models")) {
-        useModel = !useModel;
-        iNode.setForceCull(useModel);
-        iNode2.setForceCull(!useModel);
-      }
+    }
+    if (KeyBindingManager
+        .getKeyBindingManager()
+        .isValidCommand("switch_models", false)) {
+      useModel = !useModel;
+      cNode.setForceCull(useModel);
+      cNode2.setForceCull(!useModel);
     }
   }
 
   /**
-   * clears the buffers and then draws the TriMesh.
-   * @see com.jme.app.SimpleGame#render()
+   * builds the trimesh.
+   * @see com.jme.app.SimpleGame#initGame()
    */
-  protected void render(float interpolation) {
-    display.getRenderer().clearStatistics();
-    display.getRenderer().clearBuffers();
-    display.getRenderer().draw(root);
-    display.getRenderer().draw(fpsNode);
-  }
-
-  /**
-   * creates the displays and sets up the viewport.
-   * @see com.jme.app.SimpleGame#initSystem()
-   */
-  protected void initSystem() {
-    try {
-      display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-      display.createWindow(
-          properties.getWidth(),
-          properties.getHeight(),
-          properties.getDepth(),
-          properties.getFreq(),
-          properties.getFullscreen());
-      cam =
-          display.getRenderer().getCamera(
-          properties.getWidth(),
-          properties.getHeight());
-
-    }
-    catch (JmeException e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-
-    ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-    display.getRenderer().setBackgroundColor(blackColor);
-
-    // setup our camera
-    cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-    Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
-    Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f);
-    Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-    Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
-    cam.setFrame(loc, left, up, dir);
-    display.getRenderer().setCamera(cam);
-
-    // Setup the input controller and timer
-    input = new FirstPersonHandler(this, cam, "LWJGL");
-    input.setKeySpeed(10f);
-    input.setMouseSpeed(1f);
-    timer = Timer.getTimer("LWJGL");
+  protected void simpleInitGame() {
 
     display.setTitle("Imposter Test");
-    display.getRenderer().enableStatistics(true);
-
+    cam.setLocation(new Vector3f(0.0f, 0.0f, 25.0f));
+    cam.update();
     KeyBindingManager.getKeyBindingManager().set(
         "detail_up",
         KeyInput.KEY_ADD);
@@ -212,25 +124,8 @@ public class TestClodMesh extends VariableTimestepGame {
         "detail_down",
         KeyInput.KEY_SUBTRACT);
     KeyBindingManager.getKeyBindingManager().set(
-        "toggle_wire",
-        KeyInput.KEY_T);
-    KeyBindingManager.getKeyBindingManager().set(
-        "toggle_lights",
-        KeyInput.KEY_L);
-    KeyBindingManager.getKeyBindingManager().set(
         "switch_models",
         KeyInput.KEY_M);
-  }
-
-  /**
-   * builds the trimesh.
-   * @see com.jme.app.SimpleGame#initGame()
-   */
-  protected void initGame() {
-
-    scene = new Node("3D Scene Node");
-    root = new Node("Root Scene Node");
-    root.attachChild(scene);
 
     model = new ASEModel("Statue of Liberty");
     URL data = TestClodMesh.class.getClassLoader()
@@ -243,93 +138,18 @@ public class TestClodMesh extends VariableTimestepGame {
 
     model.updateGeometricState(0, true);
 
-    // Setup our params for the depth buffer
-    ZBufferState buf = display.getRenderer().getZBufferState();
-    buf.setEnabled(true);
-    buf.setFunction(ZBufferState.CF_LEQUAL);
+    cNode = new ClodMesh("model", new Disk("disc", 50, 50, 8), null);
+    cNode.setForceCull(true);
+    cNode.setModelBound(new BoundingSphere());
+    cNode.updateModelBound();
 
-    scene.setRenderState(buf);
+    TriMesh child = (TriMesh) model.getChild(0);
+    cNode2 = new ClodMesh("model", child, null);
+    cNode2.setForceCull(false);
+    cNode2.setModelBound(new BoundingSphere());
+    cNode2.updateModelBound();
 
-    iNode = new ClodMesh("model", new Disk("disc", 50, 50, 8), null);
-    iNode.setForceCull(true);
-
-    TriMesh child = (TriMesh)model.getChild(0);
-    iNode2 = new ClodMesh("model", child, null);
-    iNode2.setForceCull(false);
-
-    wireState = display.getRenderer().getWireframeState();
-    wireState.setEnabled(false);
-    scene.setRenderState(wireState);
-
-    scene.attachChild(iNode);
-    scene.attachChild(iNode2);
-
-    //This code is all for the FPS display...
-    // First setup alpha state
-    AlphaState as1 = display.getRenderer().getAlphaState();
-    as1.setBlendEnabled(true);
-    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    as1.setDstFunction(AlphaState.DB_ONE);
-    as1.setTestEnabled(true);
-    as1.setTestFunction(AlphaState.TF_GREATER);
-    as1.setEnabled(true);
-
-    // Now setup font texture
-    TextureState font = display.getRenderer().getTextureState();
-    font.setTexture(
-        TextureManager.loadTexture(
-        TestClodMesh.class.getClassLoader().getResource(
-        "jmetest/data/font/font.png"),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
-    font.setEnabled(true);
-
-    // Then our font Text object.
-    fps = new Text("FPS label", "");
-    fps.setRenderState(font);
-    fps.setRenderState(as1);
-    fps.setForceView(true);
-
-    // Finally, a stand alone node (not attached to root on purpose)
-    fpsNode = new Node("FPS node");
-    fpsNode.attachChild(fps);
-    fpsNode.setForceView(true);
-
-    // add some light...
-
-    PointLight am = new PointLight();
-    am.setDiffuse(new ColorRGBA(1f, 1.0f, 1.0f, 1.0f));
-    am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-    am.setLocation(new Vector3f(15, 15, 15));
-    am.setEnabled(true);
-
-    lightState = display.getRenderer().getLightState();
-    lightState.setEnabled(true);
-    lightState.attach(am);
-    scene.setRenderState(lightState);
-
-    cam.update();
-    scene.updateGeometricState(0.0f, true);
-    fpsNode.updateGeometricState(0.0f, true);
-    scene.updateRenderState();
-    fpsNode.updateRenderState();
+    rootNode.attachChild(cNode);
+    rootNode.attachChild(cNode2);
   }
-
-  /**
-   * not used.
-   * @see com.jme.app.SimpleGame#reinit()
-   */
-  protected void reinit() {
-
-  }
-
-  /**
-   * Not used.
-   * @see com.jme.app.SimpleGame#cleanup()
-   */
-  protected void cleanup() {
-
-  }
-
 }
