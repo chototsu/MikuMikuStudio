@@ -33,6 +33,7 @@ package jme.math;
 
 import jme.exception.MonkeyRuntimeException;
 
+
 /**
  * <code>Vector</code> defines a three dimensional vector of (x,y,z). 
  * @author Mark Powell
@@ -95,13 +96,25 @@ public class Vector {
 	}
 	
 	public float dot(Vector v) {
-		return 0;
+		return x*v.x + y*v.y + z*v.z;
+	}
+	
+	public Vector cross(Vector v) {
+		return new Vector(((y * v.z) - (z * v.y)),
+			((z * v.x) - (x * v.z)),
+			((x * v.y) - (y * v.x)));
 	}
 	
 	public void negate() {
 		x = -x;
 		y = -y;
 		z = -z;
+	}
+	
+	public Vector normalize() {
+		float length = length();				
+
+		return divide(length);	
 	}
 	
 }

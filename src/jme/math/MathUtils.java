@@ -31,7 +31,6 @@
  */
 package jme.math;
 
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>MathUtils</code> is a static class that provides commonly used math
@@ -48,7 +47,7 @@ public class MathUtils {
 	 * @param point2 the second point.
 	 * @return the distance between point1 and point2.
 	 */
-	public static double distance(Vector3f point1, Vector3f point2) {
+	public static double distance(Vector point1, Vector point2) {
 		return Math.sqrt(((point1.x - point2.x) * (point1.x - point2.x)) +
 						 ((point1.y - point2.y) * (point1.y - point2.y)) +
 						 ((point1.z - point2.z) * (point1.z - point2.z)));

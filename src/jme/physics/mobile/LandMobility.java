@@ -33,10 +33,10 @@ package jme.physics.mobile;
 
 import java.util.logging.Level;
 
+import jme.math.Vector;
 import jme.physics.PhysicsModule;
 import jme.utility.LoggingSystem;
 
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>LandMobility</code> handles the acceleration and velocity of a 
@@ -123,7 +123,7 @@ public class LandMobility implements PhysicsModule {
      * it's current velocity and angle. 
      * @param position the position to update.
      */
-	public void updatePosition(Vector3f position) {
+	public void updatePosition(Vector position) {
 		float sin = (float)Math.sin(Math.toRadians(currentAngle));
 		float cos = (float)Math.cos(Math.toRadians(currentAngle));
 		

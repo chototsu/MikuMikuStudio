@@ -37,13 +37,13 @@ import jme.entity.Entity;
 import jme.entity.camera.Camera;
 import jme.exception.MonkeyRuntimeException;
 import jme.math.MathUtils;
+import jme.math.Vector;
 import jme.physics.PhysicsModule;
 import jme.system.KeyBindingManager;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>TrackingController</code> defines a controller that uses a camera
@@ -64,7 +64,7 @@ public class TrackingController extends AbstractGameController {
 	private float trackingSpeed;
     
     //View of the camera
-    private Vector3f targetView;
+    private Vector targetView;
     private float interpolationTime;
 
 	//Camera system
@@ -136,13 +136,10 @@ public class TrackingController extends AbstractGameController {
 		double distance =
 			MathUtils.distance(camera.getPosition(), entity.getPosition());
 		if (distance > trackingDistance) {
-			Vector3f vec =
+			Vector vec =
 				(
-					Vector3f.sub(
-						camera.getView(),
-						camera.getPosition(),
-						null)).normalise(
-					null);
+					camera.getView().subtract(
+						camera.getPosition())).normalize();
 
 			camera.getPosition().x += vec.x * trackingSpeed * (time/200);
 			camera.getPosition().z += vec.z * trackingSpeed * (time/200);

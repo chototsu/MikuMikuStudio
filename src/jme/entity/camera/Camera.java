@@ -32,10 +32,9 @@
 
 package jme.entity.camera;
 
-import org.lwjgl.vector.Vector3f;
-
 import jme.entity.Entity;
 import jme.locale.external.feature.Sky;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 
 /**
@@ -51,9 +50,9 @@ import jme.system.DisplaySystem;
 public class Camera extends Entity{
 	
     private Frustum frustum;
-    private Vector3f view = null;
-    private Vector3f up = null;
-    private Vector3f strafe = null;
+    private Vector view = null;
+    private Vector up = null;
+    private Vector strafe = null;
     /**
      * <code>sky</code> the sky representation.
      */
@@ -64,8 +63,8 @@ public class Camera extends Entity{
      */
     public Camera(int id) {
         super(id);
-        view = new Vector3f();
-        up = new Vector3f();
+        view = new Vector();
+        up = new Vector();
 	}
     
     /**
@@ -76,8 +75,8 @@ public class Camera extends Entity{
      */
     public Camera(int id, Entity child) {
         super(id, child);
-        view = new Vector3f();
-        up = new Vector3f();
+        view = new Vector();
+        up = new Vector();
     }
 
     /**
@@ -107,9 +106,9 @@ public class Camera extends Entity{
         
         super(id);
 
-        setUp(new Vector3f(upX, upY, upZ));
-        setView(new Vector3f(viewX, viewY, viewZ));
-        setPosition(new Vector3f(positionX, positionY, positionZ));
+        setUp(new Vector(upX, upY, upZ));
+        setView(new Vector(viewX, viewY, viewZ));
+        setPosition(new Vector(positionX, positionY, positionZ));
         frustum = new Frustum();
     }
 
@@ -121,7 +120,7 @@ public class Camera extends Entity{
      * @param view the point the camera is looking.
      * @param up the orientation of the camera.
      */
-    public Camera(int id, Vector3f position, Vector3f view, Vector3f up) {
+    public Camera(int id, Vector position, Vector view, Vector up) {
         super(id);
         setPosition(position);
         setView(view);
@@ -153,9 +152,9 @@ public class Camera extends Entity{
         float upY,
         float upZ) {
 
-        setUp(new Vector3f(upX, upY, upZ));
-        setView(new Vector3f(viewX, viewY, viewZ));
-        setPosition(new Vector3f(positionX, positionY, positionZ));
+        setUp(new Vector(upX, upY, upZ));
+        setView(new Vector(viewX, viewY, viewZ));
+        setPosition(new Vector(positionX, positionY, positionZ));
     }
     
     /**
@@ -182,7 +181,7 @@ public class Camera extends Entity{
      * @param view the point the camera is looking.
      * @param up the orientation of the camera.
      */
-    public void set(Vector3f position, Vector3f view, Vector3f up) {
+    public void set(Vector position, Vector view, Vector up) {
         setPosition(position);
         setView(view);
         setUp(up);
@@ -196,7 +195,7 @@ public class Camera extends Entity{
      * @param z the z component of the new view.
      */
     public void setView(float x, float y, float z) {
-        view = new Vector3f(x, y, z);
+        view = new Vector(x, y, z);
     }
 
     /**
@@ -205,7 +204,7 @@ public class Camera extends Entity{
      * 
      * @param view the new view point.
      */
-    public void setView(Vector3f view) {
+    public void setView(Vector view) {
         this.view = view;
     }
 
@@ -217,7 +216,7 @@ public class Camera extends Entity{
      * @param z the new z component of the orientation vector.
      */
     public void setUp(float x, float y, float z) {
-        up = new Vector3f(x, y, z);
+        up = new Vector(x, y, z);
     }
 
     /**
@@ -225,7 +224,7 @@ public class Camera extends Entity{
      * 
      * @param up the new orientation vector of the camera.
      */
-    public void setUp(Vector3f up) {
+    public void setUp(Vector up) {
         this.up = up;
     }
 
@@ -233,7 +232,7 @@ public class Camera extends Entity{
      * <code>setStrafe</code> sets the strafe vector of the entity.
      * @param strafe the strafe vector.
      */
-    public void setStrafe(Vector3f strafe) {
+    public void setStrafe(Vector strafe) {
         this.strafe = strafe;
     }
         
@@ -242,7 +241,7 @@ public class Camera extends Entity{
     * 
     * @return the strafe vector of the camera.
     */
-   public Vector3f getStrafe() {
+   public Vector getStrafe() {
        return strafe;
    }
    
@@ -252,7 +251,7 @@ public class Camera extends Entity{
     * 
     * @return the view of the camera.
     */
-   public Vector3f getView() {
+   public Vector getView() {
        return view;
    }
 
@@ -261,7 +260,7 @@ public class Camera extends Entity{
     * 
     * @return the up vector of the camera.
     */
-   public Vector3f getUp() {
+   public Vector getUp() {
        return up;
    }
     

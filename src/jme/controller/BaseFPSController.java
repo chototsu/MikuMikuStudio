@@ -38,9 +38,9 @@ import java.util.logging.Level;
 import org.lwjgl.Display;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.vector.Vector3f;
 
 import jme.exception.MonkeyRuntimeException;
+import jme.math.Vector;
 import jme.system.KeyBindingManager;
 import jme.entity.camera.Camera;
 import jme.utility.LoggingSystem;
@@ -162,11 +162,11 @@ public class BaseFPSController extends AbstractGameController {
         rotate = (float)angle / accuracy;
 
         //Determine the axis at which we are rotating.
-        Vector3f temp =
-            Vector3f.sub(entity.getView(), entity.getPosition(), null);
+        Vector temp =
+            entity.getView().subtract(entity.getPosition());
 
-        Vector3f axis = Vector3f.cross(temp, entity.getUp(), null);
-        axis = axis.normalise(null);
+        Vector axis = temp.cross(entity.getUp());
+        axis = axis.normalize();
 
         //rotate the entity.
         rotate(rotate, axis);
@@ -189,7 +189,7 @@ public class BaseFPSController extends AbstractGameController {
 
         rotate = angle / accuracy;
 
-        rotate(-rotate, new Vector3f(0, 1, 0));
+        rotate(-rotate, new Vector(0, 1, 0));
     }
 
     /**
@@ -221,11 +221,11 @@ public class BaseFPSController extends AbstractGameController {
      */
     public boolean update(float time) {
         entity.setMoved(false);
-        Vector3f temp =
-            Vector3f.sub(entity.getView(), entity.getPosition(), null);
-        Vector3f vCross = Vector3f.cross(temp, entity.getUp(), null);
+        Vector temp =
+            entity.getView().subtract(entity.getPosition());
+        Vector vCross = temp.cross(entity.getUp());
 
-        entity.setStrafe(vCross.normalise(null));
+        entity.setStrafe(vCross.normalize());
 
         pollMouse();
         int middleX = Display.getWidth() >> 1;
@@ -315,7 +315,7 @@ public class BaseFPSController extends AbstractGameController {
      * viewing.
      * @return the point that the camera is looking at.
      */
-    public Vector3f getEntityView() {
+    public Vector getEntityView() {
         return entity.getView();
     }
 
@@ -323,7 +323,7 @@ public class BaseFPSController extends AbstractGameController {
      * <code>getEntityUp</code> return the orientation of the camera.
      * @return the orientation of the camera.
      */
-    public Vector3f getEntityUp() {
+    public Vector getEntityUp() {
         return entity.getUp();
     }
 
@@ -333,7 +333,7 @@ public class BaseFPSController extends AbstractGameController {
      * 
      * @param view the point the camera is looking at.
      */
-    public void setEntityView(Vector3f view) {
+    public void setEntityView(Vector view) {
         entity.setView(view);
     }
 
@@ -342,7 +342,7 @@ public class BaseFPSController extends AbstractGameController {
      * up or orientation of the entity.
      * @param the vector that represents the up.
      */
-    public void setEntityUp(Vector3f up) {
+    public void setEntityUp(Vector up) {
         entity.setUp(up);
     }
 
@@ -351,15 +351,15 @@ public class BaseFPSController extends AbstractGameController {
      * @param angle the angle to rotate.
      * @param axis the axis to rotate about.
      */
-    public void rotate(float angle, Vector3f axis) {
+    public void rotate(float angle, Vector axis) {
         float x, y, z;
         x = axis.x;
         y = axis.y;
         z = axis.z;
-        Vector3f newView = new Vector3f();
+        Vector newView = new Vector();
 
-        Vector3f view =
-            Vector3f.sub(entity.getView(), entity.getPosition(), null);
+        Vector view =
+            entity.getView().subtract(entity.getPosition());
 
         float cosTheta = org.lwjgl.Math.cos(angle);
         float sinTheta = org.lwjgl.Math.sin(angle);
@@ -376,7 +376,7 @@ public class BaseFPSController extends AbstractGameController {
         newView.z += ((1 - cosTheta) * y * z + x * sinTheta) * view.y;
         newView.z += (cosTheta + (1 - cosTheta) * z * z) * view.z;
 
-        entity.setView(Vector3f.add(entity.getPosition(), newView, null));
+        entity.setView(entity.getPosition().add(newView));
     }
 
     /**
@@ -386,15 +386,11 @@ public class BaseFPSController extends AbstractGameController {
      * @param speed how much to move the camera.
      */
     public void move(float speed) {
-        Vector3f vec =
+        Vector vec =
             (
-                Vector3f.sub(
-                    entity.getView(),
-                    entity.getPosition(),
-                    null)).normalise(
-                null);
+                entity.getView().subtract(entity.getPosition())).normalize();
 
-        Vector3f newView = entity.getView();
+        Vector newView = entity.getView();
 
         entity.getPosition().x += vec.x * speed;
         entity.getView().x += vec.x * speed;

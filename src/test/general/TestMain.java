@@ -39,7 +39,6 @@ import org.lwjgl.Display;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 import jme.AbstractGame;
 import jme.entity.Entity;
 import jme.entity.effects.ParticleEmitter;
@@ -53,6 +52,7 @@ import jme.locale.external.data.AbstractHeightMap;
 import jme.locale.external.data.FaultFractalHeightMap;
 import jme.locale.external.feature.SkyDome;
 import jme.locale.external.feature.WaterPlane;
+import jme.math.Vector;
 import jme.physics.mobile.LandMobility;
 import jme.system.DisplaySystem;
 import jme.entity.camera.Camera;
@@ -336,7 +336,7 @@ public class TestMain extends AbstractGame {
 		sd.setDomeRotation(0.250f);
 
 		WaterPlane wp = new WaterPlane(1025 * 2, 45, 0.25f);
-		wp.setColor(new Vector3f(1.0f, 1.0f, 1.0f));
+		wp.setColor(new Vector(1.0f, 1.0f, 1.0f));
 		wp.setTransparency(0.60f);
 		wp.setTexture("jme/data/texture/water02.jpg");
 		wp.setWaveSpeed(0.05f);
@@ -360,11 +360,11 @@ public class TestMain extends AbstractGame {
 		msmodel.setTorsoAnimation("TORSO_STAND");
 		msmodel.setLegsAnimation("LEGS_IDLE");
 
-		msmodel.setScale(new Vector3f(0.15f, 0.15f, 0.15f));
+		msmodel.setScale(new Vector(0.15f, 0.15f, 0.15f));
 
 		e.setGeometry(msmodel);
 		e.setPosition(
-			new Vector3f(
+			new Vector(
 				1000,
 				hm1.getScaledHeightAtPoint(1000 / 4, 1000 / 4),
 				1000));
@@ -414,7 +414,7 @@ public class TestMain extends AbstractGame {
 				hm1.getInterpolatedHeight(x / 2, z / 2) < 75
 					|| hm1.getInterpolatedHeight(x / 4, z / 4) > 200);
 			elist[i].setPosition(
-				new Vector3f(
+				new Vector(
 					x,
 					hm1.getInterpolatedHeight(x / 4, z / 4) + 1,
 					z));

@@ -39,13 +39,13 @@ import java.util.logging.Level;
 import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.Geometry;
-import jme.physics.PhysicsModule;
+import jme.math.Vector;
+import jme.physics.PhysicsModule; 
 import jme.system.DisplaySystem;
 import jme.entity.camera.Frustum;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>Entity</code> defines a game entity that consists of a piece of
@@ -91,7 +91,7 @@ public class Entity implements EntityInterface {
     protected Geometry geometry = null;
 
     //Orientation and position of the entity.
-    private Vector3f position = null;
+    private Vector position = null;
     
     //Set the entities orientation
     private float yaw;
@@ -122,7 +122,7 @@ public class Entity implements EntityInterface {
             throw new MonkeyRuntimeException("Entity id must be greater than 0");
         }
         children = new ArrayList();
-        position = new Vector3f();
+        position = new Vector();
         
 		gl = DisplaySystem.getDisplaySystem().getGL();
 
@@ -148,7 +148,7 @@ public class Entity implements EntityInterface {
             throw new MonkeyRuntimeException("Entity id must be greater than 0");
         }
         children = new ArrayList();
-        position = new Vector3f();
+        position = new Vector();
         
         gl = DisplaySystem.getDisplaySystem().getGL();
 
@@ -184,7 +184,7 @@ public class Entity implements EntityInterface {
      * 
      * @param position the new position of this entity.
      */
-    public void setPosition(Vector3f position) {
+    public void setPosition(Vector position) {
         this.position = position;
     }
 
@@ -259,7 +259,7 @@ public class Entity implements EntityInterface {
      * 
      * @return the position of the entity.
      */
-    public Vector3f getPosition() {
+    public Vector getPosition() {
         return position;
     }
     

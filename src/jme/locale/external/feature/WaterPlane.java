@@ -32,11 +32,11 @@
 package jme.locale.external.feature;
 
 import jme.exception.MonkeyRuntimeException;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>WaterPlane</code> implements the <code>Water</code> interface and
@@ -62,7 +62,7 @@ public class WaterPlane implements Water {
 	//max = baseLevel + variation.
 	private float variation;
 	//color of the water and transparency of the water.
-	private Vector3f color;
+	private Vector color;
 	private float transparency;
 	
 	//current height of the water.
@@ -141,7 +141,7 @@ public class WaterPlane implements Water {
 	 * <code>setColor</code> sets the color of the water texture.
 	 * @param color the color of the water texture.
 	 */
-	public void setColor(Vector3f color) {
+	public void setColor(Vector color) {
 		this.color = color;
 	}
 

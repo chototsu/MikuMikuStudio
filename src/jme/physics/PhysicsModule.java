@@ -31,7 +31,8 @@
  */
 package jme.physics;
 
-import org.lwjgl.vector.Vector3f;
+import jme.math.Vector;
+
 
 /**
  * <code>PhysicsModule</code> is an interface that defines the method for 
@@ -55,7 +56,7 @@ public interface PhysicsModule {
      * to the new position defined by the module's attributes.
      * @param position the position to set.
      */
-    public void updatePosition(Vector3f position);
+    public void updatePosition(Vector position);
     /**
      * <code>turn</code> turns the entity in the way defined by the
      * implementation of <code>PhysicsModule</code>. 

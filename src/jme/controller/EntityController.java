@@ -32,7 +32,8 @@
 
 package jme.controller;
 
-import org.lwjgl.vector.Vector3f;
+import jme.math.Vector;
+
 
 /**
  * <code>EntityController</code> defines an interface for interacting with 
@@ -51,7 +52,7 @@ public interface EntityController {
      * 
      * @return the position of the Entity.
      */
-    public Vector3f getEntityPosition();
+    public Vector getEntityPosition();
     
     /**
      * <code>setEntityPosition</code> sets the position of the Entity to the
@@ -59,7 +60,7 @@ public interface EntityController {
      * 
      * @param position the new position of the Entity.
      */
-    public void setEntityPosition(Vector3f position);
+    public void setEntityPosition(Vector position);
     
     /**
      * <code>setEntityYaw</code> sets the yaw angle of the entity. Where yaw is

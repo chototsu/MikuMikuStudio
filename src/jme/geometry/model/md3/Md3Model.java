@@ -46,6 +46,7 @@ import java.util.StringTokenizer;
 import java.util.logging.Level;
 
 import jme.math.Quaternion;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 import jme.utility.Conversion;
@@ -60,7 +61,6 @@ import jme.geometry.model.Triangle;
 
 import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>Md3Model</code> handles loading and rendering a Quake 3 MD3 format
@@ -143,7 +143,7 @@ public class Md3Model implements Geometry {
     FloatBuffer buf;
 
     //model rendering attributes.
-    private Vector3f scale;
+    private Vector scale;
     private float r;
     private float g;
     private float b;
@@ -186,7 +186,7 @@ public class Md3Model implements Geometry {
             .order(ByteOrder.nativeOrder())
             .asFloatBuffer();
 
-        scale = new Vector3f(1.0f, 1.0f, 1.0f);
+        scale = new Vector(1.0f, 1.0f, 1.0f);
         r = 1.0f;
         g = 1.0f;
         b = 1.0f;
@@ -378,7 +378,7 @@ public class Md3Model implements Geometry {
      * <code>setScale</code> sets the scale factor for the model.
      * @param scale the scale of the model.
      */
-    public void setScale(Vector3f scale) {
+    public void setScale(Vector scale) {
         this.scale = scale;
     }
 
@@ -817,8 +817,8 @@ public class Md3Model implements Geometry {
         // number of frames in the mesh.  This is because each frame of animation has a 
         // totally new set of vertices.  This will be used in the next animation tutorial.
         currentMesh.verts =
-            new Vector3f[currentMesh.numOfVerts * meshHeader.numMeshFrames];
-        currentMesh.texVerts = new Vector3f[currentMesh.numOfVerts];
+            new Vector[currentMesh.numOfVerts * meshHeader.numMeshFrames];
+        currentMesh.texVerts = new Vector[currentMesh.numOfVerts];
         currentMesh.faces = new Face[currentMesh.numOfFaces];
 
         // Go through all of the vertices and assign them over to our structure
@@ -833,7 +833,7 @@ public class Md3Model implements Geometry {
             // read any documentation on the model format that justifies this number, but
             // I can't get it to work without it.  Who knows....  Maybe it's different for
             // 3D Studio Max files verses other software?  You be the judge.  I just work here.. :)
-            currentMesh.verts[i] = new Vector3f();
+            currentMesh.verts[i] = new Vector();
             currentMesh.verts[i].x = vertices[i].vertex[0] / 64.0f;
             currentMesh.verts[i].y = vertices[i].vertex[1] / 64.0f;
             currentMesh.verts[i].z = vertices[i].vertex[2] / 64.0f;
@@ -845,7 +845,7 @@ public class Md3Model implements Geometry {
             // This is because I believe that TARGA (.tga) files, which were originally used
             // with this model, have the pixels flipped horizontally.  If you use other image
             // files and your texture mapping is crazy looking, try deleting this negative.
-            currentMesh.texVerts[i] = new Vector3f();
+            currentMesh.texVerts[i] = new Vector();
             currentMesh.texVerts[i].x = texCoords[i].textureCoord[0];
             currentMesh.texVerts[i].y = -texCoords[i].textureCoord[1];
         }
@@ -1216,14 +1216,14 @@ public class Md3Model implements Geometry {
             
             if (model.links[i] != null) {
                 //interpolated between the two positions.
-                Vector3f oldPosition =
+                Vector oldPosition =
                     model.tags[model.currentFrame*model.numOfTags+i].position;
 
-                Vector3f nextPosition =
+                Vector nextPosition =
                     model.tags[model.nextFrame*model.numOfTags+i].position;
 
                 //interpolate via p(t) = p0 + t(p1 - p0)
-                Vector3f position = new Vector3f();
+                Vector position = new Vector();
                 position.x = oldPosition.x + model.t * (nextPosition.x - 
                     oldPosition.x);
                 position.y = oldPosition.y + model.t * (nextPosition.y - 
@@ -1337,8 +1337,8 @@ public class Md3Model implements Geometry {
                             object3d.texVerts[index].y);
                     }
 
-                    Vector3f point1 = object3d.verts[currentIndex + index];
-                    Vector3f point2 = object3d.verts[nextIndex + index];
+                    Vector point1 = object3d.verts[currentIndex + index];
+                    Vector point2 = object3d.verts[nextIndex + index];
                     
                     //interpolate
                     gl.vertex3f(
@@ -1484,7 +1484,7 @@ public class Md3Model implements Geometry {
         /**
          * the translation of the tag.
          */
-        Vector3f position = new Vector3f();
+        Vector position = new Vector();
         /**
          * the rotation of the tag.
          */
@@ -1623,15 +1623,15 @@ public class Md3Model implements Geometry {
         /**
          * the vertices of the object.
          */
-        Vector3f[] verts;
+        Vector[] verts;
         /**
          * the object's normals.
          */
-        Vector3f[] normals;
+        Vector[] normals;
         /**
          * the texture coordinates.
          */
-        Vector3f[] texVerts;
+        Vector[] texVerts;
         /**
          * the faces of the object.
          */

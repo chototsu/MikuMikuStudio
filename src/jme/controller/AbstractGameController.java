@@ -33,12 +33,12 @@
 package jme.controller;
 
 import jme.entity.Entity;
+import jme.math.Vector;
 import jme.system.KeyBindingManager;
 
 import org.lwjgl.Display;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>AbstractGameController</code> defines common keyboard, mouse and
@@ -189,7 +189,7 @@ public abstract class AbstractGameController
     /**
      * @see jme.controller.EntityController#setEntityPosition(Vector3f)
      */
-    public void setEntityPosition(Vector3f position) {
+    public void setEntityPosition(Vector position) {
         entity.setPosition(position);
     }
     
@@ -219,7 +219,7 @@ public abstract class AbstractGameController
     /**
      * @see jme.controller.EntityController#getEntityPosition()
      */
-    public Vector3f getEntityPosition() {
+    public Vector getEntityPosition() {
         return entity.getPosition();
     }
     
