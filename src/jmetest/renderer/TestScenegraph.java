@@ -33,6 +33,7 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
+import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.NodeController;
@@ -67,6 +68,10 @@ public class TestScenegraph extends SimpleGame {
 	private Box box1, box2, box3, box4, box5, box6;
 	private Node node1, node2, node3, node4, node5, node6;
 	private Text text;
+	private Node selectedNode;
+	private TextureState ts, ts2, ts3;
+
+	private KeyInput key;
 
 	/**
 	 * Entry point for the test,
@@ -86,6 +91,24 @@ public class TestScenegraph extends SimpleGame {
 		timer.update();
 		input.update(timer.getTimePerFrame());
 		scene.updateGeometricState(0.0f, true);
+		
+		if (KeyBindingManager
+				.getKeyBindingManager()
+				.isValidCommand("tex1")) {
+			selectedNode.setRenderState(ts);
+		}
+		
+		if (KeyBindingManager
+				.getKeyBindingManager()
+				.isValidCommand("tex2")) {
+			selectedNode.setRenderState(ts2);
+		}
+		
+		if (KeyBindingManager
+				.getKeyBindingManager()
+				.isValidCommand("tex3")) {
+			selectedNode.setRenderState(ts3);
+		}
 	}
 
 	/**
@@ -140,6 +163,21 @@ public class TestScenegraph extends SimpleGame {
 
 		display.setTitle("Test Scene Graph");
 		display.getRenderer().enableStatistics(true);
+		
+		InputSystem.createInputSystem(properties.getRenderer());
+		key = InputSystem.getKeyInput();
+		KeyBindingManager.getKeyBindingManager().setKeyInput(key);
+		KeyBindingManager.getKeyBindingManager().set(
+				"tex1",
+				KeyInput.KEY_8);
+		
+		KeyBindingManager.getKeyBindingManager().set(
+				"tex2",
+				KeyInput.KEY_9);
+		
+		KeyBindingManager.getKeyBindingManager().set(
+				"tex3",
+				KeyInput.KEY_0);
 	}
 
 	/**
@@ -222,7 +260,7 @@ public class TestScenegraph extends SimpleGame {
 		box1 = new Box("Box 1", min, max);
 		node1.attachChild(box1);
 		node1.setLocalTranslation(new Vector3f(0, 30, 0));
-
+		selectedNode = node1;
 		node2 = new Node("Node 2");
 		box2 = new Box("Box 2", min, max);
 		node2.attachChild(box2);
@@ -260,7 +298,7 @@ public class TestScenegraph extends SimpleGame {
                             node3.getWorldTranslation(), node6.getWorldTranslation()};
         Line line = new Line("Connection", lines, null, null, null);
         
-        TextureState ts = display.getRenderer().getTextureState();
+        ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(
                 TestBoxColor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
@@ -269,7 +307,25 @@ public class TestScenegraph extends SimpleGame {
                 true);
         ts.setTexture(t1);
         
-        scene.setRenderState(ts);
+        ts2 = display.getRenderer().getTextureState();
+        ts2.setEnabled(true);
+        Texture t2 = TextureManager.loadTexture(
+        		TestBoxColor.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true);
+        ts2.setTexture(t2);
+        
+        ts3 = display.getRenderer().getTextureState();
+        ts3.setEnabled(true);
+        Texture t3 = TextureManager.loadTexture(
+        		TestBoxColor.class.getClassLoader().getResource("jmetest/data/texture/snowflake.png"),
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true);
+        ts3.setTexture(t3);
+        
+        node1.setRenderState(ts);
 
 		scene.attachChild(node1);
         root.attachChild(line);
@@ -361,26 +417,32 @@ public class TestScenegraph extends SimpleGame {
 			case 1 :
 				input = nc1;
 				text.print("Selected Node: Node 1");
+				selectedNode = node1;
 				break;
 			case 2 :
 				input = nc2;
 				text.print("Selected Node: Node 2");
+				selectedNode = node2;
 				break;
 			case 3 :
 				input = nc3;
 				text.print("Selected Node: Node 3");
+				selectedNode = node3;
 				break;
 			case 4 :
 				input = nc4;
 				text.print("Selected Node: Node 4");
+				selectedNode = node4;
 				break;
 			case 5 :
 				input = nc5;
 				text.print("Selected Node: Node 5");
+				selectedNode = node5;
 				break;
 			case 6 :
 				input = nc6;
 				text.print("Selected Node: Node 6");
+				selectedNode = node6;
 				break;
 		}
 	}
