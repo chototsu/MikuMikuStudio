@@ -29,6 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  02/09/2004 - Renamed original WidgetViewport to WidgetViewRectangle. GOP
+ */ 
+ 
 package com.jme.renderer;
 
 import java.awt.image.BufferedImage;
@@ -79,7 +84,7 @@ import com.jme.util.LoggingSystem;
 import com.jme.widget.Widget;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.border.WidgetBorderType;
-import com.jme.widget.bounds.WidgetViewport;
+import com.jme.widget.bounds.WidgetViewRectangle;
 import com.jme.widget.button.WidgetButtonStateType;
 import com.jme.widget.panel.WidgetPanel;
 import com.jme.widget.scroller.WidgetScrollerButton;
@@ -90,7 +95,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.17 2004-02-03 22:44:48 darkprophet Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.18 2004-02-09 12:04:50 greggpatton Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -1209,14 +1214,14 @@ public class LWJGLRenderer implements Renderer {
     }
 
     private void initWidgetProjection(Widget widget) {
-        WidgetViewport v;
+        WidgetViewRectangle v;
 
         Widget p = widget.getWidgetParent();
 
         if (p != null) {
-            v = p.getViewport();
+            v = p.getViewRectangle();
         } else {
-            v = widget.getViewport();
+            v = widget.getViewRectangle();
         }
 
         int x = (int) v.getMinX();
@@ -1250,5 +1255,9 @@ public class LWJGLRenderer implements Renderer {
         GL.glPopMatrix();
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPopMatrix();
+        
+        if (this.camera != null) {
+            camera.update();
+        }
     }
 }
