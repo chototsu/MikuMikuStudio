@@ -658,7 +658,8 @@ public class SphericalSound extends SoundSpatial {
     /* (non-Javadoc)
      * @see com.jme.sound.scene.SoundSpatial#fireEvent(int)
      */
-    public void fireEvent(int event) {
+    public boolean fireEvent(int event) {
+        return false;
         // TODO Implement this
 
     }

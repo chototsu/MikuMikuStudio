@@ -140,5 +140,5 @@ public abstract class SoundSpatial {
 	
 	
 	
-	public abstract void fireEvent(int event);
+	public abstract boolean fireEvent(int event);
 }

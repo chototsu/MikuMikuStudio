@@ -132,12 +132,12 @@ public class HelloIntersection extends SimpleGame {
         targetSound = new ProgrammableSound();
         /** Make the sound softer */
         targetSound .setLooping(false);
-        targetSound.setMaxDistance(40f);
+        targetSound.setMaxDistance(140f);
 
         laserSound = new ProgrammableSound();
         laserSound.setLooping(false);
-//        laserSound.setPosition(cam.getLocation());
-
+        
+        
         /** locate laser and register it with the prog sound. */
 
         laserURL = HelloIntersection.class.getClassLoader().getResource(
@@ -226,10 +226,11 @@ public class HelloIntersection extends SimpleGame {
             if (Intersection.intersection(bullet.getWorldBound(), target
                     .getWorldBound())) {
                 System.out.println("OWCH!!!");
+                targetSound.setPosition(target.getLocalTranslation());
                 target.setLocalTranslation(new Vector3f(r.nextFloat() * 10, r
                         .nextFloat() * 10, r.nextFloat() * 10));
                 lifeTime = 0;
-                targetSound.setPosition(target.getWorldTranslation());
+                
                 snode.onEvent(hitEventID);
             }
         }

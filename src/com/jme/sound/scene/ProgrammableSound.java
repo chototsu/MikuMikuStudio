@@ -616,8 +616,12 @@ public class ProgrammableSound extends SoundSpatial {
         event = tmp;
     }
     
-    
-    public void fireEvent(int eventNumber) {
+    /**
+     * Used internally for firing an event on this sound playing object. 
+     * @return true if the event has been fired
+     * and false if this sound does not "know" the event 
+     */
+    public boolean fireEvent(int eventNumber) {
         if (event != null) {
             for (int i = 0; i < event.length; i+=2) {
                 if (event[i] == eventNumber) {
@@ -625,10 +629,12 @@ public class ProgrammableSound extends SoundSpatial {
                     source.stop();
                     updateWorldData(-1);
                     play();
-                    return;
+                    return true;
                 }
             }
         }
+        return false;
+        
     }
 
     

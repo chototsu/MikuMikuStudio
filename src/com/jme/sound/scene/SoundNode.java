@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes.
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: SoundNode.java,v 1.3 2004-06-17 15:54:36 anakan Exp $
+ * @version $Id: SoundNode.java,v 1.4 2004-08-04 10:37:15 anakan Exp $
  */
 public class SoundNode extends SoundSpatial{
     //List to hold the children.
@@ -160,9 +160,8 @@ public class SoundNode extends SoundSpatial{
             SoundSpatial child = (SoundSpatial) children.get(i);
             if (child != null) {
                 child.updateGeometricState(time, false);
-                if(eventStatusChanged){
-        		    child.fireEvent(eventNumber);
-        		    eventStatusChanged=false;
+                if(eventStatusChanged){        		    
+        		    eventStatusChanged=!child.fireEvent(eventNumber);
         		}
             }
         }
@@ -184,7 +183,8 @@ public class SoundNode extends SoundSpatial{
     }
 
    
-    public void fireEvent(int event) {
+    public boolean fireEvent(int event) {
+        return false;
         // dummy        
     }
     
