@@ -194,7 +194,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public void reset() {
         Display.resetDisplayMode();
     }
-    
+
     public void close() {
     	Window.destroy();
     }
@@ -241,6 +241,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                         useRGBA, useDepth, isRectangle, target, mipmaps));
     }
 
+
     /**
      * <code>getScreenCoordinates</code> translate world to screen coordinates.
      *
@@ -250,6 +251,20 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @author Joshua Slack -- rewritten for lwjgl .9
      */
     public Vector3f getScreenCoordinates(Vector3f worldPosition) {
+      return getScreenCoordinates(worldPosition, null);
+    }
+
+    /**
+     * <code>getScreenCoordinates</code> translate world to screen coordinates.
+     *
+     * @param worldPosition the world position to translate.
+     * @return the screen position.
+     * @author Marius
+     * @author Joshua Slack -- rewritten for lwjgl .9
+     */
+    public Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store) {
+        if (store == null) store = new Vector3f();
+
         // Modelview matrix
         FloatBuffer mvBuffer = BufferUtils.createFloatBuffer(16);
         GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, mvBuffer);
@@ -279,8 +294,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         GLU.gluProject(worldPosition.x, worldPosition.y, worldPosition.z,
                 mvArray, prArray, vpArray, result);
 
-        return new Vector3f(result[0], result[1], result[2]);
+        return store.set(result[0], result[1], result[2]);
     }
+
 
     /**
      * <code>getWorldCoordinates</code> translate screen to world coordinates.
@@ -292,6 +308,21 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @author Joshua Slack -- rewritten for lwjgl .9
      */
     public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos) {
+      return getWorldCoordinates(screenPosition, zPos, null);
+    }
+
+
+      /**
+       * <code>getWorldCoordinates</code> translate screen to world coordinates.
+       *
+       * @param screenPosition the screen coordinates to translate.
+       * @param zPos between 0 and 1.
+       * @return world position pointed to by screen coordinate.
+       * @author Marius
+       * @author Joshua Slack -- rewritten for lwjgl .9
+       */
+      public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos, Vector3f store) {
+        if (store == null) store = new Vector3f();
 
         // Modelview matrix
         FloatBuffer mvBuffer = BufferUtils.createFloatBuffer(16);
@@ -322,7 +353,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         GLU.gluUnProject(screenPosition.x, screenPosition.y, zPos, mvArray,
                 prArray, vpArray, result);
 
-        return new Vector3f(result[0], result[1], result[2]);
+        return store.set(result[0], result[1], result[2]);
     }
 
     /**

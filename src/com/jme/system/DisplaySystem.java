@@ -50,7 +50,7 @@ import com.jme.math.Vector2f;
  * <code>DisplaySystem</code>
  *
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.29 2004-05-26 13:35:11 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.30 2004-07-08 20:36:04 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -73,7 +73,7 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.29 2004-05-26 13:35:11 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.30 2004-07-08 20:36:04 renanse Exp $
  */
 public abstract class DisplaySystem {
 
@@ -237,7 +237,7 @@ public abstract class DisplaySystem {
      *
      */
     public abstract void reset();
-    
+
     /**
      * <code>close</code> shutdowns and destroys any window contexts.
      *
@@ -354,22 +354,43 @@ public abstract class DisplaySystem {
             int height, boolean useRGB, boolean useRGBA, boolean useDepth,
             boolean isRectangle, int target, int mipmaps);
 
-    /**
-     * Translate world to screen coordinates
-     *
-     * @param worldPosition
-     *            Vector3f
-     * @return Vector2f
-     */
-    public abstract Vector3f getScreenCoordinates(Vector3f worldPosition);
+        /**
+         * Translate world to screen coordinates
+         *
+         * @param worldPosition
+         *            Vector3f
+         * @return Vector2f
+         */
+        public abstract Vector3f getScreenCoordinates(Vector3f worldPosition);
 
-    /**
-     * Translate screen to world coordinates.
-     *
-     * @param screenPosition
-     *            Vector2f
-     * @return Vector3f
-     */
-    public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
-            float zPos);
+        /**
+         * Translate world to screen coordinates
+         *
+         * @param worldPosition Vector3f
+         * @param store Vector3f
+         * @return Vector3f
+         */
+        public abstract Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store);
+
+        /**
+         * Translate screen to world coordinates.
+         *
+         * @param screenPosition
+         *            Vector2f
+         * @param zPos float
+         * @return Vector3f
+         */
+        public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
+                float zPos);
+
+  /**
+   * Translate screen to world coordinates.
+   *
+   * @param screenPosition Vector2f
+   * @param zPos float
+   * @param store Vector3f
+   * @return Vector3f
+   */
+  public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
+          float zPos, Vector3f store);
 }

@@ -149,5 +149,7 @@ class DummyDisplaySystem extends DisplaySystem{
     public WidgetFont getFont(String fontName) {return null;}
     public TextureRenderer createTextureRenderer(int width, int height, boolean useRGB, boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps) {return null;}
     public Vector3f getScreenCoordinates(Vector3f worldPosition) {return null;}
+    public Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store) {return null;}
     public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos) {return null;}
+    public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos, Vector3f store) {return null;}
 }
