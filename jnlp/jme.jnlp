@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" 
+      codebase="http://www.bethunerobotics.com/eric/"
+      href="jme.jnlp">
+     
+  <information>
+    <title>jME</title>
+    <vendor>Mojo Monkey Coding</vendor>
+    <homepage href="http://www.mojomonkeycoding.com"/>
+    <icon href="MissileAvatar.png"/>
+    <description>jMonkey Engine</description>
+    <description kind="short">jME provides a high performance scenegraph-based game engine.</description>
+    <offline-allowed/>
+  </information>
+  
+  <security>
+      <all-permissions/>
+  </security>
+
+  <resources>
+    <jar href="lwjgl.jar"/>
+    <jar href="jme.jar" />
+  </resources>
+    
+  <!-- Need to add the lwjgl resources for Linux and OSX -->
+  <resources os="Windows">
+  	<j2se version="1.4+"/>
+    <nativelib href = "lwjgl-windows.jar" />
+    <nativelib href = "openal-windows.jar" />
+  </resources>
+  <resources os="Linux" arch="i386">
+    <j2se version="1.4+"/> 
+  </resources>   
+  
+  <component-desc/>
+</jnlp>
