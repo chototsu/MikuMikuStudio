@@ -39,11 +39,21 @@ import com.jme.renderer.*;
 /**
  * <code>ContinuousLodNode</code>
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.1 2004-04-06 22:13:17 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.2 2004-04-06 22:49:34 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int m_iCurrentRecord, m_iTargetRecord;
   CollapseRecord[] m_akRecord;
+
+  public ClodMesh(
+      String name,
+      TriMesh data,
+      CollapseRecord[] records) {
+
+    this(name, data.getVertices(), data.getNormals(), data.getColors(),
+          data.getTextures(), data.getIndices(), records);
+
+  }
 
   public ClodMesh(
       String name,
@@ -66,28 +76,12 @@ public class ClodMesh extends TriMesh {
       m_akRecord = creator.getRecords();
     }
 
-    updateModelBound();
-  }
 
-  public ClodMesh(
-      String name,
-      TriMesh data,
-      CollapseRecord[] records) {
-
-    super(name, data.getVertices(), data.getNormals(), data.getColors(),
-          data.getTextures(), data.getIndices());
-
-    m_iTargetRecord = 0;
-    m_iCurrentRecord = 0;
-
-    if (records != null && records.length > 0) {
-      m_akRecord = records;
-    } else {
-      ClodCreator creator = new ClodCreator(vertex, normal, color, texture[0],
-                                            indices);
-      m_akRecord = creator.getRecords();
-    }
-
+    updateColorBuffer();
+    updateNormalBuffer();
+    updateVertexBuffer();
+    updateTextureBuffer();
+    updateIndexBuffer();
     updateModelBound();
   }
 

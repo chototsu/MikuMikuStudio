@@ -61,7 +61,7 @@ import com.jme.scene.shape.Disk;
 /**
  * <code>TestClodMesh</code> shows off the use of the ClodMesh in jME.
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.1 2004-04-06 22:13:19 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.2 2004-04-06 22:49:35 renanse Exp $
  */
 public class TestClodMesh extends VariableTimestepGame {
   private Camera cam;
@@ -216,9 +216,13 @@ public class TestClodMesh extends VariableTimestepGame {
     // setup the imposter node...
     // we first determine a good texture size (must be equal to or less than the display size)
     TriMesh child = (TriMesh)model.getChild(0);
-    iNode = new ClodMesh("model", new Disk("disk", 10, 10, 8), null);
+    iNode = new ClodMesh("model", new Disk("disk", 2, 5, 8), null);
 //    iNode = new ClodMesh("model", child, null);
-    iNode.setRenderState(ts);
+//    iNode.setRenderState(ts);
+    com.jme.scene.state.lwjgl.LWJGLWireframeState bs =
+            new com.jme.scene.state.lwjgl.LWJGLWireframeState();
+        bs.setEnabled(true);
+    iNode.setRenderState(bs);
 
     scene.attachChild(iNode);
 
