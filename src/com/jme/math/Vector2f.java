@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.7 2004-05-15 19:18:28 renanse Exp $
+ * @version $Id: Vector2f.java,v 1.8 2004-06-14 07:55:41 cep21 Exp $
  */
 public class Vector2f {
     /**
@@ -162,6 +162,31 @@ public class Vector2f {
      */
     public Vector3f cross(Vector2f v) {
         return new Vector3f(0, 0, ((x * v.y) - (y * v.x)));
+    }
+
+    /**
+     * Sets this vector to the interpolation by changeAmnt from this to the finalVec
+     * this=(1-changeAmnt)*this + changeAmnt * finalVec
+     * @param finalVec The final vector to interpolate towards
+     * @param changeAmnt An amount between 0.0 - 1.0 representing a precentage
+     *  change from this towards finalVec
+     */
+    public void interpolate(Vector2f finalVec, float changeAmnt) {
+        this.x=(1-changeAmnt)*this.x + changeAmnt*finalVec.x;
+        this.y=(1-changeAmnt)*this.y + changeAmnt*finalVec.y;
+    }
+
+    /**
+     * Sets this vector to the interpolation by changeAmnt from beginVec to finalVec
+     * this=(1-changeAmnt)*beginVec + changeAmnt * finalVec
+     * @param beginVec The begining vector (delta=0)
+     * @param finalVec The final vector to interpolate towards (delta=1)
+     * @param changeAmnt An amount between 0.0 - 1.0 representing a precentage
+     *  change from beginVec towards finalVec
+     */
+    public void interpolate(Vector2f beginVec,Vector2f finalVec, float changeAmnt) {
+        this.x=(1-changeAmnt)*beginVec.x + changeAmnt*finalVec.x;
+        this.y=(1-changeAmnt)*beginVec.y + changeAmnt*finalVec.y;
     }
 
     /**
