@@ -60,7 +60,7 @@ public class LoadingScene implements Scene {
 	private Timer timer;
 	private SceneEnabledGame demo;
 	private Node loadingNode;
-	private static boolean firstTime= true;
+	
 
 	public void init(SceneEnabledGame game) {
 		this.demo= game;
@@ -129,6 +129,7 @@ public class LoadingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#getLinkedSceneClassName()
 	 */
 	public String getLinkedSceneClassName() {
+		
 		return "com.jme.test.demo.SoundPlayingScene";
 	}
 

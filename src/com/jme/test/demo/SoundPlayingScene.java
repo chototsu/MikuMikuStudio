@@ -69,10 +69,10 @@ public class SoundPlayingScene implements Scene {
 	private Text text;
 	private float timeElapsed;
 	private Timer timer;
-	private Vector3f soundPosition= new Vector3f(-50, 0, 0);
+	private Vector3f soundPosition= new Vector3f(-30, 0, 0);
 	private SoundSystem soundRenderer;
 
-	private Entity backgroundMusic, e;
+	private Entity  e;
 
 	private SceneEnabledGame game;
 
@@ -104,13 +104,13 @@ public class SoundPlayingScene implements Scene {
 		text.setRenderState(as1);
 
 		soundRenderer= game.getSoundSystem();
-		backgroundMusic= new Entity("BACKGROUND");
-		soundRenderer.addSource(backgroundMusic);
-		soundRenderer.getPlayer(backgroundMusic).setPosition(soundPosition);
-		soundRenderer.getPlayer(backgroundMusic).setMaxDistance(30.0f);
+		e= new Entity("back");
+		soundRenderer.addSource(e);
+		soundRenderer.getPlayer(e).setPosition(soundPosition);
+		soundRenderer.getPlayer(e).setMaxDistance(30.0f);
 		soundLoader= new OnDemandSoundLoader(10);
 		soundLoader.start();
-		soundLoader.queueSound(backgroundMusic.getId(), "data/sound/0.mp3");
+		soundLoader.queueSound(e.getId(), "data/sound/0.mp3");
 		soundNode= new Node();
 		soundNode.attachChild(text);
 		status= Scene.LOADING_NEXT_SCENE;
@@ -154,15 +154,17 @@ public class SoundPlayingScene implements Scene {
 		if (soundNode == null) {
 			return false;
 		}
-		if (EffectRepository.getRepository().getSource(backgroundMusic.getId()) != null) {
+		if (EffectRepository.getRepository().getSource(e.getId()) != null) {
 			status= READY;
 		} else {
 			return false;
 		}
 		timer.update();
 		timeElapsed += timer.getTimePerFrame();
-		if (soundRenderer.getPlayer(backgroundMusic).getStatus() != IPlayer.PLAYING) {
-			soundRenderer.getPlayer(backgroundMusic).play(backgroundMusic.getId());
+		if (soundRenderer.getPlayer(e).getStatus() != IPlayer.PLAYING) {
+			
+			soundRenderer.getPlayer(e).play(e.getId());
+			soundRenderer.getPlayer(e).setVolume(1.0f);
 		}
 		if (toRight) {
 			soundPosition.x += 0.2;
@@ -182,10 +184,15 @@ public class SoundPlayingScene implements Scene {
 		}
 
 		soundPosition.y= (float)Math.sin(soundPosition.x);
-		soundRenderer.getPlayer(backgroundMusic).setPosition(soundPosition);
-		if (timeElapsed > 0.5) {
-			timeElapsed= 0;
+		soundRenderer.getPlayer(e).setPosition(soundPosition);
+		if (timeElapsed <10) {
+			
 			text.print("Position " + soundPosition);
+		}
+		if (timeElapsed > 10) {
+					timeElapsed= 0;
+					status= LOAD_NEXT_SCENE;
+					
 		}
 
 		t.setLocalTranslation(soundPosition);
@@ -206,8 +213,8 @@ public class SoundPlayingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#cleanup()
 	 */
 	public void cleanup() {
-		soundRenderer.getPlayer(backgroundMusic).stop();
-		EffectRepository.getRepository().remove(backgroundMusic.getId());
+		soundRenderer.getPlayer(e).stop();
+		EffectRepository.getRepository().remove(e.getId());
 		soundNode= null;
 	}
 
@@ -223,7 +230,7 @@ public class SoundPlayingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#getLinkedSceneClassName()
 	 */
 	public String getLinkedSceneClassName() {
-		return "com.jme.test.demo.LoadingScene";
+		return "com.jme.test.demo.EAXTestScene";
 	}
 
 	/* (non-Javadoc)

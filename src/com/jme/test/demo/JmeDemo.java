@@ -103,7 +103,7 @@ public class JmeDemo extends SceneEnabledGame {
 			/*****************************************************************
 			* 						INIT SOUND SYSTEM						 *
 			 *****************************************************************/
-			soundSystem= SoundSystem.getSoundEffectSystem("LWJGL");
+			soundSystem= SoundSystem.getSoundEffectSystem("LWJGL", true);
 			input= new InputController();
 			/*****************************************************************
 			* 						INIT INPUT SYSTEM						 *
