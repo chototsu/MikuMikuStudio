@@ -22,7 +22,8 @@ import java.net.MalformedURLException;
 /**
  * Started Date: Jul 17, 2004<br><br>
  *
- * Converts .obj files into .jme binary format.
+ * Converts .obj files into .jme binary format.  In order for ObjToJme to find the .mtl library, you must specify the
+ * "mtllib" tag to the baseURL where the mtl libraries are to be found.  Somewhat similar to this.setProperty("mtllib",objFile);
  * 
  * @author Jack Lindamood
  */

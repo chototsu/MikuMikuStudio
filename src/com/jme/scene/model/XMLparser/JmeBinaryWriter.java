@@ -73,6 +73,7 @@ public class JmeBinaryWriter {
      * @throws IOException If anything wierd happens.
      */
     public void writeScene(Node scene,OutputStream bin) throws IOException {
+        int DEBUGGGG;// TODO
         myOut=new DataOutputStream(bin);
         sharedObjects.clear();
         entireScene.clear();
@@ -944,8 +945,13 @@ public class JmeBinaryWriter {
         myOut.writeByte(BinaryFormatConstants.DATA_V2FARRAY);
         myOut.writeInt(array.length);
         for (int i=0;i<array.length;i++){
-            myOut.writeFloat(array[i].x);
-            myOut.writeFloat(array[i].y);
+            if (array[i]==null){
+                myOut.writeFloat(Float.NaN);
+                myOut.writeFloat(Float.NaN);
+            }else{
+                myOut.writeFloat(array[i].x);
+                myOut.writeFloat(array[i].y);
+            }
         }
     }
 

@@ -793,6 +793,7 @@ public class JmeBinaryReader {
         Vector2f[] array=new Vector2f[length];
         for (int i=0;i<length;i++){
             array[i]=new Vector2f(myIn.readFloat(),myIn.readFloat());
+            if (array[i].x==Float.NaN && array[i].y==Float.NaN) array[i]=null;
         }
         return array;
     }
