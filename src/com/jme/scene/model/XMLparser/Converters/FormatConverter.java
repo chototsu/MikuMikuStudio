@@ -46,7 +46,7 @@ abstract public class FormatConverter {
             return;
         }
         try {
-            System.out.println("Converting file " + inFile + " to " + outFile);
+            System.out.println("Converting file " + inFile.getCanonicalPath() + " to " + outFile.getCanonicalPath());
             convert(new FileInputStream(inFile),new FileOutputStream(outFile));
         } catch (IOException e) {
             System.err.println("Unable to convert:" + e);
