@@ -5,7 +5,6 @@ import org.xml.sax.SAXException;
 
 import java.util.Stack;
 import java.util.Hashtable;
-import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -22,10 +21,13 @@ import com.jme.math.Quaternion;
 import com.jme.bounding.BoundingBox;
 import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
+import com.jme.util.TextureManager;
 
 /**
  * Started Date: May 31, 2004
- * SAX Stack processor.  Helper class for SAXReader
+ * SAX Stack processor.  Helper class for SAXReader.  Increase Stack is called whenever a new element is encountered
+ * in the XML file, decrease stack is called at the end of that element.  Hashtable is to use element sharing, Stack
+ * is to keep track of where I am in the XML file.
  * 
  * @author Jack Lindamood
  */
@@ -190,10 +192,12 @@ class SAXStackProcessor {
         TextureState t=renderer.getTextureState();
         try {
             if (atts.getValue("URL")!=null && !atts.getValue("URL").equals("null")){
-                t.loadFromFile(new URL(atts.getValue("URL")),Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+                t.setTexture(TextureManager.loadTexture(new URL(atts.getValue("URL")),
+                        Texture.MM_LINEAR,Texture.FM_LINEAR,true));
             }
             if (atts.getValue("file")!=null && !atts.getValue("file").equals("null"))
-                t.loadFromFile(new File(atts.getValue("file")).toURI().toURL(),Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+                t.setTexture(TextureManager.loadTexture(atts.getValue("file"),
+                        Texture.MM_LINEAR,Texture.FM_LINEAR,true));
         } catch (MalformedURLException e) {
             throw new SAXException("Bad file name: " + atts.getValue("file") + "*" + atts.getValue("URL"));
         }
@@ -349,5 +353,11 @@ class SAXStackProcessor {
 
     public Node fetchOriginal() {
         return myScene;
+    }
+
+    public void reInitialize() {
+        myScene=null;
+        s.clear();
+        shares.clear();
     }
 }
