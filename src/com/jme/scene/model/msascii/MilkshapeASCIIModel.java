@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the 
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.11 2004-02-24 22:05:21 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.12 2004-02-25 18:17:15 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -71,6 +71,8 @@ public class MilkshapeASCIIModel extends Model {
 	private DeformationJointController jointController;
 	//the path to the file.
 	private String textureDirectory = "";
+	
+	private ColorRGBA color = new ColorRGBA(1,1,1,1);
 
 	/**
 	 * Constructor creates a new <code>MilkshapeASCIIModel</code> object. 
@@ -284,6 +286,11 @@ public class MilkshapeASCIIModel extends Model {
 			for (int j = 0; j < numberVertices; j++) {
 				vertex[j] = vertices[j];
 			}
+			
+			ColorRGBA[] setColors = new ColorRGBA[vertices.length];
+			for(int j = 0; j < numberVertices; j++) {
+				setColors[j] = color;
+			}
 
 			//assign all the mesh information to be rendered as a TriMesh.
 			mesh.setOriginalVertices(vertices);
@@ -291,6 +298,7 @@ public class MilkshapeASCIIModel extends Model {
 			mesh.setJointIndices(jointIndices);
 			mesh.setTextures(tex);
 			mesh.setNormals(norms);
+			mesh.setColors(setColors);
 			mesh.setIndices(ind);
 
 			//set the model bound and attach it to this node.
