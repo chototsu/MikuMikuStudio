@@ -49,7 +49,7 @@ import com.jme.math.Vector2f;
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.21 2004-04-19 22:05:33 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.22 2004-04-20 20:47:56 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -72,7 +72,7 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.21 2004-04-19 22:05:33 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.22 2004-04-20 20:47:56 renanse Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;
@@ -335,5 +335,5 @@ public abstract class DisplaySystem {
      * @param screenPosition Vector2f
      * @return Vector3f
      */
-    public abstract Vector3f getWorldCoordinates(Vector2f screenPosition);
+    public abstract Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos);
   }

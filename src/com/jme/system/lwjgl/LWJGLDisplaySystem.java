@@ -70,7 +70,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.7 2004-04-19 22:33:07 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.8 2004-04-20 20:47:56 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -328,7 +328,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @author Marius
      * @author Joshua Slack -- rewritten for lwjgl .9
      */
-    public Vector3f getWorldCoordinates(Vector2f screenPosition) {
+    public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos) {
 
       // Modelview matrix
       FloatBuffer mvBuffer = BufferUtils.createFloatBuffer(16);
@@ -356,7 +356,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
       GLU.gluUnProject(
               screenPosition.x,
               screenPosition.y,
-              0, // Take the far plane
+              zPos,
               mvArray,
               prArray,
               vpBuffer.array(),
