@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.13 2004-02-26 22:40:34 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.14 2004-02-27 23:51:41 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -205,6 +205,27 @@ public class BoundingSphere implements BoundingVolume {
 
         Vector3f newCenter = ((rotate.mult(center)).multLocal(scale)).addLocal(translate);
         return new BoundingSphere(scale * radius, newCenter);
+    }
+
+    /**
+     * <code>transform</code> modifies the center of the sphere to reflect the
+     * change made via a rotation, translation and scale.
+     * @param rotate the rotation change.
+     * @param translate the translation change.
+     * @param scale the size change.
+     * @param store sphere to store result in
+     */
+    public BoundingVolume transform(
+        Matrix3f rotate,
+        Vector3f translate,
+        float scale,
+        BoundingVolume store) {
+
+        BoundingSphere sphere = (BoundingSphere)store;
+        if (sphere == null) sphere = new BoundingSphere();
+        sphere.center = ((rotate.mult(center)).multLocal(scale)).addLocal(translate);
+        sphere.radius = scale*radius;
+        return sphere;
     }
 
     /**
