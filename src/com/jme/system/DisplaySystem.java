@@ -55,111 +55,123 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.8 2004-01-22 21:48:55 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.9 2004-01-25 02:14:38 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
-    private static DisplaySystem display;
-    protected int width, height;
-    
-    /**
-     * The list of current implemented rendering APIs that subclass Display.
-     */
-    public static final String[] rendererNames = {"LWJGL"};
-    
-    /**
-     * 
-     * <code>getDisplaySystem</code> is a factory method that creates the
-     * appropriate display system specified by the key parameter. If the
-     * key given is not a valid identifier for a specific display system,
-     * null is returned. For valid display systems see the
-     * <code>rendererNames</code> array.
-     * @param key the display system to use.
-     * @return the appropriate display system specified by the key.
-     */
-    public static DisplaySystem getDisplaySystem(String key) {
-        if("LWJGL".equalsIgnoreCase(key)) {
-            display = new LWJGLDisplaySystem();
-            return display;
-        }
-        
-        return null;
-    }
-    
-    public static DisplaySystem getDisplaySystem() {
-        return display;
-    }
+	private static DisplaySystem display;
+	protected int width, height;
 
-    public int getWidth() {
-        return width;
-    }
-    
-    public int getHeight() {
-        return height;
-    }
-    
-    public abstract void setTitle(String title);
+	/**
+	 * The list of current implemented rendering APIs that subclass Display.
+	 */
+	public static final String[] rendererNames = { "LWJGL" };
 
-    /**
-     * <code>createWindow</code> creates a window with the desired settings. 
-     * The width and height defined by w and h define the size of the window
-     * if fullscreen is false, otherwise it defines the resolution of the
-     * fullscreen display. The color depth is defined by bpp. The 
-     * implementing class should only allow 16, 24, and 32. The monitor 
-     * frequency is defined by the frq parameter and should not exceed the
-     * capabilities of the connected hardware, the implementing class should
-     * attempt to assure this does not happen. Lastly, the boolean flag fs 
-     * determines if the display should be windowed or fullscreen. If false,
-     * windowed is chosen. This window will be placed in the center of the
-     * screen initially. If true fullscreen mode will be entered with the
-     * appropriate settings.
-     * @param w the width/horizontal resolution of the display.
-     * @param h the height/vertical resolution of the display.
-     * @param bpp the color depth of the display.
-     * @param frq the frequency of refresh of the display.
-     * @param fs flag determining if fullscreen is to be used or not. True will
-     *      use fullscreen, false will use windowed mode.
-     */
-    public abstract void createWindow(int w, int h, int bpp, int frq, boolean fs);
-    
-    /**
-     * <code>getRenderer</code> returns the <code>Renderer</code> implementation
-     * that is compatible with the chosen <code>DisplaySystem</code>. For 
-     * example, if <code>LWJGLDisplaySystem</code> is used, the returned 
-     * <code>Renderer</code> will be </code>LWJGLRenderer</code>.
-     * @see com.jme.renderer.Renderer
-     * @return the appropriate <code>Renderer</code> implementation that is
-     *      compatible with the used <code>DisplaySystem</code>.
-     */
-    public abstract Renderer getRenderer();
-    
-    /**
-     * <code>isCreated</code> returns the current status of the display
-     * system. If the window and renderer are created, true is returned,
-     * otherwise false.
-     * 
-     * @return whether the display system is created.
-     */
-    public abstract boolean isCreated();
-    
-    /**
-     * <code>isClosing</code> notifies if the window is currently closing.
-     * This could be caused via the application itself or external interrupts
-     * such as alt-f4 etc.
-     * @return true if the window is closing, false otherwise.
-     */
-    public abstract boolean isClosing();
-    
-    /**
-     * <code>reset</code> cleans up the display system for closing or restarting.
-     *
-     */
-    public abstract void reset();
+	/**
+	 * 
+	 * <code>getDisplaySystem</code> is a factory method that creates the
+	 * appropriate display system specified by the key parameter. If the
+	 * key given is not a valid identifier for a specific display system,
+	 * null is returned. For valid display systems see the
+	 * <code>rendererNames</code> array.
+	 * @param key the display system to use.
+	 * @return the appropriate display system specified by the key.
+	 */
+	public static DisplaySystem getDisplaySystem(String key) {
+		if ("LWJGL".equalsIgnoreCase(key)) {
+			display = new LWJGLDisplaySystem();
+			return display;
+		}
 
-    /**
-     * @param fontName - name of the font to loaded
-     * @return an instance of the requested font, null of 
-     *      the isn't loaded.
-     */
-    public abstract WidgetFont getFont(String fontName);
-    
+		return null;
+	}
+
+	public static DisplaySystem getDisplaySystem() {
+		return display;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	/**
+	 * <code>isValidDisplayMode</code> determines if the given parameters constitute
+	 * a valid display mode on this system. Returning true does not necessarily
+	 * guarantee that the system is capable of running in the specified display mode,
+	 * merely that it <i>believes</i> it is possible.
+	 * @param width the width/horizontal resolution of the display.
+	 * @param height the height/vertical resolution of the display.
+	 * @param bpp the bit depth of the display.
+	 * @param freq the frequency of refresh of the display (in Hz).
+	 */
+	public abstract boolean isValidDisplayMode(int width, int height, int bpp, int freq);
+	
+	public abstract void setTitle(String title);
+
+	/**
+	 * <code>createWindow</code> creates a window with the desired settings. 
+	 * The width and height defined by w and h define the size of the window
+	 * if fullscreen is false, otherwise it defines the resolution of the
+	 * fullscreen display. The color depth is defined by bpp. The 
+	 * implementing class should only allow 16, 24, and 32. The monitor 
+	 * frequency is defined by the frq parameter and should not exceed the
+	 * capabilities of the connected hardware, the implementing class should
+	 * attempt to assure this does not happen. Lastly, the boolean flag fs 
+	 * determines if the display should be windowed or fullscreen. If false,
+	 * windowed is chosen. This window will be placed in the center of the
+	 * screen initially. If true fullscreen mode will be entered with the
+	 * appropriate settings.
+	 * @param w the width/horizontal resolution of the display.
+	 * @param h the height/vertical resolution of the display.
+	 * @param bpp the color depth of the display.
+	 * @param frq the frequency of refresh of the display.
+	 * @param fs flag determining if fullscreen is to be used or not. True will
+	 *      use fullscreen, false will use windowed mode.
+	 */
+	public abstract void createWindow(int w, int h, int bpp, int frq, boolean fs);
+
+	/**
+	 * <code>getRenderer</code> returns the <code>Renderer</code> implementation
+	 * that is compatible with the chosen <code>DisplaySystem</code>. For 
+	 * example, if <code>LWJGLDisplaySystem</code> is used, the returned 
+	 * <code>Renderer</code> will be </code>LWJGLRenderer</code>.
+	 * @see com.jme.renderer.Renderer
+	 * @return the appropriate <code>Renderer</code> implementation that is
+	 *      compatible with the used <code>DisplaySystem</code>.
+	 */
+	public abstract Renderer getRenderer();
+
+	/**
+	 * <code>isCreated</code> returns the current status of the display
+	 * system. If the window and renderer are created, true is returned,
+	 * otherwise false.
+	 * 
+	 * @return whether the display system is created.
+	 */
+	public abstract boolean isCreated();
+
+	/**
+	 * <code>isClosing</code> notifies if the window is currently closing.
+	 * This could be caused via the application itself or external interrupts
+	 * such as alt-f4 etc.
+	 * @return true if the window is closing, false otherwise.
+	 */
+	public abstract boolean isClosing();
+
+	/**
+	 * <code>reset</code> cleans up the display system for closing or restarting.
+	 *
+	 */
+	public abstract void reset();
+
+	/**
+	 * @param fontName - name of the font to loaded
+	 * @return an instance of the requested font, null of 
+	 *      the isn't loaded.
+	 */
+	public abstract WidgetFont getFont(String fontName);
+
 }
