@@ -47,7 +47,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.21 2004-02-28 03:02:38 renanse Exp $
+ * @version $Id: Spatial.java,v 1.22 2004-02-28 15:44:14 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -277,7 +277,7 @@ public abstract class Spatial implements Serializable {
     public void updateWorldData(float time) {
         //update spatial state via controllers
         Object controller;
-        for (int i = 0; i < geometricalControllers.size(); i++) {
+        for (int i = 0, gSize = geometricalControllers.size(); i < gSize; i++) {
             if ((controller = geometricalControllers.get(i)) != null) {
                 ((Controller) controller).update(time);
             }
@@ -286,7 +286,7 @@ public abstract class Spatial implements Serializable {
         //update render state via controllers
         Controller[] controls;
         RenderState rs;
-        for (int i = 0; i < renderStateList.length; i++) {
+        for (int i = 0, rLength = renderStateList.length; i < rLength; i++) {
             rs = renderStateList[i];
             if (rs != null) {
                 controls = rs.getControllers();
@@ -297,6 +297,7 @@ public abstract class Spatial implements Serializable {
                 }
             }
         }
+
         // update spatial controllers
         boolean computesWorldTransform = false;
 
