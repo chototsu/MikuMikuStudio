@@ -32,23 +32,16 @@
 package jmetest.effects;
 
 import com.jme.app.SimpleGame;
-import com.jme.bounding.BoundingSphere;
-import com.jme.effects.water.*;
+import com.jme.effects.water.WaterSurface;
 import com.jme.image.Texture;
-import com.jme.math.FastMath;
-import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.TextureState;
-import com.jme.util.TextureManager;
-import com.jme.scene.shape.Box;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestWaterSurface.java,v 1.3 2004-04-25 20:33:19 mojomonkey Exp $
+ * @version $Id: TestWaterSurface.java,v 1.4 2004-04-25 21:17:55 renanse Exp $
  */
 public class TestWaterSurface extends SimpleGame {
 
@@ -72,6 +65,7 @@ public class TestWaterSurface extends SimpleGame {
     water = new WaterSurface("water", 64, 64, .1f);
     water.copyTextureCoords(0,1);
     rootNode.attachChild(water);
+    lightState.setEnabled(false);
 
     TextureState ts = display.getRenderer().getTextureState();
     ts.setEnabled(true);
