@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.1 2004-01-25 00:58:27 greggpatton Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.2 2004-01-25 01:12:25 greggpatton Exp $
  */
 public class TestWidgetButtonLightSwitch extends AbstractGame {
     static String STARTED_STATE_STRING = " Stop ";
@@ -117,7 +117,7 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
             msgPanel.setBgColor(null);
             msgPanel.setInsets(new WidgetInsets(0, 0, 0, 5));
 
-            fps = new WidgetLabel(WidgetAlignmentType.ALIGN_CENTER);
+            fps = new WidgetLabel("         ", WidgetAlignmentType.ALIGN_CENTER);
             fps.setFgColor(new ColorRGBA());
             fps.setBgColor(null);
             fps.setInsets(new WidgetInsets(0, 0, 5, 0));
