@@ -32,27 +32,19 @@
 package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
-import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.TextureRenderer;
-import com.jme.scene.Node;
-import com.jme.scene.shape.Box;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.util.TextureManager;
-import com.jme.renderer.Renderer;
 import com.jme.scene.Skybox;
+import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.Torus;
-import com.jme.bounding.BoundingBox;
+import com.jme.util.TextureManager;
 
 /**
  * <code>TestSkybox</code>
  * @author Joshua Slack
- * @version $Id: TestSkybox.java,v 1.1 2004-07-03 21:45:23 renanse Exp $
+ * @version $Id: TestSkybox.java,v 1.2 2004-07-03 22:24:41 renanse Exp $
  */
 public class TestSkybox extends SimpleGame {
 
