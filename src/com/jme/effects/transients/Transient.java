@@ -32,17 +32,18 @@ package com.jme.effects.transients;
 import com.jme.image.Texture;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.state.TextureState;
 /**
  * <code>Transient</code>
  * 
  * @author Ahmed
- * @version $Id: Transient.java,v 1.2 2004-04-04 18:03:08 darkprophet Exp $
+ * @version $Id: Transient.java,v 1.3 2004-04-04 18:16:51 darkprophet Exp $
  *          provides a base at which furthur effects can be made of
  */
 public class Transient extends Node {
 	
 	private int maxNumOfStages, currentStage;
-	private Texture inTex, outTex;
+	private TextureState inTex, outTex;
 	
 	public Transient(String name, Texture out, Texture in) {
 		super(name);
@@ -64,19 +65,19 @@ public class Transient extends Node {
 		maxNumOfStages = num;
 	}
 
-	protected Texture getOutTexture() {
+	protected TextureState getOutTexture() {
 		return outTex;
 	}
 	
-	protected void setOutTexture(Texture out) {
+	protected void setOutTexture(TextureState out) {
 		outTex = out;
 	}
 	
-	protected Texture getInTexture() {
+	protected TextureState getInTexture() {
 		return inTex;
 	}
 	
-	protected void setInTexture(Texture in) {
+	protected void setInTexture(TextureState in) {
 		inTex = in;
 	}
 }
