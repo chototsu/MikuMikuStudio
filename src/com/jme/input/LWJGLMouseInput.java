@@ -41,7 +41,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API. 
  * 
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.1 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.2 2003-10-26 17:56:36 mojomonkey Exp $
  */
 public class LWJGLMouseInput implements MouseInput {
     
@@ -81,6 +81,14 @@ public class LWJGLMouseInput implements MouseInput {
      */
     public String getButtonName(int buttonIndex) {
         return Mouse.getButtonName(buttonIndex);
+    }
+    
+    /**
+     * <code>isButtonDown</code> tests if a given button is pressed or not.
+     * @see com.jme.input.MouseInput#isButtonDown(int)
+     */
+    public boolean isButtonDown(int buttonCode) {
+        return Mouse.isButtonDown(buttonCode);
     }
 
     /**

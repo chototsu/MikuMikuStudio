@@ -35,7 +35,7 @@ package com.jme.input;
  * <code>MouseInput</code> defines an interface to communicate with the mouse
  * input device. 
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.2 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: MouseInput.java,v 1.3 2003-10-26 17:56:36 mojomonkey Exp $
  */
 public interface MouseInput {
     
@@ -54,6 +54,15 @@ public interface MouseInput {
      * @return the code for the given button name.
      */
     public int getButtonIndex(String buttonName);
+    
+    /**
+     * 
+     * <code>isButtonDown</code> returns true if a given button is pressed,
+     * false if it is not pressed.
+     * @param buttonCode the button code to check.
+     * @return true if the button is pressed, false otherwise.
+     */
+    public boolean isButtonDown(int buttonCode);
     
     /**
      * 
