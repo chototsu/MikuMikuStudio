@@ -38,7 +38,6 @@ package com.jme.ui;
 
 import com.jme.math.Vector2f;
 import com.jme.renderer.Renderer;
-import com.jme.scene.state.TextureState;
 
 /**
  * UICharacter is used by UIText to create text strings on screen.

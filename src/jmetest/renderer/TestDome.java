@@ -36,8 +36,6 @@ import jmetest.renderer.TestBoxColor;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.shape.Dome;
-import com.jme.scene.shape.Sphere;
-import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.image.Texture;

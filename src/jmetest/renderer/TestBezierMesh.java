@@ -47,14 +47,12 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.math.Quaternion;
 import com.jme.math.FastMath;
-import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
-import com.jme.scene.state.RenderState;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.19 2004-08-14 00:50:05 cep21 Exp $
+ * @version $Id: TestBezierMesh.java,v 1.20 2005-01-03 19:00:13 renanse Exp $
  */
 public class TestBezierMesh extends SimpleGame {
   private TriMesh t;

@@ -9,7 +9,6 @@ import com.jme.image.Texture;
 import com.jme.input.KeyInput;
 import com.jme.input.action.KeyInputAction;
 import com.jme.input.action.InputActionEvent;
-import com.jme.intersection.Intersection;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;

@@ -38,7 +38,6 @@ import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.CompositeSphere;
-import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
@@ -46,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCompositeSphere</code>
  * @author Mark Powell
- * @version $Id: TestCompositeSphere.java,v 1.1 2004-11-30 00:32:04 mojomonkey Exp $
+ * @version $Id: TestCompositeSphere.java,v 1.2 2005-01-03 19:00:13 renanse Exp $
  */
 public class TestCompositeSphere extends SimpleGame {
 

@@ -2,19 +2,11 @@ package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.model.XMLparser.Converters.MaxToJme;
 import com.jme.scene.Node;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.shape.Box;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.math.FastMath;
-import com.jme.bounding.BoundingBox;
-import com.jme.renderer.ColorRGBA;
-
-
 
 import java.io.*;
 import java.net.URL;

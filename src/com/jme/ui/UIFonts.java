@@ -10,7 +10,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import java.util.*;
 import com.jme.system.JmeException;
-import com.jme.math.*;
 
 /**
  * @author schustej

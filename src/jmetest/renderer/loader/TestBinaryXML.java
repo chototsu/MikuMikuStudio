@@ -3,12 +3,6 @@ package jmetest.renderer.loader;
 import com.jme.app.SimpleGame;
 import com.jme.scene.model.XMLparser.*;
 import com.jme.scene.Node;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.shape.Box;
-import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
-import com.jme.util.TextureManager;
-import com.jme.image.Texture;
 
 import java.net.URL;
 import java.io.*;

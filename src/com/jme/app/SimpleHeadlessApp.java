@@ -38,8 +38,6 @@ import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
-import com.jme.input.KeyBindingManager;
-import com.jme.input.KeyInput;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -49,7 +47,6 @@ import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -62,7 +59,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.1 2004-11-09 19:54:56 renanse Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.2 2005-01-03 19:00:17 renanse Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
 

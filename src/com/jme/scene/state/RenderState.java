@@ -32,10 +32,8 @@
 package com.jme.scene.state;
 
 import java.util.Stack;
-import java.util.ArrayList;
 import java.io.Serializable;
 
-import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
 
 /**
@@ -47,7 +45,7 @@ import com.jme.scene.Spatial;
  * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.21 2004-12-30 02:28:18 mojomonkey Exp $
+ * @version $Id: RenderState.java,v 1.22 2005-01-03 19:00:16 renanse Exp $
  */
 public abstract class RenderState implements Serializable {
 

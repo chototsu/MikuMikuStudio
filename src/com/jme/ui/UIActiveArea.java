@@ -36,12 +36,10 @@
  */
 package com.jme.ui;
 
-import java.util.ArrayList;
-
 import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.scene.*;
-import com.jme.scene.state.RenderState;
+
 /**
  * A rectangular screen area for handling mouse input and checking hit
  * tests.

@@ -39,7 +39,6 @@ import java.io.OutputStreamWriter;
 import java.io.IOException;
 
 import com.jme.app.SimpleGame;
-import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;

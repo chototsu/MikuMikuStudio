@@ -40,7 +40,6 @@ import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import javax.swing.BorderFactory;
@@ -73,7 +72,7 @@ import com.jme.util.TextureManager;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.3 2004-11-09 23:44:39 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.4 2005-01-03 19:00:15 renanse Exp $
  */
 
 public class JMESwingTest extends SimpleHeadlessApp {

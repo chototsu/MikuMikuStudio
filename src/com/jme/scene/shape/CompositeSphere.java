@@ -36,13 +36,12 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CompositeMesh;
-import com.jme.scene.CompositeMesh.IndexRange;
 
 /**
  * <code>CompositeSphere</code> is um ... a CompositeSphere :)
  * 
  * @author Joshua Slack
- * @version $Id: CompositeSphere.java,v 1.1 2004-11-17 21:45:34 mojomonkey Exp $
+ * @version $Id: CompositeSphere.java,v 1.2 2005-01-03 19:00:15 renanse Exp $
  */
 public class CompositeSphere extends CompositeMesh {
 	private static final long serialVersionUID = 1L;

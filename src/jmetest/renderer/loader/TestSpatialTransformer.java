@@ -6,9 +6,7 @@ import com.jme.scene.shape.Sphere;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.animation.SpatialTransformer;
-import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
-import com.jme.renderer.ColorRGBA;
 
 /**
  * Started Date: Jul 12, 2004<br><br>

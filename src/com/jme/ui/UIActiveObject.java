@@ -9,19 +9,7 @@ import java.util.Vector;
 
 import com.jme.input.InputHandler;
 import com.jme.input.action.UIInputAction;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
-import com.jme.scene.shape.*;
-import com.jme.scene.state.*;
-import com.jme.scene.*;
-import com.jme.system.DisplaySystem;
-import com.jme.input.*;
-import com.jme.input.action.*;
-import java.util.*;
-import com.jme.renderer.*;
-import com.jme.system.JmeException;
 
 /**
  * @author schustej

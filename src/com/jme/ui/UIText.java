@@ -36,13 +36,7 @@
  */
 package com.jme.ui;
 
-import com.jme.image.Texture;
-import com.jme.scene.*;
-import com.jme.system.DisplaySystem;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
-import com.jme.util.TextureManager;
-import com.jme.math.*;
 
 /**
  * A specialized Node that works like a UIObject and holds as many

@@ -40,7 +40,6 @@ import com.jme.image.Texture;
 import com.jme.math.*;
 import com.jme.input.InputHandler;
 import com.jme.input.MouseButtonStateType;
-import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;

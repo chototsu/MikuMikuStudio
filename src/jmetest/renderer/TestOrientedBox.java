@@ -8,9 +8,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.FastMath;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.OrientedBoundingBox;
-import com.jme.bounding.BoundingSphere;
-
-
 
 /**
  * Started Date: Jun 26, 2004<br><br>

@@ -40,7 +40,6 @@ import com.jme.scene.TriMesh;
 import com.jme.util.AreaUtils;
 import java.util.logging.Level;
 import com.jme.util.LoggingSystem;
-import com.jme.system.DisplaySystem;
 
 /**
  * <code>AreaClodMesh</code>
@@ -51,7 +50,7 @@ import com.jme.system.DisplaySystem;
  * it to update itself.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: AreaClodMesh.java,v 1.13 2004-11-09 03:10:57 renanse Exp $
+ * @version $Id: AreaClodMesh.java,v 1.14 2005-01-03 19:00:13 renanse Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   private static final long serialVersionUID = 1L;

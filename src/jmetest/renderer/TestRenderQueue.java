@@ -45,7 +45,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.scene.state.LightState;
-import com.jme.light.AmbientLight;
 import com.jme.light.DirectionalLight;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -57,7 +56,7 @@ import com.jme.math.Vector2f;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.9 2004-08-14 00:50:07 cep21 Exp $
+ * @version $Id: TestRenderQueue.java,v 1.10 2005-01-03 19:00:13 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;

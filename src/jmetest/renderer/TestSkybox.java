@@ -41,12 +41,11 @@ import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.Torus;
 import com.jme.util.TextureManager;
 import com.jme.renderer.Renderer;
-import com.jme.scene.state.ZBufferState;
 
 /**
  * <code>TestSkybox</code>
  * @author Joshua Slack
- * @version $Id: TestSkybox.java,v 1.3 2004-08-31 01:26:46 renanse Exp $
+ * @version $Id: TestSkybox.java,v 1.4 2005-01-03 19:00:13 renanse Exp $
  */
 public class TestSkybox extends SimpleGame {
 

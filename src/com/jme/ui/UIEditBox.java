@@ -36,16 +36,11 @@
  */
 package com.jme.ui;
 
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseButtonStateType;
 import com.jme.input.action.*;
-import com.jme.input.*;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.scene.Line;
 
 /**
  * UIEditBox is a Node based aggrigation b/t a UIText and UIActiveArea

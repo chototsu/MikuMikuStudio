@@ -39,14 +39,13 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.scene.state.ZBufferState;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.23 2004-11-30 20:12:43 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.24 2005-01-03 19:00:16 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 

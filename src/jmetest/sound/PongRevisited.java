@@ -29,7 +29,6 @@ import com.jme.sound.scene.ProgrammableSound;
 import com.jme.sound.scene.SoundNode;
 import com.jme.ui.UIColorScheme;
 import com.jme.ui.UIFonts;
-import com.jme.ui.UIObject;
 import com.jme.ui.UIText;
 import com.jme.util.TextureManager;
 

@@ -51,13 +51,12 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jme.renderer.Renderer;
 
 /**
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.20 2004-08-14 00:50:07 cep21 Exp $
+ * @version $Id: TestScenegraph.java,v 1.21 2005-01-03 19:00:13 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
 

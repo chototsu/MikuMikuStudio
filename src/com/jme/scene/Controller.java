@@ -32,7 +32,6 @@
 package com.jme.scene;
 
 import java.io.Serializable;
-import java.util.HashMap;
 
 /**
  * <code>Controller</code> provides a base class for creation of controllers
@@ -42,7 +41,7 @@ import java.util.HashMap;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.10 2004-10-04 14:53:48 mojomonkey Exp $
+ * @version $Id: Controller.java,v 1.11 2005-01-03 19:00:15 renanse Exp $
  */
 public abstract class Controller implements Serializable {
 

@@ -46,7 +46,6 @@ import com.jme.scene.state.TextureState;
 import com.jme.terrain.TerrainPage;
 import com.jme.terrain.util.FaultFractalHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
-import com.jme.terrain.util.RawHeightMap;
 import com.jme.util.TextureManager;
 import com.jme.renderer.Renderer;
 
@@ -54,7 +53,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.23 2004-08-14 00:50:08 cep21 Exp $
+ * @version $Id: TestTerrainPage.java,v 1.24 2005-01-03 19:00:14 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 

@@ -37,7 +37,6 @@ import javax.swing.ImageIcon;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.scene.CloneCreator;
 import com.jme.scene.Spatial;
@@ -55,7 +54,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainTrees.java,v 1.6 2004-10-05 23:38:18 mojomonkey Exp $
+ * @version $Id: TestTerrainTrees.java,v 1.7 2005-01-03 19:00:14 renanse Exp $
  */
 public class TestTerrainTrees extends SimpleGame {
 
