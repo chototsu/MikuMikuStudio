@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
  * the camera.
  * @author Mark Powell
- * @version $Id: FirstPersonController.java,v 1.5 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: FirstPersonController.java,v 1.6 2004-02-26 03:09:36 mojomonkey Exp $
  */
 public class FirstPersonController extends InputController {
 
@@ -67,6 +67,7 @@ public class FirstPersonController extends InputController {
         keyboard.set("lookDown", KeyInput.KEY_DOWN);
         keyboard.set("turnRight", KeyInput.KEY_RIGHT);
         keyboard.set("turnLeft", KeyInput.KEY_LEFT);
+        keyboard.set("screenshot", KeyInput.KEY_F12);
         keyboard.set("exit", KeyInput.KEY_ESCAPE);
 
         setKeyBindingManager(keyboard);
@@ -86,6 +87,9 @@ public class FirstPersonController extends InputController {
         KeyExitAction exit = new KeyExitAction(app);
         exit.setKey("exit");
         addAction(exit);
+        KeyScreenShotAction screen = new KeyScreenShotAction();
+        screen.setKey("screenshot");
+        addAction(screen);
         KeyForwardAction forward = new KeyForwardAction(cam, 0.5f);
         forward.setKey("forward");
         addAction(forward);
