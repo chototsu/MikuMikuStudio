@@ -49,15 +49,18 @@ import com.jme.light.AmbientLight;
 import com.jme.light.DirectionalLight;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.scene.shape.Quad;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.RenderState;
 
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.2 2004-06-17 16:45:18 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.3 2004-06-17 19:05:27 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
-  protected Node opaques, transps;
+  protected Node opaques, transps, orthos;
 
   /**
    * Entry point for the test,
@@ -67,7 +70,6 @@ public class TestRenderQueue extends SimpleGame {
     TestRenderQueue app = new TestRenderQueue();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
-
   }
 
   protected void simpleUpdate() {
@@ -75,12 +77,14 @@ public class TestRenderQueue extends SimpleGame {
     if (KeyBindingManager.getKeyBindingManager().isValidCommand("queue", false)) {
         if (useQueue) {
           display.setTitle("Test Render Queue - off - hit Q to toggle Queue mode");
-          transps.setRenderQueueMode(Renderer.QUEUE_INHERIT);
-          opaques.setRenderQueueMode(Renderer.QUEUE_INHERIT);
+          transps.setRenderQueueMode(Renderer.QUEUE_SKIP);
+          opaques.setRenderQueueMode(Renderer.QUEUE_SKIP);
+          orthos.setRenderQueueMode(Renderer.QUEUE_SKIP);
         } else {
           display.setTitle("Test Render Queue - on - hit Q to toggle Queue mode");
           transps.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
           opaques.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+          orthos.setRenderQueueMode(Renderer.QUEUE_ORTHO);
         }
         useQueue = !useQueue;
     }
@@ -98,6 +102,11 @@ public class TestRenderQueue extends SimpleGame {
 
     opaques = new Node("Opaques");
     transps = new Node("Transps");
+    orthos = new Node("Orthos");
+    transps.setRenderQueueMode(Renderer.QUEUE_SKIP);
+    opaques.setRenderQueueMode(Renderer.QUEUE_SKIP);
+    orthos.setRenderQueueMode(Renderer.QUEUE_SKIP);
+    rootNode.attachChild(orthos);
     rootNode.attachChild(transps);
     rootNode.attachChild(opaques);
 
@@ -183,17 +192,41 @@ public class TestRenderQueue extends SimpleGame {
     tb3.setRenderState(ls);
     tb3.setLightCombineMode(LightState.REPLACE);
 
-//    ZBufferState zs = display.getRenderer().getAlphaState();
-//    zs.setEnabled(true);
-//    zs.setWritable(false);
-//    zs.setFunction(ZBufferState.CF_LESS);
-//    transps.setRenderState(zs);
-//
     AlphaState as = display.getRenderer().getAlphaState();
     as.setEnabled(true);
     as.setBlendEnabled(true);
     as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
     transps.setRenderState(as);
+
+    Quad q1 = new Quad("Ortho Q1", 40, 40);
+    q1.setLocalTranslation(new Vector3f(100,100,0));
+    q1.setZOrder(1);
+    q1.setSolidColor(ColorRGBA.white);
+    q1.setLightCombineMode(LightState.REPLACE);
+    orthos.attachChild(q1);
+
+    Quad q2 = new Quad("Ortho Q2", 100, 100);
+    q2.setLocalTranslation(new Vector3f(60,60,0));
+    q2.setZOrder(5);
+    q2.setSolidColor(ColorRGBA.red);
+    q2.setLightCombineMode(LightState.REPLACE);
+    orthos.attachChild(q2);
+
+    Quad q3 = new Quad("Ortho Q3", 120, 60);
+    q3.setLocalTranslation(new Vector3f(-20,-150,0));
+    q3.setZOrder(2);
+    q3.setSolidColor(ColorRGBA.blue);
+    q3.setLightCombineMode(LightState.REPLACE);
+    orthos.attachChild(q3);
+
+    ZBufferState zstate = display.getRenderer().getZBufferState();
+    zstate.setWritable(false);
+    zstate.setEnabled(false);
+    orthos.setRenderState(zstate);
+
+    orthos.setRenderState(Spatial.defaultStateList[RenderState.RS_LIGHT]);
+    rootNode.setForceView(true);
+    orthos.setForceView(true);
   }
 }

@@ -116,6 +116,7 @@ public class RenderQueue {
 
   private void renderOrthoBucket() {
 //    System.err.println("drawing ortho. items: "+orthoBucket.size());
+    renderer.setOrthoCenter();
     Iterator it = orthoBucket.iterator();
     while (it.hasNext()) {
       Spatial spat = (Spatial)it.next();
@@ -123,6 +124,7 @@ public class RenderQueue {
       spat.onDraw(renderer);
     }
     orthoBucket.clear();
+    renderer.unsetOrtho();
   }
 
   class OpaqueComp implements Comparator {
