@@ -37,6 +37,7 @@ import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.InputController;
 import com.jme.input.NodeController;
+import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -51,6 +52,7 @@ import com.jme.scene.Quad;
 import com.jme.scene.model.Model;
 import com.jme.scene.model.msascii.MilkshapeASCIIModel;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -105,7 +107,7 @@ public class TestCameraMan extends SimpleGame {
     protected void render(float interpolation) {
         display.getRenderer().clearStatistics();
         //render to texture
-        tRenderer.render(root, fakeTex);
+        tRenderer.render(model, fakeTex);
         //display scene
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
@@ -173,12 +175,30 @@ public class TestCameraMan extends SimpleGame {
 
         scene = new Node("3D Scene Node");
         root = new Node("Root Scene Node");
+        
+        DirectionalLight am = new DirectionalLight();
+        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
+        am.setAmbient(new ColorRGBA(0.95f, 0.95f, 0.95f, 1.0f));
+        am.setDirection(new Vector3f(1, 0, 0));
+        
+        DirectionalLight am2 = new DirectionalLight();
+        am2.setDiffuse(new ColorRGBA(1.0f,1.0f,1.0f,1.0f));
+        am2.setDirection(new Vector3f(0,0,-1));
+        
+        LightState state = display.getRenderer().getLightState();
+        state.setEnabled(true);
+        state.attach(am);
+        state.attach(am2);
+        am.setEnabled(true);
+        am2.setEnabled(true);
+        
+        root.setRenderState(state);
 
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
         scene.setRenderState(cs);
-        // Make the real world box -- you'll see this spinning around..  woo...
+        
         model = new MilkshapeASCIIModel("Milkshape Model");
         URL modelURL = TestCameraMan.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
         model.load(modelURL, "jmetest/data/model/msascii/");
@@ -186,9 +206,9 @@ public class TestCameraMan extends SimpleGame {
         scene.attachChild(model);
         root.attachChild(scene);
 
-        Box camBox = new Box("Camera Box", new Vector3f(-1f,-1f,-1f), new Vector3f(1f,1f,1f));
-        camBox.setModelBound(new BoundingSphere());
-        camBox.updateModelBound();
+        Model camBox = new MilkshapeASCIIModel("Camera Box");
+        URL camBoxUrl = TestCameraMan.class.getClassLoader().getResource("jmetest/data/model/msascii/camera.txt");
+        camBox.load(camBoxUrl, "jmetest/data/model/msascii/");
         camNode.attachChild(camBox);
 
 
@@ -201,6 +221,7 @@ public class TestCameraMan extends SimpleGame {
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
+        model.setRenderState(buf);
         scene.setRenderState(buf);
         scene.attachChild(quad);
         scene.attachChild(camNode);
