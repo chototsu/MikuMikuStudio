@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.25 2004-04-06 22:13:18 renanse Exp $
+ * @version $Id: Geometry.java,v 1.26 2004-04-09 22:40:36 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -561,13 +561,13 @@ public abstract class Geometry extends Spatial implements Serializable {
           buffer = new float[vertQuantity * 3];
         else
           buffer = new float[vertex.length * 3];
-//        if (vertBuf == null) {
+        if (vertBuf == null || vertBuf.capacity() < (4*buffer.length)) {
             vertBuf =
                 ByteBuffer
                     .allocateDirect(4 * buffer.length)
                     .order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
-//        }
+        }
 
         for (int i = 0, endPoint = buffer.length/3; i < endPoint; i++) {
             if (vertex[i] != null) {
