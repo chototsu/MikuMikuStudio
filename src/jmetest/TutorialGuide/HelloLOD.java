@@ -22,6 +22,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.input.KeyInput;
 import com.jme.input.action.KeyExitAction;
+import com.jme.util.MemPool;
 
 import java.net.URL;
 import java.io.ByteArrayOutputStream;
@@ -107,70 +108,56 @@ public class HelloLOD extends SimpleGame {
         meshParent.setLocalScale(.1f);
         meshParent.setLocalTranslation(new Vector3f(-15,0,0));
         rootNode.attachChild(meshParent);
+
+        // Clear the keyboard commands that can move the camera.
         input.clearKeyboardActions();
         input.clearMouseActions();
+        // Insert a keyboard command that can exit the application.
         input.addKeyboardAction("exit",KeyInput.KEY_ESCAPE,new KeyExitAction(this));
 
+        // The path the camera will take.
         Vector3f[]cameraPoints=new Vector3f[]{
             new Vector3f(0,5,20),
             new Vector3f(0,20,90),
             new Vector3f(0,30,200),
-            new Vector3f(0,150,300)
+            new Vector3f(0,100,300),
+            new Vector3f(0,150,400),
         };
+        // Create a path for the camera.
         BezierCurve bc=new BezierCurve("camera path",cameraPoints);
-        cn=new CameraNode("camera node",display.getRenderer().getCamera());
 
+        // Create a camera node to move along that path.
+        cn=new CameraNode("camera node",cam);
 
+        // Create a curve controller to move the CameraNode along the path
         CurveController cc=new CurveController(bc,cn);
-        cc.setActive(true);
+
+        // Set an up vector for the controller.
         cc.setUpVector(new Vector3f(0,1,0));
-        cc.setAutoRotation(false);
+
+        // Cycle the animation.
         cc.setRepeatType(Controller.RT_CYCLE);
-        cc.setSpeed(.5f);
 
+        // Slow down the curve controller a bit
+        cc.setSpeed(.25f);
+
+        // Add the controller to the node.  Notice I do NOT add the node to rootNode.
         cn.addController(cc);
-
-        drawAxis();
-//        rootNode.setForceView(true);
-    }
-
-    private void drawAxis() {
-        Box xAxis=new Box("x axis",new Vector3f(10,0,0),10,.5f,.5f);
-        MaterialState green=display.getRenderer().createMaterialState();
-        green.setEmissive(ColorRGBA.green);
-        xAxis.setRenderState(green);
-
-        Box yAxis=new Box("y axis",new Vector3f(0,10,0),.5f,10,.5f);
-        MaterialState blue=display.getRenderer().createMaterialState();
-        blue.setEmissive(ColorRGBA.blue);
-        yAxis.setRenderState(blue);
-
-        Box zAxis=new Box("z axis",new Vector3f(0,0,10),.5f,.5f,10);
-        MaterialState red=display.getRenderer().createMaterialState();
-        red.setEmissive(ColorRGBA.red);
-        zAxis.setRenderState(red);
-
-
-        rootNode.attachChild(xAxis);
-        rootNode.attachChild(yAxis);
-        rootNode.attachChild(zAxis);
     }
 
     protected void simpleUpdate(){
+        // Update the node's geometric state, which will update its controll.er
         cn.updateGeometricState(tpf,true);
-        Camera c=display.getRenderer().getCamera();
-        Vector3f objectCenter=((BoundingSphere)rootNode.getWorldBound()).center;
-        Vector3f lookAtObject=new Vector3f(objectCenter).subtractLocal(c.getLocation()).normalizeLocal();
+        // Get the center of root's bound.
+        Vector3f objectCenter=rootNode.getWorldBound().getCenter(MemPool.v3a);
 
-//        c.setFrame(c.getLocation(),
-//                lookAtObject.cross(new Vector3f(-1,0,0)).normalizeLocal(),
-//                lookAtObject.cross(new Vector3f(0,1,0)).normalizeLocal(),
-//                lookAtObject);
-        c.setFrame(c.getLocation(),
-                new Vector3f(-1,0,0).crossLocal(lookAtObject).normalizeLocal(),
+        // My direction is the place I want to look minus the location of the camera.
+        Vector3f lookAtObject=new Vector3f(objectCenter).subtractLocal(cam.getLocation()).normalizeLocal();
+
+        // Set my camera to look at the object
+        cam.setFrame(cam.getLocation(),
                 new Vector3f(0,1,0).crossLocal(lookAtObject).normalizeLocal(),
+                new Vector3f(1,0,0).crossLocal(lookAtObject).normalizeLocal(),
                 lookAtObject);
-
-        c.update();
     }
 }
