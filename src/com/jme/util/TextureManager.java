@@ -32,6 +32,7 @@
 package com.jme.util;
 
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.PixelGrabber;
@@ -62,7 +63,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.29 2004-11-30 16:37:57 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.30 2004-12-01 21:36:16 renanse Exp $
  */
 final public class TextureManager {
 
@@ -322,14 +323,15 @@ final public class TextureManager {
 		}
 		int width = image.getWidth(null);
 		int height = image.getHeight(null);
+		AffineTransform tx = null;
+		if (flipImage) {
+			tx = AffineTransform.getScaleInstance(1, -1);
+			tx.translate(0, -image.getHeight(null));
+		}
 
 		Graphics2D g = (Graphics2D) tex.getGraphics();
-		if (flipImage)
-			g.drawImage(image, 0, height, width, -height, null);
-		else
-			g.drawImage(image, 0, 0, width, height, null);
+    g.drawImage(image, tx, null);
     g.dispose();
-
     //Get a pointer to the image memory
     ByteBuffer scratch = ByteBuffer.allocateDirect(4 * tex.getWidth()
         * tex.getHeight()).order(ByteOrder.nativeOrder());
