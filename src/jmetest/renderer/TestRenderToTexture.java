@@ -242,6 +242,8 @@ public class TestRenderToTexture extends SimpleGame {
         tRenderer = new LWJGLTextureRenderer((LWJGLRenderer)display.getRenderer());
         tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
         fakeTex = tRenderer.setupTexture();
+        tRenderer.getCamera().setLocation(new Vector3f(0,0,75f));
+        tRenderer.getCamera().update();
 
         // Now add that texture to the "real" cube.
         ts = display.getRenderer().getTextureState();

@@ -44,7 +44,7 @@ import org.lwjgl.opengl.Pbuffer;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.4 2004-03-05 01:19:51 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.5 2004-03-05 02:30:43 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -56,6 +56,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /** Pbuffer instance */
     private Pbuffer pbuffer;
+    private int active = 0;
 
     private LWJGLRenderer parentRenderer;
 
@@ -181,7 +182,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             parentRenderer.draw(spat);
             GL.glBindTexture(GL.GL_TEXTURE_2D, tex.getTextureId());
             GL.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
-            pbuffer.releaseContext();
+            deactivate();
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(), "render(Spatial, Texture)", e);
         }
@@ -206,17 +207,23 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     public void activate() {
-        pbuffer.makeCurrent();
+        if (active == 0) {
+            pbuffer.makeCurrent();
+        }
+        active++;
     }
 
     public void deactivate() {
-        Pbuffer.releaseContext();
+        if (active == 1) {
+            Pbuffer.releaseContext();
+        }
+        active--;
     }
 
     private void initCamera() {
         camera = new LWJGLCamera(PBUFFER_WIDTH, PBUFFER_HEIGHT, this);
         camera.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 75.0f);
+        Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
