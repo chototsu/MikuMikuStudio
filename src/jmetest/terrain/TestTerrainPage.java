@@ -46,6 +46,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.terrain.TerrainPage;
 import com.jme.terrain.util.FaultFractalHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
+import com.jme.terrain.util.RawHeightMap;
 import com.jme.util.TextureManager;
 import com.jme.renderer.Renderer;
 
@@ -53,7 +54,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.20 2004-07-08 20:34:59 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.21 2004-07-21 21:19:50 guurk Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -113,9 +114,11 @@ public class TestTerrainPage extends SimpleGame {
     lightState.attach(dr);
 
     //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
-    FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255,
-        0.75f);
+    //FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255,
+    //    0.75f);
+    RawHeightMap heightMap = new RawHeightMap( "C:/dev/workspace/jme/src/jmetest/data/images/germany.raw", 513);
     Vector3f terrainScale = new Vector3f(10,1,10);
+    heightMap.setHeightScale( 0.001f);
     TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), terrainScale,
                                      heightMap.getHeightMap(), false);
 

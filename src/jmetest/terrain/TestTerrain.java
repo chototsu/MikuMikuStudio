@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.28 2004-07-08 20:34:59 renanse Exp $
+ * @version $Id: TestTerrain.java,v 1.29 2004-07-21 21:19:50 guurk Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -91,7 +91,9 @@ public class TestTerrain extends SimpleGame {
     Vector3f terrainScale = new Vector3f(5,1,5);
     TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
                                        heightMap.getHeightMap(),
-                                       new Vector3f(0, 0, 0), false);
+                                       new Vector3f(0, 0, 0), true);
+    //tb.setTrisPerPixel( 0.5f);
+    tb.setDistanceTolerance( 1.0f);
     tb.setDetailTexture(1, 16);
     tb.setModelBound(new BoundingBox());
     tb.updateModelBound();

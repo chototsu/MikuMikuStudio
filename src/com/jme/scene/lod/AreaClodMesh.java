@@ -47,7 +47,7 @@ import com.jme.system.DisplaySystem;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: AreaClodMesh.java,v 1.7 2004-05-07 22:03:23 renanse Exp $
+ * @version $Id: AreaClodMesh.java,v 1.8 2004-07-21 21:19:44 guurk Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   float trisPerPixel = 1f;
@@ -68,7 +68,6 @@ public class AreaClodMesh extends ClodMesh {
       CollapseRecord[] records) {
 
     super(name, data, records);
-
   }
 
   public AreaClodMesh(
@@ -80,14 +79,17 @@ public class AreaClodMesh extends ClodMesh {
       int[] indices, CollapseRecord[] records) {
 
     super(name, vertices, normal, color, texture, indices, records);
+    
   }
 
   public int chooseTargetRecord(Renderer r) {
     if (getWorldBound() == null) {
       LoggingSystem.getLogger().log(Level.WARNING,
                                     "AreaClodMesh found with no Bounds.");
+      System.out.println( "NO BOUNDS");
       return 0;
     }
+    
     float newDistance = getWorldBound().distanceTo(r.getCamera().getLocation());
     if (Math.abs(newDistance - lastDistance) <= distTolerance)
       return targetRecord; // we haven't moved relative to the model, send the old measurement back.
@@ -95,7 +97,6 @@ public class AreaClodMesh extends ClodMesh {
       return targetRecord; // we're already at the lowest setting and we just got closer to the model, no need to keep trying.
     if (lastDistance < newDistance && targetRecord == records.length-1)
       return targetRecord; // we're already at the highest setting and we just got further from the model, no need to keep trying.
-
 
     lastDistance = newDistance;
 
@@ -107,12 +108,13 @@ public class AreaClodMesh extends ClodMesh {
                                     "Records was null.");
       return 0;
     }
+    
     targetRecord = records.length - 1;
     for (int i = records.length; --i >= 0; ) {
       if (trisToDraw - records[i].numbTriangles < 0) break;
       targetRecord = i;
     }
-//    System.err.println("choosing record: "+targetRecord);
+    //System.err.println("choosing record: "+targetRecord);
     return targetRecord;
   }
 

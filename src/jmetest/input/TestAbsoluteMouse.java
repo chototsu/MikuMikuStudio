@@ -69,6 +69,11 @@ public class TestAbsoluteMouse extends BaseGame {
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
+        
+        if( this.finished) {
+            cleanup();
+        }
+        
         mouse.update();
         text.print("Position: " + mouse.getLocalTranslation().x + " , " +
                 mouse.getLocalTranslation().y);
@@ -173,11 +178,9 @@ public class TestAbsoluteMouse extends BaseGame {
     }
 
     /**
-     * not used.
      * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
-
     }
 
 }

@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.3 2004-05-09 04:31:50 renanse Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.4 2004-07-21 21:19:44 guurk Exp $
  */
 public abstract class AbstractHeightMap {
 
@@ -144,6 +144,7 @@ public abstract class AbstractHeightMap {
      * @return the value at (x,z).
      */
     public int getTrueHeightAtPoint(int x, int z) {
+        //System.out.println( heightData[x + (z*size)]);
         return heightData[x + (z*size)];
     }
 

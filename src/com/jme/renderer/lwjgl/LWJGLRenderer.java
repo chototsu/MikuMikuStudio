@@ -128,7 +128,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.30 2004-07-09 02:03:38 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.31 2004-07-21 21:19:43 guurk Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -996,7 +996,10 @@ public class LWJGLRenderer implements Renderer {
       numberOfTris += adder / 3;
       numberOfVerts += vertAdder;
     }
-    GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, t.getVertQuantity(), indices);
+
+    
+    //GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, t.getVertQuantity(), indices);
+    GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
 
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
     GL11.glPopMatrix();

@@ -62,7 +62,7 @@ import com.jme.util.LoggingSystem;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.5 2004-05-04 02:17:31 mojomonkey Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.6 2004-07-21 21:19:44 guurk Exp $
  */
 public class ProceduralTextureGenerator {
   //output image
@@ -167,8 +167,8 @@ public class ProceduralTextureGenerator {
     proceduralTexture = new ImageIcon(img);
     proceduralTexture.setDescription("TerrainTexture");
 
-    LoggingSystem.getLogger().log(Level.INFO,
-                                  "Created procedural texture successfully.");
+//    LoggingSystem.getLogger().log(Level.INFO,
+//                                  "Created procedural texture successfully.");
   }
 
   public boolean saveTexture(String filename) {
@@ -176,9 +176,9 @@ public class ProceduralTextureGenerator {
     if (null == filename) {
       throw new JmeException("Screenshot filename cannot be null");
     }
-    LoggingSystem.getLogger().log(
-        Level.INFO,
-        "Taking screenshot: " + filename + ".png");
+//    LoggingSystem.getLogger().log(
+//        Level.INFO,
+//        "Taking screenshot: " + filename + ".png");
 
     BufferedImage imageData = (BufferedImage) proceduralTexture.getImage();
 

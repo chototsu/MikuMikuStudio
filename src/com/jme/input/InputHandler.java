@@ -39,7 +39,7 @@ import com.jme.input.action.MouseInputAction;
 /**
  * <code>InputHandler</code>
  * @author Mark Powell
- * @version $Id: InputHandler.java,v 1.4 2004-05-08 02:50:06 renanse Exp $
+ * @version $Id: InputHandler.java,v 1.5 2004-07-21 21:19:42 guurk Exp $
  */
 public class InputHandler {
     protected ArrayList actions;
@@ -84,6 +84,17 @@ public class InputHandler {
         actions.add(inputAction);
     }
 
+    public void addKeyboardAction( String key, int keyInputValue, AbstractInputAction action ) {
+        if( keyboard == null) {
+    		KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
+    		keyboard.setKeyInput(InputSystem.getKeyInput());
+            setKeyBindingManager(keyboard);
+        }
+        keyboard.set( key, keyInputValue);
+        action.setKey( key);
+        addAction( action);
+    }
+    
     public void addAction(MouseInputAction mouseAction) {
         mouseActions.add(mouseAction);
     }
