@@ -59,7 +59,7 @@ import com.jme.renderer.Renderer;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.11 2004-10-05 21:31:00 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.12 2004-11-05 18:23:09 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -110,8 +110,9 @@ private final static Vector2f sharedTextureData[] = {
   private Geometry psMesh;
 
   private Camera camera;
+	private int iterations;
 
-  /**
+	/**
    * ParticleManager constructor
    *
    * @param noParticles Desired number of particles in this system.
@@ -854,6 +855,24 @@ private final static Vector2f sharedTextureData[] = {
     return psMesh;
   }
 
+	/**
+	 *
+	 * Return the number this manager has warmed up
+	 * @return int
+	 */
+		public int getIterations() {
+			return iterations;
+		}
+
+	/**
+	 * Sets the iterations for the warmup and calls
+	 * warmUp with the number of iterations as the argument
+	 * @param iterations
+	 */
+	public void setIterations(int iterations) {
+		this.iterations = iterations;
+	}
+
   /**
    * Runs the update method of this particle manager for iteration seconds
    * with an update every .1 seconds (IE <code>iterations</code> * 10
@@ -867,4 +886,48 @@ private final static Vector2f sharedTextureData[] = {
     for (int i = iterations; --i>= 0; )
       update(.1f);
   }
-}
+
+		/**
+		 * Clones every aspect of this manager into a new manager
+		 */
+		public Object clone() {
+			ParticleManager manager = new ParticleManager(getParticlesNumber(),
+																										getCamera());
+			manager.setControlFlow(getControlFlow());
+			manager.setEmissionDirection( (Vector3f) getEmissionDirection().clone());
+			manager.setEmissionMaximumAngle(getEmissionMaximumAngle());
+			manager.setEndColor( (ColorRGBA) getEndColor().clone());
+			manager.setEndSize(getEndSize());
+			manager.setGeometry(getGeoMesh());
+			manager.setGeometry(getGeometry());
+			manager.setGravityForce( (Vector3f) getGravityForce().clone());
+			manager.setInitialVelocity(getInitialVelocity());
+			manager.setParticlesMinimumLifeTime(getParticlesMinimumLifeTime());
+			manager.setParticlesOrigin( (Vector3f) getParticlesOrigin().clone());
+			manager.setParticleSpinSpeed(getParticleSpinSpeed());
+			manager.setPrecision(getPrecision());
+			manager.setRandomMod(getRandomMod());
+			manager.setReleaseRate(getReleaseRate());
+			manager.setReleaseVariance(getReleaseVariance());
+			manager.setSpeed(getSpeed());
+			manager.setStartColor( (ColorRGBA) getStartColor().clone());
+			manager.setStartSize(getStartSize());
+			manager.setIterations(getIterations());
+			manager.setRepeatType(getRepeatType());
+
+			manager.getParticles().addController(manager);
+
+			for (int i = 0; i < getParticles().getRenderStateList().length; i++) {
+				if (getParticles().getRenderStateList()[i] != null) {
+					manager.getParticles().setRenderState(getParticles()
+																								.getRenderStateList()[i]);
+				}
+			}
+
+			manager.getParticles().setModelBound(getParticles().getModelBound());
+			manager.getParticles().updateModelBound();
+			manager.warmUp(manager.getIterations());
+
+			return manager;
+		}
+	}
