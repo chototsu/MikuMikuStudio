@@ -35,6 +35,7 @@ import com.jme.util.LoggingSystem;
  * sharing, Stack is to keep track of where I am in the XML file.
  *
  * @author Jack Lindamood
+ * @deprecated Will soon be deleted.  Replaced by jME's binary format.
  */
 public class SAXStackProcessor {
 
