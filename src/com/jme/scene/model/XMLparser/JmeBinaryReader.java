@@ -20,6 +20,7 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingBox;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
+import com.jme.animation.SpatialTransformer;
 import com.jme.scene.model.JointMesh2;
 import com.jme.scene.model.EmptyTriMesh;
 import com.jme.light.Light;
@@ -184,6 +185,9 @@ public class JmeBinaryReader {
         } else if (tagName.equals("primitive")){
             s.push(processPrimitive(attributes));
         } else if (tagName.equals("sharedrenderstate")){
+
+            s.push(new XMLSharedNode((String) attributes.get("ident")));
+        } else if (tagName.equals("sharedtrimesh")){
             s.push(new XMLSharedNode((String) attributes.get("ident")));
         } else if (tagName.equals("publicobject")){
             Object toAdd=shares.get(attributes.get("ident"));
@@ -266,6 +270,49 @@ public class JmeBinaryReader {
                 i.loadFromURLPath((String)attributes.get("type"),(URL) attributes.get("url"),properties);
                 s.push(i);
             }
+        } else if (tagName.equals("spatialtransformer")){
+            SpatialTransformer st=new SpatialTransformer(((Integer)attributes.get("numobjects")).intValue());
+            s.push(st);
+        } else if (tagName.equals("stobj")){
+            s.push(attributes.get("obnum"));
+            s.push(attributes.get("parnum"));
+            s.push(new XMLSharedNode(null));
+        } else if (tagName.equals("spatialpointtime")){
+            s.push(attributes.get("time"));
+        } else if (tagName.equals("sptscale")){
+            Float oldTime=(Float) s.pop();
+            float time=oldTime.floatValue();
+            int[] scaleIndexes=(int[]) attributes.get("index");
+            Vector3f[] scalevalues=(Vector3f[]) attributes.get("scalevalues");
+            SpatialTransformer st=(SpatialTransformer) s.pop();
+            if (scalevalues!=null)
+                for (int i=0;i<scaleIndexes.length;i++)
+                    st.setScale(scaleIndexes[i],time,scalevalues[i]);
+            s.push(st);
+            s.push(oldTime);
+        } else if (tagName.equals("sptrot")){
+            Float oldTime=(Float) s.pop();
+            float time=oldTime.floatValue();
+
+            int[] rotIndexes=(int[]) attributes.get("index");
+            Quaternion[] rotvalues=(Quaternion[]) attributes.get("rotvalues");
+            SpatialTransformer st=(SpatialTransformer) s.pop();
+            if (rotvalues!=null)
+                for (int i=0;i<rotIndexes.length;i++)
+                    st.setRotation(rotIndexes[i],time,rotvalues[i]);
+            s.push(st);
+            s.push(oldTime);
+        } else if (tagName.equals("spttrans")){
+            Float oldTime=(Float) s.pop();
+            float time=oldTime.floatValue();
+            int[] transIndexes=(int[]) attributes.get("index");
+            Vector3f[] transvalues=(Vector3f[]) attributes.get("transvalues");
+            SpatialTransformer st=(SpatialTransformer) s.pop();
+            if (transvalues!=null)
+                for (int i=0;i<transIndexes.length;i++)
+                    st.setPosition(transIndexes[i],time,transvalues[i]);
+            s.push(st);
+            s.push(oldTime);
         } else{
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
@@ -376,6 +423,9 @@ public class JmeBinaryReader {
         } else if (tagName.equals("sharedrenderstate")){
             XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
             shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
+        } else if (tagName.equals("sharedtrimesh")){
+            XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
+            shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
         } else if (tagName.equals("publicobject")){
             Object o=s.pop();
             if (o instanceof RenderState){
@@ -427,6 +477,24 @@ public class JmeBinaryReader {
             parentNode=(Node) s.pop();
             parentNode.attachChild(childLoaderNode);
             s.push(parentNode);
+        } else if (tagName.equals("spatialtransformer")){
+            SpatialTransformer st=(SpatialTransformer) s.pop();
+            parentSpatial=(Spatial) s.pop();
+            st.interpolateMissing();
+            st.setActive(true);
+            parentSpatial.addController(st);
+            s.push(parentSpatial);
+        } else if (tagName.equals("stobj")){
+            XMLSharedNode xsn=(XMLSharedNode) s.pop();
+            int parNum=((Integer)s.pop()).intValue();
+            int obNum=((Integer)s.pop()).intValue();
+            SpatialTransformer parentST=(SpatialTransformer) s.pop();
+            parentST.setObject(xsn.whatIReallyAm,obNum,parNum);
+            s.push(parentST);
+        } else if (tagName.equals("spatialpointtime")){
+            s.pop();
+        } else if (tagName.equals("sptscale") || tagName.equals("sptrot") || tagName.equals("spttrans")){ // nothing to do at these ends
+
         } else {
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
@@ -590,10 +658,25 @@ public class JmeBinaryReader {
                 case BinaryFormatConstants.DATA_BOOLEAN:
                     atribMap.put(name,new Boolean(myIn.readBoolean()));
                     break;
+                case BinaryFormatConstants.DATA_QUATARRAY:
+                    atribMap.put(name,getQuatArray());
+                    break;
                 default:
                     throw new IOException("Unknown data type:" + type);
             }
         }
+    }
+
+    // Note, a quat that is all NaN for values is considered null
+    private Quaternion[] getQuatArray() throws IOException {
+        int length=myIn.readInt();
+        if (length==0) return null;
+        Quaternion[] array=new Quaternion[length];
+        for (int i=0;i<length;i++){
+            array[i]=new Quaternion(myIn.readFloat(),myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
+            if (array[i].x==Float.NaN && array[i].y==Float.NaN && array[i].z==Float.NaN && array[i].w==Float.NaN) array[i]=null;
+        }
+        return array;
     }
 
     private Quaternion getQuat() throws IOException{
