@@ -31,16 +31,17 @@
  */
 package com.jme.intersection;
 
-import java.util.ArrayList;
-
 import com.jme.scene.Geometry;
+
+import java.util.ArrayList;
 
 /**
  * <code>PickResults</code> contains information resulting from a pick test.
  * The results will contain a list of every node that was "struck" during a
  * pick test.
+ *
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.4 2004-07-30 22:27:27 cep21 Exp $
+ * @version $Id: PickResults.java,v 1.5 2004-09-02 18:02:02 mojomonkey Exp $
  */
 public class PickResults {
 
@@ -48,16 +49,15 @@ public class PickResults {
 
     /**
      * Constructor instantiates a new <code>PickResults</code> object.
-     *
      */
     public PickResults() {
         nodeList = new ArrayList();
     }
 
     /**
-     *
      * <code>addGeometry</code> places a new <code>Geometry</code> spatial into the
      * results list.
+     *
      * @param node the geometry to be placed in the results list.
      */
     public void addGeometry(Geometry node) {
@@ -65,9 +65,9 @@ public class PickResults {
     }
 
     /**
-     *
      * <code>getNumber</code> retrieves the number of geometries that have been
      * placed in the results.
+     *
      * @return the number of Geometry objects in the list.
      */
     public int getNumber() {
@@ -75,19 +75,17 @@ public class PickResults {
     }
 
     /**
-     *
      * <code>getGeometry</code> retrieves a Geometry from a specific index.
+     *
      * @param i the index requested.
      * @return the Geometry at the specified index.
      */
     public Geometry getGeometry(int i) {
-        return (Geometry)nodeList.get(i);
+        return (Geometry) nodeList.get(i);
     }
 
     /**
-     *
      * <code>clear</code> clears the list of all Geometry objects.
-     *
      */
     public void clear() {
         nodeList.clear();

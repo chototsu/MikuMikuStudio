@@ -38,32 +38,33 @@ import com.jme.scene.Spatial;
 /**
  * <code>CollisionDetection</code> provides a system for calculating collisions
  * based on given criteria.
+ *
  * @author Mark Powell
- * @version $Id: CollisionDetection.java,v 1.8 2004-08-03 02:04:38 cep21 Exp $
+ * @version $Id: CollisionDetection.java,v 1.9 2004-09-02 18:02:00 mojomonkey Exp $
  */
 public class CollisionDetection {
 
-    private CollisionDetection(){}
+    private CollisionDetection() {
+    }
 
     /**
-     *
      * <code>hasCollision</code> determines if a static test Spatial is
      * colliding with any scene objects.
-     * @param test the node to test for collisions.
-     * @param scene the world to test the node against.
+     *
+     * @param test    the node to test for collisions.
+     * @param scene   the world to test the node against.
      * @param results the list of collisions.
      */
-    public static void hasCollision(
-        Spatial test,
-        Spatial scene,
-        CollisionResults results) {
+    public static void hasCollision(Spatial test,
+                                    Spatial scene,
+                                    CollisionResults results) {
 
-    	if(test == scene) {
-    		return;
-    	}
+        if (test == scene) {
+            return;
+        }
 
         if (Intersection
-            .intersection(test.getWorldBound(), scene.getWorldBound())) {
+                .intersection(test.getWorldBound(), scene.getWorldBound())) {
             if ((scene instanceof Node)) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {

@@ -41,35 +41,37 @@ import com.jme.scene.Spatial;
  * intersected an object. This is useful for object selection, determining if
  * a weapon has hit it's target, calculating line of sight, etc. The methods
  * of <code>Pick</code> are static allowing for easy usage of the class.
+ *
  * @author Mark Powell
- * @version $Id: Pick.java,v 1.6 2004-08-03 02:04:39 cep21 Exp $
+ * @version $Id: Pick.java,v 1.7 2004-09-02 18:02:01 mojomonkey Exp $
  */
 public class Pick {
 
-    private Pick(){}
+    private Pick() {
+    }
 
     /**
-     *
      * <code>doPick</code> takes a ray object and a scene graph node. The graph
      * is traveled until it determines any leaf nodes have been hit, and those
      * leafs that have been hit are added to the results. Using the scene
      * graph allows for quick removal of branches, allowing for a quick and
      * efficient test.
-     * @param node the scene graph.
-     * @param ray the ray to test.
+     *
+     * @param node    the scene graph.
+     * @param ray     the ray to test.
      * @param results contains the nodes that were hit by the ray.
      */
     public static void doPick(Spatial node, Ray ray, PickResults results) {
-        if(Intersection.intersection(ray, node.getWorldBound())) {
-            if((node instanceof Node)) {
-                Node parent = (Node)node;
-                for(int i = 0; i < parent.getQuantity(); i++) {
+        if (Intersection.intersection(ray, node.getWorldBound())) {
+            if ((node instanceof Node)) {
+                Node parent = (Node) node;
+                for (int i = 0; i < parent.getQuantity(); i++) {
                     doPick(parent.getChild(i), ray, results);
                 }
             } else {
                 //find the triangle that is being hit.
                 //add this node and the triangle to the PickResults list.
-                results.addGeometry((Geometry)node);
+                results.addGeometry((Geometry) node);
             }
         }
     }

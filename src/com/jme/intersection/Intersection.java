@@ -45,23 +45,23 @@ import com.jme.scene.TriMesh;
  * to handle the actual work. By providing checks to just <code>BoundingVolume</code>
  * the client application need not worry about what type of bounding volume is
  * being used.
+ *
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.17 2004-08-28 20:31:53 cep21 Exp $
+ * @version $Id: Intersection.java,v 1.18 2004-09-02 18:02:01 mojomonkey Exp $
  */
 public class Intersection {
 
-    private Intersection(){}
     /**
      * EPSILON represents the error buffer used to denote a hit.
      */
     public static final double EPSILON = 1e-12;
 
     /**
-     *
      * <code>intersection</code> determines if a ray has intersected a given
      * bounding volume. This method actually delegates the work to another
      * method depending on what type of bounding volume has been passed.
-     * @param ray the ray to test.
+     *
+     * @param ray    the ray to test.
      * @param volume the bounding volume to test.
      * @return true if they intersect, false otherwise.
      */
@@ -78,7 +78,6 @@ public class Intersection {
 
 
     /**
-     *
      * <code>intersection</code> compares two bounding volumes for intersection.
      * If any part of the volumes touch, true is returned, otherwise false is
      * returned.
@@ -87,29 +86,25 @@ public class Intersection {
      * @param vol2 the second volume to check.
      * @return true if an intersection occurs, false otherwise.
      */
-    public static boolean intersection(
-        BoundingVolume vol1,
-        BoundingVolume vol2) {
+    public static boolean intersection(BoundingVolume vol1,
+                                       BoundingVolume vol2) {
         if (vol1 instanceof BoundingSphere) {
             if (vol2 instanceof BoundingSphere) {
-                return IntersectionSphere.intersection(
-                    (BoundingSphere) vol1,
-                    (BoundingSphere) vol2);
+                return IntersectionSphere.intersection((BoundingSphere) vol1,
+                        (BoundingSphere) vol2);
             } else {
                 return false;
             }
         } else if (vol1 instanceof BoundingBox) {
             if (vol2 instanceof BoundingBox) {
-                return IntersectionBox.intersection(
-                    (BoundingBox) vol1,
-                    (BoundingBox) vol2);
+                return IntersectionBox.intersection((BoundingBox) vol1,
+                        (BoundingBox) vol2);
             } else {
                 return false;
             }
         } else if (vol1 instanceof OrientedBoundingBox) {
-            return IntersectionOBB.intersection(
-                (OrientedBoundingBox) vol1,
-                vol2);
+            return IntersectionOBB.intersection((OrientedBoundingBox) vol1,
+                    vol2);
         } else {
             return false;
         }
@@ -117,42 +112,42 @@ public class Intersection {
 
     /**
      * This is a <b>VERY</b> brute force method of detecting if two TriMesh objects intersect.
+     *
      * @param a The first TriMesh.
      * @param b The second TriMesh.
      * @return True if they intersect, false otherwise.
      */
-    public static boolean meshIntersection(TriMesh a,TriMesh b){
+    public static boolean meshIntersection(TriMesh a, TriMesh b) {
 
-        int [] indexA=a.getIndices();
-        int [] indexB=b.getIndices();
-        TransformMatrix aTransform=new TransformMatrix();
+        int[] indexA = a.getIndices();
+        int[] indexB = b.getIndices();
+        TransformMatrix aTransform = new TransformMatrix();
         aTransform.setRotationQuaternion(a.getWorldRotation());
         aTransform.setTranslation(a.getWorldTranslation());
         aTransform.setScale(a.getWorldScale());
 
-        TransformMatrix bTransform=new TransformMatrix();
+        TransformMatrix bTransform = new TransformMatrix();
         bTransform.setRotationQuaternion(b.getWorldRotation());
         bTransform.setTranslation(b.getWorldTranslation());
         bTransform.setScale(b.getWorldScale());
 
-        Vector3f[] vertA=new Vector3f[a.getVertices().length];
-        for (int i=0;i<vertA.length;i++){
-            vertA[i]=aTransform.multPoint(new Vector3f(a.getVertices()[i]));
+        Vector3f[] vertA = new Vector3f[a.getVertices().length];
+        for (int i = 0; i < vertA.length; i++) {
+            vertA[i] = aTransform.multPoint(new Vector3f(a.getVertices()[i]));
         }
-        Vector3f[] vertB=new Vector3f[b.getVertices().length];
-        for (int i=0;i<vertB.length;i++){
-            vertB[i]=bTransform.multPoint(new Vector3f(b.getVertices()[i]));
+        Vector3f[] vertB = new Vector3f[b.getVertices().length];
+        for (int i = 0; i < vertB.length; i++) {
+            vertB[i] = bTransform.multPoint(new Vector3f(b.getVertices()[i]));
         }
 
-        for (int i=0;i<a.getTriangleQuantity();i++){
-            for (int j=0;j<b.getTriangleQuantity();j++){
-                if (intersection(
-                        vertA[indexA[i*3+0]],
-                        vertA[indexA[i*3+1]],
-                        vertA[indexA[i*3+2]],
-                        vertB[indexB[j*3+0]],
-                        vertB[indexB[j*3+1]],
-                        vertB[indexB[j*3+2]]))
+        for (int i = 0; i < a.getTriangleQuantity(); i++) {
+            for (int j = 0; j < b.getTriangleQuantity(); j++) {
+                if (intersection(vertA[indexA[i * 3 + 0]],
+                        vertA[indexA[i * 3 + 1]],
+                        vertA[indexA[i * 3 + 2]],
+                        vertB[indexB[j * 3 + 0]],
+                        vertB[indexB[j * 3 + 1]],
+                        vertB[indexB[j * 3 + 2]]))
                     return true;
             }
         }
@@ -160,354 +155,328 @@ public class Intersection {
     }
 
     /**
-     * This function test for the intersection between two triangles defined by their vertexes.  Converted
+     * This method tests for the intersection between two triangles defined by their vertexes.  Converted
      * to java from C code found at http://www.acm.org/jgt/papers/Moller97/tritri.html
-     * @param V0 First triangle's first vertex.
-     * @param V1 First triangle's second vertex.
-     * @param V2 First triangle's third vertex.
-     * @param U0 Second triangle's first vertex.
-     * @param U1 Second triangle's second vertex.
-     * @param U2 Second triangle's third vertex.
+     *
+     * @param v0 First triangle's first vertex.
+     * @param v1 First triangle's second vertex.
+     * @param v2 First triangle's third vertex.
+     * @param u0 Second triangle's first vertex.
+     * @param u1 Second triangle's second vertex.
+     * @param u2 Second triangle's third vertex.
      * @return True if the two triangles intersect, false otherwise.
      */
-    public static boolean intersection(Vector3f V0,Vector3f V1,Vector3f V2 ,
-                                       Vector3f U0,Vector3f U1,Vector3f U2){
-//        float E1[3],E2[3];
-        Vector3f E1=new Vector3f();
-        Vector3f E2=new Vector3f();
-//        float N1[3],N2[3],d1,d2;
-        Vector3f N1=new Vector3f();
-        Vector3f N2=new Vector3f();
-        float d1,d2;
-        float du0,du1,du2,dv0,dv1,dv2;
-//        float D[3];
-        Vector3f D=new Vector3f();
-//        float isect1[2], isect2[2];
-        float[] isect1=new float[2];
-        float[] isect2=new float[2];
-        float du0du1,du0du2,dv0dv1,dv0dv2;
+    public static boolean intersection(Vector3f v0, Vector3f v1, Vector3f v2,
+                                       Vector3f u0, Vector3f u1, Vector3f u2) {
+        Vector3f e1 = new Vector3f();
+        Vector3f e2 = new Vector3f();
+        Vector3f n1 = new Vector3f();
+        Vector3f n2 = new Vector3f();
+        float d1, d2;
+        float du0, du1, du2, dv0, dv1, dv2;
+        Vector3f d = new Vector3f();
+        float[] isect1 = new float[2];
+        float[] isect2 = new float[2];
+        float du0du1, du0du2, dv0dv1, dv0dv2;
         short index;
-        float vp0,vp1,vp2;
-        float up0,up1,up2;
-        float bb,cc,max;
-        float xx,yy,xxyy,tmp;
+        float vp0, vp1, vp2;
+        float up0, up1, up2;
+        float bb, cc, max;
+        float xx, yy, xxyy, tmp;
 
-        /* compute plane equation of triangle(V0,V1,V2) */
-//        SUB(E1,V1,V0);
-        V1.subtract(V0,E1);
+        /* compute plane equation of triangle(v0,v1,v2) */
+        v1.subtract(v0, e1);
+        v2.subtract(v0, e2);
+        e1.cross(e2, n1);
+        d1 = -n1.dot(v0);
+        /* plane equation 1: n1.X+d1=0 */
 
-//        SUB(E2,V2,V0);
-        V2.subtract(V0,E2);
-
-//        CROSS(N1,E1,E2);
-        E1.cross(E2,N1);
-
-//        d1=-DOT(N1,V0);
-        d1=-N1.dot(V0);
-        /* plane equation 1: N1.X+d1=0 */
-
-        /* put U0,U1,U2 into plane equation 1 to compute signed distances to the plane*/
-//        du0=DOT(N1,U0)+d1;
-        du0=N1.dot(U0)+d1;
-
-//        du1=DOT(N1,U1)+d1;
-        du1=N1.dot(U1)+d1;
-
-//        du2=DOT(N1,U2)+d1;
-        du2=N1.dot(U2)+d1;
+        /* put u0,u1,u2 into plane equation 1 to compute signed distances to the plane*/
+        du0 = n1.dot(u0) + d1;
+        du1 = n1.dot(u1) + d1;
+        du2 = n1.dot(u2) + d1;
 
         /* coplanarity robustness check */
-//        #if USE_EPSILON_TEST==TRUE
-        if(FastMath.abs(du0)<EPSILON) du0=0.0f;
-        if(FastMath.abs(du1)<EPSILON) du1=0.0f;
-        if(FastMath.abs(du2)<EPSILON) du2=0.0f;
-//        #endif
-        du0du1=du0*du1;
-        du0du2=du0*du2;
+        if (FastMath.abs(du0) < EPSILON) du0 = 0.0f;
+        if (FastMath.abs(du1) < EPSILON) du1 = 0.0f;
+        if (FastMath.abs(du2) < EPSILON) du2 = 0.0f;
+        du0du1 = du0 * du1;
+        du0du2 = du0 * du2;
 
-        if(du0du1>0.0f && du0du2>0.0f) /* same sign on all of them + not equal 0 ? */
+        if (du0du1 > 0.0f && du0du2 > 0.0f) {
+            return false;
+        }
+
+        /* compute plane of triangle (u0,u1,u2) */
+        u1.subtract(u0, e1);
+        u2.subtract(u0, e2);
+        e1.cross(e2, n2);
+        d2 = -n2.dot(u0);
+        /* plane equation 2: n2.X+d2=0 */
+
+        /* put v0,v1,v2 into plane equation 2 */
+        dv0 = n2.dot(v0) + d2;
+        dv1 = n2.dot(v1) + d2;
+        dv2 = n2.dot(v2) + d2;
+
+        if (FastMath.abs(dv0) < EPSILON) dv0 = 0.0f;
+        if (FastMath.abs(dv1) < EPSILON) dv1 = 0.0f;
+        if (FastMath.abs(dv2) < EPSILON) dv2 = 0.0f;
+
+        dv0dv1 = dv0 * dv1;
+        dv0dv2 = dv0 * dv2;
+
+        if (dv0dv1 > 0.0f && dv0dv2 > 0.0f) { /* same sign on all of them + not equal 0 ? */
             return false;                    /* no intersection occurs */
-
-        /* compute plane of triangle (U0,U1,U2) */
-//        SUB(E1,U1,U0);
-        U1.subtract(U0,E1);
-
-//        SUB(E2,U2,U0);
-        U2.subtract(U0,E2);
-
-//        CROSS(N2,E1,E2);
-        E1.cross(E2,N2);
-
-//        d2=-DOT(N2,U0);
-        d2=-N2.dot(U0);
-        /* plane equation 2: N2.X+d2=0 */
-
-        /* put V0,V1,V2 into plane equation 2 */
-//        dv0=DOT(N2,V0)+d2;
-        dv0=N2.dot(V0)+d2;
-
-//        dv1=DOT(N2,V1)+d2;
-        dv1=N2.dot(V1)+d2;
-
-//        dv2=DOT(N2,V2)+d2;
-        dv2=N2.dot(V2)+d2;
-
-//        #if USE_EPSILON_TEST==TRUE
-        if(FastMath.abs(dv0)<EPSILON) dv0=0.0f;
-        if(FastMath.abs(dv1)<EPSILON) dv1=0.0f;
-        if(FastMath.abs(dv2)<EPSILON) dv2=0.0f;
-//        #endif
-
-        dv0dv1=dv0*dv1;
-        dv0dv2=dv0*dv2;
-
-        if(dv0dv1>0.0f && dv0dv2>0.0f) /* same sign on all of them + not equal 0 ? */
-            return false;                    /* no intersection occurs */
+        }
 
         /* compute direction of intersection line */
-//        CROSS(D,N1,N2);
-        N1.cross(N2,D);
+        n1.cross(n2, d);
 
-        /* compute and index to the largest component of D */
-        max=(float)FastMath.abs(D.x);
-        index=0;
-        bb=(float)FastMath.abs(D.y);
-        cc=(float)FastMath.abs(D.z);
-        if(bb>max){
-            max=bb;
-            index=1;
+        /* compute and index to the largest component of d */
+        max = (float) FastMath.abs(d.x);
+        index = 0;
+        bb = (float) FastMath.abs(d.y);
+        cc = (float) FastMath.abs(d.z);
+        if (bb > max) {
+            max = bb;
+            index = 1;
         }
-        if(cc>max){
-            max=cc;
-//            index=2;
-            vp0=V0.z;
-            vp1=V1.z;
-            vp2=V2.z;
+        if (cc > max) {
+            max = cc;
+            vp0 = v0.z;
+            vp1 = v1.z;
+            vp2 = v2.z;
 
-            up0=U0.z;
-            up1=U1.z;
-            up2=U2.z;
+            up0 = u0.z;
+            up1 = u1.z;
+            up2 = u2.z;
 
-        } else if (index==1){
-            vp0=V0.y;
-            vp1=V1.y;
-            vp2=V2.y;
+        } else if (index == 1) {
+            vp0 = v0.y;
+            vp1 = v1.y;
+            vp2 = v2.y;
 
-            up0=U0.y;
-            up1=U1.y;
-            up2=U2.y;
-        } else{
-            vp0=V0.x;
-            vp1=V1.x;
-            vp2=V2.x;
+            up0 = u0.y;
+            up1 = u1.y;
+            up2 = u2.y;
+        } else {
+            vp0 = v0.x;
+            vp1 = v1.x;
+            vp2 = v2.x;
 
-            up0=U0.x;
-            up1=U1.x;
-            up2=U2.x;
+            up0 = u0.x;
+            up1 = u1.x;
+            up2 = u2.x;
         }
-
-        /* this is the simplified projection onto L*/
-//        vp0=V0[index];
-//        vp1=V1[index];
-//        vp2=V2[index];
-
-//        up0=U0[index];
-//        up1=U1[index];
-//        up2=U2[index];
 
         /* compute interval for triangle 1 */
-        Vector3f abc=new Vector3f();
-        Vector2f x0x1=new Vector2f();
-        if (NEWCOMPUTE_INTERVALS(vp0,vp1,vp2,dv0,dv1,dv2,dv0dv1,dv0dv2,abc,x0x1))
-            return coplanar_tri_tri(N1,V0,V1,V2,U0,U1,U2);
+        Vector3f abc = new Vector3f();
+        Vector2f x0x1 = new Vector2f();
+        if (newComputeIntervals(vp0, vp1, vp2, dv0, dv1, dv2, dv0dv1, dv0dv2, abc, x0x1)) {
+            return coplanarTriTri(n1, v0, v1, v2, u0, u1, u2);
+        }
 
         /* compute interval for triangle 2 */
-        Vector3f def=new Vector3f();
-        Vector2f y0y1=new Vector2f();
-        if (NEWCOMPUTE_INTERVALS(up0,up1,up2,du0,du1,du2,du0du1,du0du2,def,y0y1))
-            return coplanar_tri_tri(N1,V0,V1,V2,U0,U1,U2);
+        Vector3f def = new Vector3f();
+        Vector2f y0y1 = new Vector2f();
+        if (newComputeIntervals(up0, up1, up2, du0, du1, du2, du0du1, du0du2, def, y0y1)) {
+            return coplanarTriTri(n1, v0, v1, v2, u0, u1, u2);
+        }
 
-        xx=x0x1.x*x0x1.y;
-        yy=y0y1.x*y0y1.y;
-        xxyy=xx*yy;
+        xx = x0x1.x * x0x1.y;
+        yy = y0y1.x * y0y1.y;
+        xxyy = xx * yy;
 
-        tmp=abc.x*xxyy;
-        isect1[0]=tmp+abc.y*x0x1.y*yy;
-        isect1[1]=tmp+abc.z*x0x1.x*yy;
+        tmp = abc.x * xxyy;
+        isect1[0] = tmp + abc.y * x0x1.y * yy;
+        isect1[1] = tmp + abc.z * x0x1.x * yy;
 
-        tmp=def.x*xxyy;
-        isect2[0]=tmp+def.y*xx*y0y1.y;
-        isect2[1]=tmp+def.z*xx*y0y1.x;
+        tmp = def.x * xxyy;
+        isect2[0] = tmp + def.y * xx * y0y1.y;
+        isect2[1] = tmp + def.z * xx * y0y1.x;
 
-        SORT(isect1);
-        SORT(isect2);
+        sort(isect1);
+        sort(isect2);
 
-        if(isect1[1]<isect2[0] || isect2[1]<isect1[0]) return false;
-        return true;
-    }
-
-    private static void SORT(float[] f) {
-        if (f[0] > f[1]){
-            float c=f[0];
-            f[0]=f[1];
-            f[1]=c;
+        if (isect1[1] < isect2[0] || isect2[1] < isect1[0]) {
+            return false;
+        } else {
+            return true;
         }
     }
 
-//#define NEWCOMPUTE_INTERVALS(VV0,VV1,VV2,D0,D1,D2,D0D1,D0D2,A,B,C,X0,X1)
-    private static boolean NEWCOMPUTE_INTERVALS(float VV0, float VV1, float VV2,
-                                             float D0, float D1, float D2, 
-                                             float D0D1, float D0D2, 
-                                             Vector3f ABC, Vector2f X0X1) {
-        if(D0D1>0.0f){
-                /* here we know that D0D2<=0.0 */
-            /* that is D0, D1 are on the same side, D2 on the other or on the plane */
-                ABC.x=VV2; ABC.y=(VV0-VV2)*D2; ABC.z=(VV1-VV2)*D2; X0X1.x=D2-D0; X0X1.y=D2-D1;
-        }else if(D0D2>0.0f){
-                /* here we know that d0d1<=0.0 */ 
-            ABC.x=VV1; ABC.y=(VV0-VV1)*D1; ABC.z=(VV2-VV1)*D1; X0X1.x=D1-D0; X0X1.y=D1-D2;
-        }else if(D1*D2>0.0f || D0!=0.0f){
-                /* here we know that d0d1<=0.0 or that D0!=0.0 */
-                ABC.x=VV0; ABC.y=(VV1-VV0)*D0; ABC.z=(VV2-VV0)*D0; X0X1.x=D0-D1; X0X1.y=D0-D2;
-        }else if(D1!=0.0f){
-                ABC.x=VV1; ABC.y=(VV0-VV1)*D1; ABC.z=(VV2-VV1)*D1; X0X1.x=D1-D0; X0X1.y=D1-D2;
-        }else if(D2!=0.0f){
-                ABC.x=VV2; ABC.y=(VV0-VV2)*D2; ABC.z=(VV1-VV2)*D2; X0X1.x=D2-D0; X0X1.y=D2-D1;
-        }else{
-                /* triangles are coplanar */
-                return true;
+    private static void sort(float[] f) {
+        if (f[0] > f[1]) {
+            float c = f[0];
+            f[0] = f[1];
+            f[1] = c;
+        }
+    }
+
+    private static boolean newComputeIntervals(float vv0, float vv1, float vv2,
+                                               float d0, float d1, float d2,
+                                               float d0d1, float d0d2,
+                                               Vector3f abc, Vector2f x0x1) {
+        if (d0d1 > 0.0f) {
+            /* here we know that d0d2<=0.0 */
+            /* that is d0, d1 are on the same side, d2 on the other or on the plane */
+            abc.x = vv2;
+            abc.y = (vv0 - vv2) * d2;
+            abc.z = (vv1 - vv2) * d2;
+            x0x1.x = d2 - d0;
+            x0x1.y = d2 - d1;
+        } else if (d0d2 > 0.0f) {
+            /* here we know that d0d1<=0.0 */
+            abc.x = vv1;
+            abc.y = (vv0 - vv1) * d1;
+            abc.z = (vv2 - vv1) * d1;
+            x0x1.x = d1 - d0;
+            x0x1.y = d1 - d2;
+        } else if (d1 * d2 > 0.0f || d0 != 0.0f) {
+            /* here we know that d0d1<=0.0 or that d0!=0.0 */
+            abc.x = vv0;
+            abc.y = (vv1 - vv0) * d0;
+            abc.z = (vv2 - vv0) * d0;
+            x0x1.x = d0 - d1;
+            x0x1.y = d0 - d2;
+        } else if (d1 != 0.0f) {
+            abc.x = vv1;
+            abc.y = (vv0 - vv1) * d1;
+            abc.z = (vv2 - vv1) * d1;
+            x0x1.x = d1 - d0;
+            x0x1.y = d1 - d2;
+        } else if (d2 != 0.0f) {
+            abc.x = vv2;
+            abc.y = (vv0 - vv2) * d2;
+            abc.z = (vv1 - vv2) * d2;
+            x0x1.x = d2 - d0;
+            x0x1.y = d2 - d1;
+        } else {
+            /* triangles are coplanar */
+            return true;
         }
         return false;
     }
 
-    private static boolean coplanar_tri_tri(Vector3f N,
-                                            Vector3f V0, Vector3f V1, Vector3f V2,
-                                            Vector3f U0, Vector3f U1, Vector3f U2) {
-//        float A[3];
-        Vector3f A=new Vector3f();
-        short i0,i1;
-        /* first project onto an axis-aligned plane, that maximizes the area */
-        /* of the triangles, compute indices: i0,i1. */
-//        A[0]=fabs(N[0]);
-        A.x=FastMath.abs(N.x);
+    private static boolean coplanarTriTri(Vector3f n,
+                                          Vector3f v0, Vector3f v1, Vector3f v2,
+                                          Vector3f u0, Vector3f u1, Vector3f u2) {
+        Vector3f a = new Vector3f();
+        short i0, i1;
+        a.x = FastMath.abs(n.x);
+        a.y = FastMath.abs(n.y);
+        a.z = FastMath.abs(n.z);
 
-//        A[1]=fabs(N[1]);
-        A.y=FastMath.abs(N.y);
-
-//        A[2]=fabs(N[2]);
-        A.z=FastMath.abs(N.z);
-
-        if(A.x>A.y)
-        {
-          if(A.x>A.z)
-          {
-             i0=1;      /* A[0] is greatest */
-             i1=2;
-          }
-          else
-          {
-              i0=0;      /* A[2] is greatest */
-              i1=1;
-          }
-        }
-        else   /* A[0]<=A[1] */
-        {
-          if(A.z>A.y)
-          {
-              i0=0;      /* A[2] is greatest */
-              i1=1;
-          }
-          else
-          {
-              i0=0;      /* A[1] is greatest */
-              i1=2;
-          }
+        if (a.x > a.y) {
+            if (a.x > a.z) {
+                i0 = 1;      /* a[0] is greatest */
+                i1 = 2;
+            } else {
+                i0 = 0;      /* a[2] is greatest */
+                i1 = 1;
+            }
+        } else   /* a[0]<=a[1] */ {
+            if (a.z > a.y) {
+                i0 = 0;      /* a[2] is greatest */
+                i1 = 1;
+            } else {
+                i0 = 0;      /* a[1] is greatest */
+                i1 = 2;
+            }
         }
 
         /* test all edges of triangle 1 against the edges of triangle 2 */
-        float[] V0f=new float[3];
-        V0.toArray(V0f);
-        float[] V1f=new float[3];
-        V1.toArray(V1f);
-        float[] V2f=new float[3];
-        V2.toArray(V2f);
-        float[] U0f=new float[3];
-        U0.toArray(U0f);
-        float[] U1f=new float[3];
-        U1.toArray(U1f);
-        float[] U2f=new float[3];
-        U2.toArray(U2f);
-        if (EDGE_AGAINST_TRI_EDGES(V0f,V1f,U0f,U1f,U2f,i0,i1))
+        float[] v0f = new float[3];
+        v0.toArray(v0f);
+        float[] v1f = new float[3];
+        v1.toArray(v1f);
+        float[] v2f = new float[3];
+        v2.toArray(v2f);
+        float[] u0f = new float[3];
+        u0.toArray(u0f);
+        float[] u1f = new float[3];
+        u1.toArray(u1f);
+        float[] u2f = new float[3];
+        u2.toArray(u2f);
+        if (edgeAgainstTriEdges(v0f, v1f, u0f, u1f, u2f, i0, i1)) {
             return true;
+        }
 
-        if (EDGE_AGAINST_TRI_EDGES(V1f,V2f,U0f,U1f,U2f,i0,i1))
+        if (edgeAgainstTriEdges(v1f, v2f, u0f, u1f, u2f, i0, i1)) {
             return true;
-        if (EDGE_AGAINST_TRI_EDGES(V2f,V0f,U0f,U1f,U2f,i0,i1))
+        }
+
+        if (edgeAgainstTriEdges(v2f, v0f, u0f, u1f, u2f, i0, i1)) {
             return true;
+        }
 
         /* finally, test if tri1 is totally contained in tri2 or vice versa */
-        POINT_IN_TRI(V0f,U0f,U1f,U2f,i0,i1);
-        POINT_IN_TRI(U0f,V0f,V1f,V2f,i0,i1);
+        pointInTri(v0f, u0f, u1f, u2f, i0, i1);
+        pointInTri(u0f, v0f, v1f, v2f, i0, i1);
 
         return false;
     }
 
-    private static boolean POINT_IN_TRI(float[] V0, float[] U0, float[] U1, float[] U2,
-                                        int i0,int i1) {
-        float a,b,c,d0,d1,d2;
+    private static boolean pointInTri(float[] V0, float[] U0, float[] U1, float[] U2,
+                                      int i0, int i1) {
+        float a, b, c, d0, d1, d2;
         /* is T1 completly inside T2? */
         /* check if V0 is inside tri(U0,U1,U2) */
-        a=U1[i1]-U0[i1];
-        b=-(U1[i0]-U0[i0]);
-        c=-a*U0[i0]-b*U0[i1];
-        d0=a*V0[i0]+b*V0[i1]+c;
+        a = U1[i1] - U0[i1];
+        b = -(U1[i0] - U0[i0]);
+        c = -a * U0[i0] - b * U0[i1];
+        d0 = a * V0[i0] + b * V0[i1] + c;
 
-        a=U2[i1]-U1[i1];
-        b=-(U2[i0]-U1[i0]);
-        c=-a*U1[i0]-b*U1[i1];
-        d1=a*V0[i0]+b*V0[i1]+c;
+        a = U2[i1] - U1[i1];
+        b = -(U2[i0] - U1[i0]);
+        c = -a * U1[i0] - b * U1[i1];
+        d1 = a * V0[i0] + b * V0[i1] + c;
 
-        a=U0[i1]-U2[i1];
-        b=-(U0[i0]-U2[i0]);
-        c=-a*U2[i0]-b*U2[i1];
-        d2=a*V0[i0]+b*V0[i1]+c;
-        if(d0*d1>0.0 && d0*d2>0.0)
+        a = U0[i1] - U2[i1];
+        b = -(U0[i0] - U2[i0]);
+        c = -a * U2[i0] - b * U2[i1];
+        d2 = a * V0[i0] + b * V0[i1] + c;
+        if (d0 * d1 > 0.0 && d0 * d2 > 0.0)
             return true;
         else
             return false;
     }
 
-    private static boolean EDGE_AGAINST_TRI_EDGES(float[] V0, float[] V1, float[] U0, float[] U1, float[] U2,
-                                                  int i0,int i1) {
-        float Ax,Ay;
-        Ax=V1[i0]-V0[i0];
-        Ay=V1[i1]-V0[i1];
-        /* test edge U0,U1 against V0,V1 */
-        if (EDGE_EDGE_TEST(V0,U0,U1,i0,i1,Ax,Ay))
+    private static boolean edgeAgainstTriEdges(float[] v0, float[] v1, float[] u0, float[] u1, float[] u2,
+                                               int i0, int i1) {
+        float aX, aY;
+        aX = v1[i0] - v0[i0];
+        aY = v1[i1] - v0[i1];
+        /* test edge u0,u1 against v0,v1 */
+        if (edgeEdgeTest(v0, u0, u1, i0, i1, aX, aY)) {
             return true;
-        /* test edge U1,U2 against V0,V1 */
-        if (EDGE_EDGE_TEST(V0,U1,U2,i0,i1,Ax,Ay))
+        }
+        /* test edge u1,u2 against v0,v1 */
+        if (edgeEdgeTest(v0, u1, u2, i0, i1, aX, aY)) {
             return true;
-        /* test edge U2,U1 against V0,V1 */
-        if (EDGE_EDGE_TEST(V0,U2,U0,i0,i1,Ax,Ay))
+        }
+        /* test edge u2,u1 against v0,v1 */
+        if (edgeEdgeTest(v0, u2, u0, i0, i1, aX, aY)) {
             return true;
+        }
         return false;
     }
 
-    private static boolean EDGE_EDGE_TEST(float[] V0, float[] U0, float[] U1,
-                                          int i0, int i1,float Ax,float Ay){
-        float Bx=U0[i0]-U1[i0];
-        float By=U0[i1]-U1[i1];
-        float Cx=V0[i0]-U0[i0];
-        float Cy=V0[i1]-U0[i1];
-        float f=Ay*Bx-Ax*By;
-        float d=By*Cx-Bx*Cy;
-        if((f>0 && d>=0 && d<=f) || (f<0 && d<=0 && d>=f)){
-            float e=Ax*Cy-Ay*Cx;
-            if(f>0){
-                if(e>=0 && e<=f) return true;
+    private static boolean edgeEdgeTest(float[] v0, float[] u0, float[] u1,
+                                        int i0, int i1, float aX, float Ay) {
+        float Bx = u0[i0] - u1[i0];
+        float By = u0[i1] - u1[i1];
+        float Cx = v0[i0] - u0[i0];
+        float Cy = v0[i1] - u0[i1];
+        float f = Ay * Bx - aX * By;
+        float d = By * Cx - Bx * Cy;
+        if ((f > 0 && d >= 0 && d <= f) || (f < 0 && d <= 0 && d >= f)) {
+            float e = aX * Cy - Ay * Cx;
+            if (f > 0) {
+                if (e >= 0 && e <= f) return true;
             } else {
-                if(e<=0 && e>=f) return true;
+                if (e <= 0 && e >= f) return true;
             }
         }
         return false;

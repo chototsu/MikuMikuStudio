@@ -40,24 +40,23 @@ import com.jme.math.Vector3f;
  * and easy calls.
  *
  * @author Mark Powell
- * @version $Id: IntersectionBox.java,v 1.9 2004-08-03 02:04:38 cep21 Exp $
+ * @version $Id: IntersectionBox.java,v 1.10 2004-09-02 18:02:01 mojomonkey Exp $
  */
 public class IntersectionBox {
 
-    private IntersectionBox(){}
+    private IntersectionBox() {
+    }
+
     /**
      * EPSILON represents the error buffer used to denote a hit.
      */
     public static final double EPSILON = 1e-12;
 
     /**
-     *
      * <code>intersection</code> determines if a ray has intersected a box.
      *
-     * @param ray
-     *            the ray to test.
-     * @param box
-     *            the box to test.
+     * @param ray the ray to test.
+     * @param box the box to test.
      * @return true if they intersect, false otherwise.
      */
     public static boolean intersection(Ray ray, BoundingBox box) {
@@ -69,20 +68,17 @@ public class IntersectionBox {
         float[] t = new float[2];
         t[0] = 0f;
         t[1] = Float.POSITIVE_INFINITY;
-        float[] extents = { box.xExtent, box.yExtent, box.zExtent};
+        float[] extents = {box.xExtent, box.yExtent, box.zExtent};
         return findIntersection(origin, direction, extents, t);
     }
 
     /**
-     *
      * <code>intersection</code> compares two static spheres for intersection.
      * If any part of the two spheres touch, true is returned, otherwise false
      * will return.
      *
-     * @param box1
-     *            the first box to test.
-     * @param box2
-     *            the second box to test.
+     * @param box1 the first box to test.
+     * @param box2 the second box to test.
      * @return true if the spheres are intersecting, false otherwise.
      */
     public static boolean intersection(BoundingBox box1, BoundingBox box2) {
@@ -100,16 +96,12 @@ public class IntersectionBox {
     }
 
     /**
-     *
      * <code>clip</code> determines if a line segment intersects the current
      * test plane.
      *
-     * @param denom
-     *            the denominator of the line segment.
-     * @param numer
-     *            the numerator of the line segment.
-     * @param t
-     *            test values of the plane.
+     * @param denom the denominator of the line segment.
+     * @param numer the numerator of the line segment.
+     * @param t     test values of the plane.
      * @return true if the line segment intersects the plane, false otherwise.
      */
     private static boolean clip(float denom, float numer, float[] t) {
@@ -130,18 +122,17 @@ public class IntersectionBox {
     }
 
     /**
-     *
      * <code>findIntersection</code> determines if any of the planes of the box are
      * intersected by a ray (defined by an origin and direction).
      *
-     * @param origin the origin of the ray.
+     * @param origin    the origin of the ray.
      * @param direction the direction of the ray.
-     * @param extent the extents of the box.
-     * @param t the plane intersection values of the box.
+     * @param extent    the extents of the box.
+     * @param t         the plane intersection values of the box.
      * @return true if an intersection occurs, false otherwise.
      */
     private static boolean findIntersection(Vector3f origin,
-            Vector3f direction, float[] extent, float[] t) {
+                                            Vector3f direction, float[] extent, float[] t) {
         float saveT0 = t[0], saveT1 = t[1];
         boolean notEntirelyClipped = clip(+direction.x, -origin.x - extent[0],
                 t)

@@ -32,24 +32,26 @@
 package com.jme.intersection;
 
 import com.jme.bounding.BoundingSphere;
+import com.jme.math.FastMath;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.math.FastMath;
 
 /**
  * <code>Distance</code> provides functional methods for determining the
  * distances between one object and another. These methods are static to allow
  * for easy calling.
+ *
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.7 2004-08-03 02:04:38 cep21 Exp $
+ * @version $Id: Distance.java,v 1.8 2004-09-02 18:02:01 mojomonkey Exp $
  */
 public class Distance {
 
-    private Distance(){}
+    private Distance() {
+    }
 
     /**
-     *
      * <code>distance</code> calculates the distance between two points.
+     *
      * @param point1 the first point to test.
      * @param point2 the second point to test.
      * @return the distance between the two points.
@@ -60,25 +62,25 @@ public class Distance {
     }
 
     /**
-     *
      * <code>distanceSquared</code> returns the distance between two points,
      * with the distance squared. This allows for faster comparisons if relation
      * is important but actual distance is not.
+     *
      * @param p1 the first point to test.
      * @param p2 the second point to test.
      * @return the distance squared between two points.
      */
     public static float distanceSquared(Vector3f p1, Vector3f p2) {
         return ((p1.x - p2.x) * (p1.x - p2.x))
-            + ((p1.y - p2.y) * (p1.y - p2.y))
-            + ((p1.z - p2.z) * (p1.z - p2.z));
+                + ((p1.y - p2.y) * (p1.y - p2.y))
+                + ((p1.z - p2.z) * (p1.z - p2.z));
     }
 
     /**
-     *
      * <code>distance</code> calculates the distance between a point and a
      * sphere.
-     * @param point the point to test.
+     *
+     * @param point  the point to test.
      * @param sphere the sphere to test.
      * @return the distance between a point and a sphere.
      */
@@ -87,10 +89,10 @@ public class Distance {
     }
 
     /**
-     *
      * <code>distance</code> calculates the distance between a point and a ray.
+     *
      * @param point the point to test.
-     * @param ray the ray to test.
+     * @param ray   the ray to test.
      * @return the distance between the point and the ray.
      */
     public static float distance(Vector3f point, Ray ray) {
