@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.14 2004-03-02 03:56:40 renanse Exp $
+ * @version $Id: Geometry.java,v 1.15 2004-03-04 13:01:54 mojomonkey Exp $
  */
 public class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -66,6 +66,9 @@ public class Geometry extends Spatial implements Serializable {
     private FloatBuffer normBuf;
     private FloatBuffer vertBuf;
     private FloatBuffer[] texBuf;
+    
+    //float arrays for update phase
+    float[] colorArray;
 
     /**
      * Constructor instantiates a new <code>Geometry</code> object. This
@@ -417,24 +420,30 @@ public class Geometry extends Spatial implements Serializable {
         if (color == null) {
             return;
         }
-        float[] buffer = new float[vertex.length * 4];
-
+        if(colorArray == null) {
+            colorArray = new float[vertex.length * 4];
+        }
+        
+        if(colorArray.length != vertex.length * 4) {
+            colorArray = new float[vertex.length * 4];
+        }
+        
         if (colorBuf == null) {
             colorBuf =
                 ByteBuffer
-                    .allocateDirect(4 * buffer.length)
+                    .allocateDirect(4 * colorArray.length)
                     .order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
         }
         for (int i = 0; i < vertex.length; i++) {
-            buffer[i * 4] = color[i].r;
-            buffer[i * 4 + 1] = color[i].g;
-            buffer[i * 4 + 2] = color[i].b;
-            buffer[i * 4 + 3] = color[i].a;
+            colorArray[i * 4] = color[i].r;
+            colorArray[i * 4 + 1] = color[i].g;
+            colorArray[i * 4 + 2] = color[i].b;
+            colorArray[i * 4 + 3] = color[i].a;
         }
 
         colorBuf.clear();
-        colorBuf.put(buffer);
+        colorBuf.put(colorArray);
         colorBuf.flip();
 
     }
