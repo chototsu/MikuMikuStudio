@@ -30,8 +30,9 @@
  */
 package jmetest.renderer.loader;
 
+import javax.swing.JOptionPane;
+
 import com.jme.animation.VertexKeyframeController;
-import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
@@ -60,7 +61,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestMd2.java,v 1.2 2004-02-16 04:39:56 ericthered Exp $
  */
 public class TestMd2 extends SimpleGame {
 	LightState state;
@@ -164,15 +165,15 @@ public class TestMd2 extends SimpleGame {
 	 * 
 	 * @see com.jme.app.AbstractGame#initGame()
 	 */
-	protected void initGame() {
+	protected void initGame() {  
 		model = new Md2Model();
-		model.load(FILE_NAME);
+		model.load(TestMd2.class.getClassLoader().getResource("jmetest/"+FILE_NAME));
 		
 		ts = display.getRenderer().getTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(
 			TextureManager.loadTexture(
-				TEXTURE_NAME,
+			    TestMd2.class.getClassLoader().getResource("jmetest/"+TEXTURE_NAME),
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
@@ -240,7 +241,7 @@ public class TestMd2 extends SimpleGame {
 
 	public static void main(String[] args) {
 		TestMd2 app = new TestMd2();
-		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 }
