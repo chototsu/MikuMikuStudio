@@ -51,7 +51,7 @@ import com.jme.math.Vector2f;
 /**
  * <code>TestAnisotropic</code>
  * @author Joshua Slack
- * @version $Id: TestAnisotropic.java,v 1.1 2004-06-29 19:33:44 renanse Exp $
+ * @version $Id: TestAnisotropic.java,v 1.2 2004-06-30 00:28:49 renanse Exp $
  */
 public class TestAnisotropic extends SimpleGame {
 
@@ -73,11 +73,11 @@ public class TestAnisotropic extends SimpleGame {
   protected void simpleUpdate() {
     if (KeyBindingManager.getKeyBindingManager().isValidCommand("aniso", false)) {
         if (useAniso) {
-          display.setTitle("AnisoTropic Demo - off - press 'f' to switch");
+          display.setTitle("Anisotropic Demo - off - press 'f' to switch");
           ts.setTexture(regTexture);
           rootNode.updateRenderState();
         } else {
-          display.setTitle("AnisoTropic Demo - on - press 'f' to switch");
+          display.setTitle("Anisotropic Demo - on - press 'f' to switch");
           ts.setTexture(anisoTexture);
           rootNode.updateRenderState();
         }
@@ -90,7 +90,7 @@ public class TestAnisotropic extends SimpleGame {
    * @see com.jme.app.SimpleGame#initGame()
    */
   protected void simpleInitGame() {
-    display.setTitle("AnisoTropic Demo - off - press 'f' to switch");
+    display.setTitle("Anisotropic Demo - off - press 'f' to switch");
     KeyBindingManager.getKeyBindingManager().set("aniso", KeyInput.KEY_F);
     cam.setLocation(new Vector3f(0,10,100));
     cam.update();
