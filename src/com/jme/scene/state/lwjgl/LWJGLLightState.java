@@ -44,17 +44,18 @@ import com.jme.light.SpotLight;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
 import java.util.Stack;
+
 import com.jme.scene.Spatial;
 
 /**
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.8 2004-06-23 19:15:54 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.9 2004-07-06 04:48:52 cep21 Exp $
  */
 public class LWJGLLightState extends LightState {
   //buffer for light colors.
-  private FloatBuffer buffer;
+  private transient FloatBuffer buffer;
   private float[] ambient = {0.0f, 0.0f, 0.0f, 1.0f};
   private float[] color;
   private float[] posParam = new float[4];
@@ -80,7 +81,7 @@ public class LWJGLLightState extends LightState {
   /**
    * <code>set</code> iterates over the light queue and processes each
    * individual light.
-   * @see com.jme.scene.state.RenderState#set()
+   * @see com.jme.scene.state.RenderState#apply()
    */
   public void apply() {
     int quantity = getQuantity();

@@ -44,7 +44,7 @@ import com.jme.scene.state.MaterialState;
  * LWJGL API to access OpenGL to set the material for a given node and it's
  * children.
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.4 2004-06-17 16:31:16 renanse Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.5 2004-07-06 04:49:25 cep21 Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
     //buffer for color
@@ -67,7 +67,7 @@ public class LWJGLMaterialState extends MaterialState {
     /**
      * <code>set</code> calls the OpenGL material function to set the proper
      * material state.
-     * @see com.jme.scene.state.RenderState#set()
+     * @see com.jme.scene.state.RenderState#apply()
      */
     public void apply() {
 //        if(isEnabled()) {
@@ -124,5 +124,4 @@ public class LWJGLMaterialState extends MaterialState {
           }
   //      }
     }
-
 }
