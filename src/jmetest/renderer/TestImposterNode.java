@@ -52,7 +52,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
-import com.jme.math.FastMath;
 
 /**
  * <code>TestImposterNode</code>
