@@ -56,7 +56,7 @@ import com.jme.scene.state.RenderState;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.4 2004-06-18 17:55:09 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.5 2004-06-23 19:15:56 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -161,6 +161,8 @@ public class TestRenderQueue extends SimpleGame {
     dLight2.setDirection(new Vector3f(1,1,1));
     ls.attach(dLight2);
     ls.setTwoSidedLighting(false);
+    transps.setRenderState(ls);
+    transps.setLightCombineMode(LightState.REPLACE);
 
     Box tb1 = new Box("TBox Blue", min, max);
     tb1.setModelBound(new BoundingBox());
@@ -171,9 +173,7 @@ public class TestRenderQueue extends SimpleGame {
     ms1.setEnabled(true);
     ms1.setDiffuse(new ColorRGBA(0,0,1,.75f));
     ms1.setShininess(128);
-    tb1.setRenderState(ls);
     tb1.setRenderState(ms1);
-    tb1.setLightCombineMode(LightState.REPLACE);
 
     Box tb2 = new Box("TBox Green", min, max);
     tb2.setModelBound(new BoundingBox());
@@ -184,9 +184,7 @@ public class TestRenderQueue extends SimpleGame {
     ms2.setEnabled(true);
     ms2.setDiffuse(new ColorRGBA(0,1,0,.75f));
     ms2.setShininess(128);
-    tb2.setRenderState(ls);
     tb2.setRenderState(ms2);
-    tb2.setLightCombineMode(LightState.REPLACE);
 
     Box tb3 = new Box("TBox Red", min, max);
     tb3.setModelBound(new BoundingBox());
@@ -198,8 +196,6 @@ public class TestRenderQueue extends SimpleGame {
     ms3.setDiffuse(new ColorRGBA(1,0,0,.75f));
     ms3.setShininess(128);
     tb3.setRenderState(ms3);
-    tb3.setRenderState(ls);
-    tb3.setLightCombineMode(LightState.REPLACE);
 
     AlphaState as = display.getRenderer().getAlphaState();
     as.setEnabled(true);
@@ -212,21 +208,21 @@ public class TestRenderQueue extends SimpleGame {
     q1.setLocalTranslation(new Vector3f(100,100,0));
     q1.setZOrder(1);
     q1.setSolidColor(ColorRGBA.white);
-    q1.setLightCombineMode(LightState.REPLACE);
+    q1.setLightCombineMode(LightState.OFF);
     orthos.attachChild(q1);
 
     Quad q2 = new Quad("Ortho Q2", 100, 100);
     q2.setLocalTranslation(new Vector3f(60,60,0));
     q2.setZOrder(5);
     q2.setSolidColor(ColorRGBA.red);
-    q2.setLightCombineMode(LightState.REPLACE);
+    q2.setLightCombineMode(LightState.OFF);
     orthos.attachChild(q2);
 
     Quad q3 = new Quad("Ortho Q3", 120, 60);
     q3.setLocalTranslation(new Vector3f(-20,-150,0));
     q3.setZOrder(2);
     q3.setSolidColor(ColorRGBA.blue);
-    q3.setLightCombineMode(LightState.REPLACE);
+    q3.setLightCombineMode(LightState.OFF);
     orthos.attachChild(q3);
 
     ZBufferState zstate = display.getRenderer().getZBufferState();

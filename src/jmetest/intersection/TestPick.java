@@ -48,7 +48,7 @@ import com.jme.scene.state.LightState;
 /**
  * <code>TestPick</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.18 2004-04-25 03:04:08 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.19 2004-06-23 19:15:59 renanse Exp $
  */
 public class TestPick extends SimpleGame {
 
@@ -102,8 +102,7 @@ public class TestPick extends SimpleGame {
     Line l = new Line("Line Group", vertex, null, color, null);
     l.setModelBound(new BoundingBox());
     l.updateModelBound();
-    l.setRenderState(Line.defaultStateList[RenderState.RS_LIGHT]);
-    l.setLightCombineMode(LightState.REPLACE);
+    l.setLightCombineMode(LightState.OFF);
 
     rootNode.attachChild(l);
     rootNode.attachChild(model);

@@ -54,7 +54,7 @@ import com.jme.scene.state.RenderState;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.17 2004-06-17 16:31:20 renanse Exp $
+ * @version $Id: TestBezierMesh.java,v 1.18 2004-06-23 19:15:56 renanse Exp $
  */
 public class TestBezierMesh extends SimpleGame {
   private TriMesh t;
@@ -153,8 +153,7 @@ public class TestBezierMesh extends SimpleGame {
     Vector3f min = new Vector3f( -0.15f, -0.15f, -0.15f);
     Vector3f max = new Vector3f(0.15f, 0.15f, 0.15f);
     Box lightBox = new Box("box", min, max);
-    lightBox.setRenderState(Spatial.defaultStateList[RenderState.RS_LIGHT]);
-    lightBox.setLightCombineMode(LightState.REPLACE);
+    lightBox.setLightCombineMode(LightState.OFF);
     lightBox.setModelBound(new BoundingSphere());
     lightBox.updateModelBound();
 

@@ -59,7 +59,7 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.8 2004-06-23 18:14:18 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.9 2004-06-23 19:15:52 renanse Exp $
  */
 
 public class LensFlare extends Node {
@@ -74,13 +74,14 @@ public class LensFlare extends Node {
     Iterator it = children.iterator();
     while (it.hasNext()) {
       Geometry spat = (Geometry)it.next();
-      spat.setRenderQueueMode(Renderer.QUEUE_ORTHO);
       spat.setVBOVertexEnabled(true);
       spat.setVBONormalEnabled(true);
       spat.setVBOTextureEnabled(true);
       spat.setVBOColorEnabled(true);
     }
     this.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+    this.setLightCombineMode(LightState.OFF);
+    this.setTextureCombineMode(TextureState.REPLACE);
   }
 
   /**
@@ -241,21 +242,15 @@ public class LensFlare extends Node {
     ts4.setEnabled(true);
     ts4.apply();
 
-    LightState blankLightState = display.getRenderer().getLightState();
-    blankLightState.setEnabled(false);
-
     for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
       setRenderState(defaultStateList[i]);
     }
     setRenderState(as1);
     setRenderState(ts3);
-    setRenderState(blankLightState);
 
     mainFlare = new Quad("quad", midPoint.x * .75f, midPoint.x * .75f);
     mainFlare.setRenderState(ts);
     mainFlare.setSolidColor(new ColorRGBA(.95f, .95f, .95f, 1f));
-    mainFlare.setLightCombineMode(LightState.REPLACE);
-    mainFlare.setTextureCombineMode(TextureState.REPLACE);
     this.attachChild(mainFlare);
 
     sFlare = new Quad[15];
@@ -317,8 +312,6 @@ public class LensFlare extends Node {
 
     for (int i = 0; i < sFlare.length; i++) {
       this.attachChild(sFlare[i]);
-      sFlare[i].setLightCombineMode(LightState.REPLACE);
-      sFlare[i].setTextureCombineMode(TextureState.REPLACE);
     }
   }
 

@@ -41,9 +41,12 @@ import com.jme.image.Texture;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.9 2004-06-08 22:08:25 cep21 Exp $
+ * @version $Id: TextureState.java,v 1.10 2004-06-23 19:15:53 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
+
+    /** Ignore textures. */
+    public static final int OFF = -1;
 
     /** Combine texture states starting from the root node and working towards the given Spatial. Ignore disabled states. */
     public static final int COMBINE_FIRST = 0;
@@ -53,6 +56,9 @@ public abstract class TextureState extends RenderState {
 
     /** Similar to COMBINE_CLOSEST, but if a disabled state is encountered, it will stop combining at that point. */
     public static final int COMBINE_RECENT_ENABLED = 2;
+
+    /** Inherit mode from parent. */
+    public static final int INHERIT = 4;
 
     /** Do not combine texture states, just use the most recent one. */
     public static final int REPLACE = 5;
@@ -139,8 +145,8 @@ public abstract class TextureState extends RenderState {
     public int getNumberOfUnits() {
         return texture.length;
     }
-    
+
     public abstract void delete(int unit);
-    
+
     public abstract void deleteAll();
 }

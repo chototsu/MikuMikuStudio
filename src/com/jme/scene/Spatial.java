@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.41 2004-06-23 18:14:15 renanse Exp $
+ * @version $Id: Spatial.java,v 1.42 2004-06-23 19:15:55 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices
@@ -87,8 +87,8 @@ public abstract class Spatial implements Serializable {
   protected int zOrder = 0;
   public transient float queueDistance = Float.NEGATIVE_INFINITY;
 
-  protected int lightCombineMode = LightState.COMBINE_FIRST;
-  protected int textureCombineMode = TextureState.COMBINE_CLOSEST;
+  protected int lightCombineMode = LightState.INHERIT;
+  protected int textureCombineMode = TextureState.INHERIT;
 
   protected ArrayList geometricalControllers = new ArrayList();
 
@@ -602,7 +602,12 @@ public abstract class Spatial implements Serializable {
   }
 
   public int getLightCombineMode() {
-    return lightCombineMode;
+    if (lightCombineMode != LightState.INHERIT)
+      return lightCombineMode;
+    else if (parent != null)
+      return parent.getLightCombineMode();
+    else
+      return LightState.COMBINE_FIRST;
   }
 
   public void setTextureCombineMode(int textureCombineMode) {
@@ -610,7 +615,12 @@ public abstract class Spatial implements Serializable {
   }
 
   public int getTextureCombineMode() {
-    return textureCombineMode;
+    if (textureCombineMode != TextureState.INHERIT)
+      return textureCombineMode;
+    else if (parent != null)
+      return parent.getTextureCombineMode();
+    else
+      return TextureState.COMBINE_CLOSEST;
   }
 
   public static void clearCurrentStates() {

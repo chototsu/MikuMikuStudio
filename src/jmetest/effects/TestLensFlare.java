@@ -48,7 +48,7 @@ import com.jme.scene.state.RenderState;
  *  First crack at a lens flare for jme.  Notice that currently,
  *  it doesn't do occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.4 2004-05-01 05:31:25 mojomonkey Exp $
+ * @version $Id: TestLensFlare.java,v 1.5 2004-06-23 19:15:59 renanse Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
@@ -88,12 +88,11 @@ public class TestLensFlare extends SimpleGame {
     lightNode.setLocalTranslation(new Vector3f( -14f, 14f, -14f));
 
     // clear the lights from this child:
-    lightBox.setRenderState(Spatial.defaultStateList[RenderState.RS_LIGHT]);
-    lightBox.setLightCombineMode(LightState.REPLACE);
+    lightBox.setLightCombineMode(LightState.OFF);
 
     LensFlare flare = new LensFlare("flare");
     flare.setLocalTranslation(lightNode.getLocalTranslation());
-    
+
     //lightNode.attachChild(flare);
     Box box = new Box("my box", new Vector3f(0, 0, 0), 10, 10, 10);
     box.setModelBound(new BoundingBox());

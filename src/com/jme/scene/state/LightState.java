@@ -41,108 +41,114 @@ import com.jme.light.Light;
  * be added to the light state. Each light is processed and used to modify
  * the color of the scene.
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.6 2004-04-22 22:26:55 renanse Exp $
+ * @version $Id: LightState.java,v 1.7 2004-06-23 19:15:53 renanse Exp $
  */
 public abstract class LightState extends RenderState {
-    /**
-     * defines the maximum number of lights that are allowed to be
-     * maintained at one time.
-     */
-    public static final int MAX_LIGHTS_ALLOWED = 8;
+  /**
+   * defines the maximum number of lights that are allowed to be
+   * maintained at one time.
+   */
+  public static final int MAX_LIGHTS_ALLOWED = 8;
 
+  /** Ignore lights. */
+  public static final int OFF = -1;
 
-    /** Combine light states starting from the root node and working towards the given Spatial. Ignore disabled states. Stop combining when lights == MAX_LIGHTS_ALLOWED */
-    public static final int COMBINE_FIRST = 0;
+  /** Combine light states starting from the root node and working towards the given Spatial. Ignore disabled states. Stop combining when lights == MAX_LIGHTS_ALLOWED */
+  public static final int COMBINE_FIRST = 0;
 
-    /** Combine light states starting from the given Spatial and working towards the root. Ignore disabled states. Stop combining when lights == MAX_LIGHTS_ALLOWED */
-    public static final int COMBINE_CLOSEST = 1;
+  /** Combine light states starting from the given Spatial and working towards the root. Ignore disabled states. Stop combining when lights == MAX_LIGHTS_ALLOWED */
+  public static final int COMBINE_CLOSEST = 1;
 
-    /** Similar to COMBINE_CLOSEST, but if a disabled state is encountered, it will stop combining at that point. Stop combining when lights == MAX_LIGHTS_ALLOWED */
-    public static final int COMBINE_RECENT_ENABLED = 2;
+  /** Similar to COMBINE_CLOSEST, but if a disabled state is encountered, it will stop combining at that point. Stop combining when lights == MAX_LIGHTS_ALLOWED */
+  public static final int COMBINE_RECENT_ENABLED = 2;
 
-    /** Do not combine light states, just use the most recent one. */
-    public static final int REPLACE = 5;
+  /** Inherit mode from parent. */
+  public static final int INHERIT = 4;
 
-    //holds the lights
-    private ArrayList lightList;
-    protected boolean twoSidedOn;
+  /** Do not combine light states, just use the most recent one. */
+  public static final int REPLACE = 5;
 
-    /**
-     * Constructor instantiates a new <code>LightState</code> object. Initially
-     * there are no lights set.
-     *
-     */
-    public LightState() {
-        lightList = new ArrayList();
+  //holds the lights
+  private ArrayList lightList;
+  protected boolean twoSidedOn;
+
+  /**
+   * Constructor instantiates a new <code>LightState</code> object. Initially
+   * there are no lights set.
+   *
+   */
+  public LightState() {
+    lightList = new ArrayList();
+  }
+
+  /**
+   * <code>getType</code> returns the type of render state this is.
+   * (RS_LIGHT).
+   * @see com.jme.scene.state.RenderState#getType()
+   */
+  public int getType() {
+    return RS_LIGHT;
+  }
+
+  /**
+   *
+   * <code>attach</code> places a light in the queue to be processed. If
+   * there are already eight lights placed in the queue, the light is
+   * ignored and false ir returned. Otherwise, true is returned to indicate
+   * success.
+   * @param light the light to add to the queue.
+   * @return true if the light was added successfully, false if there are
+   *      already eight lights in the queue.
+   */
+  public boolean attach(Light light) {
+    if (lightList.size() < MAX_LIGHTS_ALLOWED) {
+      lightList.add(light);
+      return true;
     }
-    /**
-     * <code>getType</code> returns the type of render state this is.
-     * (RS_LIGHT).
-     * @see com.jme.scene.state.RenderState#getType()
-     */
-    public int getType() {
-        return RS_LIGHT;
-    }
+    return false;
+  }
 
-    /**
-     *
-     * <code>attach</code> places a light in the queue to be processed. If
-     * there are already eight lights placed in the queue, the light is
-     * ignored and false ir returned. Otherwise, true is returned to indicate
-     * success.
-     * @param light the light to add to the queue.
-     * @return true if the light was added successfully, false if there are
-     *      already eight lights in the queue.
-     */
-    public boolean attach(Light light) {
-        if(lightList.size() < MAX_LIGHTS_ALLOWED) {
-            lightList.add(light);
-            return true;
-        }
-        return false;
-    }
+  /**
+   *
+   * <code>detach</code> removes a light from the queue for processing.
+   * @param light the light to be removed.
+   */
+  public void detach(Light light) {
+    lightList.remove(light);
+  }
 
-    /**
-     *
-     * <code>detach</code> removes a light from the queue for processing.
-     * @param light the light to be removed.
-     */
-    public void detach(Light light) {
-        lightList.remove(light);
-    }
+  /**
+   *
+   * <code>detachAll</code> clears the queue of all lights to be processed.
+   *
+   */
+  public void detachAll() {
+    lightList.clear();
+  }
 
-    /**
-     *
-     * <code>detachAll</code> clears the queue of all lights to be processed.
-     *
-     */
-    public void detachAll() {
-        lightList.clear();
-    }
+  /**
+   *
+   * <code>get</code> retrieves a particular light defined by an index.
+   * If there exists no light at a particular index, null is returned.
+   * @param i the index to retrieve the light from the queue.
+   * @return the light at the given index, null if no light exists at this
+   *      index.
+   */
+  public Light get(int i) {
+    return (Light) lightList.get(i);
+  }
 
-    /**
-     *
-     * <code>get</code> retrieves a particular light defined by an index.
-     * If there exists no light at a particular index, null is returned.
-     * @param i the index to retrieve the light from the queue.
-     * @return the light at the given index, null if no light exists at this
-     *      index.
-     */
-    public Light get(int i) {
-        return (Light)lightList.get(i);
-    }
+  /**
+   *
+   * <code>getQuantity</code> returns the number of lights currently in the
+   * queue.
+   * @return the number of lights currently in the queue.
+   */
+  public int getQuantity() {
+    return lightList.size();
+  }
 
-    /**
-     *
-     * <code>getQuantity</code> returns the number of lights currently in the
-     * queue.
-     * @return the number of lights currently in the queue.
-     */
-    public int getQuantity() {
-        return lightList.size();
-    }
-
-    public void setTwoSidedLighting(boolean twoSidedOn) {
-        this.twoSidedOn = twoSidedOn;
-    }
+  public void setTwoSidedLighting(boolean twoSidedOn) {
+    this.twoSidedOn = twoSidedOn;
+  }
 }

@@ -120,9 +120,8 @@ public class TestFireMilk extends SimpleGame {
     manager.getParticles().addController(manager);
     manager.getParticles().setRenderState(ts);
     manager.getParticles().setRenderState(as1);
-    manager.getParticles().setLightCombineMode(LightState.REPLACE);
+    manager.getParticles().setLightCombineMode(LightState.OFF);
     manager.getParticles().setRenderState(display.getRenderer().getZBufferState());
-    manager.getParticles().setRenderState(display.getRenderer().getLightState());
     rootNode.attachChild(manager.getParticles());
   }
 }

@@ -57,7 +57,7 @@ import com.jme.renderer.Renderer;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.18 2004-06-17 16:31:20 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.19 2004-06-23 19:15:58 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -189,8 +189,7 @@ public class TestScenegraph extends SimpleGame {
         selectionBox.setRenderState(as1);
         selectionBox.setModelBound(new BoundingSphere());
         selectionBox.updateModelBound();
-        selectionBox.setRenderState(Box.defaultStateList[RenderState.RS_LIGHT]);
-        selectionBox.setLightCombineMode(LightState.REPLACE);
+        selectionBox.setLightCombineMode(LightState.OFF);
 
         node1 = new Node("Node 1");
         box1 = new Box("Box 1", min, max);
@@ -247,8 +246,7 @@ public class TestScenegraph extends SimpleGame {
                 node5.getWorldTranslation(), node3.getWorldTranslation(),
                 node6.getWorldTranslation()};
         Line line = new Line("Connection", lines, null, null, null);
-        line.setRenderState(Line.defaultStateList[RenderState.RS_LIGHT]);
-        line.setLightCombineMode(LightState.REPLACE);
+        line.setLightCombineMode(LightState.OFF);
 
         ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
