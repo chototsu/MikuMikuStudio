@@ -8,6 +8,8 @@ import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
+import com.jme.intersection.BoundingPickResults;
+import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -17,77 +19,92 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 
 /**
- * Started Date: Jul 22, 2004<br><br>
- *
+ * Started Date: Jul 22, 2004 <br>
+ * <br>
+ * 
  * Demonstrates picking with the mouse.
- *
+ * 
  * @author Jack Lindamood
  */
 public class HelloMousePick extends SimpleGame {
-    // This will be my mouse
-    AbsoluteMouse am;
-    // This will be he box in the middle
-    Box b;
-    public static void main(String[] args) {
-        HelloMousePick app = new HelloMousePick();
-        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
-    }
+	// This will be my mouse
+	AbsoluteMouse am;
 
-    protected void simpleInitGame() {
-        // Create a new mouse.  Restrict its movements to the display screen.
-        am=new AbsoluteMouse("The Mouse",display.getWidth(),display.getHeight());
+	// This will be he box in the middle
+	Box b;
 
-        // Get a picture for my mouse.
-        TextureState ts=display.getRenderer().createTextureState();
-        URL cursorLoc;
-        cursorLoc=HelloMousePick.class.getClassLoader().getResource("jmetest/data/cursor/cursor1.png");
-        Texture t=TextureManager.loadTexture(cursorLoc,Texture.MM_LINEAR, Texture.FM_LINEAR, true);
-        ts.setTexture(t);
-        am.setRenderState(ts);
+	PickResults pr;
 
-        // Make the mouse's background blend with what's already there
-        AlphaState as=display.getRenderer().createAlphaState();
-        as.setBlendEnabled(true);
-        as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-        as.setTestEnabled(true);
-        as.setTestFunction(AlphaState.TF_GREATER);
-        am.setRenderState(as);
+	public static void main(String[] args) {
+		HelloMousePick app = new HelloMousePick();
+		app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.start();
+	}
 
-        // Get the mouse input device and assign it to the AbsoluteMouse
-        am.setMouseInput(InputSystem.getMouseInput());
-        // Move the mouse to the middle of the screen to start with
-        am.setLocalTranslation(new Vector3f(display.getWidth()/2,display.getHeight()/2,0));
-        // Assign the mouse to an input handler
-        input.setMouse(am);
-        // Create the box in the middle.  Give it a bounds
-        b=new Box("My Box", new Vector3f(-1,-1,-1),new Vector3f(1,1,1));
-        b.setModelBound(new BoundingBox());
-        b.updateModelBound();
-        // Attach Children
-        rootNode.attachChild(b);
-        rootNode.attachChild(am);
-        // Remove all the lightstates so we can see the per-vertex colors
-        lightState.detachAll();
-    }
+	protected void simpleInitGame() {
+		// Create a new mouse. Restrict its movements to the display screen.
+		am = new AbsoluteMouse("The Mouse", display.getWidth(), display
+				.getHeight());
 
-    // This is called every frame.  Do changing of values here.
-    protected void simpleUpdate(){
-        // Get the mouse input device from the jME mouse
-        MouseInput thisMouse=am.getMouseInput();
-        // Is button 0 down?  Button 0 is left click
-        if (thisMouse.isButtonDown(0)){
-            Vector2f screenPos=new Vector2f();
-            // Get the position that the mouse is pointing to
-            screenPos.set(am.getHotSpotPosition().x,am.getHotSpotPosition().y);
-            // Get the world location of that X,Y value
-            Vector3f worldCoords=display.getWorldCoordinates(screenPos,0);
-            // Create a ray starting from the camera, and going in the direction of the mouse's location
-            Ray mouseRay=new Ray(cam.getLocation(),worldCoords.subtractLocal(cam.getLocation()));
-            // Does the mouse's ray intersect the box's world bounds?
-            if (b.getWorldBound().intersects(mouseRay))
-                b.setRandomColors();
-        }
-    }
+		// Get a picture for my mouse.
+		TextureState ts = display.getRenderer().createTextureState();
+		URL cursorLoc;
+		cursorLoc = HelloMousePick.class.getClassLoader().getResource(
+				"jmetest/data/cursor/cursor1.png");
+		Texture t = TextureManager.loadTexture(cursorLoc, Texture.MM_LINEAR,
+				Texture.FM_LINEAR, true);
+		ts.setTexture(t);
+		am.setRenderState(ts);
+
+		// Make the mouse's background blend with what's already there
+		AlphaState as = display.getRenderer().createAlphaState();
+		as.setBlendEnabled(true);
+		as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+		as.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		as.setTestEnabled(true);
+		as.setTestFunction(AlphaState.TF_GREATER);
+		am.setRenderState(as);
+
+		// Get the mouse input device and assign it to the AbsoluteMouse
+		am.setMouseInput(InputSystem.getMouseInput());
+		// Move the mouse to the middle of the screen to start with
+		am.setLocalTranslation(new Vector3f(display.getWidth() / 2, display
+				.getHeight() / 2, 0));
+		// Assign the mouse to an input handler
+		input.setMouse(am);
+		// Create the box in the middle. Give it a bounds
+		b = new Box("My Box", new Vector3f(-1, -1, -1), new Vector3f(1, 1, 1));
+		b.setModelBound(new BoundingBox());
+		b.updateModelBound();
+		// Attach Children
+		rootNode.attachChild(b);
+		rootNode.attachChild(am);
+		// Remove all the lightstates so we can see the per-vertex colors
+		lightState.detachAll();
+		pr = new BoundingPickResults();
+	}
+
+	protected void simpleUpdate() {
+		// Get the mouse input device from the jME mouse
+		MouseInput thisMouse = am.getMouseInput();
+		// Is button 0 down? Button 0 is left click
+		if (thisMouse.isButtonDown(0)) {
+			Vector2f screenPos = new Vector2f();
+			// Get the position that the mouse is pointing to
+			screenPos.set(am.getHotSpotPosition().x, am.getHotSpotPosition().y);
+			// Get the world location of that X,Y value
+			Vector3f worldCoords = display.getWorldCoordinates(screenPos, 0);
+			// Create a ray starting from the camera, and going in the direction
+			// of the mouse's location
+			Ray mouseRay = new Ray(cam.getLocation(), worldCoords
+					.subtractLocal(cam.getLocation()));
+			// Does the mouse's ray intersect the box's world bounds?
+			pr.clear();
+			rootNode.findPick(mouseRay, pr);
+
+			for (int i = 0; i < pr.getNumber(); i++) {
+				pr.getPickData(i).getTargetMesh().setRandomColors();
+			}
+		}
+	}
 }
