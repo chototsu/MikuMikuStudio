@@ -57,7 +57,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.25 2004-07-06 05:11:16 cep21 Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.26 2004-07-07 19:19:09 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -109,8 +109,9 @@ public class LWJGLTextureState extends TextureState {
    */
   public LWJGLTextureState() {
     super();
+    supportsMultiTexture = (GLContext.GL_ARB_multitexture && GLContext.OpenGL13);
     if (numTexUnits == 0) {
-      if (GLContext.GL_ARB_multitexture) {
+      if (supportsMultiTexture) {
         IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
         GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
         numTexUnits = buf.get(0);
@@ -148,28 +149,28 @@ public class LWJGLTextureState extends TextureState {
 
     for (int i = 0; i < numTexUnits; i++) {
       if (!isEnabled() || getTexture(i) == null) {
-        if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
+        if (supportsMultiTexture) {
           GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
         }
         GL11.glDisable(GL11.GL_TEXTURE_2D);
       }
     }
 
-    if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
+    if (supportsMultiTexture) {
       GL13.glActiveTexture(GL13.GL_TEXTURE0);
     }
 
     if (isEnabled()) {
       int index;
       Texture texture;
-      for (int i = 0; i < numTexUnits; i++) {
+      for (int i = firstTexture; i <= lastTexture; i++) {
         index = GL13.GL_TEXTURE0 + i;
         texture = getTexture(i);
         if (texture == null) {
           continue;
         }
 
-        if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
+        if (supportsMultiTexture && i != 0) {
           GL13.glActiveTexture(index);
         }
 
@@ -296,7 +297,7 @@ public class LWJGLTextureState extends TextureState {
                     textureCorrection[texture.getCorrection()]);
 
         if (texture.getApply() == Texture.AM_COMBINE
-            && GLContext.GL_ARB_multitexture) {
+            && supportsMultiTexture) {
 
           GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
                          GL11.GL_TEXTURE_ENV_MODE, textureApply[texture

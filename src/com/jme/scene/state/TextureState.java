@@ -31,11 +31,11 @@
  */
 package com.jme.scene.state;
 
-import com.jme.image.Texture;
-import com.jme.util.TextureManager;
-
 import java.io.IOException;
 import java.net.URL;
+
+import com.jme.image.Texture;
+import com.jme.util.TextureManager;
 
 /**
  * <code>TextureState</code> maintains a texture state for a given node and
@@ -45,7 +45,7 @@ import java.net.URL;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.13 2004-07-06 04:44:34 cep21 Exp $
+ * @version $Id: TextureState.java,v 1.14 2004-07-07 19:19:10 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -74,12 +74,16 @@ public abstract class TextureState extends RenderState {
 
     protected static float maxAnisotropic = -1.0f;
 
+    protected static boolean supportsMultiTexture = false;
+
+    protected transient int firstTexture = 0;
+    protected transient int lastTexture = 0;
+
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
      *
      */
     public TextureState() {
-        texture = new Texture[0];
     }
 
     /**
@@ -99,6 +103,7 @@ public abstract class TextureState extends RenderState {
      */
     public void setTexture(Texture texture) {
         this.texture[0] = texture;
+        resetFirstLast();
     }
 
     /**
@@ -125,6 +130,7 @@ public abstract class TextureState extends RenderState {
     public void setTexture(Texture texture, int textureUnit) {
         if(textureUnit >= 0 && textureUnit < numTexUnits) {
             this.texture[textureUnit] = texture;
+            resetFirstLast();
         }
     }
 
@@ -163,6 +169,20 @@ public abstract class TextureState extends RenderState {
     }
 
 
+    protected void resetFirstLast() {
+      boolean foundFirst = false;
+      for (int x = 0; x < numTexUnits; x++) {
+        if (texture[x] != null) {
+          if (!foundFirst) {
+            firstTexture = x;
+            foundFirst = true;
+          }
+          lastTexture = x;
+        }
+      }
+    }
+
+
     /**
      * Used with serialization.  Do not call this manually.
      * @param in
@@ -178,9 +198,10 @@ public abstract class TextureState extends RenderState {
             if (in.readBoolean())
                 texture[i]=TextureManager.loadTexture(new URL(in.readUTF()),in.readInt(),in.readInt(), true);
         }
+        resetFirstLast();
     }
 
-    /**
+  /**
      * Used with serialization.  Do not call this manually.
      * @param out
      * @throws IOException
