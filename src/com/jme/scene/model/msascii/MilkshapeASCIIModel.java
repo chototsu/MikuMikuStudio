@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the 
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.3 2004-02-15 20:09:50 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.4 2004-02-15 20:22:39 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -92,6 +92,13 @@ public class MilkshapeASCIIModel extends Model {
 		load(filename);
 	}
 	
+	/**
+	 * Loads an ascii text model exported from MS3D. The corresponding
+	 * <code>JointMesh</code> objects are created and attached to the 
+	 * model. Materials are then assigned to each mesh. Lastly, the 
+	 * joints and joint controller are loaded and initialized.
+	 * @param filename the file to load.
+	 */
 	public void load(String filename) {
 		try {
 			URL file = new URL("file:"+filename);
@@ -107,7 +114,7 @@ public class MilkshapeASCIIModel extends Model {
 	 * <code>JointMesh</code> objects are created and attached to the 
 	 * model. Materials are then assigned to each mesh. Lastly, the 
 	 * joints and joint controller are loaded and initialized.
-	 * @param filename the file to load.
+	 * @param filename the url of the file to load.
 	 */
 	public void load(URL filename) {
 		if(null == filename) {

@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.6 2004-02-15 20:09:50 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.7 2004-02-15 20:22:39 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
@@ -93,6 +93,15 @@ public class Md2Model extends Model {
 		load(filename);
 	}
 	
+	/**
+	 * Loads an MD2 model. The corresponding
+	 * <code>TriMesh</code> objects are created and attached to the 
+	 * model. Each keyframe is then loaded and assigned to a 
+	 * <code>VertexKeyframeController</code>. MD2 does not keep track 
+	 * of it's own texture or material settings, so the user is 
+	 * responsible for setting these.
+	 * @param filename the file to load.
+	 */
 	public void load(String filename) {
 		try {
 			URL file = new URL("file:"+filename);
@@ -110,7 +119,7 @@ public class Md2Model extends Model {
 	 * <code>VertexKeyframeController</code>. MD2 does not keep track 
 	 * of it's own texture or material settings, so the user is 
 	 * responsible for setting these.
-	 * @param filename the file to load.
+	 * @param filename the url of the file to load.
 	 */
 	public void load(URL filename) {
 		if(null == filename) {

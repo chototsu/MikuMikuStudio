@@ -62,7 +62,7 @@ import com.jme.util.TextureManager;
  * be returned.
  * 
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.4 2004-02-15 20:09:50 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.5 2004-02-15 20:22:39 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -124,6 +124,14 @@ public class ASEModel extends Model {
 		load(file);
 	}
 	
+	/**
+	 *  <code>load</code> parses a given file, loading the mesh data into
+	 * a structure that jME can render. Each Geomobject the ase file defines
+	 * is created as a <code>TriMesh</code> and attached to this 
+	 * <code>Model</code>. Animation is currently not supported.
+	 * @param file the ase file to load.
+	 * @see com.jme.scene.model.Model#load(java.lang.String)
+	 */
 	public void load(String file) {
 		try {
 			URL url = new URL("file:"+file);
@@ -139,7 +147,7 @@ public class ASEModel extends Model {
 	 * a structure that jME can render. Each Geomobject the ase file defines
 	 * is created as a <code>TriMesh</code> and attached to this 
 	 * <code>Model</code>. Animation is currently not supported.
-	 * @param file the ase file to load.
+	 * @param file the url of the ase file to load.
 	 * @see com.jme.scene.model.Model#load(java.lang.String)
 	 */
 	public void load(URL file) {
