@@ -3,6 +3,7 @@ package com.jme.scene.model.XMLparser;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.Controller;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.MaterialState;
@@ -14,6 +15,7 @@ import com.jme.renderer.ColorRGBA;
 
 import java.io.OutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Started Date: Jun 5, 2004
@@ -71,11 +73,69 @@ public class XMLWriter {
         writeLine();
         increaseTabSize();
 
-        writeRenderStates(toWrite);
         writeChildren(toWrite);
+        processSpatial(toWrite);
         decreaseTabSize();
         currentLine.append("</node>");
         writeLine();
+    }
+
+    private void processSpatial(Spatial s) throws IOException {
+        writeRenderStates(s);
+        ArrayList conts=s.getControllers();
+        for (int i=0;i<conts.size();i++){
+            Controller r=(Controller) conts.get(i);
+            if (r instanceof JointController){
+                writeJointController((JointController)r);
+            }
+        }
+    }
+
+    private void writeJointController(JointController jc) throws IOException {
+        currentLine.append("<jointcontroller numJoints=\"").append(jc.numJoints).append("\" >");
+        writeLine();
+        increaseTabSize();
+        Object[] o=jc.movementInfo.toArray();
+        Vector3f tempV=new Vector3f();
+        Quaternion tempQ=new Quaternion();
+        for (int j=0;j<jc.numJoints;j++){
+            currentLine.append("<joint index=\"").append(j).append("\" parentindex=\"").append(jc.parentIndex[j]).append("\" ");
+            jc.localRefMatrix[j].getRotation(tempQ);
+            jc.localRefMatrix[j].getTranslation(tempV);
+            currentLine.append("localrot=\"");
+            currentLine.append(tempQ.x).append(' ').append(tempQ.y).append(' ').append(tempQ.z).append(' ');
+            currentLine.append(tempQ.w).append("\" ");
+            currentLine.append("localvec=\"");
+            currentLine.append(tempV.x).append(' ').append(tempV.y).append(' ').append(tempV.z).append("\">");
+            writeLine();
+            increaseTabSize();
+            for (int i=0;i<o.length;i++){
+                JointController.PointInTime jp=(JointController.PointInTime) o[i];
+                if (jp.usedTrans.get(j) || jp.usedRot.get(j)){
+                    currentLine.append("<keyframe time=\"").append(jp.time).append("\"");
+                    if (jp.usedTrans.get(j)){
+                        currentLine.append(" trans=\"");
+                        tempV.set(jp.jointTranslation[j]);
+                        currentLine.append(tempV.x).append(' ').append(tempV.y).append(' ').append(tempV.z).append("\"");
+                    }
+                    if (jp.usedRot.get(j)){
+                        currentLine.append(" rot=\"");
+                        tempQ.set(jp.jointRotation[j]);
+                        currentLine.append(tempQ.x).append(' ').append(tempQ.y).append(' ').append(tempQ.z).append(' ');
+                        currentLine.append(tempQ.w).append("\"");
+                    }
+                    currentLine.append("/>");
+                    writeLine();
+                }
+            }
+            decreaseTabSize();
+            currentLine.append("</joint>");
+            writeLine();
+        }
+        decreaseTabSize();
+        currentLine.append("</jointcontroller>");
+        writeLine();
+
     }
 
     private void writeXMLloadable(XMLloadable xmlloadable) throws IOException {
@@ -103,6 +163,8 @@ public class XMLWriter {
             Spatial s=node.getChild(i);
             if (s instanceof XMLloadable)
                 writeXMLloadable((XMLloadable)s);
+            else if (s instanceof JointMesh)
+                writeJointMesh((JointMesh)s);
             else if (s instanceof Node)
                 writeNode((Node) s);
             else if (s instanceof TriMesh)
@@ -110,61 +172,48 @@ public class XMLWriter {
         }
     }
 
-    private void writeRenderStates(Spatial s) throws IOException {
-        RenderState[] states=s.getRenderStateList();
-        if (states[RenderState.RS_MATERIAL]!=null){
-            writeMaterialState((MaterialState) states[RenderState.RS_MATERIAL]);
-        }
-        if (states[RenderState.RS_TEXTURE]!=null){
-            writeTextureState((TextureState)states[RenderState.RS_TEXTURE]);
-        }
-    }
-
-    private void writeTextureState(TextureState textureState) throws IOException {
-        currentLine.append("<texturestate ");
-        if (textureState.getTexture()!=null)
-            currentLine.append("URL=\"").append(textureState.getTexture().getImageLocation()).append("\" ");
-        currentLine.append("/>");
-        writeLine();
-    }
-
-    private void writeMaterialState(MaterialState state) throws IOException {
-        currentLine.append("<materialstate ");
-        currentLine.append("emissive=\"");
-        appendColorRGBA(state.getEmissive());
-        currentLine.append("\" ");
-
-        currentLine.append("ambient=\"");
-        appendColorRGBA(state.getAmbient());
-        currentLine.append("\" ");
-
-        currentLine.append("diffuse=\"");
-        appendColorRGBA(state.getDiffuse());
-        currentLine.append("\" ");
-
-        currentLine.append("specular=\"");
-        appendColorRGBA(state.getSpecular());
-        currentLine.append("\" ");
-
-        currentLine.append("alpha=\"");
-        currentLine.append(state.getAlpha());
-        currentLine.append("\" ");
-
-        currentLine.append("shiny=\"");
-        currentLine.append(state.getShininess());
-        currentLine.append("\" ");
-
-        currentLine.append("/>");
-        writeLine();
-    }
-
-    private void writeMesh(TriMesh toWrite) throws IOException {
-        currentLine.append("<mesh ").append(getSpatialHeader(toWrite)).append(">");
+    private void writeJointMesh(JointMesh jointMesh) throws IOException {
+        currentLine.append("<jointmesh ").append(getSpatialHeader(jointMesh)).append(">");
         writeLine();
         increaseTabSize();
+        writeJointMeshTags(jointMesh);
+        decreaseTabSize();
+        currentLine.append("</jointmesh>");
+        writeLine();
+    }
 
-        writeRenderStates(toWrite);
+    private void writeJointMeshTags(JointMesh jointMesh) throws IOException {
+        currentLine.append("<jointindex>");
+        writeLine();
+        increaseTabSize();
+        int[] jointInfo=jointMesh.jointIndex;
+        writeIntArray(jointInfo);
+        if (currentLine.length()!=0) writeLine();
+        decreaseTabSize();
+        currentLine.append("</jointindex>");
+        writeLine();
 
+        currentLine.append("<origvertex>");
+        writeLine();
+        increaseTabSize();
+        writeVec3fArray(jointMesh.originalVertex);
+        if (currentLine.length()!=0) writeLine();
+        decreaseTabSize();
+        currentLine.append("</origvertex>");
+        writeLine();
+
+        currentLine.append("<orignormal>");
+        writeLine();
+        increaseTabSize();
+        writeVec3fArray(jointMesh.originalNormal);
+        if (currentLine.length()!=0) writeLine();
+        decreaseTabSize();
+        currentLine.append("</orignormal>");
+        writeLine();
+        writeTriMeshTags(jointMesh);
+    }
+
+    private void writeTriMeshTags(TriMesh toWrite) throws IOException {
         currentLine.append("<vertex>");
         writeLine();
         Vector3f[] theVerts=toWrite.getVertices();
@@ -219,6 +268,64 @@ public class XMLWriter {
         decreaseTabSize();
         currentLine.append("</index>");
         writeLine();
+
+        processSpatial(toWrite);
+
+    }
+
+    private void writeRenderStates(Spatial s) throws IOException {
+        RenderState[] states=s.getRenderStateList();
+        if (states[RenderState.RS_MATERIAL]!=null){
+            writeMaterialState((MaterialState) states[RenderState.RS_MATERIAL]);
+        }
+        if (states[RenderState.RS_TEXTURE]!=null){
+            writeTextureState((TextureState)states[RenderState.RS_TEXTURE]);
+        }
+    }
+
+    private void writeTextureState(TextureState textureState) throws IOException {
+        currentLine.append("<texturestate ");
+        if (textureState.getTexture()!=null)
+            currentLine.append("URL=\"").append(textureState.getTexture().getImageLocation()).append("\" ");
+        currentLine.append("/>");
+        writeLine();
+    }
+
+    private void writeMaterialState(MaterialState state) throws IOException {
+        currentLine.append("<materialstate ");
+        currentLine.append("emissive=\"");
+        appendColorRGBA(state.getEmissive());
+        currentLine.append("\" ");
+
+        currentLine.append("ambient=\"");
+        appendColorRGBA(state.getAmbient());
+        currentLine.append("\" ");
+
+        currentLine.append("diffuse=\"");
+        appendColorRGBA(state.getDiffuse());
+        currentLine.append("\" ");
+
+        currentLine.append("specular=\"");
+        appendColorRGBA(state.getSpecular());
+        currentLine.append("\" ");
+
+        currentLine.append("alpha=\"");
+        currentLine.append(state.getAlpha());
+        currentLine.append("\" ");
+
+        currentLine.append("shiny=\"");
+        currentLine.append(state.getShininess());
+        currentLine.append("\" ");
+
+        currentLine.append("/>");
+        writeLine();
+    }
+
+    private void writeMesh(TriMesh toWrite) throws IOException {
+        currentLine.append("<mesh ").append(getSpatialHeader(toWrite)).append(">");
+        writeLine();
+        increaseTabSize();
+        writeTriMeshTags(toWrite);
         decreaseTabSize();
         currentLine.append("</mesh>");
         writeLine();
@@ -227,7 +334,7 @@ public class XMLWriter {
     private void writeIntArray(int[] indexes) throws IOException {
         for (int i=0;i<indexes.length;i++){
             currentLine.append(indexes[i]).append(" ");
-            if ((i+1)%9==0) writeLine();
+            if ((i+1)%18==0) writeLine();
         }
     }
 
@@ -236,7 +343,7 @@ public class XMLWriter {
         for (int i=0;i<theTexCoords.length;i++){
             if (theTexCoords[i]!=null){
                 appendVector2f(theTexCoords[i]);
-                if (++counter==3){
+                if (++counter==6){
                     writeLine();
                     counter=0;
                 }
@@ -253,7 +360,7 @@ public class XMLWriter {
         for (int i=0;i<theColors.length;i++){
             if (theColors[i]!=null){
                 appendColorRGBA(theColors[i]);
-                if (++counter==3){
+                if (++counter==6){
                     counter=0;
                     writeLine();
                 }
@@ -271,7 +378,7 @@ public class XMLWriter {
         for (int i=0;i<vecs.length;i++){
             if (vecs[i]!=null){
                 appendVector3f(vecs[i]);
-                if (++counter==3){
+                if (++counter==6){
                     counter=0;
                     writeLine();
                 }
