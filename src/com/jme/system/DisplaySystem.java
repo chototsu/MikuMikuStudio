@@ -50,7 +50,7 @@ import com.jme.math.Vector2f;
  * <code>DisplaySystem</code>
  *
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.30 2004-07-08 20:36:04 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.31 2004-07-25 23:46:58 mojomonkey Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -73,7 +73,7 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.30 2004-07-08 20:36:04 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.31 2004-07-25 23:46:58 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
 
@@ -314,22 +314,35 @@ public abstract class DisplaySystem {
     public static void updateStates(Renderer r) {
 
         Spatial.defaultStateList[RenderState.RS_ALPHA] = r.getAlphaState();
+        Spatial.defaultStateList[RenderState.RS_ALPHA].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_ATTRIBUTE] = r
                 .getAttributeState();
+        Spatial.defaultStateList[RenderState.RS_ATTRIBUTE].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_CULL] = r.getCullState();
+        Spatial.defaultStateList[RenderState.RS_CULL].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_DITHER] = r.getDitherState();
+        Spatial.defaultStateList[RenderState.RS_DITHER].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_FOG] = r.getFogState();
+        Spatial.defaultStateList[RenderState.RS_FOG].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_LIGHT] = r.getLightState();
+        Spatial.defaultStateList[RenderState.RS_LIGHT].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_MATERIAL] = r
                 .getMaterialState();
+        Spatial.defaultStateList[RenderState.RS_MATERIAL].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_SHADE] = r.getShadeState();
+        Spatial.defaultStateList[RenderState.RS_SHADE].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_TEXTURE] = r.getTextureState();
+        Spatial.defaultStateList[RenderState.RS_TEXTURE].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM] = r
                 .getVertexProgramState();
+        Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_WIREFRAME] = r
                 .getWireframeState();
+        Spatial.defaultStateList[RenderState.RS_WIREFRAME].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_ZBUFFER] = r.getZBufferState();
+        Spatial.defaultStateList[RenderState.RS_ZBUFFER].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_STENCIL] = r.getStencilState();
+        Spatial.defaultStateList[RenderState.RS_STENCIL].setEnabled(false);
 
     }
 
