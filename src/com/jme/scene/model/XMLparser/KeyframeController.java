@@ -8,9 +8,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.util.LoggingSystem;
 
 import java.util.ArrayList;
-import java.util.TreeSet;
 import java.util.logging.Level;
-import java.lang.reflect.Array;
 
 /**
  * Started Date: Jun 12, 2004<br><br>
@@ -64,10 +62,12 @@ public class KeyframeController extends Controller{
      * If true, the animation is moving forward, if false the animation is moving backwards
      */
     boolean movingForward;
-
     private boolean isSmooth;
-    private float tempMinTime;
-    private float tempMaxTime;
+
+
+    private float tempNewBeginTime;
+    private float tempNewEndTime;
+
 
     /**
      * Default constructor.  Speed is 1, MinTime is 0 MaxTime is 0.  Both MinTime and MaxTime are automatically
@@ -82,7 +82,6 @@ public class KeyframeController extends Controller{
         movingForward=true;
         this.setMinTime(0);
         this.setMaxTime(0);
-        isSmooth=false;
     }
 
 
@@ -125,66 +124,152 @@ public class KeyframeController extends Controller{
     }
 
     /**
-     * Does a smooth transform from the current state of the keyframe animation to the new minimum time.
-     * The duration of the transform is transformLength (which is affected by this.getSpeed()).  The new maximum time
-     * sets the new animation boundaries after the new minimum time is reached.  This function does nothing if it is
-     * already running or if the controller isn't active.
-     * @param newMinTime The time to transform towards
-     * @param newMaxTime The new time to reach
-     * @param transformLength The length of the duration (in seconds) between the current state and the new minimum time
+     * This function will do a smooth translation between a keframe's current look, to the look directly at newTimeToReach.  It takes
+     * translationLen time (in sec) to do that translation, and once translated will animate like normal between
+     * newBeginTime and newEndTime<br><br>This would be usefull for example when a figure stops running and
+     * tries to raise an arm.  Instead of "teleporting" to the raise-arm animnation begining, a smooth translation
+     * can occur.
+     * @param newTimeToReach The time to reach.
+     * @param translationLen How long it takes
+     * @param newBeginTime The new cycle begining time
+     * @param newEndTime The new cycle ending time.
      */
-    public void smoothTransform(float newMinTime,float newMaxTime,float transformLength){
-        if (!isActive()) return;
-        if (isSmooth) return;
-        tempMinTime=newMinTime;
-        tempMaxTime=newMaxTime;
-        EmptyTriMesh before=new EmptyTriMesh();
-        getCurrent(before);
-        curFrame=0;
-        curTime=newMinTime;
-        update(0);
-        EmptyTriMesh after=new EmptyTriMesh();
-        getCurrent(after);
+    public void setSmoothTranslation(float newTimeToReach,float translationLen,float newBeginTime,float newEndTime){
+        if (!isActive() || isSmooth) return;
+        if (newBeginTime < 0 || newBeginTime > ((PointInTime)keyframes.get(keyframes.size()-1)).time){
+            LoggingSystem.getLogger().log(Level.WARNING,"Attempt to set invalid begintime:" + newBeginTime);
+            return;
+        }
+        if (newEndTime < 0 || newEndTime > ((PointInTime)keyframes.get(keyframes.size()-1)).time){
+            LoggingSystem.getLogger().log(Level.WARNING,"Attempt to set invalid endtime:" + newEndTime);
+            return;
+        }
+        EmptyTriMesh begin=null,end=null;
+        if (prevKeyframes==null){
+            prevKeyframes=new ArrayList();
+            begin=new EmptyTriMesh();
+            end=new EmptyTriMesh();
+        }
+        else{
+            begin=(EmptyTriMesh) ((PointInTime)prevKeyframes.get(0)).newShape;
+            end=(EmptyTriMesh) ((PointInTime)prevKeyframes.get(1)).newShape;
+            prevKeyframes.clear();
+        }
 
-        prevKeyframes=keyframes;
-        keyframes=new ArrayList();
-        this.setMinTime(0);
-        this.setMaxTime(0);
-        movingForward=true;
-        setKeyframe(0,before);
-        setKeyframe(transformLength,after);
-        curTime=0;
+        getCurrent(begin);
+
+        curTime=newTimeToReach;
         curFrame=0;
+        setMinTime(0);
+        setMaxTime(((PointInTime)keyframes.get(keyframes.size()-1)).time);
+        update(0);
+        getCurrent(end);
+
+        swapKeyframeSets();
+        curTime=0;
+        curFrame = 0;
+        setMinTime(0);
+        setMaxTime(translationLen);
+        setKeyframe(0,begin);
+        setKeyframe(translationLen,end);
         isSmooth=true;
+        tempNewBeginTime=newBeginTime;
+        tempNewEndTime=newEndTime;
+    }
+
+    /**
+     * Swaps prevKeyframes and keyframes
+     */
+    private void swapKeyframeSets() {
+        ArrayList temp=keyframes;
+        keyframes=prevKeyframes;
+        prevKeyframes=temp;
     }
 
 
+    /**
+     * Sets the new animation boundaries for this controller.  This will start at newBeginTime
+     * and proceed in the direction of newEndTime (either forwards or backwards).  If both are the
+     * same, then the animation is set to their time and turned off, otherwise the animation is turned on
+     * to start the animation acording to the repeat type.  If either BeginTime or EndTime are invalid times
+     * (less than 0 or greater than the maximum set keyframe time) then a warning is set and nothing happens.<br>
+     * It is suggested that this function be called if new animation boundaries need to be set, instead of setMinTime
+     * and setMaxTime directly.
+     * @param newBeginTime The starting time
+     * @param newEndTime The ending time
+     */
+    public void setNewAnimationTimes(float newBeginTime,float newEndTime){
+        if (isSmooth) return;
+        if (newBeginTime < 0 || newBeginTime > ((PointInTime)keyframes.get(keyframes.size()-1)).time){
+            LoggingSystem.getLogger().log(Level.WARNING,"Attempt to set invalid begintime:" + newBeginTime);
+            return;
+        }
+        if (newEndTime < 0 || newEndTime > ((PointInTime)keyframes.get(keyframes.size()-1)).time){
+            LoggingSystem.getLogger().log(Level.WARNING,"Attempt to set invalid endtime:" + newEndTime);
+            return;
+        }
+        setMinTime(newBeginTime);
+        setMaxTime(newEndTime);
+        setActive(true);
+        if (newBeginTime <= newEndTime){    // Moving forward
+            movingForward=true;
+            curTime=newBeginTime;
+            if (newBeginTime==newEndTime){
+                update(0);
+                setActive(false);
+            }
+        } else{ // Moving backwards
+            movingForward=false;
+            curTime=newEndTime;
+        }
+    }
+
     private void getCurrent(TriMesh dataCopy) {
         if (morphMesh.getColors()!=null){
-            ColorRGBA[] newColors=new ColorRGBA[morphMesh.getColors().length];
+            ColorRGBA[] newColors=null;
+            if (dataCopy.getColors().length!=morphMesh.getColors().length)
+                newColors=new ColorRGBA[morphMesh.getColors().length];
+            else
+                newColors=dataCopy.getColors();
             for (int i=0;i<newColors.length;i++)
                 newColors[i]=new ColorRGBA(morphMesh.getColors()[i]);
             dataCopy.setColors(newColors);
         }
         if (morphMesh.getVertices()!=null){
-            Vector3f[] newVerts=new Vector3f[morphMesh.getVertices().length];
+            Vector3f[] newVerts=null;
+            if (dataCopy.getVertices()==null || dataCopy.getVertices().length!=morphMesh.getVertices().length)
+                newVerts=new Vector3f[morphMesh.getVertices().length];
+            else
+                newVerts=dataCopy.getVertices();
             for (int i=0;i<newVerts.length;i++)
                 newVerts[i]=new Vector3f(morphMesh.getVertices()[i]);
             dataCopy.setVertices(newVerts);
         }
         if (morphMesh.getNormals()!=null){
-            Vector3f[] newNorms=new Vector3f[morphMesh.getNormals().length];
+            Vector3f[] newNorms=null;
+            if (dataCopy.getNormals()==null || dataCopy.getNormals().length!=morphMesh.getNormals().length)
+                newNorms=new Vector3f[morphMesh.getNormals().length];
+            else
+                newNorms=dataCopy.getNormals();
             for (int i=0;i<newNorms.length;i++)
                 newNorms[i]=new Vector3f(morphMesh.getNormals()[i]);
             dataCopy.setNormals(newNorms);
         }
         if (morphMesh.getIndices()!=null){
-            int[] newInds=new int[morphMesh.getIndices().length];
+            int[] newInds=null;
+            if (dataCopy.getIndices()==null || dataCopy.getIndices().length!=morphMesh.getIndices().length)
+                newInds=new int[morphMesh.getIndices().length];
+            else
+                newInds=dataCopy.getIndices();
             System.arraycopy(morphMesh.getIndices(),0,newInds,0,newInds.length);
             dataCopy.setIndices(newInds);
         }
         if (morphMesh.getTextures()!=null){
-            Vector2f[] newTex=new Vector2f[morphMesh.getTextures().length];
+            Vector2f[] newTex=null;
+            if (dataCopy.getTextures()==null || dataCopy.getNormals().length!=morphMesh.getTextures().length)
+                newTex=new Vector2f[morphMesh.getTextures().length];
+            else
+                newTex=dataCopy.getTextures();
             for (int i=0;i<newTex.length;i++)
                 newTex[i]=new Vector2f(morphMesh.getTextures()[i]);
             dataCopy.setTextures(newTex);
@@ -197,6 +282,7 @@ public class KeyframeController extends Controller{
      */
     public void update(float time) {
         if (!this.isActive()) return;
+        if (easyQuit()) return;
         if (movingForward) curTime+=time*this.getSpeed(); else curTime-=time*this.getSpeed();
         findFrame();
         before=((PointInTime)keyframes.get(curFrame));
@@ -248,6 +334,20 @@ public class KeyframeController extends Controller{
         // Renanse says : depends on machine, update***Buffer will have less of a hit on some machines.
     }
 
+
+    /**
+     * If both min and max time are equal and the model is already updated, then it's an easy quit,
+     * or if it's on CLAMP and I've exceeded my time it's also an easy quit.
+     * @return true if update doesn't need to be called, false otherwise
+     */
+    private boolean easyQuit() {
+        if (getMaxTime()==getMinTime() && curTime!=getMinTime())
+            return true;
+        if (getRepeatType()==RT_CLAMP && (curTime> getMaxTime() || curTime < getMinTime()))
+            return true;
+        return false;
+    }
+
     /**
      * This is used by update(float).  It calculates PointInTime <code>before</code>
      * and <code>after</code> as well as makes adjustments on what to do when <code>curTime</code> is beyond the
@@ -256,22 +356,17 @@ public class KeyframeController extends Controller{
     private void findFrame() {
         if (curTime>this.getMaxTime()){
             if (isSmooth){
-                keyframes=prevKeyframes;
-                prevKeyframes=null;
-                curTime = tempMinTime;
-                this.setMinTime(tempMinTime);
-                this.setMaxTime(tempMaxTime);
-                movingForward=true;
-                curFrame=0;
+                swapKeyframeSets();
                 isSmooth=false;
-                findFrame();
+                curTime=tempNewBeginTime;
+                curFrame=0;
+                setNewAnimationTimes(tempNewBeginTime,tempNewEndTime);
                 return;
             }
             if (this.getRepeatType()==Controller.RT_WRAP){
                 curTime=this.getMinTime();
                 curFrame=0;
             } else if (this.getRepeatType()==Controller.RT_CLAMP){
-                this.setActive(false);
                 return;
             } else {    // Then assume it's RT_CYCLE
                 movingForward=false;
@@ -282,7 +377,6 @@ public class KeyframeController extends Controller{
                 curTime=this.getMaxTime();
                 curFrame=0;
             } else if (this.getRepeatType()==Controller.RT_CLAMP){
-                this.setActive(false);
                 return;
             } else {    // Then assume it's RT_CYCLE
                 movingForward=true;

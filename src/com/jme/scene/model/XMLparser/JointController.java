@@ -97,7 +97,6 @@ public class JointController extends Controller {
         curTimePoint=1;
         currentSkip=0;
         skipRate=.01f;
-//        this.setSpeed(.1f);
     }
 
     /**
