@@ -95,12 +95,14 @@ import com.jme.scene.state.LWJGLLightState;
 import com.jme.scene.state.LWJGLMaterialState;
 import com.jme.scene.state.LWJGLShadeState;
 import com.jme.scene.state.LWJGLTextureState;
+import com.jme.scene.state.LWJGLVertexProgramState;
 import com.jme.scene.state.LWJGLWireframeState;
 import com.jme.scene.state.LWJGLZBufferState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
@@ -114,7 +116,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.38 2004-03-13 15:01:47 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.39 2004-03-20 20:41:42 ericthered Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -294,6 +296,10 @@ public class LWJGLRenderer implements Renderer {
 
 	public ZBufferState getZBufferState() {
 		return new LWJGLZBufferState();
+	}
+	
+	public VertexProgramState getVertexProgramState(){
+	    return new LWJGLVertexProgramState();
 	}
 
 	/**

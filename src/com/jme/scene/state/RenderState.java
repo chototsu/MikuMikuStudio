@@ -36,7 +36,7 @@ import com.jme.scene.Controller;
 /**
  * <code>RenderState</code>
  * @author Mark Powell
- * @version $Id: RenderState.java,v 1.3 2004-03-12 17:37:14 mojomonkey Exp $
+ * @version $Id: RenderState.java,v 1.4 2004-03-20 20:44:25 ericthered Exp $
  */
 public abstract class RenderState {
 
@@ -52,7 +52,8 @@ public abstract class RenderState {
     public final static int RS_ZBUFFER = 9;
     public final static int RS_CULL = 10;
     public final static int RS_SHOW_BOUNDINGS = 11;
-    public final static int RS_MAX_STATE = 12;
+    public final static int RS_VERTEX_PROGRAM = 12;
+    public final static int RS_MAX_STATE = 13;
     
     public final static int MAX_CONTROLLERS = 10;
     

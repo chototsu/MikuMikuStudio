@@ -51,6 +51,7 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.widget.WidgetRenderer;
@@ -74,7 +75,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.21 2004-03-13 15:01:47 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.22 2004-03-20 20:41:42 ericthered Exp $
  */
 public interface Renderer {
     /**
@@ -179,6 +180,8 @@ public interface Renderer {
     public WireframeState getWireframeState();
 
     public ZBufferState getZBufferState();
+    
+    public VertexProgramState getVertexProgramState();
 
     public void enableStatistics(boolean value);
 
