@@ -2,11 +2,16 @@ package com.jme.scene.model.XMLparser;
 
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.ParserConfigurationException;
 
 import com.jme.system.JmeException;
 import com.jme.scene.Node;
 
 import java.io.InputStream;
+import java.io.IOException;
+
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * XML file format parser for jME
@@ -47,13 +52,19 @@ public class SAXReader{
         factory.setNamespaceAware(true);
 
         try {
-            SAXParser parser=factory.newSAXParser();
+            SAXParser parser = factory.newSAXParser();
             //TODO: Use .xsd validating parser?
 
-            parser.parse(SAXFile,myHandler);
+            parser.parse(SAXFile, myHandler);
 
-        } catch (Throwable t) {
-            throw new JmeException("Parser exception caught:" + " * " + t.getLocalizedMessage() + " * ");
+        } catch (IOException e) {
+            throw new JmeException("Unable to do IO correctly:" + e.getMessage());
+        } catch (ParserConfigurationException e) {
+            throw new JmeException("Serious parser configuration error:" + e.getMessage());
+        } catch (SAXParseException e) {
+            throw new JmeException(e.toString() +'\n' + "Line: " +e.getLineNumber() + '\n' + "Column: " + e.getColumnNumber());
+        }catch (SAXException e) {
+            throw new JmeException("Unknown sax error: " + e.getMessage());
         }
         if (DEBUG)System.out.println("Total load time: " + (System.currentTimeMillis()-time));
         return computer.fetchOriginal();
