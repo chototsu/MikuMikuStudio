@@ -48,7 +48,7 @@ import com.jme.renderer.Renderer;
  * camera setting compatible with <code>BillboardNode</code>.
  * 
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.16 2005-02-23 22:17:55 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.17 2005-03-14 20:15:45 renanse Exp $
  */
 public class BillboardNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -163,18 +163,32 @@ public class BillboardNode extends Node {
 	 * @param camera Camera
 	 */
 	private void rotateCameraAligned(Camera camera) {
-		look.set(camera.getLocation()).subtractLocal(worldTranslation);
-		look.normalizeLocal();
-
-		left.set(camera.getUp()).crossLocal(look);
-
-		// now redo the up vector
-		up.set(look).crossLocal(left);
-		
-		orient.fromAxes(left, up, look);
-		worldRotation.fromRotationMatrix(orient);	    
-	}
-
+	    look.set(camera.getLocation()).subtractLocal(worldTranslation);
+	    look.normalizeLocal();
+	    
+	    float el = FastMath.asin(look.y);
+	    float az = FastMath.atan2(look.x, look.z);
+	    float elCos = FastMath.cos(el);
+	    float azCos = FastMath.cos(az);
+	    float elSin = FastMath.sin(el);
+	    float azSin = FastMath.sin(az);
+	    
+	    // compute the local orientation matrix for the billboard
+	    orient.m00 = azCos;
+	    orient.m01 = azSin * -elSin;
+	    orient.m02 = azSin * elCos;
+	    orient.m10 = 0;
+	    orient.m11 = elCos;
+	    orient.m12 = elSin;
+	    orient.m20 = -azSin;
+	    orient.m21 = azCos * -elSin;
+	    orient.m22 = azCos * elCos;
+	    
+	    // The billboard must be oriented to face the camera before it is
+	    // transformed into the world.
+	    worldRotation.apply(orient);
+	} 
+	
 	/**
 	 * Rotate the billboard so it points directly opposite the 
 	 * direction the camera's facing
