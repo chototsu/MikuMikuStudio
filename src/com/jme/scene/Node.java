@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.13 2004-02-26 22:40:34 renanse Exp $
+ * @version $Id: Node.java,v 1.14 2004-03-03 13:53:07 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -188,8 +188,9 @@ public class Node extends Spatial implements Serializable {
      * @param r the renderer to draw to.
      */
     public void draw(Renderer r) {
+    	Spatial child = null;
         for (int i = 0, cSize = children.size(); i < cSize ; i++) {
-            Spatial child = (Spatial) children.get(i);
+            child = (Spatial) children.get(i);
             if (child != null)
                 child.onDraw(r);
         }
