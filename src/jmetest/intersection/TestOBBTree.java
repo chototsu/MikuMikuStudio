@@ -17,19 +17,23 @@ import java.util.ArrayList;
  * @author Jack Lindamood
  */
 public class TestOBBTree extends SimpleGame {
+    ColorRGBA[] colorSpread={ColorRGBA.white,ColorRGBA.green,ColorRGBA.gray};
+    TriMesh s,r;
+    ArrayList a=new ArrayList();
+    ArrayList b=new ArrayList();
+    int count=0;
+
     public static void main(String[] args) {
         TestOBBTree app = new TestOBBTree();
         app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
-    TriMesh s,r;
     protected void simpleInitGame() {
         s=new Sphere("sphere",10,10,1);
         s.updateCollisionTree();
         s.setModelBound(new BoundingBox());
         s.updateModelBound();
 
-//        r=new Sphere("Sphere",10,10,1);
         r=new PQTorus("tort",5,4,2f,.5f,128,16);
         r.updateCollisionTree();
         r.setLocalTranslation(new Vector3f(0,0,0));
@@ -38,12 +42,22 @@ public class TestOBBTree extends SimpleGame {
 
         SpatialTransformer st=new SpatialTransformer(1);
         st.setObject(r,0,-1);
-//        st.setSpeed(.2f);
         st.setPosition(0,0,new Vector3f(10,10,0));
         st.setPosition(0,4,new Vector3f(-10,-10,0));
         st.setPosition(0,8,new Vector3f(10,10,0));
         st.interpolateMissing();
         r.addController(st);
+
+        ColorRGBA[] color1=r.getColors();
+        for (int i=0;i<color1.length;i++){
+            color1[i]=colorSpread[i%3];
+        }
+        r.setColors(color1);
+        ColorRGBA[] color2=s.getColors();
+        for (int i=0;i<color2.length;i++){
+            color2[i]=colorSpread[i%3];
+        }
+        s.setColors(color2);
 
         rootNode.attachChild(r);
         rootNode.attachChild(s);
@@ -51,55 +65,46 @@ public class TestOBBTree extends SimpleGame {
         lightState.detachAll();
     }
 
-    int count=0;
     protected void simpleUpdate(){
         count++;
-        if (count!=10) return;
+        if (count<3) return;
         count=0;
-        ArrayList a=new ArrayList();
-        ArrayList b=new ArrayList();
+
+        ColorRGBA []color1=s.getColors();
+        ColorRGBA []color2=r.getColors();
+        int[] index1=s.getIndices();
+        int[] index2=r.getIndices();
+
+        for (int i=0;i<a.size();i++){
+            int triIndex=((Integer)a.get(i)).intValue();
+            color1[index1[triIndex*3+0]]=colorSpread[index1[triIndex*3+0]%3];
+            color1[index1[triIndex*3+1]]=colorSpread[index1[triIndex*3+1]%3];
+            color1[index1[triIndex*3+2]]=colorSpread[index1[triIndex*3+2]%3];
+        }
+        for (int i=0;i<b.size();i++){
+            int triIndex=((Integer)b.get(i)).intValue();
+            color2[index2[triIndex*3+0]]=colorSpread[index2[triIndex*3+0]%3];
+            color2[index2[triIndex*3+1]]=colorSpread[index2[triIndex*3+1]%3];
+            color2[index2[triIndex*3+2]]=colorSpread[index2[triIndex*3+2]%3];
+        }
+        a.clear();
+        b.clear();
+
         s.findIntersection(r,a,b);
-        {
-        ColorRGBA[] colors=new ColorRGBA[s.getVertices().length];
-        for (int i=0;i<colors.length;i++){
-            if (i%3==0)
-                colors[i]=ColorRGBA.white;
-            else if (i%3==1)
-                colors[i]=ColorRGBA.green;
-            else
-                colors[i]=ColorRGBA.gray;
+
+        for (int i=0;i<a.size();i++){
+            int triIndex=((Integer)a.get(i)).intValue();
+            color1[index1[triIndex*3+0]]=ColorRGBA.red;
+            color1[index1[triIndex*3+1]]=ColorRGBA.red;
+            color1[index1[triIndex*3+2]]=ColorRGBA.red;
         }
-        if (a.size()!=0){
-            int[] indices=s.getIndices();
-            for (int i=0;i<a.size();i++){
-                int triIndex=((Integer)a.get(i)).intValue();
-                colors[indices[triIndex*3+0]]=ColorRGBA.red;
-                colors[indices[triIndex*3+1]]=ColorRGBA.red;
-                colors[indices[triIndex*3+2]]=ColorRGBA.red;
-            }
+        s.setColors(color1);
+        for (int i=0;i<b.size();i++){
+            int triIndex=((Integer)b.get(i)).intValue();
+            color2[index2[triIndex*3+0]]=ColorRGBA.blue;
+            color2[index2[triIndex*3+1]]=ColorRGBA.blue;
+            color2[index2[triIndex*3+2]]=ColorRGBA.blue;
         }
-        s.setColors(colors);
-        }
-        {
-        ColorRGBA[] colors2=new ColorRGBA[r.getVertices().length];
-        for (int i=0;i<colors2.length;i++){
-            if (i%3==0)
-                colors2[i]=ColorRGBA.white;
-            else if (i%3==1)
-                colors2[i]=ColorRGBA.green;
-            else
-                colors2[i]=ColorRGBA.gray;
-        }
-        if (b.size()!=0){
-            int[] indices=r.getIndices();
-            for (int i=0;i<b.size();i++){
-                int triIndex=((Integer)b.get(i)).intValue();
-                colors2[indices[triIndex*3+0]]=ColorRGBA.blue;
-                colors2[indices[triIndex*3+1]]=ColorRGBA.blue;
-                colors2[indices[triIndex*3+2]]=ColorRGBA.blue;
-            }
-        }
-        r.setColors(colors2);
-        }
+        r.setColors(color2);
     }
 }
