@@ -53,7 +53,6 @@ import org.lwjgl.opengl.Window;
 
 import com.jme.curve.Curve;
 import com.jme.input.Mouse;
-import com.jme.math.Matrix3f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -101,7 +100,7 @@ import com.jme.widget.text.WidgetText;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.25 2004-03-02 04:00:34 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.26 2004-03-02 14:57:58 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -117,6 +116,10 @@ public class LWJGLRenderer implements Renderer {
     private LWJGLFont font;
 
     private float[] modelToWorld = new float[16];
+    
+    private long numberOfVerts;
+    private long numberOfTris;
+    private boolean statisticsOn;
 
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -791,7 +794,13 @@ public class LWJGLRenderer implements Renderer {
             }
         }
 
-        GL.glDrawElements(GL.GL_TRIANGLES, t.getIndexAsBuffer());
+        IntBuffer indices = t.getIndexAsBuffer();
+        if(statisticsOn) {
+        	int adder = indices.capacity();
+        	numberOfTris += adder;
+        	numberOfVerts += adder * 3;
+        }
+        GL.glDrawElements(GL.GL_TRIANGLES, indices);
 
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPopMatrix();
@@ -857,7 +866,14 @@ public class LWJGLRenderer implements Renderer {
         GL.glRotatef(rot, vRot.x, vRot.y, vRot.z);
         GL.glScalef(scale, scale, scale);
 
-        GL.glDrawElements(GL.GL_TRIANGLES, c.getIndexBuffer());
+        IntBuffer indices = c.getIndexBuffer();
+        if(statisticsOn) {
+        	int adder = indices.capacity();
+        	numberOfTris += adder;
+        	numberOfVerts += adder * 3;
+        }
+        
+        GL.glDrawElements(GL.GL_TRIANGLES, indices);
 
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPopMatrix();
@@ -996,6 +1012,20 @@ public class LWJGLRenderer implements Renderer {
         }
 
         resetWidgetProjection();
+    }
+    
+    public void enableStatistics(boolean value){
+    	System.out.println("Stats are " + value);
+    	statisticsOn = value;
+    }
+    
+    public void clearStatistics() {
+    	numberOfVerts = 0;
+    	numberOfTris = 0;
+    }
+    
+    public String getStatistics() {
+    	return "Number of Triangles: " + numberOfTris + " : Number of Vertices: " + numberOfVerts;
     }
 
     private void drawBox2d(Widget w) {

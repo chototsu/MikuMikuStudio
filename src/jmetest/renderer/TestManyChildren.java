@@ -46,7 +46,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.3 2004-03-02 01:44:56 mojomonkey Exp $
+ * @version $Id: TestManyChildren.java,v 1.4 2004-03-02 14:57:57 mojomonkey Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
@@ -72,11 +72,13 @@ public class TestManyChildren extends SimpleGame {
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
+    	
         timer.update();
         input.update(timer.getTimePerFrame());
         root.updateGeometricState(timer.getTimePerFrame(), true);
-        fps.print("FPS: " + (int) timer.getFrameRate());
+        fps.print("FPS: " + (int) timer.getFrameRate() + " : " +display.getRenderer().getStatistics());
 //        System.out.println(timer.getFrameRate());
+        display.getRenderer().clearStatistics();
     }
 
     /**
@@ -87,6 +89,7 @@ public class TestManyChildren extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
+        
 
     }
 
@@ -124,6 +127,7 @@ public class TestManyChildren extends SimpleGame {
         input.setKeySpeed(2f);
         input.setMouseSpeed(0.5f);
         display.setTitle("Light State Test");
+        display.getRenderer().enableStatistics(true);
         timer = Timer.getTimer(properties.getRenderer());
 
     }

@@ -73,7 +73,7 @@ import com.jme.widget.text.WidgetText;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.14 2004-03-02 01:44:51 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.15 2004-03-02 14:57:58 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -178,6 +178,12 @@ public interface Renderer {
     public WireframeState getWireframeState();
     
     public ZBufferState getZBufferState();
+    
+    public void enableStatistics(boolean value);
+    
+    public void clearStatistics();
+    
+    public String getStatistics();
     
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color
