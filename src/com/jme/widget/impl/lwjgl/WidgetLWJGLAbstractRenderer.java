@@ -49,7 +49,7 @@ import java.util.Iterator;
 /**
  * <code>WidgetLWJGLAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.5 2004-04-16 20:47:22 renanse Exp $
+ * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.6 2004-04-16 21:23:25 mojomonkey Exp $
  */
 public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer {
 
@@ -153,7 +153,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
 
         Spatial.applyDefaultStates();
         applyStates(states);
-
+        
         int l = left;
         int b = bottom;
         int r = right;
@@ -167,7 +167,6 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         }
 
         if (tc != null) {
-
             alphaState.apply();
 
             GL11.glBegin(GL11.GL_QUADS);
@@ -188,7 +187,6 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
 
 
         } else if (color != null) {
-
             GL11.glColor3f(color.r, color.g, color.b);
 
             GL11.glBegin(GL11.GL_QUADS);
@@ -286,6 +284,14 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         int y = (int) v.getMinY();
         int w = (int) v.getWidth();
         int h = (int) v.getHeight();
+        
+        if(w == 0) {
+            w = 1;
+        }
+        
+        if(h == 0) {
+            h = 1;
+        }
 
         //int screenWidth = DisplaySystem.getDisplaySystem().getWidth();
         //int screenHeight = DisplaySystem.getDisplaySystem().getHeight();
@@ -303,7 +309,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         GL11.glLoadIdentity();
 
         //GLU.gluOrtho2D(0, screenWidth, 0, screenHeight);
-        GLU.gluOrtho2D(0, w, 0, h);
+        GL11.glOrtho(0, w, 0, h, -1, 1);
 
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
