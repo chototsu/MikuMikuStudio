@@ -194,8 +194,8 @@ public abstract class UIObject extends Quad {
     public void centerAt(int x, int y) {
         this.localTranslation.set(x, y, 0);
 
-        _x = (int) (x - _width / 2);
-        _y = (int) (y - _height / 2);
+        _x = (int) (x - _width / 2 * _xscale);
+        _y = (int) (y - _height / 2 * _yscale) ;
 
         _hitArea._x = _x;
         _hitArea._y = _y;
