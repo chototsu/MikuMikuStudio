@@ -41,7 +41,7 @@ import com.jme.renderer.Renderer;
  * and the GL renderers.
  *
  * @author Joshua Slack
- * @version $Id: HeadlessDelegate.java,v 1.1 2004-11-09 19:59:02 renanse Exp $
+ * @version $Id: HeadlessDelegate.java,v 1.2 2004-11-09 23:37:54 renanse Exp $
  */
 
 public class HeadlessDelegate {
@@ -91,7 +91,7 @@ public class HeadlessDelegate {
 		if (res == null) return;
 		// Copy renderer's context to the component's image buffer.
 		res.r.grabScreenContents(comp.getBuffer(), 0, 0, res.r.getWidth(), res.r.getHeight());
-	}
+ 	}
 
 	/**
 	 * Adds a new Renderer, JMEComponent pair to be tracked.  You should do this

@@ -73,7 +73,7 @@ import com.jme.util.TextureManager;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.1 2004-11-09 19:59:39 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.2 2004-11-09 23:37:54 renanse Exp $
  */
 
 public class JMESwingTest extends SimpleHeadlessApp {
@@ -140,8 +140,6 @@ public class JMESwingTest extends SimpleHeadlessApp {
 			lastCopied += tpf;
 			if (lastCopied > .01f) {
 				HeadlessDelegate.copyContents(frame.comp);
-				// tell the delegate we want new contents from GL on the next pass.
-				HeadlessDelegate.setNeedsRender(frame.comp, true);
 				lastCopied = 0;
 			}
 			// ************* /NEW FOR HEADLESS/SWING *************
@@ -151,7 +149,7 @@ public class JMESwingTest extends SimpleHeadlessApp {
 			// ************* NEW FOR HEADLESS/SWING *************
 			// tell the delegate we got new contents from GL and to hold back
 			// from rendering until set back to true.
-			HeadlessDelegate.setNeedsRender(frame.comp, false);
+			HeadlessDelegate.setNeedsRender(frame.comp, true);
 			// ************* /NEW FOR HEADLESS/SWING *************
 		}
 
