@@ -46,14 +46,18 @@ import com.jme.scene.state.LightState;
  * location.
  * 
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.5 2004-09-14 21:52:18 mojomonkey Exp $
+ * @version $Id: LightNode.java,v 1.6 2004-12-09 17:45:46 mojomonkey Exp $
  */
 public class LightNode extends Node {
 
     private static final long serialVersionUID = 1L;
-	private Light light;
+
+    private Light light;
+
     private LightState lightState;
+
     private Quaternion lightRotate;
+
     private Vector3f lightTranslate;
 
     /**
@@ -122,29 +126,26 @@ public class LightNode extends Node {
                 .multLocal(worldScale).addLocal(worldTranslation);
 
         switch (light.getType()) {
-        case Light.LT_DIRECTIONAL:
-            {
-                DirectionalLight dLight = (DirectionalLight) light;
-                dLight.setDirection(lightRotate.getRotationColumn(2,
-                        dLight.getDirection()));
-                break;
-            }
+        case Light.LT_DIRECTIONAL: {
+            DirectionalLight dLight = (DirectionalLight) light;
+            dLight.setDirection(lightRotate.getRotationColumn(2, dLight
+                    .getDirection()));
+            break;
+        }
 
-        case Light.LT_POINT:
-            {
-                PointLight pLight = (PointLight) light;
-                pLight.setLocation(lightTranslate);
-                break;
-            }
+        case Light.LT_POINT: {
+            PointLight pLight = (PointLight) light;
+            pLight.setLocation(lightTranslate);
+            break;
+        }
 
-        case Light.LT_SPOT:
-            {
-                SpotLight sLight = (SpotLight) light;
-                sLight.setLocation(lightTranslate);
-                sLight.setDirection(lightRotate.getRotationColumn(2, sLight
-                        .getDirection()));
-                break;
-            }
+        case Light.LT_SPOT: {
+            SpotLight sLight = (SpotLight) light;
+            sLight.setLocation(lightTranslate);
+            sLight.setDirection(lightRotate.getRotationColumn(2, sLight
+                    .getDirection()));
+            break;
+        }
 
         default:
             break;
