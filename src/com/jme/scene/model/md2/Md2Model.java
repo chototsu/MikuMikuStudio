@@ -33,6 +33,7 @@ package com.jme.scene.model.md2;
 import java.io.File;
 import java.io.InputStream;
 
+import com.jme.animation.VertexKeyframeController;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.BoundingSphere;
@@ -45,28 +46,277 @@ import com.jme.util.BinaryFileReader;
 /**
  * <code>Md2Model</code> defines a model using the MD2 model format made
  * common by Quake 2. This loader builds the mesh of each frame of animation
- * then builds the animation controller that allows the shown mesh to be 
+ * then builds the animation controller that allows the shown mesh to be
  * displayed at any given time. The memory footprint may be quite large
  * depending on how many key frames exist, and how many vertices within the
  * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.2 2004-02-06 03:55:13 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.3 2004-02-06 21:14:24 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
-	
+
 	private Header header; // The header data
-	private String[] skins; // The skin data
+
 	private Vector2f[] texCoords; // The texture coordinates
 	private Md2Face[] triangles; // Face index information
 	private Md2Frame[] frames; // The frames of animation (vertices)
 
+	//holds each keyframe.
 	private TriMesh[] triMesh;
+
+	private VertexKeyframeController controller;
+
+	/**
+	 * <code>load</code>
+	 * 
+	 * @param filename
+	 * @see com.jme.scene.model.Model#load(java.lang.String)
+	 */
+	public void load(String filename) {
+		InputStream is = null;
+		int fileSize = 0;
+		File file = new File(filename);
+		bis = new BinaryFileReader(file);
+
+		header = new Header();
+
+		if (header.version != 8) {
+			throw new JmeException(
+				"Invalid file format (Version not 8): " + filename + "!");
+		}
+
+		parseMesh();
+		convertDataStructures();
+
+		triangles = null;
+		texCoords = null;
+		frames = null;
+	}
+
+	/**
+	 * <code>getAnimationController</code>
+	 * 
+	 * @return @see com.jme.scene.model.Model#getAnimationController()
+	 */
+	public Controller getAnimationController() {
+		return controller;
+	}
+
+	private void parseMesh() {
+		// Here we allocate all of our memory from the header's information
+		String[] skins = new String[header.numSkins];
+		texCoords = new Vector2f[header.numTexCoords];
+		triangles = new Md2Face[header.numTriangles];
+		frames = new Md2Frame[header.numFrames];
+
+		// Next, we start reading in the data by seeking to our skin names
+		// offset
+		bis.setOffset(header.offsetSkins);
+
+		// Depending on the skin count, we read in each skin for this model
+		for (int j = 0; j < header.numSkins; j++) {
+			skins[j] = bis.readString(64);
+		}
+
+		// Move the file pointer to the position in the file for texture
+		// coordinates
+		bis.setOffset(header.offsetTexCoords);
+
+		// Read in all the texture coordinates in one fell swoop
+		for (int j = 0; j < header.numTexCoords; j++) {
+			texCoords[j] = new Vector2f();
+			texCoords[j].x = bis.readShort();
+			texCoords[j].y = bis.readShort();
+		}
+
+		// Move the file pointer to the triangles/face data offset
+		bis.setOffset(header.offsetTriangles);
+
+		// Read in the face data for each triangle (vertex and texCoord
+		// indices)
+		for (int j = 0; j < header.numTriangles; j++) {
+			triangles[j] = new Md2Face();
+		}
+
+		// Move the file pointer to the vertices (frames)
+		bis.setOffset(header.offsetFrames);
+
+		for (int i = 0; i < header.numFrames; i++) {
+			// Assign our alias frame to our buffer memory
+			VectorKeyframe pFrame = new VectorKeyframe();
+
+			// Allocate the memory for the first frame of animation's vertices
+			frames[i] = new Md2Frame();
+
+			frames[i].pVertices = new Triangle[header.numVertices];
+			Vector3f[] aliasVertices = new Vector3f[header.numVertices];
+			int[] aliasLightNormals = new int[header.numVertices];
+
+			// Read in the first frame of animation
+			for (int j = 0; j < header.numVertices; j++) {
+				aliasVertices[j] =
+					new Vector3f(
+						bis.readByte(),
+						bis.readByte(),
+						bis.readByte());
+				aliasLightNormals[j] = bis.readByte();
+			}
+
+			// Copy the name of the animation to our frames array
+			frames[i].strName = pFrame.name;
+
+			Triangle[] pVertices = frames[i].pVertices;
+
+			for (int j = 0; j < header.numVertices; j++) {
+				pVertices[j] = new Triangle();
+				pVertices[j].vertex.x =
+					aliasVertices[j].x * pFrame.scale.x + pFrame.translate.x;
+				pVertices[j].vertex.z =
+					-1
+						* (aliasVertices[j].y * pFrame.scale.y
+							+ pFrame.translate.y);
+				pVertices[j].vertex.y =
+					aliasVertices[j].z * pFrame.scale.z + pFrame.translate.z;
+			}
+		}
+	}
+
+	private void convertDataStructures() {
+		triMesh = new TriMesh[header.numFrames];
+		Vector2f[] texCoords2 = new Vector2f[header.numVertices];
+
+		for (int i = 0; i < header.numFrames; i++) {
+			int numOfVerts = header.numVertices;
+			int numTexVertex = header.numTexCoords;
+			int numOfFaces = header.numTriangles;
+			triMesh[i] = new TriMesh();
+			Vector3f[] verts = new Vector3f[numOfVerts];
+			Vector2f[] texVerts = new Vector2f[numTexVertex];
+			
+			Face[] faces = new Face[numOfFaces];
+
+			// Go through all of the vertices and assign them over to our
+			// structure
+			for (int j = 0; j < numOfVerts; j++) {
+				verts[j] = new Vector3f();
+				verts[j].x = frames[i].pVertices[j].vertex.x;
+				verts[j].y = frames[i].pVertices[j].vertex.y;
+				verts[j].z = frames[i].pVertices[j].vertex.z;
+			}
+
+			// Go through all of the face data and assign it over to OUR
+			// structure
+			for (int j = 0; j < numOfFaces; j++) {
+				faces[j] = new Face();
+				// Assign the vertex indices to our face data
+				faces[j].vertIndex[0] = triangles[j].vertexIndices[0];
+				faces[j].vertIndex[1] = triangles[j].vertexIndices[1];
+				faces[j].vertIndex[2] = triangles[j].vertexIndices[2];
+
+				// Assign the texture coord indices to our face data
+				faces[j].coordIndex[0] = triangles[j].textureIndices[0];
+				faces[j].coordIndex[1] = triangles[j].textureIndices[1];
+				faces[j].coordIndex[2] = triangles[j].textureIndices[2];
+			}
+
+			if (i == 0) {
+				for (int j = 0; j < numTexVertex; j++) {
+					texVerts[j] = new Vector2f();
+					texVerts[j].x = texCoords[j].x / (float) (header.skinWidth);
+					texVerts[j].y =
+						1 - texCoords[j].y / (float) (header.skinHeight);
+				}
+
+				for (int j = 0; j < numOfFaces; j++) {
+					int index = faces[j].vertIndex[0];
+					texCoords2[index] = new Vector2f();
+					texCoords2[index] = texVerts[faces[j].coordIndex[0]];
+
+					index = faces[j].vertIndex[1];
+					texCoords2[index] = new Vector2f();
+					texCoords2[index] = texVerts[faces[j].coordIndex[1]];
+
+					index = faces[j].vertIndex[2];
+					texCoords2[index] = new Vector2f();
+					texCoords2[index] = texVerts[faces[j].coordIndex[2]];
+				}
+			
+				int[] indices = new int[numOfFaces * 3];
+				int count = 0;
+				for (int j = 0; j < numOfFaces; j++) {
+					indices[count] = faces[j].vertIndex[0];
+					count++;
+					indices[count] = faces[j].vertIndex[1];
+					count++;
+					indices[count] = faces[j].vertIndex[2];
+					count++;
+				}
+				triMesh[i].setIndices(indices);
+			}
+
+			triMesh[i].setVertices(verts);
+			triMesh[i].setNormals(computeNormals(faces, verts));
+			triMesh[i].setName(frames[i].strName);
+			
+			if (i == 0) {
+				triMesh[i].setTextures(texCoords2);
+				triMesh[i].setModelBound(new BoundingSphere());
+				triMesh[i].updateModelBound();
+			}
+		}
+
+		controller = new VertexKeyframeController();
+		controller.setKeyframes(triMesh);
+		controller.setDisplayedMesh(triMesh[0]);
+		this.attachChild(triMesh[0]);
+		this.addController(controller);
+
+	}
+
+	private Vector3f[] computeNormals(Face[] faces, Vector3f[] verts) {
+		Vector3f[] returnNormals = new Vector3f[verts.length];
+
+		Vector3f[] normals = new Vector3f[faces.length];
+		Vector3f[] tempNormals = new Vector3f[faces.length];
+
+		for (int i = 0; i < faces.length; i++) {
+			tempNormals[i] =
+				verts[faces[i].vertIndex[0]].subtract(
+					verts[faces[i].vertIndex[2]]).cross(
+					verts[faces[i].vertIndex[2]].subtract(
+						verts[faces[i].vertIndex[1]]));
+			normals[i] = tempNormals[i].normalize();
+		}
+
+		Vector3f sum = new Vector3f();
+		Vector3f zero = sum;
+		int shared = 0;
+
+		for (int i = 0; i < verts.length; i++) {
+			for (int j = 0; j < faces.length; j++) {
+				if (faces[j].vertIndex[0] == i
+					|| faces[j].vertIndex[1] == i
+					|| faces[j].vertIndex[2] == i) {
+					sum = sum.add(tempNormals[j]);
+					shared++;
+				}
+			}
+
+			returnNormals[i] = sum.divide(-shared);
+			returnNormals[i] = returnNormals[i].normalize().negate();
+
+			sum = zero;
+			shared = 0;
+		}
+
+		return returnNormals;
+	}
 
 	// This holds the header information that is read in at the beginning of
 	// the file
-	class Header {
+	private class Header {
 		int magic; // This is used to identify the file
 		int version; // The version number of the file (Must be 8)
 		int skinWidth; // The skin width in pixels
@@ -109,13 +359,13 @@ public class Md2Model extends Model {
 	};
 
 	// This stores the normals and vertices for the frames
-	class Triangle {
+	private class Triangle {
 		Vector3f vertex = new Vector3f();
 		Vector3f normal = new Vector3f();
 	};
 
 	// This stores the indices into the vertex and texture coordinate arrays
-	class Md2Face {
+	private class Md2Face {
 		int[] vertexIndices = new int[3]; // short
 		int[] textureIndices = new int[3]; // short
 
@@ -129,7 +379,7 @@ public class Md2Model extends Model {
 
 	// This stores the animation scale, translation and name information for a
 	// frame, plus verts
-	public class VectorKeyframe {
+	private class VectorKeyframe {
 		private Vector3f scale = new Vector3f();
 		private Vector3f translate = new Vector3f();
 		private String name;
@@ -147,7 +397,7 @@ public class Md2Model extends Model {
 	};
 
 	// This stores the frames vertices after they have been transformed
-	class Md2Frame {
+	private class Md2Frame {
 		String strName; // char [16]
 		Triangle[] pVertices;
 
@@ -160,254 +410,8 @@ public class Md2Model extends Model {
 	// vertices
 	// from our vertex array go to which face, along with the correct texture
 	// coordinates.
-	public class Face {
+	private class Face {
 		public int[] vertIndex = new int[3];
 		public int[] coordIndex = new int[3];
 	};
-
-	private void parseMesh() {
-		// Here we allocate all of our memory from the header's information
-		skins = new String[header.numSkins];
-		texCoords = new Vector2f[header.numTexCoords];
-		triangles = new Md2Face[header.numTriangles];
-		frames = new Md2Frame[header.numFrames];
-
-		// Next, we start reading in the data by seeking to our skin names
-		// offset
-		bis.setOffset(header.offsetSkins);
-
-		// Depending on the skin count, we read in each skin for this model
-		for (int j = 0; j < header.numSkins; j++) {
-			skins[j] = bis.readString(64);
-		}
-
-		// Move the file pointer to the position in the file for texture
-		// coordinates
-		bis.setOffset(header.offsetTexCoords);
-
-		// Read in all the texture coordinates in one fell swoop
-		for (int j = 0; j < header.numTexCoords; j++) {
-			texCoords[j] = new Vector2f();
-			texCoords[j].x = bis.readShort();
-			texCoords[j].y = bis.readShort();
-		}
-
-		// Move the file pointer to the triangles/face data offset
-		bis.setOffset(header.offsetTriangles);
-
-		// Read in the face data for each triangle (vertex and texCoord
-		// indices)
-		for (int j = 0; j < header.numTriangles; j++) {
-			triangles[j] = new Md2Face();
-		}
-
-		// Move the file pointer to the vertices (frames)
-		bis.setOffset(header.offsetFrames);
-
-
-		for(int i = 0; i < header.numFrames; i++) {
-			// Assign our alias frame to our buffer memory
-			VectorKeyframe pFrame = new VectorKeyframe();
-	
-			// Allocate the memory for the first frame of animation's vertices
-			frames[i] = new Md2Frame();
-	
-			frames[i].pVertices = new Triangle[header.numVertices];
-			Vector3f[] aliasVertices = new Vector3f[header.numVertices];
-			int[] aliasLightNormals = new int[header.numVertices];
-	
-			// Read in the first frame of animation
-			for (int j = 0; j < header.numVertices; j++) {
-				aliasVertices[j] =
-					new Vector3f(bis.readByte(), bis.readByte(), bis.readByte());
-				aliasLightNormals[j] = bis.readByte();
-			}
-	
-			// Copy the name of the animation to our frames array
-			frames[i].strName = pFrame.name;
-	
-			Triangle[] pVertices = frames[i].pVertices;
-	
-			for (int j = 0; j < header.numVertices; j++) {
-				pVertices[j] = new Triangle();
-				pVertices[j].vertex.x =
-					aliasVertices[j].x * pFrame.scale.x + pFrame.translate.x;
-				pVertices[j].vertex.z =
-					-1 * (aliasVertices[j].y * pFrame.scale.y + pFrame.translate.y);
-				pVertices[j].vertex.y =
-					aliasVertices[j].z * pFrame.scale.z + pFrame.translate.z;
-			}
-		}
-	}
-
-	private void convertDataStructures() {
-		triMesh = new TriMesh[header.numFrames];
-
-		for (int i = 0; i < header.numFrames; i++) {
-			// Create a local object to store the first frame of animation's
-			// data
-			// Assign the vertex, texture coord and face count to our new
-			// structure
-			int numOfVerts = header.numVertices;
-			int numTexVertex = header.numTexCoords;
-			int numOfFaces = header.numTriangles;
-
-			// Allocate memory for the vertices, texture coordinates and face
-			// data.
-			Vector3f[] verts = new Vector3f[numOfVerts];
-			Vector2f[] texVerts = new Vector2f[numTexVertex];
-			Face[] faces = new Face[numOfFaces];
-
-			// Go through all of the vertices and assign them over to our
-			// structure
-			for (int j = 0; j < numOfVerts; j++) {
-				verts[j] = new Vector3f();
-				verts[j].x = frames[i].pVertices[j].vertex.x;
-				verts[j].y = frames[i].pVertices[j].vertex.y;
-				verts[j].z = frames[i].pVertices[j].vertex.z;
-			}
-
-			// Go through all of the face data and assign it over to OUR
-			// structure
-			for (int j = 0; j < numOfFaces; j++) {
-				faces[j] = new Face();
-				// Assign the vertex indices to our face data
-				faces[j].vertIndex[0] = triangles[j].vertexIndices[0];
-				faces[j].vertIndex[1] = triangles[j].vertexIndices[1];
-				faces[j].vertIndex[2] = triangles[j].vertexIndices[2];
-
-				// Assign the texture coord indices to our face data
-				faces[j].coordIndex[0] = triangles[j].textureIndices[0];
-				faces[j].coordIndex[1] = triangles[j].textureIndices[1];
-				faces[j].coordIndex[2] = triangles[j].textureIndices[2];
-			}
-
-			for (int j = 0; j < numTexVertex; j++) {
-				texVerts[j] = new Vector2f();
-				texVerts[j].x = texCoords[j].x / (float) (header.skinWidth);
-				texVerts[j].y =
-					1 - texCoords[j].y / (float) (header.skinHeight);
-			}
-
-			//texCoords = null;
-
-			Vector2f[] texCoords2 = new Vector2f[verts.length];
-
-			for (int j = 0; j < numOfFaces; j++) {
-				int index = faces[j].vertIndex[0];
-				texCoords2[index] = new Vector2f();
-				texCoords2[index] = texVerts[faces[j].coordIndex[0]];
-
-				index = faces[j].vertIndex[1];
-				texCoords2[index] = new Vector2f();
-				texCoords2[index] = texVerts[faces[j].coordIndex[1]];
-
-				index = faces[j].vertIndex[2];
-				texCoords2[index] = new Vector2f();
-				texCoords2[index] = texVerts[faces[j].coordIndex[2]];
-			}
-
-			//texVerts = texCoords2;
-			// Here we add the current object (or frame) to our list object
-			// list
-
-			int[] indices = new int[numOfFaces * 3];
-			int count = 0;
-			for (int j = 0; j < numOfFaces; j++) {
-				indices[count] = faces[j].vertIndex[0];
-				count++;
-				indices[count] = faces[j].vertIndex[1];
-				count++;
-				indices[count] = faces[j].vertIndex[2];
-				count++;
-			}
-
-			Vector3f[] normals = computeNormals(faces, verts);
-
-			triMesh[i] = new TriMesh();
-			triMesh[i].setLocalTranslation(new Vector3f(i*25,0,0));
-			triMesh[i].setVertices(verts);
-			triMesh[i].setTextures(texCoords2);
-			triMesh[i].setNormals(normals);
-			triMesh[i].setIndices(indices);
-			triMesh[i].setName(frames[i].strName);
-			this.attachChild(triMesh[i]);
-			triMesh[i].setModelBound(new BoundingSphere());
-			triMesh[i].updateModelBound();
-
-		}
-		
-	}
-
-	private Vector3f[] computeNormals(Face[] faces, Vector3f[] verts) {
-		Vector3f[] returnNormals = new Vector3f[verts.length];
-
-		Vector3f[] normals = new Vector3f[faces.length];
-		Vector3f[] tempNormals = new Vector3f[faces.length];
-
-		for (int i = 0; i < faces.length; i++) {
-			tempNormals[i] =
-				verts[faces[i].vertIndex[0]].subtract(
-					verts[faces[i].vertIndex[2]]).cross(
-					verts[faces[i].vertIndex[2]].subtract(
-						verts[faces[i].vertIndex[1]]));
-			normals[i] = tempNormals[i].normalize();
-		}
-
-		Vector3f sum = new Vector3f();
-		Vector3f zero = sum;
-		int shared = 0;
-
-		for (int i = 0; i < verts.length; i++) {
-			for (int j = 0; j < faces.length; j++) {
-				if (faces[j].vertIndex[0] == i
-					|| faces[j].vertIndex[1] == i
-					|| faces[j].vertIndex[2] == i) {
-					sum = sum.add(tempNormals[j]);
-					shared++;
-				}
-			}
-
-			returnNormals[i] = sum.divide(-shared);
-			returnNormals[i] = returnNormals[i].normalize().negate();
-
-			sum = zero;
-			shared = 0;
-		}
-
-		return returnNormals;
-	}
-
-	/**
-	 * <code>load</code>
-	 * 
-	 * @param filename
-	 * @see com.jme.scene.model.Model#load(java.lang.String)
-	 */
-	public void load(String filename) {
-		InputStream is = null;
-		int fileSize = 0;
-		File file = new File(filename);
-		bis = new BinaryFileReader(file);
-
-		header = new Header();
-
-		if (header.version != 8) {
-			throw new JmeException(
-				"Invalid file format (Version not 8): " + filename + "!");
-		}
-
-		parseMesh();
-		convertDataStructures();
-	}
-
-	/**
-	 * <code>getAnimationController</code>
-	 * 
-	 * @return @see com.jme.scene.model.Model#getAnimationController()
-	 */
-	public Controller getAnimationController() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

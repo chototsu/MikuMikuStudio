@@ -41,6 +41,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.model.md2.Md2Model;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -55,7 +56,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version
+ * @version $Id: TestMd2.java,v 1.3 2004-02-06 21:14:24 mojomonkey Exp $
  */
 public class TestMd2 extends SimpleGame {
 	LightState state;
@@ -78,6 +79,7 @@ public class TestMd2 extends SimpleGame {
 	protected void update(float f) {
 		timer.update();
 		input.update(timer.getTimePerFrame() * 100);
+		model.updateWorldData(timer.getTimePerFrame()*10);
 		
 	}
 
@@ -179,8 +181,8 @@ public class TestMd2 extends SimpleGame {
 		state.attach(am);
 		state.attach(dr);
 		state.attach(am2);
-		am.setEnabled(false);
-		am2.setEnabled(false);
+		am.setEnabled(true);
+		am2.setEnabled(true);
 		dr.setEnabled(true);
 
 		zstate = display.getRenderer().getZBufferState();
@@ -194,6 +196,7 @@ public class TestMd2 extends SimpleGame {
 		model.setRenderState(zstate);
 		model.setRenderState(ws);
 		
+		model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
 		model.updateGeometricState(0, true);
 	}
 
