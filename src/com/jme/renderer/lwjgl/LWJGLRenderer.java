@@ -129,7 +129,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.37 2004-08-21 06:18:33 cep21 Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.38 2004-08-27 07:38:40 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -399,11 +399,11 @@ public class LWJGLRenderer implements Renderer {
   public VertexProgramState createVertexProgramState() {
     return new LWJGLVertexProgramState();
   }
-  
+
   public FragmentProgramState getFragmentProgramState() {
       return createFragmentProgramState();
   }
-  
+
   /**
    * <code>createFragmentProgramState</code> returns a new
    * LWJGLFragmentProgramState object as a regular FragmentProgramState.
@@ -608,6 +608,19 @@ public class LWJGLRenderer implements Renderer {
                                     ".png");
       return false;
     }
+  }
+
+  /**
+   * <code>grabScreenContents</code> reads a block of pixels from the current framebuffer.
+   *
+   * @param buff a buffer to store contents in.
+   * @param x - x starting point of block
+   * @param y - y starting point of block
+   * @param w - width of block
+   * @param h - height of block
+   */
+  public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h) {
+    GL11.glReadPixels(x, y, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buff);
   }
 
   /**

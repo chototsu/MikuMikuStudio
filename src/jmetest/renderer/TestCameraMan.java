@@ -86,7 +86,7 @@ public class TestCameraMan extends SimpleGame {
   }
 
   protected void simpleRender() {
-    lastRend += timer.getTimePerFrame();
+    lastRend += tpf;
     if (lastRend > .03f) {
       tRenderer.render(model, fakeTex);
       lastRend = 0;

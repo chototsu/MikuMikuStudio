@@ -57,6 +57,7 @@ import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.widget.WidgetRenderer;
+import java.nio.IntBuffer;
 
 /**
  * <code>Renderer</code> defines an interface that handles displaying
@@ -77,7 +78,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.41 2004-08-22 18:42:25 cep21 Exp $
+ * @version $Id: Renderer.java,v 1.42 2004-08-27 07:38:40 renanse Exp $
  */
 public interface Renderer {
 
@@ -295,14 +296,14 @@ public interface Renderer {
      * @deprecated Use createVertexProgramState.
      * @see #createVertexProgramState()
      */
-    public VertexProgramState getVertexProgramState();    
-    
+    public VertexProgramState getVertexProgramState();
+
     /**
      * @deprecated Use createFragmentProgramState.
      * @see #createFragmentProgramState()
      */
     public FragmentProgramState getFragmentProgramState();
-    
+
     /**
      * Retrieves the fragment program state object for the proper renderer.
      * @return The <code>VertexProgramState</code> object that can make use of the
@@ -434,6 +435,17 @@ public interface Renderer {
      * @return true if the screen capture was successful, false otherwise.
      */
     public boolean takeScreenShot(String filename);
+
+    /**
+     * <code>grabScreenContents</code> reads a block of pixels from the current framebuffer.
+     *
+     * @param buff a buffer to store contents in.
+     * @param x - x starting point of block
+     * @param y - y starting point of block
+     * @param w - width of block
+     * @param h - height of block
+     */
+    public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h);
 
     /**
      * <code>draw</code> renders a scene. As it recieves a base class of

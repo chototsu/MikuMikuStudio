@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.30 2004-08-21 06:18:29 cep21 Exp $
+ * @version $Id: SimpleGame.java,v 1.31 2004-08-27 07:38:40 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -78,7 +78,7 @@ public abstract class SimpleGame extends BaseGame {
   protected Node fpsNode;
     /** Displays all the lovely information at the bottom. */
   protected Text fps;
-    /** Simply an easy way to get at timer.getTimePerFrame(). */
+    /** Simply an easy way to get at timer.getTimePerFrame().  Also saves time so you don't call it more than once per frame. */
   protected float tpf;
     /** True if the renderer should display bounds. */
   protected boolean showBounds = false;

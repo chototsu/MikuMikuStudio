@@ -48,7 +48,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.27 2004-08-14 00:50:07 cep21 Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.28 2004-08-27 07:38:41 renanse Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -79,9 +79,9 @@ public class TestRenderToTexture extends SimpleGame {
   }
 
   protected void simpleUpdate() {
-    if (timer.getTimePerFrame() < 1) {
-      angle = angle + (timer.getTimePerFrame() * -.25f);
-      angle2 = angle2 + (timer.getTimePerFrame() * 1);
+    if (tpf < 1) {
+      angle = angle + (tpf * -.25f);
+      angle2 = angle2 + (tpf * 1);
       if (angle < 0) {
         angle = 360 - .25f;
       }
@@ -98,7 +98,7 @@ public class TestRenderToTexture extends SimpleGame {
   }
 
   protected void simpleRender() {
-    lastRend += timer.getTimePerFrame();
+    lastRend += tpf;
     if (lastRend > .03f) {
       tRenderer.render(fakeScene, fakeTex);
       lastRend = 0;
