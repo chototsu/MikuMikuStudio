@@ -235,90 +235,90 @@ public class XMLWriter {
     }
 
     private void writeJointMeshTags(JointMesh jointMesh) throws IOException {
-        currentLine.append("<jointindex>");
-        writeLine();
-        increaseTabSize();
+        currentLine.append("<jointindex data=\"");
+//        writeLine();
+//        increaseTabSize();
         int[] jointInfo=jointMesh.jointIndex;
         writeIntArray(jointInfo);
         if (currentLine.length()!=0) writeLine();
-        decreaseTabSize();
-        currentLine.append("</jointindex>");
+//        decreaseTabSize();
+        currentLine.append("\" />");
         writeLine();
 
-        currentLine.append("<origvertex>");
-        writeLine();
-        increaseTabSize();
+        currentLine.append("<origvertex data=\"");
+//        writeLine();
+//        increaseTabSize();
         writeVec3fArray(jointMesh.originalVertex);
         if (currentLine.length()!=0) writeLine();
-        decreaseTabSize();
-        currentLine.append("</origvertex>");
+//        decreaseTabSize();
+        currentLine.append("\" />");
         writeLine();
 
-        currentLine.append("<orignormal>");
-        writeLine();
-        increaseTabSize();
+        currentLine.append("<orignormal data=\"");
+//        writeLine();
+//        increaseTabSize();
         writeVec3fArray(jointMesh.originalNormal);
         if (currentLine.length()!=0) writeLine();
-        decreaseTabSize();
-        currentLine.append("</orignormal>");
+//        decreaseTabSize();
+        currentLine.append("\" />");
         writeLine();
         writeTriMeshTags(jointMesh);
     }
 
     private void writeTriMeshTags(TriMesh toWrite) throws IOException {
-        currentLine.append("<vertex>");
-        writeLine();
+        currentLine.append("<vertex data=\"");
+//        writeLine();
         Vector3f[] theVerts=toWrite.getVertices();
-        increaseTabSize();
+//        increaseTabSize();
         if (theVerts!=null)
             writeVec3fArray(theVerts);
         if (currentLine.length()!=0) writeLine();
-        decreaseTabSize();
-        currentLine.append("</vertex>");
+//        decreaseTabSize();
+        currentLine.append("\" />");
         writeLine();
 
-        currentLine.append("<normal>");
-        writeLine();
+        currentLine.append("<normal data=\"");
+//        writeLine();
         Vector3f[] theNorms=toWrite.getNormals();
-        increaseTabSize();
+//        increaseTabSize();
         if (theNorms!=null)
             writeVec3fArray(theNorms);
         if (currentLine.length()!=0) writeLine();
-        decreaseTabSize();
-        currentLine.append("</normal>");
+//        decreaseTabSize();
+        currentLine.append("\" />");
         writeLine();
 
-        currentLine.append("<color>");
-        writeLine();
+        currentLine.append("<color data=\"");
+//        writeLine();
         ColorRGBA[] theColors=toWrite.getColors();
-        increaseTabSize();
+//        increaseTabSize();
         if (theColors!=null)
             writeColorRGBAArray(theColors);
         if (currentLine.length()!=0) writeLine();
-        decreaseTabSize();
-        currentLine.append("</color>");
+//        decreaseTabSize();
+        currentLine.append("\" />");
         writeLine();
 
-        currentLine.append("<texturecoords>");
-        writeLine();
+        currentLine.append("<texturecoords data=\"");
+//        writeLine();
         Vector2f[] theTexCoords=toWrite.getTextures();
-        increaseTabSize();
+//        increaseTabSize();
         if (theTexCoords!=null)
             writeVec2fArray(theTexCoords);
         if (currentLine.length()!=0) writeLine();
-        decreaseTabSize();
-        currentLine.append("</texturecoords>");
+//        decreaseTabSize();
+        currentLine.append("\" />");
         writeLine();
 
-        currentLine.append("<index>");
-        writeLine();
+        currentLine.append("<index data=\"");
+//        writeLine();
         int[] indexes=toWrite.getIndices();
-        increaseTabSize();
+//        increaseTabSize();
         if (indexes!=null)
             writeIntArray(indexes);
         if (currentLine.length()!=0) writeLine();
-        decreaseTabSize();
-        currentLine.append("</index>");
+//        decreaseTabSize();
+        currentLine.append("\" />");
         writeLine();
 
     }
