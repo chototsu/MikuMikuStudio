@@ -54,7 +54,7 @@ import com.jme.renderer.Renderer;
  *
  * @author Mark Powell
  * @author Jack Lindamood (added terrain follower)
- * @version $Id: TestTerrainFollower.java,v 1.1 2004-08-18 20:50:26 cep21 Exp $
+ * @version $Id: TestTerrainFollower.java,v 1.2 2004-08-18 20:51:23 cep21 Exp $
  */
 public class TestTerrainFollower extends SimpleGame {
 
@@ -108,7 +108,8 @@ public class TestTerrainFollower extends SimpleGame {
 
     tb.setDetailTexture(1, 16);
     rootNode.attachChild(tb);
-      tb.updateGeometricState(0,true);
+      tb.updateGeometricState(0,true);  // IMPORTANT CHANGE: You must first update any
+      // TerrainFollower's Spatials before handing them to TerrainFollower's constructor.
       tf=new TerrainFollower(tb,heightMap.getSize()*5,heightMap.getSize()*5);
 
     ProceduralTextureGenerator pt = new ProceduralTextureGenerator(heightMap);
