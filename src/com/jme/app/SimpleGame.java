@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.10 2004-04-22 22:26:22 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.11 2004-04-23 00:47:06 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -235,7 +235,7 @@ public abstract class SimpleGame extends BaseGame {
      PointLight light = new PointLight();
      light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
      light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-     light.setLocation(new Vector3f(15, 15, 15));
+     light.setLocation(new Vector3f(100, 100, 100));
      light.setEnabled(true);
 
      lightState = display.getRenderer().getLightState();
