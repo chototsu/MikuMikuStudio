@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.19 2004-05-10 23:09:37 mojomonkey Exp $
+ * @version $Id: SimpleGame.java,v 1.20 2004-05-15 19:19:49 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -165,6 +165,7 @@ public abstract class SimpleGame extends BaseGame {
     Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
     Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
     cam.setFrame(loc, left, up, dir);
+    cam.update();
     display.getRenderer().setCamera(cam);
 
     // Setup the input controller and timer
