@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRecreateWindow</code>
  * @author Joshua Slack
- * @version $Id: TestRecreateWindow.java,v 1.1 2004-09-13 21:13:47 renanse Exp $
+ * @version $Id: TestRecreateWindow.java,v 1.2 2004-09-14 03:05:58 renanse Exp $
  */
 public class TestRecreateWindow extends SimpleGame {
 
@@ -106,11 +106,11 @@ public class TestRecreateWindow extends SimpleGame {
           height = 768;
           break;
       }
-      updateRezText();
     }
 
     if (changeScreen) {
       changeScreen = false;
+      updateRezText();
       display.recreateWindow(width, height, depth, freq, fs);
     }
   }
