@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.23 2004-08-26 23:53:20 cep21 Exp $
+ * @version $Id: TriMesh.java,v 1.24 2004-08-28 20:34:34 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -194,11 +194,11 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-     * Returns the number of triangles this TriMesh contains.  Is basicly indices.length/3
+     * Returns the number of triangles this TriMesh contains.
      * @return The current number of triangles.
      */
     public int getTriangleQuantity() {
-		return indices.length / 3;
+		return triangleQuantity;
 	}
 
 	/**
