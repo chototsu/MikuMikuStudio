@@ -128,7 +128,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.28 2004-07-02 23:52:14 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.29 2004-07-08 05:26:44 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -915,6 +915,7 @@ public class LWJGLRenderer implements Renderer {
     GL11.glTranslatef(translation.x, translation.y, translation.z);
     GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
     GL11.glScalef(scale.x, scale.y, scale.z);
+    GL11.glEnable(GL11.GL_NORMALIZE);  // since we are using glScalef, we should enable this to keep normals working.
 
     prepVBO(t);
 

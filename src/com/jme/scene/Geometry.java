@@ -57,7 +57,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.53 2004-07-06 04:55:22 cep21 Exp $
+ * @version $Id: Geometry.java,v 1.54 2004-07-08 05:25:39 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -438,7 +438,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void setNormals(Vector3f[] normal) {
         if (this.normal != null) {
-            if (this.normal.length != normal.length) {
+            if (normal == null || this.normal.length != normal.length) {
                 normBuf = null;
             }
         }
