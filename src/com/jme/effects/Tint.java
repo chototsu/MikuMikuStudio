@@ -36,24 +36,44 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 
 /**
- * <code>Tint</code>
+ * <code>Tint</code> draws a tint over the entire render screen.  The color
+ * of the tint is specified by the <code>tintColor</code> of the object.  An
+ * alpha value can be used to 'weaken' the tint color.  If used for that purpose,
+ * users should combine the Tint with an alpha state that will blend the alpha
+ * values correctly.
  * @author Ahmed
- * @version $Id: Tint.java,v 1.6 2004-04-22 22:26:25 renanse Exp $
+ * @author Jack Lindamood (javadoc only)
+ * @version $Id: Tint.java,v 1.7 2004-08-03 02:50:57 cep21 Exp $
  */
 public class Tint extends Geometry {
 
+    /** The tint color used by this Geometry. */
 	private ColorRGBA tintColor;
 
+    /**
+     * Creates a new Tint object with the given name and starting tint color.
+     * @param name The name of the Tint object.
+     * @param c The starting tint color.
+     */
 	public Tint(String name, ColorRGBA c) {
 		super(name);
 		tintColor = c;
 	}
 
+    /**
+     * Creates a new tint object with the given name and a default color
+     * of 0,0,0,0.  This is basicly a call to this(name,new ColorRGBA(0,0,0,0))
+     * @param name The name of the Tint.
+     * @see #Tint(java.lang.String, com.jme.renderer.ColorRGBA)
+     */
 	public Tint(String name) {
-		super(name);
-		tintColor = new ColorRGBA(0, 0, 0, 0);
+        this(name,new ColorRGBA(0,0,0,0));
 	}
 
+    /**
+     * Draws the tint.
+     * @param r The renderer to draw it from.
+     */
 	public void draw(Renderer r) {
 		super.draw(r);
 		r.draw(this);
@@ -68,10 +88,18 @@ public class Tint extends Geometry {
         r.drawBounds(this);
     }
 
+    /**
+     * Returns the current tint color.
+     * @return The current tint color.
+     */
 	public ColorRGBA getTintColor() {
 		return tintColor;
 	}
 
+    /**
+     * Sets the tint color to use.
+     * @param c The new tint color.
+     */
 	public void setTintColor(ColorRGBA c) {
 		tintColor = c;
 	}
