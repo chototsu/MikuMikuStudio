@@ -57,47 +57,47 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.31 2004-07-12 17:40:18 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.32 2004-08-31 05:13:35 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
   private static Texture[] currentTexture;
 
   //OpenGL texture attributes.
-  private int[] textureCorrection = {GL11.GL_FASTEST, GL11.GL_NICEST};
+  private static int[] textureCorrection = {GL11.GL_FASTEST, GL11.GL_NICEST};
 
-  private int[] textureApply = {GL11.GL_REPLACE, GL11.GL_DECAL,
+  private static int[] textureApply = {GL11.GL_REPLACE, GL11.GL_DECAL,
       GL11.GL_MODULATE, GL11.GL_BLEND, GL13.GL_COMBINE};
 
-  private int[] textureFilter = {GL11.GL_NEAREST, GL11.GL_LINEAR};
+  private static int[] textureFilter = {GL11.GL_NEAREST, GL11.GL_LINEAR};
 
-  private int[] textureMipmap = {GL11.GL_NEAREST, // MM_NONE (no mipmap)
+  private static int[] textureMipmap = {GL11.GL_NEAREST, // MM_NONE (no mipmap)
       GL11.GL_NEAREST, GL11.GL_LINEAR, GL11.GL_NEAREST_MIPMAP_NEAREST,
       GL11.GL_NEAREST_MIPMAP_LINEAR, GL11.GL_LINEAR_MIPMAP_NEAREST,
       GL11.GL_LINEAR_MIPMAP_LINEAR};
 
-  private int[] textureCombineFunc = {GL11.GL_REPLACE, GL11.GL_MODULATE,
+  private static int[] textureCombineFunc = {GL11.GL_REPLACE, GL11.GL_MODULATE,
       GL11.GL_ADD, GL13.GL_ADD_SIGNED, GL13.GL_SUBTRACT,
       GL13.GL_INTERPOLATE, GL13.GL_DOT3_RGB,
       GL13.GL_DOT3_RGBA};
 
-  private int[] textureCombineSrc = {GL11.GL_TEXTURE, GL13.GL_PRIMARY_COLOR,
+  private static int[] textureCombineSrc = {GL11.GL_TEXTURE, GL13.GL_PRIMARY_COLOR,
       GL13.GL_CONSTANT, GL13.GL_PREVIOUS};
 
-  private int[] textureCombineOpRgb = {GL11.GL_SRC_COLOR,
+  private static int[] textureCombineOpRgb = {GL11.GL_SRC_COLOR,
       GL11.GL_ONE_MINUS_SRC_COLOR, GL11.GL_SRC_ALPHA,
       GL11.GL_ONE_MINUS_SRC_ALPHA};
 
 // first two entries are mostly dummy (except for def = 0) since our alpha's
 // only use 3 and 4
-  private int[] textureCombineOpAlpha = {GL11.GL_SRC_ALPHA,
+  private static int[] textureCombineOpAlpha = {GL11.GL_SRC_ALPHA,
       GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_SRC_ALPHA,
       GL11.GL_ONE_MINUS_SRC_ALPHA};
 
-  private int[] imageComponents = {GL11.GL_RGBA4, GL11.GL_RGB8,
+  private static int[] imageComponents = {GL11.GL_RGBA4, GL11.GL_RGB8,
       GL11.GL_RGB5_A1, GL11.GL_RGBA8, GL11.GL_LUMINANCE8_ALPHA8};
 
-  private int[] imageFormats = {GL11.GL_RGBA, GL11.GL_RGB, GL11.GL_RGBA,
+  private static int[] imageFormats = {GL11.GL_RGBA, GL11.GL_RGB, GL11.GL_RGBA,
       GL11.GL_RGBA, GL11.GL_LUMINANCE_ALPHA};
 
   private transient IntBuffer id = BufferUtils.createIntBuffer(1);

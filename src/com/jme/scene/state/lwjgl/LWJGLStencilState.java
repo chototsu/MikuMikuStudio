@@ -42,11 +42,11 @@ import com.jme.scene.state.StencilState;
  */
 public class LWJGLStencilState extends StencilState {
 
-    private int[] stencilFunc = { GL11.GL_NEVER, GL11.GL_LESS, GL11.GL_LEQUAL,
+    private static int[] stencilFunc = { GL11.GL_NEVER, GL11.GL_LESS, GL11.GL_LEQUAL,
             GL11.GL_GREATER, GL11.GL_GEQUAL, GL11.GL_EQUAL, GL11.GL_NOTEQUAL,
             GL11.GL_ALWAYS};
 
-    private int[] stencilOp = { GL11.GL_KEEP, GL11.GL_ZERO, GL11.GL_REPLACE,
+    private static int[] stencilOp = { GL11.GL_KEEP, GL11.GL_ZERO, GL11.GL_REPLACE,
             GL11.GL_INCR, GL11.GL_DECR, GL11.GL_INVERT};
 
     /*

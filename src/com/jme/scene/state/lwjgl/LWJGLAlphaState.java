@@ -39,11 +39,11 @@ import com.jme.scene.state.AlphaState;
  * <code>LWJGLAlphaState</code> subclasses the AlphaState using the LWJGL API
  * to set OpenGL's alpha state.
  * @author Mark Powell
- * @version $Id: LWJGLAlphaState.java,v 1.4 2004-08-02 22:35:19 cep21 Exp $
+ * @version $Id: LWJGLAlphaState.java,v 1.5 2004-08-31 05:13:34 mojomonkey Exp $
  */
 public class LWJGLAlphaState extends AlphaState {
     //gl alpha values
-    private int[] glSrcBlend =
+    private static int[] glSrcBlend =
         {
             GL11.GL_ZERO,
             GL11.GL_ONE,
@@ -55,7 +55,7 @@ public class LWJGLAlphaState extends AlphaState {
             GL11.GL_ONE_MINUS_DST_ALPHA,
             GL11.GL_SRC_ALPHA_SATURATE };
 
-    private int[] glDestBlend =
+    private static int[] glDestBlend =
         {
             GL11.GL_ZERO,
             GL11.GL_ONE,
@@ -66,7 +66,7 @@ public class LWJGLAlphaState extends AlphaState {
             GL11.GL_DST_ALPHA,
             GL11.GL_ONE_MINUS_DST_ALPHA };
 
-    private int[] glAlphaTest =
+    private static int[] glAlphaTest =
         {
             GL11.GL_NEVER,
             GL11.GL_LESS,
