@@ -39,12 +39,12 @@ import com.jme.scene.TriMesh;
  * <code>Particle</code>
  * 
  * @author Ahmed
- * @version $Id: Particle.java,v 1.2 2004-02-03 22:44:13 darkprophet Exp $
+ * @version $Id: Particle.java,v 1.3 2004-02-13 23:24:19 darkprophet Exp $
  */
 public class Particle extends TriMesh {
 
 	public float fade, life, size;
-	public Vector3f position, velocity;
+	public Vector3f velocity;
 	public ColorRGBA color;
 	
 	private ColorRGBA[] cornerColors;
@@ -63,7 +63,7 @@ public class Particle extends TriMesh {
 		
 		cornerColors = new ColorRGBA[color.length];
 		size = fade = life = 0.0f;
-		position = velocity = new Vector3f(0, 0, 0);
+		velocity = new Vector3f(0, 0, 0);
 		this.color = new ColorRGBA(0, 0, 0, 0);
 	}
 
