@@ -36,6 +36,10 @@ import com.jme.scene.BoundingSphere;
 import com.jme.scene.Controller;
 import com.jme.system.DisplaySystem;
 
+/*
+ * NOTE: 2/15/04 - Fixed random point using line. MP 
+ */
+
 /**
  * <code>ParticleController</code>
  * 
@@ -192,9 +196,7 @@ public class ParticleController extends Controller {
 
 		if (ps.useGeometry()) {
 			if (ps.getLine() != null) {
-				currentP.getLocalTranslation().x = ps.getLine().random().x;
-				currentP.getLocalTranslation().y = ps.getLine().random().y;
-				currentP.getLocalTranslation().z = ps.getLine().random().z;
+				currentP.setLocalTranslation(ps.getLine().random());
 			}
 		} else {
 			currentP.getLocalTranslation().x = ps.getStartPosition().x;
