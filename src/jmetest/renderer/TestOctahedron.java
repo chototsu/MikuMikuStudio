@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.8 2004-04-23 01:29:17 renanse Exp $
+ * @version $Id: TestOctahedron.java,v 1.9 2004-04-23 02:57:24 renanse Exp $
  */
 public class TestOctahedron extends SimpleGame {
 
@@ -64,11 +64,7 @@ public class TestOctahedron extends SimpleGame {
     app.start();
   }
 
-  /**
-   * Not used in this test.
-   * @see com.jme.app.SimpleGame#update()
-   */
-  protected void simpleUpdate(float interpolation) {
+  protected void simpleUpdate() {
 
     if (timer.getTimePerFrame() < 1) {
       angle = angle + (timer.getTimePerFrame() * 25);

@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.18 2004-04-22 23:18:03 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.19 2004-04-23 02:57:25 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -59,8 +59,7 @@ public class TestParticleSystem extends SimpleGame {
     app.start();
   }
 
-  protected void simpleUpdate(float interpolation) {
-
+  protected void simpleUpdate() {
     tpf = timer.getTimePerFrame();
     if (tpf > 1f) tpf = 1.0f; // do this to prevent a long pause at start
 

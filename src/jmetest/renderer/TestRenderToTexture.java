@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.23 2004-04-23 02:30:17 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.24 2004-04-23 02:57:24 renanse Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -72,11 +72,7 @@ public class TestRenderToTexture extends SimpleGame {
     app.start();
   }
 
-  /**
-   * Not used in this test.
-   * @see com.jme.app.SimpleGame#update()
-   */
-  protected void simpleUpdate(float interpolation) {
+  protected void simpleUpdate() {
     if (timer.getTimePerFrame() < 1) {
       angle = angle + (timer.getTimePerFrame() * -.25f);
       angle2 = angle2 + (timer.getTimePerFrame() * 1);
@@ -95,11 +91,7 @@ public class TestRenderToTexture extends SimpleGame {
     fakeScene.updateGeometricState(0.0f, true);
   }
 
-  /**
-   * clears the buffers and then draws the TriMesh.
-   * @see com.jme.app.SimpleGame#render()
-   */
-  protected void simpleRender(float interpolation) {
+  protected void simpleRender() {
     lastRend += timer.getTimePerFrame();
     if (lastRend > .03f) {
       tRenderer.render(fakeScene, fakeTex);

@@ -51,7 +51,7 @@ import com.jme.util.*;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.12 2004-04-22 22:27:41 renanse Exp $
+ * @version $Id: TestPQTorus.java,v 1.13 2004-04-23 02:57:24 renanse Exp $
  */
 public class TestPQTorus extends SimpleGame {
 
@@ -78,9 +78,8 @@ public class TestPQTorus extends SimpleGame {
 
     /**
      * Animates the PQ torus.
-     * @see com.jme.app.SimpleGame#update()
      */
-    protected void simpleUpdate(float interpolation) {
+    protected void simpleUpdate() {
       pqText.print("P: "+p+"  Q: "+q);
 
       if (!anim) {
@@ -118,8 +117,8 @@ public class TestPQTorus extends SimpleGame {
         } else anim = false;
       }
 
-      if (interpolation < 1) {
-        angle = angle + interpolation / 50;
+      if (timer.getTimePerFrame() < 1) {
+        angle = angle + timer.getTimePerFrame() * 25;
         if (angle > 360) angle = 0;
       }
 

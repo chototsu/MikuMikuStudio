@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.14 2004-04-23 00:15:21 renanse Exp $
+ * @version $Id: TestCollision.java,v 1.15 2004-04-23 02:57:23 renanse Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -73,11 +73,7 @@ public class TestCollision extends SimpleGame {
     app.start();
   }
 
-  /**
-   * Not used in this test.
-   * @see com.jme.app.SimpleGame#update()
-   */
-  protected void simpleUpdate(float interpolation) {
+  protected void simpleUpdate() {
     if (timer.getTimePerFrame() < 1) {
       angle = angle + (timer.getTimePerFrame() * 1);
       if (angle > 360) {

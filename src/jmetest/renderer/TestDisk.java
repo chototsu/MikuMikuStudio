@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestDisk.java,v 1.7 2004-04-23 01:15:33 renanse Exp $
+ * @version $Id: TestDisk.java,v 1.8 2004-04-23 02:57:24 renanse Exp $
  */
 public class TestDisk extends SimpleGame {
 
@@ -64,7 +64,7 @@ public class TestDisk extends SimpleGame {
     app.start();
   }
 
-  protected void simpleUpdate(float interpolation) {
+  protected void simpleUpdate() {
 
     if (timer.getTimePerFrame() < 1) {
       angle = angle + (timer.getTimePerFrame() * 50);

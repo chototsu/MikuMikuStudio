@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.9 2004-04-23 00:52:44 renanse Exp $
+ * @version $Id: TestSoundGraph.java,v 1.10 2004-04-23 02:57:26 renanse Exp $
  */
 public class TestSoundGraph extends SimpleGame {
 
@@ -63,17 +63,11 @@ public class TestSoundGraph extends SimpleGame {
     app.start();
   }
 
-  /* (non-Javadoc)
-   * @see com.jme.app.SimpleGame#update()
-   */
-  protected void simpleUpdate(float interpolation) {
+  protected void simpleUpdate() {
     snode.updateGeometricState(0.0f, true);
   }
 
-  /* (non-Javadoc)
-   * @see com.jme.app.SimpleGame#render()
-   */
-  protected void simpleRender(float interpolation) {
+  protected void simpleRender() {
     SoundAPIController.getRenderer().draw(snode);
   }
 
