@@ -22,7 +22,6 @@ import com.jme.sound.SoundAPIController;
 import com.jme.util.TextureManager;
 import com.jme.sound.SoundPool;
 import com.jme.sound.scene.ProgrammableSound;
-import com.jme.sound.scene.SoundNode;
 
 /**
  * Started Date: Jul 24, 2004<br><br>
@@ -42,8 +41,10 @@ public class HelloIntersection extends SimpleGame {
     Random r = new Random();
     /** A sky box for our scene. */
     Skybox sb;
-    /** The sound node that will be in charge of maintaining our sound effects. */
-    private SoundNode soundNode;
+
+    /** The programmable sound that will be in charge of maintaining our sound effects. */
+    ProgrammableSound programSound;
+
     /** The ID of our laser shooting sound effect.  The value is not important.
     It should just be unique in our game to this sound. */
     private int laserEventID = 1;
@@ -107,16 +108,12 @@ public class HelloIntersection extends SimpleGame {
         /** Set the 'ears' for the sound API*/
         SoundAPIController.getRenderer().setCamera(cam);
 
-        // Setup our sound node.  We'll attach our sound here.
-        soundNode = new SoundNode();
-
         /** Create program sound*/
-        ProgrammableSound programSound = new ProgrammableSound();
+        programSound= new ProgrammableSound();
         /** Make the sound softer*/
         programSound.setGain(.5f);
         programSound.setLooping(false);
         programSound.stop();
-        soundNode.attachChild(programSound);
 
         /** locate laser and register it with the prog sound.*/
         laserURL = HelloIntersection.class.getClassLoader().getResource("jmetest/data/sound/laser.ogg");
@@ -151,8 +148,8 @@ public class HelloIntersection extends SimpleGame {
                                                new Vector3f(cam.getDirection())));
             rootNode.attachChild(bullet);
             rootNode.updateRenderState();
-            /** Signal our sound node to play laser during rendering*/
-            soundNode.onEvent(laserEventID);
+            /** Signal our sound to play laser during rendering*/
+            programSound.fireEvent(laserEventID);
         }
     }
 
@@ -200,15 +197,15 @@ public class HelloIntersection extends SimpleGame {
     * Called every frame for rendering
     */
     protected void simpleRender() {
-        // Give control to the sound node in case sound changes are needed.
-        SoundAPIController.getRenderer().draw(soundNode);
+        // Give control to the sound in case sound changes are needed.
+        SoundAPIController.getRenderer().draw(programSound);
     }
 
     /**
     * Called every frame for updating
     */
     protected void simpleUpdate() {
-        // Let the sound node update itself.
-        soundNode.updateGeometricState(tpf, true);
+        // Let the programmable sound update itself.
+        programSound.updateGeometricState(tpf, true);
     }
 }
