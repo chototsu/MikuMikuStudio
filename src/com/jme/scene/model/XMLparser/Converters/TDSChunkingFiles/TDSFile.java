@@ -292,14 +292,6 @@ public class TDSFile extends ChunkerClass{
                 System.arraycopy(indexes,0,intIndexes,0,curPosition);
                 part.setIndices(intIndexes);
 
-                // TODO: remove in final product
-                if (parentNode.getName().equals("red")){
-                    part.setSolidColor(ColorRGBA.red);
-                } else if (parentNode.getName().equals("blue")){
-                    part.setSolidColor(ColorRGBA.blue);
-                }else
-                    part.setSolidColor(ColorRGBA.randomColor());
-
                 MaterialBlock myMaterials=(MaterialBlock) objects.materialBlocks.get(matName);
                 if (matName==null)
                     throw new IOException("Couldn't find the correct name of " + myMaterials);
@@ -325,7 +317,6 @@ public class TDSFile extends ChunkerClass{
             TriMesh noMaterials=new TriMesh(parentNode.getName()+"-1");
             noMaterials.setVertices(whatIAm.vertexes);
             noMaterials.setIndices(noMaterialIndexes);
-            noMaterials.setSolidColor(ColorRGBA.randomColor());
             parentNode.attachChild(noMaterials);
         }
     }
