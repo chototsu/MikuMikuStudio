@@ -11,6 +11,9 @@ import com.jme.util.TextureManager;
 
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.io.File;
+import java.io.IOException;
 
 
 /**
@@ -47,14 +50,21 @@ class MilkshapeMaterial {
     private TextureState generateTexture(URL baseURL){
         if (myTex!=null || texture.length()==0) return myTex;
         myTex=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+        //TODO: Clean this up
+        URL toLoad=null;
         try {
-            myTex.setTexture(TextureManager.loadTexture(new URL(baseURL,texture),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+            toLoad=new URL(baseURL,texture);
+            new File(baseURL.getPath(),texture).toURL().openStream();
+            toLoad=new File(baseURL.getPath(),texture).toURL();
         } catch (MalformedURLException e) {
-            throw new JmeException(e.toString()+"\nbase directory wrong(?)"+baseURL.toString());
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IOException e) {
+//            throw new JmeException(e.toString()+"\nbase directory wrong(?)"+baseURL.toString());
         }
+        myTex.setTexture(TextureManager.loadTexture(toLoad,
+            Texture.MM_LINEAR,
+            Texture.FM_LINEAR,
+            true));
         if (myTex==null) throw new JmeException("Problem loading file " + texture);
         myTex.setEnabled(true);
         return myTex;
