@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.22 2004-07-31 04:18:46 cep21 Exp $
+ * @version $Id: AbstractCamera.java,v 1.23 2004-09-03 22:36:35 cep21 Exp $
  */
 public abstract class AbstractCamera implements Camera {
   //planes of the frustum
@@ -344,7 +344,9 @@ public abstract class AbstractCamera implements Camera {
   }
 
   /**
-   * <code>setDirection</code> sets the direction this camera is facing.
+   * <code>setDirection</code> sets the direction this camera is facing.  In most cases, this changes
+   * the up and left vectors of the camera.  If your left or up vectors change, you must updates those
+   * as well for correct culling.
    * @see com.jme.renderer.Camera#setDirection(com.jme.math.Vector3f)
    * @param direction the direction this camera is facing.
    */
@@ -354,7 +356,9 @@ public abstract class AbstractCamera implements Camera {
   }
 
   /**
-   * <code>setLeft</code> sets the left axis of this camera.
+   * <code>setLeft</code> sets the left axis of this camera.  In most cases, this changes
+   * the up and direction vectors of the camera.  If your direction or up vectors change, you must updates those
+   * as well for correct culling.
    * @see com.jme.renderer.Camera#setLeft(com.jme.math.Vector3f)
    * @param left the left axis of this camera.
    */
@@ -364,7 +368,9 @@ public abstract class AbstractCamera implements Camera {
   }
 
   /**
-   * <code>setUp</code> sets the up axis of this camera.
+   * <code>setUp</code> sets the up axis of this camera.  In most cases, this changes
+   * the direction and left vectors of the camera.  If your left or up vectors change, you must updates those
+   * as well for correct culling.
    * @see com.jme.renderer.Camera#setUp(com.jme.math.Vector3f)
    * @param up the up axis of this camera.
    */
@@ -461,7 +467,8 @@ public abstract class AbstractCamera implements Camera {
   }
 
   /**
-   * <code>lookAt</code> is a convienence method for auto-setting the frame.
+   * <code>lookAt</code> is a convienence method for auto-setting the frame.  Unlike its name, this
+   * function doesn't totally "look at" a position mostly because left and up vectors are not updated.
    *
    * @param pos Vector3f
    */
