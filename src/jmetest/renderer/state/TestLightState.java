@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.11 2004-04-23 03:21:21 renanse Exp $
+ * @version $Id: TestLightState.java,v 1.12 2004-08-14 00:50:05 cep21 Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;
@@ -117,7 +117,7 @@ public class TestLightState extends SimpleGame {
         am2.setEnabled(true);
         dr.setEnabled(true);
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
                 ts.setEnabled(true);
                 ts.setTexture(
                     TextureManager.loadTexture(

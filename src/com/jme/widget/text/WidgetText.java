@@ -78,8 +78,8 @@ public class WidgetText extends WidgetAbstractImpl {
     public WidgetText(String text, WidgetAlignmentType alignment) {
         super();
 
-        textureState = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
-        alphaState = DisplaySystem.getDisplaySystem().getRenderer().getAlphaState();
+        textureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
 
         setText(text);
         setAlignment(alignment);

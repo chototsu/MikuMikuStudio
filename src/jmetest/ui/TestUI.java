@@ -141,7 +141,7 @@ public class TestUI extends BaseGame {
             display.createWindow(properties.getWidth(), properties.getHeight(), properties.getDepth(),
                     properties.getFreq(), properties.getFullscreen());
 
-            cam = display.getRenderer().getCamera(properties.getWidth(), properties.getHeight());
+            cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
         } catch (JmeException e) {
             e.printStackTrace();
             System.exit(1);
@@ -217,13 +217,13 @@ public class TestUI extends BaseGame {
         /*
          * Wire State
          */
-        wireState = display.getRenderer().getWireframeState();
+        wireState = display.getRenderer().createWireframeState();
         wireState.setEnabled(false);
 
         /*
          * ZBuffer
          */
-        ZBufferState bufState = display.getRenderer().getZBufferState();
+        ZBufferState bufState = display.getRenderer().createZBufferState();
         bufState.setEnabled(true);
         bufState.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -236,7 +236,7 @@ public class TestUI extends BaseGame {
         light.setLocation(new Vector3f(100, 100, 100));
         light.setEnabled(true);
 
-        lightState = display.getRenderer().getLightState();
+        lightState = display.getRenderer().createLightState();
         /*
          * Turn it off for right now
          */
@@ -247,7 +247,7 @@ public class TestUI extends BaseGame {
          * Alpha states for allowing 'black' to be transparent.
          * This one is for the text font texture
          */
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);
@@ -257,7 +257,7 @@ public class TestUI extends BaseGame {
         /*
          * This one is for the mouse cursor
          */
-        AlphaState as2 = display.getRenderer().getAlphaState();
+        AlphaState as2 = display.getRenderer().createAlphaState();
         as2.setBlendEnabled(true);
         as2.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as2.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
@@ -268,7 +268,7 @@ public class TestUI extends BaseGame {
          * The absolute mouse
          */
         mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());
-        TextureState cursor = display.getRenderer().getTextureState();
+        TextureState cursor = display.getRenderer().createTextureState();
         cursor.setEnabled(true);
         cursor.setTexture(TextureManager.loadTexture(TestAbsoluteMouse.class.getClassLoader().getResource(
                 "jmetest/data/cursor/cursor1.png"), Texture.MM_LINEAR, Texture.FM_LINEAR, true));
@@ -296,7 +296,7 @@ public class TestUI extends BaseGame {
         /*
          * The texture for the font
          */
-        TextureState font = display.getRenderer().getTextureState();
+        TextureState font = display.getRenderer().createTextureState();
         font.setTexture(TextureManager.loadTexture(SimpleGame.class.getClassLoader()
                 .getResource(fontLocation), Texture.MM_LINEAR, Texture.FM_LINEAR, true));
         font.setEnabled(true);

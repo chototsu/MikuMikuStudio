@@ -57,7 +57,7 @@ public class HelloKeyInput extends SimpleGame {
         // Point to the monkey image
         URL monkeyLoc=HelloKeyInput.class.getClassLoader().getResource("jmetest/data/images/Monkey.tga");
         // Get my TextureState
-        TextureState ts=display.getRenderer().getTextureState();
+        TextureState ts=display.getRenderer().createTextureState();
         // Get my Texture
         Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR, Texture.FM_LINEAR,true);
         // Set a wrap for my texture so it repeats

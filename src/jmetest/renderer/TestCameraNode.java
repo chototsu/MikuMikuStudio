@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.8 2004-04-22 22:27:39 renanse Exp $
+ * @version $Id: TestCameraNode.java,v 1.9 2004-08-14 00:50:06 cep21 Exp $
  */
 public class TestCameraNode extends BaseGame {
     private TriMesh t;
@@ -129,7 +129,7 @@ public class TestCameraNode extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -162,7 +162,7 @@ public class TestCameraNode extends BaseGame {
     protected void initGame() {
         text = new Text("Text Label", "Timer");
         text.setLocalTranslation(new Vector3f(1,60,0));
-        TextureState textImage = display.getRenderer().getTextureState();
+        TextureState textImage = display.getRenderer().createTextureState();
         textImage.setEnabled(true);
         textImage.setTexture(
             TextureManager.loadTexture(
@@ -171,7 +171,7 @@ public class TestCameraNode extends BaseGame {
                 Texture.FM_LINEAR,
                 true));
         text.setRenderState(textImage);
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);
@@ -200,7 +200,7 @@ public class TestCameraNode extends BaseGame {
         root = new Node("Root Node");
         root.attachChild(scene);
 
-        ZBufferState buf = display.getRenderer().getZBufferState();
+        ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -225,7 +225,7 @@ public class TestCameraNode extends BaseGame {
         dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         dr.setDirection(new Vector3f(150, 0 , 150));
 
-        LightState state = display.getRenderer().getLightState();
+        LightState state = display.getRenderer().createLightState();
         state.attach(am);
         state.attach(dr);
         state.attach(am2);
@@ -242,7 +242,7 @@ public class TestCameraNode extends BaseGame {
 
         //cam.update();
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
                 ts.setEnabled(true);
                 ts.setTexture(
                     TextureManager.loadTexture(

@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.8 2004-04-22 22:27:48 renanse Exp $
+ * @version $Id: TestTimer.java,v 1.9 2004-08-14 00:50:10 cep21 Exp $
  */
 public class TestTimer extends BaseGame {
     private TriMesh t;
@@ -141,7 +141,7 @@ public class TestTimer extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -177,7 +177,7 @@ public class TestTimer extends BaseGame {
     protected void initGame() {
         text = new Text("Text Label", "Timer");
         text.setLocalTranslation(new Vector3f(1,60,0));
-        TextureState textImage = display.getRenderer().getTextureState();
+        TextureState textImage = display.getRenderer().createTextureState();
         textImage.setEnabled(true);
         textImage.setTexture(
             TextureManager.loadTexture(
@@ -187,7 +187,7 @@ public class TestTimer extends BaseGame {
                 true));
         text.setRenderState(textImage);
 
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);
@@ -211,7 +211,7 @@ public class TestTimer extends BaseGame {
         scene.attachChild(t);
         root.attachChild(scene);
 
-        ZBufferState buf = display.getRenderer().getZBufferState();
+        ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -220,14 +220,14 @@ public class TestTimer extends BaseGame {
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         am.setDirection(new Vector3f(0, 0, -1));
 
-        LightState state = display.getRenderer().getLightState();
+        LightState state = display.getRenderer().createLightState();
         state.attach(am);
         am.setEnabled(true);
         scene.setRenderState(state);
         scene.setRenderState(buf);
         cam.update();
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
                 ts.setEnabled(true);
                 ts.setTexture(
                     TextureManager.loadTexture(

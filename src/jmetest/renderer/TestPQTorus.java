@@ -46,7 +46,7 @@ import com.jme.util.*;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.14 2004-04-25 03:03:30 mojomonkey Exp $
+ * @version $Id: TestPQTorus.java,v 1.15 2004-08-14 00:50:07 cep21 Exp $
  */
 public class TestPQTorus extends SimpleGame {
 
@@ -136,7 +136,7 @@ public class TestPQTorus extends SimpleGame {
         //Generate the geometry
         generatePQTorus();
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(

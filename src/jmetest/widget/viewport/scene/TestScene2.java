@@ -74,7 +74,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene2</code>
  * @author Gregg Patton
- * @version $Id: TestScene2.java,v 1.7 2004-04-22 22:27:50 renanse Exp $
+ * @version $Id: TestScene2.java,v 1.8 2004-08-14 00:50:11 cep21 Exp $
  */
 public class TestScene2 extends TestAbstractScene implements Observer {
 
@@ -151,7 +151,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
             Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
             Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
 
-            ZBufferState buf = display.getRenderer().getZBufferState();
+            ZBufferState buf = display.getRenderer().createZBufferState();
             buf.setEnabled(true);
             buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -190,7 +190,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
             cc.setRepeatType(Controller.RT_CYCLE);
             cc.setUpVector(new Vector3f(0, 1, 0));
 
-            TextureState ts = display.getRenderer().getTextureState();
+            TextureState ts = display.getRenderer().createTextureState();
             ts.setEnabled(true);
             ts.setTexture(
                 TextureManager.loadTexture(
@@ -224,7 +224,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
             //dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
             dr.setDirection(new Vector3f(0, 0, -1));
 
-            LightState lightState = display.getRenderer().getLightState();
+            LightState lightState = display.getRenderer().createLightState();
             lightState.attach(am);
             lightState.attach(dr);
             lightState.attach(spotlight1);
@@ -434,7 +434,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
      * @see jmetest.widget.viewport.scene.TestAbstractScene#initNewCameraController()
      */
     protected WidgetViewportCameraController initNewCameraController() {
-        Camera camera = DisplaySystem.getDisplaySystem().getRenderer().getCamera(1, 1);
+        Camera camera = DisplaySystem.getDisplaySystem().getRenderer().createCamera(1, 1);
 
         Vector3f loc = new Vector3f(0.0f, 0.0f, 15.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);

@@ -69,7 +69,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestTint</code>
  *
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.12 2004-04-22 22:27:31 renanse Exp $
+ * @version $Id: TestTint.java,v 1.13 2004-08-14 00:50:01 cep21 Exp $
  */
 public class TestTint extends BaseGame {
 
@@ -165,7 +165,7 @@ public class TestTint extends BaseGame {
 			display.setTitle("Tint Test");
 
 			cam =
-				display.getRenderer().getCamera(
+				display.getRenderer().createCamera(
 					properties.getWidth(),
 					properties.getHeight());
 		} catch (JmeException e) {
@@ -194,7 +194,7 @@ public class TestTint extends BaseGame {
 		alpha = 0f;
 		counter = 0f;
 
-		AlphaState as1 = display.getRenderer().getAlphaState();
+		AlphaState as1 = display.getRenderer().createAlphaState();
 		as1.setBlendEnabled(true);
 		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
 		as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
@@ -202,7 +202,7 @@ public class TestTint extends BaseGame {
 		as1.setTestFunction(AlphaState.TF_GEQUAL);
 		as1.setEnabled(true);
 
-		TextureState ts1 = display.getRenderer().getTextureState();
+		TextureState ts1 = display.getRenderer().createTextureState();
 		ts1.setEnabled(true);
 		ts1.setTexture(
 			TextureManager.loadTexture(
@@ -212,7 +212,7 @@ public class TestTint extends BaseGame {
 				Texture.FM_LINEAR,
 				true));
 
-		TextureState font = display.getRenderer().getTextureState();
+		TextureState font = display.getRenderer().createTextureState();
 		font.setEnabled(true);
 		font.setTexture(
 			TextureManager.loadTexture(
@@ -222,7 +222,7 @@ public class TestTint extends BaseGame {
 				Texture.FM_LINEAR,
 				true));
 
-		ZBufferState zEnabled = display.getRenderer().getZBufferState();
+		ZBufferState zEnabled = display.getRenderer().createZBufferState();
 		zEnabled.setEnabled(true);
 
 		Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);

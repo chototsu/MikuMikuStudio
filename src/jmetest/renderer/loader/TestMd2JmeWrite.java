@@ -65,7 +65,7 @@ public class TestMd2JmeWrite extends SimpleGame{
             System.out.println("damn exceptions:" + e.getMessage());
         }
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
         TextureManager.loadTexture(

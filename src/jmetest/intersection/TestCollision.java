@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.15 2004-04-23 02:57:23 renanse Exp $
+ * @version $Id: TestCollision.java,v 1.16 2004-08-14 00:50:03 cep21 Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -146,7 +146,7 @@ public class TestCollision extends SimpleGame {
     scene.attachChild(t);
     scene.attachChild(t2);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(

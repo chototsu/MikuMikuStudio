@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.14 2004-05-28 15:57:44 mojomonkey Exp $
+ * @version $Id: TestBoxColor.java,v 1.15 2004-08-14 00:50:05 cep21 Exp $
  */
 public class TestBoxColor extends SimpleGame {
   private TriMesh t;
@@ -98,7 +98,7 @@ public class TestBoxColor extends SimpleGame {
     }
     t.setColors(colors);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(

@@ -59,7 +59,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.7 2004-06-29 23:08:37 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.8 2004-08-14 00:50:00 cep21 Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -134,7 +134,7 @@ public class RenParticleEditor extends VariableTimestepGame {
           false);
 
       cam =
-          display.getRenderer().getCamera(
+          display.getRenderer().createCamera(
           properties.getWidth(),
           properties.getHeight());
     }
@@ -171,7 +171,7 @@ public class RenParticleEditor extends VariableTimestepGame {
     main = new Node("Main node");
     main.setForceView(true);
 
-    AlphaState as1 = display.getRenderer().getAlphaState();
+    AlphaState as1 = display.getRenderer().createAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as1.setDstFunction(AlphaState.DB_ONE);
@@ -179,7 +179,7 @@ public class RenParticleEditor extends VariableTimestepGame {
     as1.setTestFunction(AlphaState.TF_GREATER);
     as1.setEnabled(true);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setTexture(
         TextureManager.loadTexture(
         RenParticleEditor.class.getClassLoader().getResource(
@@ -189,7 +189,7 @@ public class RenParticleEditor extends VariableTimestepGame {
         true));
     ts.setEnabled(true);
 
-    TextureState font = display.getRenderer().getTextureState();
+    TextureState font = display.getRenderer().createTextureState();
     font.setTexture(
         TextureManager.loadTexture(
         RenParticleEditor.class.getClassLoader().getResource(

@@ -100,7 +100,7 @@ public class UICheck extends UIObject {
         _textureStates = new TextureState[4];
 
         for (int i = 0; i < 4; i++) {
-            _textureStates[i] = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+            _textureStates[i] = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
             _textureStates[i].setEnabled(true);
         }
 

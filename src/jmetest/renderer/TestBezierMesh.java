@@ -54,7 +54,7 @@ import com.jme.scene.state.RenderState;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.18 2004-06-23 19:15:56 renanse Exp $
+ * @version $Id: TestBezierMesh.java,v 1.19 2004-08-14 00:50:05 cep21 Exp $
  */
 public class TestBezierMesh extends SimpleGame {
   private TriMesh t;
@@ -129,7 +129,7 @@ public class TestBezierMesh extends SimpleGame {
     bez.updateModelBound();
     rootNode.attachChild(bez);
 
-    MaterialState ms = display.getRenderer().getMaterialState();
+    MaterialState ms = display.getRenderer().createMaterialState();
     ms.setEmissive(new ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f));
 //    ms.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
 //    ms.setDiffuse(new ColorRGBA(1.0f, 0.85f, 0.75f, 1.0f));
@@ -162,7 +162,7 @@ public class TestBezierMesh extends SimpleGame {
 
     rootNode.attachChild(lightNode);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(

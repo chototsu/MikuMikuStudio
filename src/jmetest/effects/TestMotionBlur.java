@@ -84,7 +84,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 					properties.getDepth(),
 					properties.getFreq(),
 					properties.getFullscreen());
-			cam = display.getRenderer().getCamera(properties.getWidth(),
+			cam = display.getRenderer().createCamera(properties.getWidth(),
 					properties.getHeight());
 		} catch (JmeException je) {
 			je.printStackTrace();
@@ -116,11 +116,11 @@ public class TestMotionBlur extends VariableTimestepGame {
 		//blurNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
 		// alpha state for the quad
-		AlphaState as = display.getRenderer().getAlphaState();
+		AlphaState as = display.getRenderer().createAlphaState();
 		as.setBlendEnabled(true);
 		as.setEnabled(true);
 
-		TextureState ts = display.getRenderer().getTextureState();
+		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(TextureManager
 				.loadTexture(TestMotionBlur.class.getClassLoader()
@@ -142,7 +142,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 		tRenderer.updateCamera();
 		fakeTex = tRenderer.setupTexture();
 
-		TextureState blurTS = display.getRenderer().getTextureState();
+		TextureState blurTS = display.getRenderer().createTextureState();
 		blurTS.setTexture(fakeTex);
 		blurTS.setEnabled(true);
 
@@ -159,7 +159,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 		blurNode.attachChild(quad);
 		sceneNode.attachChild(box);
 
-		ZBufferState zEnabled = display.getRenderer().getZBufferState();
+		ZBufferState zEnabled = display.getRenderer().createZBufferState();
 		zEnabled.setEnabled(true);
 
 		rootNode.setRenderState(zEnabled);

@@ -76,7 +76,7 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 					properties.getDepth(), properties.getFreq(), properties
 							.getFullscreen());
 			display.setTitle("FadeInOut Test");
-			cam = display.getRenderer().getCamera(properties.getWidth(),
+			cam = display.getRenderer().createCamera(properties.getWidth(),
 					properties.getHeight());
 		} catch (JmeException e) {
 			e.printStackTrace();
@@ -97,7 +97,7 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 		rootNode = new Node("Scene Graph Root Node");
 		fadeOutNode = new Node("Fade Out Node");
 		
-		ZBufferState zEnabled = display.getRenderer().getZBufferState();
+		ZBufferState zEnabled = display.getRenderer().createZBufferState();
 		zEnabled.setEnabled(true);
 		
 		setFadeOutNode();
@@ -123,7 +123,7 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 		fadeOutNode = new Node("FadeOut Node");
 		Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
 		Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
-		TextureState boxTS = display.getRenderer().getTextureState();
+		TextureState boxTS = display.getRenderer().createTextureState();
 		boxTS.setTexture(TextureManager.loadTexture(
 				TestFadeInOutTransientEffect.class.getClassLoader()
 						.getResource("jmetest/data/images/Monkey.png"),
@@ -142,7 +142,7 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 	private void setFadeInNode() {
 		fadeInNode = new Node("FadeIn Node");
 		
-		TextureState pyramidTS = display.getRenderer().getTextureState();
+		TextureState pyramidTS = display.getRenderer().createTextureState();
 		pyramidTS.setTexture(TextureManager.loadTexture(
 				TestFadeInOutTransientEffect.class.getClassLoader()
 						.getResource("jmetest/data/images/Monkey.png"),

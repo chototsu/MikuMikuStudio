@@ -79,7 +79,7 @@ import com.jme.widget.text.WidgetText;
  * Demonstration of <code>WidgetAnimatedImage</code> with all variations of scaling and alignment.
  *
  * @since 0.6
- * @version $$Id: TestWidgetAnimatedImage.java,v 1.2 2004-04-29 13:30:34 mojomonkey Exp $$
+ * @version $$Id: TestWidgetAnimatedImage.java,v 1.3 2004-08-14 00:50:10 cep21 Exp $$
  */
 public class TestWidgetAnimatedImage extends BaseGame {
 
@@ -486,7 +486,7 @@ public class TestWidgetAnimatedImage extends BaseGame {
         ColorRGBA background = new ColorRGBA(.5f, .5f, .5f, 1);
         display.getRenderer().setBackgroundColor(background);
 
-        cam = display.getRenderer().getCamera(display.getWidth(), display.getHeight());
+        cam = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
 
         display.getRenderer().setCamera(cam);
 

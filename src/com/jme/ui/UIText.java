@@ -101,7 +101,7 @@ public class UIText extends Node {
         _x = x;
         _y = y;
         
-        TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+        TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         ts.setEnabled(true);
 	
         if( useClassLoader) {
@@ -136,7 +136,7 @@ public class UIText extends Node {
         
         this.setRenderState( ts);
         
-		AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().getAlphaState();
+		AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
 		as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);

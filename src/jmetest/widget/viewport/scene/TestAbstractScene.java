@@ -42,7 +42,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestAbstractScene</code>
  * @author Gregg Patton
- * @version $Id: TestAbstractScene.java,v 1.2 2004-04-22 22:27:50 renanse Exp $
+ * @version $Id: TestAbstractScene.java,v 1.3 2004-08-14 00:50:11 cep21 Exp $
  */
 public abstract class TestAbstractScene {
 
@@ -76,7 +76,7 @@ public abstract class TestAbstractScene {
     public abstract void update();
 
     protected WidgetViewportCameraController initNewCameraController() {
-        Camera camera = DisplaySystem.getDisplaySystem().getRenderer().getCamera(1, 1);
+        Camera camera = DisplaySystem.getDisplaySystem().getRenderer().createCamera(1, 1);
 
         Vector3f loc = new Vector3f(4.0f, 0.0f, 0.0f);
         Vector3f left = new Vector3f(0.0f, -1.0f, 0.0f);

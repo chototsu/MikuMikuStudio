@@ -85,7 +85,7 @@ public class TestFireMilk extends SimpleGame {
     model.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     rootNode.attachChild(model);
 
-    AlphaState as1 = display.getRenderer().getAlphaState();
+    AlphaState as1 = display.getRenderer().createAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as1.setDstFunction(AlphaState.DB_ONE);
@@ -93,7 +93,7 @@ public class TestFireMilk extends SimpleGame {
     as1.setTestFunction(AlphaState.TF_GREATER);
     as1.setEnabled(true);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setTexture(
         TextureManager.loadTexture(
         TestFireMilk.class.getClassLoader().getResource(
@@ -123,7 +123,7 @@ public class TestFireMilk extends SimpleGame {
     manager.getParticles().setRenderState(ts);
     manager.getParticles().setRenderState(as1);
     manager.getParticles().setLightCombineMode(LightState.OFF);
-    manager.getParticles().setRenderState(display.getRenderer().getZBufferState());
+    manager.getParticles().setRenderState(display.getRenderer().createZBufferState());
     rootNode.attachChild(manager.getParticles());
   }
 }

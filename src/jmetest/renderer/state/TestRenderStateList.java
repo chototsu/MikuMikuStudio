@@ -105,7 +105,7 @@ public class TestRenderStateList extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -165,23 +165,23 @@ public class TestRenderStateList extends BaseGame {
         scene.attachChild(t3);
         scene.setLocalTranslation(new Vector3f(0, 0, 0));
 
-        ZBufferState buf = display.getRenderer().getZBufferState();
+        ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         scene.setRenderState(buf);
 
-        CullState cs = display.getRenderer().getCullState();
+        CullState cs = display.getRenderer().createCullState();
         cs.setEnabled(true);
         cs.setCullMode(CullState.CS_BACK);
         scene.setRenderState(cs);
 
-        CullState cs2 = display.getRenderer().getCullState();
+        CullState cs2 = display.getRenderer().createCullState();
         cs2.setEnabled(true);
         cs2.setCullMode(CullState.CS_NONE);
         t3.setRenderState(cs2);
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
@@ -189,7 +189,7 @@ public class TestRenderStateList extends BaseGame {
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR,
                 true));
-        TextureState ts2 = display.getRenderer().getTextureState();
+        TextureState ts2 = display.getRenderer().createTextureState();
             ts2.setEnabled(true);
             ts2.setTexture(
                 TextureManager.loadTexture(

@@ -95,7 +95,7 @@ public class TestWireframeState extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -203,7 +203,7 @@ public class TestWireframeState extends BaseGame {
         scene.attachChild(t2);
         scene.setLocalTranslation(new Vector3f(0,-25,0));
 
-        WireframeState ws = display.getRenderer().getWireframeState();
+        WireframeState ws = display.getRenderer().createWireframeState();
         ws.setEnabled(true);
 
         t2.setRenderState(ws);

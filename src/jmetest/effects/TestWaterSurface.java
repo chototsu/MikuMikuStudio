@@ -41,7 +41,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestWaterSurface.java,v 1.5 2004-06-17 16:31:22 renanse Exp $
+ * @version $Id: TestWaterSurface.java,v 1.6 2004-08-14 00:50:01 cep21 Exp $
  */
 public class TestWaterSurface extends SimpleGame {
 
@@ -67,7 +67,7 @@ public class TestWaterSurface extends SimpleGame {
     rootNode.attachChild(water);
     lightState.setEnabled(false);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     Texture t1 = TextureManager.loadTexture(
         TestWaterSurface.class.getClassLoader().getResource(

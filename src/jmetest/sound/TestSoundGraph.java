@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.12 2004-06-23 15:18:12 renanse Exp $
+ * @version $Id: TestSoundGraph.java,v 1.13 2004-08-14 00:50:08 cep21 Exp $
  */
 public class TestSoundGraph extends SimpleGame {
   private SoundNode snode;
@@ -84,7 +84,7 @@ public class TestSoundGraph extends SimpleGame {
     box.setModelBound(new BoundingSphere());
     box.updateModelBound();
     box.setLocalTranslation(new Vector3f(0, 0, -50));
-    TextureState tst = display.getRenderer().getTextureState();
+    TextureState tst = display.getRenderer().createTextureState();
     tst.setEnabled(true);
     tst.setTexture(TextureManager.loadTexture(
         TestSoundGraph.class.getClassLoader().getResource(

@@ -127,7 +127,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.34 2004-07-31 16:20:02 cep21 Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.35 2004-08-14 00:49:56 cep21 Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -214,7 +214,7 @@ public class LWJGLRenderer implements Renderer {
   }
 
   /**
-   * <code>getCamera</code> returns a default camera for use with the LWJGL
+   * <code>createCamera</code> returns a default camera for use with the LWJGL
    * renderer.
    *
    * @param width
@@ -223,142 +223,198 @@ public class LWJGLRenderer implements Renderer {
    *            the height of the frame.
    * @return a default LWJGL camera.
    */
-  public Camera getCamera(int width, int height) {
+  public Camera createCamera(int width, int height) {
     return new LWJGLCamera(width, height, this);
   }
 
-  /**
-   * <code>getAlphaState</code> returns a new LWJGLAlphaState object as a
+    public Camera getCamera(int width, int height) {
+        return createCamera(width,height);
+    }
+
+    /**
+   * <code>createAlphaState</code> returns a new LWJGLAlphaState object as a
    * regular AlphaState.
    *
    * @return an AlphaState object.
    */
-  public AlphaState getAlphaState() {
+  public AlphaState createAlphaState() {
     return new LWJGLAlphaState();
   }
 
-  /**
-   * <code>getAttributeState</code> returns a new LWJGLAttributeState object
+    public AlphaState getAlphaState() {
+        return createAlphaState();
+    }
+
+    /**
+   * <code>createAttributeState</code> returns a new LWJGLAttributeState object
    * as a regular AttributeState.
    *
    * @return an AttributeState object.
    */
-  public AttributeState getAttributeState() {
+  public AttributeState createAttributeState() {
     return new LWJGLAttributeState();
   }
 
-  /**
-   * <code>getCullState</code> returns a new LWJGLCullState object as a
+    public AttributeState getAttributeState() {
+        return createAttributeState();
+    }
+
+    /**
+   * <code>createCullState</code> returns a new LWJGLCullState object as a
    * regular CullState.
    *
    * @return a CullState object.
-   * @see com.jme.renderer.Renderer#getCullState()
+   * @see com.jme.renderer.Renderer#createCullState()
    */
-  public CullState getCullState() {
+  public CullState createCullState() {
     return new LWJGLCullState();
   }
 
-  /**
-   * <code>getDitherState</code> returns a new LWJGLDitherState object as a
+    public CullState getCullState() {
+        return createCullState();
+    }
+
+    /**
+   * <code>createDitherState</code> returns a new LWJGLDitherState object as a
    * regular DitherState.
    *
    * @return an DitherState object.
    */
-  public DitherState getDitherState() {
+  public DitherState createDitherState() {
     return new LWJGLDitherState();
   }
 
-  /**
-   * <code>getFogState</code> returns a new LWJGLFogState object as a
+    public DitherState getDitherState() {
+        return createDitherState();
+    }
+
+    /**
+   * <code>createFogState</code> returns a new LWJGLFogState object as a
    * regular FogState.
    *
    * @return an FogState object.
    */
-  public FogState getFogState() {
+  public FogState createFogState() {
     return new LWJGLFogState();
   }
 
-  /**
-   * <code>getLightState</code> returns a new LWJGLLightState object as a
+    public FogState getFogState() {
+        return createFogState();
+    }
+
+    /**
+   * <code>createLightState</code> returns a new LWJGLLightState object as a
    * regular LightState.
    *
    * @return an LightState object.
    */
-  public LightState getLightState() {
+  public LightState createLightState() {
     return new LWJGLLightState();
   }
 
-  /**
-   * <code>getMaterialState</code> returns a new LWJGLMaterialState object
+    public LightState getLightState() {
+        return createLightState();
+    }
+
+    /**
+   * <code>createMaterialState</code> returns a new LWJGLMaterialState object
    * as a regular MaterialState.
    *
    * @return an MaterialState object.
    */
-  public MaterialState getMaterialState() {
+  public MaterialState createMaterialState() {
     return new LWJGLMaterialState();
   }
 
-  /**
-   * <code>getShadeState</code> returns a new LWJGLShadeState object as a
+    public MaterialState getMaterialState() {
+        return createMaterialState();
+    }
+
+    /**
+   * <code>createShadeState</code> returns a new LWJGLShadeState object as a
    * regular ShadeState.
    *
    * @return an ShadeState object.
    */
-  public ShadeState getShadeState() {
+  public ShadeState createShadeState() {
     return new LWJGLShadeState();
   }
 
-  /**
-   * <code>getTextureState</code> returns a new LWJGLTextureState object as
+    public ShadeState getShadeState() {
+        return createShadeState();
+    }
+
+    /**
+   * <code>createTextureState</code> returns a new LWJGLTextureState object as
    * a regular TextureState.
    *
    * @return an TextureState object.
    */
-  public TextureState getTextureState() {
+  public TextureState createTextureState() {
     return new LWJGLTextureState();
   }
 
-  /**
-   * <code>getWireframeState</code> returns a new LWJGLWireframeState object
+    public TextureState getTextureState() {
+        return createTextureState();
+    }
+
+    /**
+   * <code>createWireframeState</code> returns a new LWJGLWireframeState object
    * as a regular WireframeState.
    *
    * @return an WireframeState object.
    */
-  public WireframeState getWireframeState() {
+  public WireframeState createWireframeState() {
     return new LWJGLWireframeState();
   }
 
-  /**
-   * <code>getZBufferState</code> returns a new LWJGLZBufferState object as
+    public WireframeState getWireframeState() {
+        return createWireframeState();
+    }
+
+    /**
+   * <code>createZBufferState</code> returns a new LWJGLZBufferState object as
    * a regular ZBufferState.
    *
    * @return a ZBufferState object.
    */
-  public ZBufferState getZBufferState() {
+  public ZBufferState createZBufferState() {
     return new LWJGLZBufferState();
   }
 
-  /**
-   * <code>getVertexProgramState</code> returns a new
+    public ZBufferState getZBufferState() {
+        return createZBufferState();
+    }
+
+    /**
+   * <code>createVertexProgramState</code> returns a new
    * LWJGLVertexProgramState object as a regular VertexProgramState.
    *
    * @return a VertexProgramState object.
    */
-  public VertexProgramState getVertexProgramState() {
+  public VertexProgramState createVertexProgramState() {
     return new LWJGLVertexProgramState();
   }
 
-  /**
-   * <code>getStencilState</code> returns a new LWJGLStencilState object as
+    public VertexProgramState getVertexProgramState() {
+        return createVertexProgramState();
+    }
+
+    /**
+   * <code>createStencilState</code> returns a new LWJGLStencilState object as
    * a regular StencilState.
    *
    * @return a StencilState object.
    */
-  public StencilState getStencilState() {
+  public StencilState createStencilState() {
     return new LWJGLStencilState();
   }
 
-  /**
+    public StencilState getStencilState() {
+        return createStencilState();
+    }
+
+    /**
    * <code>setBackgroundColor</code> sets the OpenGL clear color to the
    * color specified.
    *

@@ -85,7 +85,7 @@ public class UIBillboard extends UIObject {
 		
 		_textureStates = new TextureState[1];
 		
-		_textureStates[0] = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+		_textureStates[0] = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 		_textureStates[0].setEnabled(true);
 		
 		if( useClassLoader) {

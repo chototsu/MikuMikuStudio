@@ -101,7 +101,7 @@ public class FadeInOut extends Transient {
         fadeOutNode = out;
         fadeQ = fade;
 
-        AlphaState fadeAS = DisplaySystem.getDisplaySystem().getRenderer().getAlphaState();
+        AlphaState fadeAS = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
 		fadeAS.setBlendEnabled(true);
 		fadeAS.setSrcFunction(AlphaState.SB_SRC_ALPHA);
 		fadeAS.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);

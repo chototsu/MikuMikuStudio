@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.9 2004-04-23 02:57:24 renanse Exp $
+ * @version $Id: TestOctahedron.java,v 1.10 2004-08-14 00:50:07 cep21 Exp $
  */
 public class TestOctahedron extends SimpleGame {
 
@@ -94,7 +94,7 @@ public class TestOctahedron extends SimpleGame {
 
     rootNode.attachChild(s);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(

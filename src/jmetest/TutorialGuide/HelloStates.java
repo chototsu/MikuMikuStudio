@@ -48,14 +48,14 @@ public class HelloStates extends SimpleGame {
         monkeyLoc=HelloStates.class.getClassLoader().getResource("jmetest/data/images/Monkey.tga");
 
         // Get a TextureState
-        TextureState ts=display.getRenderer().getTextureState();
+        TextureState ts=display.getRenderer().createTextureState();
         // Use the TextureManager to load a texture
         Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR,Texture.FM_LINEAR,true);
         // Assign the texture to the TextureState
         ts.setTexture(t);
 
         // Get a MaterialState
-        MaterialState ms=display.getRenderer().getMaterialState();
+        MaterialState ms=display.getRenderer().createMaterialState();
         // Give the MaterialState an emissive tint
         ms.setEmissive(new ColorRGBA(0f,.2f,0f,1));
 
@@ -69,7 +69,7 @@ public class HelloStates extends SimpleGame {
         l.setEnabled(true);
 
         // Create a LightState to put my light in
-        LightState ls=display.getRenderer().getLightState();
+        LightState ls=display.getRenderer().createLightState();
         // Attach the light
         ls.attach(l);
 

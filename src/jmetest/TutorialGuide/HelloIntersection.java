@@ -97,7 +97,7 @@ public class HelloIntersection extends SimpleGame {
         sb = new Skybox("skybox", 200, 200, 200);
         URL monkeyLoc = HelloIntersection.class.getClassLoader().getResource(
                 "jmetest/data/texture/clouds.png");
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(TextureManager.loadTexture(monkeyLoc, Texture.MM_LINEAR,
                 Texture.FM_LINEAR, true));
         sb.setRenderState(ts);
@@ -114,11 +114,11 @@ public class HelloIntersection extends SimpleGame {
         input.addKeyboardAction("firebullet", KeyInput.KEY_F, new FireBullet());
 
         /** Make bullet material */
-        bulletMaterial = display.getRenderer().getMaterialState();
+        bulletMaterial = display.getRenderer().createMaterialState();
         bulletMaterial.setEmissive(ColorRGBA.green);
 
         /** Make target material */
-        MaterialState redMaterial = display.getRenderer().getMaterialState();
+        MaterialState redMaterial = display.getRenderer().createMaterialState();
         redMaterial.setDiffuse(ColorRGBA.red);
         target.setRenderState(redMaterial);
     }

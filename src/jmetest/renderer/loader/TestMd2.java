@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.15 2004-06-26 00:18:01 renanse Exp $
+ * @version $Id: TestMd2.java,v 1.16 2004-08-14 00:50:04 cep21 Exp $
  */
 public class TestMd2 extends SimpleGame {
   TextureState ts = null;
@@ -127,7 +127,7 @@ public class TestMd2 extends SimpleGame {
         FILE_NAME));
     rootNode.attachChild(model);
 
-    ts = display.getRenderer().getTextureState();
+    ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(

@@ -76,7 +76,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.37 2004-07-31 04:31:51 cep21 Exp $
+ * @version $Id: Renderer.java,v 1.38 2004-08-14 00:49:56 cep21 Exp $
  */
 public interface Renderer {
 
@@ -95,105 +95,174 @@ public interface Renderer {
     public void setCamera(Camera camera);
 
     /**
-     * <code>getCamera</code> retrieves the camera this renderer is using.
+     * <code>createCamera</code> retrieves the camera this renderer is using.
      * @return the camera this renderer is using.
      */
     public Camera getCamera();
 
     /**
      *
-     * <code>getCamera</code> retrieves a default camera for this renderer.
+     * <code>createCamera</code> retrieves a default camera for this renderer.
      * @param width the width of the frame.
      * @param height the height of the frame.
      * @return a default camera for this renderer.
+     */
+    public Camera createCamera(int width, int height);
+
+    /**
+     * @deprecated Use createCamera.
+     * @see #createCamera(int, int)
      */
     public Camera getCamera(int width, int height);
 
     /**
      *
-     * <code>getAlphaState</code> retrieves the alpha state object for the
+     * <code>createAlphaState</code> retrieves the alpha state object for the
      * proper renderer.
      * @return the <code>AlphaState</code> object that can make use of the
      *      proper renderer.
+     */
+    public AlphaState createAlphaState();
+
+    /**
+     * @deprecated Use createAlphaState.
+     * @see #createAlphaState()
+     *
      */
     public AlphaState getAlphaState();
 
     /**
      *
-     * <code>getAttributeState</code> retrieves the attribute saving state
+     * <code>createAttributeState</code> retrieves the attribute saving state
      * object for the proper renderer.
      * @return the <code>AttributeState</code> object that can make use of
      * 		the proper renderer.
+     */
+    public AttributeState createAttributeState();
+
+    /**
+     * @deprecated Use createAttributeState.
+     * @see #createAttributeState()
      */
     public AttributeState getAttributeState();
 
     /**
      *
-     * <code>getCullState</code> retrieves the cull state object for the
+     * <code>createCullState</code> retrieves the cull state object for the
      * proper renderer.
      * @return the <code>CullState</code> object that can make use of the
      *      proper renderer.
      */
+    public CullState createCullState();
+
+    /**
+     * @deprecated Use createCullState.
+     * @see #createCullState()
+     */
     public CullState getCullState();
     /**
      *
-     * <code>getDitherState</code> retrieves the dither state object for the
+     * <code>createDitherState</code> retrieves the dither state object for the
      * proper renderer.
      * @return the <code>DitherState</code> object that can make use of the
      *      proper renderer.
+     */
+    public DitherState createDitherState();
+
+    /**
+     * @deprecated Use createDitherState.
+     * @see #createDitherState()
      */
     public DitherState getDitherState();
 
     /**
      *
-     * <code>getFogState</code> retrieves the fog state object for the
+     * <code>createFogState</code> retrieves the fog state object for the
      * proper renderer.
      * @return the <code>FogState</code> object that can make use of the
      *      proper renderer.
      */
+    public FogState createFogState();
+
+    /**
+     * @deprecated Use createFogState.
+     * @see #createFogState()
+     */
     public FogState getFogState();
+
     /**
      *
-     * <code>getLightState</code> retrieves the light state object for the
+     * <code>createLightState</code> retrieves the light state object for the
      * proper renderer.
      * @return the <code>LightState</code> object that can make use of the
      *      proper renderer.
+     */
+    public LightState createLightState();
+
+    /**
+     * @deprecated Use createLightState
+     * @see #createLightState()
      */
     public LightState getLightState();
 
     /**
      *
-     * <code>getMaterialState</code> retrieves the material state object for the
+     * <code>createMaterialState</code> retrieves the material state object for the
      * proper renderer.
      * @return the <code>MaterialState</code> object that can make use of the
      *      proper renderer.
+     */
+    public MaterialState createMaterialState();
+
+
+    /**
+     * @deprecated Use createMaterialState.
+     * @see #createMaterialState()
      */
     public MaterialState getMaterialState();
 
     /**
      *
-     * <code>getShadeState</code> retrieves the shade state object for the
+     * <code>createShadeState</code> retrieves the shade state object for the
      * proper renderer.
      * @return the <code>ShadeState</code> object that can make use of the
      *      proper renderer.
+     */
+    public ShadeState createShadeState();
+
+    /**
+     * @deprecated Use createShadeState.
+     * @see #createShadeState()
      */
     public ShadeState getShadeState();
 
     /**
      *
-     * <code>getTextureState</code> retrieves the texture state object for the
+     * <code>createTextureState</code> retrieves the texture state object for the
      * proper renderer.
      * @return the <code>TextureState</code> object that can make use of the
      *      proper renderer.
+     */
+    public TextureState createTextureState();
+
+    /**
+     * @deprecated Use createTextureState.
+     * @see #createTextureState()
      */
     public TextureState getTextureState();
 
     /**
      *
-     * <code>getWireframeState</code> retrieves the wireframe state object for the
+     * <code>createWireframeState</code> retrieves the wireframe state object for the
      * proper renderer.
      * @return the <code>WireframeState</code> object that can make use of the
      *      proper renderer.
+     */
+    public WireframeState createWireframeState();
+
+    /**
+     * @deprecated Use createWireframeState.
+     * @see #createWireframeState()
      */
     public WireframeState getWireframeState();
 
@@ -202,6 +271,12 @@ public interface Renderer {
      * @return The <code>ZBufferState</code> object that can make use of the
      *      proper renderer.
      */
+    public ZBufferState createZBufferState();
+
+    /**
+     * @deprecated Use createZBufferState.
+     * @see #createZBufferState()
+     */
     public ZBufferState getZBufferState();
 
     /**
@@ -209,12 +284,24 @@ public interface Renderer {
      * @return The <code>VertexProgramState</code> object that can make use of the
      *      proper renderer.
      */
+    public VertexProgramState createVertexProgramState();
+
+    /**
+     * @deprecated Use createVertexProgramState.
+     * @see #createVertexProgramState()
+     */
     public VertexProgramState getVertexProgramState();
 
     /**
      * Retrieves the stencil state object for the proper renderer.
      * @return The <code>StencilState</code> object that can make use of the
      *      proper renderer.
+     */
+    public StencilState createStencilState();
+
+    /**
+     * @deprecated Use createStencilState
+     * @see #createStencilState()
      */
     public StencilState getStencilState();
 

@@ -97,7 +97,7 @@ public class UIButton extends UIObject {
         _textureStates = new TextureState[3];
 
         for (int i = 0; i < 3; i++) {
-            _textureStates[i] = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+            _textureStates[i] = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
             _textureStates[i].setEnabled(true);
         }
 

@@ -48,7 +48,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.26 2004-07-12 23:22:49 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.27 2004-08-14 00:50:07 cep21 Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -142,13 +142,13 @@ public class TestRenderToTexture extends SimpleGame {
     fakeScene.attachChild(monkeyBox);
 
     // Setup our params for the depth buffer
-    ZBufferState buf = display.getRenderer().getZBufferState();
+    ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);
     buf.setFunction(ZBufferState.CF_LEQUAL);
     fakeScene.setRenderState(buf);
 
     // Lets add a monkey texture to the geometry we are going to rendertotexture...
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     Texture tex = TextureManager.loadTexture(
         TestRenderToTexture.class.getClassLoader().getResource(
@@ -170,7 +170,7 @@ public class TestRenderToTexture extends SimpleGame {
     tRenderer.updateCamera();
 
     // Now add that texture to the "real" cube.
-    ts = display.getRenderer().getTextureState();
+    ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(fakeTex, 0);
 

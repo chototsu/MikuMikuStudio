@@ -68,7 +68,7 @@ public class TestAbsoluteMouse extends SimpleGame {
         InputSystem.createInputSystem(properties.getRenderer());
         display.getRenderer().setBackgroundColor(ColorRGBA.blue);
         mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());
-        TextureState cursor = display.getRenderer().getTextureState();
+        TextureState cursor = display.getRenderer().createTextureState();
         cursor.setEnabled(true);
         cursor.setTexture(
         			TextureManager.loadTexture(
@@ -81,7 +81,7 @@ public class TestAbsoluteMouse extends SimpleGame {
 
         text = new Text("Text Label","Testing Mouse");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
@@ -90,7 +90,7 @@ public class TestAbsoluteMouse extends SimpleGame {
                 Texture.FM_LINEAR,
                 true));
         text.setRenderState(ts);
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_ONE);
         as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_COLOR);

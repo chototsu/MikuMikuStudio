@@ -121,7 +121,7 @@ public class TestCameraMan extends SimpleGame {
     am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
     am.setDirection(new Vector3f(1, 0, 0));
 
-    LightState state = display.getRenderer().getLightState();
+    LightState state = display.getRenderer().createLightState();
     state.setEnabled(true);
     state.attach(am);
     am.setEnabled(true);
@@ -143,7 +143,7 @@ public class TestCameraMan extends SimpleGame {
     model.getAnimationController().setActive(false);
     rootNode.attachChild(model);
 
-    CullState cs = display.getRenderer().getCullState();
+    CullState cs = display.getRenderer().createCullState();
     cs.setCullMode(CullState.CS_BACK);
     cs.setEnabled(true);
     rootNode.setRenderState(cs);
@@ -174,7 +174,7 @@ public class TestCameraMan extends SimpleGame {
     monitorNode.attachChild(quad2);
 
     // Setup our params for the depth buffer
-    ZBufferState buf = display.getRenderer().getZBufferState();
+    ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);
     buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -183,7 +183,7 @@ public class TestCameraMan extends SimpleGame {
     // Ok, now lets create the Texture object that our scene will be rendered to.
     tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
     fakeTex = tRenderer.setupTexture();
-    TextureState screen = display.getRenderer().getTextureState();
+    TextureState screen = display.getRenderer().createTextureState();
     screen.setTexture(fakeTex);
     screen.setEnabled(true);
     quad.setRenderState(screen);

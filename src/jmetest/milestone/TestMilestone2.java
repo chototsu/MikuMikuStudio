@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.8 2004-04-22 22:27:37 renanse Exp $
+ * @version $Id: TestMilestone2.java,v 1.9 2004-08-14 00:50:03 cep21 Exp $
  */
 public class TestMilestone2 extends BaseGame {
     private TriMesh t;
@@ -126,7 +126,7 @@ public class TestMilestone2 extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -156,7 +156,7 @@ public class TestMilestone2 extends BaseGame {
     protected void initGame() {
         Text text = new Text("Text Label","Random boxes. Milestone 2");
         text.setLocalTranslation(new Vector3f(1,60,0));
-        TextureState textImage = display.getRenderer().getTextureState();
+        TextureState textImage = display.getRenderer().createTextureState();
         textImage.setEnabled(true);
         textImage.setTexture(
             TextureManager.loadTexture(
@@ -165,7 +165,7 @@ public class TestMilestone2 extends BaseGame {
                 Texture.FM_LINEAR,
                 true));
         text.setRenderState(textImage);
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setEnabled(true);
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -192,7 +192,7 @@ public class TestMilestone2 extends BaseGame {
         root.attachChild(text);
 
 
-        ZBufferState buf = display.getRenderer().getZBufferState();
+        ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -217,7 +217,7 @@ public class TestMilestone2 extends BaseGame {
         dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         dr.setDirection(new Vector3f(150, 0 , 150));
 
-        LightState state = display.getRenderer().getLightState();
+        LightState state = display.getRenderer().createLightState();
         state.attach(am);
         state.attach(dr);
         state.attach(am2);
@@ -229,7 +229,7 @@ public class TestMilestone2 extends BaseGame {
         scene.setRenderState(buf);
         cam.update();
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
                 ts.setEnabled(true);
                 ts.setTexture(
                     TextureManager.loadTexture(

@@ -62,7 +62,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone3.java,v 1.9 2004-04-22 22:27:38 renanse Exp $
+ * @version $Id: TestMilestone3.java,v 1.10 2004-08-14 00:50:03 cep21 Exp $
  */
 public class TestMilestone3 extends BaseGame {
     private TriMesh t;
@@ -129,7 +129,7 @@ public class TestMilestone3 extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -160,7 +160,7 @@ public class TestMilestone3 extends BaseGame {
      */
     protected void initGame() {
 
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);
@@ -171,7 +171,7 @@ public class TestMilestone3 extends BaseGame {
         root = new Node("Root Node");
         root.attachChild(scene);
 
-        ZBufferState buf = display.getRenderer().getZBufferState();
+        ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -216,7 +216,7 @@ public class TestMilestone3 extends BaseGame {
         bez.setForceView(true);
         scene.attachChild(bez);
 
-        MaterialState ms = display.getRenderer().getMaterialState();
+        MaterialState ms = display.getRenderer().createMaterialState();
         ms.setEmissive(new ColorRGBA(0, 0, 0.4f, 1.0f));
         ms.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         ms.setDiffuse(new ColorRGBA(1.0f, 0.85f, 0.75f, 1.0f));
@@ -230,7 +230,7 @@ public class TestMilestone3 extends BaseGame {
         pl.setSpecular(new ColorRGBA(0, 0, 1, 1));
         pl.setEnabled(true);
 
-        lightstate = display.getRenderer().getLightState();
+        lightstate = display.getRenderer().createLightState();
         lightstate.setEnabled(true);
         lightNode = new LightNode("Light Node", lightstate);
         lightNode.setLight(pl);
@@ -252,7 +252,7 @@ public class TestMilestone3 extends BaseGame {
         scene.attachChild(lightNode);
         scene.attachChild(curve);
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(

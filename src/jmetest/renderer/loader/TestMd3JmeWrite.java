@@ -39,7 +39,7 @@ public class TestMd3JmeWrite extends SimpleGame{
 //            System.out.println(SW);
             JmeBinaryReader jbr=new JmeBinaryReader();
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-            TextureState ts=display.getRenderer().getTextureState();
+            TextureState ts=display.getRenderer().createTextureState();
             ts.setTexture(TextureManager.loadTexture(tex,Texture.MM_LINEAR,Texture.FM_LINEAR,true));
             ts.setEnabled(true);
             r.setRenderState(ts);

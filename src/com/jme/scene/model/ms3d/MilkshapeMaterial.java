@@ -36,7 +36,7 @@ class MilkshapeMaterial {
 
     private MaterialState generateMaterial() {
         if (myMat!=null) return myMat;
-        myMat=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
+        myMat=DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
         myMat.setAmbient(ambColor);
         myMat.setEmissive(emisColor);
         myMat.setDiffuse(difColor);
@@ -49,7 +49,7 @@ class MilkshapeMaterial {
 
     private TextureState generateTexture(URL baseURL){
         if (myTex!=null || texture.length()==0) return myTex;
-        myTex=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+        myTex=DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         //TODO: Clean this up
         URL toLoad=null;
         try {

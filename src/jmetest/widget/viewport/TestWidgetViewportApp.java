@@ -48,7 +48,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
  * input.  To activate/deactivate capturing mouse input right-click on the viewport.
  * Not all the viewports will capture mouse input.
  * @author Gregg Patton
- * @version $Id: TestWidgetViewportApp.java,v 1.6 2004-04-22 22:27:49 renanse Exp $
+ * @version $Id: TestWidgetViewportApp.java,v 1.7 2004-08-14 00:50:11 cep21 Exp $
  */
 public class TestWidgetViewportApp extends BaseGame {
 
@@ -94,7 +94,7 @@ public class TestWidgetViewportApp extends BaseGame {
 
         DisplaySystem display = DisplaySystem.getDisplaySystem();
 
-        Camera cam = display.getRenderer().getCamera(display.getWidth(), display.getHeight());
+        Camera cam = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
 
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
         Vector3f loc = new Vector3f(4.0f, 0.0f, 0.0f);

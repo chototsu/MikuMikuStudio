@@ -51,7 +51,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSequencedSound.java,v 1.4 2004-06-17 15:52:31 anakan Exp $
+ * @version $Id: TestSequencedSound.java,v 1.5 2004-08-14 00:50:08 cep21 Exp $
  */
 public class TestSequencedSound extends SimpleGame {
 
@@ -160,7 +160,7 @@ public class TestSequencedSound extends SimpleGame {
         box4.setLocalTranslation(new Vector3f(50, 0, -200));
         
 
-        TextureState tst = display.getRenderer().getTextureState();
+        TextureState tst = display.getRenderer().createTextureState();
         tst.setEnabled(true);
         tst.setTexture(TextureManager.loadTexture(
                 TestSequencedSound.class.getClassLoader().getResource(

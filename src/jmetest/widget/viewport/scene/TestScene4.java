@@ -56,7 +56,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene4</code>
  * @author Gregg Patton
- * @version $Id: TestScene4.java,v 1.7 2004-04-22 22:27:51 renanse Exp $
+ * @version $Id: TestScene4.java,v 1.8 2004-08-14 00:50:11 cep21 Exp $
  */
 public class TestScene4 extends TestAbstractScene {
 
@@ -78,7 +78,7 @@ public class TestScene4 extends TestAbstractScene {
             timer = Timer.getTimer(display.getRendererType().getName());
 
 
-            ZBufferState zstate = display.getRenderer().getZBufferState();
+            ZBufferState zstate = display.getRenderer().createZBufferState();
             zstate.setEnabled(true);
             scene = new Node("Scene Node");
             scene.setRenderState(zstate);
@@ -107,7 +107,7 @@ public class TestScene4 extends TestAbstractScene {
             dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
             dr.setDirection(new Vector3f(0, 0, -150));
 
-            LightState state = display.getRenderer().getLightState();
+            LightState state = display.getRenderer().createLightState();
             state.setEnabled(true);
             state.attach(am);
             state.attach(dr);
@@ -147,7 +147,7 @@ public class TestScene4 extends TestAbstractScene {
      * @see jmetest.widget.viewport.scene.TestAbstractScene#initNewCameraController()
      */
     protected WidgetViewportCameraController initNewCameraController() {
-        Camera camera = DisplaySystem.getDisplaySystem().getRenderer().getCamera(1, 1);
+        Camera camera = DisplaySystem.getDisplaySystem().getRenderer().createCamera(1, 1);
 
         Vector3f loc = new Vector3f(20.0f, 20.0f, 200.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);

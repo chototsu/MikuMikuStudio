@@ -44,7 +44,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCylinder</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.9 2004-04-23 02:57:23 renanse Exp $
+ * @version $Id: TestCylinder.java,v 1.10 2004-08-14 00:50:06 cep21 Exp $
  */
 public class TestCylinder extends SimpleGame {
 
@@ -86,7 +86,7 @@ public class TestCylinder extends SimpleGame {
     t.updateModelBound();
     rootNode.attachChild(t);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(

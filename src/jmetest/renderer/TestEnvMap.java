@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestEnvMap.java,v 1.3 2004-07-02 23:50:32 renanse Exp $
+ * @version $Id: TestEnvMap.java,v 1.4 2004-08-14 00:50:06 cep21 Exp $
  */
 public class TestEnvMap extends SimpleGame {
 
@@ -78,12 +78,12 @@ public class TestEnvMap extends SimpleGame {
         Texture.MM_LINEAR,
         Texture.FM_LINEAR,
         true);
-    TextureState bgts = display.getRenderer().getTextureState();
+    TextureState bgts = display.getRenderer().createTextureState();
     bgts.setTexture(bg);
     bgts.setEnabled(true);
     background.setRenderState(bgts);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     //Base texture, not environmental map.
     Texture t0 = TextureManager.loadTexture(
             TestEnvMap.class.getClassLoader().getResource(

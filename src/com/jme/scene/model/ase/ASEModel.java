@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  *
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.16 2004-06-26 00:17:59 renanse Exp $
+ * @version $Id: ASEModel.java,v 1.17 2004-08-14 00:49:57 cep21 Exp $
  */
 public class ASEModel extends Model {
 
@@ -305,7 +305,7 @@ public class ASEModel extends Model {
                     DisplaySystem
                         .getDisplaySystem()
                         .getRenderer()
-                        .getMaterialState();
+                        .createMaterialState();
                 ms.setEnabled(true);
                 ms.setAmbient(
                     new ColorRGBA(
@@ -354,7 +354,7 @@ public class ASEModel extends Model {
                     DisplaySystem
                         .getDisplaySystem()
                         .getRenderer()
-                        .getTextureState();
+                        .createTextureState();
                 ts.setEnabled(true);
                 ts.setTexture(
                     TextureManager.loadTexture(

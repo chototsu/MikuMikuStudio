@@ -63,7 +63,7 @@ import com.jme.math.Vector3f;
  * method.
  *
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.19 2004-06-26 00:17:59 renanse Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.20 2004-08-14 00:49:57 cep21 Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 
@@ -329,7 +329,7 @@ public class MilkshapeASCIIModel extends Model {
         for (int i = 0; i < materials.length; i++) {
             //load material
             MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer()
-                    .getMaterialState();
+                    .createMaterialState();
             String line = getNextLine(reader);
             line = getNextLine(reader);
             String[] values = line.split(" ");
@@ -507,7 +507,7 @@ public class MilkshapeASCIIModel extends Model {
         if (tex != null) {
 
             TextureState ts = DisplaySystem.getDisplaySystem().getRenderer()
-                    .getTextureState();
+                    .createTextureState();
             ts.setEnabled(true);
             ts.setTexture(tex);
 

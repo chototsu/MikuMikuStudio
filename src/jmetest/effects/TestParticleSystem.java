@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.20 2004-06-26 00:18:00 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.21 2004-08-14 00:50:00 cep21 Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -86,7 +86,7 @@ public class TestParticleSystem extends SimpleGame {
     display.setTitle("Particle System");
     lightState.setEnabled(false);
 
-    AlphaState as1 = display.getRenderer().getAlphaState();
+    AlphaState as1 = display.getRenderer().createAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as1.setDstFunction(AlphaState.DB_ONE);
@@ -94,7 +94,7 @@ public class TestParticleSystem extends SimpleGame {
     as1.setTestFunction(AlphaState.TF_GREATER);
     as1.setEnabled(true);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setTexture(
         TextureManager.loadTexture(
         TestParticleSystem.class.getClassLoader().getResource(

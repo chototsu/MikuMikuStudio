@@ -189,7 +189,7 @@ public class PongRevisited extends SimpleGame {
         
         
         
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);
@@ -197,7 +197,7 @@ public class PongRevisited extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         as1.setEnabled(true);
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(
             TextureManager.loadTexture(
             RenParticleEditor.class.getClassLoader().getResource(

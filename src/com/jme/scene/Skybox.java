@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * set this skybox at the camera's position.
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.2 2004-07-31 18:53:54 cep21 Exp $
+ * @version $Id: Skybox.java,v 1.3 2004-08-14 00:49:56 cep21 Exp $
  */
 public class Skybox extends Node {
   /** The +Z side of the skybox. */
@@ -122,7 +122,7 @@ public class Skybox extends Node {
 
     TextureState ts = (TextureState)skyboxQuads[direction].getRenderStateList()[RenderState.RS_TEXTURE];
     if (ts == null) {
-      ts = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+      ts = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
     }
 
     // Initialize the texture state
@@ -166,7 +166,7 @@ public class Skybox extends Node {
     skyboxQuads[DOWN].setLocalTranslation(new Vector3f(0, -yExtent, 0));
 
     // We don't want the light to effect our skybox
-    LightState lightState = display.getRenderer().getLightState();
+    LightState lightState = display.getRenderer().createLightState();
     lightState.setEnabled(false);
     setRenderState(lightState);
     setLightCombineMode(LightState.REPLACE);

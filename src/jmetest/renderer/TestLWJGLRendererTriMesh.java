@@ -90,7 +90,7 @@ public class TestLWJGLRendererTriMesh extends BaseGame {
                     display.createWindow(properties.getWidth(), properties.getHeight(),
                                     properties.getDepth(), properties.getFreq(),
                                     properties.getFullscreen());
-                    cam = display.getRenderer().getCamera(properties.getWidth(),properties.getHeight());
+                    cam = display.getRenderer().createCamera(properties.getWidth(),properties.getHeight());
                 }
         } catch (JmeException e) {
             e.printStackTrace();

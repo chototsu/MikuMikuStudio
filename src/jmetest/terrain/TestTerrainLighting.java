@@ -54,7 +54,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.21 2004-07-08 20:34:59 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.22 2004-08-14 00:50:08 cep21 Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -119,7 +119,7 @@ public class TestTerrainLighting extends SimpleGame {
     dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
     dr.setLocation(new Vector3f(0.5f, -0.5f, 0));
 
-    CullState cs = display.getRenderer().getCullState();
+    CullState cs = display.getRenderer().createCullState();
     cs.setCullMode(CullState.CS_BACK);
     cs.setEnabled(true);
     lightState.setTwoSidedLighting(true);
@@ -150,7 +150,7 @@ public class TestTerrainLighting extends SimpleGame {
     rootNode.attachChild(tb);
     rootNode.setRenderState(cs);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(false);
     Texture t1 = TextureManager.loadTexture(
         TestTerrain.class.getClassLoader().getResource(

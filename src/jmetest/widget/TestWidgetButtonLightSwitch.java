@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.14 2004-04-22 22:27:49 renanse Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.15 2004-08-14 00:50:10 cep21 Exp $
  */
 public class TestWidgetButtonLightSwitch extends BaseGame {
 	static String STARTED_STATE_STRING = " Stop ";
@@ -337,7 +337,7 @@ public class TestWidgetButtonLightSwitch extends BaseGame {
                 properties.getDepth(),
                 properties.getFreq(),
                 properties.getFullscreen());
-            cam = display.getRenderer().getCamera(properties.getWidth(), properties.getHeight());
+            cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
 
         } catch (JmeException e) {
             e.printStackTrace();
@@ -384,7 +384,7 @@ public class TestWidgetButtonLightSwitch extends BaseGame {
         Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
         Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
 
-        ZBufferState buf = display.getRenderer().getZBufferState();
+        ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -423,7 +423,7 @@ public class TestWidgetButtonLightSwitch extends BaseGame {
         cc.setRepeatType(Controller.RT_CYCLE);
         cc.setUpVector(up);
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestWidgetButtonLightSwitch.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
@@ -455,7 +455,7 @@ public class TestWidgetButtonLightSwitch extends BaseGame {
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setDirection(new Vector3f(0, 0, -1));
 
-        LightState lightState = display.getRenderer().getLightState();
+        LightState lightState = display.getRenderer().createLightState();
         lightState.attach(am);
         lightState.attach(dr);
         lightState.attach(spotlight1);

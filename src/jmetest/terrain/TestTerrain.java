@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.29 2004-07-21 21:19:50 guurk Exp $
+ * @version $Id: TestTerrain.java,v 1.30 2004-08-14 00:50:08 cep21 Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -77,11 +77,11 @@ public class TestTerrain extends SimpleGame {
     cam.setLocation(new Vector3f(64*5, 250, 64*5));
     cam.update();
 
-    FogState fs = display.getRenderer().getFogState();
+    FogState fs = display.getRenderer().createFogState();
     fs.setEnabled(false);
     rootNode.setRenderState(fs);
 
-    CullState cs = display.getRenderer().getCullState();
+    CullState cs = display.getRenderer().createCullState();
     cs.setCullMode(CullState.CS_BACK);
     cs.setEnabled(true);
 
@@ -116,7 +116,7 @@ public class TestTerrain extends SimpleGame {
 
     pt.createTexture(64);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     Texture t1 = TextureManager.loadTexture(
         pt.getImageIcon().getImage(),

@@ -95,7 +95,7 @@ public class TestFogState extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -203,7 +203,7 @@ public class TestFogState extends BaseGame {
         scene.attachChild(t2);
         scene.setLocalTranslation(new Vector3f(0,-25,0));
 
-        FogState fs = display.getRenderer().getFogState();
+        FogState fs = display.getRenderer().createFogState();
         fs.setDensity(0.5f);
         fs.setEnabled(true);
         fs.setColor(new ColorRGBA(0.5f,0.5f,0.5f,0.5f));

@@ -57,7 +57,7 @@ import com.jme.math.Vector2f;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.8 2004-07-23 20:15:13 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.9 2004-08-14 00:50:07 cep21 Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -142,7 +142,7 @@ public class TestRenderQueue extends SimpleGame {
     b3.setLocalTranslation(new Vector3f(0, -15, -15));
     opaques.attachChild(b3);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(
@@ -153,7 +153,7 @@ public class TestRenderQueue extends SimpleGame {
         true));
     opaques.setRenderState(ts);
 
-    LightState ls = display.getRenderer().getLightState();
+    LightState ls = display.getRenderer().createLightState();
     ls.setEnabled(true);
     DirectionalLight dLight = new DirectionalLight();
     dLight.setEnabled(true);
@@ -174,7 +174,7 @@ public class TestRenderQueue extends SimpleGame {
     tb1.updateModelBound();
     tb1.setLocalTranslation(new Vector3f(0, 15, 15));
     transps.attachChild(tb1);
-    MaterialState ms1 = display.getRenderer().getMaterialState();
+    MaterialState ms1 = display.getRenderer().createMaterialState();
     ms1.setEnabled(true);
     ms1.setDiffuse(new ColorRGBA(0,0,1,.75f));
     ms1.setShininess(128);
@@ -185,7 +185,7 @@ public class TestRenderQueue extends SimpleGame {
     tb2.updateModelBound();
     tb2.setLocalTranslation(new Vector3f(0, 0, 30));
     transps.attachChild(tb2);
-    MaterialState ms2 = display.getRenderer().getMaterialState();
+    MaterialState ms2 = display.getRenderer().createMaterialState();
     ms2.setEnabled(true);
     ms2.setDiffuse(new ColorRGBA(0,1,0,.75f));
     ms2.setShininess(128);
@@ -196,13 +196,13 @@ public class TestRenderQueue extends SimpleGame {
     tb3.updateModelBound();
     tb3.setLocalTranslation(new Vector3f(0, 0, 15));
     transps.attachChild(tb3);
-    MaterialState ms3 = display.getRenderer().getMaterialState();
+    MaterialState ms3 = display.getRenderer().createMaterialState();
     ms3.setEnabled(true);
     ms3.setDiffuse(new ColorRGBA(1,0,0,.75f));
     ms3.setShininess(128);
     tb3.setRenderState(ms3);
 
-    AlphaState as = display.getRenderer().getAlphaState();
+    AlphaState as = display.getRenderer().createAlphaState();
     as.setEnabled(true);
     as.setBlendEnabled(true);
     as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -232,7 +232,7 @@ public class TestRenderQueue extends SimpleGame {
     q3.setLightCombineMode(LightState.OFF);
     orthos.attachChild(q3);
 
-    ZBufferState zstate = display.getRenderer().getZBufferState();
+    ZBufferState zstate = display.getRenderer().createZBufferState();
     zstate.setWritable(false);
     zstate.setEnabled(false);
     orthos.setRenderState(zstate);

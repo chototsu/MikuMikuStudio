@@ -74,7 +74,7 @@ public class TestProgrammableSound extends SimpleGame {
         SoundAPIController.getSoundSystem(properties.getRenderer());
         SoundAPIController.getRenderer().setCamera(cam);
 
-        TextureState tst = display.getRenderer().getTextureState();
+        TextureState tst = display.getRenderer().createTextureState();
         tst.setEnabled(true);
         tst.setTexture(TextureManager.loadTexture(
                 TestSequencedSound.class.getClassLoader().getResource(

@@ -31,11 +31,11 @@ class MaterialBlock extends ChunkerClass {
     }
 
     protected void initializeVariables(){
-        myMatState=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
+        myMatState=DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
         myMatState.setEnabled(false);
-        myWireState=DisplaySystem.getDisplaySystem().getRenderer().getWireframeState();
+        myWireState=DisplaySystem.getDisplaySystem().getRenderer().createWireframeState();
         myWireState.setEnabled(false);
-        myTexState=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+        myTexState=DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         myTexState.setEnabled(false);
     }
 

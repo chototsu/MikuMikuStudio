@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.13 2004-04-22 22:27:30 renanse Exp $
+ * @version $Id: TestBezierCurve.java,v 1.14 2004-08-14 00:50:00 cep21 Exp $
  */
 public class TestBezierCurve extends SimpleGame {
 
@@ -85,7 +85,7 @@ public class TestBezierCurve extends SimpleGame {
     Vector3f min = new Vector3f( -0.1f, -0.1f, -0.1f);
     Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
 
-    ZBufferState buf = display.getRenderer().getZBufferState();
+    ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);
     buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -125,7 +125,7 @@ public class TestBezierCurve extends SimpleGame {
     cc.setUpVector(up);
     cc.setSpeed(0.5f);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(

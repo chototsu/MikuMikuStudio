@@ -44,7 +44,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
 /**
  * Test of the point renderer for the LWJGL renderer.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererPoint.java,v 1.7 2004-04-22 22:27:40 renanse Exp $
+ * @version $Id: TestLWJGLRendererPoint.java,v 1.8 2004-08-14 00:50:06 cep21 Exp $
  */
 public class TestLWJGLRendererPoint extends BaseGame {
 
@@ -88,7 +88,7 @@ public class TestLWJGLRendererPoint extends BaseGame {
                 display.createWindow(properties.getWidth(), properties.getHeight(),
                                 properties.getDepth(), properties.getFreq(),
                                 properties.getFullscreen());
-                cam = display.getRenderer().getCamera(properties.getWidth(),properties.getHeight());
+                cam = display.getRenderer().createCamera(properties.getWidth(),properties.getHeight());
             }
         } catch (JmeException e) {
             e.printStackTrace();

@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestDiscreteLOD</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.10 2004-07-03 21:21:42 renanse Exp $
+ * @version $Id: TestDiscreteLOD.java,v 1.11 2004-08-14 00:50:06 cep21 Exp $
  */
 public class TestDiscreteLOD extends SimpleGame {
 
@@ -118,7 +118,7 @@ public class TestDiscreteLOD extends SimpleGame {
     dlod.setActiveChild(0);
     rootNode.attachChild(dlod);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(

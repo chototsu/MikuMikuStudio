@@ -110,7 +110,7 @@ public abstract class UIObject extends Quad {
         _width = ((TextureState) _textureStates[0]).getTexture().getImage().getWidth();
         _height = ((TextureState) _textureStates[0]).getTexture().getImage().getHeight();
 
-        AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().getAlphaState();
+        AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);

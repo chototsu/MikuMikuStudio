@@ -57,7 +57,7 @@ public class MilkToJme extends FormatConverter{
     public void convert(InputStream MSFile,OutputStream o) throws IOException {
         inFile=new LittleEndien(MSFile);
         finalNode=new Node("ms3d file");
-        CullState CS=DisplaySystem.getDisplaySystem().getRenderer().getCullState();
+        CullState CS=DisplaySystem.getDisplaySystem().getRenderer().createCullState();
         CS.setCullMode(CullState.CS_BACK);
         CS.setEnabled(true);
         finalNode.setRenderState(CS);
@@ -136,7 +136,7 @@ public class MilkToJme extends FormatConverter{
             TextureState texState=null;
             String texFile=cutAtNull(tempChar);
             if (texFile.length()!=0){
-                texState=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+                texState=DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
                 Texture tempTex=new Texture();
                 tempTex.setImageLocation("file:/"+texFile);
                 texState.setTexture(tempTex);

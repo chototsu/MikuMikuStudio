@@ -95,7 +95,7 @@ public class TestDitherState extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -203,7 +203,7 @@ public class TestDitherState extends BaseGame {
         scene.attachChild(t2);
         scene.setLocalTranslation(new Vector3f(0,-25,0));
 
-        DitherState ds = display.getRenderer().getDitherState();
+        DitherState ds = display.getRenderer().createDitherState();
         ds.setEnabled(false);
         t2.setRenderState(ds);
 

@@ -152,7 +152,7 @@ public class TestWidgetApp2 extends BaseGame implements Observer {
         ColorRGBA background = new ColorRGBA(.5f, .5f, .5f, 1);
         display.getRenderer().setBackgroundColor(background);
 
-        cam = display.getRenderer().getCamera(display.getWidth(), display.getHeight());
+        cam = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
 
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
         Vector3f loc = new Vector3f(4.0f, 0.0f, 0.0f);

@@ -42,7 +42,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.11 2004-04-24 23:09:37 renanse Exp $
+ * @version $Id: TestBillboardNode.java,v 1.12 2004-08-14 00:50:05 cep21 Exp $
  */
 public class TestBillboardNode extends SimpleGame {
 
@@ -69,7 +69,7 @@ public class TestBillboardNode extends SimpleGame {
     Quad q = new Quad("Quad");
     q.initialize(3, 3);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     Texture t1 = TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(

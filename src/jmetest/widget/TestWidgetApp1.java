@@ -285,7 +285,7 @@ public class TestWidgetApp1 extends BaseGame {
         ColorRGBA background = new ColorRGBA(.5f, .5f, .5f, 1);
         display.getRenderer().setBackgroundColor(background);
 
-        display.getRenderer().setCamera(display.getRenderer().getCamera(display.getWidth(), display.getHeight()));
+        display.getRenderer().setCamera(display.getRenderer().createCamera(display.getWidth(), display.getHeight()));
 
         input = new WidgetMouseTestControllerBasic(this);
 

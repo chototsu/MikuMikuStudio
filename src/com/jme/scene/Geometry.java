@@ -57,7 +57,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.58 2004-08-01 02:38:07 cep21 Exp $
+ * @version $Id: Geometry.java,v 1.59 2004-08-14 00:49:56 cep21 Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -123,7 +123,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         super(name);
         vertex = new Vector3f[0];
         int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-                .getTextureState().getNumberOfUnits();
+                .createTextureState().getNumberOfUnits();
         texture = new Vector2f[textureUnits][0];
         texBuf = new FloatBuffer[textureUnits];
         vboTextureIDs = new int[textureUnits];
@@ -159,7 +159,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         }
 
         int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-                .getTextureState().getNumberOfUnits();
+                .createTextureState().getNumberOfUnits();
         this.texture = new Vector2f[textureUnits][0];
         this.texBuf = new FloatBuffer[textureUnits];
         this.vboTextureIDs = new int[textureUnits];
@@ -198,7 +198,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         }
 
         int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-                .getTextureState().getNumberOfUnits();
+                .createTextureState().getNumberOfUnits();
         this.texture = new Vector2f[textureUnits][0];
         this.texBuf = new FloatBuffer[textureUnits];
         this.vertex = vertices;
@@ -721,7 +721,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void clearBuffers() {
         int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-                .getTextureState().getNumberOfUnits();
+                .createTextureState().getNumberOfUnits();
         vertBuf = null;
         normBuf = null;
         this.texBuf = new FloatBuffer[textureUnits];
@@ -1045,7 +1045,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-                .getTextureState().getNumberOfUnits();
+                .createTextureState().getNumberOfUnits();
         texBuf = new FloatBuffer[textureUnits];
         if (color!=null) updateColorBuffer();
         if (normal!=null) updateNormalBuffer();

@@ -59,7 +59,7 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.13 2004-08-02 22:10:34 cep21 Exp $
+ * @version $Id: LensFlare.java,v 1.14 2004-08-14 00:49:55 cep21 Exp $
  */
 
 public class LensFlare extends Node {
@@ -194,7 +194,7 @@ public class LensFlare extends Node {
     DisplaySystem display = DisplaySystem.getDisplaySystem();
     midPoint = new Vector2f(display.getWidth() >> 1, display.getHeight() >> 1);
 
-    AlphaState as1 = display.getRenderer().getAlphaState();
+    AlphaState as1 = display.getRenderer().createAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as1.setDstFunction(AlphaState.DB_ONE);
@@ -202,7 +202,7 @@ public class LensFlare extends Node {
     as1.setTestFunction(AlphaState.TF_GREATER);
     as1.setEnabled(true);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setTexture(
         TextureManager.loadTexture(
         LensFlare.class.getClassLoader().getResource(
@@ -213,7 +213,7 @@ public class LensFlare extends Node {
     ts.setEnabled(true);
     ts.apply();
 
-    TextureState ts2 = display.getRenderer().getTextureState();
+    TextureState ts2 = display.getRenderer().createTextureState();
     ts2.setTexture(
         TextureManager.loadTexture(
         LensFlare.class.getClassLoader().getResource(
@@ -224,7 +224,7 @@ public class LensFlare extends Node {
     ts2.setEnabled(true);
     ts2.apply();
 
-    TextureState ts3 = display.getRenderer().getTextureState();
+    TextureState ts3 = display.getRenderer().createTextureState();
     ts3.setTexture(
         TextureManager.loadTexture(
         LensFlare.class.getClassLoader().getResource(
@@ -235,7 +235,7 @@ public class LensFlare extends Node {
     ts3.setEnabled(true);
     ts3.apply();
 
-    TextureState ts4 = display.getRenderer().getTextureState();
+    TextureState ts4 = display.getRenderer().createTextureState();
     ts4.setTexture(
         TextureManager.loadTexture(
         LensFlare.class.getClassLoader().getResource(

@@ -53,7 +53,7 @@ import com.jme.system.JmeException;
  * Culling
  *
  * @author Mark Powell
- * @version $Id: TestMilestone1.java,v 1.5 2004-04-22 22:27:37 renanse Exp $
+ * @version $Id: TestMilestone1.java,v 1.6 2004-08-14 00:50:03 cep21 Exp $
  */
 public class TestMilestone1 extends BaseGame {
     private Node scene;
@@ -89,7 +89,7 @@ public class TestMilestone1 extends BaseGame {
             display.createWindow(properties.getWidth(), properties.getHeight(),
                                 properties.getDepth(), properties.getFreq(),
                                 properties.getFullscreen());
-            cam = display.getRenderer().getCamera(properties.getWidth(),
+            cam = display.getRenderer().createCamera(properties.getWidth(),
                                 properties.getHeight());
 
         } catch (JmeException e) {

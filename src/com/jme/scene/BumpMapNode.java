@@ -73,9 +73,9 @@ public class BumpMapNode extends Node {
 		this.forceCullObjects = objects.isForceCulled();
 
 		textureState = DisplaySystem.getDisplaySystem().getRenderer()
-				.getTextureState();
+				.createTextureState();
 		textureStateModulated = DisplaySystem.getDisplaySystem().getRenderer()
-				.getTextureState();
+				.createTextureState();
 
 		normalMap.setApply(Texture.AM_COMBINE);
 		normalMap.setCombineFuncRGB(Texture.ACF_DOT3_RGB);
@@ -108,7 +108,7 @@ public class BumpMapNode extends Node {
 		textureStateModulated.setTexture(texture2, 2);
 
 		alphaState = DisplaySystem.getDisplaySystem().getRenderer()
-				.getAlphaState();
+				.createAlphaState();
 		alphaState.setBlendEnabled(true);
 		alphaState.setTestEnabled(false);
 		alphaState.setSrcFunction(AlphaState.SB_DST_COLOR);

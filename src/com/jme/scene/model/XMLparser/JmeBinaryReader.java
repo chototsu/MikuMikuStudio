@@ -528,7 +528,7 @@ public class JmeBinaryReader {
     }
 
     private Object buildCullState(HashMap attributes) {
-        CullState cs=renderer.getCullState();
+        CullState cs=renderer.createCullState();
         cs.setEnabled(true);
         String state=(String) attributes.get("cull");
         if ("none".equals(state))
@@ -560,7 +560,7 @@ public class JmeBinaryReader {
     }
 
     private WireframeState buildWireState(HashMap attributes) {
-        WireframeState ws=renderer.getWireframeState();
+        WireframeState ws=renderer.createWireframeState();
         ws.setFace(((Integer)attributes.get("facetype")).intValue());
         ws.setLineWidth(((Float)attributes.get("width")).floatValue());
         ws.setEnabled(true);
@@ -578,7 +578,7 @@ public class JmeBinaryReader {
     }
 
     private LightState buildLightState(HashMap attributes) {
-        LightState ls=renderer.getLightState();
+        LightState ls=renderer.createLightState();
         ls.setEnabled(true);
         return ls;
     }
@@ -620,7 +620,7 @@ public class JmeBinaryReader {
      * @return The new texture
      */
     private TextureState buildTexture(HashMap atts){
-        TextureState t=renderer.getTextureState();
+        TextureState t=renderer.createTextureState();
         try {
             Texture p=null;
             if (atts.get("URL")!=null && !atts.get("URL").equals("null")){
@@ -681,7 +681,7 @@ public class JmeBinaryReader {
      * @return A new material state
      */
     private MaterialState buildMaterial(HashMap atts) {
-        MaterialState m=renderer.getMaterialState();
+        MaterialState m=renderer.createMaterialState();
         m.setAlpha(((Float)atts.get("alpha")).floatValue());
         m.setAmbient((ColorRGBA) atts.get("ambient"));
         m.setDiffuse((ColorRGBA) atts.get("diffuse"));

@@ -394,7 +394,7 @@ public class TestWidgetImage extends BaseGame {
         ColorRGBA background = new ColorRGBA(.5f, .5f, .5f, 1);
         display.getRenderer().setBackgroundColor(background);
 
-        cam = display.getRenderer().getCamera(display.getWidth(), display.getHeight());
+        cam = display.getRenderer().createCamera(display.getWidth(), display.getHeight());
 
         display.getRenderer().setCamera(cam);
 

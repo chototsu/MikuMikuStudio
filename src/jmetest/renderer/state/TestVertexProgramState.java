@@ -89,14 +89,14 @@ public class TestVertexProgramState extends SimpleGame {
 
     private Torus createShadedTorus() {
         //Load the vertex program from a file and bind it to a render state
-        VertexProgramState vp = display.getRenderer().getVertexProgramState();
+        VertexProgramState vp = display.getRenderer().createVertexProgramState();
         vp.setParameter(lightPosition, 8);
         vp.load(TestVertexProgramState.class.getClassLoader().getResource(
                 "jmetest/data/images/celshaderARB.vp"));
         vp.setEnabled(true);
 
         //Bind a 1-dimensional luminance texture for use by the vertex program
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(TextureManager.loadTexture(
                 TestVertexProgramState.class.getClassLoader().getResource(
@@ -112,11 +112,11 @@ public class TestVertexProgramState extends SimpleGame {
     }
 
     private Torus createOutlineTorus() {
-        CullState cs = display.getRenderer().getCullState();
+        CullState cs = display.getRenderer().createCullState();
         cs.setCullMode(CullState.CS_FRONT);
         cs.setEnabled(true);
 
-        WireframeState ws = display.getRenderer().getWireframeState();
+        WireframeState ws = display.getRenderer().createWireframeState();
         ws.setLineWidth(6.0f);
         ws.setFace(WireframeState.WS_FRONT);
         ws.setEnabled(true);

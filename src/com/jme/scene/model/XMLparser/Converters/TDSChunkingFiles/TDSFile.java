@@ -82,7 +82,7 @@ public class TDSFile extends ChunkerClass{
         }
         for (int i=0;i<spatialLights.size();i++){
             if (ls==null){
-                    ls=DisplaySystem.getDisplaySystem().getRenderer().getLightState();
+                    ls=DisplaySystem.getDisplaySystem().getRenderer().createLightState();
                     ls.setEnabled(true);
             }
             ls.attach((Light) spatialLights.get(i));

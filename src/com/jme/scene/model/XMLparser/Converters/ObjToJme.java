@@ -251,12 +251,12 @@ public class ObjToJme extends FormatConverter{
 
     private class MaterialGrouping{
         public MaterialGrouping(){
-            m=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
+            m=DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
             m.setAmbient(new ColorRGBA(.2f,.2f,.2f,1));
             m.setDiffuse(new ColorRGBA(.8f,.8f,.8f,1));
             m.setSpecular(ColorRGBA.white);
             m.setEnabled(true);
-            ts=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+            ts=DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
         }
         MaterialState m;
         TextureState ts;

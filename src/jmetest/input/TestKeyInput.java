@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.5 2004-04-22 22:27:33 renanse Exp $
+ * @version $Id: TestKeyInput.java,v 1.6 2004-08-14 00:50:03 cep21 Exp $
  */
 public class TestKeyInput extends BaseGame {
     private Text text;
@@ -103,7 +103,7 @@ public class TestKeyInput extends BaseGame {
                     properties.getFreq(),
                     properties.getFullscreen());
 
-            cam = display.getRenderer().getCamera(properties.getWidth(), properties.getHeight());
+            cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
         } catch (JmeException e) {
             e.printStackTrace();
             System.exit(1);
@@ -132,7 +132,7 @@ public class TestKeyInput extends BaseGame {
     protected void initGame() {
         text = new Text("Text Label", "Press 0 and/or 1");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
@@ -141,7 +141,7 @@ public class TestKeyInput extends BaseGame {
                 Texture.FM_LINEAR,
                 true));
         text.setRenderState(ts);
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);

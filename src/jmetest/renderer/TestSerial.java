@@ -215,7 +215,7 @@ public class TestSerial extends SimpleGame{
     }
 
     private ByteArrayOutputStream getFreaky() throws IOException {
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
@@ -262,7 +262,7 @@ public class TestSerial extends SimpleGame{
         Vector3f min = new Vector3f( -0.1f, -0.1f, -0.1f);
         Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
 
-        ZBufferState buf = display.getRenderer().getZBufferState();
+        ZBufferState buf = display.getRenderer().createZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -302,7 +302,7 @@ public class TestSerial extends SimpleGame{
         cc.setUpVector(up);
         cc.setSpeed(0.5f);
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(

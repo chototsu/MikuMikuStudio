@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestText</code> draws text using the scenegraph.
  * @author Mark Powell
- * @version $Id: TestText.java,v 1.8 2004-04-22 22:27:42 renanse Exp $
+ * @version $Id: TestText.java,v 1.9 2004-08-14 00:50:07 cep21 Exp $
  */
 public class TestText extends BaseGame {
 
@@ -87,7 +87,7 @@ public class TestText extends BaseGame {
             display.createWindow(properties.getWidth(), properties.getHeight(),
                     properties.getDepth(), properties.getFreq(), properties.getFullscreen());
             display.setTitle("Test Text");
-            cam = display.getRenderer().getCamera(properties.getWidth(), properties.getHeight());
+            cam = display.getRenderer().createCamera(properties.getWidth(), properties.getHeight());
         } catch (JmeException e) {
             e.printStackTrace();
             System.exit(1);
@@ -110,7 +110,7 @@ public class TestText extends BaseGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        AlphaState as = display.getRenderer().getAlphaState();
+        AlphaState as = display.getRenderer().createAlphaState();
         as.setBlendEnabled(true);
         as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as.setDstFunction(AlphaState.DB_ONE);
@@ -118,7 +118,7 @@ public class TestText extends BaseGame {
         as.setTestFunction(AlphaState.TF_GREATER);
         as.setEnabled(true);
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(
             TextureManager.loadTexture(
                 TestText.class.getClassLoader().getResource("jmetest/data/font/font.png"),

@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestAnisotropic</code>
  * @author Joshua Slack
- * @version $Id: TestAnisotropic.java,v 1.3 2004-06-30 19:32:29 renanse Exp $
+ * @version $Id: TestAnisotropic.java,v 1.4 2004-08-14 00:50:05 cep21 Exp $
  */
 public class TestAnisotropic extends SimpleGame {
 
@@ -106,7 +106,7 @@ public class TestAnisotropic extends SimpleGame {
 
     rootNode.attachChild(q);
 
-    ts = display.getRenderer().getTextureState();
+    ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     regTexture =
         TextureManager.loadTexture(

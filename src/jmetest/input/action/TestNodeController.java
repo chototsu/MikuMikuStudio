@@ -50,7 +50,7 @@ import com.jme.system.JmeException;
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.6 2004-04-22 22:27:35 renanse Exp $
+ * @version $Id: TestNodeController.java,v 1.7 2004-08-14 00:50:02 cep21 Exp $
  */
 public class TestNodeController extends BaseGame {
     private Node scene;
@@ -93,7 +93,7 @@ public class TestNodeController extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 

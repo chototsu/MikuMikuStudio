@@ -57,7 +57,7 @@ import com.jme.renderer.Renderer;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.19 2004-06-23 19:15:58 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.20 2004-08-14 00:50:07 cep21 Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -157,7 +157,7 @@ public class TestScenegraph extends SimpleGame {
 
         Vector3f min = new Vector3f(-5, -5, -5);
         Vector3f max = new Vector3f(5, 5, 5);
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);
@@ -179,7 +179,7 @@ public class TestScenegraph extends SimpleGame {
 
         scene = new Node("3D Scene Node");
 
-        CullState cs = display.getRenderer().getCullState();
+        CullState cs = display.getRenderer().createCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
         rootNode.setRenderState(cs);
@@ -248,7 +248,7 @@ public class TestScenegraph extends SimpleGame {
         Line line = new Line("Connection", lines, null, null, null);
         line.setLightCombineMode(LightState.OFF);
 
-        ts = display.getRenderer().getTextureState();
+        ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(
                 TestScenegraph.class.getClassLoader().getResource(
@@ -256,14 +256,14 @@ public class TestScenegraph extends SimpleGame {
                 Texture.FM_LINEAR, true);
         ts.setTexture(t1);
 
-        ts2 = display.getRenderer().getTextureState();
+        ts2 = display.getRenderer().createTextureState();
         ts2.setEnabled(true);
         Texture t2 = TextureManager.loadTexture(TestScenegraph.class
                 .getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
                 Texture.MM_LINEAR, Texture.FM_LINEAR, true);
         ts2.setTexture(t2);
 
-        ts3 = display.getRenderer().getTextureState();
+        ts3 = display.getRenderer().createTextureState();
         ts3.setEnabled(true);
         Texture t3 = TextureManager.loadTexture(TestScenegraph.class
                 .getClassLoader().getResource(

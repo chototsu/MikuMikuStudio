@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.7 2004-06-26 00:18:01 renanse Exp $
+ * @version $Id: TestTorus.java,v 1.8 2004-08-14 00:50:07 cep21 Exp $
  */
 public class TestTorus extends BaseGame {
 	private Camera cam;
@@ -129,7 +129,7 @@ public class TestTorus extends BaseGame {
 				properties.getFreq(),
 				properties.getFullscreen());
 			cam =
-				display.getRenderer().getCamera(
+				display.getRenderer().createCamera(
 					properties.getWidth(),
 					properties.getHeight());
 
@@ -173,7 +173,7 @@ public class TestTorus extends BaseGame {
 
 		scene.attachChild(t);
 
-		TextureState ts = display.getRenderer().getTextureState();
+		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(
 			TextureManager.loadTexture(
@@ -185,7 +185,7 @@ public class TestTorus extends BaseGame {
 
 		scene.setRenderState(ts);
 
-		ZBufferState buf = display.getRenderer().getZBufferState();
+		ZBufferState buf = display.getRenderer().createZBufferState();
 		buf.setEnabled(true);
 		buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -203,7 +203,7 @@ public class TestTorus extends BaseGame {
 		am2.setLocation(new Vector3f(-250, 10, 0));
 		am2.setAngle(1);
 
-		AlphaState as1 = display.getRenderer().getAlphaState();
+		AlphaState as1 = display.getRenderer().createAlphaState();
 		as1.setBlendEnabled(true);
 		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
 		as1.setDstFunction(AlphaState.DB_ONE);
@@ -211,7 +211,7 @@ public class TestTorus extends BaseGame {
 		as1.setTestFunction(AlphaState.TF_GREATER);
 		as1.setEnabled(true);
 
-		TextureState font = display.getRenderer().getTextureState();
+		TextureState font = display.getRenderer().createTextureState();
 		font.setTexture(
 			TextureManager.loadTexture(
 				TestManyChildren.class.getClassLoader().getResource(
@@ -231,7 +231,7 @@ public class TestTorus extends BaseGame {
 		//dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
 		dr.setDirection(new Vector3f(150, 0, 150));
 
-		LightState state = display.getRenderer().getLightState();
+		LightState state = display.getRenderer().createLightState();
 		state.setEnabled(true);
 		state.attach(am);
 		state.attach(dr);

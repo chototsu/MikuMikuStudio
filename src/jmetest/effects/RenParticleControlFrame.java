@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.31 2004-06-29 23:08:37 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.32 2004-08-14 00:50:00 cep21 Exp $
  *
  */
 
@@ -1311,7 +1311,7 @@ public class RenParticleControlFrame extends JFrame {
     }
     code.append("ParticleManager manager = new ParticleManager(" +
                 RenParticleEditor.manager.getParticlesNumber() +
-                ", display.getRenderer().getCamera());\n");
+                ", display.getRenderer().etCamera());\n");
     code.append("manager.setGravityForce(" +
                 codeString(RenParticleEditor.manager.getGravityForce()) +
                 ");\n");
@@ -1405,7 +1405,7 @@ public class RenParticleControlFrame extends JFrame {
 
       RenParticleEditor.root.clearRenderState(RenderState.RS_TEXTURE);
       TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().
-          getTextureState();
+              createTextureState();
       ts.setTexture(
           TextureManager.loadTexture(
           textFile.getAbsolutePath(),

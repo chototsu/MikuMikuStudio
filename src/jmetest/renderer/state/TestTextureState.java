@@ -97,7 +97,7 @@ public class TestTextureState extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -216,7 +216,7 @@ public class TestTextureState extends BaseGame {
         scene.attachChild(t2);
         scene.setLocalTranslation(new Vector3f(0, -25, 0));
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(

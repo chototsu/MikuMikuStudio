@@ -45,7 +45,7 @@ import com.jme.math.FastMath;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.10 2004-04-23 04:26:46 renanse Exp $
+ * @version $Id: TestMultitexture.java,v 1.11 2004-08-14 00:50:06 cep21 Exp $
  */
 public class TestMultitexture extends SimpleGame {
   private TriMesh t;
@@ -104,7 +104,7 @@ public class TestMultitexture extends SimpleGame {
 
     rootNode.attachChild(t);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     Texture t1 = TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(

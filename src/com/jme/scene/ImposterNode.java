@@ -47,7 +47,7 @@ import com.jme.renderer.Camera;
 /**
  * <code>ImposterNode</code>
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.9 2004-04-23 05:06:43 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.10 2004-08-14 00:49:56 cep21 Exp $
  */
 public class ImposterNode extends Node {
   private TextureRenderer tRenderer;
@@ -284,14 +284,14 @@ public class ImposterNode extends Node {
     else
       texture = tRenderer.setupTexture();
     TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().
-        getTextureState();
+            createTextureState();
     ts.setEnabled(true);
     ts.setTexture(texture, 0);
     standIn.setRenderState(ts);
 
     // Add a blending mode...  This is so the background of the texture is transparent.
     AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().
-        getAlphaState();
+            createAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);

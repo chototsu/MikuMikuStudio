@@ -34,74 +34,63 @@ class DummyDisplaySystem extends DisplaySystem{
             public void setCamera(Camera camera) {}
             public Camera getCamera() {return null;}
             public Camera createCamera(int width, int height) {return null;}
-
-            public Camera getCamera(int width, int height) {
-                return null;
-            }
-
+            public Camera getCamera(int width, int height) {return createCamera(width,height);}
             public AlphaState createAlphaState() {
                 return new AlphaState(){
                     public void apply() {}
                 };
             }
-
-            public AlphaState getAlphaState() {return null;}
+            public AlphaState getAlphaState() {return createAlphaState();}
 
             public AttributeState createAttributeState() {
                 return new AttributeState(){
                     public void apply() {}
                 };
             }
-
-            public AttributeState getAttributeState() {return null;}
+            public AttributeState getAttributeState() {return createAttributeState();}
 
             public CullState createCullState() {
                 return new CullState(){
                     public void apply() {}
                 };
             }
-
-            public CullState getCullState() {return null;}
+            public CullState getCullState() {return createCullState();}
 
             public DitherState createDitherState() {
                 return new DitherState(){
                     public void apply() {
                     }
                 };}
-
-            public DitherState getDitherState() {return null;}
+            public DitherState getDitherState() {return createDitherState();}
 
             public FogState createFogState() {
                 return new FogState(){
                     public void apply() {}
                 };
             }
-
-            public FogState getFogState() {return null;}
+            public FogState getFogState() {return createFogState();}
 
             public LightState createLightState() {
                 return new LightState(){
                     public void apply() {}
                 };
             }
-
-            public LightState getLightState() {return null;}
+            public LightState getLightState() {return createLightState();}
 
             public MaterialState createMaterialState() {
                 return new MaterialState(){
                     public void apply() {}
                 };
             }
-
-            public MaterialState getMaterialState() {return null;}
+            public MaterialState getMaterialState() {return createMaterialState();}
 
             public ShadeState createShadeState() {
                 return new ShadeState(){
                     public void apply(){}
                 };
             }
+            public ShadeState getShadeState() {return createShadeState();}
 
-            public ShadeState getShadeState() {return null;}
             class TextureStateN extends TextureState{
                 TextureStateN(){
                     numTexUnits=1;
@@ -114,23 +103,21 @@ class DummyDisplaySystem extends DisplaySystem{
                 return new TextureStateN();
             }
 
-            public TextureState getTextureState() {return null;}
+            public TextureState getTextureState() {return createTextureState();}
 
             public WireframeState createWireframeState() {
                 return new WireframeState(){
                     public void apply(){}
                 };
             }
-
-            public WireframeState getWireframeState() {return null;}
+            public WireframeState getWireframeState() {return createWireframeState();}
 
             public ZBufferState createZBufferState() {
                 return new ZBufferState(){
                     public void apply(){}
                 };
             }
-
-            public ZBufferState getZBufferState() {return null;}
+            public ZBufferState getZBufferState() {return createZBufferState();}
 
             public VertexProgramState createVertexProgramState() {
                 return new VertexProgramState(){
@@ -139,16 +126,14 @@ class DummyDisplaySystem extends DisplaySystem{
                     public void apply() {}
                 };
             }
-
-            public VertexProgramState getVertexProgramState() {return null;}
+            public VertexProgramState getVertexProgramState() {return createVertexProgramState();}
 
             public StencilState createStencilState() {
                 return new StencilState(){
                     public void apply() {}
                 };
             }
-
-            public StencilState getStencilState() {return null;}
+            public StencilState getStencilState() {return createStencilState();}
 
             public void enableStatistics(boolean value){}
             public void clearStatistics() {}

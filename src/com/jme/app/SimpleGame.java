@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.28 2004-07-29 07:13:05 cep21 Exp $
+ * @version $Id: SimpleGame.java,v 1.29 2004-08-14 00:49:55 cep21 Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -182,7 +182,7 @@ public abstract class SimpleGame extends BaseGame {
          /** Create a camera specific to the DisplaySystem that works with
           * the display's width and height*/
       cam =
-          display.getRenderer().getCamera(
+          display.getRenderer().createCamera(
           display.getWidth(),
           display.getHeight());
 
@@ -254,12 +254,12 @@ public abstract class SimpleGame extends BaseGame {
 
     /** Create a wirestate to toggle on and off.  Starts disabled with
      * default width of 1 pixel. */
-    wireState = display.getRenderer().getWireframeState();
+    wireState = display.getRenderer().createWireframeState();
     wireState.setEnabled(false);
     rootNode.setRenderState(wireState);
 
     /** Create a ZBuffer to display pixels closest to the camera above farther ones.  */
-    ZBufferState buf = display.getRenderer().getZBufferState();
+    ZBufferState buf = display.getRenderer().createZBufferState();
     buf.setEnabled(true);
     buf.setFunction(ZBufferState.CF_LEQUAL);
 
@@ -268,7 +268,7 @@ public abstract class SimpleGame extends BaseGame {
     // -- FPS DISPLAY
     // First setup alpha state
       /** This allows correct blending of text and what is already rendered below it*/
-    AlphaState as1 = display.getRenderer().getAlphaState();
+    AlphaState as1 = display.getRenderer().createAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as1.setDstFunction(AlphaState.DB_ONE);
@@ -277,7 +277,7 @@ public abstract class SimpleGame extends BaseGame {
     as1.setEnabled(true);
 
     // Now setup font texture
-    TextureState font = display.getRenderer().getTextureState();
+    TextureState font = display.getRenderer().createTextureState();
       /** The texture is loaded from fontLocation */
     font.setTexture(
         TextureManager.loadTexture(
@@ -310,7 +310,7 @@ public abstract class SimpleGame extends BaseGame {
     light.setEnabled(true);
 
       /** Attach the light to a lightState and the lightState to rootNode. */
-    lightState = display.getRenderer().getLightState();
+    lightState = display.getRenderer().createLightState();
     lightState.setEnabled(true);
     lightState.attach(light);
     rootNode.setRenderState(lightState);

@@ -97,7 +97,7 @@ public class TestAlphaState extends BaseGame {
                 properties.getFreq(),
                 properties.getFullscreen());
             cam =
-                display.getRenderer().getCamera(
+                display.getRenderer().createCamera(
                     properties.getWidth(),
                     properties.getHeight());
 
@@ -206,7 +206,7 @@ public class TestAlphaState extends BaseGame {
         scene.attachChild(t2);
         scene.setLocalTranslation(new Vector3f(0,-25,0));
 
-        AlphaState as1 = display.getRenderer().getAlphaState();
+        AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);

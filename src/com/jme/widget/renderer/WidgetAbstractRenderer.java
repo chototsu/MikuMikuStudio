@@ -45,7 +45,7 @@ import com.jme.widget.WidgetRenderer;
 /**
  * <code>WidgetAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetAbstractRenderer.java,v 1.4 2004-04-22 22:27:23 renanse Exp $
+ * @version $Id: WidgetAbstractRenderer.java,v 1.5 2004-08-14 00:49:59 cep21 Exp $
  */
 public abstract class WidgetAbstractRenderer implements WidgetRenderer {
 
@@ -69,8 +69,8 @@ public abstract class WidgetAbstractRenderer implements WidgetRenderer {
         renderer = DisplaySystem.getDisplaySystem().getRenderer();
 
         if (textureState == null) {
-            textureState = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
-            alphaState = DisplaySystem.getDisplaySystem().getRenderer().getAlphaState();
+            textureState = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+            alphaState = DisplaySystem.getDisplaySystem().getRenderer().createAlphaState();
 
             alphaState.setBlendEnabled(true);
             URL imageUrl = WidgetAbstractRenderer.class.getClassLoader().getResource(IMAGE_DIRECTORY + "DefaultLookAndFeel.png");

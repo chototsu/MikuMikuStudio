@@ -52,7 +52,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainTrees.java,v 1.4 2004-07-08 20:34:59 renanse Exp $
+ * @version $Id: TestTerrainTrees.java,v 1.5 2004-08-14 00:50:08 cep21 Exp $
  */
 public class TestTerrainTrees extends SimpleGame {
 
@@ -80,11 +80,11 @@ public class TestTerrainTrees extends SimpleGame {
         cam.setLocation(new Vector3f(64 * 5, 250, 64 * 5));
         cam.update();
 
-        FogState fs = display.getRenderer().getFogState();
+        FogState fs = display.getRenderer().createFogState();
         fs.setEnabled(false);
         rootNode.setRenderState(fs);
 
-        CullState cs = display.getRenderer().getCullState();
+        CullState cs = display.getRenderer().createCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
 
@@ -114,7 +114,7 @@ public class TestTerrainTrees extends SimpleGame {
 
         pt.createTexture(512);
 
-        TextureState ts = display.getRenderer().getTextureState();
+        TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
                 Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true, true);
@@ -145,7 +145,7 @@ public class TestTerrainTrees extends SimpleGame {
         t2.setCombineScaleRGB(1.0f);
         rootNode.setRenderState(ts);
 
-        TextureState treeTex = display.getRenderer().getTextureState();
+        TextureState treeTex = display.getRenderer().createTextureState();
         treeTex.setEnabled(true);
         Texture tr = TextureManager.loadTexture(
                 TestTerrainTrees.class.getClassLoader().getResource(

@@ -92,7 +92,7 @@ public class TestRigidSmoker extends SimpleGame {
     smokeNode.attachChild(camBox);
     rootNode.attachChild(smokeNode);
 
-    AlphaState as1 = display.getRenderer().getAlphaState();
+    AlphaState as1 = display.getRenderer().createAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as1.setDstFunction(AlphaState.DB_ONE);
@@ -100,7 +100,7 @@ public class TestRigidSmoker extends SimpleGame {
     as1.setTestFunction(AlphaState.TF_GREATER);
     as1.setEnabled(true);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setTexture(
         TextureManager.loadTexture(
         TestRigidSmoker.class.getClassLoader().getResource(
@@ -126,7 +126,7 @@ public class TestRigidSmoker extends SimpleGame {
     manager.warmUp(60);
     manager.getParticles().addController(manager);
 
-    ZBufferState zbuf = display.getRenderer().getZBufferState();
+    ZBufferState zbuf = display.getRenderer().createZBufferState();
     zbuf.setWritable(false);
     zbuf.setEnabled(true);
     zbuf.setFunction(ZBufferState.CF_LEQUAL);

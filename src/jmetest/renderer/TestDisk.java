@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestDisk.java,v 1.8 2004-04-23 02:57:24 renanse Exp $
+ * @version $Id: TestDisk.java,v 1.9 2004-08-14 00:50:06 cep21 Exp $
  */
 public class TestDisk extends SimpleGame {
 
@@ -92,7 +92,7 @@ public class TestDisk extends SimpleGame {
 
     rootNode.attachChild(t);
 
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(
