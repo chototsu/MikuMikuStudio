@@ -209,7 +209,7 @@ public class XMLWriter {
     }
 
     private void appendColorRGBA(ColorRGBA theColor) throws IOException {
-        currentLine.append(Float.toString(theColor.r)).append(" ").append(Float.toString(theColor.g)).append(" ").append(Float.toString(theColor.b)).append(" ").append(Float.toString(theColor.a)).append(" ");
+        currentLine.append(Float.toString(theColor.r)).append(" ").append(Float.toString(theColor.g)).append(" ").append(Float.toString(theColor.b)).append(" ").append(Float.toString(theColor.a)).append(' ');
     }
 
     private void writeVec3fArray(Vector3f[] vecs) throws IOException {
@@ -251,7 +251,7 @@ public class XMLWriter {
     private void writeHeader() throws IOException {
         currentLine.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
         writeLine();
-        currentLine.append("<scene xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"\">\n");
+        currentLine.append("<scene xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"\">");
         writeLine();
     }
 
