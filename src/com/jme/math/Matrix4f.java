@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * convinience methods for creating the matrix from a multitude of sources.
  *
  * @author Mark Powell
- * @version $Id: Matrix4f.java,v 1.4 2004-04-22 22:26:39 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.5 2004-05-24 18:20:29 renanse Exp $
  */
 public class Matrix4f {
 	private float matrix[][];
@@ -420,15 +420,15 @@ public class Matrix4f {
 		float angle;
 		float sr, sp, sy, cr, cp, cy;
 
-		angle = (float) (angles.z * (Math.PI * 2 / 360));
-		sy = (float) java.lang.Math.sin(angle);
-		cy = (float) java.lang.Math.cos(angle);
-		angle = (float) (angles.y * (Math.PI * 2 / 360));
-		sp = (float) java.lang.Math.sin(angle);
-		cp = (float) java.lang.Math.cos(angle);
-		angle = (float) (angles.x * (Math.PI * 2 / 360));
-		sr = (float) java.lang.Math.sin(angle);
-		cr = (float) java.lang.Math.cos(angle);
+		angle = (angles.z * FastMath.RAD_TO_DEG);
+		sy = FastMath.sin(angle);
+		cy = FastMath.cos(angle);
+		angle = (angles.y * FastMath.RAD_TO_DEG);
+		sp = FastMath.sin(angle);
+		cp = FastMath.cos(angle);
+		angle = (angles.x * FastMath.RAD_TO_DEG);
+		sr = FastMath.sin(angle);
+		cr = FastMath.cos(angle);
 
 		// matrix = (Z * Y) * X
 		matrix[0][0] = cp * cy;
@@ -481,12 +481,12 @@ public class Matrix4f {
 		if (angles.length != 3) {
 			throw new JmeException("Angles must be of size 3.");
 		}
-		double cr = Math.cos(angles[0]);
-		double sr = Math.sin(angles[0]);
-		double cp = Math.cos(angles[1]);
-		double sp = Math.sin(angles[1]);
-		double cy = Math.cos(angles[2]);
-		double sy = Math.sin(angles[2]);
+		double cr = FastMath.cos(angles[0]);
+		double sr = FastMath.sin(angles[0]);
+		double cp = FastMath.cos(angles[1]);
+		double sp = FastMath.sin(angles[1]);
+		double cy = FastMath.cos(angles[2]);
+		double sy = FastMath.sin(angles[2]);
 
 		matrix[0][0] = (float) (cp * cy);
 		matrix[1][0] = (float) (cp * sy);
@@ -515,9 +515,9 @@ public class Matrix4f {
 			throw new JmeException("Angles must be of size 3.");
 		}
 		float vec[] = new float[3];
-		vec[0] = (float) (angles[0] * 180.0 / Math.PI);
-		vec[1] = (float) (angles[1] * 180.0 / Math.PI);
-		vec[2] = (float) (angles[2] * 180.0 / Math.PI);
+		vec[0] = (angles[0] * FastMath.RAD_TO_DEG);
+		vec[1] = (angles[1] * FastMath.RAD_TO_DEG);
+		vec[2] = (angles[2] * FastMath.RAD_TO_DEG);
 		setInverseRotationRadians(vec);
 	}
 

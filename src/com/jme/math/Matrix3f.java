@@ -41,10 +41,10 @@ import com.jme.util.LoggingSystem;
  * internally and is acessible via the get and set methods. Convenience methods
  * are used for matrix operations as well as generating a matrix from a given
  * set of values.
- * 
+ *
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.20 2004-05-23 21:23:33 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.21 2004-05-24 18:20:28 renanse Exp $
  */
 public class Matrix3f {
 	public float m00, m01, m02;
@@ -54,7 +54,7 @@ public class Matrix3f {
 	/**
 	 * Constructor instantiates a new <code>Matrix3f</code> object. The
 	 * initial values for the matrix is that of the identity matrix.
-	 *  
+	 *
 	 */
 	public Matrix3f() {
 		loadIdentity();
@@ -77,7 +77,7 @@ public class Matrix3f {
 	/**
 	 * Copy constructor that creates a new <code>Matrix3f</code> object that
 	 * is the same as the provided matrix.
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix to copy.
 	 */
@@ -89,7 +89,7 @@ public class Matrix3f {
 	 * <code>copy</code> transfers the contents of a given matrix to this
 	 * matrix. If a null matrix is supplied, this matrix is set to the identity
 	 * matrix.
-	 * 
+	 *
 	 * @param matrix
 	 *            the matrix to copy.
 	 */
@@ -113,7 +113,7 @@ public class Matrix3f {
 	 * <code>get</code> retrieves a value from the matrix at the given
 	 * position. If the position is invalid a <code>JmeException</code> is
 	 * thrown.
-	 * 
+	 *
 	 * @param i
 	 *            the row index.
 	 * @param j
@@ -154,7 +154,7 @@ public class Matrix3f {
 	/**
 	 * <code>getColumn</code> returns one of three columns specified by the
 	 * parameter. This column is returned as a <code>Vector3f</code> object.
-	 * 
+	 *
 	 * @param i
 	 *            the column to retrieve. Must be between 0 and 2.
 	 * @return the column specified by the index.
@@ -166,7 +166,7 @@ public class Matrix3f {
 	/**
 	 * <code>getColumn</code> returns one of three columns specified by the
 	 * parameter. This column is returned as a <code>Vector3f</code> object.
-	 * 
+	 *
 	 * @param i
 	 *            the column to retrieve. Must be between 0 and 2.
 	 * @param store
@@ -202,10 +202,10 @@ public class Matrix3f {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setColumn</code> sets a particular column of this matrix to that
 	 * represented by the provided vector.
-	 * 
+	 *
 	 * @param i
 	 *            the column to set.
 	 * @param column
@@ -245,7 +245,7 @@ public class Matrix3f {
 	 * <code>set</code> places a given value into the matrix at the given
 	 * position. If the position is invalid a <code>JmeException</code> is
 	 * thrown.
-	 * 
+	 *
 	 * @param i
 	 *            the row index.
 	 * @param j
@@ -287,10 +287,10 @@ public class Matrix3f {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>set</code> sets the values of the matrix to those supplied by the
 	 * 3x3 two dimenion array.
-	 * 
+	 *
 	 * @param matrix
 	 *            the new values of the matrix.
 	 */
@@ -312,7 +312,7 @@ public class Matrix3f {
 
 	/**
 	 * Recreate Matrix using the provided axis.
-	 * 
+	 *
 	 * @param uAxis
 	 *            Vector3f
 	 * @param vAxis
@@ -337,7 +337,7 @@ public class Matrix3f {
 	/**
 	 * <code>set</code> sets the values of this matrix from an array of
 	 * values;
-	 * 
+	 *
 	 * @param matrix
 	 *            the matrix to set the value to.
 	 */
@@ -358,11 +358,11 @@ public class Matrix3f {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>set</code> defines the values of the matrix based on a supplied
 	 * <code>Quaternion</code>. It should be noted that all previous values
 	 * will be overridden.
-	 * 
+	 *
 	 * @param quaternion
 	 *            the quaternion to create a rotational matrix from.
 	 */
@@ -393,7 +393,7 @@ public class Matrix3f {
 	/**
 	 * <code>loadIdentity</code> sets this matrix to the identity matrix.
 	 * Where all values are zero except those along the diagonal which are one.
-	 *  
+	 *
 	 */
 	public void loadIdentity() {
 		m01 = m02 = m10 = m12 = m20 = m21 = 0;
@@ -402,7 +402,7 @@ public class Matrix3f {
 
 	/**
 	 * <code>multiply</code> multiplies this matrix by a scalar.
-	 * 
+	 *
 	 * @param scalar
 	 *            the scalar to multiply this matrix by.
 	 */
@@ -422,7 +422,7 @@ public class Matrix3f {
 	 * <code>mult</code> multiplies this matrix by a given matrix. The result
 	 * matrix is returned as a new object. If the given matrix is null, a null
 	 * matrix is returned.
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix to multiply this matrix by.
 	 * @return the result matrix.
@@ -435,7 +435,7 @@ public class Matrix3f {
 	 * <code>mult</code> multiplies this matrix by a given matrix. The result
 	 * matrix is returned as a new object. If the given matrix is null, a null
 	 * matrix is returned.
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix to multiply this matrix by.
 	 * @param product
@@ -468,7 +468,7 @@ public class Matrix3f {
 	 * <code>mult</code> multiplies this matrix by a given
 	 * <code>Vector3f</code> object. The result vector is returned. If the
 	 * given vector is null, null will be returned.
-	 * 
+	 *
 	 * @param vec
 	 *            the vector to multiply this matrix by.
 	 * @return the result vector.
@@ -500,7 +500,7 @@ public class Matrix3f {
 
 	/**
 	 * <code>add</code> adds the values of a parameter matrix to this matrix.
-	 * 
+	 *
 	 * @param mat
 	 *            the matrix to add to this.
 	 */
@@ -517,10 +517,10 @@ public class Matrix3f {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>fromAxisAngle</code> creates a rotational matrix given an axis
 	 * and an angle. The angle is expected to be in radians.
-	 * 
+	 *
 	 * @param axis
 	 *            the axis to rotate about.
 	 * @param radian
@@ -528,8 +528,8 @@ public class Matrix3f {
 	 */
 	public void fromAxisAngle(Vector3f axis, float radian) {
 		Vector3f normAxis = axis.normalize();
-		float cos = (float) Math.cos(radian);
-		float sin = (float) Math.sin(radian);
+		float cos = FastMath.cos(radian);
+		float sin = FastMath.sin(radian);
 		float oneMinusCos = 1.0f - cos;
 		float x2 = normAxis.x * axis.x;
 		float y2 = normAxis.y * axis.y;
@@ -559,7 +559,7 @@ public class Matrix3f {
 	 * 1.0 0.0 0.0 <br>
 	 * 0.0 1.0 0.0 <br>
 	 * 0.0 0.0 1.0 <br>]<br>
-	 * 
+	 *
 	 * @return the string representation of this object.
 	 */
 	public String toString() {

@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.13 2004-05-24 16:44:48 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.14 2004-05-24 18:20:29 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -138,14 +138,14 @@ public class Quaternion {
         float angle;
         float sr, sp, sy, cr, cp, cy;
         angle = angles[2] * 0.5f;
-        sy = (float) Math.sin(angle);
-        cy = (float) Math.cos(angle);
+        sy = FastMath.sin(angle);
+        cy = FastMath.cos(angle);
         angle = angles[1] * 0.5f;
-        sp = (float) Math.sin(angle);
-        cp = (float) Math.cos(angle);
+        sp = FastMath.sin(angle);
+        cp = FastMath.cos(angle);
         angle = angles[0] * 0.5f;
-        sr = (float) Math.sin(angle);
-        cr = (float) Math.cos(angle);
+        sr = FastMath.sin(angle);
+        cr = FastMath.cos(angle);
 
         float crcp = cr * cp;
         float srsp = sr * sp;
@@ -166,25 +166,25 @@ public class Quaternion {
         float t = matrix.m00 + matrix.m11 + matrix.m22 + 1;
 
         if (t > 0f) {
-            float s = 0.5f / (float)Math.sqrt(t);
+            float s = 0.5f / FastMath.sqrt(t);
             w = 0.25f / s;
             x = ( matrix.m21 - matrix.m12 ) * s;
             y = ( matrix.m02 - matrix.m20 ) * s;
             z = ( matrix.m10 - matrix.m01 ) * s;
         } else if ((matrix.m00 > matrix.m11) && (matrix.m00 > matrix.m22)) {
-            float s = (float)Math.sqrt( 1.0f + matrix.m00 - matrix.m11 - matrix.m22 ) * 2;
+            float s = FastMath.sqrt( 1.0f + matrix.m00 - matrix.m11 - matrix.m22 ) * 2;
             x = 0.25f * s;
             y = (matrix.m01 + matrix.m10 ) / s;
             z = (matrix.m02 + matrix.m20 ) / s;
             w = (matrix.m12 - matrix.m21 ) / s;
         } else if (matrix.m11 > matrix.m22) {
-            float s = (float)Math.sqrt( 1.0f + matrix.m11 - matrix.m00 - matrix.m22 ) * 2;
+            float s = FastMath.sqrt( 1.0f + matrix.m11 - matrix.m00 - matrix.m22 ) * 2;
             x = (matrix.m01 + matrix.m10 ) / s;
             y = 0.25f * s;
             z = (matrix.m12 + matrix.m21 ) / s;
             w = (matrix.m02 - matrix.m20 ) / s;
         } else {
-            float s = (float)Math.sqrt( 1.0f + matrix.m22 - matrix.m00 - matrix.m11 ) * 2;
+            float s = FastMath.sqrt( 1.0f + matrix.m22 - matrix.m00 - matrix.m11 ) * 2;
             x = (matrix.m02 + matrix.m20 ) / s;
             y = (matrix.m12 + matrix.m21 ) / s;
             z = 0.25f * s;
@@ -296,8 +296,8 @@ public class Quaternion {
     public void fromAngleAxis(float angle, Vector3f axis) {
         Vector3f normAxis = axis.normalize();
         float halfAngle = 0.5f * angle;
-        float sin = (float) Math.sin(halfAngle);
-        w = (float) Math.cos(halfAngle);
+        float sin = FastMath.sin(halfAngle);
+        w = FastMath.cos(halfAngle);
         x = sin * normAxis.x;
         y = sin * normAxis.y;
         z = sin * normAxis.z;
@@ -309,7 +309,7 @@ public class Quaternion {
      * as following: The axis is provided as a parameter and built
      * by the method, the angle is returned as a float.
      * @param axis the object to contain the axis.
-     * @return the angle of rotation.
+     * @return the angle of rotation in degrees.
      */
     public float toAngleAxis(Vector3f axis) {
         float sqrLength = x * x + y * y + z * z;
@@ -320,13 +320,13 @@ public class Quaternion {
             axis.y = 0.0f;
             axis.z = 0.0f;
         } else {
-            angle = (float) (2.0 * FastMath.acos(w));
-            float invLength = (float) (1.0 / FastMath.sqrt(sqrLength));
+            angle = (2.0f * FastMath.acos(w));
+            float invLength = (1.0f / FastMath.sqrt(sqrLength));
             axis.x = x * invLength;
             axis.y = y * invLength;
             axis.z = z * invLength;
         }
-        angle = (float)(angle*180/Math.PI);
+        angle = (angle*FastMath.RAD_TO_DEG);
 
         return angle;
     }
@@ -369,8 +369,8 @@ public class Quaternion {
             float sinTheta = FastMath.sin(theta);
 
             // Calculate the scale for q1 and q2, according to the angle and it's sine value
-            scale0 = (float) Math.sin((1 - t) * theta) / sinTheta;
-            scale1 = (float) Math.sin((t * theta)) / sinTheta;
+            scale0 = FastMath.sin((1 - t) * theta) / sinTheta;
+            scale1 = FastMath.sin((t * theta)) / sinTheta;
         }
 
         // Calculate the x, y, z and w values for the quaternion by using a special
@@ -574,7 +574,7 @@ public class Quaternion {
     }
 
     public void normalize() {
-        double n = Math.sqrt(x*x + y*y + z*z + w*w);
+        double n = FastMath.sqrt(x*x + y*y + z*z + w*w);
         x /= n;
         y /= n;
         z /= n;
