@@ -37,8 +37,8 @@
 package com.jme.sound.scene.second;
 
 import com.jme.renderer.Camera;
-import com.jme.sound.second.ISoundRenderer;
-import com.jme.sound.second.SoundAPIController;
+import com.jme.sound.ISoundRenderer;
+import com.jme.sound.SoundAPIController;
 
 /**
  * @author Arman Ozcelik

@@ -36,9 +36,10 @@
  */
 package com.jme.sound.scene.second;
 
-import com.jme.sound.second.ISoundRenderer;
-import com.jme.sound.second.ISource;
-import com.jme.sound.second.SoundAPIController;
+import com.jme.sound.ISoundRenderer;
+import com.jme.sound.ISource;
+import com.jme.sound.SoundAPIController;
+import com.jme.sound.scene.SoundSpatial;
 
 
 /**

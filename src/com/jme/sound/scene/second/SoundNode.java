@@ -36,7 +36,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 
 
-import com.jme.sound.second.ISoundRenderer;
+import com.jme.sound.ISoundRenderer;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes. 
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: SoundNode.java,v 1.1 2004-01-25 18:47:33 Anakan Exp $
+ * @version $Id: SoundNode.java,v 1.2 2004-01-26 01:15:51 Anakan Exp $
  */
 public class SoundNode extends SoundSpatial{
     //List to hold the children.
