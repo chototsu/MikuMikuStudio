@@ -36,7 +36,6 @@ import com.jme.bounding.BoundingBox;
 import com.jme.effects.LensFlare;
 import com.jme.light.LightNode;
 import com.jme.light.PointLight;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
@@ -49,7 +48,7 @@ import com.jme.scene.state.RenderState;
  *  First crack at a lens flare for jme.  Notice that currently,
  *  it doesn't do occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.3 2004-04-30 17:29:46 mojomonkey Exp $
+ * @version $Id: TestLensFlare.java,v 1.4 2004-05-01 05:31:25 mojomonkey Exp $
  */
 public class TestLensFlare extends SimpleGame {
 

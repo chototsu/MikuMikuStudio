@@ -47,15 +47,12 @@ import com.jme.terrain.TerrainPage;
 import com.jme.terrain.util.FaultFractalHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
 import com.jme.util.TextureManager;
-import com.jme.scene.shape.Sphere;
-import com.jme.bounding.BoundingBox;
-import com.jme.math.FastMath;
 
 /**
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.14 2004-05-01 03:51:43 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.15 2004-05-01 05:31:27 mojomonkey Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -78,6 +75,12 @@ public class TestTerrainPage extends SimpleGame {
    * @see com.jme.app.SimpleGame#initGame()
    */
   protected void simpleInitGame() {
+      
+      DirectionalLight dl = new DirectionalLight();
+      dl.setDiffuse(new ColorRGBA(1.0f,1.0f,1.0f,1.0f));
+      dl.setDirection(new Vector3f(1,-0.5f,1));
+      dl.setEnabled(true);
+      lightState.attach(dl);
 
     camNode = new CameraNode("Camera Node", cam);
     camNode.setLocalTranslation(new Vector3f(0, 250, -20));
@@ -160,7 +163,7 @@ public class TestTerrainPage extends SimpleGame {
 
     FogState fs = display.getRenderer().getFogState();
     fs.setDensity(0.5f);
-    fs.setEnabled(false);
+    fs.setEnabled(true);
     fs.setColor(new ColorRGBA(0.5f, 0.5f, 0.5f, 0.5f));
     fs.setEnd(1000);
     fs.setStart(500);
@@ -168,23 +171,6 @@ public class TestTerrainPage extends SimpleGame {
     fs.setApplyFunction(FogState.AF_PER_VERTEX);
     rootNode.setRenderState(fs);
 
-    TextureState blah = display.getRenderer().getTextureState();
-    blah.setEnabled(true);
-    blah.setTexture(TextureManager.loadTexture(
-      TestTerrain.class.getClassLoader().getResource(
-      "jmetest/data/images/Monkey.jpg"),
-      Texture.MM_LINEAR,
-      Texture.MM_LINEAR, false));
-
-    for(int i = 0; i < 500; i++) {
-        Sphere s = new Sphere("Sphere" + i, 10, 10, 2);
-        s.setRenderState(blah);
-        float randX = ((FastMath.nextRandomFloat() * (heightMap.getSize()-1))-((heightMap.getSize()-1)>>1)) * terrainScale.x;
-        float randZ = ((FastMath.nextRandomFloat() * (heightMap.getSize()-1))-((heightMap.getSize()-1)>>1)) * terrainScale.z;
-        s.setLocalTranslation(new Vector3f(randX, tb.getHeight(randX, randZ), randZ));
-        s.setModelBound(new BoundingBox());
-        s.updateModelBound();
-        rootNode.attachChild(s);
-    }
+    
   }
 }
