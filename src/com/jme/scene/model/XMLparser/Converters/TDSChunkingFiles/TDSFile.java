@@ -6,8 +6,7 @@ import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.LightState;
-import com.jme.math.Vector3f;
-import com.jme.math.Vector2f;
+import com.jme.math.*;
 import com.jme.light.Light;
 import com.jme.light.SpotLight;
 import com.jme.light.PointLight;
@@ -68,11 +67,13 @@ public class TDSFile extends ChunkerClass{
 
     public Node buildScene() throws IOException {
         buildObject();
+        putTranslations();
         Node uberNode=new Node("TDS Scene");
         LightState ls=null;
         for (int i=0;i<spatialNodes.size();i++){
             if (spatialNodes.get(i) instanceof Spatial){
-                uberNode.attachChild((Spatial) spatialNodes.get(i));
+                Spatial toAttach=(Spatial)spatialNodes.get(i);
+                uberNode.attachChild(toAttach);
             } else if (spatialNodes.get(i) instanceof Light){
                 if (ls==null){
                     ls=DisplaySystem.getDisplaySystem().getRenderer().getLightState();
@@ -86,6 +87,27 @@ public class TDSFile extends ChunkerClass{
         return uberNode;
     }
 
+    private void putTranslations() {
+
+        int count=0;
+        for (int i=0;i<spatialNodes.size();i++)
+            if (spatialNodes.get(i) instanceof Spatial)
+                count++;
+        for (int i=0;i<spatialNodes.size();i++){
+            if (spatialNodes.get(i) instanceof Spatial){
+                Spatial toChange=(Spatial) spatialNodes.get(i);
+                KeyframeInfoChunk.KeyPointInTime thisTime=
+                        (KeyframeInfoChunk.KeyPointInTime) ((KeyframeInfoChunk)keyframes.objKeyframes.get(toChange.getName())).track.get(0);
+                if (thisTime.position!=null)
+                    toChange.setLocalTranslation(thisTime.position);
+                if (thisTime.rot!=null)
+                    toChange.setLocalRotation(thisTime.rot);
+                if (thisTime.scale!=null)
+                    toChange.setLocalScale(thisTime.scale);
+            }
+        }
+    }
+
 
     private void buildObject() throws IOException {
         spatialNodes=new ArrayList();   // An ArrayList of Nodes
@@ -95,7 +117,7 @@ public class TDSFile extends ChunkerClass{
             NamedObjectChunk noc=(NamedObjectChunk) objects.namedObjects.get(objectKey);
             if (noc.whatIAm instanceof TriMeshChunk){
                 Node parentNode=new Node(objectKey);
-                putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm);
+                putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm,((KeyframeInfoChunk)keyframes.objKeyframes.get(objectKey)).pivot);
                 if (parentNode.getQuantity()==1){
                     spatialNodes.add(parentNode.getChild(0));
                     ((Spatial)parentNode.getChild(0)).setName(parentNode.getName());
@@ -105,7 +127,6 @@ public class TDSFile extends ChunkerClass{
                 spatialNodes.add(createChildLight((LightChunk)noc.whatIAm));
             }
         }
-
     }
 
     private Light createChildLight(LightChunk lightChunk) {
@@ -136,7 +157,7 @@ public class TDSFile extends ChunkerClass{
 
     }
 
-    private void putChildMeshes(Node parentNode, TriMeshChunk whatIAm) throws IOException {
+    private void putChildMeshes(Node parentNode, TriMeshChunk whatIAm,Vector3f pivotLoc) throws IOException {
         FacesChunk myFace=whatIAm.face;
         boolean[] faceHasMaterial=new boolean[myFace.nFaces];
         int noMaterialCount=myFace.nFaces;
@@ -144,6 +165,13 @@ public class TDSFile extends ChunkerClass{
         ArrayList vertexes=new ArrayList(myFace.nFaces);
         Vector3f tempNormal=new Vector3f();
         ArrayList texCoords=new ArrayList(myFace.nFaces);
+        whatIAm.coordSystem.inverse();
+        for (int i=0;i<whatIAm.vertexes.length;i++){
+            whatIAm.coordSystem.multPoint(whatIAm.vertexes[i]);
+            whatIAm.vertexes[i].subtractLocal(pivotLoc);
+        }
+        Vector3f[] faceNormals=new Vector3f[myFace.nFaces];
+        calculateFaceNormals(faceNormals,whatIAm.vertexes,whatIAm.face.faces);
 
         // Precalculate nextTo[vertex][0...i] <--->
         // whatIAm.vertexes[vertex] is next to face nextTo[vertex][0] & nextTo[vertex][i]
@@ -193,8 +221,8 @@ public class TDSFile extends ChunkerClass{
                     for (int k=0;k<3;k++){                      //   and every vertex in that face
                         // what faces contain this vertex index? If they do and are in the same SG, average
                         vertexIndex=myFace.faces[actuallFace][k];
-                        tempNormal.set(whatIAm.faceNormals[actuallFace]);
-                        calcFacesWithVertexAndSmoothGroup(realNextFaces[vertexIndex],whatIAm.faceNormals,myFace,tempNormal,actuallFace);
+                        tempNormal.set(faceNormals[actuallFace]);
+                        calcFacesWithVertexAndSmoothGroup(realNextFaces[vertexIndex],faceNormals,myFace,tempNormal,actuallFace);
                         // Now can I just index this Vertex/tempNormal combination?
                         int l=0;
                         Vector3f vertexValue=whatIAm.vertexes[vertexIndex];
@@ -248,6 +276,18 @@ public class TDSFile extends ChunkerClass{
             noMaterials.setVertices(whatIAm.vertexes);
             noMaterials.setIndices(noMaterialIndexes);
             parentNode.attachChild(noMaterials);
+        }
+    }
+
+    private void calculateFaceNormals(Vector3f[] faceNormals,Vector3f[] vertexes,int[][] faces) {
+        Vector3f tempa=new Vector3f(),tempb=new Vector3f();
+        // Face normals
+        for (int i=0;i<faceNormals.length;i++){
+            tempa.set(vertexes[faces[i][0]]);  // tempa=a
+            tempa.subtractLocal(vertexes[faces[i][1]]);    // tempa-=b (tempa=a-b)
+            tempb.set(vertexes[faces[i][0]]);  // tempb=a
+            tempb.subtractLocal(vertexes[faces[i][2]]);    // tempb-=c (tempb=a-c)
+            faceNormals[i]=tempa.cross(tempb).normalizeLocal();
         }
     }
 
