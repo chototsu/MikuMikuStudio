@@ -55,12 +55,12 @@ import com.jme.renderer.ColorRGBA;
 
 /**
  * 
- * <code>TextureManager</code> provides static methods for building a <code>Texture</code>
- * object. Typically, the information supplied is the filename and the texture
- * properties.
+ * <code>TextureManager</code> provides static methods for building a
+ * <code>Texture</code> object. Typically, the information supplied is the
+ * filename and the texture properties.
  * 
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.12 2004-03-23 17:27:08 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.13 2004-04-13 16:43:09 mojomonkey Exp $
  */
 public class TextureManager {
 
@@ -84,28 +84,28 @@ public class TextureManager {
 	private static int[] pixels;
 
 	/**
-	 * <code>loadTexture</code> loads a new texture defined by the parameter
-	 * string. Filter parameters are used to define the filtering of the
-	 * texture. Whether the texture is to be mipmapped or not is denoted by the
-	 * isMipmapped boolean flag. If there is an error loading the file, null is
-	 * returned.
-	 * 
-	 * @param file
-	 *            the filename of the texture image.
-	 * @param minFilter
-	 *            the filter for the near values.
-	 * @param magFilter
-	 *            the filter for the far values.
-	 * @param isMipmapped
-	 *            determines if we will load the texture mipmapped or not. True
-	 *            load the texture mipmapped, false do not.
-	 * @param flipped
-	 *            true flips the bits of the image, false does not. True by
-	 *            default.
-	 * 
-	 * @return the loaded texture. If there is a problem loading the texture,
-	 *         null is returned.
-	 */
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * string. Filter parameters are used to define the filtering of the
+     * texture. Whether the texture is to be mipmapped or not is denoted by the
+     * isMipmapped boolean flag. If there is an error loading the file, null is
+     * returned.
+     * 
+     * @param file
+     *            the filename of the texture image.
+     * @param minFilter
+     *            the filter for the near values.
+     * @param magFilter
+     *            the filter for the far values.
+     * @param isMipmapped
+     *            determines if we will load the texture mipmapped or not. True
+     *            load the texture mipmapped, false do not.
+     * @param flipped
+     *            true flips the bits of the image, false does not. True by
+     *            default.
+     * 
+     * @return the loaded texture. If there is a problem loading the texture,
+     *         null is returned.
+     */
 	public static com.jme.image.Texture loadTexture(
 		String file,
 		int minFilter,
@@ -115,25 +115,25 @@ public class TextureManager {
 	}
 
 	/**
-	 * <code>loadTexture</code> loads a new texture defined by the parameter
-	 * string. Filter parameters are used to define the filtering of the
-	 * texture. Whether the texture is to be mipmapped or not is denoted by the
-	 * isMipmapped boolean flag. If there is an error loading the file, null is
-	 * returned.
-	 * 
-	 * @param file
-	 *            the filename of the texture image.
-	 * @param minFilter
-	 *            the filter for the near values.
-	 * @param magFilter
-	 *            the filter for the far values.
-	 * @param isMipmapped
-	 *            determines if we will load the texture mipmapped or not. True
-	 *            load the texture mipmapped, false do not.
-	 * 
-	 * @return the loaded texture. If there is a problem loading the texture,
-	 *         null is returned.
-	 */
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * string. Filter parameters are used to define the filtering of the
+     * texture. Whether the texture is to be mipmapped or not is denoted by the
+     * isMipmapped boolean flag. If there is an error loading the file, null is
+     * returned.
+     * 
+     * @param file
+     *            the filename of the texture image.
+     * @param minFilter
+     *            the filter for the near values.
+     * @param magFilter
+     *            the filter for the far values.
+     * @param isMipmapped
+     *            determines if we will load the texture mipmapped or not. True
+     *            load the texture mipmapped, false do not.
+     * 
+     * @return the loaded texture. If there is a problem loading the texture,
+     *         null is returned.
+     */
 	public static com.jme.image.Texture loadTexture(
 		String file,
 		int minFilter,
@@ -151,28 +151,28 @@ public class TextureManager {
 	}
 
 	/**
-	 * <code>loadTexture</code> loads a new texture defined by the parameter
-	 * url. Filter parameters are used to define the filtering of the texture.
-	 * Whether the texture is to be mipmapped or not is denoted by the
-	 * isMipmapped boolean flag. If there is an error loading the file, null is
-	 * returned.
-	 * 
-	 * @param file
-	 *            the url of the texture image.
-	 * @param minFilter
-	 *            the filter for the near values.
-	 * @param magFilter
-	 *            the filter for the far values.
-	 * @param isMipmapped
-	 *            determines if we will load the texture mipmapped or not. True
-	 *            load the texture mipmapped, false do not.
-	 * @param flipped
-	 *            true flips the bits of the image, false does not. True by
-	 *            default.
-	 * 
-	 * @return the loaded texture. If there is a problem loading the texture,
-	 *         null is returned.
-	 */
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * url. Filter parameters are used to define the filtering of the texture.
+     * Whether the texture is to be mipmapped or not is denoted by the
+     * isMipmapped boolean flag. If there is an error loading the file, null is
+     * returned.
+     * 
+     * @param file
+     *            the url of the texture image.
+     * @param minFilter
+     *            the filter for the near values.
+     * @param magFilter
+     *            the filter for the far values.
+     * @param isMipmapped
+     *            determines if we will load the texture mipmapped or not. True
+     *            load the texture mipmapped, false do not.
+     * @param flipped
+     *            true flips the bits of the image, false does not. True by
+     *            default.
+     * 
+     * @return the loaded texture. If there is a problem loading the texture,
+     *         null is returned.
+     */
 	public static com.jme.image.Texture loadTexture(
 		URL file,
 		int minFilter,
@@ -182,25 +182,25 @@ public class TextureManager {
 	}
 
 	/**
-	 * <code>loadTexture</code> loads a new texture defined by the parameter
-	 * url. Filter parameters are used to define the filtering of the texture.
-	 * Whether the texture is to be mipmapped or not is denoted by the
-	 * isMipmapped boolean flag. If there is an error loading the file, null is
-	 * returned.
-	 * 
-	 * @param file
-	 *            the url of the texture image.
-	 * @param minFilter
-	 *            the filter for the near values.
-	 * @param magFilter
-	 *            the filter for the far values.
-	 * @param isMipmapped
-	 *            determines if we will load the texture mipmapped or not. True
-	 *            load the texture mipmapped, false do not.
-	 * 
-	 * @return the loaded texture. If there is a problem loading the texture,
-	 *         null is returned.
-	 */
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * url. Filter parameters are used to define the filtering of the texture.
+     * Whether the texture is to be mipmapped or not is denoted by the
+     * isMipmapped boolean flag. If there is an error loading the file, null is
+     * returned.
+     * 
+     * @param file
+     *            the url of the texture image.
+     * @param minFilter
+     *            the filter for the near values.
+     * @param magFilter
+     *            the filter for the far values.
+     * @param isMipmapped
+     *            determines if we will load the texture mipmapped or not. True
+     *            load the texture mipmapped, false do not.
+     * 
+     * @return the loaded texture. If there is a problem loading the texture,
+     *         null is returned.
+     */
 	public static com.jme.image.Texture loadTexture(
 		URL file,
 		int minFilter,
@@ -255,17 +255,34 @@ public class TextureManager {
 		texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
 		return texture;
 	}
+	
+	public static com.jme.image.Texture loadTexture(java.awt.Image image, 
+	        int minFilter, int magFilter, boolean isMipmapped, 
+	        boolean flipped) {
+	    
+	    com.jme.image.Image imageData = loadImage(image, flipped);
+
+		Texture texture = new Texture();
+		texture.setApply(Texture.AM_MODULATE);
+		texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
+		texture.setCorrection(Texture.CM_PERSPECTIVE);
+		texture.setFilter(magFilter);
+		texture.setImage(imageData);
+		texture.setMipmapState(minFilter);
+		texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+		return texture;
+	}
 
 	/**
-	 * 
-	 * <code>loadImage</code> sets the image data.
-	 * 
-	 * @param image
-	 *            The image data.
-	 * @param flipImage
-	 *            if true will flip the image's y values.
-	 * @return the loaded image.
-	 */
+     * 
+     * <code>loadImage</code> sets the image data.
+     * 
+     * @param image
+     *            The image data.
+     * @param flipImage
+     *            if true will flip the image's y values.
+     * @return the loaded image.
+     */
 	public static com.jme.image.Image loadImage(
 		java.awt.Image image,
 		boolean flipImage) {
@@ -334,18 +351,17 @@ public class TextureManager {
 	}
 
 	/**
-	 * <code>loadBMPImage</code> because bitmap is not directly supported by
-	 * Java, we must load it manually. The requires opening a stream to the
-	 * file and reading in each byte. After the image data is read, it is used
-	 * to create a new <code>Image</code> object. This object is returned to
-	 * be used for normal use.
-	 * 
-	 * @param file
-	 *            the name of the bitmap file.
-	 * 
-	 * @return <code>Image</code> object that contains the bitmap
-	 *         information.
-	 */
+     * <code>loadBMPImage</code> because bitmap is not directly supported by
+     * Java, we must load it manually. The requires opening a stream to the file
+     * and reading in each byte. After the image data is read, it is used to
+     * create a new <code>Image</code> object. This object is returned to be
+     * used for normal use.
+     * 
+     * @param file
+     *            the name of the bitmap file.
+     * 
+     * @return <code>Image</code> object that contains the bitmap information.
+     */
 	private static java.awt.Image loadBMPImage(URL file) {
 		try {
 			InputStream fs = file.openStream();
@@ -378,17 +394,17 @@ public class TextureManager {
 	}
 
 	/**
-	 * <code>loadTGAImage</code> because targa is not directly supported by
-	 * Java, we must load it manually. The requires opening a stream to the
-	 * file and reading in each byte. After the image data is read, it is used
-	 * to create a new <code>Image</code> object. This object is returned to
-	 * be used for normal use.
-	 * 
-	 * @param file
-	 *            the name of the targa file.
-	 * 
-	 * @return <code>Image</code> object that contains the targa information.
-	 */
+     * <code>loadTGAImage</code> because targa is not directly supported by
+     * Java, we must load it manually. The requires opening a stream to the file
+     * and reading in each byte. After the image data is read, it is used to
+     * create a new <code>Image</code> object. This object is returned to be
+     * used for normal use.
+     * 
+     * @param file
+     *            the name of the targa file.
+     * 
+     * @return <code>Image</code> object that contains the targa information.
+     */
 	private static java.awt.Image loadTGAImage(URL file) {
 		try {
 			int red = 0;
@@ -470,27 +486,27 @@ public class TextureManager {
 	}
 
 	/**
-	 * <code>flipEndian</code> is used to flip the endian bit of the header
-	 * file.
-	 * 
-	 * @param signedShort
-	 *            the bit to flip.
-	 * 
-	 * @return the flipped bit.
-	 */
+     * <code>flipEndian</code> is used to flip the endian bit of the header
+     * file.
+     * 
+     * @param signedShort
+     *            the bit to flip.
+     * 
+     * @return the flipped bit.
+     */
 	private static short flipEndian(short signedShort) {
 		int input = signedShort & 0xFFFF;
 		return (short) (input << 8 | (input & 0xFF00) >>> 8);
 	}
 
 	/**
-	 * <code>hasAlpha</code> returns true if the specified image has
-	 * transparent pixels
-	 * 
-	 * @param image
-	 *            Image to check
-	 * @return true if the specified image has transparent pixels
-	 */
+     * <code>hasAlpha</code> returns true if the specified image has
+     * transparent pixels
+     * 
+     * @param image
+     *            Image to check
+     * @return true if the specified image has transparent pixels
+     */
 	public static boolean hasAlpha(java.awt.Image image) {
 		if (null == image) {
 			return false;
