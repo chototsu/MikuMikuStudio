@@ -32,6 +32,7 @@
 package com.jme.test.renderer.state;
 
 import com.jme.app.AbstractGame;
+import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.light.DirectionalLight;
@@ -44,14 +45,17 @@ import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.TextureManager;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.2 2003-10-31 22:02:54 mojomonkey Exp $
+ * @version $Id: TestLightState.java,v 1.3 2003-11-13 16:15:35 mojomonkey Exp $
  */
 public class TestLightState extends AbstractGame {
     private TriMesh t;
@@ -129,136 +133,24 @@ public class TestLightState extends AbstractGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
-        Vector3f max = new Vector3f(10,10,-20);
-        Vector3f min = new Vector3f(0,0,-10);
-        Vector3f[] verts = new Vector3f[24];
-        Vector3f vert0 = min;
-        Vector3f vert1 = new Vector3f(max.x, min.y, min.z);
-        Vector3f vert2 = new Vector3f(max.x, max.y, min.z);
-        Vector3f vert3 = new Vector3f(min.x, max.y, min.z);
-        Vector3f vert4 = new Vector3f(max.x, min.y, max.z);
-        Vector3f vert5 = new Vector3f(min.x, min.y, max.z);
-        Vector3f vert6 = max;
-        Vector3f vert7 = new Vector3f(min.x, max.y, max.z);
-
-        //Front
-        verts[0] = vert0;
-        verts[1] = vert1;
-        verts[2] = vert2;
-        verts[3] = vert3;
-
-        //Right
-        verts[4] = vert1;
-        verts[5] = vert4;
-        verts[6] = vert6;
-        verts[7] = vert2;
-
-        //Back
-        verts[8] = vert4;
-        verts[9] = vert5;
-        verts[10] = vert7;
-        verts[11] = vert6;
-
-        //Left
-        verts[12] = vert5;
-        verts[13] = vert0;
-        verts[14] = vert3;
-        verts[15] = vert7;
-
-        //Top
-        verts[16] = vert2;
-        verts[17] = vert6;
-        verts[18] = vert7;
-        verts[19] = vert3;
-
-        //Bottom
-        verts[20] = vert0;
-        verts[21] = vert5;
-        verts[22] = vert4;
-        verts[23] = vert1;
-
+        Vector3f max = new Vector3f(10,10,10);
+        Vector3f min = new Vector3f(0,0,0);
         
-        Vector3f[] normals = new Vector3f[24];
-        //Vector3f front = new Vector3f(0, 0, -1);
-        //Vector3f right = new Vector3f(1, 0, 0);
-        //Vector3f back = new Vector3f(0, 0, 1);
-        Vector3f left = new Vector3f(-1, 0, 0);
-        Vector3f top = new Vector3f(0, 1, 0);
-        Vector3f bottom = new Vector3f(0, -1, 0);
-//        Vector3f front = vert0.cross(vert3).normalize();
-//        Vector3f right = vert3.cross(vert4).normalize();
-//        Vector3f back = vert6.cross(vert5).normalize();
-//        Vector3f left = vert0.cross(vert7).normalize();
-       // System.out.println(back);
-        System.out.println(left);
-
-        //front
-        normals[0] = vert1.cross(vert3).normalize();
-        normals[1] = vert2.cross(vert0).normalize();
-        normals[2] = vert3.cross(vert1).normalize();
-        normals[3] = vert0.cross(vert2).normalize();
-
-        //right
-        normals[4] = vert4.cross(vert2).normalize();
-        normals[5] = vert6.cross(vert1).normalize();
-        normals[6] = vert2.cross(vert4).normalize();
-        normals[7] = vert1.cross(vert6).normalize();
-
-        //back
-        normals[8] = vert5.cross(vert6).normalize();
-        normals[9] = vert7.cross(vert4).normalize();
-        normals[10] = vert6.cross(vert5).normalize();
-        normals[11] = vert4.cross(vert7).normalize();
-
-        //left
-        normals[12] = vert0.cross(vert7).normalize();
-        normals[13] = vert3.cross(vert5).normalize();
-        normals[14] = vert7.cross(vert0).normalize();
-        normals[15] = vert5.cross(vert3).normalize();
-
-        //top
-        normals[16] = vert6.cross(vert3).normalize();
-        normals[17] = vert7.cross(vert2).normalize();
-        normals[18] = vert3.cross(vert6).normalize();
-        normals[19] = vert2.cross(vert7).normalize();
-
-        //bottom
-        normals[20] = vert5.cross(vert1).normalize();
-        normals[21] = vert4.cross(vert0).normalize();
-        normals[22] = vert1.cross(vert5).normalize();
-        normals[23] = vert0.cross(vert4).normalize();
-
-        
-        int[] indices = {
-                    0,1,2,
-                    0,2,3,
-                    4,5,6,
-                    4,6,7,
-                    8,9,10,
-                    8,10,11,
-                    12,13,14,
-                    12,14,15,
-                    16,17,18,
-                    16,18,19,
-                    20,21,22,
-                    20,22,23
-                    
-                };
-
-        
-        ColorRGBA[] color = new ColorRGBA[24];
-        for (int i = 0; i < color.length; i++) {
-            color[i] = new ColorRGBA(1, 1, 1, 1);
-        }
-
-        t = new TriMesh(verts, normals, color, null, indices);
-        //t = new Box(new Vector3f(-10, 0, 0), new Vector3f(-20, 10, 10));
+        t = new Box(min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
-
+        
+        Box t2 = new Box(min, max);
+        t2.setModelBound(new BoundingSphere());
+        t2.updateModelBound();
+        
+        t.setLocalTranslation(new Vector3f(0,0,-10));
+        
+        t2.setLocalTranslation(new Vector3f(-20,0,0));
         
         scene = new Node();
         scene.attachChild(t);
+        scene.attachChild(t2);
         
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
@@ -266,26 +158,51 @@ public class TestLightState extends AbstractGame {
         
         SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.0f, 0.5f, 1.0f, 1.0f));
-        am.setSpecular(new ColorRGBA(0.0f, 0.0f, 1.0f, 1.0f));
-        am.setDirection(new Vector3f(-40, -50, 0));
-        am.setLocation(new Vector3f(-20, -100, 0));
-        am.setAngle(90);
+        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        am.setDirection(new Vector3f(0, 0, 0));
+        am.setLocation(new Vector3f(25, 10, 0));
+        am.setAngle(15);
+        
+        SpotLight am2 = new SpotLight();
+        am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        am2.setDirection(new Vector3f(0, 0, 0));
+        am2.setLocation(new Vector3f(-25, 10, 0));
+        am2.setAngle(15);
+
 
         DirectionalLight dr = new DirectionalLight();
-        dr.setDiffuse(new ColorRGBA(0.0f, 0.0f, 1.0f, 1.0f));
-        dr.setAmbient(new ColorRGBA(1.0f, 0.5f, 0.0f, 1.0f));
-        dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-        dr.setDirection(new Vector3f(-40, -25, 0));
+        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        //dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        dr.setDirection(new Vector3f(150, 0 , 150));
 
         LightState state = display.getRenderer().getLightState();
         state.attach(am);
         state.attach(dr);
+        state.attach(am2);
         am.setEnabled(true);
+        am2.setEnabled(true);
         dr.setEnabled(true);
         scene.setRenderState(state);
         scene.setRenderState(buf);
         cam.update();
+        
+        TextureState ts = display.getRenderer().getTextureState();
+                ts.setEnabled(true);
+                ts.setTexture(
+                    TextureManager.loadTexture(
+                        "data/Images/Monkey.jpg",
+                        Texture.MM_LINEAR,
+                        Texture.FM_LINEAR,
+                        true));
+                        
+        WireframeState ws = display.getRenderer().getWireframeState();
+        ws.setEnabled(true);
+        t2.setRenderState(ws);
+                        
+        scene.setRenderState(ts);
+        
 
         scene.updateGeometricState(0.0f, true);
 

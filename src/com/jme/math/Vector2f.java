@@ -34,7 +34,7 @@ package com.jme.math;
 /**
  * <code>Vector2f</code> defines a Vector for a two float value vector. 
  * @author Mark Powell
- * @version $Id: Vector2f.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Vector2f.java,v 1.2 2003-11-13 16:15:35 mojomonkey Exp $
  *
  */
 public class Vector2f {
@@ -46,6 +46,15 @@ public class Vector2f {
      * the y value of the vector.
      */
     public float y;
+    
+    public Vector2f(float x, float y) {
+        this.x = x;
+        this.y = y;
+    }
+    
+    public Vector2f() {
+        
+    }
     
     /**
      * <code>toString</code> returns the string representation of this 
