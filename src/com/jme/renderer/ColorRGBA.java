@@ -45,7 +45,7 @@ import com.jme.math.FastMath;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.4 2004-03-27 00:59:32 renanse Exp $
+ * @version $Id: ColorRGBA.java,v 1.5 2004-04-19 20:43:13 renanse Exp $
  */
 public class ColorRGBA {
     public float r;
@@ -170,5 +170,11 @@ public class ColorRGBA {
     b = rgba.b;
     a = rgba.a;
   }
+
+  public static final ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
+  public static final ColorRGBA white = new ColorRGBA(1f, 1f, 1f, 1f);
+  public static final ColorRGBA red = new ColorRGBA(1f, 0f, 0f, 1f);
+  public static final ColorRGBA green = new ColorRGBA(0f, 1f, 0f, 1f);
+  public static final ColorRGBA blue = new ColorRGBA(0f, 0f, 1f, 1f);
 
 }
