@@ -61,7 +61,7 @@ import com.jme.scene.state.TextureState;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.20 2005-03-17 21:41:42 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.21 2005-03-17 23:02:54 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -204,7 +204,7 @@ public class ParticleManager extends Controller {
             for (int a = 3; a >= 0; a--) {
                 particlesGeometry.setTextureCoord(0, (k << 2) + a, sharedTextureData[a]);
                 geometryCoordinates[ (k << 2) + a] = particles[k].verts[a];
-                appearanceColors[ (k << 2) + a] = particles[k].color;
+                appearanceColors[ (k << 2) + a] = particles[k].currColor;
             }
             
         }

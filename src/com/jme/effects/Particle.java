@@ -40,13 +40,14 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.13 2004-06-29 23:08:36 renanse Exp $
+ * @version $Id: Particle.java,v 1.14 2005-03-17 23:02:54 renanse Exp $
  */
 public class Particle {
 
   Vector3f verts[];
   Vector3f location;
-  ColorRGBA color;
+  ColorRGBA startColor;
+  ColorRGBA currColor;
   int status;
 
   private float currentSize;
@@ -57,6 +58,9 @@ public class Particle {
   private ParticleManager parent;
   private Vector3f speed;
   private Vector3f bbX, bbY;
+
+  // colors
+  private float rChange, gChange, bChange, aChange;
 
   /** Particle is dead -- not in play. */
   public static final int DEAD = 0;
@@ -80,7 +84,8 @@ public class Particle {
     this.location = new Vector3f();
     this.parent = parent;
 
-    color = (ColorRGBA) parent.getStartColor().clone();
+    startColor = (ColorRGBA) parent.getStartColor().clone();
+    currColor = new ColorRGBA(startColor);
     currentAge = 0;
     status = AVAILABLE;
     currentSize = parent.getStartSize();
@@ -103,8 +108,12 @@ public class Particle {
     this.lifeSpan = lifeSpan;
     this.speed.set(speed);
 
-    this.color.set(parent.getStartColor().r, parent.getStartColor().g,
-                   parent.getStartColor().b, parent.getStartColor().a);
+    startColor.set(parent.getStartColor());
+    currColor.set(startColor);
+    rChange = startColor.r - parent.getEndColor().r;
+    gChange = startColor.g - parent.getEndColor().g;
+    bChange = startColor.b - parent.getEndColor().b;
+    aChange = startColor.a - parent.getEndColor().a;
     currentSize = parent.getStartSize();
     currentAge = 0;
     spinAngle = 0;
@@ -151,10 +160,10 @@ public class Particle {
     if (status != ALIVE) {
       return true;
     }
-    currentAge += secondsPassed * 1000; // add 10ms to age
+    currentAge += secondsPassed * 1000; // add time to age
     if (currentAge > lifeSpan) {
       status = DEAD;
-      color.a = 0;
+      currColor.a = 0;
       return true;
     }
 
@@ -180,15 +189,11 @@ public class Particle {
         ( (currentSize - parent.getEndSize()) * lifeRatio);
 
     // interpolate colors
-    color.set(parent.getStartColor());
-    color.r -=
-        ( (color.r - parent.getEndColor().r) * lifeRatio);
-    color.g -=
-        ( (color.g - parent.getEndColor().g) * lifeRatio);
-    color.b -=
-        ( (color.b - parent.getEndColor().b) * lifeRatio);
-    color.a -=
-        ( (color.a - parent.getEndColor().a) * lifeRatio);
+    currColor.set(startColor);
+    currColor.r -= rChange * lifeRatio;
+    currColor.g -= gChange * lifeRatio;
+    currColor.b -= bChange * lifeRatio;
+    currColor.a -= aChange * lifeRatio;
 
     updateVerts();
 
