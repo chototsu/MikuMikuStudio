@@ -37,7 +37,7 @@ package com.jme.input;
  * to the LWJGL key bindings. This may require conversion by other subclasses
  * for specific APIs.
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.4 2004-04-23 15:41:34 mojomonkey Exp $
+ * @version $Id: KeyInput.java,v 1.5 2004-07-30 21:03:36 cep21 Exp $
  */
 public interface KeyInput {
 
@@ -485,6 +485,7 @@ public interface KeyInput {
      * PgUp key.
      */
     public static final int KEY_PRIOR = 0xC9;
+    /** PgUp key.*/
     public static final int KEY_PGUP = KEY_PRIOR;
     
     /**
@@ -507,6 +508,7 @@ public interface KeyInput {
      * PgDn key.
      */
     public static final int KEY_NEXT = 0xD1;
+    /** PgDn key.*/
     public static final int KEY_PGDN = KEY_NEXT;
     
     /**

@@ -51,7 +51,7 @@ import com.jme.scene.state.LightState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.12 2004-07-24 18:53:57 renanse Exp $
+ * @version $Id: Mouse.java,v 1.13 2004-07-30 21:08:23 cep21 Exp $
  */
 public abstract class Mouse extends Quad {
   /**
@@ -64,10 +64,20 @@ public abstract class Mouse extends Quad {
    */
   protected boolean hasCursor = false;
 
-  protected int imageWidth, imageHeight;
+  /**
+   * Width of this mouse's texture.
+   */
+  protected int imageWidth;
+  /** Height of this mouse's texture.
+   *
+   */
+  protected int imageHeight;
 
   protected float _speed = 1.0f;
+  /** This mouse's actual location after hotspot offset is taken into account. */
   protected Vector3f _hotSpotLocation = new Vector3f();
+  /** This mouse's hotspot location.  The location on the texture where
+   * the mouse is actually clicking, relative to the bottom left.*/
   protected Vector3f _hotSpotOffset = new Vector3f();
 
   /**
@@ -173,13 +183,30 @@ public abstract class Mouse extends Quad {
     _speed = speed;
   }
 
+  /**
+   * Returns this mouse's location relative to the hotspot offset.  Basicly, where
+   * the mouse is on the screen.
+   * @return The mouse's location.
+   */
   public Vector3f getHotSpotPosition() {
     return _hotSpotLocation;
   }
 
+  /**
+   * Returns the currently set hotspot of the mouse.  This is the spot relative
+   * to the bottom left of the texture where the mouse is actually pointed.
+   * @return The mouse's hotspot offset.
+   */
   public Vector3f getHotSpotOffset() {
     return _hotSpotOffset;
   }
+
+  /**
+   * Sets the mouse's hotspot offset.  The hotspot is the spot relative to the
+   * bottom left of the texture where the mouse is actually pointed.  Note that this
+   * is a shallow copy, not a deep copy.
+   * @param offset The new hotspot for this mouse.
+   */
   public void setHotSpotOffset(Vector3f offset) {
     _hotSpotOffset = offset;
   }

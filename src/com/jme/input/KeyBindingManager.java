@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.7 2004-05-13 18:09:50 mojomonkey Exp $
+ * @version $Id: KeyBindingManager.java,v 1.8 2004-07-30 21:02:23 cep21 Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -79,7 +79,11 @@ public class KeyBindingManager {
     public void setKeyInput(KeyInput keyInput) {
         this.keyInput = keyInput;
     }
-    
+
+    /**
+     * Returns the current KeyInput that this manager is using to determine keyboard input.
+     * @return The current KeyInput used by this manager.
+     */
     public KeyInput getKeyInput() {
         return keyInput;
     }
@@ -218,10 +222,15 @@ public class KeyBindingManager {
         return value;
     }
 
-    // If we are down and not retricted, stick and return true;
-    // If we are up and restricted, clear restriction
-    // return false;
-    public boolean getStickyKey(int key) {
+    /**
+     * Returns true if a key is down and wasn't down last call.
+     * If a key is down and not restricted, the key is set as restricted and true is returned.
+     * If a key is down and restricted, false is returned.
+     * If a key is not down and is restricted, the restriction is cleared.
+     * @param key The key to test
+     * @return True if the key is a fresh key input.
+     */
+    private boolean getStickyKey(int key) {
       if(keyInput == null) {
           return false;
       }
