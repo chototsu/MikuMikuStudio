@@ -38,7 +38,7 @@ import org.lwjgl.opengl.GL;
  * LWJGL API to access OpenGL. If the state is enabled, wireframe mode is
  * used, otherwise solid fill is used.
  * @author Mark Powell
- * @version $Id: LWJGLWireframeState.java,v 1.1 2003-10-13 18:30:08 mojomonkey Exp $
+ * @version $Id: LWJGLWireframeState.java,v 1.2 2004-02-01 19:09:33 mojomonkey Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
 
@@ -50,10 +50,7 @@ public class LWJGLWireframeState extends WireframeState {
     public void set() {
         if (isEnabled()) {
                 GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
-        } else {
-                GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
-        }
-
+        } 
     }
 
     /**
@@ -64,10 +61,7 @@ public class LWJGLWireframeState extends WireframeState {
     public void unset() {
         if (isEnabled()) {
                 GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_FILL);
-        } else {
-                GL.glPolygonMode(GL.GL_FRONT_AND_BACK, GL.GL_LINE);
-        }
-
+        } 
     }
 
 }
