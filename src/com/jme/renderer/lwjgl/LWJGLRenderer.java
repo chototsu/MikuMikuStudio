@@ -122,7 +122,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.5 2004-04-16 19:32:10 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.6 2004-04-20 17:43:05 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -916,9 +916,10 @@ public class LWJGLRenderer implements Renderer {
 
     IntBuffer indices = t.getIndexAsBuffer();
     if (statisticsOn) {
-      int adder = indices.capacity();
+      int adder = t.getIndices().length;
+      int vertAdder = t.getVertices().length;
       numberOfTris += adder / 3;
-      numberOfVerts += adder;
+      numberOfVerts += vertAdder;
     }
     GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
 
