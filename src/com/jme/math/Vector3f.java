@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.29 2004-09-14 21:52:20 mojomonkey Exp $
+ * @version $Id: Vector3f.java,v 1.30 2004-09-27 20:56:41 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -475,7 +475,8 @@ public class Vector3f implements Externalizable{
      * @return the result <code>Vector</code>.
      */
     public Vector3f divide(float scalar) {
-        return new Vector3f(x / scalar, y / scalar, z / scalar);
+        scalar = 1f/scalar;
+        return new Vector3f(x * scalar, y * scalar, z * scalar);
     }
 
     /**
@@ -488,9 +489,10 @@ public class Vector3f implements Externalizable{
      * @return this
      */
     public Vector3f divideLocal(float scalar) {
-        x /= scalar;
-        y /= scalar;
-        z /= scalar;
+        scalar = 1f/scalar;
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
         return this;
     }
 
