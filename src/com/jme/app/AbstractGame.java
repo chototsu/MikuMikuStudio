@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * continues to run until finish is called.
  * 
  * @author Mark Powell
- * @version $Id: AbstractGame.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: AbstractGame.java,v 1.2 2003-10-27 21:34:53 mojomonkey Exp $
  */
 
 public abstract class AbstractGame {
@@ -150,6 +150,14 @@ public abstract class AbstractGame {
         noDialog = value;
         dialogRequested = false;
     }
+    
+    /**
+     * <code>finish</code> is called to break out of the main game loop. This
+     * method is final and cannot be overridden.
+     */
+    public final void finish() {
+        finished = true;
+    }
 
     /**
      * <code>quit</code> is called to exit the program. By default it simply
@@ -158,14 +166,6 @@ public abstract class AbstractGame {
      */
     protected void quit() {
         System.exit(0);
-    }
-
-    /**
-     * <code>finish</code> is called to break out of the main game loop. This
-     * method is final and cannot be overridden.
-     */
-    protected final void finish() {
-        finished = true;
     }
 
     /**
