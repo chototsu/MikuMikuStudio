@@ -40,33 +40,65 @@ import com.jme.math.Vector3f;
 import com.jme.scene.state.LightState;
 
 /**
- * <code>LightNode</code>
+ * <code>LightNode</code> defines a scene node that contains and maintains a
+ * light object. A light node contains a single light, and positions the light
+ * based on it's translation vector. If the contained light is a spot light, 
+ * the rotation of the node determines it's direction. If the contained light
+ * is a Directional light rotation determines it's direction. It has no
+ * concept of location.
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.1 2004-01-15 02:51:25 mojomonkey Exp $
+ * @version $Id: LightNode.java,v 1.2 2004-01-15 17:45:42 mojomonkey Exp $
  */
 public class LightNode extends Node {
     private Light light;
     private LightState lightState;
 
+    /**
+     * Constructor creates a new <code>LightState</code> object. The light
+     * state the node controls is required at construction time.
+     * @param lightState the lightstate that this node will control.
+     */
     public LightNode(LightState lightState) {
         super();
         this.lightState = lightState;
     }
 
+    /**
+     * 
+     * <code>setLight</code> sets the light of this node. If a light was
+     * previously set to the node, it is replaced by this light.
+     * @param light the light to use for the node.
+     */
     public void setLight(Light light) {
         this.light = light;
         lightState.detachAll();
         lightState.attach(light);
     }
 
+    /**
+     * 
+     * <code>getLight</code> returns the light object this node is controlling.
+     * @return the light object of the node.
+     */
     public Light getLight() {
         return light;
     }
 
+    /**
+     * 
+     * <code>setTarget</code> defines the node (and it's children) that is
+     * affected by this light. 
+     * @param node the node that is the target of the light.
+     */
     public void setTarget(Spatial node) {
         node.setRenderState(lightState);
     }
 
+    /**
+     * <code>updateWorldData</code> modifies the light data based on any
+     * change the light node has made.
+     * @param time the time between frames.
+     */
     public void updateWorldData(float time) {
         super.updateWorldData(time);
         Matrix3f lightRotate = worldRotation.mult(localRotation);

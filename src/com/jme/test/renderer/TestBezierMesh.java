@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.4 2004-01-15 15:40:23 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.5 2004-01-15 17:45:42 mojomonkey Exp $
  */
 public class TestBezierMesh extends AbstractGame {
     private TriMesh t;
@@ -221,12 +221,12 @@ public class TestBezierMesh extends AbstractGame {
         ms.setAmbient(new ColorRGBA(0.5f,0.5f,0.5f,1.0f));
         ms.setDiffuse(new ColorRGBA(1.0f,0.85f,0.75f,1.0f));
         ms.setSpecular(new ColorRGBA(0.8f,0.8f,0.8f,1.0f));
-        ms.setShininess(1.0f);
+        ms.setShininess(128.0f);
         bez.setRenderState(ms);
 
         pl = new PointLight();
         pl.setAmbient(new ColorRGBA(0, 0, 0, 1));
-        pl.setDiffuse(new ColorRGBA(0, 1, 0, 1));
+        pl.setDiffuse(new ColorRGBA(1, 1, 1, 1));
         pl.setSpecular(new ColorRGBA(0, 0, 1, 1));
         pl.setEnabled(true);
 
