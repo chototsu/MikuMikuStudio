@@ -44,7 +44,7 @@ import org.lwjgl.Sys;
  * method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.5 2004-03-08 02:28:10 renanse Exp $
+ * @version $Id: LWJGLTimer.java,v 1.6 2004-03-19 22:33:46 renanse Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;
@@ -65,8 +65,8 @@ public class LWJGLTimer extends Timer {
         //reset time
         Sys.setTime(0);
 
-        // set fps... might want to make it something other than 0 if funny activity at beginning.
-        for (int i = TIMER_SMOOTHNESS; --i>=0; ) fps[i]=0f;
+        // set fps...  Using 60 to begin with...
+        for (int i = TIMER_SMOOTHNESS; --i>=0; ) fps[i]=60f;
 
         //set priority of this process
         Sys.setProcessPriority(Sys.LOW_PRIORITY);
