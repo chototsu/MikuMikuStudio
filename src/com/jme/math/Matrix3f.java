@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.7 2004-01-22 21:48:55 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.8 2004-02-01 07:50:43 mojomonkey Exp $
  */
 public class Matrix3f {
     private float[][] matrix;
@@ -57,12 +57,27 @@ public class Matrix3f {
         loadIdentity();
     }
     
+    /**
+     * Copy constructor that creates a new <code>Matrix3f</code> object
+     * that is the same as the provided matrix.
+     * @param mat the matrix to copy.
+     */
+    public Matrix3f(Matrix3f mat) {
+    	copy(mat);
+    }
+    
+    /**
+     * <code>copy</code> transfers the contents of a given matrix to this
+     * matrix. If a null matrix is supplied, this matrix is set to the
+     * identity matrix.
+     * @param matrix the matrix to copy.
+     */
     public void copy(Matrix3f matrix) {
         if(null == matrix) {
             loadIdentity();
         } else {
-            for(int i = 0; i < 4; i++) {
-                for(int j = 0; j < 4; j++) {
+            for(int i = 0; i < 3; i++) {
+                for(int j = 0; j < 3; j++) {
                  this.matrix[i][j] = matrix.matrix[i][j];
               }
             }
@@ -164,28 +179,66 @@ public class Matrix3f {
     }
     
     /**
+	 * <code>set</code> sets the values of this matrix from an array of
+	 * values;
+	 * @param matrix the matrix to set the value to.
+	 */
+	public void set(float[] matrix) {
+		if (matrix.length != 9) {
+			throw new JmeException("Array must be of size 9.");
+		}
+		for(int i = 0; i < 3; i++) {
+			for(int j = 0; j < 3; j++) {
+				this.matrix[i][j] = matrix[j*3 + i];
+			}
+		}
+	}
+    
+    /**
      * 
      * <code>set</code> defines the values of the matrix based on a supplied
      * <code>Quaternion</code>. It should be noted that all previous values
      * will be overridden.
      * @param quat the quaternion to create a rotational matrix from.
      */
-    public void set(Quaternion quat) {
-        float[] matrix = new float[16];
-        matrix[0] = 1.0f - 2.0f * (quat.y * quat.y + quat.z * quat.z);
-        matrix[1] = 2.0f * (quat.x * quat.y - quat.w * quat.z);
-        matrix[2] = 2.0f * (quat.x * quat.z + quat.w * quat.y);
-        
-        // Second row
-        matrix[3] = 2.0f * (quat.x * quat.y + quat.w * quat.z);
-        matrix[4] = 1.0f - 2.0f * (quat.x * quat.x + quat.z * quat.z);
-        matrix[5] = 2.0f * (quat.y * quat.z - quat.w * quat.x);
-        
-        // Third row
-        matrix[6] = 2.0f * (quat.x * quat.z - quat.w * quat.y);
-        matrix[7] = 2.0f * (quat.y * quat.z + quat.w * quat.x);
-        matrix[8] = 1.0f - 2.0f * (quat.x * quat.x + quat.y * quat.y);
+    public void set(Quaternion quaternion) {
+		loadIdentity();
+		matrix[0][0] = (float) (1.0 - 2.0 * quaternion.y * quaternion.y - 2.0 * quaternion.z * quaternion.z);
+		matrix[1][0] = (float) (2.0 * quaternion.x * quaternion.y + 2.0 * quaternion.w * quaternion.z);
+		matrix[2][0] = (float) (2.0 * quaternion.x * quaternion.z - 2.0 * quaternion.w * quaternion.y);
+
+		matrix[0][1] = (float) (2.0 * quaternion.x * quaternion.y - 2.0 * quaternion.w * quaternion.z);
+		matrix[1][1] = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0 * quaternion.z * quaternion.z);
+		matrix[2][1] = (float) (2.0 * quaternion.y * quaternion.z + 2.0 * quaternion.w * quaternion.x);
+
+		matrix[0][2] = (float) (2.0 * quaternion.x * quaternion.z + 2.0 * quaternion.w * quaternion.y);
+		matrix[1][2] = (float) (2.0 * quaternion.y * quaternion.z - 2.0 * quaternion.w * quaternion.x);
+		matrix[2][2] = (float) (1.0 - 2.0 * quaternion.x * quaternion.x - 2.0 * quaternion.y * quaternion.y);
+
     }
+    
+	/**
+	 * <code>loadIdentity</code> sets this matrix to the identity matrix. 
+	 * Where all values are zero except those along the diagonal which are
+	 * one.
+	 *
+	 */
+	public void loadIdentity() {
+		matrix = new float[3][3];
+		matrix[0][0] = matrix[1][1] = matrix[2][2] = 1;
+	}
+	
+	/**
+	 * <code>multiply</code> multiplies this matrix by a scalar.
+	 * @param scalar the scalar to multiply this matrix by.
+	 */
+	public void multiply(float scalar) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				matrix[i][j] *= scalar;
+			}
+		}
+	}
 
     /**
      * <code>mult</code> multiplies this matrix by a given matrix. The
@@ -239,24 +292,18 @@ public class Matrix3f {
 
         return product;
     }
-
-    /**
-     * <code>loadIdentity</code> sets this matrix to the identity matrix. 
-     * Where all values are zero except those along the diagonal which are
-     * one.
-     *
-     */
-    public void loadIdentity() {
-        for (int i = 0; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (i == j) {
-                    matrix[i][j] = 1.0f;
-                } else {
-                    matrix[i][j] = 0.0f;
-                }
-            }
-        }
-    }
+    
+	/**
+	 * <code>add</code> adds the values of a parameter matrix to this matrix.
+	 * @param matrix the matrix to add to this.
+	 */
+	public void add(Matrix3f matrix) {
+		for (int i = 0; i < 3; i++) {
+			for (int j = 0; j < 3; j++) {
+				this.matrix[i][j] += matrix.get(i,j);
+			}
+		}
+	}
 
     /**
      * 
@@ -291,35 +338,6 @@ public class Matrix3f {
         matrix[2][2] = z2 * oneMinusCos + cos;
     }
     
-    public void fromAngles(Vector3f angles) {
-        float angle;
-        float sr, sp, sy, cr, cp, cy;
-
-        angle = (float) (angles.z * (Math.PI * 2 / 360));
-        sy = (float) java.lang.Math.sin(angle);
-        cy = (float) java.lang.Math.cos(angle);
-        angle = (float) (angles.y * (Math.PI * 2 / 360));
-        sp = (float) java.lang.Math.sin(angle);
-        cp = (float) java.lang.Math.cos(angle);
-        angle = (float) (angles.x * (Math.PI * 2 / 360));
-        sr = (float) java.lang.Math.sin(angle);
-        cr = (float) java.lang.Math.cos(angle);
-
-        // matrix = (Z * Y) * X
-        matrix[0][0] = cp * cy;
-        matrix[1][0] = cp * sy;
-        matrix[2][0] = -sp;
-        matrix[0][1] = sr * sp * cy + cr * -sy;
-        matrix[1][1] = sr * sp * sy + cr * cy;
-        matrix[2][1] = sr * cp;
-        matrix[0][2] = (cr * sp * cy + -sr * -sy);
-        matrix[1][2] = (cr * sp * sy + -sr * cy);
-        matrix[2][2] = cr * cp;
-        matrix[0][3] = 0.0f;
-        matrix[1][3] = 0.0f;
-        matrix[2][3] = 0.0f;
-    }
-
     /**
      * <code>toString</code> returns the string representation of this object.
      * It is in a format of a 3x3 matrix. For example, an identity matrix would
