@@ -3,16 +3,13 @@ package jmetest.renderer.loader;
 import com.jme.app.SimpleGame;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.model.XMLparser.BinaryToXML;
-import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.scene.model.XMLparser.Converters.MaxToJme;
 import com.jme.scene.Node;
-import com.jme.scene.state.MaterialState;
 import com.jme.scene.shape.Box;
-import com.jme.scene.shape.Pyramid;
 import com.jme.math.Vector3f;
+import com.jme.math.Quaternion;
 import com.jme.bounding.BoundingSphere;
 import com.jme.renderer.ColorRGBA;
-import com.jme.light.DirectionalLight;
 
 
 import java.io.*;
@@ -40,9 +37,26 @@ public class TestMaxJmeWrite extends SimpleGame{
 
         try {
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
-            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/sphere.3DS");
+            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/cubeColoured.3DS");
+//            URL maxFile = new File("3dsmodels/sphere.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/cube.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/face.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/europe.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/cow.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/tank.3ds").toURI().toURL();
-            C1.convert(maxFile.openStream(),BO);
+//            URL maxFile = new File("3dsmodels/simpmovement.3DS").toURI().toURL();
+
+            C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
+            JmeBinaryReader jbr=new JmeBinaryReader();
+            BinaryToXML btx=new BinaryToXML();
+            StringWriter SW=new StringWriter();
+            btx.sendBinarytoXML(new ByteArrayInputStream(BO.toByteArray()),SW);
+            System.out.println(SW);
+//            jbr.setProperty("texurl",new File("3dsmodels").toURI().toURL());
+            Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            r.setLocalScale(.1f);
+            rootNode.attachChild(r);
+//            drawAxis();
         } catch (IOException e) {
             System.out.println("Damn exceptions:"+e);
         }
