@@ -31,220 +31,99 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.InputHandler;
-import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.CullState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
+import com.jme.math.FastMath;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.9 2004-04-22 22:27:41 renanse Exp $
+ * @version $Id: TestMultitexture.java,v 1.10 2004-04-23 04:26:46 renanse Exp $
  */
-public class TestMultitexture extends BaseGame {
-    private TriMesh t;
-    private Camera cam;
-    private Node root;
-    private Node scene;
-    private InputHandler input;
-    private Thread thread;
-    private Timer timer;
-    private Quaternion rotQuat;
-    private float angle = 0;
-    private Vector3f axis;
+public class TestMultitexture extends SimpleGame {
+  private TriMesh t;
+  private Quaternion rotQuat;
+  private float angle = 0;
+  private Vector3f axis;
 
-    /**
-     * Entry point for the test,
-     * @param args
-     */
-    public static void main(String[] args) {
-        TestMultitexture app = new TestMultitexture();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
+  /**
+   * Entry point for the test,
+   * @param args
+   */
+  public static void main(String[] args) {
+    TestMultitexture app = new TestMultitexture();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
+  }
 
+  /**
+   * Not used in this test.
+   * @see com.jme.app.SimpleGame#update()
+   */
+  protected void simpleUpdate() {
+    if (timer.getTimePerFrame() < 1) {
+      angle = angle + (timer.getTimePerFrame() * 25);
+      if (angle > 360) {
+        angle = 0;
+      }
     }
 
-    /**
-     * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
-        if(timer.getTimePerFrame() < 1) {
-            angle = angle + (timer.getTimePerFrame() * 1);
-            if(angle > 360) {
-                angle = 0;
-            }
-        }
+    rotQuat.fromAngleAxis(angle*FastMath.DEG_TO_RAD, axis);
+    t.setLocalRotation(rotQuat);
+  }
 
-        rotQuat.fromAngleAxis(angle, axis);
-        timer.update();
-        input.update(timer.getTimePerFrame());
+  /**
+   * builds the trimesh.
+   * @see com.jme.app.SimpleGame#initGame()
+   */
+  protected void simpleInitGame() {
 
-        t.setLocalRotation(rotQuat);
-        scene.updateGeometricState(0.0f, true);
+    rotQuat = new Quaternion();
+    axis = new Vector3f(1, 1, 0.5f);
 
+    display.setTitle("Multitexturing");
+    cam.setLocation(new Vector3f(0, 0, 40));
+    cam.update();
+    input.setKeySpeed(15f);
 
-    }
+    Vector3f max = new Vector3f(5, 5, 5);
+    Vector3f min = new Vector3f( -5, -5, -5);
 
-    /**
-     * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
+    t = new Box("Box", min, max);
+    t.setModelBound(new BoundingSphere());
+    t.updateModelBound();
 
-        display.getRenderer().draw(root);
+    t.setLocalTranslation(new Vector3f(0, 0, 0));
 
-    }
+    rootNode.attachChild(t);
 
-    /**
-     * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
-                    properties.getHeight());
+    TextureState ts = display.getRenderer().getTextureState();
+    ts.setEnabled(true);
+    Texture t1 = TextureManager.loadTexture(
+        TestBoxColor.class.getClassLoader().getResource(
+        "jmetest/data/images/Monkey.jpg"),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true);
+    ts.setTexture(t1, 0);
 
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 75.0f);
-        Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-        Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
-        cam.setFrame(loc, left, up, dir);
-        display.getRenderer().setCamera(cam);
+    Texture t2 = TextureManager.loadTexture(TestBoxColor.class.getClassLoader().
+                                            getResource("jmetest/data/texture/dirt.jpg"),
+                                            Texture.MM_LINEAR,
+                                            Texture.FM_LINEAR,
+                                            true);
+    ts.setTexture(t2, 1);
+    System.out.println("This video card has " + ts.getNumberOfUnits() +
+                       " texture units.");
+    t.copyTextureCoords(0, 1);
+    rootNode.setRenderState(ts);
 
-        input = new FirstPersonHandler(this, cam, properties.getRenderer());
-        input.setKeySpeed(15f);
-        input.setMouseSpeed(1);
-        timer = Timer.getTimer(properties.getRenderer());
-
-        rotQuat = new Quaternion();
-        axis = new Vector3f(1,1,0.5f);
-        display.setTitle("Multitexturing");
-
-    }
-
-    /**
-     * builds the trimesh.
-     * @see com.jme.app.SimpleGame#initGame()
-     */
-    protected void initGame() {
-        AlphaState as1 = display.getRenderer().getAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        scene = new Node("3D Scene Node");
-        root = new Node("Root Scene Node");
-
-        Vector3f max = new Vector3f(5,5,5);
-        Vector3f min = new Vector3f(-5,-5,-5);
-
-        CullState cs = display.getRenderer().getCullState();
-        cs.setEnabled(true);
-        cs.setCullMode(CullState.CS_BACK);
-        scene.setRenderState(cs);
-
-        t = new Box("Box", min,max);
-        t.setModelBound(new BoundingSphere());
-        t.updateModelBound();
-
-        t.setLocalTranslation(new Vector3f(0,0,0));
-
-        scene.attachChild(t);
-        root.attachChild(scene);
-
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
-
-        DirectionalLight am = new DirectionalLight();
-        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 75));
-
-        LightState state = display.getRenderer().getLightState();
-        state.attach(am);
-        am.setEnabled(true);
-        //scene.setRenderState(state);
-        scene.setRenderState(buf);
-        cam.update();
-
-        TextureState ts = display.getRenderer().getTextureState();
-        ts.setEnabled(true);
-        Texture t1 = TextureManager.loadTexture(
-        		TestBoxColor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true);
-        ts.setTexture(t1 ,0);
-
-
-        Texture t2 = TextureManager.loadTexture(TestBoxColor.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
-		        Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true);
-        ts.setTexture( t2,1);
-        System.out.println("This video card has " + ts.getNumberOfUnits() +
-                " texture units.");
-        Vector2f[] dirtCoords = t.getTextures(0);
-        t.setTextures(dirtCoords, 1);
-        scene.setRenderState(ts);
-
-        scene.updateGeometricState(0.0f, true);
-        scene.updateRenderState();
-
-    }
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-
-    }
-
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-
-    }
-
+  }
 }
