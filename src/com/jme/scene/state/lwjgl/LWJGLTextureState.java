@@ -54,9 +54,9 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
- * 
+ *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.15 2004-05-26 00:03:19 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.16 2004-05-26 00:11:55 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -102,7 +102,7 @@ public class LWJGLTextureState extends TextureState {
 	 * The number of textures that can be combined is determined during
 	 * construction. This equates the number of texture units supported by the
 	 * graphics card.
-	 *  
+	 *
 	 */
 	public LWJGLTextureState() {
 		super();
@@ -127,7 +127,7 @@ public class LWJGLTextureState extends TextureState {
 	 * subsequent calls. The multitexture extension is used to define the
 	 * multiple texture states, with the number of units being determined at
 	 * construction time.
-	 * 
+	 *
 	 * @see com.jme.scene.state.RenderState#unset()
 	 */
 	public void apply() {
@@ -402,24 +402,26 @@ public class LWJGLTextureState extends TextureState {
      * @see com.jme.scene.state.TextureState#delete(int)
      */
     public void delete(int unit) {
-        IntBuffer id = BufferUtils.createIntBuffer(1);
-        id.put(texture[unit].getTextureId());
-        id.rewind();
-        GL11.glDeleteTextures(id);
-        
+      if (unit < 0 || unit >= texture.length || texture[unit] == null) return;
+      IntBuffer id = BufferUtils.createIntBuffer(1);
+      id.put(texture[unit].getTextureId());
+      id.rewind();
+      texture[unit] = null;
+      GL11.glDeleteTextures(id);
     }
 
     /* (non-Javadoc)
      * @see com.jme.scene.state.TextureState#deleteAll()
      */
     public void deleteAll() {
-        IntBuffer id = BufferUtils.createIntBuffer(1);
-        for(int i = 0; i < texture.length; i++) {
-            id.clear();
-            id.put(texture[i].getTextureId());
-            id.rewind();
-            GL11.glDeleteTextures(id);
-        }
-        
+      IntBuffer id = BufferUtils.createIntBuffer(1);
+      for (int i = 0; i < texture.length; i++) {
+        if (texture[i] == null) continue;
+        id.clear();
+        id.put(texture[i].getTextureId());
+        id.rewind();
+        GL11.glDeleteTextures(id);
+        texture[i] = null;
+      }
     }
 }
