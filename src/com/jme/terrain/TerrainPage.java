@@ -76,12 +76,12 @@ public class TerrainPage extends Node {
      * @param size
      *            the size of the heightmap for this page.
      * @param stepScale
-     *            the scale of the x/z axes.
+     *            the scale of the axes.
      * @param heightMap
      *            the height data.
      * @param clod true will use level of detail, false will not.
      */
-    public TerrainPage(String name, int blockSize, int size, float stepScale,
+    public TerrainPage(String name, int blockSize, int size, Vector3f stepScale,
             int[] heightMap, boolean clod) {
         this(name, blockSize, size, stepScale, heightMap, clod, size,
                 new Vector2f(), 0);
@@ -101,7 +101,7 @@ public class TerrainPage extends Node {
      * @param size
      *            the size of the heightmap for this page.
      * @param stepScale
-     *            the scale of the x/z axes.
+     *            the scale of the axes.
      * @param heightMap
      *            the height data.
      * @param clod true will use level of detail, false will not.
@@ -110,7 +110,7 @@ public class TerrainPage extends Node {
      * @param offset the texture offset for the page.
      * @param offsetAmount the amount of the offset.
      */
-    public TerrainPage(String name, int blockSize, int size, float stepScale,
+    public TerrainPage(String name, int blockSize, int size, Vector3f stepScale,
             int[] heightMap, boolean clod, int totalSize, Vector2f offset,
             int offsetAmount) {
         super(name);
@@ -193,7 +193,7 @@ public class TerrainPage extends Node {
      * @param heightMap the height data.
      * @param clod true if level of detail is used, false otherwise.
      */
-    private void split(int size, int blockSize, float stepScale,
+    private void split(int size, int blockSize, Vector3f stepScale,
             int[] heightMap, boolean clod) {
         if (size / 2 + 1 <= blockSize) {
             createQuadBlock(size, stepScale, heightMap, clod);
@@ -208,7 +208,7 @@ public class TerrainPage extends Node {
      * 
      *  
      */
-    private void createQuadPage(int size, int blockSize, float stepScale,
+    private void createQuadPage(int size, int blockSize, Vector3f stepScale,
             int[] heightMap, boolean clod) {
         //      create 4 terrain pages
         Vector2f tempOffset = new Vector2f();
@@ -225,8 +225,8 @@ public class TerrainPage extends Node {
                 heightBlock1[count++] = heightMap[j + (i * size)];
             }
         }
-        Vector3f origin1 = new Vector3f(-size / 4 * stepScale, 0, -size / 4
-                * stepScale);
+        Vector3f origin1 = new Vector3f(-size / 4 * stepScale.x, 0, -size / 4
+                * stepScale.z);
 
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
@@ -247,8 +247,8 @@ public class TerrainPage extends Node {
                 heightBlock2[count++] = heightMap[j + (i * size)];
             }
         }
-        Vector3f origin2 = new Vector3f(-size / 4 * stepScale, 0, size / 4
-                * stepScale);
+        Vector3f origin2 = new Vector3f(-size / 4 * stepScale.x, 0, size / 4
+                * stepScale.z);
 
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
@@ -269,8 +269,8 @@ public class TerrainPage extends Node {
                 heightBlock3[count++] = heightMap[j + (i * size)];
             }
         }
-        Vector3f origin3 = new Vector3f(size / 4 * stepScale, 0, -size / 4
-                * stepScale);
+        Vector3f origin3 = new Vector3f(size / 4 * stepScale.x, 0, -size / 4
+                * stepScale.z);
 
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
@@ -291,8 +291,8 @@ public class TerrainPage extends Node {
                 heightBlock4[count++] = heightMap[j + (i * size)];
             }
         }
-        Vector3f origin4 = new Vector3f(size / 4 * stepScale, 0, size / 4
-                * stepScale);
+        Vector3f origin4 = new Vector3f(size / 4 * stepScale.x, 0, size / 4
+                * stepScale.z);
 
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
@@ -312,7 +312,7 @@ public class TerrainPage extends Node {
      * 
      *  
      */
-    private void createQuadBlock(int size, float stepScale, int[] heightMap,
+    private void createQuadBlock(int size, Vector3f stepScale, int[] heightMap,
             boolean clod) {
         Vector2f tempOffset = new Vector2f();
         offsetAmount += size / 4;
@@ -326,8 +326,8 @@ public class TerrainPage extends Node {
                 heightBlock1[count++] = heightMap[j + (i * size)];
             }
         }
-        Vector3f origin1 = new Vector3f(-size / 4 * stepScale, 0, -size / 4
-                * stepScale);
+        Vector3f origin1 = new Vector3f(-size / 4 * stepScale.x, 0, -size / 4
+                * stepScale.z);
 
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
@@ -349,8 +349,8 @@ public class TerrainPage extends Node {
                 heightBlock2[count++] = heightMap[j + (i * size)];
             }
         }
-        Vector3f origin2 = new Vector3f(-size / 4 * stepScale, 0, size / 4
-                * stepScale);
+        Vector3f origin2 = new Vector3f(-size / 4 * stepScale.x, 0, size / 4
+                * stepScale.z);
 
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
@@ -372,8 +372,8 @@ public class TerrainPage extends Node {
                 heightBlock3[count++] = heightMap[j + (i * size)];
             }
         }
-        Vector3f origin3 = new Vector3f(size / 4 * stepScale, 0, -size / 4
-                * stepScale);
+        Vector3f origin3 = new Vector3f(size / 4 * stepScale.x, 0, -size / 4
+                * stepScale.z);
 
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;
@@ -395,8 +395,8 @@ public class TerrainPage extends Node {
                 heightBlock4[count++] = heightMap[j + (i * size)];
             }
         }
-        Vector3f origin4 = new Vector3f(size / 4 * stepScale, 0, size / 4
-                * stepScale);
+        Vector3f origin4 = new Vector3f(size / 4 * stepScale.x, 0, size / 4
+                * stepScale.z);
 
         tempOffset.x = offset.x;
         tempOffset.y = offset.y;

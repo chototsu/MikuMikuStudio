@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.20 2004-04-23 01:05:57 renanse Exp $
+ * @version $Id: TestTerrain.java,v 1.21 2004-04-28 13:37:58 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -86,7 +86,8 @@ public class TestTerrain extends SimpleGame {
     lightState.setTwoSidedLighting(true);
 
     MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
-    TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5,
+    Vector3f terrainScale = new Vector3f(5,1,5);
+    TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
                                        heightMap.getHeightMap(),
                                        new Vector3f(0, 0, 0), false);
     tb.setDetailTexture(1, 4);

@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.10 2004-04-23 05:06:45 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.11 2004-04-28 13:37:58 mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -129,7 +129,8 @@ public class TestTerrainLighting extends SimpleGame {
     rootNode.attachChild(lightNode);
 
     MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
-    TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5,
+    Vector3f terrainScale = new Vector3f(5,1,5);
+    TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
                                        heightMap.getHeightMap(),
                                        new Vector3f(0, 0, 0), false);
     tb.setDetailTexture(1, 4);

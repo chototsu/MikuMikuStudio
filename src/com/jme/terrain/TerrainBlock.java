@@ -51,7 +51,7 @@ import com.jme.math.Vector3f;
  * use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.15 2004-04-26 16:00:55 mojomonkey Exp $
+ * @version $Id: TerrainBlock.java,v 1.16 2004-04-28 13:37:59 mojomonkey Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
     //size of the block, totalSize is the total size of the heightmap if this
@@ -60,7 +60,7 @@ public class TerrainBlock extends AreaClodMesh {
     private int totalSize;
 
     //x/z step
-    private float stepScale;
+    private Vector3f stepScale;
     //use lod or not
     private boolean useClod;
     
@@ -75,12 +75,12 @@ public class TerrainBlock extends AreaClodMesh {
      * <code>TriMesh</code> object for renderering.
      * @param name the name of the terrain block.
      * @param size the size of the heightmap.
-     * @param stepScale the scale for the x/z axes.
+     * @param stepScale the scale for the axes.
      * @param heightMap the height data.
      * @param origin the origin offset of the block.
      * @param clod true will use level of detail, false will not.
      */
-    public TerrainBlock(String name, int size, float stepScale,
+    public TerrainBlock(String name, int size, Vector3f stepScale,
             int[] heightMap, Vector3f origin, boolean clod) {
         this(name, size, stepScale, heightMap, origin, clod, size,
                 new Vector2f(), 0);
@@ -92,7 +92,7 @@ public class TerrainBlock extends AreaClodMesh {
      * <code>TriMesh</code> object for renderering.
      * @param name the name of the terrain block.
      * @param size the size of the block.
-     * @param stepScale the scale for the x/z axes.
+     * @param stepScale the scale for the axes.
      * @param heightMap the height data.
      * @param origin the origin offset of the block.
      * @param clod true will use level of detail, false will not.
@@ -101,7 +101,7 @@ public class TerrainBlock extends AreaClodMesh {
      * @param offset the offset for texture coordinates.
      * @param offsetAmount the total offset amount.
      */
-    public TerrainBlock(String name, int size, float stepScale,
+    public TerrainBlock(String name, int size, Vector3f stepScale,
             int[] heightMap, Vector3f origin, boolean clod, int totalSize,
             Vector2f offset, int offsetAmount) {
         super(name);
@@ -166,8 +166,8 @@ public class TerrainBlock extends AreaClodMesh {
         vertex = new Vector3f[heightMap.length];
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                vertex[x + (y * size)] = new Vector3f(x * stepScale,
-                        heightMap[x + (y * size)], y * stepScale);
+                vertex[x + (y * size)] = new Vector3f(x * stepScale.x,
+                        heightMap[x + (y * size)] * stepScale.y, y * stepScale.z);
             }
         }
 
@@ -208,15 +208,15 @@ public class TerrainBlock extends AreaClodMesh {
      *  
      */
     private void buildTextureCoordinates() {
-        offset.x += (int) (offsetAmount * stepScale);
-        offset.y += (int) (offsetAmount * stepScale);
+        offset.x += (int) (offsetAmount * stepScale.x);
+        offset.y += (int) (offsetAmount * stepScale.z);
 
         texture[0] = new Vector2f[vertex.length];
 
         for (int i = 0; i < texture[0].length; i++) {
             texture[0][i] = new Vector2f((vertex[i].x + offset.x)
-                    / (stepScale * (totalSize - 1)), (vertex[i].z + offset.y)
-                    / (stepScale * (totalSize - 1)));
+                    / (stepScale.x * (totalSize - 1)), (vertex[i].z + offset.y)
+                    / (stepScale.z * (totalSize - 1)));
         }
 
         setTextures(texture[0]);

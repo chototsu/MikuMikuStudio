@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.12 2004-04-23 22:31:10 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.13 2004-04-28 13:37:58 mojomonkey Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -102,7 +102,8 @@ public class TestTerrainPage extends SimpleGame {
     //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
     FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255,
         0.75f);
-    TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), 10,
+    Vector3f terrainScale = new Vector3f(10,1,10);
+    TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), terrainScale,
                                      heightMap.getHeightMap(), true);
 
     tb.setDetailTexture(1, 16);
