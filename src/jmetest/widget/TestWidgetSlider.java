@@ -280,8 +280,8 @@ public class TestWidgetSlider extends SimpleGame {
 
     public static void main(String[] args) {
         TestWidgetSlider app = new TestWidgetSlider();
-        //app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        //app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
         app.start();
     }
 
