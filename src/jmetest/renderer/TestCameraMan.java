@@ -57,6 +57,9 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.Timer;
+import com.jme.scene.Text;
+import com.jme.util.TextureManager;
+import com.jme.scene.state.AlphaState;
 
 /**
  * <code>TestRenderToTexture</code>
@@ -67,17 +70,14 @@ public class TestCameraMan extends SimpleGame {
     private Camera cam;
     private Node root, scene;
     private InputHandler input;
-    private Thread thread;
     private Timer timer;
-    private Quaternion rotQuat;
-    private Quaternion rotMBQuat;
-    private float angle = 0;
-    private float angle2 = 0;
-    private Vector3f axis;
     private CameraNode camNode;
 
-    TextureRenderer tRenderer;
-    Texture fakeTex;
+    private TextureRenderer tRenderer;
+    private Texture fakeTex;
+
+    private Node fpsNode;
+    private Text fps;
 
     /**
      * Entry point for the test,
@@ -95,6 +95,8 @@ public class TestCameraMan extends SimpleGame {
      */
     protected void update(float interpolation) {
         timer.update();
+        fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
+                  display.getRenderer().getStatistics());
         input.update(timer.getTimePerFrame());
         scene.updateGeometricState(0.0f, true);
     }
@@ -110,8 +112,7 @@ public class TestCameraMan extends SimpleGame {
         //display scene
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
-        display.setTitle("Camera Man - FPS:"+(int)timer.getFrameRate()+" - "+display.getRenderer().getStatistics());
-
+        display.getRenderer().draw(fpsNode);
     }
 
     /**
@@ -159,9 +160,6 @@ public class TestCameraMan extends SimpleGame {
         input.setMouseSpeed(1f);
         timer = Timer.getTimer("LWJGL");
 
-        rotQuat = new Quaternion();
-        rotMBQuat = new Quaternion();
-        axis = new Vector3f(1,1,0.5f);
         display.setTitle("Camera Man");
         display.getRenderer().enableStatistics(true);
     }
@@ -180,30 +178,25 @@ public class TestCameraMan extends SimpleGame {
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         am.setDirection(new Vector3f(1, 0, 0));
 
-        
+
         LightState state = display.getRenderer().getLightState();
         state.setEnabled(true);
         state.attach(am);
         am.setEnabled(true);
-        
+
         SpotLight sl = new SpotLight();
         sl.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         sl.setAmbient(new ColorRGBA(0.75f, 0.75f, 0.75f, 1.0f));
         sl.setDirection(new Vector3f(0, 0, 1));
         sl.setLocation(new Vector3f(0, 0, 0));
         sl.setAngle(25);
-        
+
         LightState cameraLightState = display.getRenderer().getLightState();
         cameraLightState.setEnabled(true);
-        
-        sl.setEnabled(true);
-        
-        scene.setRenderState(state);
 
-        CullState cs = display.getRenderer().getCullState();
-        cs.setCullMode(CullState.CS_BACK);
-        cs.setEnabled(true);
-        scene.setRenderState(cs);
+        sl.setEnabled(true);
+
+        scene.setRenderState(state);
 
         model = new MilkshapeASCIIModel("Milkshape Model");
         URL modelURL = TestCameraMan.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
@@ -211,7 +204,13 @@ public class TestCameraMan extends SimpleGame {
         model.getAnimationController().setActive(false);
         scene.attachChild(model);
         root.attachChild(scene);
-        
+
+        CullState cs = display.getRenderer().getCullState();
+        cs.setCullMode(CullState.CS_BACK);
+        cs.setEnabled(false);
+        scene.setRenderState(cs);
+        model.setRenderState(cs);
+
         LightNode cameraLight = new LightNode("Camera Light", cameraLightState);
         cameraLight.setLight(sl);
         cameraLight.setTarget(model);
@@ -227,6 +226,10 @@ public class TestCameraMan extends SimpleGame {
         quad.initialize(3,3);
         quad.setLocalTranslation(new Vector3f(3.75f,52.5f,90));
 
+        Quad quad2 = new Quad("Monitor");
+        quad2.initialize(3.4f,3.4f);
+        quad2.setLocalTranslation(new Vector3f(3.95f,52.6f,89.5f));
+
         // Setup our params for the depth buffer
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
@@ -235,12 +238,14 @@ public class TestCameraMan extends SimpleGame {
         model.setRenderState(buf);
         scene.setRenderState(buf);
         scene.attachChild(quad);
+        scene.attachChild(quad2);
         scene.attachChild(camNode);
 
 
         // Ok, now lets create the Texture object that our monkey cube will be rendered to.
 
-        tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
+//        tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
+        tRenderer.setBackgroundColor(new ColorRGBA(0f, 0f, 0f, 1f));
         fakeTex = tRenderer.setupTexture();
         TextureState screen = display.getRenderer().getTextureState();
         screen.setTexture(fakeTex);
@@ -250,8 +255,41 @@ public class TestCameraMan extends SimpleGame {
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
 
+        //This code is all for the FPS display...
+        // First setup alpha state
+        AlphaState as1 = display.getRenderer().getAlphaState();
+        as1.setBlendEnabled(true);
+        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setTestEnabled(true);
+        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setEnabled(true);
+
+        // Now setup font texture
+        TextureState font = display.getRenderer().getTextureState();
+        font.setTexture(
+            TextureManager.loadTexture(
+            TestImposterNode.class.getClassLoader().getResource(
+            "jmetest/data/font/font.png"),
+            Texture.MM_LINEAR,
+            Texture.FM_LINEAR,
+            true));
+        font.setEnabled(true);
+
+        // Then our font Text object.
+        fps = new Text("FPS label", "");
+        fps.setRenderState(font);
+        fps.setRenderState(as1);
+        fps.setForceView(true);
+
+        // Finally, a stand alone node (not attached to root on purpose)
+        fpsNode = new Node("FPS node");
+        fpsNode.attachChild(fps);
+        fpsNode.setForceView(true);
+
         cam.update();
         scene.updateGeometricState(0.0f, true);
+        fpsNode.updateGeometricState(0.0f, true);
     }
 
     /**
