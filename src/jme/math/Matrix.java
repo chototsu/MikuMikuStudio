@@ -39,7 +39,7 @@ import jme.exception.MonkeyRuntimeException;
  * convinience methods for creating the matrix from a multitude of sources.
  * 
  * @author Mark Powell
- * @version $Id: Matrix.java,v 1.4 2003-08-22 02:26:48 mojomonkey Exp $
+ * @version $Id: Matrix.java,v 1.5 2003-08-28 18:48:21 mojomonkey Exp $
  */
 public class Matrix {
     private float matrix[];
@@ -93,6 +93,22 @@ public class Matrix {
 
         for (int i = 0; i < 16; i++) {
             this.matrix[i] = matrix[i];
+        }
+    }
+    
+    public void add(Matrix matrix) {
+        for(int i = 0; i < 16; i++) {
+            this.matrix[i] += matrix.getMatrix()[i];
+        }
+    }
+    
+    /**
+     * <code>multiply</code> multiplies this matrix by a scalar.
+     * @param scalar the scalar to multiply this matrix by.
+     */
+    public void multiply(float scalar) {
+        for(int i = 0; i < 16; i++) {
+            matrix[i] *= scalar;
         }
     }
 
@@ -373,5 +389,17 @@ public class Matrix {
             vector[0] * matrix[8]
                 + vector[1] * matrix[9]
                 + vector[2] * matrix[10];
+    }
+    
+    public void tensorProduct (Vector u, Vector v) {
+        matrix[0] = u.x * v.x;
+        matrix[1] = u.x * v.y;
+        matrix[2] = u.x * v.z;
+        matrix[4] = u.y * v.x;
+        matrix[5] = u.y * v.y;
+        matrix[6] = u.y * v.z;
+        matrix[8] = u.z * v.x;
+        matrix[9] = u.z * v.y;
+        matrix[10] = u.z * v.z;
     }
 }
