@@ -65,7 +65,7 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume{
         if (fDistance <=-fRadius)
             return Plane.NEGATIVE_SIDE;
         else
-            return Plane.POSITIVE_SIDE;
+            return Plane.NO_SIDE;
     }
 
     public void computeFromPoints(Vector3f[] points) {
