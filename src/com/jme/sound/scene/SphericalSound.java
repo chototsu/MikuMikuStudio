@@ -173,7 +173,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
         if (playTime != null) {
             if (activeSource < sequence.length) {
                 if (sequenceStartTime == 0) sequenceStartTime = time;
-                if ((time - sequenceStartTime) > playTime[activeSource] / 1000) {
+                if ((time - sequenceStartTime) > playTime[activeSource]/1000) {
                     stop();
                     sequenceStartTime = time;
                     activeSource++;
