@@ -41,7 +41,7 @@ import java.util.Arrays;
  * The width and height must be greater than 0. The data is contained in a
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.7 2005-02-15 00:50:58 renanse Exp $
+ * @version $Id: Image.java,v 1.8 2005-02-18 18:28:02 renanse Exp $
  */
 public class Image {
     /**
@@ -89,7 +89,7 @@ public class Image {
     /**
      * RGBA8888, compressed to DXT-3 internally.
      */
-    public static final int RGBA8888_DXTC3 = 7;
+    public static final int RGBA8888_DXT3 = 7;
 
     /**
      * RGBA8888, compressed to DXT-5 internally.
