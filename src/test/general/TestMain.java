@@ -220,7 +220,7 @@ public class TestMain extends AbstractGame {
 	
 	protected void initGame() {
 		hm1 = new FaultFractalHeightMap(1025, 64, 0, 255, 0.15f);
-		hm1.setHeightScale(0.50f);
+		hm1.setHeightScale(1.0f);
         pt = new ProceduralTexture(hm1);
 		pt.addTexture(new ImageIcon("jme/data/texture/plants15.jpg"), -128, 0, 128);
 		pt.addTexture(new ImageIcon("jme/data/texture/plants12.jpg"), 0, 128, 255);
@@ -269,12 +269,12 @@ public class TestMain extends AbstractGame {
 		
 		msmodel.setScale(new Vector3f(0.15f,0.15f,0.15f));
 		e.setGeometry(msmodel);
-		e.setPosition(new Vector3f(1000,hm1.getScaledHeightAtPoint(1000/2,1000/2),1000));
+		e.setPosition(new Vector3f(1000,hm1.getScaledHeightAtPoint(1000/4,1000/4),1000));
 		e.setVisibilityType(Entity.VISIBILITY_SPHERE);
 		camera.setView(e.getPosition());
 
-		l.setXScale(2.0f);
-		l.setZScale(2.0f);
+		l.setXScale(4.0f);
+		l.setZScale(4.0f);
 		l.setTexture(pt.getImageIcon());
 		world = new World();
 		world.addEntity(e);
@@ -293,7 +293,7 @@ public class TestMain extends AbstractGame {
 		l.setVolumetricFogDepth(100);
 		object = new Pyramid(10,30);
 		object.setColor(0.5f,0.85f,0.5f,0.5f);
-		object.setTexture("jme/data/texture/Plants15.jpg");
+		object.setTexture("jme/data/texture/plants15.jpg");
         object.useDisplayList(true);
 
         //object = new MilkshapeModel("jme/data/tree.ms3d");
@@ -307,8 +307,8 @@ public class TestMain extends AbstractGame {
 			do {
 				x = (float)Math.random() * 2000;
 				z = (float)Math.random() * 2000;
-			} while(hm1.getInterpolatedHeight(x/2,z/2) < 75 || hm1.getInterpolatedHeight(x/2,z/2) > 200);
-			elist[i].setPosition(new Vector3f(x,hm1.getInterpolatedHeight(x/2,z/2)+1,z));
+			} while(hm1.getInterpolatedHeight(x/2,z/2) < 75 || hm1.getInterpolatedHeight(x/4,z/4) > 200);
+			elist[i].setPosition(new Vector3f(x,hm1.getInterpolatedHeight(x/4,z/4)+1,z));
 			world.addEntity(elist[i]);
 			elist[i].setVisibilityType(Entity.VISIBILITY_SPHERE);
 		}

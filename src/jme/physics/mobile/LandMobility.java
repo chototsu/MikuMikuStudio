@@ -123,14 +123,11 @@ public class LandMobility {
      * @param position the position to update.
      */
 	public void updatePosition(Vector3f position) {
-		float x, z;
 		float sin = (float)Math.sin(Math.toRadians(currentAngle));
 		float cos = (float)Math.cos(Math.toRadians(currentAngle));
-		x = sin * distance;
-		z = cos * distance;
 		
-		position.x += x;
-		position.z += z;
+		position.x += sin * distance;
+		position.z += cos * distance;
 		
 		distance = 0;
 
@@ -149,7 +146,7 @@ public class LandMobility {
     
     /**
      * <code>move</code> sets the current acceleration to the base acceleration
-     * time the acceleration scalar. Therefore, if you wanted to move forward
+     * to the acceleration scalar. Therefore, if you wanted to move forward
      * at full speed the accelerationScalar would be set to 1. If you wanted
      * to decelerate by half the speed (-0.5).
      * @param accelerationScalar the scalar to multiply the baseAcceleration and
@@ -161,40 +158,97 @@ public class LandMobility {
         moving = true;
     }
     
-    
-    public void strafe(float speed) {
+    /**
+     * <code>strafe</code> sets the current acceleration to the base strafe
+     * acceleration to the acceleration scalar. Therefore, if you want to strafe
+     * to the right, you would set it to -1. To the left would be 1.
+     * @param strafeScalar is the scalar to multiply the strafe acceleration
+     *      by.
+     */
+    public void strafe(float strafeScalar) {
     	//TODO set up strafe
     }
     
-    public void setCoastDeceleration(float cd) {
-    	coastDeceleration = cd;
+    /**
+     * <code>setCoastDeceleration</code> sets the deceleration rate of the
+     * entity. This value is used when the entity is not actively moving.
+     * @param coastDeceleration the deceleration rate of the entity.
+     */
+    public void setCoastDeceleration(float coastDeceleration) {
+    	this.coastDeceleration = coastDeceleration;
     }
-	public float getTurningVelocity() {
-		return turningVelocity;
+    
+    /**
+     * <code>setMaxVelocity</code> sets the maximum velocity the entity is
+     * allowed to obtain.
+     * @param maxVelocity the maximum velocity of the entity.
+     */
+    public void setMaxVelocity(float maxVelocity) {
+		this.maxVelocity = maxVelocity;
 	}
-	public void setMaxVelocity(float f) {
-		maxVelocity = f;
+    
+    /**
+     * <code>setMinVelocity</code> sets the minimum velocity (backward movement)
+     * the entity is allowed to obtain.
+     * @param minVelocity the minimum velocity of the entity.
+     */
+	public void setMinVelocity(float minVelocity) {
+		this.minVelocity = minVelocity;
 	}
-	public void setMinVelocity(float f) {
-		minVelocity = f;
-	}
+    
+    /**
+     * <code>setTurningVelocity</code> sets the rate at which the entity can
+     * turn.
+     * @param turningVelocity the rate of turn of the entity.
+     */
 	public void setTurningVelocity(float f) {
 		turningVelocity = f;
 	}
+    
+    /**
+     * <code>setBaseAcceleration</code> sets the acceleration of the entity. 
+     * This base is used to determine the velocity of the entity.
+     * @param baseAcceleration the base (unmodified) acceleration rate of the
+     *      entity.
+     */
+    public void setBaseAcceleration(float baseAcceleration) {
+        this.baseAcceleration = baseAcceleration;
+    }
+
+    /**
+     * <code>setCurrentAngle</code> sets the current angle of the entity. 
+     * Effectively rotating the entity instantly.
+     * @param currentAngle the angle to set the entity to.
+     */
+    public void setCurrentAngle(float currentAngle) {
+        this.currentAngle = currentAngle;
+    }
+
+    /**
+     * <code>getCurrentAngle</code> returns the current angle the entity is 
+     * facing.
+     * @return the current angle of the entity.
+     */
 	public float getCurrentAngle() {
 		return currentAngle;
 	}
+    
+    /**
+     * <code>getCurrentVelocity</code> returns the current velocity of the 
+     * entity.
+     * @return the current velocity of the entity.
+     */
 	public float getCurrentVelocity() {
 		return currentVelocity;
 	}
-	public void setCurrentAngle(float f) {
-		currentAngle = f;
-	}
+    
+    /**
+     * <code>getCurrentTurningVel</code> returns the current velocity of turning.
+     * @return the current turning velocity.
+     */
 	public float getCurrentTurningVel() {
         return currentTurningVel;
     }
     
-    public void setBaseAcceleration(float baseAcceleration) {
-        this.baseAcceleration = baseAcceleration;
-    }
+
 }

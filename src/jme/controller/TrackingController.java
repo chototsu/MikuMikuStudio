@@ -84,7 +84,7 @@ public class TrackingController extends AbstractGameController {
 		physics.setBaseAcceleration(60.0f);
 		physics.setCoastDeceleration(20.0f);
 		physics.setCurrentAngle(0);
-		physics.setTurningVelocity(60.0f);
+		physics.setTurningVelocity(100.0f);
 
 		setDefaultKeyBindings();
 	}
@@ -111,12 +111,12 @@ public class TrackingController extends AbstractGameController {
 		camera.updateFrustum();
 		physics.updatePosition(entity.getPosition());
 		//app specific
-		if (entity.getPosition().x > 2000) {
-			entity.getPosition().x = 2000;
+		if (entity.getPosition().x > 4000) {
+			entity.getPosition().x = 4000;
 		}
 
-		if (entity.getPosition().z > 2000) {
-			entity.getPosition().z = 2000;
+		if (entity.getPosition().z > 4000) {
+			entity.getPosition().z = 4000;
 		}
 
 		if (entity.getPosition().x < 200) {
@@ -128,8 +128,8 @@ public class TrackingController extends AbstractGameController {
 		}
 		entity.getPosition().y =
 			hm.getInterpolatedHeight(
-				entity.getPosition().x / 2,
-				entity.getPosition().z / 2)
+				entity.getPosition().x / 4,
+				entity.getPosition().z / 4)
 				+ 3;
 		camera.setView(entity.getPosition());
 
@@ -148,12 +148,12 @@ public class TrackingController extends AbstractGameController {
 			camera.getPosition().x += vec.x * 1.00f;
 			camera.getPosition().z += vec.z * 1.00f;
 
-			if (camera.getPosition().x > 2000) {
-				camera.getPosition().x = 2000;
+			if (camera.getPosition().x > 4000) {
+				camera.getPosition().x = 4000;
 			}
 
-			if (camera.getPosition().z > 2000) {
-				camera.getPosition().z = 2000;
+			if (camera.getPosition().z > 4000) {
+				camera.getPosition().z = 4000;
 			}
 
 			if (camera.getPosition().x < 200) {
@@ -164,11 +164,20 @@ public class TrackingController extends AbstractGameController {
 				camera.getPosition().z = 200;
 			}
 
-			camera.getPosition().y =
+            camera.getPosition().y = entity.getPosition().y;
+            
+			if(camera.getPosition().y <
 				hm.getInterpolatedHeight(
-					camera.getPosition().x / 2,
-					camera.getPosition().z / 2)
-					+ 8;
+					camera.getPosition().x / 4,
+					camera.getPosition().z / 4)
+					+ 8) {
+            
+                camera.getPosition().y = hm.getInterpolatedHeight(
+                    camera.getPosition().x / 4,
+                    camera.getPosition().z / 4)
+                    + 8;
+                        
+			}
 		}
 
 		//update animation....
