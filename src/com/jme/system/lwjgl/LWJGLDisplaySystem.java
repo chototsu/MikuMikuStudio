@@ -194,6 +194,10 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public void reset() {
         Display.resetDisplayMode();
     }
+    
+    public void close() {
+    	Window.destroy();
+    }
 
     /*
      * (non-Javadoc)

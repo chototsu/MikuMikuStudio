@@ -50,7 +50,7 @@ import com.jme.math.Vector2f;
  * <code>DisplaySystem</code>
  *
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.28 2004-05-24 21:03:05 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.29 2004-05-26 13:35:11 mojomonkey Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -73,7 +73,7 @@ import com.jme.math.Vector2f;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.28 2004-05-24 21:03:05 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.29 2004-05-26 13:35:11 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
 
@@ -237,6 +237,12 @@ public abstract class DisplaySystem {
      *
      */
     public abstract void reset();
+    
+    /**
+     * <code>close</code> shutdowns and destroys any window contexts.
+     *
+     */
+    public abstract void close();
 
     /**
      * @param fontName -
