@@ -26,20 +26,20 @@ public class HelloKeyframes extends SimpleGame {
 
     protected void simpleInitGame() {
         // The box we start off looking like
-        TriMesh startBox=new Sphere("begining box",15,15,4);
+        TriMesh startBox=new Sphere("begining box",15,15,3);
         // Null colors,normals,textures because they aren't being updated
         startBox.setColors(null);
         startBox.setNormals(null);
         startBox.setTextures(null);
 
         // The middle animation sphere
-        TriMesh middleSphere=new Sphere("middleSphere sphere",15,15,4);
+        TriMesh middleSphere=new Sphere("middleSphere sphere",15,15,3);
         middleSphere.setColors(null);
         middleSphere.setNormals(null);
         middleSphere.setTextures(null);
 
         // The end animation pyramid
-        TriMesh endPyramid=new Sphere("End sphere",15,15,4);
+        TriMesh endPyramid=new Sphere("End sphere",15,15,3);
         endPyramid.setColors(null);
         endPyramid.setNormals(null);
         endPyramid.setTextures(null);
@@ -54,9 +54,9 @@ public class HelloKeyframes extends SimpleGame {
             Vector3f pyramidPos=pyramidVerts[i];
 
             // The box is the sign of the sphere coords * 5
-            boxPos.x =FastMath.sign(spherePos.x)*5;
-            boxPos.y =FastMath.sign(spherePos.y)*5;
-            boxPos.z =FastMath.sign(spherePos.z)*5;
+            boxPos.x =FastMath.sign(spherePos.x)*4;
+            boxPos.y =FastMath.sign(spherePos.y)*4;
+            boxPos.z =FastMath.sign(spherePos.z)*4;
 
             if (boxPos.y<0){    // The bottom of the pyramid
                 pyramidPos.x=boxPos.x;
@@ -68,7 +68,8 @@ public class HelloKeyframes extends SimpleGame {
         }
 
         // The object that will actually be rendered
-        TriMesh renderedObject=new Sphere("Rendered Object",15,15,2);
+        TriMesh renderedObject=new Sphere("Rendered Object",15,15,3);
+        renderedObject.setLocalScale(2);
 
         // Create my KeyframeController
         KeyframeController kc=new KeyframeController();
