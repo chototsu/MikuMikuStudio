@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.17 2004-05-12 00:19:34 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.18 2004-05-13 00:50:58 mojomonkey Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -89,6 +89,7 @@ public class TestTerrainPage extends SimpleGame {
     camNode.setLocalTranslation(new Vector3f(0, 250, -20));
     camNode.updateWorldData(0);
     input = new NodeHandler(this, camNode, properties.getRenderer());
+    rootNode.attachChild(camNode);
     input.setKeySpeed(150f);
     input.setMouseSpeed(1f);
     display.setTitle("Terrain Test");
