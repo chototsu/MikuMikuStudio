@@ -263,7 +263,7 @@ public class TestMain extends AbstractGame {
 		cc = new TestController(camera, e, this);
 		cc.setHeightMap(hm1);
 		//MilkshapeModel msmodel = new MilkshapeModel("jme/data/tris.ms3d");
-		Md3Model msmodel = new Md3Model("jme/data/model/lara","lara","railgun");
+		Md3Model msmodel = new Md3Model("jme/data/model/Paladin","Paladin","railgun");
 		msmodel.setTorsoAnimation("TORSO_STAND");
 		msmodel.setLegsAnimation("LEGS_IDLE");
 		
@@ -313,14 +313,8 @@ public class TestMain extends AbstractGame {
 			elist[i].setVisibilityType(Entity.VISIBILITY_SPHERE);
 		}
 		
-		
-		
-		//camera.addChild(e);
 		world.setCamera(camera);
 		world.setEntityVisibility(true);
-		//e.setVisibilityType(Entity.VISIBILITY_SPHERE);
-		
-		
 		
 	}
 	public void rebuildTerrain() {
