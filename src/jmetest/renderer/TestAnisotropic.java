@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestAnisotropic</code>
  * @author Joshua Slack
- * @version $Id: TestAnisotropic.java,v 1.4 2004-08-14 00:50:05 cep21 Exp $
+ * @version $Id: TestAnisotropic.java,v 1.5 2004-09-07 07:13:29 renanse Exp $
  */
 public class TestAnisotropic extends SimpleGame {
 
@@ -110,7 +110,7 @@ public class TestAnisotropic extends SimpleGame {
     ts.setEnabled(true);
     regTexture =
         TextureManager.loadTexture(
-        TestBoxColor.class.getClassLoader().getResource(
+        TestAnisotropic.class.getClassLoader().getResource(
         "jmetest/data/texture/dirt.jpg"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
@@ -119,13 +119,13 @@ public class TestAnisotropic extends SimpleGame {
 
     anisoTexture =
         TextureManager.loadTexture(
-        TestBoxColor.class.getClassLoader().getResource(
+        TestAnisotropic.class.getClassLoader().getResource(
         "jmetest/data/texture/dirt.jpg"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
-        true);
+        ts.getMaxAnisotropic(),
+        true, true);
     anisoTexture.setWrap(Texture.WM_WRAP_S_WRAP_T);
-    anisoTexture.setAnisoLevel(ts.getMaxAnisotropic());
 
     ts.setTexture(regTexture);
     rootNode.setRenderState(ts);

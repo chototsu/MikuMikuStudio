@@ -61,7 +61,7 @@ import com.jme.image.Texture;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.25 2004-09-06 18:17:44 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.26 2004-09-07 07:13:29 renanse Exp $
  */
 final public class TextureManager {
 
@@ -92,7 +92,7 @@ final public class TextureManager {
   public static com.jme.image.Texture loadTexture(String file, int minFilter,
                                                   int magFilter,
                                                   boolean isMipMapped) {
-    return loadTexture(file, minFilter, magFilter, isMipMapped, true);
+    return loadTexture(file, minFilter, magFilter, 1.0f, isMipMapped, true);
   }
 
   /**
@@ -119,6 +119,7 @@ final public class TextureManager {
    */
   public static com.jme.image.Texture loadTexture(String file, int minFilter,
                                                   int magFilter,
+                                                  float anisoLevel,
                                                   boolean isMipmapped,
                                                   boolean flipped) {
     URL url = null;
@@ -128,7 +129,7 @@ final public class TextureManager {
     catch (MalformedURLException e) {
       e.printStackTrace();
     }
-    return loadTexture(url, minFilter, magFilter, isMipmapped, flipped);
+    return loadTexture(url, minFilter, magFilter, anisoLevel, isMipmapped, flipped);
   }
 
   /**
@@ -154,7 +155,7 @@ final public class TextureManager {
   public static com.jme.image.Texture loadTexture(URL file, int minFilter,
                                                   int magFilter,
                                                   boolean isMipMapped) {
-    return loadTexture(file, minFilter, magFilter, isMipMapped, true);
+    return loadTexture(file, minFilter, magFilter, 1.0f, isMipMapped, true);
   }
 
   /**
@@ -181,6 +182,7 @@ final public class TextureManager {
    */
   public static com.jme.image.Texture loadTexture(URL file, int minFilter,
                                                   int magFilter,
+                                                  float anisoLevel,
                                                   boolean isMipmapped,
                                                   boolean flipped) {
     if (null == file) {
@@ -191,7 +193,7 @@ final public class TextureManager {
     if (fileName == null)
       return null;
 
-    TextureKey tkey = new TextureKey(file, minFilter, magFilter, flipped);
+    TextureKey tkey = new TextureKey(file, minFilter, magFilter, anisoLevel, flipped);
     Texture texture = (Texture) m_tCache.get(tkey);
 
     if (texture != null)return texture;
@@ -241,7 +243,7 @@ final public class TextureManager {
                                     "(image null) Could not load: " + file);
       return null;
     }
-    texture = new Texture();
+    texture = new Texture(anisoLevel);
     texture.setCorrection(Texture.CM_PERSPECTIVE);
     texture.setFilter(magFilter);
     texture.setImage(imageData);

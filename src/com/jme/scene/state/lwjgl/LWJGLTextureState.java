@@ -57,7 +57,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.32 2004-08-31 05:13:35 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.33 2004-09-07 07:13:28 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -125,7 +125,7 @@ public class LWJGLTextureState extends TextureState {
     if (currentTexture == null)
       currentTexture = new Texture[numTexUnits];
 
-    if (maxAnisotropic == -1.0) {
+    if (maxAnisotropic == -1.0 && GLContext.GL_EXT_texture_filter_anisotropic) {
       // Due to LWJGL buffer check, you can't use smaller sized buffers (min_size = 16 for glGetFloat()).
       FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
       max_a.rewind();
@@ -193,7 +193,8 @@ public class LWJGLTextureState extends TextureState {
           }
 
           // Set up the anisotropic filter.
-          GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
+          if (GLContext.GL_EXT_texture_filter_anisotropic)
+            GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
                                EXTTextureFilterAnisotropic.
                                GL_TEXTURE_MAX_ANISOTROPY_EXT,
                                texture.getAnisoLevel());
@@ -217,7 +218,15 @@ public class LWJGLTextureState extends TextureState {
                                     GL11.GL_UNSIGNED_BYTE, image.getData());
             }
           }
+        } else {
+          // texture already exists in OpenGL, just bind it
+          GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture
+                             .getTextureId());
+        }
 
+        // If wrap mode was changed or this texture is new...
+        if (texture.needsWrapRefresh()) {
+          texture.setNeedsWrapRefresh(false);
           // set up wrap mode
           switch (texture.getWrap()) {
             case Texture.WM_ECLAMP_S_ECLAMP_T:
@@ -263,17 +272,13 @@ public class LWJGLTextureState extends TextureState {
                                    GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
               break;
           }
-
-        } else {
-          // texture already exists in OpenGL, just bind it
-          GL11.glBindTexture(GL11.GL_TEXTURE_2D, texture
-                             .getTextureId());
         }
+
 
         // If texture data was changed, (eg. render to texture) the
         // filtering needs to be redone.
-        if (texture.needsRefresh()) {
-          texture.setNeedsRefresh(false);
+        if (texture.needsFilterRefresh()) {
+          texture.setNeedsFilterRefresh(false);
 
           // set up filter mode
           GL11.glTexParameteri(GL11.GL_TEXTURE_2D,

@@ -52,7 +52,7 @@ import org.lwjgl.opengl.Window;
  * This class is used by LWJGL to render textures.  Users should <b>not</b> create this
  * class directly.  Instead, allow DisplaySystem to create it for you.
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.6 2004-08-09 07:46:04 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.7 2004-09-07 07:13:28 renanse Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int)
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
@@ -224,7 +224,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
                 deactivate();
             }
-            tex.setNeedsRefresh(true);
+            tex.setNeedsFilterRefresh(true);
 
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(), "render(Spatial, Texture)", e);

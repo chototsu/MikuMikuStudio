@@ -47,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.14 2004-09-06 18:17:45 renanse Exp $
+ * @version $Id: Texture.java,v 1.15 2004-09-07 07:13:29 renanse Exp $
  */
 public class Texture {
 
@@ -238,7 +238,8 @@ public class Texture {
   private float combineScaleRGB;
   private float combineScaleAlpha;
 
-  private boolean needsRefresh = false;
+  private boolean needsFilterRefresh = true;
+  private boolean needsWrapRefresh = true;
 
   /**
    * Constructor instantiates a new <code>Texture</code> object with
@@ -254,6 +255,16 @@ public class Texture {
     setBlendColor(new ColorRGBA(0, 0, 0, 0));
     combineScaleRGB = 1.0f;
     combineScaleAlpha = 1.0f;
+  }
+
+  /**
+   * Constructor instantiates a new <code>Texture</code> object with
+   * given attributes.
+   *
+   */
+  public Texture(float aniso) {
+    this();
+    this.anisoLevel = aniso;
   }
 
   /**
@@ -310,6 +321,7 @@ public class Texture {
       mipmapState = MM_NONE;
     }
     this.mipmapState = mipmapState;
+    needsFilterRefresh = true;
   }
 
   /**
@@ -346,6 +358,7 @@ public class Texture {
       filter = FM_NEAREST;
     }
     this.filter = filter;
+    needsFilterRefresh = true;
   }
 
   /**
@@ -366,6 +379,7 @@ public class Texture {
       wrap = WM_ECLAMP_S_ECLAMP_T;
     }
     this.wrap = wrap;
+    needsWrapRefresh = true;
   }
 
   /**
@@ -697,16 +711,29 @@ public class Texture {
     return anisoLevel;
   }
 
+  /**
+   *
+   * @param level float
+   * @deprecated Must set aniso level when loading texture from manager.
+   */
   public void setAnisoLevel(float level) {
     anisoLevel = level;
   }
 
-  public void setNeedsRefresh(boolean needed) {
-    needsRefresh = needed;
+  public void setNeedsFilterRefresh(boolean needed) {
+    needsFilterRefresh = needed;
   }
 
-  public boolean needsRefresh() {
-    return needsRefresh;
+  public boolean needsFilterRefresh() {
+    return needsFilterRefresh;
+  }
+
+  public void setNeedsWrapRefresh(boolean needed) {
+    needsWrapRefresh = needed;
+  }
+
+  public boolean needsWrapRefresh() {
+    return needsWrapRefresh;
   }
 
   public boolean equals(Object other) {

@@ -39,19 +39,21 @@ import java.net.URL;
  * retrieve <code>Texture</code> objects.
  *
  * @author Joshua Slack
- * @version $Id: TextureKey.java,v 1.1 2004-09-06 18:17:44 renanse Exp $
+ * @version $Id: TextureKey.java,v 1.2 2004-09-07 07:13:29 renanse Exp $
  */
 final public class TextureKey {
   private URL m_location = null;
   private int m_minFilter, m_maxFilter;
+  private float m_anisoLevel;
   private boolean m_flipped;
   int code = Integer.MAX_VALUE;
 
-  public TextureKey(URL location, int minFilter, int maxFilter, boolean flipped) {
+  public TextureKey(URL location, int minFilter, int maxFilter, float anisoLevel, boolean flipped) {
     m_location = location;
     m_minFilter = minFilter;
     m_maxFilter = maxFilter;
     m_flipped = flipped;
+    m_anisoLevel = anisoLevel;
   }
 
   public boolean equals(Object other) {
@@ -65,17 +67,19 @@ final public class TextureKey {
     if (!this.m_location.equals(that.m_location)) return false;
     if (this.m_minFilter != that.m_minFilter) return false;
     if (this.m_maxFilter != that.m_maxFilter) return false;
+    if (this.m_anisoLevel != that.m_anisoLevel) return false;
     if (this.m_flipped != that.m_flipped) return false;
 
     return true;
   }
 
+// TODO: make this better?
   public int hashCode() {
     if (code == Integer.MAX_VALUE) {
       code = m_location.hashCode();
-      code *= 1000;
-      code += m_maxFilter*100;
-      code += m_minFilter*10;
+      code += (int)(m_anisoLevel*100);
+      code += m_maxFilter;
+      code += m_minFilter;
       code += (m_flipped ? 1 : 0);
     }
     return code;
