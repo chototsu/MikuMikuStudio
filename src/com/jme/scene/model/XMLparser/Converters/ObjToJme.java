@@ -16,7 +16,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.net.URL;
-import java.net.MalformedURLException;
 
 
 /**
@@ -29,14 +28,28 @@ import java.net.MalformedURLException;
  */
 public class ObjToJme extends FormatConverter{
     private BufferedReader inFile;
+    /** Every vertex in the file*/
     private ArrayList vertexList=new ArrayList();
+    /** Every texture coordinate in the file*/
     private ArrayList textureList=new ArrayList();
+    /** Every normal in the file*/
     private ArrayList normalList=new ArrayList();
+    /** Last 'material' flag in the file*/
     private MaterialGrouping curGroup;
+    /** Default material group for groups without a material*/
     private final MaterialGrouping DEFAULT_GROUP=new MaterialGrouping();
+    /** Maps material names to the actual material object **/
     private HashMap materialNames=new HashMap();
-    private HashMap materialSets=new HashMap(); // Maps MaterialGroup to ArraySet
+    /** Maps Materials to their vertex usage **/
+    private HashMap materialSets=new HashMap();
 
+    /**
+     * Converts an .obj file to .jme format.  If you wish to use a .mtl to load the obj's material information please specify
+     * the base url where the .mtl is located with setProperty("mtllib",new URL(baseURL))
+     * @param format The .obj file's stream.
+     * @param jMEFormat The .jme file's stream.
+     * @throws IOException If anything bad happens.
+     */
     public void convert(InputStream format, OutputStream jMEFormat) throws IOException {
         vertexList.clear();
         textureList.clear();
@@ -54,6 +67,10 @@ public class ObjToJme extends FormatConverter{
         nullAll();
     }
 
+    /**
+     * Nulls all to let the gc do its job.
+     * @throws IOException
+     */
     private void nullAll() throws IOException {
         vertexList.clear();
         textureList.clear();
@@ -64,6 +81,10 @@ public class ObjToJme extends FormatConverter{
         inFile=null;
     }
 
+    /**
+     * Converts the structures of the .obj file to a scene to write
+     * @return The TriMesh or Node that represents the .obj file.
+     */
     private Spatial buildStructure() {
         Node toReturn=new Node("obj file");
         Object[] o=materialSets.keySet().toArray();
@@ -97,6 +118,11 @@ public class ObjToJme extends FormatConverter{
             return toReturn;
     }
 
+    /**
+     * Processes a line of text in the .obj file.
+     * @param s The line of text in the file.
+     * @throws IOException
+     */
     private void processLine(String s) throws IOException {
         if (s==null) return ;
         if (s.length()==0) return;
@@ -223,6 +249,9 @@ public class ObjToJme extends FormatConverter{
         TextureState ts;
     }
 
+    /**
+     * Stores a complete set of vertex/texture/normal triplet set that is to be indexed by the TriMesh.
+     */
     private class IndexSet{
         public IndexSet(){}
         public IndexSet(String parts){
@@ -265,6 +294,9 @@ public class ObjToJme extends FormatConverter{
         Vector3f normal;
     }
 
+    /**
+     * An array of information that will become a renderable trimesh.  Each material has it's own trimesh.
+     */
     private class ArraySet{
         private ArrayList vertexes=new ArrayList();
         private ArrayList normals=new ArrayList();

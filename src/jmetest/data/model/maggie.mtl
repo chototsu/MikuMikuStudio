@@ -1,0 +1,40 @@
+newmtl MAGGIE_black_2
+illum 4
+Ks 0.50 0.50 0.50
+Ns 9.60
+Ni 1.00
+Kd 0.00 0.00 0.00
+Ka 0.00 0.00 0.00
+Tf 1.00 1.00 1.00
+newmtl MAGGIE_blue_1
+illum 4
+Ks 0.50 0.50 0.50
+Ns 9.60
+Ni 1.00
+Kd 0.00 0.00 1.00
+Ka 0.00 0.00 1.00
+Tf 1.00 1.00 1.00
+newmtl MAGGIE_light_re
+illum 4
+Ks 0.50 0.50 0.50
+Ns 9.60
+Ni 1.00
+Kd 0.70 0.00 0.00
+Ka 0.70 0.00 0.00
+Tf 1.00 1.00 1.00
+newmtl MAGGIE_white_3
+illum 4
+Ks 0.50 0.50 0.50
+Ns 9.60
+Ni 1.00
+Kd 1.00 1.00 1.00
+Ka 1.00 1.00 1.00
+Tf 1.00 1.00 1.00
+newmtl MAGGIE_yellow_0
+illum 4
+Ks 0.50 0.50 0.50
+Ns 9.60
+Ni 1.00
+Kd 1.00 1.00 0.00
+Ka 1.00 1.00 0.00
+Tf 1.00 1.00 1.00
