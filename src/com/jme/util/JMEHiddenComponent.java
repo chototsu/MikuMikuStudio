@@ -44,7 +44,7 @@ import com.jme.util.JMEComponent;
  * processes.
  *
  * @author Joshua Slack
- * @version $Id: JMEHiddenComponent.java,v 1.1 2005-03-30 05:32:38 renanse Exp $
+ * @version $Id: JMEHiddenComponent.java,v 1.2 2005-03-30 20:18:05 renanse Exp $
  */
 
 public class JMEHiddenComponent extends JMEComponent {
@@ -60,6 +60,23 @@ public class JMEHiddenComponent extends JMEComponent {
 	public JMEHiddenComponent(int width, int height) {
 		super(width, height);
 	}
+	
+    protected void setupPaintThread() {
+        try {
+			new Thread() {
+				public void run() {
+					while (true) {
+						try {
+							sleep(refresh);
+							paint(null);
+						} catch (InterruptedException ex) {}
+					}
+				}
+			}.start();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+    }
 
 	/**
 	 * Overriden paint(Graphics) method.  Does not call super method.
