@@ -45,6 +45,7 @@ import javax.swing.ImageIcon;
 
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.math.Vector2f;
 
 /**
  * <code>ProceduralTexture</code> generates an <code>ImageIcon</code>
@@ -62,249 +63,260 @@ import com.jme.util.LoggingSystem;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.3 2004-04-22 22:27:08 renanse Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.4 2004-05-03 18:10:59 renanse Exp $
  */
 public class ProceduralTextureGenerator {
-	//output image
-	private ImageIcon proceduralTexture;
+  //output image
+  private ImageIcon proceduralTexture;
 
-	//inputs: height map and all input textures.
-	private AbstractHeightMap heightMap;
-	private ArrayList textureList;
+  //inputs: height map and all input textures.
+  private AbstractHeightMap heightMap;
+  private ArrayList textureList;
 
-	//the size of the texture.
-	private int size;
+  //the size of the texture.
+  private int size;
 
-	/**
-	 * Constructor instantiates a new <code>ProceduralTexture</code> object
-	 * initializing the list for textures and the height map.
-	 * @param heightMap the height map to use for the texture generation.
-	 */
-	public ProceduralTextureGenerator(AbstractHeightMap heightMap) {
-		textureList = new ArrayList();
-		this.heightMap = heightMap;
-		this.size = heightMap.getSize();
-	}
+  /**
+   * Constructor instantiates a new <code>ProceduralTexture</code> object
+   * initializing the list for textures and the height map.
+   * @param heightMap the height map to use for the texture generation.
+   */
+  public ProceduralTextureGenerator(AbstractHeightMap heightMap) {
+    textureList = new ArrayList();
+    this.heightMap = heightMap;
+    this.size = heightMap.getSize();
+  }
 
-	/**
-	 * <code>createTexture</code> takes the current height map and
-	 * the current loaded textures and produces an <code>ImageIcon</code>
-	 * which can be retrieved with a call to <code>getImageIcon</code>.
-	 */
-	public void createTexture(int textureSize) {
-		BufferedImage img =
-			new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_RGB);
-		DataBufferInt data =
-			(DataBufferInt) img.getRaster().getDataBuffer();
-		int[] pixels = data.getData();
+  /**
+   * <code>createTexture</code> takes the current height map and
+   * the current loaded textures and produces an <code>ImageIcon</code>
+   * which can be retrieved with a call to <code>getImageIcon</code>.
+   */
+  public void createTexture(int textureSize) {
+    BufferedImage img =
+        new BufferedImage(textureSize, textureSize, BufferedImage.TYPE_INT_RGB);
+    DataBufferInt data =
+        (DataBufferInt) img.getRaster().getDataBuffer();
+    int[] pixels = data.getData();
 
-		//tempvalues for the color
-		int red = 0;
-		int green = 0;
-		int blue = 0;
+    //tempvalues for the color
+    int red = 0;
+    int green = 0;
+    int blue = 0;
 
+    int tlSize = textureList.size();
+    int twidths[] = new int[tlSize];
+    int theights[] = new int[tlSize];
+    for (int i = 0; i < tlSize; i++) {
+      BufferedImage tempImg =
+          ( (TextureTile) textureList.get(i)).imageData;
+      twidths[i] = tempImg.getWidth();
+      theights[i] = tempImg.getHeight();
+    }
 
-		int scaledX;
-		int scaledZ;
+    int scaledX;
+    int scaledZ;
 
-		float mapRatio = (float)size / (float)textureSize;
+    float mapRatio = (float) size / (float) textureSize;
 
-		//check each pixel of the heightmap
-		for (int x = 0; x < textureSize; x++) {
-			for (int z = 0; z < textureSize; z++) {
-				//combine every texture for this pixel
-				for (int i = 0; i < textureList.size(); i++) {
-					BufferedImage tempImg =
-						((TextureTile) textureList.get(i)).imageData;
-					data =
-						(DataBufferInt) tempImg.getRaster()
-							.getDataBuffer();
-					pixels = data.getData();
+    //check each pixel of the heightmap
+    BufferedImage tempImg;
+    float scalar;
+    for (int x = 0; x < textureSize; x++) {
+      for (int z = 0; z < textureSize; z++) {
+        //combine every texture for this pixel
+        for (int i = 0; i < tlSize; i++) {
+          tempImg =
+              ( (TextureTile) textureList.get(i)).imageData;
+          data =
+              (DataBufferInt) tempImg.getRaster()
+              .getDataBuffer();
+          pixels = data.getData();
 
-					//We may have to tile the texture if the terrain is
-					//larger than the texture.
-					scaledX = x % tempImg.getWidth();
-					scaledZ = z % tempImg.getHeight();
+          //We may have to tile the texture if the terrain is
+          //larger than the texture.
+          scaledX = x % twidths[i];
+          scaledZ = z % theights[i];
 
-					//Retrieve the amount of the color to use for this
-					//texture.
-					float scalar = getTextureScale(interpolateHeight(x,z,mapRatio),i);
-					red += scalar
-						* ((pixels[scaledZ * tempImg.getWidth()
-							+ scaledX] & 0x00FF0000)
-							>> 16);
-					green += scalar
-						* ((pixels[scaledZ * tempImg.getWidth()
-							+ scaledX] & 0x0000FF00)
-							>> 8);
-					blue += scalar
-						* ((pixels[scaledZ * tempImg.getWidth()
-							+ scaledX] & 0x000000FF));
-				}
+          //Retrieve the amount of the color to use for this
+          //texture.
+          scalar = getTextureScale(interpolateHeight(x, z, mapRatio), i);
+          red += scalar
+              * ( (pixels[scaledZ * twidths[i]
+                   + scaledX] & 0x00FF0000)
+                 >> 16);
+          green += scalar
+              * ( (pixels[scaledZ * twidths[i]
+                   + scaledX] & 0x0000FF00)
+                 >> 8);
+          blue += scalar
+              * ( (pixels[scaledZ * twidths[i]
+                   + scaledX] & 0x000000FF));
+        }
 
-				//set the color for the final texture.
-				int rgb = red << 16 | green << 8 | blue;
-				img.setRGB(x, textureSize - (z+1), rgb);
+        //set the color for the final texture.
+        int rgb = red << 16 | green << 8 | blue;
+        img.setRGB(x, textureSize - (z + 1), rgb);
 
-				red = 0;
-				green = 0;
-				blue = 0;
-			}
-		}
+        red = 0;
+        green = 0;
+        blue = 0;
+      }
+    }
 
-		//create the new image from the data.
-		proceduralTexture = new ImageIcon(img);
-		proceduralTexture.setDescription("TerrainTexture");
+    //create the new image from the data.
+    proceduralTexture = new ImageIcon(img);
+    proceduralTexture.setDescription("TerrainTexture");
 
-		LoggingSystem.getLogger().log(Level.INFO,
-				"Created procedural texture successfully.");
-	}
+    LoggingSystem.getLogger().log(Level.INFO,
+                                  "Created procedural texture successfully.");
+  }
 
-	public boolean saveTexture(String filename) {
+  public boolean saveTexture(String filename) {
 
-		if (null == filename) {
-			throw new JmeException("Screenshot filename cannot be null");
-		}
-		LoggingSystem.getLogger().log(
-			Level.INFO,
-			"Taking screenshot: " + filename + ".png");
+    if (null == filename) {
+      throw new JmeException("Screenshot filename cannot be null");
+    }
+    LoggingSystem.getLogger().log(
+        Level.INFO,
+        "Taking screenshot: " + filename + ".png");
 
+    BufferedImage imageData = (BufferedImage) proceduralTexture.getImage();
 
-		BufferedImage imageData = (BufferedImage) proceduralTexture.getImage();
+    //write out the screenshot image to a file.
+    try {
+      File out = new File(filename + ".png");
+      return ImageIO.write(imageData, "png", out);
+    }
+    catch (IOException e) {
+      LoggingSystem.getLogger().log(
+          Level.WARNING,
+          "Could not create file: " + filename + ".png");
+      return false;
+    }
+  }
 
-		//write out the screenshot image to a file.
-		try {
-			File out = new File(filename + ".png");
-			return ImageIO.write(imageData, "png", out);
-		} catch (IOException e) {
-			LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"Could not create file: " + filename + ".png");
-			return false;
-		}
-	}
+  /**
+   * <code>addTexture</code> adds an additional texture to the list of
+   * input textures. Each texture has a low, optimal and high value
+   * associated with it. This determines how much of the texture color
+   * to use for a particular pixel. Where optimal is 100% of the color,
+   * less than low is 0% and higher than high is 0%. For example if the
+   * values are (0, 10, 20), and the height is 5, then 50% of the
+   * color will be used.
+   *
+   * @param image the input texture.
+   * @param low the low color value for this texture.
+   * @param optimal the optimal color value for this texture.
+   * @param high the high color value for this texture.
+   */
+  public void addTexture(ImageIcon image, int low, int optimal, int high) {
+    //create the texture data.
+    BufferedImage img =
+        new BufferedImage(
+        image.getIconWidth(),
+        image.getIconHeight(),
+        BufferedImage.TYPE_INT_RGB);
+    Graphics2D g = (Graphics2D) img.getGraphics();
+    g.drawImage(image.getImage(), null, null);
+    g.dispose();
 
-	/**
-	 * <code>addTexture</code> adds an additional texture to the list of
-	 * input textures. Each texture has a low, optimal and high value
-	 * associated with it. This determines how much of the texture color
-	 * to use for a particular pixel. Where optimal is 100% of the color,
-	 * less than low is 0% and higher than high is 0%. For example if the
-	 * values are (0, 10, 20), and the height is 5, then 50% of the
-	 * color will be used.
-	 *
-	 * @param image the input texture.
-	 * @param low the low color value for this texture.
-	 * @param optimal the optimal color value for this texture.
-	 * @param high the high color value for this texture.
-	 */
-	public void addTexture(ImageIcon image, int low, int optimal, int high) {
-		//create the texture data.
-		BufferedImage img =
-			new BufferedImage(
-				image.getIconWidth(),
-				image.getIconHeight(),
-				BufferedImage.TYPE_INT_RGB);
-		Graphics2D g = (Graphics2D) img.getGraphics();
-		g.drawImage(image.getImage(), null, null);
-		g.dispose();
+    //set the texture data and add it to the list.
+    TextureTile tile = new TextureTile();
+    tile.highHeight = high;
+    tile.optimalHeight = optimal;
+    tile.lowHeight = low;
+    tile.imageData = img;
+    textureList.add(tile);
+  }
 
-		//set the texture data and add it to the list.
-		TextureTile tile = new TextureTile();
-		tile.highHeight = high;
-		tile.optimalHeight = optimal;
-		tile.lowHeight = low;
-		tile.imageData = img;
-		textureList.add(tile);
-	}
+  /**
+   * <code>setHeightMap</code> sets the input heightmap to use
+   * for the texture generation.
+   * @param hm the new heightmap.
+   * @throws JmeException if hm is null.
+   */
+  public void setHeightMap(AbstractHeightMap hm) {
+    if (null == hm) {
+      throw new JmeException("Heightmap cannot be null");
+    }
+    heightMap = hm;
+  }
 
-	/**
-	 * <code>setHeightMap</code> sets the input heightmap to use
-	 * for the texture generation.
-	 * @param hm the new heightmap.
-	 * @throws JmeException if hm is null.
-	 */
-	public void setHeightMap(AbstractHeightMap hm) {
-		if(null == hm) {
-			throw new JmeException("Heightmap cannot be null");
-		}
-		heightMap = hm;
-	}
+  /**
+   * <code>getImageIcon</code> retrieves the procedural texture that
+   * has been created. Note that this will return null until
+   * <code>createTexture</code> has been called.
+   * @return the <code>ImageIcon</code> of the output texture.
+   */
+  public ImageIcon getImageIcon() {
+    return proceduralTexture;
+  }
 
-	/**
-	 * <code>getImageIcon</code> retrieves the procedural texture that
-	 * has been created. Note that this will return null until
-	 * <code>createTexture</code> has been called.
-	 * @return the <code>ImageIcon</code> of the output texture.
-	 */
-	public ImageIcon getImageIcon() {
-		return proceduralTexture;
-	}
+  /**
+   * <code>getTextureScale</code> returns the percentage of the
+   * color to use for a given height.
+   * @param height the height to compare.
+   * @param tileIndex the texture id.
+   * @return the percentage to use 0 to 1.
+   */
+  private float getTextureScale(int height, int tileIndex) {
+    TextureTile tile = (TextureTile) textureList.get(tileIndex);
 
-	/**
-	 * <code>getTextureScale</code> returns the percentage of the
-	 * color to use for a given height.
-	 * @param height the height to compare.
-	 * @param tileIndex the texture id.
-	 * @return the percentage to use 0 to 1.
-	 */
-	private float getTextureScale(int height, int tileIndex) {
-		TextureTile tile = (TextureTile) textureList.get(tileIndex);
+    //check if the height is within the textures boundary's, if not
+    //use 0%, otherwise determine where it lies on the scale.
+    if (height < tile.optimalHeight && height > tile.lowHeight) {
+      return ( (float) (height - tile.lowHeight))
+          / (tile.optimalHeight - tile.lowHeight);
+    } else if (height > tile.optimalHeight && height < tile.highHeight) {
+      return ( (float) (tile.highHeight - height))
+          / (tile.highHeight - tile.optimalHeight);
+    } else if (height == tile.optimalHeight) {
+      return 1.0f;
+    } else {
+      return 0.0f;
+    }
+  }
 
-		//check if the height is within the textures boundary's, if not
-		//use 0%, otherwise determine where it lies on the scale.
-		if (height < tile.optimalHeight && height > tile.lowHeight) {
-			return ((float) (height - tile.lowHeight))
-				/ (tile.optimalHeight - tile.lowHeight);
-		} else if (height > tile.optimalHeight && height < tile.highHeight) {
-			return ((float) (tile.highHeight - height))
-				/ (tile.highHeight - tile.optimalHeight);
-		} else if (height == tile.optimalHeight) {
-			return 1.0f;
-		} else {
-			return 0.0f;
-		}
-	}
+  private int interpolateHeight(int x, int z, float ratio) {
+    int low, highX, highZ;
+    float intX, intZ;
+    float scaledX = x * ratio;
+    float scaledZ = z * ratio;
+    float interpolation;
 
-	private int interpolateHeight(int x, int z, float ratio) {
-		int low, highX, highZ;
-		float intX, intZ;
-		float scaledX = x * ratio;
-		float scaledZ = z * ratio;
-		float interpolation;
+    low = heightMap.getTrueHeightAtPoint( (int) scaledX, (int) scaledZ);
 
-		low = heightMap.getTrueHeightAtPoint((int)scaledX, (int)scaledZ);
+    if (scaledX + 1 >= size) {
+      return low;
+    } else {
+      highX = heightMap.getTrueHeightAtPoint( (int) scaledX + 1, (int) scaledZ);
+    }
 
-		if(scaledX+1 >= size) {
-			return low;
-		} else {
-			highX = heightMap.getTrueHeightAtPoint((int)scaledX+1, (int)scaledZ);
-		}
+    interpolation = scaledX - (int) scaledX;
+    intX = ( (highX - low) * interpolation) + low;
 
-		interpolation = scaledX - (int)scaledX;
-		intX = ((highX - low) * interpolation) + low;
+    if (scaledZ + 1 >= size) {
+      return low;
+    } else {
+      highZ = heightMap.getTrueHeightAtPoint( (int) scaledX, (int) scaledZ + 1);
+    }
 
-		if(scaledZ+1 >=size) {
-			return low;
-		} else {
-			highZ = heightMap.getTrueHeightAtPoint((int)scaledX, (int)scaledZ+1);
-		}
+    interpolation = scaledZ - (int) scaledZ;
+    intZ = ( (highZ - low) * interpolation) + low;
 
-		interpolation = scaledZ - (int)scaledZ;
-		intZ = ((highZ - low) * interpolation) + low;
+    return (int) ( (intX + intZ) / 2f);
+  }
 
-		return (int)((intX+intZ)/2);
-	}
-
-	/**
-	 * <code>TextureTile</code> is an inner class that contains data
-	 * for each input texture. All data is public with no methods.
-	 */
-	private class TextureTile {
-		public BufferedImage imageData;
-		public int lowHeight;
-		public int optimalHeight;
-		public int highHeight;
-	}
+  /**
+   * <code>TextureTile</code> is an inner class that contains data
+   * for each input texture. All data is public with no methods.
+   */
+  private class TextureTile {
+    public BufferedImage imageData;
+    public int lowHeight;
+    public int optimalHeight;
+    public int highHeight;
+  }
 
 }

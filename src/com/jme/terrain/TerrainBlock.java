@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 package com.jme.terrain;
@@ -45,14 +45,14 @@ import com.jme.math.FastMath;
  * dimenensional int array. The step scale is used to define the amount of units
  * each block line will extend. Clod can be used to allow for level of detail
  * control.
- * 
+ *
  * By directly creating a <code>TerrainBlock</code> yourself, you can generate
  * a brute force terrain. This is many times sufficient for small terrains on
  * modern hardware. If terrain is to be large, it is recommended that you make
  * use of the <code>TerrainPage</code> class.
- * 
+ *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.21 2004-05-01 05:31:28 mojomonkey Exp $
+ * @version $Id: TerrainBlock.java,v 1.22 2004-05-03 18:11:00 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -81,7 +81,7 @@ public class TerrainBlock extends AreaClodMesh {
      * Constructor instantiates a new <code>TerrainBlock</code> object. The
      * parameters and heightmap data are then processed to generate a
      * <code>TriMesh</code> object for renderering.
-     * 
+     *
      * @param name
      *            the name of the terrain block.
      * @param size
@@ -105,7 +105,7 @@ public class TerrainBlock extends AreaClodMesh {
      * Constructor instantiates a new <code>TerrainBlock</code> object. The
      * parameters and heightmap data are then processed to generate a
      * <code>TriMesh</code> object for renderering.
-     * 
+     *
      * @param name
      *            the name of the terrain block.
      * @param size
@@ -152,7 +152,7 @@ public class TerrainBlock extends AreaClodMesh {
     /**
      * <code>chooseTargetRecord</code> determines which level of detail to
      * use. If CLOD is not used, the index 0 is always returned.
-     * 
+     *
      * @param r
      *            the renderer to use for determining the LOD record.
      * @return the index of the record to use.
@@ -166,10 +166,10 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * 
+     *
      * <code>setDetailTexture</code> sets the detail texture unit's repeat
      * value.
-     * 
+     *
      * @param unit
      *            int
      * @param repeat
@@ -185,13 +185,13 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * 
+     *
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
      * point provided is not within the bounds of the height map, the NaN float
      * value is returned (Float.NaN).
-     * 
+     *
      * @param position
      *            the vector representing the height location to check.
      * @return the height at the provided location.
@@ -201,13 +201,13 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * 
+     *
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
      * point provided is not within the bounds of the height map, the NaN float
      * value is returned (Float.NaN).
-     * 
+     *
      * @param position
      *            the vector representing the height location to check. Only the
      *            x and z values are used.
@@ -218,13 +218,13 @@ public class TerrainBlock extends AreaClodMesh {
     }
 
     /**
-     * 
+     *
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
      * point provided is not within the bounds of the height map, the NaN float
      * value is returned (Float.NaN).
-     * 
+     *
      * @param x
      *            the x coordinate to check.
      * @param y
@@ -311,7 +311,7 @@ public class TerrainBlock extends AreaClodMesh {
     /**
      * <code>buildTextureCoordinates</code> calculates the texture coordinates
      * of the terrain.
-     *  
+     *
      */
     private void buildTextureCoordinates() {
         offset.x += (int) (offsetAmount * stepScale.x);
@@ -320,57 +320,62 @@ public class TerrainBlock extends AreaClodMesh {
         texture[0] = new Vector2f[vertex.length];
 
         for (int i = 0; i < texture[0].length; i++) {
-            texture[0][i] = new Vector2f((vertex[i].x + offset.x)
-                    / (stepScale.x * (totalSize - 1)), (vertex[i].z + offset.y)
-                    / (stepScale.z * (totalSize - 1)));
+            texture[0][i] = new Vector2f(
+                (vertex[i].x + offset.x) / (stepScale.x * (totalSize - 1)),
+                (vertex[i].z + offset.y) / (stepScale.z * (totalSize - 1)));
         }
 
         setTextures(texture[0]);
     }
 
     /**
-     * 
+     *
      * <code>buildNormals</code> calculates the normals of each vertex that
      * makes up the block of terrain.
-     * 
-     *  
+     *
+     *
      */
     private void buildNormals() {
         Vector3f[] normal = new Vector3f[vertex.length];
-
+        Vector3f oppositeVector = new Vector3f();
         int normalIndex = 0;
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
+              normal[normalIndex] = new Vector3f();
                 if (row == size - 1) {
                     if (col == size - 1) { // last row, last col
                         // up cross left
-                        normal[normalIndex] = vertex[normalIndex - size]
-                                .subtract(vertex[normalIndex]).cross(
-                                        vertex[normalIndex - 1]
-                                                .subtract(vertex[normalIndex]))
-                                .normalize();
+                        normal[normalIndex].set(vertex[normalIndex - size])
+                                .subtractLocal(vertex[normalIndex])
+                                .crossLocal(
+                                    oppositeVector.set(vertex[normalIndex - 1])
+                                    .subtractLocal(vertex[normalIndex]))
+                                .normalizeLocal();
                     } else { // last row, except for last col
                         // right cross up
-                        normal[normalIndex] = vertex[normalIndex + 1].subtract(
-                                vertex[normalIndex]).cross(
-                                vertex[normalIndex - size]
-                                        .subtract(vertex[normalIndex]))
-                                .normalize();
+                        normal[normalIndex].set(vertex[normalIndex + 1])
+                                .subtractLocal(vertex[normalIndex])
+                                .crossLocal(
+                                    oppositeVector.set(vertex[normalIndex - size])
+                                    .subtractLocal(vertex[normalIndex]))
+                                .normalizeLocal();
                     }
                 } else {
                     if (col == size - 1) { // last column except for last row
                         // left cross down
-                        normal[normalIndex] = vertex[normalIndex - 1].subtract(
-                                vertex[normalIndex]).cross(
-                                vertex[normalIndex + size]
-                                        .subtract(vertex[normalIndex]))
-                                .normalize();
+                        normal[normalIndex].set(vertex[normalIndex - 1])
+                                .subtractLocal(vertex[normalIndex])
+                                .crossLocal(
+                                    oppositeVector.set(vertex[normalIndex + size])
+                                    .subtractLocal(vertex[normalIndex]))
+                                .normalizeLocal();
                     } else { // most cases
                         // down cross right
-                        normal[normalIndex] = vertex[normalIndex + size]
-                                .subtract(vertex[normalIndex]).cross(
-                                        vertex[normalIndex + 1]
-                                                .subtract(vertex[normalIndex]))
+                        normal[normalIndex].set(vertex[normalIndex + size])
+                                .subtractLocal(vertex[normalIndex])
+                                .crossLocal(
+                                    oppositeVector.set(vertex[normalIndex + 1])
+                                    .subtractLocal(vertex[normalIndex]))
                                 .normalizeLocal();
                     }
                 }

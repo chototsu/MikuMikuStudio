@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package com.jme.terrain;
 
@@ -51,9 +51,9 @@ import com.jme.scene.Spatial;
  * block size is completely dependant on the application. In some cases, a large
  * size will give performance gains, in others, a small size is the best option.
  * It is recommended that different combinations are tried.
- * 
+ *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.14 2004-05-01 05:31:28 mojomonkey Exp $
+ * @version $Id: TerrainPage.java,v 1.15 2004-05-03 18:11:00 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -71,7 +71,7 @@ public class TerrainPage extends Node {
      * Constructor instantiates a new <code>TerrainPage</code> object. The
      * data is then split into either 4 new <code>TerrainPages</code> or 4 new
      * <code>TerrainBlock</code>.
-     * 
+     *
      * @param name
      *            the name of the page.
      * @param blockSize
@@ -97,7 +97,7 @@ public class TerrainPage extends Node {
      * Constructor instantiates a new <code>TerrainPage</code> object. The
      * data is then split into either 4 new <code>TerrainPages</code> or 4 new
      * <code>TerrainBlock</code>.
-     * 
+     *
      * @param name
      *            the name of the page.
      * @param blockSize
@@ -125,7 +125,7 @@ public class TerrainPage extends Node {
             Vector2f offset, int offsetAmount) {
         super(name);
         if (!FastMath.isPowerOfTwo(size - 1)) { throw new JmeException(
-                "Terrain page sizes may only be (2^N + 1)"); }
+                "size given: "+size+"  Terrain page sizes may only be (2^N + 1)"); }
 
         this.offset = offset;
         this.offsetAmount = offsetAmount;
@@ -136,10 +136,10 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * 
+     *
      * <code>setDetailTexture</code> sets the detail texture coordinates to be
      * applied on top of the normal terrain texture.
-     * 
+     *
      * @param unit
      *            the texture unit to set the coordinates.
      * @param repeat
@@ -157,10 +157,10 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * 
+     *
      * <code>setModelBound</code> sets the model bounds for the terrain
      * blocks.
-     * 
+     *
      * @param v
      *            the bounding volume to set for the terrain blocks.
      */
@@ -178,11 +178,11 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * 
+     *
      * <code>updateModelBound</code> updates the model bounds (generates the
      * bounds from the current vertices).
-     * 
-     *  
+     *
+     *
      */
     public void updateModelBound() {
         for (int i = 0; i < this.getQuantity(); i++) {
@@ -196,13 +196,13 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * 
+     *
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
      * point provided is not within the bounds of the height map, the NaN
      * float value is returned (Float.NaN).
-     * 
+     *
      * @param position the vector representing the height location to check.
      * @return the height at the provided location.
      */
@@ -211,14 +211,14 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * 
+     *
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
      * point provided is not within the bounds of the height map, the NaN
      * float value is returned (Float.NaN).
      *
-     * @param position the vector representing the height location to check. 
+     * @param position the vector representing the height location to check.
      * 		Only the x and z values are used.
      * @return the height at the provided location.
      */
@@ -227,7 +227,7 @@ public class TerrainPage extends Node {
     }
 
     /**
-     * 
+     *
      * <code>getHeight</code> returns the height of an arbitrary point on the
      * terrain. If the point is between height point values, the height is
      * linearly interpolated. This provides smooth height calculations. If the
@@ -283,7 +283,7 @@ public class TerrainPage extends Node {
      * children are either pages or blocks. This is dependent on the size of the
      * children. If the child's size is less than or equal to the set block
      * size, then blocks are created, otherwise, pages are created.
-     * 
+     *
      * @param blockSize
      *            the blocks size to test against.
      * @param size
@@ -307,8 +307,8 @@ public class TerrainPage extends Node {
 
     /**
      * <code>createQuadPage</code> generates four new pages from this page.
-     * 
-     *  
+     *
+     *
      */
     private void createQuadPage(int size, int blockSize, Vector3f stepScale,
             int[] heightMap, boolean clod) {
@@ -413,8 +413,8 @@ public class TerrainPage extends Node {
 
     /**
      * <code>createQuadBlock</code> creates four child blocks from this page.
-     * 
-     *  
+     *
+     *
      */
     private void createQuadBlock(int size, Vector3f stepScale, int[] heightMap,
             boolean clod) {
