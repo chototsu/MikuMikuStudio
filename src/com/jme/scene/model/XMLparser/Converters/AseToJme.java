@@ -26,6 +26,10 @@ import java.net.MalformedURLException;
  */
 public class AseToJme extends FormatConverter{
 
+    /**
+     * Converts an ase file to jme format.  The syntax is: AseToJme file.ase out.jme
+     * @param args The array of parameters
+     */ 
     public static void main(String[] args){
         new DummyDisplaySystem();
         new AseToJme().attemptFileConvert(args);
@@ -53,7 +57,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.3 2004-07-02 06:42:55 cep21 Exp $
+     * @version $Id: AseToJme.java,v 1.4 2004-07-02 07:16:36 cep21 Exp $
      */
     private class ASEModelCopy extends Node{
 

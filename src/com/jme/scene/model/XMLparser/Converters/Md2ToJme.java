@@ -23,6 +23,10 @@ import java.util.Random;
  */
 public class Md2ToJme extends FormatConverter{
 
+    /**
+     * Converts an Md2 file to jME format.  The syntax is: Md2ToJme drfreak.md2 outfile.jme
+     * @param args The array of parameters
+     */
     public static void main(String[] args){
         new DummyDisplaySystem();
         new Md2ToJme().attemptFileConvert(args);

@@ -31,6 +31,10 @@ public class MilkToJme extends FormatConverter{
     private MilkTriangle[] myTris;
     private int[] materialIndexes;
 
+    /**
+     * Converts a MS3D file to jME format.  The syntax is: MilkToJme runner.ms3d out.jme
+     * @param args
+     */
     public static void main(String[] args){
         new DummyDisplaySystem();
         new MilkToJme().attemptFileConvert(args);
