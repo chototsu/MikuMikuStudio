@@ -85,7 +85,7 @@ public class HelloIntersection extends SimpleGame {
             setAllowsRepeats(false);
         }
         public void performAction(float time) {
-            System.out.println("BANG"+time);
+            System.out.println("BANG");
             Sphere bullet=new Sphere("bullet"+numBullets++,8,8,.25f);
             bullet.setModelBound(new BoundingSphere());
             bullet.updateModelBound();
@@ -122,6 +122,7 @@ public class HelloIntersection extends SimpleGame {
             bulletPos.addLocal(direction.mult(time*speed));
             bullet.setLocalTranslation(bulletPos);
             if (Intersection.intersection(bullet.getWorldBound(),target.getWorldBound())){
+                System.out.println("OWCH!!!");
                 target.setLocalTranslation(new Vector3f(r.nextFloat()*10,r.nextFloat()*10,r.nextFloat()*10));
                 lifeTime=0;
             }
