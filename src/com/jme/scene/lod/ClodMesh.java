@@ -39,9 +39,10 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>ContinuousLodNode</code>
+ * <code>ClodMesh</code>
+ * ported from Eberly
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.5 2004-04-08 02:51:37 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.6 2004-04-08 15:23:00 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int m_iCurrentRecord, m_iTargetRecord;

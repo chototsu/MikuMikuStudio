@@ -32,6 +32,13 @@
 
 package com.jme.scene.lod;
 
+/**
+ * <code>CollapseRecord</code>
+ * ported from Eberly
+ * @author Joshua Slack
+ * @version $Id: CollapseRecord.java,v 1.2 2004-04-08 15:23:00 renanse Exp $
+ */
+
 public class CollapseRecord {
 
   public CollapseRecord(int iVKeep, int iVThrow, int iVQuantity,
