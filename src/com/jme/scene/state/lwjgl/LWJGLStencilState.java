@@ -42,28 +42,30 @@ import com.jme.scene.state.StencilState;
  */
 public class LWJGLStencilState extends StencilState {
 
-    private static int[] stencilFunc = { GL11.GL_NEVER, GL11.GL_LESS, GL11.GL_LEQUAL,
-            GL11.GL_GREATER, GL11.GL_GEQUAL, GL11.GL_EQUAL, GL11.GL_NOTEQUAL,
-            GL11.GL_ALWAYS};
+	private static final long serialVersionUID = 1L;
 
-    private static int[] stencilOp = { GL11.GL_KEEP, GL11.GL_ZERO, GL11.GL_REPLACE,
-            GL11.GL_INCR, GL11.GL_DECR, GL11.GL_INVERT};
+	private static int[] stencilFunc = { GL11.GL_NEVER, GL11.GL_LESS,
+			GL11.GL_LEQUAL, GL11.GL_GREATER, GL11.GL_GEQUAL, GL11.GL_EQUAL,
+			GL11.GL_NOTEQUAL, GL11.GL_ALWAYS };
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.scene.state.RenderState#apply()
-     */
-    public void apply() {
-        if (isEnabled()) {
-            GL11.glStencilFunc(stencilFunc[getStencilFunc()], getStencilRef(),
-                    getStencilMask());
-            GL11.glStencilOp(stencilOp[getStencilOpFail()],
-                    stencilOp[getStencilOpZFail()],
-                    stencilOp[getStencilOpZPass()]);
+	private static int[] stencilOp = { GL11.GL_KEEP, GL11.GL_ZERO,
+			GL11.GL_REPLACE, GL11.GL_INCR, GL11.GL_DECR, GL11.GL_INVERT };
 
-        }
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see com.jme.scene.state.RenderState#apply()
+	 */
+	public void apply() {
+		if (isEnabled()) {
+			GL11.glStencilFunc(stencilFunc[getStencilFunc()], getStencilRef(),
+					getStencilMask());
+			GL11.glStencilOp(stencilOp[getStencilOpFail()],
+					stencilOp[getStencilOpZFail()],
+					stencilOp[getStencilOpZPass()]);
 
-    }
+		}
+
+	}
 
 }

@@ -51,10 +51,11 @@ import com.jme.widget.renderer.WidgetRendererFactory;
  *   SCALE_MODE_RELATIVE - The image is scaled vertically and horizontally by a percentage of the size of the widget.
  *
  * @since 0.6
- * @version $$Id: WidgetAnimatedImage.java,v 1.1 2004-04-25 16:58:22 mojomonkey Exp $$
+ * @version $$Id: WidgetAnimatedImage.java,v 1.2 2004-09-14 21:52:09 mojomonkey Exp $$
  */
 public class WidgetAnimatedImage extends WidgetImage {
-    protected List imageList = null;
+    private static final long serialVersionUID = 1L;
+	protected List imageList = null;
     int imageIndex = 0;
     
     public WidgetAnimatedImage() {

@@ -44,6 +44,7 @@ import com.jme.widget.button.WidgetButton;
  */
 class WidgetRolloutPanelButton extends WidgetButton {
 
+	private static final long serialVersionUID = 1L;
 	private int rolloutPanelWidth;
 
     public WidgetRolloutPanelButton() {

@@ -31,8 +31,6 @@
  */
 package com.jme.intersection;
 
-import com.jme.scene.TriMesh;
-
 import java.util.ArrayList;
 
 /**
@@ -40,7 +38,7 @@ import java.util.ArrayList;
  * storing an ArrayList of CollisionData.
  * 
  * @author Mark Powell
- * @version $Id: CollisionResults.java,v 1.5 2004-09-10 22:36:09 mojomonkey Exp $
+ * @version $Id: CollisionResults.java,v 1.6 2004-09-14 21:52:25 mojomonkey Exp $
  */
 public class CollisionResults {
 

@@ -47,11 +47,12 @@ import java.io.*;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.16 2004-08-21 06:18:33 cep21 Exp $
+ * @version $Id: ColorRGBA.java,v 1.17 2004-09-14 21:52:20 mojomonkey Exp $
  */
 public class ColorRGBA implements Externalizable{
 
-    /**
+    private static final long serialVersionUID = 1L;
+	/**
      * the color black (0,0,0).
      */
     public static final ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);

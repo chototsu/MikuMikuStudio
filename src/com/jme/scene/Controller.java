@@ -34,148 +34,171 @@ package com.jme.scene;
 import java.io.Serializable;
 
 /**
- * <code>Controller</code> provides a base class for creation of controllers to
- * modify nodes and render states over time. The base controller provides a
- * repeat type, min and max time, as well as speed. Subclasses
- * of this will provide the update method that takes the time between the last
- * call and the current one and modifies an object in a application specific way.
+ * <code>Controller</code> provides a base class for creation of controllers
+ * to modify nodes and render states over time. The base controller provides a
+ * repeat type, min and max time, as well as speed. Subclasses of this will
+ * provide the update method that takes the time between the last call and the
+ * current one and modifies an object in a application specific way.
+ * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.8 2004-07-06 04:55:49 cep21 Exp $
+ * @version $Id: Controller.java,v 1.9 2004-09-14 21:52:11 mojomonkey Exp $
  */
-public abstract class Controller implements Serializable{
+public abstract class Controller implements Serializable {
 
-    /**
-     * A clamped repeat type signals that the controller should look like its final state when it's done<br>
-     * Example: 0 1 5 8 9 10 10 10 10 10 10 10 10 10 10 10...
-     */
-    public static final int RT_CLAMP = 0;
+	/**
+	 * A clamped repeat type signals that the controller should look like its
+	 * final state when it's done <br>
+	 * Example: 0 1 5 8 9 10 10 10 10 10 10 10 10 10 10 10...
+	 */
+	public static final int RT_CLAMP = 0;
 
-    /**
-     * A wrapped repeat type signals that the controller should start back at the begining
-     * when it's final state is reached<br>
-     * Example: 0 1 5 8 9 10 0 1 5 8 9 10 0 1 5 ....
-     *
-     */
-    public static final int RT_WRAP = 1;
+	/**
+	 * A wrapped repeat type signals that the controller should start back at
+	 * the begining when it's final state is reached <br>
+	 * Example: 0 1 5 8 9 10 0 1 5 8 9 10 0 1 5 ....
+	 *  
+	 */
+	public static final int RT_WRAP = 1;
 
-    /**
-     * A cycled repeat type signals that the controller should cycle it's states forwards and backwards<br>
-     * Example: 0 1 5 8 9 10 9 8 5 1 0 1 5 8 9 10 9 ....
-     */
-    public static final int RT_CYCLE = 2;
+	/**
+	 * A cycled repeat type signals that the controller should cycle it's states
+	 * forwards and backwards <br>
+	 * Example: 0 1 5 8 9 10 9 8 5 1 0 1 5 8 9 10 9 ....
+	 */
+	public static final int RT_CYCLE = 2;
 
-    /**
-     * Defines how this controller should repeat itself.  This can be one of RT_CLAMP, RT_WRAP, RT_CYCLE, or
-     * an application specific repeat flag.
-     */
-    private int repeatType;
+	/**
+	 * Defines how this controller should repeat itself. This can be one of
+	 * RT_CLAMP, RT_WRAP, RT_CYCLE, or an application specific repeat flag.
+	 */
+	private int repeatType;
 
-    /**
-     * The controller's minimum cycle time
-     */
-    private float minTime;
+	/**
+	 * The controller's minimum cycle time
+	 */
+	private float minTime;
 
-    /**
-     * The controller's maximum cycle time
-     */
-    private float maxTime;
-    /**
-     * The 'speed' of this Controller.  Genericly, less than 1 is slower, more than 1 is
-     * faster, and 1 represents the base speed
-     */
-    private float speed = 1;
+	/**
+	 * The controller's maximum cycle time
+	 */
+	private float maxTime;
 
-    /**
-     * True if this controller is active, false otherwise
-     */
-    private boolean active = true;
+	/**
+	 * The 'speed' of this Controller. Genericly, less than 1 is slower, more
+	 * than 1 is faster, and 1 represents the base speed
+	 */
+	private float speed = 1;
 
-    /**
-     * Returns the speed of this controller.  Speed is 1 by default.
-     * @return
-     */
-    public float getSpeed() {
-        return speed;
-    }
+	/**
+	 * True if this controller is active, false otherwise
+	 */
+	private boolean active = true;
 
-    /**
-     * Sets the speed of this controller
-     * @param speed The new speed
-     */
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
+	/**
+	 * Returns the speed of this controller. Speed is 1 by default.
+	 * 
+	 * @return
+	 */
+	public float getSpeed() {
+		return speed;
+	}
 
-    /**
-     * Returns the current maximum time for this controller.
-     * @return This controller's maximum time.
-     */
-    public float getMaxTime() {
-        return maxTime;
-    }
+	/**
+	 * Sets the speed of this controller
+	 * 
+	 * @param speed
+	 *            The new speed
+	 */
+	public void setSpeed(float speed) {
+		this.speed = speed;
+	}
 
-    /**
-     * Sets the maximum time for this controller
-     * @param maxTime The new maximum time
-     */
-    public void setMaxTime(float maxTime) {
-        this.maxTime = maxTime;
-    }
+	/**
+	 * Returns the current maximum time for this controller.
+	 * 
+	 * @return This controller's maximum time.
+	 */
+	public float getMaxTime() {
+		return maxTime;
+	}
 
-    /**
-     * Returns the current minimum time of this controller
-     * @return This controller's minimum time
-     */
-    public float getMinTime() {
-        return minTime;
-    }
+	/**
+	 * Sets the maximum time for this controller
+	 * 
+	 * @param maxTime
+	 *            The new maximum time
+	 */
+	public void setMaxTime(float maxTime) {
+		this.maxTime = maxTime;
+	}
 
-    /**
-     * Sets the minimum time of this controller
-     * @param minTime The new minimum time.
-     */
-    public void setMinTime(float minTime) {
-        this.minTime = minTime;
-    }
+	/**
+	 * Returns the current minimum time of this controller
+	 * 
+	 * @return This controller's minimum time
+	 */
+	public float getMinTime() {
+		return minTime;
+	}
 
-    /**
-     * Returns the current repeat type of this controller.
-     * @return The current repeat type
-     */
-    public int getRepeatType() {
-        return repeatType;
-    }
+	/**
+	 * Sets the minimum time of this controller
+	 * 
+	 * @param minTime
+	 *            The new minimum time.
+	 */
+	public void setMinTime(float minTime) {
+		this.minTime = minTime;
+	}
 
-    /**
-     * Sets the repeat type of this controller.
-     * @param repeatType The new repeat type.
-     */
-    public void setRepeatType(int repeatType) {
-        this.repeatType = repeatType;
-    }
+	/**
+	 * Returns the current repeat type of this controller.
+	 * 
+	 * @return The current repeat type
+	 */
+	public int getRepeatType() {
+		return repeatType;
+	}
 
-    /**
-     * Sets the active flag of this controller.  Note: updates on controllers are still called even if
-     * this flag is set to false.  It is the responsibility of the extending class to check isActive if it
-     * wishes to be turn-off-able.
-     * @param active The new active state.
-     */
-    public void setActive(boolean active) {
-        this.active = active;
-    }
+	/**
+	 * Sets the repeat type of this controller.
+	 * 
+	 * @param repeatType
+	 *            The new repeat type.
+	 */
+	public void setRepeatType(int repeatType) {
+		this.repeatType = repeatType;
+	}
 
-    /**
-     * Returns if this Controller is active or not.
-     * @return True if this controller is set to active, false if not.
-     */
-    public boolean isActive() {
-        return active;
-    }
+	/**
+	 * Sets the active flag of this controller. Note: updates on controllers are
+	 * still called even if this flag is set to false. It is the responsibility
+	 * of the extending class to check isActive if it wishes to be
+	 * turn-off-able.
+	 * 
+	 * @param active
+	 *            The new active state.
+	 */
+	public void setActive(boolean active) {
+		this.active = active;
+	}
 
-    /**
-     * Defined by extending classes, <code>update</code> is a signal to Controller that it should update
-     * whatever object(s) it is controlling.
-     * @param time The time in seconds between the last call to update and the current one
-     */
-    public abstract void update(float time);
+	/**
+	 * Returns if this Controller is active or not.
+	 * 
+	 * @return True if this controller is set to active, false if not.
+	 */
+	public boolean isActive() {
+		return active;
+	}
+
+	/**
+	 * Defined by extending classes, <code>update</code> is a signal to
+	 * Controller that it should update whatever object(s) it is controlling.
+	 * 
+	 * @param time
+	 *            The time in seconds between the last call to update and the
+	 *            current one
+	 */
+	public abstract void update(float time);
 }

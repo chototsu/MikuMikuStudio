@@ -49,7 +49,8 @@ import com.jme.scene.Controller;
  */
 public class FadeInOutController extends Controller {
 
-    /** The FadeInOut object to fade upon. */
+    private static final long serialVersionUID = 1L;
+	/** The FadeInOut object to fade upon. */
     private FadeInOut fio;
 
 

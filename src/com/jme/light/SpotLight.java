@@ -39,10 +39,11 @@ import com.jme.math.Vector3f;
  * Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: SpotLight.java,v 1.4 2004-04-26 14:42:36 mojomonkey Exp $
+ * @version $Id: SpotLight.java,v 1.5 2004-09-14 21:52:18 mojomonkey Exp $
  */
 public class SpotLight extends PointLight {
-    //attributes
+    private static final long serialVersionUID = 1L;
+	//attributes
     private float angle;
     private float exponent;
     private Vector3f direction;

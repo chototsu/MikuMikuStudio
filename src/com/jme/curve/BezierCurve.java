@@ -45,9 +45,11 @@ import com.jme.scene.Spatial;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.11 2004-09-10 22:36:13 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.12 2004-09-14 21:52:15 mojomonkey Exp $
  */
 public class BezierCurve extends Curve {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor instantiates a new <code>BezierCurve</code> object.

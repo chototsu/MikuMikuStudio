@@ -38,31 +38,37 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Disk</code> is a flat circle.  It is simply defined with a radius.  It
+ * <code>Disk</code> is a flat circle. It is simply defined with a radius. It
  * starts out flat along the Z, with center at the origin.
+ * 
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.3 2004-08-01 06:21:58 cep21 Exp $
+ * @version $Id: Disk.java,v 1.4 2004-09-14 21:52:22 mojomonkey Exp $
  */
 public class Disk extends TriMesh {
 
+	private static final long serialVersionUID = 1L;
+
 	private int shellSamples;
+
 	private int radialSamples;
+
 	private float radius;
 
-    /**
-     * Creates a flat disk (circle) at the origin flat along the Z.  Usually,
-     * a higher sample number creates a better looking cylinder, but at the
-     * cost of more vertex information.
-     * @param name The name of the disk.
-     * @param shellSamples The number of shell samples.
-     * @param radialSamples The number of radial samples.
-     * @param radius The radius of the disk.
-     */
-	public Disk(
-		String name,
-		int shellSamples,
-		int radialSamples,
-		float radius) {
+	/**
+	 * Creates a flat disk (circle) at the origin flat along the Z. Usually, a
+	 * higher sample number creates a better looking cylinder, but at the cost
+	 * of more vertex information.
+	 * 
+	 * @param name
+	 *            The name of the disk.
+	 * @param shellSamples
+	 *            The number of shell samples.
+	 * @param radialSamples
+	 *            The number of radial samples.
+	 * @param radius
+	 *            The radius of the disk.
+	 */
+	public Disk(String name, int shellSamples, int radialSamples, float radius) {
 		super(name);
 
 		this.shellSamples = shellSamples;
@@ -130,9 +136,7 @@ public class Disk extends TriMesh {
 		// generate connectivity
 		int index = 0;
 		int triangleCount = 0;
-		for (int radialCount0 = radialless, radialCount1 = 0;
-			radialCount1 < radialSamples;
-			radialCount0 = radialCount1++) {
+		for (int radialCount0 = radialless, radialCount1 = 0; radialCount1 < radialSamples; radialCount0 = radialCount1++) {
 			indices[index + 0] = 0;
 			indices[index + 1] = 1 + shellLess * radialCount0;
 			indices[index + 2] = 1 + shellLess * radialCount1;

@@ -71,11 +71,13 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: PropertiesDialog2.java,v 1.2 2004-06-28 22:16:56 ericthered Exp $
+ * @version $Id: PropertiesDialog2.java,v 1.3 2004-09-14 21:52:25 mojomonkey Exp $
  */
 public final class PropertiesDialog2 extends JDialog {
 
-    //connection to properties file.
+    private static final long serialVersionUID = 1L;
+
+	//connection to properties file.
     private final PropertiesIO source;
 
     //Title Image

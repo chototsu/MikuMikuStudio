@@ -34,7 +34,6 @@ package com.jme.intersection;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Line;
 import com.jme.math.Plane;
-import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 
 /**

@@ -36,24 +36,28 @@ import org.lwjgl.opengl.GL11;
 import com.jme.scene.state.DitherState;
 
 /**
- * <code>LWJGLDitherState</code> subclasses the DitherState using the
- * LWJGL API to set the dithering state of OpenGL.
+ * <code>LWJGLDitherState</code> subclasses the DitherState using the LWJGL
+ * API to set the dithering state of OpenGL.
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLDitherState.java,v 1.4 2004-08-03 04:05:15 cep21 Exp $
+ * @version $Id: LWJGLDitherState.java,v 1.5 2004-09-14 21:52:15 mojomonkey Exp $
  */
 public class LWJGLDitherState extends DitherState {
 
-    /**
-     * <code>set</code> sets the dithering state on if it is enabled, and
-     * sets it off otherwise.
-     * @see com.jme.scene.state.DitherState#apply() ()
-     */
-    public void apply() {
-        if(isEnabled()) {
-            GL11.glEnable(GL11.GL_DITHER);
-        } else {
-            GL11.glDisable(GL11.GL_DITHER);
-        }
-    }
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * <code>set</code> sets the dithering state on if it is enabled, and sets
+	 * it off otherwise.
+	 * 
+	 * @see com.jme.scene.state.DitherState#apply() ()
+	 */
+	public void apply() {
+		if (isEnabled()) {
+			GL11.glEnable(GL11.GL_DITHER);
+		} else {
+			GL11.glDisable(GL11.GL_DITHER);
+		}
+	}
 
 }

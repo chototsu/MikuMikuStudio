@@ -45,9 +45,11 @@ import com.jme.math.*;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.21 2004-09-12 02:10:41 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.22 2004-09-14 21:52:24 mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
+
+	private static final long serialVersionUID = 1L;
 
 	/** These define the array of planes that are check during view culling. */
 	public int[] checkPlanes = new int[6];
@@ -554,10 +556,10 @@ public class BoundingBox extends Box implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
 	 */
 	public boolean intersects(BoundingVolume bv) {
-        if (bv==null)
-            return false;
-        else
-		    return bv.intersectsBoundingBox(this);
+		if (bv == null)
+			return false;
+		else
+			return bv.intersectsBoundingBox(this);
 	}
 
 	/*

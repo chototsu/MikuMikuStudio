@@ -43,11 +43,12 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.4 2004-09-14 03:05:35 renanse Exp $
+ * @version $Id: LWJGLCamera.java,v 1.5 2004-09-14 21:52:24 mojomonkey Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
-    private int width;
+    private static final long serialVersionUID = 1L;
+	private int width;
     private int height;
     private Object parent;
     private Class parentClass;

@@ -42,7 +42,8 @@ import com.jme.widget.panel.WidgetPanel;
  */
 public class WidgetLabel extends WidgetPanel {
 
-    protected WidgetText text;
+    private static final long serialVersionUID = 1L;
+	protected WidgetText text;
 
     public WidgetLabel(String title) {
         this(title, WidgetAlignmentType.ALIGN_SOUTHWEST);

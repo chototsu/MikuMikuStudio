@@ -53,7 +53,9 @@ import com.jme.widget.util.WidgetRepeater;
  */
 public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
-    protected WidgetRepeater repeat = new WidgetRepeater();
+    private static final long serialVersionUID = 1L;
+
+	protected WidgetRepeater repeat = new WidgetRepeater();
 
     protected boolean pagingUpLeft;
     protected boolean pagingDownRight;

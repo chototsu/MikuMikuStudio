@@ -43,198 +43,203 @@ import com.jme.system.JmeException;
  * how smooth the mesh will be.
  * 
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.11 2004-04-26 14:39:57 mojomonkey Exp $
+ * @version $Id: BezierMesh.java,v 1.12 2004-09-14 21:52:13 mojomonkey Exp $
  */
 public class BezierMesh extends TriMesh {
 
-    private BezierPatch patch;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor creates a default <code>BezierMesh</code> object.
-     * 
-     * @param name
-     *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
-     */
-    public BezierMesh(String name) {
-        super(name);
-    }
+	private BezierPatch patch;
 
-    /**
-     * Constructor creates a new <code>BezierMesh</code> object with the given
-     * <code>BezierPatch</code>. The mesh is then automatically tessellated.
-     * 
-     * @param name
-     *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
-     * @param patch
-     *            the <code>BezierPatch</code> used to define this mesh.
-     */
-    public BezierMesh(String name, BezierPatch patch) {
-        super(name);
-        this.patch = patch;
-        tessellate();
-    }
+	/**
+	 * Constructor creates a default <code>BezierMesh</code> object.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 */
+	public BezierMesh(String name) {
+		super(name);
+	}
 
-    /**
-     * 
-     * <code>setPatch</code> sets the <code>BezierPatch</code> of the mesh.
-     * It is then tessellated.
-     * 
-     * @param patch
-     *            the patch to use for this mesh.
-     */
-    public void setPatch(BezierPatch patch) {
-        this.patch = patch;
-        tessellate();
-    }
+	/**
+	 * Constructor creates a new <code>BezierMesh</code> object with the given
+	 * <code>BezierPatch</code>. The mesh is then automatically tessellated.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 * @param patch
+	 *            the <code>BezierPatch</code> used to define this mesh.
+	 */
+	public BezierMesh(String name, BezierPatch patch) {
+		super(name);
+		this.patch = patch;
+		tessellate();
+	}
 
-    /**
-     * 
-     * <code>tessellate</code> generates the <code>BezierMesh</code>
-     * vertices from the supplied patch and detail level. This method is called
-     * when patch is set, and therefore, should normally have to be called.
-     * However, if patch is changed externally, and you wish to update the mesh,
-     * a call to <code>tessellate</code> is appropriate.
-     *  
-     */
-    public void tessellate() {
-        if (patch == null) { return; }
-        int u = 0, v;
-        float py, px, pyold;
-        int detailLevel = patch.getDetailLevel();
+	/**
+	 * 
+	 * <code>setPatch</code> sets the <code>BezierPatch</code> of the mesh.
+	 * It is then tessellated.
+	 * 
+	 * @param patch
+	 *            the patch to use for this mesh.
+	 */
+	public void setPatch(BezierPatch patch) {
+		this.patch = patch;
+		tessellate();
+	}
 
-        Vector3f[] temp = new Vector3f[4];
-        Vector3f[] last = new Vector3f[detailLevel + 1];
+	/**
+	 * 
+	 * <code>tessellate</code> generates the <code>BezierMesh</code>
+	 * vertices from the supplied patch and detail level. This method is called
+	 * when patch is set, and therefore, should normally have to be called.
+	 * However, if patch is changed externally, and you wish to update the mesh,
+	 * a call to <code>tessellate</code> is appropriate.
+	 *  
+	 */
+	public void tessellate() {
+		if (patch == null) {
+			return;
+		}
+		int u = 0, v;
+		float py, px, pyold;
+		int detailLevel = patch.getDetailLevel();
 
-        temp[0] = patch.getAnchor(0, 3);
-        temp[1] = patch.getAnchor(1, 3);
-        temp[2] = patch.getAnchor(2, 3);
-        temp[3] = patch.getAnchor(3, 3);
+		Vector3f[] temp = new Vector3f[4];
+		Vector3f[] last = new Vector3f[detailLevel + 1];
 
-        for (v = 0; v <= detailLevel; v++) {
-            px = ((float) v) / ((float) detailLevel);
-            last[v] = calcBerstein(px, temp);
-        }
+		temp[0] = patch.getAnchor(0, 3);
+		temp[1] = patch.getAnchor(1, 3);
+		temp[2] = patch.getAnchor(2, 3);
+		temp[3] = patch.getAnchor(3, 3);
 
-        u = 1;
-        Vector3f[] vertex = new Vector3f[((detailLevel * 2) + 2) * detailLevel];
-        Vector2f[] texture = new Vector2f[((detailLevel * 2) + 2) * detailLevel];
-        Vector3f[] normal = new Vector3f[vertex.length];
-        int[] indices = new int[detailLevel * detailLevel * 6];
+		for (v = 0; v <= detailLevel; v++) {
+			px = ((float) v) / ((float) detailLevel);
+			last[v] = calcBerstein(px, temp);
+		}
 
-        int count = 0;
-        for (u = 1; u <= detailLevel; u++) {
+		u = 1;
+		Vector3f[] vertex = new Vector3f[((detailLevel * 2) + 2) * detailLevel];
+		Vector2f[] texture = new Vector2f[((detailLevel * 2) + 2) * detailLevel];
+		Vector3f[] normal = new Vector3f[vertex.length];
+		int[] indices = new int[detailLevel * detailLevel * 6];
 
-            py = ((float) u) / ((float) detailLevel);
-            pyold = (u - 1.0f) / (detailLevel);
-            temp[0] = calcBerstein(py, patch.getAnchors()[0]);
-            temp[1] = calcBerstein(py, patch.getAnchors()[1]);
-            temp[2] = calcBerstein(py, patch.getAnchors()[2]);
-            temp[3] = calcBerstein(py, patch.getAnchors()[3]);
+		int count = 0;
+		for (u = 1; u <= detailLevel; u++) {
 
-            for (v = 0; v <= detailLevel; v++) {
-                px = ((float) v) / ((float) detailLevel);
-                texture[count] = new Vector2f(pyold, px);
-                vertex[count] = new Vector3f(last[v].x, last[v].y, last[v].z);
-                count++;
-                last[v] = calcBerstein(px, temp);
-                texture[count] = new Vector2f(py, px);
-                vertex[count] = new Vector3f(last[v].x, last[v].y, last[v].z);
-                count++;
-            }
+			py = ((float) u) / ((float) detailLevel);
+			pyold = (u - 1.0f) / (detailLevel);
+			temp[0] = calcBerstein(py, patch.getAnchors()[0]);
+			temp[1] = calcBerstein(py, patch.getAnchors()[1]);
+			temp[2] = calcBerstein(py, patch.getAnchors()[2]);
+			temp[3] = calcBerstein(py, patch.getAnchors()[3]);
 
-        }
+			for (v = 0; v <= detailLevel; v++) {
+				px = ((float) v) / ((float) detailLevel);
+				texture[count] = new Vector2f(pyold, px);
+				vertex[count] = new Vector3f(last[v].x, last[v].y, last[v].z);
+				count++;
+				last[v] = calcBerstein(px, temp);
+				texture[count] = new Vector2f(py, px);
+				vertex[count] = new Vector3f(last[v].x, last[v].y, last[v].z);
+				count++;
+			}
 
-        int index = -1;
-        for (int i = 0; i < detailLevel * detailLevel * 6; i = i + 6) {
+		}
 
-            index++;
-            if (i > 0 && i % (detailLevel * 6) == 0) {
-                index += 1;
-            }
+		int index = -1;
+		for (int i = 0; i < detailLevel * detailLevel * 6; i = i + 6) {
 
-            indices[i] = 2 * index;
-            indices[(i + 1)] = (2 * index) + 1;
-            indices[(i + 2)] = (2 * index) + 2;
+			index++;
+			if (i > 0 && i % (detailLevel * 6) == 0) {
+				index += 1;
+			}
 
-            indices[(i + 3)] = (2 * index) + 3;
-            indices[(i + 4)] = (2 * index) + 2;
-            indices[(i + 5)] = (2 * index) + 1;
-        }
+			indices[i] = 2 * index;
+			indices[(i + 1)] = (2 * index) + 1;
+			indices[(i + 2)] = (2 * index) + 2;
 
-        int normalIndex = 0;
-        for (int i = 0; i < detailLevel; i++) {
-            for (int j = 0; j < (detailLevel * 2) + 2; j++) {
-                if (j % 2 == 0) {
-                    if (i == 0) {
-                        if (j < (detailLevel * 2)) {
-                            //right cross up
-                            normal[normalIndex] = vertex[normalIndex + 1]
-                                    .subtract(vertex[normalIndex])
-                                    .cross(
-                                            vertex[normalIndex + 2]
-                                                    .subtract(vertex[normalIndex]))
-                                    .normalizeLocal();
-                        } else {
-                            //down cross right
-                            normal[normalIndex] = vertex[normalIndex - 2]
-                                    .subtract(vertex[normalIndex])
-                                    .cross(
-                                            vertex[normalIndex + 1]
-                                                    .subtract(vertex[normalIndex]))
-                                    .normalizeLocal();
-                        }
-                    } else {
-                        normal[normalIndex] = (Vector3f) normal[normalIndex
-                                - (detailLevel * 2 + 1)].clone();
-                    }
-                } else {
-                    if (j < (detailLevel * 2) + 1) {
-                        //up cross left
-                        normal[normalIndex] = vertex[normalIndex + 2].subtract(
-                                vertex[normalIndex]).cross(
-                                vertex[normalIndex - 1]
-                                        .subtract(vertex[normalIndex]))
-                                .normalizeLocal();
-                    } else {
-                        //left cross down
-                        normal[normalIndex] = vertex[normalIndex - 1].subtract(
-                                vertex[normalIndex]).cross(
-                                vertex[normalIndex - 2]
-                                        .subtract(vertex[normalIndex]))
-                                .normalizeLocal();
-                    }
-                }
-                normalIndex++;
-            }
-        }
+			indices[(i + 3)] = (2 * index) + 3;
+			indices[(i + 4)] = (2 * index) + 2;
+			indices[(i + 5)] = (2 * index) + 1;
+		}
 
-        setVertices(vertex);
-        setTextures(texture);
-        setIndices(indices);
-        setNormals(normal);
-    }
+		int normalIndex = 0;
+		for (int i = 0; i < detailLevel; i++) {
+			for (int j = 0; j < (detailLevel * 2) + 2; j++) {
+				if (j % 2 == 0) {
+					if (i == 0) {
+						if (j < (detailLevel * 2)) {
+							//right cross up
+							normal[normalIndex] = vertex[normalIndex + 1]
+									.subtract(vertex[normalIndex])
+									.cross(
+											vertex[normalIndex + 2]
+													.subtract(vertex[normalIndex]))
+									.normalizeLocal();
+						} else {
+							//down cross right
+							normal[normalIndex] = vertex[normalIndex - 2]
+									.subtract(vertex[normalIndex])
+									.cross(
+											vertex[normalIndex + 1]
+													.subtract(vertex[normalIndex]))
+									.normalizeLocal();
+						}
+					} else {
+						normal[normalIndex] = (Vector3f) normal[normalIndex
+								- (detailLevel * 2 + 1)].clone();
+					}
+				} else {
+					if (j < (detailLevel * 2) + 1) {
+						//up cross left
+						normal[normalIndex] = vertex[normalIndex + 2].subtract(
+								vertex[normalIndex]).cross(
+								vertex[normalIndex - 1]
+										.subtract(vertex[normalIndex]))
+								.normalizeLocal();
+					} else {
+						//left cross down
+						normal[normalIndex] = vertex[normalIndex - 1].subtract(
+								vertex[normalIndex]).cross(
+								vertex[normalIndex - 2]
+										.subtract(vertex[normalIndex]))
+								.normalizeLocal();
+					}
+				}
+				normalIndex++;
+			}
+		}
 
-    /**
-     * 
-     * <code>calcBerstein</code> calculates the Berstein number for the given
-     * u and control points.
-     * 
-     * @param u
-     *            the u value.
-     * @param p
-     *            the control points.
-     * @return the Berstein number.
-     */
-    private Vector3f calcBerstein(float u, Vector3f[] p) {
-        if (p.length != 4) { throw new JmeException(
-                "Point parameter must be length 4."); }
-        Vector3f a = p[0].mult((float) Math.pow(u, 3));
-        Vector3f b = p[1].mult(3 * (float) Math.pow(u, 2) * (1 - u));
-        Vector3f c = p[2].mult(3 * u * (float) Math.pow((1 - u), 2));
-        Vector3f d = p[3].mult((float) Math.pow((1 - u), 3));
+		setVertices(vertex);
+		setTextures(texture);
+		setIndices(indices);
+		setNormals(normal);
+	}
 
-        return (a.addLocal(b)).addLocal((c.addLocal(d)));
-    }
+	/**
+	 * 
+	 * <code>calcBerstein</code> calculates the Berstein number for the given
+	 * u and control points.
+	 * 
+	 * @param u
+	 *            the u value.
+	 * @param p
+	 *            the control points.
+	 * @return the Berstein number.
+	 */
+	private Vector3f calcBerstein(float u, Vector3f[] p) {
+		if (p.length != 4) {
+			throw new JmeException("Point parameter must be length 4.");
+		}
+		Vector3f a = p[0].mult((float) Math.pow(u, 3));
+		Vector3f b = p[1].mult(3 * (float) Math.pow(u, 2) * (1 - u));
+		Vector3f c = p[2].mult(3 * u * (float) Math.pow((1 - u), 2));
+		Vector3f d = p[3].mult((float) Math.pow((1 - u), 3));
+
+		return (a.addLocal(b)).addLocal((c.addLocal(d)));
+	}
 }

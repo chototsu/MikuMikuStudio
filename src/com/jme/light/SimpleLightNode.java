@@ -18,7 +18,8 @@ import com.jme.math.Vector3f;
  * @author Jack Lindamood
  */
 public class SimpleLightNode extends Node{
-    private Light light;
+    private static final long serialVersionUID = 1L;
+	private Light light;
     private Quaternion lightRotate;
     private Vector3f lightTranslate;
 

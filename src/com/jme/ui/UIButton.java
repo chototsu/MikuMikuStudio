@@ -52,7 +52,9 @@ import com.jme.util.TextureManager;
  */
 public class UIButton extends UIObject {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * Constructor requires the unique name, the inputhandler with the mouse
      * that will be monitored for hit tests and the 3 files for the states that
      * it will show.

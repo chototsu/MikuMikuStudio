@@ -40,55 +40,58 @@ import org.lwjgl.opengl.GL11;
 import com.jme.scene.state.FogState;
 
 /**
- * <code>LWJGLFogState</code> subclasses the fog state using the LWJGL API
- * to set the OpenGL fog state.
+ * <code>LWJGLFogState</code> subclasses the fog state using the LWJGL API to
+ * set the OpenGL fog state.
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLFogState.java,v 1.8 2004-08-31 05:13:35 mojomonkey Exp $
+ * @version $Id: LWJGLFogState.java,v 1.9 2004-09-14 21:52:14 mojomonkey Exp $
  */
 public class LWJGLFogState extends FogState {
-    //buffer to hold the color
-    transient FloatBuffer colorBuf;
+	private static final long serialVersionUID = 1L;
 
-    private static int[] glFogDensity = { GL11.GL_LINEAR, GL11.GL_EXP, GL11.GL_EXP2 };
+	//buffer to hold the color
+	transient FloatBuffer colorBuf;
 
-    private static int[] glFogApply = { GL11.GL_FASTEST, GL11.GL_NICEST };
-    private static final float[] tempf=new float[4];
+	private static int[] glFogDensity = { GL11.GL_LINEAR, GL11.GL_EXP,
+			GL11.GL_EXP2 };
 
-    /**
-     * Constructor instantiates a new <code>LWJGLFogState</code> object with
-     * default values.
-     *
-     */
-    public LWJGLFogState() {
-        super();
-        colorBuf =
-            ByteBuffer
-                .allocateDirect(16)
-                .order(ByteOrder.nativeOrder())
-                .asFloatBuffer();
-    }
+	private static int[] glFogApply = { GL11.GL_FASTEST, GL11.GL_NICEST };
 
-    /**
-     * <code>set</code> sets the OpenGL fog values if the state is enabled.
-     * @see com.jme.scene.state.RenderState#apply()
-     */
-    public void apply() {
-        if (isEnabled()) {
-            GL11.glEnable(GL11.GL_FOG);
-            GL11.glFogf(GL11.GL_FOG_START, start);
-            GL11.glFogf(GL11.GL_FOG_END, end);
+	private static final float[] tempf = new float[4];
 
-            colorBuf.clear();
-            colorBuf.put(color.getColorArray(tempf));
-            colorBuf.flip();
+	/**
+	 * Constructor instantiates a new <code>LWJGLFogState</code> object with
+	 * default values.
+	 *  
+	 */
+	public LWJGLFogState() {
+		super();
+		colorBuf = ByteBuffer.allocateDirect(16).order(ByteOrder.nativeOrder())
+				.asFloatBuffer();
+	}
 
-            GL11.glFog(GL11.GL_FOG_COLOR, colorBuf);
+	/**
+	 * <code>set</code> sets the OpenGL fog values if the state is enabled.
+	 * 
+	 * @see com.jme.scene.state.RenderState#apply()
+	 */
+	public void apply() {
+		if (isEnabled()) {
+			GL11.glEnable(GL11.GL_FOG);
+			GL11.glFogf(GL11.GL_FOG_START, start);
+			GL11.glFogf(GL11.GL_FOG_END, end);
 
-            GL11.glFogf(GL11.GL_FOG_DENSITY, density);
-            GL11.glFogi(GL11.GL_FOG_MODE, glFogDensity[densityFunction]);
-            GL11.glHint(GL11.GL_FOG_HINT, glFogApply[applyFunction]);
-        } else {
-            GL11.glDisable(GL11.GL_FOG);
-        }
-    }
+			colorBuf.clear();
+			colorBuf.put(color.getColorArray(tempf));
+			colorBuf.flip();
+
+			GL11.glFog(GL11.GL_FOG_COLOR, colorBuf);
+
+			GL11.glFogf(GL11.GL_FOG_DENSITY, density);
+			GL11.glFogi(GL11.GL_FOG_MODE, glFogDensity[densityFunction]);
+			GL11.glHint(GL11.GL_FOG_HINT, glFogApply[applyFunction]);
+		} else {
+			GL11.glDisable(GL11.GL_FOG);
+		}
+	}
 }

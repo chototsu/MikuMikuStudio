@@ -46,10 +46,11 @@ package com.jme.input;
  * correspond to the width and height of the window).
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.13 2004-09-14 07:14:07 renanse Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.14 2004-09-14 21:52:19 mojomonkey Exp $
  */
 public class AbsoluteMouse extends Mouse {
-    //position
+    private static final long serialVersionUID = 1L;
+	//position
     private int width, height;
 
     /**

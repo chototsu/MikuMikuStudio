@@ -38,11 +38,13 @@ import com.jme.widget.renderer.WidgetRendererFactory;
 /**
  * <code>WidgetPanel</code>
  * @author Gregg Patton
- * @version $Id: WidgetPanel.java,v 1.5 2004-04-22 22:27:22 renanse Exp $
+ * @version $Id: WidgetPanel.java,v 1.6 2004-09-14 21:52:22 mojomonkey Exp $
  */
 public class WidgetPanel extends WidgetAbstractContainer {
 
-    public WidgetPanel() {
+    private static final long serialVersionUID = 1L;
+
+	public WidgetPanel() {
         super();
     }
 

@@ -36,40 +36,44 @@ import org.lwjgl.opengl.GL11;
 import com.jme.scene.state.WireframeState;
 
 /**
- * <code>LWJGLWireframeState</code> subclasses WireframeState to use the
- * LWJGL API to access OpenGL. If the state is enabled, wireframe mode is
- * used, otherwise solid fill is used.
+ * <code>LWJGLWireframeState</code> subclasses WireframeState to use the LWJGL
+ * API to access OpenGL. If the state is enabled, wireframe mode is used,
+ * otherwise solid fill is used.
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLWireframeState.java,v 1.4 2004-08-03 04:06:28 cep21 Exp $
+ * @version $Id: LWJGLWireframeState.java,v 1.5 2004-09-14 21:52:14 mojomonkey Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
 
-    /**
-     * <code>set</code> sets the polygon mode to line or fill depending on
-     * if the state is enabled or not.
-     * @see com.jme.scene.state.WireframeState#apply()
-     */
-    public void apply() {
-        if (isEnabled()) {
-            GL11.glLineWidth(lineWidth);
-            switch (face) {
-            case WS_FRONT_AND_BACK:
-                GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-                break;
-            case WS_FRONT:
-                GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
-            case WS_BACK:
-                GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_LINE);
-                break;
-            default:
-                GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
-                break;
-            }
+	private static final long serialVersionUID = 1L;
 
-        } else {
-          GL11.glLineWidth(1.0f);
-          GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
-        }
-    }
+	/**
+	 * <code>set</code> sets the polygon mode to line or fill depending on if
+	 * the state is enabled or not.
+	 * 
+	 * @see com.jme.scene.state.WireframeState#apply()
+	 */
+	public void apply() {
+		if (isEnabled()) {
+			GL11.glLineWidth(lineWidth);
+			switch (face) {
+			case WS_FRONT_AND_BACK:
+				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+				break;
+			case WS_FRONT:
+				GL11.glPolygonMode(GL11.GL_FRONT, GL11.GL_LINE);
+			case WS_BACK:
+				GL11.glPolygonMode(GL11.GL_BACK, GL11.GL_LINE);
+				break;
+			default:
+				GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
+				break;
+			}
+
+		} else {
+			GL11.glLineWidth(1.0f);
+			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_FILL);
+		}
+	}
 
 }

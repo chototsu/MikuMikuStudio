@@ -40,11 +40,13 @@ package com.jme.system;
  * visualize what is causing the exception.
  *
  * @author Mark Powell
- * @version $Id: JmeException.java,v 1.2 2004-04-22 22:27:05 renanse Exp $
+ * @version $Id: JmeException.java,v 1.3 2004-09-14 21:52:26 mojomonkey Exp $
  */
 public class JmeException extends RuntimeException {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * Default constructor creates a new <code>JmeException</code> with
      * out any description of what caused the exception.
      */

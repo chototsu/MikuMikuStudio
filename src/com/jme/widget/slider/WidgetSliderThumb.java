@@ -41,11 +41,12 @@ import com.jme.widget.scroller.WidgetScrollerThumb;
 /**
  * <code>WidgetSliderThumb</code>
  * @author Gregg Patton
- * @version $Id: WidgetSliderThumb.java,v 1.2 2004-04-22 22:27:26 renanse Exp $
+ * @version $Id: WidgetSliderThumb.java,v 1.3 2004-09-14 21:52:26 mojomonkey Exp $
  */
 public class WidgetSliderThumb extends WidgetScrollerThumb {
 
-    private WidgetOrientationType orientationType = WidgetOrientationType.NONE;
+    private static final long serialVersionUID = 1L;
+	private WidgetOrientationType orientationType = WidgetOrientationType.NONE;
 
     public WidgetSliderThumb() {
         super();

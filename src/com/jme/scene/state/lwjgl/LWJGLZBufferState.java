@@ -36,43 +36,40 @@ import org.lwjgl.opengl.GL11;
 import com.jme.scene.state.ZBufferState;
 
 /**
- * <code>LWJGLZBufferState</code> subclasses ZBufferState to use the
- * LWJGL API to access OpenGL.
+ * <code>LWJGLZBufferState</code> subclasses ZBufferState to use the LWJGL API
+ * to access OpenGL.
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLZBufferState.java,v 1.5 2004-08-31 05:13:34 mojomonkey Exp $
+ * @version $Id: LWJGLZBufferState.java,v 1.6 2004-09-14 21:52:13 mojomonkey Exp $
  */
 public class LWJGLZBufferState extends ZBufferState {
-    //the open gl depth tests
-    private static int[] glBufferCompare =
-        {
-            GL11.GL_NEVER,
-            GL11.GL_LESS,
-            GL11.GL_EQUAL,
-            GL11.GL_LEQUAL,
-            GL11.GL_GREATER,
-            GL11.GL_NOTEQUAL,
-            GL11.GL_GEQUAL,
-            GL11.GL_ALWAYS };
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * <code>set</code> turns on the specified depth test specified by the
-     * state.
-     * @see com.jme.scene.state.RenderState#apply()
-     */
-    public void apply() {
-        if (isEnabled()) {
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            GL11.glDepthFunc(glBufferCompare[function]);
-        } else {
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glDepthFunc(GL11.GL_ALWAYS);
-        }
+	//the open gl depth tests
+	private static int[] glBufferCompare = { GL11.GL_NEVER, GL11.GL_LESS,
+			GL11.GL_EQUAL, GL11.GL_LEQUAL, GL11.GL_GREATER, GL11.GL_NOTEQUAL,
+			GL11.GL_GEQUAL, GL11.GL_ALWAYS };
 
-        if (writable) {
-            GL11.glDepthMask(true);
-        } else {
-            GL11.glDepthMask(false);
-        }
+	/**
+	 * <code>set</code> turns on the specified depth test specified by the
+	 * state.
+	 * 
+	 * @see com.jme.scene.state.RenderState#apply()
+	 */
+	public void apply() {
+		if (isEnabled()) {
+			GL11.glEnable(GL11.GL_DEPTH_TEST);
+			GL11.glDepthFunc(glBufferCompare[function]);
+		} else {
+			GL11.glDisable(GL11.GL_DEPTH_TEST);
+			GL11.glDepthFunc(GL11.GL_ALWAYS);
+		}
 
-    }
+		if (writable) {
+			GL11.glDepthMask(true);
+		} else {
+			GL11.glDepthMask(false);
+		}
+
+	}
 }

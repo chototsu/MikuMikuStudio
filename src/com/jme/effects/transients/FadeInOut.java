@@ -57,7 +57,8 @@ import com.jme.system.DisplaySystem;
  */
 public class FadeInOut extends Transient {
 
-    private Geometry fadeQ;
+    private static final long serialVersionUID = 1L;
+	private Geometry fadeQ;
     private Node fadeInNode, fadeOutNode;
     private ColorRGBA fadeColor;
     private float speed;

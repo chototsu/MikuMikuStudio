@@ -75,11 +75,13 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.2 2004-09-10 17:47:19 renanse Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.3 2004-09-14 21:52:25 mojomonkey Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
-    //connection to properties file.
+    private static final long serialVersionUID = 1L;
+
+	//connection to properties file.
     private final PropertiesIO source;
 
     //Title Image

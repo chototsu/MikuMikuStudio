@@ -42,7 +42,9 @@ import com.jme.widget.WidgetOrientationType;
  */
 public class WidgetHScroller extends WidgetAbstractScroller {
 
-    public WidgetHScroller() {
+    private static final long serialVersionUID = 1L;
+
+	public WidgetHScroller() {
         super(WidgetOrientationType.HORIZONTAL);
     }
 

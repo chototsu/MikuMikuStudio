@@ -40,9 +40,10 @@ import com.jme.scene.SwitchNode;
 /**
  * <code>DiscreteLodNode</code>
  * @author Mark Powell
- * @version $Id: DiscreteLodNode.java,v 1.4 2004-06-23 18:14:17 renanse Exp $
+ * @version $Id: DiscreteLodNode.java,v 1.5 2004-09-14 21:52:23 mojomonkey Exp $
  */
 public class DiscreteLodNode extends SwitchNode {
+	private static final long serialVersionUID = 1L;
 	private Vector3f modelCenter;
 	private Vector3f worldCenter;
 

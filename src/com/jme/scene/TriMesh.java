@@ -58,9 +58,11 @@ import com.jme.bounding.OBBTree;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.29 2004-09-10 23:59:05 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.30 2004-09-14 21:52:12 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	protected int[] indices;
 
 	private transient IntBuffer indexBuffer;
@@ -344,7 +346,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * determines if this TriMesh has made contact with the give scene. The
 	 * scene is recursively transversed until a trimesh is found, at which time
 	 * the two trimesh OBBTrees are then compared to find the triangles that
-	 * hit. 
+	 * hit.
 	 */
 	public void hasCollision(Spatial scene, CollisionResults results) {
 		if (this == scene) {

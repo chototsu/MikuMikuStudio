@@ -12,6 +12,8 @@ import com.jme.math.*;
  * @author Jack Lindamood
  */
 public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
+	private static final long serialVersionUID = 1L;
+
 	private static final float[] fWdU = new float[3];
 
 	private static final float[] fAWdU = new float[3];
@@ -401,10 +403,10 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
 	 */
 	public boolean intersects(BoundingVolume bv) {
-        if (bv==null)
-            return false;
-        else
-		    return bv.intersectsOrientedBoundingBox(this);
+		if (bv == null)
+			return false;
+		else
+			return bv.intersectsOrientedBoundingBox(this);
 	}
 
 	/*

@@ -43,11 +43,12 @@ import com.jme.widget.text.WidgetLabel;
 /**
  * <code>WidgetButton</code>
  * @author Gregg Patton
- * @version $Id: WidgetButton.java,v 1.7 2004-04-22 22:27:15 renanse Exp $
+ * @version $Id: WidgetButton.java,v 1.8 2004-09-14 21:52:21 mojomonkey Exp $
  */
 public class WidgetButton extends WidgetLabel {
 
-    protected WidgetButtonStateType buttonState = WidgetButtonStateType.BUTTON_UP;
+    private static final long serialVersionUID = 1L;
+	protected WidgetButtonStateType buttonState = WidgetButtonStateType.BUTTON_UP;
 
     public WidgetButton() {
         super("");

@@ -41,7 +41,9 @@ import com.jme.widget.WidgetOrientationType;
  */
 public class WidgetVScroller extends WidgetAbstractScroller {
 
-    public WidgetVScroller() {
+    private static final long serialVersionUID = 1L;
+
+	public WidgetVScroller() {
         super(WidgetOrientationType.VERTICAL);
     }
 

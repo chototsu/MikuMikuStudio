@@ -40,106 +40,120 @@ import com.jme.scene.TriMesh;
  * <code>Quad</code> defines a four sided, two dimensional shape. The local
  * height of the <code>Quad</code> defines it's size about the y-axis, while
  * the width defines the x-axis. The z-axis will always be 0.
+ * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.4 2004-09-14 07:12:46 renanse Exp $
+ * @version $Id: Quad.java,v 1.5 2004-09-14 21:52:22 mojomonkey Exp $
  */
 public class Quad extends TriMesh {
 
-    /**
-     * Constructor creates a new <code>Quad</code> object. That data for the
-     * <code>Quad</code> is not set until a call to <code>initialize</code> is
-     * made.
-     * @param name the name of this <code>Quad</code>.
-     */
-    public Quad(String name) {
-        super(name);
-    }
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor creates a new <code>Quade</code> object with the provided
-     * width and height.
-     * @param name the name of the <code>Quad</code>.
-     * @param width the width of the <code>Quad</code>.
-     * @param height the height of the <code>Quad</code>.
-     */
-    public Quad(String name, float width, float height) {
-        super(name);
-        initialize(width, height);
-    }
+	/**
+	 * Constructor creates a new <code>Quad</code> object. That data for the
+	 * <code>Quad</code> is not set until a call to <code>initialize</code>
+	 * is made.
+	 * 
+	 * @param name
+	 *            the name of this <code>Quad</code>.
+	 */
+	public Quad(String name) {
+		super(name);
+	}
 
-    /**
-     * <code>resize</code> changes the width and height of the given quad
-     * by altering its vertices.
-     *
-     * @param width the new width of the <code>Quad</code>.
-     * @param height the new height of the <code>Quad</code>.
-     */
-    public void resize(float width, float height) {
-      Vector3f[] verts = new Vector3f[4];
+	/**
+	 * Constructor creates a new <code>Quade</code> object with the provided
+	 * width and height.
+	 * 
+	 * @param name
+	 *            the name of the <code>Quad</code>.
+	 * @param width
+	 *            the width of the <code>Quad</code>.
+	 * @param height
+	 *            the height of the <code>Quad</code>.
+	 */
+	public Quad(String name, float width, float height) {
+		super(name);
+		initialize(width, height);
+	}
 
-      verts[0] = new Vector3f(-width/2f, height/2f, 0);
-      verts[1] = new Vector3f(-width/2f, -height/2f, 0);
-      verts[2] = new Vector3f(width/2f, -height/2f, 0);
-      verts[3] = new Vector3f(width/2f, height/2f, 0);
+	/**
+	 * <code>resize</code> changes the width and height of the given quad by
+	 * altering its vertices.
+	 * 
+	 * @param width
+	 *            the new width of the <code>Quad</code>.
+	 * @param height
+	 *            the new height of the <code>Quad</code>.
+	 */
+	public void resize(float width, float height) {
+		Vector3f[] verts = new Vector3f[4];
 
-      setVertices(verts);
-    }
+		verts[0] = new Vector3f(-width / 2f, height / 2f, 0);
+		verts[1] = new Vector3f(-width / 2f, -height / 2f, 0);
+		verts[2] = new Vector3f(width / 2f, -height / 2f, 0);
+		verts[3] = new Vector3f(width / 2f, height / 2f, 0);
 
-    /**
-     *
-     * <code>initialize</code> builds the data for the <code>Quad</code> object.
-     *
-     *
-     * @param width the width of the <code>Quad</code>.
-     * @param height the height of the <code>Quad</code>.
-     */
-    public void initialize(float width, float height) {
-        Vector3f[] verts = new Vector3f[4];
-        Vector3f[] norms = new Vector3f[4];
-        Vector2f[] texCoords = new Vector2f[4];
-        ColorRGBA[] colors = new ColorRGBA[4];
-        int[] indices = new int[6];
+		setVertices(verts);
+	}
 
-        verts[0] = new Vector3f(-width/2f, height/2f, 0);
-        verts[1] = new Vector3f(-width/2f, -height/2f, 0);
-        verts[2] = new Vector3f(width/2f, -height/2f, 0);
-        verts[3] = new Vector3f(width/2f, height/2f, 0);
+	/**
+	 * 
+	 * <code>initialize</code> builds the data for the <code>Quad</code>
+	 * object.
+	 * 
+	 * 
+	 * @param width
+	 *            the width of the <code>Quad</code>.
+	 * @param height
+	 *            the height of the <code>Quad</code>.
+	 */
+	public void initialize(float width, float height) {
+		Vector3f[] verts = new Vector3f[4];
+		Vector3f[] norms = new Vector3f[4];
+		Vector2f[] texCoords = new Vector2f[4];
+		ColorRGBA[] colors = new ColorRGBA[4];
+		int[] indices = new int[6];
 
-        norms[0] = new Vector3f(0,0,1);
-        norms[1] = new Vector3f(0,0,1);
-        norms[2] = new Vector3f(0,0,1);
-        norms[3] = new Vector3f(0,0,1);
+		verts[0] = new Vector3f(-width / 2f, height / 2f, 0);
+		verts[1] = new Vector3f(-width / 2f, -height / 2f, 0);
+		verts[2] = new Vector3f(width / 2f, -height / 2f, 0);
+		verts[3] = new Vector3f(width / 2f, height / 2f, 0);
 
-        texCoords[0] = new Vector2f(0,1);
-        texCoords[1] = new Vector2f(0,0);
-        texCoords[2] = new Vector2f(1,0);
-        texCoords[3] = new Vector2f(1,1);
+		norms[0] = new Vector3f(0, 0, 1);
+		norms[1] = new Vector3f(0, 0, 1);
+		norms[2] = new Vector3f(0, 0, 1);
+		norms[3] = new Vector3f(0, 0, 1);
 
-        colors[0] = new ColorRGBA();
-        colors[1] = new ColorRGBA();
-        colors[2] = new ColorRGBA();
-        colors[3] = new ColorRGBA();
+		texCoords[0] = new Vector2f(0, 1);
+		texCoords[1] = new Vector2f(0, 0);
+		texCoords[2] = new Vector2f(1, 0);
+		texCoords[3] = new Vector2f(1, 1);
 
-        indices[0] = 0;
-        indices[1] = 1;
-        indices[2] = 2;
-        indices[3] = 0;
-        indices[4] = 2;
-        indices[5] = 3;
+		colors[0] = new ColorRGBA();
+		colors[1] = new ColorRGBA();
+		colors[2] = new ColorRGBA();
+		colors[3] = new ColorRGBA();
 
-        setVertices(verts);
-        setNormals(norms);
-        setColors(colors);
-        setTextures(texCoords);
-        setIndices(indices);
-    }
+		indices[0] = 0;
+		indices[1] = 1;
+		indices[2] = 2;
+		indices[3] = 0;
+		indices[4] = 2;
+		indices[5] = 3;
 
-  /**
-   * <code>getCenter</code> returns the center of the <code>Quad</code>.
-   *
-   * @return Vector3f the center of the <code>Quad</code>.
-   */
-  public Vector3f getCenter() {
-    return worldTranslation;
-  }
+		setVertices(verts);
+		setNormals(norms);
+		setColors(colors);
+		setTextures(texCoords);
+		setIndices(indices);
+	}
+
+	/**
+	 * <code>getCenter</code> returns the center of the <code>Quad</code>.
+	 * 
+	 * @return Vector3f the center of the <code>Quad</code>.
+	 */
+	public Vector3f getCenter() {
+		return worldTranslation;
+	}
 }

@@ -42,9 +42,11 @@ import com.jme.renderer.ColorRGBA;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.13 2004-09-10 22:36:10 mojomonkey Exp $
+ * @version $Id: Text.java,v 1.14 2004-09-14 21:52:12 mojomonkey Exp $
  */
 public class Text extends Geometry {
+	private static final long serialVersionUID = 1L;
+
 	private StringBuffer text;
 
 	private ColorRGBA textColor = new ColorRGBA();

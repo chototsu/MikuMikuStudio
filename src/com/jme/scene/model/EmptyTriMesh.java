@@ -18,7 +18,9 @@ import java.io.ObjectOutput;
  * @author Jack Lindamood
  */
 public class EmptyTriMesh extends TriMesh implements Externalizable{
-    public EmptyTriMesh(){
+    private static final long serialVersionUID = 1L;
+
+	public EmptyTriMesh(){
         this.texture=new Vector2f[1][];
     }
     public void setVertices(Vector3f[] storageArray){

@@ -40,10 +40,11 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.13 2004-07-30 23:26:40 cep21 Exp $
+ * @version $Id: Vector2f.java,v 1.14 2004-09-14 21:52:20 mojomonkey Exp $
  */
 public class Vector2f implements Externalizable{
-    /**
+    private static final long serialVersionUID = 1L;
+	/**
      * the x value of the vector.
      */
     public float x;

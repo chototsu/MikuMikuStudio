@@ -12,7 +12,8 @@ import com.jme.scene.state.RenderState;
  * @author Jack Lindamood
  */
 class XMLSharedNode extends Node {
-    String myIdent;
+    private static final long serialVersionUID = 1L;
+	String myIdent;
     Object whatIReallyAm;
     XMLSharedNode(String ident){
         super();

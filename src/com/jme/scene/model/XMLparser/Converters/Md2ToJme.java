@@ -57,7 +57,9 @@ public class Md2ToJme extends FormatConverter{
      * @author Jack Lindamood
      */
     private static class Md2ConverterCopy extends TriMesh{
-        private BinaryFileReader bis = null;
+        private static final long serialVersionUID = 1L;
+
+		private BinaryFileReader bis = null;
 
         private Header header;
 

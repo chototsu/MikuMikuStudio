@@ -59,11 +59,12 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.14 2004-08-14 00:49:55 cep21 Exp $
+ * @version $Id: LensFlare.java,v 1.15 2004-09-14 21:52:23 mojomonkey Exp $
  */
 
 public class LensFlare extends Node {
-  private Quad mainFlare;
+  private static final long serialVersionUID = 1L;
+private Quad mainFlare;
   private Quad sFlare[];
   private Vector2f midPoint;
   private Vector3f flarePoint;

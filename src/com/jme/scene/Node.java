@@ -57,9 +57,11 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.28 2004-09-10 22:36:10 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.29 2004-09-14 21:52:12 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
+	private static final long serialVersionUID = 1L;
+
 	/** This node's children. */
 	protected ArrayList children;
 
@@ -329,9 +331,9 @@ public class Node extends Spatial implements Serializable {
 	 *      com.jme.intersection.CollisionResults)
 	 */
 	public void hasCollision(Spatial scene, CollisionResults results) {
-		if(getWorldBound().intersects(scene.getWorldBound())) {
+		if (getWorldBound().intersects(scene.getWorldBound())) {
 			//further checking needed.
-			for(int i = 0; i < getQuantity(); i++) {
+			for (int i = 0; i < getQuantity(); i++) {
 				getChild(i).hasCollision(scene, results);
 			}
 		}

@@ -38,12 +38,14 @@ import java.util.Vector;
  * <code>ExVector</code> is an Extended Vector that does not allow multiple
  * instances.
  * @author Joshua Slack
- * @version $Id: ExVector.java,v 1.5 2004-04-22 22:26:49 renanse Exp $
+ * @version $Id: ExVector.java,v 1.6 2004-09-14 21:52:23 mojomonkey Exp $
  */
 
 public class ExVector extends Vector {
 
-  /**
+  private static final long serialVersionUID = 1L;
+
+/**
    * Basic constructor.
    */
   public ExVector() {

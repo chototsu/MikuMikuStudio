@@ -33,47 +33,56 @@ package com.jme.scene;
 import com.jme.renderer.Renderer;
 
 /**
- * <code>SwitchNode</code> defines a node that maintains a single active child at a time. This allows
- * the instantanious switching of children depending on any number of factors. For example,
- * multiple levels of detail models can be loaded into the switch node and the active model can
- * be set depending on the distance from the camera.
- *
+ * <code>SwitchNode</code> defines a node that maintains a single active child
+ * at a time. This allows the instantanious switching of children depending on
+ * any number of factors. For example, multiple levels of detail models can be
+ * loaded into the switch node and the active model can be set depending on the
+ * distance from the camera.
+ * 
  * @author Mark Powell
- * @version $Id: SwitchNode.java,v 1.3 2004-07-31 17:20:18 cep21 Exp $
+ * @version $Id: SwitchNode.java,v 1.4 2004-09-14 21:52:13 mojomonkey Exp $
  */
 public class SwitchNode extends Node {
+	private static final long serialVersionUID = 1L;
+
 	/**
 	 * defines an inactive or invalid child.
 	 */
 	public static final int SN_INVALID_CHILD = -1;
 
 	private int activeChild;
+
 	private Spatial activeChildData;
 
 	/**
-	 * Constructor instantiates a new <code>SwitchNode</code> object. The name of the
-	 * node is provided during construction.
-	 * @param name the name of the node.
+	 * Constructor instantiates a new <code>SwitchNode</code> object. The name
+	 * of the node is provided during construction.
+	 * 
+	 * @param name
+	 *            the name of the node.
 	 */
 	public SwitchNode(String name) {
 		super(name);
 	}
 
-    /**
-     * Returns the index of the currently rendered child for this Node.
-     * @return The currently active child.
-     */
+	/**
+	 * Returns the index of the currently rendered child for this Node.
+	 * 
+	 * @return The currently active child.
+	 */
 	public int getActiveChild() {
 		return activeChild;
 	}
 
-    /**
-     * Sets the index of the child of this Node that will be rendered.  If
-     * the index is <0 or >getQuantity then nothing is rendered.
-     * @param child The child index of this node it should render.
-     */
+	/**
+	 * Sets the index of the child of this Node that will be rendered. If the
+	 * index is <0 or >getQuantity then nothing is rendered.
+	 * 
+	 * @param child
+	 *            The child index of this node it should render.
+	 */
 	public void setActiveChild(int child) {
-		if(child < 0 || child > getQuantity()) {
+		if (child < 0 || child > getQuantity()) {
 			activeChild = SN_INVALID_CHILD;
 		} else {
 			this.activeChild = child;
@@ -81,18 +90,20 @@ public class SwitchNode extends Node {
 		}
 	}
 
-    /**
-     * Marks the node to render nothing on a draw.
-     */
+	/**
+	 * Marks the node to render nothing on a draw.
+	 */
 	public void disableAllChildren() {
 		activeChild = SN_INVALID_CHILD;
 	}
 
-    /**
-     * If a valid active child is set, that child is rendered and none others.
-     * This function should be called internally only.
-     * @param r The render system to draw the child.
-     */
+	/**
+	 * If a valid active child is set, that child is rendered and none others.
+	 * This function should be called internally only.
+	 * 
+	 * @param r
+	 *            The render system to draw the child.
+	 */
 	public void draw(Renderer r) {
 		if (activeChild != SN_INVALID_CHILD) {
 			if (activeChildData != null) {

@@ -41,11 +41,13 @@ import com.jme.widget.scroller.WidgetScrollerThumbTray;
 /**
  * <code>WidgetSliderThumbTray</code>
  * @author Gregg Patton
- * @version $Id: WidgetSliderThumbTray.java,v 1.2 2004-04-22 22:27:26 renanse Exp $
+ * @version $Id: WidgetSliderThumbTray.java,v 1.3 2004-09-14 21:52:26 mojomonkey Exp $
  */
 public class WidgetSliderThumbTray extends WidgetScrollerThumbTray {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * @param type
      */
     public WidgetSliderThumbTray(WidgetOrientationType type) {

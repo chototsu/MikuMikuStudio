@@ -37,56 +37,68 @@ import com.jme.renderer.Camera;
  * <code>CameraNode</code> defines a node that contains a camera object. This
  * allows a camera to be controlled by any other node, and allows the camera to
  * be attached to any node. A call to <code>updateWorldData</code> will adjust
- * the camera's frame by the world translation and the world rotation.
- * The column 0 of the world rotation matrix is used for the camera left vector,
- * column 1 is used for the camera up vector, column 2 is used for the
- * camera direction vector.
+ * the camera's frame by the world translation and the world rotation. The
+ * column 0 of the world rotation matrix is used for the camera left vector,
+ * column 1 is used for the camera up vector, column 2 is used for the camera
+ * direction vector.
+ * 
  * @author Mark Powell
- * @version $Id: CameraNode.java,v 1.4 2004-04-22 22:26:44 renanse Exp $
+ * @version $Id: CameraNode.java,v 1.5 2004-09-14 21:52:13 mojomonkey Exp $
  */
 public class CameraNode extends Node {
-    private Camera camera;
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor instantiates a new <code>CameraNode</code> object setting
-     * the camera to use for the frame reference.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     * @param camera the camera this node controls.
-     */
-    public CameraNode(String name, Camera camera) {
-        super(name);
-        this.camera = camera;
-    }
+	private Camera camera;
 
-    /**
-     *
-     * <code>setCamera</code> sets the camera that this node controls.
-     * @param camera the camera that this node controls.
-     */
-    public void setCamera(Camera camera) {
-        this.camera = camera;
-    }
+	/**
+	 * Constructor instantiates a new <code>CameraNode</code> object setting
+	 * the camera to use for the frame reference.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 * @param camera
+	 *            the camera this node controls.
+	 */
+	public CameraNode(String name, Camera camera) {
+		super(name);
+		this.camera = camera;
+	}
 
-    /**
-     *
-     * <code>getCamera</code> retrieves the camera object that this node
-     * controls.
-     * @return the camera this node controls.
-     */
-    public Camera getCamera() {
-        return camera;
-    }
+	/**
+	 * 
+	 * <code>setCamera</code> sets the camera that this node controls.
+	 * 
+	 * @param camera
+	 *            the camera that this node controls.
+	 */
+	public void setCamera(Camera camera) {
+		this.camera = camera;
+	}
 
-    /**
-     * <code>updateWorldData</code> updates the rotation and translation of this
-     * node, and sets the camera's frame buffer to reflect the current view.
-     * @param time the time between frames.
-     */
-    public void updateWorldData(float time) {
-        super.updateWorldData(time);
-        if(camera != null) {
-            camera.setFrame(worldTranslation, worldRotation);
-        }
-    }
+	/**
+	 * 
+	 * <code>getCamera</code> retrieves the camera object that this node
+	 * controls.
+	 * 
+	 * @return the camera this node controls.
+	 */
+	public Camera getCamera() {
+		return camera;
+	}
+
+	/**
+	 * <code>updateWorldData</code> updates the rotation and translation of
+	 * this node, and sets the camera's frame buffer to reflect the current
+	 * view.
+	 * 
+	 * @param time
+	 *            the time between frames.
+	 */
+	public void updateWorldData(float time) {
+		super.updateWorldData(time);
+		if (camera != null) {
+			camera.setFrame(worldTranslation, worldRotation);
+		}
+	}
 }

@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
- 
+
 package com.jme.scene.shape;
 
 import com.jme.math.Vector2f;
@@ -39,21 +39,31 @@ import com.jme.scene.TriMesh;
 
 /**
  * <code>Hexagon</code> provides an extension of <code>TriMesh</code>. A
- * <code>Hexagon</code> provides a regular hexagon with each triangle having side
- * length that is given in the constructor.
+ * <code>Hexagon</code> provides a regular hexagon with each triangle having
+ * side length that is given in the constructor.
+ * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.3 2004-05-27 02:28:26 guurk Exp $
+ * @version $Id: Hexagon.java,v 1.4 2004-09-14 21:52:21 mojomonkey Exp $
  */
 public class Hexagon extends TriMesh {
+	private static final long serialVersionUID = 1L;
+
 	private static final int NUM_POINTS = 7;
+
 	private static final int NUM_TRIS = 6;
+
 	private float sideLength;
+
 	/**
-	 * Hexagon Constructor instantiates a new Hexagon. This element is center on 0,0,0 with all
-	 * normals pointing up. The user must move and rotate for positioning.
-	 * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-	 * @param sideLength The length of all the sides of the tiangles 
+	 * Hexagon Constructor instantiates a new Hexagon. This element is center on
+	 * 0,0,0 with all normals pointing up. The user must move and rotate for
+	 * positioning.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 * @param sideLength
+	 *            The length of all the sides of the tiangles
 	 */
 	public Hexagon(String name, float sideLength) {
 		super(name);
@@ -73,27 +83,22 @@ public class Hexagon extends TriMesh {
 		setColorData();
 
 	}
+
 	/**
-	 * Vertexes are set up like this:
-	 *         0__1
-	 *        / \    /  \
-	 *     5/__\6/__\2
-	 *       \   /   \    /
-	 *        \ /___\ /
-	 *         4       3
+	 * Vertexes are set up like this: 0__1 / \ / \ 5/__\6/__\2 \ / \ / \ /___\ /
+	 * 4 3
 	 * 
-	 *     All lines on this diagram are sideLength long.
-	 *    Therefore, the width of the hexagon is sideLength * 2,
-	 *     and the height is 2 * the height of one equalateral triangle with
-	 *    all side = sideLength which is .866
-	 * 
+	 * All lines on this diagram are sideLength long. Therefore, the width of
+	 * the hexagon is sideLength * 2, and the height is 2 * the height of one
+	 * equalateral triangle with all side = sideLength which is .866
+	 *  
 	 */
 	private void setVertexData() {
-		vertex[0] = new Vector3f(- (sideLength / 2), sideLength * 0.866f, 0.0f);
+		vertex[0] = new Vector3f(-(sideLength / 2), sideLength * 0.866f, 0.0f);
 		vertex[1] = new Vector3f(sideLength / 2, sideLength * 0.866f, 0.0f);
 		vertex[2] = new Vector3f(sideLength, 0.0f, 0.0f);
 		vertex[3] = new Vector3f(sideLength / 2, -sideLength * 0.866f, 0.0f);
-		vertex[4] = new Vector3f(- (sideLength / 2), -sideLength * 0.866f, 0.0f);
+		vertex[4] = new Vector3f(-(sideLength / 2), -sideLength * 0.866f, 0.0f);
 		vertex[5] = new Vector3f(-sideLength, 0.0f, 0.0f);
 		vertex[6] = new Vector3f(0.0f, 0.0f, 0.0f);
 
@@ -102,9 +107,9 @@ public class Hexagon extends TriMesh {
 
 	/**
 	 * Sets up the indexes of the mesh. These go in a clockwise fassion and thus
-	 * only the 'up' side of the hex is visible. If you wish to have to either set
-	 * two sided lighting or create two hexes back-to-back
-	 *
+	 * only the 'up' side of the hex is visible. If you wish to have to either
+	 * set two sided lighting or create two hexes back-to-back
+	 *  
 	 */
 
 	private void setIndexData() {
@@ -170,7 +175,7 @@ public class Hexagon extends TriMesh {
 
 	/**
 	 * Sets all the default vertex colors to white.
-	 *
+	 *  
 	 */
 
 	private void setColorData() {
@@ -181,9 +186,9 @@ public class Hexagon extends TriMesh {
 
 	/**
 	 * Sets all the default vertex normals to 'up', +1 in the Z direction.
-	 *
+	 *  
 	 */
-	
+
 	private void setNormalData() {
 		for (int i = 0; i < NUM_POINTS; i++)
 			normal[i] = new Vector3f(0, 0, 1);
@@ -194,9 +199,9 @@ public class Hexagon extends TriMesh {
 }
 
 /*
- * $Log: not supported by cvs2svn $
- * Revision 1.2  2004/05/27 02:06:31  guurk
- * Added some CVS keyword replacements.
- *
+ * $Log: not supported by cvs2svn $ Revision 1.3 2004/05/27 02:28:26 guurk Corrected shape
+ * for height.
+ * 
+ * Revision 1.2 2004/05/27 02:06:31 guurk Added some CVS keyword replacements.
+ *  
  */
- 

@@ -39,10 +39,11 @@ import com.jme.math.Vector3f;
  * light bulb. Typically this light's values are attenuated based on the
  * distance of the point light and the object it illuminates.
  * @author Mark Powell
- * @version $Id: PointLight.java,v 1.2 2004-04-22 22:26:38 renanse Exp $
+ * @version $Id: PointLight.java,v 1.3 2004-09-14 21:52:18 mojomonkey Exp $
  */
 public class PointLight extends Light {
-    //Position of the light.
+    private static final long serialVersionUID = 1L;
+	//Position of the light.
     private Vector3f location;
 
     /**

@@ -37,46 +37,37 @@ import com.jme.scene.state.AttributeState;
 
 /**
  * <code>LWJGLAttributeState</code>
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLAttributeState.java,v 1.6 2004-09-08 17:06:47 mojomonkey Exp $
+ * @version $Id: LWJGLAttributeState.java,v 1.6 2004/09/08 17:06:47 mojomonkey
+ *          Exp $
  */
 public class LWJGLAttributeState extends AttributeState {
-private static int[] glAttributeState = {
-      GL11.GL_ALL_ATTRIB_BITS,
-      GL11.GL_ACCUM_BUFFER_BIT,
-      GL11.GL_COLOR_BUFFER_BIT,
-      GL11.GL_CURRENT_BIT,
-      GL11.GL_DEPTH_BUFFER_BIT,
-      GL11.GL_ENABLE_BIT,
-      GL11.GL_EVAL_BIT,
-      GL11.GL_FOG_BIT,
-      GL11.GL_HINT_BIT,
-      GL11.GL_LIGHTING_BIT,
-      GL11.GL_LINE_BIT,
-      GL11.GL_LIST_BIT,
-      GL11.GL_PIXEL_MODE_BIT,
-      GL11.GL_POINT_BIT,
-      GL11.GL_POLYGON_BIT,
-      GL11.GL_POLYGON_STIPPLE_BIT,
-      GL11.GL_SCISSOR_BIT,
-      GL11.GL_STENCIL_BUFFER_BIT,
-      GL11.GL_TEXTURE_BIT,
-      GL11.GL_TRANSFORM_BIT,
-      GL11.GL_VIEWPORT_BIT
-  };
+	private static final long serialVersionUID = 1L;
 
-  /** <code>set</code>
-   *
-   * @see com.jme.scene.state.RenderState#apply() ()
-   */
-  public void apply() {
-    if (isEnabled()) {
-      GL11.glPushAttrib(glAttributeState[getMask()]);
-      level++;
-    } else if (level > 0) {
-      GL11.glPopAttrib();
-      level--;
-    }
-  }
+	private static int[] glAttributeState = { GL11.GL_ALL_ATTRIB_BITS,
+			GL11.GL_ACCUM_BUFFER_BIT, GL11.GL_COLOR_BUFFER_BIT,
+			GL11.GL_CURRENT_BIT, GL11.GL_DEPTH_BUFFER_BIT, GL11.GL_ENABLE_BIT,
+			GL11.GL_EVAL_BIT, GL11.GL_FOG_BIT, GL11.GL_HINT_BIT,
+			GL11.GL_LIGHTING_BIT, GL11.GL_LINE_BIT, GL11.GL_LIST_BIT,
+			GL11.GL_PIXEL_MODE_BIT, GL11.GL_POINT_BIT, GL11.GL_POLYGON_BIT,
+			GL11.GL_POLYGON_STIPPLE_BIT, GL11.GL_SCISSOR_BIT,
+			GL11.GL_STENCIL_BUFFER_BIT, GL11.GL_TEXTURE_BIT,
+			GL11.GL_TRANSFORM_BIT, GL11.GL_VIEWPORT_BIT };
+
+	/**
+	 * <code>set</code>
+	 * 
+	 * @see com.jme.scene.state.RenderState#apply() ()
+	 */
+	public void apply() {
+		if (isEnabled()) {
+			GL11.glPushAttrib(glAttributeState[getMask()]);
+			level++;
+		} else if (level > 0) {
+			GL11.glPopAttrib();
+			level--;
+		}
+	}
 
 }

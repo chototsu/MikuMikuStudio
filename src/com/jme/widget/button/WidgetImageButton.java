@@ -44,11 +44,12 @@ import com.jme.widget.panel.WidgetPanel;
 /**
  * <code>WidgetImageButton</code>
  * @author Joel Schuster
- * @version $Id: WidgetImageButton.java,v 1.1 2004-05-27 02:08:46 guurk Exp $
+ * @version $Id: WidgetImageButton.java,v 1.2 2004-09-14 21:52:21 mojomonkey Exp $
  */
 
 public class WidgetImageButton extends WidgetPanel {
 
+	private static final long serialVersionUID = 1L;
 	protected com.jme.image.Image _imageUp = null;
 	protected com.jme.image.Image _imageDown = null;
 	protected com.jme.image.Image _imageOver = null;
@@ -224,4 +225,10 @@ public class WidgetImageButton extends WidgetPanel {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.1  2004/05/27 02:08:46  guurk
+ * New widget that is based on using three interchangeable images to
+ * react to the input of a mouse.
+ *
+ * Initial Checkin
+ *
  */

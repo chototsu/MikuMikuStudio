@@ -68,6 +68,8 @@ import java.util.Stack;
 public abstract class WidgetAbstractContainer extends Node implements Widget {
 	private class WidgetContainerImpl extends WidgetAbstractImpl {
 
+		private static final long serialVersionUID = 1L;
+
 		/**
 		 * <code>initWidgetRenderer</code>
 		 * 

@@ -36,11 +36,13 @@ import com.jme.widget.WidgetOrientationType;
 /**
  * <code>WidgetHSlider</code>
  * @author Gregg Patton
- * @version $Id: WidgetHSlider.java,v 1.2 2004-04-22 22:27:25 renanse Exp $
+ * @version $Id: WidgetHSlider.java,v 1.3 2004-09-14 21:52:26 mojomonkey Exp $
  */
 public class WidgetHSlider extends WidgetAbstractSlider {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * @param type
      */
     public WidgetHSlider(WidgetOrientationType thumbOrientation) {

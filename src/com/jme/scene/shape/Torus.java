@@ -38,32 +38,40 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Torus</code> is um ... a Torus :)  The center is by default
- * the origin.
+ * <code>Torus</code> is um ... a Torus :) The center is by default the
+ * origin.
+ * 
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.3 2004-08-01 07:12:51 cep21 Exp $
+ * @version $Id: Torus.java,v 1.4 2004-09-14 21:52:21 mojomonkey Exp $
  */
 public class Torus extends TriMesh {
+	private static final long serialVersionUID = 1L;
+
 	private int circleSamples;
+
 	private int radialSamples;
 
 	private float innerRadius;
+
 	private float outerRadius;
 
-    /**
-     * Constructs a new Torus.  Center is the origin, but the Torus may be transformed.
-     * @param name The name of the Torus.
-     * @param circleSamples The number of samples along the circles.
-     * @param radialSamples The number of samples along the radial.
-     * @param innerRadius The radius of the inner begining of the Torus.
-     * @param outerRadius The radius of the outter end of the Torus.
-     */
-	public Torus(
-		String name,
-		int circleSamples,
-		int radialSamples,
-		float innerRadius,
-		float outerRadius) {
+	/**
+	 * Constructs a new Torus. Center is the origin, but the Torus may be
+	 * transformed.
+	 * 
+	 * @param name
+	 *            The name of the Torus.
+	 * @param circleSamples
+	 *            The number of samples along the circles.
+	 * @param radialSamples
+	 *            The number of samples along the radial.
+	 * @param innerRadius
+	 *            The radius of the inner begining of the Torus.
+	 * @param outerRadius
+	 *            The radius of the outter end of the Torus.
+	 */
+	public Torus(String name, int circleSamples, int radialSamples,
+			float innerRadius, float outerRadius) {
 
 		super(name);
 		this.circleSamples = circleSamples;
@@ -87,7 +95,7 @@ public class Torus extends TriMesh {
 		//by the user)
 		texture[0] = new Vector2f[numVerts];
 
-        // generate geometry
+		// generate geometry
 		float inverseCircleSamples = 1.0f / (float) circleSamples;
 		float inverseRadialSamples = 1.0f / (float) radialSamples;
 		int i = 0;
@@ -103,9 +111,7 @@ public class Torus extends TriMesh {
 
 			// compute slice vertices with duplication at end point
 			int iSave = i;
-			for (int radialCount = 0;
-				radialCount < radialSamples;
-				radialCount++) {
+			for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
 				float radialFraction = radialCount * inverseRadialSamples;
 				// in [0,1)
 				float phi = FastMath.TWO_PI * radialFraction;

@@ -39,10 +39,11 @@ import com.jme.widget.button.WidgetButtonStateType;
 /**
  * <code>WidgetScrollerThumb</code>
  * @author Gregg Patton
- * @version $Id: WidgetScrollerThumb.java,v 1.3 2004-04-22 22:27:24 renanse Exp $
+ * @version $Id: WidgetScrollerThumb.java,v 1.4 2004-09-14 21:52:10 mojomonkey Exp $
  */
 public class WidgetScrollerThumb extends WidgetButton {
 
+	private static final long serialVersionUID = 1L;
 	protected Vector2f preferredSize = new Vector2f();
 
     /**

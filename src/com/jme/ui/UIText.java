@@ -53,7 +53,8 @@ import com.jme.math.*;
  */
 public class UIText extends Node {
 
-    UICharacter[] _chars = new UICharacter[256];
+    private static final long serialVersionUID = 1L;
+	UICharacter[] _chars = new UICharacter[256];
     String _text = "";
     
     float _texSizeX = 0.0f;

@@ -55,7 +55,8 @@ import com.jme.widget.scroller.WidgetVScroller;
  */
 public class WidgetScrollPanel extends WidgetAbstractContainer implements Observer {
 
-    protected WidgetPanel panel;
+    private static final long serialVersionUID = 1L;
+	protected WidgetPanel panel;
     private WidgetVScroller vScroller;
     private WidgetHScroller hScroller;
 

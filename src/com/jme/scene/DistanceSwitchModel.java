@@ -51,122 +51,130 @@ import com.jme.system.JmeException;
  */
 public class DistanceSwitchModel implements SwitchModel {
 
-    private float[] modelMin;
+	private float[] modelMin;
 
-    private float[] modelMax;
+	private float[] modelMax;
 
-    private float[] worldMin;
+	private float[] worldMin;
 
-    private float[] worldMax;
+	private float[] worldMax;
 
-    private int numChildren;
+	private int numChildren;
 
-    private float worldScaleSquared;
+	private float worldScaleSquared;
 
-    private Vector3f diff;
+	private Vector3f diff;
 
-    /**
-     * Constructor instantiates a new <code>DistanceSwitchModel</code> object
-     * with the number of children to select from.
-     * 
-     * @param numChildren
-     *            the number of children this model selects from.
-     */
-    public DistanceSwitchModel(int numChildren) {
-        this.numChildren = numChildren;
-        modelMin = new float[numChildren];
-        modelMax = new float[numChildren];
-        worldMin = new float[numChildren];
-        worldMax = new float[numChildren];
-    }
+	/**
+	 * Constructor instantiates a new <code>DistanceSwitchModel</code> object
+	 * with the number of children to select from.
+	 * 
+	 * @param numChildren
+	 *            the number of children this model selects from.
+	 */
+	public DistanceSwitchModel(int numChildren) {
+		this.numChildren = numChildren;
+		modelMin = new float[numChildren];
+		modelMax = new float[numChildren];
+		worldMin = new float[numChildren];
+		worldMax = new float[numChildren];
+	}
 
-    /**
-     * 
-     * <code>setModelMinDistance</code> sets the minimum distance that a
-     * particular child should be used.
-     * 
-     * @param index the index of the child.
-     * @param minDist the minimum of this child.
-     */
-    public void setModelMinDistance(int index, float minDist) {
+	/**
+	 * 
+	 * <code>setModelMinDistance</code> sets the minimum distance that a
+	 * particular child should be used.
+	 * 
+	 * @param index
+	 *            the index of the child.
+	 * @param minDist
+	 *            the minimum of this child.
+	 */
+	public void setModelMinDistance(int index, float minDist) {
 
-        modelMin[index] = minDist;
-    }
+		modelMin[index] = minDist;
+	}
 
-    /**
-     * 
-     * <code>setModelMaxDistance</code> sets the maximum distance that a
-     * particular child should be used.
-     * 
-     * @param index the index of the child.
-     * @param maxDist the maximum of this child.
-     */
-    public void setModelMaxDistance(int index, float maxDist) {
-        modelMax[index] = maxDist;
-    }
+	/**
+	 * 
+	 * <code>setModelMaxDistance</code> sets the maximum distance that a
+	 * particular child should be used.
+	 * 
+	 * @param index
+	 *            the index of the child.
+	 * @param maxDist
+	 *            the maximum of this child.
+	 */
+	public void setModelMaxDistance(int index, float maxDist) {
+		modelMax[index] = maxDist;
+	}
 
-    /**
-     * 
-     * <code>setModelDistance</code> sets the minimum and maximum distance that a
-     * particular child should be used.
-     * 
-     * @param index the index of the child.
-     * @param minDist the minimum of this child.
-     * @param maxDist the maximum of this child.
-     */
-    public void setModelDistance(int index, float minDist, float maxDist) {
+	/**
+	 * 
+	 * <code>setModelDistance</code> sets the minimum and maximum distance
+	 * that a particular child should be used.
+	 * 
+	 * @param index
+	 *            the index of the child.
+	 * @param minDist
+	 *            the minimum of this child.
+	 * @param maxDist
+	 *            the maximum of this child.
+	 */
+	public void setModelDistance(int index, float minDist, float maxDist) {
 
-        modelMin[index] = minDist;
-        modelMax[index] = maxDist;
-    }
+		modelMin[index] = minDist;
+		modelMax[index] = maxDist;
+	}
 
-    /**
-     * <code>set</code> accepts Float and Vector3f objects to set the
-     * properties of the distance switch model. If the value passed is a Float
-     * object, this value is used to determine the world scale (squared) value,
-     * which allows the adjustment of the min and max distances for switching.
-     * If the value passed is a Vector3f, that is used to set the difference of
-     * the switch node and a comparison point which is typically the camera 
-     * location.
-     * 
-     * @param value
-     *            either Float - the world scale squared value, or Vector3f -
-     *            the difference between the switch node and a location.
-     */
-    public void set(Object value) {
-        if (value instanceof Float) {
+	/**
+	 * <code>set</code> accepts Float and Vector3f objects to set the
+	 * properties of the distance switch model. If the value passed is a Float
+	 * object, this value is used to determine the world scale (squared) value,
+	 * which allows the adjustment of the min and max distances for switching.
+	 * If the value passed is a Vector3f, that is used to set the difference of
+	 * the switch node and a comparison point which is typically the camera
+	 * location.
+	 * 
+	 * @param value
+	 *            either Float - the world scale squared value, or Vector3f -
+	 *            the difference between the switch node and a location.
+	 */
+	public void set(Object value) {
+		if (value instanceof Float) {
 
-            worldScaleSquared = ((Float) value).floatValue();
+			worldScaleSquared = ((Float) value).floatValue();
 
-            for (int i = 0; i < numChildren; i++) {
-                worldMin[i] = worldScaleSquared * modelMin[i] * modelMin[i];
-                worldMax[i] = worldScaleSquared * modelMax[i] * modelMax[i];
-            }
-        } else if (value instanceof Vector3f) {
-            diff = (Vector3f) value;
-        } else {
-            throw new JmeException("Invalid value for set method.");
-        }
-    }
+			for (int i = 0; i < numChildren; i++) {
+				worldMin[i] = worldScaleSquared * modelMin[i] * modelMin[i];
+				worldMax[i] = worldScaleSquared * modelMax[i] * modelMax[i];
+			}
+		} else if (value instanceof Vector3f) {
+			diff = (Vector3f) value;
+		} else {
+			throw new JmeException("Invalid value for set method.");
+		}
+	}
 
-    /**
-     * <code>getSwitchChild</code> returns the index of the child that should be
-     * switched on. The current distance between the parent switch node and a
-     * supplied point is used to determine the valid child. 
-     * @return the index of the valid child.
-     */
-    public int getSwitchChild() {
-        // select the switch child
-        if (numChildren > 0) {
-            float sqrDistance = diff.lengthSquared();
+	/**
+	 * <code>getSwitchChild</code> returns the index of the child that should
+	 * be switched on. The current distance between the parent switch node and a
+	 * supplied point is used to determine the valid child.
+	 * 
+	 * @return the index of the valid child.
+	 */
+	public int getSwitchChild() {
+		// select the switch child
+		if (numChildren > 0) {
+			float sqrDistance = diff.lengthSquared();
 
-            for (int i = 0; i < numChildren; i++) {
-                if (worldMin[i] <= sqrDistance && sqrDistance < worldMax[i]) { 
-                    return i; 
-                }
-            }
-        }
+			for (int i = 0; i < numChildren; i++) {
+				if (worldMin[i] <= sqrDistance && sqrDistance < worldMax[i]) {
+					return i;
+				}
+			}
+		}
 
-        return SwitchNode.SN_INVALID_CHILD;
-    }
+		return SwitchNode.SN_INVALID_CHILD;
+	}
 }

@@ -40,7 +40,8 @@ import com.jme.math.Vector2f;
  */
 public class WidgetViewRectangle extends WidgetBoundingRectangle {
 
-    protected Vector2f offset = new Vector2f();
+    private static final long serialVersionUID = 1L;
+	protected Vector2f offset = new Vector2f();
 
     public WidgetViewRectangle() {
         super();

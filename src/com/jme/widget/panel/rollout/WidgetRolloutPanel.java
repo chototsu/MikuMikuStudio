@@ -54,11 +54,12 @@ import com.jme.widget.util.WidgetNotifier;
 /**
  * <code>WidgetRolloutPanel</code>
  * @author Gregg Patton
- * @version $Id: WidgetRolloutPanel.java,v 1.4 2004-04-22 22:27:22 renanse Exp $
+ * @version $Id: WidgetRolloutPanel.java,v 1.5 2004-09-14 21:52:16 mojomonkey Exp $
  */
 public class WidgetRolloutPanel extends WidgetAbstractContainer implements Observer {
 
-    private static final String PLUS = "+";
+    private static final long serialVersionUID = 1L;
+	private static final String PLUS = "+";
     private static final String MINUS = "-";
 
     WidgetRolloutPanelButton button;

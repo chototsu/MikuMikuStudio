@@ -15,7 +15,8 @@ import java.io.*;
  * @author Jack Lindamood
  */
 public class LoaderNode extends Node{
-    String filePath;
+    private static final long serialVersionUID = 1L;
+	String filePath;
     String classLoaderPath;
     URL urlPath;
     String type;

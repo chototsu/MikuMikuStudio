@@ -39,121 +39,141 @@ import com.jme.system.JmeException;
  * will be enough to generate a single section of a <code>BezierMesh</code>.
  * The detail level of the patch determines the smoothness of the resultant
  * <code>BezierMesh</code>.
+ * 
  * @author Mark Powell
- * @version $Id: BezierPatch.java,v 1.4 2004-04-22 22:26:44 renanse Exp $
+ * @version $Id: BezierPatch.java,v 1.5 2004-09-14 21:52:11 mojomonkey Exp $
  */
 public class BezierPatch {
-    private Vector3f[][] anchors;
-    private int detailLevel;
+	private Vector3f[][] anchors;
 
-    /**
-     * Constructor instantiates a new <code>BezierPatch</code> with a default
-     * empty control point mesh and a detail level of zero.
-     *
-     */
-    public BezierPatch() {
-        anchors = new Vector3f[4][4];
-        detailLevel = 0;
-    }
+	private int detailLevel;
 
-    /**
-     * Constructor instantiates a new <code>BezierPatch</code> with a given
-     * control point grid and a default detail level of zero.
-     * @param anchors the control points that make up the patch.
-     */
-    public BezierPatch(Vector3f[][] anchors) {
-        if (anchors.length != 4 || anchors[0].length != 4) {
-            throw new JmeException("Bezier patch anchors must be 4x4.");
-        }
+	/**
+	 * Constructor instantiates a new <code>BezierPatch</code> with a default
+	 * empty control point mesh and a detail level of zero.
+	 *  
+	 */
+	public BezierPatch() {
+		anchors = new Vector3f[4][4];
+		detailLevel = 0;
+	}
 
-        this.anchors = anchors;
-        detailLevel = 0;
-    }
+	/**
+	 * Constructor instantiates a new <code>BezierPatch</code> with a given
+	 * control point grid and a default detail level of zero.
+	 * 
+	 * @param anchors
+	 *            the control points that make up the patch.
+	 */
+	public BezierPatch(Vector3f[][] anchors) {
+		if (anchors.length != 4 || anchors[0].length != 4) {
+			throw new JmeException("Bezier patch anchors must be 4x4.");
+		}
 
-    /**
-     * Constructor instantiates a new <code>BezierPatch</code> with a given
-     * control point grid and a given detail level.
-     * @param anchors the control points that make up the patch.
-     * @param detailLevel the detail level of the patch.
-     */
-    public BezierPatch(Vector3f[][] anchors, int detailLevel) {
-        if (anchors.length != 4 || anchors[0].length != 4) {
-            throw new JmeException("Bezier patch anchors must be 4x4.");
-        }
+		this.anchors = anchors;
+		detailLevel = 0;
+	}
 
-        this.anchors = anchors;
-        this.detailLevel = detailLevel;
-    }
+	/**
+	 * Constructor instantiates a new <code>BezierPatch</code> with a given
+	 * control point grid and a given detail level.
+	 * 
+	 * @param anchors
+	 *            the control points that make up the patch.
+	 * @param detailLevel
+	 *            the detail level of the patch.
+	 */
+	public BezierPatch(Vector3f[][] anchors, int detailLevel) {
+		if (anchors.length != 4 || anchors[0].length != 4) {
+			throw new JmeException("Bezier patch anchors must be 4x4.");
+		}
 
-    /**
-     *
-     * <code>setAnchors</code> sets the control anchors of this patch.
-     * @param anchors the control anchors of this patch.
-     */
-    public void setAnchors(Vector3f[][] anchors) {
-        if (anchors.length != 4 || anchors[0].length != 4) {
-            throw new JmeException("Bezier patch anchors must be 4x4.");
-        }
+		this.anchors = anchors;
+		this.detailLevel = detailLevel;
+	}
 
-        this.anchors = anchors;
-    }
+	/**
+	 * 
+	 * <code>setAnchors</code> sets the control anchors of this patch.
+	 * 
+	 * @param anchors
+	 *            the control anchors of this patch.
+	 */
+	public void setAnchors(Vector3f[][] anchors) {
+		if (anchors.length != 4 || anchors[0].length != 4) {
+			throw new JmeException("Bezier patch anchors must be 4x4.");
+		}
 
-    /**
-     *
-     * <code>getAnchors</code> returns the control anchors that make up this
-     * patch.
-     * @return the control anchors of this patch.
-     */
-    public Vector3f[][] getAnchors() {
-        return anchors;
-    }
+		this.anchors = anchors;
+	}
 
-    /**
-     *
-     * <code>setAnchor</code> sets a single anchor of the patch.
-     * @param i the i index (row).
-     * @param j the j index (column).
-     * @param anchor the control anchor for this point.
-     */
-    public void setAnchor(int i, int j, Vector3f anchor) {
-        if ((i < 0 || i > 4) || (j < 0 || j > 4)) {
-            throw new JmeException("Bezier Patch anchor out of bounds.");
-        }
+	/**
+	 * 
+	 * <code>getAnchors</code> returns the control anchors that make up this
+	 * patch.
+	 * 
+	 * @return the control anchors of this patch.
+	 */
+	public Vector3f[][] getAnchors() {
+		return anchors;
+	}
 
-        anchors[i][j] = anchor;
-    }
+	/**
+	 * 
+	 * <code>setAnchor</code> sets a single anchor of the patch.
+	 * 
+	 * @param i
+	 *            the i index (row).
+	 * @param j
+	 *            the j index (column).
+	 * @param anchor
+	 *            the control anchor for this point.
+	 */
+	public void setAnchor(int i, int j, Vector3f anchor) {
+		if ((i < 0 || i > 4) || (j < 0 || j > 4)) {
+			throw new JmeException("Bezier Patch anchor out of bounds.");
+		}
 
-    /**
-     *
-     * <code>getAnchor</code> returns a single control anchor of a given
-     * (i, j) of the patch.
-     * @param i the i index (row).
-     * @param j the j index (column).
-     * @return the control anchor of the given i,j.
-     */
-    public Vector3f getAnchor(int i, int j) {
-        if ((i < 0 || i > 4) || (j < 0 || j > 4)) {
-            throw new JmeException("Bezier Patch anchor out of bounds.");
-        }
+		anchors[i][j] = anchor;
+	}
 
-        return anchors[i][j];
-    }
+	/**
+	 * 
+	 * <code>getAnchor</code> returns a single control anchor of a given (i,
+	 * j) of the patch.
+	 * 
+	 * @param i
+	 *            the i index (row).
+	 * @param j
+	 *            the j index (column).
+	 * @return the control anchor of the given i,j.
+	 */
+	public Vector3f getAnchor(int i, int j) {
+		if ((i < 0 || i > 4) || (j < 0 || j > 4)) {
+			throw new JmeException("Bezier Patch anchor out of bounds.");
+		}
 
-    /**
-     *
-     * <code>setDetailLevel</code> sets the detail level of this patch.
-     * @param detailLevel the detail level of this patch.
-     */
-    public void setDetailLevel(int detailLevel) {
-        this.detailLevel = detailLevel;
-    }
+		return anchors[i][j];
+	}
 
-    /**
-     *
-     * <code>getDetailLevel</code> retrieves the detail level of this patch.
-     * @return the detail level of this patch.
-     */
-    public int getDetailLevel() {
-        return detailLevel;
-    }
+	/**
+	 * 
+	 * <code>setDetailLevel</code> sets the detail level of this patch.
+	 * 
+	 * @param detailLevel
+	 *            the detail level of this patch.
+	 */
+	public void setDetailLevel(int detailLevel) {
+		this.detailLevel = detailLevel;
+	}
+
+	/**
+	 * 
+	 * <code>getDetailLevel</code> retrieves the detail level of this patch.
+	 * 
+	 * @return the detail level of this patch.
+	 */
+	public int getDetailLevel() {
+		return detailLevel;
+	}
 }

@@ -47,9 +47,11 @@ import com.jme.util.LoggingSystem;
  * lines.
  * 
  * @author Mark Powell
- * @version $Id: Line.java,v 1.10 2004-09-10 22:36:10 mojomonkey Exp $
+ * @version $Id: Line.java,v 1.11 2004-09-14 21:52:12 mojomonkey Exp $
  */
 public class Line extends Geometry {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructs a new line with the given name. By default, the line has no

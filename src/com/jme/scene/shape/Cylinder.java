@@ -39,34 +39,42 @@ import com.jme.scene.TriMesh;
 
 /**
  * <code>Cylinder</code> provides an extension of <code>TriMesh</code>. A
- * <code>Cylinder</code> is defined by a height and radius.  The center of the
+ * <code>Cylinder</code> is defined by a height and radius. The center of the
  * Cylinder is the origin.
+ * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.3 2004-08-01 05:23:58 cep21 Exp $
+ * @version $Id: Cylinder.java,v 1.4 2004-09-14 21:52:21 mojomonkey Exp $
  */
 public class Cylinder extends TriMesh {
 
+	private static final long serialVersionUID = 1L;
+
 	private int axisSamples;
+
 	private int radialSamples;
+
 	private float radius;
+
 	private float height;
 
-    /**
-     * Creates a new Cylinder.  By default its center is the origin.  Usually,
-     * a higher sample number creates a better looking cylinder, but at the
-     * cost of more vertex information.
-     * @param name The name of this Cylinder.
-     * @param axisSamples Number of triangle samples along the axis.
-     * @param radialSamples Number of triangle samples along the radial.
-     * @param radius The radius of the cylinder.
-     * @param height The cylinder's height.
-     */
-	public Cylinder(
-		String name,
-		int axisSamples,
-		int radialSamples,
-		float radius,
-		float height) {
+	/**
+	 * Creates a new Cylinder. By default its center is the origin. Usually, a
+	 * higher sample number creates a better looking cylinder, but at the cost
+	 * of more vertex information.
+	 * 
+	 * @param name
+	 *            The name of this Cylinder.
+	 * @param axisSamples
+	 *            Number of triangle samples along the axis.
+	 * @param radialSamples
+	 *            Number of triangle samples along the radial.
+	 * @param radius
+	 *            The radius of the cylinder.
+	 * @param height
+	 *            The cylinder's height.
+	 */
+	public Cylinder(String name, int axisSamples, int radialSamples,
+			float radius, float height) {
 
 		super(name);
 
@@ -126,12 +134,10 @@ public class Cylinder extends TriMesh {
 
 			// compute slice vertices with duplication at end point
 			int save = i;
-			for (int radialCount = 0;
-				radialCount < radialSamples;
-				radialCount++) {
+			for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
 				float radialFraction = radialCount * inverseRadial; // in [0,1)
-				Vector3f tempNormal =
-					new Vector3f(cos[radialCount], sin[radialCount], 0);
+				Vector3f tempNormal = new Vector3f(cos[radialCount],
+						sin[radialCount], 0);
 				vertex[i] = sliceCenter.add(tempNormal.mult(radius));
 				if (true) {
 					normal[i] = tempNormal;
@@ -160,9 +166,7 @@ public class Cylinder extends TriMesh {
 	private void setIndexData() {
 		// generate connectivity
 		int index = 0;
-		for (int axisCount = 0, axisStart = 0;
-			axisCount < axisSamples - 1;
-			axisCount++) {
+		for (int axisCount = 0, axisStart = 0; axisCount < axisSamples - 1; axisCount++) {
 			int i0 = axisStart;
 			int i1 = i0 + 1;
 			axisStart += radialSamples + 1;

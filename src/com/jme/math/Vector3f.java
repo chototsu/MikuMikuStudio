@@ -48,11 +48,13 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.28 2004-08-28 20:32:27 cep21 Exp $
+ * @version $Id: Vector3f.java,v 1.29 2004-09-14 21:52:20 mojomonkey Exp $
  */
 public class Vector3f implements Externalizable{
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * the x value of the vector.
      */
     public float x;

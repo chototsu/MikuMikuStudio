@@ -49,7 +49,9 @@ import com.jme.scene.state.TextureState;
  */
 public class UICharacter extends UIObject {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * Constructs a single character UIObject based on a sub-texture location
      * for the needed character. tx,ty and tx2,ty2 are the texture coordinates
      * of the corners of the quad

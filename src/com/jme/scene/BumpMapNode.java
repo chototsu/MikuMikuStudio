@@ -48,18 +48,27 @@ import com.jme.system.DisplaySystem;
 
 /**
  * <code>BumpMapNode</code>
- *
+ * 
  * @author Mark Powell
  * @version $id$
  */
 public class BumpMapNode extends Node {
+	private static final long serialVersionUID = 1L;
+
 	private Node objects;
+
 	private Texture normalMap;
+
 	private Light light;
+
 	private boolean modulate;
+
 	private TextureState textureState;
+
 	private TextureState textureStateModulated;
+
 	private AlphaState alphaState;
+
 	private boolean forceCullObjects;
 
 	public BumpMapNode(Node objects, Texture normalMap, Light light,
@@ -161,13 +170,14 @@ public class BumpMapNode extends Node {
 		// texture units, then ambient is added. If not, then it gets modulated
 		// by L.N.
 		if (textureStateModulated.getNumberOfUnits() > 2) {
-			textureStateModulated.getTexture(1).setBlendColor(color
-					.mult(light.getDiffuse()));
+			textureStateModulated.getTexture(1).setBlendColor(
+					color.mult(light.getDiffuse()));
 		} else {
-			FloatBuffer fb = textureStateModulated.getTexture(2).getBlendColor();
+			FloatBuffer fb = textureStateModulated.getTexture(2)
+					.getBlendColor();
 			ColorRGBA c = new ColorRGBA(fb.get(), fb.get(), fb.get(), fb.get());
-			textureStateModulated.getTexture(1).setBlendColor(color
-					.mult(light.getDiffuse()).add(c));
+			textureStateModulated.getTexture(1).setBlendColor(
+					color.mult(light.getDiffuse()).add(c));
 		}
 	}
 
@@ -184,17 +194,16 @@ public class BumpMapNode extends Node {
 		// get the world light vector
 		Vector3f lightVector;
 		switch (light.getType()) {
-			case Light.LT_DIRECTIONAL :
-				lightVector = ((DirectionalLight) light).getDirection()
-						.negate();
-				break;
-			case Light.LT_POINT :
-			case Light.LT_SPOT :
-				lightVector = ((PointLight) light).getLocation();
-				break;
-			default :
-				// ambient light, nothing we can do to handle this
-				return;
+		case Light.LT_DIRECTIONAL:
+			lightVector = ((DirectionalLight) light).getDirection().negate();
+			break;
+		case Light.LT_POINT:
+		case Light.LT_SPOT:
+			lightVector = ((PointLight) light).getLocation();
+			break;
+		default:
+			// ambient light, nothing we can do to handle this
+			return;
 		}
 
 		//	  transform the world light vector into model space
@@ -226,14 +235,14 @@ public class BumpMapNode extends Node {
 			int triIndex[] = new int[3];
 			mesh.getTriangle(tris, triIndex);
 
-			Vector3f[] vert = {vertices[triIndex[0]], vertices[triIndex[1]],
-					vertices[triIndex[2]]};
+			Vector3f[] vert = { vertices[triIndex[0]], vertices[triIndex[1]],
+					vertices[triIndex[2]] };
 
-			Vector3f[] norm = {normals[triIndex[0]], normals[triIndex[1]],
-					normals[triIndex[2]]};
+			Vector3f[] norm = { normals[triIndex[0]], normals[triIndex[1]],
+					normals[triIndex[2]] };
 
-			Vector2f[] tex = {textures[triIndex[0]], textures[triIndex[1]],
-					textures[triIndex[2]]};
+			Vector2f[] tex = { textures[triIndex[0]], textures[triIndex[1]],
+					textures[triIndex[2]] };
 
 			for (int i = 0; i < 3; i++) {
 				ColorRGBA color = lightVectors[triIndex[i]];
@@ -382,6 +391,7 @@ public class BumpMapNode extends Node {
 			}
 		}
 	}
+
 	public void updateWorldBound() {
 		worldBound = objects.getWorldBound();
 	}

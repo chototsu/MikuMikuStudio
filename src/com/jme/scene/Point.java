@@ -45,9 +45,11 @@ import com.jme.util.LoggingSystem;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.8 2004-09-10 22:36:10 mojomonkey Exp $
+ * @version $Id: Point.java,v 1.9 2004-09-14 21:52:12 mojomonkey Exp $
  */
 public class Point extends Geometry {
+
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * Constructor instantiates a new <code>Point</code> object with a given

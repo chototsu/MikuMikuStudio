@@ -37,36 +37,40 @@ import com.jme.scene.state.CullState;
 
 /**
  * <code>LWJGLCullState</code>
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLCullState.java,v 1.4 2004-08-03 04:04:57 cep21 Exp $
+ * @version $Id: LWJGLCullState.java,v 1.5 2004-09-14 21:52:14 mojomonkey Exp $
  */
 public class LWJGLCullState extends CullState {
 
-    /** <code>set</code>
-     *
-     * @see com.jme.scene.state.CullState#apply()
-     */
-    public void apply() {
-        if (isEnabled()) {
-            switch (getCullMode()) {
-                case CS_FRONT :
-                    GL11.glCullFace(GL11.GL_FRONT);
-                    GL11.glEnable(GL11.GL_CULL_FACE);
-                    break;
-                case CS_BACK :
-                    GL11.glCullFace(GL11.GL_BACK);
-                    GL11.glEnable(GL11.GL_CULL_FACE);
-                    break;
-                case CS_NONE :
-                    GL11.glDisable(GL11.GL_CULL_FACE);
-                    break;
-                default :
-                    GL11.glDisable(GL11.GL_CULL_FACE);
-                    break;
-            }
-        } else {
-          GL11.glDisable(GL11.GL_CULL_FACE);
-        }
+	private static final long serialVersionUID = 1L;
 
-    }
+	/**
+	 * <code>set</code>
+	 * 
+	 * @see com.jme.scene.state.CullState#apply()
+	 */
+	public void apply() {
+		if (isEnabled()) {
+			switch (getCullMode()) {
+			case CS_FRONT:
+				GL11.glCullFace(GL11.GL_FRONT);
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				break;
+			case CS_BACK:
+				GL11.glCullFace(GL11.GL_BACK);
+				GL11.glEnable(GL11.GL_CULL_FACE);
+				break;
+			case CS_NONE:
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				break;
+			default:
+				GL11.glDisable(GL11.GL_CULL_FACE);
+				break;
+			}
+		} else {
+			GL11.glDisable(GL11.GL_CULL_FACE);
+		}
+
+	}
 }

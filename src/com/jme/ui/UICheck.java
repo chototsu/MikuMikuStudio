@@ -56,7 +56,8 @@ import com.jme.input.*;
  */
 public class UICheck extends UIObject {
 
-    protected boolean _selected = false;
+    private static final long serialVersionUID = 1L;
+	protected boolean _selected = false;
 
     /**
      * Constructor, give unique name, inputhandler with the mouse attached to check for

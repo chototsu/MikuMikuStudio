@@ -39,10 +39,11 @@ import com.jme.math.Vector3f;
  * of the light rays are all parallel. The direction the light is coming from
  * is defined by the class.
  * @author Mark Powell
- * @version $Id: DirectionalLight.java,v 1.4 2004-04-26 14:51:03 mojomonkey Exp $
+ * @version $Id: DirectionalLight.java,v 1.5 2004-09-14 21:52:18 mojomonkey Exp $
  */
 public class DirectionalLight extends Light {
-    //direction the light is coming from.
+    private static final long serialVersionUID = 1L;
+	//direction the light is coming from.
     private Vector3f direction;
 
     /**

@@ -54,6 +54,8 @@ import com.jme.scene.Spatial;
  */
 public class WidgetText extends WidgetAbstractImpl {
 
+	private static final long serialVersionUID = 1L;
+
 	private final static String FONT_NAME = "Default";
 
 	protected TextureState textureState;

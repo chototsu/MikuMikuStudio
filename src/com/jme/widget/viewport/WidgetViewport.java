@@ -42,11 +42,12 @@ import com.jme.widget.panel.WidgetPanel;
 /**
  * <code>WidgetViewport</code>
  * @author Gregg Patton
- * @version $Id: WidgetViewport.java,v 1.2 2004-04-22 22:27:29 renanse Exp $
+ * @version $Id: WidgetViewport.java,v 1.3 2004-09-14 21:52:17 mojomonkey Exp $
  */
 public class WidgetViewport extends WidgetPanel {
 
-    protected WidgetViewportCameraController cameraController;
+    private static final long serialVersionUID = 1L;
+	protected WidgetViewportCameraController cameraController;
     private Spatial child;
 
     public WidgetViewport() {

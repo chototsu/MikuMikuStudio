@@ -55,7 +55,9 @@ import com.jme.math.Vector3f;
  */
 public class UIBillboard extends UIObject {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * Specific the image file to be shown. Just like all objects in jME, name it
      * with a unique name.
      *

@@ -41,395 +41,407 @@ import com.jme.bounding.BoundingBox;
 /**
  * <code>Box</code> provides an extension of <code>TriMesh</code>. A
  * <code>Box</code> is defined by a minimal point and a maximum point. The
- * eight vertices that make the box are then computed. They are computed in
- * such a way as to generate an axis-aligned box.
+ * eight vertices that make the box are then computed. They are computed in such
+ * a way as to generate an axis-aligned box.
+ * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.8 2004-08-01 05:19:45 cep21 Exp $
+ * @version $Id: Box.java,v 1.9 2004-09-14 21:52:21 mojomonkey Exp $
  */
 public class Box extends TriMesh implements XMLloadable {
-    public float xExtent, yExtent, zExtent;
-    public final Vector3f center = new Vector3f(0f, 0f, 0f);
+	private static final long serialVersionUID = 1L;
 
-    public final static Vector3f AXIS_X = new Vector3f(1,0,0);
-    public final static Vector3f AXIS_Y = new Vector3f(0,1,0);
-    public final static Vector3f AXIS_Z = new Vector3f(0,0,1);
+	public float xExtent, yExtent, zExtent;
 
-    /**
-     * instantiates a new <code>Box</code> object.  All information must be applies later.
-     * For internal usage only
-     */
-    public Box(){
-        super("temp");
-    }
+	public final Vector3f center = new Vector3f(0f, 0f, 0f);
 
-    /**
-     * Constructor instantiates a new <code>Box</code> object.  Center and vertice
-     * information must be supplied later.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     */
-    public Box(String name) {
-        super(name);
-    }
+	public final static Vector3f AXIS_X = new Vector3f(1, 0, 0);
 
-    /**
-     * Constructor instantiates a new <code>Box</code> object. The minimum and
-     * maximum point are provided. These two points define the shape and size
-     * of the box, but not it's orientation or position. You should use the
-     * <code>setLocalTranslation</code> and <code>setLocalRotation</code> for
-     * those attributes.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     * @param min the minimum point that defines the box.
-     * @param max the maximum point that defines the box.
-     */
-    public Box(String name, Vector3f min, Vector3f max) {
-        super(name);
-        setData(min, max, true);
-    }
+	public final static Vector3f AXIS_Y = new Vector3f(0, 1, 0);
 
-    /**
-     * Constructs a new box.  The box has the given center and extends in the x, y, and z
-     * out from the center (+ and -) by the given amounts.  So, for example, a box with extent of .5
-     * would be the unit cube.
-     * @param name Name of the box.
-     * @param center Center of the box.
-     * @param xExtent x extent of the box, in both directions.
-     * @param yExtent y extent of the box, in both directions.
-     * @param zExtent z extent of the box, in both directions.
-     */
-    public Box(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
-        super(name);
-        setData(center, xExtent, yExtent, zExtent, true);
-    }
+	public final static Vector3f AXIS_Z = new Vector3f(0, 0, 1);
 
-    /**
-     * Changes the data of the box so that the two opposite corners are minPoint and
-     * maxPoint.  The other corners are created from those two poitns.  If update buffers
-     * is flagged as true, the vertex/normal/texture/color/index buffers are updated when the
-     * data is changed.
-     * @param minPoint The new minPoint of the box.
-     * @param maxPoint The new maxPoint of the box.
-     * @param updateBuffers If true, buffers are updated.
-     */
-    public void setData(Vector3f minPoint, Vector3f maxPoint, boolean updateBuffers) {
-        center.set(maxPoint).addLocal(minPoint).multLocal(0.5f);
+	/**
+	 * instantiates a new <code>Box</code> object. All information must be
+	 * applies later. For internal usage only
+	 */
+	public Box() {
+		super("temp");
+	}
 
-        float x = maxPoint.x - center.x;
-        float y = maxPoint.y - center.y;
-        float z = maxPoint.z - center.z;
-        setData(center, x, y, z, updateBuffers);
-    }
+	/**
+	 * Constructor instantiates a new <code>Box</code> object. Center and
+	 * vertice information must be supplied later.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 */
+	public Box(String name) {
+		super(name);
+	}
 
-    /**
-     * Changes the data of the box so that its center is <code>center</code> and it extends
-     * in the x, y, and z directions by the given extent.  Note that the actual sides will be
-     * 2x the given extent values because the box extends in + & - from the center for each
-     * extent.
-     * @param center The center of the box.
-     * @param xExtent x extent of the box, in both directions.
-     * @param yExtent y extent of the box, in both directions.
-     * @param zExtent z extent of the box, in both directions.
-     * @param updateBuffers If true, buffers are updated.
-     */
-    public void setData(Vector3f center, float xExtent, float yExtent, float zExtent, boolean updateBuffers) {
-        if (center != null)
-            this.center.set(center);
-        
-        this.xExtent = xExtent;
-        this.yExtent = yExtent;
-        this.zExtent = zExtent;
+	/**
+	 * Constructor instantiates a new <code>Box</code> object. The minimum and
+	 * maximum point are provided. These two points define the shape and size of
+	 * the box, but not it's orientation or position. You should use the
+	 * <code>setLocalTranslation</code> and <code>setLocalRotation</code>
+	 * for those attributes.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 * @param min
+	 *            the minimum point that defines the box.
+	 * @param max
+	 *            the maximum point that defines the box.
+	 */
+	public Box(String name, Vector3f min, Vector3f max) {
+		super(name);
+		setData(min, max, true);
+	}
 
-        if (updateBuffers) {
-          setVertexData();
-          setNormalData();
-          setColorData();
-          setTextureData();
-          setIndexData();
-        }
-    }
+	/**
+	 * Constructs a new box. The box has the given center and extends in the x,
+	 * y, and z out from the center (+ and -) by the given amounts. So, for
+	 * example, a box with extent of .5 would be the unit cube.
+	 * 
+	 * @param name
+	 *            Name of the box.
+	 * @param center
+	 *            Center of the box.
+	 * @param xExtent
+	 *            x extent of the box, in both directions.
+	 * @param yExtent
+	 *            y extent of the box, in both directions.
+	 * @param zExtent
+	 *            z extent of the box, in both directions.
+	 */
+	public Box(String name, Vector3f center, float xExtent, float yExtent,
+			float zExtent) {
+		super(name);
+		setData(center, xExtent, yExtent, zExtent, true);
+	}
 
-    /**
-     *
-     * <code>setVertexData</code> sets the vertex positions that define the
-     * box. These eight points are determined from the minimum and maximum
-     * point.
-     *
-     */
-    private void setVertexData() {
-        Vector3f[] verts = new Vector3f[24];
-        Vector3f[] vert = computeVertices(); // returns 8
+	/**
+	 * Changes the data of the box so that the two opposite corners are minPoint
+	 * and maxPoint. The other corners are created from those two poitns. If
+	 * update buffers is flagged as true, the vertex/normal/texture/color/index
+	 * buffers are updated when the data is changed.
+	 * 
+	 * @param minPoint
+	 *            The new minPoint of the box.
+	 * @param maxPoint
+	 *            The new maxPoint of the box.
+	 * @param updateBuffers
+	 *            If true, buffers are updated.
+	 */
+	public void setData(Vector3f minPoint, Vector3f maxPoint,
+			boolean updateBuffers) {
+		center.set(maxPoint).addLocal(minPoint).multLocal(0.5f);
 
-        //Front
-        verts[0] = vert[0];
-        verts[1] = vert[1];
-        verts[2] = vert[2];
-        verts[3] = vert[3];
+		float x = maxPoint.x - center.x;
+		float y = maxPoint.y - center.y;
+		float z = maxPoint.z - center.z;
+		setData(center, x, y, z, updateBuffers);
+	}
 
-        //Right
-        verts[4] = vert[1];
-        verts[5] = vert[4];
-        verts[6] = vert[6];
-        verts[7] = vert[2];
+	/**
+	 * Changes the data of the box so that its center is <code>center</code>
+	 * and it extends in the x, y, and z directions by the given extent. Note
+	 * that the actual sides will be 2x the given extent values because the box
+	 * extends in + & - from the center for each extent.
+	 * 
+	 * @param center
+	 *            The center of the box.
+	 * @param xExtent
+	 *            x extent of the box, in both directions.
+	 * @param yExtent
+	 *            y extent of the box, in both directions.
+	 * @param zExtent
+	 *            z extent of the box, in both directions.
+	 * @param updateBuffers
+	 *            If true, buffers are updated.
+	 */
+	public void setData(Vector3f center, float xExtent, float yExtent,
+			float zExtent, boolean updateBuffers) {
+		if (center != null)
+			this.center.set(center);
 
-        //Back
-        verts[8] = vert[4];
-        verts[9] = vert[5];
-        verts[10] = vert[7];
-        verts[11] = vert[6];
+		this.xExtent = xExtent;
+		this.yExtent = yExtent;
+		this.zExtent = zExtent;
 
-        //Left
-        verts[12] = vert[5];
-        verts[13] = vert[0];
-        verts[14] = vert[3];
-        verts[15] = vert[7];
+		if (updateBuffers) {
+			setVertexData();
+			setNormalData();
+			setColorData();
+			setTextureData();
+			setIndexData();
+		}
+	}
 
-        //Top
-        verts[16] = vert[2];
-        verts[17] = vert[6];
-        verts[18] = vert[7];
-        verts[19] = vert[3];
+	/**
+	 * 
+	 * <code>setVertexData</code> sets the vertex positions that define the
+	 * box. These eight points are determined from the minimum and maximum
+	 * point.
+	 *  
+	 */
+	private void setVertexData() {
+		Vector3f[] verts = new Vector3f[24];
+		Vector3f[] vert = computeVertices(); // returns 8
 
-        //Bottom
-        verts[20] = vert[0];
-        verts[21] = vert[5];
-        verts[22] = vert[4];
-        verts[23] = vert[1];
-        setVertices(verts);
+		//Front
+		verts[0] = vert[0];
+		verts[1] = vert[1];
+		verts[2] = vert[2];
+		verts[3] = vert[3];
 
-    }
+		//Right
+		verts[4] = vert[1];
+		verts[5] = vert[4];
+		verts[6] = vert[6];
+		verts[7] = vert[2];
 
-    /**
-     *
-     * <code>setNormalData</code> sets the normals of each of the box's planes.
-     *
-     *
-     */
-    private void setNormalData() {
-        Vector3f[] normals = new Vector3f[24];
-        Vector3f front = new Vector3f(0, 0, 1);
-        Vector3f right = new Vector3f(1, 0, 0);
-        Vector3f back = new Vector3f(0, 0, -1);
-        Vector3f left = new Vector3f(-1, 0, 0);
-        Vector3f top = new Vector3f(0, 1, 0);
-        Vector3f bottom = new Vector3f(0, -1, 0);
+		//Back
+		verts[8] = vert[4];
+		verts[9] = vert[5];
+		verts[10] = vert[7];
+		verts[11] = vert[6];
 
-        //back
-        normals[0] = back;
-        normals[1] = back;
-        normals[2] = back;
-        normals[3] = back;
+		//Left
+		verts[12] = vert[5];
+		verts[13] = vert[0];
+		verts[14] = vert[3];
+		verts[15] = vert[7];
 
-        //right
-        normals[4] = right;
-        normals[5] = right;
-        normals[6] = right;
-        normals[7] = right;
+		//Top
+		verts[16] = vert[2];
+		verts[17] = vert[6];
+		verts[18] = vert[7];
+		verts[19] = vert[3];
 
-        //front
-        normals[8] = front;
-        normals[9] = front;
-        normals[10] = front;
-        normals[11] = front;
+		//Bottom
+		verts[20] = vert[0];
+		verts[21] = vert[5];
+		verts[22] = vert[4];
+		verts[23] = vert[1];
+		setVertices(verts);
 
-        //left
-        normals[12] = left;
-        normals[13] = left;
-        normals[14] = left;
-        normals[15] = left;
+	}
 
-        //top
-        normals[16] = top;
-        normals[17] = top;
-        normals[18] = top;
-        normals[19] = top;
+	/**
+	 * 
+	 * <code>setNormalData</code> sets the normals of each of the box's
+	 * planes.
+	 * 
+	 *  
+	 */
+	private void setNormalData() {
+		Vector3f[] normals = new Vector3f[24];
+		Vector3f front = new Vector3f(0, 0, 1);
+		Vector3f right = new Vector3f(1, 0, 0);
+		Vector3f back = new Vector3f(0, 0, -1);
+		Vector3f left = new Vector3f(-1, 0, 0);
+		Vector3f top = new Vector3f(0, 1, 0);
+		Vector3f bottom = new Vector3f(0, -1, 0);
 
-        //bottom
-        normals[20] = bottom;
-        normals[21] = bottom;
-        normals[22] = bottom;
-        normals[23] = bottom;
+		//back
+		normals[0] = back;
+		normals[1] = back;
+		normals[2] = back;
+		normals[3] = back;
 
-        setNormals(normals);
+		//right
+		normals[4] = right;
+		normals[5] = right;
+		normals[6] = right;
+		normals[7] = right;
 
-    }
+		//front
+		normals[8] = front;
+		normals[9] = front;
+		normals[10] = front;
+		normals[11] = front;
 
-    /**
-     *
-     * <code>setTextureData</code> sets the points that define the texture of
-     * the box. It's a one-to-one ratio, where each plane of the box has it's
-     * own copy of the texture. That is, the texture is repeated one time for
-     * each six faces.
-     *
-     */
-    private void setTextureData() {
-        Vector2f[] textures = new Vector2f[24];
-        Vector2f br = new Vector2f(0, 0);
-        Vector2f bl = new Vector2f(1, 0);
-        Vector2f tl = new Vector2f(1, 1);
-        Vector2f tr = new Vector2f(0, 1);
+		//left
+		normals[12] = left;
+		normals[13] = left;
+		normals[14] = left;
+		normals[15] = left;
 
-        textures[0] = bl;
-        textures[1] = br;
-        textures[2] = tr;
-        textures[3] = tl;
+		//top
+		normals[16] = top;
+		normals[17] = top;
+		normals[18] = top;
+		normals[19] = top;
 
-        textures[4] = bl;
-        textures[5] = br;
-        textures[6] = tr;
-        textures[7] = tl;
+		//bottom
+		normals[20] = bottom;
+		normals[21] = bottom;
+		normals[22] = bottom;
+		normals[23] = bottom;
 
-        textures[8] = bl;
-        textures[9] = br;
-        textures[10] = tr;
-        textures[11] = tl;
+		setNormals(normals);
 
-        textures[12] = bl;
-        textures[13] = br;
-        textures[14] = tr;
-        textures[15] = tl;
+	}
 
-        textures[16] = bl;
-        textures[17] = br;
-        textures[18] = tr;
-        textures[19] = tl;
+	/**
+	 * 
+	 * <code>setTextureData</code> sets the points that define the texture of
+	 * the box. It's a one-to-one ratio, where each plane of the box has it's
+	 * own copy of the texture. That is, the texture is repeated one time for
+	 * each six faces.
+	 *  
+	 */
+	private void setTextureData() {
+		Vector2f[] textures = new Vector2f[24];
+		Vector2f br = new Vector2f(0, 0);
+		Vector2f bl = new Vector2f(1, 0);
+		Vector2f tl = new Vector2f(1, 1);
+		Vector2f tr = new Vector2f(0, 1);
 
-        textures[20] = bl;
-        textures[21] = br;
-        textures[22] = tr;
-        textures[23] = tl;
+		textures[0] = bl;
+		textures[1] = br;
+		textures[2] = tr;
+		textures[3] = tl;
 
-        setTextures(textures);
+		textures[4] = bl;
+		textures[5] = br;
+		textures[6] = tr;
+		textures[7] = tl;
 
-    }
+		textures[8] = bl;
+		textures[9] = br;
+		textures[10] = tr;
+		textures[11] = tl;
 
-    /**
-     *
-     * <code>setColorData</code> sets the color values for each vertex of the
-     * box. Currently, these are set to white.
-     *
-     */
-    private void setColorData() {
-        ColorRGBA[] color = new ColorRGBA[24];
-        for (int i = 0; i < color.length; i++) {
-            color[i] = new ColorRGBA(1, 1, 1, 1);
-        }
-        setColors(color);
-    }
+		textures[12] = bl;
+		textures[13] = br;
+		textures[14] = tr;
+		textures[15] = tl;
 
-    /**
-     *
-     * <code>setIndexData</code> sets the indices into the list of vertices,
-     * defining all triangles that constitute the box.
-     *
-     */
-    private void setIndexData() {
-        int[] indices =
-            {
-                2,
-                1,
-                0,
-                3,
-                2,
-                0,
-                6,
-                5,
-                4,
-                7,
-                6,
-                4,
-                10,
-                9,
-                8,
-                11,
-                10,
-                8,
-                14,
-                13,
-                12,
-                15,
-                14,
-                12,
-                18,
-                17,
-                16,
-                19,
-                18,
-                16,
-                22,
-                21,
-                20,
-                23,
-                22,
-                20 };
-        setIndices(indices);
+		textures[16] = bl;
+		textures[17] = br;
+		textures[18] = tr;
+		textures[19] = tl;
 
-    }
+		textures[20] = bl;
+		textures[21] = br;
+		textures[22] = tr;
+		textures[23] = tl;
 
-    /**
-     * <code>clone</code> creates a new Box object containing the same
-     * data as this one.
-     * @return the new Box
-     */
-    public Object clone() {
-        Box rVal = new Box(name+"_clone", (Vector3f)center.clone(), xExtent, yExtent, zExtent);
-        return rVal;
-    }
+		setTextures(textures);
 
-    /**
-     *
-     * @return a size 8 array of Vectors representing the 8 points of the box.
-     */
-    public Vector3f[] computeVertices() {
+	}
 
-        Vector3f akEAxis[] = {
-            AXIS_X.mult(xExtent),
-            AXIS_Y.mult(yExtent),
-            AXIS_Z.mult(zExtent)
-        };
+	/**
+	 * 
+	 * <code>setColorData</code> sets the color values for each vertex of the
+	 * box. Currently, these are set to white.
+	 *  
+	 */
+	private void setColorData() {
+		ColorRGBA[] color = new ColorRGBA[24];
+		for (int i = 0; i < color.length; i++) {
+			color[i] = new ColorRGBA(1, 1, 1, 1);
+		}
+		setColors(color);
+	}
 
-        Vector3f rVal[] = new Vector3f[8];
-        rVal[0] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1]).subtractLocal(akEAxis[2]);
-        rVal[1] = center.add(akEAxis[0]).subtractLocal(akEAxis[1]).subtractLocal(akEAxis[2]);
-        rVal[2] = center.add(akEAxis[0]).addLocal(akEAxis[1]).subtractLocal(akEAxis[2]);
-        rVal[3] = center.subtract(akEAxis[0]).addLocal(akEAxis[1]).subtractLocal(akEAxis[2]);
-        rVal[4] = center.add(akEAxis[0]).subtractLocal(akEAxis[1]).addLocal(akEAxis[2]);
-        rVal[5] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1]).addLocal(akEAxis[2]);
-        rVal[6] = center.add(akEAxis[0]).addLocal(akEAxis[1]).addLocal(akEAxis[2]);
-        rVal[7] = center.subtract(akEAxis[0]).addLocal(akEAxis[1]).addLocal(akEAxis[2]);
-        return rVal;
-    }
+	/**
+	 * 
+	 * <code>setIndexData</code> sets the indices into the list of vertices,
+	 * defining all triangles that constitute the box.
+	 *  
+	 */
+	private void setIndexData() {
+		int[] indices = { 2, 1, 0, 3, 2, 0, 6, 5, 4, 7, 6, 4, 10, 9, 8, 11, 10,
+				8, 14, 13, 12, 15, 14, 12, 18, 17, 16, 19, 18, 16, 22, 21, 20,
+				23, 22, 20 };
+		setIndices(indices);
 
-    /**
-     * Returns the current center of the box.
-     * @return The box's center.
-     */
-	public Vector3f getCenter(){
+	}
+
+	/**
+	 * <code>clone</code> creates a new Box object containing the same data as
+	 * this one.
+	 * 
+	 * @return the new Box
+	 */
+	public Object clone() {
+		Box rVal = new Box(name + "_clone", (Vector3f) center.clone(), xExtent,
+				yExtent, zExtent);
+		return rVal;
+	}
+
+	/**
+	 * 
+	 * @return a size 8 array of Vectors representing the 8 points of the box.
+	 */
+	public Vector3f[] computeVertices() {
+
+		Vector3f akEAxis[] = { AXIS_X.mult(xExtent), AXIS_Y.mult(yExtent),
+				AXIS_Z.mult(zExtent) };
+
+		Vector3f rVal[] = new Vector3f[8];
+		rVal[0] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1])
+				.subtractLocal(akEAxis[2]);
+		rVal[1] = center.add(akEAxis[0]).subtractLocal(akEAxis[1])
+				.subtractLocal(akEAxis[2]);
+		rVal[2] = center.add(akEAxis[0]).addLocal(akEAxis[1]).subtractLocal(
+				akEAxis[2]);
+		rVal[3] = center.subtract(akEAxis[0]).addLocal(akEAxis[1])
+				.subtractLocal(akEAxis[2]);
+		rVal[4] = center.add(akEAxis[0]).subtractLocal(akEAxis[1]).addLocal(
+				akEAxis[2]);
+		rVal[5] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1])
+				.addLocal(akEAxis[2]);
+		rVal[6] = center.add(akEAxis[0]).addLocal(akEAxis[1]).addLocal(
+				akEAxis[2]);
+		rVal[7] = center.subtract(akEAxis[0]).addLocal(akEAxis[1]).addLocal(
+				akEAxis[2]);
+		return rVal;
+	}
+
+	/**
+	 * Returns the current center of the box.
+	 * 
+	 * @return The box's center.
+	 */
+	public Vector3f getCenter() {
 		return center;
 	}
 
-    /**
-     * Sets the center of the box.  Note that even though the center is set, Geometry
-     * information is not updated.  In most cases, you'll want to use setData()
-     * @param aCenter The new center.
-     */
-	public void setCenter(Vector3f aCenter){
+	/**
+	 * Sets the center of the box. Note that even though the center is set,
+	 * Geometry information is not updated. In most cases, you'll want to use
+	 * setData()
+	 * 
+	 * @param aCenter
+	 *            The new center.
+	 */
+	public void setCenter(Vector3f aCenter) {
 		center.set(aCenter);
 	}
 
-    public String writeToXML() {
-        StringBuffer returnedValue=new StringBuffer();
-        returnedValue.append(center.x).append(' ').append(center.y).append(' ').append(center.z).append(' ');
-        returnedValue.append(xExtent).append(' ').append(yExtent).append(' ').append(zExtent).append(' ');
-        return returnedValue.toString();
-    }
+	public String writeToXML() {
+		StringBuffer returnedValue = new StringBuffer();
+		returnedValue.append(center.x).append(' ').append(center.y).append(' ')
+				.append(center.z).append(' ');
+		returnedValue.append(xExtent).append(' ').append(yExtent).append(' ')
+				.append(zExtent).append(' ');
+		return returnedValue.toString();
+	}
 
-    public Object loadFromXML(String args) {
-        String[] parts=args.split(" ");
-        setData(new Vector3f(Float.parseFloat(parts[0]),Float.parseFloat(parts[1]),Float.parseFloat(parts[2]))
-                , Float.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float.parseFloat(parts[5]), true);
-        this.setModelBound(new BoundingBox());
-        this.updateModelBound();
-        return this;
-    }
+	public Object loadFromXML(String args) {
+		String[] parts = args.split(" ");
+		setData(new Vector3f(Float.parseFloat(parts[0]), Float
+				.parseFloat(parts[1]), Float.parseFloat(parts[2])), Float
+				.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float
+				.parseFloat(parts[5]), true);
+		this.setModelBound(new BoundingBox());
+		this.updateModelBound();
+		return this;
+	}
 }

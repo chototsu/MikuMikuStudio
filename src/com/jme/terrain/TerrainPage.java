@@ -56,11 +56,13 @@ import com.jme.util.LoggingSystem;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.21 2004-09-05 16:18:54 cep21 Exp $
+ * @version $Id: TerrainPage.java,v 1.22 2004-09-14 21:52:11 mojomonkey Exp $
  */
 public class TerrainPage extends Node {
 
-    private Vector2f offset;
+    private static final long serialVersionUID = 1L;
+
+	private Vector2f offset;
 
     private int totalSize;
 

@@ -35,11 +35,13 @@ package com.jme.light;
  * <code>AmbientLight</code> defines the natural light of a scene. This is
  * light that affects all color values of the scene.
  * @author Mark Powell
- * @version $Id: AmbientLight.java,v 1.5 2004-07-30 22:29:42 cep21 Exp $
+ * @version $Id: AmbientLight.java,v 1.6 2004-09-14 21:52:18 mojomonkey Exp $
  */
 public class AmbientLight extends Light {
 
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * Constructor instantiates a new <code>AmbientLight</code> object. This
      * sets the color values to white.
      *

@@ -59,11 +59,12 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.8 2004-09-08 17:06:41 mojomonkey Exp $
+     * @version $Id: AseToJme.java,v 1.9 2004-09-14 21:52:10 mojomonkey Exp $
      */
     private class ASEModelCopy extends Node{
 
-        //ASE file tags.
+        private static final long serialVersionUID = 1L;
+		//ASE file tags.
         private static final String OBJECT = "*GEOMOBJECT";
         private static final String NUM_VERTEX = "*MESH_NUMVERTEX";
         private static final String NUM_FACES = "*MESH_NUMFACES";
@@ -808,7 +809,8 @@ public class AseToJme extends FormatConverter{
          * <code>ASEObject</code> holds the data for the mesh.
          */
         public class ASEObject extends TriMesh {
-            public int materialID;
+            private static final long serialVersionUID = 1L;
+			public int materialID;
             public Vector2f[] tempTexVerts; // The texture's UV coordinates
             public Face[] faces; // The faces information of the object
 

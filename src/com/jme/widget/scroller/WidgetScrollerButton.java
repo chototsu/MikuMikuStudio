@@ -44,7 +44,9 @@ import com.jme.widget.renderer.WidgetRendererFactory;
  */
 public class WidgetScrollerButton extends WidgetButton {
 
-    public final static int DEFAULT_SCROLLER_BUTTON_SIZE = 16;
+    private static final long serialVersionUID = 1L;
+
+	public final static int DEFAULT_SCROLLER_BUTTON_SIZE = 16;
 
     protected WidgetExpander expander = new WidgetExpander();
 

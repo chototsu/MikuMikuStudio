@@ -47,9 +47,11 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.19 2004-09-12 02:11:02 cep21 Exp $
+ * @version $Id: BoundingSphere.java,v 1.20 2004-09-14 21:52:24 mojomonkey Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
+
+	private static final long serialVersionUID = 1L;
 
 	public int[] checkPlanes = new int[6];
 
@@ -58,8 +60,9 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 	private Vector3f oldCenter = new Vector3f();
 
 	static final private float radiusEpsilon = 1 + 1e-5f; // NOTE: To avoid
-														  // numerical
-														  // inaccuracies
+
+	// numerical
+	// inaccuracies
 
 	/**
 	 * When this flag is true, updateModelBound() for BoundingSphere will
@@ -689,10 +692,10 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
 	 */
 	public boolean intersects(BoundingVolume bv) {
-        if (bv==null)
-            return false;
-        else
-		    return bv.intersectsSphere(this);
+		if (bv == null)
+			return false;
+		else
+			return bv.intersectsSphere(this);
 	}
 
 	/*

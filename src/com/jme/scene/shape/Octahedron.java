@@ -38,20 +38,30 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Octahedron</code> is an eight faced polyhedron.  It looks somewhat like two
- * pyramids placed bottom to bottom.
+ * <code>Octahedron</code> is an eight faced polyhedron. It looks somewhat
+ * like two pyramids placed bottom to bottom.
+ * 
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.3 2004-08-01 06:27:18 cep21 Exp $
+ * @version $Id: Octahedron.java,v 1.4 2004-09-14 21:52:22 mojomonkey Exp $
  */
 public class Octahedron extends TriMesh {
+	private static final long serialVersionUID = 1L;
+
 	private static final int NUM_POINTS = 6;
+
 	private static final int NUM_TRIS = 8;
+
 	private float sideLength;
-    /**
-     * Creates an octahedron with center at the origin.  The lenght sides are given.
-     * @param name The name of the octahedron.
-     * @param sideLength The length of each side of the octahedron.
-     */
+
+	/**
+	 * Creates an octahedron with center at the origin. The lenght sides are
+	 * given.
+	 * 
+	 * @param name
+	 *            The name of the octahedron.
+	 * @param sideLength
+	 *            The length of each side of the octahedron.
+	 */
 	public Octahedron(String name, float sideLength) {
 		super(name);
 		this.sideLength = sideLength;
@@ -107,15 +117,14 @@ public class Octahedron extends TriMesh {
 
 		setIndices(indices);
 	}
+
 	private void setTextureData() {
 		for (int i = 0; i < NUM_POINTS; i++) {
 			texture[0][i] = new Vector2f();
 			if (FastMath.abs(vertex[i].z) < sideLength) {
-				texture[0][i].x =
-					0.5f
-						* (1.0f
-							+ FastMath.atan2(vertex[i].y, vertex[i].x)
-								* FastMath.INV_PI);
+				texture[0][i].x = 0.5f * (1.0f + FastMath.atan2(vertex[i].y,
+						vertex[i].x)
+						* FastMath.INV_PI);
 			} else {
 				texture[0][i].x = 0.5f;
 			}
@@ -124,16 +133,19 @@ public class Octahedron extends TriMesh {
 
 		setTextures(texture[0]);
 	}
+
 	private void setColorData() {
 		for (int x = 0; x < NUM_POINTS; x++)
 			color[x] = new ColorRGBA();
 		setColors(color);
 	}
+
 	private void setNormalData() {
 		for (int i = 0; i < NUM_POINTS; i++)
 			normal[i] = vertex[i].normalize();
 		setNormals(normal);
 	}
+
 	private void setVertexData() {
 		vertex[0] = new Vector3f(sideLength, 0.0f, 0.0f);
 		vertex[1] = new Vector3f(-sideLength, 0.0f, 0.0f);

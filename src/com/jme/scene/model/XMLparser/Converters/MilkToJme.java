@@ -122,7 +122,9 @@ public class MilkToJme extends FormatConverter{
         for (int i=0;i<nNumMaterials;i++){
             inFile.skipBytes(32);   // Skip the name, unused
             MaterialState matState=new MaterialState(){
-                public void apply() {throw new JmeException("I am not to be used in a real graph");}
+                private static final long serialVersionUID = 1L;
+
+				public void apply() {throw new JmeException("I am not to be used in a real graph");}
             };
             matState.setAmbient(getNextColor());
             matState.setDiffuse(getNextColor());

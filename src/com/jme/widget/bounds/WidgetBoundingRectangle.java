@@ -50,6 +50,8 @@ import com.jme.math.Vector3f;
  */
 public class WidgetBoundingRectangle implements BoundingVolume {
 
+	private static final long serialVersionUID = 1L;
+
 	public int[] checkPlanes = new int[6];
 
 	protected Vector2f min = new Vector2f();

@@ -38,34 +38,34 @@ import com.jme.scene.state.ShadeState;
 /**
  * <code>LWJGLShadeState</code> subclasses the ShadeState class using the
  * LWJGL API to access OpenGL to set the shade state.
+ * 
  * @author Mark Powell
- * @version $Id: LWJGLShadeState.java,v 1.5 2004-08-31 05:13:34 mojomonkey Exp $
+ * @version $Id: LWJGLShadeState.java,v 1.6 2004-09-14 21:52:14 mojomonkey Exp $
  */
 public class LWJGLShadeState extends ShadeState {
-    //open gl params
-    private static int[] glShadeState =
-    {
-        GL11.GL_FLAT,
-        GL11.GL_SMOOTH
-    };
+	private static final long serialVersionUID = 1L;
 
-    /**
-     * Constructor instantiates a new <code>LWJGLShadeState</code> object.
-     *
-     */
-    public LWJGLShadeState() {
-        super();
-    }
+	//open gl params
+	private static int[] glShadeState = { GL11.GL_FLAT, GL11.GL_SMOOTH };
 
-    /**
-     * <code>set</code> sets the OpenGL shade state to that specified by
-     * the state.
-     * @see com.jme.scene.state.ShadeState#apply() ()
-     */
-    public void apply() {
-      if (isEnabled())
-        GL11.glShadeModel(glShadeState[shade]);
-      else
-        GL11.glShadeModel(GL11.GL_SMOOTH);
-    }
+	/**
+	 * Constructor instantiates a new <code>LWJGLShadeState</code> object.
+	 *  
+	 */
+	public LWJGLShadeState() {
+		super();
+	}
+
+	/**
+	 * <code>set</code> sets the OpenGL shade state to that specified by the
+	 * state.
+	 * 
+	 * @see com.jme.scene.state.ShadeState#apply() ()
+	 */
+	public void apply() {
+		if (isEnabled())
+			GL11.glShadeModel(glShadeState[shade]);
+		else
+			GL11.glShadeModel(GL11.GL_SMOOTH);
+	}
 }

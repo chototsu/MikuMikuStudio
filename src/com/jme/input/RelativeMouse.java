@@ -45,10 +45,12 @@ package com.jme.input;
  * position of a mouse in a rendering window. This type of controller is
  * typically useful for a first person mouse look or similar.
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.11 2004-07-30 21:20:23 cep21 Exp $
+ * @version $Id: RelativeMouse.java,v 1.12 2004-09-14 21:52:19 mojomonkey Exp $
  */
 public class RelativeMouse extends Mouse {
-    /**
+    private static final long serialVersionUID = 1L;
+
+	/**
      * Constructor creates a new <code>RelativeMouse</code> object.
      * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.

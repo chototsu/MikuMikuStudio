@@ -41,26 +41,27 @@ package com.jme.scene;
  * 
  * @see com.jme.scene.SwitchNode
  * @author Mark Powell
- * @version $Id: SwitchModel.java,v 1.3 2004-04-29 15:29:39 mojomonkey Exp $
+ * @version $Id: SwitchModel.java,v 1.4 2004-09-14 21:52:12 mojomonkey Exp $
  */
 public interface SwitchModel {
-    /**
-     * 
-     * <code>getSwitchChild</code> returns the index of the node that should
-     * be set active in the <code>SwitchNode</code>.
-     *
-     * @return the index of the active child.
-     */
-    public int getSwitchChild();
+	/**
+	 * 
+	 * <code>getSwitchChild</code> returns the index of the node that should
+	 * be set active in the <code>SwitchNode</code>.
+	 * 
+	 * @return the index of the active child.
+	 */
+	public int getSwitchChild();
 
-    /**
-     * 
-     * <code>set</code> provides a generic set method for implementing classes.
-     * The value set can be anything, and it is the responsibility of the 
-     * implementing to define what this method will do for the particular 
-     * implementation.
-     *
-     * @param value the value to set.
-     */
-    public void set(Object value);
+	/**
+	 * 
+	 * <code>set</code> provides a generic set method for implementing
+	 * classes. The value set can be anything, and it is the responsibility of
+	 * the implementing to define what this method will do for the particular
+	 * implementation.
+	 * 
+	 * @param value
+	 *            the value to set.
+	 */
+	public void set(Object value);
 }

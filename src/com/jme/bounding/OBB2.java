@@ -12,6 +12,8 @@ import com.jme.math.*;
  */
 public class OBB2 implements BoundingVolume {
 
+	private static final long serialVersionUID = 1L;
+
 	static private final Vector3f tempVa = new Vector3f();
 
 	static private final Vector3f tempVb = new Vector3f();
@@ -780,10 +782,10 @@ public class OBB2 implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
 	 */
 	public boolean intersects(BoundingVolume bv) {
-        if (bv==null)
-            return false;
-        else
-		    return bv.intersectsOBB2(this);
+		if (bv == null)
+			return false;
+		else
+			return bv.intersectsOBB2(this);
 	}
 
 	/*

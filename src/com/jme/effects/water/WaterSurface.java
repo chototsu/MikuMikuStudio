@@ -43,11 +43,12 @@ import com.jme.scene.TriMesh;
  * Portions from Game Programming Gems 4 article by Jerry Tessendorf
  *
  * @author Joshua Slack
- * @version $Id: WaterSurface.java,v 1.6 2004-08-03 02:52:20 cep21 Exp $
+ * @version $Id: WaterSurface.java,v 1.7 2004-09-14 21:52:27 mojomonkey Exp $
  */
 
 public class WaterSurface extends TriMesh {
-  private int iwidth, iheight, size;
+  private static final long serialVersionUID = 1L;
+private int iwidth, iheight, size;
   private float[] vertical_derivative, height, previous_height;
   float kernel[][] = new float[13][13];
   float gravity, tension;

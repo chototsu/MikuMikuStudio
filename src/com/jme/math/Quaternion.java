@@ -47,10 +47,11 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.29 2004-08-26 23:46:02 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.30 2004-09-14 21:52:20 mojomonkey Exp $
  */
 public class Quaternion implements Externalizable{
-    public float x, y, z, w;
+    private static final long serialVersionUID = 1L;
+	public float x, y, z, w;
 
     /**
      * Constructor instantiates a new <code>Quaternion</code> object

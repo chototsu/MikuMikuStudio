@@ -12,7 +12,8 @@ import com.jme.math.Vector3f;
  * @author Jack Lindamood
  */
 public class JointMesh extends TriMesh{
-    public int[] jointIndex;
+    private static final long serialVersionUID = 1L;
+	public int[] jointIndex;
     public Vector3f[] originalVertex;
     public Vector3f[] originalNormal;
     public JointMesh(String name){

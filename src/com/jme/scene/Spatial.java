@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.50 2004-09-10 22:36:10 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.51 2004-09-14 21:52:12 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 	/** Spatial's rotation relative to its parent. */
@@ -839,10 +839,13 @@ public abstract class Spatial implements Serializable {
 	}
 
 	/**
-	 * checks this spatial against a second spatial, any collisions are 
-	 * stored in the results object.
-	 * @param scene the scene to test against.
-	 * @param results the results of the collisions.
+	 * checks this spatial against a second spatial, any collisions are stored
+	 * in the results object.
+	 * 
+	 * @param scene
+	 *            the scene to test against.
+	 * @param results
+	 *            the results of the collisions.
 	 */
 	public abstract void hasCollision(Spatial scene, CollisionResults results);
 

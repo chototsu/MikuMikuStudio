@@ -46,10 +46,11 @@ import com.jme.scene.TriMesh;
  * a trimesh at various degrees of accuracy.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: ClodMesh.java,v 1.16 2004-08-27 01:47:57 cep21 Exp $
+ * @version $Id: ClodMesh.java,v 1.17 2004-09-14 21:52:23 mojomonkey Exp $
  */
 public class ClodMesh extends TriMesh {
-  int currentRecord, targetRecord;
+  private static final long serialVersionUID = 1L;
+int currentRecord, targetRecord;
   CollapseRecord[] records;
 
   /**

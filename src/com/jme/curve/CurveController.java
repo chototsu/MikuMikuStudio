@@ -42,10 +42,11 @@ import com.jme.scene.Spatial;
  * curve), the orientation precision defines how accurate the orientation of the
  * spatial will be.
  * @author Mark Powell
- * @version $Id: CurveController.java,v 1.8 2004-08-21 06:18:30 cep21 Exp $
+ * @version $Id: CurveController.java,v 1.9 2004-09-14 21:52:15 mojomonkey Exp $
  */
 public class CurveController extends Controller {
-    private Spatial mover;
+    private static final long serialVersionUID = 1L;
+	private Spatial mover;
     private Curve curve;
     private Vector3f up;
     private float orientationPrecision = 0.1f;

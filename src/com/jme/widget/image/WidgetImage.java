@@ -60,11 +60,12 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
  *  Alignment code doesn't work properly.
  *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.8 2004-09-10 22:36:13 mojomonkey Exp $$
+ * @version $$Id: WidgetImage.java,v 1.9 2004-09-14 21:52:09 mojomonkey Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
-    public final static int SCALE_MODE_NONE = 0;
+    private static final long serialVersionUID = 1L;
+	public final static int SCALE_MODE_NONE = 0;
     public final static int SCALE_MODE_SIZE_TO_FIT = 1;
     public final static int SCALE_MODE_ABSOLUTE = 2;
     public final static int SCALE_MODE_RELATIVE = 3;

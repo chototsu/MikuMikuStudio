@@ -53,11 +53,13 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.31 2004-09-05 16:18:28 cep21 Exp $
+ * @version $Id: TerrainBlock.java,v 1.32 2004-09-14 21:52:11 mojomonkey Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
-    //size of the block, totalSize is the total size of the heightmap if this
+    private static final long serialVersionUID = 1L;
+
+	//size of the block, totalSize is the total size of the heightmap if this
     //block is just a small section of it.
     private int size;
 

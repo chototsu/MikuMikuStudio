@@ -49,7 +49,8 @@ import com.jme.input.*;
  */
 public class UIEditBox extends Node {
 
-    protected UIActiveArea _hitArea = null;
+    private static final long serialVersionUID = 1L;
+	protected UIActiveArea _hitArea = null;
     UIText _text = null;
     protected InputHandler _inputHandler = null;
 

@@ -50,7 +50,9 @@ import com.jme.widget.panel.WidgetScrollPanel;
  */
 public class WidgetRolloutPanelContainer extends WidgetScrollPanel implements Observer {
 
-    public WidgetRolloutPanelContainer() {
+    private static final long serialVersionUID = 1L;
+
+	public WidgetRolloutPanelContainer() {
         super();
 
         init();

@@ -38,62 +38,79 @@ public class DummyDisplaySystem extends DisplaySystem{
             public Camera getCamera(int width, int height) {return createCamera(width,height);}
             public AlphaState createAlphaState() {
                 return new AlphaState(){
-                    public void apply() {}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply() {}
                 };
             }
             public AlphaState getAlphaState() {return createAlphaState();}
 
             public AttributeState createAttributeState() {
                 return new AttributeState(){
-                    public void apply() {}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply() {}
                 };
             }
             public AttributeState getAttributeState() {return createAttributeState();}
 
             public CullState createCullState() {
                 return new CullState(){
-                    public void apply() {}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply() {}
                 };
             }
             public CullState getCullState() {return createCullState();}
 
             public DitherState createDitherState() {
                 return new DitherState(){
-                    public void apply() {
+                    private static final long serialVersionUID = 1L;
+
+					public void apply() {
                     }
                 };}
             public DitherState getDitherState() {return createDitherState();}
 
             public FogState createFogState() {
                 return new FogState(){
-                    public void apply() {}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply() {}
                 };
             }
             public FogState getFogState() {return createFogState();}
 
             public LightState createLightState() {
                 return new LightState(){
-                    public void apply() {}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply() {}
                 };
             }
             public LightState getLightState() {return createLightState();}
 
             public MaterialState createMaterialState() {
                 return new MaterialState(){
-                    public void apply() {}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply() {}
                 };
             }
             public MaterialState getMaterialState() {return createMaterialState();}
 
             public ShadeState createShadeState() {
                 return new ShadeState(){
-                    public void apply(){}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply(){}
                 };
             }
             public ShadeState getShadeState() {return createShadeState();}
 
             class TextureStateN extends TextureState{
-                TextureStateN(){
+                private static final long serialVersionUID = 1L;
+				TextureStateN(){
                     numTexUnits=1;
                     texture = new Texture[numTexUnits];
                 }
@@ -110,21 +127,26 @@ public class DummyDisplaySystem extends DisplaySystem{
 
             public WireframeState createWireframeState() {
                 return new WireframeState(){
-                    public void apply(){}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply(){}
                 };
             }
             public WireframeState getWireframeState() {return createWireframeState();}
 
             public ZBufferState createZBufferState() {
                 return new ZBufferState(){
-                    public void apply(){}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply(){}
                 };
             }
             public ZBufferState getZBufferState() {return createZBufferState();}
 
             public VertexProgramState createVertexProgramState() {
                 return new VertexProgramState(){
-                    public boolean isSupported() {return false;}
+                    private static final long serialVersionUID = 1L;
+					public boolean isSupported() {return false;}
                     public void load(URL file) {}
                     public void apply() {}
                 };
@@ -133,7 +155,8 @@ public class DummyDisplaySystem extends DisplaySystem{
 
             public FragmentProgramState createFragmentProgramState() {
                 return new FragmentProgramState(){
-                    public boolean isSupported() {return false;}
+                    private static final long serialVersionUID = 1L;
+					public boolean isSupported() {return false;}
                     public void load(URL file) {}
                     public void apply() {}
                 };
@@ -142,7 +165,9 @@ public class DummyDisplaySystem extends DisplaySystem{
 
             public StencilState createStencilState() {
                 return new StencilState(){
-                    public void apply() {}
+                    private static final long serialVersionUID = 1L;
+
+					public void apply() {}
                 };
             }
             public StencilState getStencilState() {return createStencilState();}

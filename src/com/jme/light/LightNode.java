@@ -46,11 +46,12 @@ import com.jme.scene.state.LightState;
  * location.
  * 
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.4 2004-04-26 14:51:03 mojomonkey Exp $
+ * @version $Id: LightNode.java,v 1.5 2004-09-14 21:52:18 mojomonkey Exp $
  */
 public class LightNode extends Node {
 
-    private Light light;
+    private static final long serialVersionUID = 1L;
+	private Light light;
     private LightState lightState;
     private Quaternion lightRotate;
     private Vector3f lightTranslate;

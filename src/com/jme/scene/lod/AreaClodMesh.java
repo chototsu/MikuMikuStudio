@@ -51,10 +51,11 @@ import com.jme.system.DisplaySystem;
  * it to update itself.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: AreaClodMesh.java,v 1.11 2004-09-05 16:08:22 cep21 Exp $
+ * @version $Id: AreaClodMesh.java,v 1.12 2004-09-14 21:52:23 mojomonkey Exp $
  */
 public class AreaClodMesh extends ClodMesh {
-  private float trisPerPixel = 1f;
+  private static final long serialVersionUID = 1L;
+private float trisPerPixel = 1f;
   private float distTolerance = 1f;
   private float lastDistance = 0f;
 
