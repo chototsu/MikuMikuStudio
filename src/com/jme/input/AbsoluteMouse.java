@@ -46,7 +46,7 @@ package com.jme.input;
  * correspond to the width and height of the window).
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.8 2004-06-03 01:25:42 guurk Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.9 2004-07-22 20:58:16 guurk Exp $
  */
 public class AbsoluteMouse extends Mouse {
     //position
@@ -79,7 +79,7 @@ public class AbsoluteMouse extends Mouse {
      */
     public void update(boolean updateState) {
         if (updateState)
-            mouse.poll();
+            mouse.updateState();
 
         localTranslation.x += mouse.getXDelta() * _speed;
         localTranslation.y += mouse.getYDelta() * _speed;
