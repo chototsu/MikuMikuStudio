@@ -42,7 +42,7 @@ import com.jme.scene.TriMesh;
  * <code>Hexagon</code> provides a regular hexagon with each triangle having side
  * length that is given in the constructor.
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.2 2004-05-27 02:06:31 guurk Exp $
+ * @version $Id: Hexagon.java,v 1.3 2004-05-27 02:28:26 guurk Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final int NUM_POINTS = 7;
@@ -89,11 +89,11 @@ public class Hexagon extends TriMesh {
 	 * 
 	 */
 	private void setVertexData() {
-		vertex[0] = new Vector3f(- (sideLength * 0.866f), sideLength, 0.0f);
-		vertex[1] = new Vector3f(sideLength * 0.866f, sideLength, 0.0f);
+		vertex[0] = new Vector3f(- (sideLength / 2), sideLength * 0.866f, 0.0f);
+		vertex[1] = new Vector3f(sideLength / 2, sideLength * 0.866f, 0.0f);
 		vertex[2] = new Vector3f(sideLength, 0.0f, 0.0f);
-		vertex[3] = new Vector3f(sideLength * 0.866f, -sideLength, 0.0f);
-		vertex[4] = new Vector3f(- (sideLength * 0.866f), -sideLength, 0.0f);
+		vertex[3] = new Vector3f(sideLength / 2, -sideLength * 0.866f, 0.0f);
+		vertex[4] = new Vector3f(- (sideLength / 2), -sideLength * 0.866f, 0.0f);
 		vertex[5] = new Vector3f(-sideLength, 0.0f, 0.0f);
 		vertex[6] = new Vector3f(0.0f, 0.0f, 0.0f);
 
@@ -195,5 +195,8 @@ public class Hexagon extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.2  2004/05/27 02:06:31  guurk
+ * Added some CVS keyword replacements.
+ *
  */
  
