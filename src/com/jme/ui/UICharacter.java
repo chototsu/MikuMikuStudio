@@ -1,4 +1,36 @@
 /*
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/*
  * Created on Jul 26, 2004
  *
  */
@@ -12,12 +44,27 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
 /**
+ * UICharacter is used by UIText to create text strings on screen.
+ * Each UICharacter is unique and a part of the whole font file texture.
+ * 
  * @author schustej
  *  
  */
 public class UICharacter extends UIObject {
 
-    UICharacter(String name, TextureState ts, float tx, float ty, float tx2, float ty2, float scale) {
+    /**
+     * Constructs a single character UIObject based on a sub-texture location
+     * for the needed character. tx,ty and tx2,ty2 are the texture coordinates
+     * of the corners of the quad
+     * @param name unique
+     * @param ts the texture state that contains the texture that has the characters
+     * @param tx 
+     * @param ty
+     * @param tx2
+     * @param ty2
+     * @param scale
+     */
+    public UICharacter(String name, TextureState ts, float tx, float ty, float tx2, float ty2, float scale) {
         super(name, null, 0, 0, scale);
 
         _textureStates = new TextureState[1];
@@ -37,8 +84,15 @@ public class UICharacter extends UIObject {
         _scale = scale;
     }
 
-    UICharacter(UICharacter tmp) {
-        super(tmp.getName(), null, 0, 0, tmp._scale);
+    /**
+     * Copy contstructor, this is used when UIText needs to make a copy of a character
+     * for actual rendering. The only difference b/t one character and another will be the
+     * location.
+     * We should convert this to using Clones if it makes sense.
+     * @param tmp
+     */
+    public UICharacter(String name, UICharacter tmp) {
+        super( name + tmp.getName(), null, 0, 0, tmp._scale);
 
         this._textureStates = tmp._textureStates;
         this._width = tmp._width;
@@ -57,6 +111,10 @@ public class UICharacter extends UIObject {
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
     }
 
+    /**
+     * Specialized override of UIObject setup that
+     * accounts for the 1/16 size of the subtexture
+     */
     protected void setup() {
 
         _width = ((TextureState) _textureStates[0]).getTexture().getImage().getWidth() / 16;
@@ -72,6 +130,9 @@ public class UICharacter extends UIObject {
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
     }
 
+    /**
+     * Empty
+     */
     public boolean update() {
         return false;
     }
