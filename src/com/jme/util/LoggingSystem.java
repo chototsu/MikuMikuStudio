@@ -56,7 +56,7 @@ import com.jme.system.JmeException;
  * @see java.util.logging.Logger
  * 
  * @author Mark Powell
- * @version $Id: LoggingSystem.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: LoggingSystem.java,v 1.2 2004-01-29 21:33:13 ericthered Exp $
  */
 public class LoggingSystem {
     //Singleton object for the logging sytem.
@@ -111,7 +111,7 @@ public class LoggingSystem {
         if(value) {
            logger.setLevel(Level.FINE); 
         } else {
-           logger.setLevel(Level.SEVERE);
+           logger.setLevel(Level.OFF);
         }
     }
     
