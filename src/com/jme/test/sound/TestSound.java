@@ -35,7 +35,7 @@
  */
 package com.jme.test.sound;
 
-import com.jme.sound.IPlayer;
+
 import com.jme.sound.SoundSystem;
 
 /**
@@ -45,13 +45,13 @@ import com.jme.sound.SoundSystem;
 public class TestSound {
 
 	public static void main(String[] args) throws InterruptedException {
-		SoundSystem system= SoundSystem.getSoundEffectSystem("LWJGL");
+		SoundSystem system= SoundSystem.getSoundEffectSystem("LWJGL", true);
 		system.addSource("NPC");
-		system.load("data/sound/walk.mp3", "music");
+		system.load("data/sound/0.mp3", "music");
 		system.getPlayer("NPC").play("music");
-		while (system.getPlayer("NPC").getStatus() == IPlayer.PLAYING) {
+		
 			Thread.sleep(1000);
-		}
+		
 
 	}
 }

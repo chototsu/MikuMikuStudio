@@ -129,7 +129,7 @@ public class TestSoundActions extends AbstractGame {
 		KeyBindingManager keyboard= KeyBindingManager.getKeyBindingManager();
 		InputSystem.createInputSystem("LWJGL");
 
-		soundRenderer= SoundSystem.getSoundEffectSystem("LWJGL");
+		soundRenderer= SoundSystem.getSoundEffectSystem("LWJGL", true);
 
 		soundRenderer.addSource("SHIP0");
 		soundRenderer.addSource("SHIP1");
