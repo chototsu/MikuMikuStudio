@@ -40,7 +40,7 @@ import com.jme.scene.Geometry;
  * The results will contain a list of every node that was "struck" during a
  * pick test.
  * @author Mark Powell
- * @version $Id: PickResults.java,v 1.3 2004-04-22 22:26:37 renanse Exp $
+ * @version $Id: PickResults.java,v 1.4 2004-07-30 22:27:27 cep21 Exp $
  */
 public class PickResults {
 
@@ -56,19 +56,19 @@ public class PickResults {
 
     /**
      *
-     * <code>addNode</code> places a new <code>Geometry</code> node into the
+     * <code>addGeometry</code> places a new <code>Geometry</code> spatial into the
      * results list.
-     * @param node the node to be placed in the results list.
+     * @param node the geometry to be placed in the results list.
      */
-    public void addNode(Geometry node) {
+    public void addGeometry(Geometry node) {
         nodeList.add(node);
     }
 
     /**
      *
-     * <code>getNumber</code> retrieves the number of nodes that have been
+     * <code>getNumber</code> retrieves the number of geometries that have been
      * placed in the results.
-     * @return the number of nodes in the list.
+     * @return the number of Geometry objects in the list.
      */
     public int getNumber() {
         return nodeList.size();
@@ -76,17 +76,17 @@ public class PickResults {
 
     /**
      *
-     * <code>getNode</code> retrieves a node from a specific index.
+     * <code>getGeometry</code> retrieves a Geometry from a specific index.
      * @param i the index requested.
-     * @return the node at the specified index.
+     * @return the Geometry at the specified index.
      */
-    public Geometry getNode(int i) {
+    public Geometry getGeometry(int i) {
         return (Geometry)nodeList.get(i);
     }
 
     /**
      *
-     * <code>clear</code> clears the list of all nodes.
+     * <code>clear</code> clears the list of all Geometry objects.
      *
      */
     public void clear() {
