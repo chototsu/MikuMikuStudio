@@ -2,7 +2,6 @@ package com.jme.scene.model.XMLparser.Converters;
 
 import com.jme.util.LittleEndien;
 import com.jme.system.JmeException;
-import com.jme.system.DisplaySystem;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.scene.Node;
@@ -14,7 +13,6 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.renderer.ColorRGBA;
 import com.jme.image.Texture;
-import com.jme.animation.JointController;
 
 import java.io.*;
 
@@ -25,7 +23,7 @@ import java.io.*;
  * 
  * @author Jack Lindamood
  */
-public class MilkToJme {
+public class MilkToJme extends FormatConverter{
     private DataInput inFile;
     private byte[] tempChar=new byte[128];
     private int nNumVertices;
@@ -34,19 +32,20 @@ public class MilkToJme {
     private MilkTriangle[] myTris;
     private int[] materialIndexes;
 
+
     /**
      * The node that represents the .ms3d file.  It's chidren are MS meshes
      */
     private Node finalNode;
 
     /**
-     * This class's only public function.  It creates a node from a .ms3d file and then writes that node to the given
+     * This class's only public function.  It creates a node from a .ms3d stream and then writes that node to the given
      * OutputStream in binary format
      * @param MSFile An inputStream that is the .ms3d file
      * @param o The Stream to write it's jME binary equivalent to
      * @throws IOException If anything funky goes wrong with reading information
      */
-    public void writeFiletoStream(InputStream MSFile,OutputStream o) throws IOException {
+    public void convert(InputStream MSFile,OutputStream o) throws IOException {
         inFile=new LittleEndien(MSFile);
         finalNode=new Node("ms3d file");
         checkHeader();
@@ -104,7 +103,9 @@ public class MilkToJme {
 //                inFile.skipBytes(329);
 //                continue;
 //            }
-            MaterialState matState=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
+            MaterialState matState=new MaterialState(){
+                public void apply() {throw new JmeException("I am not to be used in a real graph");}
+            };
             matState.setAmbient(getNextColor());
             matState.setDiffuse(getNextColor());
             matState.setSpecular(getNextColor());
@@ -117,7 +118,16 @@ public class MilkToJme {
             TextureState texState=null;
             String texFile=cutAtNull(tempChar);
             if (texFile.length()!=0){
-                texState=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+                texState=new TextureState(){
+                    public void setTexture(Texture t){
+                        if (texture.length==0) texture=new Texture[1];
+                        texture[0] = t;
+                    }
+                    public void delete(int unit) {throw new JmeException("I am not to be used in a real graph");}
+                    public void deleteAll() {throw new JmeException("I am not to be used in a real graph");}
+                    public void apply() {throw new JmeException("I am not to be used in a real graph");}
+
+                };
                 Texture tempTex=new Texture();
 //                tempTex.setImageLocation(new URL("file:///./"+texFile));
                 tempTex.setImageLocation("file:/"+texFile);

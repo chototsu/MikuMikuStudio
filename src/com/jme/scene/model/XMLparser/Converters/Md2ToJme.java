@@ -12,8 +12,8 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
 
-import java.net.URL;
 import java.io.*;
+import java.util.Random;
 
 
 /**
@@ -23,21 +23,21 @@ import java.io.*;
  * 
  * @author Jack Lindamood
  */
-public class Md2ToJme {
+public class Md2ToJme extends FormatConverter{
 
     Node nodeToReturn;
     /**
-     * This class's only public function.  It creates a node from a .md2 file and then writes that node to the given
-     * OutputStream in jME's binary format
-     * @param file A URL pointing to the .md2 file
+     * It creates a node from a .md2 stream and then writes that
+     * node to the given OutputStream in jME's binary format
+     * @param Md2Stream A stream representing the .md2 file
      * @param o The stream to write it's binary equivalent to
      * @throws java.io.IOException If anything funky goes wrong with reading information
      */
-    public void writeFiletoStream(URL file,OutputStream o) throws IOException {
-        if (file==null)
-            throw new NullPointerException("Unable to load null URL streams");
+    public void convert(InputStream Md2Stream,OutputStream o) throws IOException {
+        if (Md2Stream==null)
+            throw new NullPointerException("Unable to load null streams");
         JmeBinaryWriter i=new JmeBinaryWriter();
-        i.writeScene(new Md2ConverterCopy(file),o);
+        i.writeScene(new Md2ConverterCopy(Md2Stream),o);
     }
 
     /**
@@ -69,20 +69,21 @@ public class Md2ToJme {
          * <code>KeyframeController</code>. MD2 does not keep track
          * of it's own texture or material settings, so the user is
          * responsible for setting these.
-         * @param filename the url of the file to load.
+         * @param Md2 the InputStream of the file to load.
          */
-        public Md2ConverterCopy(URL filename) {
-            super(new File(filename.getFile()).getName());
-            if(null == filename) {
+        public Md2ConverterCopy(InputStream Md2) {
+            super("MD2 mesh"+new Random().nextInt());
+            if(null == Md2) {
                 throw new JmeException("Null data. Cannot load.");
             }
-            bis = new BinaryFileReader(filename);
+//            bis = new BinaryFileReader(filename);
+            bis=new BinaryFileReader(Md2);
 
             header = new Header();
 
             if (header.version != 8) {
                 throw new JmeException(
-                    "Invalid file format (Version not 8): " + filename + "!");
+                    "Invalid file format (Version not 8)!");
             }
 
             parseMesh();

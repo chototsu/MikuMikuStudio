@@ -12,9 +12,9 @@ import com.jme.util.TextureManager;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.bounding.BoundingBox;
-import com.jme.system.DisplaySystem;
 import com.jme.renderer.ColorRGBA;
 import com.jme.image.Texture;
+import com.jme.system.JmeException;
 
 import java.io.*;
 import java.util.StringTokenizer;
@@ -28,20 +28,20 @@ import java.net.MalformedURLException;
  * 
  * @author Jack Lindamood
  */
-public class AseToJme {
+public class AseToJme extends FormatConverter{
 
     /**
-     * This class's only public function.  It creates a node from a .ase file and then writes that node to the given
+     * Creates a node from a .ase InputStream and then writes that node to the given
      * OutputStream in jME's binary format
-     * @param file A URL pointing to the .ase file
+     * @param ASEStream An InputStream pointing to the .ase file
      * @param o The stream to write it's binary equivalent to
      * @throws java.io.IOException If anything funky goes wrong with reading information
      */
-    public void writeFiletoStream(URL file,OutputStream o) throws IOException {
-        if (file==null)
-            throw new NullPointerException("Unable to load null URL streams");
+    public void convert(InputStream ASEStream,OutputStream o) throws IOException {
+        if (ASEStream==null)
+            throw new NullPointerException("Unable to load null streams");
         JmeBinaryWriter i=new JmeBinaryWriter();
-        i.writeScene(new AseToJme.ASEModelCopy(file.openStream()),o);
+        i.writeScene(new AseToJme.ASEModelCopy(ASEStream),o);
     }
 
     /**
@@ -52,7 +52,7 @@ public class AseToJme {
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.1 2004-07-02 03:56:29 cep21 Exp $
+     * @version $Id: AseToJme.java,v 1.2 2004-07-02 05:13:51 cep21 Exp $
      */
     private class ASEModelCopy extends Node{
 
@@ -258,11 +258,10 @@ public class AseToJme {
                 ASEMaterialInfo mat =
                     (ASEMaterialInfo) materials.get(j);
                 if (mat.file.length() > 0) {
-                    MaterialState ms =
-                        DisplaySystem
-                            .getDisplaySystem()
-                            .getRenderer()
-                            .getMaterialState();
+                    MaterialState ms =new MaterialState(){
+                        public void apply() {throw new JmeException("I am not to be used in a real graph");}
+                    };
+
                     ms.setEnabled(true);
                     ms.setAmbient(
                         new ColorRGBA(
@@ -307,18 +306,20 @@ public class AseToJme {
                             return;
                         }
                     }
-                    TextureState ts =
-                        DisplaySystem
-                            .getDisplaySystem()
-                            .getRenderer()
-                            .getTextureState();
+                    TextureState ts = new TextureState(){
+                        public void setTexture(Texture t){
+                            if (texture.length==0) texture=new Texture[1];
+                            texture[0] = t;
+                        }
+                        public void delete(int unit) {throw new JmeException("I am not to be used in a real graph");}
+                        public void deleteAll() {throw new JmeException("I am not to be used in a real graph");}
+                        public void apply() {throw new JmeException("I am not to be used in a real graph");}
+
+                    };
                     ts.setEnabled(true);
-                    ts.setTexture(
-                        TextureManager.loadTexture(
-                            fileURL,
-                            Texture.MM_LINEAR_LINEAR,
-                            Texture.FM_LINEAR,
-                            true));
+                    Texture t=new Texture();
+                    t.setImageLocation("file:/"+filename);
+                    ts.setTexture(t);
                     this.setRenderState(ts);
                 }
 
