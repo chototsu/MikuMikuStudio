@@ -48,7 +48,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.11 2004-07-03 20:02:11 renanse Exp $
+ * @version $Id: Texture.java,v 1.12 2004-07-06 00:31:03 renanse Exp $
  */
 public class Texture {
 
@@ -220,8 +220,8 @@ public class Texture {
     private int combineOp0Alpha;
     private int combineOp1Alpha;
     private int combineOp2Alpha;
-    private int combineScaleRGB;
-    private int combineScaleAlpha;
+    private float combineScaleRGB;
+    private float combineScaleAlpha;
 
     private boolean needsRefresh = false;
 
@@ -237,6 +237,8 @@ public class Texture {
         correction = CM_AFFINE;
         wrap = WM_ECLAMP_S_ECLAMP_T;
         setBlendColor(new ColorRGBA(0,0,0,0));
+        combineScaleRGB = 1.0f;
+        combineScaleAlpha = 1.0f;
     }
 
     /**
@@ -532,28 +534,28 @@ public class Texture {
 	/**
 	 * @return Returns the combineScaleAlpha.
 	 */
-	public int getCombineScaleAlpha() {
+	public float getCombineScaleAlpha() {
 		return combineScaleAlpha;
 	}
 
 	/**
 	 * @param combineScaleAlpha The combineScaleAlpha to set.
 	 */
-	public void setCombineScaleAlpha(int combineScaleAlpha) {
+	public void setCombineScaleAlpha(float combineScaleAlpha) {
 		this.combineScaleAlpha = combineScaleAlpha;
 	}
 
 	/**
 	 * @return Returns the combineScaleRGB.
 	 */
-	public int getCombineScaleRGB() {
+	public float getCombineScaleRGB() {
 		return combineScaleRGB;
 	}
 
 	/**
 	 * @param combineScaleRGB The combineScaleRGB to set.
 	 */
-	public void setCombineScaleRGB(int combineScaleRGB) {
+	public void setCombineScaleRGB(float combineScaleRGB) {
 		this.combineScaleRGB = combineScaleRGB;
 	}
 

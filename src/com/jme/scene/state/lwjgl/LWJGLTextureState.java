@@ -58,7 +58,7 @@ import java.nio.FloatBuffer;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.23 2004-07-03 20:02:10 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.24 2004-07-06 00:31:03 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -92,8 +92,6 @@ public class LWJGLTextureState extends TextureState {
   private int[] textureCombineOpAlpha = {GL11.GL_SRC_ALPHA,
       GL11.GL_ONE_MINUS_SRC_ALPHA, GL11.GL_SRC_ALPHA,
       GL11.GL_ONE_MINUS_SRC_ALPHA};
-
-  private float[] textureCombineScale = {1.0f, 2.0f, 4.0f};
 
   private int[] imageComponents = {GL11.GL_RGBA4, GL11.GL_RGB8,
       GL11.GL_RGB5_A1, GL11.GL_RGBA8, GL11.GL_LUMINANCE8_ALPHA8};
@@ -158,6 +156,10 @@ public class LWJGLTextureState extends TextureState {
       }
     }
 
+    if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
+      GL13.glActiveTexture(GL13.GL_TEXTURE0);
+    }
+
     if (isEnabled()) {
       int index;
       Texture texture;
@@ -171,6 +173,7 @@ public class LWJGLTextureState extends TextureState {
         if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
           GL13.glActiveTexture(index);
         }
+
         GL11.glEnable(GL11.GL_TEXTURE_2D);
 
         //texture not yet loaded.
@@ -314,40 +317,60 @@ public class LWJGLTextureState extends TextureState {
               break;
             }
           }
-
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB,
-                         textureCombineFunc[texture.getCombineFuncRGB()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA,
-                         textureCombineFunc[texture.getCombineFuncAlpha()]);
+          int cf = texture.getCombineFuncRGB();
+          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_RGB, textureCombineFunc[cf]);
           GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_RGB,
                          textureCombineSrc[texture.getCombineSrc0RGB()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE1_RGB,
-                         textureCombineSrc[texture.getCombineSrc1RGB()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE2_RGB,
-                         textureCombineSrc[texture.getCombineSrc2RGB()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA,
-                         textureCombineSrc[texture.getCombineSrc0Alpha()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE1_ALPHA,
-                         textureCombineSrc[texture.getCombineSrc1Alpha()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE2_ALPHA,
-                         textureCombineSrc[texture.getCombineSrc2Alpha()]);
           GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB,
                          textureCombineOpRgb[texture.getCombineOp0RGB()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_RGB,
-                         textureCombineOpRgb[texture.getCombineOp1RGB()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_RGB,
-                         textureCombineOpRgb[texture.getCombineOp2RGB()]);
+          if (cf != Texture.ACF_REPLACE) {
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE1_RGB,
+                           textureCombineSrc[texture.getCombineSrc1RGB()]);
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_RGB,
+                           textureCombineOpRgb[texture.getCombineOp1RGB()]);
+            if (cf == Texture.ACF_INTERPOLATE) {
+              GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_RGB,
+                             textureCombineOpRgb[texture.getCombineOp2RGB()]);
+              GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE2_RGB,
+                             textureCombineSrc[texture.getCombineSrc2RGB()]);
+            }
+          }
+
+          cf = texture.getCombineFuncAlpha();
+          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_COMBINE_ALPHA, textureCombineFunc[cf]);
+          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE0_ALPHA,
+                         textureCombineSrc[texture.getCombineSrc0Alpha()]);
           GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA,
                          textureCombineOpAlpha[texture.getCombineOp0Alpha()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_ALPHA,
-                         textureCombineOpAlpha[texture.getCombineOp1Alpha()]);
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_ALPHA,
-                         textureCombineOpAlpha[texture.getCombineOp2Alpha()]);
-          GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_RGB_SCALE,
-                         textureCombineScale[texture.getCombineScaleRGB()]);
-          GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE,
-                         textureCombineScale[texture.getCombineScaleAlpha()]);
+          if (cf != Texture.ACF_REPLACE) {
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE1_ALPHA,
+                           textureCombineSrc[texture.getCombineSrc1Alpha()]);
+            GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_ALPHA,
+                           textureCombineOpAlpha[texture.getCombineOp1Alpha()]);
+            if (cf == Texture.ACF_INTERPOLATE) {
+              GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE2_ALPHA,
+                             textureCombineSrc[texture.getCombineSrc2Alpha()]);
+              GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_ALPHA,
+                             textureCombineOpAlpha[texture.getCombineOp2Alpha()]);
+            }
+          }
 
+          GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_RGB_SCALE,
+                         texture.getCombineScaleRGB());
+          GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE,
+                         texture.getCombineScaleAlpha());
+
+        } else {
+          // set up apply mode
+          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
+                         GL11.GL_TEXTURE_ENV_MODE, textureApply[texture
+                         .getApply()]);
+        }
+
+        if (texture.getEnvironmentalMapMode() == Texture.EM_IGNORE) {
+        // Do not alter the texure generation status. This allows
+        // complex texturing outside of texture state to exist
+        // peacefully.
         } else if (texture.getEnvironmentalMapMode() == Texture.EM_NONE) {
           // turn off anything that other maps might have turned on
           GL11.glDisable(GL11.GL_TEXTURE_GEN_Q);
@@ -362,15 +385,6 @@ public class LWJGLTextureState extends TextureState {
                          GL11.GL_SPHERE_MAP);
           GL11.glEnable(GL11.GL_TEXTURE_GEN_S);
           GL11.glEnable(GL11.GL_TEXTURE_GEN_T);
-        } else if (texture.getEnvironmentalMapMode() == Texture.EM_IGNORE) {
-          // Do not alter the texure generation status. This allows
-          // complex texturing outside of texture state to exist
-          // peacefully.
-        } else {
-          // set up apply mode
-          GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-                         GL11.GL_TEXTURE_ENV_MODE, textureApply[texture
-                         .getApply()]);
         }
 
         GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
