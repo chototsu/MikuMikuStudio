@@ -29,13 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.test.util;
+package com.jme.test.renderer;
 
 import com.jme.app.AbstractGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.light.DirectionalLight;
+import com.jme.light.SpotLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -43,6 +44,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
+import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
@@ -59,10 +61,11 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.6 2003-12-03 19:57:31 mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.1 2003-12-03 19:57:31 mojomonkey Exp $
  */
-public class TestTimer extends AbstractGame {
+public class TestCameraNode extends AbstractGame {
     private TriMesh t;
+    private CameraNode camNode;
     private Camera cam;
     private Text text;
     private Node root;
@@ -79,7 +82,7 @@ public class TestTimer extends AbstractGame {
      * @param args
      */
     public static void main(String[] args) {
-        TestTimer app = new TestTimer();
+        TestCameraNode app = new TestCameraNode();
         app.useDialogAlways(true);
         app.start();
         
@@ -108,7 +111,9 @@ public class TestTimer extends AbstractGame {
         input.update(timer.getTimePerFrame());
         text.print("Frame Rate: " + timer.getFrameRate());
         
-        //t.setLocalRotation(rotQuat);
+        t.setLocalRotation(rotQuat);
+        rotQuat.inverse();
+        camNode.setLocalRotation(rotQuat);
         scene.updateGeometricState(0.0f, true);
         
        
@@ -150,7 +155,7 @@ public class TestTimer extends AbstractGame {
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 75.0f);
+        Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
@@ -164,7 +169,7 @@ public class TestTimer extends AbstractGame {
         
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
-        axis = new Vector3f(1,0,0);
+        axis = new Vector3f(1,1,1);
 
     }
 
@@ -192,8 +197,7 @@ public class TestTimer extends AbstractGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
         scene = new Node();
-        root = new Node();
-        root.attachChild(text);
+        scene.attachChild(text);
         
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
@@ -206,24 +210,51 @@ public class TestTimer extends AbstractGame {
         
         t.setLocalTranslation(new Vector3f(0,0,0));
         
+        scene = new Node();
         scene.attachChild(t);
+        root = new Node();
         root.attachChild(scene);
         
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
         
-        DirectionalLight am = new DirectionalLight();
+        SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 75));
+        am.setDirection(new Vector3f(0, 0, 0));
+        am.setLocation(new Vector3f(25, 10, 0));
+        am.setAngle(15);
         
+        SpotLight am2 = new SpotLight();
+        am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        am2.setDirection(new Vector3f(0, 0, 0));
+        am2.setLocation(new Vector3f(-25, 10, 0));
+        am2.setAngle(15);
+
+
+        DirectionalLight dr = new DirectionalLight();
+        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        dr.setDirection(new Vector3f(150, 0 , 150));
+
         LightState state = display.getRenderer().getLightState();
         state.attach(am);
+        state.attach(dr);
+        state.attach(am2);
         am.setEnabled(true);
-        scene.setRenderState(state);
+        am2.setEnabled(true);
+        dr.setEnabled(true);
+        //scene.setRenderState(state);
         scene.setRenderState(buf);
-        cam.update();
+        
+        camNode = new CameraNode(cam);
+        camNode.setLocalTranslation(new Vector3f(0,0,-75));
+        scene.attachChild(camNode);
+        
+        //cam.update();
         
         TextureState ts = display.getRenderer().getTextureState();
                 ts.setEnabled(true);
