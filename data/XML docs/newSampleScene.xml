@@ -19,7 +19,7 @@
 		<primitive type="box" params="MyBox -1 -1 -1 1 1 1" translation="7 7 7">
             <publicobject ident="red">
             </publicobject>
-            <texturestate file="CVS root/src/jmetest/data/images/Monkey.tga"/>
+            <texturestate file="src/jmetest/data/images/Monkey.tga"/>
         </primitive>
         <xmlloadable class="com.jme.scene.shape.Box" name="loadedBox" args="0 0 0 1 1 1"/>
     </node>
