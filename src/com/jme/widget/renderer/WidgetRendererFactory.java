@@ -38,6 +38,8 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.WidgetRenderer;
+import com.jme.widget.image.WidgetImage;
+import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLPanelRenderer;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLScrollerButtonRenderer;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLSliderThumbRenderer;
@@ -51,7 +53,7 @@ import com.jme.widget.text.WidgetText;
 /**
  * <code>WidgetRendererFactory</code>
  * @author Gregg Patton
- * @version $Id: WidgetRendererFactory.java,v 1.2 2004-04-22 22:27:23 renanse Exp $
+ * @version $Id: WidgetRendererFactory.java,v 1.3 2004-04-25 16:58:22 mojomonkey Exp $
  */
 public final class WidgetRendererFactory {
     private static String UNKNOWN_RENDERER_TYPE = "Unknown RendererType";
@@ -163,6 +165,25 @@ public final class WidgetRendererFactory {
         if (rendererType == RendererType.LWJGL) {
             renderer = new WidgetLWJGLSliderThumbTrayRenderer(wst);
             renderer.setWidget(wst);
+        } else {
+            LoggingSystem.getLogger().log(Level.SEVERE, UNKNOWN_RENDERER_TYPE);
+            throw new JmeException(UNKNOWN_RENDERER_TYPE);
+        }
+
+        return renderer;
+    }
+    
+    /**
+     * <code>getRenderer</code>
+     * @param wi
+     * @return
+     */
+    public WidgetRenderer getRenderer(WidgetImage wi) {
+        WidgetRenderer renderer = null;
+
+        if (rendererType == RendererType.LWJGL) {
+            renderer = new WidgetLWJGLImage(wi);
+            renderer.setWidget(wi);
         } else {
             LoggingSystem.getLogger().log(Level.SEVERE, UNKNOWN_RENDERER_TYPE);
             throw new JmeException(UNKNOWN_RENDERER_TYPE);
