@@ -53,15 +53,11 @@ public class HelloStates extends SimpleGame {
         Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR,Texture.FM_LINEAR,true);
         // Assign the texture to the TextureState
         ts.setTexture(t);
-        // Enable the TextureState
-        ts.setEnabled(true);
 
         // Get a MaterialState
         MaterialState ms=display.getRenderer().getMaterialState();
         // Give the MaterialState an emissive tint
         ms.setEmissive(new ColorRGBA(0f,.2f,0f,1));
-        // Enable the material state
-        ms.setEnabled(true);
 
         // Create a point light
         PointLight l=new PointLight();
@@ -76,8 +72,6 @@ public class HelloStates extends SimpleGame {
         LightState ls=display.getRenderer().getLightState();
         // Attach the light
         ls.attach(l);
-        // Enable the lightstate
-        ls.setEnabled(true);
 
 
         // Signal that b should use renderstate ts
