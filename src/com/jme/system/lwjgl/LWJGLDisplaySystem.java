@@ -73,7 +73,7 @@ import java.awt.Toolkit;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.21 2004-11-09 19:55:49 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.22 2004-11-16 16:42:30 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -441,6 +441,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     private void initDisplay() {
         //create the Display.
         DisplayMode mode = getValidDisplayMode(width, height, bpp, frq);
+				PixelFormat format = new PixelFormat(bpp, alphaBits, depthBits, stencilBits, samples);
         if (null == mode) { throw new JmeException("Bad display mode"); }
 
         try {
@@ -452,7 +453,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 							y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) >> 1;
 							Display.setLocation(x,y);
 						}
-						Display.create();
+						Display.create(format);
             // kludge added here...  LWJGL does not properly clear their
             // keyboard and mouse buffers when you call the destroy method,
             // so if you run two jme programs in the same jvm back to back
