@@ -40,6 +40,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
+import com.jme.scene.Geometry;
 
 /**
  * <code>ParticleManager</code>
@@ -57,7 +58,7 @@ import com.jme.scene.TriMesh;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.5 2004-04-22 23:18:01 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.6 2004-04-27 17:10:13 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
@@ -102,6 +103,7 @@ public class ParticleManager extends Controller {
   private int geoToUse;
   private Line psLine;
   private Rectangle psRect;
+  private Geometry psMesh;
 
   private Camera camera;
 
@@ -237,6 +239,9 @@ public class ParticleManager extends Controller {
                   break;
                 case 2:
                   particles[i].location.set(getRectangle().random());
+                  break;
+                case 3:
+                  particles[i].location.set(getGeoMesh().randomVertice());
                   break;
                 default:
                   particles[i].location.set(originCenter);
@@ -753,6 +758,7 @@ public class ParticleManager extends Controller {
    * 0 = point
    * 1 = line
    * 2 = rectangle
+   * 3 = trimesh
    * This is already done by setGeometry(Line) and setGeometry(Rectangle)
    * You should not need to use this method unless you are switching between
    * geometry already set by those methods.
@@ -784,6 +790,16 @@ public class ParticleManager extends Controller {
   }
 
   /**
+   * Set a Geometry's verts to be the random emission points
+   *
+   * @param mesh Geometry
+   */
+  public void setGeometry(Geometry mesh) {
+    psMesh = mesh;
+    geoToUse = 3;
+  }
+
+  /**
    * getLine
    *
    * @return Line
@@ -799,6 +815,15 @@ public class ParticleManager extends Controller {
    */
   public Rectangle getRectangle() {
     return psRect;
+  }
+
+  /**
+   * getGeoMesh
+   *
+   * @return TriMesh
+   */
+  public Geometry getGeoMesh() {
+    return psMesh;
   }
 
   /**

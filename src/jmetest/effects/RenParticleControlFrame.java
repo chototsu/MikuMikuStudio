@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.29 2004-04-22 23:18:02 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.30 2004-04-27 17:10:14 renanse Exp $
  *
  */
 
@@ -1127,6 +1127,7 @@ public class RenParticleControlFrame extends JFrame {
     updateVelocityLabels();
 
     RenParticleEditor.root.attachChild(RenParticleEditor.manager.getParticles());
+    RenParticleEditor.root.updateRenderState();
     regenCode();
     validate();
     RenParticleEditor.noUpdate = false;

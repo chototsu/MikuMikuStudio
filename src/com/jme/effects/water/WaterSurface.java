@@ -30,24 +30,20 @@
  */
 package com.jme.effects.water;
 
+import com.jme.input.KeyBindingManager;
 import com.jme.math.Bessel;
 import com.jme.math.FastMath;
-import com.jme.scene.TriMesh;
-import com.jme.math.Vector3f;
-import com.jme.input.KeyBindingManager;
-import com.jme.renderer.Renderer;
-import java.nio.ByteBuffer;
-import org.lwjgl.opengl.GL11;
-import org.lwjgl.BufferUtils;
 import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.scene.TriMesh;
 
 /**
- * <code>WaterSurface</code>...
+ * <code>WaterSurface</code>...  This is not for actual use yet.
  *
  * Portions from Game Programming Gems 4 article by Jerry Tessendorf
  *
  * @author Joshua Slack
- * @version $Id: WaterSurface.java,v 1.4 2004-04-25 20:32:24 renanse Exp $
+ * @version $Id: WaterSurface.java,v 1.5 2004-04-27 17:10:18 renanse Exp $
  */
 
 public class WaterSurface extends TriMesh {
@@ -80,6 +76,9 @@ public class WaterSurface extends TriMesh {
     obstruction = new float[size];
     source = new float[size];
     display_map = new float[size];
+
+    for (int x = size/2; x < size/2 + iwidth; x++)
+      obstruction[x] = 1f;
 
     clearWaves();
     clearObstruction();

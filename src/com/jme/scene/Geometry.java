@@ -35,18 +35,19 @@ import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.util.Stack;
 import java.util.logging.Level;
 
-import com.jme.bounding.*;
+import com.jme.bounding.BoundingVolume;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.state.RenderState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import java.util.Stack;
-import com.jme.scene.state.RenderState;
+import com.jme.math.FastMath;
 
 /**
  * <code>Geometry</code> defines a leaf node of the scene graph. The leaf
@@ -54,7 +55,7 @@ import com.jme.scene.state.RenderState;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.31 2004-04-23 02:27:52 renanse Exp $
+ * @version $Id: Geometry.java,v 1.32 2004-04-27 17:10:12 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
   protected BoundingVolume bound;
@@ -734,6 +735,17 @@ public abstract class Geometry extends Spatial implements Serializable {
     texBuf[textureUnit].put(buffer);
     texBuf[textureUnit].flip();
 
+  }
+
+  /**
+   * random
+   *
+   * @return Vector3f
+   */
+  public Vector3f randomVertice() {
+    if (vertex == null) return null;
+    int i = (int)(FastMath.nextRandomFloat() * vertQuantity);
+    return vertex[i];
   }
 
 }
