@@ -32,6 +32,7 @@
 package com.jme.math;
 
 import java.util.logging.Level;
+import java.io.*;
 
 import com.jme.util.LoggingSystem;
 
@@ -39,9 +40,9 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.9 2004-06-21 02:22:10 cep21 Exp $
+ * @version $Id: Vector2f.java,v 1.10 2004-07-06 05:00:54 cep21 Exp $
  */
-public class Vector2f {
+public class Vector2f implements Externalizable{
     /**
      * the x value of the vector.
      */
@@ -425,5 +426,28 @@ public class Vector2f {
      */
     public String toString() {
         return "com.jme.math.Vector2f [X="+x+", Y="+y+"]";
+    }
+
+    /**
+     * Used with serialization.  Not to be called manually.
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Externalizable
+     */
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        x=in.readFloat();
+        y=in.readFloat();
+    }
+
+    /**
+     * Used with serialization.  Not to be called manually.
+     * @param out
+     * @throws IOException
+     * @see java.io.Externalizable
+     */
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeFloat(x);
+        out.writeFloat(y);
     }
 }

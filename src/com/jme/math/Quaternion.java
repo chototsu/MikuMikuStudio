@@ -34,6 +34,7 @@ package com.jme.math;
 import com.jme.util.LoggingSystem;
 import com.jme.system.JmeException;
 import java.util.logging.Level;
+import java.io.*;
 
 /**
  * <code>Quaternion</code> defines a single example of a more general class of
@@ -46,9 +47,9 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.21 2004-07-05 22:54:35 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.22 2004-07-06 05:03:41 cep21 Exp $
  */
-public class Quaternion {
+public class Quaternion implements Externalizable{
     public float x, y, z, w;
 
     /**
@@ -696,5 +697,32 @@ public class Quaternion {
         if (z != comp.z) return false;
         if (w != comp.w) return false;
         return true;
+    }
+
+    /**
+     * Used with serialization.  Not to be called manually.
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Externalizable
+     */
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        x=in.readFloat();
+        y=in.readFloat();
+        z=in.readFloat();
+        w=in.readFloat();
+    }
+
+    /**
+     * Used with serialization.  Not to be called manually.
+     * @param out
+     * @throws IOException
+     * @see java.io.Externalizable
+     */
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeFloat(x);
+        out.writeFloat(y);
+        out.writeFloat(z);
+        out.writeFloat(w);
     }
 }

@@ -33,6 +33,8 @@ package com.jme.light;
 
 import com.jme.renderer.ColorRGBA;
 
+import java.io.Serializable;
+
 /**
  * <code>Light</code> defines the attributes of a light element. This class
  * is abstract and intended to be subclassed by specific lighting types. A
@@ -49,9 +51,9 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.3 2004-04-22 22:26:38 renanse Exp $
+ * @version $Id: Light.java,v 1.4 2004-07-06 05:04:10 cep21 Exp $
  */
-public abstract class Light {
+public abstract class Light implements Serializable{
 
     /**
      * defines the lighting type as ambient.

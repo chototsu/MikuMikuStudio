@@ -7,9 +7,13 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.LoggingSystem;
+import com.jme.util.TextureManager;
+import com.jme.image.Texture;
 
 import java.util.ArrayList;
 import java.util.logging.Level;
+import java.io.*;
+import java.net.URL;
 
 /**
  * Started Date: Jun 12, 2004<br><br>
@@ -33,12 +37,12 @@ public class KeyframeController extends Controller{
     /**
      * An array of <code>PointInTime</code>s that defines the animation
      */
-    public ArrayList keyframes;
+    transient public ArrayList keyframes;
 
     /**
      * A special array used with SmoothTransform to store temporary smooth transforms
      */
-    ArrayList prevKeyframes;
+    transient ArrayList prevKeyframes;
 
     /**
      * The mesh that is actually morphed
@@ -48,43 +52,43 @@ public class KeyframeController extends Controller{
     /**
      * The current time in the animation
      */
-    float curTime;
+    transient float curTime;
 
     /**
      * The current frame of the animation
      */
-    int curFrame;
+    transient int curFrame;
 
-    Vector3f tempV3f=new Vector3f();
-    Vector2f tempV2f=new Vector2f();
-    ColorRGBA tempColor=new ColorRGBA();
+    transient Vector3f tempV3f=new Vector3f();
+    transient Vector2f tempV2f=new Vector2f();
+    transient ColorRGBA tempColor=new ColorRGBA();
 
     /**
      * The PointInTime before <code>curTime</code>
      */
-    PointInTime before;
+    transient PointInTime before;
 
     /**
      * The PointInTime after <code>curTime</code>
      */
-    PointInTime after;
+    transient PointInTime after;
 
     /**
      * If true, the animation is moving forward, if false the animation is moving backwards
      */
-    boolean movingForward;
+    transient boolean movingForward;
 
     /**
      * Used with SmoothTransform to signal it is doing a smooth transform
      */
-    private boolean isSmooth;
+    transient private boolean isSmooth;
 
 
     /**
      * Used with SmoothTransform to hold the new beinging and ending time once the transform is complete
      */
-    private float tempNewBeginTime;
-    private float tempNewEndTime;
+    transient private float tempNewBeginTime;
+    transient private float tempNewEndTime;
 
 
     /**
@@ -434,7 +438,7 @@ public class KeyframeController extends Controller{
      * This class defines a point in time that states <code>morphShape</code> should look like <code>newShape</code> at
      * <code>time</code> seconds
      */
-    public class PointInTime{
+    public class PointInTime implements Serializable{
         public TriMesh newShape;
         public float time;
 
@@ -442,5 +446,24 @@ public class KeyframeController extends Controller{
             this.time=time;
             this.newShape=shape;
         }
+    }
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        keyframes=(ArrayList) in.readObject();
+        tempV3f=new Vector3f();
+        tempV2f=new Vector2f();
+        tempColor=new ColorRGBA();
+        movingForward=true;
+    }
+
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException{
+        out.defaultWriteObject();
+        if (isSmooth)
+            out.writeObject(prevKeyframes);
+        else
+            out.writeObject(keyframes);
+
+
     }
 }

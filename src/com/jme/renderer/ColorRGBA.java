@@ -33,6 +33,8 @@ package com.jme.renderer;
 
 import com.jme.math.FastMath;
 
+import java.io.*;
+
 /**
  * <code>ColorRGBA</code> defines a color made from a collection of
  * red, green and blue values. An alpha value determines is transparency.
@@ -45,9 +47,9 @@ import com.jme.math.FastMath;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.11 2004-06-14 07:57:36 cep21 Exp $
+ * @version $Id: ColorRGBA.java,v 1.12 2004-07-06 04:59:06 cep21 Exp $
  */
-public class ColorRGBA {
+public class ColorRGBA implements Externalizable{
 
     /**
      * the color black (0,0,0).
@@ -329,5 +331,32 @@ public class ColorRGBA {
         hash += 37 * b;
         hash += 37 * a;
         return hash;
+    }
+
+    /**
+     * Used with serialization.  Not to be called manually.
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Externalizable
+     */
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        r=in.readFloat();
+        g=in.readFloat();
+        b=in.readFloat();
+        a=in.readFloat();
+    }
+
+    /**
+     * Used with serialization.  Not to be called manually.     *  
+     * @param out
+     * @throws IOException
+     * @see java.io.Externalizable
+     */
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeFloat(r);
+        out.writeFloat(g);
+        out.writeFloat(b);
+        out.writeFloat(a);
     }
 }
