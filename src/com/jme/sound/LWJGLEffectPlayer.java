@@ -186,7 +186,7 @@ public class LWJGLEffectPlayer implements IPlayer {
 	 * 
 	 * @param the buffer filter for this player
 	 */
-	public void applyFilter(BufferFilter f) {
+	public void applyFilter(IBufferFilter f) {
 		if (EAX.isCreated()) {
 			if (f instanceof LWJGLBufferFilter) {
 				((LWJGLBufferFilter)f).applyOnSource(sourceNumber);
@@ -195,7 +195,7 @@ public class LWJGLEffectPlayer implements IPlayer {
 
 	}
 
-	public void applyFilter(ListenerFilter f) {
+	public void applyFilter(IListenerFilter f) {
 		if (EAX.isCreated()) {
 		if (f instanceof LWJGLListenerFilter) {
 			((LWJGLListenerFilter)f).enable();

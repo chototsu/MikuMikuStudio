@@ -45,6 +45,7 @@ import org.lwjgl.openal.AL;
 
 import com.jme.math.Vector3f;
 import com.jme.sound.second.IBuffer;
+import com.jme.sound.second.IBufferFilter;
 import com.jme.sound.second.ISource;
 
 /**
@@ -397,6 +398,13 @@ public class Source implements ISource {
 	
 	public boolean isPlaying(){
 		return (AL.alGetSourcei(sourceNumber, AL.AL_PLAYING)==AL.AL_TRUE);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.second.ISource#setFilter(com.jme.sound.second.IBufferFilter)
+	 */
+	public void setFilter(IBufferFilter filter) {
+		filter.applyOnSource(sourceNumber);		
 	}
 
 }

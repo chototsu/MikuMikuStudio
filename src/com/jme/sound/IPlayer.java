@@ -80,9 +80,9 @@ public interface IPlayer extends ISource {
 	
 	public float getVolume();
 	
-	public void applyFilter(BufferFilter bf);
+	public void applyFilter(IBufferFilter bf);
 	
-	public void applyFilter(ListenerFilter lf);
+	public void applyFilter(IListenerFilter lf);
 	
 	
 

@@ -44,6 +44,7 @@ import org.lwjgl.openal.AL;
 
 import com.jme.math.Vector3f;
 import com.jme.sound.second.IListener;
+import com.jme.sound.second.IListenerFilter;
 
 /**
  * @author Arman Ozcelik
@@ -60,7 +61,7 @@ public class Listener implements IListener {
 	private float[] orientation= new float[6];
 	private FloatBuffer orientationBuffer=
 		ByteBuffer.allocateDirect(4 * 6).order(ByteOrder.nativeOrder()).asFloatBuffer();
-
+	
 	/* (non-Javadoc)
 	 * @see com.jme.sound.IListener#setGain(float)
 	 */
@@ -144,6 +145,13 @@ public class Listener implements IListener {
 			orientation[a]=orientationBuffer.get(a);
 		}
 		return orientation;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.second.IListener#setFilter(com.jme.sound.second.IListenerFilter)
+	 */
+	public void setFilter(IListenerFilter filter) {
+		filter.enable();		
 	}
 
 }
