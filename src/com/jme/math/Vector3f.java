@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.18 2004-05-10 22:36:18 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.19 2004-05-15 19:17:28 renanse Exp $
  */
 public class Vector3f {
 
@@ -629,7 +629,7 @@ public class Vector3f {
      *
      * @param o
      *            the object to compare for equality
-     * @return this vector
+     * @return true if they are equal
      */
     public boolean equals(Object o) {
         if (!(o instanceof Vector3f) || o == null) { return false; }
