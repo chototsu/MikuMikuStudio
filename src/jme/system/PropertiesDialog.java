@@ -197,11 +197,13 @@ public class PropertiesDialog extends JDialog {
         int height =
             Integer.parseInt(display.substring(0, display.indexOf("x")));
         display = display.substring(display.indexOf("x") + 1);
-        int depth = Integer.parseInt(display);
+        int depth = Integer.parseInt(display.substring(0, display.indexOf("x")));
+        display = display.substring(display.indexOf("x") + 1);
+        int freq = Integer.parseInt(display);
         boolean fullscreen = fullscreenBox.isSelected();
 
         //use the propertiesio class to save it.
-        source.save(width, height, depth, fullscreen);
+        source.save(width, height, depth, freq, fullscreen);
     }
 
     /**
@@ -218,7 +220,8 @@ public class PropertiesDialog extends JDialog {
         String displayString;
         for (int i = 0; i < modes.length; i++) {
             displayString =
-                modes[i].width + "x" + modes[i].height + "x" + modes[i].bpp;
+                modes[i].width + "x" + modes[i].height + "x" + modes[i].bpp + 
+                "x" + modes[i].freq;
             if (!uniqueModes.contains(displayString)) {
                 uniqueModes.add(displayString);
             }
@@ -234,7 +237,9 @@ public class PropertiesDialog extends JDialog {
                 + "x"
                 + source.getHeight()
                 + "x"
-                + source.getDepth());
+                + source.getDepth()
+                + "x"
+                + source.getFreq());
 
         return comboBox;
     }

@@ -49,6 +49,7 @@ import jme.utility.LoggingSystem;
  * WIDTH=640<br>
  * HEIGHT=480<br>
  * DEPTH=16<br>
+ * FREQ=60<br>
  * FULLSCREEN=true<br>
  * <br>
  * 
@@ -68,6 +69,11 @@ public class PropertiesIO {
      * The default depth, used if there is a problem with the properties file.
      */
     public static final int DEFAULT_DEPTH = 16;
+    /**
+     * The default frequency, used if there is a problem with the properties
+     * file.
+     */
+    public static final int DEFAULT_FREQ = 60;
     /**
      * The default fullscreen flag, used if there is a problem with the 
      * properties file.
@@ -154,10 +160,13 @@ public class PropertiesIO {
      * @param width the width of the resolution.
      * @param height the height of the resolution.
      * @param depth the bits per pixel.
+     * @param freq the frequency of the monitor.
      * @param fullscreen use fullscreen or not.
      * @return true if save was successful, false otherwise.
      */
-    public boolean save(int width, int height, int depth, boolean fullscreen) {
+    public boolean save(int width, int height, int depth, int freq, 
+            boolean fullscreen) {
+        
         FileOutputStream fout;
         try {
             fout = new FileOutputStream(filename);
@@ -167,6 +176,7 @@ public class PropertiesIO {
             prop.put("WIDTH", "" + width);
             prop.put("HEIGHT", "" + height);
             prop.put("DEPTH", "" + depth);
+            prop.put("FREQ", "" + freq);
             prop.put("FULLSCREEN", "" + fullscreen);
 
             prop.store(fout, "Properties");
@@ -229,6 +239,22 @@ public class PropertiesIO {
             return DEFAULT_DEPTH;
         } else {
             return Integer.parseInt(d);
+        }
+    }
+    
+    /**
+     * <code>getFreq</code> returns the frequency of the monitor as read from
+     * the properties file. If the properties file does not contain frequency
+     * or was not read properly the default frequency is returned.
+     * 
+     * @return the frequency determined by the properties file, or the default.
+     */
+    public int getFreq() {
+        String f = prop.getProperty("FREQ");
+        if(null == f) {
+            return DEFAULT_FREQ;
+        } else {
+            return Integer.parseInt(f);
         }
     }
 

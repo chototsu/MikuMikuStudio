@@ -95,6 +95,7 @@ public class DisplaySystem {
     private int height;
     private int width;
     private int bpp;
+    private int freq;
     private boolean fullscreen;
     private String title;
 
@@ -107,6 +108,7 @@ public class DisplaySystem {
      * @param width the width of the window. Must be greater than 0.
      * @param height the height of the window. Must be greater than 0.
      * @param bpp the color depth of the window. Must be 16 or 32.
+     * @param freq the frequency of the monitor.
      * @param fullscreen flag to run fullscreen or not. True is fullscreen, 
      *      false is windowed.
      * @param title the title of the window.
@@ -117,6 +119,7 @@ public class DisplaySystem {
         int width,
         int height,
         int bpp,
+        int freq,
         boolean fullscreen,
         String title) {
 
@@ -132,6 +135,7 @@ public class DisplaySystem {
         this.width = width;
         this.height = height;
         this.bpp = bpp;
+        this.freq = freq;
         this.fullscreen = fullscreen;
         this.title = title;
 
@@ -149,6 +153,7 @@ public class DisplaySystem {
      * @param width the width of the window. Must be greater than 0.
      * @param height the height of the window. Must be greater than 0.
      * @param bpp the color depth of the display. Must be either 16 or 32.
+     * @param freq the frequency of the monitor.
      * @param fullscreen flag to run fullscreen or not. True is fullscreen, 
      *      false is windowed.
      * @param title the title of the window.
@@ -159,6 +164,7 @@ public class DisplaySystem {
         int width,
         int height,
         int bpp,
+        int freq,
         boolean fullscreen,
         String title) {
         //check for parameter validity
@@ -173,6 +179,7 @@ public class DisplaySystem {
         this.width = width;
         this.height = height;
         this.bpp = bpp;
+        this.freq = freq;
         this.fullscreen = fullscreen;
         this.title = title;
 
@@ -198,6 +205,7 @@ public class DisplaySystem {
      * @param width the width of the window. Must be greater than 0.
      * @param height the height of the window. Must be greater than 0.
      * @param bpp the color depth of the window. Must be 16 or 32.
+     * @param freq the frequency of the monitor.
      * @param fullscreen flag to run fullscreen or not. True is fullscreen, 
      *      false is windowed.
      * @param title the title of the window.
@@ -209,12 +217,14 @@ public class DisplaySystem {
         int width,
         int height,
         int bpp,
+        int freq,
         boolean fullscreen,
         String title) {
 
         //Only create a new DisplaySystem if there is no system in existance.
         if (null == instance) {
-            instance = new DisplaySystem(width, height, bpp, fullscreen, title);
+            instance = new DisplaySystem(width, height, bpp, freq, fullscreen, 
+                            title);
         }
     }
 
@@ -268,6 +278,7 @@ public class DisplaySystem {
                     prop.getWidth(),
                     prop.getHeight(),
                     prop.getDepth(),
+                    prop.getFreq(),
                     prop.getFullscreen(),
                     title);
         }
@@ -319,10 +330,12 @@ public class DisplaySystem {
      * @param width the width of the desired mode.
      * @param height the height of the desired mode.
      * @param bpp the color depth of the desired mode.
+     * @param freq the frequency of the monitor.
      * @return <code>DisplayMode</code> object that supports the requested
      *      resolutions. Null is returned if no valid modes are found.
      */
-    public DisplayMode getValidDisplayMode(int width, int height, int bpp) {
+    public DisplayMode getValidDisplayMode(int width, int height, int bpp, 
+                int freq) {
         //get all the modes, and find one that matches our width, height, bpp.
         DisplayMode[] modes = Display.getAvailableDisplayModes();
         //Make sure that we find the mode that uses our current monitor freq.
@@ -333,7 +346,7 @@ public class DisplaySystem {
             if (modes[i].width == width
                 && modes[i].height == height
                 && modes[i].bpp == bpp
-                && modes[i].freq == DEFAULT_FREQ) {
+                && modes[i].freq == freq) {
 
                 LoggingSystem.getLoggingSystem().getLogger().log(
                     Level.INFO,
@@ -439,7 +452,7 @@ public class DisplaySystem {
 
         try {
             //create the Display. 
-            DisplayMode mode = getValidDisplayMode(width, height, bpp);
+            DisplayMode mode = getValidDisplayMode(width, height, bpp, freq);
             if (null == mode) {
                 throw new MonkeyRuntimeException("Bad display mode");
             }
@@ -456,7 +469,7 @@ public class DisplaySystem {
                     (Toolkit.getDefaultToolkit().getScreenSize().height
                         - height)
                         / 2;
-                gl = new GL(title, x, y, width, height, bpp, 0, 0, 0);
+                gl = new GL(title, x, y, width, height, bpp, 1, 1, 1);
             }
 
             gl.create();

@@ -142,6 +142,7 @@ public abstract class AbstractGame {
 	 * @param width new width of the resolution.
 	 * @param height new height of the resolution.
 	 * @param bpp the depth of the resolution.
+     * @param freq the frequency of the monitor.
 	 * @param fullscreen fullscreen or not.
 	 * @param title the name of the window.
 	 */
@@ -149,6 +150,7 @@ public abstract class AbstractGame {
 		int width,
 		int height,
 		int bpp,
+        int freq,
 		boolean fullscreen,
 		String title) {
 		Keyboard.destroy();
@@ -158,6 +160,7 @@ public abstract class AbstractGame {
 			width,
 			height,
 			bpp,
+            freq,
 			fullscreen,
 			title);
 		reinit();

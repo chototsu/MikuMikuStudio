@@ -158,7 +158,7 @@ public class TestMain extends AbstractGame {
         
 	}
 	private void initDisplay() {
-		DisplaySystem.createDisplaySystem("test", "jme/data/images/Monkey.jpg", true);
+		DisplaySystem.createDisplaySystem("test", "jme/data/Images/Monkey.jpg", true);
 	}
 	
 	private void initGL() {
@@ -192,7 +192,7 @@ public class TestMain extends AbstractGame {
 			initGL();
 			initTimer();
 			TextureManager.getTextureManager().reload();
-			font = new Font2D("jme/data/font/font.png");
+			font = new Font2D("jme/data/Font/font.png");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -209,7 +209,7 @@ public class TestMain extends AbstractGame {
 	}
 	protected void initSystem() {
 		initDisplay();
-		font = new Font2D("jme/data/font/font.png");
+		font = new Font2D("jme/data/Font/font.png");
 		initLogger();
 		initGL();
 		initCamera();
@@ -217,7 +217,7 @@ public class TestMain extends AbstractGame {
 		initTimer();
 		
 		SplashScreen ss3 = new SplashScreen();
-		ss3.setTexture("jme/data/images/tdemo.jpg");
+		ss3.setTexture("jme/data/Images/tdemo.jpg");
 		
 		addSplashScreen(ss3);
 		

@@ -70,21 +70,21 @@ public class TestController extends TrackingController {
 		if (isKeyDown("640x480")) {
 			if (smode != 0) {
 				smode = 0;
-				main.resetDisplay(640, 480, 32, false, "Terrain");
+				main.resetDisplay(640, 480, 32, 60,false, "Terrain");
 			}
 		}
 
 		if (isKeyDown("1024x768")) {
 			if (smode != 1) {
 				smode = 1;
-				main.resetDisplay(1024, 768, 32, false, "Terrain");
+				main.resetDisplay(1024, 768, 32, 60,false, "Terrain");
 			}
 		}
 
 		if (isKeyDown("1024x768fs")) {
 			if (smode != 2) {
 				smode = 2;
-				main.resetDisplay(1024, 768, 32, true, "Terrain");
+				main.resetDisplay(1024, 768, 32, 60,true, "Terrain");
 			}
 		}
 
