@@ -47,7 +47,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.14 2004-03-31 21:58:20 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.15 2004-04-02 18:36:58 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -207,13 +207,13 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
                 activate();
                 parentRenderer.clearBuffers();
-                parentRenderer.draw(spat);
+                spat.onDraw(parentRenderer);
                 deactivate();
                 pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
             } else {
                 activate();
                 parentRenderer.clearBuffers();
-                parentRenderer.draw(spat);
+                spat.onDraw(parentRenderer);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
                 GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
                 deactivate();
