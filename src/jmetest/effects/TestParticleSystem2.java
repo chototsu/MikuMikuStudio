@@ -197,8 +197,8 @@ public class TestParticleSystem2 extends SimpleGame {
 		mojo.setEnabled(true);
 
 		ps = new ParticleSystem(1000);
-		ps.setStartColor(new ColorRGBA(1f, 1f, 1f, 0.9f));
-		ps.setEndColor(new ColorRGBA(1f, 1f, 1f, 0.0f));
+		ps.setStartColor(new ColorRGBA(0f, 1f, 0f, 0.9f));
+		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0.0f));
 		ps.setStartSize(0.2f);
 		ps.setEndSize(0.1f);
 		ps.setGravity(new Vector3f(0, -25, 0));
