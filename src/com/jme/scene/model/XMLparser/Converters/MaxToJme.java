@@ -3,14 +3,11 @@ package com.jme.scene.model.XMLparser.Converters;
 import com.jme.util.LittleEndien;
 import com.jme.scene.Node;
 import com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
-import com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.MaxChunkIDs;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.IOException;
-import java.util.Stack;
-import java.util.HashMap;
 
 /**
  * Started Date: Jun 26, 2004<br><br>
@@ -22,7 +19,6 @@ import java.util.HashMap;
 public class MaxToJme extends FormatConverter {
     private LittleEndien myIn;
 
-    private Stack s=new Stack();
     private TDSFile chunkedTDS=null;
 
     /**
@@ -32,7 +28,6 @@ public class MaxToJme extends FormatConverter {
      * @throws IOException If read/write goes wrong.
      */
     public void convert(InputStream max,OutputStream bin) throws IOException {
-        s.clear();
         myIn=new LittleEndien(max);
         chunkedTDS=new TDSFile(myIn);
         Node toReturn=chunkedTDS.buildScene();
