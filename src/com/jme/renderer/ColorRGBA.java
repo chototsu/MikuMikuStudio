@@ -45,12 +45,45 @@ import com.jme.math.FastMath;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.6 2004-04-22 22:26:41 renanse Exp $
+ * @version $Id: ColorRGBA.java,v 1.7 2004-04-26 14:05:21 mojomonkey Exp $
  */
 public class ColorRGBA {
+    /**
+     * the color black (0,0,0).
+     */
+    public static final ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
+    /**
+     * the color white (1,1,1).
+     */
+    public static final ColorRGBA white = new ColorRGBA(1f, 1f, 1f, 1f);
+    /**
+     * the color red (1,0,0).
+     */
+    public static final ColorRGBA red = new ColorRGBA(1f, 0f, 0f, 1f);
+    /**
+     * the color green (0,1,0).
+     */
+    public static final ColorRGBA green = new ColorRGBA(0f, 1f, 0f, 1f);
+    /**
+     * the color blue (0,0,1).
+     */
+    public static final ColorRGBA blue = new ColorRGBA(0f, 0f, 1f, 1f);
+    
+    /**
+     * The red component of the color.
+     */
     public float r;
+    /**
+     * The green component of the color.
+     */
     public float g;
+    /**
+     * the blue component of the color.
+     */
     public float b;
+    /**
+     * the alpha component of the color.
+     */
     public float a;
 
     /**
@@ -79,12 +112,42 @@ public class ColorRGBA {
       clamp();
     }
 
+    /**
+     * 
+     * <code>set</code> sets the RGBA values of this color. The values are then
+     * clamped to insure that they are between 0 and 1.
+     * 
+     * @param r the red component of this color.
+     * @param g the green component of this color.
+     * @param b the blue component of this color.
+     * @param a the alpha component of this color.
+     */
     public void set(float r, float g, float b, float a) {
       this.r = r;
       this.g = g;
       this.b = b;
       this.a = a;
       clamp();
+    }
+    
+    /**
+     * <code>set</code> sets the values of this color to those set by a parameter
+     * color.
+     *
+     * @param rgba ColorRGBA the color to set this color to.
+     */
+    public void set(ColorRGBA rgba) {
+      if(rgba == null) {
+          r = 0;
+          g = 0;
+          b = 0;
+          a = 0;
+      } else {
+	      r = rgba.r;
+	      g = rgba.g;
+	      b = rgba.b;
+	      a = rgba.a;
+      }
     }
 
     /**
@@ -130,6 +193,13 @@ public class ColorRGBA {
         return f;
     }
 
+    /**
+     * 
+     * <code>randomColor</code> is a utility method that generates a random
+     * color.
+     *
+     * @return a random color.
+     */
     public static ColorRGBA randomColor() {
       ColorRGBA rVal = new ColorRGBA(0, 0, 0, 1);
       rVal.r = FastMath.nextRandomFloat();
@@ -146,35 +216,55 @@ public class ColorRGBA {
      * @return the string representation of this color.
      */
     public String toString() {
-        return "com.jme.ColorRGBA: [R="+r+", G="+g+", B="+b+", A="+a+"]";
+        return "com.jme.renderer.ColorRGBA: [R="+r+", G="+g+", B="+b+", A="+a+"]";
     }
 
 
     /**
      * <code>clone</code> creates a new Vector3f object containing the same
      * data as this one.
-     * @return the new Vector3f
+     * @return the color that is the same as this.
      */
     public Object clone() {
         return new ColorRGBA(r,g,b,a);
     }
-
-  /**
-   * set Color given an existing color
-   *
-   * @param rgba ColorRGBA
-   */
-  public void set(ColorRGBA rgba) {
-    r = rgba.r;
-    g = rgba.g;
-    b = rgba.b;
-    a = rgba.a;
-  }
-
-  public static final ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
-  public static final ColorRGBA white = new ColorRGBA(1f, 1f, 1f, 1f);
-  public static final ColorRGBA red = new ColorRGBA(1f, 0f, 0f, 1f);
-  public static final ColorRGBA green = new ColorRGBA(0f, 1f, 0f, 1f);
-  public static final ColorRGBA blue = new ColorRGBA(0f, 0f, 1f, 1f);
-
+    
+    /**
+     * <code>equals</code> returns true if this color is logically equivalent
+     * to a given color. That is, if the values of the two colors are the same.
+     * False is returned otherwise.
+     * @param the object to compare againts.
+     * @return true if the colors are equal, false otherwise.
+     */
+    public boolean equals(Object o) {
+        if(!(o instanceof ColorRGBA) || o == null) {
+            return false;
+        }
+        
+        if(this == o) {
+            return true;
+        }
+        
+        ColorRGBA comp = (ColorRGBA)o;
+        if (r != comp.r) return false;
+        if (g != comp.g) return false;
+        if (b != comp.b) return false;
+        if (a != comp.a) return false;
+        return true;
+    }
+    
+    /**
+     * <code>hashCode</code> returns a unique code for this color object based
+     * on it's values. If two colors are logically equivalent, they will return
+     * the same hash code value.
+     * @return the hash code value of this color.
+     */
+    public int hashCode() {
+        int hash = 17;
+        hash += 37 * r;
+        hash += 37 * g;
+        hash += 37 * b;
+        hash += 37 * a;
+        return hash;
+    }
 }
