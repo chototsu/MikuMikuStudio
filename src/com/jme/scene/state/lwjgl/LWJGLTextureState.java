@@ -57,7 +57,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.29 2004-07-10 19:51:55 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.30 2004-07-12 15:10:30 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -157,12 +157,13 @@ public class LWJGLTextureState extends TextureState {
       int index;
       Texture texture;
       for (int i = 0; i < numTexUnits; i++) {
-        index = GL13.GL_TEXTURE0 + i;
         texture = getTexture(i);
         if (texture == currentTexture[i]) continue;
         currentTexture[i] = texture;
 
-        if (supportsMultiTexture && i != 0) {
+        index = GL13.GL_TEXTURE0 + i;
+
+        if (supportsMultiTexture) {
           GL13.glActiveTexture(index);
         }
 
