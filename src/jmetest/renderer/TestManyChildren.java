@@ -46,7 +46,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.4 2004-03-02 14:57:57 mojomonkey Exp $
+ * @version $Id: TestManyChildren.java,v 1.5 2004-03-08 02:30:38 renanse Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
@@ -54,7 +54,6 @@ public class TestManyChildren extends SimpleGame {
     private Node root;
     private InputController input;
     private Timer timer;
-    private Text fps;
 
     /**
      * Entry point for the test,
@@ -72,11 +71,11 @@ public class TestManyChildren extends SimpleGame {
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
-    	
+
         timer.update();
         input.update(timer.getTimePerFrame());
         root.updateGeometricState(timer.getTimePerFrame(), true);
-        fps.print("FPS: " + (int) timer.getFrameRate() + " : " +display.getRenderer().getStatistics());
+        display.setTitle("FPS: " + (int) timer.getFrameRate() + " : " +display.getRenderer().getStatistics());
 //        System.out.println(timer.getFrameRate());
         display.getRenderer().clearStatistics();
     }
@@ -89,7 +88,7 @@ public class TestManyChildren extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
-        
+
 
     }
 
@@ -120,13 +119,13 @@ public class TestManyChildren extends SimpleGame {
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
 
         display.getRenderer().setCamera(cam);
-        
+
         camNode = new CameraNode("Camera Node", cam);
         //camNode.setLocalTranslation(new Vector3f();
         input = new NodeController(this, camNode, "LWJGL");
         input.setKeySpeed(2f);
         input.setMouseSpeed(0.5f);
-        display.setTitle("Light State Test");
+        display.setTitle("2500 Box Test");
         display.getRenderer().enableStatistics(true);
         timer = Timer.getTimer(properties.getRenderer());
 
@@ -146,7 +145,7 @@ public class TestManyChildren extends SimpleGame {
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         scene.setGeometry(t);
-        
+
         for(int i = 0; i < 2500; i++) {
             float x = (float)Math.random() * 10;
             float y = (float)Math.random() * 10;
@@ -182,20 +181,6 @@ public class TestManyChildren extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         as1.setEnabled(true);
 
-        TextureState font = display.getRenderer().getTextureState();
-        font.setTexture(
-            TextureManager.loadTexture(
-                TestManyChildren.class.getClassLoader().getResource(
-                    "jmetest/data/font/font.png"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-        font.setEnabled(true);
-
-        fps = new Text("FPS counter","");
-        fps.setRenderState(font);
-        fps.setRenderState(as1);
-
         DirectionalLight dr = new DirectionalLight();
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
@@ -213,12 +198,10 @@ public class TestManyChildren extends SimpleGame {
         scene.setRenderState(state);
         scene.setRenderState(buf);
         root.attachChild(scene);
-        root.attachChild(fps);
-
 
         root.updateGeometricState(0.0f, true);
-
     }
+
     /**
      * not used.
      * @see com.jme.app.SimpleGame#reinit()
