@@ -6,6 +6,30 @@
 		</xs:annotation>
 		<xs:complexType>
 			<xs:sequence>
+				<xs:element name="SharedElementsBase" minOccurs="0">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="SharedMaterialBase" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="MaterialStateType">
+											<xs:attribute name="identification" type="xs:string" use="required"/>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+							<xs:element name="SharedTextureBase" minOccurs="0" maxOccurs="unbounded">
+								<xs:complexType>
+									<xs:complexContent>
+										<xs:extension base="TextureStateType">
+											<xs:attribute name="identification" type="xs:string" use="required"/>
+										</xs:extension>
+									</xs:complexContent>
+								</xs:complexType>
+							</xs:element>
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
 				<xs:element name="Model" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>Group of meshes making up a drawable thing</xs:documentation>
@@ -124,20 +148,9 @@
 			<xs:documentation>Renderable States</xs:documentation>
 		</xs:annotation>
 		<xs:choice>
-			<xs:element name="TextureState">
-				<xs:complexType/>
-			</xs:element>
+			<xs:element name="TextureState" type="TextureStateType"/>
 			<xs:group ref="Light"/>
-			<xs:element name="MaterialState">
-				<xs:complexType>
-					<xs:attribute name="alpha" type="xs:float" use="optional" default="0"/>
-					<xs:attribute name="ambient" type="ColorRGBA" use="optional" default="0 0 0 0"/>
-					<xs:attribute name="diffuse" type="ColorRGBA" use="optional" default="0 0 0 0"/>
-					<xs:attribute name="emissive" type="ColorRGBA" use="optional" default="0 0 0 0"/>
-					<xs:attribute name="specular" type="ColorRGBA" use="optional" default="0 0 0 0"/>
-					<xs:attribute name="shiny" type="xs:float" use="optional" default="64"/>
-				</xs:complexType>
-			</xs:element>
+			<xs:element name="MaterialState" type="MaterialStateType"/>
 		</xs:choice>
 	</xs:group>
 	<xs:complexType name="BaseLightType">
@@ -152,10 +165,26 @@
 	</xs:group>
 	<xs:complexType name="Spatial">
 		<xs:sequence>
+			<xs:element name="SharedTypes" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:attribute name="identification" type="xs:string" use="required"/>
+				</xs:complexType>
+			</xs:element>
 			<xs:group ref="RenderState" minOccurs="0" maxOccurs="unbounded"/>
 			<xs:group ref="Controller" minOccurs="0" maxOccurs="unbounded"/>
 		</xs:sequence>
 		<xs:attributeGroup ref="WorldRef"/>
 		<xs:attributeGroup ref="Basics"/>
+	</xs:complexType>
+	<xs:complexType name="MaterialStateType">
+		<xs:attribute name="alpha" type="xs:float" use="optional" default="0"/>
+		<xs:attribute name="ambient" type="ColorRGBA" use="optional" default="0 0 0 0"/>
+		<xs:attribute name="diffuse" type="ColorRGBA" use="optional" default="0 0 0 0"/>
+		<xs:attribute name="emissive" type="ColorRGBA" use="optional" default="0 0 0 0"/>
+		<xs:attribute name="specular" type="ColorRGBA" use="optional" default="0 0 0 0"/>
+		<xs:attribute name="shiny" type="xs:float" use="optional" default="64"/>
+	</xs:complexType>
+	<xs:complexType name="TextureStateType">
+		<xs:attribute name="filename" type="xs:string" use="required"/>
 	</xs:complexType>
 </xs:schema>
