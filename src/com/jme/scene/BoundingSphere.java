@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.11 2004-02-26 17:40:27 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.12 2004-02-26 18:03:27 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -284,7 +284,11 @@ public class BoundingSphere implements BoundingVolume {
             float diffSquared = radiusDiff * radiusDiff;
 
             if (diffSquared >= lengthSquared) {
-                return (radiusDiff >= 0.0 ? volume : this);
+                if (radiusDiff >= 0.0) {
+                    center = sphere.center;
+                    radius = sphere.radius;
+                }
+                return this;
             }
 
             float length = (float) Math.sqrt(lengthSquared);
@@ -292,12 +296,10 @@ public class BoundingSphere implements BoundingVolume {
 
             if (length > tolerance) {
                 float coeff = (length + radiusDiff) / (2.0f * length);
-                setCenter(center.add(diff.mult(coeff)));
-            } else {
-                setCenter(center);
+                center = center.add(diff.mult(coeff));
             }
 
-            setRadius(0.5f * (length + radius + sphere.getRadius()));
+            radius = (0.5f * (length + radius + sphere.radius));
 
             return this;
         }
