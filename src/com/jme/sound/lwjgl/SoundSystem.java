@@ -53,12 +53,12 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
-import javazoom.jl.decoder.Bitstream;
-import javazoom.jl.decoder.BitstreamException;
-import javazoom.jl.decoder.Decoder;
-import javazoom.jl.decoder.DecoderException;
-import javazoom.jl.decoder.Header;
-import javazoom.jl.decoder.SampleBuffer;
+//import javazoom.jl.decoder.Bitstream;
+//import javazoom.jl.decoder.BitstreamException;
+//import javazoom.jl.decoder.Decoder;
+//import javazoom.jl.decoder.DecoderException;
+//import javazoom.jl.decoder.Header;
+//import javazoom.jl.decoder.SampleBuffer;
 
 import org.lwjgl.openal.*;
 import org.lwjgl.openal.eax.EAX;
@@ -157,82 +157,82 @@ public class SoundSystem implements ISoundSystem {
         if (".wav".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.')))) {
             return loadWAV(file);
         }
-        if (".mp3".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.')))) {
-            return loadMP3(file);
-        }
+//        if (".mp3".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.')))) {
+//            return loadMP3(file);
+//        }
         return null;
     }
 
     /**
      * @return
      */
-    private IBuffer loadMP3(URL file) {
-        Decoder decoder= null;
-        Bitstream stream= null;
-        SampleBuffer sampleBuf= null;
-        int sampleRate= 0;
-        int channels= 0;
-        ByteBuffer data= null;
-        try {
-
-            InputStream in= file.openStream();
-            BufferedInputStream bin= new BufferedInputStream(in);
-            decoder= new Decoder();
-            stream= new Bitstream(bin);
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-        }
-        ByteArrayOutputStream out= new ByteArrayOutputStream();
-        try {
-            Header header= null;
-            while ((header= stream.readFrame()) != null) {
-                if (sampleBuf == null) {
-                    sampleBuf=
-                        new SampleBuffer(
-                            header.frequency(),
-                            (header.mode() == Header.SINGLE_CHANNEL) ? 1 : 2);
-                    decoder.setOutputBuffer(sampleBuf);
-                }
-                if (channels == 0) {
-                    channels=
-                        (header.mode() == Header.SINGLE_CHANNEL)
-                            ? AL10.AL_FORMAT_MONO16
-                            : AL10.AL_FORMAT_STEREO16;
-                }
-                if (sampleRate == 0) {
-                    sampleRate= header.frequency();
-                }
-                decoder.decodeFrame(header, stream);
-                stream.closeFrame();
-                out.write(toByteArray(sampleBuf.getBuffer(), 0, sampleBuf.getBufferLength()));
-
-            }
-            byte[] obuf= out.toByteArray();
-            data= ByteBuffer.allocateDirect(obuf.length);
-            data.put(obuf);
-            data.rewind();
-
-        } catch (BitstreamException bs) {
-            bs.printStackTrace();
-        } catch (DecoderException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-
-            e.printStackTrace();
-        }
-        IBuffer[] tmp= generateBuffers(1);
-        tmp[0].configure(data, channels, sampleRate);
-        //cleanup
-        data.clear();
-        data= null;
-        try {
-            stream.close();
-        } catch (BitstreamException e1) {
-            e1.printStackTrace();
-        }
-
-        return tmp[0];
-    }
+//    private IBuffer loadMP3(URL file) {
+//        Decoder decoder= null;
+//        Bitstream stream= null;
+//        SampleBuffer sampleBuf= null;
+//        int sampleRate= 0;
+//        int channels= 0;
+//        ByteBuffer data= null;
+//        try {
+//
+//            InputStream in= file.openStream();
+//            BufferedInputStream bin= new BufferedInputStream(in);
+//            decoder= new Decoder();
+//            stream= new Bitstream(bin);
+//        } catch (IOException ioe) {
+//            ioe.printStackTrace();
+//        }
+//        ByteArrayOutputStream out= new ByteArrayOutputStream();
+//        try {
+//            Header header= null;
+//            while ((header= stream.readFrame()) != null) {
+//                if (sampleBuf == null) {
+//                    sampleBuf=
+//                        new SampleBuffer(
+//                            header.frequency(),
+//                            (header.mode() == Header.SINGLE_CHANNEL) ? 1 : 2);
+//                    decoder.setOutputBuffer(sampleBuf);
+//                }
+//                if (channels == 0) {
+//                    channels=
+//                        (header.mode() == Header.SINGLE_CHANNEL)
+//                            ? AL10.AL_FORMAT_MONO16
+//                            : AL10.AL_FORMAT_STEREO16;
+//                }
+//                if (sampleRate == 0) {
+//                    sampleRate= header.frequency();
+//                }
+//                decoder.decodeFrame(header, stream);
+//                stream.closeFrame();
+//                out.write(toByteArray(sampleBuf.getBuffer(), 0, sampleBuf.getBufferLength()));
+//
+//            }
+//            byte[] obuf= out.toByteArray();
+//            data= ByteBuffer.allocateDirect(obuf.length);
+//            data.put(obuf);
+//            data.rewind();
+//
+//        } catch (BitstreamException bs) {
+//            bs.printStackTrace();
+//        } catch (DecoderException e) {
+//            e.printStackTrace();
+//        } catch (IOException e) {
+//
+//            e.printStackTrace();
+//        }
+//        IBuffer[] tmp= generateBuffers(1);
+//        tmp[0].configure(data, channels, sampleRate);
+//        //cleanup
+//        data.clear();
+//        data= null;
+//        try {
+//            stream.close();
+//        } catch (BitstreamException e1) {
+//            e1.printStackTrace();
+//        }
+//
+//        return tmp[0];
+//    }
 
     public static byte[] toByteArray(short[] samples, int offs, int len) {
         byte[] b= new byte[len * 2];
