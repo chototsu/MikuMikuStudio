@@ -42,7 +42,7 @@ import java.util.Stack;
 /**
  * <code>CloneNode</code>
  * @author Mark Powell
- * @version $Id: CloneNode.java,v 1.3 2004-04-16 17:12:50 renanse Exp $
+ * @version $Id: CloneNode.java,v 1.4 2004-04-16 20:35:55 renanse Exp $
  */
 public class CloneNode extends Node {
     private TriMesh geometry;
@@ -59,7 +59,7 @@ public class CloneNode extends Node {
      * @param r the renderer to draw to.
      */
     public void draw(Renderer r) {
-      setStates();
+      applyStates();
       r.draw(this);
       super.draw(r);
     }
@@ -80,7 +80,7 @@ public class CloneNode extends Node {
      * particular geometry.
      *
      */
-    public void setStates() {
+    public void applyStates() {
       if (parent == null || isRoot)
         Spatial.clearCurrentStates();
       for (int i = 0; i < states.length; i++) {

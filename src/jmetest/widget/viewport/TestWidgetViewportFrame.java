@@ -1,33 +1,33 @@
-/* 
-* Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding 
-* All rights reserved. 
-* 
-* Redistribution and use in source and binary forms, with or without 
-* modification, are permitted provided that the following conditions are met: 
-* 
-* Redistributions of source code must retain the above copyright notice, this 
-* list of conditions and the following disclaimer. 
-* 
-* Redistributions in binary form must reproduce the above copyright notice, 
-* this list of conditions and the following disclaimer in the documentation 
-* and/or other materials provided with the distribution. 
-* 
-* Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
-* names of its contributors may be used to endorse or promote products derived 
-* from this software without specific prior written permission. 
-* 
-* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
-* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
-* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
-* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
-* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
-* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
-* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
-* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
-* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
-* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
-* POSSIBILITY OF SUCH DAMAGE. 
-* 
+/*
+* Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
+* All rights reserved.
+*
+* Redistribution and use in source and binary forms, with or without
+* modification, are permitted provided that the following conditions are met:
+*
+* Redistributions of source code must retain the above copyright notice, this
+* list of conditions and the following disclaimer.
+*
+* Redistributions in binary form must reproduce the above copyright notice,
+* this list of conditions and the following disclaimer in the documentation
+* and/or other materials provided with the distribution.
+*
+* Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+* names of its contributors may be used to endorse or promote products derived
+* from this software without specific prior written permission.
+*
+* THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+* AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+* IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+* ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+* LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+* CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+* SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+* INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+* CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+* ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+* POSSIBILITY OF SUCH DAMAGE.
+*
 */
 package jmetest.widget.viewport;
 
@@ -48,7 +48,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestWidgetViewportFrame</code>
  * @author Gregg Patton
- * @version $Id: TestWidgetViewportFrame.java,v 1.6 2004-04-05 11:36:14 greggpatton Exp $
+ * @version $Id: TestWidgetViewportFrame.java,v 1.7 2004-04-16 20:35:58 renanse Exp $
  */
 public class TestWidgetViewportFrame extends WidgetAbstractFrame {
 
@@ -106,7 +106,7 @@ public class TestWidgetViewportFrame extends WidgetAbstractFrame {
         scene1.shuffle();
     }
 
-    /** <code>onDraw</code> 
+    /** <code>onDraw</code>
      * @param r
      * @see com.jme.scene.Spatial#onDraw(com.jme.renderer.Renderer)
      */
@@ -125,7 +125,7 @@ public class TestWidgetViewportFrame extends WidgetAbstractFrame {
     public void doMouseButtonUp() {
 
         super.doMouseButtonUp();
-        
+
         if (getMouseInput().getPreviousButtonState() == MouseButtonStateType.MOUSE_BUTTON_2) {
             if (getMouseInput().isCursorVisible()) {
 
@@ -183,7 +183,7 @@ public class TestWidgetViewportFrame extends WidgetAbstractFrame {
             if (cameraController != null && cameraController.getInputHandler() != null) {
                 cameraController.getInputHandler().update(false, false, time);
             }
-            
+
         }
 
         scene1.update();

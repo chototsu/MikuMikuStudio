@@ -143,7 +143,7 @@ public class WidgetText extends WidgetAbstractImpl {
      * particular geometry.
      *
      */
-    public void setStates() {
+    public void applyStates() {
       if (parent != null)
         Spatial.clearCurrentStates();
       for (int i = 0; i < states.length; i++) {
@@ -155,7 +155,7 @@ public class WidgetText extends WidgetAbstractImpl {
     }
 
     public void draw(Renderer r) {
-      setStates();
+      applyStates();
         r.draw(getWidgetRenderer());
     }
 

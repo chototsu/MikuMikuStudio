@@ -55,7 +55,7 @@ import com.jme.scene.state.lwjgl.LWJGLTextureState;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.27 2004-04-16 17:12:50 renanse Exp $
+ * @version $Id: Geometry.java,v 1.28 2004-04-16 20:35:55 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
   protected BoundingVolume bound;
@@ -496,7 +496,7 @@ public abstract class Geometry extends Spatial implements Serializable {
    * particular geometry.
    *
    */
-  public void setStates() {
+  public void applyStates() {
     if (parent != null)
       Spatial.clearCurrentStates();
     for (int i = 0; i < states.length; i++) {
@@ -516,7 +516,7 @@ public abstract class Geometry extends Spatial implements Serializable {
    */
   public void draw(Renderer r) {
 //    r.setShaderState(this);
-    setStates();
+    applyStates();
   }
 
   /**

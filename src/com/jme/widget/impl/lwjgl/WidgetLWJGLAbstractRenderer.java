@@ -41,11 +41,12 @@ import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.border.WidgetBorderType;
 import com.jme.widget.bounds.WidgetViewRectangle;
 import com.jme.widget.renderer.WidgetAbstractRenderer;
+import com.jme.scene.Spatial;
 
 /**
  * <code>WidgetLWJGLAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.3 2004-04-16 17:12:58 renanse Exp $
+ * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.4 2004-04-16 20:35:58 renanse Exp $
  */
 public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer {
 
@@ -145,7 +146,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         WidgetBorder border,
         ColorRGBA color,
         WidgetTextureCoords tc) {
-
+          Spatial.applyDefaultStates();
         int l = left;
         int b = bottom;
         int r = right;
@@ -206,6 +207,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         WidgetBorder border,
         ColorRGBA topLeft,
         ColorRGBA bottomRight) {
+          Spatial.applyDefaultStates();
 
         GL11.glBegin(GL11.GL_QUADS);
 

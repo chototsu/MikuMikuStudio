@@ -63,7 +63,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.4 2004-04-16 18:36:03 mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.5 2004-04-16 20:35:57 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -130,7 +130,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
         initDisplay();
         renderer = new LWJGLRenderer(width, height);
-        updateStates();
+        updateStates(renderer);
 
         created = true;
     }

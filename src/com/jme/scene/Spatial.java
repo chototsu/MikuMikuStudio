@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.35 2004-04-16 19:57:42 renanse Exp $
+ * @version $Id: Spatial.java,v 1.36 2004-04-16 20:35:55 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices
@@ -576,5 +576,15 @@ public abstract class Spatial implements Serializable {
   public static void clearCurrentStates() {
     for (int i = 0; i < currentStates.length; i++)
       currentStates[i] = null;
+  }
+
+  /**
+   * applyDefaultStates
+   */
+  public static void applyDefaultStates() {
+    for (int i = 0; i < defaultStateList.length; i++) {
+      if (defaultStateList[i] != null)
+        defaultStateList[i].apply();
+    }
   }
 }
