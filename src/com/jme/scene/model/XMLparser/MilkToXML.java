@@ -12,10 +12,7 @@ import com.jme.scene.state.TextureState;
 import com.jme.renderer.ColorRGBA;
 import com.jme.image.Texture;
 
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.DataInput;
-import java.io.File;
+import java.io.*;
 import java.net.URL;
 
 /**
@@ -37,12 +34,12 @@ public class MilkToXML {
 
     /**
      * This class's only public function.  It creates a node from a .ms3d file and then writes that node to the given
-     * OutputStream in XML format
+     * Writer in XML format
      * @param file A URL pointing to the .ms3d file
-     * @param o The stream to write it's XML equivalent to
+     * @param o The Writer to write it's XML equivalent to
      * @throws IOException If anything funky goes wrong with reading information
      */
-    public void writeFiletoStream(URL file,OutputStream o) throws IOException {
+    public void writeFiletoStream(URL file,Writer o) throws IOException {
         inFile=new LittleEndien(file.openStream());
         finalNode=new Node(new File(file.getFile()).getName());
         checkHeader();
