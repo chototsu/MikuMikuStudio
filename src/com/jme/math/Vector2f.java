@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.8 2004-06-14 07:55:41 cep21 Exp $
+ * @version $Id: Vector2f.java,v 1.9 2004-06-21 02:22:10 cep21 Exp $
  */
 public class Vector2f {
     /**
@@ -58,6 +58,15 @@ public class Vector2f {
 
     public Vector2f() {
         x=y=0;
+    }
+
+    /**
+     * Creates a new Vector2f that contains the passed vector's information
+     * @param vector2f The vector to copy
+     */
+    public Vector2f(Vector2f vector2f) {
+        this.x=vector2f.x;
+        this.y=vector2f.y;
     }
 
     /**
