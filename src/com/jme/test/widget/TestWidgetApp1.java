@@ -32,17 +32,15 @@
 package com.jme.test.widget;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.InputControllerAbstract;
+import com.jme.input.AbstractInputController;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.LWJGLCamera;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.Timer;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 import com.jme.widget.WidgetFillType;
-import com.jme.widget.WidgetFrameAbstract;
+import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.border.WidgetBorderType;
@@ -51,6 +49,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
 import com.jme.widget.layout.WidgetBorderLayout;
 import com.jme.widget.layout.WidgetBorderLayoutConstraint;
 import com.jme.widget.layout.WidgetFlowLayout;
+import com.jme.widget.layout.WidgetGridLayout;
 import com.jme.widget.panel.WidgetPanel;
 import com.jme.widget.panel.WidgetScrollPanel;
 import com.jme.widget.panel.rollout.WidgetRolloutPanel;
@@ -65,17 +64,17 @@ import com.jme.widget.text.WidgetText;
  */
 public class TestWidgetApp1 extends SimpleGame {
 
-    class TestFrame extends WidgetFrameAbstract {
+    class TestFrame extends WidgetAbstractFrame {
 
         static final int TOTAL_BUTTONS = 30;
         static final int TOTAL_BUNNIES = 2;
-        static final int TOTAL_ROLLOUTS = 4;
+        static final int TOTAL_ROLLOUTS = 1;
 
-        static final boolean ADD_CENTER_BUTTON = false;
-        static final boolean ADD_NORTH_PANEL = true;
-        static final boolean ADD_SOUTH_BUTTON = true;
-        static final boolean ADD_EAST_BUTTON = true;
-        static final boolean ADD_WEST_BUTTON = true;
+        static final boolean ADD_CENTER = true;
+        static final boolean ADD_NORTH = true;
+        static final boolean ADD_SOUTH = true;
+        static final boolean ADD_EAST = true;
+        static final boolean ADD_WEST = true;
 
         static final boolean PANEL = false;
         static final boolean SCROLL_PANEL = false;
@@ -83,48 +82,67 @@ public class TestWidgetApp1 extends SimpleGame {
         static final boolean ROLLOUT_CONTAINER = true;
 
         WidgetText fps;
-        
-        TestFrame(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
-            super(ds, ic, timer);
+
+        TestFrame(AbstractInputController ic) {
+            super(ic);
 
             setLayout(new WidgetBorderLayout());
             setInsets(new WidgetInsets());
 
             WidgetPanel northPanel = new WidgetPanel();
             //northPanel.setBgColor(null);
-            northPanel.setLayout(new WidgetFlowLayout(5, 0));
-            northPanel.setInsets(new WidgetInsets(5, 5, 5, 5));
+            northPanel.setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_EAST, 5, 0));
+            northPanel.setInsets(new WidgetInsets(5, 5, 5, 10));
             northPanel.setBorder(new WidgetBorder(1, 1, 1, 1, WidgetBorderType.LOWERED));
 
             WidgetButton northButton = new WidgetButton("North", WidgetAlignmentType.ALIGN_CENTER);
             northButton.setBorder(new WidgetBorder(3, 3, 3, 3));
             northButton.setInsets(new WidgetInsets(5, 5, 5, 5));
 
-            fps = new WidgetText("          ");
+            fps = new WidgetText("FPS:  000");
 
             northPanel.add(northButton);
             northPanel.add(fps);
 
-                        
-            if (ADD_NORTH_PANEL)
+            if (ADD_NORTH)
                 add(northPanel, WidgetBorderLayoutConstraint.NORTH);
 
             WidgetButton south = new WidgetButton("South", WidgetAlignmentType.ALIGN_CENTER);
-            if (ADD_SOUTH_BUTTON)
+            if (ADD_SOUTH)
                 add(south, WidgetBorderLayoutConstraint.SOUTH);
 
             WidgetButton east = new WidgetButton("East                      East", WidgetAlignmentType.ALIGN_CENTER);
-            if (ADD_EAST_BUTTON)
+            if (ADD_EAST)
                 add(east, WidgetBorderLayoutConstraint.EAST);
 
             WidgetButton west = new WidgetButton("West                      West", WidgetAlignmentType.ALIGN_CENTER);
-            if (ADD_WEST_BUTTON)
+            if (ADD_WEST)
                 add(west, WidgetBorderLayoutConstraint.WEST);
 
-            if (ADD_CENTER_BUTTON) {
+            if (ADD_CENTER) {
 
-                WidgetButton center = new WidgetButton("Center", WidgetAlignmentType.ALIGN_CENTER);
-                add(center, WidgetBorderLayoutConstraint.CENTER);
+                WidgetPanel centerPanel = new WidgetPanel();
+
+                centerPanel.setInsets(new WidgetInsets(5, 5, 5, 5));
+
+                int xSize = 4;
+                int ySize = 10;
+
+                centerPanel.setLayout(new WidgetGridLayout(xSize, ySize, 5, 5));
+                //centerPanel.setLayout(new WidgetGridLayout(xSize, ySize));
+
+                for (int y = 0; y < ySize; y++) {
+                    for (int x = 0; x < xSize; x++) {
+
+                        WidgetButton button =
+                            new WidgetButton("" + (x + 1) + "," + (y + 1), WidgetAlignmentType.ALIGN_CENTER);
+                        button.setInsets(new WidgetInsets(0, 3, 2, 2));
+
+                        centerPanel.add(button);
+                    }
+                }
+
+                add(centerPanel, WidgetBorderLayoutConstraint.CENTER);
 
             } else {
 
@@ -133,7 +151,8 @@ public class TestWidgetApp1 extends SimpleGame {
                     WidgetScrollPanel scrollPanel = new WidgetScrollPanel();
 
                     if (SCROLL_PANEL_FILL_HORIZONTAL)
-                        scrollPanel.setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_WEST, WidgetFillType.HORIZONTAL));
+                        scrollPanel.setLayout(
+                            new WidgetFlowLayout(WidgetAlignmentType.ALIGN_WEST, WidgetFillType.HORIZONTAL));
 
                     add(scrollPanel, WidgetBorderLayoutConstraint.CENTER);
                     addWidgets(scrollPanel);
@@ -158,14 +177,13 @@ public class TestWidgetApp1 extends SimpleGame {
             }
 
             doLayout();
-            doLayout();
         }
 
-        void addWidgets(WidgetContainerAbstract c) {
+        void addWidgets(WidgetAbstractContainer c) {
             addWidgets(c, null);
         }
 
-        void addWidgets(WidgetContainerAbstract c, String t) {
+        void addWidgets(WidgetAbstractContainer c, String t) {
             String title;
 
             if (t == null)
@@ -177,6 +195,8 @@ public class TestWidgetApp1 extends SimpleGame {
 
             if (ROLLOUT_CONTAINER == true) {
                 rollout = new WidgetRolloutPanel(title);
+                rollout.setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_CENTER, 0, 0));
+                //rollout.setPanelInsets(new WidgetInsets(5, 5, 0, 5));
             }
 
             StringBuffer buf = new StringBuffer();
@@ -216,7 +236,7 @@ public class TestWidgetApp1 extends SimpleGame {
     }
 
     private TestFrame frame;
-    private InputControllerAbstract input;
+    private AbstractInputController input;
 
     /* (non-Javadoc)
      * @see com.jme.app.SimpleGame#update()
@@ -255,9 +275,9 @@ public class TestWidgetApp1 extends SimpleGame {
         ColorRGBA background = new ColorRGBA(.5f, .5f, .5f, 1);
         display.getRenderer().setBackgroundColor(background);
 
-        display.getRenderer().setCamera(new LWJGLCamera(display.getWidth(), display.getHeight()));
+        display.getRenderer().setCamera(display.getRenderer().getCamera(display.getWidth(), display.getHeight()));
 
-        input = new WidgetMouseTestControllerBasic(this, display.getRenderer().getCamera(), properties.getRenderer());
+        input = new WidgetMouseTestControllerBasic(this);
 
     }
 
@@ -265,7 +285,7 @@ public class TestWidgetApp1 extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        frame = new TestFrame(display, input, Timer.getTimer(properties.getRenderer()));
+        frame = new TestFrame(input);
 
         frame.updateGeometricState(0.0f, true);
     }
@@ -274,7 +294,7 @@ public class TestWidgetApp1 extends SimpleGame {
      * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
-        WidgetFrameAbstract.destroy();
+        WidgetAbstractFrame.destroy();
 
         frame.init();
 
@@ -284,7 +304,7 @@ public class TestWidgetApp1 extends SimpleGame {
      * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
-        WidgetFrameAbstract.destroy();
+        WidgetAbstractFrame.destroy();
     }
 
     public static void main(String[] args) {

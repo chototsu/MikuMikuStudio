@@ -38,7 +38,7 @@ import com.jme.app.SimpleGame;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
-import com.jme.input.InputControllerAbstract;
+import com.jme.input.AbstractInputController;
 import com.jme.light.AmbientLight;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
@@ -58,10 +58,9 @@ import com.jme.sound.SoundAPIController;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.WidgetFillType;
-import com.jme.widget.WidgetFrameAbstract;
+import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.button.WidgetButton;
@@ -77,7 +76,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.5 2004-02-02 23:05:06 ericthered Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.6 2004-02-09 12:18:55 greggpatton Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
     private ISource clickSource;
@@ -89,7 +88,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
     
     
 
-    class TestFrame extends WidgetFrameAbstract implements Observer {
+    class TestFrame extends WidgetAbstractFrame implements Observer {
 
         WidgetButton startStopButton;
         WidgetButton onOffButton;
@@ -100,8 +99,8 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         WidgetPanel buttonPanel;
         WidgetPanel msgPanel;
 
-        TestFrame(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
-            super(ds, ic, timer);
+        TestFrame(AbstractInputController ic) {
+            super(ic);
 
             setLayout(new WidgetBorderLayout());
 
@@ -120,7 +119,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
             msgPanel = new WidgetPanel();
             msgPanel.setLayout(new WidgetFlowLayout(WidgetFillType.HORIZONTAL));
             msgPanel.setBgColor(null);
-            msgPanel.setInsets(new WidgetInsets(0, 0, 0, 5));
+            msgPanel.setInsets(new WidgetInsets(0, 0, 0, 25));
 
             fps = new WidgetLabel("         ", WidgetAlignmentType.ALIGN_CENTER);
             fps.setFgColor(new ColorRGBA());
@@ -128,42 +127,47 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
             fps.setInsets(new WidgetInsets(0, 0, 5, 0));
             add(fps, WidgetBorderLayoutConstraint.SOUTH);
 
-            msgLabel = new WidgetLabel("'W' to move forward ", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel = new WidgetLabel("'W' to move forward", WidgetAlignmentType.ALIGN_CENTER);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
 
-            msgLabel = new WidgetLabel("'S' to move backward ", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel = new WidgetLabel("'S' to move backward", WidgetAlignmentType.ALIGN_CENTER);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
 
-            msgLabel = new WidgetLabel("'A' to strafe left ", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel = new WidgetLabel("'A' to strafe left", WidgetAlignmentType.ALIGN_CENTER);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
 
-            msgLabel = new WidgetLabel("'D' to strafe right ", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel = new WidgetLabel("'D' to strafe right", WidgetAlignmentType.ALIGN_CENTER);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
 
-            msgLabel = new WidgetLabel("Up Arrow to look up ", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel = new WidgetLabel("Up Arrow to look up", WidgetAlignmentType.ALIGN_CENTER);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
 
-            msgLabel = new WidgetLabel("Down Arrow to look down ", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel = new WidgetLabel("Down Arrow to look down", WidgetAlignmentType.ALIGN_CENTER);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
 
-            msgLabel = new WidgetLabel("Right Arrow to turn right ", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel = new WidgetLabel("Right Arrow to turn right", WidgetAlignmentType.ALIGN_CENTER);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
 
-            msgLabel = new WidgetLabel("Left Arrow to turn left ", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel = new WidgetLabel("Left Arrow to turn left", WidgetAlignmentType.ALIGN_CENTER);
+            msgLabel.setFgColor(new ColorRGBA());
+            msgLabel.setBgColor(null);
+            msgPanel.add(msgLabel);
+
+            msgLabel = new WidgetLabel("Esc to exit", WidgetAlignmentType.ALIGN_CENTER);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
@@ -173,7 +177,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
 
-            msgLabel = new WidgetLabel("Right click mouse to toggle cursor ", WidgetAlignmentType.ALIGN_EAST);
+            msgLabel = new WidgetLabel("Right click mouse to toggle cursor", WidgetAlignmentType.ALIGN_EAST);
             msgLabel.setFgColor(new ColorRGBA());
             msgLabel.setBgColor(null);
             msgPanel.add(msgLabel);
@@ -252,7 +256,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
 
         public void handleMouseButtonDown() {
 
-            if (getMouseInput().getButtonState() != WidgetMouseButtonType.MOUSE_BUTTON_2) {
+            if (frame.isMouseCursorOn() && getMouseInput().getButtonState() != WidgetMouseButtonType.MOUSE_BUTTON_2) {
                 super.handleMouseButtonDown();
                 
             }
@@ -286,7 +290,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
     private Node scene, root;
     private static final float MAX_STEPS = 25;
     private Camera cam;
-    private InputControllerAbstract input;
+    private AbstractInputController input;
     private BezierCurve curve;
 
     private float step = 0;
@@ -302,7 +306,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
      */
     protected void update(float interpolation) {
 
-        frame.fps.setTitle("FPS:  " + WidgetFrameAbstract.getFrameRate().toString());
+        frame.fps.setTitle("FPS:  " + WidgetAbstractFrame.getFrameRate().toString());
 
         input.setUpdateMouseActionsEnabled(!frame.isMouseCursorOn());
 
@@ -357,9 +361,9 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
 
         display.getRenderer().setCamera(cam);
 
-        input = new WidgetMouseTestControllerFirstPerson(this, display.getRenderer().getCamera(), properties.getRenderer());
+        input = new WidgetMouseTestControllerFirstPerson(this, cam);
 
-    	SoundAPIController.getSoundSystem("LWJGL");
+    	SoundAPIController.getSoundSystem(properties.getRenderer());
     }
 
     /* (non-Javadoc)
@@ -482,7 +486,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
 
         scene.updateGeometricState(0.0f, true);
 
-        frame = new TestFrame(display, input, Timer.getTimer(properties.getRenderer()));
+        frame = new TestFrame(input);
 
         root.attachChild(frame);
         

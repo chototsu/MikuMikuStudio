@@ -36,19 +36,18 @@ import java.util.Observer;
 import java.util.Random;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.InputControllerAbstract;
+import com.jme.input.AbstractInputController;
 import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.LWJGLCamera;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.Timer;
 import com.jme.widget.Widget;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetFrameAbstract;
+import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.button.WidgetButton;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
@@ -60,13 +59,13 @@ import com.jme.widget.layout.WidgetAbsoluteLayout;
  * @version
  */
 public class TestWidgetApp2 extends SimpleGame implements Observer {
-    class TestFrame extends WidgetFrameAbstract {
+    class TestFrame extends WidgetAbstractFrame {
 
         WidgetButton shuffleButton;
         Random random = new Random();
 
-        TestFrame(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
-            super(ds, ic, timer);
+        TestFrame(AbstractInputController ic) {
+            super(ic);
 
             setLayout(new WidgetAbsoluteLayout());
 
@@ -112,9 +111,8 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
 
     private TestFrame frame;
     private Node scene;
-    private TriMesh t;
-    private LWJGLCamera cam;
-    private InputControllerAbstract input;
+    private Camera cam;
+    private AbstractInputController input;
 
     /* (non-Javadoc)
      * @see com.jme.app.SimpleGame#update()
@@ -154,7 +152,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
         ColorRGBA background = new ColorRGBA(.5f, .5f, .5f, 1);
         display.getRenderer().setBackgroundColor(background);
 
-        cam = new LWJGLCamera(display.getWidth(), display.getHeight());
+        cam = display.getRenderer().getCamera(display.getWidth(), display.getHeight());
 
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
         Vector3f loc = new Vector3f(4.0f, 0.0f, 0.0f);
@@ -164,7 +162,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new WidgetMouseTestControllerBasic(this, display.getRenderer().getCamera(), properties.getRenderer());
+        input = new WidgetMouseTestControllerBasic(this);
 
     }
 
@@ -176,7 +174,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
 
         initTriMesh();
 
-        frame = new TestFrame(display, input, Timer.getTimer(properties.getRenderer()));
+        frame = new TestFrame(input);
 
         frame.shuffle();
 
@@ -224,7 +222,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
         color[2].a = 1;
         int[] indices = { 0, 1, 2 };
 
-        t = new TriMesh(verts, null, color, null, indices);
+        TriMesh t = new TriMesh(verts, null, color, null, indices);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         System.out.println(t.getModelBound());
@@ -238,7 +236,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
      * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
-        WidgetFrameAbstract.destroy();
+        WidgetAbstractFrame.destroy();
         frame.init();
     }
 
@@ -246,7 +244,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
      * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
-        WidgetFrameAbstract.destroy();
+        WidgetAbstractFrame.destroy();
     }
 
     public static void main(String[] args) {

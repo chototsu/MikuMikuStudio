@@ -32,15 +32,14 @@
 package com.jme.test.widget;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.InputControllerAbstract;
+import com.jme.input.AbstractInputController;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.LWJGLCamera;
 import com.jme.scene.Node;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.Timer;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetFrameAbstract;
+import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.button.WidgetButton;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
@@ -53,9 +52,9 @@ import com.jme.widget.layout.WidgetFlowLayout;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class TestWidgetAppTemplate extends SimpleGame {
-    private class TestFrame extends WidgetFrameAbstract {
-        public TestFrame(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
-            super(ds, ic, timer);
+    class TestFrame extends WidgetAbstractFrame {
+        TestFrame(AbstractInputController ic) {
+            super(ic);
 
             setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_CENTER));
 
@@ -71,7 +70,7 @@ public class TestWidgetAppTemplate extends SimpleGame {
     private TestFrame frame;
     private Node scene;
     private LWJGLCamera cam;
-    private InputControllerAbstract input;
+    private AbstractInputController input;
 
     /* (non-Javadoc)
      * @see com.jme.app.SimpleGame#update()
@@ -115,7 +114,7 @@ public class TestWidgetAppTemplate extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
 
-        input = new WidgetMouseTestControllerBasic(this, display.getRenderer().getCamera(), properties.getRenderer());
+        input = new WidgetMouseTestControllerBasic(this);
 
     }
 
@@ -125,7 +124,7 @@ public class TestWidgetAppTemplate extends SimpleGame {
     protected void initGame() {
         scene = new Node();
 
-        frame = new TestFrame(display, input, Timer.getTimer(properties.getRenderer()));
+        frame = new TestFrame(input);
 
         frame.updateGeometricState(0.0f, true);
 
@@ -140,7 +139,7 @@ public class TestWidgetAppTemplate extends SimpleGame {
      * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
-        WidgetFrameAbstract.destroy();
+        WidgetAbstractFrame.destroy();
         frame.init();
     }
 
@@ -148,7 +147,7 @@ public class TestWidgetAppTemplate extends SimpleGame {
      * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
-        WidgetFrameAbstract.destroy();
+        WidgetAbstractFrame.destroy();
     }
 
     public static void main(String[] args) {
