@@ -47,7 +47,7 @@ import com.jme.scene.Spatial;
  * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.19 2004-09-08 17:06:47 mojomonkey Exp $
+ * @version $Id: RenderState.java,v 1.20 2004-10-26 23:26:10 mojomonkey Exp $
  */
 public abstract class RenderState implements Serializable {
 
@@ -96,19 +96,12 @@ public abstract class RenderState implements Serializable {
 	/** The total number of diffrent types of RenderState. */
 	public final static int RS_MAX_STATE = 14;
 
-	/** Max number of Controller for each RenderState. */
-	public final static int MAX_CONTROLLERS = 10;
-
-	//  private Controller[] controllers;
-	private ArrayList controllers;
-
 	private boolean enabled = true;
 
 	/**
 	 * Construts a new RenderState. The state is enabled by default.
 	 */
 	public RenderState() {
-		//    controllers = new Controller[MAX_CONTROLLERS];
 	}
 
 	/**
@@ -138,31 +131,6 @@ public abstract class RenderState implements Serializable {
 	 */
 	public void setEnabled(boolean value) {
 		this.enabled = value;
-	}
-
-	/**
-	 * Returns an array of Controllers for this render state.
-	 * 
-	 * @return The controllers for this render state.
-	 */
-	public ArrayList getControllers() {
-		return controllers;
-	}
-
-	/**
-	 * Adds the controller c at the specific index in this renderstate's
-	 * controller array.
-	 * 
-	 * @param index
-	 *            The index to add the controller too.
-	 * @param c
-	 *            The controller to add.
-	 */
-	public void addController(int index, Controller c) {
-		//    controllers[index] = c;
-		if (controllers == null)
-			controllers = new ArrayList(10);
-		controllers.set(index, c);
 	}
 
 	/**
