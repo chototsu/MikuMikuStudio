@@ -41,7 +41,7 @@ import com.jme.light.Light;
  * be added to the light state. Each light is processed and used to modify
  * the color of the scene.
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.2 2004-02-27 00:18:09 mojomonkey Exp $
+ * @version $Id: LightState.java,v 1.3 2004-04-02 21:05:47 mojomonkey Exp $
  */
 public abstract class LightState extends RenderState {
     /**
@@ -53,7 +53,9 @@ public abstract class LightState extends RenderState {
     //holds the lights
     private ArrayList lightList;
     protected boolean twoSidedOn;
-
+    
+    protected static int numLights;
+    
     /**
      * Constructor instantiates a new <code>LightState</code> object. Initially
      * there are no lights set.
