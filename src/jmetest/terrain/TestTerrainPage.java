@@ -1,21 +1,20 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
- * All rights reserved.
- *
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * 
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
+ * 
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,10 +26,12 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  */
 
 package jmetest.terrain;
+
+import javax.swing.ImageIcon;
 
 import com.jme.app.*;
 import com.jme.image.*;
@@ -44,20 +45,30 @@ import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
 import com.jme.terrain.util.FaultFractalHeightMap;
+import com.jme.terrain.util.ProceduralTextureGenerator;
+
 /**
  * <code>TestLightState</code>
+ * 
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.4 2004-04-19 20:45:00 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.5 2004-04-20 14:44:10 mojomonkey Exp $
  */
 public class TestTerrainPage extends BaseGame {
     private Camera cam;
+
     private CameraNode camNode;
+
     private Node root;
+
     private InputHandler input;
+
     private Timer timer;
+
     private Text fps;
+
     /**
      * Entry point for the test,
+     * 
      * @param args
      */
     public static void main(String[] args) {
@@ -69,6 +80,7 @@ public class TestTerrainPage extends BaseGame {
 
     /**
      * Not used in this test.
+     * 
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
@@ -76,19 +88,15 @@ public class TestTerrainPage extends BaseGame {
         timer.update();
         input.update(timer.getTimePerFrame());
 
-
-
         root.updateGeometricState(timer.getTimePerFrame(), true);
-        fps.print(
-            "FPS: "
-                + (int) timer.getFrameRate()
-                + " : "
+        fps.print("FPS: " + (int) timer.getFrameRate() + " : "
                 + display.getRenderer().getStatistics());
         display.getRenderer().clearStatistics();
     }
 
     /**
      * clears the buffers and then draws the TriMesh.
+     * 
      * @see com.jme.app.SimpleGame#render()
      */
     protected void render(float interpolation) {
@@ -101,20 +109,16 @@ public class TestTerrainPage extends BaseGame {
 
     /**
      * creates the displays and sets up the viewport.
+     * 
      * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
+            display.createWindow(properties.getWidth(), properties.getHeight(),
+                    properties.getDepth(), properties.getFreq(), properties
+                            .getFullscreen());
+            cam = display.getRenderer().getCamera(properties.getWidth(),
                     properties.getHeight());
 
         } catch (JmeException e) {
@@ -142,6 +146,7 @@ public class TestTerrainPage extends BaseGame {
 
     /**
      * builds the trimesh.
+     * 
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
@@ -150,7 +155,6 @@ public class TestTerrainPage extends BaseGame {
 
         WireframeState ws = display.getRenderer().getWireframeState();
         ws.setEnabled(false);
-
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -165,8 +169,6 @@ public class TestTerrainPage extends BaseGame {
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
 
-
-
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
@@ -175,19 +177,15 @@ public class TestTerrainPage extends BaseGame {
         lightstate.setTwoSidedLighting(true);
         lightstate.setEnabled(true);
         lightstate.attach(dr);
-
-
         Node scene = new Node("scene");
         scene.setRenderState(ws);
         scene.setRenderState(lightstate);
         root = new Node("Root node");
-
         //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
         FaultFractalHeightMap heightMap = new FaultFractalHeightMap(129, 32, 0, 255, 0.75f);
-        TerrainPage tb = new TerrainPage("Terrain", 17, heightMap.getSize(), 17, heightMap.getHeightMap(), false);
+        TerrainPage tb = new TerrainPage("Terrain", 65, heightMap.getSize(), 10, heightMap.getHeightMap(), false);
+
         tb.setDetailTexture(1, 4);
-        //tb.setModelBound(new BoundingBox());
-        //tb.updateModelBound();
         scene.attachChild(tb);
         scene.setRenderState(cs);
 
@@ -196,34 +194,37 @@ public class TestTerrainPage extends BaseGame {
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         TextureState font = display.getRenderer().getTextureState();
-        font.setTexture(
-            TextureManager.loadTexture(
-                TestTerrain.class.getClassLoader().getResource(
-                    "jmetest/data/font/font.png"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+        font.setTexture(TextureManager.loadTexture(TestTerrain.class
+                .getClassLoader().getResource("jmetest/data/font/font.png"),
+                Texture.MM_LINEAR, Texture.FM_LINEAR, true));
         font.setEnabled(true);
 
         fps = new Text("FPS counter", "");
         fps.setRenderState(font);
         fps.setRenderState(as1);
 
+        ProceduralTextureGenerator pt = new ProceduralTextureGenerator(heightMap);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png")), -128, 0, 128);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg")), 0, 128, 255);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/highest.jpg")), 128, 255, 384);
+
+        pt.createTexture(512);
 
         TextureState ts = display.getRenderer().getTextureState();
-        ts.setEnabled(false);
+        ts.setEnabled(true);
         Texture t1 = TextureManager.loadTexture(
-                        TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png"),
-                                Texture.MM_LINEAR,
-                                Texture.FM_LINEAR,
-                                true);
+        		pt.getImageIcon().getImage(),
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true,
+				true);
         ts.setTexture(t1 ,0);
 
 
         Texture t2 = TextureManager.loadTexture(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/Detail.jpg"),
-                        Texture.MM_LINEAR,
-                                Texture.FM_LINEAR,
-                                true);
+		        Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true);
         ts.setTexture( t2,1);
         t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 
@@ -253,8 +254,10 @@ public class TestTerrainPage extends BaseGame {
         root.updateRenderState();
 
     }
+
     /**
      * not used.
+     * 
      * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
@@ -263,6 +266,7 @@ public class TestTerrainPage extends BaseGame {
 
     /**
      * Not used.
+     * 
      * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
