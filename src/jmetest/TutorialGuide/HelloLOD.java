@@ -12,6 +12,8 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
+import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.curve.CurveController;
 import com.jme.curve.BezierCurve;
 import com.jme.input.KeyInput;
@@ -73,27 +75,9 @@ public class HelloLOD extends SimpleGame {
             System.exit(0);
         }
 
-        // Create a node to hold my cLOD mesh objects
-        Node clodNode=new Node("Clod node");
-        // For each mesh in maggie
-        for (int i=0;i<meshParent.getQuantity();i++){
-            // Create an AreaClodMesh for that mesh.  Let it compute records automatically
-            AreaClodMesh acm=new AreaClodMesh("part"+i,(TriMesh) meshParent.getChild(i),null);
-            acm.setModelBound(new BoundingSphere());
-            acm.updateModelBound();
+        // Create a clod duplicate of meshParent.
+        Node clodNode=getClodNodeFromParent(meshParent);
 
-            // Allow 1/2 of a triangle in every pixel on the screen in the bounds.
-            acm.setTrisPerPixel(.5f);
-
-            // Force a move of 2 units before updating the mesh geometry
-            acm.setDistanceTolerance(2);
-
-            // Give the clodMesh node the material state that the original had.
-            acm.setRenderState(meshParent.getChild(i).getRenderStateList()[RenderState.RS_MATERIAL]);
-
-            // Attach clod node.
-            clodNode.attachChild(acm);
-        }
         // Attach the clod mesh at the origin.
         clodNode.setLocalScale(.1f);
         rootNode.attachChild(clodNode);
@@ -101,6 +85,7 @@ public class HelloLOD extends SimpleGame {
         // Attach the original at -15,0,0
         meshParent.setLocalScale(.1f);
         meshParent.setLocalTranslation(new Vector3f(-15,0,0));
+
         rootNode.attachChild(meshParent);
 
         // Clear the keyboard commands that can move the camera.
@@ -126,32 +111,58 @@ public class HelloLOD extends SimpleGame {
         // Create a curve controller to move the CameraNode along the path
         CurveController cc=new CurveController(bc,cn);
 
-        // Set an up vector for the controller.
-        cc.setUpVector(new Vector3f(0,1,0));
-
         // Cycle the animation.
         cc.setRepeatType(Controller.RT_CYCLE);
 
         // Slow down the curve controller a bit
         cc.setSpeed(.25f);
 
-        // Add the controller to the node.  Notice I do NOT add the node to rootNode.
+        // Add the controller to the node.
         cn.addController(cc);
+
+        // Attach the node to rootNode
+        rootNode.attachChild(cn);
+    }
+
+    private Node getClodNodeFromParent(Node meshParent) {
+        // Create a node to hold my cLOD mesh objects
+        Node clodNode=new Node("Clod node");
+        // For each mesh in maggie
+        for (int i=0;i<meshParent.getQuantity();i++){
+            // Create an AreaClodMesh for that mesh.  Let it compute records automatically
+            AreaClodMesh acm=new AreaClodMesh("part"+i,(TriMesh) meshParent.getChild(i),null);
+            acm.setModelBound(new BoundingSphere());
+            acm.updateModelBound();
+
+            // Allow 1/2 of a triangle in every pixel on the screen in the bounds.
+            acm.setTrisPerPixel(.5f);
+
+            // Force a move of 2 units before updating the mesh geometry
+            acm.setDistanceTolerance(2);
+
+            // Give the clodMesh node the material state that the original had.
+            acm.setRenderState(meshParent.getChild(i).getRenderStateList()[RenderState.RS_MATERIAL]);
+
+            // Attach clod node.
+            clodNode.attachChild(acm);
+        }
+        return clodNode;
     }
 
     protected void simpleUpdate(){
-        // Update the node's geometric state, which will update its controll.er
-        cn.updateGeometricState(tpf,true);
         // Get the center of root's bound.
         Vector3f objectCenter=rootNode.getWorldBound().getCenter(MemPool.v3a);
 
         // My direction is the place I want to look minus the location of the camera.
         Vector3f lookAtObject=new Vector3f(objectCenter).subtractLocal(cam.getLocation()).normalizeLocal();
 
-        // Set my camera to look at the object
-        cam.setFrame(cam.getLocation(),
-                new Vector3f(0,1,0).crossLocal(lookAtObject).normalizeLocal(),
-                new Vector3f(1,0,0).crossLocal(lookAtObject).normalizeLocal(),
-                lookAtObject);
+        // Left vector
+        MemPool.m3a.setColumn(0,new Vector3f(0,1,0).crossLocal(lookAtObject).normalizeLocal());
+        // Up vector
+        MemPool.m3a.setColumn(1,new Vector3f(1,0,0).crossLocal(lookAtObject).normalizeLocal());
+        // Direction vector
+        MemPool.m3a.setColumn(2,lookAtObject);
+
+        cn.setLocalRotation(MemPool.m3a);
     }
 }
