@@ -2,37 +2,37 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
 
 /*
  * EDIT:  02/09/2004 - Changed merge to return this instead of null. GOP
- */ 
+ */
 
 package com.jme.scene;
 
@@ -44,17 +44,17 @@ import com.jme.math.Vector3f;
 import com.jme.util.LoggingSystem;
 
 /**
- * <code>BoundingSphere</code> defines a sphere that defines a container 
- * for a group of vertices of a particular piece of geometry. This sphere 
- * defines a radius and a center. 
+ * <code>BoundingSphere</code> defines a sphere that defines a container
+ * for a group of vertices of a particular piece of geometry. This sphere
+ * defines a radius and a center.
  * <br><br>
  * A typical usage is to allow the class define the center and radius
  * by calling either <code>containAABB</code> or <code>averagePoints</code>.
- * A call to <code>computeFramePoint</code> in turn calls 
+ * A call to <code>computeFramePoint</code> in turn calls
  * <code>containAABB</code>.
- * 
+ *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.9 2004-02-20 16:28:48 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.10 2004-02-26 05:37:45 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -62,7 +62,7 @@ public class BoundingSphere implements BoundingVolume {
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
-     * object. 
+     * object.
      */
     public BoundingSphere() {
         center = new Vector3f();
@@ -126,7 +126,7 @@ public class BoundingSphere implements BoundingVolume {
 
     /**
      * <code>containAABB</code> creates a minimum-volume axis-aligned
-     * bounding box of the points, then selects the smallest 
+     * bounding box of the points, then selects the smallest
      * enclosing sphere of the box with the sphere centered at the
      * boxes center.
      * @param points the list of points.
@@ -135,7 +135,7 @@ public class BoundingSphere implements BoundingVolume {
        if(points.length <= 0) {
             return;
         }
-    
+
         Vector3f min = new Vector3f(points[0].x, points[0].y, points[0].z);
         Vector3f max = new Vector3f(min.x, min.y, min.z);
         for (int i = 1; i < points.length; i++) {
@@ -156,16 +156,16 @@ public class BoundingSphere implements BoundingVolume {
         }
 
         center = max.add(min);
-        center = center.mult(0.5f);
+        center.multLocal(0.5f);
 
         Vector3f halfDiagonal = max.subtract(min);
-        halfDiagonal = halfDiagonal.mult(0.5f);
+        halfDiagonal.multLocal(0.5f);
         radius = halfDiagonal.length();
     }
 
     /**
      * <code>averagePoints</code> selects the sphere center to be
-     * the average of the points and the sphere radius to be the 
+     * the average of the points and the sphere radius to be the
      * smallest value to enclose all points.
      * @param points the list of points to contain.
      */
@@ -175,9 +175,9 @@ public class BoundingSphere implements BoundingVolume {
         center = points[0];
 
         for (int i = 1; i < points.length; i++)
-            center = center.add(points[i]);
+            center.addLocal(points[i]);
         float quantity = 1.0f / points.length;
-        center = center.mult(quantity);
+        center.multLocal(quantity);
 
         float maxRadiusSqr = 0;
         for (int i = 0; i < points.length; i++) {
@@ -202,14 +202,14 @@ public class BoundingSphere implements BoundingVolume {
         Matrix3f rotate,
         Vector3f translate,
         float scale) {
-            
-        Vector3f newCenter = ((rotate.mult(center)).mult(scale)).add(translate);
+
+        Vector3f newCenter = ((rotate.mult(center)).multLocal(scale)).addLocal(translate);
         return new BoundingSphere(scale * radius, newCenter);
     }
-    
+
     /**
      * <code>whichSide</code> takes a plane (typically provided by a view
-     * frustum) to determine which side this bound is on. 
+     * frustum) to determine which side this bound is on.
      * @param plane the plane to check against.
      */
     public int whichSide(Plane plane) {
@@ -258,7 +258,7 @@ public class BoundingSphere implements BoundingVolume {
             }
 
             newSphere.setRadius(0.5f * (length + radius + sphere.getRadius()));
-            
+
             return newSphere;
         }
     }
@@ -269,7 +269,7 @@ public class BoundingSphere implements BoundingVolume {
      * @return the string representation of this.
      */
     public String toString() {
-        return "com.jme.scene.BoundingSphere [Radius: " + radius + " Center: " 
+        return "com.jme.scene.BoundingSphere [Radius: " + radius + " Center: "
                 + center +"]";
     }
 }

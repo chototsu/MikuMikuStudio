@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -41,7 +41,7 @@ import com.jme.system.JmeException;
  * curve the surface of the mesh will take. The patch also contains information
  * about it's detail level, which defines how smooth the mesh will be.
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.7 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: BezierMesh.java,v 1.8 2004-02-26 05:37:45 renanse Exp $
  */
 public class BezierMesh extends TriMesh {
     private BezierPatch patch;
@@ -52,25 +52,25 @@ public class BezierMesh extends TriMesh {
      * 		comparision purposes.
      */
     public BezierMesh(String name) {
-    	super(name);
+        super(name);
     }
 
     /**
      * Constructor creates a new <code>BezierMesh</code> object with the
-     * given <code>BezierPatch</code>. The mesh is then automatically 
+     * given <code>BezierPatch</code>. The mesh is then automatically
      * tessellated.
      * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
      * @param patch the <code>BezierPatch</code> used to define this mesh.
      */
     public BezierMesh(String name, BezierPatch patch) {
-    	super(name);
+        super(name);
         this.patch = patch;
         tessellate();
     }
 
     /**
-     * 
+     *
      * <code>setPatch</code> sets the <code>BezierPatch</code> of the mesh.
      * It is then tessellated.
      * @param patch the patch to use for this mesh.
@@ -81,11 +81,11 @@ public class BezierMesh extends TriMesh {
     }
 
     /**
-     * 
+     *
      * <code>tessellate</code> generates the <code>BezierMesh</code> vertices
      * from the supplied patch and detail level. This method is called when
      * patch is set, and therefore, should normally have to be called. However,
-     * if patch is changed externally, and you wish to update the mesh, a 
+     * if patch is changed externally, and you wish to update the mesh, a
      * call to <code>tessellate</code> is appropriate.
      *
      */
@@ -206,8 +206,8 @@ public class BezierMesh extends TriMesh {
     }
 
     /**
-     * 
-     * <code>calcBerstein</code> calculates the Berstein number for the 
+     *
+     * <code>calcBerstein</code> calculates the Berstein number for the
      * given u and control points.
      * @param u the u value.
      * @param p the control points.
@@ -222,6 +222,6 @@ public class BezierMesh extends TriMesh {
         Vector3f c = p[2].mult(3 * u * (float) Math.pow((1 - u), 2));
         Vector3f d = p[3].mult((float) Math.pow((1 - u), 3));
 
-        return (a.add(b)).add((c.add(d)));
+        return (a.addLocal(b)).addLocal((c.addLocal(d)));
     }
 }
