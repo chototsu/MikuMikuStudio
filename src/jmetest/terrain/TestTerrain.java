@@ -33,7 +33,6 @@
 package jmetest.terrain;
 
 import com.jme.app.*;
-import com.jme.bounding.BoundingSphere;
 import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.light.*;
@@ -46,11 +45,12 @@ import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
 import com.jme.terrain.util.MidPointHeightMap;
+import com.jme.terrain.util.RawHeightMap;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.6 2004-04-12 16:31:19 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.7 2004-04-13 02:08:59 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -64,7 +64,7 @@ public class TestTerrain extends SimpleGame {
      * @param args
      */
     public static void main(String[] args) {
-        LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
+        //LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
         TestTerrain app = new TestTerrain();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
@@ -185,7 +185,7 @@ public class TestTerrain extends SimpleGame {
         scene.setRenderState(lightstate);
         root = new Node("Root node");
         
-        MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
+        RawHeightMap heightMap = new RawHeightMap("C:/eclipse/workspace/jMonkeyEngine/src/jmetest/data/images/Terrain.raw", 128);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0));
         tb.setDetailTexture(1, 4);
         scene.attachChild(tb);

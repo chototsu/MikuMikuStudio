@@ -33,6 +33,7 @@
 package jmetest.terrain;
 
 import com.jme.app.*;
+import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.*;
 import com.jme.input.*;
@@ -50,7 +51,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.1 2004-04-12 16:31:18 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.2 2004-04-13 02:08:59 mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
     private Camera cam;
@@ -115,6 +116,7 @@ public class TestTerrainLighting extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
+        //display.getRenderer().drawBounds(root);
 
     }
 
@@ -203,7 +205,9 @@ public class TestTerrainLighting extends SimpleGame {
         Vector3f min2 = new Vector3f(-0.5f, -0.5f, -0.5f);
         Vector3f max2 = new Vector3f(0.5f,0.5f,0.5f);
         Box lightBox = new Box("box", min2,max2);
-        lightBox.setForceView(true);
+        //lightBox.setForceView(true);
+        lightBox.setModelBound(new BoundingBox());
+        lightBox.updateModelBound();
         lightNode.attachChild(lightBox);
         
         
@@ -217,6 +221,8 @@ public class TestTerrainLighting extends SimpleGame {
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
         TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0));
         tb.setDetailTexture(1, 4);
+        tb.setModelBound(new BoundingBox());
+        tb.updateModelBound();
         scene.attachChild(tb);
         scene.setRenderState(cs);
         
