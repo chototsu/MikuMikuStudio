@@ -7,7 +7,7 @@ import com.jme.math.*;
  * Started Date: Aug 24, 2004<br><br>
  *
  * This class is liked BoundingBox, but can correctly rotate to fit its bounds.
- * 
+ *
  * @author Jack Lindamood
  */
 public class OrientedBoundingBox extends OrientedBox implements BoundingVolume{
@@ -209,19 +209,7 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume{
     }
 
     private BoundingVolume mergeOBB(OrientedBoundingBox volume) {
-//        OrientedBoundingBox mergeBox=(OrientedBoundingBox) volume;
-//        if (!correctCorners) this.computeCorners();
-//        if (!mergeBox.correctCorners) mergeBox.computeCorners();
-//        Vector3f[] mergeArray=new Vector3f[16];
-//        for (int i=0;i<vectorStore.length;i++){
-//            mergeArray[i*2+0]=this    .vectorStore[i];
-//            mergeArray[i*2+1]=mergeBox.vectorStore[i];
-//        }
-//        containAABB(mergeArray);
-//        correctCorners=false;
-//        return this;
-        // construct a box that contains the input boxes
-//        Box3<Real> kBox;
+
         OrientedBoundingBox rkBox0=this;
         OrientedBoundingBox rkBox1=volume;
 
@@ -254,7 +242,6 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume{
         Quaternion kQ = kQ0.addLocal(kQ1);
         float fInvLength = FastMath.invSqrt(kQ.dot(kQ));
         kQ.multLocal(fInvLength);
-//        kQ = fInvLength*kQ;
         Matrix3f kBoxaxis=kQ.toRotationMatrix(tempMa);
 
         // Project the input box vertices onto the merged-box axes.  Each axis
@@ -269,26 +256,21 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume{
         //   e[i] = 0.5*(pmax[i]-pmin[i])
 
         int i;
-        float fDot;
-//        Vector3f akVertex[8], kDiff;
+        float fDot = 0;
         Vector3f kDiff=tempVa;
-//        Vector3f kMin = new Vector3f();
-//        Vector3f kMax = new Vector3f();
-//        float[] kMax=new float[3];
-//        float[] kMin=new float[3];
         Vector3f kMin=tempVb;
         Vector3f kMax=tempVc;
+
+        kMin.zero(); kMax.zero();
 
         Vector3f kBoxXaxis=kBoxaxis.getColumn(0,tempVe);
         Vector3f kBoxYaxis=kBoxaxis.getColumn(1,tempVf);
         Vector3f kBoxZaxis=kBoxaxis.getColumn(2,tempVg);
 
-//        rkBox0.ComputeVertices(akVertex);
         if (!rkBox0.correctCorners)
             rkBox0.computeCorners();
         for (i = 0; i < 8; i++)
         {
-//            kDiff = akVertex[i] - kBox.Center();
             rkBox0.vectorStore[i].subtract(kBoxCenter,kDiff);
 
             fDot = kDiff.dot(kBoxXaxis);
@@ -311,10 +293,10 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume{
 
         }
 
-        if (!rkBox1.correctCorners) rkBox1.computeCorners();
+        if (!rkBox1.correctCorners)
+          rkBox1.computeCorners();
         for (i = 0; i < 8; i++)
         {
-//            kDiff = akVertex[i] - kBox.Center();
             rkBox1.vectorStore[i].subtract(kBoxCenter,kDiff);
 
             fDot = kDiff.dot(kBoxXaxis);
