@@ -40,7 +40,7 @@ import com.jme.input.Mouse;
  * 
  * @see com.jme.input.InputController
  * @author Mark Powell
- * @version $Id: MouseInputAction.java,v 1.3 2003-10-30 20:41:24 mojomonkey Exp $
+ * @version $Id: MouseInputAction.java,v 1.4 2003-11-14 19:37:28 mojomonkey Exp $
  */
 public interface MouseInputAction {
     /**
@@ -50,6 +50,7 @@ public interface MouseInputAction {
      * @param time the time between frames.
      */
     public void performAction(float time);
+    public void setSpeed(float speed);
     /**
      * 
      * <code>setMouse</code> sets the mouse type used by this action.

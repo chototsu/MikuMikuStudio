@@ -38,11 +38,15 @@ import com.jme.app.AbstractGame;
  * application. This action can be assigned to an event, such as the escape
  * key being pressed, or a exit button being chosen.
  * @author Mark Powell
- * @version $Id: KeyExitAction.java,v 1.2 2003-10-30 20:41:24 mojomonkey Exp $
+ * @version $Id: KeyExitAction.java,v 1.3 2003-11-14 19:37:28 mojomonkey Exp $
  */
 public class KeyExitAction implements InputAction{
     private AbstractGame app;
     private String key;
+    
+    public void setSpeed(float speed) {
+        
+    }
     
     /**
      * Constructor instantiates a new <code>KeyExitAction</code> object.

@@ -92,7 +92,7 @@ public class LWJGLWaveStream implements SoundStream {
 			} else if (format.getSampleSizeInBits() == 16) {
 				channels = AL.AL_FORMAT_MONO16;
 			} else {
-				assert false : "Illegal sample size";
+				//assert false : "Illegal sample size";
 			}
 		} else if (format.getChannels() == 2) {
 			if (format.getSampleSizeInBits() == 8) {
@@ -100,10 +100,10 @@ public class LWJGLWaveStream implements SoundStream {
 			} else if (format.getSampleSizeInBits() == 16) {
 				channels = AL.AL_FORMAT_STEREO16;
 			} else {
-				assert false : "Illegal sample size";
+				//assert false : "Illegal sample size";
 			}
 		} else {
-			assert false : "Only mono or stereo is supported";
+			//assert false : "Only mono or stereo is supported";
 		}
 
 	}

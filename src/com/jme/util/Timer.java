@@ -29,46 +29,31 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.input.action;
+package com.jme.util;
 
 /**
- * <code>InputAction</code> defines an interface for creating input actions. 
- * These actions can correspond to any event defined by a key value. The
- * <code>InputController</code> class typically maintains a collection of
- * the actions and when required calls the actions <code>performAction</code>
- * method.
- * 
- * @see com.jme.input.InputController
+ * <code>Timer</code>
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.3 2003-11-14 19:37:28 mojomonkey Exp $
+ * @version $Id: Timer.java,v 1.1 2003-11-14 19:37:28 mojomonkey Exp $
  */
-public interface InputAction {
+public abstract class Timer {
+    private static Timer instance;
     
-    /**
-     * 
-     * <code>setSpeed</code> defines the speed at which this action occurs.
-     * @param speed the speed at which this action occurs.
-     */
-    public void setSpeed(float speed);
-    /**
-     * 
-     * <code>performAction</code> defines the appropriate action to take when
-     * called. The action is completely class specific.
-     * @param time the time value for the action.
-     */
-    public void performAction(float time);
+    public abstract float getFrameRate();
     
-    /**
-     * 
-     * <code>getKey</code> retrieves the key associated with this action. 
-     * @return the key associated with the action.
-     */
-    public String getKey();
+    public abstract float getTimePerFrame();
     
-    /**
-     * 
-     * <code>setKey</code> sets the key associated with this action.
-     * @param key the key associated with the action.
-     */
-    public void setKey(String key);
+    public abstract void update();
+    
+    public static Timer getTimer(String version) {
+        if("LWJGL".equalsIgnoreCase(version)) {
+            if(instance == null || !(instance instanceof LWJGLTimer)) {
+                instance = new LWJGLTimer();
+            }
+            
+            return instance;
+        } else {
+            return null;
+        }
+    }
 }

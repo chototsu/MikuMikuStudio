@@ -39,7 +39,7 @@ import com.jme.input.action.MouseInputAction;
 /**
  * <code>InputController</code>
  * @author Mark Powell
- * @version $Id: InputController.java,v 1.2 2003-10-29 18:02:14 mojomonkey Exp $
+ * @version $Id: InputController.java,v 1.3 2003-11-14 19:37:28 mojomonkey Exp $
  */
 public class InputController {
     private ArrayList actions;
@@ -66,6 +66,18 @@ public class InputController {
     
     public Mouse getMouse() {
         return mouse;
+    }
+    
+    public void setKeySpeed(float speed) {
+        for(int i = 0; i < actions.size(); i++) {
+            ((InputAction)actions.get(i)).setSpeed(speed);
+        }
+    }
+    
+    public void setMouseSpeed(float speed) {
+        for(int i = 0; i < mouseActions.size(); i++) {
+            ((MouseInputAction)mouseActions.get(i)).setSpeed(speed);
+        }
     }
 
     public void addAction(InputAction inputAction) {
