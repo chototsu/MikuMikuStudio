@@ -1,6 +1,5 @@
 package jmetest.TutorialGuide;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
 
@@ -56,7 +55,9 @@ public class HelloIntersection extends SimpleGame {
      * The programmable sound that will be in charge of maintaining our sound
      * effects.
      */
-    ProgrammableSound programSound;
+    ProgrammableSound laserSound;
+
+    ProgrammableSound targetSound;
 
     /** The node where attached sounds will be propagated from */
     SoundNode snode;
@@ -128,27 +129,30 @@ public class HelloIntersection extends SimpleGame {
         SoundAPIController.getRenderer().setCamera(cam);
         snode = new SoundNode();
         /** Create program sound */
-        programSound = new ProgrammableSound();
+        targetSound = new ProgrammableSound();
         /** Make the sound softer */
-        programSound.setGain(1f);
-        programSound.setLooping(false);
+        targetSound .setLooping(false);
+        targetSound.setMaxDistance(40f);
 
-        programSound.setPosition(cam.getLocation());
+        laserSound = new ProgrammableSound();
+        laserSound.setLooping(false);
+//        laserSound.setPosition(cam.getLocation());
+
         /** locate laser and register it with the prog sound. */
 
         laserURL = HelloIntersection.class.getClassLoader().getResource(
                 "jmetest/data/sound/laser.ogg");
         hitURL = HelloIntersection.class.getClassLoader().getResource(
-                "jmetest/data/sound/explosion.wav");
+                "jmetest/data/sound/explosion.ogg");
         // Ask the system for a program id for this resource
         int programid = SoundPool.compile(new URL[] { laserURL });
         int hitid = SoundPool.compile(new URL[] { hitURL });
         // Then we bind the programid we received to our laser event id.
-        programSound.bindEvent(laserEventID, programid);
-        programSound.bindEvent(hitEventID, hitid);
-        programSound.setMaxDistance(25f);
+        laserSound.bindEvent(laserEventID, programid);
+        targetSound.bindEvent(hitEventID, hitid);
         //        programSound.setNextProgram(programid);
-        snode.attachChild(programSound);
+        snode.attachChild(laserSound);
+        snode.attachChild(targetSound);
         //... repeat above 3 lines to register other sounds.
     }
 
@@ -182,7 +186,7 @@ public class HelloIntersection extends SimpleGame {
             rootNode.attachChild(bullet);
             bullet.updateRenderState();
             /** Signal our sound to play laser during rendering */
-            programSound.setPosition(cam.getLocation());
+            laserSound.setPosition(cam.getLocation());
             snode.onEvent(laserEventID);
         }
     }
@@ -225,8 +229,8 @@ public class HelloIntersection extends SimpleGame {
                 target.setLocalTranslation(new Vector3f(r.nextFloat() * 10, r
                         .nextFloat() * 10, r.nextFloat() * 10));
                 lifeTime = 0;
+                targetSound.setPosition(target.getWorldTranslation());
                 snode.onEvent(hitEventID);
-                programSound.setPosition(target.getWorldTranslation());
             }
         }
     }
