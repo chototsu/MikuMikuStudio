@@ -72,7 +72,7 @@ public class HelloLOD extends SimpleGame {
             acm.setModelBound(new BoundingSphere());
             acm.updateModelBound();
 
-            // Allow 1/2 of a triangle in every pixel on the screen
+            // Allow 1/2 of a triangle in every pixel on the screen in the bounds.
             acm.setTrisPerPixel(.5f);
 
             // Force a move of 2 units before updating the mesh geometry
