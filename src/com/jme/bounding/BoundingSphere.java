@@ -37,12 +37,12 @@ package com.jme.bounding;
 
 import java.util.logging.Level;
 
-import com.jme.math.Quaternion;
-import com.jme.math.Plane;
-import com.jme.math.Vector3f;
-import com.jme.scene.shape.*;
-import com.jme.util.LoggingSystem;
 import com.jme.math.FastMath;
+import com.jme.math.Plane;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.scene.shape.Sphere;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>BoundingSphere</code> defines a sphere that defines a container for a
@@ -54,7 +54,7 @@ import com.jme.math.FastMath;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.9 2004-06-23 18:14:16 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.10 2004-07-15 23:40:24 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -238,7 +238,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             Vector3f scale) {
         Vector3f newCenter = rotate.mult(center).multLocal(scale).addLocal(
                 translate);
-        return new BoundingSphere(scale.length() * radius, newCenter);
+        return new BoundingSphere(getMaxAxis(scale) * radius, newCenter);
     }
 
     /**
@@ -264,11 +264,21 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
                 sphere = new BoundingSphere(1, new Vector3f(0, 0, 0));
         rotate.mult(center, sphere.center);
         sphere.center.multLocal(scale).addLocal(translate);
-        sphere.radius = scale.length() * radius;
+        sphere.radius = getMaxAxis(scale) * radius;
         return sphere;
     }
 
-    /**
+  private float getMaxAxis(Vector3f scale) {
+    if (scale.x >= scale.y) {
+      if (scale.x >= scale.z) return scale.x;
+      else return scale.z;
+    } else {
+      if (scale.y >= scale.z) return scale.y;
+      else return scale.z;
+    }
+  }
+
+  /**
      * <code>whichSide</code> takes a plane (typically provided by a view
      * frustum) to determine which side this bound is on.
      *
