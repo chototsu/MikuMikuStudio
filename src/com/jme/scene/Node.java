@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.11 2004-02-25 22:43:54 renanse Exp $
+ * @version $Id: Node.java,v 1.12 2004-02-26 17:40:27 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -208,7 +208,7 @@ public class Node extends Spatial implements Serializable {
             if (child != null) {
                 if (foundFirstBound) {
                     // merge current world bound with child world bound
-                    worldBound = worldBound.merge(child.getWorldBound());
+                    worldBound.mergeLocal(child.getWorldBound());
 
                 } else {
                     // set world bound to first non-null child world bound

@@ -2,30 +2,30 @@
  * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -47,7 +47,7 @@ import com.jme.widget.bounds.WidgetBoundingRectangle;
 /**
  * <code>WidgetFlowLayout</code>
  * @author Gregg Patton
- * @version $Id: WidgetFlowLayout.java,v 1.3 2004-02-09 12:34:43 greggpatton Exp $
+ * @version $Id: WidgetFlowLayout.java,v 1.4 2004-02-26 17:40:28 renanse Exp $
  */
 public class WidgetFlowLayout extends WidgetLayoutManager {
 
@@ -69,7 +69,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
     }
 
     /**
-     * 
+     *
      */
     public WidgetFlowLayout() {
         super();
@@ -234,8 +234,8 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
                     if (pastWidth || lastChild) {
 
-                        /* 
-                         * Passed max width 
+                        /*
+                         * Passed max width
                          * OR
                          * Passe width of the parent
                          * OR
@@ -243,7 +243,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                          */
 
                         if ((!atRowStart && pastWidth)) {
-                            /* 
+                            /*
                              * Not the first child on a row
                              * AND
                              * Not the last child
@@ -276,7 +276,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                          * Initialize the current row array
                          */
                         curRow = new ArrayList();
-                        
+
                         for (int i = rowStartIdx; i <= idx; i++) {
 
                             r = (WidgetBoundingRectangle) newBounds.get(i);
@@ -287,17 +287,17 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                              * Set size to preferred width and max row height
                              */
                             r.setHeight(maxRowHeight);
-                        
-                            
+
+
                             /*
                              * Store RowItem in current row array
                              */
                             RowItem ri = new RowItem();
-                            
+
                             ri.child = parent.getWidget(i);
-                            ri.childIdx = i;         
-                            ri.r = r;   
-                                                
+                            ri.childIdx = i;
+                            ri.r = r;
+
                             curRow.add(ri);
                         }
 
@@ -358,7 +358,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
                     r = (WidgetBoundingRectangle) newBounds.get(idx);
 
-                    bounds = (WidgetBoundingRectangle) bounds.merge(r);
+                    bounds.mergeLocal(r);
                 }
 
                 ret.x = bounds.getWidth();
@@ -380,11 +380,11 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                     xOffset = (parentWidth - bounds.getWidth()) - (insets.getLeft() + insets.getRight());
 
                 Iterator rowsI = rows.iterator();
-                                    
+
                 while (rowsI.hasNext()) {
-                 
+
                     curRow = (ArrayList) rowsI.next();
-                    
+
                     curRowWidth = calcRowWidth(curRow);
 
                     if (this.alignmentType == WidgetAlignmentType.ALIGN_CENTER) {
@@ -392,10 +392,10 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                     }
 
                     Iterator curRowI = curRow.iterator();
-                    
+
                     while (curRowI.hasNext()) {
-                 
-                        ri = (RowItem) curRowI.next();    
+
+                        ri = (RowItem) curRowI.next();
 
                         Vector2f l = ri.r.getMin();
                         Vector2f s = ri.r.getSize();
@@ -419,20 +419,20 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
      */
     private float calcRowWidth(ArrayList curRow) {
         float ret = 0;
-        
-        
+
+
         RowItem ri;
         Iterator i = curRow.iterator();
-        
+
         while (i.hasNext()) {
             ri = (RowItem) i.next();
             ret += ri.r.getWidth();
         }
-        
+
         return ret;
     }
 
-    /** <code>preferredLayoutSize</code> 
+    /** <code>preferredLayoutSize</code>
      * @param parent
      * @return
      * @see com.jme.widget.layout.WidgetLayoutManager#preferredLayoutSize(com.jme.widget.WidgetAbstractContainer)
@@ -452,7 +452,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
         return ret;
     }
 
-    /** <code>layoutContainer</code> 
+    /** <code>layoutContainer</code>
      * @param parent
      * @see com.jme.widget.layout.WidgetLayoutManager#layoutContainer(com.jme.widget.WidgetAbstractContainer)
      */

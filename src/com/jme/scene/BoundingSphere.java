@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.10 2004-02-26 05:37:45 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.11 2004-02-26 17:40:27 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -228,6 +228,7 @@ public class BoundingSphere implements BoundingVolume {
      * <code>merge</code> combines this sphere with a second bounding sphere.
      * This new sphere contains both bounding spheres and is returned.
      * @param volume the sphere to combine with this sphere.
+     * @return the new sphere
      */
     public BoundingVolume merge(BoundingVolume volume) {
         if(volume == null) {
@@ -260,6 +261,45 @@ public class BoundingSphere implements BoundingVolume {
             newSphere.setRadius(0.5f * (length + radius + sphere.getRadius()));
 
             return newSphere;
+        }
+    }
+
+    /**
+     * <code>mergeLocal</code> combines this sphere with a second bounding sphere locally.
+     * Altering this sphere to contain both the original and the additional sphere volumes;
+     * @param volume the sphere to combine with this sphere.
+     * @return this
+     */
+    public BoundingVolume mergeLocal(BoundingVolume volume) {
+        if(volume == null) {
+            return this;
+        }
+        if (!(volume instanceof BoundingSphere)) {
+            return this;
+        } else {
+            BoundingSphere sphere = (BoundingSphere) volume;
+            Vector3f diff = sphere.getCenter().subtract(center);
+            float lengthSquared = diff.lengthSquared();
+            float radiusDiff = sphere.getRadius() - radius;
+            float diffSquared = radiusDiff * radiusDiff;
+
+            if (diffSquared >= lengthSquared) {
+                return (radiusDiff >= 0.0 ? volume : this);
+            }
+
+            float length = (float) Math.sqrt(lengthSquared);
+            float tolerance = 1e-06f;
+
+            if (length > tolerance) {
+                float coeff = (length + radiusDiff) / (2.0f * length);
+                setCenter(center.add(diff.mult(coeff)));
+            } else {
+                setCenter(center);
+            }
+
+            setRadius(0.5f * (length + radius + sphere.getRadius()));
+
+            return this;
         }
     }
 

@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -152,7 +152,7 @@ public class WidgetBoundingRectangle implements BoundingVolume {
     /**
      * <code>axisAligned</code> creates a minimal box around all
      * supplied points. The orientation is always aligned with the
-     * local entity's coordinate system and therefore is axis 
+     * local entity's coordinate system and therefore is axis
      * aligned.
      * @param points the list of points to contain.
      */
@@ -248,6 +248,47 @@ public class WidgetBoundingRectangle implements BoundingVolume {
         newCenter.y = (newMax.y + newMin.y) / 2;
 
         return new WidgetBoundingRectangle(newMin, newMax, newCenter);
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.scene.BoundingVolume#merge(com.jme.scene.BoundingVolume)
+     */
+    public BoundingVolume mergeLocal(BoundingVolume bound) {
+        if (!(bound instanceof WidgetBoundingRectangle)) {
+            return this;
+        }
+
+        WidgetBoundingRectangle testBox = (WidgetBoundingRectangle) bound;
+        if (contains(testBox)) {
+            return this;
+        } else if (testBox.contains(this)) {
+            return testBox;
+        }
+
+        //otherwise:
+        //new sphere setting is the average of the two centers
+        //smallest min and largest max.
+        if (min.x > testBox.getMin().x) {
+            min.x = testBox.getMin().x;
+        }
+
+        //find min point
+        if (min.y > testBox.getMin().y) {
+            min.y = testBox.getMin().y;
+        }
+
+        if (max.x < testBox.getMax().x) {
+            max.x = testBox.getMax().x;
+        }
+
+        //find max point
+        if (max.y < testBox.getMax().y) {
+            max.y = testBox.getMax().y;
+        }
+
+        center.x = (max.x + min.x) / 2;
+        center.y = (max.y + min.y) / 2;
+        return this;
     }
 
     public void setMin(Vector2f min) {
@@ -476,12 +517,12 @@ public class WidgetBoundingRectangle implements BoundingVolume {
         // TODO Auto-generated method stub
         return null;
     }
-    
+
     public BoundingVolume transform(Matrix3f rotate, Vector3f translate, float scale, BoundingVolume bv) {
-    	// TODO Auto-generated method stub
-    	return null;
+        // TODO Auto-generated method stub
+        return null;
     }
-    
+
 
     /* (non-Javadoc)
      * @see com.jme.scene.BoundingVolume#whichSide(com.jme.math.Plane)

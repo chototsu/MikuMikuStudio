@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -45,12 +45,12 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 
 /**
- * <code>Geometry</code> defines a leaf node of the scene graph. The leaf 
+ * <code>Geometry</code> defines a leaf node of the scene graph. The leaf
  * node contains the geometric data for rendering objects. It manages all
- * rendering information such as a collection of states and the data for a 
+ * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.9 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.10 2004-02-26 17:40:27 renanse Exp $
  */
 public class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -65,25 +65,25 @@ public class Geometry extends Spatial implements Serializable {
     private FloatBuffer normBuf;
     private FloatBuffer vertBuf;
     private FloatBuffer texBuf;
-    
+
     /**
      * Constructor instantiates a new <code>Geometry</code> object. This
      * is the default object which has an empty vertex array. All other
      * data is null.
-     * 
+     *
       * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
      *
      */
     public Geometry(String name) {
-    	super(name);
+        super(name);
         vertex = new Vector3f[0];
     }
 
     /**
      * Constructor creates a new <code>Geometry</code> object. During
      * instantiation the geometry is set including vertex, normal, color and
-     * texture information. Any part may be null except for the vertex 
+     * texture information. Any part may be null except for the vertex
      * information. If this is null, an exception will be thrown.
      * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
@@ -93,7 +93,7 @@ public class Geometry extends Spatial implements Serializable {
      * @param texture the texture coordinates of the geometry.
      */
     public Geometry(
-    	String name,
+        String name,
         Vector3f[] vertex,
         Vector3f[] normal,
         ColorRGBA[] color,
@@ -102,7 +102,8 @@ public class Geometry extends Spatial implements Serializable {
         super(name);
 
         if (vertex == null) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Geometry must" +                " include vertex information.");
+            LoggingSystem.getLogger().log(Level.WARNING, "Geometry must" +
+                " include vertex information.");
             throw new JmeException("Geometry must include vertex information.");
         }
 
@@ -131,11 +132,11 @@ public class Geometry extends Spatial implements Serializable {
      * @param color the new color array.
      */
     public void setColors(ColorRGBA[] color) {
-    	if(this.color != null) {
-	    	if(this.color.length != color.length) {
-	    		colorBuf = null;
-	    	}
-    	}
+        if(this.color != null) {
+            if(this.color.length != color.length) {
+                colorBuf = null;
+            }
+        }
         this.color = color;
         updateColorBuffer();
     }
@@ -167,21 +168,21 @@ public class Geometry extends Spatial implements Serializable {
             throw new JmeException("Geometry must include vertex information.");
         }
         if(this.vertex.length != vertex.length) {
-        	vertBuf = null;
+            vertBuf = null;
         }
         this.vertex = vertex;
         updateVertexBuffer();
     }
-    
+
     public void setVertex(int index, Vector3f value) {
-    	vertex[index] = value;
-    	vertBuf.put(index * 3, value.x);
-    	vertBuf.put(index * 3 + 1, value.y);
-    	vertBuf.put(index * 3 + 2, value.z);
+        vertex[index] = value;
+        vertBuf.put(index * 3, value.x);
+        vertBuf.put(index * 3 + 1, value.y);
+        vertBuf.put(index * 3 + 2, value.z);
     }
 
     /**
-     * <code>getVerticeAsFloatBuffer</code> returns the float buffer that 
+     * <code>getVerticeAsFloatBuffer</code> returns the float buffer that
      * contains this geometry's vertex information.
      * @return the float buffer that contains this geometry's vertex information.
      */
@@ -190,7 +191,7 @@ public class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * <code>getNormals</code> returns the array that contains this 
+     * <code>getNormals</code> returns the array that contains this
      * geometry's normal information.
      * @return the normal array for this geometry.
      */
@@ -204,11 +205,11 @@ public class Geometry extends Spatial implements Serializable {
      * @param normal the new normal values.
      */
     public void setNormals(Vector3f[] normal) {
-    	if(this.normal != null) {
-	    	if(this.normal.length != normal.length) {
-	    		normBuf = null;
-	    	}
-    	}
+        if(this.normal != null) {
+            if(this.normal.length != normal.length) {
+                normBuf = null;
+            }
+        }
         this.normal = normal;
         updateNormalBuffer();
     }
@@ -237,11 +238,11 @@ public class Geometry extends Spatial implements Serializable {
      * @param texture the new texture information for this geometry.
      */
     public void setTextures(Vector2f[] texture) {
-    	if(this.texture != null) {
-	    	if(this.texture.length != texture.length) {
-	    		texBuf = null;
-	    	}
-    	}
+        if(this.texture != null) {
+            if(this.texture.length != texture.length) {
+                texBuf = null;
+            }
+        }
         this.texture = texture;
         updateTextureBuffer();
     }
@@ -249,7 +250,7 @@ public class Geometry extends Spatial implements Serializable {
     /**
      * <code>getTextureAsFloatBuffer</code> retrieves this geometry's texture
      * information contained within a float buffer.
-     * @return the float buffer that contains this geometry's texture 
+     * @return the float buffer that contains this geometry's texture
      *      information.
      */
     public FloatBuffer getTextureAsFloatBuffer() {
@@ -270,7 +271,7 @@ public class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getModelBound</code> retrieves the bounding object that contains
      * the geometry node's vertices.
      * @return the bounding object for this geometry.
@@ -280,16 +281,16 @@ public class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setModelBound</code> sets the bounding object for this geometry.
      * @param modelBound the bounding object for this geometry.
      */
     public void setModelBound(BoundingVolume modelBound) {
         this.bound = modelBound;
     }
-    
+
     /**
-     * <code>draw</code> prepares the geometry for rendering to the display. 
+     * <code>draw</code> prepares the geometry for rendering to the display.
      * The renderstate is set and the subclass is responsible for rendering
      * the actual data.
      * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
@@ -303,15 +304,15 @@ public class Geometry extends Spatial implements Serializable {
     /**
      * <code>updateWorldBound</code> updates the bounding volume that contains
      * this geometry. The location of the geometry is based on the location
-     * of all this node's parents. 
+     * of all this node's parents.
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
     public void updateWorldBound() {
-    	if(bound != null) {
+        if (bound != null) {
            worldBound = bound.transform(worldRotation, worldTranslation, worldScale);
-        }  
-    } 
-    
+        }
+    }
+
     /**
      * <code>setColorBuffer</code> calculates the <code>FloatBuffer</code>
      * that contains all the color information of this geometry.
@@ -324,11 +325,11 @@ public class Geometry extends Spatial implements Serializable {
         float[] buffer = new float[vertex.length * 4];
 
         if(colorBuf == null) {
-	        colorBuf =
-	            ByteBuffer
-	                .allocateDirect(4 * buffer.length)
-	                .order(ByteOrder.nativeOrder())
-	                .asFloatBuffer();
+            colorBuf =
+                ByteBuffer
+                    .allocateDirect(4 * buffer.length)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
         }
         for (int i = 0; i < vertex.length; i++) {
             buffer[i * 4] = color[i].r;
@@ -354,13 +355,13 @@ public class Geometry extends Spatial implements Serializable {
         }
         float[] buffer = new float[vertex.length * 3];
         if(vertBuf == null) {
-	        vertBuf =
-	            ByteBuffer
-	                .allocateDirect(4 * buffer.length)
-	                .order(ByteOrder.nativeOrder())
-	                .asFloatBuffer();
+            vertBuf =
+                ByteBuffer
+                    .allocateDirect(4 * buffer.length)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
         }
-        
+
         for (int i = 0; i < vertex.length; i++) {
             buffer[i * 3] = vertex[i].x;
             buffer[i * 3 + 1] = vertex[i].y;
@@ -384,11 +385,11 @@ public class Geometry extends Spatial implements Serializable {
         }
         float[] buffer = new float[vertex.length * 3];
         if(normBuf == null) {
-	        normBuf =
-	            ByteBuffer
-	                .allocateDirect(4 * buffer.length)
-	                .order(ByteOrder.nativeOrder())
-	                .asFloatBuffer();
+            normBuf =
+                ByteBuffer
+                    .allocateDirect(4 * buffer.length)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
         }
         for (int i = 0; i < vertex.length; i++) {
             buffer[i * 3] = normal[i].x;
@@ -413,15 +414,15 @@ public class Geometry extends Spatial implements Serializable {
         }
         float[] buffer = new float[vertex.length * 2];
         if(texBuf == null) {
-	        texBuf =
-	            ByteBuffer
-	                .allocateDirect(4 * buffer.length)
-	                .order(ByteOrder.nativeOrder())
-	                .asFloatBuffer();
-	        for (int i = 0; i < vertex.length; i++) {
-	            buffer[i * 2] = texture[i].x;
-	            buffer[i * 2 + 1] = texture[i].y;
-	        }
+            texBuf =
+                ByteBuffer
+                    .allocateDirect(4 * buffer.length)
+                    .order(ByteOrder.nativeOrder())
+                    .asFloatBuffer();
+            for (int i = 0; i < vertex.length; i++) {
+                buffer[i * 2] = texture[i].x;
+                buffer[i * 2 + 1] = texture[i].y;
+            }
         }
         texBuf.clear();
         texBuf.put(buffer);
@@ -429,5 +430,5 @@ public class Geometry extends Spatial implements Serializable {
 
     }
 
-    
+
 }
