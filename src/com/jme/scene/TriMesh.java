@@ -51,11 +51,12 @@ import com.jme.util.LoggingSystem;
  * renderer the order in which to draw the points, creating triangles on
  * every three points.
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.9 2004-03-13 03:07:39 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.10 2004-04-06 22:13:18 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
     protected int[] indices;
     private IntBuffer indexBuffer;
+    protected int triangleQuantity = -1;
 
     /**
      * Constructor instantiates a new <code>TriMesh</code> object.
@@ -96,7 +97,7 @@ public class TriMesh extends Geometry implements Serializable {
         }
         this.indices = indices;
 
-        setIndexBuffers();
+        updateIndexBuffer();
         LoggingSystem.getLogger().log(Level.INFO, "TriMesh created.");
     }
 
@@ -124,7 +125,7 @@ public class TriMesh extends Geometry implements Serializable {
         }
         this.indices = indices;
 
-          setIndexBuffers();
+          updateIndexBuffer();
         LoggingSystem.getLogger().log(Level.INFO, "TriMesh reconstructed.");
     }
 
@@ -154,7 +155,8 @@ public class TriMesh extends Geometry implements Serializable {
      */
     public void setIndices(int[] indices) {
         this.indices = indices;
-        setIndexBuffers();
+        triangleQuantity = indices.length/3;
+        updateIndexBuffer();
     }
 
     /**
@@ -184,15 +186,18 @@ public class TriMesh extends Geometry implements Serializable {
      * contains the indices array.
      *
      */
-    private void setIndexBuffers() {
-        indexBuffer =
-            ByteBuffer
-                .allocateDirect(4 * indices.length)
-                .order(ByteOrder.nativeOrder())
-                .asIntBuffer();
+    public void updateIndexBuffer() {
+      if (indices == null) {
+          return;
+      }
+      indexBuffer =
+          ByteBuffer
+              .allocateDirect(4 * (triangleQuantity >= 0 ? triangleQuantity * 3 : indices.length))
+              .order(ByteOrder.nativeOrder())
+              .asIntBuffer();
 
-        indexBuffer.clear();
-        indexBuffer.put(indices);
-        indexBuffer.flip();
+      indexBuffer.clear();
+      indexBuffer.put(indices,0,triangleQuantity >= 0 ? triangleQuantity*3 : indices.length);
+      indexBuffer.flip();
     }
 }

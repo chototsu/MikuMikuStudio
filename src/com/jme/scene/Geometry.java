@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.24 2004-04-02 15:51:59 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.25 2004-04-06 22:13:18 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -61,6 +61,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     protected Vector3f[] normal;
     protected ColorRGBA[] color;
     protected Vector2f[][] texture;
+    protected int vertQuantity = -1;
 
     //buffers that allow for faster data processing.
     private FloatBuffer colorBuf;
@@ -130,6 +131,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         this.texture = new Vector2f[textureUnits][0];
         this.texBuf = new FloatBuffer[textureUnits];
         this.vertex = vertex;
+        this.vertQuantity = vertex.length;
         this.normal = normal;
         this.color = color;
         this.texture[0] = texture;
@@ -232,6 +234,7 @@ public abstract class Geometry extends Spatial implements Serializable {
             vertBuf = null;
         }
         this.vertex = vertex;
+        this.vertQuantity = vertex.length;
 
         updateVertexBuffer();
     }
@@ -553,16 +556,20 @@ public abstract class Geometry extends Spatial implements Serializable {
         if (vertex == null) {
             return;
         }
-        float[] buffer = new float[vertex.length * 3];
-        if (vertBuf == null) {
+        float[] buffer;
+        if (vertQuantity >= 0)
+          buffer = new float[vertQuantity * 3];
+        else
+          buffer = new float[vertex.length * 3];
+//        if (vertBuf == null) {
             vertBuf =
                 ByteBuffer
                     .allocateDirect(4 * buffer.length)
                     .order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
-        }
+//        }
 
-        for (int i = 0; i < vertex.length; i++) {
+        for (int i = 0, endPoint = buffer.length/3; i < endPoint; i++) {
             if (vertex[i] != null) {
               buffer[i * 3] = vertex[i].x;
               buffer[i * 3 + 1] = vertex[i].y;
