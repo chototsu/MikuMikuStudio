@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 /*
@@ -45,6 +45,8 @@ import java.awt.Toolkit;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.RenderTexture;
 import org.lwjgl.opengl.Window;
@@ -67,7 +69,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  * <code>DisplaySystem</code> that uses the LWJGL API for window creation and
  * rendering via OpenGL. <code>LWJGLRenderer</code> is also created that gives
  * a way of displaying data to the created window.
- * 
+ *
  * @author Mark Powell
  * @author Gregg Patton
  * @version $Id: LWJGLDisplaySystem.java,v 1.11 2004/04/26 20:31:14 mojomonkey
@@ -91,7 +93,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * Constructor instantiates a new <code>LWJGLDisplaySystem</code> object.
      * During instantiation confirmation is made to determine if the LWJGL API
      * is installed properly. If not, a JmeException is thrown.
-     *  
+     *
      */
     public LWJGLDisplaySystem() {
         super();
@@ -115,7 +117,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>setTitle</code> sets the window title of the created window.
-     * 
+     *
      * @param title
      *            the title.
      */
@@ -126,7 +128,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     /**
      * <code>createWindow</code> will create a LWJGL display context. This
      * window will be a purely native context as defined by the LWJGL API.
-     * 
+     *
      * @see com.jme.system.DisplaySystem#createWindow(int, int, int, int,
      *      boolean)
      */
@@ -155,7 +157,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * <code>getRenderer</code> returns the created rendering class for LWJGL (
      * <code>LWJGLRenderer</code>). This will give the needed access to
      * display data to the window.
-     * 
+     *
      * @see com.jme.system.DisplaySystem#getRenderer()
      */
     public Renderer getRenderer() {
@@ -165,7 +167,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     /**
      * <code>isCreated</code> returns true if the current display is created,
      * false otherwise.
-     * 
+     *
      * @see com.jme.system.DisplaySystem#isCreated()
      * @return true if display is created.
      */
@@ -176,7 +178,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     /**
      * <code>isClosing</code> returns any close requests. True if any exist,
      * false otherwise.
-     * 
+     *
      * @see com.jme.system.DisplaySystem#isClosing()
      * @return true if a close request is active.
      */
@@ -186,7 +188,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>reset</code> prepares the window for closing or restarting.
-     * 
+     *
      * @see com.jme.system.DisplaySystem#reset()
      */
     public void reset() {
@@ -195,7 +197,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.system.DisplaySystem#getFont(java.lang.String)
      */
     public WidgetFont getFont(String fontName) {
@@ -205,7 +207,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>getRendererType</code>
-     * 
+     *
      * @return @see com.jme.system.DisplaySystem#getRendererType()
      */
     public RendererType getRendererType() {
@@ -237,7 +239,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>getScreenCoordinates</code> translate world to screen coordinates.
-     * 
+     *
      * @param worldPosition the world position to translate.
      * @return the screen position.
      * @author Marius
@@ -278,7 +280,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>getWorldCoordinates</code> translate screen to world coordinates.
-     * 
+     *
      * @param screenPosition the screen coordinates to translate.
      * @param zPos between 0 and 1.
      * @return world position pointed to by screen coordinate.
@@ -323,7 +325,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * <code>getValidDisplayMode</code> returns a <code>DisplayMode</code>
      * object that has the requested width, height and color depth. If there is
      * no mode that supports a requested resolution, null is returned.
-     * 
+     *
      * @param width
      *            the width of the desired mode.
      * @param height
@@ -355,7 +357,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     /**
      * <code>initDisplay</code> creates the LWJGL window with the desired
      * specifications.
-     *  
+     *
      */
     private void initDisplay() {
         //create the Display.
@@ -374,6 +376,14 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                 Window.create(title, x, y, width, height, bpp, alphaBits,
                         depthBits, stencilBits, samples);
             }
+
+            // kludge added here...  LWJGL does not properly clear their
+            // keyboard and mouse buffers when you call the destroy method,
+            // so if you run two jme programs in the same jvm back to back
+            // the second one will pick up the esc key used to exit out of
+            // the first.
+            Keyboard.poll();
+            Mouse.poll();
 
         } catch (Exception e) {
             //System.exit(1);

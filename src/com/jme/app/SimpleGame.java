@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.16 2004-05-08 02:49:32 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.17 2004-05-08 23:19:16 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -274,7 +274,7 @@ public abstract class SimpleGame extends BaseGame {
   }
 
   /**
-   * unused
+   * unused -- recommend you kill the mouse and keyboard...
    * @see AbstractGame#cleanup()
    */
   protected void cleanup() {
