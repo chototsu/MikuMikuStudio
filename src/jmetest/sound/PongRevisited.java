@@ -1,5 +1,5 @@
 /*
- * Created on 4 août 2004
+ * Created on 4 august 2004
  */
 package jmetest.sound;
 
