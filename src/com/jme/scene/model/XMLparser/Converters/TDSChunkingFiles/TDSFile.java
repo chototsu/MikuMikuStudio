@@ -116,6 +116,7 @@ public class TDSFile extends ChunkerClass{
         Object[] keysetKeyframe=keyframes.objKeyframes.keySet().toArray();
         for (int i=0;i<keysetKeyframe.length;i++){
             KeyframeInfoChunk thisOne=(KeyframeInfoChunk) keyframes.objKeyframes.get(keysetKeyframe[i]);
+            if ("$$$DUMMY".equals(thisOne.name)) continue;
             int indexInST=findIndex(thisOne.name);
             for (int j=0;j<thisOne.track.size();j++){
                 KeyframeInfoChunk.KeyPointInTime thisTime=(KeyframeInfoChunk.KeyPointInTime) thisOne.track.get(j);
