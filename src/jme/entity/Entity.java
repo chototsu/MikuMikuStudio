@@ -39,6 +39,7 @@ import java.util.logging.Level;
 import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.Geometry;
+import jme.physics.PhysicsModule;
 import jme.system.DisplaySystem;
 import jme.entity.camera.Frustum;
 import jme.utility.LoggingSystem;
@@ -102,6 +103,9 @@ public class Entity implements EntityInterface {
     private boolean isVisible = true;
     private int visibilityType;
 
+    //physics
+    private PhysicsModule physics;
+    
     //the gl object for translation and rotation of the entity.
     protected GL gl;
 
@@ -220,6 +224,17 @@ public class Entity implements EntityInterface {
     }
 
     /**
+     * <code>setPhysicsModule</code> sets the module the defines how the
+     * physics of the entity are handled. This allows the entity to 
+     * interact with the world (what ever that may be) in a realistic and
+     * appropriate manner.
+     * @param physics the physics module for this entity.
+     */
+    public void setPhysicsModule(PhysicsModule physics) {
+        this.physics = physics;
+    }
+
+    /**
      * <code>hasMoved</code> returns true if the entity has moved during the
      * last update, false otherwise.
      * @return true if the entity has moved, false if it hasn't.
@@ -247,13 +262,19 @@ public class Entity implements EntityInterface {
     public Vector3f getPosition() {
         return position;
     }
+    
+    public PhysicsModule getPhysics() {
+        return physics;
+    }
 
     /**
-     * <code>update</code> updates the state of the entity. As the entity
-     * is not mobile, nothing changes.
+     * <code>update</code> updates the state of the entity. 
      */
     public void update(float time) {
-        //done nothing
+        if(null != physics) {
+            physics.update(time);
+            physics.updatePosition(position);
+        }
     }
 
     /**

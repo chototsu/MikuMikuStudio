@@ -33,6 +33,7 @@ package jme.physics.mobile;
 
 import java.util.logging.Level;
 
+import jme.physics.PhysicsModule;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.vector.Vector3f;
@@ -48,7 +49,7 @@ import org.lwjgl.vector.Vector3f;
  * 
  * @author Mark Powell
  */
-public class LandMobility {
+public class LandMobility implements PhysicsModule {
 	private float currentTurningVel;
     private float maxVelocity;
 	private float minVelocity;
