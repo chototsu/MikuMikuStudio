@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.4 2003-12-02 20:08:09 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.5 2003-12-03 16:25:40 mojomonkey Exp $
  */
 public class TestTimer extends AbstractGame {
     private TriMesh t;
@@ -103,10 +103,12 @@ public class TestTimer extends AbstractGame {
                 angle = 0;
             }
         }
+        
         rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
         text.print("Frame Rate: " + timer.getFrameRate());
+        
         scene.setLocalRotation(rotQuat);
         scene.updateGeometricState(0.0f, true);
         
@@ -193,8 +195,8 @@ public class TestTimer extends AbstractGame {
         scene = new Node();
         scene.attachChild(text);
         
-        Vector3f max = new Vector3f(10,10,10);
-        Vector3f min = new Vector3f(0,0,0);
+        Vector3f max = new Vector3f(5,5,5);
+        Vector3f min = new Vector3f(-5,-5,-5);
         
         
         
@@ -202,7 +204,7 @@ public class TestTimer extends AbstractGame {
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
-        t.setLocalTranslation(new Vector3f(0,0,-10));
+        t.setLocalTranslation(new Vector3f(0,0,0));
         
         scene = new Node();
         scene.attachChild(t);

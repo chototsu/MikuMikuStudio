@@ -41,7 +41,7 @@ package com.jme.math;
  * {x y z w}.
  * 
  * @author Mark Powell
- * @version $Id: Quaternion.java,v 1.2 2003-12-02 20:08:09 mojomonkey Exp $
+ * @version $Id: Quaternion.java,v 1.3 2003-12-03 16:25:40 mojomonkey Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -225,21 +225,33 @@ public class Quaternion {
      * @return the rotation matrix representation of this quaternion.
      */
     public Matrix3f toRotationMatrix( ) {
-        
+        float[][] kRot = new float[3][3];
+        float fTx  = 2.0f*x;
+        float fTy  = 2.0f*y;
+        float fTz  = 2.0f*z;
+        float fTwx = fTx*w;
+        float fTwy = fTy*w;
+        float fTwz = fTz*w;
+        float fTxx = fTx*x;
+        float fTxy = fTy*x;
+        float fTxz = fTz*x;
+        float fTyy = fTy*y;
+        float fTyz = fTz*y;
+        float fTzz = fTz*z;
+    
         Matrix3f matrix = new Matrix3f();
-        matrix.set(0, 0, (1.0f - 2.0f * (y * y + z * z)));
-        matrix.set(0, 1, (2.0f * (x * y - w * z)));
-        matrix.set(0, 2, (2.0f * (x * z + w * y)));
+    
+        kRot[0][0] = 1.0f-(fTyy+fTzz);
+        kRot[0][1] = fTxy-fTwz;
+        kRot[0][2] = fTxz+fTwy;
+        kRot[1][0] = fTxy+fTwz;
+        kRot[1][1] = 1.0f-(fTxx+fTzz);
+        kRot[1][2] = fTyz-fTwx;
+        kRot[2][0] = fTxz-fTwy;
+        kRot[2][1] = fTyz+fTwx;
+        kRot[2][2] = 1.0f-(fTxx+fTyy);
         
-        // Second row
-        matrix.set(1, 0, (2.0f * (x * y + w * z)));
-        matrix.set(1, 1, (1.0f - 2.0f * (x * x + z * z)));
-        matrix.set(1, 2, (2.0f * (y * z - w * x)));
-       
-        // Third row
-        matrix.set(2, 0, (2.0f * (x * z - w * y)));
-        matrix.set(2, 1, (2.0f * (y * z + w * x)));
-        matrix.set(2, 2, (1.0f - 2.0f * (x * x + y * y)));
+        matrix.set(kRot);
         
         return matrix;
             
@@ -248,16 +260,17 @@ public class Quaternion {
     /**
      * <code>fromAngleAxis</code> sets this quaternion to the values
      * specified by an angle and an axis of rotation.
-     * @param angle the angle to rotate.
+     * @param angle the angle to rotate (in radians).
      * @param axis the axis of rotation.
      */
     public void fromAngleAxis(float angle, Vector3f axis) {
+        Vector3f normAxis = axis.normalize();
         float halfAngle = 0.5f * angle;
         float sin = (float) Math.sin(halfAngle);
         w = (float) Math.cos(halfAngle);
-        x = sin * axis.x;
-        y = sin * axis.y;
-        z = sin * axis.z;
+        x = sin * normAxis.x;
+        y = sin * normAxis.y;
+        z = sin * normAxis.z;
     }
 
     /**
@@ -442,5 +455,9 @@ public class Quaternion {
         y *= -1;
         z *= -1;
         w *= -1;
+    }
+    
+    public String toString() {
+        return "com.jme.math.Quaternion: [x=" +x+" y="+y+" z="+z+" w="+w+"]";
     }
 }
