@@ -50,7 +50,8 @@ public class TestShake extends SimpleGame {
         milkshapeModel.getController(0).setSpeed(10f);
         
         camShake = new Shake(camNode, 1f);
-        camShake.setType(Shake.RANDOMISE);
+        camShake.setType(Shake.RETURN_TO_ORIGIN);
+        camShake.setActive(true);
         camNode.addController(camShake);
         
         rootNode.attachChild(milkshapeModel);
