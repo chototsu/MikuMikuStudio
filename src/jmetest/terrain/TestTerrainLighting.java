@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.15 2004-05-01 03:51:42 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.16 2004-05-12 00:42:44 renanse Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -94,6 +94,9 @@ public class TestTerrainLighting extends SimpleGame {
   protected void simpleInitGame() {
     currentPos = new Vector3f();
     newPos = new Vector3f();
+
+    cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+    cam.update();
 
     camNode = new CameraNode("Camera Node", cam);
     camNode.setLocalTranslation(new Vector3f(0, 250, -20));
