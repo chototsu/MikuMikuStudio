@@ -5,6 +5,7 @@ import com.jme.math.Vector3f;
 import com.jme.math.Matrix3f;
 import com.jme.util.LoggingSystem;
 import com.jme.system.JmeException;
+import com.jme.scene.Spatial;
 
 import java.util.logging.Level;
 
@@ -15,6 +16,7 @@ import java.util.logging.Level;
  * @author Jack Lindamood
  */
 public class TransformMatrix {
+    // TODO: Clean up and standardize this class's functionality
 
     private Matrix3f rot=new Matrix3f();
     private Vector3f translation=new Vector3f();
@@ -98,7 +100,7 @@ public class TransformMatrix {
     public void mult(float scalar) {
         rot.multiply(scalar);
         translation.mult(scalar);
-        scale.set(1,1,1);
+        scale.multLocal(scalar);
     }
 
     /**
@@ -128,10 +130,9 @@ public class TransformMatrix {
     public void interpolateTransforms(TransformMatrix start,TransformMatrix end,float delta){
         this.translation.set(start.translation).interpolate(end.translation,delta);
         this.scale.set(start.scale).interpolate(end.scale,delta);
-        Quaternion q1=new Quaternion();
-        this.getRotation(q1);
-        Quaternion q2=new Quaternion();
-        this.getRotation(q2);
+        Quaternion q1=new Quaternion(),q2=new Quaternion();
+        start.getRotation(q1);
+        end.getRotation(q2);
         q1.slerp(q2,delta);
         this.setRotationQuaternion(q1);
     }
@@ -217,8 +218,7 @@ public class TransformMatrix {
 
     /**
      * Sets the rotational component of this transform to the matrix represented
-     * by an Euler rotation about x, y, then z and the translational component to
-     * the identity
+     * by an Euler rotation about x, y, then z.
      * @param x The X rotation, in radians
      * @param y The Y rotation, in radians
      * @param z The Z rotation, in radians
@@ -241,14 +241,11 @@ public class TransformMatrix {
         rot.m20 = (float) -D;
         rot.m21 = (float) (B * C);
         rot.m22 = (float) (A * C);
-        translation.set(0,0,0);
-        scale.set(1,1,1);
     }
 
     /**
      * <code>setRotationQuaternion</code> builds a rotation from a
-     * <code>Quaternion</code>.  The translational component of the
-     * transform is set to the identity.
+     * <code>Quaternion</code>.
      * @param quat The quaternion to build the rotation from.
      * @throws JmeException if quat is null.
      */
@@ -257,8 +254,6 @@ public class TransformMatrix {
             throw new JmeException("Quat may not be null.");
         }
         rot.set(quat);
-        translation.set(0,0,0);
-        scale.set(1,1,1);
     }
 
     /**
@@ -376,6 +371,16 @@ public class TransformMatrix {
     }
 
     /**
+     * Sets this TransformMatrix's scale to the given x,y,z
+     * @param x The x scale
+     * @param y The y scale
+     * @param z The z scale
+     */
+    public void setScale(float x, float y, float z) {
+        scale.set(x,y,z);
+    }
+
+    /**
      * Returns this TransformMatrix's scale factor
      * @param storeS The place to store the current scale factor
      * @return The given scale factor
@@ -384,4 +389,15 @@ public class TransformMatrix {
         if (storeS==null) storeS=new Vector3f();
         return storeS.set(this.scale);
     }
+
+    /**
+     * Applies this TransformMatrix to the given spatial, by updating the spatial's local translation, rotation, scale.
+     * @param spatial The spatial to update
+     */
+    public void applyToSpatial(Spatial spatial) {
+        spatial.setLocalTranslation(translation);
+        spatial.setLocalRotation(rot);
+        spatial.setLocalScale(scale);
+    }
+
 }
