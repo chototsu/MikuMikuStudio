@@ -5,8 +5,15 @@ package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Spatial;
+import com.jme.scene.state.LightState;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
+import com.jme.light.Light;
+import com.jme.light.SpotLight;
+import com.jme.light.PointLight;
+import com.jme.renderer.ColorRGBA;
+import com.jme.system.JmeException;
+import com.jme.system.DisplaySystem;
 
 import java.io.IOException;
 import java.io.DataInput;
@@ -62,8 +69,20 @@ public class TDSFile extends ChunkerClass{
     public Node buildScene() throws IOException {
         buildObject();
         Node uberNode=new Node("TDS Scene");
-        for (int i=0;i<spatialNodes.size();i++)
-            uberNode.attachChild((Spatial) spatialNodes.get(i));
+        LightState ls=null;
+        for (int i=0;i<spatialNodes.size();i++){
+            if (spatialNodes.get(i) instanceof Spatial){
+                uberNode.attachChild((Spatial) spatialNodes.get(i));
+            } else if (spatialNodes.get(i) instanceof Light){
+                if (ls==null){
+                    ls=DisplaySystem.getDisplaySystem().getRenderer().getLightState();
+                    ls.setEnabled(true);
+                }
+                ls.attach((Light) spatialNodes.get(i));
+            }
+        }
+        if (ls!=null)
+            uberNode.setRenderState(ls);
         return uberNode;
     }
 
@@ -73,13 +92,47 @@ public class TDSFile extends ChunkerClass{
         Iterator i=objects.namedObjects.keySet().iterator();
         while (i.hasNext()){
             String objectKey=(String) i.next();
-            Node parentNode=new Node(objectKey);
             NamedObjectChunk noc=(NamedObjectChunk) objects.namedObjects.get(objectKey);
             if (noc.whatIAm instanceof TriMeshChunk){
+                Node parentNode=new Node(objectKey);
                 putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm);
+                if (parentNode.getQuantity()==1){
+                    spatialNodes.add(parentNode.getChild(0));
+                    ((Spatial)parentNode.getChild(0)).setName(parentNode.getName());
+                } else
+                    spatialNodes.add(parentNode);
+            } else if (noc.whatIAm instanceof LightChunk){
+                spatialNodes.add(createChildLight((LightChunk)noc.whatIAm));
             }
-            spatialNodes.add(parentNode);
         }
+
+    }
+
+    private Light createChildLight(LightChunk lightChunk) {
+        // Light attenuation does not work right.
+        if (lightChunk.spotInfo!=null){
+            SpotLight toReturn=new SpotLight();
+            toReturn.setLocation(lightChunk.myLoc);
+            toReturn.setDiffuse(lightChunk.lightColor);
+            toReturn.setAmbient(ColorRGBA.black);
+            toReturn.setSpecular(ColorRGBA.white);
+            Vector3f tempDir=lightChunk.myLoc.subtract(lightChunk.spotInfo.target).multLocal(-1);
+            tempDir.normalizeLocal();
+            toReturn.setDirection(tempDir);
+//            toReturn.setAngle(lightChunk.spotInfo.fallOff);  // Get this working correctly
+            toReturn.setAngle(180);  // TODO: Get this working correctly, it's just a hack
+            toReturn.setEnabled(true);
+            return toReturn;
+        } else{
+            PointLight toReturn=new PointLight();
+            toReturn.setLocation(lightChunk.myLoc);
+            toReturn.setDiffuse(lightChunk.lightColor);
+            toReturn.setAmbient(ColorRGBA.black);
+            toReturn.setSpecular(ColorRGBA.white);
+            toReturn.setEnabled(true);
+            return toReturn;
+        }
+
 
     }
 
