@@ -47,7 +47,7 @@ import com.jme.util.Timer;
  * method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.2 2004-04-22 22:27:11 renanse Exp $
+ * @version $Id: LWJGLTimer.java,v 1.3 2004-05-19 15:03:34 mojomonkey Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;
@@ -139,6 +139,9 @@ public class LWJGLTimer extends Timer {
     public void update() {
         newTime = Sys.getTime();
         frameDiff = newTime - oldTime;
+        if(frameDiff == 0) {
+        	frameDiff = 1;
+        }
         fps[smoothIndex] = timerRez / frameDiff;
         oldTime = newTime;
         smoothIndex--;
