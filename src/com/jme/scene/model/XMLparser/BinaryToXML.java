@@ -158,8 +158,18 @@ public class BinaryToXML {
             case BinaryFormatConstants.DATA_V2F:
                 readVec2f();
                 break;
+            case BinaryFormatConstants.DATA_MATRIX3:
+                readMatrix3f();
+                break;
             default:
                 throw new IOException("Unknown data type:" + type);
+        }
+    }
+
+    private void readMatrix3f() throws IOException {
+        for (int i=0;i<9;i++){
+            currentLine.append(myIn.readFloat());
+            if (i!=8) currentLine.append(' ');
         }
     }
 
