@@ -46,13 +46,16 @@ import com.jme.light.SpotLight;
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.6 2004-02-06 14:16:11 mojomonkey Exp $
+ * @version $Id: LWJGLLightState.java,v 1.7 2004-02-19 20:59:47 mojomonkey Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.
     private FloatBuffer buffer;
     private float[] ambient = { 0.0f, 0.0f, 0.0f, 1.0f };;
     private float[] color;
+    private float[] posParam = new float[4];
+    private float[] spotDir = new float[3];
+    private float[] defaultDirection = new float[3];
 
     /**
      * Constructor instantiates a new <code>LWJGLLightState</code>.
@@ -153,7 +156,7 @@ public class LWJGLLightState extends LightState {
                         ambient[2] += light.getAmbient().b;
                     }
 
-                    float[] posParam = new float[4];
+                    
                     switch (light.getType()) {
                         case Light.LT_DIRECTIONAL :
                             {
@@ -193,11 +196,9 @@ public class LWJGLLightState extends LightState {
                             GL.GL_SPOT_CUTOFF,
                             180.0f * spot.getAngle() / (float) Math.PI);
                         buffer.clear();
-                        float[] spotDir =
-                            {
-                                spot.getDirection().x,
-                                spot.getDirection().y,
-                                spot.getDirection().z };
+                        spotDir[0]= spot.getDirection().x;
+                        spotDir[1]= spot.getDirection().y;
+                        spotDir[2]= spot.getDirection().z;
                         buffer.put(spotDir);
                         buffer.flip();
                         GL.glLightfv(index, GL.GL_SPOT_DIRECTION, buffer);
@@ -206,10 +207,12 @@ public class LWJGLLightState extends LightState {
                             GL.GL_SPOT_EXPONENT,
                             spot.getExponent());
                     } else {
-                        float[] afDefaultDirection = { 0.0f, 0.0f, -1.0f };
+                        defaultDirection[0] = 0.0f;
+						defaultDirection[1] = 0.0f;
+						defaultDirection[2] = -1.0f;
                         GL.glLightf(index, GL.GL_SPOT_CUTOFF, 180.0f);
                         buffer.clear();
-                        buffer.put(afDefaultDirection);
+                        buffer.put(defaultDirection);
                         buffer.flip();
                         GL.glLightfv(index, GL.GL_SPOT_DIRECTION, buffer);
                         GL.glLightf(index, GL.GL_SPOT_EXPONENT, 0.0f);
