@@ -32,6 +32,7 @@
 package jmetest.widget.viewport;
 
 import com.jme.input.AbstractInputHandler;
+import com.jme.input.MouseButtonStateType;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import jmetest.widget.viewport.scene.TestAbstractScene;
@@ -40,7 +41,6 @@ import jmetest.widget.viewport.scene.TestScene2;
 import jmetest.widget.viewport.scene.TestScene3;
 import jmetest.widget.viewport.scene.TestScene4;
 import com.jme.widget.WidgetAbstractFrame;
-import com.jme.widget.input.mouse.WidgetMouseButtonType;
 import com.jme.widget.layout.WidgetGridLayout;
 import com.jme.widget.viewport.WidgetViewport;
 import com.jme.widget.viewport.WidgetViewportCameraController;
@@ -48,7 +48,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestWidgetViewportFrame</code>
  * @author Gregg Patton
- * @version $Id: TestWidgetViewportFrame.java,v 1.5 2004-03-27 17:45:04 greggpatton Exp $
+ * @version $Id: TestWidgetViewportFrame.java,v 1.6 2004-04-05 11:36:14 greggpatton Exp $
  */
 public class TestWidgetViewportFrame extends WidgetAbstractFrame {
 
@@ -126,7 +126,7 @@ public class TestWidgetViewportFrame extends WidgetAbstractFrame {
 
         super.doMouseButtonUp();
         
-        if (getMouseInput().getPreviousButtonState() == WidgetMouseButtonType.MOUSE_BUTTON_2) {
+        if (getMouseInput().getPreviousButtonState() == MouseButtonStateType.MOUSE_BUTTON_2) {
             if (getMouseInput().isCursorVisible()) {
 
                 Spatial scene = null;
@@ -169,7 +169,7 @@ public class TestWidgetViewportFrame extends WidgetAbstractFrame {
 
     public void doMouseButtonDown() {
 
-        if (isMouseCursorOn() && getMouseInput().getButtonState() != WidgetMouseButtonType.MOUSE_BUTTON_2) {
+        if (isMouseCursorOn() && getMouseInput().getButtonState() != MouseButtonStateType.MOUSE_BUTTON_2) {
             super.doMouseButtonDown();
         }
     }

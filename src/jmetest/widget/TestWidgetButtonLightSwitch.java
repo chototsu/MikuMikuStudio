@@ -41,6 +41,7 @@ import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
 import com.jme.input.AbstractInputHandler;
+import com.jme.input.MouseButtonStateType;
 import com.jme.light.AmbientLight;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
@@ -63,7 +64,6 @@ import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.button.WidgetButton;
-import com.jme.widget.input.mouse.WidgetMouseButtonType;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 import com.jme.widget.layout.WidgetBorderLayout;
 import com.jme.widget.layout.WidgetBorderLayoutConstraint;
@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.10 2004-04-02 21:26:50 mojomonkey Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.11 2004-04-05 11:36:14 greggpatton Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
 	static String STARTED_STATE_STRING = " Stop ";
@@ -243,7 +243,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         public void handleMouseButtonUp() {
             super.handleMouseButtonUp();
 
-            if (getMouseInput().getPreviousButtonState() == WidgetMouseButtonType.MOUSE_BUTTON_2) {
+            if (getMouseInput().getPreviousButtonState() == MouseButtonStateType.MOUSE_BUTTON_2) {
                 if (getMouseInput().isCursorVisible()) {
                     getMouseInput().setCursorVisible(false);
                 } else {
@@ -254,7 +254,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
 
         public void handleMouseButtonDown() {
 
-            if (frame.isMouseCursorOn() && getMouseInput().getButtonState() != WidgetMouseButtonType.MOUSE_BUTTON_2) {
+            if (frame.isMouseCursorOn() && getMouseInput().getButtonState() != MouseButtonStateType.MOUSE_BUTTON_2) {
                 super.handleMouseButtonDown();
                 
             }

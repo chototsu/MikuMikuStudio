@@ -29,31 +29,30 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.widget.input.mouse;
+package com.jme.input;
 
 import com.jme.util.JmeType;
 
 
 /**
+ * <code>MouseButtonStateType</code>
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: MouseButtonStateType.java,v 1.1 2004-04-05 11:35:00 greggpatton Exp $
  */
-public class WidgetMouseButtonType extends JmeType {
+public class MouseButtonStateType extends JmeType {
 
-    public final static WidgetMouseButtonType MOUSE_BUTTON_NONE = new WidgetMouseButtonType ("MOUSE_BUTTON_NONE");
-    public final static WidgetMouseButtonType MOUSE_BUTTON_1 = new WidgetMouseButtonType ("MOUSE_BUTTON_1");
-    public final static WidgetMouseButtonType MOUSE_BUTTON_2 = new WidgetMouseButtonType ("MOUSE_BUTTON_2");
-    public final static WidgetMouseButtonType MOUSE_BUTTON_3 = new WidgetMouseButtonType ("MOUSE_BUTTON_3");
+    public final static MouseButtonStateType MOUSE_BUTTON_NONE = new MouseButtonStateType ("MOUSE_BUTTON_NONE");
+    public final static MouseButtonStateType MOUSE_BUTTON_1 = new MouseButtonStateType ("MOUSE_BUTTON_1");
+    public final static MouseButtonStateType MOUSE_BUTTON_2 = new MouseButtonStateType ("MOUSE_BUTTON_2");
+    public final static MouseButtonStateType MOUSE_BUTTON_3 = new MouseButtonStateType ("MOUSE_BUTTON_3");
 
-    public final static WidgetMouseButtonType MOUSE_BUTTON_1_2 = new WidgetMouseButtonType ("MOUSE_BUTTON_1_2");
-    public final static WidgetMouseButtonType MOUSE_BUTTON_1_3 = new WidgetMouseButtonType ("MOUSE_BUTTON_1_3");
-    public final static WidgetMouseButtonType MOUSE_BUTTON_2_3 = new WidgetMouseButtonType ("MOUSE_BUTTON_2_3");
+    public final static MouseButtonStateType MOUSE_BUTTON_1_2 = new MouseButtonStateType ("MOUSE_BUTTON_1_2");
+    public final static MouseButtonStateType MOUSE_BUTTON_1_3 = new MouseButtonStateType ("MOUSE_BUTTON_1_3");
+    public final static MouseButtonStateType MOUSE_BUTTON_2_3 = new MouseButtonStateType ("MOUSE_BUTTON_2_3");
 
-    public final static WidgetMouseButtonType MOUSE_BUTTON_1_2_3 = new WidgetMouseButtonType ("MOUSE_BUTTON_1_2_3");
+    public final static MouseButtonStateType MOUSE_BUTTON_1_2_3 = new MouseButtonStateType ("MOUSE_BUTTON_1_2_3");
 
-    public WidgetMouseButtonType(String name) {
+    public MouseButtonStateType(String name) {
         super(name);
     }
 

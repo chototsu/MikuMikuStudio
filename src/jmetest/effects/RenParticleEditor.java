@@ -40,6 +40,7 @@ import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.AbstractInputHandler;
 import com.jme.input.InputSystem;
+import com.jme.input.MouseButtonStateType;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -53,12 +54,11 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.widget.WidgetAbstractFrame;
-import com.jme.widget.input.mouse.WidgetMouseButtonType;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.1 2004-03-28 03:16:03 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.2 2004-04-05 11:36:13 greggpatton Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -250,7 +250,7 @@ public class RenParticleEditor extends VariableTimestepGame {
     public void handleMouseButtonUp() {
         super.handleMouseButtonUp();
 
-        if (getMouseInput().getPreviousButtonState() == WidgetMouseButtonType.MOUSE_BUTTON_2) {
+        if (getMouseInput().getPreviousButtonState() == MouseButtonStateType.MOUSE_BUTTON_2) {
             if (getMouseInput().isCursorVisible()) {
                 getMouseInput().setCursorVisible(false);
                 input.setUpdateMouseActionsEnabled(true);
@@ -265,7 +265,7 @@ public class RenParticleEditor extends VariableTimestepGame {
 
     public void handleMouseButtonDown() {
 
-        if (isMouseCursorOn() && getMouseInput().getButtonState() != WidgetMouseButtonType.MOUSE_BUTTON_2) {
+        if (isMouseCursorOn() && getMouseInput().getButtonState() != MouseButtonStateType.MOUSE_BUTTON_2) {
             super.handleMouseButtonDown();
 
         }

@@ -36,23 +36,23 @@ import java.util.logging.Level;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Window;
 
+import com.jme.input.MouseButtonStateType;
 import com.jme.input.MouseInput;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLStandardCursor;
-import com.jme.widget.input.mouse.WidgetMouseButtonType;
 
 /**
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.1 2004-04-02 23:29:16 mojomonkey Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.2 2004-04-05 11:36:12 greggpatton Exp $
  */
 public class LWJGLMouseInput implements MouseInput {
     private int x;
     private int y;
 
-    private WidgetMouseButtonType buttonType = WidgetMouseButtonType.MOUSE_BUTTON_NONE;
-    private WidgetMouseButtonType previousButtonType = WidgetMouseButtonType.MOUSE_BUTTON_NONE;
+    private MouseButtonStateType buttonType = MouseButtonStateType.MOUSE_BUTTON_NONE;
+    private MouseButtonStateType previousButtonType = MouseButtonStateType.MOUSE_BUTTON_NONE;
 
 
     /**
@@ -170,11 +170,11 @@ public class LWJGLMouseInput implements MouseInput {
         x += Mouse.getDX();
         y += Mouse.getDY();
 
-        setButtonType();
+        setButtonStateType();
 
     }
 
-    private void setButtonType() {
+    private void setButtonStateType() {
         int button = 0;
 
         previousButtonType = buttonType;
@@ -197,28 +197,28 @@ public class LWJGLMouseInput implements MouseInput {
 
         switch (button) {
             case 0 :
-                buttonType = WidgetMouseButtonType.MOUSE_BUTTON_NONE;
+                buttonType = MouseButtonStateType.MOUSE_BUTTON_NONE;
                 break;
             case BUTTON_1 :
-                buttonType = WidgetMouseButtonType.MOUSE_BUTTON_1;
+                buttonType = MouseButtonStateType.MOUSE_BUTTON_1;
                 break;
             case BUTTON_2 :
-                buttonType = WidgetMouseButtonType.MOUSE_BUTTON_2;
+                buttonType = MouseButtonStateType.MOUSE_BUTTON_2;
                 break;
             case BUTTON_3 :
-                buttonType = WidgetMouseButtonType.MOUSE_BUTTON_3;
+                buttonType = MouseButtonStateType.MOUSE_BUTTON_3;
                 break;
             case BUTTON_1_2 :
-                buttonType = WidgetMouseButtonType.MOUSE_BUTTON_1_2;
+                buttonType = MouseButtonStateType.MOUSE_BUTTON_1_2;
                 break;
             case BUTTON_1_3 :
-                buttonType = WidgetMouseButtonType.MOUSE_BUTTON_1_3;
+                buttonType = MouseButtonStateType.MOUSE_BUTTON_1_3;
                 break;
             case BUTTON_2_3 :
-                buttonType = WidgetMouseButtonType.MOUSE_BUTTON_2_3;
+                buttonType = MouseButtonStateType.MOUSE_BUTTON_2_3;
                 break;
             case BUTTON_1_2_3 :
-                buttonType = WidgetMouseButtonType.MOUSE_BUTTON_1_2_3;
+                buttonType = MouseButtonStateType.MOUSE_BUTTON_1_2_3;
                 break;
         }
 
@@ -256,7 +256,7 @@ public class LWJGLMouseInput implements MouseInput {
     /**
      * @return
      */
-    public WidgetMouseButtonType getButtonType() {
+    public MouseButtonStateType getButtonType() {
         return buttonType;
     }
 
@@ -264,7 +264,7 @@ public class LWJGLMouseInput implements MouseInput {
      * @return the state of the mouse buttons.
      * @see com.jme.input.MouseInput#getButtonState()
      */
-    public WidgetMouseButtonType getButtonState() {
+    public MouseButtonStateType getButtonState() {
         return buttonType;
     }
 
@@ -272,7 +272,7 @@ public class LWJGLMouseInput implements MouseInput {
      * @return the previous state of the mouse buttons.
      * @see com.jme.input.MouseInput#getPreviousButtonState()
      */
-    public WidgetMouseButtonType getPreviousButtonState() {
+    public MouseButtonStateType getPreviousButtonState() {
         return previousButtonType;
     }
 

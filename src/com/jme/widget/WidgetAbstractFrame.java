@@ -42,6 +42,7 @@ import java.util.Observer;
 import java.util.logging.Level;
 
 import com.jme.input.AbstractInputHandler;
+import com.jme.input.MouseButtonStateType;
 import com.jme.input.MouseInput;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
@@ -50,7 +51,6 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 import com.jme.widget.bounds.WidgetViewRectangle;
 import com.jme.widget.font.WidgetFontManager;
-import com.jme.widget.input.mouse.WidgetMouseButtonType;
 import com.jme.widget.util.WidgetFrameRate;
 
 /**
@@ -207,12 +207,12 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         MouseInput mi = getMouseInput();
 
         if (mi != null) {
-            WidgetMouseButtonType buttonType = mi.getButtonState();
-            WidgetMouseButtonType lastButtonType = mi.getPreviousButtonState();
+            MouseButtonStateType buttonType = mi.getButtonState();
+            MouseButtonStateType lastButtonType = mi.getPreviousButtonState();
     
             if (lastButtonType != buttonType) {
     
-                if (buttonType != WidgetMouseButtonType.MOUSE_BUTTON_NONE) {
+                if (buttonType != MouseButtonStateType.MOUSE_BUTTON_NONE) {
     
                     handleMouseButtonDown();
     
@@ -223,13 +223,13 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
                 }
             }
     
-            if (buttonType == WidgetMouseButtonType.MOUSE_BUTTON_NONE
+            if (buttonType == MouseButtonStateType.MOUSE_BUTTON_NONE
                 && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
     
                 handleMouseMove();
     
             } else if (
-                buttonType != WidgetMouseButtonType.MOUSE_BUTTON_NONE
+                buttonType != MouseButtonStateType.MOUSE_BUTTON_NONE
                     && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
     
                 handleMouseDrag();

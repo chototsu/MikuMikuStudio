@@ -31,13 +31,12 @@
  */
 package com.jme.input;
 
-import com.jme.widget.input.mouse.WidgetMouseButtonType;
 
 /**
  * <code>MouseInput</code> defines an interface to communicate with the mouse
  * input device. 
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.4 2004-01-25 00:56:25 greggpatton Exp $
+ * @version $Id: MouseInput.java,v 1.5 2004-04-05 11:35:00 greggpatton Exp $
  */
 public interface MouseInput {
     
@@ -156,10 +155,10 @@ public interface MouseInput {
     /**
      * @return the state of the mouse buttons.
      */
-    public WidgetMouseButtonType getButtonState();
+    public MouseButtonStateType getButtonState();
 
     /**
      * @return the previous state of the mouse buttons.
      */
-    public WidgetMouseButtonType getPreviousButtonState();
+    public MouseButtonStateType getPreviousButtonState();
 }
