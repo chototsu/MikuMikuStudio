@@ -49,11 +49,12 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.7 2004-07-02 05:31:43 cep21 Exp $
+ * @version $Id: BinaryFileReader.java,v 1.8 2004-07-15 12:51:18 cep21 Exp $
  */
 public class BinaryFileReader {
 	private byte[] fileContents;
 	private int fileIndex = 0;
+    private int markedPos = 0;
 
 	/**
 	 * Constructor creates a new <code>BinaryFileReader</code> class. This
@@ -144,6 +145,13 @@ public class BinaryFileReader {
 		return (s1 | s2);
 	}
 
+	public int readShort2() {
+		int s1 = (fileContents[fileIndex + 1] & 0xFF);
+		int s2 = (fileContents[fileIndex] & 0xFF) << 8;
+		fileIndex += 2;
+		return (s1 | s2);
+	}
+
 	/**
 	 *
 	 * <code>readInt</code> reads four bytes from the array, generating
@@ -204,4 +212,30 @@ public class BinaryFileReader {
 		}
 		fileIndex = offset;
 	}
+
+    /**
+     * Sets a mark for a later seekMarkOffset call.
+     */
+    public void markPos(){
+        markedPos=fileIndex;
+    }
+
+    /**
+     * Seeks to the position of the last mark + offset.
+     * @param offset The Offset relative to mark.
+     */
+    public void seekMarkOffset(int offset){
+        fileIndex=markedPos+offset;
+        if (fileIndex < 0 || fileIndex > fileContents.length){
+			throw new JmeException("Illegal offset value. " + offset);
+		}
+    }
+
+    /**
+     * Reads a signed short value.
+     * @return The signed short.
+     */ 
+    public short readSignedShort() {
+        return (short) readShort();
+    }
 }
