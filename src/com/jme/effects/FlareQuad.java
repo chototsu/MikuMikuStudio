@@ -36,51 +36,63 @@ import com.jme.math.Vector3f;
 import com.jme.scene.shape.Quad;
 
 /**
- * <code>FlareQuad</code>
- *  A Quad representing a single light reflection in a LensFlare
+ * <code>FlareQuad</code> represents a single light reflection in a LensFlare
+ * object.
+ * 
  * @author Joshua Slack
- * @version $Id: FlareQuad.java,v 1.1 2004-11-15 22:04:03 renanse Exp $
+ * @version $Id: FlareQuad.java,v 1.2 2004-12-10 19:27:14 mojomonkey Exp $
  */
 
 public class FlareQuad extends Quad {
 
-	Vector2f positionPercent = new Vector2f(1,1);
+    private static final long serialVersionUID = 1L;
 
-	/**
-	 * Creates a new Quad to act as a single lens flare reflection in a
-	 * LensFlare.  The width and height of the quad are in ortho terms.
-	 *
-	 * @param name String
-	 * @param width float
-	 * @param height float
-	 */
-	public FlareQuad(String name, float width, float height) {
-		super(name, width, height);
-	}
+    Vector2f positionPercent = new Vector2f(1, 1);
 
-	/**
-	 * Set the offset of this FlareQuad from the center point of the screen
-	 * using a ratio where 1.0f (100%) = the position of the light source (or
-	 * screen position of the worldTranslation of the LensFlare.)  A negative
-	 * value for x or y flips it across the axis from the light position.
-	 * @param amountX float
-	 * @param amountY float
-	 */
-	public void setOffset(float amountX, float amountY) {
-		positionPercent.x = 1f/amountX;
-		positionPercent.y = 1f/amountY;
-	}
+    /**
+     * Creates a new Quad to act as a single lens flare reflection in a
+     * LensFlare. The width and height of the quad are in ortho terms.
+     * 
+     * @param name
+     *            String
+     * @param width
+     *            float
+     * @param height
+     *            float
+     */
+    public FlareQuad(String name, float width, float height) {
+        super(name, width, height);
+    }
 
-	/**
-	 * Updates worldTranslation of this FlareQuad.  Called by LensFlare during
-	 * it's updateWorldData method.
-	 * @param flarePoint Vector3f
-	 * @param midPoint Vector2f
-	 */
-	public void updatePosition(Vector3f flarePoint, Vector2f midPoint) {
-		Vector3f tempPoint = FlareQuad.this.getWorldTranslation();
-		tempPoint.x = (flarePoint.x * positionPercent.x) + midPoint.x;
-		tempPoint.y = (flarePoint.y * positionPercent.y) + midPoint.y;
-		tempPoint.z = 0;
-	}
+    /**
+     * Set the offset of this FlareQuad from the center point of the screen
+     * using a ratio where 1.0f (100%) = the position of the light source (or
+     * screen position of the worldTranslation of the LensFlare.) A negative
+     * value for x or y flips it across the axis from the light position.
+     * 
+     * @param amountX
+     *            float
+     * @param amountY
+     *            float
+     */
+    public void setOffset(float amountX, float amountY) {
+        positionPercent.x = 1f / amountX;
+        positionPercent.y = 1f / amountY;
+    }
+
+    /**
+     * Updates worldTranslation of this FlareQuad. Called by LensFlare during
+     * it's updateWorldData method.
+     * 
+     * @param flarePoint
+     *            Vector3f
+     * @param midPoint
+     *            Vector2f
+     */
+    public void updatePosition(Vector3f flarePoint, Vector2f midPoint) {
+        Vector3f tempPoint = FlareQuad.this.getWorldTranslation();
+        tempPoint.x = (flarePoint.x * positionPercent.x) + midPoint.x;
+        tempPoint.y = (flarePoint.y * positionPercent.y) + midPoint.y;
+        tempPoint.z = 0;
+    }
 }
