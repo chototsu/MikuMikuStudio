@@ -1,9 +1,6 @@
 package com.jme.scene.model.XMLparser;
 
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
-import com.jme.scene.Controller;
+import com.jme.scene.*;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.MaterialState;
@@ -12,6 +9,7 @@ import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.animation.VertexKeyframeController;
 
 import java.io.OutputStream;
 import java.io.IOException;
@@ -63,6 +61,21 @@ public class XMLWriter {
         myStream.close();
     }
 
+    /**
+     * Writes a Geometry to the current OutputStream in XML format.  A .close() is called on the
+     * stream after the Geometry is written.
+     * @param toWrite The node to write
+     * @throws IOException If an exception happens during Node writting
+     */
+    public void writeScene(Geometry toWrite) throws IOException {
+        writeHeader();
+        increaseTabSize();
+        writeSpatial(toWrite);
+        decreaseTabSize();
+        writeClosing();
+        myStream.close();
+    }
+
     private void writeClosing() throws IOException {
         currentLine.append("</scene>");
         writeLine();
@@ -80,15 +93,49 @@ public class XMLWriter {
         writeLine();
     }
 
+
     private void processSpatial(Spatial s) throws IOException {
         writeRenderStates(s);
+        writeControllers(s);
+    }
+
+    private void writeControllers(Spatial s) throws IOException {
         ArrayList conts=s.getControllers();
+        if (conts==null) return;
         for (int i=0;i<conts.size();i++){
             Controller r=(Controller) conts.get(i);
             if (r instanceof JointController){
                 writeJointController((JointController)r);
+            } else if (r instanceof VertexKeyframeController){
+
+            } else if (r instanceof KeyframeController){
+                writeKeyframeController((KeyframeController)r);
             }
         }
+    }
+
+    private void writeKeyframeController(KeyframeController keyframeController) throws IOException {
+        // Assume that morphMesh is keyframeController's parent
+        currentLine.append("<keyframecontroller>");
+        writeLine();
+        increaseTabSize();
+        ArrayList keyframes=keyframeController.keyframes;
+        for (int i=0;i<keyframes.size();i++){
+            writeKeyFramePointInTime((KeyframeController.PointInTime)keyframes.get(i));
+        }
+        decreaseTabSize();
+        currentLine.append("</keyframecontroller>");
+        writeLine();
+    }
+
+    private void writeKeyFramePointInTime(KeyframeController.PointInTime pointInTime) throws IOException {
+        currentLine.append("<keyframepointintime time=\"").append(pointInTime.time).append("\" >");
+        writeLine();
+        increaseTabSize();
+        writeTriMeshTags(pointInTime.newShape);
+        decreaseTabSize();
+        currentLine.append("</keyframepointintime>");
+        writeLine();
     }
 
     private void writeJointController(JointController jc) throws IOException {
@@ -160,16 +207,19 @@ public class XMLWriter {
 
     private void writeChildren(Node node) throws IOException {
         for (int i=0;i<node.getQuantity();i++){
-            Spatial s=node.getChild(i);
-            if (s instanceof XMLloadable)
-                writeXMLloadable((XMLloadable)s);
-            else if (s instanceof JointMesh)
-                writeJointMesh((JointMesh)s);
-            else if (s instanceof Node)
-                writeNode((Node) s);
-            else if (s instanceof TriMesh)
-                writeMesh((TriMesh)s);
+            writeSpatial(node.getChild(i));
         }
+    }
+
+    private void writeSpatial(Spatial s) throws IOException {
+        if (s instanceof XMLloadable)
+            writeXMLloadable((XMLloadable)s);
+        else if (s instanceof JointMesh)
+            writeJointMesh((JointMesh)s);
+        else if (s instanceof Node)
+            writeNode((Node) s);
+        else if (s instanceof TriMesh)
+            writeMesh((TriMesh)s);
     }
 
     private void writeJointMesh(JointMesh jointMesh) throws IOException {
@@ -177,6 +227,7 @@ public class XMLWriter {
         writeLine();
         increaseTabSize();
         writeJointMeshTags(jointMesh);
+        processSpatial(jointMesh);
         decreaseTabSize();
         currentLine.append("</jointmesh>");
         writeLine();
@@ -269,12 +320,11 @@ public class XMLWriter {
         currentLine.append("</index>");
         writeLine();
 
-        processSpatial(toWrite);
-
     }
 
     private void writeRenderStates(Spatial s) throws IOException {
         RenderState[] states=s.getRenderStateList();
+        if (states==null) return;
         if (states[RenderState.RS_MATERIAL]!=null){
             writeMaterialState((MaterialState) states[RenderState.RS_MATERIAL]);
         }
@@ -288,11 +338,16 @@ public class XMLWriter {
         String s=textureState.getTexture().getImageLocation();
         currentLine.append("<texturestate ");
         if ("file:/".equals(s.substring(0,6)))
-            currentLine.append("file=\"").append(s.substring(6)).append("\" ");
+            currentLine.append("file=\"").append(replaceSpecialsForFile(new StringBuffer(s.substring(6)))).append("\" ");
         else
             currentLine.append("URL=\"").append(s).append("\" ");
         currentLine.append("/>");
         writeLine();
+    }
+
+    private StringBuffer replaceSpecialsForFile(StringBuffer s) {
+        int i=s.indexOf("%20");
+        if (i==-1) return s; else return replaceSpecialsForFile(s.replace(i,i+3," "));
     }
 
     private void writeMaterialState(MaterialState state) throws IOException {
@@ -330,6 +385,7 @@ public class XMLWriter {
         writeLine();
         increaseTabSize();
         writeTriMeshTags(toWrite);
+        processSpatial(toWrite);
         decreaseTabSize();
         currentLine.append("</mesh>");
         writeLine();
