@@ -38,25 +38,44 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 
 /**
+ * A <code>FadeInOutController</code> controlls a <code>FadeInOut</code> object.
+ * The <code>FadeInOut</code> object is updated by having its alpha value increased
+ * every update.  When the alpha value is >= 1, it stage is increased and the
+ * alpha value of the <code>FadeInOut</code> object is decreased untill its color is <= 0
+ * and then it's stage is increased again.
+ *
  * @author Ahmed
+ * @author Jack Lindamood (javadoc only)
  */
 public class FadeInOutController extends Controller {
 
+    /** The FadeInOut object to fade upon. */
     private FadeInOut fio;
-    private ColorRGBA color;
-    
+
+
+    /**
+     * Creates a new FadeInOutController that fades the given object.
+     * @param f The object to fade per time.
+     */ 
     public FadeInOutController(FadeInOut f) {
         fio = f;
-        color = (ColorRGBA)fio.getFadeColor().clone();
     }
-    
+
+    /**
+     * Returns "Alpha: "+{alpha value of fade object's quad's color}
+     * @return Stat string for this controller.
+     */
     public String getStats() {
     	return ("Alpha: " + fio.getFadeQuad().getColors()[0].a);
     }
 
+    /**
+     * Updates the fade colors of the fade object.
+     * @param timeF A time value to change the color by.
+     */
     public void update(float timeF) {
         float time = timeF * fio.getSpeed();
-        color = fio.getFadeColor();
+        ColorRGBA color = fio.getFadeColor();
         if (fio.getCurrentStage() == 0) {
             color.a += time;
             fio.setFadeColor(color);
