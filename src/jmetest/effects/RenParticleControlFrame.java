@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.32 2004-08-14 00:50:00 cep21 Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.33 2004-11-30 20:16:52 renanse Exp $
  *
  */
 
@@ -1353,6 +1353,10 @@ public class RenParticleControlFrame extends JFrame {
     code.append("myNode.setRenderState(YOUR TEXTURE STATE);\n");
     code.append("myNode.setRenderState(YOUR ALPHA STATE);\n");
     code.append("myNode.attachChild(manager.getParticles());\n");
+		code.append("ZBufferState zstate = DisplaySystem.getDisplaySystem().getRenderer().createZBufferState();\n");
+		code.append("zstate.setEnabled(false);\n");
+		code.append("manager.getParticles().setRenderState(zstate);\n");
+
     codeTextArea.setText(code.toString());
     codeTextArea.setCaretPosition(0);
   }
