@@ -7,12 +7,14 @@ import com.jme.scene.model.XMLparser.XMLWriter;
 import com.jme.scene.Node;
 
 import java.io.*;
+import java.net.URL;
 
 
 /**
  *
- * Test class for XML loading/writting with jME
- * Started Date: May 30, 2004
+ * Started Date: May 30, 2004 <br><br>
+ * Test class for XML loading/writting with jME.  I load an XML doc, write the node I loaded, then load that write and
+ * finally attach that to the SceneGraph
  * @author Jack Lindamood
  */
 public class TestXMLLoader extends SimpleGame{
@@ -26,9 +28,14 @@ public class TestXMLLoader extends SimpleGame{
         lightState.get(0).setSpecular(new ColorRGBA(1,1,1,1));
 
         SAXReader r=new SAXReader();
+        URL xmldoc=TestXMLLoader.class.getClassLoader().getResource("jmetest/data/XML docs/newSampleScene.xml");
+        if (xmldoc==null){
+            System.out.println("Error locating XML document.  Try including jmetest-data.jar in classpath");
+            System.exit(0);
+        }
         Node mi1=null;
         try {
-            mi1=r.loadXML(new File("data/XML docs/newSampleScene.xml").toURL().openStream());
+            mi1=r.loadXML(xmldoc.openStream());
         } catch (IOException e) {
             System.out.println("bad File exception" + e.getCause() + "*" + e.getMessage());
         }
