@@ -55,8 +55,6 @@ import jme.utility.StringUtils;
 import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
 import jme.geometry.Geometry;
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.Window;
@@ -98,7 +96,7 @@ import org.lwjgl.opengl.Window;
  * 
  * 
  * @author Mark Powell
- * @version $Id: Md3Model.java,v 1.8 2003-09-04 16:02:34 mojomonkey Exp $
+ * @version $Id: Md3Model.java,v 1.9 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public class Md3Model implements Geometry {
     /**
@@ -140,7 +138,7 @@ public class Md3Model implements Geometry {
     private Model3D lower;
     private Model3D weaponModel;
 
-    FloatBuffer buf;
+    private FloatBuffer buf;
 
     //model rendering attributes.
     private Vector scale;
@@ -149,14 +147,14 @@ public class Md3Model implements Geometry {
     private float b;
     private float a;
 
-    //bounding information.
-    private BoundingSphere boundingSphere;
-    private BoundingBox boundingBox;
+    //list of points
+    private ArrayList points;
 
     //Model constants
     private static final int START_TORSO_ANIMATION = 6;
     private static final int START_LEGS_ANIMATION = 13;
     private static final int MAX_ANIMATIONS = 25;
+   
 
     /**
      * Constructor instantiates a new <code>Md3Model</code> object. During
@@ -195,6 +193,8 @@ public class Md3Model implements Geometry {
         upper = new Model3D();
         lower = new Model3D();
         weaponModel = new Model3D();
+        
+        points = new ArrayList();
 
         initialize();
         LoggingSystem.getLoggingSystem().getLogger().log(
@@ -255,12 +255,6 @@ public class Md3Model implements Geometry {
     public void initialize() {
         loadModel();
         loadWeapon();
-        boundingSphere = new BoundingSphere(10, null);
-        boundingBox =
-            new BoundingBox(
-                new Vector(),
-                new Vector(-5, -5, -5),
-                new Vector(5, 5, 5));
     }
 
     /**
@@ -361,29 +355,19 @@ public class Md3Model implements Geometry {
     }
 
     /**
-     * <code>getBoundingBox</code> returns the bounding box that contains this
-     * model.
-     * @return the bounding box for the model.
-     */
-    public BoundingBox getBoundingBox() {
-        return boundingBox;
-    }
-
-    /**
-     * <code>getBoundingSphere</code> returns the bounding sphere that contains
-     * this model.
-     * @return the bounding sphere for the model.
-     */
-    public BoundingSphere getBoundingSphere() {
-        return boundingSphere;
-    }
-
-    /**
      * <code>setScale</code> sets the scale factor for the model.
      * @param scale the scale of the model.
      */
     public void setScale(Vector scale) {
         this.scale = scale;
+    }
+    
+    /**
+     * <code>getPoints</code> returns all the points of the MD3 model.
+     * @return the list of points.
+     */
+    public Vector[] getPoints() {
+        return (Vector[])points.toArray();
     }
 
     /**
@@ -766,13 +750,13 @@ public class Md3Model implements Geometry {
                 vertices[i].vertex[0] = buffer.getShort();
                 vertices[i].vertex[1] = buffer.getShort();
                 vertices[i].vertex[2] = buffer.getShort();
+                points.add(new Vector(vertices[i].vertex[0], 
+                        vertices[i].vertex[1], vertices[i].vertex[2]));
                 vertices[i].normal[0] = buffer.get();
                 vertices[i].normal[1] = buffer.get();
             }
 
-            // Now that we have the data loaded into the Quake3 structures, let's convert them to
-            // our data types like Model3D and Object3D.  That way the rest of our model loading
-            // code will be mostly the same as the other model loading tutorials.
+            //convert to the custom model structures.
             convertDataStructures(pModel, meshHeader);
 
             // Free all the memory for this mesh since we just converted it to our structures

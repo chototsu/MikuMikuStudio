@@ -132,7 +132,7 @@ public class TrackingController extends AbstractGameController {
 		
 
 		double distance =
-			Distance.distance(camera.getPosition(), entity.getPosition());
+			Distance.distancePointPoint(camera.getPosition(), entity.getPosition());
 		if (distance > trackingDistance) {
 			Vector vec =
 				(

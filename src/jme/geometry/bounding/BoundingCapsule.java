@@ -31,6 +31,7 @@
  */
 package jme.geometry.bounding;
 
+import jme.entity.camera.Frustum;
 import jme.math.Line;
 import jme.math.Approximation;
 import jme.math.Distance;
@@ -42,7 +43,7 @@ import jme.math.Vector;
  * thought of as a cylinder with domed caps.
  * 
  * @author Mark Powell
- * @version $Id: BoundingCapsule.java,v 1.4 2003-08-28 18:52:12 mojomonkey Exp $
+ * @version $Id: BoundingCapsule.java,v 1.5 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public class BoundingCapsule implements BoundingVolume {
 	private Line lineSegment;
@@ -110,7 +111,7 @@ public class BoundingCapsule implements BoundingVolume {
 		float maxRadiusSqr = 0.0f;
 
 		for (int i = 0; i < points.length; i++) {
-			float radiusSquared = Distance.distanceSquared(points[i], line);
+			float radiusSquared = Distance.distancePointLineSquared(points[i], line);
 			if (radiusSquared > maxRadiusSqr) {
 				maxRadiusSqr = radiusSquared;
 			}
@@ -154,4 +155,16 @@ public class BoundingCapsule implements BoundingVolume {
 
 		radius = (float) Math.sqrt(maxRadiusSqr);
 	}
+    
+    public boolean hasCollision(BoundingVolume volume) {
+        return false;
+    }
+
+    public float distance(BoundingVolume volume) {
+        return -1.0f;
+    }
+    
+    public boolean isVisible(Frustum frustum) {
+        return true;
+    }
 }

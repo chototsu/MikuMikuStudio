@@ -127,7 +127,19 @@ public class TestMilkshape extends AbstractGame {
         initDisplay();
         initGL();
         camera = new Camera(1, 50, 0, 300, 0, 0, 0, 0, 1, 0);
-        cc = new BaseFPSController(camera);
+        cc = new BaseFPSController(camera) {
+            protected boolean checkAdditionalKeys() {
+                    if (isKeyDown("exit")) {
+                        return false;
+                    }
+        
+                    if (isKeyDown("rise")) {
+                        DisplaySystem.getDisplaySystem().takeScreenShot("test");
+                    }
+                    return true;
+                }
+        };
+        
         timer = Timer.getTimer();
         //Instantiate a font object
         font = new Font2D("data/Font/font.png");
@@ -136,8 +148,7 @@ public class TestMilkshape extends AbstractGame {
      * Nothing here yet.
      */
     protected void initGame() {
-        model = new MilkshapeModel(true);
-        model.load("data/model/msascii/run.txt");
+        model = new MilkshapeModel("data/model/msascii/run.txt",true);
     }
 
     /** 

@@ -31,12 +31,16 @@
  */
 package jme.geometry.bounding;
 
+import jme.entity.camera.Frustum;
+
 /**
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points. 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.1 2003-08-28 18:52:12 mojomonkey Exp $
+ * @version $Id: BoundingVolume.java,v 1.2 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public interface BoundingVolume {
-
+    public boolean hasCollision(BoundingVolume volume);
+    public float distance(BoundingVolume distance);
+    public boolean isVisible(Frustum frustum);
 }

@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.ArrayList;
 
 import jme.geometry.model.Joint;
 import jme.geometry.model.Keyframe;
@@ -76,7 +77,7 @@ import org.lwjgl.opengl.GL;
  *
  * @author naj
  * @author Mark Powell
- * @version $Id: MilkshapeModel.java,v 1.8 2003-09-05 22:20:23 mojomonkey Exp $
+ * @version $Id: MilkshapeModel.java,v 1.9 2003-09-08 20:29:27 mojomonkey Exp $
  */
 public class MilkshapeModel implements Model {
 
@@ -124,6 +125,8 @@ public class MilkshapeModel implements Model {
      * The joints in the model.
      */
     private Joint[] joints;
+    
+    private ArrayList points;
 
     /**
      * The absolute path to the directory containing the model file.  Used
@@ -131,12 +134,24 @@ public class MilkshapeModel implements Model {
      */
     private String absoluteFilePath;
 
-    public MilkshapeModel() {
+    //Color attributes
+    private float r = 1.0f;
+    private float g = 1.0f;
+    private float b = 1.0f;
+    private float a = 1.0f;
+    
+    private String filename;
+
+    public MilkshapeModel(String filename) {
+        this.filename = filename;
         this.animated = false;
+        initialize();
     }
 
-    public MilkshapeModel(boolean animated) {
+    public MilkshapeModel(String filename, boolean animated) {
+        this.filename = filename;
         this.animated = animated;
+        initialize();
     }
 
     /**
@@ -195,6 +210,7 @@ public class MilkshapeModel implements Model {
             Vertex[] vertices = meshes[meshIndex].vertices;
 
             GL.glBegin(GL.GL_TRIANGLES);
+            GL.glColor4f(r,g,b,a);
             for (int triangleIndex = 0;
                 triangleIndex < triangleCount;
                 triangleIndex++) {
@@ -438,7 +454,8 @@ public class MilkshapeModel implements Model {
      * Loads an ascii text model exported from MS3D.
      * @param filename the file to load.
      */
-    public void load(String filename) {
+    public void initialize() {
+        points = new ArrayList();
         try {
             File file = new File(filename);
             absoluteFilePath = file.getAbsolutePath();
@@ -477,7 +494,22 @@ public class MilkshapeModel implements Model {
 
         reloadTextures();
     }
-
+    
+    public void setColor(float r, float g, float b, float a) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }
+    
+    public void setTexture(String texture) {
+        //not used.
+    }
+    
+    public Vector[] getPoints() {
+        return (Vector[])points.toArray();
+    }
+    
     /**
      * Simple parser to extract the mesh information from the text file.
      */
@@ -509,6 +541,7 @@ public class MilkshapeModel implements Model {
                         Float.parseFloat(values[4]),
                         Float.parseFloat(values[5]),
                         Integer.parseInt(values[6]));
+                points.add(new Vector(vertices[j].x, vertices[j].y, vertices[j].z));
             }
             mesh.vertices = vertices;
 

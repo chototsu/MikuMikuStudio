@@ -32,6 +32,7 @@
 
 package jme.geometry.bounding;
 
+import jme.entity.camera.Frustum;
 import jme.math.Vector;
 
 /**
@@ -45,7 +46,7 @@ import jme.math.Vector;
  * 
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.4 2003-08-28 18:52:12 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.5 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public class BoundingSphere implements BoundingVolume {
 	private float radius;
@@ -164,4 +165,16 @@ public class BoundingSphere implements BoundingVolume {
 		radius = (float)Math.sqrt(maxRadiusSqr);
 
 	}
+    
+    public boolean hasCollision(BoundingVolume volume) {
+        return false;
+    }
+
+    public float distance(BoundingVolume volume) {
+        return -1.0f;
+    }
+    
+    public boolean isVisible(Frustum frustum) {
+        return true;
+    }
 }

@@ -32,10 +32,6 @@
 
 package jme.geometry.primitive;
 
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
-import jme.math.Vector;
-
 
 /**
  * <code>PartialDisk</code> defines a sliver of a disk geometry. The partial 
@@ -50,7 +46,7 @@ import jme.math.Vector;
  * the negative x-axis
  * 
  * @author Mark Powell
- * @version $Id: PartialDisk.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
+ * @version $Id: PartialDisk.java,v 1.4 2003-09-08 20:29:27 mojomonkey Exp $
  */
 public class PartialDisk extends Disk {
     
@@ -79,10 +75,6 @@ public class PartialDisk extends Disk {
         this.startAngle = startAngle;
         this.endAngle = endAngle;
         
-        //set up bounding volumes
-        boundingBox = new BoundingBox(new Vector(), new Vector(-(float)outerRadius,-(float)outerRadius,-(float)outerRadius),
-        	new Vector((float)outerRadius,(float)outerRadius,(float)outerRadius));
-        boundingSphere = new BoundingSphere((float)outerRadius, null);
     }
      
     /**

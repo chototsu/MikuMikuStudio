@@ -35,8 +35,6 @@ import java.util.logging.Level;
 
 import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
@@ -50,7 +48,7 @@ import org.lwjgl.opengl.Window;
  * base and the height.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
+ * @version $Id: Pyramid.java,v 1.4 2003-09-08 20:29:27 mojomonkey Exp $
  */
 public class Pyramid extends Primitive {
     private boolean usingDisplay;
@@ -58,6 +56,7 @@ public class Pyramid extends Primitive {
     private float base;
     private float height;
     private GL gl;
+    private Vector[] points;
 
     /**
      * Constructor instantiates a new <code>Pyramid</code> object with 
@@ -150,10 +149,13 @@ public class Pyramid extends Primitive {
         } else {
             boundry = base;
         }
-        //set up the bounding volumes
-        boundingBox = new BoundingBox(new Vector(), new Vector(-boundry,-boundry,-boundry),
-        		new Vector(boundry,boundry,boundry));
-        boundingSphere = new BoundingSphere(boundry, null);
+        
+        points = new Vector[5];
+        points[0] = new Vector(-base / 2, -height / 2, -base / 2);
+        points[1] = new Vector(base / 2, -height / 2, -base / 2);
+        points[2] = new Vector(base / 2, -height / 2, base / 2);
+        points[3] = new Vector(-base / 2, -height / 2, base / 2);
+        points[4] = new Vector(0, height / 2, 0);
     }
 
     /**
@@ -179,55 +181,59 @@ public class Pyramid extends Primitive {
 
         //front
         GL.glTexCoord2f(1, 0);
-        GL.glVertex3f(-base / 2, -height / 2, -base / 2); //f1
+        GL.glVertex3f(points[0].x, points[0].y, points[0].z);
         GL.glTexCoord2f(0.5f, 1);
-        GL.glVertex3f(0, height / 2, 0); //top
+        GL.glVertex3f(points[4].x, points[4].y, points[4].z); //top
         GL.glTexCoord2f(0.75f, 0);
-        GL.glVertex3f(base / 2, -height / 2, -base / 2); //f2
+        GL.glVertex3f(points[1].x, points[1].y, points[1].z); //f2
 
         //right
         GL.glTexCoord2f(0.75f, 0);
-        GL.glVertex3f(base / 2, -height / 2, -base / 2); //f2
+        GL.glVertex3f(points[1].x, points[1].y, points[1].z); //f2
         GL.glTexCoord2f(0.5f, 1);
-        GL.glVertex3f(0, height / 2, 0); //top
+        GL.glVertex3f(points[4].x, points[4].y, points[4].z); //top
         GL.glTexCoord2f(0.5f, 0);
-        GL.glVertex3f(base / 2, -height / 2, base / 2); //b2
+        GL.glVertex3f(points[2].x, points[2].y, points[2].z); //b2
 
         //back
         GL.glTexCoord2f(0.5f, 0);
-        GL.glVertex3f(base / 2, -height / 2, base / 2); //b2
+        GL.glVertex3f(points[2].x, points[2].y, points[2].z); //b2
         GL.glTexCoord2f(0.5f, 1);
-        GL.glVertex3f(0, height / 2, 0); //top
+        GL.glVertex3f(points[4].x, points[4].y, points[4].z); //top
         GL.glTexCoord2f(0.25f, 0);
-        GL.glVertex3f(-base / 2, -height / 2, base / 2); //b1
+        GL.glVertex3f(points[3].x, points[3].y, points[3].z); //b1
 
         //left
         GL.glTexCoord2f(0.25f, 0);
-        GL.glVertex3f(-base / 2, -height / 2, base / 2); //b1
+        GL.glVertex3f(points[3].x, points[3].y, points[3].z); //b1
         GL.glTexCoord2f(0.5f, 1);
-        GL.glVertex3f(0, height / 2, 0); //top
+        GL.glVertex3f(points[4].x, points[4].y, points[4].z); //top
         GL.glTexCoord2f(0, 0);
-        GL.glVertex3f(-base / 2, -height / 2, -base / 2); //f1
+        GL.glVertex3f(points[0].x, points[0].y, points[0].z);
 
         //bottom
         GL.glTexCoord2f(0, 0);
-        GL.glVertex3f(-base / 2, -height / 2, -base / 2); //f1
+        GL.glVertex3f(points[0].x, points[0].y, points[0].z); //f1
         GL.glTexCoord2f(1, 1);
-        GL.glVertex3f(base / 2, -height / 2, base / 2); //b2
+        GL.glVertex3f(points[2].x, points[2].y, points[2].z); //b2
         GL.glTexCoord2f(0, 1);
-        GL.glVertex3f(-base / 2, -height / 2, base / 2); //b1
+        GL.glVertex3f(points[3].x, points[3].y, points[3].z); //b1
         GL.glTexCoord2f(0, 0);
-        GL.glVertex3f(-base / 2, -height / 2, -base / 2); //f1
+        GL.glVertex3f(points[0].x, points[0].y, points[0].z); //f1
         GL.glTexCoord2f(1, 0);
-        GL.glVertex3f(base / 2, -height / 2, -base / 2); //f2
+        GL.glVertex3f(points[1].x, points[1].y, points[1].z); //f2
         GL.glTexCoord2f(1, 1);
-        GL.glVertex3f(base / 2, -height / 2, base / 2); //b2
+        GL.glVertex3f(points[2].x, points[2].y, points[2].z); //b2
 
         GL.glEnd();
 
         if (getTextureId() > 0) {
             GL.glDisable(GL.GL_TEXTURE_2D);
         }
+    }
+    
+    public Vector[] getPoints() {
+        return points;
     }
 
 }

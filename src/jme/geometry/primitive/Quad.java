@@ -33,8 +33,6 @@
 package jme.geometry.primitive;
 
 import jme.exception.MonkeyRuntimeException;
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
 import jme.texture.TextureManager;
 
@@ -53,7 +51,7 @@ import org.lwjgl.opengl.GL;
  * 3 - BottomLeft<br>
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.6 2003-09-03 18:05:36 mojomonkey Exp $
+ * @version $Id: Quad.java,v 1.7 2003-09-08 20:29:27 mojomonkey Exp $
  */
 public class Quad extends Primitive {
     private GL gl;
@@ -149,11 +147,6 @@ public class Quad extends Primitive {
 				size = distance;
 			}
 		}
-		//set up bounding volumes.
-		boundingBox = new BoundingBox(new Vector(), new Vector(-size,-size,-size),
-			new Vector(size,size,size));
-		boundingSphere = new BoundingSphere();
-		boundingSphere.containAABB(points);
     }
 
 	/**
@@ -161,6 +154,10 @@ public class Quad extends Primitive {
 	 */
     public void preRender() {
 		//do nothing
+    }
+    
+    public Vector[] getPoints() {
+        return points;
     }
 
 }

@@ -33,8 +33,6 @@
 package jme.geometry.primitive;
 
 import jme.exception.MonkeyRuntimeException;
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
 import jme.texture.TextureManager;
 import jme.math.Vector;
 
@@ -52,7 +50,7 @@ import org.lwjgl.opengl.GL;
  * 2 - BottomRight<br>
  * 
  * @author Samuel Wasson
- * @version $Id: Triangle.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
+ * @version $Id: Triangle.java,v 1.4 2003-09-08 20:29:27 mojomonkey Exp $
  */
 
 public class Triangle extends Primitive {
@@ -144,11 +142,6 @@ public class Triangle extends Primitive {
 				size = distance;
 			}
 		}
-		//set up bounding volumes.
-		boundingBox = new BoundingBox(new Vector(), new Vector(-size,-size,-size),
-			new Vector(size,size,size));
-		boundingSphere = new BoundingSphere(size, null);
-		
 	}
 	
 	/**
@@ -157,6 +150,10 @@ public class Triangle extends Primitive {
 	public void preRender() {
 		//do nothing
 	}
+    
+    public Vector[] getPoints() {
+        return points;
+    }
 }
 	
 	

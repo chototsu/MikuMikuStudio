@@ -35,8 +35,6 @@ package jme.geometry.primitive;
 import java.util.logging.Level;
 
 import jme.exception.MonkeyRuntimeException;
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
 import jme.utility.LoggingSystem;
 
@@ -52,7 +50,7 @@ import org.lwjgl.opengl.GLU;
  * image, but framerate will suffer.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
+ * @version $Id: Cylinder.java,v 1.4 2003-09-08 20:29:27 mojomonkey Exp $
  */
 public class Cylinder extends Quadric {
     
@@ -93,11 +91,6 @@ public class Cylinder extends Quadric {
         this.height = height;
         this.slices = slices;
         this.stacks = stacks;
-        
-        //set up bounding volumes
-        boundingSphere = new BoundingSphere((float)height, null);
-        boundingBox = new BoundingBox(new Vector(), new Vector(-(float)height,-(float)height,-(float)height),
-        	new Vector((float)height,(float)height,(float)height));
         
         
         super.initialize();
@@ -192,5 +185,9 @@ public class Cylinder extends Quadric {
                     "than zero");
         }
         this.stacks = stacks;
+    }
+    
+    public Vector[] getPoints() {
+        return null;
     }
 }

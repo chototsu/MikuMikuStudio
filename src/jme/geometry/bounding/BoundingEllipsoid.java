@@ -31,6 +31,7 @@
  */
 package jme.geometry.bounding;
 
+import jme.entity.camera.Frustum;
 import jme.math.Approximation;
 import jme.math.Matrix;
 import jme.math.Vector;
@@ -40,7 +41,7 @@ import jme.math.Vector;
  * with a center of (0, 0, 0). The ellipsoid can also be expressed as the 
  * center matrix form (and will be in this class) as: (X-C)^T A (X-C) = 1.
  * @author Mark Powell
- * @version $Id: BoundingEllipsoid.java,v 1.2 2003-08-28 18:52:12 mojomonkey Exp $
+ * @version $Id: BoundingEllipsoid.java,v 1.3 2003-09-08 20:29:28 mojomonkey Exp $
  *
  */
 public class BoundingEllipsoid implements BoundingVolume {
@@ -115,5 +116,17 @@ public class BoundingEllipsoid implements BoundingVolume {
         tensor[0].add(tensor[1]);
         a = tensor[0];
 
+    }
+    
+    public boolean hasCollision(BoundingVolume volume) {
+        return false;
+    }
+
+    public float distance(BoundingVolume volume) {
+        return -1.0f;
+    }
+    
+    public boolean isVisible(Frustum frustum) {
+        return true;
     }
 }

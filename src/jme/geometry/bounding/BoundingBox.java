@@ -32,7 +32,7 @@
 
 package jme.geometry.bounding;
 
-import jme.math.Distance;
+import jme.entity.camera.Frustum;
 import jme.math.Vector;
 
 /**
@@ -40,7 +40,7 @@ import jme.math.Vector;
  * all vertices that make up the geometry.
  * 
  * @author Mark Powell
- * @version $Id: BoundingBox.java,v 1.5 2003-08-28 18:53:03 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.6 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public class BoundingBox implements BoundingVolume {
 	private Vector center;
@@ -115,16 +115,6 @@ public class BoundingBox implements BoundingVolume {
 	}
 
 	/**
-	 * <code>getRadius</code> calculates the distance between
-	 * the center point and the minPoint point.
-	 * @return the distance between the center of the box and
-	 * 		the minPoint point.
-	 */
-	public double getRadius() {
-		return Distance.distance(center, minPoint);
-	}
-
-	/**
 	 * <code>getMinPoint</code> returns the minPoint or minimum point of 
 	 * the bounding box.
 	 * @return the minPoint point of the box.
@@ -175,5 +165,17 @@ public class BoundingBox implements BoundingVolume {
 	public void setMaxPoint(Vector maxPoint) {
 		this.maxPoint = maxPoint;
 	}
+    
+    public boolean hasCollision(BoundingVolume volume) {
+        return false;
+    }
+    
+    public float distance(BoundingVolume volume) {
+        return -1.0f;
+    }
+    
+    public boolean isVisible(Frustum frustum) {
+        return true;
+    }
 
 }

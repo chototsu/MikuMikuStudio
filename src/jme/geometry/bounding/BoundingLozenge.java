@@ -31,6 +31,7 @@
  */
 package jme.geometry.bounding;
 
+import jme.entity.camera.Frustum;
 import jme.math.Approximation;
 import jme.math.Rectangle;
 import jme.math.Vector;
@@ -42,7 +43,7 @@ import jme.math.Vector;
  * <br><br>
  * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
- * @version $Id: BoundingLozenge.java,v 1.3 2003-08-28 18:52:12 mojomonkey Exp $
+ * @version $Id: BoundingLozenge.java,v 1.4 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public class BoundingLozenge implements BoundingVolume {
     private Rectangle rectangle;
@@ -231,5 +232,17 @@ public class BoundingLozenge implements BoundingVolume {
 
         radius = tempRadius;
 
+    }
+    
+    public boolean hasCollision(BoundingVolume volume) {
+        return false;
+    }
+
+    public float distance(BoundingVolume volume) {
+        return -1.0f;
+    }
+    
+    public boolean isVisible(Frustum frustum) {
+        return true;
     }
 }

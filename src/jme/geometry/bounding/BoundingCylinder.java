@@ -31,6 +31,7 @@
  */
 package jme.geometry.bounding;
 
+import jme.entity.camera.Frustum;
 import jme.math.Approximation;
 import jme.math.Distance;
 import jme.math.Line;
@@ -43,7 +44,7 @@ import jme.math.Vector;
  * also defined by the equation Xi = P + RYi where R = [U V D], and U V causes
  * R to be orthonormal.
  * @author Mark Powell
- * @version $Id: BoundingCylinder.java,v 1.2 2003-08-28 18:52:12 mojomonkey Exp $
+ * @version $Id: BoundingCylinder.java,v 1.3 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public class BoundingCylinder implements BoundingVolume {
     private Vector center; //P
@@ -115,7 +116,7 @@ public class BoundingCylinder implements BoundingVolume {
 
         float maxRadiusSquared = 0.0f;
         for (int i = 0; i < points.length; i++) {
-            float radiusSquared = Distance.distanceSquared(points[i], line);
+            float radiusSquared = Distance.distancePointLineSquared(points[i], line);
             if (radiusSquared > maxRadiusSquared) {
                 maxRadiusSquared = radiusSquared;
             }
@@ -140,6 +141,18 @@ public class BoundingCylinder implements BoundingVolume {
         radius = (float) Math.sqrt(maxRadiusSquared);
         height = wMax - wMin;
 
+    }
+    
+    public boolean hasCollision(BoundingVolume volume) {
+        return false;
+    }
+
+    public float distance(BoundingVolume volume) {
+        return -1.0f;
+    }
+    
+    public boolean isVisible(Frustum frustum) {
+        return true;
     }
 
 }

@@ -35,8 +35,6 @@ package jme.geometry.primitive;
 import java.util.logging.Level;
 
 import jme.exception.MonkeyRuntimeException;
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
 import jme.utility.LoggingSystem;
 
@@ -50,7 +48,7 @@ import jme.utility.LoggingSystem;
  * determine the number of concentric rings around the center.
  * 
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
+ * @version $Id: Disk.java,v 1.4 2003-09-08 20:29:27 mojomonkey Exp $
  */
 public class Disk extends Quadric {
     
@@ -90,11 +88,6 @@ public class Disk extends Quadric {
         this.outerRadius = outerRadius;
         this.slices = slices;
         this.loops = loops;
-        
-        //set up bounding volumes
-        boundingBox = new BoundingBox(new Vector(), new Vector(-(float)outerRadius,-(float)outerRadius,-(float)outerRadius),
-        		new Vector((float)outerRadius,(float)outerRadius,(float)outerRadius));
-        boundingSphere = new BoundingSphere((float)outerRadius, null);
         
         super.initialize();
         
@@ -174,6 +167,10 @@ public class Disk extends Quadric {
         }
         
         this.loops = loops;
+    }
+    
+    public Vector[] getPoints() {
+        return null;
     }
 
 }

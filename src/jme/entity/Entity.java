@@ -65,7 +65,7 @@ import org.lwjgl.opengl.Window;
  * <code>Entity</code> to represent something abstract.
  * 
  * @author Mark Powell
- * @version $Id: Entity.java,v 1.7 2003-09-03 16:20:52 mojomonkey Exp $
+ * @version $Id: Entity.java,v 1.8 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public class Entity implements EntityInterface {
     /**
@@ -192,6 +192,35 @@ public class Entity implements EntityInterface {
      */
     public BoundingVolume getBoundingVolume() {
         return boundingVolume;
+    }
+    
+    /**
+     * <code>hasCollision</code> determines if this entity is colliding with
+     * a provided entity.
+     * @param ent the entity to check.
+     * @return true if a collision has occured, false otherwise.
+     */
+    public boolean hasCollision(Entity ent) {
+        if(null != boundingVolume) {
+            return boundingVolume.hasCollision(ent.getBoundingVolume());
+        } else {
+            return false;
+        }
+    }
+    
+    /**
+     * <code>distance</code> returns the distance between this entity and
+     * a given entity. 
+     * @param ent the entity to check.
+     * @return the distance between this entity and another. -1 is returned
+     *      if boundingVolume is not set.
+     */
+    public float distance(Entity ent) {
+        if(null != boundingVolume) {
+            return boundingVolume.distance(ent.getBoundingVolume());
+        } else {
+            return -1.0f;
+        }
     }
 
     /**
@@ -347,29 +376,10 @@ public class Entity implements EntityInterface {
      * @param frustum the camera's view frustum.
      */
     public void checkVisibility(Frustum frustum) {
-        switch (visibilityType) {
-            case VISIBILITY_POINT :
-                isVisible =
-                    frustum.containsPoint(position.x, position.y, position.z);
-                break;
-            case VISIBILITY_SPHERE :
-                if(null == geometry) {
-                    break;
-                }
-                isVisible =
-                    frustum.containsSphere(position.x, position.y, position.z,
-                    geometry.getBoundingSphere().getRadius());
-                break;
-            case VISIBILITY_CUBE :
-                if(null == geometry) {
-                    break;
-                }
-                isVisible = 
-                    frustum.containsCube(position.x, position.y, 
-                    position.z, (float)geometry.getBoundingBox().getRadius());
-                break;
-            default :
-                break;
+        if(null != boundingVolume) {
+            isVisible = boundingVolume.isVisible(frustum);
+        } else {
+            isVisible = true;
         }
     }
 
@@ -425,7 +435,8 @@ public class Entity implements EntityInterface {
         return string;
     }
 	/**
-	 * @return
+     * <code>getGeometry</code> returns the geometry of this entity.
+	 * @return the geometry of this entity.
 	 */
 	public Geometry getGeometry() {
 		return geometry;

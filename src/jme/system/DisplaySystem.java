@@ -76,9 +76,10 @@ import org.lwjgl.opengl.Window;
  * and create a new system.
  * 
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: DisplaySystem.java,v 1.10 2003-09-08 20:29:28 mojomonkey Exp $
  */
 public class DisplaySystem {
+    private static String VERSION = "jME version 0.1.0";
     //Singleton reference.
     private static DisplaySystem instance = null;
 
@@ -322,6 +323,15 @@ public class DisplaySystem {
 
         //none found
         return null;
+    }
+    
+    /**
+     * <code>getVersion</code> returns a string representation of what version
+     * jME is currently running.
+     * @return the version of this API.
+     */
+    public static String getVersion() {
+        return VERSION;
     }
 
     /**

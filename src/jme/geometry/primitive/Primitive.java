@@ -35,8 +35,6 @@ package jme.geometry.primitive;
 import org.lwjgl.opengl.GL;
 
 import jme.geometry.Geometry;
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
 import jme.texture.TextureManager;
 
 /**
@@ -47,15 +45,6 @@ import jme.texture.TextureManager;
  * @version 1
  */
 public abstract class Primitive implements Geometry {
-    /**
-     * the bounding sphere of the primitive.
-     */    
-    protected BoundingSphere boundingSphere;
-    
-    /**
-     * the bounding box of the primitive.
-     */
-    protected BoundingBox boundingBox;
 
    /**
      * the red component of the object's color.
@@ -132,26 +121,6 @@ public abstract class Primitive implements Geometry {
         if (-1 != texID) {
             GL.glDisable(GL.GL_TEXTURE_2D);
         }
-    }
-
-    /**
-     * <code>getBoundingSphere</code> returns the sphere that contains the
-     * Primitive. Null is possibly returned if the implementing class does 
-     * not define the sphere.
-     * @return the sphere that bounds the primitive.
-     */
-    public BoundingSphere getBoundingSphere() {
-         return boundingSphere;
-    }
-     
-    /**
-     * <code>getBoundingBox</code> returns the box that contains the
-     * Primitive. Null is possibly returned if the implmenenting class does
-     * not define the box.
-     * @return the box the bounds the primitive.
-     */
-    public BoundingBox getBoundingBox() {
-         return boundingBox;
     }
 
     /**

@@ -32,8 +32,8 @@
 
 package jme.geometry;
 
-import jme.geometry.bounding.BoundingBox;
-import jme.geometry.bounding.BoundingSphere;
+import jme.math.Vector;
+
 
 /**
  * <code>Geometry</code> defines an interface to maintain and render a 
@@ -81,17 +81,9 @@ public interface Geometry {
     public void setColor(float red, float green, float blue, float alpha);
     
     /**
-     * <code>getBoundingSphere</code> returns the sphere that surrounds all vertices
-     * of the geometry object.
-     * @return the bounding sphere of the object.
+     * <code>getPoints</code> returns an array of Vectors that represents
+     * each point that makes up the piece of geometry.
+     * @return the array of vectors for the points.
      */
-    public BoundingSphere getBoundingSphere();
-    
-    /**
-     * <code>getBoundingBox</code> returns the box that surrounds all vertices
-     * of the geometry object.
-     * 
-     * @return the bounding box of the object.
-     */
-    public BoundingBox getBoundingBox();
+    public Vector[] getPoints();
 }

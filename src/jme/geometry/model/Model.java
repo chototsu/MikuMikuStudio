@@ -32,6 +32,8 @@
 
 package jme.geometry.model;
 
+import jme.geometry.Geometry;
+
 /**
  * An interface for models.  Models should be able to load from a file and
  * draw itself (animated if possible).
@@ -39,19 +41,6 @@ package jme.geometry.model;
  * @author naj
  * @version 0.1
  */
-public interface Model {
-
-    /**
-     * Loads a model from a file that contains the model information.
-     * @param filename file that contains the model information.
-     */
-    public void load(String filename);
-
-    /**
-     * Draw the model (to opengl).
-     */
-    public void render();
-    
+public interface Model extends Geometry {
     public void update(float time);
-
 }
