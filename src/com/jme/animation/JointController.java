@@ -1,7 +1,7 @@
 package com.jme.animation;
 
 import com.jme.scene.Controller;
-import com.jme.scene.model.JointMesh2;
+import com.jme.scene.model.JointMesh;
 import com.jme.math.TransformMatrix;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -13,7 +13,7 @@ import java.util.BitSet;
 /**
  * Started Date: Jun 9, 2004<br>
  *
- * This controller animates a Node's JointMesh2 children
+ * This controller animates a Node's JointMesh children
  * acording to the joints stored inside <code>movementInfo</code>.
  *
  * @author Jack Lindamood
@@ -229,7 +229,7 @@ public class JointController extends Controller {
      */
     private void updateData(){
         for (int currentGroup=0;currentGroup<movingMeshes.size();currentGroup++){
-            JointMesh2 updatingGroup=(JointMesh2) movingMeshes.get(currentGroup);
+            JointMesh updatingGroup=(JointMesh) movingMeshes.get(currentGroup);
             int currentBoneIndex;
             Vector3f[] vertexes=updatingGroup.getVertices();
             Vector3f[] normals=updatingGroup.getNormals();
@@ -442,9 +442,9 @@ public class JointController extends Controller {
 
     /**
      * Adds a jointmesh for this JointController to consider animating.
-     * @param child Child JointMesh2 to consider
+     * @param child Child JointMesh to consider
      */
-    public void addJointMesh(JointMesh2 child) {
+    public void addJointMesh(JointMesh child) {
         movingMeshes.add(child);
     }
 

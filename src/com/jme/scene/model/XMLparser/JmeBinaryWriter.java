@@ -4,7 +4,7 @@ import com.jme.scene.*;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.lod.CollapseRecord;
 import com.jme.scene.lod.AreaClodMesh;
-import com.jme.scene.model.JointMesh2;
+import com.jme.scene.model.JointMesh;
 import com.jme.scene.state.*;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -258,8 +258,8 @@ public class JmeBinaryWriter {
             writeXMLloadable((XMLloadable)s);
         else if (s instanceof LoaderNode)
             writeLoaderNode((LoaderNode)s);
-        else if (s instanceof JointMesh2)
-            writeJointMesh((JointMesh2)s);
+        else if (s instanceof JointMesh)
+            writeJointMesh((JointMesh)s);
         else if (s instanceof TerrainPage)
             writeTerrainPage((TerrainPage)s);
         else if (s instanceof Node)
@@ -390,11 +390,11 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a JointMesh2 to binary format.
+     * Writes a JointMesh to binary format.
      * @param jointMesh The JointMesh to write
      * @throws IOException
      */
-    private void writeJointMesh(JointMesh2 jointMesh) throws IOException {
+    private void writeJointMesh(JointMesh jointMesh) throws IOException {
         if ("astrimesh".equals(properties.get("jointmesh"))){
             writeMesh(jointMesh);
             return;
@@ -418,11 +418,11 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes the inner tags of a JointMesh2 to binary format.
+     * Writes the inner tags of a JointMesh to binary format.
      * @param jointMesh Mesh who's tags are to be written
      * @throws IOException
      */
-    private void writeJointMeshTags(JointMesh2 jointMesh) throws IOException {
+    private void writeJointMeshTags(JointMesh jointMesh) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
         atts.put("data",jointMesh.jointIndex);

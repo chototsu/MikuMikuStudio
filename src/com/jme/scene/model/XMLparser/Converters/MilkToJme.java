@@ -8,7 +8,7 @@ import com.jme.math.Vector2f;
 import com.jme.scene.*;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.animation.JointController;
-import com.jme.scene.model.JointMesh2;
+import com.jme.scene.model.JointMesh;
 import com.jme.scene.state.*;
 import com.jme.renderer.*;
 import com.jme.image.Texture;
@@ -186,7 +186,7 @@ public class MilkToJme extends FormatConverter{
             Vector2f[] meshTexCoords=new Vector2f[numTriLocal*3];
             int[] meshIndex=new int[numTriLocal*3];
             int[] jointIndex=new int[numTriLocal*3];
-            JointMesh2 theMesh=new JointMesh2(cutAtNull(tempChar));
+            JointMesh theMesh=new JointMesh(cutAtNull(tempChar));
 
             for (int j=0;j<numTriLocal;j++){
                 int triIndex=inFile.readUnsignedShort();

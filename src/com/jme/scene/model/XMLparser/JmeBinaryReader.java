@@ -24,7 +24,7 @@ import com.jme.bounding.BoundingVolume;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
 import com.jme.animation.SpatialTransformer;
-import com.jme.scene.model.JointMesh2;
+import com.jme.scene.model.JointMesh;
 import com.jme.scene.model.EmptyTriMesh;
 import com.jme.light.Light;
 import com.jme.light.SpotLight;
@@ -209,15 +209,15 @@ public class JmeBinaryReader {
             m.setIndices((int[]) attributes.get("data"));
             s.push(m);
         } else if (tagName.equals("origvertex")){
-            JointMesh2 jm=(JointMesh2) s.pop();
+            JointMesh jm=(JointMesh) s.pop();
             jm.originalVertex=(Vector3f[]) attributes.get("data");
             s.push(jm);
         } else if (tagName.equals("orignormal")){
-            JointMesh2 jm=(JointMesh2) s.pop();
+            JointMesh jm=(JointMesh) s.pop();
             jm.originalNormal=(Vector3f[]) attributes.get("data");
             s.push(jm);
         } else if (tagName.equals("jointindex")){
-            JointMesh2 jm=(JointMesh2) s.pop();
+            JointMesh jm=(JointMesh) s.pop();
             jm.jointIndex=(int[]) attributes.get("data");
             s.push(jm);
         } else if (tagName.equals("sharedtypes")){
@@ -277,7 +277,7 @@ public class JmeBinaryReader {
             s.push(jc);
             s.push(attributes.get("index"));
         } else if (tagName.equals("jointmesh")){
-            s.push(processSpatial(new JointMesh2((String) attributes.get("name")),attributes));
+            s.push(processSpatial(new JointMesh((String) attributes.get("name")),attributes));
         } else if (tagName.equals("keyframecontroller")){
             KeyframeController kc=new KeyframeController();
             kc.setActive(true);
@@ -489,8 +489,8 @@ public class JmeBinaryReader {
             JointController jc=(JointController) s.pop();
             parentNode=(Node) s.pop();
             for (int i=0;i<parentNode.getQuantity();i++){
-                if (parentNode.getChild(i) instanceof JointMesh2)
-                    jc.addJointMesh((JointMesh2) parentNode.getChild(i));
+                if (parentNode.getChild(i) instanceof JointMesh)
+                    jc.addJointMesh((JointMesh) parentNode.getChild(i));
             }
             jc.processController();
             if (jc.numJoints!=0) parentNode.addController(jc);
