@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLVertexProgramState</code>
  *
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.4 2004-04-21 18:53:19 renanse Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.5 2004-04-21 18:56:35 renanse Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 
@@ -87,7 +87,8 @@ public class LWJGLVertexProgramState extends VertexProgramState {
                 program[i] = ((Byte)bytes.get(i)).byteValue();
 
         } catch (Exception e) {
-            LoggingSystem.getLogger().throwing(getClass().getName(), "load(URL)", e);
+          LoggingSystem.getLogger().log(Level.SEVERE, "Could not load vertex program: "+e);
+          LoggingSystem.getLogger().throwing(getClass().getName(), "load(URL)", e);
         }
 	}
 
