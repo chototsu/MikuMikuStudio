@@ -33,6 +33,9 @@ import java.io.ByteArrayInputStream;
  * @author Jack Lindamood
  */
 public class HelloLOD extends SimpleGame {
+
+    CameraNode cn;
+
     public static void main(String[] args) {
         HelloLOD app = new HelloLOD();
         app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
@@ -111,10 +114,12 @@ public class HelloLOD extends SimpleGame {
             new Vector3f(0,0,0),
             new Vector3f(0,5,20),
             new Vector3f(0,10,40),
-            new Vector3f(0,45,60),
+            new Vector3f(0,20,90),
+            new Vector3f(0,25,150),
+            new Vector3f(0,30,200)
         };
         BezierCurve bc=new BezierCurve("camera path",cameraPoints);
-        CameraNode cn=new CameraNode("camera node",display.getRenderer().getCamera());
+        cn=new CameraNode("camera node",display.getRenderer().getCamera());
         Vector3f left=new Vector3f(-1,0,0);
         Vector3f up=new Vector3f(0,1,0);
         Vector3f direction=new Vector3f(0,0,-1);
@@ -130,12 +135,17 @@ public class HelloLOD extends SimpleGame {
         cc.setRepeatType(Controller.RT_CYCLE);
         cn.addController(cc);
         cc.setSpeed(.1f);
-        rootNode.attachChild(cn);
+//        rootNode.setForceView(true);
     }
+
     protected void simpleUpdate(){
+        cn.updateGeometricState(tpf,true);
         Camera c=display.getRenderer().getCamera();
-        c.lookAt(new Vector3f(0,0,0));
-//        c.setFrame(c.getLocation(),new Vector3f(-1,0,0),new Vector3f(0,1,0),new Vector3f(c.getLocation()).negateLocal());
+
+        Vector3f objectCenter=((BoundingSphere)rootNode.getWorldBound()).center;
+        Vector3f lookAtObject=new Vector3f(objectCenter).subtractLocal(c.getLocation());
+
+        c.setDirection(lookAtObject);
         c.update();
     }
 }
