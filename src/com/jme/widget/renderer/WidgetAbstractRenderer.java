@@ -43,14 +43,14 @@ import com.jme.widget.WidgetRenderer;
 /**
  * <code>WidgetAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetAbstractRenderer.java,v 1.1 2004-03-04 03:30:03 greggpatton Exp $
+ * @version $Id: WidgetAbstractRenderer.java,v 1.2 2004-03-05 11:38:14 greggpatton Exp $
  */
 public abstract class WidgetAbstractRenderer implements WidgetRenderer {
 
     public static float LOOK_AND_FEEL_TEXTURE_SIZE = 64;
     public static float LOOK_AND_FEEL_PIXEL_SIZE = 1f / LOOK_AND_FEEL_TEXTURE_SIZE;
 
-    private static String IMAGE_DIRECTORY = "com/jme/widget/lookandfeel/data/";
+    private static String IMAGE_DIRECTORY = "jmetest/data/lookandfeel/";
 
     protected Widget widget;
     protected Renderer renderer;
