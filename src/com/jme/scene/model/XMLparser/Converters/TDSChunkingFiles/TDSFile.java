@@ -11,8 +11,9 @@ import com.jme.light.Light;
 import com.jme.light.SpotLight;
 import com.jme.light.PointLight;
 import com.jme.renderer.ColorRGBA;
-import com.jme.system.JmeException;
 import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.animation.SpatialTransformer;
 
 import java.io.IOException;
 import java.io.DataInput;
@@ -30,6 +31,8 @@ public class TDSFile extends ChunkerClass{
     EditableObjectChunk objects=null;
     KeyframeChunk keyframes=null;
     ArrayList spatialNodes;
+    ArrayList spatialNodesNames;
+    private SpatialTransformer st;
 
     public TDSFile(DataInput myIn) throws IOException {
         super(myIn);
@@ -84,37 +87,62 @@ public class TDSFile extends ChunkerClass{
         }
         if (ls!=null)
             uberNode.setRenderState(ls);
+        uberNode.addController(st);
+        st.setActive(true);
         return uberNode;
     }
 
     private void putTranslations() {
-
-        int count=0;
-        for (int i=0;i<spatialNodes.size();i++)
-            if (spatialNodes.get(i) instanceof Spatial)
-                count++;
+        st=new SpatialTransformer(spatialNodes.size());
         for (int i=0;i<spatialNodes.size();i++){
-            if (spatialNodes.get(i) instanceof Spatial){
-                Spatial toChange=(Spatial) spatialNodes.get(i);
-                KeyframeInfoChunk.KeyPointInTime thisTime=
-                        (KeyframeInfoChunk.KeyPointInTime) ((KeyframeInfoChunk)keyframes.objKeyframes.get(toChange.getName())).track.get(0);
-                if (thisTime.position!=null)
-                    toChange.setLocalTranslation(thisTime.position);
+            st.setObject(spatialNodes.get(i),i,getParentIndex(i));
+        }
+        Object[] keysetKeyframe=keyframes.objKeyframes.keySet().toArray();
+        for (int i=0;i<keysetKeyframe.length;i++){
+            KeyframeInfoChunk thisOne=(KeyframeInfoChunk) keyframes.objKeyframes.get(keysetKeyframe[i]);
+            int indexInST=findIndex(thisOne.name);
+            st.putPivot(indexInST,thisOne.pivot);
+            for (int j=0;j<thisOne.track.size();j++){
+                KeyframeInfoChunk.KeyPointInTime thisTime=(KeyframeInfoChunk.KeyPointInTime) thisOne.track.get(j);
                 if (thisTime.rot!=null)
-                    toChange.setLocalRotation(thisTime.rot);
+                    st.setRotation(indexInST,thisTime.frame,thisTime.rot);
+                if (thisTime.position!=null)
+                    st.setPosition(indexInST,thisTime.frame,thisTime.position);
                 if (thisTime.scale!=null)
-                    toChange.setLocalScale(thisTime.scale);
+                    st.setScale(indexInST,thisTime.frame,thisTime.scale);
             }
         }
+        st.interpolateMissing();
+        st.setSpeed(10);
     }
 
 
+    private int findIndex(String name) {
+        for (int i=0;i<spatialNodesNames.size();i++){
+            if (spatialNodesNames.get(i).equals(name)) return i;
+        }
+        throw new JmeException("Logic error.  Unknown keyframe name " + name);
+    }
+
+    private int getParentIndex(int objectIndex) {
+        short parentID=((KeyframeInfoChunk)keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex))).parent;
+        if (parentID==-1) return -1;
+        Object[] objs=keyframes.objKeyframes.keySet().toArray();
+        for (int i=0;i<objs.length;i++){
+            if (((KeyframeInfoChunk)keyframes.objKeyframes.get(objs[i])).myID==parentID)
+                return i;
+        }
+        throw new JmeException("Logic error.  Unknown parent ID for " + objectIndex);
+    }
+
     private void buildObject() throws IOException {
         spatialNodes=new ArrayList();   // An ArrayList of Nodes
+        spatialNodesNames=new ArrayList();   // Their names
         Iterator i=objects.namedObjects.keySet().iterator();
         while (i.hasNext()){
             String objectKey=(String) i.next();
             NamedObjectChunk noc=(NamedObjectChunk) objects.namedObjects.get(objectKey);
+            spatialNodesNames.add(noc.name);
             if (noc.whatIAm instanceof TriMeshChunk){
                 Node parentNode=new Node(objectKey);
                 putChildMeshes(parentNode,(TriMeshChunk) noc.whatIAm,((KeyframeInfoChunk)keyframes.objKeyframes.get(objectKey)).pivot);
@@ -125,6 +153,8 @@ public class TDSFile extends ChunkerClass{
                     spatialNodes.add(parentNode);
             } else if (noc.whatIAm instanceof LightChunk){
                 spatialNodes.add(createChildLight((LightChunk)noc.whatIAm));
+            } else{
+                spatialNodes.add(null);
             }
         }
     }
@@ -250,6 +280,14 @@ public class TDSFile extends ChunkerClass{
                 System.arraycopy(indexes,0,intIndexes,0,curPosition);
                 part.setIndices(intIndexes);
 
+                // TODO: remove in final product
+                if (parentNode.getName().equals("red")){
+                    part.setSolidColor(ColorRGBA.red);
+                } else if (parentNode.getName().equals("blue")){
+                    part.setSolidColor(ColorRGBA.blue);
+                }else
+                    part.setSolidColor(ColorRGBA.randomColor());
+
                 MaterialBlock myMaterials=(MaterialBlock) objects.materialBlocks.get(matName);
                 if (matName==null)
                     throw new IOException("Couldn't find the correct name of " + myMaterials);
@@ -275,6 +313,7 @@ public class TDSFile extends ChunkerClass{
             TriMesh noMaterials=new TriMesh(parentNode.getName()+"-1");
             noMaterials.setVertices(whatIAm.vertexes);
             noMaterials.setIndices(noMaterialIndexes);
+            noMaterials.setSolidColor(ColorRGBA.randomColor());
             parentNode.attachChild(noMaterials);
         }
     }
