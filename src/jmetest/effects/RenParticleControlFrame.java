@@ -38,23 +38,33 @@ import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import com.jme.math.FastMath;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.effects.*;
 
 public class RenParticleControlFrame extends JFrame {
   BorderLayout borderLayout1 = new BorderLayout();
@@ -130,12 +140,24 @@ public class RenParticleControlFrame extends JFrame {
   GridBagLayout gridBagLayout12 = new GridBagLayout();
   JLabel randomLabel = new JLabel();
   JSlider randomSlider = new JSlider();
+  JPanel examplesPanel = new JPanel();
+  GridBagLayout gridBagLayout13 = new GridBagLayout();
+  JScrollPane exampleSP = new JScrollPane();
+  JList exampleList = null;
+  JLabel examplesLabel = new JLabel();
+  JButton exampleButton = new JButton();
+  JPanel codePanel = new JPanel();
+  GridBagLayout gridBagLayout14 = new GridBagLayout();
+  JLabel codeLabel = new JLabel();
+  JScrollPane codeSP = new JScrollPane();
+  JTextArea codeTextArea = new JTextArea();
+  DefaultListModel exampleModel = new DefaultListModel();
 
   /**
   * <code>RenParticleControlFrame</code>
   *
   * @author Joshua Slack
-  * @version $Id: RenParticleControlFrame.java,v 1.6 2004-03-24 18:46:06 renanse Exp $
+  * @version $Id: RenParticleControlFrame.java,v 1.7 2004-03-24 20:09:43 renanse Exp $
   *
   */
 
@@ -148,7 +170,7 @@ public class RenParticleControlFrame extends JFrame {
     }
   }
 
-  void jbInit() throws Exception {
+  private void jbInit() throws Exception {
     colorBorder = new TitledBorder("");
     sizeBorder = new TitledBorder("");
     ageBorder = new TitledBorder(" PARTICLE AGE ");
@@ -215,6 +237,7 @@ public class RenParticleControlFrame extends JFrame {
         int val = endSizeSlider.getValue();
         TestRenParticleGUI.manager.setEndSize(val/10f);
         updateSizeLabels();
+        regenCode();
       }
     });
     startSizeSlider.setMajorTickSpacing(10);
@@ -225,6 +248,7 @@ public class RenParticleControlFrame extends JFrame {
         int val = startSizeSlider.getValue();
         TestRenParticleGUI.manager.setStartSize(val/10f);
         updateSizeLabels();
+        regenCode();
       }
     });
     ageBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
@@ -241,6 +265,7 @@ public class RenParticleControlFrame extends JFrame {
         int val = speedSlider.getValue();
         TestRenParticleGUI.manager.setParticlesSpeed((float)val * .1f);
         updateSpeedLabels();
+        regenCode();
       }
     });
     texturePanel.setBorder(textureBorder);
@@ -279,6 +304,7 @@ public class RenParticleControlFrame extends JFrame {
         int val = gravXSlider.getValue();
         if (TestRenParticleGUI.manager != null)
           TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.001f;
+        regenCode();
       }
     });
 
@@ -298,6 +324,7 @@ public class RenParticleControlFrame extends JFrame {
         int val = gravYSlider.getValue();
         if (TestRenParticleGUI.manager != null)
           TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.001f;
+        regenCode();
       }
     });
 
@@ -317,6 +344,7 @@ public class RenParticleControlFrame extends JFrame {
         int val = gravZSlider.getValue();
         if (TestRenParticleGUI.manager != null)
           TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.001f;
+        regenCode();
       }
     });
 
@@ -333,6 +361,7 @@ public class RenParticleControlFrame extends JFrame {
         int val = minAgeSlider.getValue();
         TestRenParticleGUI.manager.setParticlesMinimumLifeTime((float)val);
         updateAgeLabels();
+        regenCode();
       }
     });
 
@@ -354,6 +383,7 @@ public class RenParticleControlFrame extends JFrame {
           TestRenParticleGUI.manager.getEmissionDirection().z = (float) val * .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
+        regenCode();
       }
     });
     emitYSlider.setOrientation(JSlider.VERTICAL);
@@ -370,6 +400,7 @@ public class RenParticleControlFrame extends JFrame {
           TestRenParticleGUI.manager.getEmissionDirection().y = (float)val * .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
+        regenCode();
       }
     });
     emitXSlider.setOrientation(JSlider.VERTICAL);
@@ -386,6 +417,7 @@ public class RenParticleControlFrame extends JFrame {
           TestRenParticleGUI.manager.getEmissionDirection().x = (float)val * .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
+        regenCode();
       }
     });
     emitXLabel.setFont(new java.awt.Font("Arial", 1, 13));
@@ -408,6 +440,7 @@ public class RenParticleControlFrame extends JFrame {
         int val = angleSlider.getValue();
         TestRenParticleGUI.manager.setEmissionMaximumAngle((float)val * FastMath.DEG_TO_RAD);
         updateAngleLabels();
+        regenCode();
       }
     });
     randomPanel.setBorder(randomBorder);
@@ -423,8 +456,45 @@ public class RenParticleControlFrame extends JFrame {
         int val = randomSlider.getValue();
         TestRenParticleGUI.manager.setRandomMod((float)val*.01f);
         updateRandomLabels();
+        regenCode();
       }
     });
+    examplesPanel.setLayout(gridBagLayout13);
+    examplesLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    examplesLabel.setText("Prebuilt Examples:");
+    exampleButton.setFont(new java.awt.Font("Arial", 0, 12));
+    exampleButton.setMargin(new Insets(2, 14, 2, 14));
+    exampleButton.setText("Apply");
+    exampleButton.setEnabled(false);
+    exampleButton.addActionListener(new ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        applyExample();
+      }
+    });
+    updateExampleModel();
+    exampleList = new JList(exampleModel);
+    exampleList.setFont(new java.awt.Font("Arial", 0, 13));
+    exampleList.addListSelectionListener(new ListSelectionListener() {
+      public void valueChanged(ListSelectionEvent e) {
+        if (exampleList.getSelectedValue() instanceof String)
+          exampleButton.setEnabled(true);
+        else
+          exampleButton.setEnabled(false);
+      }
+    });
+    codePanel.setFont(new java.awt.Font("Arial", 0, 13));
+    codePanel.setLayout(gridBagLayout14);
+    appPanel.setFont(new java.awt.Font("Arial", 0, 13));
+    emitPanel.setFont(new java.awt.Font("Arial", 0, 13));
+    worldPanel.setFont(new java.awt.Font("Arial", 0, 13));
+    examplesPanel.setFont(new java.awt.Font("Arial", 0, 13));
+    mainTabbedPane1.setFont(new java.awt.Font("Arial", 0, 13));
+    codeLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    codeLabel.setText("Particle Code:");
+    codeTextArea.setFont(new java.awt.Font("Monospaced", 0, 10));
+    codeTextArea.setText("");
+    codeTextArea.setEditable(false);
+    codeTextArea.setAutoscrolls(true);
     this.getContentPane().add(mainTabbedPane1, BorderLayout.CENTER);
     mainTabbedPane1.add(appPanel,   "Appearance");
     mainTabbedPane1.add(emitPanel,     "Emission");
@@ -450,12 +520,14 @@ public class RenParticleControlFrame extends JFrame {
     startAlphaSpinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         TestRenParticleGUI.manager.getStartColor().a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
+        regenCode();
       }
     });
 
     endAlphaSpinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         TestRenParticleGUI.manager.getEndColor().a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
+        regenCode();
       }
     });
 
@@ -538,8 +610,87 @@ public class RenParticleControlFrame extends JFrame {
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 10, 5, 10), 0, 0));
     randomPanel.add(randomSlider,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
+    mainTabbedPane1.add(examplesPanel,   "Examples");
+    examplesPanel.add(examplesLabel,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 5, 10), 0, 0));
+        examplesPanel.add(exampleSP,     new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
+                ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 10, 0, 10), 0, 0));
+    examplesPanel.add(exampleButton,   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 10, 10, 10), 0, 0));
+    exampleSP.setViewportView(exampleList);
+    mainTabbedPane1.add(codePanel,  "Code");
+    codePanel.add(codeLabel,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 5, 10), 0, 0));
+    codePanel.add(codeSP,   new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
+            ,GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(5, 10, 10, 10), 0, 0));
+    codeSP.setViewportView(codeTextArea);
 
     setSize(new Dimension(450, 320));
+  }
+
+  /**
+   * applyExample
+   */
+  private void applyExample() {
+    if (exampleList == null || exampleList.getSelectedValue() == null) return;
+    String examType = exampleList.getSelectedValue().toString();
+    RenParticleManager manager = TestRenParticleGUI.manager;
+    if ("FIRE".equalsIgnoreCase(examType)) {
+      manager.setStartColor(new ColorRGBA(1f, .312f, .121f, 1));
+      manager.setEndColor(new ColorRGBA(1f, .312f, .121f, 0));
+      manager.setStartSize(40f);
+      manager.setEndSize(40f);
+      manager.setEmissionMaximumAngle(.174f);
+      manager.setRandomMod(5.0f);
+      manager.setParticlesSpeed(2.96f);
+      manager.setParticlesMinimumLifeTime(800f);
+      manager.setGravityForce(new Vector3f(0f,0f,0f));
+    } else if ("FOUNTAIN".equalsIgnoreCase(examType)) {
+      manager.setStartColor(new ColorRGBA(0f, .0625f, 1f, 1));
+      manager.setEndColor(new ColorRGBA(0f, .0625f, 1f, 0));
+      manager.setStartSize(10f);
+      manager.setEndSize(10f);
+      manager.setEmissionMaximumAngle(.244f);
+      manager.setRandomMod(1.0f);
+      manager.setParticlesSpeed(7.5f);
+      manager.setParticlesMinimumLifeTime(2000f);
+      manager.setGravityForce(new Vector3f(0f,-4e-3f,0f));
+    } else if ("LAVA".equalsIgnoreCase(examType)) {
+      manager.setStartColor(new ColorRGBA(1f, .18f, 0.125f, 1));
+      manager.setEndColor(new ColorRGBA(1f, .18f, 0.125f, 0));
+      manager.setStartSize(40f);
+      manager.setEndSize(40f);
+      manager.setEmissionMaximumAngle(.418f);
+      manager.setRandomMod(1.0f);
+      manager.setParticlesSpeed(3.0f);
+      manager.setParticlesMinimumLifeTime(2400f);
+      manager.setGravityForce(new Vector3f(0f,-4e-3f,0f));
+    } else if ("SMOKE".equalsIgnoreCase(examType)) {
+      manager.setStartColor(new ColorRGBA(.375f, .375f, .375f, 1));
+      manager.setEndColor(new ColorRGBA(.375f, .375f, .375f, 0));
+      manager.setStartSize(20f);
+      manager.setEndSize(40f);
+      manager.setEmissionMaximumAngle(.331f);
+      manager.setRandomMod(2.6f);
+      manager.setParticlesSpeed(.9f);
+      manager.setParticlesMinimumLifeTime(4000f);
+      manager.setGravityForce(new Vector3f(0f,0f,0f));
+    }
+    manager.setEmissionDirection(new Vector3f(0f,0f,0f));
+    manager.warmup();
+    updateFromManager();
+  }
+
+  /**
+   * updateExampleModel
+   */
+  private void updateExampleModel() {
+    exampleModel.addElement("Fire");
+    exampleModel.addElement("Fountain");
+    exampleModel.addElement("Lava");
+    exampleModel.addElement("Smoke");
+//    exampleModel.addElement("Rain");
+//    exampleModel.addElement("Snow");
   }
 
   /**
@@ -568,6 +719,7 @@ public class RenParticleControlFrame extends JFrame {
     updateAngleLabels();
     randomSlider.setValue((int)(TestRenParticleGUI.manager.getRandomMod() * 10));
     updateRandomLabels();
+    regenCode();
     validate();
   }
 
@@ -640,7 +792,7 @@ public class RenParticleControlFrame extends JFrame {
     return new ColorRGBA(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
   }
 
-  void startColorPanel_mouseClicked(MouseEvent e) {
+  private void startColorPanel_mouseClicked(MouseEvent e) {
     TestRenParticleGUI.noUpdate = true;
     Color color = JColorChooser.showDialog(this, "Choose new start color:", startColorPanel.getBackground());
     if (color == null) return;
@@ -648,11 +800,12 @@ public class RenParticleControlFrame extends JFrame {
     rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
     TestRenParticleGUI.manager.setStartColor(rgba);
     startColorPanel.setBackground(color);
+    regenCode();
     updateColorLabels();
     TestRenParticleGUI.noUpdate = false;
   }
 
-  void endColorPanel_mouseClicked(MouseEvent e) {
+  private void endColorPanel_mouseClicked(MouseEvent e) {
     TestRenParticleGUI.noUpdate = true;
     Color color = JColorChooser.showDialog(this, "Choose new end color:", endColorPanel.getBackground());
     if (color == null) return;
@@ -660,8 +813,53 @@ public class RenParticleControlFrame extends JFrame {
     rgba.a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
     TestRenParticleGUI.manager.setEndColor(rgba);
     endColorPanel.setBackground(color);
+    regenCode();
     updateColorLabels();
     TestRenParticleGUI.noUpdate = false;
   }
 
+  private void regenCode() {
+    StringBuffer code = new StringBuffer();
+    if (TestRenParticleGUI.manager == null) {
+      codeTextArea.setText("");
+      return;
+    }
+    code.append("RenParticleManager manager = new RenParticleManager("+TestRenParticleGUI.manager.getParticlesNumber()+", display.getRenderer().getCamera());\n");
+    code.append("manager.setGravityForce("+codeString(TestRenParticleGUI.manager.getGravityForce())+");\n");
+    code.append("manager.setEmissionDirection("+codeString(TestRenParticleGUI.manager.getEmissionDirection())+");\n");
+    code.append("manager.setEmissionMaximumAngle("+TestRenParticleGUI.manager.getEmissionMaximumAngle()+"f);\n");
+    code.append("manager.setParticlesSpeed("+TestRenParticleGUI.manager.getParticlesSpeed()+"f);\n");
+    code.append("manager.setParticlesMinimumLifeTime("+TestRenParticleGUI.manager.getParticlesMinimumLifeTime()+"f);\n");
+    code.append("manager.setStartSize("+TestRenParticleGUI.manager.getStartSize()+"f);\n");
+    code.append("manager.setEndSize("+TestRenParticleGUI.manager.getEndSize()+"f);\n");
+    code.append("manager.setStartColor("+codeString(TestRenParticleGUI.manager.getStartColor())+");\n");
+    code.append("manager.setEndColor("+codeString(TestRenParticleGUI.manager.getEndColor())+");\n");
+    code.append("manager.setRandomMod("+TestRenParticleGUI.manager.getRandomMod()+"f);\n");
+    code.append("\n");
+    code.append("Node myNode = new Node(\"Particle Nodes\")\n");
+    code.append("myNode.setRenderState(YOUR TEXTURE STATE);\n");
+    code.append("myNode.setRenderState(YOUR ALPHA STATE);\n");
+    code.append("myNode.attachChild(manager.getParticles());\n");
+    codeTextArea.setText(code.toString());
+    codeTextArea.setCaretPosition(0);
+  }
+
+  private String codeString(ColorRGBA rgba) {
+    StringBuffer code = new StringBuffer("new ColorRGBA(");
+    code.append(rgba.r+"f, ");
+    code.append(rgba.g+"f, ");
+    code.append(rgba.b+"f, ");
+    code.append(rgba.a+"f");
+    code.append(")");
+    return code.toString();
+  }
+
+  private String codeString(Vector3f vect) {
+    StringBuffer code = new StringBuffer("new Vector3f(");
+    code.append(vect.x+"f, ");
+    code.append(vect.y+"f, ");
+    code.append(vect.z+"f");
+    code.append(")");
+    return code.toString();
+  }
 }
