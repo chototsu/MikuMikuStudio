@@ -43,14 +43,13 @@ import com.jme.util.Timer;
  * the logic based on the time elapsed.
  *
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.5 2004-03-27 01:05:07 renanse Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.6 2004-03-27 04:04:33 renanse Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 
 	//Timing stuff
 	private Timer timer;
-	private long time0, time1;
-	private float frametime, fps;
+	private float frametime;
 
 	/**
 	 * <code>getFramesPerSecond</code> gets the current frame rate.
@@ -87,7 +86,6 @@ public abstract class VariableTimestepGame extends AbstractGame {
 
 			initGame();
 
-			time0 = timer.getTime();
 			//main loop
 			while (!finished && !display.isClosing()) {
 				//determine time elapsed since last frame

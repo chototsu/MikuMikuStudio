@@ -79,6 +79,14 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 
+/**
+ * <code>RenParticleControlFrame</code>
+ *
+ * @author Joshua Slack
+ * @version $Id: RenParticleControlFrame.java,v 1.22 2004-03-27 04:04:31 renanse Exp $
+ *
+ */
+
 public class RenParticleControlFrame extends JFrame {
   JTabbedPane mainTabbedPane1 = new JTabbedPane();
   JPanel appPanel = new JPanel();
@@ -172,14 +180,6 @@ public class RenParticleControlFrame extends JFrame {
   TitledBorder velocityBorder;
   JLabel velocityLabel = new JLabel();
   JSlider velocitySlider = new JSlider();
-
-  /**
-   * <code>RenParticleControlFrame</code>
-   *
-   * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.21 2004-03-27 01:05:07 renanse Exp $
-   *
-   */
 
   public RenParticleControlFrame() {
     try {

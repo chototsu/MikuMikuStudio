@@ -56,7 +56,7 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.11 2004-03-27 01:05:08 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.12 2004-03-27 04:04:32 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
@@ -69,6 +69,7 @@ public class RenParticleManager extends Controller {
       new Vector2f(1.0f, 1.0f), new Vector2f(0.0f, 1.0f)
   };
 
+  private Vector3f particleSpeed;
   private TriMesh particlesGeometry;
   private int noParticles;
   private int releaseRate; // particles per second
@@ -118,6 +119,7 @@ public class RenParticleManager extends Controller {
     emissionDirection = new Vector3f(0.0f, 1.0f, 0.0f);
     startColor = new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f);
     endColor = new ColorRGBA(1.0f, 1.0f, 0.0f, 0.0f);
+    particleSpeed = new Vector3f();
 
     setMinTime(0);
     setMaxTime(Float.MAX_VALUE);
@@ -185,9 +187,8 @@ public class RenParticleManager extends Controller {
       currentTime += secondsPassed;
       if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
 
-        Vector3f speed = new Vector3f();
         if (controlFlow) {
-          if (currentTime - releaseTime > 1000.0) {
+          if (currentTime - releaseTime > 1.0f) {
             released = 0;
             releaseTime = currentTime;
           }
@@ -215,8 +216,8 @@ public class RenParticleManager extends Controller {
                 released++;
                 particlesToCreate--;
               }
-              getRandomSpeed(speed);
-              particles[i].recreateParticle(speed, getRandomLifeSpan());
+              getRandomSpeed(particleSpeed);
+              particles[i].recreateParticle(particleSpeed, getRandomLifeSpan());
               particles[i].status = RenParticle.ALIVE;
 
               switch (getGeometry()) {
@@ -330,28 +331,19 @@ public class RenParticleManager extends Controller {
   }
 
   /**
-   * Uses the System.currentTimeMillis() to return a heartbeat for this manager.
-   *
-   * @return long
-   */
-  private long getTimerTic() {
-    return System.currentTimeMillis();
-  }
-
-  /**
    * Generate a random velocity within the parameters of max angle and
    * the rotation matrix.
    *
-   * @param speed a vector to store the results in.
+   * @param pSpeed a vector to store the results in.
    */
-  private void getRandomSpeed(Vector3f speed) {
+  private void getRandomSpeed(Vector3f pSpeed) {
     float randDir = FastMath.TWO_PI * FastMath.nextRandomFloat();
     float clampAngle = clampToMaxAngle(FastMath.PI * FastMath.nextRandomFloat());
-    speed.x = (float) (FastMath.cos(randDir) * FastMath.sin(clampAngle));
-    speed.y = (float) FastMath.cos(clampAngle);
-    speed.z = (float) (FastMath.sin(randDir) * FastMath.sin(clampAngle));
-    rotateVectorSpeed(speed);
-    speed.multLocal(initialVelocity);
+    pSpeed.x = (float) (FastMath.cos(randDir) * FastMath.sin(clampAngle));
+    pSpeed.y = (float) FastMath.cos(clampAngle);
+    pSpeed.z = (float) (FastMath.sin(randDir) * FastMath.sin(clampAngle));
+    rotateVectorSpeed(pSpeed);
+    pSpeed.multLocal(initialVelocity);
   }
 
   /**
@@ -387,21 +379,21 @@ public class RenParticleManager extends Controller {
    *
    * @param speed the velocity vector to be modified.
    */
-  private void rotateVectorSpeed(Vector3f speed) {
+  private void rotateVectorSpeed(Vector3f pSpeed) {
 
-    float x = speed.x,
-        y = speed.y,
-        z = speed.z;
+    float x = pSpeed.x,
+        y = pSpeed.y,
+        z = pSpeed.z;
 
-    speed.x = -1 * ( (rotMatrix.m00 * x) +
+    pSpeed.x = -1 * ( (rotMatrix.m00 * x) +
                     (rotMatrix.m10 * y) +
                     (rotMatrix.m20 * z));
 
-    speed.y = (rotMatrix.m01 * x) +
+    pSpeed.y = (rotMatrix.m01 * x) +
         (rotMatrix.m11 * y) +
         (rotMatrix.m21 * z);
 
-    speed.z = -1 * ( (rotMatrix.m02 * x) +
+    pSpeed.z = -1 * ( (rotMatrix.m02 * x) +
                     (rotMatrix.m12 * y) +
                     (rotMatrix.m22 * z));
   }

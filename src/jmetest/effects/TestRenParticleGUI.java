@@ -58,7 +58,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.13 2004-03-27 01:05:07 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.14 2004-03-27 04:04:32 renanse Exp $
  */
 public class TestRenParticleGUI extends VariableTimestepGame {
 
@@ -99,22 +99,15 @@ public class TestRenParticleGUI extends VariableTimestepGame {
     controlFrame = new RenParticleControlFrame();
   }
 
-  float tpf = 0;
   protected void update(float interpolation) {
-    if (quit) {
-      finished = true;
-      return;
-    }
+    if (quit) finish();
     if (noUpdate) return;
-    timer.update();
-    tpf = timer.getTimePerFrame();
-    if (tpf > 1f) tpf = 1.0f; // do this to prevent a long pause at start
 
-    frame.handleInput(tpf*10f);
+    frame.handleInput(interpolation*10f);
 
     fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
               display.getRenderer().getStatistics());
-    main.updateGeometricState(tpf, true);
+    main.updateGeometricState(interpolation, true);
   }
 
   protected void render(float interpolation) {
