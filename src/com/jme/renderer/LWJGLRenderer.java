@@ -59,11 +59,13 @@ import com.jme.scene.state.LWJGLMaterialState;
 import com.jme.scene.state.LWJGLShadeState;
 import com.jme.scene.state.LWJGLTextureState;
 import com.jme.scene.state.LWJGLWireframeState;
+import com.jme.scene.state.LWJGLZBufferState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 
@@ -72,7 +74,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.4 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.5 2003-10-31 22:02:54 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -214,6 +216,10 @@ public class LWJGLRenderer implements Renderer {
      */
     public WireframeState getWireframeState() {
         return new LWJGLWireframeState();
+    }
+    
+    public ZBufferState getZBufferState() {
+        return new LWJGLZBufferState();
     }
 
     /**

@@ -38,7 +38,7 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>Vector3f</code> defines a Vector for a three float value tuple. 
  * @author Mark Powell
- * @version $Id: Vector3f.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Vector3f.java,v 1.2 2003-10-31 22:02:54 mojomonkey Exp $
  */
 public class Vector3f {
     /**
@@ -109,6 +109,19 @@ public class Vector3f {
     }
     
     /**
+     * <code>cross</code> calculates the cross product of this vector
+     * with a parameter vector v.
+     * @param v the vector to take the cross product of with this.
+     * @return the cross product vector.
+     */
+    public Vector3f cross(Vector3f v) {
+        return new Vector3f(
+            ((y * v.z) - (z * v.y)),
+            ((z * v.x) - (x * v.z)),
+            ((x * v.y) - (y * v.x)));
+    }
+    
+    /**
      * <code>length</code> calculates the magnitude of this vector.
      * @return the length or magnitude of the vector.
      */
@@ -137,6 +150,17 @@ public class Vector3f {
     }
     
     /**
+     * <code>divide</code> divides the values of this vector by a 
+     * scalar and returns the result. The values of this vector 
+     * remain untouched.
+     * @param scalar the value to divide this vectors attributes by.
+     * @return the result <code>Vector</code>.
+     */
+    public Vector3f divide(float scalar) {
+        return new Vector3f(x / scalar, y / scalar, z / scalar);
+    }
+    
+    /**
      * 
      * <code>negate</code> returns the negative of this vector. All values are
      * negated and set to a new vector.
@@ -156,6 +180,16 @@ public class Vector3f {
      */
     public Vector3f subtract(Vector3f vec) {
         return new Vector3f(x - vec.x, y - vec.y, z - vec.z);
+    }
+    
+    /**
+     * <code>normalize</code> returns the unit vector of this vector.
+     * @return unit vector of this vector.
+     */
+    public Vector3f normalize() {
+        float length = length();
+
+        return divide(length);
     }
     
     /**

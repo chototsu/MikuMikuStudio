@@ -45,6 +45,7 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.ZBufferState;
 
 /**
  * <code>Renderer</code> defines an interface that handles displaying 
@@ -65,7 +66,7 @@ import com.jme.scene.state.WireframeState;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.4 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.5 2003-10-31 22:02:54 mojomonkey Exp $
  */
 public interface Renderer {
     
@@ -160,6 +161,8 @@ public interface Renderer {
      *      proper renderer.
      */
     public WireframeState getWireframeState();
+    
+    public ZBufferState getZBufferState();
     
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color
