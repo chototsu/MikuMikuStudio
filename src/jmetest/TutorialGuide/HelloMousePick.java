@@ -68,13 +68,11 @@ public class HelloMousePick extends SimpleGame {
         b=new Box("My Box", new Vector3f(-1,-1,-1),new Vector3f(1,1,1));
         b.setModelBound(new BoundingBox());
         b.updateModelBound();
+        // Attach Children
         rootNode.attachChild(b);
+        rootNode.attachChild(am);
         // Remove all the lightstates so we can see the per-vertex colors
         lightState.detachAll();
-
-        // Update the mouse's newly added render states
-        am.updateRenderState();
-//        rootNode.attachChild(am);  // If you do this, NO NEED to render mouse seperately.
     }
 
     // This is called every frame.  Do changing of values here.
@@ -94,12 +92,5 @@ public class HelloMousePick extends SimpleGame {
             if (Intersection.intersection(mouseRay, b.getWorldBound()))
                 b.setRandomColors();
         }
-    }
-
-    // This is called every frame.  Do rendering here.
-    protected void simpleRender(){
-        // Draw the mouse
-//        display.getRenderer().draw(am);
-        am.onDraw(display.getRenderer());
     }
 }
