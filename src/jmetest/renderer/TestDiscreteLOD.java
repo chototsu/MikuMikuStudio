@@ -32,262 +32,107 @@
 
 package jmetest.renderer;
 
-import com.jme.app.*;
-import com.jme.bounding.*;
-import com.jme.image.*;
-import com.jme.input.*;
-import com.jme.light.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
-import com.jme.scene.*;
-import com.jme.scene.lod.*;
-import com.jme.scene.shape.*;
-import com.jme.scene.state.*;
-import com.jme.system.*;
-import com.jme.util.*;
+import com.jme.app.SimpleGame;
+import com.jme.bounding.BoundingBox;
+import com.jme.image.Texture;
+import com.jme.math.FastMath;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
+import com.jme.scene.DistanceSwitchModel;
+import com.jme.scene.lod.DiscreteLodNode;
+import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
 
 /**
- * <code>TestLightState</code>
+ * <code>TestDiscreteLOD</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.7 2004-04-22 22:27:39 renanse Exp $
+ * @version $Id: TestDiscreteLOD.java,v 1.8 2004-04-23 00:47:22 renanse Exp $
  */
-public class TestDiscreteLOD extends BaseGame {
-	private Camera cam;
-	private CameraNode camNode;
-	private Node root;
-	private InputHandler input;
-	private Timer timer;
-	private Text fps;
+public class TestDiscreteLOD extends SimpleGame {
 
-	private Quaternion rotQuat = new Quaternion();
-	private float angle = 0;
-	private Vector3f axis = new Vector3f(1, 1, 0);
-    private DiscreteLodNode dlod;
+  private Quaternion rotQuat = new Quaternion();
+  private float angle = 0;
+  private Vector3f axis = new Vector3f(1, 1, 0);
+  private DiscreteLodNode dlod;
 
-	/**
-	 * Entry point for the test,
-	 * @param args
-	 */
-	public static void main(String[] args) {
-		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
-		TestDiscreteLOD app = new TestDiscreteLOD();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-		app.start();
-	}
+  /**
+   * Entry point for the test,
+   * @param args
+   */
+  public static void main(String[] args) {
+    TestDiscreteLOD app = new TestDiscreteLOD();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
+  }
 
-	/**
-	 * Not used in this test.
-	 * @see com.jme.app.SimpleGame#update()
-	 */
-	protected void update(float interpolation) {
+  /**
+   * Not used in this test.
+   * @see com.jme.app.SimpleGame#update()
+   */
+  protected void simpleUpdate(float interpolation) {
+    if (timer.getTimePerFrame() < 1) {
+      angle = angle + (timer.getTimePerFrame() * 10);
+      if (angle > 360)
+        angle = 0;
+    }
 
-		timer.update();
-		input.update(timer.getTimePerFrame());
+    rotQuat.fromAngleAxis(angle * FastMath.DEG_TO_RAD, axis);
 
-		if (timer.getTimePerFrame() < 1) {
-			angle = angle + (timer.getTimePerFrame() * 1);
-			if (angle > 360) {
-				angle = 0;
-			}
-		}
+    dlod.setLocalRotation(rotQuat);
+  }
 
-		rotQuat.fromAngleAxis(angle, axis);
+  /**
+   * builds the trimesh.
+   * @see com.jme.app.SimpleGame#initGame()
+   */
+  protected void simpleInitGame() {
+    display.setTitle("Discrete Level of Detail Test");
+    cam.setLocation(new Vector3f(0, 0, 50));
+    cam.update();
+    input.setKeySpeed(20);
 
-		dlod.setLocalRotation(rotQuat);
+    Sphere s1 = new Sphere("Sphere", 100, 100, 25);
+    s1.setModelBound(new BoundingBox());
+    s1.updateModelBound();
 
-		root.updateGeometricState(timer.getTimePerFrame(), true);
-		fps.print(
-			"FPS: "
-				+ (int) timer.getFrameRate()
-				+ " : "
-				+ display.getRenderer().getStatistics());
-		//        System.out.println(timer.getFrameRate());
-		display.getRenderer().clearStatistics();
-	}
+    Sphere s2 = new Sphere("Sphere", 50, 50, 25);
+    s2.setModelBound(new BoundingBox());
+    s2.updateModelBound();
 
-	/**
-	 * clears the buffers and then draws the TriMesh.
-	 * @see com.jme.app.SimpleGame#render()
-	 */
-	protected void render(float interpolation) {
-		display.getRenderer().clearBuffers();
+    Sphere s3 = new Sphere("Sphere", 30, 20, 25);
+    s3.setModelBound(new BoundingBox());
+    s3.updateModelBound();
 
-		display.getRenderer().draw(root);
+    Sphere s4 = new Sphere("Sphere", 10, 10, 25);
+    s4.setModelBound(new BoundingBox());
+    s4.updateModelBound();
 
-	}
+    DistanceSwitchModel m = new DistanceSwitchModel(4);
+    m.setModelDistance(0, 0, 100);
+    m.setModelDistance(1, 100, 200);
+    m.setModelDistance(2, 200, 300);
+    m.setModelDistance(3, 300, 1000);
 
-	/**
-	 * creates the displays and sets up the viewport.
-	 * @see com.jme.app.SimpleGame#initSystem()
-	 */
-	protected void initSystem() {
-		try {
-			display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-			display.createWindow(
-				properties.getWidth(),
-				properties.getHeight(),
-				properties.getDepth(),
-				properties.getFreq(),
-				properties.getFullscreen());
-			cam =
-				display.getRenderer().getCamera(
-					properties.getWidth(),
-					properties.getHeight());
+    dlod = new DiscreteLodNode("DLOD", m);
+    dlod.attachChild(s1);
+    dlod.attachChild(s2);
+    dlod.attachChild(s3);
+    dlod.attachChild(s4);
+    dlod.setActiveChild(0);
+    rootNode.attachChild(dlod);
 
-		} catch (JmeException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-		display.getRenderer().setBackgroundColor(blackColor);
-		cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+    TextureState ts = display.getRenderer().getTextureState();
+    ts.setEnabled(true);
+    ts.setTexture(
+        TextureManager.loadTexture(
+        TestBoxColor.class.getClassLoader().getResource(
+        "jmetest/data/images/Monkey.jpg"),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true));
 
-		display.getRenderer().setCamera(cam);
+    rootNode.setRenderState(ts);
 
-		camNode = new CameraNode("Camera Node", cam);
-		camNode.setLocalTranslation(new Vector3f(0, 0, -50));
-		camNode.updateWorldData(0);
-		//camNode.setLocalTranslation(new Vector3f();
-		input = new NodeHandler(this, camNode, "LWJGL");
-		input.setKeySpeed(30f);
-		input.setMouseSpeed(1f);
-		display.setTitle("Discrete Level of Detail Test");
-		display.getRenderer().enableStatistics(true);
-		timer = Timer.getTimer(properties.getRenderer());
-
-	}
-
-	/**
-	 * builds the trimesh.
-	 * @see com.jme.app.SimpleGame#initGame()
-	 */
-	protected void initGame() {
-		Vector3f max = new Vector3f(0.5f, 0.5f, 0.5f);
-		Vector3f min = new Vector3f(-0.5f, -0.5f, -0.5f);
-
-		Node scene = new Node("scene");
-		root = new Node("Root node");
-
-		Sphere s1 = new Sphere("Sphere", 100, 100, 25);
-		s1.setModelBound(new BoundingBox());
-		s1.updateModelBound();
-
-        Sphere s2 = new Sphere("Sphere", 50, 50, 25);
-        s2.setModelBound(new BoundingBox());
-        s2.updateModelBound();
-
-        Sphere s3 = new Sphere("Sphere", 30, 20, 25);
-        s3.setModelBound(new BoundingBox());
-        s3.updateModelBound();
-
-        Sphere s4 = new Sphere("Sphere", 10, 10, 25);
-        s4.setModelBound(new BoundingBox());
-        s4.updateModelBound();
-
-        DistanceSwitchModel m = new DistanceSwitchModel(4);
-        m.setModelDistance(0, 0, 100);
-        m.setModelDistance(1, 100, 200);
-        m.setModelDistance(2, 200, 300);
-        m.setModelDistance(3, 300, 1000);
-
-        dlod = new DiscreteLodNode("DLOD", m);
-        dlod.attachChild(s1);
-        dlod.attachChild(s2);
-        dlod.attachChild(s3);
-        dlod.attachChild(s4);
-        dlod.setActiveChild(0);
-		scene.attachChild(dlod);
-
-		TextureState ts = display.getRenderer().getTextureState();
-		ts.setEnabled(true);
-		ts.setTexture(
-			TextureManager.loadTexture(
-				TestBoxColor.class.getClassLoader().getResource(
-					"jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true));
-
-		scene.setRenderState(ts);
-
-		ZBufferState buf = display.getRenderer().getZBufferState();
-		buf.setEnabled(true);
-		buf.setFunction(ZBufferState.CF_LEQUAL);
-
-		SpotLight am = new SpotLight();
-		am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-		am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		am.setDirection(new Vector3f(0, 0, 0));
-		am.setLocation(new Vector3f(250, 100, 0));
-		am.setAngle(1);
-
-		SpotLight am2 = new SpotLight();
-		am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-		am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-		am2.setDirection(new Vector3f(0, 0, 0));
-		am2.setLocation(new Vector3f(-250, 10, 0));
-		am2.setAngle(1);
-
-		AlphaState as1 = display.getRenderer().getAlphaState();
-		as1.setBlendEnabled(true);
-		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		as1.setDstFunction(AlphaState.DB_ONE);
-		as1.setTestEnabled(true);
-		as1.setTestFunction(AlphaState.TF_GREATER);
-		as1.setEnabled(true);
-
-		TextureState font = display.getRenderer().getTextureState();
-		font.setTexture(
-			TextureManager.loadTexture(
-				TestManyChildren.class.getClassLoader().getResource(
-					"jmetest/data/font/font.png"),
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true));
-		font.setEnabled(true);
-
-		fps = new Text("FPS counter", "");
-		fps.setRenderState(font);
-		fps.setRenderState(as1);
-
-		DirectionalLight dr = new DirectionalLight();
-		dr.setDiffuse(new ColorRGBA(0.25f, 0.75f, 0.25f, 1.0f));
-		dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
-		//dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-		dr.setDirection(new Vector3f(150, 0, 150));
-
-		LightState state = display.getRenderer().getLightState();
-		state.setEnabled(true);
-		state.attach(am);
-		state.attach(dr);
-		state.attach(am2);
-		am.setEnabled(true);
-		am2.setEnabled(true);
-		dr.setEnabled(true);
-		scene.setRenderState(state);
-		scene.setRenderState(buf);
-		root.attachChild(scene);
-		root.attachChild(fps);
-		root.setForceView(true);
-
-		root.updateGeometricState(0.0f, true);
-		root.updateRenderState();
-
-	}
-	/**
-	 * not used.
-	 * @see com.jme.app.SimpleGame#reinit()
-	 */
-	protected void reinit() {
-
-	}
-
-	/**
-	 * Not used.
-	 * @see com.jme.app.SimpleGame#cleanup()
-	 */
-	protected void cleanup() {
-
-	}
-
+  }
 }
