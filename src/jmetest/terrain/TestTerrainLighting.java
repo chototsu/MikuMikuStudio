@@ -54,7 +54,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.20 2004-06-23 18:14:20 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.21 2004-07-08 20:34:59 renanse Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -175,7 +175,7 @@ public class TestTerrainLighting extends SimpleGame {
     t1.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
     t1.setCombineSrc1RGB(Texture.ACS_PRIMARY_COLOR);
     t1.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-    t1.setCombineScaleRGB(0);
+    t1.setCombineScaleRGB(1.0f);
 
     t2.setApply(Texture.AM_COMBINE);
     t2.setCombineFuncRGB(Texture.ACF_ADD_SIGNED);
@@ -183,7 +183,7 @@ public class TestTerrainLighting extends SimpleGame {
     t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
     t2.setCombineSrc1RGB(Texture.ACS_PREVIOUS);
     t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-    t2.setCombineScaleRGB(0);
+    t2.setCombineScaleRGB(1.0f);
     rootNode.setRenderState(ts);
 
     rootNode.attachChild(lightNode);
