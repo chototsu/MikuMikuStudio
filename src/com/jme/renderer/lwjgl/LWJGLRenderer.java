@@ -132,7 +132,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLRenderer.java,v 1.55 2004-12-30 02:28:21 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.56 2005-01-10 20:29:30 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -946,16 +946,16 @@ public class LWJGLRenderer implements Renderer {
         predrawMesh(t);
 
         IntBuffer indices = t.getIndexAsBuffer();
+        int verts = (t.getVertQuantity() >= 0 ? t.getVertQuantity() 
+                : t.getVertices().length);
         if (statisticsOn) {
             numberOfTris += (t.getTriangleQuantity() >= 0 ? t
                     .getTriangleQuantity() : t.getIndices().length / 3);
-            numberOfVerts += (t.getVertQuantity() >= 0 ? t.getVertQuantity()
-                    : t.getVertices().length);
+            numberOfVerts += verts;
         }
 
         if (GLContext.OpenGL12)
-            GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, t.getVertQuantity(),
-                    indices);
+            GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, verts, indices);
         else
             GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
 
@@ -975,9 +975,10 @@ public class LWJGLRenderer implements Renderer {
 
         IntBuffer indices = t.getIndexAsBuffer().duplicate();
         CompositeMesh.IndexRange[] ranges = t.getIndexRanges();
+        int verts = (t.getVertQuantity() >= 0 ? t.getVertQuantity() 
+                : t.getVertices().length);
         if (statisticsOn) {
-            numberOfVerts += (t.getVertQuantity() >= 0 ? t.getVertQuantity()
-                    : t.getVertices().length);
+            numberOfVerts += verts;
             numberOfTris += t.getTriangleQuantity();
         }
 
@@ -1005,7 +1006,10 @@ public class LWJGLRenderer implements Renderer {
                         + ranges[i].getKind());
             }
             indices.limit(indices.position() + ranges[i].getCount());
-            GL12.glDrawRangeElements(mode, 0, t.getVertQuantity(), indices);
+            if (GLContext.OpenGL12)
+                GL12.glDrawRangeElements(mode, 0, verts, indices);
+            else
+                GL11.glDrawElements(mode, indices);
             indices.position(indices.limit());
         }
 
@@ -1016,9 +1020,9 @@ public class LWJGLRenderer implements Renderer {
 
     public void prepVBO(Geometry g) {
         if (!GLContext.OpenGL15) return;
-        int verts = g.getVertQuantity();
-        if (verts < 0) verts = g.getVertices().length;
+        int verts = g.getVertices().length;
         if (g.isVBOVertexEnabled() && g.getVBOVertexID() <= 0) {
+            g.updateVertexBuffer(g.getVertices().length);
             GL15.glGenBuffers(buf);
             g.setVBOVertexID(buf.get(0));
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOVertexID());
@@ -1027,6 +1031,7 @@ public class LWJGLRenderer implements Renderer {
             buf.clear();
         }
         if (g.isVBONormalEnabled() && g.getVBONormalID() <= 0) {
+            g.updateNormalBuffer(g.getVertices().length);
             GL15.glGenBuffers(buf);
             g.setVBONormalID(buf.get(0));
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBONormalID());
@@ -1035,6 +1040,7 @@ public class LWJGLRenderer implements Renderer {
             buf.clear();
         }
         if (g.isVBOColorEnabled() && g.getVBOColorID() <= 0) {
+            g.updateColorBuffer(g.getVertices().length);
             GL15.glGenBuffers(buf);
             g.setVBOColorID(buf.get(0));
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
@@ -1047,6 +1053,7 @@ public class LWJGLRenderer implements Renderer {
 
                 if (g.getVBOTextureID(i) <= 0
                         && g.getTextureAsFloatBuffer(i) != null) {
+                    g.updateTextureBuffer(i, g.getVertices().length);
                     GL15.glGenBuffers(buf);
                     g.setVBOTextureID(i, buf.get(0));
                     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g
