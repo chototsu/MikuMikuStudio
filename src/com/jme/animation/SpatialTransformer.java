@@ -221,7 +221,7 @@ public class SpatialTransformer extends Controller{
             updatePivot(parentIndexes[objIndex],thisTime,haveChanged);
             pivots[objIndex].set(pivots[parentIndexes[objIndex]]);
         }
-        pivots[objIndex].multLocal(thisTime.look[objIndex]);
+        pivots[objIndex].multLocal(thisTime.look[objIndex],unSyncbeginPos);
         Spatial thisSpatial=(Spatial) toChange[objIndex];
         pivots[objIndex].applyToSpatial(thisSpatial);
 

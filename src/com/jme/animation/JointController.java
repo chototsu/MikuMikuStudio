@@ -235,7 +235,7 @@ public class JointController extends Controller {
                 unSyncbeginPos.set(updatingGroup.originalNormal[j]);
                 updatingGroup.setNormal(j,jointMovements[currentBoneIndex].multNormal(unSyncbeginPos));
             }
-            updatingGroup.updateModelBound();   //TODO: Why won't this work?
+//            updatingGroup.updateModelBound();   //TODO: Why won't this work?
         }
     }
 
@@ -244,7 +244,7 @@ public class JointController extends Controller {
      */
     private void combineWithInverse() {
         for (int i=0;i<numJoints;i++)
-            jointMovements[i].multLocal(inverseChainMatrix[i]);
+            jointMovements[i].multLocal(inverseChainMatrix[i],unSyncbeginPos);
     }
 
 
@@ -268,7 +268,7 @@ public class JointController extends Controller {
             inverseChainMatrix[i]=new TransformMatrix(localRefMatrix[i]);
             inverseChainMatrix[i].inverse();
             if (parentIndex[i]!=-1)
-                inverseChainMatrix[i].multLocal(inverseChainMatrix[parentIndex[i]]);
+                inverseChainMatrix[i].multLocal(inverseChainMatrix[parentIndex[i]],unSyncbeginPos);
         }
     }
 
@@ -291,11 +291,11 @@ public class JointController extends Controller {
 
             tempUnSyncd.set(unSyncbeginAngle,unSyncbeginPos);
             jointMovements[index].set(localRefMatrix[index]);
-            jointMovements[index].multLocal(tempUnSyncd);
+            jointMovements[index].multLocal(tempUnSyncd,unSyncbeginPos);
             if (theParentIndex!=-1){
                 tempUnSyncd.set(jointMovements[index]);
                 jointMovements[index].set(jointMovements[theParentIndex]);
-                jointMovements[index].multLocal(tempUnSyncd);
+                jointMovements[index].multLocal(tempUnSyncd,unSyncbeginPos);
             }
         }
     }
