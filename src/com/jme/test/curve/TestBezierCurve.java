@@ -35,6 +35,7 @@ import org.lwjgl.opengl.GL;
 
 import com.jme.app.AbstractGame;
 import com.jme.curve.BezierCurve;
+import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.math.Vector3f;
@@ -43,22 +44,35 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
+import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.TextureManager;
 
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.1 2004-01-06 15:20:26 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.2 2004-01-06 20:54:22 mojomonkey Exp $
  */
 public class TestBezierCurve extends AbstractGame {
-    private TriMesh t,t2,t3,t4;
+    private TriMesh t, t2, t3, t4;
+
+    private Text text;
+    private TriMesh box;
     private Node scene, root;
     private static final float MAX_STEPS = 25;
     private Camera cam;
     private InputController input;
     private BezierCurve curve;
+    
+    private float step = 0;
+    private float mod = 0.0005f;
+
+    private Vector3f up = new Vector3f(0,1,0);
 
     public static void main(String[] args) {
         TestBezierCurve app = new TestBezierCurve();
@@ -71,6 +85,20 @@ public class TestBezierCurve extends AbstractGame {
      */
     protected void update() {
         input.update(0.2f);
+        box.setLocalTranslation(curve.getPoint(step));
+        box.setLocalRotation(curve.getOrientation(step, 0.1f));
+        scene.updateWorldData(0.1f);
+        step += mod;
+        
+        text.print("STEP: " + step);
+        
+        if(step > 1) {
+            mod = mod*-1;
+            step = 1+mod;
+        } else if(step < 0) {
+            mod = mod*-1;
+            step = mod;
+        }
 
     }
 
@@ -135,6 +163,24 @@ public class TestBezierCurve extends AbstractGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
+        text = new Text("Timer");
+        text.setLocalTranslation(new Vector3f(1,60,0));
+        TextureState textImage = display.getRenderer().getTextureState();
+        textImage.setEnabled(true);
+        textImage.setTexture(
+            TextureManager.loadTexture(
+                "data/Font/font.png",
+                Texture.MM_LINEAR,
+                Texture.FM_LINEAR,
+                true));
+        text.setRenderState(textImage);
+        AlphaState as1 = display.getRenderer().getAlphaState();
+        as1.setBlendEnabled(true);
+        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setTestEnabled(true);
+        as1.setTestFunction(AlphaState.TF_GREATER);
+        text.setRenderState(as1);
         //create control Points
         Vector3f[] points = new Vector3f[4];
         points[0] = new Vector3f(-4, 0, 0);
@@ -146,6 +192,10 @@ public class TestBezierCurve extends AbstractGame {
 
         Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
         Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
+
+        ZBufferState buf = display.getRenderer().getZBufferState();
+        buf.setEnabled(true);
+        buf.setFunction(ZBufferState.CF_LEQUAL);
 
         t = new Box(min, max);
         t.setModelBound(new BoundingSphere());
@@ -171,14 +221,32 @@ public class TestBezierCurve extends AbstractGame {
 
         t4.setLocalTranslation(points[3]);
 
+        box = new Box(min.mult(5), max.mult(5));
+        box.setModelBound(new BoundingSphere());
+        box.updateModelBound();
+
+        box.setLocalTranslation(points[0]);
+        TextureState ts = display.getRenderer().getTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(
+            TextureManager.loadTexture(
+                "data/Images/Monkey.jpg",
+                Texture.MM_LINEAR,
+                Texture.FM_LINEAR,
+                true));
+        box.setRenderState(ts);
+
         scene = new Node();
+        scene.setRenderState(buf);
         scene.attachChild(t);
         scene.attachChild(t2);
         scene.attachChild(t3);
         scene.attachChild(t4);
+        scene.attachChild(box);
+        scene.attachChild(text);
         root = new Node();
         root.attachChild(scene);
-        
+
         scene.updateGeometricState(0.0f, true);
 
     }

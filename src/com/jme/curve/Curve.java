@@ -31,13 +31,14 @@
  */
 package com.jme.curve;
 
+import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
 
 /**
  * <code>Curve</code>
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.3 2004-01-06 15:19:39 mojomonkey Exp $
+ * @version $Id: Curve.java,v 1.4 2004-01-06 20:54:22 mojomonkey Exp $
  */
 public abstract class Curve {
 
@@ -76,4 +77,7 @@ public abstract class Curve {
     }
 
     public abstract Vector3f getPoint(float time);
+    
+    public abstract Matrix3f getOrientation(float time, float precision);
+    public abstract Matrix3f getOrientation(float time, float precision, Vector3f up);
 }
