@@ -116,7 +116,7 @@ public abstract class WidgetFontAbstract implements WidgetFont {
 
             //header.chars
             buf.getInt();
-
+            
             float newHeight = 0;
             float height = 0;
 

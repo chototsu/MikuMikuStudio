@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.3 2004-02-20 20:51:16 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.4 2004-02-24 16:46:13 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -215,7 +215,7 @@ public class TestCollision extends SimpleGame {
         textImage.setEnabled(true);
         textImage.setTexture(
             TextureManager.loadTexture(
-                TestCollision.class.getClassLoader().getResource("jmetest/data/Font/font.png"),
+                TestCollision.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR,
                 true));
