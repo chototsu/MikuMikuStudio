@@ -44,7 +44,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.11 2004-08-17 19:55:31 cep21 Exp $
+ * @version $Id: InputHandler.java,v 1.12 2004-08-17 20:48:33 cep21 Exp $
  */
 public class InputHandler {
     /** List of keyboard actions. They are performed in update if valid. */
@@ -202,6 +202,20 @@ public class InputHandler {
      */
     public void removeAction(AbstractInputAction inputAction) {
         keyActions.remove(inputAction);
+    }
+
+    /**
+     * Clears all keyboard actions currently stored.
+     */
+    public void clearKeyboardActions(){
+        keyActions.clear();
+    }
+
+    /**
+     * Clears all mouse actions currently stored.
+     */
+    public void clearMouseActions(){
+        mouseActions.clear();
     }
 
     /**
