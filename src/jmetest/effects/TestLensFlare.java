@@ -34,21 +34,23 @@ package jmetest.effects;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.effects.LensFlare;
+import com.jme.effects.LensFlareFactory;
+import com.jme.image.Texture;
 import com.jme.light.LightNode;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
-import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
 
 /**
  * <code>TestLensFlare</code>
- *  First crack at a lens flare for jme.  Notice that currently,
- *  it doesn't do occlusion culling.
+ *  Test of the lens flare effect in jME.  Notice that currently it doesn't do
+ *  occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.5 2004-06-23 19:15:59 renanse Exp $
+ * @version $Id: TestLensFlare.java,v 1.6 2004-11-15 22:04:04 renanse Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
@@ -87,10 +89,57 @@ public class TestLensFlare extends SimpleGame {
     lightNode.setTarget(rootNode);
     lightNode.setLocalTranslation(new Vector3f( -14f, 14f, -14f));
 
-    // clear the lights from this child:
+    // clear the lights from this lightbox so the lightbox itself doesn't
+		// get affected by light:
     lightBox.setLightCombineMode(LightState.OFF);
 
-    LensFlare flare = new LensFlare("flare");
+		// Setup the lensflare textures.
+		TextureState[] tex = new TextureState[4];
+		tex[0] = display.getRenderer().createTextureState();
+		tex[0].setTexture(
+				TextureManager.loadTexture(
+				LensFlare.class.getClassLoader().getResource(
+				"jmetest/data/texture/flare1.png"),
+				Texture.MM_LINEAR_LINEAR,
+				Texture.FM_LINEAR,
+				true));
+		tex[0].setEnabled(true);
+		tex[0].apply();
+
+		tex[1] = display.getRenderer().createTextureState();
+		tex[1].setTexture(
+				TextureManager.loadTexture(
+				LensFlare.class.getClassLoader().getResource(
+				"jmetest/data/texture/flare2.png"),
+				Texture.MM_LINEAR_LINEAR,
+				Texture.FM_LINEAR,
+				true));
+		tex[1].setEnabled(true);
+		tex[1].apply();
+
+		tex[2] = display.getRenderer().createTextureState();
+		tex[2].setTexture(
+				TextureManager.loadTexture(
+				LensFlare.class.getClassLoader().getResource(
+				"jmetest/data/texture/flare3.png"),
+				Texture.MM_LINEAR_LINEAR,
+				Texture.FM_LINEAR,
+				true));
+		tex[2].setEnabled(true);
+		tex[2].apply();
+
+		tex[3] = display.getRenderer().createTextureState();
+		tex[3].setTexture(
+				TextureManager.loadTexture(
+				LensFlare.class.getClassLoader().getResource(
+				"jmetest/data/texture/flare4.png"),
+				Texture.MM_LINEAR_LINEAR,
+				Texture.FM_LINEAR,
+				true));
+		tex[3].setEnabled(true);
+		tex[3].apply();
+
+    LensFlare flare = LensFlareFactory.createBasicLensFlare("flare", tex);
     flare.setLocalTranslation(lightNode.getLocalTranslation());
 
     //lightNode.attachChild(flare);
