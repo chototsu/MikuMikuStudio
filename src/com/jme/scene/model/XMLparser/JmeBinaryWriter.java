@@ -109,7 +109,7 @@ public class JmeBinaryWriter {
             }
         }
 
-        for (int i=0;i<l.size();i++){   // write spatials second
+        for (int i=0;i<l.size();i++){   // write Meshes second
             atts.clear();
             Object thisType=l.get(i);
             String name=(String) sharedObjects.get(thisType);
@@ -123,6 +123,21 @@ public class JmeBinaryWriter {
                 writeEndTag("sharedtrimesh");
             }
         }
+        for (int i=0;i<l.size();i++){   // write Nodes third
+            atts.clear();
+            Object thisType=l.get(i);
+            String name=(String) sharedObjects.get(thisType);
+            atts.put("ident",name);
+
+            if (thisType instanceof Node){
+                writeTag("sharednode",atts);
+                sharedObjects.remove(thisType);
+                writeNode((Node) thisType);
+                sharedObjects.put(thisType,name);
+                writeEndTag("sharednode");
+            }
+        }
+
 
         writeEndTag("sharedtypes");
 //        sharedObjects=temp;
@@ -400,6 +415,8 @@ public class JmeBinaryWriter {
     private void writeObject(Object o) throws IOException {
         if (o instanceof TriMesh){
             writeMesh((TriMesh) o);
+        } else if (o instanceof Node){
+            writeNode((Node) o);
         }
     }
 
