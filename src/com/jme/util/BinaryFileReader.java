@@ -32,9 +32,11 @@
 package com.jme.util;
 
 import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
 
 import com.jme.system.JmeException;
 
@@ -47,36 +49,49 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the 
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.2 2004-02-06 20:20:57 mojomonkey Exp $
+ * @version $Id: BinaryFileReader.java,v 1.3 2004-02-15 20:09:50 mojomonkey Exp $
  */
 public class BinaryFileReader {
-	private int fileSize;
 	private byte[] fileContents;
 	private int fileIndex = 0;
-	
+
+	public BinaryFileReader(String f) {
+		try {
+			URL file = new URL(f);
+			open(file);
+		} catch (MalformedURLException e) {
+			LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"Could not open: " + f);
+		}
+	}
+
 	/**
 	 * Constructor instantiates a new <code>BinaryFileReader</code> object, 
 	 * loading the provided file and reading the data into a byte array.
 	 * @param f the file to read.
 	 */
-	public BinaryFileReader(File f) {
+	public BinaryFileReader(URL f) {
+		open(f);
+	}
+
+	public void open(URL f) {
 		try {
-			FileInputStream is = new FileInputStream(f);
-			fileSize = (int) f.length();
-			
+			InputStream is = f.openStream();
+
 			// wrap a buffer to make reading more efficient (faster)
 			DataInputStream bis = new DataInputStream(is);
-			
-			fileContents = new byte[fileSize];
-			
+
+			fileContents = new byte[bis.available()];
+
 			// Read the entire file into memory
-			bis.read(fileContents, 0, fileSize);
+			bis.read(fileContents);
 			bis.close();
 		} catch (IOException ioe) {
-			throw new JmeException("Could not read: " + f.getName());
+			throw new JmeException("Could not read: " + f);
 		}
 	}
-	
+
 	/**
 	 * 
 	 * <code>readByte</code> reads a single byte from the array and 
@@ -141,28 +156,25 @@ public class BinaryFileReader {
 		//Look for zero terminated string from byte array
 		for (int i = fileIndex; i < fileIndex + size; i++) {
 			if (fileContents[i] == (byte) 0) {
-				String s = new String(
-						fileContents,
-						fileIndex,
-						i - fileIndex);
+				String s = new String(fileContents, fileIndex, i - fileIndex);
 				fileIndex += size;
 				return s;
 			}
 		}
-		
+
 		String s = new String(fileContents, fileIndex, size);
 		fileIndex += size;
 		return s;
 	}
-	
+
 	/**
 	 * 
 	 * <code>setOffset</code> sets the index of the file data.
 	 * @param offset the new index of the file pointer.
 	 */
 	public void setOffset(int offset) {
-		if(offset < 0 ||offset > fileContents.length) {
-			throw new JmeException("Illegal offset value. " + offset );
+		if (offset < 0 || offset > fileContents.length) {
+			throw new JmeException("Illegal offset value. " + offset);
 		}
 		fileIndex = offset;
 	}

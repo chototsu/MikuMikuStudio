@@ -30,8 +30,10 @@
  */
 package com.jme.scene.model.md2;
 
-import java.io.File;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
 
 import com.jme.animation.VertexKeyframeController;
 import com.jme.math.Vector2f;
@@ -43,6 +45,7 @@ import com.jme.scene.model.Face;
 import com.jme.scene.model.Model;
 import com.jme.system.JmeException;
 import com.jme.util.BinaryFileReader;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>Md2Model</code> defines a model using the MD2 model format made
@@ -53,7 +56,7 @@ import com.jme.util.BinaryFileReader;
  * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.5 2004-02-12 23:05:00 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.6 2004-02-15 20:09:50 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
@@ -89,6 +92,16 @@ public class Md2Model extends Model {
 		super();
 		load(filename);
 	}
+	
+	public void load(String filename) {
+		try {
+			URL file = new URL("file:"+filename);
+			load(file);
+		} catch (MalformedURLException e) {
+			LoggingSystem.getLogger().log(Level.WARNING, "Could not load: " + 
+					filename);
+		}
+	}
 
 	/**
 	 * Loads an MD2 model. The corresponding
@@ -99,14 +112,13 @@ public class Md2Model extends Model {
 	 * responsible for setting these.
 	 * @param filename the file to load.
 	 */
-	public void load(String filename) {
+	public void load(URL filename) {
 		if(null == filename) {
 			throw new JmeException("Null data. Cannot load.");
 		}
 		InputStream is = null;
 		int fileSize = 0;
-		File file = new File(filename);
-		bis = new BinaryFileReader(file);
+		bis = new BinaryFileReader(filename);
 
 		header = new Header();
 

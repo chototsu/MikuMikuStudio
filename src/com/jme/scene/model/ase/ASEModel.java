@@ -31,11 +31,11 @@
 package com.jme.scene.model.ase;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
@@ -62,7 +62,7 @@ import com.jme.util.TextureManager;
  * be returned.
  * 
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.3 2004-02-13 21:47:21 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.4 2004-02-15 20:09:50 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -124,6 +124,16 @@ public class ASEModel extends Model {
 		load(file);
 	}
 	
+	public void load(String file) {
+		try {
+			URL url = new URL("file:"+file);
+			load(url);
+		} catch (MalformedURLException e) {
+			LoggingSystem.getLogger().log(Level.WARNING, "Could not load: " 
+					+ file);
+		}
+	}
+	
 	/**
 	 *  <code>load</code> parses a given file, loading the mesh data into
 	 * a structure that jME can render. Each Geomobject the ase file defines
@@ -132,18 +142,17 @@ public class ASEModel extends Model {
 	 * @param file the ase file to load.
 	 * @see com.jme.scene.model.Model#load(java.lang.String)
 	 */
-	public void load(String file) {
+	public void load(URL file) {
 		InputStream is = null;
 		int fileSize = 0;
 		try {
-			File f = new File(file);
-			absoluteFilePath = f.getAbsolutePath();
+			absoluteFilePath = file.getPath();
 			absoluteFilePath =
 				absoluteFilePath.substring(
 					0,
-					absoluteFilePath.lastIndexOf(File.separator) + 1);
-			is = new FileInputStream(f);
-			fileSize = (int) f.length();
+					absoluteFilePath.lastIndexOf("/") + 1);
+			is = file.openStream();
+			fileSize = is.available();
 
 			reader = new BufferedReader(new InputStreamReader(is));
 

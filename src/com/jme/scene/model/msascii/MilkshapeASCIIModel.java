@@ -33,8 +33,10 @@
 package com.jme.scene.model.msascii;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
+import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.logging.Level;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BoundingSphere;
@@ -44,6 +46,7 @@ import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.animation.*;
 import com.jme.image.Texture;
@@ -59,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the 
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.2 2004-02-12 23:00:00 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.3 2004-02-15 20:09:50 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -88,6 +91,16 @@ public class MilkshapeASCIIModel extends Model {
 		super();
 		load(filename);
 	}
+	
+	public void load(String filename) {
+		try {
+			URL file = new URL("file:"+filename);
+			load(file);
+		} catch (MalformedURLException e) {
+			LoggingSystem.getLogger().log(Level.WARNING, "Could not load " + 
+					filename);
+		}
+	}
 
 	/**
 	 * Loads an ascii text model exported from MS3D. The corresponding
@@ -96,22 +109,21 @@ public class MilkshapeASCIIModel extends Model {
 	 * joints and joint controller are loaded and initialized.
 	 * @param filename the file to load.
 	 */
-	public void load(String filename) {
+	public void load(URL filename) {
 		if(null == filename) {
 			throw new JmeException("Null data. Cannot load.");
 		}
 		//attempt to load and parse the data.
 		try {
-			File file = new File(filename);
-			absoluteFilePath = file.getAbsolutePath();
+			absoluteFilePath = filename.getPath();
 			absoluteFilePath =
 				absoluteFilePath.substring(
 					0,
-					absoluteFilePath.lastIndexOf(File.separator) + 1);
+					absoluteFilePath.lastIndexOf("/") + 1);
 			//add a controller for animations.		
 			jointController = new DeformationJointController();
 			
-			BufferedReader reader = new BufferedReader(new FileReader(file));
+			BufferedReader reader = new BufferedReader(new InputStreamReader(filename.openStream()));
 			
 			String line;
 			while ((line = getNextLine(reader)) != null) {
@@ -444,14 +456,20 @@ public class MilkshapeASCIIModel extends Model {
 	 * @param the relative filename to the bmp
 	 * @return the image address in memory
 	 */
-	private TextureState loadTexture(String file) throws Exception {
-		file = absoluteFilePath + file;
+	private TextureState loadTexture(String file) {
+		URL fileURL = null;
+		try {
+			fileURL = new URL("file:" + absoluteFilePath + file);
+		} catch (MalformedURLException e) {
+			LoggingSystem.getLogger().log(Level.WARNING, "Bad texture name: " + 
+				file);
+		}
 		TextureState ts =
 			DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(
 			TextureManager.loadTexture(
-				file,
+				fileURL,
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
