@@ -35,6 +35,8 @@ import com.jme.app.AbstractGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
+import com.jme.intersection.CollisionDetection;
+import com.jme.intersection.CollisionResults;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -56,12 +58,14 @@ import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
- * <code>TestLightState</code>
+ * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.4 2003-12-09 20:34:48 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.1 2003-12-09 20:34:48 mojomonkey Exp $
  */
-public class TestPick extends AbstractGame {
+public class TestCollision extends AbstractGame {
+
     private TriMesh t;
+    private TriMesh t2;
     private Camera cam;
     private Text text;
     private Node root;
@@ -73,17 +77,20 @@ public class TestPick extends AbstractGame {
     private float angle = 0;
     private Vector3f axis;
 
+    private float tInc = -40.0f;
+    private float t2Inc = -10.0f;
+
     /**
      * Entry point for the test, 
      * @param args
      */
     public static void main(String[] args) {
-        TestPick app = new TestPick();
+        TestCollision app = new TestCollision();
         app.useDialogAlways(true);
         app.start();
-        
+
     }
-    
+
     public void addSpatial(Spatial spatial) {
         scene.attachChild(spatial);
         scene.updateGeometricState(0.0f, true);
@@ -95,21 +102,50 @@ public class TestPick extends AbstractGame {
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
-        if(timer.getTimePerFrame() < 1) {
+        if (timer.getTimePerFrame() < 1) {
             angle = angle + (timer.getTimePerFrame() * 1);
-            if(angle > 360) {
+            if (angle > 360) {
                 angle = 0;
             }
         }
-        
+
         rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
-        
+
         t.setLocalRotation(rotQuat);
-        scene.updateGeometricState(0.0f, true);
         
-       
+        t.getLocalTranslation().y += tInc * timer.getTimePerFrame();
+        t2.getLocalTranslation().x += t2Inc * timer.getTimePerFrame();
+        
+        if(t.getLocalTranslation().y > 40) {
+            t.getLocalTranslation().y = 40;
+            tInc *= -1;
+        } else if(t.getLocalTranslation().y < -40) {
+            t.getLocalTranslation().y = -40;
+            tInc *= -1;
+        }
+        
+        if(t2.getLocalTranslation().x > 40) {
+            t2.getLocalTranslation().x = 40;
+            t2Inc *= -1;
+        } else if(t2.getLocalTranslation().x < -40) {
+            t2.getLocalTranslation().x = -40;
+            t2Inc *= -1;
+        }
+        
+        CollisionResults results = new CollisionResults();
+        
+        CollisionDetection.hasCollision(t, t2, results);
+        
+        if(results.getNumber() > 0) {
+            text.print("Collision: YES");
+        } else {
+            text.print("Collision: NO");
+        }
+        
+        scene.updateGeometricState(0.0f, true);
+
     }
 
     /** 
@@ -158,12 +194,12 @@ public class TestPick extends AbstractGame {
         input = new FirstPersonController(this, cam, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
-        
+
         timer = Timer.getTimer("LWJGL");
-        
+
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
-        axis = new Vector3f(1,0,0);
+        axis = new Vector3f(1, 0, 0);
 
     }
 
@@ -172,8 +208,8 @@ public class TestPick extends AbstractGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Hits: 0 Shots: 0");
-        text.setLocalTranslation(new Vector3f(1,60,0));
+        text = new Text("Collision: No");
+        text.setLocalTranslation(new Vector3f(1, 60, 0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
         textImage.setTexture(
@@ -193,53 +229,54 @@ public class TestPick extends AbstractGame {
         scene = new Node();
         root = new Node();
         root.attachChild(text);
-        
-        Vector3f max = new Vector3f(5,5,5);
-        Vector3f min = new Vector3f(-5,-5,-5);
-        
-        
-        
-        t = new Box(min,max);
+
+        Vector3f max = new Vector3f(5, 5, 5);
+        Vector3f min = new Vector3f(-5, -5, -5);
+
+        t = new Box(min, max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
+
+        t.setLocalTranslation(new Vector3f(0, 30, 0));
         
-        t.setLocalTranslation(new Vector3f(0,10,0));
-        
+        t2 = new Box(min, max);
+        t2.setModelBound(new BoundingSphere());
+        t2.updateModelBound();
+
+        t2.setLocalTranslation(new Vector3f(30, 0, 0));
+
         scene.attachChild(t);
+        scene.attachChild(t2);
         root.attachChild(scene);
-        
+
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
-        
+
         DirectionalLight am = new DirectionalLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         am.setDirection(new Vector3f(0, 0, 75));
-        
+
         scene.setRenderState(buf);
         scene.setWorldBound(new BoundingSphere());
         cam.update();
-        
+
         TextureState ts = display.getRenderer().getTextureState();
-                ts.setEnabled(true);
-                ts.setTexture(
-                    TextureManager.loadTexture(
-                        "data/Images/Monkey.jpg",
-                        Texture.MM_LINEAR,
-                        Texture.FM_LINEAR,
-                        true));
-                        
+        ts.setEnabled(true);
+        ts.setTexture(
+            TextureManager.loadTexture(
+                "data/Images/Monkey.jpg",
+                Texture.MM_LINEAR,
+                Texture.FM_LINEAR,
+                true));
+
         scene.setRenderState(ts);
-        
+
         root.attachChild(text);
-        
 
         scene.updateGeometricState(0.0f, true);
-        MousePick pick = new MousePick(cam, scene, text);
-                pick.setMouse(input.getMouse());
-                input.addAction(pick);
-
+        
     }
     /**
      * not used.

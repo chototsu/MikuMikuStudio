@@ -43,7 +43,7 @@ import com.jme.scene.BoundingVolume;
  * intersection of some objects. All the methods are static to allow for quick
  * and easy calls.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.3 2003-12-08 20:29:54 mojomonkey Exp $
+ * @version $Id: Intersection.java,v 1.4 2003-12-09 20:34:48 mojomonkey Exp $
  */
 public class Intersection {
     /**
@@ -182,6 +182,28 @@ public class Intersection {
             return (- (sphere.getRadius() + sdist) / dotNW) < time;
         } else {
             return true;
+        }
+    }
+    
+    /**
+     * 
+     * <code>intersection</code> compares two bounding volumes for intersection.
+     * If any part of the volumes touch, true is returned, otherwise false is
+     * returned.
+     * 
+     * @param vol1 the first volume to check.
+     * @param vol2 the second volume to check.
+     * @return true if an intersection occurs, false otherwise.
+     */
+    public static boolean intersection(BoundingVolume vol1, BoundingVolume vol2) {
+        if(vol1 instanceof BoundingSphere) {
+            if(vol2 instanceof BoundingSphere) {
+                return intersection((BoundingSphere)vol1,(BoundingSphere)vol2);
+            } else {
+                return false;
+            }
+        } else {
+            return false;
         }
     }
 
