@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.10 2004-04-23 05:16:24 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.11 2004-04-23 17:32:42 mojomonkey Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -83,6 +83,7 @@ public class TestTerrainPage extends SimpleGame {
     input.setKeySpeed(50f);
     input.setMouseSpeed(1f);
     display.setTitle("Terrain Test");
+    display.getRenderer().setBackgroundColor(new ColorRGBA(0.5f,0.5f,0.5f,1));
 
     DirectionalLight dr = new DirectionalLight();
     dr.setEnabled(true);
