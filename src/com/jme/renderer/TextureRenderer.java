@@ -43,12 +43,12 @@ import com.jme.scene.Spatial;
  * NOTE: This example uses the <code>DisplaySystem</code> class to obtain the
  * <code>TextureRenderer</code>.
  *
- * <code>
+ * <code> DisplaySystem.getDisplaySystem().createTextureRenderer(...)
  * </code>
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.7 2004-07-31 04:36:21 cep21 Exp $
+ * @version $Id: TextureRenderer.java,v 1.8 2004-07-31 16:32:41 cep21 Exp $
  */
 public interface TextureRenderer {
 
