@@ -366,7 +366,9 @@ public class KeyframeController extends Controller{
     private boolean easyQuit() {
         if (getMaxTime()==getMinTime() && curTime!=getMinTime())
             return true;
-        if (getRepeatType()==RT_CLAMP && (curTime> getMaxTime() || curTime < getMinTime()))
+        else if (getRepeatType()==RT_CLAMP && (curTime> getMaxTime() || curTime < getMinTime()))
+            return true;
+        else if (keyframes.size()<2)
             return true;
         return false;
     }
