@@ -55,7 +55,7 @@ import java.util.Stack;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.21 2004-05-07 22:03:25 renanse Exp $
+ * @version $Id: Node.java,v 1.22 2004-05-14 19:49:43 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -123,6 +123,26 @@ public class Node extends Spatial implements Serializable {
             LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
         }
         return index;
+    }
+
+    /**
+     *
+     * <code>detachChild</code> removes a given child from the node's list.
+     * This child will no longe be maintained.
+     * @param child the child to remove.
+     * @return the index the child was at. -1 if the child was not in the list.
+     */
+    public int detachChildNamed(String childName) {
+      if (childName == null) return -1;
+      for (int x = 0, max = children.size(); x < max; x++) {
+        Spatial child = (Spatial)children.get(x);
+        if(childName.equals(child.getName())) {
+            children.remove(x);
+            LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
+            return x;
+        }
+      }
+      return -1;
     }
 
     /**

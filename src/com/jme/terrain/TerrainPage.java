@@ -53,7 +53,7 @@ import com.jme.scene.Spatial;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.16 2004-05-07 22:03:27 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.17 2004-05-14 19:49:44 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -270,6 +270,8 @@ public class TerrainPage extends Node {
             } else {
                 // lower left...
                 child = getChild(0);
+                if (x == 0) x -=.1f;
+                if (z == 0) z -=.1f;
                 newX = x + halfmapx;
                 newZ = z + halfmapz;
             }
