@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package com.jme.math;
 
@@ -44,10 +44,10 @@ import com.jme.util.LoggingSystem;
  * <code>Vector3f</code> can represent any three dimensional value, such as a
  * vertex, a normal, etc. Utility methods are also included to aid in
  * mathematical calculations.
- * 
+ *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.16 2004-04-26 14:33:44 mojomonkey Exp $
+ * @version $Id: Vector3f.java,v 1.17 2004-05-09 04:21:17 renanse Exp $
  */
 public class Vector3f {
 
@@ -69,7 +69,7 @@ public class Vector3f {
     /**
      * Constructor instantiates a new <code>Vector3f</code> with default
      * values of (0,0,0).
-     *  
+     *
      */
     public Vector3f() {
         x = y = z = 0;
@@ -78,7 +78,7 @@ public class Vector3f {
     /**
      * Constructor instantiates a new <code>Vector3f</code> with provides
      * values.
-     * 
+     *
      * @param x
      *            the x value of the vector.
      * @param y
@@ -95,7 +95,7 @@ public class Vector3f {
     /**
      * <code>set</code> sets the x,y,z values of the vector based on passed
      * parameters.
-     * 
+     *
      * @param x
      *            the x value of the vector.
      * @param y
@@ -114,7 +114,7 @@ public class Vector3f {
     /**
      * <code>set</code> sets the x,y,z values of the vector by copying the
      * supplied vector.
-     * 
+     *
      * @param vect
      *            the vector to copy.
      * @return this vector
@@ -127,11 +127,11 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>add</code> adds a provided vector to this vector creating a
      * resultant vector which is returned. If the provided vector is null, null
      * is returned.
-     * 
+     *
      * @param vec
      *            the vector to add to this.
      * @return the resultant vector.
@@ -146,10 +146,10 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>add</code> adds the values of a provided vector storing the
      * values in the supplied vector.
-     * 
+     *
      * @param vec
      *            the vector to add to this
      * @param result
@@ -167,7 +167,7 @@ public class Vector3f {
      * <code>addLocal</code> adds a provided vector to this vector internally,
      * and returns a handle to this vector for easy chaining of calls. If the
      * provided vector is null, null is returned.
-     * 
+     *
      * @param vec
      *            the vector to add to this vector.
      * @return this
@@ -185,10 +185,10 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>add</code> adds the provided values to this vector, creating a
      * new vector that is then returned.
-     * 
+     *
      * @param addX
      *            the x value to add.
      * @param addY
@@ -205,7 +205,7 @@ public class Vector3f {
      * <code>addLocal</code> adds the provided values to this vector
      * internally, and returns a handle to this vector for easy chaining of
      * calls.
-     * 
+     *
      * @param addX
      *            value to add to x
      * @param addY
@@ -220,12 +220,12 @@ public class Vector3f {
         z += addZ;
         return this;
     }
-    
+
     /**
-     * 
+     *
      * <code>scaleAdd</code> multiplies this vector by a scalar then adds the
      * given Vector3f.
-     * 
+     *
      * @param scalar
      *            the value to multiply this vector by.
      * @param add
@@ -236,12 +236,12 @@ public class Vector3f {
         y = y * scalar + add.y;
         z = z * scalar + add.z;
     }
-    
+
     /**
-     * 
+     *
      * <code>scaleAdd</code> multiplies the given vector by a scalar then adds
      * the given vector.
-     * 
+     *
      * @param scalar
      *            the value to multiply this vector by.
      * @param mult
@@ -256,10 +256,10 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>dot</code> calculates the dot product of this vector with a
      * provided vector. If the provided vector is null, 0 is returned.
-     * 
+     *
      * @param vec
      *            the vector to dot with this vector.
      * @return the resultant dot product of this vector and a given vector.
@@ -276,7 +276,7 @@ public class Vector3f {
     /**
      * <code>cross</code> calculates the cross product of this vector with a
      * parameter vector v.
-     * 
+     *
      * @param v
      *            the vector to take the cross product of with this.
      * @return the cross product vector.
@@ -289,7 +289,7 @@ public class Vector3f {
     /**
      * <code>crossLocal</code> calculates the cross product of this vector
      * with a parameter vector v.
-     * 
+     *
      * @param v
      *            the vector to take the cross product of with this.
      * @return this.
@@ -306,7 +306,7 @@ public class Vector3f {
 
     /**
      * <code>length</code> calculates the magnitude of this vector.
-     * 
+     *
      * @return the length or magnitude of the vector.
      */
     public float length() {
@@ -316,7 +316,7 @@ public class Vector3f {
     /**
      * <code>lengthSquared</code> calculates the squared value of the
      * magnitude of the vector.
-     * 
+     *
      * @return the magnitude squared of the vector.
      */
     public float lengthSquared() {
@@ -326,7 +326,7 @@ public class Vector3f {
     /**
      * <code>distanceSquared</code> calculates the distance squared between
      * this vector and vector v.
-     * 
+     *
      * @param v the second vector to determine the distance squared.
      * @return the distance squared between the two vectors.
      */
@@ -340,7 +340,7 @@ public class Vector3f {
     /**
      * <code>distance</code> calculates the distance between this vector and
      * vector v.
-     * 
+     *
      * @param v the second vector to determine the distance.
      * @return the distance between the two vectors.
      */
@@ -349,10 +349,10 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>mult</code> multiplies this vector by a scalar. The resultant
      * vector is returned.
-     * 
+     *
      * @param scalar
      *            the value to multiply this vector by.
      * @return the new vector.
@@ -360,10 +360,10 @@ public class Vector3f {
     public Vector3f mult(float scalar) {
         return new Vector3f(x * scalar, y * scalar, z * scalar);
     }
-    
+
     /**
-     * 
-     * <code>mult</code> multiplies this vector by a scalar. The resultant 
+     *
+     * <code>mult</code> multiplies this vector by a scalar. The resultant
      * vector is supplied as the second parameter and returned.
      *
      * @param scalar the scalar to multiply this vector by.
@@ -383,7 +383,7 @@ public class Vector3f {
     /**
      * <code>multLocal</code> multiplies this vector by a scalar internally,
      * and returns a handle to this vector for easy chaining of calls.
-     * 
+     *
      * @param scalar
      *            the value to multiply this vector by.
      * @return this
@@ -399,7 +399,7 @@ public class Vector3f {
      * <code>multLocal</code> multiplies a provided vector to this vector
      * internally, and returns a handle to this vector for easy chaining of
      * calls. If the provided vector is null, null is returned.
-     * 
+     *
      * @param vec
      *            the vector to mult to this vector.
      * @return this
@@ -415,12 +415,12 @@ public class Vector3f {
         z *= vec.z;
         return this;
     }
-    
+
 
     /**
      * <code>divide</code> divides the values of this vector by a scalar and
      * returns the result. The values of this vector remain untouched.
-     * 
+     *
      * @param scalar
      *            the value to divide this vectors attributes by.
      * @return the result <code>Vector</code>.
@@ -433,7 +433,7 @@ public class Vector3f {
      * <code>divideLocal</code> divides this vector by a scalar internally,
      * and returns a handle to this vector for easy chaining of calls. Dividing
      * by zero will result in an exception.
-     * 
+     *
      * @param scalar
      *            the value to divides this vector by.
      * @return this
@@ -446,10 +446,10 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>negate</code> returns the negative of this vector. All values are
      * negated and set to a new vector.
-     * 
+     *
      * @return the negated vector.
      */
     public Vector3f negate() {
@@ -457,9 +457,9 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>negateLocal</code> negates the internal values of this vector.
-     * 
+     *
      * @return this.
      */
     public Vector3f negateLocal() {
@@ -470,11 +470,11 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>subtract</code> subtracts the values of a given vector from those
      * of this vector creating a new vector object. If the provided vector is
      * null, null is returned.
-     * 
+     *
      * @param vec
      *            the vector to subtract from this vector.
      * @return the result vector.
@@ -487,7 +487,7 @@ public class Vector3f {
      * <code>subtractLocal</code> subtracts a provided vector to this vector
      * internally, and returns a handle to this vector for easy chaining of
      * calls. If the provided vector is null, null is returned.
-     * 
+     *
      * @param vec
      *            the vector to subtract
      * @return this
@@ -505,9 +505,9 @@ public class Vector3f {
     }
 
     /**
-     * 
+     *
      * <code>subtract</code>
-     * 
+     *
      * @param vec
      *            the vector to subtract from this
      * @param result
@@ -523,7 +523,7 @@ public class Vector3f {
 
     /**
      * <code>normalize</code> returns the unit vector of this vector.
-     * 
+     *
      * @return unit vector of this vector.
      */
     public Vector3f normalize() {
@@ -538,7 +538,7 @@ public class Vector3f {
     /**
      * <code>normalizeLocal</code> makes this vector into a unit vector of
      * itself.
-     * 
+     *
      * @return this.
      */
     public Vector3f normalizeLocal() {
@@ -558,9 +558,27 @@ public class Vector3f {
     }
 
     /**
+     * Check a vector... if it is null or its floats are NaN or infinite,
+     * return false.  Else return true.
+     * @param vector the vector to check
+     * @return true or false as stated above.
+     */
+    public static boolean isValidVector(Vector3f vector) {
+      if (vector == null) return false;
+      if (Float.isNaN(vector.x) ||
+          Float.isNaN(vector.y) ||
+          Float.isNaN(vector.z)) return false;
+      if (Float.isInfinite(vector.x) ||
+          Float.isInfinite(vector.y) ||
+          Float.isInfinite(vector.z)) return false;
+      return true;
+    }
+
+
+    /**
      * <code>clone</code> creates a new Vector3f object containing the same
      * data as this one.
-     * 
+     *
      * @return the new Vector3f
      */
     public Object clone() {
@@ -570,7 +588,7 @@ public class Vector3f {
     /**
      * are these two vectors the same? they are is they both have the same x,y,
      * and z values.
-     * 
+     *
      * @param o
      *            the object to compare for equality
      * @return this vector
@@ -604,9 +622,9 @@ public class Vector3f {
     /**
      * <code>toString</code> returns the string representation of this vector.
      * The format is:
-     * 
+     *
      * org.jme.math.Vector3f [X=XX.XXXX, Y=YY.YYYY, Z=ZZ.ZZZZ]
-     * 
+     *
      * @return the string representation of this vector.
      */
     public String toString() {
