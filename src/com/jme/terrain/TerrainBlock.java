@@ -53,7 +53,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.30 2004-09-05 16:14:52 cep21 Exp $
+ * @version $Id: TerrainBlock.java,v 1.31 2004-09-05 16:18:28 cep21 Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -482,9 +482,9 @@ public class TerrainBlock extends AreaClodMesh {
 
     /**
      * Sets the value for the current offset amount to use when building texture coordinates.
-     * This function is pretty useless in the current state because an offset amount is only used
-     * during the constructor.
-     * @param offset
+     * Note that this does <b>NOT</b> rebuild the terrain at all.  This is mostly used for
+     * outside constructors of terrain blocks.
+     * @param offset The new texture offset.
      */
     public void setOffset(Vector2f offset) {
         this.offset = offset;
@@ -511,7 +511,8 @@ public class TerrainBlock extends AreaClodMesh {
      * Sets the total size of the terrain .  Note that this does <b>NOT</b> rebuild the terrain
      * at all.  This is mostly used for outside constructors of terrain blocks.
      * @param totalSize The new total size.
-     */    public void setTotalSize(int totalSize) {
+     */
+    public void setTotalSize(int totalSize) {
         this.totalSize = totalSize;
     }
 
