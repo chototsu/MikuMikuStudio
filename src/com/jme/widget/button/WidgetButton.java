@@ -35,11 +35,10 @@ import com.jme.renderer.Renderer;
 
 import com.jme.widget.Widget;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetContainerAbstract;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.border.WidgetBorderType;
 import com.jme.widget.layout.WidgetFlowLayout;
-import com.jme.widget.renderer.WidgetRenderer;
+import com.jme.widget.panel.WidgetPanel;
 import com.jme.widget.text.WidgetText;
 
 /**
@@ -48,7 +47,7 @@ import com.jme.widget.text.WidgetText;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetButton extends WidgetContainerAbstract {
+public class WidgetButton extends WidgetPanel {
 
     protected WidgetText text;
 
@@ -108,15 +107,6 @@ public class WidgetButton extends WidgetContainerAbstract {
             w.doAlignment(getSize(), getInsets());
         }
 
-    }
-
-    public void draw(Renderer r) {
-        if (isVisible() == false)
-            return;
-
-        ((WidgetRenderer)r).draw((Widget)this);
-
-        super.draw(r);
     }
 
     public void doMouseButtonDown() {
