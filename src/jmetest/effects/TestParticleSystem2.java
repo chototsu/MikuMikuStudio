@@ -210,7 +210,6 @@ public class TestParticleSystem2 extends SimpleGame {
 				new Vector3f(-25, 0, 0),
 				new Vector3f(25, 0, 0),
 				new Vector3f(25, 0, 5)));
-		ps.setAlwaysRotate(true);
 		ps.setLocalTranslation(new Vector3f(0, 8, 10));
 
 		pc = new ParticleController(ps);
