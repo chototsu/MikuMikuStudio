@@ -41,8 +41,10 @@ import java.awt.image.DirectColorModel;
 import java.awt.image.MemoryImageSource;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
@@ -56,7 +58,7 @@ import com.jme.renderer.ColorRGBA;
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.1 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.2 2004-02-10 14:47:22 mojomonkey Exp $
  */
 public class TextureManager {
    
@@ -78,7 +80,6 @@ public class TextureManager {
     private static short imageDescriptor;
     private static DirectColorModel cm;
     private static int[] pixels;
-
     
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
@@ -99,13 +100,13 @@ public class TextureManager {
      *      loading the texture, null is returned.
      */
     public static com.jme.image.Texture loadTexture(
-        String file,
-        int minFilter,
-        int magFilter,
-        boolean isMipMapped) {
-        return loadTexture(file, minFilter, magFilter, isMipMapped, true);
+    		String file,
+			int minFilter,
+			int magFilter,
+			boolean isMipMapped) {
+    	return loadTexture(file, minFilter, magFilter, isMipMapped, true);
     }
-
+    
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * string. Filter parameters are used
@@ -123,19 +124,82 @@ public class TextureManager {
      *      loading the texture, null is returned.
      */
     public static com.jme.image.Texture loadTexture(
-        String file,
+    		String file,
+			int minFilter,
+			int magFilter,
+			boolean isMipmapped,
+			boolean flipped) {
+    	
+    	URL url = null;
+		try {
+			url = new URL("file:"+file);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		}
+		return loadTexture(url,minFilter,magFilter,isMipmapped,flipped);
+    }
+
+    
+    /**
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * url. Filter parameters are used
+     * to define the filtering of the texture. Whether the texture is to be
+     * mipmapped or not is denoted by the isMipmapped boolean flag. If there
+     * is an error loading the file, null is returned.
+     * 
+     * @param file the url of the texture image.
+     * @param minFilter the filter for the near values.
+     * @param magFilter the filter for the far values.
+     * @param isMipmapped determines if we will load the texture mipmapped
+     *      or not. True load the texture mipmapped, false do not.
+     * @param flipped true flips the bits of the image, false does not. True
+     *      by default.
+     * 
+     * @return the loaded texture. If there is a problem
+     *      loading the texture, null is returned.
+     */
+    public static com.jme.image.Texture loadTexture(
+        URL file,
+        int minFilter,
+        int magFilter,
+        boolean isMipMapped) {
+        return loadTexture(file, minFilter, magFilter, isMipMapped, true);
+    }
+
+    /**
+     * <code>loadTexture</code> loads a new texture defined by the parameter
+     * url. Filter parameters are used
+     * to define the filtering of the texture. Whether the texture is to be
+     * mipmapped or not is denoted by the isMipmapped boolean flag. If there
+     * is an error loading the file, null is returned.
+     * 
+     * @param file the url of the texture image.
+     * @param minFilter the filter for the near values.
+     * @param magFilter the filter for the far values.
+     * @param isMipmapped determines if we will load the texture mipmapped
+     *      or not. True load the texture mipmapped, false do not.
+     * 
+     * @return the loaded texture. If there is a problem
+     *      loading the texture, null is returned.
+     */
+    public static com.jme.image.Texture loadTexture(
+        URL file,
         int minFilter,
         int magFilter,
         boolean isMipmapped,
         boolean flipped) {
 
-        java.awt.Image image = null;
+    	if(null == file) {
+    		return null;
+    	}
+    	
+    	java.awt.Image image = null;
 
-        if (".TGA".equalsIgnoreCase(file.substring(file.indexOf('.')))) {
+        if (".TGA".equalsIgnoreCase(file.getFile().substring(file.getFile().indexOf('.')))) {
             //Load the TGA file
             image = loadTGAImage(file);
         } else if (
-            ".BMP".equalsIgnoreCase(file.substring(file.indexOf('.')))) {
+            ".BMP".equalsIgnoreCase(file.getFile().substring(file.getFile().indexOf('.')))) {
             image = loadBMPImage(file);
         } else {
             //Load the new image.
@@ -150,7 +214,7 @@ public class TextureManager {
         }
 
         com.jme.image.Image imageData =
-            loadImage(file, image, flipped);
+            loadImage(image, flipped);
         Texture texture = new Texture();
         texture.setApply(Texture.AM_MODULATE);
         texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
@@ -164,17 +228,13 @@ public class TextureManager {
 
     /**
      * 
-     * <code>loadImage</code> sets the image data
+     * <code>loadImage</code> sets the image data.
      * 
-     * @param file The name of the texture (filename usually).
      * @param image The image data.
-     * @param minFilter minimum filter
-     * @param magFilter maximum filter
-     * @param isMipmapped whether the texture should be mipmapped or not.
+     * @param flipImage if true will flip the image's y values.
      * @return the loaded image.
      */
     public static com.jme.image.Image loadImage(
-        String file,
         java.awt.Image image,
         boolean flipImage) {
         //      Obtain the image data.
@@ -186,9 +246,6 @@ public class TextureManager {
                     image.getHeight(null),
                     BufferedImage.TYPE_3BYTE_BGR);
         } catch (IllegalArgumentException e) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "Could not load image file " + file);
             return null;
         }
         Graphics2D g = (Graphics2D) tex.getGraphics();
@@ -240,10 +297,10 @@ public class TextureManager {
     * 
     * @return <code>Image</code> object that contains the bitmap information.
     */
-    private static java.awt.Image loadBMPImage(String file) {
+    private static java.awt.Image loadBMPImage(URL file) {
 
         try {
-            FileInputStream fs = new FileInputStream(file);
+            InputStream fs = file.openStream();
             BitmapHeader bh = new BitmapHeader();
             bh.read(fs);
 
@@ -276,7 +333,7 @@ public class TextureManager {
      * 
      * @return <code>Image</code> object that contains the targa information.
      */
-    private static java.awt.Image loadTGAImage(String file) {
+    private static java.awt.Image loadTGAImage(URL file) {
         try {
             int red = 0;
             int green = 0;
@@ -285,7 +342,7 @@ public class TextureManager {
             int alpha = FULL_TRANSPARENCY;
 
             //open a stream to the file
-            FileInputStream fis = new FileInputStream(file);
+            InputStream fis = file.openStream();
             BufferedInputStream bis = new BufferedInputStream(fis, 8192);
             DataInputStream dis = new DataInputStream(bis);
 

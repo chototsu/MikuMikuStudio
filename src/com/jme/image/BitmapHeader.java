@@ -33,8 +33,8 @@ package com.jme.image;
 
 import java.awt.Toolkit;
 import java.awt.image.MemoryImageSource;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * <code>BitmapHeader</code>
@@ -55,7 +55,7 @@ public class BitmapHeader {
     public int clrused;
     public int clrimp;
 
-    public java.awt.Image readMap32(FileInputStream fs, BitmapHeader bh)
+    public java.awt.Image readMap32(InputStream fs, BitmapHeader bh)
         throws IOException {
         java.awt.Image image;
         int xwidth = bh.sizeimage / bh.height;
@@ -79,7 +79,7 @@ public class BitmapHeader {
         return (image);
     }
 
-    public java.awt.Image readMap24(FileInputStream fs, BitmapHeader bh)
+    public java.awt.Image readMap24(InputStream fs, BitmapHeader bh)
         throws IOException {
         java.awt.Image image;
         int npad = (bh.sizeimage / bh.height) - bh.width * 3;
@@ -104,7 +104,7 @@ public class BitmapHeader {
         return image;
     }
 
-    public java.awt.Image readMap8(FileInputStream fs, BitmapHeader bh)
+    public java.awt.Image readMap8(InputStream fs, BitmapHeader bh)
         throws IOException {
         java.awt.Image image;
         int nNumColors = 0;
@@ -213,7 +213,7 @@ public class BitmapHeader {
         return (ret);
     }
 
-    public final void read(FileInputStream fs) throws IOException {
+    public final void read(InputStream fs) throws IOException {
         final int bflen = 14;
         byte bf[] = new byte[bflen];
         fs.read(bf, 0, bflen);
