@@ -31,7 +31,7 @@
  */
 package com.jme.widget;
 
-import com.jme.widget.util.WidgetType;
+import com.jme.util.JmeType;
 
 /**
  * @author Gregg Patton
@@ -39,7 +39,7 @@ import com.jme.widget.util.WidgetType;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public final class WidgetFillType extends WidgetType {
+public final class WidgetFillType extends JmeType {
 
     public final static WidgetFillType NONE = new WidgetFillType("FillType.NONE");
     public final static WidgetFillType VERTICAL = new WidgetFillType("FillType.VERTICAL");
@@ -50,8 +50,8 @@ public final class WidgetFillType extends WidgetType {
         super(name);
     }
 
-    public WidgetType getType(String name) {
-        WidgetType type = null;
+    public JmeType getType(String name) {
+        JmeType type = null;
 
         if (NONE.name.equals(name)) {
             type = NONE;

@@ -31,7 +31,7 @@
  */
 package com.jme.widget.input.mouse;
 
-import com.jme.widget.util.WidgetType;
+import com.jme.util.JmeType;
 
 
 /**
@@ -40,7 +40,7 @@ import com.jme.widget.util.WidgetType;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetMouseButtonType extends WidgetType {
+public class WidgetMouseButtonType extends JmeType {
 
     public final static WidgetMouseButtonType MOUSE_BUTTON_NONE = new WidgetMouseButtonType ("MOUSE_BUTTON_NONE");
     public final static WidgetMouseButtonType MOUSE_BUTTON_1 = new WidgetMouseButtonType ("MOUSE_BUTTON_1");
@@ -57,8 +57,8 @@ public class WidgetMouseButtonType extends WidgetType {
         super(name);
     }
 
-    public WidgetType getType(String name) {
-        WidgetType type = null;
+    public JmeType getType(String name) {
+        JmeType type = null;
 
         if (MOUSE_BUTTON_NONE.name.equals(name)) {
             type = MOUSE_BUTTON_NONE;

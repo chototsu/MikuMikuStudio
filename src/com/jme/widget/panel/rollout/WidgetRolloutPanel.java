@@ -37,9 +37,9 @@ import java.util.Observer;
 import com.jme.math.Vector2f;
 import com.jme.widget.Widget;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 import com.jme.widget.WidgetInsets;
-import com.jme.widget.bounds.WidgetViewport;
+import com.jme.widget.bounds.WidgetViewRectangle;
 import com.jme.widget.button.WidgetButtonStateType;
 import com.jme.widget.layout.WidgetBorderLayout;
 import com.jme.widget.layout.WidgetBorderLayoutConstraint;
@@ -54,7 +54,7 @@ import com.jme.widget.util.WidgetNotifier;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetRolloutPanel extends WidgetContainerAbstract implements Observer {
+public class WidgetRolloutPanel extends WidgetAbstractContainer implements Observer {
 
     private static final String PLUS = "+";
     private static final String MINUS = "-";
@@ -314,15 +314,15 @@ public class WidgetRolloutPanel extends WidgetContainerAbstract implements Obser
 	}
 
 	/* (non-Javadoc)
-	 * @see jme.widget.Widget#setViewport(jme.widget.bounds.WidgetViewport)
+	 * @see jme.widget.Widget#setViewport(jme.widget.bounds.WidgetViewRectangle)
 	 */
-	public void setViewport(WidgetViewport viewport) {
-		WidgetViewport v = new WidgetViewport(viewport);
+	public void setViewRectangle(WidgetViewRectangle viewport) {
+		WidgetViewRectangle v = new WidgetViewRectangle(viewport);
 		
 		if (getOwner() != null)
-			v.setWidth(getOwner().getViewport().getWidth());
+			v.setWidth(getOwner().getViewRectangle().getWidth());
 		
-		super.setViewport(v);
+		super.setViewRectangle(v);
         
 	}
 	public String toString() {

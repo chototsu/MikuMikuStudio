@@ -31,7 +31,7 @@
  */
 package com.jme.widget.button;
 
-import com.jme.widget.util.WidgetType;
+import com.jme.util.JmeType;
 
 /**
  * @author Gregg Patton
@@ -39,7 +39,7 @@ import com.jme.widget.util.WidgetType;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public final class WidgetButtonStateType extends WidgetType {
+public final class WidgetButtonStateType extends JmeType {
     public final static WidgetButtonStateType BUTTON_UP =
         new WidgetButtonStateType("BUTTON_UP");
     public final static WidgetButtonStateType BUTTON_DOWN =
@@ -51,8 +51,8 @@ public final class WidgetButtonStateType extends WidgetType {
         super(name);
     }
 
-    public WidgetType getType(String name) {
-        WidgetType type = null;
+    public JmeType getType(String name) {
+        JmeType type = null;
 
         if (BUTTON_UP.name.equals(name)) {
             type = BUTTON_UP;

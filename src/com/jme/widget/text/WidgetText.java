@@ -36,8 +36,8 @@ import com.jme.math.Vector2f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
+import com.jme.system.DisplaySystem;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetFrameAbstract;
 import com.jme.widget.WidgetImpl;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.font.WidgetFontManager;
@@ -72,8 +72,8 @@ public class WidgetText extends WidgetImpl {
     public WidgetText(String text, WidgetAlignmentType alignment) {
         super();
 
-        textureState = WidgetFrameAbstract.getDisplaySystem().getRenderer().getTextureState();
-        alphaState = WidgetFrameAbstract.getDisplaySystem().getRenderer().getAlphaState();
+        textureState = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+        alphaState = DisplaySystem.getDisplaySystem().getRenderer().getAlphaState();
 
         setText(text);
         setAlignment(alignment);

@@ -36,8 +36,9 @@ import java.util.Observer;
 
 import com.jme.widget.Widget;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 import com.jme.widget.WidgetExpander;
+import com.jme.widget.WidgetInsets;
 import com.jme.widget.bounds.WidgetBoundingRectangle;
 import com.jme.widget.layout.WidgetBorderLayout;
 import com.jme.widget.layout.WidgetBorderLayoutConstraint;
@@ -52,7 +53,7 @@ import com.jme.widget.scroller.WidgetVScroller;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetScrollPanel extends WidgetContainerAbstract implements Observer {
+public class WidgetScrollPanel extends WidgetAbstractContainer implements Observer {
 
     protected WidgetPanel panel;
     private WidgetVScroller vScroller;
@@ -205,6 +206,14 @@ public class WidgetScrollPanel extends WidgetContainerAbstract implements Observ
 
     public WidgetLayoutManager getLayout() {
         return panel.getLayout();
+    }
+
+    /** <code>setInsets</code> 
+     * @param insets
+     * @see com.jme.widget.WidgetAbstractContainer#setInsets(com.jme.widget.WidgetInsets)
+     */
+    public void setInsets(WidgetInsets insets) {
+        panel.setInsets(insets);
     }
 
     public boolean isShowVScroll() {

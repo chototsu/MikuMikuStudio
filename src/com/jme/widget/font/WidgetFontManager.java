@@ -48,14 +48,11 @@ public class WidgetFontManager {
 
     private static WidgetFontManager fm;
     private static Hashtable fontList;
-	private static DisplaySystem displaySystem;
 	
-    protected WidgetFontManager(DisplaySystem d) {
+    protected WidgetFontManager() {
         fontList = new Hashtable();
 
-		displaySystem = d;
-
-        WidgetFont f = displaySystem.getFont("Default");
+        WidgetFont f = DisplaySystem.getDisplaySystem().getFont("Default");
 		fontList.put(f.getName(), f);
 
 		//        f = new WidgetFont("Default");
@@ -75,7 +72,7 @@ public class WidgetFontManager {
 
     }
 
-    public static void init(DisplaySystem d) {
-        fm = new WidgetFontManager(d);
+    public static void init() {
+        fm = new WidgetFontManager();
     }
 }

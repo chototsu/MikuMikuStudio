@@ -27,8 +27,8 @@
  */
 package com.jme.widget.input.mouse;
 
-import com.jme.app.SimpleGame;
-import com.jme.input.InputControllerAbstract;
+import com.jme.app.AbstractGame;
+import com.jme.input.AbstractInputController;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
 import com.jme.input.RelativeMouse;
@@ -43,28 +43,35 @@ import com.jme.input.action.KeyStrafeLeftAction;
 import com.jme.input.action.KeyStrafeRightAction;
 import com.jme.input.action.MouseLook;
 import com.jme.renderer.Camera;
+import com.jme.renderer.RendererType;
 
 /**
- * <code>WidgetMouseController</code>
+ * <code>WidgetMouseTestControllerFirstPerson</code>
  * @author Gregg Patton
- * @version
+ * @version $Id: WidgetMouseTestControllerFirstPerson.java,v 1.3 2004-02-09 12:33:19 greggpatton Exp $
  */
-public class WidgetMouseTestControllerFirstPerson extends InputControllerAbstract {
+public class WidgetMouseTestControllerFirstPerson extends AbstractInputController {
+
+    /**
+     * @param camera
+     */
+    public WidgetMouseTestControllerFirstPerson(Camera camera) {
+        super(camera);
+    }
 
     /**
      * @param app
-     * @param cam
-     * @param api
+     * @param camera
      */
-    public WidgetMouseTestControllerFirstPerson(SimpleGame app, Camera cam, String api) {
-        super(app, cam, api);
+    public WidgetMouseTestControllerFirstPerson(AbstractGame app, Camera camera) {
+        super(app, camera);
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.InputControllerAbstract#setKeyBindings(java.lang.String)
+     * @see com.jme.input.AbstractInputController#setKeyBindings(java.lang.String)
      */
-    protected void setKeyBindings(String api) {
-        super.setKeyBindings(api);
+    protected void setKeyBindings(RendererType rendererType) {
+        super.setKeyBindings(rendererType);
 
         keyboard.set("forward", KeyInput.KEY_W);
         keyboard.set("backward", KeyInput.KEY_S);
@@ -79,48 +86,52 @@ public class WidgetMouseTestControllerFirstPerson extends InputControllerAbstrac
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.InputControllerAbstract#setMouse(com.jme.renderer.Camera)
+     * @see com.jme.input.AbstractInputController#setMouse(com.jme.renderer.Camera)
      */
-    protected void setMouse(Camera cam) {
+    protected void setMouse() {
         RelativeMouse mouse = new RelativeMouse();
         mouse.setMouseInput(InputSystem.getMouseInput());
         setMouse(mouse);
 
-        MouseLook mouseLook = new MouseLook(mouse, cam, 0.1f);
-        mouseLook.setLockAxis(cam.getUp());
+        MouseLook mouseLook = new MouseLook(mouse, camera, 0.1f);
+        mouseLook.setLockAxis(camera.getUp());
         addAction(mouseLook);
         
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.InputControllerAbstract#setActions(com.jme.renderer.Camera, com.jme.app.SimpleGame)
+     * @see com.jme.input.AbstractInputController#setActions(com.jme.renderer.Camera, com.jme.app.AbstractGame)
      */
-    protected void setActions(Camera cam, SimpleGame app) {
+    protected void setActions() {
+
+        if (app != null) {
         KeyExitAction exit = new KeyExitAction(app);
         exit.setKey("exit");
         addAction(exit);
-        KeyForwardAction forward = new KeyForwardAction(cam, 0.5f);
+        }
+
+        KeyForwardAction forward = new KeyForwardAction(camera, 0.5f);
         forward.setKey("forward");
         addAction(forward);
-        KeyBackwardAction backward = new KeyBackwardAction(cam, 0.5f);
+        KeyBackwardAction backward = new KeyBackwardAction(camera, 0.5f);
         backward.setKey("backward");
         addAction(backward);
-        KeyStrafeLeftAction strafeLeft = new KeyStrafeLeftAction(cam, 0.5f);
+        KeyStrafeLeftAction strafeLeft = new KeyStrafeLeftAction(camera, 0.5f);
         strafeLeft.setKey("strafeLeft");
         addAction(strafeLeft);
-        KeyStrafeRightAction strafeRight = new KeyStrafeRightAction(cam, 0.5f);
+        KeyStrafeRightAction strafeRight = new KeyStrafeRightAction(camera, 0.5f);
         strafeRight.setKey("strafeRight");
         addAction(strafeRight);
-        KeyLookUpAction lookUp = new KeyLookUpAction(cam, 0.01f);
+        KeyLookUpAction lookUp = new KeyLookUpAction(camera, 0.01f);
         lookUp.setKey("lookUp");
         addAction(lookUp);
-        KeyLookDownAction lookDown = new KeyLookDownAction(cam, 0.01f);
+        KeyLookDownAction lookDown = new KeyLookDownAction(camera, 0.01f);
         lookDown.setKey("lookDown");
         addAction(lookDown);
-        KeyRotateRightAction rotateRight = new KeyRotateRightAction(cam, 0.01f);
+        KeyRotateRightAction rotateRight = new KeyRotateRightAction(camera, 0.01f);
         rotateRight.setKey("turnRight");
         addAction(rotateRight);
-        KeyRotateLeftAction rotateLeft = new KeyRotateLeftAction(cam, 0.01f);
+        KeyRotateLeftAction rotateLeft = new KeyRotateLeftAction(camera, 0.01f);
         rotateLeft.setKey("turnLeft");
         addAction(rotateLeft);
     }

@@ -37,6 +37,7 @@ import com.jme.widget.Widget;
 import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.border.WidgetBorderType;
+import com.jme.widget.bounds.WidgetViewRectangle;
 import com.jme.widget.layout.WidgetFlowLayout;
 import com.jme.widget.text.WidgetLabel;
 

@@ -31,7 +31,7 @@
  */
 package com.jme.widget.scroller;
 
-import com.jme.widget.util.WidgetType;
+import com.jme.util.JmeType;
 
 /**
  * @author Gregg Patton
@@ -39,7 +39,7 @@ import com.jme.widget.util.WidgetType;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public final class WidgetScrollerType extends WidgetType {
+public final class WidgetScrollerType extends JmeType {
 
     public final static WidgetScrollerType VERTICAL = new WidgetScrollerType("VERTICAL");
     public final static WidgetScrollerType HORIZONTAL = new WidgetScrollerType("HORIZONTAL");
@@ -48,8 +48,8 @@ public final class WidgetScrollerType extends WidgetType {
         super(name);
     }
 
-    public WidgetType getType(String name) {
-        WidgetType type = null;
+    public JmeType getType(String name) {
+        JmeType type = null;
 
         if (VERTICAL.name.equals(name)) {
             type = VERTICAL;

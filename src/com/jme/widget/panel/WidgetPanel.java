@@ -32,7 +32,7 @@
 package com.jme.widget.panel;
 
 import com.jme.renderer.Renderer;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 
 /**
  * @author Gregg Patton
@@ -40,7 +40,7 @@ import com.jme.widget.WidgetContainerAbstract;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetPanel extends WidgetContainerAbstract {
+public class WidgetPanel extends WidgetAbstractContainer {
 
     public WidgetPanel() {
 		super();		        

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -33,7 +33,7 @@ package com.jme.widget;
 
 import java.util.Observer;
 
-import com.jme.input.InputControllerAbstract;
+import com.jme.input.AbstractInputController;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
@@ -41,14 +41,13 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.bounds.WidgetBoundingRectangle;
-import com.jme.widget.bounds.WidgetViewport;
+import com.jme.widget.bounds.WidgetViewRectangle;
 import com.jme.widget.util.WidgetNotifier;
 
 /**
+ * <code>WidgetImpl</code>
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version
  */
 public class WidgetImpl extends Spatial implements Widget {
 
@@ -83,14 +82,15 @@ public class WidgetImpl extends Spatial implements Widget {
     protected WidgetNotifier notifierMouseExit = new WidgetNotifier();
     protected WidgetNotifier notifierMouseMove = new WidgetNotifier();
 
-    protected WidgetViewport viewport = new WidgetViewport();
+    protected WidgetViewRectangle viewRectangle = new WidgetViewRectangle();
     private boolean applyOffsetX = true;
     private boolean applyOffsetY = true;
 
-    //private static WidgetMouseStateAbstract mouseState;
-    private static InputControllerAbstract inputController;
+    private static AbstractInputController inputController;
 
     private static Widget mouseOwner;
+    private static Widget widgetUnderMouse;
+    private static Widget lastWidgetUnderMouse;
 
     private Widget owner;
 
@@ -114,11 +114,11 @@ public class WidgetImpl extends Spatial implements Widget {
         return inputController.getMouse().getMouseInput();
     }
 
-    public InputControllerAbstract getInputController() {
+    public AbstractInputController getInputController() {
         return inputController;
     }
 
-    public void setInputController(InputControllerAbstract controller) {
+    public void setInputController(AbstractInputController controller) {
         inputController = controller;
     }
 
@@ -129,6 +129,38 @@ public class WidgetImpl extends Spatial implements Widget {
 
     public void setMouseOwner(Widget widget) {
         WidgetImpl.mouseOwner = widget;
+    }
+
+    /**
+     * <code>getWidgetUnderMouse</code>
+     * @return
+     */
+    public Widget getWidgetUnderMouse() {
+        return widgetUnderMouse;
+    }
+
+    /**
+     * <code>setWidgetUnderMouse</code>
+     * @param widget
+     */
+    public void setWidgetUnderMouse(Widget widget) {
+        widgetUnderMouse = widget;
+    }
+
+    /**
+     * <code>getLastWidgetUnderMouse</code>
+     * @return
+     */
+    public Widget getLastWidgetUnderMouse() {
+        return lastWidgetUnderMouse;
+    }
+
+    /**
+     * <code>setLastWidgetUnderMouse</code>
+     * @param widget
+     */
+    public void setLastWidgetUnderMouse(Widget widget) {
+        lastWidgetUnderMouse = widget;
     }
 
     public WidgetBorder getBorder() {
@@ -251,17 +283,17 @@ public class WidgetImpl extends Spatial implements Widget {
     }
 
     public void doParentLayout() {
-        WidgetContainerAbstract p = getWidgetParent();
+        WidgetAbstractContainer p = getWidgetParent();
         if (p != null)
             p.doLayout();
     }
 
-    public void setWidgetParent(WidgetContainerAbstract parent) {
+    public void setWidgetParent(WidgetAbstractContainer parent) {
         super.setParent(parent);
     }
 
-    public WidgetContainerAbstract getWidgetParent() {
-        return (WidgetContainerAbstract) super.getParent();
+    public WidgetAbstractContainer getWidgetParent() {
+        return (WidgetAbstractContainer) super.getParent();
     }
 
     public Vector2f getAbsoluteLocation() {
@@ -269,7 +301,7 @@ public class WidgetImpl extends Spatial implements Widget {
         l.x = localBound.getMinX();
         l.y = localBound.getMinY();
 
-        WidgetContainerAbstract p = getWidgetParent();
+        WidgetAbstractContainer p = getWidgetParent();
 
         while (p != null) {
 
@@ -316,10 +348,10 @@ public class WidgetImpl extends Spatial implements Widget {
     }
 
     public int getXOffset() {
-        WidgetContainerAbstract p = getWidgetParent();
+        WidgetAbstractContainer p = getWidgetParent();
 
         if (p != null && applyOffsetX == true) {
-            return (int) (p.getViewport().getOffsetX() + p.getPanOffsetX());
+            return (int) (p.getViewRectangle().getOffsetX() + p.getPanOffsetX());
         } else {
             return 0;
         }
@@ -335,10 +367,10 @@ public class WidgetImpl extends Spatial implements Widget {
 
     public int getYOffset() {
 
-        WidgetContainerAbstract p = getWidgetParent();
+        WidgetAbstractContainer p = getWidgetParent();
 
         if (p != null && applyOffsetY == true) {
-            return (int) (p.getViewport().getOffsetY() + p.getPanOffsetY());
+            return (int) (p.getViewRectangle().getOffsetY() + p.getPanOffsetY());
         } else {
             return 0;
         }
@@ -362,10 +394,9 @@ public class WidgetImpl extends Spatial implements Widget {
         else if (mouseOwner != null && (mouseOwner != getParent() && mouseOwner.getZOrder() > zOrder))
             return false;
 
-        //WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
         MouseInput mi = getMouseInput();
 
-        return getViewport().inside(mi.getXAbsolute(), mi.getYAbsolute());
+        return getViewRectangle().inside(mi.getXAbsolute(), mi.getYAbsolute());
     }
 
     public WidgetAlignmentType getAlignment() {
@@ -462,6 +493,14 @@ public class WidgetImpl extends Spatial implements Widget {
         this.notifierMouseButtonDown.deleteObserver(o);
     }
 
+    /** <code>deleteMouseButtonDownObservers</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseButtonDownObservers()
+     */
+    public void deleteMouseButtonDownObservers() {
+        this.notifierMouseButtonDown.deleteObservers();
+    }
+
     public void doMouseButtonDown() {}
 
     public void handleMouseButtonDown() {
@@ -483,6 +522,14 @@ public class WidgetImpl extends Spatial implements Widget {
 
     public void deleteMouseButtonUpObserver(Observer o) {
         this.notifierMouseButtonUp.deleteObserver(o);
+    }
+
+    /** <code>deleteMouseButtonUpObservers</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseButtonUpObservers()
+     */
+    public void deleteMouseButtonUpObservers() {
+        this.notifierMouseButtonUp.deleteObservers();
     }
 
     public void doMouseButtonUp() {}
@@ -511,11 +558,27 @@ public class WidgetImpl extends Spatial implements Widget {
         this.notifierMouseMove.deleteObserver(o);
     }
 
+    /** <code>deleteMouseMoveObservers</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseMoveObservers()
+     */
+    public void deleteMouseMoveObservers() {
+        this.notifierMouseMove.deleteObservers();
+    }
+
     public void doMouseMove() {}
 
     public void handleMouseMove() {
         if (isVisible() == false)
             return;
+
+        boolean b = isMouseInWidget();
+
+        if (b) {
+
+            setWidgetUnderMouse(this);
+        }
+            
     }
 
     public void addMouseDragObserver(Observer o) {
@@ -524,6 +587,14 @@ public class WidgetImpl extends Spatial implements Widget {
 
     public void deleteMouseDragObserver(Observer o) {
         this.notifierMouseDrag.deleteObserver(o);
+    }
+
+    /** <code>deleteMouseDragObservers</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseDragObservers()
+     */
+    public void deleteMouseDragObservers() {
+        this.notifierMouseDrag.deleteObservers();
     }
 
     public void doMouseDrag() {}
@@ -541,6 +612,14 @@ public class WidgetImpl extends Spatial implements Widget {
         this.notifierMouseEnter.deleteObserver(o);
     }
 
+    /** <code>deleteMouseEnterObservers</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseEnterObservers()
+     */
+    public void deleteMouseEnterObservers() {
+        this.notifierMouseEnter.deleteObservers();
+    }
+
     public void doMouseEnter() {}
 
     public void handleMouseEnter() {
@@ -554,6 +633,14 @@ public class WidgetImpl extends Spatial implements Widget {
 
     public void deleteMouseExitObserver(Observer o) {
         this.notifierMouseExit.deleteObserver(o);
+    }
+
+    /** <code>deleteMouseExitObservers</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseExitObservers()
+     */
+    public void deleteMouseExitObservers() {
+        this.notifierMouseExit.deleteObservers();
     }
 
     public void doMouseExit() {}
@@ -571,12 +658,12 @@ public class WidgetImpl extends Spatial implements Widget {
         cantOwnMouse = b;
     }
 
-    public WidgetViewport getViewport() {
-        return new WidgetViewport(viewport);
+    public WidgetViewRectangle getViewRectangle() {
+        return new WidgetViewRectangle(viewRectangle);
     }
 
-    public void setViewport(WidgetViewport viewport) {
-        this.viewport.set(viewport);
+    public void setViewRectangle(WidgetViewRectangle viewRectangle) {
+        this.viewRectangle.set(viewRectangle);
     }
 
     public Widget getOwner() {
@@ -627,8 +714,8 @@ public class WidgetImpl extends Spatial implements Widget {
     }
 
     protected boolean isCulled(WidgetBoundingRectangle bound) {
-        float w = viewport.getWidth();
-        float h = viewport.getHeight();
+        float w = viewRectangle.getWidth();
+        float h = viewRectangle.getHeight();
 
         if ((w > 0 && h > 0) == false)
             return true; //has no size so it's culled
@@ -640,10 +727,10 @@ public class WidgetImpl extends Spatial implements Widget {
 
         WidgetBoundingRectangle r = bound;
 
-        ret = !viewport.contains(bound);
+        ret = !viewRectangle.contains(bound);
 
         if (ret == true) {
-            ret = !WidgetBoundingRectangle.intersects(viewport, r);
+            ret = !WidgetBoundingRectangle.intersects(viewRectangle, r);
         }
 
         return ret;

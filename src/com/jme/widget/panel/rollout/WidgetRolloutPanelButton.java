@@ -33,7 +33,7 @@ package com.jme.widget.panel.rollout;
 
 import com.jme.math.Vector2f;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.bounds.WidgetViewport;
+import com.jme.widget.bounds.WidgetViewRectangle;
 import com.jme.widget.button.WidgetButton;
 
 /**
@@ -98,14 +98,14 @@ class WidgetRolloutPanelButton extends WidgetButton {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget#setViewport(jme.widget.bounds.WidgetViewport)
+     * @see jme.widget.Widget#setViewport(jme.widget.bounds.WidgetViewRectangle)
      */
-    public void setViewport(WidgetViewport viewport) {
-		WidgetViewport v = new WidgetViewport(viewport);
+    public void setViewRectangle(WidgetViewRectangle viewport) {
+		WidgetViewRectangle v = new WidgetViewRectangle(viewport);
 		
-		v.setWidth(getWidgetParent().getViewport().getWidth());
+		v.setWidth(getWidgetParent().getViewRectangle().getWidth());
 		
-        super.setViewport(v);
+        super.setViewRectangle(v);
     }
 
 }

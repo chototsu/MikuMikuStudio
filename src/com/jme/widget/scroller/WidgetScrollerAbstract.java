@@ -35,7 +35,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import com.jme.renderer.Renderer;
-import com.jme.widget.WidgetContainerAbstract;
+import com.jme.widget.WidgetAbstractContainer;
 import com.jme.widget.WidgetExpander;
 import com.jme.widget.button.WidgetButton;
 import com.jme.widget.button.WidgetButtonStateType;
@@ -50,7 +50,7 @@ import com.jme.widget.util.WidgetRepeater;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public abstract class WidgetScrollerAbstract extends WidgetContainerAbstract implements Observer {
+public abstract class WidgetScrollerAbstract extends WidgetAbstractContainer implements Observer {
 
     private WidgetNotifier notifierScrollChange = new WidgetNotifier();
 

@@ -27,59 +27,65 @@
  */
 package com.jme.widget.input.mouse;
 
-import com.jme.app.SimpleGame;
-import com.jme.input.InputControllerAbstract;
+import com.jme.app.AbstractGame;
+import com.jme.input.AbstractInputController;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
 import com.jme.input.RelativeMouse;
 import com.jme.input.action.KeyExitAction;
-import com.jme.renderer.Camera;
+import com.jme.renderer.RendererType;
 
 /**
- * <code>WidgetMouseController</code>
+ * <code>WidgetMouseTestControllerBasic</code>
  * @author Gregg Patton
- * @version
+ * @version $Id: WidgetMouseTestControllerBasic.java,v 1.3 2004-02-09 12:33:19 greggpatton Exp $
  */
-public class WidgetMouseTestControllerBasic extends InputControllerAbstract {
+public class WidgetMouseTestControllerBasic extends AbstractInputController {
+
+    /**
+     * 
+     */
+    public WidgetMouseTestControllerBasic() {
+        super();
+    }
 
     /**
      * @param app
-     * @param cam
-     * @param api
      */
-    public WidgetMouseTestControllerBasic(SimpleGame app, Camera cam, String api) {
-        super(app, cam, api);
+    public WidgetMouseTestControllerBasic(AbstractGame app) {
+        super(app);
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.InputControllerAbstract#setKeyBindings(java.lang.String)
+     * @see com.jme.input.AbstractInputController#setKeyBindings(java.lang.String)
      */
-    protected void setKeyBindings(String api) {
-        super.setKeyBindings(api);
+    protected void setKeyBindings(RendererType rendererType) {
+        super.setKeyBindings(rendererType);
 
         keyboard.set("exit", KeyInput.KEY_ESCAPE);
 
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.InputControllerAbstract#setMouse(com.jme.renderer.Camera)
+     * @see com.jme.input.AbstractInputController#setMouse(com.jme.renderer.Camera)
      */
-    protected void setMouse(Camera cam) {
+    protected void setMouse() {
         RelativeMouse mouse = new RelativeMouse();
         mouse.setMouseInput(InputSystem.getMouseInput());
-        
+
         mouse.getMouseInput().setCursorVisible(true);
-        
+
         setMouse(mouse);
     }
 
     /* (non-Javadoc)
      * @see com.jme.input.InputControllerAbstract#setActions(com.jme.renderer.Camera, com.jme.app.SimpleGame)
      */
-    protected void setActions(Camera cam, SimpleGame app) {
-        KeyExitAction exit = new KeyExitAction(app);
-        exit.setKey("exit");
-        addAction(exit);
+    protected void setActions() {
+        if (app != null) {
+            KeyExitAction exit = new KeyExitAction(this.app);
+            exit.setKey("exit");
+            addAction(exit);
+        }
     }
-
 }
