@@ -132,7 +132,10 @@ public class HelloIntersection extends SimpleGame {
 		targetSound = new ProgrammableSound();
 		/** Make the sound softer */
 		targetSound.setLooping(false);
-		targetSound.setMaxDistance(140f);
+		targetSound.setMaxDistance(1000f);
+		targetSound.setRolloffFactor(.01f);
+		targetSound.setGain(1000.00f);
+		targetSound.setReferenceDistance(10f);
 
 		laserSound = new ProgrammableSound();
 		laserSound.setLooping(false);
