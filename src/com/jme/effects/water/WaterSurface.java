@@ -38,12 +38,12 @@ import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>WaterSurface</code>...  This is not for actual use yet.
+ * <code>WaterSurface</code>...  <b>This is not for actual use yet.</b>
  *
  * Portions from Game Programming Gems 4 article by Jerry Tessendorf
  *
  * @author Joshua Slack
- * @version $Id: WaterSurface.java,v 1.5 2004-04-27 17:10:18 renanse Exp $
+ * @version $Id: WaterSurface.java,v 1.6 2004-08-03 02:52:20 cep21 Exp $
  */
 
 public class WaterSurface extends TriMesh {
