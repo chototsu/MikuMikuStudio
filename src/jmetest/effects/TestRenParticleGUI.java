@@ -58,13 +58,13 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.4 2004-03-24 20:22:19 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.5 2004-03-24 23:13:56 renanse Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
   public static RenParticleManager manager;
 
-  private Node root;
+  public static Node root;
   private Node main;
 
   private Camera cam;

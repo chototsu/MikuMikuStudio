@@ -55,7 +55,7 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.6 2004-03-24 20:09:44 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.7 2004-03-24 23:13:57 renanse Exp $
  *
  */
 public class RenParticleManager {
@@ -611,10 +611,10 @@ public class RenParticleManager {
   /**
    * Set the number of particles to be managed by this manager.
    *
-   * @return float
+   * @return int
    */
-  public float getParticlesNumber() {
-    return (float) noParticles;
+  public int getParticlesNumber() {
+    return noParticles;
   }
 
   /**

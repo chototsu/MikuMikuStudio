@@ -31,31 +31,6 @@
 
 package jmetest.effects;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import java.awt.SystemColor;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JColorChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JSlider;
-import javax.swing.JSpinner;
-import javax.swing.JTabbedPane;
-import javax.swing.JTextArea;
-import javax.swing.border.TitledBorder;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
@@ -65,6 +40,10 @@ import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.effects.*;
+import java.awt.*;
+import javax.swing.*;
+import javax.swing.border.*;
+import java.awt.event.*;
 
 public class RenParticleControlFrame extends JFrame {
   BorderLayout borderLayout1 = new BorderLayout();
@@ -152,20 +131,25 @@ public class RenParticleControlFrame extends JFrame {
   JScrollPane codeSP = new JScrollPane();
   JTextArea codeTextArea = new JTextArea();
   DefaultListModel exampleModel = new DefaultListModel();
+  JPanel countPanel = new JPanel();
+  TitledBorder countBorder;
+  JLabel countLabel = new JLabel();
+  JButton countButton = new JButton();
+  GridBagLayout gridBagLayout15 = new GridBagLayout();
 
   /**
-  * <code>RenParticleControlFrame</code>
-  *
-  * @author Joshua Slack
-  * @version $Id: RenParticleControlFrame.java,v 1.9 2004-03-24 20:21:04 renanse Exp $
-  *
-  */
+   * <code>RenParticleControlFrame</code>
+   *
+   * @author Joshua Slack
+   * @version $Id: RenParticleControlFrame.java,v 1.10 2004-03-24 23:13:56 renanse Exp $
+   *
+   */
 
- public RenParticleControlFrame() {
+  public RenParticleControlFrame() {
     try {
       jbInit();
     }
-    catch(Exception ex) {
+    catch (Exception ex) {
       ex.printStackTrace();
     }
   }
@@ -180,6 +164,7 @@ public class RenParticleControlFrame extends JFrame {
     emitBorder = new TitledBorder(" EMISSION DIRECTION ");
     angleBorder = new TitledBorder("");
     randomBorder = new TitledBorder("");
+    countBorder = new TitledBorder("");
     this.getContentPane().setLayout(borderLayout1);
     appPanel.setLayout(gridBagLayout1);
     emitPanel.setLayout(gridBagLayout2);
@@ -233,7 +218,7 @@ public class RenParticleControlFrame extends JFrame {
     endSizeSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = endSizeSlider.getValue();
-        TestRenParticleGUI.manager.setEndSize(val/10f);
+        TestRenParticleGUI.manager.setEndSize(val / 10f);
         updateSizeLabels();
         regenCode();
       }
@@ -242,7 +227,7 @@ public class RenParticleControlFrame extends JFrame {
     startSizeSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = startSizeSlider.getValue();
-        TestRenParticleGUI.manager.setStartSize(val/10f);
+        TestRenParticleGUI.manager.setStartSize(val / 10f);
         updateSizeLabels();
         regenCode();
       }
@@ -259,7 +244,7 @@ public class RenParticleControlFrame extends JFrame {
     speedSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = speedSlider.getValue();
-        TestRenParticleGUI.manager.setParticlesSpeed((float)val * .1f);
+        TestRenParticleGUI.manager.setParticlesSpeed( (float) val * .1f);
         updateSpeedLabels();
         regenCode();
       }
@@ -274,7 +259,8 @@ public class RenParticleControlFrame extends JFrame {
     changeTextureButton.setMargin(new Insets(2, 2, 2, 2));
     changeTextureButton.setText("Browse...");
     imageLabel.setBackground(Color.lightGray);
-    imageLabel.setBorder(BorderFactory.createLineBorder(SystemColor.controlText,1));
+    imageLabel.setBorder(BorderFactory.createLineBorder(SystemColor.controlText,
+        1));
     imageLabel.setMaximumSize(new Dimension(128, 128));
     imageLabel.setMinimumSize(new Dimension(0, 0));
     imageLabel.setOpaque(true);
@@ -289,7 +275,7 @@ public class RenParticleControlFrame extends JFrame {
     gravXSlider.setInverted(false);
     gravXSlider.setMajorTickSpacing(16);
     gravXSlider.setMaximum(32);
-    gravXSlider.setMinimum(-32);
+    gravXSlider.setMinimum( -32);
     gravXSlider.setMinorTickSpacing(4);
     gravXSlider.setPaintLabels(true);
     gravXSlider.setPaintTicks(true);
@@ -299,7 +285,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravXSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.001f;
+          TestRenParticleGUI.manager.getGravityForce().x = (float) val * 0.001f;
         regenCode();
       }
     });
@@ -309,7 +295,7 @@ public class RenParticleControlFrame extends JFrame {
     gravYSlider.setInverted(false);
     gravYSlider.setMajorTickSpacing(16);
     gravYSlider.setMaximum(32);
-    gravYSlider.setMinimum(-32);
+    gravYSlider.setMinimum( -32);
     gravYSlider.setMinorTickSpacing(4);
     gravYSlider.setPaintLabels(true);
     gravYSlider.setPaintTicks(true);
@@ -319,7 +305,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravYSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.001f;
+          TestRenParticleGUI.manager.getGravityForce().y = (float) val * 0.001f;
         regenCode();
       }
     });
@@ -329,7 +315,7 @@ public class RenParticleControlFrame extends JFrame {
     gravZSlider.setInverted(false);
     gravZSlider.setMajorTickSpacing(16);
     gravZSlider.setMaximum(32);
-    gravZSlider.setMinimum(-32);
+    gravZSlider.setMinimum( -32);
     gravZSlider.setMinorTickSpacing(4);
     gravZSlider.setPaintLabels(true);
     gravZSlider.setPaintTicks(true);
@@ -339,7 +325,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravZSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.001f;
+          TestRenParticleGUI.manager.getGravityForce().z = (float) val * 0.001f;
         regenCode();
       }
     });
@@ -355,7 +341,7 @@ public class RenParticleControlFrame extends JFrame {
     minAgeSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = minAgeSlider.getValue();
-        TestRenParticleGUI.manager.setParticlesMinimumLifeTime((float)val);
+        TestRenParticleGUI.manager.setParticlesMinimumLifeTime( (float) val);
         updateAgeLabels();
         regenCode();
       }
@@ -367,7 +353,7 @@ public class RenParticleControlFrame extends JFrame {
     emitBorder.setTitle(" DIRECTION ");
     emitZSlider.setOrientation(JSlider.VERTICAL);
     emitZSlider.setMajorTickSpacing(5);
-    emitZSlider.setMinimum(-10);
+    emitZSlider.setMinimum( -10);
     emitZSlider.setMaximum(10);
     emitZSlider.setMinorTickSpacing(1);
     emitZSlider.setPaintLabels(true);
@@ -376,7 +362,8 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = emitZSlider.getValue();
         if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().z = (float) val * .1f;
+          TestRenParticleGUI.manager.getEmissionDirection().z = (float) val *
+              .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
         regenCode();
@@ -384,7 +371,7 @@ public class RenParticleControlFrame extends JFrame {
     });
     emitYSlider.setOrientation(JSlider.VERTICAL);
     emitYSlider.setMajorTickSpacing(5);
-    emitYSlider.setMinimum(-10);
+    emitYSlider.setMinimum( -10);
     emitYSlider.setMaximum(10);
     emitYSlider.setMinorTickSpacing(1);
     emitYSlider.setPaintLabels(true);
@@ -393,7 +380,8 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = emitYSlider.getValue();
         if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().y = (float)val * .1f;
+          TestRenParticleGUI.manager.getEmissionDirection().y = (float) val *
+              .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
         regenCode();
@@ -401,7 +389,7 @@ public class RenParticleControlFrame extends JFrame {
     });
     emitXSlider.setOrientation(JSlider.VERTICAL);
     emitXSlider.setMajorTickSpacing(5);
-    emitXSlider.setMinimum(-10);
+    emitXSlider.setMinimum( -10);
     emitXSlider.setMaximum(10);
     emitXSlider.setMinorTickSpacing(1);
     emitXSlider.setPaintLabels(true);
@@ -410,7 +398,8 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = emitXSlider.getValue();
         if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().x = (float)val * .1f;
+          TestRenParticleGUI.manager.getEmissionDirection().x = (float) val *
+              .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
         regenCode();
@@ -434,7 +423,8 @@ public class RenParticleControlFrame extends JFrame {
     angleSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = angleSlider.getValue();
-        TestRenParticleGUI.manager.setEmissionMaximumAngle((float)val * FastMath.DEG_TO_RAD);
+        TestRenParticleGUI.manager.setEmissionMaximumAngle( (float) val *
+            FastMath.DEG_TO_RAD);
         updateAngleLabels();
         regenCode();
       }
@@ -450,7 +440,7 @@ public class RenParticleControlFrame extends JFrame {
     randomSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = randomSlider.getValue();
-        TestRenParticleGUI.manager.setRandomMod((float)val*.1f);
+        TestRenParticleGUI.manager.setRandomMod( (float) val * .1f);
         updateRandomLabels();
         regenCode();
       }
@@ -491,144 +481,236 @@ public class RenParticleControlFrame extends JFrame {
     codeTextArea.setText("");
     codeTextArea.setEditable(false);
     codeTextArea.setAutoscrolls(true);
+    countPanel.setFont(new java.awt.Font("Arial", 0, 13));
+    countPanel.setBorder(countBorder);
+    countPanel.setLayout(gridBagLayout15);
+    countBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
+    countBorder.setTitle(" PARTICLE COUNT ");
+    countLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    countLabel.setText("Particles: 300");
+    countButton.setFont(new java.awt.Font("Arial", 1, 12));
+    countButton.setMargin(new Insets(2, 2, 2, 2));
+    countButton.setText("Change...");
+    countButton.addActionListener(new java.awt.event.ActionListener() {
+      public void actionPerformed(ActionEvent e) {
+        countButton_actionPerformed(e);
+      }
+    });
     this.getContentPane().add(mainTabbedPane1, BorderLayout.CENTER);
-    mainTabbedPane1.add(appPanel,   "Appearance");
-    mainTabbedPane1.add(emitPanel,     "Emission");
-    emitPanel.add(directionPanel,         new GridBagConstraints(0, 0, 1, 2, 0.5, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 10, 5), 0, 0));
-    directionPanel.add(emitXSlider,          new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 5, 0), 0, 0));
-    directionPanel.add(emitYSlider,            new GridBagConstraints(1, 0, 1, 1, 0.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 5, 0), 0, 0));
-    directionPanel.add(emitZSlider,         new GridBagConstraints(2, 0, 1, 1, 0.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 5, 10), 0, 0));
-    directionPanel.add(emitXLabel,      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    directionPanel.add(emitYLabel,     new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    directionPanel.add(emitZLabel,    new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
-    mainTabbedPane1.add(worldPanel,    "World");
+    mainTabbedPane1.add(appPanel, "Appearance");
+    mainTabbedPane1.add(emitPanel, "Emission");
+    emitPanel.add(directionPanel, new GridBagConstraints(0, 0, 1, 2, 0.5, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 10, 10, 5), 0, 0));
+    directionPanel.add(emitXSlider, new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 10, 5, 0), 0, 0));
+    directionPanel.add(emitYSlider, new GridBagConstraints(1, 0, 1, 1, 0.0, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 0, 5, 0), 0, 0));
+    directionPanel.add(emitZSlider, new GridBagConstraints(2, 0, 1, 1, 0.0, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 0, 5, 10), 0, 0));
+    directionPanel.add(emitXLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 0, 0));
+    directionPanel.add(emitYLabel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 0, 0));
+    directionPanel.add(emitZLabel, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 5), 0, 0));
+    mainTabbedPane1.add(worldPanel, "World");
 
-    worldPanel.add(speedPanel,       new GridBagConstraints(0, 0, 1, 1, 0.5, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 5, 5), 0, 0));
+    worldPanel.add(speedPanel, new GridBagConstraints(0, 0, 1, 1, 0.5, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 10, 5, 5), 0, 0));
 
     startAlphaSpinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        TestRenParticleGUI.manager.getStartColor().a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
+        TestRenParticleGUI.manager.getStartColor().a = (Integer.parseInt(
+            startAlphaSpinner.getValue().toString()) / 255f);
         regenCode();
       }
     });
 
     endAlphaSpinner.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
-        TestRenParticleGUI.manager.getEndColor().a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
+        TestRenParticleGUI.manager.getEndColor().a = (Integer.parseInt(
+            endAlphaSpinner.getValue().toString()) / 255f);
         regenCode();
       }
     });
 
-    appPanel.add(colorPanel,      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 5, 5), 0, 0));
-    colorPanel.add(startColorLabel,             new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 10, 0, 10), 0, 0));
-    colorPanel.add(colorLabel,        new GridBagConstraints(2, 0, 1, 3, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 5, 0, 5), 0, 0));
-    colorPanel.add(endColorLabel,       new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(5, 10, 0, 10), 0, 0));
-    colorPanel.add(startColorPanel,        new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 25, 25));
-    colorPanel.add(endColorPanel,      new GridBagConstraints(3, 1, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 25, 25));
-    colorPanel.add(startColorHex,      new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 4, 0), 0, 0));
-    colorPanel.add(endColorHex,     new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 4, 0), 0, 0));
-    colorPanel.add(startAlphaSpinner,        new GridBagConstraints(1, 3, 1, 1, 0.25, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 20, 0));
-    colorPanel.add(startAlphaLabel,    new GridBagConstraints(0, 3, 1, 1, 0.25, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    colorPanel.add(endAlphaLabel,    new GridBagConstraints(3, 3, 1, 1, 0.25, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    colorPanel.add(endAlphaSpinner,    new GridBagConstraints(4, 3, 1, 1, 0.25, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 20, 0));
-    appPanel.add(sizePanel,    new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 5, 10), 0, 0));
-    sizePanel.add(startSizeLabel,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(0, 4, 0, 0), 0, 0));
-    sizePanel.add(startSizeSlider,         new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 4, 0, 0), 100, 0));
-    sizePanel.add(endSizeLabel,  new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(4, 4, 0, 0), 0, 0));
-    sizePanel.add(endSizeSlider,     new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 4, 0, 0), 100, 0));
-    appPanel.add(texturePanel,   new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 5, 10), 0, 0));
-    texturePanel.add(textureLabel,   new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 4), 0, 0));
-    texturePanel.add(changeTextureButton,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.EAST, GridBagConstraints.NONE, new Insets(10, 0, 5, 4), 0, 0));
-    texturePanel.add(imageLabel,       new GridBagConstraints(1, 0, 1, 2, 0.0, 0.0
-            ,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 32, 32));
-    speedPanel.add(speedLabel,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 0, 10), 0, 0));
-    speedPanel.add(speedSlider,      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
-    worldPanel.add(gravityPanel,          new GridBagConstraints(1, 0, 1, 3, 0.5, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 10, 10), 0, 0));
-    gravityPanel.add(gravXSlider,    new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-    gravityPanel.add(gravYSlider,       new GridBagConstraints(1, 0, 1, 1, 0.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-    gravityPanel.add(gravZSlider,    new GridBagConstraints(2, 0, 1, 1, 0.0, 1.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-    gravityPanel.add(gravXLabel,  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    gravityPanel.add(gravYLabel,  new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    gravityPanel.add(gravZLabel,  new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    worldPanel.add(agePanel,      new GridBagConstraints(0, 1, 1, 1, 0.5, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 5, 5), 0, 0));
+    appPanel.add(colorPanel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 10, 5, 5), 0, 0));
+    colorPanel.add(startColorLabel, new GridBagConstraints(0, 0, 2, 1, 0.0, 0.0
+        , GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(5, 10, 0, 10), 0, 0));
+    colorPanel.add(colorLabel, new GridBagConstraints(2, 0, 1, 3, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 5, 0, 5), 0, 0));
+    colorPanel.add(endColorLabel, new GridBagConstraints(3, 0, 2, 1, 0.0, 0.0
+        , GridBagConstraints.EAST, GridBagConstraints.NONE,
+        new Insets(5, 10, 0, 10), 0, 0));
+    colorPanel.add(startColorPanel, new GridBagConstraints(0, 1, 2, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 25, 25));
+    colorPanel.add(endColorPanel, new GridBagConstraints(3, 1, 2, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 25, 25));
+    colorPanel.add(startColorHex, new GridBagConstraints(0, 2, 2, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 4, 0), 0, 0));
+    colorPanel.add(endColorHex, new GridBagConstraints(3, 2, 2, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 4, 0), 0, 0));
+    colorPanel.add(startAlphaSpinner,
+                   new GridBagConstraints(1, 3, 1, 1, 0.25, 0.0
+                                          , GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 0, 0), 20, 0));
+    colorPanel.add(startAlphaLabel,
+                   new GridBagConstraints(0, 3, 1, 1, 0.25, 0.0
+                                          , GridBagConstraints.EAST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 0, 0), 0, 0));
+    colorPanel.add(endAlphaLabel, new GridBagConstraints(3, 3, 1, 1, 0.25, 0.0
+        , GridBagConstraints.EAST, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 0, 0));
+    colorPanel.add(endAlphaSpinner,
+                   new GridBagConstraints(4, 3, 1, 1, 0.25, 0.0
+                                          , GridBagConstraints.WEST,
+                                          GridBagConstraints.NONE,
+                                          new Insets(0, 0, 0, 0), 20, 0));
+    appPanel.add(sizePanel, new GridBagConstraints(1, 0, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 5, 5, 10), 0, 0));
+    sizePanel.add(startSizeLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+        , GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(0, 4, 0, 0), 0, 0));
+    sizePanel.add(startSizeSlider, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 4, 0, 0), 100, 0));
+    sizePanel.add(endSizeLabel, new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+        , GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(4, 4, 0, 0), 0, 0));
+    sizePanel.add(endSizeSlider, new GridBagConstraints(0, 3, 1, 1, 1.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 4, 0, 0), 100, 0));
+    appPanel.add(texturePanel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(5, 10, 5, 5), 0, 0));
+    texturePanel.add(textureLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 4), 0, 0));
+    texturePanel.add(changeTextureButton,
+                     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+                                            , GridBagConstraints.EAST,
+                                            GridBagConstraints.NONE,
+                                            new Insets(10, 0, 5, 4), 0, 0));
+    texturePanel.add(imageLabel, new GridBagConstraints(1, 0, 1, 2, 1.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(5, 5, 5, 5), 32, 32));
+    appPanel.add(countPanel, new GridBagConstraints(1, 1, 1, 1, 0.5, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(5, 5, 5, 10), 0, 0));
+    speedPanel.add(speedLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+        , GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(10, 10, 0, 10), 0, 0));
+    speedPanel.add(speedSlider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 5, 5, 5), 0, 0));
+    worldPanel.add(gravityPanel, new GridBagConstraints(1, 0, 1, 3, 0.5, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 5, 10, 10), 0, 0));
+    gravityPanel.add(gravXSlider, new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(0, 0, 0, 0), 0, 0));
+    gravityPanel.add(gravYSlider, new GridBagConstraints(1, 0, 1, 1, 0.0, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(0, 0, 0, 0), 0, 0));
+    gravityPanel.add(gravZSlider, new GridBagConstraints(2, 0, 1, 1, 0.0, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(0, 0, 0, 0), 0, 0));
+    gravityPanel.add(gravXLabel, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 0, 0));
+    gravityPanel.add(gravYLabel, new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 0, 0));
+    gravityPanel.add(gravZLabel, new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(0, 0, 0, 0), 0, 0));
+    worldPanel.add(agePanel, new GridBagConstraints(0, 1, 1, 1, 0.5, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(5, 10, 5, 5), 0, 0));
     agePanel.add(minAgeLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 0), 0, 0));
-    agePanel.add(minAgeSlider,  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
-    worldPanel.add(randomPanel,  new GridBagConstraints(0, 2, 1, 1, 0.5, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 10, 5), 0, 0));
-    emitPanel.add(anglePanel,   new GridBagConstraints(1, 0, 1, 1, 0.5, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 5, 10), 0, 0));
-    anglePanel.add(angleLabel,     new GridBagConstraints(0, 0, 1, 1, 0.5, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 5, 10), 0, 0));
-    anglePanel.add(angleSlider,   new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 5, 10), 0, 0));
+        , GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(5, 5, 5, 0), 0, 0));
+    agePanel.add(minAgeSlider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 5, 5, 5), 0, 0));
+    worldPanel.add(randomPanel, new GridBagConstraints(0, 2, 1, 1, 0.5, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(5, 10, 10, 5), 0, 0));
+    emitPanel.add(anglePanel, new GridBagConstraints(1, 0, 1, 1, 0.5, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 5, 5, 10), 0, 0));
+    anglePanel.add(angleLabel, new GridBagConstraints(0, 0, 1, 1, 0.5, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(10, 5, 5, 10), 0, 0));
+    anglePanel.add(angleSlider, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(5, 10, 5, 10), 0, 0));
     anglePanel.add(angleLabel, null);
-    randomPanel.add(randomLabel,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 10, 5, 10), 0, 0));
-    randomPanel.add(randomSlider,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
-    mainTabbedPane1.add(examplesPanel,   "Examples");
-    examplesPanel.add(examplesLabel,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 5, 10), 0, 0));
-        examplesPanel.add(exampleSP,     new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
-                ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(0, 10, 0, 10), 0, 0));
-    examplesPanel.add(exampleButton,   new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 10, 10, 10), 0, 0));
+    randomPanel.add(randomLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+        , GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(5, 10, 5, 10), 0, 0));
+    randomPanel.add(randomSlider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
+        new Insets(0, 5, 5, 5), 0, 0));
+    mainTabbedPane1.add(examplesPanel, "Examples");
+    examplesPanel.add(examplesLabel,
+                      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+                                             , GridBagConstraints.WEST,
+                                             GridBagConstraints.NONE,
+                                             new Insets(10, 10, 5, 10), 0, 0));
+    examplesPanel.add(exampleSP, new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
+        , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+        new Insets(0, 10, 0, 10), 0, 0));
+    examplesPanel.add(exampleButton,
+                      new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
+                                             , GridBagConstraints.CENTER,
+                                             GridBagConstraints.NONE,
+                                             new Insets(5, 10, 10, 10), 0, 0));
     exampleSP.setViewportView(exampleList);
-    mainTabbedPane1.add(codePanel,  "Code");
-    codePanel.add(codeLabel,  new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 5, 10), 0, 0));
-    codePanel.add(codeSP,   new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
-            ,GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(5, 10, 10, 10), 0, 0));
+    mainTabbedPane1.add(codePanel, "Code");
+    codePanel.add(codeLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+        , GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(10, 10, 5, 10), 0, 0));
+    codePanel.add(codeSP, new GridBagConstraints(0, 1, 1, 1, 1.0, 1.0
+                                                 , GridBagConstraints.NORTHWEST,
+                                                 GridBagConstraints.BOTH,
+                                                 new Insets(5, 10, 10, 10), 0,
+                                                 0));
+    countPanel.add(countLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+        , GridBagConstraints.WEST, GridBagConstraints.NONE,
+        new Insets(10, 10, 5, 10), 0, 0));
+    countPanel.add(countButton, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
+        , GridBagConstraints.CENTER, GridBagConstraints.NONE,
+        new Insets(5, 10, 10, 10), 0, 0));
     codeSP.setViewportView(codeTextArea);
 
-    setSize(new Dimension(450, 320));
+    setSize(new Dimension(450, 330));
   }
 
   /**
    * applyExample
    */
   private void applyExample() {
-    if (exampleList == null || exampleList.getSelectedValue() == null) return;
+    if (exampleList == null || exampleList.getSelectedValue() == null)return;
     String examType = exampleList.getSelectedValue().toString();
     RenParticleManager manager = TestRenParticleGUI.manager;
     if ("FIRE".equalsIgnoreCase(examType)) {
@@ -640,7 +722,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setRandomMod(5.0f);
       manager.setParticlesSpeed(2.96f);
       manager.setParticlesMinimumLifeTime(800f);
-      manager.setGravityForce(new Vector3f(0f,0f,0f));
+      manager.setGravityForce(new Vector3f(0f, 0f, 0f));
     } else if ("FOUNTAIN".equalsIgnoreCase(examType)) {
       manager.setStartColor(new ColorRGBA(0f, .0625f, 1f, 1));
       manager.setEndColor(new ColorRGBA(0f, .0625f, 1f, 0));
@@ -650,7 +732,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setRandomMod(1.0f);
       manager.setParticlesSpeed(7.5f);
       manager.setParticlesMinimumLifeTime(2000f);
-      manager.setGravityForce(new Vector3f(0f,-4e-3f,0f));
+      manager.setGravityForce(new Vector3f(0f, -4e-3f, 0f));
     } else if ("LAVA".equalsIgnoreCase(examType)) {
       manager.setStartColor(new ColorRGBA(1f, .18f, 0.125f, 1));
       manager.setEndColor(new ColorRGBA(1f, .18f, 0.125f, 0));
@@ -660,7 +742,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setRandomMod(1.0f);
       manager.setParticlesSpeed(3.0f);
       manager.setParticlesMinimumLifeTime(2400f);
-      manager.setGravityForce(new Vector3f(0f,-4e-3f,0f));
+      manager.setGravityForce(new Vector3f(0f, -4e-3f, 0f));
     } else if ("SMOKE".equalsIgnoreCase(examType)) {
       manager.setStartColor(new ColorRGBA(.375f, .375f, .375f, 1));
       manager.setEndColor(new ColorRGBA(.375f, .375f, .375f, 0));
@@ -670,9 +752,9 @@ public class RenParticleControlFrame extends JFrame {
       manager.setRandomMod(2.6f);
       manager.setParticlesSpeed(.9f);
       manager.setParticlesMinimumLifeTime(4000f);
-      manager.setGravityForce(new Vector3f(0f,0f,0f));
+      manager.setGravityForce(new Vector3f(0f, 0f, 0f));
     }
-    manager.setEmissionDirection(new Vector3f(0f,1f,0f));
+    manager.setEmissionDirection(new Vector3f(0f, 1f, 0f));
     manager.warmup();
     updateFromManager();
   }
@@ -693,30 +775,105 @@ public class RenParticleControlFrame extends JFrame {
    * updateFromManager
    */
   public void updateFromManager() {
-    startColorPanel.setBackground(makeColor(TestRenParticleGUI.manager.getStartColor(), false));
-    endColorPanel.setBackground(makeColor(TestRenParticleGUI.manager.getEndColor(), false));
-    startAlphaSpinner.setValue(new Integer(makeColor(TestRenParticleGUI.manager.getStartColor(), true).getAlpha()));
-    endAlphaSpinner.setValue(new Integer(makeColor(TestRenParticleGUI.manager.getEndColor(), true).getAlpha()));
+    startColorPanel.setBackground(makeColor(TestRenParticleGUI.manager.
+                                            getStartColor(), false));
+    endColorPanel.setBackground(makeColor(TestRenParticleGUI.manager.
+                                          getEndColor(), false));
+    startAlphaSpinner.setValue(new Integer(makeColor(TestRenParticleGUI.manager.
+        getStartColor(), true).getAlpha()));
+    endAlphaSpinner.setValue(new Integer(makeColor(TestRenParticleGUI.manager.
+        getEndColor(), true).getAlpha()));
     updateColorLabels();
-    startSizeSlider.setValue((int)(TestRenParticleGUI.manager.getStartSize() * 10));
-    endSizeSlider.setValue((int)(TestRenParticleGUI.manager.getEndSize() * 10));
+    startSizeSlider.setValue( (int) (TestRenParticleGUI.manager.getStartSize() *
+                                     10));
+    endSizeSlider.setValue( (int) (TestRenParticleGUI.manager.getEndSize() * 10));
     updateSizeLabels();
-    minAgeSlider.setValue((int)(TestRenParticleGUI.manager.getParticlesMinimumLifeTime()));
+    minAgeSlider.setValue( (int) (TestRenParticleGUI.manager.
+                                  getParticlesMinimumLifeTime()));
     updateAgeLabels();
-    speedSlider.setValue((int)(TestRenParticleGUI.manager.getParticlesSpeed() * 10));
+    speedSlider.setValue( (int) (TestRenParticleGUI.manager.getParticlesSpeed() *
+                                 10));
     updateSpeedLabels();
-    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 1000));
-    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 1000));
-    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 1000));
-    emitXSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().x * 10));
-    emitYSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().y * 10));
-    emitZSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().z * 10));
-    angleSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionMaximumAngle() * FastMath.RAD_TO_DEG));
+    gravXSlider.setValue( (int) (TestRenParticleGUI.manager.getGravityForce().x *
+                                 1000));
+    gravYSlider.setValue( (int) (TestRenParticleGUI.manager.getGravityForce().y *
+                                 1000));
+    gravZSlider.setValue( (int) (TestRenParticleGUI.manager.getGravityForce().z *
+                                 1000));
+    emitXSlider.setValue( (int) (TestRenParticleGUI.manager.
+                                 getEmissionDirection().x * 10));
+    emitYSlider.setValue( (int) (TestRenParticleGUI.manager.
+                                 getEmissionDirection().y * 10));
+    emitZSlider.setValue( (int) (TestRenParticleGUI.manager.
+                                 getEmissionDirection().z * 10));
+    angleSlider.setValue( (int) (TestRenParticleGUI.manager.
+                                 getEmissionMaximumAngle() *
+                                 FastMath.RAD_TO_DEG));
     updateAngleLabels();
-    randomSlider.setValue((int)(TestRenParticleGUI.manager.getRandomMod() * 10));
+    randomSlider.setValue( (int) (TestRenParticleGUI.manager.getRandomMod() *
+                                  10));
     updateRandomLabels();
     regenCode();
     validate();
+  }
+
+  /**
+   * updateManager
+   * @param particles number of particles to reset manager with.
+   */
+  public void resetManager(int particles) {
+    TestRenParticleGUI.noUpdate = true;
+    TestRenParticleGUI.root.detachChild(TestRenParticleGUI.manager.getParticles());
+    TestRenParticleGUI.manager = new RenParticleManager(particles,
+        TestRenParticleGUI.manager.getCamera());
+
+    ColorRGBA rgba = makeColorRGBA(startColorPanel.getBackground());
+    rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
+    TestRenParticleGUI.manager.setStartColor(rgba);
+
+    rgba = makeColorRGBA(endColorPanel.getBackground());
+    rgba.a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
+    TestRenParticleGUI.manager.setEndColor(rgba);
+
+    int val = startSizeSlider.getValue();
+    TestRenParticleGUI.manager.setStartSize(val / 10f);
+
+    val = endSizeSlider.getValue();
+    TestRenParticleGUI.manager.setEndSize(val / 10f);
+
+    val = minAgeSlider.getValue();
+    TestRenParticleGUI.manager.setParticlesMinimumLifeTime( (float) val);
+
+    val = speedSlider.getValue();
+    TestRenParticleGUI.manager.setParticlesSpeed( (float) val * .1f);
+
+    val = gravXSlider.getValue();
+    TestRenParticleGUI.manager.getGravityForce().x = (float) val * 0.001f;
+    val = gravYSlider.getValue();
+    TestRenParticleGUI.manager.getGravityForce().y = (float) val * 0.001f;
+    val = gravZSlider.getValue();
+    TestRenParticleGUI.manager.getGravityForce().z = (float) val * 0.001f;
+
+    val = emitXSlider.getValue();
+    TestRenParticleGUI.manager.getEmissionDirection().x = (float) val * .1f;
+    val = emitYSlider.getValue();
+    TestRenParticleGUI.manager.getEmissionDirection().y = (float) val * .1f;
+    val = emitZSlider.getValue();
+    TestRenParticleGUI.manager.getEmissionDirection().z = (float) val * .1f;
+    TestRenParticleGUI.manager.updateRotationMatrix();
+
+    val = angleSlider.getValue();
+    TestRenParticleGUI.manager.setEmissionMaximumAngle( (float) val *
+        FastMath.DEG_TO_RAD);
+
+    val = randomSlider.getValue();
+    TestRenParticleGUI.manager.setRandomMod( (float) val * .1f);
+
+    TestRenParticleGUI.root.attachChild(TestRenParticleGUI.manager.getParticles());
+
+    regenCode();
+    validate();
+    TestRenParticleGUI.noUpdate = false;
   }
 
   /**
@@ -724,7 +881,7 @@ public class RenParticleControlFrame extends JFrame {
    */
   private void updateRandomLabels() {
     int val = randomSlider.getValue();
-    randomLabel.setText("Random Factor: "+val/10f);
+    randomLabel.setText("Random Factor: " + val / 10f);
   }
 
   /**
@@ -732,7 +889,7 @@ public class RenParticleControlFrame extends JFrame {
    */
   private void updateAngleLabels() {
     int val = angleSlider.getValue();
-    angleLabel.setText("Degrees Off Direction: "+val);
+    angleLabel.setText("Degrees Off Direction: " + val);
   }
 
   /**
@@ -740,7 +897,15 @@ public class RenParticleControlFrame extends JFrame {
    */
   private void updateSpeedLabels() {
     int val = speedSlider.getValue();
-    speedLabel.setText("Speed Mod: "+val*10+"%");
+    speedLabel.setText("Speed Mod: " + val * 10 + "%");
+  }
+
+  /**
+   * updateCountLabels
+   */
+  private void updateCountLabels() {
+    int val = TestRenParticleGUI.manager.getParticlesNumber();
+    countLabel.setText("Particles: "+val);
   }
 
   /**
@@ -748,7 +913,7 @@ public class RenParticleControlFrame extends JFrame {
    */
   private void updateAgeLabels() {
     int val = minAgeSlider.getValue();
-    minAgeLabel.setText("Minimum Age: "+val+"ms");
+    minAgeLabel.setText("Minimum Age: " + val + "ms");
   }
 
   /**
@@ -756,20 +921,20 @@ public class RenParticleControlFrame extends JFrame {
    */
   private void updateSizeLabels() {
     int val = endSizeSlider.getValue();
-    endSizeLabel.setText("End Size: "+val/10f);
+    endSizeLabel.setText("End Size: " + val / 10f);
     val = startSizeSlider.getValue();
-    startSizeLabel.setText("Start Size: "+val/10f);
+    startSizeLabel.setText("Start Size: " + val / 10f);
   }
 
   private String convColorToHex(Color c) {
-      if (c == null) return null;
-      String sRed = Integer.toHexString( c.getRed() );
-      if (sRed.length() == 1) sRed = "0"+sRed;
-      String sGreen = Integer.toHexString( c.getGreen() );
-      if (sGreen.length() == 1) sGreen = "0"+sGreen;
-      String sBlue = Integer.toHexString( c.getBlue() );
-      if (sBlue.length() == 1) sBlue = "0"+sBlue;
-      return "#"+sRed+sGreen+sBlue;
+    if (c == null)return null;
+    String sRed = Integer.toHexString(c.getRed());
+    if (sRed.length() == 1) sRed = "0" + sRed;
+    String sGreen = Integer.toHexString(c.getGreen());
+    if (sGreen.length() == 1) sGreen = "0" + sGreen;
+    String sBlue = Integer.toHexString(c.getBlue());
+    if (sBlue.length() == 1) sBlue = "0" + sBlue;
+    return "#" + sRed + sGreen + sBlue;
   }
 
   /**
@@ -785,13 +950,15 @@ public class RenParticleControlFrame extends JFrame {
   }
 
   private ColorRGBA makeColorRGBA(Color color) {
-    return new ColorRGBA(color.getRed()/255f, color.getGreen()/255f, color.getBlue()/255f, color.getAlpha()/255f);
+    return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
+                         color.getBlue() / 255f, color.getAlpha() / 255f);
   }
 
   private void startColorPanel_mouseClicked(MouseEvent e) {
     TestRenParticleGUI.noUpdate = true;
-    Color color = JColorChooser.showDialog(this, "Choose new start color:", startColorPanel.getBackground());
-    if (color == null) return;
+    Color color = JColorChooser.showDialog(this, "Choose new start color:",
+                                           startColorPanel.getBackground());
+    if (color == null)return;
     ColorRGBA rgba = makeColorRGBA(color);
     rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);
     TestRenParticleGUI.manager.setStartColor(rgba);
@@ -803,8 +970,9 @@ public class RenParticleControlFrame extends JFrame {
 
   private void endColorPanel_mouseClicked(MouseEvent e) {
     TestRenParticleGUI.noUpdate = true;
-    Color color = JColorChooser.showDialog(this, "Choose new end color:", endColorPanel.getBackground());
-    if (color == null) return;
+    Color color = JColorChooser.showDialog(this, "Choose new end color:",
+                                           endColorPanel.getBackground());
+    if (color == null)return;
     ColorRGBA rgba = makeColorRGBA(color);
     rgba.a = (Integer.parseInt(endAlphaSpinner.getValue().toString()) / 255f);
     TestRenParticleGUI.manager.setEndColor(rgba);
@@ -820,17 +988,32 @@ public class RenParticleControlFrame extends JFrame {
       codeTextArea.setText("");
       return;
     }
-    code.append("RenParticleManager manager = new RenParticleManager("+TestRenParticleGUI.manager.getParticlesNumber()+", display.getRenderer().getCamera());\n");
-    code.append("manager.setGravityForce("+codeString(TestRenParticleGUI.manager.getGravityForce())+");\n");
-    code.append("manager.setEmissionDirection("+codeString(TestRenParticleGUI.manager.getEmissionDirection())+");\n");
-    code.append("manager.setEmissionMaximumAngle("+TestRenParticleGUI.manager.getEmissionMaximumAngle()+"f);\n");
-    code.append("manager.setParticlesSpeed("+TestRenParticleGUI.manager.getParticlesSpeed()+"f);\n");
-    code.append("manager.setParticlesMinimumLifeTime("+TestRenParticleGUI.manager.getParticlesMinimumLifeTime()+"f);\n");
-    code.append("manager.setStartSize("+TestRenParticleGUI.manager.getStartSize()+"f);\n");
-    code.append("manager.setEndSize("+TestRenParticleGUI.manager.getEndSize()+"f);\n");
-    code.append("manager.setStartColor("+codeString(TestRenParticleGUI.manager.getStartColor())+");\n");
-    code.append("manager.setEndColor("+codeString(TestRenParticleGUI.manager.getEndColor())+");\n");
-    code.append("manager.setRandomMod("+TestRenParticleGUI.manager.getRandomMod()+"f);\n");
+    code.append("RenParticleManager manager = new RenParticleManager(" +
+                TestRenParticleGUI.manager.getParticlesNumber() +
+                ", display.getRenderer().getCamera());\n");
+    code.append("manager.setGravityForce(" +
+                codeString(TestRenParticleGUI.manager.getGravityForce()) +
+                ");\n");
+    code.append("manager.setEmissionDirection(" +
+                codeString(TestRenParticleGUI.manager.getEmissionDirection()) +
+                ");\n");
+    code.append("manager.setEmissionMaximumAngle(" +
+                TestRenParticleGUI.manager.getEmissionMaximumAngle() + "f);\n");
+    code.append("manager.setParticlesSpeed(" +
+                TestRenParticleGUI.manager.getParticlesSpeed() + "f);\n");
+    code.append("manager.setParticlesMinimumLifeTime(" +
+                TestRenParticleGUI.manager.getParticlesMinimumLifeTime() +
+                "f);\n");
+    code.append("manager.setStartSize(" +
+                TestRenParticleGUI.manager.getStartSize() + "f);\n");
+    code.append("manager.setEndSize(" + TestRenParticleGUI.manager.getEndSize() +
+                "f);\n");
+    code.append("manager.setStartColor(" +
+                codeString(TestRenParticleGUI.manager.getStartColor()) + ");\n");
+    code.append("manager.setEndColor(" +
+                codeString(TestRenParticleGUI.manager.getEndColor()) + ");\n");
+    code.append("manager.setRandomMod(" +
+                TestRenParticleGUI.manager.getRandomMod() + "f);\n");
     code.append("\n");
     code.append("Node myNode = new Node(\"Particle Nodes\")\n");
     code.append("myNode.setRenderState(YOUR TEXTURE STATE);\n");
@@ -842,20 +1025,33 @@ public class RenParticleControlFrame extends JFrame {
 
   private String codeString(ColorRGBA rgba) {
     StringBuffer code = new StringBuffer("new ColorRGBA(");
-    code.append(rgba.r+"f, ");
-    code.append(rgba.g+"f, ");
-    code.append(rgba.b+"f, ");
-    code.append(rgba.a+"f");
+    code.append(rgba.r + "f, ");
+    code.append(rgba.g + "f, ");
+    code.append(rgba.b + "f, ");
+    code.append(rgba.a + "f");
     code.append(")");
     return code.toString();
   }
 
   private String codeString(Vector3f vect) {
     StringBuffer code = new StringBuffer("new Vector3f(");
-    code.append(vect.x+"f, ");
-    code.append(vect.y+"f, ");
-    code.append(vect.z+"f");
+    code.append(vect.x + "f, ");
+    code.append(vect.y + "f, ");
+    code.append(vect.z + "f");
     code.append(")");
     return code.toString();
+  }
+
+  private void countButton_actionPerformed(ActionEvent e) {
+    String response = JOptionPane.showInputDialog(this, "Please enter a new particle count for this system:", "How many particles?", JOptionPane.PLAIN_MESSAGE);
+    int particles = 100;
+    try {
+      particles = Integer.parseInt(response);
+    } catch (NumberFormatException ex) {
+      JOptionPane.showMessageDialog(this, "Invalid number entered.  Using 100 instead.", "Invalid", JOptionPane.WARNING_MESSAGE);
+      particles = 100;;
+    }
+    resetManager(particles);
+    updateCountLabels();
   }
 }
