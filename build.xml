@@ -26,7 +26,7 @@
             <exclude name="**/*.java" />
         </fileset>
     </copy>
-    <javac srcdir="${src}/com" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jl030.jar" listfiles="no"/>
+    <javac srcdir="${src}/com" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar" listfiles="no"/>
   </target>
 <!-- ************************************************************************* -->
 
