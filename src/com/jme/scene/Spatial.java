@@ -45,7 +45,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and 
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.3 2003-10-17 20:45:04 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -60,8 +60,9 @@ public abstract class Spatial implements Serializable {
     private float localScale;
     protected float worldScale;
 
-    //flag to cull node
+    //flag to cull/show node
     private boolean forceCull;
+    private boolean forceView;
 
     //bounding volume of the world.
     protected BoundingVolume worldBound;
@@ -119,7 +120,7 @@ public abstract class Spatial implements Serializable {
         Camera camera = r.getCamera();
         int state = camera.getPlaneState();
         //check to see if we can cull this node
-        if (!camera.culled(worldBound)) {
+        if (!camera.culled(worldBound) || forceView) {
             setStates();
             draw(r);
             unsetStates();
@@ -175,6 +176,10 @@ public abstract class Spatial implements Serializable {
     public boolean isForceCulled() {
         return forceCull;
     }
+    
+    public boolean isForceView() {
+        return forceView;
+    }
 
     /**
      * 
@@ -185,6 +190,10 @@ public abstract class Spatial implements Serializable {
      */
     public void setForceCull(boolean forceCull) {
         this.forceCull = forceCull;
+    }
+    
+    public void setForceView(boolean value) {
+        forceView = value;
     }
 
     /**

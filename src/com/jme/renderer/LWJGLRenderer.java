@@ -45,6 +45,7 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
+import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.DitherState;
@@ -70,7 +71,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.3 2003-10-17 20:45:04 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -78,10 +79,11 @@ public class LWJGLRenderer implements Renderer {
     //width and height of renderer
     private int width;
     private int height;
-    
+
     private FloatBuffer worldBuffer;
-    
+
     private LWJGLCamera camera;
+    private LWJGLFont font;
 
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -91,7 +93,9 @@ public class LWJGLRenderer implements Renderer {
      */
     public LWJGLRenderer(int width, int height) {
         if (width <= 0 || height <= 0) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Invalid width " +                "and/or height values.");
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Invalid width " + "and/or height values.");
             throw new JmeException("Invalid width and/or height values.");
         }
         this.width = width;
@@ -103,21 +107,22 @@ public class LWJGLRenderer implements Renderer {
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
 
-        LoggingSystem.getLogger().log(Level.INFO, "LWJGLRenderer created. W:  " 
-                + width + "H: " + height);
+        LoggingSystem.getLogger().log(
+            Level.INFO,
+            "LWJGLRenderer created. W:  " + width + "H: " + height);
     }
-    
+
     /**
      * <code>setCamera</code> sets the camera this renderer is using. It
      * asserts that the camera is of type <code>LWJGLCamera</code>.
      * @see com.jme.renderer.Renderer#setCamera(com.jme.renderer.Camera)
      */
     public void setCamera(Camera camera) {
-        if(camera instanceof LWJGLCamera) {
-            this.camera = (LWJGLCamera)camera;
+        if (camera instanceof LWJGLCamera) {
+            this.camera = (LWJGLCamera) camera;
         }
     }
-    
+
     /**
      * <code>getCamera</code> returns the camera used by this renderer.
      * @see com.jme.renderer.Renderer#getCamera()
@@ -125,7 +130,7 @@ public class LWJGLRenderer implements Renderer {
     public Camera getCamera() {
         return camera;
     }
-    
+
     /**
      * <code>getCamera</code> returns a default camera for use with the 
      * LWJGL renderer. 
@@ -135,9 +140,9 @@ public class LWJGLRenderer implements Renderer {
      * @return a default LWJGL camera.
      */
     public Camera getCamera(int width, int height) {
-        return new LWJGLCamera(width,height);
+        return new LWJGLCamera(width, height);
     }
-    
+
     /**
      * <code>getAlphaState</code> returns a new LWJGLAlphaState object as
      * a regular AlphaState. 
@@ -146,7 +151,7 @@ public class LWJGLRenderer implements Renderer {
     public AlphaState getAlphaState() {
         return new LWJGLAlphaState();
     }
-    
+
     /**
      * <code>getDitherState</code> returns a new LWJGLDitherState object as
      * a regular DitherState. 
@@ -155,7 +160,7 @@ public class LWJGLRenderer implements Renderer {
     public DitherState getDitherState() {
         return new LWJGLDitherState();
     }
-    
+
     /**
      * <code>getFogState</code> returns a new LWJGLFogState object as
      * a regular FogState. 
@@ -164,7 +169,7 @@ public class LWJGLRenderer implements Renderer {
     public FogState getFogState() {
         return new LWJGLFogState();
     }
-    
+
     /**
      * <code>getLightState</code> returns a new LWJGLLightState object as
      * a regular LightState. 
@@ -173,7 +178,7 @@ public class LWJGLRenderer implements Renderer {
     public LightState getLightState() {
         return new LWJGLLightState();
     }
-    
+
     /**
      * <code>getMaterialState</code> returns a new LWJGLMaterialState object as
      * a regular MaterialState. 
@@ -182,7 +187,7 @@ public class LWJGLRenderer implements Renderer {
     public MaterialState getMaterialState() {
         return new LWJGLMaterialState();
     }
-    
+
     /**
      * <code>getShadeState</code> returns a new LWJGLShadeState object as
      * a regular ShadeState. 
@@ -191,7 +196,7 @@ public class LWJGLRenderer implements Renderer {
     public ShadeState getShadeState() {
         return new LWJGLShadeState();
     }
-    
+
     /**
      * <code>getTextureState</code> returns a new LWJGLTextureState object as
      * a regular TextureState. 
@@ -200,7 +205,7 @@ public class LWJGLRenderer implements Renderer {
     public TextureState getTextureState() {
         return new LWJGLTextureState();
     }
-    
+
     /**
      * <code>getWireframeState</code> returns a new LWJGLWireframeState object as
      * a regular WireframeState. 
@@ -478,7 +483,7 @@ public class LWJGLRenderer implements Renderer {
             if (color != null) {
                 if (texture != null) {
                     // N,C,T
-                    for (int i = 0; i < vertex.length-1; i++) {
+                    for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
                         GL.glColor4f(
                             color[i].r,
@@ -505,7 +510,7 @@ public class LWJGLRenderer implements Renderer {
 
                 } else {
                     // N,C
-                    for (int i = 0; i < vertex.length-1; i++) {
+                    for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
                         GL.glColor4f(
                             color[i].r,
@@ -531,7 +536,7 @@ public class LWJGLRenderer implements Renderer {
             } else {
                 if (texture != null) {
                     // N,T
-                    for (int i = 0; i < vertex.length-1; i++) {
+                    for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
@@ -548,7 +553,7 @@ public class LWJGLRenderer implements Renderer {
 
                 } else {
                     // N
-                    for (int i = 0; i < vertex.length-1; i++) {
+                    for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         GL.glNormal3f(
@@ -567,7 +572,7 @@ public class LWJGLRenderer implements Renderer {
             if (color != null) {
                 if (texture != null) {
                     // C,T
-                    for (int i = 0; i < vertex.length-1; i++) {
+                    for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glColor4f(
                             color[i].r,
                             color[i].g,
@@ -589,7 +594,7 @@ public class LWJGLRenderer implements Renderer {
 
                 } else {
                     // C
-                    for (int i = 0; i < vertex.length-1; i++) {
+                    for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glColor4f(
                             color[i].r,
                             color[i].g,
@@ -610,7 +615,7 @@ public class LWJGLRenderer implements Renderer {
             } else {
                 if (texture != null) {
                     // T
-                    for (int i = 0; i < vertex.length-1; i++) {
+                    for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
@@ -622,7 +627,7 @@ public class LWJGLRenderer implements Renderer {
 
                 } else {
                     // none
-                    for (int i = 0; i < vertex.length-1; i++) {
+                    for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
                         GL.glVertex3f(
                             vertex[i + 1].x,
@@ -682,26 +687,26 @@ public class LWJGLRenderer implements Renderer {
         GL.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
         GL.glEnableClientState(GL.GL_VERTEX_ARRAY);
 
-        FloatBuffer afNormals = t.getNormalAsFloatBuffer();
-        if (afNormals != null) {
+        FloatBuffer normals = t.getNormalAsFloatBuffer();
+        if (normals != null) {
             GL.glEnableClientState(GL.GL_NORMAL_ARRAY);
-            GL.glNormalPointer(0, afNormals);
+            GL.glNormalPointer(0, normals);
         } else {
             GL.glDisableClientState(GL.GL_NORMAL_ARRAY);
         }
 
-        FloatBuffer afColors = t.getColorAsFloatBuffer();
-        if (afColors != null) {
+        FloatBuffer colors = t.getColorAsFloatBuffer();
+        if (colors != null) {
             GL.glEnableClientState(GL.GL_COLOR_ARRAY);
-            GL.glColorPointer(4, 0, afColors);
+            GL.glColorPointer(4, 0, colors);
         } else {
             GL.glDisableClientState(GL.GL_COLOR_ARRAY);
         }
 
-        FloatBuffer afTextures = t.getTextureAsFloatBuffer();
-        if (afTextures != null) {
+        FloatBuffer textures = t.getTextureAsFloatBuffer();
+        if (textures != null) {
             GL.glEnableClientState(GL.GL_TEXTURE_COORD_ARRAY);
-            GL.glTexCoordPointer(2, 0, afTextures);
+            GL.glTexCoordPointer(2, 0, textures);
         } else {
             GL.glDisableClientState(GL.GL_TEXTURE_COORD_ARRAY);
         }
@@ -718,9 +723,25 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
     public void draw(Spatial s) {
-        if(s != null) {
+        if (s != null) {
             s.onDraw(this);
         }
+    }
+
+    /**
+     * <code>draw</code> renders a text object using a predefined font.
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.Text)
+     */
+    public void draw(Text t) {
+        if (font == null) {
+            font = new LWJGLFont();
+        }
+
+        font.print(
+            (int) t.getLocalTranslation().x,
+            (int) t.getLocalTranslation().y,
+            t.getText(),
+            0);
     }
 
 }

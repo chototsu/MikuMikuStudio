@@ -34,6 +34,7 @@ package com.jme.renderer;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
+import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.DitherState;
@@ -63,7 +64,7 @@ import com.jme.scene.state.WireframeState;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.3 2003-10-17 20:45:04 mojomonkey Exp $
  */
 public interface Renderer {
     
@@ -226,6 +227,13 @@ public interface Renderer {
      * @param l the line to be rendered.
      */
     public void draw(Line l);
+    
+    /**
+     * 
+     * <code>draw</code> renders text to the back buffer.
+     * @param t the text object to be rendered.
+     */
+    public void draw(Text t);
     
     /**
      * <code>draw</code> renders a triangle mesh to the back buffer.

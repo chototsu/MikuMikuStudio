@@ -37,6 +37,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Node;
+import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.system.DisplaySystem;
@@ -51,6 +52,7 @@ public class TestAlphaState extends AbstractGame {
     private TriMesh t, t2;
     private Camera cam;
     private Node scene;
+    private Text text;
 
     /**
      * Entry point for the test, 
@@ -78,7 +80,7 @@ public class TestAlphaState extends AbstractGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
-
+        
     }
 
     /**
@@ -122,6 +124,7 @@ public class TestAlphaState extends AbstractGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
+        
         Vector3f[] verts = new Vector3f[3];
         ColorRGBA[] color = new ColorRGBA[3];
 
@@ -211,7 +214,7 @@ public class TestAlphaState extends AbstractGame {
         as.setTestFunction(AlphaState.TF_GREATER);
         
         t2.setRenderState(as);
-        
+        scene.attachChild(text);
         cam.update();
 
         scene.updateGeometricState(0.0f, true);
