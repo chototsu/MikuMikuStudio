@@ -31,35 +31,27 @@
  */
 package jmetest.renderer;
 
+import com.jme.app.VariableTimestepGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
-import com.jme.light.DirectionalLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
+import com.jme.scene.BillboardNode;
+import com.jme.scene.Controller;
 import com.jme.scene.ImposterNode;
 import com.jme.scene.Node;
-import com.jme.scene.state.LightState;
+import com.jme.scene.Text;
+import com.jme.scene.model.Model;
+import com.jme.scene.model.md2.Md2Model;
+import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
-import com.jme.scene.BoundingBox;
-import com.jme.math.FastMath;
-import com.jme.light.PointLight;
-import com.jme.app.VariableTimestepGame;
-import com.jme.scene.BillboardNode;
-import com.jme.scene.model.msascii.MilkshapeASCIIModel;
-import com.jme.animation.DeformationJointController;
-import com.jme.scene.Controller;
-import com.jme.scene.model.Model;
-import java.net.URL;
-import com.jme.scene.model.md2.Md2Model;
 
 /**
  * <code>TestImposterNode</code>
@@ -76,7 +68,10 @@ public class TestImposterNode extends VariableTimestepGame {
   private String FILE_NAME = "data/model/drfreak.md2";
   private String TEXTURE_NAME = "data/model/drfreak.jpg";
 
-  ImposterNode iNode;
+  private ImposterNode iNode;
+  private Node fpsNode;
+  private Text fps;
+
 
   /**
    * Entry point for the test,
@@ -94,8 +89,8 @@ public class TestImposterNode extends VariableTimestepGame {
    */
   protected void update(float interpolation) {
     input.update(timer.getTimePerFrame());
-    display.setTitle("Imposter Node - FPS:" + (int) timer.getFrameRate() +
-                     " - " + display.getRenderer().getStatistics());
+    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
+              display.getRenderer().getStatistics());
     scene.updateGeometricState(interpolation, true);
   }
 
@@ -107,6 +102,7 @@ public class TestImposterNode extends VariableTimestepGame {
     display.getRenderer().clearStatistics();
     display.getRenderer().clearBuffers();
     display.getRenderer().draw(root);
+    display.getRenderer().draw(fpsNode);
   }
 
   /**
@@ -133,7 +129,7 @@ public class TestImposterNode extends VariableTimestepGame {
       System.exit(1);
     }
 
-    ColorRGBA blackColor = new ColorRGBA(1, 1, 1, 1);
+    ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
     display.getRenderer().setBackgroundColor(blackColor);
 
     // setup our camera
@@ -204,8 +200,36 @@ public class TestImposterNode extends VariableTimestepGame {
     bnode.attachChild(iNode);
     scene.attachChild(bnode);
 
+    AlphaState as1 = display.getRenderer().getAlphaState();
+    as1.setBlendEnabled(true);
+    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+    as1.setDstFunction(AlphaState.DB_ONE);
+    as1.setTestEnabled(true);
+    as1.setTestFunction(AlphaState.TF_GREATER);
+    as1.setEnabled(true);
+
+    TextureState font = display.getRenderer().getTextureState();
+    font.setTexture(
+        TextureManager.loadTexture(
+        TestImposterNode.class.getClassLoader().getResource(
+        "jmetest/data/font/font.png"),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true));
+    font.setEnabled(true);
+
+    fps = new Text("FPS label", "");
+    fps.setRenderState(font);
+    fps.setRenderState(as1);
+    fps.setForceView(true);
+
+    fpsNode = new Node("FPS node");
+    fpsNode.attachChild(fps);
+    fpsNode.setForceView(true);
+
     cam.update();
     scene.updateGeometricState(0.0f, true);
+    fpsNode.updateGeometricState(0.0f, true);
   }
 
   /**
