@@ -44,7 +44,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLStandardCursor;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.7 2004-11-16 20:45:41 renanse Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.8 2005-01-03 19:41:58 renanse Exp $
  */
 public class LWJGLMouseInput implements MouseInput {
 
@@ -116,12 +116,17 @@ public class LWJGLMouseInput implements MouseInput {
      * @see com.jme.input.MouseInput#poll()
      */
     public void poll() {
-      dx = Mouse.getDX();
-      dy = Mouse.getDY();
-			if (virgin && (dx != 0 || dy != 0)) {
-				dx = dy = 0;
-				virgin = false;
-			}
+        if (Mouse.isGrabbed()) {
+            dx = Mouse.getDX();
+            dy = Mouse.getDY();
+        } else {
+            dx = Mouse.getEventX();
+            dy = Mouse.getEventY();          
+        }
+        if (virgin && (dx != 0 || dy != 0)) {
+            dx = dy = 0;
+            virgin = false;
+        }
     }
 
     /**
