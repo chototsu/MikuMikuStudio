@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.4 2003-11-24 15:07:44 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.5 2003-12-04 14:40:09 mojomonkey Exp $
  */
 public class Matrix3f {
     private float[][] matrix;
@@ -227,28 +227,29 @@ public class Matrix3f {
      * @param radian the angle to rotate.
      */
     public void fromAxisAngle(Vector3f axis, float radian) {
-        float fCos = (float)Math.cos(radian);
-        float fSin = (float)Math.sin(radian);
-        float fOneMinusCos = 1.0f - fCos;
-        float fX2 = axis.x * axis.x;
-        float fY2 = axis.y * axis.y;
-        float fZ2 = axis.z * axis.z;
-        float fXYM = axis.x * axis.y * fOneMinusCos;
-        float fXZM = axis.x * axis.z * fOneMinusCos;
-        float fYZM = axis.y * axis.z * fOneMinusCos;
-        float fXSin = axis.x * fSin;
-        float fYSin = axis.y * fSin;
-        float fZSin = axis.z * fSin;
+        Vector3f normAxis = axis.normalize();
+        float cos = (float)Math.cos(radian);
+        float sin = (float)Math.sin(radian);
+        float oneMinusCos = 1.0f - cos;
+        float x2 = normAxis.x * axis.x;
+        float y2 = normAxis.y * axis.y;
+        float z2 = normAxis.z * axis.z;
+        float xym = normAxis.x * axis.y * oneMinusCos;
+        float xzm = normAxis.x * axis.z * oneMinusCos;
+        float yzm = normAxis.y * axis.z * oneMinusCos;
+        float xSin = normAxis.x * sin;
+        float ySin = normAxis.y * sin;
+        float zSin = normAxis.z * sin;
 
-        matrix[0][0] = fX2 * fOneMinusCos + fCos;
-        matrix[0][1] = fXYM - fZSin;
-        matrix[0][2] = fXZM + fYSin;
-        matrix[1][0] = fXYM + fZSin;
-        matrix[1][1] = fY2 * fOneMinusCos + fCos;
-        matrix[1][2] = fYZM - fXSin;
-        matrix[2][0] = fXZM - fYSin;
-        matrix[2][1] = fYZM + fXSin;
-        matrix[2][2] = fZ2 * fOneMinusCos + fCos;
+        matrix[0][0] = x2 * oneMinusCos + cos;
+        matrix[0][1] = xym - zSin;
+        matrix[0][2] = xzm + ySin;
+        matrix[1][0] = xym + zSin;
+        matrix[1][1] = y2 * oneMinusCos + cos;
+        matrix[1][2] = yzm - xSin;
+        matrix[2][0] = xzm - ySin;
+        matrix[2][1] = yzm + xSin;
+        matrix[2][2] = z2 * oneMinusCos + cos;
     }
 
     /**
