@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * convinience methods for creating the matrix from a multitude of sources.
  * 
  * @author Mark Powell
- * @version $Id: Matrix4f.java,v 1.2 2004-02-01 17:29:37 mojomonkey Exp $
+ * @version $Id: Matrix4f.java,v 1.3 2004-02-01 17:47:08 mojomonkey Exp $
  */
 public class Matrix4f {
 	private float matrix[][];
@@ -252,10 +252,10 @@ public class Matrix4f {
 	}
 
 	/**
-	 * <code>multiply</code> multiplies this matrix by a scalar.
+	 * <code>mult</code> multiplies this matrix by a scalar.
 	 * @param scalar the scalar to multiply this matrix by.
 	 */
-	public void multiply(float scalar) {
+	public void mult(float scalar) {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
 				matrix[i][j] *= scalar;
@@ -264,7 +264,7 @@ public class Matrix4f {
 	}
 
 	/**
-	 * <code>multiply</code> multiplies this matrix with another matrix. The
+	 * <code>mult</code> multiplies this matrix with another matrix. The
 	 * result matrix will then be returned.
 	 * This matrix will be on the left hand side, while the parameter matrix
 	 * will be on the right.
