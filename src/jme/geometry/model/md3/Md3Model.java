@@ -57,7 +57,6 @@ import jme.exception.MonkeyRuntimeException;
 import jme.geometry.Geometry;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
-import jme.geometry.model.Triangle;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.Window;
@@ -99,7 +98,7 @@ import org.lwjgl.opengl.Window;
  * 
  * 
  * @author Mark Powell
- * @version $Id: Md3Model.java,v 1.7 2003-09-03 16:20:52 mojomonkey Exp $
+ * @version $Id: Md3Model.java,v 1.8 2003-09-04 16:02:34 mojomonkey Exp $
  */
 public class Md3Model implements Geometry {
     /**
@@ -126,7 +125,7 @@ public class Md3Model implements Geometry {
     private Md3Skin[] skins;
     private Md3TexCoord[] texCoords;
     //private Md3Face[] triangles;
-    private Triangle[] triangles;
+    private Md3Triangle[] triangles;
     private Md3Triangle[] vertices;
     private Md3Bone[] bones;
 
@@ -140,7 +139,7 @@ public class Md3Model implements Geometry {
     private Model3D upper;
     private Model3D lower;
     private Model3D weaponModel;
-    
+
     FloatBuffer buf;
 
     //model rendering attributes.
@@ -158,7 +157,7 @@ public class Md3Model implements Geometry {
     private static final int START_TORSO_ANIMATION = 6;
     private static final int START_LEGS_ANIMATION = 13;
     private static final int MAX_ANIMATIONS = 25;
-    
+
     /**
      * Constructor instantiates a new <code>Md3Model</code> object. During
      * creation, the model is loaded and initialized.
@@ -175,12 +174,12 @@ public class Md3Model implements Geometry {
         if (!Window.isCreated()) {
             throw new MonkeyGLException("Window must be created first.");
         }
-        
+
         buf =
-        ByteBuffer
-            .allocateDirect(64)
-            .order(ByteOrder.nativeOrder())
-            .asFloatBuffer();
+            ByteBuffer
+                .allocateDirect(64)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
 
         scale = new Vector(1.0f, 1.0f, 1.0f);
         r = 1.0f;
@@ -198,8 +197,9 @@ public class Md3Model implements Geometry {
         weaponModel = new Model3D();
 
         initialize();
-        LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO, 
-                "Successfully loaded MD3 model " + model);
+        LoggingSystem.getLoggingSystem().getLogger().log(
+            Level.INFO,
+            "Successfully loaded MD3 model " + model);
     }
 
     /**
@@ -256,10 +256,13 @@ public class Md3Model implements Geometry {
         loadModel();
         loadWeapon();
         boundingSphere = new BoundingSphere(10, null);
-        boundingBox = new BoundingBox(new Vector(), 
-        		new Vector(-5,-5,-5), new Vector(5,5,5));
+        boundingBox =
+            new BoundingBox(
+                new Vector(),
+                new Vector(-5, -5, -5),
+                new Vector(5, 5, 5));
     }
-    
+
     /**
      * <code>render</code> handles rendering the model to the screen. This 
      * occurs recursively starting with the legs, then torso and lastly
@@ -268,11 +271,11 @@ public class Md3Model implements Geometry {
      */
     public void render() {
         DisplaySystem.getDisplaySystem().cullMode(GL.GL_FRONT, true);
-        
+
         //MD3 has Z up, so remedy this.
-		GL.glRotatef(-90,0,1,0);
+        GL.glRotatef(-90, 0, 1, 0);
         GL.glRotatef(-90, 1, 0, 0);
-        
+
         //scale by a desired factor
         GL.glScalef(scale.x, scale.y, scale.z);
         //set the desired color
@@ -296,12 +299,14 @@ public class Md3Model implements Geometry {
      */
     public void setTorsoAnimation(String animationName) {
         for (int i = 0; i < upper.numOfAnimations; i++) {
-            if (((AnimationInfo)upper.animations.get(i))
+            if (((AnimationInfo) upper.animations.get(i))
                 .name
                 .equals(animationName)) {
-                
+
                 upper.currentAnim = i;
-                upper.currentFrame = ((AnimationInfo)upper.animations.get(
+                upper.currentFrame =
+                    (
+                        (AnimationInfo) upper.animations.get(
                             upper.currentAnim)).startFrame;
                 return;
             }
@@ -316,12 +321,14 @@ public class Md3Model implements Geometry {
      */
     public void setLegsAnimation(String animationName) {
         for (int i = 0; i < lower.numOfAnimations; i++) {
-            if (((AnimationInfo)lower.animations.get(i))
+            if (((AnimationInfo) lower.animations.get(i))
                 .name
                 .equals(animationName)) {
-            
+
                 lower.currentAnim = i;
-                lower.currentFrame = ((AnimationInfo)lower.animations.get(
+                lower.currentFrame =
+                    (
+                        (AnimationInfo) lower.animations.get(
                             lower.currentAnim)).startFrame;
                 return;
             }
@@ -385,7 +392,7 @@ public class Md3Model implements Geometry {
      * @return true if the model loaded correctly, false otherwise.
      */
     public boolean loadModel() {
-        if(null == path || null == model) {
+        if (null == path || null == model) {
             return false;
         }
         //model file names
@@ -407,42 +414,48 @@ public class Md3Model implements Geometry {
 
         // Load the head mesh
         if (!importMD3(head, headModel)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the HEAD model!");
             return false;
         }
 
         // Load the upper mesh
         if (!importMD3(upper, upperModel)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the UPPER model!");
             return false;
         }
 
         // Load the lower mesh
         if (!importMD3(lower, lowerModel)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the LOWER model!");
             return false;
         }
 
         // Load the lower skin
         if (!loadSkin(lower, lowerSkin)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the LOWER skin!");
             return false;
         }
 
         // Load the upper skin
         if (!loadSkin(upper, upperSkin)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the UPPER skin!");
             return false;
         }
 
         // Load the head skin
         if (!loadSkin(head, headSkin)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the HEAD skin!");
             return false;
         }
@@ -457,7 +470,8 @@ public class Md3Model implements Geometry {
 
         // Load the animation config file
         if (!loadAnimations(configFile)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the Animation Config File!");
             return false;
         }
@@ -477,17 +491,18 @@ public class Md3Model implements Geometry {
      * @return true if the weapon loaded correctly, false otherwise.
      */
     public boolean loadWeapon() {
-        if(null == path || null == weapon) {
+        if (null == path || null == weapon) {
             return false;
         }
         String weaponFile;
         String shaderFile;
-        
+
         weaponFile = path + "/" + weapon + ".md3";
 
         // Load the weapon mesh
         if (!importMD3(weaponModel, weaponFile)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the WEAPON model!");
             return false;
         }
@@ -497,7 +512,8 @@ public class Md3Model implements Geometry {
 
         // Load our textures associated with the gun from the weapon shader file
         if (!loadShader(weaponModel, shaderFile)) {
-            LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
                 "Unable to load the SHADER file!");
             return false;
         }
@@ -524,7 +540,7 @@ public class Md3Model implements Geometry {
             FileInputStream fis = new FileInputStream(f);
             // wrap a buffer to make reading more efficient (faster)
             BufferedInputStream bis = new BufferedInputStream(fis);
-            fileSize = (int)f.length();
+            fileSize = (int) f.length();
             fileContents = new byte[fileSize];
 
             System.out.println(fileContents.length);
@@ -535,7 +551,8 @@ public class Md3Model implements Geometry {
             // Close the .md3 file that we opened
             bis.close();
         } catch (IOException ioe) {
-            throw new MonkeyRuntimeException("Could not open MD3 Model." + file);
+            throw new MonkeyRuntimeException(
+                "Could not open MD3 Model." + file);
         }
         // Open the MD3 file in binary
         //filePointer = 0;
@@ -707,7 +724,7 @@ public class Md3Model implements Geometry {
 
             texCoords = new Md3TexCoord[meshHeader.numVertices];
 
-            triangles = new Triangle[meshHeader.numTriangles];
+            triangles = new Md3Triangle[meshHeader.numTriangles];
             vertices =
                 new Md3Triangle[meshHeader.numVertices
                     * meshHeader.numMeshFrames];
@@ -725,7 +742,7 @@ public class Md3Model implements Geometry {
             // Seek to the start of the triangle/face data, then read it in
             buffer.position(meshOffset + meshHeader.triStart);
             for (i = 0; i < meshHeader.numTriangles; i++) {
-                triangles[i] = new Triangle();
+                triangles[i] = new Md3Triangle();
                 triangles[i].vertexIndices[0] = buffer.getInt();
                 triangles[i].vertexIndices[1] = buffer.getInt();
                 triangles[i].vertexIndices[2] = buffer.getInt();
@@ -926,7 +943,7 @@ public class Md3Model implements Geometry {
                     if (StringUtils
                         .isInString(
                             strLine,
-                            ((Object3D)pModel.object.get(i)).name)) {
+                            ((Object3D) pModel.object.get(i)).name)) {
                         // To extract the texture name, we loop through the string, starting
                         // at the end of it until we find a '/' character, then save that index + 1.
                         textureNameStart = strLine.lastIndexOf("/") + 1;
@@ -944,9 +961,9 @@ public class Md3Model implements Geometry {
                         texture.uTile = texture.uTile = 1;
 
                         // Store the material ID for this object and set the texture boolean to true
-                        ((Object3D)pModel.object.get(i)).materialID =
+                        ((Object3D) pModel.object.get(i)).materialID =
                             pModel.numOfMaterials;
-                        ((Object3D)pModel.object.get(i)).hasTexture = true;
+                        ((Object3D) pModel.object.get(i)).hasTexture = true;
 
                         // Here we increase the number of materials for the model
                         pModel.numOfMaterials++;
@@ -977,7 +994,7 @@ public class Md3Model implements Geometry {
         if (null == weaponModel || null == shaderFile) {
             return false;
         }
-        
+
         InputStream is = null;
         try {
             is = new FileInputStream(shaderFile);
@@ -998,9 +1015,9 @@ public class Md3Model implements Geometry {
                 texture.uTile = texture.vTile = 1;
 
                 // Store the\ ID for this object and set the texture to true
-                ((Object3D)weaponModel.object.get(currentIndex)).materialID =
+                ((Object3D) weaponModel.object.get(currentIndex)).materialID =
                     weaponModel.numOfMaterials;
-                ((Object3D)weaponModel.object.get(currentIndex)).hasTexture = 
+                ((Object3D) weaponModel.object.get(currentIndex)).hasTexture =
                     true;
 
                 // Here we increase the number of materials for the model
@@ -1016,8 +1033,8 @@ public class Md3Model implements Geometry {
             // Close the file and return a success
             reader.close();
         } catch (IOException e) {
-            throw new MonkeyRuntimeException("Could not load shader " 
-                    + shaderFile);
+            throw new MonkeyRuntimeException(
+                "Could not load shader " + shaderFile);
         }
 
         return true;
@@ -1033,15 +1050,17 @@ public class Md3Model implements Geometry {
     private void loadModelTextures(Model3D model, String texPath) {
         //Load the textures for each material
         for (int i = 0; i < model.numOfMaterials; i++) {
-            if (((MaterialInfo)model.materials.get(i)).file != null) {
+            if (((MaterialInfo) model.materials.get(i)).file != null) {
                 String fullPath;
 
                 //find the path of the texture.
-                fullPath = texPath + "/"
-                        + ((MaterialInfo)model.materials.get(i)).file;
+                fullPath =
+                    texPath
+                        + "/"
+                        + ((MaterialInfo) model.materials.get(i)).file;
 
                 //use TextureManager to supply the texture id and store it.
-                ((MaterialInfo)model.materials.get(i)).texureId =
+                ((MaterialInfo) model.materials.get(i)).texureId =
                     TextureManager.getTextureManager().loadTexture(
                         fullPath,
                         GL.GL_LINEAR_MIPMAP_LINEAR,
@@ -1065,11 +1084,11 @@ public class Md3Model implements Geometry {
             is = new FileInputStream(configFile);
             BufferedReader reader =
                 new BufferedReader(new InputStreamReader(is));
-            
+
             String line = "";
             int currentAnim = 0;
             int torsoOffset = 0;
-            
+
             StringTokenizer tokenizer;
 
             while ((line = reader.readLine()) != null) {
@@ -1142,10 +1161,10 @@ public class Md3Model implements Geometry {
      * @param tagName the name of the link.
      */
     private void linkModel(Model3D parent, Model3D child, String tagName) {
-        if(null == parent || null == child || null == tagName) {
+        if (null == parent || null == child || null == tagName) {
             return;
         }
-        
+
         //find the tag and then set the link
         for (int i = 0; i < parent.numOfTags; i++) {
             if (parent.tags[i].name.equals(tagName)) {
@@ -1168,7 +1187,7 @@ public class Md3Model implements Geometry {
 
         //get the current animation information
         AnimationInfo animInfo =
-            (AnimationInfo)model.animations.get(model.currentAnim);
+            (AnimationInfo) model.animations.get(model.currentAnim);
 
         if (model.numOfAnimations != 0) {
             startFrame = animInfo.startFrame;
@@ -1205,32 +1224,33 @@ public class Md3Model implements Geometry {
 
         //render each tag
         for (int i = 0; i < model.numOfTags; i++) {
-            
+
             if (model.links[i] != null) {
                 //interpolated between the two positions.
                 Vector oldPosition =
-                    model.tags[model.currentFrame*model.numOfTags+i].position;
+                    model.tags[model.currentFrame * model.numOfTags
+                        + i].position;
 
                 Vector nextPosition =
-                    model.tags[model.nextFrame*model.numOfTags+i].position;
+                    model.tags[model.nextFrame * model.numOfTags + i].position;
 
                 //interpolate via p(t) = p0 + t(p1 - p0)
                 Vector position = new Vector();
-                position.x = oldPosition.x + model.t * (nextPosition.x - 
-                    oldPosition.x);
-                position.y = oldPosition.y + model.t * (nextPosition.y - 
-                    oldPosition.y);
-                position.z = oldPosition.z + model.t * (nextPosition.z - 
-                    oldPosition.z);
+                position.x =
+                    oldPosition.x + model.t * (nextPosition.x - oldPosition.x);
+                position.y =
+                    oldPosition.y + model.t * (nextPosition.y - oldPosition.y);
+                position.z =
+                    oldPosition.z + model.t * (nextPosition.z - oldPosition.z);
 
                 //interpolate the rotations
-                matrix = model.tags[model.currentFrame * model.numOfTags
+                matrix =
+                    model.tags[model.currentFrame * model.numOfTags
                         + i].rotation;
 
-                nextMatrix = model.tags[model.nextFrame * model.numOfTags
-                        + i].rotation;
+                nextMatrix =
+                    model.tags[model.nextFrame * model.numOfTags + i].rotation;
 
-                
                 quat.fromMatrix(matrix, 3);
                 nextQuat.fromMatrix(nextMatrix, 3);
 
@@ -1267,12 +1287,14 @@ public class Md3Model implements Geometry {
         if (model.animations.size() == 0) {
             return;
         }
-        
+
         long time = System.currentTimeMillis();
         //the number of milliseconds between the current time and the last time.
         long elapsedTime = time - model.lastTime;
-        
-        int animationSpeed = ((AnimationInfo)model.animations.get(
+
+        int animationSpeed =
+            (
+                (AnimationInfo) model.animations.get(
                     model.currentAnim)).framesPerSecond;
 
         //find the ratio between the first and second frame.
@@ -1296,18 +1318,20 @@ public class Md3Model implements Geometry {
         if (null == model.object) {
             return;
         }
-        
+
         for (int i = 0; i < model.numOfObjects; i++) {
-            Object3D object3d = (Object3D)model.object.get(i);
+            Object3D object3d = (Object3D) model.object.get(i);
 
             int currentIndex = model.currentFrame * object3d.numOfVerts;
             int nextIndex = model.nextFrame * object3d.numOfVerts;
-            
+
             //if there is a texture assigned to the model, use it.
             if (object3d.hasTexture) {
                 GL.glEnable(GL.GL_TEXTURE_2D);
 
-                int textureID = ((MaterialInfo)model.materials.get(
+                int textureID =
+                    (
+                        (MaterialInfo) model.materials.get(
                             object3d.materialID)).texureId;
 
                 TextureManager.getTextureManager().bind(textureID);
@@ -1331,7 +1355,7 @@ public class Md3Model implements Geometry {
 
                     Vector point1 = object3d.verts[currentIndex + index];
                     Vector point2 = object3d.verts[nextIndex + index];
-                    
+
                     //interpolate
                     GL.glVertex3f(
                         point1.x + model.t * (point2.x - point1.x),
@@ -1343,7 +1367,7 @@ public class Md3Model implements Geometry {
             GL.glEnd();
         }
     }
-    
+
     /**
      * <code>Md3Header</code> maintains the header information for the 
      * MD3 file.
@@ -1523,6 +1547,27 @@ public class Md3Model implements Geometry {
          * the normal values for the triangle.
          */
         int[] normal = new int[2];
+
+        public int flags;
+        public byte smoothingGroup;
+        public byte groupIndex;
+
+        /**
+         * the indices into the array of vertices/
+         */
+        public int[] vertexIndices = new int[3];
+        /**
+         * the normal for each point.
+         */
+        public float[][] vertexNormals = new float[3][3];
+        /**
+         * the s texture coordinate for each point.
+         */
+        public float[] s = new float[3];
+        /**
+         * the t texture coordinate for each point.
+         */
+        public float[] t = new float[3];
     }
 
     /**
