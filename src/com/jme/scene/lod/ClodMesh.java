@@ -42,7 +42,7 @@ import com.jme.scene.TriMesh;
  * <code>ClodMesh</code>
  * ported from Eberly
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.6 2004-04-08 15:23:00 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.7 2004-04-08 19:14:58 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int m_iCurrentRecord, m_iTargetRecord;
@@ -80,6 +80,8 @@ ClodCreator creator;
       creator.removeAllTriangles();
       creator = null;
     }
+    triangleQuantity = m_akRecord[0].m_iTQuantity;
+    vertQuantity = m_akRecord[0].m_iVQuantity;
 
 
     updateColorBuffer();

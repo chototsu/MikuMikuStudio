@@ -44,7 +44,7 @@ import java.util.Map.Entry;
  * <code>ClodCreator</code>
  * ported from Eberly
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.6 2004-04-08 15:23:00 renanse Exp $
+ * @version $Id: ClodCreator.java,v 1.7 2004-04-08 19:14:58 renanse Exp $
  */
 
 public class ClodCreator extends VETMesh {
@@ -124,6 +124,27 @@ public class ClodCreator extends VETMesh {
                                  indices[3 * i + 2]);
       insertTriangle(kT);
       setData(kT, new Integer(i));
+    }
+
+    if (m_kTMap.size() != m_iTQuantity) {
+      int newIndices[] = new int[m_kTMap.size()*3];
+      Iterator it = m_kTMap.keySet().iterator();
+      int i = 0;
+      while (it.hasNext()) {
+        Triangle t = (Triangle)it.next();
+        newIndices[i*3 + 0] = t.m_aiV[0];
+        newIndices[i*3 + 1] = t.m_aiV[1];
+        newIndices[i*3 + 2] = t.m_aiV[2];
+        i++;
+      }
+      ClodCreator creator = new ClodCreator(vertices, normal, color, texture, newIndices);
+      rakCRecord = creator.getRecords();
+//      creator.removeAllTriangles();
+      creator = null;
+      m_kTMap.clear();
+      for (i = 0; i < newIndices.length; i++)
+        indices[i] = newIndices[i];
+      return;
     }
 
     if (m_kVMap.size() != m_akVertex.length)throw new AssertionError();
