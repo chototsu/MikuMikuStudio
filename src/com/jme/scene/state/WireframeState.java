@@ -37,7 +37,7 @@ package com.jme.scene.state;
  * rendered solid.
  *
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.5 2004-08-02 21:14:32 cep21 Exp $
+ * @version $Id: WireframeState.java,v 1.6 2004-08-03 06:26:41 cep21 Exp $
  */
 public abstract class WireframeState extends RenderState {
 
@@ -90,5 +90,13 @@ public abstract class WireframeState extends RenderState {
      */
     public void setFace(int face){
         this.face = face;
+    }
+
+    /**
+     * Returns the face state of this wireframe state.
+     * @return The face state (one of WS_FRONT, WS_BACK, or WS_FRONT_AND_BACK)
+     */
+    public int getFace() {
+        return face;
     }
 }
