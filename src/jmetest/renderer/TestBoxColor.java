@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: TestBoxColor.java,v 1.3 2004-02-23 21:26:41 mojomonkey Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;
@@ -162,6 +162,7 @@ public class TestBoxColor extends SimpleGame {
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
         axis = new Vector3f(1,1,0.5f);
+        display.setTitle("Vertex Colors");
 
     }
 

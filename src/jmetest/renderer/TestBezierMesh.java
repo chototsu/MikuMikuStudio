@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.5 2004-02-22 23:47:00 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.6 2004-02-23 21:26:41 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -114,7 +114,6 @@ public class TestBezierMesh extends SimpleGame {
              
          lightNode.setLocalTranslation(currentPos);
 
-            lightNode.setLocalTranslation(new Vector3f(100, 100, 0));
          scene.updateGeometricState(timer.getTimePerFrame(), true);
     }
 
