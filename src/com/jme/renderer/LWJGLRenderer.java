@@ -90,7 +90,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.12 2004-01-22 21:48:55 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.13 2004-01-25 00:57:28 greggpatton Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -980,6 +980,10 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#draw(com.jme.widget.text.WidgetText)
      */
     public void draw(WidgetText wt) {
+        
+        if (wt.getFgColor() == null)
+            return;
+            
         initWidgetProjection(wt);
 
         float x = (wt.getX()) + wt.getXOffset();
