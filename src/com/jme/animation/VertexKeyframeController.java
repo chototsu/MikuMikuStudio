@@ -45,7 +45,7 @@ import com.jme.system.JmeException;
  * the displayed model is morphed from one keyframe to another giving the
  * impression of movement.
  * @author Mark Powell
- * @version $Id: VertexKeyframeController.java,v 1.5 2004-03-31 22:57:38 renanse Exp $
+ * @version $Id: VertexKeyframeController.java,v 1.6 2004-04-01 16:21:26 renanse Exp $
  */
 public class VertexKeyframeController extends Controller {
 	private TriMesh[] keyframes;
@@ -131,13 +131,17 @@ public class VertexKeyframeController extends Controller {
 		}
 
 		//Morph each aspect of the model for every vertex.
+                boolean morphedVerts = false, morphedNorms = false, morphedTexts = false, morphedColors = false;
+                Vector3f[] verts = displayedMesh.getVertices();
+                Vector3f[] norms = displayedMesh.getNormals();
+                Vector2f[] texs = displayedMesh.getTextures();
+                ColorRGBA[] colors = displayedMesh.getColors();
 		for (int i = 0; i < displayedMesh.getVertices().length; i++) {
 
 			//morph vertices
-			if (displayedMesh.getVertices() != null
+			if (verts != null
 				&& keyframes[currentFrame].getVertices() != null
 				&& keyframes[nextFrame].getVertices() != null) {
-				Vector3f[] verts = displayedMesh.getVertices();
 				verts[i].x =
 					keyframes[currentFrame].getVertices()[i].x
 						+ currentTime
@@ -153,14 +157,13 @@ public class VertexKeyframeController extends Controller {
 						+ currentTime
 							* (keyframes[nextFrame].getVertices()[i].z
 								- keyframes[currentFrame].getVertices()[i].z);
-				displayedMesh.updateVertexBuffer();
+                                morphedVerts = true;
 			}
 
 			//morph normals if appropriate
-			if (displayedMesh.getNormals() != null
+			if (norms != null
 				&& keyframes[currentFrame].getNormals() != null
 				&& keyframes[nextFrame].getNormals() != null) {
-				Vector3f[] norms = displayedMesh.getNormals();
 				norms[i].x =
 					keyframes[currentFrame].getNormals()[i].x
 						+ currentTime
@@ -176,14 +179,13 @@ public class VertexKeyframeController extends Controller {
 						+ currentTime
 							* (keyframes[nextFrame].getNormals()[i].z
 								- keyframes[currentFrame].getNormals()[i].z);
-				displayedMesh.updateNormalBuffer();
+				morphedNorms = true;
 			}
 
 			//morph texture coordinates if appropriate.
-			if (displayedMesh.getTextures() != null
+			if (texs != null
 				&& keyframes[currentFrame].getTextures().length > 0
 				&& keyframes[nextFrame].getTextures().length > 0) {
-				Vector2f[] texs = displayedMesh.getTextures();
 				texs[i].x =
 					keyframes[currentFrame].getTextures()[i].x
 						+ currentTime
@@ -194,14 +196,13 @@ public class VertexKeyframeController extends Controller {
 						+ currentTime
 							* (keyframes[nextFrame].getTextures()[i].y
 								- keyframes[currentFrame].getTextures()[i].y);
-				displayedMesh.updateTextureBuffer();
+				morphedTexts = true;
 			}
 
 			//morph colors if appropriate.
-			if (displayedMesh.getColors() != null
+			if (colors != null
 				&& keyframes[currentFrame].getColors() != null
 				&& keyframes[nextFrame].getColors() != null) {
-				ColorRGBA[] colors = displayedMesh.getColors();
 				colors[i].r =
 					keyframes[currentFrame].getColors()[i].r
 						+ currentTime
@@ -222,11 +223,13 @@ public class VertexKeyframeController extends Controller {
 						+ currentTime
 							* (keyframes[nextFrame].getColors()[i].a
 								- keyframes[currentFrame].getColors()[i].a);
-
-				displayedMesh.updateColorBuffer();
+				morphedColors = true;
 			}
 		}
-
+                if (morphedVerts) displayedMesh.updateVertexBuffer();
+                if (morphedNorms) displayedMesh.updateNormalBuffer();
+                if (morphedTexts) displayedMesh.updateTextureBuffer();
+                if (morphedColors) displayedMesh.updateColorBuffer();
 	}
 
 	/**
