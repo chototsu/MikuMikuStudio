@@ -145,7 +145,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
     /**
      * @return Returns the activeSource.
      */
-    public int getActiveSource() {
+    public int getActiveSequence() {
         return activeSource;
     }
 
@@ -648,5 +648,14 @@ public class SphericalSound extends SoundSpatial implements ISource {
         for (int a = 0; a < sequence.length; a++) {
             sequence[a].setFilter(filter);
         }
+    }
+    
+    public int getPlayingTime(){
+        if(playTime !=null){
+            if(activeSource < sequence.length){
+                return playTime[activeSource];
+            }
+        }
+        return 0;
     }
 }

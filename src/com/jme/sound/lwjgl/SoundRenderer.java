@@ -87,14 +87,11 @@ public class SoundRenderer implements ISoundRenderer {
                     .getMaxDistance()) {
 
                 s.pause();
-               
-
             } else {
                 if (!s.isPlaying()) {
-                   s.play();
+                    s.play();
                 }
-              
-                 
+
             }
         }
 

@@ -51,15 +51,13 @@ import com.jme.util.Timer;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSequencedSound.java,v 1.1 2004-06-12 23:27:35 anakan Exp $
+ * @version $Id: TestSequencedSound.java,v 1.2 2004-06-12 23:51:14 anakan Exp $
  */
 public class TestSequencedSound extends SimpleGame {
 
     private SoundNode snode;
 
-    SphericalSound footsteps;
-
-    SphericalSound background;
+    SphericalSound sequenced;
 
     Box box;
 
@@ -74,7 +72,10 @@ public class TestSequencedSound extends SimpleGame {
     protected void simpleUpdate() {
         float time = timer.getTimeInSeconds();
         snode.updateGeometricState(time, true);
-        
+        fps.print("Playing seqence:" + sequenced.getActiveSequence()
+                + " Duration: " + sequenced.getPlayingTime()
+                + " millis.(Please go near the box)");
+
     }
 
     protected void simpleRender() {
@@ -108,27 +109,22 @@ public class TestSequencedSound extends SimpleGame {
         rootNode.setRenderState(tst);
         rootNode.attachChild(box);
         snode = new SoundNode();
-        URL[] url = new URL[2];
-        url[0] = TestSequencedSound.class.getClassLoader().getResource(
+        URL[] urls = new URL[2];
+        urls[0] = TestSequencedSound.class.getClassLoader().getResource(
+                "jmetest/data/sound/Footsteps.wav");
+        urls[1] = TestSequencedSound.class.getClassLoader().getResource(
                 "jmetest/data/sound/test.ogg");
-        url[1] = TestSequencedSound.class.getClassLoader().getResource(
-                "jmetest/data/sound/test.ogg");
-        int[] times = {3000, 3000};
-        footsteps = new SphericalSound(url, times);
+        int[] times = { 3000, 5000};
 
-        footsteps.setMaxDistance(100);
-        footsteps.setRolloffFactor(.1f);
-        footsteps.setPosition(box.getLocalTranslation());
-        footsteps.setGain(1.0f);
-        footsteps.setLoopingEnabled(true);
-        footsteps.setLooping(true);
-        background = new SphericalSound(TestSequencedSound.class.getClassLoader()
-                .getResource("jmetest/data/sound/test.ogg"));
-        background.setGain(.06f);
-        background.setLooping(true);
+        sequenced = new SphericalSound(urls, times);
 
-        snode.attachChild(footsteps);
-        //snode.attachChild(background);
-        //snode.updateGeometricState(0.0f, true);
+        sequenced.setMaxDistance(100);
+        sequenced.setRolloffFactor(.1f);
+        sequenced.setPosition(box.getLocalTranslation());
+        sequenced.setGain(1.0f);
+        sequenced.setLoopingEnabled(true);
+        sequenced.setLooping(true);
+        snode.attachChild(sequenced);
+
     }
 }
