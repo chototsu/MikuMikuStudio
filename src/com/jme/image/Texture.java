@@ -48,7 +48,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.9 2004-06-12 23:51:38 cep21 Exp $
+ * @version $Id: Texture.java,v 1.10 2004-06-29 19:08:07 renanse Exp $
  */
 public class Texture {
 
@@ -194,6 +194,8 @@ public class Texture {
     //texture attributes.
     private Image image;
     private FloatBuffer blendColorBuffer;
+
+    private float anisoLevel = 1.0f;
 
     private int mipmapState;
     private int textureId;
@@ -410,7 +412,7 @@ public class Texture {
     public FloatBuffer getBlendColor() {
         return blendColorBuffer;
     }
-    
+
     /**
      * <code>getWrap</code> returns the wrap mode for the texture.
      * @return the wrap mode of the texture.
@@ -668,5 +670,13 @@ public class Texture {
 
     public void setImageLocation(String imageLocation) {
         this.imageLocation = imageLocation;
+    }
+
+    public float getAnisoLevel() {
+      return anisoLevel;
+    }
+
+    public void setAnisoLevel(float level) {
+      anisoLevel = level;
     }
 }

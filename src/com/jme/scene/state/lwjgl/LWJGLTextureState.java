@@ -39,6 +39,8 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.glu.GLU;
 
@@ -48,13 +50,15 @@ import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
+import java.nio.FloatBuffer;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.20 2004-06-24 20:38:08 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.21 2004-06-29 19:08:06 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -112,6 +116,19 @@ public class LWJGLTextureState extends TextureState {
       } else {
         numTexUnits = 1;
       }
+    }
+    if (maxAnisotropic == -1.0) {
+      // Due to LWJGL buffer check, you can't use smaller sized buffers (min_size = 16 for glGetFloat()).
+      FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
+      max_a.rewind();
+
+      // Grab the maximum anisotropic filter.
+      GL11.glGetFloat(EXTTextureFilterAnisotropic.
+                      GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
+                      max_a);
+
+      // set max.
+      maxAnisotropic = max_a.get(0);
     }
     texture = new Texture[numTexUnits];
   }
@@ -172,6 +189,12 @@ public class LWJGLTextureState extends TextureState {
             texture.setTextureId( -1);
             return;
           }
+
+          // Set up the anisotropic filter.
+          GL11.glTexParameterf(GL11.GL_TEXTURE_2D,
+                               EXTTextureFilterAnisotropic.GL_TEXTURE_MAX_ANISOTROPY_EXT,
+                               texture.getAnisoLevel());
+
           if (texture.getMipmap() == Texture.MM_NONE) {
             GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0,
                               imageComponents[image.getType()], image
@@ -340,7 +363,6 @@ public class LWJGLTextureState extends TextureState {
         GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
                              GL11.GL_TEXTURE_MIN_FILTER, textureMipmap[texture
                              .getMipmap()]);
-
       }
     }
   }

@@ -41,7 +41,7 @@ import com.jme.image.Texture;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.11 2004-06-24 20:38:08 renanse Exp $
+ * @version $Id: TextureState.java,v 1.12 2004-06-29 19:08:07 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -68,6 +68,7 @@ public abstract class TextureState extends RenderState {
 
     protected static int numTexUnits = 0;
 
+    protected static float maxAnisotropic = -1.0f;
 
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
@@ -152,4 +153,8 @@ public abstract class TextureState extends RenderState {
     public abstract void delete(int unit);
 
     public abstract void deleteAll();
+
+    public float getMaxAnisotropic() {
+      return maxAnisotropic;
+    }
 }
