@@ -181,7 +181,7 @@ public class PropertiesDialog extends JDialog {
                 / 2;
         this.setLocation(x, y);
 
-        show();
+        setVisible(true);
         toFront();
     }
 
