@@ -56,7 +56,7 @@ import com.jme.scene.shape.Disk;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.13 2004-07-21 21:19:49 guurk Exp $
+ * @version $Id: TestClodMesh.java,v 1.14 2004-07-21 22:16:38 guurk Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
@@ -88,7 +88,6 @@ public class TestClodMesh extends SimpleGame {
         else
           cNode.setTargetRecord( (cNode.getTargetRecord()) + 25);
         lastPress = System.currentTimeMillis();
-        System.out.println("Down");
       }
       if (KeyBindingManager
           .getKeyBindingManager()
@@ -98,7 +97,6 @@ public class TestClodMesh extends SimpleGame {
         else
           cNode.setTargetRecord( (cNode.getTargetRecord()) - 25);
         lastPress = System.currentTimeMillis();
-        System.out.println("up");
       }
     }
     if (KeyBindingManager
