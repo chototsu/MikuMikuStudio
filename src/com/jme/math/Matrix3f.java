@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.22 2004-05-27 22:10:22 cep21 Exp $
+ * @version $Id: Matrix3f.java,v 1.23 2004-06-29 07:13:58 cep21 Exp $
  */
 public class Matrix3f {
 	public float m00, m01, m02;
@@ -550,6 +550,24 @@ public class Matrix3f {
         m20=f20;
         m21=f21;
 
+        return this;
+    }
+
+    /**
+     * Transposes this matrix in place.  Returns this matrix for chaining
+     * @return This matrix after transpose
+     */
+    public Matrix3f transposeLocal(){
+        float temp;
+        temp=m01;
+        m01=m10;
+        m10=temp;
+        temp=m02;
+        m02=m20;
+        m20=temp;
+        temp=m21;
+        m21=m12;
+        m12=temp;
         return this;
     }
 
