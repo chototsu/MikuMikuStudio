@@ -36,14 +36,14 @@ import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.Node;
+import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.scene.state.RenderState;
-import com.jme.renderer.Renderer;
 
 /**
  * A Box made of textured quads that simulate having a sky, horizon and so forth
@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * set this skybox at the camera's position.
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.3 2004-08-14 00:49:56 cep21 Exp $
+ * @version $Id: Skybox.java,v 1.4 2004-08-31 01:26:46 renanse Exp $
  */
 public class Skybox extends Node {
   /** The +Z side of the skybox. */
@@ -172,6 +172,12 @@ public class Skybox extends Node {
     setLightCombineMode(LightState.REPLACE);
     setTextureCombineMode(TextureState.REPLACE);
 
+    ZBufferState zbuff = display.getRenderer().createZBufferState();
+    zbuff.setWritable(false);
+    zbuff.setEnabled(true);
+    zbuff.setFunction(ZBufferState.CF_LEQUAL);
+    setRenderState(zbuff);
+
     // We don't want it making our skybox disapear, so force view
     setForceView(true);
 
@@ -190,11 +196,11 @@ public class Skybox extends Node {
       skyboxQuads[i].updateModelBound();
 
 
-      skyboxQuads[i].setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-      skyboxQuads[i].setVBOVertexEnabled(true);
-      skyboxQuads[i].setVBONormalEnabled(true);
-      skyboxQuads[i].setVBOTextureEnabled(true);
-      skyboxQuads[i].setVBOColorEnabled(true);
+      skyboxQuads[i].setRenderQueueMode(Renderer.QUEUE_SKIP);
+      skyboxQuads[i].setVBOVertexEnabled(false);
+      skyboxQuads[i].setVBONormalEnabled(false);
+      skyboxQuads[i].setVBOTextureEnabled(false);
+      skyboxQuads[i].setVBOColorEnabled(false);
 
       // And attach the skybox as a child
       attachChild(skyboxQuads[i]);
@@ -208,5 +214,14 @@ public class Skybox extends Node {
    */
   public Quad getSide(int direction) {
     return skyboxQuads[direction];
+  }
+
+  public void preloadTextures() {
+    for (int x = 0; x < 6; x++) {
+      TextureState ts = (TextureState) skyboxQuads[x].
+          getRenderStateList()[RenderState.RS_TEXTURE];
+      if (ts != null) ts.apply();
+    }
+
   }
 }

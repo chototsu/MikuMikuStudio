@@ -40,11 +40,13 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.Torus;
 import com.jme.util.TextureManager;
+import com.jme.renderer.Renderer;
+import com.jme.scene.state.ZBufferState;
 
 /**
  * <code>TestSkybox</code>
  * @author Joshua Slack
- * @version $Id: TestSkybox.java,v 1.2 2004-07-03 22:24:41 renanse Exp $
+ * @version $Id: TestSkybox.java,v 1.3 2004-08-31 01:26:46 renanse Exp $
  */
 public class TestSkybox extends SimpleGame {
 
@@ -83,6 +85,7 @@ public class TestSkybox extends SimpleGame {
     t.setVBONormalEnabled(true);
     t.setVBOColorEnabled(true);
     rootNode.attachChild(t);
+    t.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 
     Sphere s = new Sphere("Sphere", 63, 50, 25);
     s.setModelBound(new BoundingBox());
@@ -93,6 +96,7 @@ public class TestSkybox extends SimpleGame {
     s.setVBOTextureEnabled(true);
     s.setVBONormalEnabled(true);
     s.setVBOColorEnabled(true);
+    s.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 
     Box b = new Box("box", new Vector3f(-25, 70, -45), 20, 20, 20);
     b.setModelBound(new BoundingBox());
@@ -102,14 +106,10 @@ public class TestSkybox extends SimpleGame {
     b.setVBONormalEnabled(true);
     b.setVBOColorEnabled(true);
     rootNode.attachChild(b);
-
+    b.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 
     // Create a skybox
-    // we pick 570 because our clip plane is at 1000 -- see SimpleGame
-    // (570^2 + 570^2 + 570^2)^.5 = ~988 so it won't get clipped.
-    // If our scene has stuff larger than will fit in the box, we'll
-    // need to increase max clip.
-    m_skybox = new Skybox("skybox", 570, 570, 570);
+    m_skybox = new Skybox("skybox", 10, 10, 10);
 
     Texture north = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
@@ -154,6 +154,7 @@ public class TestSkybox extends SimpleGame {
     m_skybox.setTexture(Skybox.EAST, east);
     m_skybox.setTexture(Skybox.UP, up);
     m_skybox.setTexture(Skybox.DOWN, down);
+    m_skybox.preloadTextures();
     rootNode.attachChild(m_skybox);
 
   }
