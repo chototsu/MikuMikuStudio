@@ -16,10 +16,12 @@ import java.io.InputStream;
 
 /**
  * XML file format parser for jME
+ * DEPRECIATED Don't use me
  *
  * @author Jack Lindamood
  */
 public class SAXReader extends DefaultHandler{
+/*
     public final static File XSD=new File("data/XML docs/LoaderFormat.xsd");
     static final String JAXP_SCHEMA_LANGUAGE =
         "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
@@ -97,4 +99,5 @@ public class SAXReader extends DefaultHandler{
     public InputSource resolveEntity(String publicID,String systemID) throws SAXException{
         return null;
     }
+    */
 }
