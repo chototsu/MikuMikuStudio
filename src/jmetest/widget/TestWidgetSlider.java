@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -38,7 +38,7 @@ import java.util.Observer;
 import com.jme.app.SimpleGame;
 import com.jme.input.AbstractInputController;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.LWJGLCamera;
+import com.jme.renderer.Camera;
 import com.jme.scene.Node;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -65,7 +65,7 @@ import com.jme.widget.text.WidgetLabel;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public class TestWidgetSlider extends SimpleGame {
-    
+
     class TestFrame extends WidgetAbstractFrame implements Observer {
         WidgetLabel northSliderValue = new WidgetLabel("", WidgetAlignmentType.ALIGN_CENTER);
         WidgetLabel southSliderValue = new WidgetLabel("", WidgetAlignmentType.ALIGN_CENTER);
@@ -75,23 +75,23 @@ public class TestWidgetSlider extends SimpleGame {
         WidgetHSlider hSouthSlider;
         WidgetVSlider vEastSlider;
         WidgetVSlider vWestSlider;
-        
+
         WidgetPanel centerPanel;
-        
+
         TestFrame(AbstractInputController ic) {
             super(ic);
 
             setLayout(new WidgetBorderLayout());
 
             hNorthSlider = new WidgetHSlider(WidgetOrientationType.DOWN);
-            hNorthSlider.setBorder(new WidgetBorder(1, 1, 1, 1));            
+            hNorthSlider.setBorder(new WidgetBorder(1, 1, 1, 1));
             hNorthSlider.setInsets(new WidgetInsets(5, 5, 5, 5));
             hNorthSlider.setMaximum(200);
             add(hNorthSlider, WidgetBorderLayoutConstraint.NORTH);
 
             hSouthSlider = new WidgetHSlider(WidgetOrientationType.UP);
             hSouthSlider.setInsets(new WidgetInsets(5, 5, 5, 5));
-            hSouthSlider.setBorder(new WidgetBorder(1, 1, 1, 1, WidgetBorderType.LOWERED));            
+            hSouthSlider.setBorder(new WidgetBorder(1, 1, 1, 1, WidgetBorderType.LOWERED));
             hSouthSlider.setMinimum(-100);
             hSouthSlider.setMaximum(0);
             add(hSouthSlider, WidgetBorderLayoutConstraint.SOUTH);
@@ -108,7 +108,7 @@ public class TestWidgetSlider extends SimpleGame {
             centerPanel.setLayout(new WidgetBorderLayout());
 
             add(centerPanel, WidgetBorderLayoutConstraint.CENTER);
-            
+
             northSliderValue.setInsets(new WidgetInsets(5, 5, 5, 5));
             centerPanel.add(northSliderValue, WidgetBorderLayoutConstraint.NORTH);
 
@@ -171,24 +171,24 @@ public class TestWidgetSlider extends SimpleGame {
             update(null, hNorthSlider);
 
         }
-        
-        /** <code>update</code> 
+
+        /** <code>update</code>
          * @param o
          * @param arg
          * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
          */
         public void update(Observable o, Object obj) {
-            
+
             DecimalFormat df = new DecimalFormat("0.00");
-            
+
             northSliderValue.setTitle("" + df.format(hNorthSlider.getValue()));
             southSliderValue.setTitle("" + df.format(hSouthSlider.getValue()));
             eastSliderValue.setTitle("" + df.format(vEastSlider.getValue()));
             westSliderValue.setTitle("" + df.format(vWestSlider.getValue()));
 
-            if (obj == hNorthSlider)            
+            if (obj == hNorthSlider)
                 hSouthSlider.setValue(-hNorthSlider.getValue());
-            
+
             centerPanel.doLayout();
         }
 
@@ -196,7 +196,7 @@ public class TestWidgetSlider extends SimpleGame {
 
     private TestFrame frame;
     private Node scene;
-    private LWJGLCamera cam;
+    private Camera cam;
     private AbstractInputController input;
 
     /* (non-Javadoc)
@@ -236,7 +236,7 @@ public class TestWidgetSlider extends SimpleGame {
         ColorRGBA background = new ColorRGBA(.5f, .5f, .5f, 1);
         display.getRenderer().setBackgroundColor(background);
 
-        cam = new LWJGLCamera(display.getWidth(), display.getHeight());
+        cam = display.getRenderer().getCamera(display.getWidth(), display.getHeight());
 
         display.getRenderer().setCamera(cam);
 

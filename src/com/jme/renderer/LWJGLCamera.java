@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -35,31 +35,35 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLU;
 
 /**
- * <code>LWJGLCamera</code> defines a concrete implementation of a 
+ * <code>LWJGLCamera</code> defines a concrete implementation of a
  * <code>AbstractCamera</code> using the LWJGL library for view port setting.
  * Most functionality is provided by the <code>AbstractCamera</code> class with
- * this class handling the OpenGL specific calls to set the frustum and 
+ * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.3 2004-02-20 01:27:02 mojomonkey Exp $
+ * @version $Id: LWJGLCamera.java,v 1.4 2004-03-05 01:19:51 renanse Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
     private int width;
     private int height;
+    private Object parent;
+    private Class parentClass;
 
     /**
-     * Constructor instantiates a new <code>LWJGLCamera</code> object. The 
-     * width and height are provided, which cooresponds to either the 
+     * Constructor instantiates a new <code>LWJGLCamera</code> object. The
+     * width and height are provided, which cooresponds to either the
      * width and height of the rendering window, or the resolution of the
      * fullscreen display.
      * @param width the width/resolution of the display.
      * @param height the height/resolution of the display.
      */
-    public LWJGLCamera(int width, int height) {
+    public LWJGLCamera(int width, int height, Object parent) {
         super();
         this.width = width;
         this.height = height;
+        this.parent = parent;
+        parentClass = parent.getClass();
         onFrustumChange();
         onViewPortChange();
         onFrameChange();
@@ -87,7 +91,7 @@ public class LWJGLCamera extends AbstractCamera {
     }
 
     /**
-     * <code>onViewportChange</code> updates the viewport when needed. It 
+     * <code>onViewportChange</code> updates the viewport when needed. It
      * calculates the viewport coordinates and then calls OpenGL's viewport.
      * @see com.jme.renderer.Camera#onViewPortChange()
      */
@@ -109,6 +113,9 @@ public class LWJGLCamera extends AbstractCamera {
     public void onFrameChange() {
         super.onFrameChange();
 
+        if (parentClass == LWJGLTextureRenderer.class)
+            ((LWJGLTextureRenderer)parent).activate();
+
         // set view matrix
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glLoadIdentity();
@@ -123,5 +130,8 @@ public class LWJGLCamera extends AbstractCamera {
             up.x,
             up.y,
             up.z);
+
+        if (parentClass == LWJGLTextureRenderer.class)
+            ((LWJGLTextureRenderer)parent).deactivate();
     }
 }

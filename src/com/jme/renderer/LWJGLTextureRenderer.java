@@ -44,7 +44,7 @@ import org.lwjgl.opengl.Pbuffer;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.3 2004-03-04 20:08:01 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.4 2004-03-05 01:19:51 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -189,12 +189,13 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
 
     private void initPbuffer() {
-        if (camera == null) initCamera();
         try {
             pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0);
             activate();
 
             GL.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
+
+            if (camera == null) initCamera();
             camera.update();
 
             deactivate();
@@ -204,16 +205,16 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         }
     }
 
-    private void activate() {
+    public void activate() {
         pbuffer.makeCurrent();
     }
 
-    private void deactivate() {
+    public void deactivate() {
         Pbuffer.releaseContext();
     }
 
     private void initCamera() {
-        camera = new LWJGLCamera(PBUFFER_WIDTH, PBUFFER_HEIGHT);
+        camera = new LWJGLCamera(PBUFFER_WIDTH, PBUFFER_HEIGHT, this);
         camera.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 75.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
