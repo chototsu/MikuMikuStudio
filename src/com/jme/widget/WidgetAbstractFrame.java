@@ -32,6 +32,7 @@
  
 /*
  * EDIT:  03/30/2004 - Added default constructor. GOP
+ * EDIT:  04/01/2004 - Check for null in handleMouse(). GOP
  */
 
 package com.jme.widget;
@@ -205,35 +206,37 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
     protected void handleMouse() {
         MouseInput mi = getMouseInput();
 
-        WidgetMouseButtonType buttonType = mi.getButtonState();
-        WidgetMouseButtonType lastButtonType = mi.getPreviousButtonState();
-
-        if (lastButtonType != buttonType) {
-
-            if (buttonType != WidgetMouseButtonType.MOUSE_BUTTON_NONE) {
-
-                handleMouseButtonDown();
-
-            } else {
-
-                handleMouseButtonUp();
-
+        if (mi != null) {
+            WidgetMouseButtonType buttonType = mi.getButtonState();
+            WidgetMouseButtonType lastButtonType = mi.getPreviousButtonState();
+    
+            if (lastButtonType != buttonType) {
+    
+                if (buttonType != WidgetMouseButtonType.MOUSE_BUTTON_NONE) {
+    
+                    handleMouseButtonDown();
+    
+                } else {
+    
+                    handleMouseButtonUp();
+    
+                }
             }
-        }
-
-        if (buttonType == WidgetMouseButtonType.MOUSE_BUTTON_NONE
-            && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
-
-            handleMouseMove();
-
-        } else if (
-            buttonType != WidgetMouseButtonType.MOUSE_BUTTON_NONE
+    
+            if (buttonType == WidgetMouseButtonType.MOUSE_BUTTON_NONE
                 && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
-
-            handleMouseDrag();
+    
+                handleMouseMove();
+    
+            } else if (
+                buttonType != WidgetMouseButtonType.MOUSE_BUTTON_NONE
+                    && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
+    
+                handleMouseDrag();
+            }
+    
+            lastButtonType = buttonType;
         }
-
-        lastButtonType = buttonType;
     }
 
     /** <code>doMouseButtonDown</code> 
