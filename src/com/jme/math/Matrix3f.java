@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * a given set of values.
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.18 2004-04-22 22:26:39 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.19 2004-05-21 19:45:19 renanse Exp $
  */
 public class Matrix3f {
     public float m00, m01, m02;
@@ -329,7 +329,6 @@ public class Matrix3f {
      * @param quaternion the quaternion to create a rotational matrix from.
      */
     public void set(Quaternion quaternion) {
-        loadIdentity();
         m00 = (float) (1.0 - 2.0 * quaternion.y * quaternion.y - 2.0 * quaternion.z * quaternion.z);
         m10 = (float) (2.0 * quaternion.x * quaternion.y + 2.0 * quaternion.w * quaternion.z);
         m20 = (float) (2.0 * quaternion.x * quaternion.z - 2.0 * quaternion.w * quaternion.y);
