@@ -25,7 +25,7 @@ public class LoaderNode extends Node{
         super(name);
     }
 
-    void loadFromFilePath(String type,String filePath,HashMap parentAttributes) throws IOException {
+    public void loadFromFilePath(String type,String filePath,HashMap parentAttributes) throws IOException {
         this.type=type;
         this.filePath=filePath;
         JmeBinaryReader jbr=new JmeBinaryReader();
@@ -40,7 +40,7 @@ public class LoaderNode extends Node{
             throw new IOException("Unknown LoaderNode flag: " + type);
         jbr.loadBinaryFormat(this,loaderInput);
     }
-    void loadFromURLPath(String type,URL urlPath,HashMap parentAttributes) throws IOException {
+    public void loadFromURLPath(String type,URL urlPath,HashMap parentAttributes) throws IOException {
         this.urlPath=urlPath;
         this.type=type;
         JmeBinaryReader jbr=new JmeBinaryReader();
@@ -55,7 +55,7 @@ public class LoaderNode extends Node{
             throw new IOException("Unknown LoaderNode flag: " + type);
         jbr.loadBinaryFormat(this,loaderInput);
     }
-    void loadFromClassLoader(String type,String classLoaderPath,HashMap parentAttributes) throws IOException {
+    public void loadFromClassLoader(String type,String classLoaderPath,HashMap parentAttributes) throws IOException {
         this.classLoaderPath=classLoaderPath;
         this.type=type;
         JmeBinaryReader jbr=new JmeBinaryReader();
@@ -71,7 +71,7 @@ public class LoaderNode extends Node{
             throw new IOException("Unknown LoaderNode flag: " + type);
         jbr.loadBinaryFormat(this,loaderInput);
     }
-    private void setProperties(JmeBinaryReader jbr, HashMap parentAttributes) {
+    public void setProperties(JmeBinaryReader jbr, HashMap parentAttributes) {
         final Object[] keys=parentAttributes.keySet().toArray();
         for (int i=0;i<keys.length;i++)
             jbr.setProperty((String) keys[i],parentAttributes.get(keys[i]));
