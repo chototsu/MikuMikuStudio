@@ -37,10 +37,10 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>MouseLook</code> defines a mouse action that detects mouse movement
- * and converts it into camera rotations and camera tilts. 
+ * <code>NodeMouseLook</code> defines a mouse action that detects mouse movement
+ * and converts it into node rotations and node tilts. 
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.1 2003-12-11 23:21:07 mojomonkey Exp $
+ * @version $Id: NodeMouseLook.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
  */
 public class NodeMouseLook implements MouseInputAction {
     private RelativeMouse mouse;
@@ -55,10 +55,10 @@ public class NodeMouseLook implements MouseInputAction {
     private Spatial node;
 
     /**
-     * Constructor creates a new <code>MouseLook</code> object. It takes the
-     * mouse, camera and speed of the looking.
+     * Constructor creates a new <code>NodeMouseLook</code> object. It takes the
+     * mouse, node and speed of the looking.
      * @param mouse the mouse to calculate view changes.
-     * @param camera the camera to move.
+     * @param node the node to move.
      * @param speed the speed at which to alter the camera.
      */
     public NodeMouseLook(Mouse mouse, Spatial node, float speed) {
@@ -110,7 +110,7 @@ public class NodeMouseLook implements MouseInputAction {
     
     /**
      * <code>performAction</code> checks for any movement of the mouse, and
-     * calls the appropriate method to alter the camera's orientation when
+     * calls the appropriate method to alter the node's orientation when
      * applicable.
      * @see com.jme.input.action.MouseInputAction#performAction(float)
      */

@@ -35,11 +35,11 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>KeyStrafeLeftAction</code> defines an action that causes the camera to
- * move along the positive left vector. The speed at which it moves is set and
+ * <code>KeyNodeStrafeLeftAction</code> defines an action that moves a node along 
+ * the positive left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeLeftAction.java,v 1.1 2003-12-11 23:21:07 mojomonkey Exp $
+ * @version $Id: KeyNodeStrafeLeftAction.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
  */
 public class KeyNodeStrafeLeftAction implements InputAction {
 
@@ -48,21 +48,27 @@ public class KeyNodeStrafeLeftAction implements InputAction {
     private String key;
 
     /**
-     * Constructor instantiates a new <code>KeyStrafeLeftAction</code> object.
-     * @param camera the camera to move along the left vector.
-     * @param speed the speed at which to move the camera.
+     * Constructor instantiates a new <code>KeyNodeStrafeLeftAction</code> object.
+     * @param node the node to move along the left vector.
+     * @param speed the speed at which to move the node.
      */
     public KeyNodeStrafeLeftAction(Spatial node, float speed) {
         this.node = node;
         this.speed = speed;
     }
     
+    /**
+     * 
+     * <code>setSpeed</code> sets the speed in units/second that the 
+     * node can move.
+     * @param movementSpeed the units/second of the node.
+     */
     public void setSpeed(float speed) {
         this.speed = speed;
     }
 
     /**
-     * <code>performAction</code> moves the camera along the left vector for
+     * <code>performAction</code> moves the node along the left vector for
      * a given distance of speed * time. 
      * @see com.jme.input.action.InputAction#performAction(float)
      */

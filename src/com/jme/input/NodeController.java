@@ -36,16 +36,24 @@ import com.jme.input.action.*;
 import com.jme.scene.Spatial;
 
 /**
- * <code>FirsPersonController</code> defines an InputController that sets 
- * input to be controlled similar to First Person Shooting games. By default the
- * commands are, WSAD moves the camera forward, backward and strafes. The 
- * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
- * the camera.
+ * <code>NodeController</code> defines an InputController that sets 
+ * a node that can be controlled via keyboard and mouse inputs. By default the
+ * commands are, WSAD moves the node forward, backward and strafes. The 
+ * arrow keys rotate and tilt the node and the mouse also rotates and tilts
+ * the node.
  * @author Mark Powell
- * @version $Id: NodeController.java,v 1.1 2003-12-11 23:21:07 mojomonkey Exp $
+ * @version $Id: NodeController.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
  */
 public class NodeController extends InputController {
 
+    /**
+     * Constructor instantiates a new <code>NodeController</code> object. The
+     * application is set for the use of the exit action. The node is set to
+     * control, while the api defines which input api is to be used.
+     * @param app the app using the controller, for the exit action.
+     * @param node the node to control.
+     * @param api the api to use for input.
+     */
     public NodeController(AbstractGame app, Spatial node, String api) {
 
         setKeyBindings(api);
@@ -54,6 +62,11 @@ public class NodeController extends InputController {
 
     }
 
+    /**
+     * 
+     * <code>setKeyBindings</code> binds the keys to use for the actions.
+     * @param api the api to use for the input.
+     */
     private void setKeyBindings(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         InputSystem.createInputSystem(api);
@@ -72,6 +85,11 @@ public class NodeController extends InputController {
         setKeyBindingManager(keyboard);
     }
 
+    /**
+     * 
+     * <code>setUpMouse</code> sets the mouse look object.
+     * @param node the node to use for rotations.
+     */
     private void setUpMouse(Spatial node) {
         RelativeMouse mouse = new RelativeMouse();
         mouse.setMouseInput(InputSystem.getMouseInput());
@@ -82,6 +100,13 @@ public class NodeController extends InputController {
         addAction(mouseLook);
     }
 
+    /**
+     * 
+     * <code>setActions</code> sets the keyboard actions with the corresponding
+     * key command.
+     * @param node the node to control.
+     * @param app the app to use exit with.
+     */
     private void setActions(Spatial node, AbstractGame app) {
         KeyExitAction exit = new KeyExitAction(app);
         exit.setKey("exit");

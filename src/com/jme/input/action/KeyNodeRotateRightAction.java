@@ -36,9 +36,15 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>KeyNodeBackwardAction</code> 
+ * <code>KeyNodeRotateRightAction</code> rotates a node to the right. The axis
+ * of rotation is dependant on the setting of the lock axis. If no lock axis
+ * is set, the node rotates about it's y-axis. This will allow the node to 
+ * roll. However, to prevent rolling, setting the lock axis to the world's 
+ * y-axis (or any desired axis for that matter), will cause the node to 
+ * rotate about the world. The locking of the axis is particularly useful for
+ * control schemes similar to first person shooters.
  * @author Mark Powell
- * @version $Id: KeyNodeRotateRightAction.java,v 1.1 2003-12-11 23:21:07 mojomonkey Exp $
+ * @version $Id: KeyNodeRotateRightAction.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
  */
 public class KeyNodeRotateRightAction implements InputAction {
     private Matrix3f incr;
@@ -48,9 +54,10 @@ public class KeyNodeRotateRightAction implements InputAction {
     private Vector3f lockAxis;
     
     /**
-     
-     * @param camera the camera that will be affected by this action.
-     * @param speed the speed at which the camera can move.
+     * Constructor instantiates a new <code>KeyNodeRotateRightAction</code> 
+     * object using the node and speed parameters for it's attributes.
+     * @param node the node that will be affected by this action.
+     * @param speed the speed at which the node can move.
      */
     public KeyNodeRotateRightAction(Spatial node, float speed) {
         incr = new Matrix3f();
@@ -61,8 +68,8 @@ public class KeyNodeRotateRightAction implements InputAction {
     /**
      * 
      * <code>setSpeed</code> sets the speed in units/second that the 
-     * camera node can move.
-     * @param movementSpeed the units/second of the camera.
+     * node can move.
+     * @param movementSpeed the units/second of the node.
      */
     public void setSpeed(float movementSpeed) {
         this.speed = movementSpeed;
@@ -72,8 +79,8 @@ public class KeyNodeRotateRightAction implements InputAction {
      * 
      * <code>setLockAxis</code> allows a certain axis to be locked, meaning
      * the camera will always be within the plane of the locked axis. For 
-     * example, if the camera is a first person camera, the user might lock
-     * the camera's up vector. This will keep the camera vertical of the 
+     * example, if the node is a first person camera, the user might lock
+     * the node's up vector. This will keep the node vertical with the 
      * ground.
      * @param lockAxis the axis to lock.
      */
@@ -82,8 +89,8 @@ public class KeyNodeRotateRightAction implements InputAction {
     }
     
     /**
-     * <code>performAction</code> moves the camera node along it's negative
-     * direction vector at a speed of movement speed * time. Where time is
+     * <code>performAction</code> rotates the camera about it's up vector or
+     * lock axis at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
      * @see com.jme.input.action.InputAction#performAction(float)
      */

@@ -35,9 +35,13 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>KeyNodeBackwardAction</code> 
+ * <code>KeyNodeBackwardAction</code> defines an action to move a 
+ * <code>Spatial</code> node along it's negative direction vector. The speed
+ * of the node is defined by the speed and the value set in the 
+ * <code>performAction</code> method. The speed is set with construction or
+ * the <code>setSpeed</code> method. This can be thought as units/second.
  * @author Mark Powell
- * @version $Id: KeyNodeBackwardAction.java,v 1.1 2003-12-11 23:21:07 mojomonkey Exp $
+ * @version $Id: KeyNodeBackwardAction.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
  */
 public class KeyNodeBackwardAction implements InputAction {
     private Spatial node;
@@ -45,8 +49,10 @@ public class KeyNodeBackwardAction implements InputAction {
     private String key;
     
     /**
-     
-     * @param camera the camera that will be affected by this action.
+     * Constructor creates a new <code>KeyNodeBackwardAction</code> object. 
+     * During construction, the node to direct and the speed at which to
+     * move the node is set.
+     * @param node the node that will be affected by this action.
      * @param speed the speed at which the camera can move.
      */
     public KeyNodeBackwardAction(Spatial node, float speed) {
@@ -57,15 +63,15 @@ public class KeyNodeBackwardAction implements InputAction {
     /**
      * 
      * <code>setSpeed</code> sets the speed in units/second that the 
-     * camera node can move.
-     * @param movementSpeed the units/second of the camera.
+     * node can move.
+     * @param movementSpeed the units/second of the node.
      */
     public void setSpeed(float movementSpeed) {
         this.speed = movementSpeed;
     }
     
     /**
-     * <code>performAction</code> moves the camera node along it's negative
+     * <code>performAction</code> moves the node along it's negative
      * direction vector at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
      * @see com.jme.input.action.InputAction#performAction(float)
@@ -75,7 +81,6 @@ public class KeyNodeBackwardAction implements InputAction {
         loc = loc.subtract(node.getLocalRotation().getColumn(2).mult((speed*time)));
         node.setLocalTranslation(loc);
         node.updateWorldData(time);
-
     }
 
     /**

@@ -47,9 +47,10 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 
 /**
- * <code>TestBackwardAction</code>
+ * <code>TestNodeController</code> provides a test for control of a node, in
+ * this case a camera node.
  * @author Mark Powell
- * @version 
+ * @version $Id: TestNodeController.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
  */
 public class TestNodeController extends AbstractGame {
     private Node scene;

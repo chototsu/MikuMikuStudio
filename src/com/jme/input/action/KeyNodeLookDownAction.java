@@ -35,9 +35,11 @@ import com.jme.math.Matrix3f;
 import com.jme.scene.Spatial;
 
 /**
- * <code>KeyNodeBackwardAction</code> 
+ * <code>KeyNodeLookDownAction</code> defines an action to tilt the node 
+ * towards the worlds negative y-axis. The rotation is along the node's left
+ * vector (the first column of it's rotation matrix). 
  * @author Mark Powell
- * @version $Id: KeyNodeLookDownAction.java,v 1.1 2003-12-11 23:21:07 mojomonkey Exp $
+ * @version $Id: KeyNodeLookDownAction.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
  */
 public class KeyNodeLookDownAction implements InputAction {
     private Matrix3f incr;
@@ -46,9 +48,10 @@ public class KeyNodeLookDownAction implements InputAction {
     private String key;
     
     /**
-     
-     * @param camera the camera that will be affected by this action.
-     * @param speed the speed at which the camera can move.
+     * Constructor instatiates a new <code>KeyNodeLookDownAction</code> object
+     * using the supplied node and speed for it's attributes.
+     * @param node the node that will be affected by this action.
+     * @param speed the speed at which the node can move.
      */
     public KeyNodeLookDownAction(Spatial node, float speed) {
         incr = new Matrix3f();
@@ -59,16 +62,16 @@ public class KeyNodeLookDownAction implements InputAction {
     /**
      * 
      * <code>setSpeed</code> sets the speed in units/second that the 
-     * camera node can move.
-     * @param movementSpeed the units/second of the camera.
+     * node can move.
+     * @param movementSpeed the units/second of the node.
      */
     public void setSpeed(float movementSpeed) {
         this.speed = movementSpeed;
     }
     
     /**
-     * <code>performAction</code> moves the camera node along it's negative
-     * direction vector at a speed of movement speed * time. Where time is
+     * <code>performAction</code> rotates the node towards the world's negative
+     * y-axis at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
      * @see com.jme.input.action.InputAction#performAction(float)
      */
