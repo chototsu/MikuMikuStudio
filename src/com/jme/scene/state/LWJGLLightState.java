@@ -46,7 +46,7 @@ import com.jme.light.SpotLight;
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.3 2004-01-15 15:07:17 mojomonkey Exp $
+ * @version $Id: LWJGLLightState.java,v 1.4 2004-01-24 19:01:00 mojomonkey Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.
@@ -203,6 +203,8 @@ public class LWJGLLightState extends LightState {
                         GL.glLightfv(index, GL.GL_SPOT_DIRECTION, buffer);
                         GL.glLightf(index, GL.GL_SPOT_EXPONENT, 0.0f);
                     }
+                } else {
+                    GL.glDisable(GL.GL_LIGHT0 + i);
                 }
             }
 
