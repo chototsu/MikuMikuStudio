@@ -31,72 +31,76 @@
  */
 
 /*
- * Created on 23 oct. 2003
+ * Created on 25 janv. 2004
  *
  */
-package com.jme.sound;
+package com.jme.sound.joal;
 
-import java.io.IOException;
-import java.nio.ByteBuffer;
-
-import javax.sound.sampled.AudioFormat;
+import com.jme.sound.IBuffer;
+import com.jme.sound.IListener;
+import com.jme.sound.ISoundSystem;
+import com.jme.sound.ISource;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public interface SoundStream {
+public class SoundSystem implements ISoundSystem {
 
-	public static final int MP3_SOUND_STREAM=1;
-	public static final int WAV_SOUND_STREAM=2;
-	public static final int OGG_SOUND_STREAM=3;
-	
-	/**
-	 * Closes this stream .
-	 *
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundSystem#getAPIName()
 	 */
-	public void close();
+	public String getAPIName() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	/**
-	 * 
-	 * @return the audio channels provided by the stream 
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundSystem#generateBuffers(int)
 	 */
-	public int getChannels();
+	public IBuffer[] generateBuffers(int numOfBuffers) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	/**
-	 * 
-	 * @return the <code>AudioFormat</code> of this stream
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundSystem#loadBuffer(java.lang.String)
 	 */
-	public AudioFormat getFormat();
+	public IBuffer loadBuffer(String file) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	/**
-	 * 
-	 * @return The length in bytes of the sound data.
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundSystem#loadSource(java.lang.String)
 	 */
-	public int getLength();
+	public ISource loadSource(String file) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	/**
-	 * 
-	 * @return the sample rate of the sound data contained in this stream
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundSystem#generateSources(int)
 	 */
-	public int getSampleRate();
+	public ISource[] generateSources(int numOfSources) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-	/**
-	 * Reads the rest of the data in the stream.
-	 * @return the data in the stream as a direct <code>ByteBuffer</code>
-	 * The length is 0 if no more data is available in the Stream.
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundSystem#generateSource(com.jme.sound.IBuffer)
 	 */
-	public ByteBuffer read() throws IOException;
+	public ISource generateSource(IBuffer buffer) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-		
-	
-	/**
-	 * 
-	 * @return the stream type. The values can be  
-	 * MP3_SOUND_STREAM=1;
-	 * WAV_SOUND_STREAM=2;
-	 * OGG_SOUND_STREAM=3;
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundSystem#getListener()
 	 */
-	public int getStreamType();
+	public IListener getListener() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

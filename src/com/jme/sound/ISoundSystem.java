@@ -31,40 +31,30 @@
  */
 
 /*
- * Created on 29 oct. 2003
+ * Created on 22 janv. 2004
  *
  */
-package com.jme.sound.action;
-
-import com.jme.input.action.KeyRotateLeftAction;
-import com.jme.renderer.Camera;
-import com.jme.sound.IPlayer;
+package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class SoundRotateLeftAction extends KeyRotateLeftAction {
+public interface ISoundSystem {
+	
+	public String getAPIName();
+	
+	public IBuffer[] generateBuffers(int numOfBuffers);
+	
+	public IBuffer loadBuffer(String file);
+	
+	public ISource loadSource(String file);
+	
+	public ISource[] generateSources(int numOfSources);
+	
+	public ISource generateSource(IBuffer buffer);
+	
+	public IListener getListener();
+	
 
-	private String sound;
-	private IPlayer player;
-	/**
-	 * @param camera
-	 * @param speed
-	 */
-	public SoundRotateLeftAction(Camera camera, float speed, IPlayer soundPlayer, String soundName) {
-		super(camera, speed);
-		player= soundPlayer;
-		sound= soundName;
-	}
-
-	/**
-	* @see com.jme.input.action.InputAction#performAction(float)
-	*/
-	public void performAction(float time) {
-		super.performAction(time);
-		if (player != null && player.getStatus() != IPlayer.PLAYING) {
-			player.play(sound);
-		}
-	}
 }

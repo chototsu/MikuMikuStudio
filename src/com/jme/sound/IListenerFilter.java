@@ -34,163 +34,144 @@
  * Created on 17 janv. 2004
  *
  */
-package com.jme.sound.filter;
+package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public abstract class BufferFilter{
+public interface IListenerFilter {
 
+	public static final int GENERIC= 0;
+	public static final int PADDEDCELL= 1;
+	public static final int ROOM= 2;
+	public static final int BATHROOM= 3;
+	public static final int LIVINGROOM= 4;
+	public static final int STONEROOM= 5;
+	public static final int AUDITORIUM= 6;
+	public static final int CONCERTHALL= 7;
+	public static final int CAVE= 8;
+	public static final int ARENA= 9;
+	public static final int HANGAR= 10;
+	public static final int CARPETEDHALLWAY= 11;
+	public static final int HALLWAY= 12;
+	public static final int STONECORRIDOR= 13;
+	public static final int ALLEY= 14;
+	public static final int FOREST= 15;
+	public static final int CITY= 16;
+	public static final int MOUNTAINS= 17;
+	public static final int QUARRY= 18;
+	public static final int PLAIN= 19;
+	public static final int PARKINGLOT= 20;
+	public static final int SEWERPIPE= 21;
+	public static final int UNDERWATER= 22;
+	public static final int DRUGGED= 23;
+	public static final int DIZZY= 24;
+	public static final int PSYCHOTIC= 25;
+	public static final int COUNT= 26;
+
+	/**
+	 * @return
+	 */
+	public float getAirAbsorptionHF();
+
+	/**
+	 * @return
+	 */
+	public float getDecayTimeHFRatio();
+
+	/**
+	 * @return
+	 */
+	public float getDecayTime();
+
+	/**
+	 * @return
+	 */
+	public int getReflections();
+	/**
+	 * @return
+	 */
+	public float getReflectionsDelay();
+	/**
+	 * @return
+	 */
+	public int getReverb();
+
+	/**
+	 * @return
+	 */
+	public float getReverbDelay();
+
+	/**
+	 * @return
+	 */
+	public int getRoom();
+
+	/**
+	 * @return
+	 */
+	public int getRoomHF();
+
+	/**
+	 * @return
+	 */
+	public float getRoomRolloffFactor();
+
+	/**
+	 * 
+	 * @param f
+	 */
+	public void setAirAbsorptionHF(float f);
+
+	/**
+	 * @param f
+	 */
+	public void setDecayTimeHFRatio(float f);
+
+	/**
+	 * @param i
+	 */
+	public void setDecayTime(float i);
+
+	/**
+	 * @param i
+	 */
+	public void setReflections(int i);
+
+	/**
+	 * @param i
+	 */
+	public void setReflectionsDelay(float i);
+
+	/**
+	 * @param i
+	 */
+	public void setReverb(int i);
+
+	/**
+	 * @param i
+	 */
+	public void setReverbDelay(float i);
+
+	/**
+	 * @param i
+	 */
+	public void setRoom(int i);
+
+	/**
+	 * @param i
+	 */
+	public void setRoomHF(int i);
+
+	/**
+	 * @param i
+	 */
+	public void setRoomRolloffFactor(float i);
+
+	public IListenerFilter getPredefinedFilter(int filterName);
 	
-
-	/**
-		 * @return
-		 */
-	public abstract float getAirAbsorptionFactor();
-
-	/**
-	 * @return
-	 */
-	public abstract int getObstruction();
-
-	/**
-	 * @return
-	 */
-	public abstract float getObstructionLFRatio();
-
-	/**
-	 * @return
-	 */
-	public abstract int getOcclusion();
-
-	/**
-	 * @return
-	 */
-	public abstract int getOcclusionHF();
-
-	/**
-	 * @return
-	 */
-	public abstract int getOcclusionLF();
-
-	/**
-	 * @return
-	 */
-	public abstract float getOcclusionLFRatio();
-
-	/**
-	 * @return
-	 */
-	public abstract float getOcclusionRoomRatio();
-
-	/**
-	 * @return
-	 */
-	public abstract int getOutsideVolumeHF();
-
-	/**
-	 * @return
-	 */
-	public abstract int getRoomHF();
-
-	/**
-	 * @return
-	 */
-	public abstract int getRoomLF();
-
-	/**
-	 * @return
-	 */
-	public abstract float getRoomRolloffFactor();
-	/**
-	 * @param f
-	 */
-	public abstract void setAirAbsorptionFactor(float f);
-
-	/**
-	 * @param i
-	 */
-	public abstract void setObstruction(int i);
-
-	/**
-	 * @param f
-	 */
-	public abstract void setObstructionLFRatio(float f);
-
-	/**
-	 * @param i
-	 */
-	public abstract void setOcclusion(int i);
-
-	/**
-	 * @param i
-	 */
-	public abstract void setOcclusionHF(int i);
-
-	/**
-	 * @param i
-	 */
-	public abstract void setOcclusionLF(int i);
-
-	/**
-	 * @param f
-	 */
-	public abstract void setOcclusionLFRatio(float f);
-
-	/**
-	 * @param f
-	 */
-	public abstract void setOcclusionRoomRatio(float f);
-
-	/**
-	 * @param i
-	 */
-	public abstract void setOutsideVolumeHF(int i);
-
-	/**
-	 * @param i
-	 */
-	public abstract void setRoomHF(int i);
-
-	/**
-	 * @param i
-	 */
-	public abstract void setRoomLF(int i);
-
-	/**
-	 * @param f
-	 */
-	public abstract void setRoomRolloffFactor(float f);
-
-	/**
-	 * @return
-	 */
-	public abstract int getDirect();
-
-	/**
-	 * @return
-	 */
-	public abstract int getDirectHF();
-
-	/**
-	 * @param i
-	 */
-	public abstract void setDirect(int i);
-
-	/**
-	 * @param i
-	 */
-	public abstract void setDirectHF(int i);
-
-	/**
-	 * @return
-	 */
-	public abstract int getRoom();
-
-	/**
-	 * @param i
-	 */
-	public abstract void setRoom(int i);
+	
+	public void enable();
 
 }

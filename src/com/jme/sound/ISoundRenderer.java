@@ -31,40 +31,28 @@
  */
 
 /*
- * Created on 29 oct. 2003
+ * Created on 25 janv. 2004
  *
  */
-package com.jme.sound.action;
+package com.jme.sound;
 
-import com.jme.input.action.KeyRotateRightAction;
 import com.jme.renderer.Camera;
-import com.jme.sound.IPlayer;
-
+import com.jme.sound.scene.SoundSpatial;
+import com.jme.sound.scene.SphericalSound;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class SoundRotateRightAction extends KeyRotateRightAction {
-	private String sound;
-	private IPlayer player;
-	/**
-	 * @param camera
-	 * @param speed
-	 */
-	public SoundRotateRightAction(Camera camera, float speed, IPlayer soundPlayer, String soundName) {
-		super(camera, speed);
-		player= soundPlayer;
-		sound= soundName;
-	}
+public interface ISoundRenderer {
 
-	/**
-	* @see com.jme.input.action.InputAction#performAction(float)
-	*/
-	public void performAction(float time) {
-		super.performAction(time);
-		if (player != null && player.getStatus() != IPlayer.PLAYING) {
-			player.play(sound);
-		}
-	}
+	public void setCamera(Camera camera);
+
+	public Camera getCamera();
+
+	public Camera getCamera(int width, int height);
+
+	public void draw(SoundSpatial s);
+
+	public void draw(SphericalSound s);
 }

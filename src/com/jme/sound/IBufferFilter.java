@@ -34,141 +34,163 @@
  * Created on 17 janv. 2004
  *
  */
-package com.jme.sound.filter;
+package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public abstract class ListenerFilter {
+public interface IBufferFilter {
 
-	public static final int GENERIC= 0;
-	public static final int PADDEDCELL= 1;
-	public static final int ROOM= 2;
-	public static final int BATHROOM= 3;
-	public static final int LIVINGROOM= 4;
-	public static final int STONEROOM= 5;
-	public static final int AUDITORIUM= 6;
-	public static final int CONCERTHALL= 7;
-	public static final int CAVE= 8;
-	public static final int ARENA= 9;
-	public static final int HANGAR= 10;
-	public static final int CARPETEDHALLWAY= 11;
-	public static final int HALLWAY= 12;
-	public static final int STONECORRIDOR= 13;
-	public static final int ALLEY= 14;
-	public static final int FOREST= 15;
-	public static final int CITY= 16;
-	public static final int MOUNTAINS= 17;
-	public static final int QUARRY= 18;
-	public static final int PLAIN= 19;
-	public static final int PARKINGLOT= 20;
-	public static final int SEWERPIPE= 21;
-	public static final int UNDERWATER= 22;
-	public static final int DRUGGED= 23;
-	public static final int DIZZY= 24;
-	public static final int PSYCHOTIC= 25;
-	public static final int COUNT= 26;
+	/**
+		 * @return
+		 */
+	public float getAirAbsorptionFactor();
 
 	/**
 	 * @return
 	 */
-	public abstract float getAirAbsorptionHF();
+	public int getObstruction();
 
 	/**
 	 * @return
 	 */
-	public abstract float getDecayTimeHFRatio();
+	public float getObstructionLFRatio();
 
 	/**
 	 * @return
 	 */
-	public abstract float getDecayTime();
+	public int getOcclusion();
 
 	/**
 	 * @return
 	 */
-	public abstract int getReflections();
-	/**
-	 * @return
-	 */
-	public abstract float getReflectionsDelay();
-	/**
-	 * @return
-	 */
-	public abstract int getReverb();
+	public int getOcclusionHF();
 
 	/**
 	 * @return
 	 */
-	public abstract float getReverbDelay();
+	public int getOcclusionLF();
 
 	/**
 	 * @return
 	 */
-	public abstract int getRoom();
+	public float getOcclusionLFRatio();
 
 	/**
 	 * @return
 	 */
-	public abstract int getRoomHF();
+	public float getOcclusionRoomRatio();
 
 	/**
 	 * @return
 	 */
-	public abstract float getRoomRolloffFactor();
+	public int getOutsideVolumeHF();
 
 	/**
-	 * 
+	 * @return
+	 */
+	public int getRoomHF();
+
+	/**
+	 * @return
+	 */
+	public int getRoomLF();
+
+	/**
+	 * @return
+	 */
+	public float getRoomRolloffFactor();
+	/**
 	 * @param f
 	 */
-	public abstract void setAirAbsorptionHF(float f);
+	public void setAirAbsorptionFactor(float f);
+
+	/**
+	 * @param i
+	 */
+	public void setObstruction(int i);
 
 	/**
 	 * @param f
 	 */
-	public abstract void setDecayTimeHFRatio(float f);
+	public void setObstructionLFRatio(float f);
 
 	/**
 	 * @param i
 	 */
-	public abstract void setDecayTime(float i);
+	public void setOcclusion(int i);
 
 	/**
 	 * @param i
 	 */
-	public abstract void setReflections(int i);
+	public void setOcclusionHF(int i);
 
 	/**
 	 * @param i
 	 */
-	public abstract void setReflectionsDelay(float i);
+	public void setOcclusionLF(int i);
+
+	/**
+	 * @param f
+	 */
+	public void setOcclusionLFRatio(float f);
+
+	/**
+	 * @param f
+	 */
+	public void setOcclusionRoomRatio(float f);
 
 	/**
 	 * @param i
 	 */
-	public abstract void setReverb(int i);
+	public void setOutsideVolumeHF(int i);
 
 	/**
 	 * @param i
 	 */
-	public abstract void setReverbDelay(float i);
+	public void setRoomHF(int i);
 
 	/**
 	 * @param i
 	 */
-	public abstract void setRoom(int i);
+	public void setRoomLF(int i);
+
+	/**
+	 * @param f
+	 */
+	public void setRoomRolloffFactor(float f);
+
+	/**
+	 * @return
+	 */
+	public int getDirect();
+
+	/**
+	 * @return
+	 */
+	public int getDirectHF();
 
 	/**
 	 * @param i
 	 */
-	public abstract void setRoomHF(int i);
+	public void setDirect(int i);
 
 	/**
 	 * @param i
 	 */
-	public abstract void setRoomRolloffFactor(float i);
+	public void setDirectHF(int i);
+
+	/**
+	 * @return
+	 */
+	public int getRoom();
+
+	/**
+	 * @param i
+	 */
+	public void setRoom(int i);
 	
-	public abstract ListenerFilter getPredefinedFilter(int filterName);
+	public void applyOnSource(int source);
 
 }

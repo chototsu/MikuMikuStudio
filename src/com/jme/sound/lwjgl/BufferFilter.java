@@ -34,15 +34,16 @@
  * Created on 17 janv. 2004
  *
  */
-package com.jme.sound.filter;
+package com.jme.sound.lwjgl;
 
 import org.lwjgl.openal.eax.EAXBufferProperties;
+import com.jme.sound.IBufferFilter;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public abstract class LWJGLBufferFilter extends BufferFilter{
+public abstract class BufferFilter implements IBufferFilter{
 
 	protected EAXBufferProperties bufferProperties;
 	protected int occlusion;
@@ -62,7 +63,7 @@ public abstract class LWJGLBufferFilter extends BufferFilter{
 	protected int directHF;
 	
 
-	protected LWJGLBufferFilter() {
+	protected BufferFilter() {
 		super();
 		bufferProperties= new EAXBufferProperties();
 		setDirect(EAXBufferProperties.EAXBUFFER_DEFAULTDIRECT);
@@ -322,7 +323,7 @@ public abstract class LWJGLBufferFilter extends BufferFilter{
 	}
 	
 	public void applyOnSource(int sourceNumber){
-		//bufferProperties.setCurrentSoure(sourceNumber);
+		bufferProperties.setCurrentSource(sourceNumber);
 	}
 	
 	

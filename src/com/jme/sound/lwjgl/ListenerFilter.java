@@ -34,15 +34,17 @@
  * Created on 17 janv. 2004
  *
  */
-package com.jme.sound.filter;
+package com.jme.sound.lwjgl;
 
 import org.lwjgl.openal.eax.EAXListenerProperties;
+
+import com.jme.sound.IListenerFilter;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class LWJGLListenerFilter extends ListenerFilter {
+public class ListenerFilter implements IListenerFilter {
 
 	protected int room;
 	protected int roomHF;
@@ -58,8 +60,7 @@ public class LWJGLListenerFilter extends ListenerFilter {
 	protected EAXListenerProperties listenerProperties;
 	protected int environment;
 	
-	public LWJGLListenerFilter() {
-		super();
+	public ListenerFilter() {
 		listenerProperties= new EAXListenerProperties();
 		setRoom(EAXListenerProperties.EAXLISTENER_DEFAULTROOM);
 		setRoomHF(EAXListenerProperties.EAXLISTENER_DEFAULTROOMHF);
@@ -271,7 +272,7 @@ public class LWJGLListenerFilter extends ListenerFilter {
 	/* (non-Javadoc)
 	 * @see com.jme.sound.filter.ListenerFilter#getPredefinedFilter(int)
 	 */
-	public ListenerFilter getPredefinedFilter(int filterName) {
+	public IListenerFilter getPredefinedFilter(int filterName) {
 		environment=filterName;
 		return this;
 	}

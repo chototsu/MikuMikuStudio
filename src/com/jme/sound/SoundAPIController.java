@@ -31,46 +31,56 @@
  */
 
 /*
- * Created on 1 nov. 2003
+ * Created on 24 janv. 2004
  *
  */
 package com.jme.sound;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
-import java.nio.IntBuffer;
 
-import org.lwjgl.openal.AL;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class LWJGLMP3Buffer extends MP3Buffer {
+public class SoundAPIController {
 
-	IntBuffer buffer;
+	private static ISoundSystem soundSystem;
+	private static String api;
+	private static ISoundRenderer renderer;
 
-	public LWJGLMP3Buffer() {
-		buffer= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
-		AL.alGenBuffers(buffer);
+	public SoundAPIController() {
+
 	}
 
-	public int getBufferNumber() {
+	public static ISoundSystem getSoundSystem(String apiName) {
+		api= apiName;
+		if (api.equals("LWJGL")) {
+			soundSystem= new com.jme.sound.lwjgl.SoundSystem();
+			renderer= new com.jme.sound.lwjgl.SoundRenderer();
 
-		return buffer.get(0);
-	}
-
-	public int getChannels() {
-		switch (channels) {
-			case MONO8 :
-				return AL.AL_FORMAT_MONO8;
-			case MONO16 :
-				return AL.AL_FORMAT_MONO16;
-			case STEREO8 :
-				return AL.AL_FORMAT_STEREO8;
-			case STEREO16 :
-				return AL.AL_FORMAT_STEREO16;
 		}
-		return 0;
+		if (api.equals("JOAL")) {
+			soundSystem= new com.jme.sound.joal.SoundSystem();
+			renderer= new com.jme.sound.joal.SoundRenderer();
+		}
+		return soundSystem;
+
 	}
+
+	public static ISoundRenderer getRenderer() {
+		return renderer;
+	}
+
+	public static ISoundSystem getSoundSystem() {
+		return soundSystem;
+	}
+
+	public static void plugExternal(ISoundSystem externalAPI, ISoundRenderer externalRenderer) {
+		if (externalAPI != null) {
+			soundSystem= externalAPI;
+			renderer= externalRenderer;
+			api= soundSystem.getAPIName();
+		}
+	}
+
 }

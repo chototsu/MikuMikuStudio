@@ -29,29 +29,73 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 /*
- * Created on 18 oct. 2003
+ * Created on 25 janv. 2004
  *
  */
-package com.jme.test.sound;
+package com.jme.sound.lwjgl;
 
-
-import com.jme.sound.SoundSystem;
+import com.jme.intersection.Distance;
+import com.jme.renderer.Camera;
+import com.jme.renderer.LWJGLCamera;
+import com.jme.sound.ISoundRenderer;
+import com.jme.sound.SoundAPIController;
+import com.jme.sound.scene.SoundSpatial;
+import com.jme.sound.scene.SphericalSound;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class TestSound {
+public class SoundRenderer implements ISoundRenderer {
 
-	public static void main(String[] args) throws InterruptedException {
-		SoundSystem system= SoundSystem.getSoundEffectSystem("LWJGL", true);
-		system.addSource("NPC");
-		system.load("data/sound/0.mp3", "music");
-		system.getPlayer("NPC").play("music");
-		
-			Thread.sleep(1000);
-		
+	private LWJGLCamera camera;
 
+	public void setCamera(Camera camera) {
+		if (camera instanceof LWJGLCamera) {
+			this.camera= (LWJGLCamera)camera;
+		}
+
+	}
+
+	public Camera getCamera() {
+		return camera;
+	}
+
+	public Camera getCamera(int width, int height) {
+		return new LWJGLCamera(width, height);
+	}
+
+	public void draw(SoundSpatial s) {
+		if (s != null) {
+			s.onDraw(this);
+		}
+
+	}
+
+	public void draw(SphericalSound s) {
+		if (s.getCullMode() == SoundSpatial.CULL_DISTANCE) {
+			if (Distance
+				.distance(
+					SoundAPIController.getSoundSystem().getListener().getPosition(),
+					s.getSource().getPosition())
+				> s.getSource().getMaxDistance()) {
+				s.getSource().pause();
+				s.getSource().setLooping(false);
+			} else {
+				if (!s.getSource().getLooping()) {
+					s.getSource().setLooping(true);
+					s.getSource().play();
+				}
+			}
+		}
+		/*
+		System.out.println(
+			"Camera dist from box"
+				+ Distance.distance(
+					SoundAPIController.getSoundSystem().getListener().getPosition(),
+					s.getSource().getPosition()));
+					*/
 	}
 }

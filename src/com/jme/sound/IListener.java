@@ -31,49 +31,37 @@
  */
 
 /*
- * Created on 31 oct. 2003
+ * Created on 22 janv. 2004
  *
  */
-package com.jme.sound.utils;
+package com.jme.sound;
 
-import java.util.Hashtable;
-import com.jme.sound.ISound;
-
+import com.jme.math.Vector3f;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class EffectRepository {
-
-	private Hashtable repository= new Hashtable();
-	private Hashtable queued= new Hashtable();
-	private static EffectRepository instance;
-
-	private EffectRepository() {
-
-	}
-
-	public synchronized static EffectRepository getRepository() {
-		if (instance == null) {
-			instance= new EffectRepository();
-		}
-		return instance;
-	}
-
-	public void bind(String name, ISound source) {
-		
-		repository.put(name, source);
-
-	}
+public interface IListener {
 	
-	public ISound getSource(String name) {
-		
-		return (ISound)repository.get(name);		
-	}
+	public void setGain(float gain);
 	
-	public void remove(String name){
-		repository.remove(name);
-	}
+	public float getGain();
+	
+	public void setPosition(float x, float y, float z);
+	
+	public void setPosition(Vector3f position);
+	
+	public Vector3f getPosition();
+	
+	public void setVelocity(Vector3f velocity);
+	
+	public Vector3f getVelocity();
+	
+	public void setOrientation(float[] orientation);
+	
+	public float[] getOrientation();
+	
+	public void setFilter(IListenerFilter filter);
 
 }

@@ -48,10 +48,9 @@ import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.sound.scene.second.SoundNode;
-import com.jme.sound.scene.second.SoundSpatial;
-import com.jme.sound.scene.second.SphericalSound;
-import com.jme.sound.second.SoundAPIController;
+import com.jme.sound.scene.SoundNode;
+import com.jme.sound.scene.SphericalSound;
+import com.jme.sound.SoundAPIController;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
@@ -151,9 +150,9 @@ public class TestSoundGraph extends AbstractGame {
 		
 		snode=new SoundNode();
 		footsteps=new SphericalSound("data/sound/Footsteps.wav");
-		footsteps.getSource().setMaxDistance(250);
+		footsteps.getSource().setMaxDistance(100);
 		footsteps.getSource().setPosition(box.getLocalTranslation());				
-		//footsteps.getSource().setSourceRelative(true);
+		footsteps.getSource().setGain(1.0f);
 		snode.attachChild(footsteps);
 		
 		

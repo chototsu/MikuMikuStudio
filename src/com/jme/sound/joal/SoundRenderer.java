@@ -31,41 +31,60 @@
  */
 
 /*
- * Created on 29 oct. 2003
+ * Created on 25 janv. 2004
  *
  */
-package com.jme.sound.action;
+package com.jme.sound.joal;
 
-import com.jme.input.action.KeyForwardAction;
 import com.jme.renderer.Camera;
-import com.jme.sound.IPlayer;
+import com.jme.sound.ISoundRenderer;
+import com.jme.sound.scene.SoundSpatial;
+import com.jme.sound.scene.SphericalSound;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class SoundForwardAction extends KeyForwardAction {
+public class SoundRenderer implements ISoundRenderer {
 
-	private IPlayer player;
-	private String sound;
-
-	/**
-	 * @param camera
-	 * @param speed
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundRenderer#setCamera(com.jme.renderer.Camera)
 	 */
-	public SoundForwardAction(Camera camera, float speed, IPlayer soundPlayer, String soundName) {
-		super(camera, speed);
-		player= soundPlayer;
-		sound= soundName;
+	public void setCamera(Camera camera) {
+		// TODO Auto-generated method stub
+
 	}
 
-	/**
-	* @see com.jme.input.action.InputAction#performAction(float)
-	*/
-	public void performAction(float time) {
-		super.performAction(time);
-		if (player != null && player.getStatus() != IPlayer.PLAYING) {
-			player.play(sound);
-		}
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundRenderer#getCamera()
+	 */
+	public Camera getCamera() {
+		// TODO Auto-generated method stub
+		return null;
 	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundRenderer#getCamera(int, int)
+	 */
+	public Camera getCamera(int width, int height) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundRenderer#draw(com.jme.sound.scene.SoundSpatial)
+	 */
+	public void draw(SoundSpatial s) {
+		// TODO Auto-generated method stub
+
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.ISoundRenderer#draw(com.jme.sound.scene.SphericalSound)
+	 */
+	public void draw(SphericalSound s) {
+		// TODO Auto-generated method stub
+
+	}
+
 }

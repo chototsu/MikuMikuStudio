@@ -29,46 +29,69 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.sound.utils;
 
-import java.util.Hashtable;
+/*
+ * Created on 25 janv. 2004
+ *
+ */
+package com.jme.sound.scene;
 
-
+import com.jme.sound.ISoundRenderer;
+import com.jme.sound.ISource;
+import com.jme.sound.SoundAPIController;
 
 
 /**
  * @author Arman Ozcelik
- * @version $Id: StreamRepository.java,v 1.1 2003-10-25 02:26:03 Anakan Exp $
+ *
  */
-public class StreamRepository {
+public class SphericalSound extends SoundSpatial {
+
 	
-	private static StreamRepository instance;
-	private Hashtable sources=new Hashtable();
+	private ISource source;
+	private int cullMode;
 	
-	private StreamRepository(){
-		
+	public SphericalSound(String file){
+		source=SoundAPIController.getSoundSystem().loadSource(file);
+		cullMode=SoundSpatial.CULL_DISTANCE;			
 	}
-	/**
-	 * 
+	
+	
+	/* (non-Javadoc)
+	 * @see com.jme.sound.scene.SoundSpatial#draw(com.jme.sound.scene.SoundRenderer)
 	 */
-	public synchronized static StreamRepository getInstance(){
-		if(instance==null){
-			instance=new StreamRepository();
-		}
-		return instance;		
+	public void draw(ISoundRenderer r) {
+		r.draw(this);
 	}
 	
-	public void bind(String name, String file){
-		sources.put(name, file);
-	}
 	
-	public String getStream(String name){
-		return (String)sources.get(name);
-		
+
+	/**
+	 * @return
+	 */
+	public ISource getSource() {
+		return source;
 	}
-	
-	public boolean contains(String name){
-		return sources.containsKey(name);
+
+	/**
+	 * @param source
+	 */
+	public void setSource(ISource source) {
+		this.source= source;
+	}
+
+	/**
+	 * @return
+	 */
+	public int getCullMode() {
+		return cullMode;
+	}
+
+	/**
+	 * @param i
+	 */
+	public void setCullMode(int i) {
+		cullMode= i;
 	}
 
 }

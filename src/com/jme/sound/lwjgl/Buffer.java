@@ -31,42 +31,87 @@
  */
 
 /*
- * Created on 31 oct. 2003
+ * Created on 24 janv. 2004
  *
  */
-package com.jme.sound.utils;
+package com.jme.sound.lwjgl;
 
-import java.util.Hashtable;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.IntBuffer;
 
-import com.jme.sound.IPlayer;
+import org.lwjgl.openal.AL;
+
+import com.jme.sound.IBuffer;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class EffectPlayerRepository {
+public class Buffer implements IBuffer {
 
-	private Hashtable repository = new Hashtable();
-	private static EffectPlayerRepository instance;
+	protected int bufferNumber;
+	private ByteBuffer data;
 
-	private EffectPlayerRepository() {
+	public Buffer(int bufferNumber) {
+		this.bufferNumber= bufferNumber;
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.IBuffer#configure(java.nio.ByteBuffer, int, int)
+	 */
+	public void configure(ByteBuffer data, int format, int freq) {
+		this.data= data;
+		AL.alBufferData(bufferNumber, format, data, data.capacity(), freq);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.IBuffer#delete()
+	 */
+	public void delete() {
+		IntBuffer alBuffer= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+		alBuffer.put(bufferNumber);
+		alBuffer.rewind();
+		AL.alDeleteBuffers(alBuffer);
 
 	}
 
-	public synchronized static EffectPlayerRepository getRepository() {
-		if (instance == null) {
-			instance = new EffectPlayerRepository();
-		}
-		return instance;
+	/* (non-Javadoc)
+	 * @see com.jme.sound.IBuffer#getBitDepth()
+	 */
+	public int getBitDepth() {
+		return AL.alGetBufferi(bufferNumber, AL.AL_BITS);
 	}
 
-	public void bind(Object player, IPlayer source) {
-		repository.put(player, source);
-
+	/* (non-Javadoc)
+	 * @see com.jme.sound.IBuffer#getNumChannels()
+	 */
+	public int getNumChannels() {
+		return AL.alGetBufferi(bufferNumber, AL.AL_CHANNELS);
 	}
 
-	public IPlayer getSource(Object player) {
-		return (IPlayer) repository.get(player);
+	/* (non-Javadoc)
+	 * @see com.jme.sound.IBuffer#getData()
+	 */
+	public ByteBuffer getData() {
+		return data;
 	}
 
+	/* (non-Javadoc)
+	 * @see com.jme.sound.IBuffer#getFrequency()
+	 */
+	public int getFrequency() {
+		return AL.alGetBufferi(bufferNumber, AL.AL_FREQUENCY);
+	}
+
+	/* (non-Javadoc)
+	 * @see com.jme.sound.IBuffer#getSize()
+	 */
+	public int getSize() {
+		return AL.alGetBufferi(bufferNumber, AL.AL_SIZE);
+	}
+
+	public int getBufferNumber(){
+		return bufferNumber;
+	}
 }
