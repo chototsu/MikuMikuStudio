@@ -85,13 +85,11 @@ public class SoundRenderer implements ISoundRenderer {
             if (Distance.distance(SoundAPIController.getSoundSystem()
                     .getListener().getPosition(), s.getPosition()) > s
                     .getMaxDistance()) {
-
                 s.pause();
             } else {
                 if (!s.isPlaying()) {
                     s.play();
                 }
-
             }
         }
 

@@ -167,6 +167,8 @@ public class SoundSystem implements ISoundSystem {
 		//        }
 		return null;
 	}
+	
+	/*
 	public static byte[] toByteArray(short[] samples, int offs, int len) {
 		byte[] b = new byte[len * 2];
 		int idx = 0;
@@ -176,6 +178,7 @@ public class SoundSystem implements ISoundSystem {
 		}
 		return b;
 	}
+	*/
 	/**
 	 * @return
 	 */

@@ -190,7 +190,6 @@ public class SphericalSound extends SoundSpatial implements ISource {
                 if (loopingEnabled) activeSource = 0;
             }
         }
-
     }
 
     /**
