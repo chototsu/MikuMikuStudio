@@ -128,8 +128,8 @@ import com.jme.scene.state.RenderState;
  *
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.52 2004-10-26 23:47:35 mojomonkey Exp $
+ * @author Joshua Slack - Optimizations and Headless rendering
+ * @version $Id: LWJGLRenderer.java,v 1.53 2004-11-09 19:57:02 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -169,7 +169,7 @@ public class LWJGLRenderer implements Renderer {
 
     private Vector3f tempVa = new Vector3f();
 
-    DisplayMode window = Display.getDisplayMode();
+    private DisplayMode mode = Display.getDisplayMode();
 
     private FloatBuffer prevVerts;
 
@@ -178,6 +178,8 @@ public class LWJGLRenderer implements Renderer {
     private FloatBuffer prevColor;
 
     private FloatBuffer[] prevTex;
+
+    private boolean headless = false;
 
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -221,7 +223,7 @@ public class LWJGLRenderer implements Renderer {
         this.width = width;
         this.height = height;
         if (camera != null) camera.resize(width, height);
-        window = Display.getDisplayMode();
+        mode = Display.getDisplayMode();
     }
 
     /**
@@ -497,7 +499,8 @@ public class LWJGLRenderer implements Renderer {
         Arrays.fill(prevTex, null);
 
         GL11.glFlush();
-        Display.update();
+        if (!headless)
+          Display.update();
     }
 
     public void setOrtho() {
@@ -507,7 +510,7 @@ public class LWJGLRenderer implements Renderer {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
-        GLU.gluOrtho2D(0, window.getWidth(), 0, window.getHeight());
+        GLU.gluOrtho2D(0, mode.getWidth(), 0, mode.getHeight());
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -521,10 +524,8 @@ public class LWJGLRenderer implements Renderer {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
-        GLU.gluOrtho2D(-window.getWidth() / 2, window.getWidth() / 2, -window
-                .getHeight() / 2, window.getHeight() / 2);
-        System.err.println("window: " + window.getWidth() + ", "
-                + window.getHeight());
+        GLU.gluOrtho2D(-mode.getWidth() / 2, mode.getWidth() / 2, -mode
+                .getHeight() / 2, mode.getHeight() / 2);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -599,8 +600,7 @@ public class LWJGLRenderer implements Renderer {
      *            height of block
      */
     public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h) {
-        GL11
-                .glReadPixels(x, y, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
+        GL11.glReadPixels(x, y, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
                         buff);
     }
 
@@ -987,7 +987,7 @@ public class LWJGLRenderer implements Renderer {
         prevNorms = normals;
 
         FloatBuffer colors = t.getColorAsFloatBuffer();
-        if (prevColor != colors) {
+        if (colors == null || prevColor != colors) {
             if (colors != null || t.getVBOColorID() > 0) {
                 GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
                 if (t.isVBOColorEnabled() && GLContext.OpenGL15) {
@@ -998,11 +998,12 @@ public class LWJGLRenderer implements Renderer {
                     if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
                     GL11.glColorPointer(4, 0, colors);
                 }
+									prevColor = colors;
             } else {
                 GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
             }
         }
-        prevColor = colors;
+
 
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureAsFloatBuffer(i);
@@ -1238,6 +1239,23 @@ public class LWJGLRenderer implements Renderer {
         boundsZState.apply();
     }
 
+
+		/**
+		 * See Renderer.isHeadless()
+		 * @return boolean
+		 */
+		public boolean isHeadless() {
+			return headless;
+		}
+
+		/**
+		 * See Renderer.setHeadless()
+		 * @return boolean
+		 */
+		public void setHeadless(boolean headless) {
+			this.headless = headless;
+		}
+
     public boolean checkAndAdd(Spatial s) {
         int rqMode = s.getRenderQueueMode();
         if (rqMode != Renderer.QUEUE_SKIP) {
@@ -1263,4 +1281,12 @@ public class LWJGLRenderer implements Renderer {
     public boolean supportsVBO() {
         return GLContext.OpenGL15;
     }
+
+		public int getWidth() {
+			return width;
+		}
+
+		public int getHeight() {
+			return height;
+		}
 }
