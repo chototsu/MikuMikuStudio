@@ -72,25 +72,28 @@ public class LineApproximation {
 			fSumZZ += kDiff.z * kDiff.z;
 		}
 
+        float[][] matrix = new float[3][3];
 		// setup the eigensolver
-		Eigen kES = new Eigen(3);
-		kES.setMatrixValue(0, 0, fSumYY + fSumZZ);
-		kES.setMatrixValue(0, 1, -fSumXY);
-		kES.setMatrixValue(0, 2, -fSumXZ);
-		kES.setMatrixValue(1, 0, kES.getMatrixValue(0, 1));
-		kES.setMatrixValue(1, 1, fSumXX + fSumZZ);
-		kES.setMatrixValue(1, 2, -fSumYZ);
-		kES.setMatrixValue(2, 0, kES.getMatrixValue(0, 2));
-		kES.setMatrixValue(2, 1, kES.getMatrixValue(1, 2));
-		kES.setMatrixValue(2, 2, fSumXX + fSumYY);
-
+		matrix[0][0] = fSumYY + fSumZZ;
+        matrix[0][1] = -fSumXY;
+        matrix[0][2] = -fSumXZ;
+        matrix[1][0] = matrix[0][1];
+        matrix[1][1] = fSumXX + fSumZZ;
+        matrix[1][2] = -fSumYZ;
+        matrix[2][0] = matrix[0][2];
+        matrix[2][1] = matrix[1][2];
+        matrix[2][2] = fSumXX + fSumYY;
+        EigenSystem eigen = new EigenSystem(matrix);
+        
 		// compute eigenstuff, smallest eigenvalue is in last position
-		kES.decrementSort3();
+		eigen.tridiagonalReduction();
+        eigen.tridiagonalQL();
+        eigen.decreasingSort();
 
 		// unit-length direction for best-fit line
-		direction.x = kES.getEigenvector(0, 2);
-		direction.y = kES.getEigenvector(1, 2);
-		direction.z = kES.getEigenvector(2, 2);
+		direction.x = eigen.getEigenvector(0, 2);
+		direction.y = eigen.getEigenvector(1, 2);
+		direction.z = eigen.getEigenvector(2, 2);
 		
 		return new Line(origin, direction);
 	}

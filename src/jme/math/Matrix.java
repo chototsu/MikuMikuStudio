@@ -330,7 +330,7 @@ public class Matrix {
     public float[] getMatrix() {
         return matrix;
     }
-
+    
     /**
      * 
      * <code>inverseTranslateVect</code> translates a given vector by the
