@@ -40,7 +40,6 @@ import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>Quad</code> handles the rendering of a single quad shape. This
@@ -55,11 +54,11 @@ import org.lwjgl.vector.Vector3f;
  * 3 - BottomLeft<br>
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
+ * @version $Id: Quad.java,v 1.3 2003-08-08 19:00:28 mojomonkey Exp $
  */
 public class Quad extends Primitive {
     private GL gl;
-	Vector3f[] points;
+	Vector[] points;
 	
 	/**
 	 * Constructor instantiates a new <code>Quad</code> with the given set of
@@ -67,7 +66,7 @@ public class Quad extends Primitive {
 	 * @param points the points that make up the quad.
 	 * @throws MonkeyRuntimeException if points are null.
 	 */
-	public Quad(Vector3f[] points) {
+	public Quad(Vector[] points) {
 		if(null == points) {
 			throw new MonkeyRuntimeException("Points cannot be null.");
 		}
@@ -81,7 +80,7 @@ public class Quad extends Primitive {
 	 * @param points the points that make up the quad.
 	 * @throws MonkeyRuntimeException if points are null.
 	 */
-	public void setPoints(Vector3f[] points) {
+	public void setPoints(Vector[] points) {
 		if(null == points) {
 			throw new MonkeyRuntimeException("Points cannot be null.");
 		}
@@ -102,7 +101,7 @@ public class Quad extends Primitive {
 	 * @param index the corner to change.
 	 * @param point the new point of the corner.
 	 */
-	public void setPoint(int index, Vector3f point) {
+	public void setPoint(int index, Vector point) {
 		points[index] = point;
 		initialize();
 	}
@@ -155,7 +154,8 @@ public class Quad extends Primitive {
 		//set up bounding volumes.
 		boundingBox = new BoundingBox(new Vector(), new Vector(-(float)size,-(float)size,-(float)size),
 			new Vector((float)size,(float)size,(float)size));
-		boundingSphere = new BoundingSphere((float)size, null);
+		boundingSphere = new BoundingSphere();
+		boundingSphere.containAABB(points);
     }
 
 	/**

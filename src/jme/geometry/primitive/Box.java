@@ -42,7 +42,6 @@ import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>Box</code> defines a primitive object of a box shape. The box is 
@@ -61,11 +60,11 @@ import org.lwjgl.vector.Vector3f;
  * 7 - Back face, bottom right<br>
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
+ * @version $Id: Box.java,v 1.3 2003-08-08 18:59:01 mojomonkey Exp $
  */
 public class Box extends Primitive {
     private GL gl;
-    private Vector3f[] corners;
+    private Vector[] corners;
     
     /**
      * Constructor instantiates an empty <code>Box</code> with all points
@@ -73,9 +72,9 @@ public class Box extends Primitive {
      */
     public Box() {
 		gl = DisplaySystem.getDisplaySystem().getGL();
-    	corners = new Vector3f[8];
+    	corners = new Vector[8];
     	for(int i = 0; i < 8; i++) {
-    		corners[i] = new Vector3f();
+    		corners[i] = new Vector();
     	}
     	initialize();
     	LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO, 
@@ -88,7 +87,7 @@ public class Box extends Primitive {
      * @param corners the points of the box.
      * @throws MonkeyRuntimeException if corners is null.
      */
-    public Box(Vector3f[] corners) {
+    public Box(Vector[] corners) {
 		if(null == corners) {
 			throw new MonkeyRuntimeException("Corners cannot be null.");
 		}
@@ -107,16 +106,16 @@ public class Box extends Primitive {
      */
     public Box(float size) {
 		gl = DisplaySystem.getDisplaySystem().getGL();
-    	corners = new Vector3f[8];
+    	corners = new Vector[8];
     	
-    	corners[0] = new Vector3f(-size/2, size/2, -size/2);
-		corners[1] = new Vector3f(size/2, size/2, -size/2);
-		corners[2] = new Vector3f(-size/2, -size/2, -size/2);
-		corners[3] = new Vector3f(size/2, -size/2, -size/2);
-		corners[4] = new Vector3f(-size/2, size/2, size/2);
-		corners[5] = new Vector3f(size/2, size/2, size/2);
-		corners[6] = new Vector3f(-size/2, -size/2, size/2);
-		corners[7] = new Vector3f(size/2, -size/2, size/2);
+    	corners[0] = new Vector(-size/2, size/2, -size/2);
+		corners[1] = new Vector(size/2, size/2, -size/2);
+		corners[2] = new Vector(-size/2, -size/2, -size/2);
+		corners[3] = new Vector(size/2, -size/2, -size/2);
+		corners[4] = new Vector(-size/2, size/2, size/2);
+		corners[5] = new Vector(size/2, size/2, size/2);
+		corners[6] = new Vector(-size/2, -size/2, size/2);
+		corners[7] = new Vector(size/2, -size/2, size/2);
 		initialize();
 		LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO, 
 					"Box created.");
@@ -222,7 +221,8 @@ public class Box extends Primitive {
     	//set up bounding volumes.
 	   	boundingBox = new BoundingBox(new Vector(), new Vector(-size, -size, -size),
 	   			new Vector(size,size,size));
-		boundingSphere = new BoundingSphere((float)size, null);
+		boundingSphere = new BoundingSphere();
+		boundingSphere.containAABB(corners);
     }
 
    	/**
@@ -237,7 +237,7 @@ public class Box extends Primitive {
      * @param corners the points of the box.
      * @throws MonkeyRuntimeException if corners is null.
      */
-    public void setCorners(Vector3f[] corners) {
+    public void setCorners(Vector[] corners) {
     	if(null == corners) {
     		throw new MonkeyRuntimeException("Corners cannot be null.");
     	}
@@ -260,7 +260,7 @@ public class Box extends Primitive {
      * @param corner the corner to change.
      * @param point the new point for the corner.
      */
-    public void setCorner(int corner, Vector3f point) {
+    public void setCorner(int corner, Vector point) {
     	corners[corner] = point;
 		initialize();
     }
