@@ -40,7 +40,7 @@ public class TestBinaryXML extends SimpleGame{
 
         // Send XML file to jME binary
         XMLtoBinary c1=new XMLtoBinary();
-        URL xmldoc=TestBinaryXML.class.getClassLoader().getResource("jmetest/data/XML docs/newSampleScene.xml");
+        URL xmldoc=TestBinaryXML.class.getClassLoader().getResource("jmetest/data/XML documents/newSampleScene.xml");
         ByteArrayOutputStream BO1=new ByteArrayOutputStream();
         c1.sendXMLtoBinary(xmldoc.openStream(),BO1);
 
