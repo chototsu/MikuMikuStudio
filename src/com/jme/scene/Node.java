@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes. 
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: Node.java,v 1.4 2003-12-10 01:05:36 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.5 2004-02-01 07:48:00 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -87,7 +87,7 @@ public class Node extends Spatial implements Serializable {
             child.setParent(this);
             children.add(child);
         }
-        LoggingSystem.getLogger().log(Level.INFO, "Child attached to this" +            " node");
+        LoggingSystem.getLogger().log(Level.INFO, "Child (" + child.getName() + ") attached to this" +            " node");
         return children.size();
     }
     
