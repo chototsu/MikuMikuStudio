@@ -37,13 +37,10 @@ import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BillboardNode;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.Quad;
 import com.jme.scene.TriMesh;
@@ -60,7 +57,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.1 2004-03-03 21:58:06 mojomonkey Exp $
+ * @version $Id: TestBillboardNode.java,v 1.2 2004-03-05 14:51:23 mojomonkey Exp $
  */
 public class TestBillboardNode extends SimpleGame {
     private TriMesh t;

@@ -35,12 +35,9 @@ import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.input.NodeController;
-import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -53,14 +50,11 @@ import com.jme.scene.Node;
 import com.jme.scene.Quad;
 import com.jme.scene.model.Model;
 import com.jme.scene.model.msascii.MilkshapeASCIIModel;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**

@@ -37,7 +37,6 @@ import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.LWJGLCamera;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;

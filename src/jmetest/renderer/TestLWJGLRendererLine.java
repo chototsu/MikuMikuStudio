@@ -36,7 +36,6 @@ import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.LWJGLCamera;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
@@ -46,7 +45,7 @@ import com.jme.system.LWJGLDisplaySystem;
 /**
  * Tests the rendering of lines.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererLine.java,v 1.3 2004-03-05 01:20:55 renanse Exp $
+ * @version $Id: TestLWJGLRendererLine.java,v 1.4 2004-03-05 14:51:22 mojomonkey Exp $
  */
 public class TestLWJGLRendererLine extends SimpleGame {
 
