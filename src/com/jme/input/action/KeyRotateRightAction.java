@@ -32,6 +32,7 @@
 package com.jme.input.action;
 
 import com.jme.math.Matrix3f;
+import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 /**
@@ -44,6 +45,7 @@ public class KeyRotateRightAction implements InputAction {
     private Camera camera;
     private float speed;
     private String key;
+    private Vector3f lockAxis;
     
     public KeyRotateRightAction(Camera camera, float speed) {
         this.camera = camera;
@@ -54,19 +56,27 @@ public class KeyRotateRightAction implements InputAction {
     public void setSpeed(float speed) {
         this.speed = speed;
     }
-
+    
+    public void setLockAxis(Vector3f lockAxis) {
+        this.lockAxis = lockAxis;
+    }
 
     /* (non-Javadoc)
      * @see com.jme.input.action.InputAction#performAction(float)
      */
     public void performAction(float time) {
         incr.loadIdentity();
-        incr.fromAxisAngle(camera.getUp(), -speed);
+        if(lockAxis == null) {
+            incr.fromAxisAngle(camera.getUp(), -speed);
+        } else {
+            incr.fromAxisAngle(lockAxis, -speed);
+        }
+        camera.setUp(incr.mult(camera.getUp()));
+        
         camera.setLeft(incr.mult(camera.getLeft()));
         camera.setDirection(incr.mult(camera.getDirection()));
-        camera.setUp(incr.mult(camera.getUp()));
         camera.update();
-
+        
     }
 
     /* (non-Javadoc)

@@ -32,9 +32,8 @@
 package com.jme.test.input.action;
 
 import com.jme.app.AbstractGame;
+import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
-import com.jme.input.InputSystem;
-import com.jme.input.action.MouseLook;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -51,7 +50,7 @@ import com.jme.system.JmeException;
  * @author Mark Powell
  * @version 
  */
-public class TestMouseLook extends AbstractGame {
+public class TestFirstPersonController extends AbstractGame {
     private Node scene;
     private Camera cam;
     private Line l;
@@ -113,12 +112,7 @@ public class TestMouseLook extends AbstractGame {
 
         display.getRenderer().setCamera(cam);
         
-        input = new InputController();
-        InputSystem.createInputSystem("LWJGL");
-        input.setMouse(InputSystem.getMouseInput());
-        MouseLook mouseLook = new MouseLook(InputSystem.getMouseInput(), cam, 0.1f);
-        mouseLook.setLockAxis(up);
-        input.addAction(mouseLook);
+        input = new FirstPersonController(this, cam);
         
 
     }
@@ -275,7 +269,7 @@ public class TestMouseLook extends AbstractGame {
     }
 
     public static void main(String[] args) {
-        TestMouseLook app = new TestMouseLook();
+        TestFirstPersonController app = new TestFirstPersonController();
         app.useDialogAlways(true);
         app.start();
     }
