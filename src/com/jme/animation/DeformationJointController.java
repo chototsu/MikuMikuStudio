@@ -45,7 +45,7 @@ import com.jme.scene.model.JointMesh;
  * call to <code>setupJointAnimations</code> to properly position and
  * initialize the joints (Milkshape). 
  * @author Mark Powell
- * @version $Id: DeformationJointController.java,v 1.1 2004-02-01 07:51:06 mojomonkey Exp $
+ * @version $Id: DeformationJointController.java,v 1.2 2004-02-01 17:29:57 mojomonkey Exp $
  */
 public class DeformationJointController extends Controller {
 	//keyframe information
@@ -56,6 +56,8 @@ public class DeformationJointController extends Controller {
 	private JointMesh[] meshes;
 	//going forward or backward?
 	private int modifier = 1;
+	
+	private boolean doBoundsUpdate;
 
 	/**
 	 * Constructor creates a new <code>DeformationJointController</code>.
@@ -63,6 +65,10 @@ public class DeformationJointController extends Controller {
 	 */
 	public DeformationJointController() {
 		super();
+	}
+	
+	public void setUpdateModelBounds(boolean value) {
+		doBoundsUpdate = value;
 	}
 
 	/**
@@ -320,7 +326,7 @@ public class DeformationJointController extends Controller {
 					int joint = jointIndices[ind[triangleIndex]];
 					if (joint != -1) {
 						meshes[i].getVertices()[ind[triangleIndex]] =
-							joints[joint].finalMatrix.rotate(
+							joints[joint].finalMatrix.mult(
 								new Vector3f(vertex.x, vertex.y, vertex.z));
 						meshes[i].getVertices()[ind[triangleIndex]].x
 							+= joints[joint].finalMatrix.get(0, 3);
@@ -338,7 +344,7 @@ public class DeformationJointController extends Controller {
 
 					if (joint != -1) {
 						meshes[i].getVertices()[ind[triangleIndex]] =
-							joints[joint].finalMatrix.rotate(
+							joints[joint].finalMatrix.mult(
 								new Vector3f(vertex.x, vertex.y, vertex.z));
 						meshes[i].getVertices()[ind[triangleIndex]].x
 							+= joints[joint].finalMatrix.get(0, 3);
@@ -354,7 +360,7 @@ public class DeformationJointController extends Controller {
 
 					if (joint != -1) {
 						meshes[i].getVertices()[ind[triangleIndex]] =
-							joints[joint].finalMatrix.rotate(
+							joints[joint].finalMatrix.mult(
 								new Vector3f(vertex.x, vertex.y, vertex.z));
 						meshes[i].getVertices()[ind[triangleIndex]].x
 							+= joints[joint].finalMatrix.get(0, 3);
@@ -367,7 +373,10 @@ public class DeformationJointController extends Controller {
 
 				}
 				meshes[i].updateVertexBuffer();
-				meshes[i].updateModelBound();
+				
+				if(doBoundsUpdate) {
+					meshes[i].updateModelBound();
+				}
 			}
 		}
 	}

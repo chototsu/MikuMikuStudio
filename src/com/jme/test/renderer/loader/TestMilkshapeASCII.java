@@ -68,6 +68,7 @@ public class TestMilkshapeASCII extends AbstractGame {
     protected void update() {
     	timer.update();
         input.update(timer.getTimePerFrame() * 100);
+        System.out.println(timer.getFrameRate());
         scene.updateWorldData(timer.getTimePerFrame());
     }
 
