@@ -34,8 +34,6 @@ package jmetest.widget.viewport;
 import com.jme.input.AbstractInputController;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
-//import com.jme.sound.SoundAPIController;
-import com.jme.system.DisplaySystem;
 import jmetest.widget.viewport.scene.TestAbstractScene;
 import jmetest.widget.viewport.scene.TestScene1;
 import jmetest.widget.viewport.scene.TestScene2;
@@ -50,7 +48,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestWidgetViewportFrame</code>
  * @author Gregg Patton
- * @version $Id: TestWidgetViewportFrame.java,v 1.2 2004-02-25 16:36:46 mojomonkey Exp $
+ * @version $Id: TestWidgetViewportFrame.java,v 1.3 2004-02-25 18:18:13 mojomonkey Exp $
  */
 public class TestWidgetViewportFrame extends WidgetAbstractFrame {
 
