@@ -38,14 +38,20 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Octahedron</code>
+ * <code>Octahedron</code> is an eight faced polyhedron.  It looks somewhat like two
+ * pyramids placed bottom to bottom.
  * @author Mark Powell
- * @version $Id: Octahedron.java,v 1.2 2004-04-22 22:26:53 renanse Exp $
+ * @version $Id: Octahedron.java,v 1.3 2004-08-01 06:27:18 cep21 Exp $
  */
 public class Octahedron extends TriMesh {
 	private static final int NUM_POINTS = 6;
 	private static final int NUM_TRIS = 8;
 	private float sideLength;
+    /**
+     * Creates an octahedron with center at the origin.  The lenght sides are given.
+     * @param name The name of the octahedron.
+     * @param sideLength The length of each side of the octahedron.
+     */
 	public Octahedron(String name, float sideLength) {
 		super(name);
 		this.sideLength = sideLength;
