@@ -30,37 +30,21 @@
  *
  */
 
-package com.jme.util;
+package com.jme.util.awt;
 
-import com.jme.renderer.Renderer;
+import java.awt.Color;
 
 /**
- * <code>HeadlessDelegate</code> provides an interface between JMEComponents
- * and the GL renderers.
- * 
+ * <code>JMEComponent</code> is an interface to classes allowing jME generated
+ * graphics to be displayed in an AWT/Swing interface.
+ *
  * @author Joshua Slack
- * @version $Id: HeadlessDelegate.java,v 1.4 2005-04-04 19:10:57 renanse Exp $
+ * @version $Id: JMECanvas.java,v 1.1 2005-04-05 23:45:45 renanse Exp $
  */
 
-public class HeadlessDelegate {
-
-    private static Renderer r;
+public interface JMECanvas {
     
-    /**
-     * Copies the OpenGL contents currently in the matching OpenGL context into
-     * the given JMEComponent's IntBuffer field.
-     * 
-     * @param comp
-     *            JMEComponent
-     */
-    public static void copyContents(JMEComponent comp) {
-        // Copy renderer's context to the component's image buffer.
-        comp.getBuffer().clear();
-        r.grabScreenContents(comp.getBuffer(), 0, 0, r.getWidth(), r
-                .getHeight());
-    }
-
-    public static void setRenderer(Renderer r) {
-        HeadlessDelegate.r = r;
-    }
+    public void setImplementor(JMECanvasImplementor impl);
+    public void setVSync(boolean sync);
+    public void setBackground(Color bgColor);
 }

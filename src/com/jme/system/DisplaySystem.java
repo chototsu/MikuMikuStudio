@@ -36,6 +36,8 @@
 
 package com.jme.system;
 
+import java.awt.Canvas;
+
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
@@ -69,7 +71,7 @@ import com.jme.math.Vector2f;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.37 2004-12-30 02:28:23 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.38 2005-04-05 23:45:48 renanse Exp $
  */
 public abstract class DisplaySystem {
 
@@ -264,10 +266,9 @@ public abstract class DisplaySystem {
      * <code>createHeadlessWindow</code> creates a headless window with the
      * desired settings. A headless window is a rendering target that is not
      * shown on screen. It is useful for doing offline rendering, integration
-     * (such as swing) and so forth. You can not have a regular and headless
+     * and so forth. You can not have a regular and headless
      * window at the same time. The width and height defined by w and h define
-     * the size of the window if fullscreen is false, otherwise it defines the
-     * resolution of the fullscreen display. The color depth is defined by bpp.
+     * the size of the window. The color depth is defined by bpp.
      * 
      * @param w
      *            the width/horizontal resolution of the display.
@@ -277,6 +278,18 @@ public abstract class DisplaySystem {
      *            the color depth of the display.
      */
     public abstract void createHeadlessWindow(int w, int h, int bpp);
+
+    /**
+     * <code>createCanvas</code> creates an awt canvas with the
+     * desired settings. The width and height defined by w and h define
+     * the size of the canvas.
+     * 
+     * @param w
+     *            the width/horizontal resolution of the display.
+     * @param h
+     *            the height/vertical resolution of the display.
+     */
+    public abstract Canvas createCanvas(int w, int h);
 
     /**
      * <code>recreateWindow</code> recreates a window with the desired
@@ -310,6 +323,8 @@ public abstract class DisplaySystem {
      */
     public abstract Renderer getRenderer();
 
+    public abstract void setRenderer(Renderer r);
+    
     /**
      * <code>getRendererType</code> returns an instance of a strongly typed
      * enumeration that can be used to determine the renderer that the

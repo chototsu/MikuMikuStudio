@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -16,7 +16,7 @@
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS &quot;AS IS&quot;
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
  * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
@@ -29,52 +29,49 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+package com.jme.util.awt;
 
-package com.jme.util;
-
-import java.awt.Graphics;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 
 /**
- * <code>JMEHiddenComponent</code> is an integration class allowing jME generated
- * graphics to be rendered and stored in this component for retrieval by other 
- * processes.
- *
+ * <code>JMECanvasImplementor</code>
+ * 
  * @author Joshua Slack
- * @version $Id: JMEHiddenComponent.java,v 1.4 2005-04-04 19:58:35 renanse Exp $
+ * @version $Id: JMECanvasImplementor.java,v 1.1 2005-04-05 23:45:45 renanse Exp $
  */
+public abstract class JMECanvasImplementor {
 
-public class JMEHiddenComponent extends JMEComponent {
-    private static final long serialVersionUID = 1L;
+    protected boolean setup = false;
 
-	/**
-	 * Main Constructor.  Must be set with the width and height of the underlying
-	 * GL context or bad things will happen... (Buffer Over/Underflow exceptions)
-	 *
-	 * @param width gl context width
-	 * @param height gl context height
-	 */
-	public JMEHiddenComponent(int width, int height) {
-		super(width, height);
-	}
-	
-    protected void setupPaintThread() {
-        try {
-			new Thread() {
-				public void run() {
-					while (true) {
-						try {
-							sleep(refresh);
-							paint(null);
-						} catch (InterruptedException ex) {}
-					}
-				}
-			}.start();
-		} catch (Exception ex) {
-			ex.printStackTrace();
-		}
+    protected Renderer renderer;
+
+    public void doSetup() {
+        setup = true;
     }
-    
-    protected void useImage(Graphics g) {
-        // ignore.
+
+    public abstract void doUpdate();
+
+    public abstract void doRender();
+
+    public boolean isSetup() {
+        return setup;
+    }
+
+    public Renderer getRenderer() {
+        return renderer;
+    }
+
+    public void setRenderer(Renderer renderer) {
+        this.renderer = renderer;
+    }
+
+    public void resizeCanvas(int width, int height) {
+        if (renderer != null)
+            renderer.reinit(width, height);
+    }
+
+    public void setBackground(ColorRGBA colorRGBA) {
+        renderer.setBackgroundColor(colorRGBA);
     }
 }

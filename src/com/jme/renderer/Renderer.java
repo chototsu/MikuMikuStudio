@@ -78,7 +78,7 @@ import java.nio.IntBuffer;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.50 2004-12-30 02:28:22 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.51 2005-04-05 23:45:47 renanse Exp $
  */
 public interface Renderer {
 
@@ -328,7 +328,7 @@ public interface Renderer {
      * the screen. Clearing this buffer frees it for rendering the next frame.
      *  
      */
-    public void clearBackBuffer();
+    public void clearColorBuffer();
 
     /**
      * <code>clearBuffers</code> clears both the depth buffer and the back
@@ -336,6 +336,14 @@ public interface Renderer {
      *  
      */
     public void clearBuffers();
+
+    /**
+     * <code>clearBuffers</code> clears both the depth buffer and the back
+     * buffer restricting the clear to the rectangle defined by the width and
+     * height of the renderer.
+     *  
+     */
+    public void clearStrictBuffers();
 
     /**
      * <code>displayBackBuffer</code> swaps the back buffer with the currently
@@ -569,4 +577,15 @@ public interface Renderer {
      * @return height
      */
     public int getHeight();
+    
+    /**
+     * Reinitialize the renderer with the given width/height. Also calls resize
+     * on the attached camera if present.
+     * 
+     * @param width
+     *            int
+     * @param height
+     *            int
+     */
+    public void reinit(int width, int height);
 }

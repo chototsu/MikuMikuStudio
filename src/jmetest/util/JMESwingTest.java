@@ -32,16 +32,19 @@
 
 package jmetest.util;
 
-import java.awt.AWTEvent;
 import java.awt.BorderLayout;
-import java.awt.Dimension;
+import java.awt.Canvas;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -53,242 +56,282 @@ import javax.swing.JScrollPane;
 import javax.swing.JTree;
 import javax.swing.UIManager;
 
-import com.jme.app.SimpleHeadlessApp;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
-import com.jme.util.HeadlessDelegate;
-import com.jme.util.JMEComponent;
+import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jme.util.awt.JMECanvas;
+import com.jme.util.awt.JMECanvasImplementor;
+import com.jme.util.awt.SimpleCanvasImpl;
 
 /**
  * <code>JMESwingTest</code> is a test demoing the JMEComponent and
- * HeadlessDelegate integration classes allowing jME generated
- * graphics to be displayed in a AWT/Swing interface.
- *
+ * HeadlessDelegate integration classes allowing jME generated graphics to be
+ * displayed in a AWT/Swing interface.
+ * 
+ * Note the Repaint thread and how you grab a canvas and add an implementor to it.
+ * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.7 2005-04-04 19:10:58 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.8 2005-04-05 23:45:47 renanse Exp $
  */
 
-public class JMESwingTest extends SimpleHeadlessApp {
+public class JMESwingTest {
 
-	// Items for scene
-	private Box box;
-	private Quaternion rotQuat;
-	private float angle = 0;
-	private Vector3f axis;
+    int width = 640, height = 480;
 
-	// Swing frame
-	private SwingFrame frame;
+    // Swing frame
+    private SwingFrame frame;
 
-	public JMESwingTest() {
-		frame = new SwingFrame();
-		frame.validate();
+    public JMESwingTest() {
+        frame = new SwingFrame();
+        // center the frame
+        frame.setLocationRelativeTo(null);
+        // show frame
+        frame.setVisible(true);
+    }
 
-		//Center the window
-		frame.setLocationRelativeTo(null);
+    /**
+     * Main Entry point...
+     * 
+     * @param args
+     *            String[]
+     */
+    public static void main(String[] args) {
 
-		frame.setVisible(true);
-	}
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JMESwingTest app = new JMESwingTest();
+    }
 
+    // **************** SWING FRAME ****************
 
-	/**
-	 * Main Entry point...
-	 * @param args String[]
-	 */
-	public static void main(String[] args) {
+    // Our custom Swing frame... Nothing really special here.
+    class SwingFrame extends JFrame {
+        private static final long serialVersionUID = 1L;
 
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch(Exception e) {
-			e.printStackTrace();
-		}
-		JMESwingTest app = new JMESwingTest();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-		app.start();
-	}
+        JPanel contentPane;
+        JPanel mainPanel = new JPanel();
+        Canvas comp = null;
+        JButton coolButton = new JButton();
+        JButton uncoolButton = new JButton();
+        JPanel spPanel = new JPanel();
+        JScrollPane scrollPane = new JScrollPane();
+        JTree jTree1 = new JTree();
+        JCheckBox scaleBox = new JCheckBox("Scale GL Image");
+        JPanel colorPanel = new JPanel();
+        JLabel colorLabel = new JLabel("BG Color:");
+        JMECanvasImplementor impl;
 
-	float lastCopied = 0;
-	public boolean added = false;
-	protected void simpleUpdate() {
+        // Construct the frame
+        public SwingFrame() {
+            addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    dispose();
+                }
+            });
 
-	      // Code for rotating the box...  no surprises here.
-			if (tpf < 1) {
-				angle = angle + (tpf * 25);
-				if (angle > 360) {
-					angle = 0;
-				}
-			}
-			rotQuat.fromAngleAxis(angle * FastMath.DEG_TO_RAD, axis);
-			box.setLocalRotation(rotQuat);
-
-			// ************* NEW FOR HEADLESS/SWING *************
-			// New code added to relegate number of times
-			// the scene is copied to the JMEComponent.  Only copy if at least
-			// 1/100th of a second has passed.  Not necessary, but definitely
-			// recommended.  Tweak "at least" value as you wish.
-			//
-			// Note: This is a good place to do the copy because it is right before
-			// the render method which means the previous render is definitely
-			// done and flushed and the new render has not been called to clear the
-			// buffers.
-			lastCopied += tpf;
-			if (lastCopied > .01f) {
-				HeadlessDelegate.copyContents(frame.comp);
-				lastCopied = 0;
-			}
-			// ************* /NEW FOR HEADLESS/SWING *************
-		}
-
-		protected void simpleInitGame() {
-			// Normal Scene setup stuff...
-			rotQuat = new Quaternion();
-			axis = new Vector3f(1, 1, 0.5f);
-			display.setTitle("Vertex Colors");
-			lightState.setEnabled(false);
-			input.clearMouseActions();
-
-			Vector3f max = new Vector3f(5, 5, 5);
-			Vector3f min = new Vector3f( -5, -5, -5);
-
-			box = new Box("Box", min, max);
-			box.setModelBound(new BoundingBox());
-			box.updateModelBound();
-			box.setLocalTranslation(new Vector3f(0, 0, -10));
-			rootNode.attachChild(box);
-
-			ColorRGBA[] colors = new ColorRGBA[24];
-			for (int i = 0; i < 24; i++) {
-				colors[i] = ColorRGBA.randomColor();
-			}
-			box.setColors(colors);
-
-			TextureState ts = display.getRenderer().createTextureState();
-			ts.setEnabled(true);
-			ts.setTexture(
-					TextureManager.loadTexture(
-					JMESwingTest.class.getClassLoader().getResource(
-					"jmetest/data/images/Monkey.jpg"),
-					Texture.MM_LINEAR,
-					Texture.FM_LINEAR));
-
-			rootNode.setRenderState(ts);
-
-			// ************* NEW FOR HEADLESS/SWING *************
-			// New code setting up the JMEComponent and adding it to the frame.
-			frame.comp = new JMEComponent(display.getWidth(), display.getHeight());
-			frame.glPanel.add(frame.comp, BorderLayout.CENTER);
-
-			// New code setting the options on the JMEComponent...
-			// Scale the GL image to the size of the component
-			frame.comp.setScaled(true);
-			// Refresh the screen image every 30 ms.  (I like to use twice the value
-			// in the lastCopied at least setting.)
-			frame.comp.setRefreshRate(30);
-			// Set the background color of the component.
-			frame.comp.setBackground(java.awt.Color.black);
-
-			// Now add our JMEComponent to the HeadlessDelegate so it
-			// can be properly tracked and updated as needed.
-			HeadlessDelegate.setRenderer(display.getRenderer());
-
-			// Now validate frame to get the component properly sized and showing.
-			frame.validate();
-			// ************* /NEW FOR HEADLESS/SWING *************
-		}
-	}
+            init();
+            pack();
 
 
-// **************** SWING FRAME ****************
+            // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
+            new Thread() {
+                { setDaemon(true); }
+                public void run() {
+                    while (true) {
+                        comp.repaint();
+                    }
+                }
+            }.start();
 
+            
+        }
 
-// Our custom Swing frame...  Nothing really special here.
-	class SwingFrame extends JFrame {
-	    private static final long serialVersionUID = 1L;
-		JPanel contentPane;
-		JPanel mainPanel = new JPanel();
-		JMEComponent comp = null;
-		JButton coolButton = new JButton();
-		JButton uncoolButton = new JButton();
-		JPanel spPanel = new JPanel();
-		JPanel glPanel = new JPanel();
-		JScrollPane scrollPane = new JScrollPane();
-		JTree jTree1 = new JTree();
-		JCheckBox scaleBox = new JCheckBox("Scale GL Image");
-		JPanel colorPanel = new JPanel();
-		JLabel colorLabel = new JLabel("BG Color:");
+        // Component initialization
+        private void init() {
+            contentPane = (JPanel) this.getContentPane();
+            contentPane.setLayout(new BorderLayout());
 
-		//Construct the frame
-		public SwingFrame() {
-			enableEvents(AWTEvent.WINDOW_EVENT_MASK);
-			init();
-			pack();
-		}
+            mainPanel.setLayout(new GridBagLayout());
 
-		//Component initialization
-		private void init() {
-			contentPane = (JPanel) this.getContentPane();
-			contentPane.setLayout(new BorderLayout());
+            setTitle("JME - SWING INTEGRATION TEST");
 
-			mainPanel.setLayout(new GridBagLayout());
+            // -------------GL STUFF------------------
 
-			setTitle("JME - SWING INTEGRATION TEST");
+            // make the canvas:
+            comp = DisplaySystem.getDisplaySystem("lwjgl").createCanvas(width, height);
 
-			coolButton.setText("Cool Button");
-			uncoolButton.setText("Uncool Button");
+            // add a listener... if window is resized, we can do something about it.
+            comp.addComponentListener(new ComponentAdapter() {
+                public void componentResized(ComponentEvent ce) {
+                    doResize();
+                }
+            });
 
-			colorPanel.setBackground(java.awt.Color.black);
-			colorPanel.setToolTipText("Click here to change Panel BG color.");
-			colorPanel.setBorder(BorderFactory.createRaisedBevelBorder());
-			colorPanel.addMouseListener(new java.awt.event.MouseAdapter() {
-				public void mouseClicked(MouseEvent e) {
-					java.awt.Color color = JColorChooser.showDialog(SwingFrame.this, "Choose new background color:",
-																								 colorPanel.getBackground());
-					if (color == null) return;
-					colorPanel.setBackground(color);
-					comp.setBackground(color);
-				}
-			});
+            // Important!  Here is where we add the guts to the panel:
+            impl = new MyImplementor(width, height);
+            ((JMECanvas) comp).setImplementor(impl);
+            
+            // -----------END OF GL STUFF-------------
 
-			scaleBox.setOpaque(false);
-			scaleBox.setSelected(true);
-			scaleBox.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					if (comp != null) comp.setScaled(scaleBox.isSelected());
-				}
-			});
+            coolButton.setText("Cool Button");
+            uncoolButton.setText("Uncool Button");
 
-			spPanel.setLayout(new BorderLayout());
-			contentPane.add(mainPanel, BorderLayout.WEST);
-			mainPanel.add(scaleBox,      new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
-					,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
-			mainPanel.add(colorLabel,    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-					,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
-			mainPanel.add(colorPanel,    new GridBagConstraints(0, 2, 1, 1, 0.0, 0.0
-					,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(5, 5, 0, 5), 25, 25));
-			mainPanel.add(coolButton,    new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0
-					,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
-			mainPanel.add(uncoolButton,  new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0
-					,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0, 5), 0, 0));
-			mainPanel.add(spPanel,       new GridBagConstraints(0, 5, 1, 1, 1.0, 1.0
-					,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 0, 5), 0, 0));
-			spPanel.add(scrollPane,  BorderLayout.CENTER);
-			scrollPane.setViewportView(jTree1);
-			glPanel.setLayout(new BorderLayout());
-			glPanel.setPreferredSize(new Dimension(640,480));
-			contentPane.add(glPanel, BorderLayout.CENTER);
-		}
+            colorPanel.setBackground(java.awt.Color.black);
+            colorPanel.setToolTipText("Click here to change Panel BG color.");
+            colorPanel.setBorder(BorderFactory.createRaisedBevelBorder());
+            colorPanel.addMouseListener(new java.awt.event.MouseAdapter() {
+                public void mouseClicked(MouseEvent e) {
+                    java.awt.Color color = JColorChooser.showDialog(
+                            SwingFrame.this, "Choose new background color:",
+                            colorPanel.getBackground());
+                    if (color == null)
+                        return;
+                    colorPanel.setBackground(color);
+                    comp.setBackground(color);
+                }
+            });
 
-		//Overridden so we can exit when window is closed
-		protected void processWindowEvent(WindowEvent e) {
-			super.processWindowEvent(e);
-			if (e.getID() == WindowEvent.WINDOW_CLOSING) {
-				System.exit(0);
-			}
-		}
-	}
+            scaleBox.setOpaque(false);
+            scaleBox.setSelected(true);
+            scaleBox.addActionListener(new ActionListener() {
+                public void actionPerformed(ActionEvent e) {
+                    if (comp != null)
+                        doResize();
+                }
+            });
+
+            spPanel.setLayout(new BorderLayout());
+            contentPane.add(mainPanel, BorderLayout.WEST);
+            mainPanel.add(scaleBox,
+                    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0,
+                            GridBagConstraints.CENTER,
+                            GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0,
+                                    5), 0, 0));
+            mainPanel.add(colorLabel,
+                    new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0,
+                            GridBagConstraints.CENTER,
+                            GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0,
+                                    5), 0, 0));
+            mainPanel.add(colorPanel, new GridBagConstraints(0, 2, 1, 1, 0.0,
+                    0.0, GridBagConstraints.CENTER, GridBagConstraints.NONE,
+                    new Insets(5, 5, 0, 5), 25, 25));
+            mainPanel.add(coolButton,
+                    new GridBagConstraints(0, 3, 1, 1, 0.0, 0.0,
+                            GridBagConstraints.CENTER,
+                            GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0,
+                                    5), 0, 0));
+            mainPanel.add(uncoolButton,
+                    new GridBagConstraints(0, 4, 1, 1, 0.0, 0.0,
+                            GridBagConstraints.CENTER,
+                            GridBagConstraints.HORIZONTAL, new Insets(5, 5, 0,
+                                    5), 0, 0));
+            mainPanel.add(spPanel, new GridBagConstraints(0, 5, 1, 1, 1.0, 1.0,
+                    GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                    new Insets(5, 5, 0, 5), 0, 0));
+            spPanel.add(scrollPane, BorderLayout.CENTER);
+            
+            scrollPane.setViewportView(jTree1);
+            comp.setBounds(0, 0, width, height);
+            contentPane.add(comp, BorderLayout.CENTER);
+        }
+
+        protected void doResize() {
+            if (scaleBox != null && scaleBox.isSelected()) {
+                impl.resizeCanvas(comp.getWidth(), comp.getHeight());
+            } else {
+                impl.resizeCanvas(width, height);
+            }
+        }
+
+        // Overridden so we can exit when window is closed
+        protected void processWindowEvent(WindowEvent e) {
+            super.processWindowEvent(e);
+            if (e.getID() == WindowEvent.WINDOW_CLOSING) {
+                System.exit(0);
+            }
+        }
+    }
+
+    
+    // IMPLEMENTING THE SCENE:
+    
+    class MyImplementor extends SimpleCanvasImpl {
+
+        private Quaternion rotQuat;
+        private float angle = 0;
+        private Vector3f axis;
+        private Box box;
+		long startTime = 0;
+		long fps = 0;			
+
+        public MyImplementor(int width, int height) {
+            super(width, height);
+        }
+
+        public void simpleSetup() {
+
+            // Normal Scene setup stuff...
+            rotQuat = new Quaternion();
+            axis = new Vector3f(1, 1, 0.5f);
+
+            Vector3f max = new Vector3f(5, 5, 5);
+            Vector3f min = new Vector3f(-5, -5, -5);
+
+            box = new Box("Box", min, max);
+            box.setModelBound(new BoundingBox());
+            box.updateModelBound();
+            box.setLocalTranslation(new Vector3f(0, 0, -10));
+            box.setRenderQueueMode(Renderer.QUEUE_SKIP);
+            rootNode.attachChild(box);
+
+            ColorRGBA[] colors = new ColorRGBA[24];
+            for (int i = 0; i < 24; i++) {
+                colors[i] = ColorRGBA.randomColor();
+            }
+            box.setColors(colors);
+
+            TextureState ts = renderer.createTextureState();
+            ts.setEnabled(true);
+            ts.setTexture(TextureManager.loadTexture(JMESwingTest.class
+                    .getClassLoader().getResource(
+                            "jmetest/data/images/Monkey.jpg"),
+                    Texture.MM_LINEAR, Texture.FM_LINEAR));
+
+            rootNode.setRenderState(ts);
+            startTime = System.currentTimeMillis() + 5000;
+        };
+
+        public void simpleUpdate() {
+            // Code for rotating the box... no surprises here.
+            if (tpf < 1) {
+                angle = angle + (tpf * 25);
+                if (angle > 360) {
+                    angle = 0;
+                }
+            }
+            rotQuat.fromAngleAxis(angle * FastMath.DEG_TO_RAD, axis);
+            box.setLocalRotation(rotQuat);
+            
+			if (startTime > System.currentTimeMillis()) {
+				fps++;
+			} else {
+				long timeUsed = 5000 + (startTime - System.currentTimeMillis());
+				startTime = System.currentTimeMillis() + 5000;
+				System.out.println(fps + " frames in " + (float) (timeUsed / 1000f) + " seconds = "
+						+ (fps / (timeUsed / 1000f))+" FPS (average)");
+				fps = 0;
+			}				
+        }
+    }
+}

@@ -132,7 +132,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLRenderer.java,v 1.58 2005-04-04 19:10:57 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.59 2005-04-05 23:45:47 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -454,12 +454,7 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#clearZBuffer()
      */
     public void clearZBuffer() {
-        GL11.glDisable(GL11.GL_DITHER);
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(0, 0, width, height);
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
-        GL11.glEnable(GL11.GL_DITHER);
     }
 
     /**
@@ -467,13 +462,8 @@ public class LWJGLRenderer implements Renderer {
      * 
      * @see com.jme.renderer.Renderer#clearBackBuffer()
      */
-    public void clearBackBuffer() {
-        GL11.glDisable(GL11.GL_DITHER);
-        GL11.glEnable(GL11.GL_SCISSOR_TEST);
-        GL11.glScissor(0, 0, width, height);
+    public void clearColorBuffer() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-        GL11.glDisable(GL11.GL_SCISSOR_TEST);
-        GL11.glEnable(GL11.GL_DITHER);
     }
 
     /**
@@ -482,6 +472,16 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#clearBuffers()
      */
     public void clearBuffers() {
+        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+    }
+    
+    /**
+     * <code>clearBuffers</code> clears both the color and the depth buffer 
+     * for only the part of the buffer defined by the renderer width/height.
+     * 
+     * @see com.jme.renderer.Renderer#clearBuffers()
+     */
+    public void clearStrictBuffers() {
         GL11.glDisable(GL11.GL_DITHER);
         GL11.glEnable(GL11.GL_SCISSOR_TEST);
         GL11.glScissor(0, 0, width, height);

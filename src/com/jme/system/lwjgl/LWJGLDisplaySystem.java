@@ -59,10 +59,13 @@ import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.awt.lwjgl.LWJGLCanvas;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
 import org.lwjgl.opengl.PixelFormat;
 import org.lwjgl.opengl.Pbuffer;
+
+import java.awt.Canvas;
 import java.awt.Toolkit;
 
 /**
@@ -74,7 +77,7 @@ import java.awt.Toolkit;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.23 2005-04-04 19:10:54 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.24 2005-04-05 23:45:44 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -170,6 +173,35 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         updateStates(renderer);
 
         created = true;
+    }
+
+    /**
+     * <code>createCanvas</code> will create an AWTGLCanvas
+		 * context. This window will be a purely native context as defined by
+		 * the LWJGL API.
+     *
+     * @see com.jme.system.DisplaySystem#createCanvas(int, int)
+     */
+    public Canvas createCanvas(int w, int h) {
+        //confirm that the parameters are valid.
+        if (w <= 0 || h <= 0) {
+            throw new JmeException("Invalid resolution values: " + w + " " + h);
+        }
+
+        //set the window attributes
+        this.width = w;
+        this.height = h;
+
+        LWJGLCanvas canvas = null;
+        try {
+        	canvas = new LWJGLCanvas();
+        } catch (LWJGLException e) {
+            throw new JmeException("Unable to create canvas.", e);
+        }
+
+        created = true;
+     
+        return canvas;
     }
 
     /**
@@ -520,5 +552,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                     "reinitDisplay()", e);
             throw new Error("Cannot recreate window: " + e.getMessage());
         }
+    }
+
+    public void setRenderer(Renderer r) {
+        renderer = (LWJGLRenderer)r;
     }
 }

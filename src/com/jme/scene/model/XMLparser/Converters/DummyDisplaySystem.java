@@ -12,6 +12,7 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.image.Texture;
 
+import java.awt.Canvas;
 import java.net.URL;
 import java.nio.IntBuffer;
 
@@ -338,10 +339,13 @@ public class DummyDisplaySystem extends DisplaySystem {
             public void clearZBuffer() {
             }
 
-            public void clearBackBuffer() {
+            public void clearColorBuffer() {
             }
 
             public void clearBuffers() {
+            }
+
+            public void clearStrictBuffers() {
             }
 
             public void displayBackBuffer() {
@@ -427,6 +431,11 @@ public class DummyDisplaySystem extends DisplaySystem {
             public int getHeight() {
                 return -1;
             }
+
+            public void reinit(int width, int height) {
+                // TODO Auto-generated method stub
+                
+            }
         };
     }
 
@@ -468,6 +477,13 @@ public class DummyDisplaySystem extends DisplaySystem {
 
     public Vector3f getWorldCoordinates(Vector2f screenPosition, float zPos,
             Vector3f store) {
+        return null;
+    }
+
+    public void setRenderer(Renderer r) {
+    }
+
+    public Canvas createCanvas(int w, int h) {
         return null;
     }
 }
