@@ -31,15 +31,15 @@
  */
 package com.jme.bounding;
 
-import com.jme.math.Quaternion;
 import com.jme.math.Plane;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 
 /**
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points.
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.1 2004-04-02 15:51:52 mojomonkey Exp $
+ * @version $Id: BoundingVolume.java,v 1.2 2004-04-09 22:40:00 renanse Exp $
  */
 public interface BoundingVolume {
 
@@ -137,5 +137,13 @@ public interface BoundingVolume {
      * Reconstruct a visible mesh for the bound.
      */
     public void recomputeMesh();
+
+  /**
+   * Find the distance from the center of this Bounding Volume to the given point.
+   *
+   * @param point The point to get the distance to
+   * @return distance
+   */
+  public abstract float distanceTo(Vector3f point);
 
 }

@@ -599,6 +599,16 @@ public class WidgetBoundingRectangle implements BoundingVolume {
         // TODO Auto-generated method stub
     }
 
+    /**
+     * Find the distance from the center of this Bounding Volume to the given point.
+     *
+     * @param point The point to get the distance to
+     * @return distance
+     */
+    public float distanceTo(Vector3f point) {
+      return center.subtract(new Vector2f(point.x, point.y)).length();
+    }
+
     public String toString() {
         return "[min=" + min + "\nmax=" + max + "\ncenter=" + center + "\nwidth=" + getWidth() + "\nheight=" + getHeight() + "]";
     }

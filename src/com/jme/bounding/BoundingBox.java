@@ -48,7 +48,7 @@ import com.jme.scene.shape.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.1 2004-04-02 15:51:52 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.2 2004-04-09 22:39:59 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -316,6 +316,16 @@ public class BoundingBox extends Box implements BoundingVolume {
             oldZExtent = zExtent;
             oldCenter.set(center.x, center.y, center.z);
         }
+    }
+
+    /**
+     * Find the distance from the center of this Bounding Volume to the given point.
+     *
+     * @param point The point to get the distance to
+     * @return distance
+     */
+    public float distanceTo(Vector3f point) {
+      return center.distance(point);
     }
 
     /**
