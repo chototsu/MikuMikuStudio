@@ -47,7 +47,7 @@ import jme.math.Vector;
  * 
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.6 2003-09-10 20:32:59 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.7 2004-02-03 16:13:24 mojomonkey Exp $
  */
 public class BoundingSphere implements BoundingVolume {
 	private float radius;
@@ -192,7 +192,6 @@ public class BoundingSphere implements BoundingVolume {
             Vector targetOffset) {
                 
         float distance = distance(sourceOffset, volume, targetOffset);
-        System.out.println(distance);
         if(distance <= collisionBuffer && distance != -1.0f) {
             return true;
         } else {
@@ -215,7 +214,6 @@ public class BoundingSphere implements BoundingVolume {
     public float distance(Vector sourceOffset, BoundingVolume volume, 
             Vector targetOffset) {
         float rad = ((BoundingSphere)volume).radius + radius;
-        System.out.println(((BoundingSphere)volume).radius + " + " + radius + " = " + rad);
         float dis =  Distance.distancePointPoint(sourceOffset, targetOffset);
         if(dis < 0) {
             return 0;
