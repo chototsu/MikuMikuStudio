@@ -31,7 +31,7 @@
  */
 package jme.geometry.bounding;
 
-import jme.math.LineApproximation;
+import jme.math.Approximation;
 import jme.math.Rectangle;
 import jme.math.Vector;
 
@@ -42,7 +42,7 @@ import jme.math.Vector;
  * <br><br>
  * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
- * @version $Id: BoundingLozenge.java,v 1.1 2003-08-27 20:45:32 mojomonkey Exp $
+ * @version $Id: BoundingLozenge.java,v 1.2 2003-08-27 20:48:48 mojomonkey Exp $
  */
 public class BoundingLozenge {
     private Rectangle rectangle;
@@ -77,7 +77,7 @@ public class BoundingLozenge {
         Vector center = new Vector();
         Vector[] axis = new Vector[3];
         float[] extent = new float[3];
-        LineApproximation.gaussPointsFit(points, center, axis, extent);
+        Approximation.gaussPointsFit(points, center, axis, extent);
 
         Vector diff = points[0].subtract(center);
         float wMin = axis[0].dot(diff);

@@ -32,7 +32,7 @@
 package jme.geometry.bounding;
 
 import jme.math.Line;
-import jme.math.LineApproximation;
+import jme.math.Approximation;
 import jme.math.Distance;
 import jme.math.Vector;
 
@@ -42,7 +42,7 @@ import jme.math.Vector;
  * thought of as a cylinder with domed caps.
  * 
  * @author Mark Powell
- * @version $Id: BoundingCapsule.java,v 1.2 2003-08-22 02:26:48 mojomonkey Exp $
+ * @version $Id: BoundingCapsule.java,v 1.3 2003-08-27 20:48:48 mojomonkey Exp $
  */
 public class BoundingCapsule {
 	private Line lineSegment;
@@ -105,7 +105,7 @@ public class BoundingCapsule {
 	 */
 	public void leastSquaresFit(Vector[] points) {
 
-		Line line = LineApproximation.orthogonalLineFit(points);
+		Line line = Approximation.orthogonalLineFit(points);
 
 		float maxRadiusSqr = 0.0f;
 
