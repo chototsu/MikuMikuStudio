@@ -1,6 +1,9 @@
 package com.jme.scene.model.XMLparser;
 
 import com.jme.scene.*;
+import com.jme.scene.lod.ClodMesh;
+import com.jme.scene.lod.CollapseRecord;
+import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.model.JointMesh2;
 import com.jme.scene.state.*;
 import com.jme.math.Quaternion;
@@ -14,6 +17,12 @@ import com.jme.animation.SpatialTransformer;
 import com.jme.light.Light;
 import com.jme.light.SpotLight;
 import com.jme.light.PointLight;
+import com.jme.terrain.TerrainBlock;
+import com.jme.terrain.TerrainPage;
+import com.jme.bounding.BoundingVolume;
+import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.OrientedBoundingBox;
 
 
 import java.io.OutputStream;
@@ -196,6 +205,24 @@ public class JmeBinaryWriter {
         writeEndTag("node");
     }
 
+    private void writeTerrainPage(TerrainPage terrainPage) throws IOException {
+        if (terrainPage==null) return;
+        HashMap atts=new HashMap();
+        atts.clear();
+        if (sharedObjects.containsKey(terrainPage))
+            atts.put("sharedident",sharedObjects.get(terrainPage));
+        putSpatialAtts(terrainPage,atts);
+        atts.put("offset",terrainPage.getOffset());
+        atts.put("totsize",new Integer(terrainPage.getTotalSize()));
+        atts.put("size",new Integer(terrainPage.getSize()));
+        atts.put("stepscale",terrainPage.getStepScale());
+        atts.put("offamnt",new Integer(terrainPage.getOffsetAmount()));
+        writeTag("terrainpage",atts);
+        writeChildren(terrainPage);
+        writeSpatialChildren(terrainPage);
+        writeEndTag("terrainpage");
+    }
+
     private void writeSharedObject(Object o) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
@@ -233,8 +260,16 @@ public class JmeBinaryWriter {
             writeLoaderNode((LoaderNode)s);
         else if (s instanceof JointMesh2)
             writeJointMesh((JointMesh2)s);
+        else if (s instanceof TerrainPage)
+            writeTerrainPage((TerrainPage)s);
         else if (s instanceof Node)
             writeNode((Node) s);
+        else if (s instanceof TerrainBlock)
+            writeTerrainBlock((TerrainBlock) s);
+        else if (s instanceof AreaClodMesh)
+            writeAreaClod((AreaClodMesh) s);
+        else if (s instanceof ClodMesh)
+            writeClod((ClodMesh) s);
         else if (s instanceof TriMesh)
             writeMesh((TriMesh)s);
     }
@@ -255,6 +290,86 @@ public class JmeBinaryWriter {
         writeEndTag("jmefile");
 
     }
+
+
+    private void writeTerrainBlock(TerrainBlock terrainBlock) throws IOException {
+        if (terrainBlock==null) return;
+        HashMap atts=new HashMap();
+        atts.clear();
+        if (sharedObjects.containsKey(terrainBlock))
+            atts.put("sharedident",sharedObjects.get(terrainBlock));
+        putSpatialAtts(terrainBlock,atts);
+        atts.put("trisppix",new Float(terrainBlock.getTrisPerPixel()));
+        atts.put("disttol",new Float(terrainBlock.getDistanceTolerance()));
+
+        atts.put("tbsize",new Integer(terrainBlock.getSize()));
+        atts.put("totsize",new Integer(terrainBlock.getTotalSize()));
+        atts.put("step",terrainBlock.getStepScale());
+        atts.put("isclod",new Boolean(terrainBlock.isUseClod()));
+        atts.put("offset",terrainBlock.getOffset());
+        atts.put("offamnt",new Integer(terrainBlock.getOffsetAmount()));
+        atts.put("hmap",terrainBlock.getHeightMap());
+        writeTag("terrainblock",atts);
+        writeTriMeshTags(terrainBlock);
+        writeRecords(terrainBlock.getRecords());
+        writeSpatialChildren(terrainBlock);
+        writeEndTag("terrainblock");
+
+
+    }
+
+    private void writeAreaClod(AreaClodMesh areaClodMesh) throws IOException {
+        if (areaClodMesh==null) return;
+        HashMap atts=new HashMap();
+        atts.clear();
+        if (sharedObjects.containsKey(areaClodMesh))
+            atts.put("sharedident",sharedObjects.get(areaClodMesh));
+        putSpatialAtts(areaClodMesh,atts);
+        atts.put("trisppix",new Float(areaClodMesh.getTrisPerPixel()));
+        atts.put("disttol",new Float(areaClodMesh.getDistanceTolerance()));
+        writeTag("areaclod",atts);
+        writeTriMeshTags(areaClodMesh);
+        writeRecords(areaClodMesh.getRecords());
+        writeSpatialChildren(areaClodMesh);
+        writeEndTag("areaclod");
+    }
+
+    private void writeClod(ClodMesh clodMesh) throws IOException {
+        if (clodMesh==null) return;
+        HashMap atts=new HashMap();
+        atts.clear();
+        if (sharedObjects.containsKey(clodMesh))
+            atts.put("sharedident",sharedObjects.get(clodMesh));
+        putSpatialAtts(clodMesh,atts);
+        writeTag("clod",atts);
+        writeTriMeshTags(clodMesh);
+        writeRecords(clodMesh.getRecords());
+        writeSpatialChildren(clodMesh);
+        writeEndTag("clod");
+    }
+
+    private void writeRecords(CollapseRecord[] records) throws IOException {
+        if (records==null) return;
+        HashMap atts=new HashMap();
+        atts.clear();
+        atts.put("numrec",new Integer(records.length));
+        writeTag("clodrecords",atts);
+        for (int i=0;i<records.length;i++){
+            atts.clear();
+            atts.put("index",new Integer(i));
+            atts.put("numi",new Integer(records[i].numbIndices));
+            atts.put("numt",new Integer(records[i].numbTriangles));
+            atts.put("numv",new Integer(records[i].numbVerts));
+            atts.put("vkeep",new Integer(records[i].vertToKeep));
+            atts.put("vthrow",new Integer(records[i].vertToThrow));
+            if (records[i].indices!=null)
+                atts.put("indexary",records[i].indices);
+            writeTag("crecord",atts);
+            writeEndTag("crecord");
+        }
+        writeEndTag("clodrecords");
+    }
+
 
     /**
      * Writes a mesh to binary format.
@@ -548,6 +663,57 @@ public class JmeBinaryWriter {
             atts.put("data",triMesh.getIndices());
         writeTag("index",atts);
         writeEndTag("index");
+
+        if (triMesh.getModelBound()!=null)
+            writeBounds(triMesh.getModelBound());
+    }
+
+    private void writeBounds(BoundingVolume bound) throws IOException {
+        if (bound==null) return;
+        if (bound instanceof BoundingBox)
+            writeBoundingBox((BoundingBox)bound);
+        else if (bound instanceof BoundingSphere)
+            writeBoundingSphere((BoundingSphere)bound);
+        else if (bound instanceof OrientedBoundingBox)
+            writeOBB((OrientedBoundingBox)bound);
+    }
+
+    private void writeOBB(OrientedBoundingBox v) throws IOException {
+        if (v==null) return;
+        HashMap atts=new HashMap();
+        if (sharedObjects.containsKey(v))
+            atts.put("sharedident",sharedObjects.get(v));
+        atts.put("center",v.getCenter());
+        atts.put("xaxis",v.getxAxis());
+        atts.put("yaxis",v.getyAxis());
+        atts.put("zaxis",v.getzAxis());
+        atts.put("extent",v.getExtent());
+        writeTag("obb",atts);
+        writeEndTag("obb");
+    }
+
+    private void writeBoundingSphere(BoundingSphere v) throws IOException {
+        if (v==null) return;
+        HashMap atts=new HashMap();
+        if (sharedObjects.containsKey(v))
+            atts.put("sharedident",sharedObjects.get(v));
+        atts.put("center",v.getCenter());
+        atts.put("radius",new Float(v.getRadius()));
+        writeTag("boundsphere",atts);
+        writeEndTag("boundsphere");
+    }
+
+    private void writeBoundingBox(BoundingBox v) throws IOException {
+        if (v==null) return;
+        HashMap atts=new HashMap();
+        if (sharedObjects.containsKey(v))
+            atts.put("sharedident",sharedObjects.get(v));
+        atts.put("origcent",v.getOrigCenter());
+        atts.put("origext",v.getOrigExtent());
+        atts.put("nowcent",v.getCenter());
+        atts.put("nowext",new Vector3f(v.xExtent,v.yExtent,v.zExtent));
+        writeTag("boundbox",atts);
+        writeEndTag("boundbox");
     }
 
     private short[] vertsToShorts(Vector3f[] vertices) {
@@ -820,6 +986,8 @@ public class JmeBinaryWriter {
                 writeIntArray((int[]) attrib);
             else if (attrib instanceof Vector3f)
                 writeVec3f((Vector3f) attrib);
+            else if (attrib instanceof Vector2f)
+                writeVec2f((Vector2f) attrib);
             else if (attrib instanceof Quaternion)
                 writeQuat((Quaternion) attrib);
             else if (attrib instanceof Float)
@@ -910,6 +1078,12 @@ public class JmeBinaryWriter {
         myOut.writeFloat(v.x);
         myOut.writeFloat(v.y);
         myOut.writeFloat(v.z);
+    }
+
+    private void writeVec2f(Vector2f v) throws IOException {
+        myOut.writeByte(BinaryFormatConstants.DATA_V2F);
+        myOut.writeFloat(v.x);
+        myOut.writeFloat(v.y);
     }
 
     private void writeIntArray(int[] array) throws IOException {
