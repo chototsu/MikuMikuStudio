@@ -49,10 +49,10 @@ public final class WidgetAlignmentType extends WidgetType {
 	public final static WidgetAlignmentType ALIGN_EAST = new WidgetAlignmentType("ALIGN_EAST");
     public final static WidgetAlignmentType ALIGN_WEST = new WidgetAlignmentType("ALIGN_WEST");
 
-	public final static WidgetAlignmentType ALIGN_NW = new WidgetAlignmentType("ALIGN_NW");
-	public final static WidgetAlignmentType ALIGN_SW = new WidgetAlignmentType("ALIGN_SW");
-	public final static WidgetAlignmentType ALIGN_NE = new WidgetAlignmentType("ALIGN_NE");
-	public final static WidgetAlignmentType ALIGN_SE = new WidgetAlignmentType("ALIGN_SE");
+	public final static WidgetAlignmentType ALIGN_NORTHWEST = new WidgetAlignmentType("ALIGN_NORTHWEST");
+	public final static WidgetAlignmentType ALIGN_SOUTHWEST = new WidgetAlignmentType("ALIGN_SOUTHWEST");
+	public final static WidgetAlignmentType ALIGN_NORTHEAST = new WidgetAlignmentType("ALIGN_NORTHEAST");
+	public final static WidgetAlignmentType ALIGN_SOUTHEAST = new WidgetAlignmentType("ALIGN_SOUTHEAST");
 
     private WidgetAlignmentType(String name) {
         super(name);
@@ -75,14 +75,14 @@ public final class WidgetAlignmentType extends WidgetType {
         } else if (ALIGN_WEST.name.equals(name)) {
             type = ALIGN_WEST;
 
-		} else if (ALIGN_NW.name.equals(name)) {
-			type = ALIGN_NW;
-		} else if (ALIGN_SW.name.equals(name)) {
-			type = ALIGN_SW;
-		} else if (ALIGN_NE.name.equals(name)) {
-			type = ALIGN_NE;
-		} else if (ALIGN_SE.name.equals(name)) {
-			type = ALIGN_SE;
+		} else if (ALIGN_NORTHWEST.name.equals(name)) {
+			type = ALIGN_NORTHWEST;
+		} else if (ALIGN_SOUTHWEST.name.equals(name)) {
+			type = ALIGN_SOUTHWEST;
+		} else if (ALIGN_NORTHEAST.name.equals(name)) {
+			type = ALIGN_NORTHEAST;
+		} else if (ALIGN_SOUTHEAST.name.equals(name)) {
+			type = ALIGN_SOUTHEAST;
         }
 
         return type;
