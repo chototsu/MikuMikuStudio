@@ -43,7 +43,7 @@ import com.jme.widget.WidgetInsets;
  */
 public class WidgetBorder extends WidgetInsets {
 
-    private WidgetBorderType type = WidgetBorderType.NONE;
+    private WidgetBorderType type = WidgetBorderType.RAISED;
     private ColorRGBA darkColor = new ColorRGBA(.25f, .25f, .25f, 1);
     private ColorRGBA lightColor = new ColorRGBA(.95f, .95f, .95f, 1);
     private ColorRGBA flatColor = new ColorRGBA(.95f, .95f, .95f, 1);
