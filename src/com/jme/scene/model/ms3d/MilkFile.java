@@ -26,7 +26,7 @@ class MilkFile {
     private int nNumTriangles;
     byte[] boneID;
     Vector3f[] vertexes;
-    private int[] vertexIndextoGroup;
+//    private int[] vertexIndextoGroup;
     int nNumGroups;
     MilkshapeGroup[] myGroups;
     private int nNumMaterials;
@@ -210,7 +210,7 @@ class MilkFile {
     private void loadTriangles() throws IOException {
         nNumTriangles=file.readUnsignedShort();
         myTri=new MilkshapeTriangle[nNumTriangles];
-        vertexIndextoGroup=new int[nNumTriangles];
+//        vertexIndextoGroup=new int[nNumTriangles];
 
         for (int i=0;i<nNumTriangles;i++){
             myTri[i]=new MilkshapeTriangle();
@@ -228,7 +228,7 @@ class MilkFile {
             for (int j=0;j<3;j++)
                 myTri[i].texCoords[j].y=1-file.readFloat();
             file.readUnsignedByte(); // Smoothing group
-            vertexIndextoGroup[i]=file.readUnsignedByte();
+            /*vertexIndextoGroup[i]=*/file.readUnsignedByte();
         }
     }
 
@@ -265,7 +265,7 @@ class MilkFile {
         toReturn.nNumTriangles=this.nNumTriangles;
         toReturn.boneID=this.boneID;
         toReturn.vertexes=this.vertexes;
-        toReturn.vertexIndextoGroup=this.vertexIndextoGroup;
+//        toReturn.vertexIndextoGroup=this.vertexIndextoGroup;
         toReturn.nNumMaterials=this.nNumMaterials;
         toReturn.myMats=this.myMats;
         toReturn.iTotalFrames=this.iTotalFrames;
