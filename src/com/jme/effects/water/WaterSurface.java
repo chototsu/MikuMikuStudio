@@ -47,7 +47,7 @@ import com.jme.math.Vector2f;
  * Portions from Game Programming Gems 4 article by Jerry Tessendorf
  *
  * @author Joshua Slack
- * @version $Id: WaterSurface.java,v 1.3 2004-04-25 00:40:30 renanse Exp $
+ * @version $Id: WaterSurface.java,v 1.4 2004-04-25 20:32:24 renanse Exp $
  */
 
 public class WaterSurface extends TriMesh {
@@ -60,6 +60,7 @@ public class WaterSurface extends TriMesh {
   float source[];
   float scaling_factor;
   float stepScale;
+  float timeFactor;
 
   public WaterSurface(String name, int gridWidth, int gridHeight, float stepScale) {
     super(name);
@@ -70,11 +71,9 @@ public class WaterSurface extends TriMesh {
     size = iwidth * iheight;
 
     tension = .4f;
-
+    timeFactor = 2.0f;
     scaling_factor = 1.0f;
-//    toggle_animation_on_off = true;
 
-    // allocate space for fields and initialize them
     height = new float[size];
     previous_height = new float[size];
     vertical_derivative = new float[size];
@@ -89,7 +88,6 @@ public class WaterSurface extends TriMesh {
     initializeKernel();
     buildVertices();
     buildTextureCoordinates();
-    buildNormals();
 
     convertToDisplay();
     initialize(source, size, 0);
@@ -171,24 +169,24 @@ public class WaterSurface extends TriMesh {
           if (col == iwidth - 1) { // last row, last col
             // up cross left
             normal[normalIndex] = vertex[normalIndex -
-                iwidth].subtract(vertex[normalIndex]).cross(vertex[normalIndex -
-                1].subtract(vertex[normalIndex])).normalize();
+                iwidth].subtract(vertex[normalIndex]).crossLocal(vertex[normalIndex -
+                1].subtract(vertex[normalIndex])).normalizeLocal();
           } else { // last row, except for last col
             // right cross up
             normal[normalIndex] = vertex[normalIndex +
-                1].subtract(vertex[normalIndex]).cross(vertex[normalIndex -
-                iwidth].subtract(vertex[normalIndex])).normalize();
+                1].subtract(vertex[normalIndex]).crossLocal(vertex[normalIndex -
+                iwidth].subtract(vertex[normalIndex])).normalizeLocal();
           }
         } else {
           if (col == iwidth - 1) { // last column except for last row
             // left cross down
             normal[normalIndex] = vertex[normalIndex -
-                1].subtract(vertex[normalIndex]).cross(vertex[normalIndex +
-                iwidth].subtract(vertex[normalIndex])).normalize();
+                1].subtract(vertex[normalIndex]).crossLocal(vertex[normalIndex +
+                iwidth].subtract(vertex[normalIndex])).normalizeLocal();
           } else { // most cases
             // down cross right
             normal[normalIndex] = vertex[normalIndex +
-                iwidth].subtract(vertex[normalIndex]).cross(vertex[normalIndex +
+                iwidth].subtract(vertex[normalIndex]).crossLocal(vertex[normalIndex +
                 1].subtract(vertex[normalIndex])).normalizeLocal();
           }
         }
@@ -275,13 +273,15 @@ public class WaterSurface extends TriMesh {
 
   void computeVerticalDerivative() {
     // first step:  the interior
-    for (int ix = 6; ix < iwidth - 6; ix++) {
-      for (int iy = 6; iy < iheight - 6; iy++) {
-        int index = ix + iwidth * iy;
-        float vd = 0;
-        for (int iix = -6; iix <= 6; iix++) {
-          for (int iiy = -6; iiy <= 6; iiy++) {
-            int iindex = ix + iix + iwidth * (iy + iiy);
+    int index, iindex, ix, iix, iy, iiy;
+    float vd;
+    for (ix = 6; ix < iwidth - 6; ix++) {
+      for (iy = 6; iy < iheight - 6; iy++) {
+        index = ix + iwidth * iy;
+        vd = 0;
+        for (iix = -6; iix <= 6; iix++) {
+          for (iiy = -6; iiy <= 6; iiy++) {
+            iindex = ix + iix + iwidth * (iy + iiy);
             vd += kernel[iix + 6][iiy + 6] * height[iindex];
           }
         }
@@ -291,7 +291,7 @@ public class WaterSurface extends TriMesh {
   }
 
   void propagate(float dt) {
-    dt *= 2;
+    dt *= timeFactor;
     // apply obstruction
     gravity = 9.8f * dt * dt;
     for (int i = 0; i < size; i++)
