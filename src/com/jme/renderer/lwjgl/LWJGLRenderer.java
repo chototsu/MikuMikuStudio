@@ -127,7 +127,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.33 2004-07-23 20:15:12 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.34 2004-07-31 16:20:02 cep21 Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -139,7 +139,7 @@ public class LWJGLRenderer implements Renderer {
 
   private int height;
 
-  private FloatBuffer worldBuffer;
+//  private FloatBuffer worldBuffer;    unused?
 
   private Vector3f vRot = new Vector3f();
 
@@ -147,7 +147,7 @@ public class LWJGLRenderer implements Renderer {
 
   private LWJGLFont font;
 
-  private float[] modelToWorld = new float[16];
+//  private float[] modelToWorld = new float[16];   unused?
 
   private long numberOfVerts;
 
@@ -183,7 +183,8 @@ public class LWJGLRenderer implements Renderer {
     this.width = width;
     this.height = height;
 
-    worldBuffer = BufferUtils.createFloatBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asFloatBuffer();
+//    worldBuffer = BufferUtils.createFloatBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asFloatBuffer();
+      // Unused??
 
     LoggingSystem.getLogger().log(Level.INFO,
                                   "LWJGLRenderer created. W:  " + width + "H: " +
@@ -1002,6 +1003,8 @@ public class LWJGLRenderer implements Renderer {
   }
 
   IntBuffer buf = BufferUtils.createIntBuffer(16);
+
+
   public void prepVBO(Geometry g) {
     if (!GLContext.OpenGL15)return;
     int verts = g.getVertQuantity();
@@ -1058,7 +1061,7 @@ public class LWJGLRenderer implements Renderer {
    * it's normals, colors, textures and vertices.
    *
    * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
-   * @param t
+   * @param g
    *            the mesh to render.
    */
   public void drawBounds(Geometry g) {
@@ -1072,7 +1075,7 @@ public class LWJGLRenderer implements Renderer {
    * it's normals, colors, textures and vertices.
    *
    * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
-   * @param t
+   * @param bv
    *            the mesh to render.
    */
   public void drawBounds(BoundingVolume bv) {
@@ -1284,6 +1287,10 @@ public class LWJGLRenderer implements Renderer {
     return processingQueue;
   }
 
+  /**
+   * Return true if the system running this supports VBO
+   * @return boolean true if VBO supported
+   */
   public boolean supportsVBO() {
     return GLContext.OpenGL15;
   }
