@@ -56,7 +56,7 @@ import org.lwjgl.opengl.Window;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.3 2004-05-21 15:41:27 mojomonkey Exp $
+ * @version $Id: LWJGLFont.java,v 1.4 2004-05-21 16:01:34 mojomonkey Exp $
  */
 public class LWJGLFont {
     /**
@@ -73,6 +73,9 @@ public class LWJGLFont {
 
     //Color to render the font.
     private float red, green, blue, alpha;
+    
+    //buffer that holds the text.
+    private ByteBuffer scratch;
 
     /**
      * Constructor instantiates a new <code>LWJGLFont</code> object. The
@@ -84,7 +87,8 @@ public class LWJGLFont {
         green = 1.0f;
         blue = 1.0f;
         alpha = 1.0f;
-
+        scratch = ByteBuffer.allocateDirect(1).order(
+                ByteOrder.nativeOrder());
         buildDisplayList();
     }
 
@@ -140,9 +144,13 @@ public class LWJGLFont {
         GL11.glListBase(base - 32 + (128 * set));
 
         //Put the string into a "pointer"
-        ByteBuffer scratch =
-            ByteBuffer.allocateDirect(text.length()).order(
-                ByteOrder.nativeOrder());
+        if(text.length() != scratch.capacity()) {
+	        scratch =
+	            ByteBuffer.allocateDirect(text.length()).order(
+	                ByteOrder.nativeOrder());
+        } else {
+            scratch.clear();
+        }
         scratch.put(text.toString().getBytes());
         scratch.flip();
         GL11.glColor4f(red, green, blue, alpha);
