@@ -31,6 +31,8 @@
  */
 package jme.math;
 
+import org.lwjgl.vector.Vector3f;
+
 import jme.exception.MonkeyRuntimeException;
 
 /**
@@ -47,11 +49,31 @@ import jme.exception.MonkeyRuntimeException;
 public class Quaternion {
 	public float x, y, z, w;
 
+	/**
+	 * Constructor instantiates a new <code>Quaternion</code> object 
+	 * initializing all values to zero.
+	 *
+	 */
 	public Quaternion() {
 		x = 0;
 		y = 0;
 		z = 0;
 		w = 0;
+	}
+
+	/**
+	 * Constructor instantiates a new <code>Quaternion</code> object 
+	 * from the given list of parameters.
+	 * @param x the x value of the quaternion.
+	 * @param y the y value of the quaternion.
+	 * @param z the z value of the quaternion.
+	 * @param w the w value of the quaternion.
+	 */
+	public Quaternion(float x, float y, float z, float w) {
+		this.x = x;
+		this.y = y;
+		this.z = z;
+		this.w = w;
 	}
 
 	/**
@@ -73,6 +95,18 @@ public class Quaternion {
 	 */
 	public Quaternion(Quaternion q1, Quaternion q2, float interp) {
 		slerp(q1, q2, interp);
+	}
+
+	/**
+	 * Constructor instantiates a new <code>Quaternion</code> object from
+	 * an existing quaternion, creating a copy.
+	 * @param q the quaternion to copy.
+	 */
+	public Quaternion(Quaternion q) {
+		this.x = q.x;
+		this.y = q.y;
+		this.z = q.z;
+		this.w = q.w;
 	}
 
 	/**
@@ -103,10 +137,26 @@ public class Quaternion {
 	}
 
 	/**
+	 * <code>fromAngleAxis</code> sets this quaternion to the values
+	 * specified by an angle and an axis of rotation.
+	 * @param angle the angle to rotate.
+	 * @param axis the axis of rotation.
+	 */
+	public void fromAngleAxis(float angle, Vector3f axis) {
+		float halfAngle = 0.5f * angle;
+		float sin = (float) Math.sin(halfAngle);
+		w = (float) Math.cos(halfAngle);
+		x = sin * axis.x;
+		y = sin * axis.y;
+		z = sin * axis.z;
+	}
+
+	/**
 	 * <code>fromMatrix</code> creates a quaternion from the rotational 
-	 * matrix. A quaternion can be created from a 3x3 or 4x4 matrix. 
-	 * @param matrix
-	 * @param rowColumnCount
+	 * matrix. A quaternion can be created from a 3x3 or 4x4 matrix. If
+	 * a 3x3 matrix is passed, it will be converted into a 4x4.
+	 * @param matrix the matrix to generate the quaternion from.
+	 * @param rowColumnCount the number of rows/colums (3 or 4).
 	 */
 	public void fromMatrix(float[] matrix, int rowColumnCount) {
 		if (matrix == null || (rowColumnCount != 3) && (rowColumnCount != 4)) {
@@ -114,13 +164,9 @@ public class Quaternion {
 				"matrix cannot be null, while"
 					+ "rowColumnCount must be 3 or 4.");
 		}
-		// This function is used to take in a 3x3 or 4x4 matrix and convert the matrix
-		// to a quaternion.  If rowColumnCount is a 3, then we need to convert the 3x3
-		// matrix passed in to a 4x4 matrix, otherwise we just leave the matrix how it is.
-		// Since we want to apply a matrix to an OpenGL matrix, we need it to be 4x4.
 
 		// Point the matrix pointer to the matrix passed in, assuming it's a 4x4 matrix
-		float[] pMatrix = matrix;
+		float[] tempMatrix = matrix;
 
 		// Create a 4x4 matrix to convert a 3x3 matrix to a 4x4 matrix (If rowColumnCount == 3)
 		float[] m4x4 = new float[16];
@@ -150,25 +196,12 @@ public class Quaternion {
 			m4x4[15] = 1;
 
 			// Set the matrix pointer to the first index in the newly converted matrix
-			pMatrix = m4x4;
+			tempMatrix = m4x4;
 		}
 
-		// The next step, once we made sure we are dealing with a 4x4 matrix, is to check the
-		// diagonal of the matrix.  This means that we add up all of the indices that comprise
-		// the standard 1's in the identity matrix.  If you draw out the identity matrix of a
-		// 4x4 matrix, you will see that they 1's form a diagonal line.  Notice we just assume
-		// that the last index (15) is 1 because it is not effected in the 3x3 rotation matrix.
-
-		// Find the diagonal of the matrix by adding up it's diagonal indices.
-		// This is also known as the "trace", but I will call the variable diagonal.
-		float diagonal = pMatrix[0] + pMatrix[5] + pMatrix[10] + 1;
+		//calculate the trace of the matrix.
+		float diagonal = tempMatrix[0] + tempMatrix[5] + tempMatrix[10] + 1;
 		float scale = 0.0f;
-
-		// Below we check if the diagonal is greater than zero.  To avoid accidents with
-		// floating point numbers, we substitute 0 with 0.00000001.  If the diagonal is
-		// great than zero, we can perform an "instant" calculation, otherwise we will need
-		// to identify which diagonal element has the greatest value.  Note, that it appears
-		// that %99 of the time, the diagonal IS greater than 0 so the rest is rarely used.
 
 		// If the diagonal is greater than zero
 		if (diagonal > 0.00000001f) {
@@ -176,55 +209,111 @@ public class Quaternion {
 			scale = (float) Math.sqrt(diagonal) * 2f;
 
 			// Calculate the x, y, z and w of the quaternion through the respective equation
-			x = (pMatrix[9] - pMatrix[6]) / scale;
-			y = (pMatrix[2] - pMatrix[8]) / scale;
-			z = (pMatrix[4] - pMatrix[1]) / scale;
+			x = (tempMatrix[9] - tempMatrix[6]) / scale;
+			y = (tempMatrix[2] - tempMatrix[8]) / scale;
+			z = (tempMatrix[4] - tempMatrix[1]) / scale;
 			w = 0.25f * scale;
 		} else {
 			// If the first element of the diagonal is the greatest value
-			if (pMatrix[0] > pMatrix[5] && pMatrix[0] > pMatrix[10]) {
+			if (tempMatrix[0] > tempMatrix[5]
+				&& tempMatrix[0] > tempMatrix[10]) {
 				// Find the scale according to the first element, and double that value
 				scale =
 					(float) Math.sqrt(
-						1.0f + pMatrix[0] - pMatrix[5] - pMatrix[10])
+						1.0f + tempMatrix[0] - tempMatrix[5] - tempMatrix[10])
 						* 2.0f;
 
 				// Calculate the x, y, z and w of the quaternion through the respective equation
 				x = 0.25f * scale;
-				y = (pMatrix[4] + pMatrix[1]) / scale;
-				z = (pMatrix[2] + pMatrix[8]) / scale;
-				w = (pMatrix[9] - pMatrix[6]) / scale;
+				y = (tempMatrix[4] + tempMatrix[1]) / scale;
+				z = (tempMatrix[2] + tempMatrix[8]) / scale;
+				w = (tempMatrix[9] - tempMatrix[6]) / scale;
 			}
 			// Else if the second element of the diagonal is the greatest value
-			else if (pMatrix[5] > pMatrix[10]) {
+			else if (tempMatrix[5] > tempMatrix[10]) {
 				// Find the scale according to the second element, and double that value
 				scale =
 					(float) Math.sqrt(
-						1.0f + pMatrix[5] - pMatrix[0] - pMatrix[10])
+						1.0f + tempMatrix[5] - tempMatrix[0] - tempMatrix[10])
 						* 2.0f;
 
 				// Calculate the x, y, z and w of the quaternion through the respective equation
-				x = (pMatrix[4] + pMatrix[1]) / scale;
+				x = (tempMatrix[4] + tempMatrix[1]) / scale;
 				y = 0.25f * scale;
-				z = (pMatrix[9] + pMatrix[6]) / scale;
-				w = (pMatrix[2] - pMatrix[8]) / scale;
+				z = (tempMatrix[9] + tempMatrix[6]) / scale;
+				w = (tempMatrix[2] - tempMatrix[8]) / scale;
 			}
 			// Else the third element of the diagonal is the greatest value
 			else {
 				// Find the scale according to the third element, and double that value
 				scale =
 					(float) Math.sqrt(
-						1.0f + pMatrix[10] - pMatrix[0] - pMatrix[5])
+						1.0f + tempMatrix[10] - tempMatrix[0] - tempMatrix[5])
 						* 2.0f;
 
 				// Calculate the x, y, z and w of the quaternion through the respective equation
-				x = (pMatrix[2] + pMatrix[8]) / scale;
-				y = (pMatrix[9] + pMatrix[6]) / scale;
+				x = (tempMatrix[2] + tempMatrix[8]) / scale;
+				y = (tempMatrix[9] + tempMatrix[6]) / scale;
 				z = 0.25f * scale;
-				w = (pMatrix[4] - pMatrix[1]) / scale;
+				w = (tempMatrix[4] - tempMatrix[1]) / scale;
 			}
 		}
 
+	}
+
+	/**
+	 * <code>getMatrix</code> converts the values of this quaternion into
+	 * a 4x4 matrix. 
+	 * @return the matrix representation of this quaternion.
+	 */
+	public float[] toMatrix() {
+		float[] matrix = new float[16];
+		matrix[0] = 1.0f - 2.0f * (y * y + z * z);
+		matrix[1] = 2.0f * (x * y - w * z);
+		matrix[2] = 2.0f * (x * z + w * y);
+		matrix[3] = 0.0f;
+
+		// Second row
+		matrix[4] = 2.0f * (x * y + w * z);
+		matrix[5] = 1.0f - 2.0f * (x * x + z * z);
+		matrix[6] = 2.0f * (y * z - w * x);
+		matrix[7] = 0.0f;
+
+		// Third row
+		matrix[8] = 2.0f * (x * z - w * y);
+		matrix[9] = 2.0f * (y * z + w * x);
+		matrix[10] = 1.0f - 2.0f * (x * x + y * y);
+		matrix[11] = 0.0f;
+
+		// Fourth row
+		matrix[12] = 0;
+		matrix[13] = 0;
+		matrix[14] = 0;
+		matrix[15] = 1.0f;
+
+		return matrix;
+	}
+
+	/**
+	 * <code>toAngleAxis</code> sets a given angle and axis to that
+	 * represented by the current quaternion.
+	 * @param angle the value to contain the angle.
+	 * @param axis the object to contain the axis.
+	 */
+	public void toAngleAxis(float angle, Vector3f axis) {
+		float sqrLength = x * x + y * y + z * z;
+		if (sqrLength > 0.0) {
+			angle = (float) (2.0 * Math.cos(w));
+			float invLength = (float) (1.0 / Math.sqrt(sqrLength));
+			axis.x = x * invLength;
+			axis.y = y * invLength;
+			axis.z = z * invLength;
+		} else {
+			angle = 0.0f;
+			axis.x = 1.0f;
+			axis.y = 0.0f;
+			axis.z = 0.0f;
+		}
 	}
 
 	/**
@@ -284,39 +373,100 @@ public class Quaternion {
 		return interpolated;
 	}
 
-	public float[] getMatrix() {
-		float[] matrix = new float[16];
-		matrix[0] = 1.0f - 2.0f * (y * y + z * z);
-		matrix[1] = 2.0f * (x * y - w * z);
-		matrix[2] = 2.0f * (x * z + w * y);
-		matrix[3] = 0.0f;
-
-		// Second row
-		matrix[4] = 2.0f * (x * y + w * z);
-		matrix[5] = 1.0f - 2.0f * (x * x + z * z);
-		matrix[6] = 2.0f * (y * z - w * x);
-		matrix[7] = 0.0f;
-
-		// Third row
-		matrix[8] = 2.0f * (x * z - w * y);
-		matrix[9] = 2.0f * (y * z + w * x);
-		matrix[10] = 1.0f - 2.0f * (x * x + y * y);
-		matrix[11] = 0.0f;
-
-		// Fourth row
-		matrix[12] = 0;
-		matrix[13] = 0;
-		matrix[14] = 0;
-		matrix[15] = 1.0f;
-
-		return matrix;
+	/**
+	 * <code>add</code> adds the values of this quaternion to those
+	 * of the parameter quaternion. The result is returned as a new
+	 * quaternion.
+	 * @param q the quaternion to add to this.
+	 * @return the new quaternion.
+	 */
+	public Quaternion add(Quaternion q) {
+		return new Quaternion(x + q.x, y + q.y, z + q.z, w + q.w);
 	}
 
 	/**
-	 * <code>inverse</code> inverts the values of the quaternion.
+	 * <code>subtract</code> subtracts the values of the parameter
+	 * quaternion from those of this quaternion. The result is 
+	 * returned as a new quaternion. 
+	 * @param q the quaternion to subtract from this.
+	 * @return the new quaternion.
+	 */
+	public Quaternion subtract(Quaternion q) {
+		return new Quaternion(x - q.x, y - q.y, z - q.z, w - q.w);
+	}
+
+	/**
+	 * <code>mult</code> multiplies this quaternion by a parameter 
+	 * quaternion. The result is returned as a new quaternion. It should
+	 * be noted that quaternion multiplication is not cummulative so
+	 * q * p != p * q.
+	 * @param q the quaternion to multiply this quaternion by.
+	 * @return the new quaternion.
+	 */
+	public Quaternion mult(Quaternion q) {
+		return new Quaternion(
+			w * q.w - x * q.x - y * q.y - z * q.z,
+			w * q.x + x * q.w + y * q.z - z * q.y,
+			w * q.y + y * q.w + z * q.x - x * q.z,
+			w * q.z + z * q.w + x * q.y - y * q.x);
+	}
+
+	/**
+	 * <code>mult</code> multiplies this quaternion by a parameter 
+	 * scalar. The result is returned as a new quaternion. 
+	 * @param q the quaternion to multiply this quaternion by.
+	 * @return the new quaternion.
+	 */
+	public Quaternion mult(float scalar) {
+		return new Quaternion(scalar * w, scalar * x, scalar * y, scalar * z);
+	}
+
+	/**
+	 * <code>dot</code> calculates and returns the dot product of this
+	 * quaternion with that of the parameter quaternion.
+	 * @param q the quaternion to calculate the dot product of.
+	 * @return the dot product of this and the parameter quaternion.
+	 */
+	public float dot(Quaternion q) {
+		return w * q.w + x * q.x + y * q.y + z * q.z;
+	}
+
+	/**
+	 * <code>norm</code> returns the norm of this quaternion. This is
+	 * the dot product of this quaternion with itself.
+	 * @return the norm of the quaternion.
+	 */
+	public float norm() {
+		return w * w + x * x + y * y + z * z;
+	}
+
+	/**
+	 * <code>inverse</code> returns the inverse of this quaternion as
+	 * a new quaternion. If this quaternion does not have an inverse
+	 * (if it's norma is 0 or less), then null is returned.
+	 * @return the inverse of this quaternion or null if the inverse 
+	 * 		does not exist.
+	 */
+	public Quaternion inverse() {
+		float norm = w * w + x * x + y * y + z * z;
+		if (norm > 0.0) {
+			float invNorm = 1.0f / norm;
+			return new Quaternion(
+				w * invNorm,
+				-x * invNorm,
+				-y * invNorm,
+				-z * invNorm);
+		} else {
+			// return an invalid result to flag the error
+			return null;
+		}
+	}
+
+	/**
+	 * <code>negate</code> inverts the values of the quaternion.
 	 *
 	 */
-	public void inverse() {
+	public void negate() {
 		x *= -1;
 		y *= -1;
 		z *= -1;

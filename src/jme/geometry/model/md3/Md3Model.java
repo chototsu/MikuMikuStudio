@@ -1244,7 +1244,7 @@ public class Md3Model implements Geometry {
 
                 //slerp to interpolate
                 interpolatedQuat = quat.slerp(quat, nextQuat, model.t);
-                finalMatrix = interpolatedQuat.getMatrix();
+                finalMatrix = interpolatedQuat.toMatrix();
 
                 finalMatrix[12] = position.x;
                 finalMatrix[13] = position.y;
