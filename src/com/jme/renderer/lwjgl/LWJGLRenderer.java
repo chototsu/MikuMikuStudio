@@ -58,8 +58,6 @@ package com.jme.renderer.lwjgl;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -101,7 +99,7 @@ import org.lwjgl.BufferUtils;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.19 2004-05-21 15:41:27 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.20 2004-05-27 01:09:01 ericthered Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -155,8 +153,7 @@ public class LWJGLRenderer implements Renderer {
         this.width = width;
         this.height = height;
 
-        worldBuffer = ByteBuffer.allocateDirect(64).order(
-                ByteOrder.nativeOrder()).asFloatBuffer();
+        worldBuffer = BufferUtils.createFloatBuffer(16);//ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
         LoggingSystem.getLogger().log(Level.INFO,
                 "LWJGLRenderer created. W:  " + width + "H: " + height);
@@ -471,8 +468,7 @@ public class LWJGLRenderer implements Renderer {
 
         //Create a pointer to the image info and create a buffered image to
         //hold it.
-        IntBuffer buff = ByteBuffer.allocateDirect(width * height * 4).order(
-                ByteOrder.nativeOrder()).asIntBuffer();
+        IntBuffer buff = BufferUtils.createIntBuffer(width * height);//ByteBuffer.allocateDirect(width * height * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
         GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA,
                 GL11.GL_UNSIGNED_BYTE, buff);
         BufferedImage img = new BufferedImage(width, height,

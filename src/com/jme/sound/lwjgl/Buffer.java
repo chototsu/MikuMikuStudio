@@ -37,9 +37,9 @@
 package com.jme.sound.lwjgl;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
 import com.jme.sound.IBuffer;
@@ -69,7 +69,7 @@ public class Buffer implements IBuffer {
      * @see com.jme.sound.IBuffer#delete()
      */
     public void delete() {
-        IntBuffer alBuffer= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+        IntBuffer alBuffer= BufferUtils.createIntBuffer(1);//ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
         alBuffer.put(bufferNumber);
         alBuffer.rewind();
         AL10.alDeleteBuffers(alBuffer);

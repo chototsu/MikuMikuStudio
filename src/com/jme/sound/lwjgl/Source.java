@@ -36,11 +36,10 @@
  */
 package com.jme.sound.lwjgl;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
 import com.jme.math.Vector3f;
@@ -57,14 +56,14 @@ public class Source implements ISource {
     private int sourceNumber;
     private Vector3f position= new Vector3f();
     private FloatBuffer positionBuffer=
-        ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        BufferUtils.createFloatBuffer(3); //ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
     private Vector3f velocity= new Vector3f();
     private FloatBuffer velocityBuffer=
-        ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        BufferUtils.createFloatBuffer(3);//ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
     private Vector3f direction= new Vector3f();
     private FloatBuffer directionBuffer=
-        ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        BufferUtils.createFloatBuffer(3);//ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
     private IBuffer buffer;
 
@@ -108,7 +107,7 @@ public class Source implements ISource {
      * @see com.jme.sound.ISource#delete()
      */
     public void delete() {
-        IntBuffer alSource= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
+        IntBuffer alSource= BufferUtils.createIntBuffer(1);//ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
         alSource.put(sourceNumber);
         AL10.alDeleteSources(alSource);
 
@@ -374,7 +373,7 @@ public class Source implements ISource {
      */
     public void queueBuffers(IBuffer[] buffers) {
         IntBuffer alBuffer=
-            ByteBuffer.allocateDirect(4 * buffers.length).order(ByteOrder.nativeOrder()).asIntBuffer();
+            BufferUtils.createIntBuffer(buffers.length);//ByteBuffer.allocateDirect(4 * buffers.length).order(ByteOrder.nativeOrder()).asIntBuffer();
         for (int i= 0; i < buffers.length; i++) {
             alBuffer.put(((Buffer)buffers[i]).getBufferNumber());
         }
@@ -387,7 +386,7 @@ public class Source implements ISource {
      */
     public void unqueueBuffers(IBuffer[] buffers) {
         IntBuffer alBuffer=
-            ByteBuffer.allocateDirect(4 * buffers.length).order(ByteOrder.nativeOrder()).asIntBuffer();
+            BufferUtils.createIntBuffer(buffers.length);//ByteBuffer.allocateDirect(4 * buffers.length).order(ByteOrder.nativeOrder()).asIntBuffer();
         for (int i= 0; i < buffers.length; i++) {
             alBuffer.put(((Buffer)buffers[i]).getBufferNumber());
         }

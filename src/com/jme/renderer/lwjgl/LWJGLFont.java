@@ -32,8 +32,8 @@
 package com.jme.renderer.lwjgl;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Window;
 
@@ -56,7 +56,7 @@ import org.lwjgl.opengl.Window;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.4 2004-05-21 16:01:34 mojomonkey Exp $
+ * @version $Id: LWJGLFont.java,v 1.5 2004-05-27 01:09:01 ericthered Exp $
  */
 public class LWJGLFont {
     /**
@@ -87,8 +87,7 @@ public class LWJGLFont {
         green = 1.0f;
         blue = 1.0f;
         alpha = 1.0f;
-        scratch = ByteBuffer.allocateDirect(1).order(
-                ByteOrder.nativeOrder());
+        scratch = BufferUtils.createByteBuffer(1);//ByteBuffer.allocateDirect(1).order(ByteOrder.nativeOrder());
         buildDisplayList();
     }
 
@@ -145,9 +144,7 @@ public class LWJGLFont {
 
         //Put the string into a "pointer"
         if(text.length() != scratch.capacity()) {
-	        scratch =
-	            ByteBuffer.allocateDirect(text.length()).order(
-	                ByteOrder.nativeOrder());
+	        scratch = BufferUtils.createByteBuffer(text.length()); //ByteBuffer.allocateDirect(text.length()).order(ByteOrder.nativeOrder());
         } else {
             scratch.clear();
         }

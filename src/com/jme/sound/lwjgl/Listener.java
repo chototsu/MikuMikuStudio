@@ -36,10 +36,9 @@
  */
 package com.jme.sound.lwjgl;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.*;
 
 import com.jme.math.Vector3f;
@@ -54,13 +53,13 @@ public class Listener implements IListener {
 
     private Vector3f position= new Vector3f();
     private FloatBuffer positionBuffer=
-        ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        BufferUtils.createFloatBuffer(3);//ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
     private Vector3f velocity= new Vector3f();
     private FloatBuffer velocityBuffer=
-        ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        BufferUtils.createFloatBuffer(3);//ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
     private float[] orientation= new float[6];
     private FloatBuffer orientationBuffer=
-        ByteBuffer.allocateDirect(4 * 6).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        BufferUtils.createFloatBuffer(3);//ByteBuffer.allocateDirect(4 * 6).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
     /* (non-Javadoc)
      * @see com.jme.sound.IListener#setGain(float)

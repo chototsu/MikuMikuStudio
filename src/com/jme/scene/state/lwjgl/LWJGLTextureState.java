@@ -31,8 +31,6 @@
  */
 package com.jme.scene.state.lwjgl;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -56,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.17 2004-05-26 00:17:44 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.18 2004-05-27 01:09:15 ericthered Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -108,8 +106,7 @@ public class LWJGLTextureState extends TextureState {
 		super();
 		if (numTexUnits == 0) {
 			if (GLContext.GL_ARB_multitexture) {
-				IntBuffer buf = ByteBuffer.allocateDirect(64).order(
-						ByteOrder.nativeOrder()).asIntBuffer();
+				IntBuffer buf = BufferUtils.createIntBuffer(16);//ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
 				GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
 
 				numTexUnits = buf.get(0);
@@ -159,8 +156,7 @@ public class LWJGLTextureState extends TextureState {
 				//texture not yet loaded.
 				if (texture.getTextureId() == 0) {
 					// Create A IntBuffer For Image Address In Memory
-					IntBuffer buf = ByteBuffer.allocateDirect(4).order(
-							ByteOrder.nativeOrder()).asIntBuffer();
+					IntBuffer buf = BufferUtils.createIntBuffer(1);//ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
 
 					//Create the texture
 					GL11.glGenTextures(buf);

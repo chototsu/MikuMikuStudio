@@ -41,7 +41,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
 import javax.sound.sampled.AudioFormat;
@@ -54,6 +53,7 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 //import javazoom.jl.decoder.DecoderException;
 //import javazoom.jl.decoder.Header;
 //import javazoom.jl.decoder.SampleBuffer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.*;
 import org.lwjgl.openal.eax.EAX;
 import com.jcraft.jogg.Packet;
@@ -122,8 +122,7 @@ public class SoundSystem implements ISoundSystem {
 	 */
 	public IBuffer[] generateBuffers(int numOfBuffers) {
 		Buffer[] result = new Buffer[numOfBuffers];
-		IntBuffer alBuffers = ByteBuffer.allocateDirect(4 * numOfBuffers)
-				.order(ByteOrder.nativeOrder()).asIntBuffer();
+		IntBuffer alBuffers = BufferUtils.createIntBuffer(numOfBuffers);//ByteBuffer.allocateDirect(4 * numOfBuffers).order(ByteOrder.nativeOrder()).asIntBuffer();
 		AL10.alGenBuffers(alBuffers);
 		for (int i = 0; i < numOfBuffers; i++) {
 			result[i] = new Buffer(alBuffers.get(i));
@@ -200,7 +199,7 @@ public class SoundSystem implements ISoundSystem {
 		} catch (IOException e1) {
 			e1.printStackTrace();
 		}
-		ByteBuffer data = ByteBuffer.allocateDirect(length);
+		ByteBuffer data = BufferUtils.createByteBuffer(length);//ByteBuffer.allocateDirect(length);
 		data.put(temp);
 		data.rewind();
 		int channels = getChannels(audioStream.getFormat());
@@ -424,7 +423,7 @@ public class SoundSystem implements ISoundSystem {
 			}
 			syncState.clear();
 			byte[] buf = baout.toByteArray();
-			ByteBuffer data = ByteBuffer.allocateDirect(buf.length);
+			ByteBuffer data = BufferUtils.createByteBuffer(buf.length);//ByteBuffer.allocateDirect(buf.length);
 			data.put(buf);
 			data.rewind();
 			tmp = generateBuffers(1);
@@ -487,8 +486,7 @@ public class SoundSystem implements ISoundSystem {
 	 */
 	public ISource[] generateSources(int numOfSources) {
 		Source[] result = new Source[numOfSources];
-		IntBuffer alSources = ByteBuffer.allocateDirect(4 * numOfSources)
-				.order(ByteOrder.nativeOrder()).asIntBuffer();
+		IntBuffer alSources = BufferUtils.createIntBuffer(numOfSources);//ByteBuffer.allocateDirect(4 * numOfSources).order(ByteOrder.nativeOrder()).asIntBuffer();
 		AL10.alGenSources(alSources);
 		for (int i = 0; i < numOfSources; i++) {
 			result[i] = new Source(alSources.get(i));

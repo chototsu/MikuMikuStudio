@@ -31,10 +31,9 @@
  */
 package com.jme.widget.impl.lwjgl;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.input.Cursor;
 
 /**
@@ -51,7 +50,7 @@ public class WidgetLWJGLStandardCursor extends Cursor {
     private static int size = 32;
 
     static {
-        cursor_image = ByteBuffer.allocateDirect(size * size * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
+        cursor_image = BufferUtils.createIntBuffer(size * size);//ByteBuffer.allocateDirect(size * size * 4).order(ByteOrder.nativeOrder()).asIntBuffer();
 
         int row = 0;
         cursor_image.put(row * size + 8, 0xFF000000);
