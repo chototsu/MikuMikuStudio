@@ -32,6 +32,8 @@
 
 /*
  * EDIT:  04/01/2004 - Check for null in getMouseInput(). GOP
+ * EDIT:  04/02/2004 - Renamed methods get/setInputController to get/setInputHandler. GOP
+ * EDIT:  04/02/2004 - Renamed attribute inputController to inputHandler. GOP
  */
 
 package com.jme.widget;
@@ -94,7 +96,7 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
     private boolean applyOffsetX = true;
     private boolean applyOffsetY = true;
 
-    private static AbstractInputHandler inputController;
+    private static AbstractInputHandler inputHandler;
 
     private static Widget mouseOwner;
     private static Widget widgetUnderMouse;
@@ -124,7 +126,7 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
 
     public MouseInput getMouseInput() {
         MouseInput mi = null;
-        Mouse m = inputController.getMouse();
+        Mouse m = inputHandler.getMouse();
         
         if (m != null) {
             mi = m.getMouseInput();
@@ -133,12 +135,12 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         return mi;
     }
 
-    public AbstractInputHandler getInputController() {
-        return inputController;
+    public AbstractInputHandler getInputHandler() {
+        return inputHandler;
     }
 
-    public void setInputController(AbstractInputHandler controller) {
-        inputController = controller;
+    public void setInputHandler(AbstractInputHandler ih) {
+        inputHandler = ih;
     }
 
 
