@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.1 2004-04-02 23:29:02 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.2 2004-04-14 00:48:02 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.
@@ -80,12 +80,13 @@ public class LWJGLTextureState extends TextureState {
             GL13.GL_CONSTANT,
             GL13.GL_PREVIOUS};
 
-    private int[] textureCombineOp = { GL11.GL_SRC_COLOR,
-            GL11.GL_ONE_MINUS_SRC_COLOR,
-            GL11.GL_SRC_ALPHA,
+    private int[] textureCombineOpRgb = { GL11.GL_SRC_COLOR,
+            GL11.GL_ONE_MINUS_SRC_COLOR};
+    
+    private int[] textureCombineOpAlpha = { GL11.GL_SRC_ALPHA,
             GL11.GL_ONE_MINUS_SRC_ALPHA };
 
-    private int[] textureCombineScale = { 1,2,4 };
+    private float[] textureCombineScale = { 1.0f,2.0f,4.0f };
 
     private int[] imageComponents =
         {
@@ -241,21 +242,21 @@ public class LWJGLTextureState extends TextureState {
                     GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_SOURCE2_ALPHA,
                             textureCombineSrc[texture.getCombineSrc2Alpha()]);
                     GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_RGB,
-                            textureCombineOp[texture.getCombineOp0RGB()]);
+                            textureCombineOpRgb[texture.getCombineOp0RGB()]);
                     GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_RGB,
-                            textureCombineOp[texture.getCombineOp1RGB()]);
+                            textureCombineOpRgb[texture.getCombineOp1RGB()]);
                     GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_RGB,
-                            textureCombineOp[texture.getCombineOp2RGB()]);
+                            textureCombineOpRgb[texture.getCombineOp2RGB()]);
                     GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND0_ALPHA,
-                            textureCombineOp[texture.getCombineOp0Alpha()]);
+                            textureCombineOpAlpha[texture.getCombineOp0Alpha()]);
                     GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND1_ALPHA,
-                            textureCombineOp[texture.getCombineOp1Alpha()]);
+                            textureCombineOpAlpha[texture.getCombineOp1Alpha()]);
                     GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_OPERAND2_ALPHA,
-                            textureCombineOp[texture.getCombineOp2Alpha()]);
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL13.GL_RGB_SCALE,
-                            textureCombineOp[texture.getCombineScaleRGB()]);
-                    GL11.glTexEnvi(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE,
-                            textureCombineOp[texture.getCombineScaleAlpha()]);
+                            textureCombineOpAlpha[texture.getCombineOp2Alpha()]);
+                    GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL13.GL_RGB_SCALE,
+                            textureCombineScale[texture.getCombineScaleRGB()]);
+                    GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE,
+                            textureCombineScale[texture.getCombineScaleRGB()]);
 
                 } else {
                     // set up apply mode
