@@ -100,7 +100,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.10 2004-04-25 21:03:45 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.11 2004-04-26 17:24:03 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -833,7 +833,7 @@ public class LWJGLRenderer implements Renderer {
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureAsFloatBuffer(i);
             if (textures != null) {
-                if(GLContext.GL_ARB_multitexture) {
+                if(GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
                     GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                 }
                 if (textures != null) {
