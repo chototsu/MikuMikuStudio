@@ -397,12 +397,6 @@ public class TestUI extends BaseGame {
          * This call updates the location of the mouse cursor
          */
         mouse.update();
-        
-        /*
-         * IMPORTANT... you have to call the updateState so that
-         * the button states are updated for the UIObjects to read
-         */
-        mouse.getMouseInput().updateState();
         mouseText.print("Position: " + mouse.getLocalTranslation().x + " , " + mouse.getLocalTranslation().y);
 
         /*
