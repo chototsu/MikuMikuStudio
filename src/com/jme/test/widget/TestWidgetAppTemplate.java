@@ -32,8 +32,7 @@
 package com.jme.test.widget;
 
 import com.jme.app.AbstractGame;
-import com.jme.input.InputSystem;
-import com.jme.input.KeyInput;
+import com.jme.input.InputControllerAbstract;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.LWJGLCamera;
 import com.jme.scene.Node;
@@ -44,8 +43,7 @@ import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.WidgetFrameAbstract;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.button.WidgetButton;
-import com.jme.widget.impl.lwjgl.WidgetLWJGLMouseState;
-import com.jme.widget.input.mouse.WidgetMouseStateAbstract;
+import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
 import com.jme.widget.layout.WidgetFlowLayout;
 
 /**
@@ -56,8 +54,8 @@ import com.jme.widget.layout.WidgetFlowLayout;
  */
 public class TestWidgetAppTemplate extends AbstractGame {
     private class TestFrame extends WidgetFrameAbstract {
-        public TestFrame(DisplaySystem ds, WidgetMouseStateAbstract mouseState, Timer timer) {
-            super(ds, mouseState, timer);
+        public TestFrame(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
+            super(ds, ic, timer);
 
             setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_CENTER));
 
@@ -73,19 +71,13 @@ public class TestWidgetAppTemplate extends AbstractGame {
     private TestFrame frame;
     private Node scene;
     private LWJGLCamera cam;
-    private KeyInput key;
+    private InputControllerAbstract input;
 
     /* (non-Javadoc)
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
-        key.update();
-
-        if (key.isKeyDown(KeyInput.KEY_ESCAPE)) {
-            finish();
-        }
-
-        frame.handleMouse();
+        frame.handleInput();
     }
 
     /* (non-Javadoc)
@@ -122,8 +114,8 @@ public class TestWidgetAppTemplate extends AbstractGame {
 
         display.getRenderer().setCamera(cam);
 
-        InputSystem.createInputSystem(properties.getRenderer());
-        key = InputSystem.getKeyInput();
+
+        input = new WidgetMouseTestControllerBasic(this, display.getRenderer().getCamera(), properties.getRenderer());
 
     }
 
@@ -133,7 +125,7 @@ public class TestWidgetAppTemplate extends AbstractGame {
     protected void initGame() {
         scene = new Node();
 
-        frame = new TestFrame(display, new WidgetLWJGLMouseState(), Timer.getTimer(properties.getRenderer()));
+        frame = new TestFrame(display, input, Timer.getTimer(properties.getRenderer()));
 
         frame.updateGeometricState(0.0f, true);
 

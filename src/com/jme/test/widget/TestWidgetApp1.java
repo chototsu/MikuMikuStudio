@@ -32,8 +32,7 @@
 package com.jme.test.widget;
 
 import com.jme.app.AbstractGame;
-import com.jme.input.InputSystem;
-import com.jme.input.KeyInput;
+import com.jme.input.InputControllerAbstract;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.LWJGLCamera;
 import com.jme.renderer.Renderer;
@@ -45,9 +44,10 @@ import com.jme.widget.WidgetContainerAbstract;
 import com.jme.widget.WidgetFillType;
 import com.jme.widget.WidgetFrameAbstract;
 import com.jme.widget.WidgetInsets;
+import com.jme.widget.border.WidgetBorder;
+import com.jme.widget.border.WidgetBorderType;
 import com.jme.widget.button.WidgetButton;
-import com.jme.widget.impl.lwjgl.WidgetLWJGLMouseState;
-import com.jme.widget.input.mouse.WidgetMouseStateAbstract;
+import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
 import com.jme.widget.layout.WidgetBorderLayout;
 import com.jme.widget.layout.WidgetBorderLayoutConstraint;
 import com.jme.widget.layout.WidgetFlowLayout;
@@ -55,6 +55,7 @@ import com.jme.widget.panel.WidgetPanel;
 import com.jme.widget.panel.WidgetScrollPanel;
 import com.jme.widget.panel.rollout.WidgetRolloutPanel;
 import com.jme.widget.panel.rollout.WidgetRolloutPanelContainer;
+import com.jme.widget.text.WidgetText;
 
 /**
  * @author Gregg Patton
@@ -71,7 +72,7 @@ public class TestWidgetApp1 extends AbstractGame {
         static final int TOTAL_ROLLOUTS = 4;
 
         static final boolean ADD_CENTER_BUTTON = false;
-        static final boolean ADD_NORTH_BUTTON = true;
+        static final boolean ADD_NORTH_PANEL = true;
         static final boolean ADD_SOUTH_BUTTON = true;
         static final boolean ADD_EAST_BUTTON = true;
         static final boolean ADD_WEST_BUTTON = true;
@@ -81,18 +82,32 @@ public class TestWidgetApp1 extends AbstractGame {
         static final boolean SCROLL_PANEL_FILL_HORIZONTAL = false;
         static final boolean ROLLOUT_CONTAINER = true;
 
-        WidgetButton north;
-
-        TestFrame(DisplaySystem ds, WidgetMouseStateAbstract mouseState, Timer timer) {
-            super(ds, mouseState, timer);
+        WidgetText fps;
+        
+        TestFrame(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
+            super(ds, ic, timer);
 
             setLayout(new WidgetBorderLayout());
             setInsets(new WidgetInsets());
 
-            north = new WidgetButton("North", WidgetAlignmentType.ALIGN_WEST);
-            north.setInsets(new WidgetInsets(5, 5, 5, 5));
-            if (ADD_NORTH_BUTTON)
-                add(north, WidgetBorderLayoutConstraint.NORTH);
+            WidgetPanel northPanel = new WidgetPanel();
+            //northPanel.setBgColor(null);
+            northPanel.setLayout(new WidgetFlowLayout(5, 0));
+            northPanel.setInsets(new WidgetInsets(5, 5, 5, 5));
+            northPanel.setBorder(new WidgetBorder(1, 1, 1, 1, WidgetBorderType.LOWERED));
+
+            WidgetButton northButton = new WidgetButton("North", WidgetAlignmentType.ALIGN_CENTER);
+            northButton.setBorder(new WidgetBorder(3, 3, 3, 3));
+            northButton.setInsets(new WidgetInsets(5, 5, 5, 5));
+
+            fps = new WidgetText("          ");
+
+            northPanel.add(northButton);
+            northPanel.add(fps);
+
+                        
+            if (ADD_NORTH_PANEL)
+                add(northPanel, WidgetBorderLayoutConstraint.NORTH);
 
             WidgetButton south = new WidgetButton("South", WidgetAlignmentType.ALIGN_CENTER);
             if (ADD_SOUTH_BUTTON)
@@ -127,10 +142,10 @@ public class TestWidgetApp1 extends AbstractGame {
 
                     WidgetPanel panel = new WidgetPanel();
 
-                    add(panel, WidgetBorderLayoutConstraint.CENTER);
-                    addWidgets(panel);
+                    add(northPanel, WidgetBorderLayoutConstraint.CENTER);
+                    addWidgets(northPanel);
 
-                } else {
+                } else if (ROLLOUT_CONTAINER) {
 
                     WidgetRolloutPanelContainer rpc = new WidgetRolloutPanelContainer();
 
@@ -142,6 +157,7 @@ public class TestWidgetApp1 extends AbstractGame {
                 }
             }
 
+            doLayout();
             doLayout();
         }
 
@@ -194,25 +210,19 @@ public class TestWidgetApp1 extends AbstractGame {
         public void onDraw(Renderer r) {
             super.onDraw(r);
 
-            north.setTitle("North - FPS:  " + getFrameRate().toString());
+            fps.setText("FPS:  " + getFrameRate().toString());
         }
 
     }
 
     private TestFrame frame;
-    private KeyInput key;
+    private InputControllerAbstract input;
 
     /* (non-Javadoc)
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
-        key.update();
-
-        if (key.isKeyDown(KeyInput.KEY_ESCAPE)) {
-            finish();
-        }
-
-        frame.handleMouse();
+        frame.handleInput();
     }
 
     /* (non-Javadoc)
@@ -247,8 +257,7 @@ public class TestWidgetApp1 extends AbstractGame {
 
         display.getRenderer().setCamera(new LWJGLCamera(display.getWidth(), display.getHeight()));
 
-        InputSystem.createInputSystem(properties.getRenderer());
-        key = InputSystem.getKeyInput();
+        input = new WidgetMouseTestControllerBasic(this, display.getRenderer().getCamera(), properties.getRenderer());
 
     }
 
@@ -256,7 +265,7 @@ public class TestWidgetApp1 extends AbstractGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
-        frame = new TestFrame(display, new WidgetLWJGLMouseState(), Timer.getTimer(properties.getRenderer()));
+        frame = new TestFrame(display, input, Timer.getTimer(properties.getRenderer()));
 
         frame.updateGeometricState(0.0f, true);
     }

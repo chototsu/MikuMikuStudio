@@ -36,8 +36,7 @@ import java.util.Observer;
 import java.util.Random;
 
 import com.jme.app.AbstractGame;
-import com.jme.input.InputSystem;
-import com.jme.input.KeyInput;
+import com.jme.input.InputControllerAbstract;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.LWJGLCamera;
@@ -52,8 +51,7 @@ import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.WidgetFrameAbstract;
 import com.jme.widget.WidgetInsets;
 import com.jme.widget.button.WidgetButton;
-import com.jme.widget.impl.lwjgl.WidgetLWJGLMouseState;
-import com.jme.widget.input.mouse.WidgetMouseStateAbstract;
+import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
 import com.jme.widget.layout.WidgetAbsoluteLayout;
 
 /**
@@ -67,8 +65,8 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
         WidgetButton shuffleButton;
         Random random = new Random();
 
-        TestFrame(DisplaySystem ds, WidgetMouseStateAbstract mouseState, Timer timer) {
-            super(ds, mouseState, timer);
+        TestFrame(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
+            super(ds, ic, timer);
 
             setLayout(new WidgetAbsoluteLayout());
 
@@ -116,19 +114,13 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
     private Node scene;
     private TriMesh t;
     private LWJGLCamera cam;
-    private KeyInput key;
+    private InputControllerAbstract input;
 
     /* (non-Javadoc)
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
-        key.update();
-
-        if (key.isKeyDown(KeyInput.KEY_ESCAPE)) {
-            finish();
-        }
-
-        frame.handleMouse();
+        frame.handleInput();
     }
 
     /* (non-Javadoc)
@@ -172,8 +164,7 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        InputSystem.createInputSystem(properties.getRenderer());
-        key = InputSystem.getKeyInput();
+        input = new WidgetMouseTestControllerBasic(this, display.getRenderer().getCamera(), properties.getRenderer());
 
     }
 
@@ -185,7 +176,7 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
 
         initTriMesh();
 
-        frame = new TestFrame(display, new WidgetLWJGLMouseState(), Timer.getTimer(properties.getRenderer()));
+        frame = new TestFrame(display, input, Timer.getTimer(properties.getRenderer()));
 
         frame.shuffle();
 
