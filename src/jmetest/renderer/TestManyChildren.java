@@ -46,7 +46,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.6 2004-03-08 02:50:24 renanse Exp $
+ * @version $Id: TestManyChildren.java,v 1.7 2004-03-08 23:43:51 renanse Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
@@ -126,7 +126,7 @@ public class TestManyChildren extends SimpleGame {
         input = new NodeController(this, camNode, "LWJGL");
         input.setKeySpeed(2f);
         input.setMouseSpeed(0.5f);
-        display.setTitle("Light State Test");
+        display.setTitle("2,500 Box Test");
         display.getRenderer().enableStatistics(true);
         timer = Timer.getTimer(properties.getRenderer());
 
@@ -143,7 +143,7 @@ public class TestManyChildren extends SimpleGame {
         CloneNode scene = new CloneNode("Clone node");
         root = new Node("Root node");
         TriMesh t = new Box("Box", min, max);
-        t.setModelBound(new BoundingSphere());
+        t.setModelBound(new BoundingBox());
         t.updateModelBound();
         scene.setGeometry(t);
 
