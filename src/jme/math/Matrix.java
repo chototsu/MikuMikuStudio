@@ -51,6 +51,23 @@ public class Matrix {
     public Matrix() {
         loadIdentity();
     }
+    
+    /**
+     * Constructor instantiates a new <code>Matrix</code> that is set to the
+     * provided matrix. This constructor copies a given Matrix. If the 
+     * provided matrix is null, the constructor sets the matrix to the 
+     * identity.
+     * @param mat the matrix to copy.
+     */
+    public Matrix(Matrix mat) {
+    	if(null == mat) {
+    		loadIdentity();
+    	} else {
+	    	for(int i = 0; i < 16; i++) {
+	    		matrix[i] = mat.getMatrix()[i];
+	    	}
+    	}
+    }
 
     /**
      * <code>loadIdentity</code> sets this matrix to the identity matrix, 
@@ -79,13 +96,13 @@ public class Matrix {
     }
 
     /**
-     * <code>postMultiply</code> multiplies this matrix with another matrix.
+     * <code>multiply</code> multiplies this matrix with another matrix.
      * This matrix will be on the left hand side, while the parameter matrix
      * will be on the right.
      * @param matrix the matrix to multiply this matrix by.
      * @throws MonkeyRuntimeException if matrix is null.
      */
-    public void postMultiply(Matrix matrix) {
+    public void multiply(Matrix matrix) {
         if(null == matrix) {
             throw new MonkeyRuntimeException("Matrix may not be null.");
         }
@@ -149,7 +166,7 @@ public class Matrix {
         this.matrix[15] = 1;
 
     }
-
+    
     /**
      * <code>setTranslation</code> will set the matrix's translation values.
      * @param translation the new values for the translation.

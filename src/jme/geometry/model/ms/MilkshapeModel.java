@@ -597,7 +597,7 @@ public class MilkshapeModel implements Geometry {
             if (joints[i].parent != -1) {
                 joints[i].absolute.set(
                     joints[joints[i].parent].absolute.getMatrix());
-                joints[i].absolute.postMultiply(joints[i].relative);
+                joints[i].absolute.multiply(joints[i].relative);
             } else {
                 joints[i].absolute.set(joints[i].relative.getMatrix());
             }
