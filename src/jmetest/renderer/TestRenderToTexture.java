@@ -123,7 +123,7 @@ public class TestRenderToTexture extends SimpleGame {
      */
     protected void render(float interpolation) {
         display.getRenderer().clearStatistics();
-
+////////////////////////////////////////
         try {
 
             if (pbuffer.isBufferLost()) {
@@ -138,18 +138,15 @@ public class TestRenderToTexture extends SimpleGame {
             display.getRenderer().draw(fake);
             GL.glBindTexture(GL.GL_TEXTURE_2D, tex_handle);
             GL.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
-            GL.glFinish();
             pbuffer.releaseContext();
         } catch (Exception e) {
             System.err.println("ouch");
             e.printStackTrace();
             System.exit(0);
         }
-
+////////////////////////////////////////
         display.getRenderer().clearBuffers();
-            GL.glPushMatrix();
         display.getRenderer().draw(root);
-            GL.glPopMatrix();
 
     }
 
@@ -175,13 +172,13 @@ public class TestRenderToTexture extends SimpleGame {
             e.printStackTrace();
             System.exit(1);
         }
-
+////////////////////////////////////////
       if ((Pbuffer.getPbufferCaps() & Pbuffer.PBUFFER_SUPPORTED) == 0) {
           System.out.println("No Pbuffer support!");
           System.exit(1);
       }
       System.out.println("Pbuffer support detected");
-
+////////////////////////////////////////
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
@@ -200,7 +197,7 @@ public class TestRenderToTexture extends SimpleGame {
         rotQuat = new Quaternion();
         axis = new Vector3f(1,1,0.5f);
         display.setTitle("Render to Texture");
-
+////////////////////////////////////////
         IntBuffer buf =
             ByteBuffer
                 .allocateDirect(4)
@@ -218,9 +215,9 @@ public class TestRenderToTexture extends SimpleGame {
         GL.glTexEnvi(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
         GL.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
 //        GL.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_GENERATE_MIPMAP, GL.GL_TRUE);
-
-        display.getRenderer().enableStatistics(true);
         initPbuffer();
+////////////////////////////////////////
+        display.getRenderer().enableStatistics(true);
     }
 
     /**
@@ -229,12 +226,6 @@ public class TestRenderToTexture extends SimpleGame {
      */
     protected void initGame() {
 
-        AlphaState as1 = display.getRenderer().getAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
         scene = new Node("3D Scene Node");
         root = new Node("Root Scene Node");
         fake = new Node("Fake node");
@@ -242,12 +233,9 @@ public class TestRenderToTexture extends SimpleGame {
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
 
-
-
         t = new Box("Box", min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
-
         t.setLocalTranslation(new Vector3f(0,0,0));
 
         scene.attachChild(t);
@@ -256,8 +244,6 @@ public class TestRenderToTexture extends SimpleGame {
         t2 = new Box("Inner Box", min,max);
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
-//        t2.setRenderState(as1);
-
         t2.setLocalTranslation(new Vector3f(0,0,0));
 
         fake.attachChild(t2);
@@ -265,6 +251,9 @@ public class TestRenderToTexture extends SimpleGame {
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
+
+        scene.setRenderState(buf);
+        fake.setRenderState(buf);
 
         DirectionalLight am = new DirectionalLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
@@ -274,54 +263,37 @@ public class TestRenderToTexture extends SimpleGame {
         LightState state = display.getRenderer().getLightState();
         state.attach(am);
         am.setEnabled(true);
-        //scene.setRenderState(state);
-        scene.setRenderState(buf);
-        fake.setRenderState(buf);
+        scene.setRenderState(state);
+
         cam.update();
 
-        ColorRGBA[] colors = new ColorRGBA[24];
-        for(int i = 0; i < 24; i++) {
-            colors[i] = new ColorRGBA((float)Math.random(),
-                    (float)Math.random(),
-                    (float)Math.random(),1);
-        }
-            TextureState ts = display.getRenderer().getTextureState();
-                ts.setEnabled(true);
-                ts.setTexture(
-                    TextureManager.loadTexture(
-                        TestRenderToTexture.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                        Texture.MM_LINEAR,
-                        Texture.FM_LINEAR,
-                        true));
-//        t.setColors(colors);
+        TextureState ts = display.getRenderer().getTextureState();
+            ts.setEnabled(true);
+            ts.setTexture(
+                TextureManager.loadTexture(
+                    TestRenderToTexture.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
+                    Texture.MM_LINEAR_LINEAR,
+                    Texture.FM_LINEAR,
+                    true));
         fake.setRenderState(ts);
 
-
-            ts = display.getRenderer().getTextureState();
-            ts.setEnabled(true);
-            Texture tex = new Texture();
-            ts.setEnabled(true);
-            tex.setTextureId(tex_handle);
-//            tex.setApply(Texture.AM_MODULATE);
-            tex.setBlendColor(new ColorRGBA(1, 1, 1, 1f));
-//            tex.setCorrection(Texture.CM_PERSPECTIVE);
-//            tex.setFilter(GL.GL_LINEAR);
-//            tex.setMipmapState(GL.GL_LINEAR_MIPMAP_LINEAR);
-//            tex.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-            ts.setTexture(tex);
-//
-//                ts.setTexture(
-//                    TextureManager.loadTexture(
-//                        TestRenderToTexture.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-//                        Texture.MM_LINEAR,
-//                        Texture.FM_LINEAR,
-//                        true));
+////////////////////////////////////////
+        ts = display.getRenderer().getTextureState();
+        ts.setEnabled(true);
+        Texture tex = new Texture();
+        ts.setEnabled(true);
+        tex.setTextureId(tex_handle);
+        tex.setApply(Texture.AM_MODULATE);
+        tex.setBlendColor(new ColorRGBA(1, 1, 1, 1f));
+        tex.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+        ts.setTexture(tex);
+////////////////////////////////////////
 
         scene.setRenderState(ts);
 
         scene.updateGeometricState(0.0f, true);
-
     }
+
     /**
      * not used.
      * @see com.jme.app.SimpleGame#reinit()
