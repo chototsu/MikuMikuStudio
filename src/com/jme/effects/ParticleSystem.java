@@ -52,7 +52,7 @@ import com.jme.scene.state.RenderState;
  * <code>ParticleSystem</code>
  *
  * @author Ahmed
- * @version $Id: ParticleSystem.java,v 1.11 2004-02-24 14:59:42 mojomonkey Exp $
+ * @version $Id: ParticleSystem.java,v 1.12 2004-03-03 00:19:38 renanse Exp $
  */
 public class ParticleSystem extends Node {
 
@@ -148,14 +148,14 @@ public class ParticleSystem extends Node {
 
             int[] indices = { 0, 1, 3, 2, 3, 1 };
 
-            
-            
+
+
             for (int i = 0; i < numOfParticles; i++) {
                 particles[i] = new Particle("Particle " + (i + 1),vertices, null, colors, tex, indices);
                 particleParent.attachChild(particles[i]);
             }
 
-            
+
             geoToUse = 0;
         }
 
@@ -204,10 +204,10 @@ public class ParticleSystem extends Node {
         startSize = s;
         endSize = e;
         for(int i = 0; i < particles.length; i++) {
-        	particles[i].setAverageSize((s+e)/2f);
+            particles[i].setAverageSize((s+e)/2f);
         }
     }
-    
+
     public void setFade(float f) {
         fade = f;
     }
@@ -268,13 +268,11 @@ public class ParticleSystem extends Node {
             if (parent != null) {
                 worldScale = parent.getWorldScale() * localScale;
                 if (!(parent instanceof CameraNode) || alwaysRotate) {
-                    parent.getWorldRotation().mult(
-                        localRotation,
-                        worldRotation);
+                    parent.getWorldRotation().mult(localRotation, worldRotation);
                 }
-                parent.getWorldRotation().mult(localTranslation, worldTranslation);
-                worldTranslation.multLocal(parent.getWorldScale());
-                worldTranslation.addLocal(parent.getWorldTranslation());
+                worldTranslation = parent.getWorldRotation().mult(localTranslation, worldTranslation)
+                        .multLocal(parent.getWorldScale())
+                        .addLocal(parent.getWorldTranslation());
 
             } else {
                 worldScale = localScale;

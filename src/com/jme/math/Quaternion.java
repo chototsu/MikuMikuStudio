@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.6 2004-03-02 19:55:15 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.7 2004-03-03 00:19:38 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -468,15 +468,7 @@ public class Quaternion {
      * @return the new vector.
      */
     public Vector3f mult(Vector3f v) {
-        uv.set(x,y,z).crossLocal(v);
-        uuv.set(x,y,z).crossLocal(uv);
-        uv.multLocal(2f * w);
-        uuv.multLocal(2f);
-        Vector3f rVal = new Vector3f();
-        rVal.x = v.x + (uv.x+uuv.x);
-        rVal.y = v.y + (uv.y+uuv.y);
-        rVal.z = v.z + (uv.z+uuv.z);
-        return rVal;
+        return mult(v, null);
     }
 
     /**
@@ -486,13 +478,11 @@ public class Quaternion {
      * @return v
      */
     public Vector3f multLocal(Vector3f v) {
-        uv.set(x,y,z).crossLocal(v);
-        uuv.set(x,y,z).crossLocal(uv);
-        uv.multLocal(2f * w);
-        uuv.multLocal(2f);
-        v.x = v.x + (uv.x+uuv.x);
-        v.y = v.y + (uv.y+uuv.y);
-        v.z = v.z + (uv.z+uuv.z);
+        float tempX, tempY;
+        tempX =   w*w*v.x + 2*y*w*v.z - 2*z*w*v.y +   x*x*v.x + 2*y*x*v.y + 2*z*x*v.z -   z*z*v.x - y*y*v.x;
+        tempY = 2*x*y*v.x +   y*y*v.y + 2*z*y*v.z + 2*w*z*v.x -   z*z*v.y +   w*w*v.y - 2*x*w*v.z - x*x*v.y;
+        v.z = 2*x*z*v.x + 2*y*z*v.y +   z*z*v.z - 2*w*y*v.x -   y*y*v.z + 2*w*x*v.y -   x*x*v.z + w*w*v.z;
+        v.x = tempX; v.y = tempY;
         return v;
     }
 
@@ -504,14 +494,10 @@ public class Quaternion {
      * @return the result vector.
      */
     public Vector3f mult(Vector3f v, Vector3f store) {
-        uv.set(x,y,z).crossLocal(v);
-        uuv.set(x,y,z).crossLocal(uv);
-        uv.multLocal(2f*w);
-        uuv.multLocal(2f);
         if (store == null) store = new Vector3f();
-        store.x = v.x + (uv.x + uuv.x);
-        store.y = v.y + (uv.y + uuv.y);
-        store.z = v.z + (uv.z + uuv.z);
+        store.x =   w*w*v.x + 2*y*w*v.z - 2*z*w*v.y +   x*x*v.x + 2*y*x*v.y + 2*z*x*v.z -   z*z*v.x - y*y*v.x;
+        store.y = 2*x*y*v.x +   y*y*v.y + 2*z*y*v.z + 2*w*z*v.x -   z*z*v.y +   w*w*v.y - 2*x*w*v.z - x*x*v.y;
+        store.z = 2*x*z*v.x + 2*y*z*v.y +   z*z*v.z - 2*w*y*v.x -   y*y*v.z + 2*w*x*v.y -   x*x*v.z + w*w*v.z;
         return store;
     }
 
