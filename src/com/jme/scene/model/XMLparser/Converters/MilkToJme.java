@@ -27,9 +27,9 @@ public class MilkToJme extends FormatConverter{
     private DataInput inFile;
     private byte[] tempChar=new byte[128];
     private int nNumVertices;
-    private MilkVertex[] myVerts;
     private int nNumTriangles;
     private MilkTriangle[] myTris;
+    private MilkVertex[] myVerts;
     private int[] materialIndexes;
 
     /**
@@ -70,7 +70,13 @@ public class MilkToJme extends FormatConverter{
         if (!readJoints()){
             jbw.setProperty("jointmesh","astrimesh");
         }
+        nullAll();
         jbw.writeScene(finalNode,o);
+    }
+
+    private void nullAll() {
+        myTris=null;
+        myVerts=null;
     }
 
     private boolean readJoints() throws IOException {

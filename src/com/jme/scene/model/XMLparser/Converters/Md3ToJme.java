@@ -24,11 +24,11 @@ import java.io.IOException;
  * @author Jack Lindamood
  */
 public class Md3ToJme extends FormatConverter{
-    BinaryFileReader file;
-    MD3Header head;
-    MD3Frame[] frames;
-    MD3Tag[][] tags;
-    MD3Surface[] surfaces;
+    private BinaryFileReader file;
+    private MD3Header head;
+    private MD3Frame[] frames;
+    private MD3Tag[][] tags;
+    private MD3Surface[] surfaces;
 
     public void convert(InputStream format, OutputStream jMEFormat) throws IOException {
         file=new BinaryFileReader(format);
@@ -61,7 +61,16 @@ public class Md3ToJme extends FormatConverter{
             vkc.setActive(true);
             object.addController(vkc);
         }
+        nullAll();
         return toReturn;
+    }
+
+    private void nullAll() {
+        frames=null;
+        tags=null;
+        surfaces=null;
+        head=null;
+        file=null;
     }
 
     private void readSurfaces() throws IOException {

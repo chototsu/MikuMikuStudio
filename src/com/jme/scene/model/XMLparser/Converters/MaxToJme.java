@@ -40,6 +40,8 @@ public class MaxToJme extends FormatConverter {
         myIn=new LittleEndien(max);
         chunkedTDS=new TDSFile(myIn);
         Node toReturn=chunkedTDS.buildScene();
+        chunkedTDS=null;
+        myIn=null;
         new JmeBinaryWriter().writeScene(toReturn,bin);
     }
 }
