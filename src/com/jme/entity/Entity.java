@@ -40,7 +40,7 @@ import com.jme.scene.Spatial;
  * within the game world. The <code>Entity</code> will contain all relevant
  * game information allowing for easy data reference and control.
  * @author Mark Powell
- * @version $Id: Entity.java,v 1.5 2004-04-22 22:26:27 renanse Exp $
+ * @version $Id: Entity.java,v 1.6 2004-07-05 06:39:09 cep21 Exp $
  */
 public class Entity {
 	private Spatial spatial;
@@ -109,7 +109,7 @@ public class Entity {
 
 	/**
 	 * Binds a property name of the entity with it's property object.
-	 * @param propertName the property name.
+	 * @param propertyName the property name.
 	 * @param property the propery to bind with the name.
 	 */
 	public void setProperty(String propertyName, Object property) {
