@@ -40,7 +40,7 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: RenParticle.java,v 1.2 2004-03-24 01:38:25 renanse Exp $
+ * @version $Id: RenParticle.java,v 1.3 2004-03-24 18:45:18 renanse Exp $
  */
 public class RenParticle {
 
@@ -106,7 +106,7 @@ public class RenParticle {
   public void updateVerts() {
     Camera cam = parent.getCamera();
 
-    bbX.set(cam.getLeft()).negateLocal().multLocal(currentSize);
+    bbX.set(cam.getLeft()).multLocal(currentSize);
     bbY.set(cam.getUp()).multLocal(currentSize);
 
     location.subtract(bbX, verts[0]).subtractLocal(bbY);
@@ -127,17 +127,17 @@ public class RenParticle {
    * @return true if this particle has "died"
    */
   public boolean updateAndCheck() {
-    currentAge += 10F;
+    currentAge += 10f; // add 10ms to age
     if (currentAge > lifeSpan) {
       return true;
     }
 
     speed.scaleAdd(parent.getParticlesSpeed(), parent.getGravityForce(), speed);
     location.scaleAdd(parent.getParticlesSpeed(), speed, location);
-    if (parent.getRandomMod() != 0.0F) {
+    if (parent.getRandomMod() != 0.0f) {
       randomPoint.set(parent.getRandomMod() *
                       ( -FastMath.nextRandomFloat() + FastMath.nextRandomFloat()),
-                      0.0F,
+                      0.0f,
                       parent.getRandomMod() *
                       ( -FastMath.nextRandomFloat() + FastMath.nextRandomFloat()));
       location.addLocal(randomPoint);

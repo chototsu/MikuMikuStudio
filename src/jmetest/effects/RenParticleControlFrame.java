@@ -135,7 +135,7 @@ public class RenParticleControlFrame extends JFrame {
   * <code>RenParticleControlFrame</code>
   *
   * @author Joshua Slack
-  * @version $Id: RenParticleControlFrame.java,v 1.5 2004-03-24 01:38:26 renanse Exp $
+  * @version $Id: RenParticleControlFrame.java,v 1.6 2004-03-24 18:46:06 renanse Exp $
   *
   */
 
@@ -235,11 +235,11 @@ public class RenParticleControlFrame extends JFrame {
     speedLabel.setFont(new java.awt.Font("Arial", 1, 13));
     speedLabel.setText("Speed Mod.: 0%");
     speedBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
-    speedSlider.setMaximum(500);
+    speedSlider.setMaximum(100);
     speedSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = speedSlider.getValue();
-        TestRenParticleGUI.manager.setParticlesSpeed((float)val/1000f);
+        TestRenParticleGUI.manager.setParticlesSpeed((float)val * .1f);
         updateSpeedLabels();
       }
     });
@@ -266,10 +266,10 @@ public class RenParticleControlFrame extends JFrame {
     gravXLabel.setText("X");
     gravXSlider.setOrientation(JSlider.VERTICAL);
     gravXSlider.setInverted(false);
-    gravXSlider.setMajorTickSpacing(20);
-    gravXSlider.setMaximum(100);
-    gravXSlider.setMinimum(-100);
-    gravXSlider.setMinorTickSpacing(5);
+    gravXSlider.setMajorTickSpacing(16);
+    gravXSlider.setMaximum(32);
+    gravXSlider.setMinimum(-32);
+    gravXSlider.setMinorTickSpacing(4);
     gravXSlider.setPaintLabels(true);
     gravXSlider.setPaintTicks(true);
     gravXSlider.setPaintTrack(true);
@@ -278,17 +278,17 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravXSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.05f;
+          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.001f;
       }
     });
 
     gravYLabel.setText("Y");
     gravYSlider.setOrientation(JSlider.VERTICAL);
     gravYSlider.setInverted(false);
-    gravYSlider.setMajorTickSpacing(20);
-    gravYSlider.setMaximum(100);
-    gravYSlider.setMinimum(-100);
-    gravYSlider.setMinorTickSpacing(5);
+    gravYSlider.setMajorTickSpacing(16);
+    gravYSlider.setMaximum(32);
+    gravYSlider.setMinimum(-32);
+    gravYSlider.setMinorTickSpacing(4);
     gravYSlider.setPaintLabels(true);
     gravYSlider.setPaintTicks(true);
     gravYSlider.setPaintTrack(true);
@@ -297,17 +297,17 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravYSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.05f;
+          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.001f;
       }
     });
 
     gravZLabel.setText("Z");
     gravZSlider.setOrientation(JSlider.VERTICAL);
     gravZSlider.setInverted(false);
-    gravZSlider.setMajorTickSpacing(20);
-    gravZSlider.setMaximum(100);
-    gravZSlider.setMinimum(-100);
-    gravZSlider.setMinorTickSpacing(5);
+    gravZSlider.setMajorTickSpacing(16);
+    gravZSlider.setMaximum(32);
+    gravZSlider.setMinimum(-32);
+    gravZSlider.setMinorTickSpacing(4);
     gravZSlider.setPaintLabels(true);
     gravZSlider.setPaintTicks(true);
     gravZSlider.setPaintTrack(true);
@@ -316,7 +316,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravZSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.05f;
+          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.001f;
       }
     });
 
@@ -341,9 +341,10 @@ public class RenParticleControlFrame extends JFrame {
     emitBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
     emitBorder.setTitle(" DIRECTION ");
     emitZSlider.setOrientation(JSlider.VERTICAL);
-    emitZSlider.setMajorTickSpacing(20);
-    emitZSlider.setMinimum(-100);
-    emitZSlider.setMinorTickSpacing(5);
+    emitZSlider.setMajorTickSpacing(5);
+    emitZSlider.setMinimum(-10);
+    emitZSlider.setMaximum(10);
+    emitZSlider.setMinorTickSpacing(1);
     emitZSlider.setPaintLabels(true);
     emitZSlider.setPaintTicks(true);
     emitZSlider.addChangeListener(new ChangeListener() {
@@ -356,9 +357,10 @@ public class RenParticleControlFrame extends JFrame {
       }
     });
     emitYSlider.setOrientation(JSlider.VERTICAL);
-    emitYSlider.setMajorTickSpacing(20);
-    emitYSlider.setMinimum(-100);
-    emitYSlider.setMinorTickSpacing(5);
+    emitYSlider.setMajorTickSpacing(5);
+    emitYSlider.setMinimum(-10);
+    emitYSlider.setMaximum(10);
+    emitYSlider.setMinorTickSpacing(1);
     emitYSlider.setPaintLabels(true);
     emitYSlider.setPaintTicks(true);
     emitYSlider.addChangeListener(new ChangeListener() {
@@ -371,9 +373,10 @@ public class RenParticleControlFrame extends JFrame {
       }
     });
     emitXSlider.setOrientation(JSlider.VERTICAL);
-    emitXSlider.setMajorTickSpacing(20);
-    emitXSlider.setMinimum(-100);
-    emitXSlider.setMinorTickSpacing(5);
+    emitXSlider.setMajorTickSpacing(5);
+    emitXSlider.setMinimum(-10);
+    emitXSlider.setMaximum(10);
+    emitXSlider.setMinorTickSpacing(1);
     emitXSlider.setPaintLabels(true);
     emitXSlider.setPaintTicks(true);
     emitXSlider.addChangeListener(new ChangeListener() {
@@ -399,7 +402,7 @@ public class RenParticleControlFrame extends JFrame {
     angleLabel.setFont(new java.awt.Font("Arial", 1, 13));
     angleSlider.setValue(0);
     angleSlider.setMinimum(0);
-    angleSlider.setMaximum(360);
+    angleSlider.setMaximum(180);
     angleSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = angleSlider.getValue();
@@ -553,11 +556,11 @@ public class RenParticleControlFrame extends JFrame {
     updateSizeLabels();
     minAgeSlider.setValue((int)(TestRenParticleGUI.manager.getParticlesMinimumLifeTime()));
     updateAgeLabels();
-    speedSlider.setValue((int)(TestRenParticleGUI.manager.getParticlesSpeed() * 1000));
+    speedSlider.setValue((int)(TestRenParticleGUI.manager.getParticlesSpeed() * 10));
     updateSpeedLabels();
-    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 500));
-    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 500));
-    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 500));
+    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 1000));
+    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 1000));
+    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 1000));
     emitXSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().x * 10));
     emitYSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().y * 10));
     emitZSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().z * 10));
@@ -589,7 +592,7 @@ public class RenParticleControlFrame extends JFrame {
    */
   private void updateSpeedLabels() {
     int val = speedSlider.getValue();
-    speedLabel.setText("Speed Mod: "+val+"%");
+    speedLabel.setText("Speed Mod: "+val*10+"%");
   }
 
   /**

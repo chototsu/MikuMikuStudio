@@ -55,7 +55,7 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.4 2004-03-24 01:38:26 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.5 2004-03-24 18:45:18 renanse Exp $
  *
  */
 public class RenParticleManager {
@@ -222,16 +222,15 @@ public class RenParticleManager {
    */
   public void updateRotationMatrix() {
     float emit = emissionDirection.length();
-    if (emit < 0.1F) {
+    if (emit < 0.1f) {
       return;
     }
-    Vector3f abUpMinUp = new Vector3f();
-    Vector3f absUpVector = new Vector3f();
     float matData[][] = new float[3][3];
     emissionDirection.multLocal(1.0f / emit);
-    Vector3f upXemit = upVector.cross(emissionDirection);
     float upDotEmit = upVector.dot(emissionDirection);
     if ( ( (double) FastMath.abs(upDotEmit)) > 1.0d - FastMath.DBL_EPSILON) {
+      Vector3f absUpVector = new Vector3f();
+      Vector3f abUpMinUp = new Vector3f();
       absUpVector.x = upVector.x <= 0.0f ? -upVector.x : upVector.x;
       absUpVector.y = upVector.y <= 0.0f ? -upVector.y : upVector.y;
       absUpVector.z = upVector.z <= 0.0f ? -upVector.z : upVector.z;
@@ -252,7 +251,7 @@ public class RenParticleManager {
         absUpVector.x = absUpVector.y = 0.0f;
       }
       abUpMinUp = absUpVector.subtract(upVector);
-      upXemit = absUpVector.subtract(emissionDirection);
+      Vector3f upXemit = absUpVector.subtract(emissionDirection);
       float f4 = 2.0f / abUpMinUp.dot(abUpMinUp);
       float f6 = 2.0f / upXemit.dot(upXemit);
       float f8 = f4 * f6 * abUpMinUp.dot(upXemit);
@@ -272,6 +271,7 @@ public class RenParticleManager {
       }
 
     } else {
+      Vector3f upXemit = upVector.cross(emissionDirection);
       float f2 = 1.0f / (1.0f + upDotEmit);
       float f5 = f2 * upXemit.x;
       float f7 = f2 * upXemit.z;
@@ -309,9 +309,9 @@ public class RenParticleManager {
   private void getRandomSpeed(Vector3f speed) {
     float randDir = FastMath.TWO_PI * FastMath.nextRandomFloat();
     float clampAngle = clampToMaxAngle(FastMath.PI * FastMath.nextRandomFloat());
-    speed.x = (float) (FastMath.FastTrig.cos(randDir) * FastMath.FastTrig.sin(clampAngle));
-    speed.y = (float) FastMath.FastTrig.cos(clampAngle);
-    speed.z = (float) (FastMath.FastTrig.sin(randDir) * FastMath.FastTrig.sin(clampAngle));
+    speed.x = (float) (FastMath.cos(randDir) * FastMath.sin(clampAngle));
+    speed.y = (float) FastMath.cos(clampAngle);
+    speed.z = (float) (FastMath.sin(randDir) * FastMath.sin(clampAngle));
     rotateVectorSpeed(speed);
   }
 
@@ -349,14 +349,22 @@ public class RenParticleManager {
    * @param speed the velocity vector to be modified.
    */
   private void rotateVectorSpeed(Vector3f speed) {
-    speed.x = -1f *
-        ((rotMatrix.m00 * speed.x) + (rotMatrix.m10 * speed.y) +
-         (rotMatrix.m20 * speed.z));
-    speed.y = (rotMatrix.m01 * speed.x) + (rotMatrix.m11 * speed.y) +
-        (rotMatrix.m21 * speed.z);
-    speed.z = -1f *
-        ((rotMatrix.m02 * speed.x) + (rotMatrix.m12 * speed.y) +
-         (rotMatrix.m22 * speed.z));
+
+    float x = speed.x,
+          y = speed.y,
+          z = speed.z;
+
+    speed.x = -1*((rotMatrix.m00 * x) +
+                  (rotMatrix.m10 * y) +
+                  (rotMatrix.m20 * z));
+
+    speed.y =     (rotMatrix.m01 * x) +
+                  (rotMatrix.m11 * y) +
+                  (rotMatrix.m21 * z);
+
+    speed.z = -1*((rotMatrix.m02 * x) +
+                  (rotMatrix.m12 * y) +
+                  (rotMatrix.m22 * z));
   }
 
   /**
@@ -367,7 +375,7 @@ public class RenParticleManager {
    * @param origin new origin position
    */
   public void setParticlesOrigin(Vector3f origin) {
-    originCenter.set(origin.x, origin.y, origin.z);
+    originCenter.set(origin);
   }
 
   /**
@@ -464,7 +472,7 @@ public class RenParticleManager {
    * @param force Vector3f
    */
   public void setGravityForce(Vector3f force) {
-    gravityForce.set(force.x, force.y, force.z);
+    gravityForce.set(force);
   }
 
   /**
@@ -521,7 +529,7 @@ public class RenParticleManager {
    * @param direction Vector3f
    */
   public void setEmissionDirection(Vector3f direction) {
-    emissionDirection.set(direction.x, direction.y, direction.z);
+    emissionDirection.set(direction);
     updateRotationMatrix();
   }
 

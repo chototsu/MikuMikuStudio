@@ -58,7 +58,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.2 2004-03-24 01:04:13 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.3 2004-03-24 18:46:06 renanse Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
@@ -150,7 +150,7 @@ public class TestRenParticleGUI extends SimpleGame {
 
     cam.setFrustum(1f, 1000F, -0.55f, 0.55f, 0.4125f, -0.4125f);
 
-    Vector3f loc = new Vector3f(0, 20, -100);
+    Vector3f loc = new Vector3f(0, 0, -850);
     Vector3f left = new Vector3f(1, 0, 0);
     Vector3f up = new Vector3f(0, 1, 0f);
     Vector3f dir = new Vector3f(0, 0, 1);
@@ -212,15 +212,15 @@ public class TestRenParticleGUI extends SimpleGame {
     fpsNode.setForceView(true);
 
     manager = new RenParticleManager(300, display.getRenderer().getCamera());
-    manager.setEmissionDirection(new Vector3f(0,0,0));
-    manager.setEmissionMaximumAngle(360f * FastMath.DEG_TO_RAD);
+    manager.setEmissionDirection(new Vector3f(0,1,0));
+    manager.setEmissionMaximumAngle(45f * FastMath.DEG_TO_RAD);
     manager.setParticlesOrigin(new Vector3f(0,0,0));
-    manager.setParticlesSpeed(.06f);
-    manager.setStartSize(2.5f);
-    manager.setEndSize(.5f);
-    manager.setParticlesMinimumLifeTime(1200f);
-    manager.setStartColor(new ColorRGBA(1, 0, 0, 1));
-    manager.setEndColor(new ColorRGBA(0, 1, 0, 0));
+    manager.setParticlesSpeed(2.5f);
+    manager.setStartSize(4.0f);
+    manager.setEndSize(4.0f);
+    manager.setParticlesMinimumLifeTime(2500f);
+    manager.setStartColor(new ColorRGBA(0, 0.1f, 1, 1));
+    manager.setEndColor(new ColorRGBA(0, 0.1f, 1, 0));
 
     root.setRenderState(ts);
     root.setRenderState(as1);
