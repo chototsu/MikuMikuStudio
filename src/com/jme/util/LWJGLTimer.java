@@ -44,7 +44,7 @@ import org.lwjgl.Sys;
  * method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.4 2004-03-08 01:40:17 renanse Exp $
+ * @version $Id: LWJGLTimer.java,v 1.5 2004-03-08 02:28:10 renanse Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;
@@ -52,8 +52,9 @@ public class LWJGLTimer extends Timer {
     //frame rate parameters.
     private long oldTime = 0;
     private long newTime = 0;
-    private final static int TIMER_SMOOTHNESS = 16;
-    private long[] fps = new long[TIMER_SMOOTHNESS];
+    private final static int TIMER_SMOOTHNESS = 32;
+    private float[] fps = new float[TIMER_SMOOTHNESS];
+    private int smoothIndex = TIMER_SMOOTHNESS - 1;
     private final static long timerRez = Sys.getTimerResolution();
 
     /**
@@ -65,7 +66,7 @@ public class LWJGLTimer extends Timer {
         Sys.setTime(0);
 
         // set fps... might want to make it something other than 0 if funny activity at beginning.
-        for (int i = TIMER_SMOOTHNESS; --i>=0; ) fps[i]=0;
+        for (int i = TIMER_SMOOTHNESS; --i>=0; ) fps[i]=0f;
 
         //set priority of this process
         Sys.setProcessPriority(Sys.LOW_PRIORITY);
@@ -135,9 +136,10 @@ public class LWJGLTimer extends Timer {
     public void update() {
         newTime = Sys.getTime();
         frameDiff = newTime - oldTime;
-        for (int i = 0; i<TIMER_SMOOTHNESS-1; i++) fps[i] = fps[i+1];
-        fps[TIMER_SMOOTHNESS-1] = timerRez / frameDiff;
+        fps[smoothIndex] = timerRez / frameDiff;
         oldTime = newTime;
+        smoothIndex--;
+        if (smoothIndex < 0) smoothIndex = TIMER_SMOOTHNESS - 1;
     }
 
     /**
