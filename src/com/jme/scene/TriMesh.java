@@ -32,6 +32,7 @@
 package com.jme.scene;
 
 import java.io.Serializable;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -52,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.18 2004-06-17 16:31:13 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.19 2004-07-06 04:43:20 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -260,5 +261,18 @@ public class TriMesh extends Geometry implements Serializable {
     public void setIndexBuffer(IntBuffer toSet){
         indexBuffer=toSet;
     }
+
+    /**
+     * Used with Serialization.  Do not call this directly.
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+		updateIndexBuffer();
+    }
+
 
 }
