@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.13 2004-03-13 03:07:40 renanse Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.14 2004-03-23 15:07:03 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -380,8 +380,12 @@ public class MilkshapeASCIIModel extends Model {
 			//if the mesh is assigned to this material, set it.
 			for (int j = 0; j < meshes.length; j++) {
 				if (meshes[j].getMaterialsIndex() == i) {
-					meshes[j].setRenderState(materials[i]);
-					meshes[j].setRenderState(textures[i]);
+					if(materials[i] != null) {
+						meshes[j].setRenderState(materials[i]);
+					}
+					if(textures[i] != null) {
+						meshes[j].setRenderState(textures[i]);
+					}
 				}
 			}
 		}
@@ -500,16 +504,24 @@ public class MilkshapeASCIIModel extends Model {
 				return null;
 			}
 		}
-		TextureState ts =
-			DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
-		ts.setEnabled(true);
-		ts.setTexture(
-			TextureManager.loadTexture(
-				fileURL,
+        
+        Texture tex = TextureManager.loadTexture(
+        		fileURL,
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
-				true));
-		return ts;
+				true);
+        
+        if(tex != null) {
+        
+			TextureState ts =
+				DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
+			ts.setEnabled(true);
+			ts.setTexture(tex);
+			
+			return ts;
+        } else {
+        	return null;
+        }
 	}
 
 
