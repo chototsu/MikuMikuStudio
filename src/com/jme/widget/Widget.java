@@ -44,7 +44,7 @@ import com.jme.widget.util.WidgetNotifier;
 /**
  * <code>Widget</code>
  * @author Gregg Patton
- * @version $Id: Widget.java,v 1.3 2004-02-09 12:24:46 greggpatton Exp $
+ * @version $Id: Widget.java,v 1.4 2004-03-04 03:26:08 greggpatton Exp $
  */
 public interface Widget extends WidgetMouseHandlerInterface {
     
@@ -447,5 +447,36 @@ public interface Widget extends WidgetMouseHandlerInterface {
      * @param controller
      */
     public abstract void setInputController(AbstractInputController controller);
+    
+    /**
+     * <code>getWidgetRenderer</code>
+     * @return
+     */
+    public abstract WidgetRenderer getWidgetRenderer();
+    
+    /**
+     * <code>setWidgetRenderer</code>
+     * @param widgetRenderer
+     */
+    public abstract void setWidgetRenderer(WidgetRenderer widgetRenderer);
+    
+    /**
+     * <code>initWidgetRenderer</code>
+     * 
+     */
+    public abstract void initWidgetRenderer();
+
+
+    /**
+     * <code>getTextureCoords</code>
+     * @return
+     */
+    public abstract WidgetTextureCoords getTextureCoords();
+
+    /**
+     * <code>setTextureCoords</code>
+     * @param coords
+     */
+    public void setTextureCoords(WidgetTextureCoords coords);
     
 }

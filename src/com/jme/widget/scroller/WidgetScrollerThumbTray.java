@@ -39,6 +39,8 @@ import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.widget.WidgetAlignmentType;
+import com.jme.widget.WidgetOrientationType;
+import com.jme.widget.button.WidgetButton;
 import com.jme.widget.layout.WidgetFlowLayout;
 import com.jme.widget.panel.WidgetPanel;
 import com.jme.widget.util.WidgetRepeater;
@@ -51,29 +53,29 @@ import com.jme.widget.util.WidgetRepeater;
  */
 public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
-    private WidgetRepeater repeat = new WidgetRepeater();
+    protected WidgetRepeater repeat = new WidgetRepeater();
 
-    private boolean pagingUpLeft;
-    private boolean pagingDownRight;
+    protected boolean pagingUpLeft;
+    protected boolean pagingDownRight;
 
-    WidgetScrollerThumb thumb = new WidgetScrollerThumb();
-    WidgetScrollerType type;
+    protected WidgetButton thumb = new WidgetScrollerThumb();
+    protected WidgetOrientationType type;
 
-    double buttonSize = WidgetScrollerButton.DEFAULT_SCROLLER_BUTTON_SIZE;
+    protected double buttonSize = WidgetScrollerButton.DEFAULT_SCROLLER_BUTTON_SIZE;
 
-    double range;
-    double visibleRange;
-    double ratio;
+    protected double range;
+    protected double visibleRange;
+    protected double ratio;
 
-    double offset;
-    double offsetAdjust = 0;
+    protected double offset;
+    protected double offsetAdjust = 0;
 
-    double thumbPos;
-    double thumbSize;
+    protected double thumbPos;
+    protected double thumbSize;
 
-    double size;
+    protected double size;
 
-    public WidgetScrollerThumbTray(WidgetScrollerType type) {
+    public WidgetScrollerThumbTray(WidgetOrientationType type) {
         super();
 
         setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_WEST));
@@ -92,7 +94,7 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
     }
 
-    private void calcRatio() {
+    protected void calcRatio() {
         if (range != 0) {
 
             ratio = size / range;
@@ -100,18 +102,18 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
         }
     }
 
-    private void calcOffset() {
+    protected void calcOffset() {
         if (ratio != 0) {
             offset = (thumbPos + (offsetAdjust * (thumbPos / (size - buttonSize)))) / ratio;
         }
     }
 
-    private void calcThumbPos() {
+    protected void calcThumbPos() {
         thumbPos = offset * ratio;
         clampThumbPos();
     }
 
-    private void calcThumbSize() {
+    protected void calcThumbSize() {
         if (ratio != 0) {
 
             double ts = visibleRange * ratio;
@@ -130,8 +132,8 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
     }
 
-    private void clampThumbPos() {
-        if (type == WidgetScrollerType.VERTICAL) {
+    protected void clampThumbPos() {
+        if (type == WidgetOrientationType.VERTICAL) {
 
             if (thumbPos < 0) {
                 thumbPos = 0;
@@ -139,7 +141,7 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
                 thumbPos = getHeight() - thumbSize;
             }
 
-        } else if (type == WidgetScrollerType.HORIZONTAL) {
+        } else if (type == WidgetOrientationType.HORIZONTAL) {
 
             if (thumbPos < 0) {
                 thumbPos = 0;
@@ -149,7 +151,7 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
         }
     }
 
-    private void clampOffset() {
+    protected void clampOffset() {
 
         if (offset < 0) {
             offset = 0;
@@ -159,10 +161,10 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
     }
 
-    void initExtents() {
+    protected void initExtents() {
 
-        if (type == WidgetScrollerType.VERTICAL) {
-			size = getHeight();
+        if (type == WidgetOrientationType.VERTICAL) {
+            size = getHeight();
 
             if (size > 0) {
 
@@ -173,10 +175,10 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
                 clampThumbPos();
 
                 thumb.setPreferredSize((int) buttonSize, (int) thumbSize);
-                setPanYOffset((int) - thumbPos);
+                updatePanOffset();
             }
 
-        } else if (type == WidgetScrollerType.HORIZONTAL) {
+        } else if (type == WidgetOrientationType.HORIZONTAL) {
             size = getWidth();
 
             if (size > 0) {
@@ -188,7 +190,7 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
                 clampThumbPos();
 
                 thumb.setPreferredSize((int) thumbSize, (int) buttonSize);
-                setPanXOffset((int) thumbPos);
+                updatePanOffset();
             }
         }
 
@@ -196,29 +198,25 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
     }
 
     public void update(Observable o, Object arg) {
-		//WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
         MouseInput mi = getMouseInput();
 
+        if (type == WidgetOrientationType.VERTICAL) {
 
-        if (type == WidgetScrollerType.VERTICAL) {
-
-            //thumbPos -= mouseState.dy;
             thumbPos -= mi.getYDelta();
 
             clampThumbPos();
 
             calcOffset();
-            setPanYOffset((int) - thumbPos);
+            updatePanOffset();
 
-        } else if (type == WidgetScrollerType.HORIZONTAL) {
+        } else if (type == WidgetOrientationType.HORIZONTAL) {
 
-            //thumbPos += mouseState.dx;
             thumbPos += mi.getXDelta();
 
             clampThumbPos();
 
             calcOffset();
-            setPanXOffset((int) thumbPos);
+            updatePanOffset();
         }
 
         getNotifierMouseDrag().notifyObservers(this);
@@ -271,15 +269,7 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
         calcThumbPos();
 
-        if (type == WidgetScrollerType.VERTICAL) {
-
-            setPanYOffset((int) - thumbPos);
-
-        } else if (type == WidgetScrollerType.HORIZONTAL) {
-
-            setPanXOffset((int) thumbPos);
-
-        }
+        updatePanOffset();
 
         getNotifierMouseDrag().notifyObservers(this);
     }
@@ -295,25 +285,29 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
         clampOffset();
 
-        if (type == WidgetScrollerType.VERTICAL) {
-
-            setPanYOffset((int) - thumbPos);
-
-        } else if (type == WidgetScrollerType.HORIZONTAL) {
-
-            setPanXOffset((int) thumbPos);
-
-        }
-
+        updatePanOffset();
+        
         getNotifierMouseDrag().notifyObservers(this);
 
     }
 
+    protected void updatePanOffset() {
+        if (type == WidgetOrientationType.VERTICAL) {
+
+            setPanYOffset((int) - thumbPos);
+
+        } else if (type == WidgetOrientationType.HORIZONTAL) {
+
+            setPanXOffset((int) thumbPos);
+
+        }
+    }
+    
+
     public void doMouseButtonDown() {
-        //WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
         MouseInput mi = getMouseInput();
 
-        if (this.type == WidgetScrollerType.VERTICAL) {
+        if (this.type == WidgetOrientationType.VERTICAL) {
             Vector2f l = thumb.getAbsoluteLocation();
 
             if (mi.getYAbsolute() > l.y + thumbSize) {
@@ -328,7 +322,7 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
                 repeat.start();
             }
 
-        } else if (this.type == WidgetScrollerType.HORIZONTAL) {
+        } else if (this.type == WidgetOrientationType.HORIZONTAL) {
             Vector2f l = thumb.getAbsoluteLocation();
 
             if (mi.getXAbsolute() > l.x + thumbSize) {
@@ -370,11 +364,11 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
     public void setSize(int width, int height) {
         super.setSize(width, height);
 
-        if (type == WidgetScrollerType.VERTICAL) {
+        if (type == WidgetOrientationType.VERTICAL) {
 
             size = getHeight();
 
-        } else if (this.type == WidgetScrollerType.HORIZONTAL) {
+        } else if (this.type == WidgetOrientationType.HORIZONTAL) {
 
             size = getWidth();
 
@@ -382,6 +376,63 @@ public class WidgetScrollerThumbTray extends WidgetPanel implements Observer {
 
         calcRatio();
         initExtents();
+    }
+
+    /** <code>setSize</code> 
+     * @param size
+     * @see com.jme.widget.Widget#setSize(com.jme.math.Vector2f)
+     */
+    public void setSize(Vector2f size) {
+        setSize((int) size.x, (int) size.y);
+    }
+
+
+    /**
+     * <code>getThumb</code>
+     * @return
+     */
+    public WidgetButton getThumb() {
+        return thumb;
+    }
+
+    /**
+     * <code>setThumb</code>
+     * @param button
+     */
+    public void setThumb(WidgetButton button) {
+        if (thumb != null) {
+            remove(thumb);
+        }
+
+        thumb = button;
+        add(thumb);
+        thumb.addMouseDragObserver(this);
+    }
+
+    /**
+     * <code>getThumbPos</code>
+     * @return
+     */
+    public double getThumbPos() {
+        return thumbPos;
+    }
+
+    /**
+     * <code>setThumbPos</code>
+     * @param d
+     */
+    public void setThumbPos(double d) {
+        thumbPos = d;
+        clampThumbPos();
+        updatePanOffset();
+    }
+
+    /**
+     * <code>getThumbSize</code>
+     * @return
+     */
+    public double getThumbSize() {
+        return thumbSize;
     }
 
 }

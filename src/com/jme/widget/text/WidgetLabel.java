@@ -44,14 +44,6 @@ public class WidgetLabel extends WidgetPanel {
 
     protected WidgetText text;
 
-    public WidgetLabel() {
-        super();
-    }
-
-    public WidgetLabel(int width, int height) {
-        super(width, height);
-    }
-
     public WidgetLabel(String title) {
         this("", WidgetAlignmentType.ALIGN_SOUTHWEST);
     }
@@ -63,6 +55,10 @@ public class WidgetLabel extends WidgetPanel {
     public WidgetLabel(String title, WidgetAlignmentType textAlignment) {
         super();
         
+        init(title, textAlignment);        
+    }
+
+    private void init(String title, WidgetAlignmentType textAlignment) {
         text = new WidgetText(title);
         text.setAlignment(textAlignment);
         text.setCantOwnMouse(true);
@@ -70,9 +66,7 @@ public class WidgetLabel extends WidgetPanel {
 
         add(text);
 
-        
     }
-
     
     public String getTitle() {
         return text.getText();

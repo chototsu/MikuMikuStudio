@@ -38,9 +38,10 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.widget.WidgetAlignmentType;
-import com.jme.widget.WidgetImpl;
+import com.jme.widget.WidgetAbstractImpl;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.font.WidgetFontManager;
+import com.jme.widget.renderer.WidgetRendererFactory;
 
 
 /**
@@ -49,7 +50,7 @@ import com.jme.widget.font.WidgetFontManager;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetText extends WidgetImpl {
+public class WidgetText extends WidgetAbstractImpl {
 
     private final static String FONT_NAME = "Default";
 
@@ -132,7 +133,7 @@ public class WidgetText extends WidgetImpl {
     }
 
     public void draw(Renderer r) {
-        r.draw(this);
+        r.draw(getWidgetRenderer());
     }
 
     public float getScale() {
@@ -204,6 +205,14 @@ public class WidgetText extends WidgetImpl {
 
     public void setFont(WidgetFont font) {
         this.font = font;
+    }
+
+    /** <code>initWidgetRenderer</code> 
+     * 
+     * @see com.jme.widget.Widget#initWidgetRenderer()
+     */
+    public void initWidgetRenderer() {
+        setWidgetRenderer(WidgetRendererFactory.getFactory().getRenderer(this));
     }
 
 }

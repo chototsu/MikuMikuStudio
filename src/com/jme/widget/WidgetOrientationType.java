@@ -36,34 +36,28 @@ import com.jme.util.JmeType;
 /**
  * <code>WidgetOrientationType</code>
  * @author Gregg Patton
- * @version $Id: WidgetOrientationType.java,v 1.1 2004-02-09 12:28:04 greggpatton Exp $
+ * @version $Id: WidgetOrientationType.java,v 1.2 2004-03-04 03:26:08 greggpatton Exp $
  */
 public class WidgetOrientationType extends JmeType {
 
-    public final static WidgetOrientationType ORIENTATION_NONE =
-        new WidgetOrientationType("ORIENTATION_NONE");
+    public final static WidgetOrientationType NONE =
+        new WidgetOrientationType("NONE");
 
-    public final static WidgetOrientationType ORIENTATION_TOP_LEFT_TO_RIGHT =
-        new WidgetOrientationType("ORIENTATION_TOP_LEFT_TO_RIGHT");
-    public final static WidgetOrientationType ORIENTATION_TOP_RIGHT_TO_LEFT =
-        new WidgetOrientationType("ORIENTATION_TOP_RIGHT_TO_LEFT");
+    public final static WidgetOrientationType HORIZONTAL =
+        new WidgetOrientationType("HORIZONTAL");
+    public final static WidgetOrientationType VERTICAL =
+        new WidgetOrientationType("VERTICAL");
 
-    public final static WidgetOrientationType ORIENTATION_BOTTOM_LEFT_TO_RIGHT =
-        new WidgetOrientationType("ORIENTATION_BOTTOM_LEFT_TO_RIGHT");
-    public final static WidgetOrientationType ORIENTATION_BOTTOM_RIGHT_TO_LEFT =
-        new WidgetOrientationType("ORIENTATION_BOTTOM_RIGHT_TO_LEFT");
+    public final static WidgetOrientationType UP =
+        new WidgetOrientationType("UP");
+    public final static WidgetOrientationType DOWN =
+        new WidgetOrientationType("DOWN");
+    public final static WidgetOrientationType LEFT =
+        new WidgetOrientationType("LEFT");
+    public final static WidgetOrientationType RIGHT =
+        new WidgetOrientationType("RIGHT");
 
-    public final static WidgetOrientationType ORIENTATION_LEFT_TOP_TO_BOTTOM =
-        new WidgetOrientationType("ORIENTATION_LEFT_TOP_TO_BOTTOM");
-    public final static WidgetOrientationType ORIENTATION_LEFT_BOTTOM_TO_TOP =
-        new WidgetOrientationType("ORIENTATION_LEFT_BOTTOM_TO_TOP");
-
-    public final static WidgetOrientationType ORIENTATION_RIGHT_TOP_TO_BOTTOM =
-        new WidgetOrientationType("ORIENTATION_RIGHT_TOP_TO_BOTTOM");
-    public final static WidgetOrientationType ORIENTATION_RIGHT_BOTTOM_TO_TOP =
-        new WidgetOrientationType("ORIENTATION_RIGHT_BOTTOM_TO_TOP");
-
-    public WidgetOrientationType(String name) {
+    private WidgetOrientationType(String name) {
         super(name);
     }
 
@@ -75,44 +69,35 @@ public class WidgetOrientationType extends JmeType {
     public JmeType getType(String name) {
         JmeType type = null;
 
-        if (ORIENTATION_NONE.name.equals(name)) {
+        if (NONE.name.equals(name)) {
             
-            type = ORIENTATION_NONE;
+            type = NONE;
             
-        } else if (ORIENTATION_TOP_LEFT_TO_RIGHT.name.equals(name)) {
+        } else if (HORIZONTAL.name.equals(name)) {
             
-            type = ORIENTATION_TOP_LEFT_TO_RIGHT;
-            
-        } else if (ORIENTATION_TOP_RIGHT_TO_LEFT.name.equals(name)) {
-            
-            type = ORIENTATION_TOP_RIGHT_TO_LEFT;
-            
-        } else if (ORIENTATION_BOTTOM_LEFT_TO_RIGHT.name.equals(name)) {
-            
-            type = ORIENTATION_BOTTOM_LEFT_TO_RIGHT;
-            
-        } else if (ORIENTATION_BOTTOM_RIGHT_TO_LEFT.name.equals(name)) {
-            
-            type = ORIENTATION_BOTTOM_RIGHT_TO_LEFT;
-            
-        } else if (ORIENTATION_LEFT_TOP_TO_BOTTOM.name.equals(name)) {
-            
-            type = ORIENTATION_LEFT_TOP_TO_BOTTOM;
-            
-        } else if (ORIENTATION_LEFT_BOTTOM_TO_TOP.name.equals(name)) {
-            
-            type = ORIENTATION_LEFT_BOTTOM_TO_TOP;
-            
-        } else if (ORIENTATION_RIGHT_TOP_TO_BOTTOM.name.equals(name)) {
-            
-            type = ORIENTATION_RIGHT_TOP_TO_BOTTOM;
-            
-        } else if (ORIENTATION_RIGHT_BOTTOM_TO_TOP.name.equals(name)) {
-            
-            type = ORIENTATION_RIGHT_BOTTOM_TO_TOP;
-            
-        }
+            type = HORIZONTAL;
 
+        } else if (VERTICAL.name.equals(name)) {
+            
+            type = VERTICAL;
+
+        } else if (UP.name.equals(name)) {
+            
+            type = UP;
+
+        } else if (DOWN.name.equals(name)) {
+            
+            type = DOWN;
+
+        } else if (LEFT.name.equals(name)) {
+            
+            type = LEFT;
+
+        } else if (RIGHT.name.equals(name)) {
+            
+            type = RIGHT;
+        }
+        
         return type;
     }
 

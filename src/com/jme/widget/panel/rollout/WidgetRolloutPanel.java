@@ -33,8 +33,11 @@ package com.jme.widget.panel.rollout;
 
 import java.util.Observable;
 import java.util.Observer;
+import java.util.logging.Level;
 
 import com.jme.math.Vector2f;
+import com.jme.system.JmeException;
+import com.jme.util.LoggingSystem;
 import com.jme.widget.Widget;
 import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.WidgetAbstractContainer;
@@ -49,10 +52,9 @@ import com.jme.widget.text.WidgetText;
 import com.jme.widget.util.WidgetNotifier;
 
 /**
+ * <code>WidgetRolloutPanel</code>
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: WidgetRolloutPanel.java,v 1.3 2004-03-04 03:29:59 greggpatton Exp $
  */
 public class WidgetRolloutPanel extends WidgetAbstractContainer implements Observer {
 
@@ -83,9 +85,9 @@ public class WidgetRolloutPanel extends WidgetAbstractContainer implements Obser
         super.setLayout(new WidgetBorderLayout());
 
         button = new WidgetRolloutPanelButton(title, WidgetAlignmentType.ALIGN_WEST);
-        button.setInsets(new WidgetInsets(4,4,4,4));
-		//button.setBorder(new WidgetBorder(5,5,5,5, WidgetBorderType.RAISED));
-		
+        button.setInsets(new WidgetInsets(4, 4, 4, 4));
+        //button.setBorder(new WidgetBorder(5,5,5,5, WidgetBorderType.RAISED));
+
         button.addMouseButtonUpObserver(this);
 
         super.add(button, WidgetBorderLayoutConstraint.NORTH);
@@ -95,19 +97,20 @@ public class WidgetRolloutPanel extends WidgetAbstractContainer implements Obser
         textPlusMinus.setVisible(true);
         textPlusMinus.setCantOwnMouse(true);
         textPlusMinus.setApplyOffsetX(false);
-        
+
         button.add(textPlusMinus);
 
         panel = new WidgetScrollPanel();
         panel.setVisible(false);
-        
+
         super.add(panel, WidgetBorderLayoutConstraint.CENTER);
-        
+
         setPanelEmpty();
+
     }
 
     public void doMouseButtonDown() {
-        button.doMouseButtonUp();
+        button.doMouseButtonDown();
     }
 
     public void doMouseButtonUp() {
@@ -116,23 +119,23 @@ public class WidgetRolloutPanel extends WidgetAbstractContainer implements Obser
 
     private void setPanelEmpty() {
         panel.removeAll();
-        panel.add(new WidgetText("Empty", WidgetAlignmentType.ALIGN_CENTER));
+        addPanelWidget(new WidgetText("Empty", WidgetAlignmentType.ALIGN_CENTER));
         panelEmpty = true;
     }
-    
+
     private void setPanelNotEmpty() {
         panel.removeAll();
         panelEmpty = false;
     }
-    
+
     private void rollDown() {
 
         textPlusMinus.setText(WidgetRolloutPanel.MINUS);
         expanded = true;
 
         panel.setVisible(true);
-        
-		panel.getLayout().setMaximumWidth(button.getWidth());
+
+        panel.getLayout().setMaximumWidth(button.getWidth());
 
         this.rollDownNotifier.notifyObservers(this);
     }
@@ -148,7 +151,8 @@ public class WidgetRolloutPanel extends WidgetAbstractContainer implements Obser
     }
 
     public void update(Observable o, Object arg) {
-        if (arg == button && ((WidgetRolloutPanelButton) arg).getButtonState() == WidgetButtonStateType.BUTTON_UP) {
+        if (arg == button
+            && ((WidgetRolloutPanelButton) arg).getButtonState() == WidgetButtonStateType.BUTTON_UP) {
             if (expanded == true) {
 
                 rollUp();
@@ -170,13 +174,50 @@ public class WidgetRolloutPanel extends WidgetAbstractContainer implements Obser
     }
 
     public void add(Widget w, Object constraints) {
-        if (panelEmpty == true)
-            setPanelNotEmpty();
-             
-        panel.add(w, constraints);
+        LoggingSystem.getLogger().log(Level.WARNING, "Use addPanelWidget method");
+        throw new JmeException("Use addPanelWidget method");
     }
 
     public void add(Widget w) {
+        LoggingSystem.getLogger().log(Level.WARNING, "Use addPanelWidget method");
+        throw new JmeException("Use addPanelWidget method");
+    }
+
+    /** <code>remove</code> 
+     * @param w
+     * @see com.jme.widget.WidgetAbstractContainer#remove(int)
+     */
+    public void remove(int w) {
+        LoggingSystem.getLogger().log(Level.WARNING, "Use removePanelWidget method");
+        throw new JmeException("Use removePanelWidget method");
+    }
+
+    /** <code>remove</code> 
+     * @param w
+     * @see com.jme.widget.WidgetAbstractContainer#remove(com.jme.widget.Widget)
+     */
+    public void remove(Widget w) {
+        LoggingSystem.getLogger().log(Level.WARNING, "Use removePanelWidget method");
+        throw new JmeException("Use removePanelWidget method");
+    }
+
+    /** <code>removeAll</code> 
+     * 
+     * @see com.jme.widget.WidgetAbstractContainer#removeAll()
+     */
+    public void removeAll() {
+        LoggingSystem.getLogger().log(Level.WARNING, "Use removeAllPanelWidgets method");
+        throw new JmeException("Use removeAllPanelWidgets method");
+    }
+
+    public void addPanelWidget(Widget w, Object constraints) {
+        if (panelEmpty == true)
+            setPanelNotEmpty();
+
+        panel.add(w, constraints);
+    }
+
+    public void addPanelWidget(Widget w) {
         if (panelEmpty == true)
             setPanelNotEmpty();
 
@@ -191,39 +232,49 @@ public class WidgetRolloutPanel extends WidgetAbstractContainer implements Obser
         panel.setInsets(insets);
     }
 
-    public Widget getWidget(int n) {
+    public Widget getPanelWidget(int n) {
         return panel.getWidget(n);
     }
 
-    public int getWidgetCount() {
+    public int getPanelWidgetCount() {
         if (panel != null)
             return panel.getWidgetCount();
         return 0;
-            
+
     }
 
-    public void remove(int w) {
-        panel.remove(w);
-        
-        if (panel.getWidgetCount() == 0)
-            setPanelEmpty();
-    }
-
-    public void remove(Widget w) {
+    public void removePanelWidget(int w) {
         panel.remove(w);
 
         if (panel.getWidgetCount() == 0)
             setPanelEmpty();
     }
-    public void removeAll() {
+
+    public void removePanelWidget(Widget w) {
+        panel.remove(w);
+
+        if (panel.getWidgetCount() == 0)
+            setPanelEmpty();
+    }
+    public void removeAllPanelWidgets() {
         setPanelEmpty();
     }
 
     public WidgetLayoutManager getLayout() {
-        return panel.getLayout();
+        LoggingSystem.getLogger().log(Level.WARNING, "Use getPanelLayout method");
+        throw new JmeException("Use getPanelLayout method");
     }
 
     public void setLayout(WidgetLayoutManager layout) {
+        LoggingSystem.getLogger().log(Level.WARNING, "Use setPanelLayout method");
+        throw new JmeException("Use setPanelLayout method");
+    }
+
+    public WidgetLayoutManager getPanelLayout() {
+        return panel.getLayout();
+    }
+
+    public void setPanelLayout(WidgetLayoutManager layout) {
         panel.setLayout(layout);
     }
 
@@ -242,91 +293,98 @@ public class WidgetRolloutPanel extends WidgetAbstractContainer implements Obser
     public void setShowHScroll(boolean b) {
         panel.setShowHScroll(b);
     }
-	public void addRollUpObserver(Observer o){
-        this.rollUpNotifier.addObserver(o);
-	}
 
-    public void deleteRollUpObserver(Observer o){
+    public void addRollUpObserver(Observer o) {
+        this.rollUpNotifier.addObserver(o);
+    }
+
+    public void deleteRollUpObserver(Observer o) {
         this.rollUpNotifier.deleteObserver(o);
     }
 
-    public void addRollDownObserver(Observer o){
+    public void addRollDownObserver(Observer o) {
         this.rollDownNotifier.addObserver(o);
     }
 
-    public void deleteRollDownObserver(Observer o){
+    public void deleteRollDownObserver(Observer o) {
         this.rollDownNotifier.deleteObserver(o);
     }
 
-	public Vector2f getPreferredSize() {
-		
+    public Vector2f getPreferredSize() {
+
         Vector2f ret = super.getPreferredSize();
 
-		if (getOwner() != null) {
+        if (getOwner() != null) {
 
-			float ownerW = getOwner().getWidth();
-			
-			float panelW = panel.getPreferredSize().x;
-			 
-			ret.x = panelW > ownerW ? panelW : ownerW;
+            float ownerW = getOwner().getWidth();
 
-		}
-        
-		if (ret.x < button.getText().getWidth() + textPlusMinus.getWidth())
-			ret.x = (button.getText().getWidth() + (textPlusMinus.getWidth() * 2)); 
-        
-		return ret;
-	}
+            float panelW = panel.getPreferredSize().x;
 
-	public void setSize(int width, int height) {
-		super.setSize(width, height);
-        
-		if (getOwner() != null) {
+            ret.x = panelW > ownerW ? panelW : ownerW;
 
-			float ownerW = getOwner().getWidth();
+        }
 
-			if (ownerW != 0) {
-				
-				button.setRolloutPanelWidth((int) ownerW);
-				
-			} else	
-				button.setRolloutPanelWidth(width);
+        if (ret.x < button.getText().getWidth() + textPlusMinus.getWidth())
+            ret.x = (button.getText().getWidth() + (textPlusMinus.getWidth() * 2));
 
-		} else { 
+        return ret;
+    }
 
-			button.setRolloutPanelWidth(width);
-		}
+    public void setSize(int width, int height) {
+        super.setSize(width, height);
 
-	}
+        if (getOwner() != null) {
 
-	public void setSize(Vector2f size) {
-		setSize((int)size.x, (int)size.y);
+            float ownerW = getOwner().getWidth();
 
-	}
+            if (ownerW != 0) {
 
-	/* (non-Javadoc)
-	 * @see jme.widget.Widget#setOwner(jme.widget.Widget)
-	 */
-	public void setOwner(Widget owner) {
-		button.setOwner(owner);
-		panel.setOwner(owner);
-		super.setOwner(owner);
-	}
+                button.setRolloutPanelWidth((int) ownerW);
 
-	/* (non-Javadoc)
-	 * @see jme.widget.Widget#setViewport(jme.widget.bounds.WidgetViewRectangle)
-	 */
-	public void setViewRectangle(WidgetViewRectangle viewport) {
-		WidgetViewRectangle v = new WidgetViewRectangle(viewport);
-		
-		if (getOwner() != null)
-			v.setWidth(getOwner().getViewRectangle().getWidth());
-		
-		super.setViewRectangle(v);
-        
-	}
-	public String toString() {
-		return "[" + getTitle() + super.toString() +"]";
-	}
+            } else
+                button.setRolloutPanelWidth(width);
+
+        } else {
+
+            button.setRolloutPanelWidth(width);
+        }
+
+    }
+
+    public void setSize(Vector2f size) {
+        setSize((int) size.x, (int) size.y);
+
+    }
+
+    /* (non-Javadoc)
+     * @see jme.widget.Widget#setOwner(jme.widget.Widget)
+     */
+    public void setOwner(Widget owner) {
+        button.setOwner(owner);
+        panel.setOwner(owner);
+        super.setOwner(owner);
+    }
+
+    /* (non-Javadoc)
+     * @see jme.widget.Widget#setViewport(jme.widget.bounds.WidgetViewRectangle)
+     */
+    public void setViewRectangle(WidgetViewRectangle viewport) {
+        WidgetViewRectangle v = new WidgetViewRectangle(viewport);
+
+        if (getOwner() != null)
+            v.setWidth(getOwner().getViewRectangle().getWidth());
+
+        super.setViewRectangle(v);
+
+    }
+    public String toString() {
+        return "[" + getTitle() + super.toString() + "]";
+    }
+
+    /** <code>initWidgetRenderer</code> 
+     * 
+     * @see com.jme.widget.Widget#initWidgetRenderer()
+     */
+    public void initWidgetRenderer() {}
 
 }

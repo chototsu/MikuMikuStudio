@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public abstract class WidgetFontAbstract implements WidgetFont {
+public abstract class WidgetAbstractFont implements WidgetFont {
     private static String FONT_DIRECTORY = "jmetest/data/font/";
     private static String FONT_EXT = "glf";
 
@@ -62,7 +62,7 @@ public abstract class WidgetFontAbstract implements WidgetFont {
 
     private String name;
 
-    public WidgetFontAbstract(String name) {
+    public WidgetAbstractFont(String name) {
         this.name = name;
 
         String filename = FONT_DIRECTORY + name + "." + FONT_EXT;
@@ -73,7 +73,7 @@ public abstract class WidgetFontAbstract implements WidgetFont {
     public void create(String filename) {
     	URL url = null;
     	
-    	url = WidgetFontAbstract.class.getClassLoader().getResource(FONT_DIRECTORY+name+"."+FONT_EXT);
+    	url = WidgetAbstractFont.class.getClassLoader().getResource(FONT_DIRECTORY+name+"."+FONT_EXT);
     	
     	if(url != null) {
     		create(url);

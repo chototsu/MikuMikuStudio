@@ -47,7 +47,7 @@ import com.jme.widget.bounds.WidgetBoundingRectangle;
 /**
  * <code>WidgetFlowLayout</code>
  * @author Gregg Patton
- * @version $Id: WidgetFlowLayout.java,v 1.4 2004-02-26 17:40:28 renanse Exp $
+ * @version $Id: WidgetFlowLayout.java,v 1.5 2004-03-04 03:29:11 greggpatton Exp $
  */
 public class WidgetFlowLayout extends WidgetLayoutManager {
 
@@ -445,6 +445,9 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
         WidgetInsets insets = parent.getInsets();
         WidgetBorder border = parent.getBorder();
+
+        if (border == null)
+            border = new WidgetBorder();
 
         ret.x += border.getLeft() + border.getRight() + insets.getLeft() + insets.getRight();
         ret.y += border.getTop() + border.getBottom() + insets.getBottom() + insets.getTop();

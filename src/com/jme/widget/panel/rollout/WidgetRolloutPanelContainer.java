@@ -104,13 +104,6 @@ public class WidgetRolloutPanelContainer extends WidgetScrollPanel implements Ob
 
 			super.update(o, arg);
 
-//			for (int i = 0; i < panel.getQuantity(); i++) {
-//				WidgetRolloutPanel w = (WidgetRolloutPanel) panel.getChild(i);
-//				
-//				WidgetViewRectangle vp = w.button.getViewport()
-//				w.button.setX((int) -panel.getPanOffset().x);
-//			}
-			
         }
 
     }

@@ -58,6 +58,9 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
     private static Timer timer;
     private static WidgetFrameRate frameRate;
 
+    /**
+     * @param ic
+     */
     public WidgetAbstractFrame(AbstractInputController ic) {
         super();
 
@@ -97,12 +100,20 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         return timer;
     }
 
+    /**
+     * <code>noInitMsg</code>
+     * 
+     */
     protected static void noInitMsg() {
         String msg = "WidgetAbstractFrame is not initialized.";
         LoggingSystem.getLogger().log(Level.WARNING, msg);
         throw new JmeException(msg);
     }
 
+    /**
+     * <code>init</code>
+     * 
+     */
     public void init() {
 
         WidgetFontManager.init();
@@ -118,22 +129,48 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
     }
 
+    /**
+     * <code>destroy</code>
+     * 
+     */
     public static void destroy() {}
 
+    /** <code>update</code> 
+     * @param o
+     * @param arg
+     * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+     */
     public void update(Observable o, Object arg) {}
 
+    /**
+     * <code>handleInput</code>
+     * 
+     */
     public void handleInput() {
         handleInput(true, 0);
     }
 
+    /**
+     * <code>handleInput</code>
+     * @param updateController
+     */
     public void handleInput(boolean updateController) {
         handleInput(updateController, 0);
     }
 
+    /**
+     * <code>handleInput</code>
+     * @param time
+     */
     public void handleInput(float time) {
         handleInput(true, time);
     }
 
+    /**
+     * <code>handleInput</code>
+     * @param updateController
+     * @param time
+     */
     public void handleInput(boolean updateController, float time) {
 
         if (updateController) {
@@ -144,13 +181,21 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         handleKeyboard();
     }
 
+    /**
+     * <code>handleKeyboard</code>
+     * 
+     */
     protected void handleKeyboard() {
         //super.handleKeyboard();
     }
 
+    /**
+     * <code>handleMouse</code>
+     * 
+     */
     protected void handleMouse() {
         MouseInput mi = getMouseInput();
-        
+
         WidgetMouseButtonType buttonType = mi.getButtonState();
         WidgetMouseButtonType lastButtonType = mi.getPreviousButtonState();
 
@@ -182,6 +227,10 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         lastButtonType = buttonType;
     }
 
+    /** <code>doMouseButtonDown</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#doMouseButtonDown()
+     */
     public void doMouseButtonDown() {
         Widget mouseOwner = getMouseOwner();
 
@@ -190,11 +239,19 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         }
     }
 
+    /** <code>handleMouseButtonDown</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseButtonDown()
+     */
     public void handleMouseButtonDown() {
         super.handleMouseButtonDown();
         doMouseButtonDown();
     }
 
+    /** <code>doMouseButtonUp</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#doMouseButtonUp()
+     */
     public void doMouseButtonUp() {
         Widget mouseOwner = getMouseOwner();
 
@@ -203,11 +260,19 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         }
     }
 
+    /** <code>handleMouseButtonUp</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseButtonUp()
+     */
     public void handleMouseButtonUp() {
         super.handleMouseButtonUp();
         doMouseButtonUp();
     }
 
+    /** <code>doMouseDrag</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#doMouseDrag()
+     */
     public void doMouseDrag() {
         Widget mouseOwner = getMouseOwner();
 
@@ -216,21 +281,37 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
         }
     }
 
+    /** <code>handleMouseDrag</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseDrag()
+     */
     public void handleMouseDrag() {
         super.handleMouseDrag();
         doMouseDrag();
     }
 
+    /** <code>handleMouseEnter</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseEnter()
+     */
     public void handleMouseEnter() {
         super.handleMouseEnter();
         doMouseEnter();
     }
 
+    /** <code>handleMouseExit</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseExit()
+     */
     public void handleMouseExit() {
         super.handleMouseExit();
         doMouseExit();
     }
 
+    /** <code>doMouseMove</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#doMouseMove()
+     */
     public void doMouseMove() {
         Widget last = getLastWidgetUnderMouse();
         Widget w = getWidgetUnderMouse();
@@ -242,22 +323,34 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
             if (w != null)
                 w.handleMouseEnter();
-                
-            setLastWidgetUnderMouse(w);                
+
+            setLastWidgetUnderMouse(w);
         }
     }
 
+    /** <code>handleMouseMove</code> 
+     * 
+     * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#handleMouseMove()
+     */
     public void handleMouseMove() {
         super.handleMouseMove();
         doMouseMove();
     }
 
+    /** <code>onDraw</code> 
+     * @param r
+     * @see com.jme.scene.Spatial#onDraw(com.jme.renderer.Renderer)
+     */
     public void onDraw(Renderer r) {
         super.onDraw(r);
 
         timer.update();
     }
 
+    /** <code>draw</code> 
+     * @param r
+     * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
+     */
     public void draw(Renderer r) {
         if (isVisible() == false)
             return;
@@ -266,5 +359,11 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
 
         r.getCamera().update();
     }
+
+    /** <code>initWidgetRenderer</code> 
+     * 
+     * @see com.jme.widget.Widget#initWidgetRenderer()
+     */
+    public void initWidgetRenderer() {}
 
 }

@@ -34,7 +34,7 @@ package com.jme.widget.impl.lwjgl;
 import org.lwjgl.opengl.GL;
 
 import com.jme.renderer.ColorRGBA;
-import com.jme.widget.font.WidgetFontAbstract;
+import com.jme.widget.font.WidgetAbstractFont;
 import com.jme.widget.font.WidgetFontChar;
 
 /**
@@ -43,7 +43,7 @@ import com.jme.widget.font.WidgetFontChar;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetLWJGLFont extends WidgetFontAbstract {
+public class WidgetLWJGLFont extends WidgetAbstractFont {
 
     public WidgetLWJGLFont(String name) {
         super(name);

@@ -98,10 +98,10 @@ class WidgetRolloutPanelButton extends WidgetButton {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget#setViewport(jme.widget.bounds.WidgetViewRectangle)
+     * @see jme.widget.Widget#setViewRectangle(jme.widget.bounds.WidgetViewRectangle)
      */
-    public void setViewRectangle(WidgetViewRectangle viewport) {
-		WidgetViewRectangle v = new WidgetViewRectangle(viewport);
+    public void setViewRectangle(WidgetViewRectangle viewRect) {
+		WidgetViewRectangle v = new WidgetViewRectangle(viewRect);
 		
 		v.setWidth(getWidgetParent().getViewRectangle().getWidth());
 		

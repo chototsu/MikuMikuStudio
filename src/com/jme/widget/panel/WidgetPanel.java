@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -33,37 +33,38 @@ package com.jme.widget.panel;
 
 import com.jme.renderer.Renderer;
 import com.jme.widget.WidgetAbstractContainer;
+import com.jme.widget.renderer.WidgetRendererFactory;
 
 /**
+ * <code>WidgetPanel</code>
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: WidgetPanel.java,v 1.4 2004-03-04 03:29:58 greggpatton Exp $
  */
 public class WidgetPanel extends WidgetAbstractContainer {
 
     public WidgetPanel() {
-		super();		        
-
-        init();
-        
+        super();                
     }
 
     public WidgetPanel(int width, int height) {
         super(width, height);
-        
-        init();
-    }
-    
-    private void init() {
     }
     
     public void draw(Renderer r) {
         if (isVisible() == false)
             return;
 
-        r.draw(this);
+        r.draw(getWidgetRenderer());
 
         super.draw(r);
     }
+
+    /** <code>initWidgetRenderer</code> 
+     * 
+     * @see com.jme.widget.Widget#initWidgetRenderer()
+     */
+    public void initWidgetRenderer() {
+        setWidgetRenderer(WidgetRendererFactory.getFactory().getRenderer(this));
+    }
+
 }

@@ -37,6 +37,7 @@ import java.util.Observer;
 import com.jme.renderer.Renderer;
 import com.jme.widget.WidgetAbstractContainer;
 import com.jme.widget.WidgetExpander;
+import com.jme.widget.WidgetOrientationType;
 import com.jme.widget.button.WidgetButton;
 import com.jme.widget.button.WidgetButtonStateType;
 import com.jme.widget.layout.WidgetBorderLayout;
@@ -44,31 +45,25 @@ import com.jme.widget.layout.WidgetBorderLayoutConstraint;
 import com.jme.widget.util.WidgetNotifier;
 import com.jme.widget.util.WidgetRepeater;
 
-/**
- * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
- */
-public abstract class WidgetScrollerAbstract extends WidgetAbstractContainer implements Observer {
+public abstract class WidgetAbstractScroller extends WidgetAbstractContainer implements Observer {
 
     private WidgetNotifier notifierScrollChange = new WidgetNotifier();
 
     private WidgetRepeater repeat = new WidgetRepeater();
-    
+
     private boolean incrementing;
     private boolean decrementing;
-    
-    WidgetScrollerType type;
+
+    WidgetOrientationType type;
 
     WidgetScrollerButton upLeft = new WidgetScrollerButton();
     WidgetScrollerButton downRight = new WidgetScrollerButton();
 
     WidgetScrollerThumbTray thumbTray;
-    
-    int buttonSize = WidgetScrollerButton.DEFAULT_SCROLLER_BUTTON_SIZE; 
 
-    public WidgetScrollerAbstract(WidgetScrollerType type) {
+    int buttonSize = WidgetScrollerButton.DEFAULT_SCROLLER_BUTTON_SIZE;
+
+    public WidgetAbstractScroller(WidgetOrientationType type) {
         super();
 
         setLayout(new WidgetBorderLayout());
@@ -79,21 +74,21 @@ public abstract class WidgetScrollerAbstract extends WidgetAbstractContainer imp
         add(thumbTray, WidgetBorderLayoutConstraint.CENTER);
         thumbTray.addMouseDragObserver(this);
 
-        if (this.type == WidgetScrollerType.VERTICAL) {
-            
+        if (this.type == WidgetOrientationType.VERTICAL) {
+
             add(upLeft, WidgetBorderLayoutConstraint.NORTH);
             add(downRight, WidgetBorderLayoutConstraint.SOUTH);
-            
-        } else if (this.type == WidgetScrollerType.HORIZONTAL) {
+
+        } else if (this.type == WidgetOrientationType.HORIZONTAL) {
 
             add(upLeft, WidgetBorderLayoutConstraint.WEST);
             add(downRight, WidgetBorderLayoutConstraint.EAST);
 
         }
-        
+
         upLeft.addMouseButtonDownObserver(this);
         upLeft.addMouseButtonUpObserver(this);
-        
+
         downRight.addMouseButtonDownObserver(this);
         downRight.addMouseButtonUpObserver(this);
 
@@ -112,12 +107,12 @@ public abstract class WidgetScrollerAbstract extends WidgetAbstractContainer imp
     }
 
     void initButtonExtents() {
-        
+
         upLeft.setPreferredSize(buttonSize, buttonSize);
         downRight.setPreferredSize(buttonSize, buttonSize);
 
         thumbTray.initExtents();
-        
+
         this.notifierScrollChange.notifyObservers(this);
     }
 
@@ -148,37 +143,37 @@ public abstract class WidgetScrollerAbstract extends WidgetAbstractContainer imp
     public void update(Observable o, Object arg) {
 
         if (arg == upLeft && upLeft.isVisible()) {
-    
-            WidgetButtonStateType bs = ((WidgetButton)arg).getButtonState();
-    
+
+            WidgetButtonStateType bs = ((WidgetButton) arg).getButtonState();
+
             if (bs == WidgetButtonStateType.BUTTON_DOWN) {
-                
+
                 thumbTray.decrement();
                 decrementing = true;
                 repeat.start();
-                                
+
             } else if (bs == WidgetButtonStateType.BUTTON_UP) {
                 decrementing = false;
             }
-            
+
         } else if (arg == downRight && downRight.isVisible()) {
-    
-            WidgetButtonStateType bs = ((WidgetButton)arg).getButtonState();
-    
+
+            WidgetButtonStateType bs = ((WidgetButton) arg).getButtonState();
+
             if (bs == WidgetButtonStateType.BUTTON_DOWN) {
-                
+
                 thumbTray.increment();
                 incrementing = true;
                 repeat.start();
-                
+
             } else if (bs == WidgetButtonStateType.BUTTON_UP) {
-                
+
                 incrementing = false;
-                
+
             }
-            
+
         }
-        
+
         this.notifierScrollChange.notifyObservers(this);
 
     }
@@ -210,8 +205,14 @@ public abstract class WidgetScrollerAbstract extends WidgetAbstractContainer imp
                 thumbTray.increment();
             }
         }
-        
+
         super.onDraw(r);
     }
+
+    /** <code>initWidgetRenderer</code> 
+     * 
+     * @see com.jme.widget.Widget#initWidgetRenderer()
+     */
+    public void initWidgetRenderer() {}
 
 }

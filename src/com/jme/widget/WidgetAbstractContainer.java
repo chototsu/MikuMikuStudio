@@ -58,11 +58,20 @@ import com.jme.widget.util.WidgetNotifier;
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
 public abstract class WidgetAbstractContainer extends Node implements Widget {
+    private class WidgetContainerImpl extends WidgetAbstractImpl {
+
+        /** <code>initWidgetRenderer</code> 
+         * 
+         * @see com.jme.widget.Widget#initWidgetRenderer()
+         */
+        public void initWidgetRenderer() {}
+    }
+
     protected Vector2f panOffset = new Vector2f();
 
     protected WidgetLayoutManager layout;
 
-    protected WidgetImpl widgetImpl = new WidgetImpl();
+    protected WidgetContainerImpl widgetImpl = new WidgetContainerImpl();
 
     protected ArrayList widgetList = new ArrayList();
 
@@ -82,6 +91,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     private void init() {
+        initWidgetRenderer();
         setVisible(true);
     }
 
@@ -222,12 +232,14 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 
     public void remove(int w) {
         if (w > 0 && w < super.getQuantity()) {
+            widgetList.remove(w);
             super.detachChildAt(w);
             doLayout();
         }
     }
 
     public void remove(Widget w) {
+        widgetList.remove(w);
         if (w instanceof Spatial) {
 
             super.detachChild((Spatial) w);
@@ -242,6 +254,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 
     public void removeAll() {
         detachAllChildren();
+        widgetList.clear();
     }
 
     public void dispose() {
@@ -291,6 +304,22 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
      */
     public void setLastWidgetUnderMouse(Widget widget) {
         widgetImpl.setLastWidgetUnderMouse(widget);
+    }
+
+    /** <code>getWidgetRenderer</code> 
+     * @return
+     * @see com.jme.widget.Widget#getWidgetRenderer()
+     */
+    public WidgetRenderer getWidgetRenderer() {
+        return widgetImpl.getWidgetRenderer();
+    }
+
+    /** <code>setWidgetRenderer</code> 
+     * @param widgetRenderer
+     * @see com.jme.widget.Widget#setWidgetRenderer(com.jme.widget.WidgetRenderer)
+     */
+    public void setWidgetRenderer(WidgetRenderer widgetRenderer) {
+        widgetImpl.setWidgetRenderer(widgetRenderer);
     }
 
     /**
@@ -443,26 +472,26 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 
     /*
      **************************************************************
-     * Widget2d implementation - start
+     * Widget implementation - start
      **************************************************************
      */
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getBorder()
+     * @see jme.widget.Widget#getBorder()
      */
     public WidgetBorder getBorder() {
         return widgetImpl.getBorder();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setBorder(jme.widget.border.Border)
+     * @see jme.widget.Widget#setBorder(jme.widget.border.Border)
      */
     public void setBorder(WidgetBorder border) {
         widgetImpl.setBorder(border);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setLocation(jme.math.point.Point2)
+     * @see jme.widget.Widget#setLocation(jme.math.point.Point2)
      */
     public void setLocation(Vector2f at) {
         widgetImpl.setLocation(at);
@@ -470,7 +499,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setLocation(int, int)
+     * @see jme.widget.Widget#setLocation(int, int)
      */
     public void setLocation(int x, int y) {
         widgetImpl.setLocation(x, y);
@@ -478,14 +507,14 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getLocation()
+     * @see jme.widget.Widget#getLocation()
      */
     public Vector2f getLocation() {
         return widgetImpl.getLocation();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setSize(jme.math.point.Point2)
+     * @see jme.widget.Widget#setSize(jme.math.point.Point2)
      */
     public void setSize(Vector2f size) {
         widgetImpl.setSize(size);
@@ -493,7 +522,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setSize(int, int)
+     * @see jme.widget.Widget#setSize(int, int)
      */
     public void setSize(int width, int height) {
         widgetImpl.setSize(width, height);
@@ -501,84 +530,84 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getSize()
+     * @see jme.widget.Widget#getSize()
      */
     public Vector2f getSize() {
         return widgetImpl.getSize();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setPreferredSize(jme.math.point.Point2)
+     * @see jme.widget.Widget#setPreferredSize(jme.math.point.Point2)
      */
     public void setPreferredSize(Vector2f size) {
         widgetImpl.setPreferredSize(size);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setPreferredSize(int, int)
+     * @see jme.widget.Widget#setPreferredSize(int, int)
      */
     public void setPreferredSize(int width, int height) {
         widgetImpl.setPreferredSize(width, height);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getX()
+     * @see jme.widget.Widget#getX()
      */
     public int getX() {
         return widgetImpl.getX();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setX(int)
+     * @see jme.widget.Widget#setX(int)
      */
     public void setX(int x) {
         widgetImpl.setX(x);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getY()
+     * @see jme.widget.Widget#getY()
      */
     public int getY() {
         return widgetImpl.getY();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setY(int)
+     * @see jme.widget.Widget#setY(int)
      */
     public void setY(int y) {
         widgetImpl.setY(y);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getWidth()
+     * @see jme.widget.Widget#getWidth()
      */
     public int getWidth() {
         return widgetImpl.getWidth();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setWidth(int)
+     * @see jme.widget.Widget#setWidth(int)
      */
     public void setWidth(int width) {
         widgetImpl.setWidth(width);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getHeight()
+     * @see jme.widget.Widget#getHeight()
      */
     public int getHeight() {
         return widgetImpl.getHeight();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setHeight(int)
+     * @see jme.widget.Widget#setHeight(int)
      */
     public void setHeight(int height) {
         widgetImpl.setHeight(height);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setVisible(boolean)
+     * @see jme.widget.Widget#setVisible(boolean)
      */
     public void setVisible(boolean visible) {
         widgetImpl.setVisible(visible);
@@ -586,42 +615,42 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#isVisible()
+     * @see jme.widget.Widget#isVisible()
      */
     public boolean isVisible() {
         return widgetImpl.isVisible();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#isOpaque()
+     * @see jme.widget.Widget#isOpaque()
      */
     public boolean isOpaque() {
         return widgetImpl.isOpaque();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#doParentLayout()
+     * @see jme.widget.Widget#doParentLayout()
      */
     public void doParentLayout() {
         widgetImpl.doParentLayout();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setWidgetParent(jme.widget.WidgetAbstractContainer)
+     * @see jme.widget.Widget#setWidgetParent(jme.widget.WidgetAbstractContainer)
      */
     public void setWidgetParent(WidgetAbstractContainer parent) {
         widgetImpl.setWidgetParent(parent);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getWidgetParent()
+     * @see jme.widget.Widget#getWidgetParent()
      */
     public WidgetAbstractContainer getWidgetParent() {
         return widgetImpl.getWidgetParent();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getAbsoluteLocation()
+     * @see jme.widget.Widget#getAbsoluteLocation()
      */
     public Vector2f getAbsoluteLocation() {
         return widgetImpl.getAbsoluteLocation();
@@ -642,7 +671,7 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getXOffset()
+     * @see jme.widget.Widget#getXOffset()
      */
     public int getXOffset() {
         return widgetImpl.getXOffset();
@@ -663,119 +692,119 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getYOffset()
+     * @see jme.widget.Widget#getYOffset()
      */
     public int getYOffset() {
         return widgetImpl.getYOffset();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getZOrder()
+     * @see jme.widget.Widget#getZOrder()
      */
     public int getZOrder() {
         return widgetImpl.getZOrder();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setZOrder(int)
+     * @see jme.widget.Widget#setZOrder(int)
      */
     public void setZOrder(int i) {
         widgetImpl.setZOrder(i);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#isMouseInWidget()
+     * @see jme.widget.Widget#isMouseInWidget()
      */
     public boolean isMouseInWidget() {
         return widgetImpl.isMouseInWidget();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getAlignment()
+     * @see jme.widget.Widget#getAlignment()
      */
     public WidgetAlignmentType getAlignment() {
         return widgetImpl.getAlignment();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setAlignment(jme.widget.AlignmentType)
+     * @see jme.widget.Widget#setAlignment(jme.widget.AlignmentType)
      */
     public void setAlignment(WidgetAlignmentType alignment) {
         widgetImpl.setAlignment(alignment);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#doAlignment(jme.math.point.Point2, jme.widget.Insets)
+     * @see jme.widget.Widget#doAlignment(jme.math.point.Point2, jme.widget.Insets)
      */
     public void doAlignment(Vector2f size, WidgetInsets insets) {
         widgetImpl.doAlignment(size, insets);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#close()
+     * @see jme.widget.Widget#close()
      */
     public void close() {
         widgetImpl.close();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#canClose()
+     * @see jme.widget.Widget#canClose()
      */
     public boolean canClose() {
         return widgetImpl.canClose();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getBgColor()
+     * @see jme.widget.Widget#getBgColor()
      */
     public ColorRGBA getBgColor() {
         return widgetImpl.getBgColor();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setBgColor(jme.color.ColorRGBA)
+     * @see jme.widget.Widget#setBgColor(jme.color.ColorRGBA)
      */
     public void setBgColor(ColorRGBA colorRGBA) {
         widgetImpl.setBgColor(colorRGBA);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getFgColor()
+     * @see jme.widget.Widget#getFgColor()
      */
     public ColorRGBA getFgColor() {
         return widgetImpl.getFgColor();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setFgColor(jme.color.ColorRGBA)
+     * @see jme.widget.Widget#setFgColor(jme.color.ColorRGBA)
      */
     public void setFgColor(ColorRGBA colorRGBA) {
         widgetImpl.setFgColor(colorRGBA);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#isCantOwnMouse()
+     * @see jme.widget.Widget#isCantOwnMouse()
      */
     public boolean isCantOwnMouse() {
         return widgetImpl.isCantOwnMouse();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setCantOwnMouse(boolean)
+     * @see jme.widget.Widget#setCantOwnMouse(boolean)
      */
     public void setCantOwnMouse(boolean b) {
         widgetImpl.setCantOwnMouse(b);
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getViewport()
+     * @see jme.widget.Widget#getViewport()
      */
     public WidgetViewRectangle getViewRectangle() {
         return widgetImpl.getViewRectangle();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#setViewport(jme.scene.bounds.Viewport)
+     * @see jme.widget.Widget#setViewport(jme.scene.bounds.Viewport)
      */
     public void setViewRectangle(WidgetViewRectangle viewport) {
         widgetImpl.setViewRectangle(viewport);
@@ -796,50 +825,66 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getNotifierMouseButtonDown()
+     * @see jme.widget.Widget#getNotifierMouseButtonDown()
      */
     public WidgetNotifier getNotifierMouseButtonDown() {
         return widgetImpl.getNotifierMouseButtonDown();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getNotifierMouseButtonUp()
+     * @see jme.widget.Widget#getNotifierMouseButtonUp()
      */
     public WidgetNotifier getNotifierMouseButtonUp() {
         return widgetImpl.getNotifierMouseButtonUp();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getNotifierMouseDrag()
+     * @see jme.widget.Widget#getNotifierMouseDrag()
      */
     public WidgetNotifier getNotifierMouseDrag() {
         return widgetImpl.getNotifierMouseDrag();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getNotifierMouseEnter()
+     * @see jme.widget.Widget#getNotifierMouseEnter()
      */
     public WidgetNotifier getNotifierMouseEnter() {
         return widgetImpl.getNotifierMouseEnter();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getNotifierMouseExit()
+     * @see jme.widget.Widget#getNotifierMouseExit()
      */
     public WidgetNotifier getNotifierMouseExit() {
         return widgetImpl.getNotifierMouseExit();
     }
 
     /* (non-Javadoc)
-     * @see jme.widget.Widget2d#getNotifierMouseMove()
+     * @see jme.widget.Widget#getNotifierMouseMove()
      */
     public WidgetNotifier getNotifierMouseMove() {
         return widgetImpl.getNotifierMouseMove();
     }
 
+    /** <code>getTextureCoords</code> 
+     * @return
+     * @see com.jme.widget.Widget#getTextureCoords()
+     */
+    public WidgetTextureCoords getTextureCoords() {
+        return widgetImpl.getTextureCoords();
+    }
+
+    /** <code>setTextureCoords</code> 
+     * @param coords
+     * @see com.jme.widget.Widget#setTextureCoords(com.jme.widget.WidgetTextureCoords)
+     */
+    public void setTextureCoords(WidgetTextureCoords coords) {
+        widgetImpl.setTextureCoords(coords);
+    }
+
     /*
      **************************************************************
-     * Widget2d implementation - end
+     * Widget implementation - end
      **************************************************************
      */
 

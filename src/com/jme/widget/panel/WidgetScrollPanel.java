@@ -122,9 +122,9 @@ public class WidgetScrollPanel extends WidgetAbstractContainer implements Observ
     }
 
     public void doLayout() {
-		if (isVisible() == false)
-			return;
-			
+        if (isVisible() == false)
+            return;
+
         WidgetBoundingRectangle r;
 
         super.doLayout();
@@ -132,7 +132,7 @@ public class WidgetScrollPanel extends WidgetAbstractContainer implements Observ
         if (this.showVScroll) {
 
             if (changingVScroller == false) {
-                
+
                 changingVScroller = true;
 
                 super.remove(vScroller);
@@ -140,7 +140,7 @@ public class WidgetScrollPanel extends WidgetAbstractContainer implements Observ
                 super.add(vScroller, WidgetBorderLayoutConstraint.EAST);
                 vScroller.setVisible(true);
 
-				super.doLayout();
+                super.doLayout();
 
                 r = panel.getExtents();
 
@@ -162,7 +162,7 @@ public class WidgetScrollPanel extends WidgetAbstractContainer implements Observ
         if (showHScroll) {
 
             if (changingHScroller == false) {
-                
+
                 changingHScroller = true;
 
                 super.remove(hScroller);
@@ -180,7 +180,7 @@ public class WidgetScrollPanel extends WidgetAbstractContainer implements Observ
                 super.doLayout();
 
                 r = panel.getExtents();
-                
+
                 if (r.getWidth() > panel.getWidth()) {
 
                     hScroller.setRangeExtents((int) r.getWidth(), panel.getWidth());
@@ -197,7 +197,7 @@ public class WidgetScrollPanel extends WidgetAbstractContainer implements Observ
             }
         }
 
-		updateWorldBound();
+        updateWorldBound();
     }
 
     public void setLayout(WidgetLayoutManager layout) {
@@ -231,5 +231,11 @@ public class WidgetScrollPanel extends WidgetAbstractContainer implements Observ
     public void setShowHScroll(boolean b) {
         showHScroll = b;
     }
+
+    /** <code>initWidgetRenderer</code> 
+     * 
+     * @see com.jme.widget.Widget#initWidgetRenderer()
+     */
+    public void initWidgetRenderer() {}
 
 }

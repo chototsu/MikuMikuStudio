@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -37,14 +37,13 @@ import com.jme.widget.button.WidgetButton;
 import com.jme.widget.button.WidgetButtonStateType;
 
 /**
+ * <code>WidgetScrollerThumb</code>
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: WidgetScrollerThumb.java,v 1.2 2004-03-04 03:30:00 greggpatton Exp $
  */
 public class WidgetScrollerThumb extends WidgetButton {
 
-	private Vector2f preferredSize = new Vector2f();
+	protected Vector2f preferredSize = new Vector2f();
 	
     /**
      * 

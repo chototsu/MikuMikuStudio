@@ -32,6 +32,7 @@
 package com.jme.widget.scroller;
 
 import com.jme.widget.WidgetExpander;
+import com.jme.widget.WidgetOrientationType;
 
 /**
  * @author Gregg Patton
@@ -39,10 +40,10 @@ import com.jme.widget.WidgetExpander;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetHScroller extends WidgetScrollerAbstract {
+public class WidgetHScroller extends WidgetAbstractScroller {
 
     public WidgetHScroller() {
-        super(WidgetScrollerType.HORIZONTAL);
+        super(WidgetOrientationType.HORIZONTAL);
     }
 
     public void setRightButtonExpander(WidgetExpander expander) {

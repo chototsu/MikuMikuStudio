@@ -31,16 +31,18 @@
  */
 package com.jme.widget.scroller;
 
+import com.jme.widget.WidgetOrientationType;
+
 /**
  * @author Gregg Patton
  *
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetVScroller extends WidgetScrollerAbstract {
+public class WidgetVScroller extends WidgetAbstractScroller {
 
     public WidgetVScroller() {
-        super(WidgetScrollerType.VERTICAL);
+        super(WidgetOrientationType.VERTICAL);
     }
 
 }
