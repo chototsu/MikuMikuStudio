@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.23 2005-02-23 00:55:35 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.24 2005-02-24 06:58:51 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -176,8 +176,9 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     public void calcWelzl(Vector3f[] points) {
         if (center == null) center = new Vector3f();
         Vector3f[] newRef = new Vector3f[points.length];
-        for (int i = 0; i < points.length; i++)
+        for (int i = 0; i < points.length; i++) {
             newRef[i] = points[i];
+        }
         recurseMini(newRef, newRef.length, 0, 0);
     }
 
@@ -199,8 +200,8 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     private void recurseMini(Vector3f[] points, int p, int b, int ap) {
         switch (b) {
         case 0:
-            this.radius = 0;
-            this.center.set(Float.MAX_VALUE, Float.MAX_VALUE, Float.MAX_VALUE);
+            this.radius = -1;
+            this.center.set(0, 0, 0);
             break;
         case 1:
             this.radius = 1 - radiusEpsilon;
@@ -250,13 +251,18 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
         float Denominator = 2.0f * (a.x * (b.y * c.z - c.y * b.z) - b.x
                 * (a.y * c.z - c.y * a.z) + c.x * (a.y * b.z - b.y * a.z));
-        Vector3f o = a.cross(b).multLocal(c.lengthSquared()).addLocal(
+        if (Denominator == 0) {
+            center.set(0,0,0);
+            radius = 0;
+        } else {
+            Vector3f o = a.cross(b).multLocal(c.lengthSquared()).addLocal(
                 c.cross(a).multLocal(b.lengthSquared())).addLocal(
                 b.cross(c).multLocal(a.lengthSquared())).divideLocal(
                 Denominator);
 
-        radius = o.length() * radiusEpsilon;
-        O.add(o, center);
+        	radius = o.length() * radiusEpsilon;
+        	O.add(o, center);
+        }
     }
 
     /**
@@ -278,12 +284,17 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
         float Denominator = 2.0f * acrossB.dot(acrossB);
 
-        Vector3f o = acrossB.cross(a).multLocal(b.lengthSquared()).addLocal(
+        if (Denominator == 0) {
+            center.set(0,0,0);
+            radius = 0;
+        } else {
+                    
+            Vector3f o = acrossB.cross(a).multLocal(b.lengthSquared()).addLocal(
                 b.cross(acrossB).multLocal(a.lengthSquared())).divideLocal(
                 Denominator);
-
-        radius = o.length() * radiusEpsilon;
-        O.add(o, center);
+        	radius = o.length() * radiusEpsilon;
+        	O.add(o, center);
+        }
     }
 
     /**
@@ -298,7 +309,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      */
     private void setSphere(Vector3f O, Vector3f A) {
         radius = FastMath.sqrt(((A.x - O.x) * (A.x - O.x) + (A.y - O.y)
-                * (A.y - O.y) + (A.z - O.z) * (A.z - O.z)) / 4);
+                * (A.y - O.y) + (A.z - O.z) * (A.z - O.z)) / 4f);
         center.interpolate(O, A, .5f);
     }
 
