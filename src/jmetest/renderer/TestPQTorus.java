@@ -51,7 +51,7 @@ import com.jme.util.*;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.9 2004-04-22 02:18:26 renanse Exp $
+ * @version $Id: TestPQTorus.java,v 1.10 2004-04-22 02:20:13 renanse Exp $
  */
 public class TestPQTorus extends SimpleGame {
 
@@ -61,7 +61,7 @@ public class TestPQTorus extends SimpleGame {
     private PQTorus t;
     private Text pqText;
 
-    private float p = 1, q = 2;
+    private float p = 1, q = 0;
     private boolean anim = false;
     private float targetP = p, targetQ = q;
 
@@ -157,13 +157,14 @@ public class TestPQTorus extends SimpleGame {
     }
 
     private void generatePQTorus(){
-        //Generate a torus with 128 steps along the torus, 16 radial samples,
-        //and a radius of 2.0 units
-        t = new PQTorus("torus", p, q, 2.0f, 1.0f, 128, 16);
+      rootNode.detachChild(t);
 
-        //Update the scene
-        rootNode.detachAllChildren();
-        rootNode.attachChild(t);
+      //Generate a torus with 128 steps along the torus, 16 radial samples,
+      //and a radius of 2.0 units
+      t = new PQTorus("torus", p, q, 2.0f, 1.0f, 128, 16);
+
+      //Update the scene
+      rootNode.attachChild(t);
     }
 
     /**
