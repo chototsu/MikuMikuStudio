@@ -48,7 +48,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestWidgetViewportFrame</code>
  * @author Gregg Patton
- * @version $Id: TestWidgetViewportFrame.java,v 1.4 2004-03-25 17:14:19 mojomonkey Exp $
+ * @version $Id: TestWidgetViewportFrame.java,v 1.5 2004-03-27 17:45:04 greggpatton Exp $
  */
 public class TestWidgetViewportFrame extends WidgetAbstractFrame {
 
@@ -180,8 +180,8 @@ public class TestWidgetViewportFrame extends WidgetAbstractFrame {
         if (curVp != null && updateController) {
             WidgetViewportCameraController cameraController = curVp.getCameraController();
 
-            if (cameraController != null && cameraController.getInputController() != null) {
-                cameraController.getInputController().update(false, false, time);
+            if (cameraController != null && cameraController.getInputHandler() != null) {
+                cameraController.getInputHandler().update(false, false, time);
             }
             
         }
