@@ -52,7 +52,9 @@ public interface ISoundRenderer {
 
 	public Camera getCamera(int width, int height);
 
+	public void draw(SphericalSound s);
+	
 	public void draw(SoundSpatial s);
 
-	public void draw(SphericalSound s);
+	
 }
