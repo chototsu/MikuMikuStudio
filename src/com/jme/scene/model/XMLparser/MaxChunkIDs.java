@@ -93,4 +93,33 @@ public interface MaxChunkIDs {
     static final int KEY_OMNI_LI_INFO=0xb005;
     static final int KEY_COLOR_TRACK=0xb025;
     static final int KEY_AMBIENT_NODE=0xb001;
+    static final int IN_TRANC_FLAG   =0xa08a;
+    static final int TEXMAP_ONE     =0xa200;
+    static final int MAT_TEXNAME    =0xa300;
+    static final int MAT_TEX_FLAGS =0xa351;
+    static final int MAT_TEX_BLUR   =0xa353;
+    static final int MAT_TEX_BUMPMAP=0xa230;
+    static final int MAT_TEX_BUMP_PER=0xa252;
+    static final int MAT_SOFTEN     =0xa08c;
+    static final int MAT_SXP_TEXT_DATA=0xa320;
+    static final int MAT_REFL_BLUR      =0xa250;
+    static final int MAT_WIRE_ABS   =0xa08e;
+    static final int MAT_REFLECT_MAP    =0xa220;
+    static final int MAT_SXP_BUMP_DATA  =0xa324;
+    static final int MAT_TWO_SIDED  =0xa081;
+    static final int MAT_FALLOFF    =0xa240;
+    static final int MAT_WIREFRAME_ON=0xa085;
+    static final int MAT_TEX2MAP    =0xa33a;
+    static final int LIGHT_SPOTLIGHT=0x4610;
+    static final int LIGHT_SPOT_ROLL=0x4656;
+    static final int LIGHT_SPOT_SHADOWED=0x4630;
+    static final int LIGHT_SPOT_BIAS=0x4658;
+    static final int MESH_TEXTURE_INFO=0x4170;
+    static final int KEY_SPOT_TARGET =0xb006;
+    static final int KEY_SPOT_INFO  =0xb007;
+    static final int KEY_HOTSPOT_TRACK=0xb027;
+    static final int KEY_FALLOFF_TRACK=0xb028;
+    static final int UNKNOWN1       =0x0001;
+
+
 }
