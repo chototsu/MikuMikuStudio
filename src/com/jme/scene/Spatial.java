@@ -56,7 +56,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.61 2004-11-06 18:55:44 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.62 2005-02-24 07:00:50 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -575,6 +575,21 @@ public abstract class Spatial implements Serializable {
 		this.parent = parent;
 	}
 
+
+	/**
+	 * <code>removeFromParent</code> removes this Spatial from it's parent.
+	 * 
+	 * @return true if it has a parent and performed the remove.
+	 */
+    public boolean removeFromParent() {
+        if (parent != null) {
+            parent.detachChild(this);
+            return true;
+        }
+        return false;
+    }
+
+	
 	/**
 	 * <code>getLocalRotation</code> retrieves the local rotation of this
 	 * node.
