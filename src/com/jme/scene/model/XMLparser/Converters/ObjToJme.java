@@ -44,6 +44,15 @@ public class ObjToJme extends FormatConverter{
     private HashMap materialSets=new HashMap();
 
     /**
+     * Converts an Obj file to jME format.  The syntax is: "Md2ToJme file.obj outfile.jme".
+     * @param args The array of parameters
+     */
+    public static void main(String[] args){
+        new DummyDisplaySystem();
+        new ObjToJme().attemptFileConvert(args);
+    }
+
+    /**
      * Converts an .obj file to .jme format.  If you wish to use a .mtl to load the obj's material information please specify
      * the base url where the .mtl is located with setProperty("mtllib",new URL(baseURL))
      * @param format The .obj file's stream.
