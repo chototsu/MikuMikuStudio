@@ -54,6 +54,8 @@ public class SoundPool {
         if (!table.containsKey(fileName)) {
             loaded = SoundAPIController.getSoundSystem().loadBuffer(fileName);
             table.put(fileName, loaded);
+        }else {
+            loaded = (IBuffer)table.get(fileName);
         }
 
         return loaded;
