@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,11 +27,11 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 /*
  * Created on 24 janv. 2004
- *  
+ *
  */
 package com.jme.sound.lwjgl;
 import java.io.ByteArrayOutputStream;
@@ -72,7 +72,7 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 /**
  * @author Arman Ozcelik
- *  
+ *
  */
 public class SoundSystem implements ISoundSystem {
 	private IListener listener;
@@ -82,7 +82,7 @@ public class SoundSystem implements ISoundSystem {
 		listener = new Listener();
 	}
 	/**
-	 *  
+	 *
 	 */
 	private void initalizeEAX() {
 		try {
@@ -95,7 +95,7 @@ public class SoundSystem implements ISoundSystem {
 		}
 	}
 	/**
-	 *  
+	 *
 	 */
 	private void initializeOpenAL() {
 		try {
@@ -109,7 +109,7 @@ public class SoundSystem implements ISoundSystem {
 	}
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISoundSystem#getAPIName()
 	 */
 	public String getAPIName() {
@@ -117,7 +117,7 @@ public class SoundSystem implements ISoundSystem {
 	}
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISoundSystem#generateBuffers(int)
 	 */
 	public IBuffer[] generateBuffers(int numOfBuffers) {
@@ -133,7 +133,7 @@ public class SoundSystem implements ISoundSystem {
 	}
 	/**
 	 * <code>loadBuffer</code>
-	 * 
+	 *
 	 * @param file
 	 * @return @see com.jme.sound.ISoundSystem#loadBuffer(java.lang.String)
 	 */
@@ -149,7 +149,7 @@ public class SoundSystem implements ISoundSystem {
 	}
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISoundSystem#loadBuffer(java.lang.String)
 	 */
 	public IBuffer loadBuffer(URL file) {
@@ -206,7 +206,7 @@ public class SoundSystem implements ISoundSystem {
 		IBuffer[] tmp = generateBuffers(1);
 		tmp[0].configure(data, channels, (int) audioStream.getFormat()
 				.getSampleRate(), getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
-		
+
 		System.out.println("Wav estimated time "+ getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
 		//cleanup
 		data.clear();
@@ -432,13 +432,13 @@ public class SoundSystem implements ISoundSystem {
 			tmp = generateBuffers(1);
 			int chans = getChannels(vorbisInfo);
 			int rate= chans == AL10.AL_FORMAT_MONO16
-			? vorbisInfo.rate 
+			? vorbisInfo.rate
 					: vorbisInfo.rate;
-			float time = (buf.length) / (rate * vorbisInfo.channels * 2);
+			float time = (buf.length) / (float)(rate * vorbisInfo.channels * 2);
 			tmp[0].configure(data, chans, rate, time);
-					
-			System.out.println("Sample rate= " + vorbisInfo.rate);
-			System.out.println("Estimated Play Time " + time);
+
+			System.err.println("Sample rate= " + vorbisInfo.rate);
+			System.err.println("Estimated Play Time " + time);
 
 		} catch (IOException ioe) {
 			ioe.printStackTrace();
@@ -475,9 +475,9 @@ public class SoundSystem implements ISoundSystem {
 			throw new JmeException("Only mono or stereo is supported");
 		}
 	}
-	
-	
-	
+
+
+
 	private float getPlayTime(byte[] data, AudioFormat format, int rate) {
 //		get channels
 		if (format.getChannels() == 1) {
@@ -499,12 +499,12 @@ public class SoundSystem implements ISoundSystem {
 		} else {
 			throw new JmeException("Only mono or stereo is supported");
 		}
-		
+
 	}
-	
+
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISoundSystem#loadSource(java.lang.String)
 	 */
 	public ISource loadSource(String file) {
@@ -517,7 +517,7 @@ public class SoundSystem implements ISoundSystem {
 	}
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISoundSystem#generateSources(int)
 	 */
 	public ISource[] generateSources(int numOfSources) {
@@ -533,7 +533,7 @@ public class SoundSystem implements ISoundSystem {
 	}
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISoundSystem#generateSource(com.jme.sound.IBuffer)
 	 */
 	public ISource generateSource(IBuffer buffer) {
@@ -543,7 +543,7 @@ public class SoundSystem implements ISoundSystem {
 	}
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISoundSystem#getListener()
 	 */
 	public IListener getListener() {
