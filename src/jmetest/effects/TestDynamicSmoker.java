@@ -61,9 +61,8 @@ import com.jme.renderer.Renderer;
  */
 public class TestDynamicSmoker extends SimpleGame {
   private Node smokeNode;
-  private TriMesh smoke;
   private Vector3f offset = new Vector3f(0,3.75f,14.0f);
-  ParticleManager manager;
+  private ParticleManager manager;
 
   /**
    * Entry point for the test,
@@ -89,7 +88,6 @@ public class TestDynamicSmoker extends SimpleGame {
 
     smokeNode = new Node("Smoker Node");
     smokeNode.setLocalTranslation(new Vector3f(0, 50, -50));
-    smokeNode.updateGeometricState(0, true);
 
     // Setup the input controller and timer
     input = new NodeHandler(this, smokeNode, "LWJGL");
@@ -128,6 +126,7 @@ public class TestDynamicSmoker extends SimpleGame {
     smokeNode.attachChild(camBox);
     Disk emitDisc = new Disk("disc", 6, 6, 1.5f);
     emitDisc.setLocalTranslation(offset);
+    emitDisc.setForceCull(true);
     smokeNode.attachChild(emitDisc);
     rootNode.attachChild(smokeNode);
 
@@ -163,7 +162,7 @@ public class TestDynamicSmoker extends SimpleGame {
     manager.setGeometry(emitDisc);
 
     manager.warmUp(60);
-    smoke = manager.getParticles();
+    TriMesh smoke = manager.getParticles();
     smoke.addController(manager);
 
     ZBufferState zbuf = display.getRenderer().createZBufferState();
