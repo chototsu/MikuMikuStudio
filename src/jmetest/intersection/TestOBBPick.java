@@ -63,13 +63,15 @@ import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.util.TextureManager;
+import com.jme.scene.Line;
+import com.jme.intersection.PickData;
 
 /**
  * Started Date: Jul 22, 2004 <br>
  * <br>
- * 
+ *
  * Demonstrates picking with the mouse.
- * 
+ *
  * @author Jack Lindamood
  */
 public class TestOBBPick extends SimpleGame {
@@ -77,7 +79,8 @@ public class TestOBBPick extends SimpleGame {
 	AbsoluteMouse am;
 
 	Node maggie;
-	public static void main(String[] args) {
+  private Line l;
+  public static void main(String[] args) {
 		TestOBBPick app = new TestOBBPick();
 		app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
@@ -147,9 +150,11 @@ public class TestOBBPick extends SimpleGame {
 		// Attach Children
 		rootNode.attachChild(maggie);
 		rootNode.attachChild(am);
+    l = new Line("me", new Vector3f[] {new Vector3f(110,110,110), new Vector3f(-110,-110,-110)}, null, new ColorRGBA[] {ColorRGBA.white, ColorRGBA.white}, null);
+    rootNode.attachChild(l);
 		// Remove all the lightstates so we can see the per-vertex colors
 		lightState.detachAll();
-		
+
 			}
 
 	private void randomizeColors(Spatial s) {
@@ -162,28 +167,29 @@ public class TestOBBPick extends SimpleGame {
 		}
 	}
 
+  PickResults results = new TrianglePickResults() {
+    public void processPick() {
+      if (getNumber() > 0) {
+        for(int j = 0; j < getNumber(); j++) {
+          PickData pData = getPickData(j);
+          ArrayList tris = pData.getTargetTris();
+          TriMesh mesh = (TriMesh) pData.getTargetMesh();
+          int[] indices = mesh.getIndices();
+          ColorRGBA toPaint = ColorRGBA.randomColor();
+
+          for (int i = 0; i < tris.size(); i++) {
+            int index = ((Integer) tris.get(i)).intValue() * 3;
+            mesh.setColor(indices[index + 0], toPaint);
+            mesh.setColor(indices[index + 1], toPaint);
+            mesh.setColor(indices[index + 2], toPaint);
+          }
+        }
+      }
+    }
+  };
+
 	// This is called every frame. Do changing of values here.
 	protected void simpleUpdate() {
-		PickResults results = new TrianglePickResults() {
-			public void processPick() {
-				if (this.getNumber() > 0) {
-					for(int j = 0; j < getNumber(); j++) {
-					int[] indicies = ((TriMesh) this.getPickData(j)
-							.getTargetMesh()).getIndices();
-					ColorRGBA toPaint = ColorRGBA.randomColor();
-
-					for (int i = 0; i < this.getPickData(j).getTargetTris()
-							.size(); i++) {
-						((TriMesh) this.getPickData(j).getTargetMesh())
-								.setColor(indicies[((Integer) this
-										.getPickData(j).getTargetTris()
-										.get(i)).intValue() * 3 + 0],
-										toPaint);
-					}
-					}
-				}
-			}
-		};
 
 		// Get the mouse input device from the jME mouse
 		MouseInput thisMouse = am.getMouseInput();
@@ -193,12 +199,15 @@ public class TestOBBPick extends SimpleGame {
 			// Get the position that the mouse is pointing to
 			screenPos.set(am.getHotSpotPosition().x, am.getHotSpotPosition().y);
 			// Get the world location of that X,Y value
-			Vector3f worldCoords = display.getWorldCoordinates(screenPos, 0);
+			Vector3f worldCoords = display.getWorldCoordinates(screenPos, 1.0f);
 			// Create a ray starting from the camera, and going in the direction
 			// of the mouse's location
 			final Ray mouseRay = new Ray(cam.getLocation(), worldCoords
 					.subtractLocal(cam.getLocation()));
-			results.clear();
+      results.clear();
+
+      l.getVertices()[0].set(cam.getLocation());
+      l.getVertices()[1].set(worldCoords);
 			maggie.doPick(mouseRay, results);
 			System.out.println(results.getNumber());
 			results.processPick();
