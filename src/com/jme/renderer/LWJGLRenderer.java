@@ -31,10 +31,16 @@
  */
 package com.jme.renderer;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.logging.Level;
+
+import javax.imageio.ImageIO;
 
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.Window;
@@ -74,7 +80,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.7 2003-12-02 20:08:09 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.8 2004-01-05 01:44:13 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -114,7 +120,7 @@ public class LWJGLRenderer implements Renderer {
             Level.INFO,
             "LWJGLRenderer created. W:  " + width + "H: " + height);
     }
-    
+
     /**
      * <code>setCullingMode</code> defines which side of a triangle (if any) 
      * will be culled. Front means the side the normal faces will be culled,
@@ -122,20 +128,20 @@ public class LWJGLRenderer implements Renderer {
      * @param mode the side to cull.
      */
     public void setCullingMode(int mode) {
-        switch(mode) {
-            case CULL_FRONT:
+        switch (mode) {
+            case CULL_FRONT :
                 GL.glCullFace(GL.GL_FRONT);
                 GL.glEnable(GL.GL_CULL_FACE);
                 break;
-            case CULL_BACK:
+            case CULL_BACK :
                 GL.glCullFace(GL.GL_BACK);
                 GL.glEnable(GL.GL_CULL_FACE);
                 break;
-            case CULL_NONE:
+            case CULL_NONE :
                 GL.glCullFace(GL.GL_NONE);
                 GL.glEnable(GL.GL_CULL_FACE);
                 break;
-            default:
+            default :
                 GL.glDisable(GL.GL_CULL_FACE);
                 break;
         }
@@ -243,7 +249,7 @@ public class LWJGLRenderer implements Renderer {
     public WireframeState getWireframeState() {
         return new LWJGLWireframeState();
     }
-    
+
     public ZBufferState getZBufferState() {
         return new LWJGLZBufferState();
     }
@@ -330,6 +336,58 @@ public class LWJGLRenderer implements Renderer {
         GL.glFlush();
         Window.paint();
         Window.update();
+    }
+
+    /**
+     * <code>takeScreenShot</code> saves the current buffer to a file. The
+     * file name is provided, and .png will be appended. True is returned
+     * if the capture was successful, false otherwise.
+     * @param filename the name of the file to save.
+     * @return true if successful, false otherwise.
+     */
+    public boolean takeScreenShot(String filename) {
+        if (null == filename) {
+            throw new JmeException("Screenshot filename cannot be null");
+        }
+        LoggingSystem.getLogger().log(
+            Level.INFO,
+            "Taking screenshot: " + filename + ".png");
+
+        //Create a pointer to the image info and create a buffered image to
+        //hold it.
+        IntBuffer buff =
+            ByteBuffer
+                .allocateDirect(width * height * 4)
+                .order(ByteOrder.nativeOrder())
+                .asIntBuffer();
+        GL.glReadPixels(
+            0,
+            0,
+            width,
+            height,
+            GL.GL_BGRA,
+            GL.GL_UNSIGNED_BYTE,
+            buff);
+        BufferedImage img =
+            new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+
+        //Grab each pixel information and set it to the BufferedImage info.
+        for (int x = 0; x < width; x++) {
+            for (int y = 0; y < height; y++) {
+                img.setRGB(x, y, buff.get((height - y - 1) * width + x));
+            }
+        }
+
+        //write out the screenshot image to a file.
+        try {
+            File out = new File(filename + ".png");
+            return ImageIO.write(img, "png", out);
+        } catch (IOException e) {
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Could not create file: " + filename + ".png");
+            return false;
+        }
     }
 
     /**
@@ -689,7 +747,7 @@ public class LWJGLRenderer implements Renderer {
         Matrix3f rotation = t.getWorldRotation();
         Vector3f translation = t.getWorldTranslation();
         float scale = t.getWorldScale();
-        
+
         float[] modelToWorld =
             {
                 scale * rotation.get(0, 0),
@@ -783,10 +841,10 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#draw(com.jme.input.Mouse)
      */
     public void draw(Mouse m) {
-        if(!m.hasCursor()) {
+        if (!m.hasCursor()) {
             return;
         }
-        
+
         GL.glMatrixMode(GL.GL_PROJECTION);
         GL.glPushMatrix();
         GL.glLoadIdentity();
@@ -794,24 +852,27 @@ public class LWJGLRenderer implements Renderer {
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPushMatrix();
         GL.glLoadIdentity();
-        GL.glTranslatef(m.getLocalTranslation().x, m.getLocalTranslation().y, 0);
-        
+        GL.glTranslatef(
+            m.getLocalTranslation().x,
+            m.getLocalTranslation().y,
+            0);
+
         //render the cursor
         int width = m.getImageWidth();
         int height = m.getImageHeight();
-        
+
         GL.glBegin(GL.GL_QUADS);
         GL.glTexCoord2f(0, 0);
-        GL.glVertex2f(0,0);
-        
+        GL.glVertex2f(0, 0);
+
         GL.glTexCoord2f(1, 0);
-        GL.glVertex2f(width,0);
+        GL.glVertex2f(width, 0);
         GL.glTexCoord2f(1, 1);
-        GL.glVertex2f(width,height);
+        GL.glVertex2f(width, height);
         GL.glTexCoord2f(0, 1);
-        GL.glVertex2f(0,height);
+        GL.glVertex2f(0, height);
         GL.glEnd();
-        
+
         GL.glMatrixMode(GL.GL_PROJECTION);
         GL.glPopMatrix();
         GL.glMatrixMode(GL.GL_MODELVIEW);

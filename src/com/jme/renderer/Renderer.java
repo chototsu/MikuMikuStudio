@@ -66,7 +66,7 @@ import com.jme.scene.state.ZBufferState;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.6 2003-12-01 13:18:58 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.7 2004-01-05 01:44:13 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -232,6 +232,16 @@ public interface Renderer {
      *
      */
     public void displayBackBuffer();
+    
+    /**
+     * 
+     * <code>takeScreenShot</code> saves the current buffer to a png file. 
+     * The filename is provided, .png will be appended to the end of the
+     * name.
+     * @param filename the name of the screenshot file.
+     * @return true if the screen capture was successful, false otherwise.
+     */
+    public boolean takeScreenShot(String filename);
     
     /**
      * <code>draw</code> renders a scene. As it recieves a base class of
