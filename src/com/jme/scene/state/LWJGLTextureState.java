@@ -45,7 +45,7 @@ import com.jme.image.Texture;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.1 2003-10-13 18:30:08 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.2 2004-01-20 12:50:22 greggpatton Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.
@@ -65,9 +65,9 @@ public class LWJGLTextureState extends TextureState {
             GL.GL_LINEAR_MIPMAP_LINEAR };
 
     private int[] imageComponents =
-        { GL.GL_RGBA4, GL.GL_RGB8, GL.GL_RGB5_A1, GL.GL_RGBA8 };
+        { GL.GL_RGBA4, GL.GL_RGB8, GL.GL_RGB5_A1, GL.GL_RGBA8, GL.GL_LUMINANCE8_ALPHA8 };
 
-    private int[] imageFormats = { GL.GL_RGBA, GL.GL_RGB, GL.GL_RGBA, GL.GL_RGBA };
+    private int[] imageFormats = { GL.GL_RGBA, GL.GL_RGB, GL.GL_RGBA, GL.GL_RGBA, GL.GL_LUMINANCE_ALPHA };
 
     /**
      * <code>unset</code> disables texture mapping.
