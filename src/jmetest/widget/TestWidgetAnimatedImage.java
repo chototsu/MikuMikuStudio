@@ -55,7 +55,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.WidgetInsets;
@@ -80,7 +79,7 @@ import com.jme.widget.text.WidgetText;
  * Demonstration of <code>WidgetAnimatedImage</code> with all variations of scaling and alignment.
  *
  * @since 0.6
- * @version $$Id: TestWidgetAnimatedImage.java,v 1.1 2004-04-25 16:58:43 mojomonkey Exp $$
+ * @version $$Id: TestWidgetAnimatedImage.java,v 1.2 2004-04-29 13:30:34 mojomonkey Exp $$
  */
 public class TestWidgetAnimatedImage extends BaseGame {
 
