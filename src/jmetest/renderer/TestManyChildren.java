@@ -46,7 +46,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.5 2004-03-08 02:30:38 renanse Exp $
+ * @version $Id: TestManyChildren.java,v 1.6 2004-03-08 02:50:24 renanse Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
@@ -54,6 +54,7 @@ public class TestManyChildren extends SimpleGame {
     private Node root;
     private InputController input;
     private Timer timer;
+    private Text fps;
 
     /**
      * Entry point for the test,
@@ -75,7 +76,7 @@ public class TestManyChildren extends SimpleGame {
         timer.update();
         input.update(timer.getTimePerFrame());
         root.updateGeometricState(timer.getTimePerFrame(), true);
-        display.setTitle("FPS: " + (int) timer.getFrameRate() + " : " +display.getRenderer().getStatistics());
+        fps.print("FPS: " + (int) timer.getFrameRate() + " : " +display.getRenderer().getStatistics());
 //        System.out.println(timer.getFrameRate());
         display.getRenderer().clearStatistics();
     }
@@ -125,7 +126,7 @@ public class TestManyChildren extends SimpleGame {
         input = new NodeController(this, camNode, "LWJGL");
         input.setKeySpeed(2f);
         input.setMouseSpeed(0.5f);
-        display.setTitle("2500 Box Test");
+        display.setTitle("Light State Test");
         display.getRenderer().enableStatistics(true);
         timer = Timer.getTimer(properties.getRenderer());
 
@@ -181,6 +182,20 @@ public class TestManyChildren extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         as1.setEnabled(true);
 
+        TextureState font = display.getRenderer().getTextureState();
+        font.setTexture(
+            TextureManager.loadTexture(
+                TestManyChildren.class.getClassLoader().getResource(
+                    "jmetest/data/font/font.png"),
+                Texture.MM_LINEAR,
+                Texture.FM_LINEAR,
+                true));
+        font.setEnabled(true);
+
+        fps = new Text("FPS counter","");
+        fps.setRenderState(font);
+        fps.setRenderState(as1);
+
         DirectionalLight dr = new DirectionalLight();
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
@@ -198,10 +213,12 @@ public class TestManyChildren extends SimpleGame {
         scene.setRenderState(state);
         scene.setRenderState(buf);
         root.attachChild(scene);
+        root.attachChild(fps);
+
 
         root.updateGeometricState(0.0f, true);
-    }
 
+    }
     /**
      * not used.
      * @see com.jme.app.SimpleGame#reinit()
