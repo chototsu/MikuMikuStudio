@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.2 2003-12-09 20:38:27 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.3 2003-12-10 01:05:36 mojomonkey Exp $
  */
 public class TestCollision extends AbstractGame {
 
@@ -145,7 +145,7 @@ public class TestCollision extends AbstractGame {
         }
         
         scene.updateGeometricState(0.0f, true);
-
+    
     }
 
     /** 

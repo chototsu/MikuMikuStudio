@@ -44,7 +44,7 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes. 
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: Node.java,v 1.3 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.4 2003-12-10 01:05:36 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -190,7 +190,7 @@ public class Node extends Spatial implements Serializable {
             if (child != null) {
                 if (foundFirstBound) {
                     // merge current world bound with child world bound
-                    worldBound.merge(child.getWorldBound());
+                    worldBound = worldBound.merge(child.getWorldBound());
                 } else {
                     // set world bound to first non-null child world bound
                     foundFirstBound = true;
