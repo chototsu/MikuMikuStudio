@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a 
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.4 2004-01-22 21:48:55 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.5 2004-02-01 07:52:00 mojomonkey Exp $
  */
 public class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -106,7 +106,7 @@ public class Geometry extends Spatial implements Serializable {
 
         setColorBuffer();
         setNormalBuffer();
-        setVertexBuffer();
+        updateVertexBuffer();
         setTextureBuffer();
     }
 
@@ -155,7 +155,14 @@ public class Geometry extends Spatial implements Serializable {
             throw new JmeException("Geometry must include vertex information.");
         }
         this.vertex = vertex;
-        setVertexBuffer();
+        updateVertexBuffer();
+    }
+    
+    public void setVertex(int index, Vector3f value) {
+    	vertex[index] = value;
+    	vertBuf.put(index * 3, value.x);
+    	vertBuf.put(index * 3 + 1, value.y);
+    	vertBuf.put(index * 3 + 2, value.z);
     }
 
     /**
@@ -231,7 +238,6 @@ public class Geometry extends Spatial implements Serializable {
      *
      */
     public void updateModelBound() {
-        System.out.println("Updating model bound");
         if (bound != null) {
             bound.computeFromPoints(vertex);
         }
@@ -315,7 +321,7 @@ public class Geometry extends Spatial implements Serializable {
      * geometry's vertex information.
      *
      */
-    private void setVertexBuffer() {
+    public void updateVertexBuffer() {
         if (vertex == null) {
             return;
         }
