@@ -51,13 +51,13 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLVertexProgramState</code>
  *
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.2 2004-04-16 17:12:53 renanse Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.3 2004-04-17 00:35:43 ericthered Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 
     private byte[] program;
     private int programID = -1;
-
+    
     /**
      * Determines if the current OpenGL context supports the
      * GL_ARB_vertex_program extension.
@@ -90,7 +90,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
             LoggingSystem.getLogger().log(Level.WARNING, "Could not load vertex program");
         }
 	}
-
+	
     private void create() {
         IntBuffer buf = BufferUtils.createIntBuffer(1);
 
@@ -103,15 +103,6 @@ public class LWJGLVertexProgramState extends VertexProgramState {
         ARBVertexProgram.glProgramStringARB(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB,
                 							ARBVertexProgram.GL_PROGRAM_FORMAT_ASCII_ARB,
                 							pbuf);
-        /*NVVertexProgram.glGenProgramsNV(buf);
-        NVVertexProgram.glBindProgramNV(NVVertexProgram.GL_VERTEX_PROGRAM_NV, buf.get(0));
-        NVVertexProgram.glLoadProgramNV(NVVertexProgram.GL_VERTEX_PROGRAM_NV, buf.get(0), pbuf);
-        NVVertexProgram.glTrackMatrixNV(
-                NVVertexProgram.GL_VERTEX_PROGRAM_NV, 0,
-                NVVertexProgram.GL_MODELVIEW_PROJECTION_NV, NVVertexProgram.GL_IDENTITY_NV);
-        NVVertexProgram.glTrackMatrixNV(
-                NVVertexProgram.GL_VERTEX_PROGRAM_NV, 4,
-                GL11.GL_MODELVIEW, NVVertexProgram.GL_INVERSE_TRANSPOSE_NV);*/
 
         programID = buf.get(0);
     }
@@ -125,8 +116,13 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 
             ARBVertexProgram.glBindProgramARB(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, programID);
             GL11.glEnable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
-            //GL11.glEnable(NVVertexProgram.GL_VERTEX_PROGRAM_NV);
-            //NVVertexProgram.glBindProgramNV(NVVertexProgram.GL_VERTEX_PROGRAM_NV, programID);
+            
+            //load environmental parameters...
+            for (int i = 0; i < envparameters.length; i++)
+                if (envparameters[i] != null)
+                    ARBVertexProgram.glProgramEnvParameter4fARB(
+                            ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
+                            envparameters[i][0], envparameters[i][1], envparameters[i][2], envparameters[i][3]);
 
             //load local parameters...
             if (usingParameters) //No sense checking array if we are sure no parameters are used
@@ -135,9 +131,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 	                    ARBVertexProgram.glProgramLocalParameter4fARB(
 	                            ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, i,
 	                            parameters[i][0], parameters[i][1], parameters[i][2], parameters[i][3]);
-	                    //NVVertexProgram.glProgramParameter4fNV(
-	                    //        NVVertexProgram.GL_VERTEX_PROGRAM_NV, i,
-	                    //        parameters[i][0], parameters[i][1], parameters[i][2], parameters[i][3]);
+
         } else {
           GL11.glDisable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
         }

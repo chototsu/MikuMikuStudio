@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Eric Woroshow
- * @version $Id: TestVertexProgramState.java,v 1.5 2004-04-16 19:21:40 renanse Exp $
+ * @version $Id: TestVertexProgramState.java,v 1.6 2004-04-17 00:35:59 ericthered Exp $
  */
 public class TestVertexProgramState extends VariableTimestepGame {
 
@@ -97,7 +97,6 @@ public class TestVertexProgramState extends VariableTimestepGame {
             System.exit(1);
         }
 
-        //ColorRGBA blackColor = new ColorRGBA(0.2f, 0.627f, 0.055f, 1.0f);
         ColorRGBA blackColor = new ColorRGBA(0.02f, 0.0f, 0.776f, 1.0f);
         display.getRenderer().setBackgroundColor(blackColor);
 
@@ -163,7 +162,6 @@ public class TestVertexProgramState extends VariableTimestepGame {
 
         //Generate the torus
         Torus torus = new Torus("shadedTorus", 128, 32, 3.0f, 5.0f);
-        //PQTorus torus = new PQTorus("shadedTorus", 5, 3, 2.0f, 1.0f, 256, 32);
         torus.setRenderState(vp);
         torus.setRenderState(ts);
 
@@ -181,8 +179,7 @@ public class TestVertexProgramState extends VariableTimestepGame {
         ws.setEnabled(true);
 
         Torus torus = new Torus("outlineTorus", 128, 32, 3.0f, 5.0f);
-        //PQTorus torus = new PQTorus("outlineTorus", 5, 3, 2.0f, 1.0f, 256, 32);
-
+        
         ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
         ColorRGBA[] colors = new ColorRGBA[torus.getVertices().length];
         for (int i = 0; i < colors.length; i++)
@@ -207,7 +204,7 @@ public class TestVertexProgramState extends VariableTimestepGame {
 
     public static void main(String[] args) {
         TestVertexProgramState app = new TestVertexProgramState();
-        app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 }

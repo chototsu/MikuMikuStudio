@@ -37,13 +37,24 @@ import java.net.URL;
  * <code>ProgramState</code>
  * 
  * @author Eric Woroshow
- * @version $Id: VertexProgramState.java,v 1.1 2004-03-20 20:44:25 ericthered Exp $
+ * @version $Id: VertexProgramState.java,v 1.2 2004-04-17 00:35:30 ericthered Exp $
  */
 public abstract class VertexProgramState extends RenderState {
 
+    protected static float[][] envparameters = new float[96][4];
+    
     protected boolean usingParameters = false;
     protected float[][] parameters;
 
+    public static void setEnvParameter(float[] param, int paramID){
+        if (paramID < 0 || paramID > 95)
+            throw new IllegalArgumentException("Invalid parameter ID");
+        if (param != null && param.length != 4)
+            throw new IllegalArgumentException("Vertex program parameters must be of type float[4]");
+        
+        envparameters[paramID] = param;
+    }
+    
     /**
      * <code>isSupported</code> determines if the ARB_vertex_program extension
      * is supported by current graphics configuration.
@@ -64,8 +75,7 @@ public abstract class VertexProgramState extends RenderState {
         if (paramID < 0 || paramID > 95)
                 throw new IllegalArgumentException("Invalid parameter ID");
         if (param != null && param.length != 4)
-                throw new IllegalArgumentException(
-                        "Vertex program parameters must be of type float[4]");
+                throw new IllegalArgumentException("Vertex program parameters must be of type float[4]");
 
         usingParameters = true;
         parameters[paramID] = param;
