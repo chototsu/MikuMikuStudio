@@ -77,7 +77,7 @@ public class OBBTree{
         bounds=new OBB2();
         worldBounds=new OBB2();
         bounds.computeFromTris(tris,start,end);
-        if (myEnd-myStart+1<maxPerLeaf){
+        if (myEnd-myStart+1<=maxPerLeaf){
 //            System.out.println("Returned");
             return;
         }else{
@@ -148,7 +148,7 @@ public class OBBTree{
      */
     public boolean intersect(OBBTree collisionTree) {
         if (collisionTree==null) return false;
-        collisionTree.bounds.transform(collisionTree.myParent.getWorldRotation(),
+        collisionTree.bounds.transform(collisionTree.myParent.findWorldRotMat(),
                 collisionTree.myParent.getWorldTranslation(), collisionTree.myParent.getWorldScale(), collisionTree.worldBounds);
         if (!worldBounds.intersection(collisionTree.worldBounds)) return false;
         if (left!=null){    // This is not a leaf
@@ -195,17 +195,19 @@ public class OBBTree{
      */
     public boolean intersect(OBBTree collisionTree,ArrayList aList,ArrayList bList) {
         if (collisionTree==null) return false;
-        collisionTree.bounds.transform(collisionTree.myParent.getWorldRotation(),
+        collisionTree.bounds.transform(collisionTree.myParent.findWorldRotMat(),
                 collisionTree.myParent.getWorldTranslation(), collisionTree.myParent.getWorldScale(), collisionTree.worldBounds);
         if (!worldBounds.intersection(collisionTree.worldBounds)) return false;
         if (left!=null){    // This is not a leaf
             boolean test=collisionTree.intersect(left,bList,aList);
-            test|=collisionTree.intersect(right,bList,aList);
+//            test|=collisionTree.intersect(right,bList,aList);
+            test=collisionTree.intersect(right,bList,aList) || test;
             return test;
         } else{ // This is a leaf
             if (collisionTree.left!=null){  // but collision isn't
                 boolean test=this.intersect(collisionTree.left,aList,bList);
-                test|=this.intersect(collisionTree.right,aList,bList);
+//                test|=this.intersect(collisionTree.right,aList,bList);
+                test=this.intersect(collisionTree.right,aList,bList) || test;
                 return test;
             } else{ // both are leaves
                 Matrix3f roti=this.myParent.findWorldRotMat();
