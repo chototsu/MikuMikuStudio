@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.17 2004-05-09 04:21:17 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.18 2004-05-10 22:36:18 renanse Exp $
  */
 public class Vector3f {
 
@@ -368,6 +368,7 @@ public class Vector3f {
      *
      * @param scalar the scalar to multiply this vector by.
      * @param product the product to store the result in.
+     * @return product
      */
     public Vector3f mult(float scalar, Vector3f product) {
         if (null == product) {
@@ -519,6 +520,43 @@ public class Vector3f {
         result.y = y - vec.y;
         result.z = z - vec.z;
         return result;
+    }
+
+    /**
+     *
+     * <code>subtract</code> subtracts the provided values from this vector,
+     * creating a new vector that is then returned.
+     *
+     * @param subtractX
+     *            the x value to subtract.
+     * @param subtractY
+     *            the y value to subtract.
+     * @param subtractZ
+     *            the z value to subtract.
+     * @return the result vector.
+     */
+    public Vector3f subtract(float subtractX, float subtractY, float subtractZ) {
+        return new Vector3f(x - subtractX, y - subtractY, z - subtractZ);
+    }
+
+    /**
+     * <code>subtractLocal</code> subtracts the provided values from this vector
+     * internally, and returns a handle to this vector for easy chaining of
+     * calls.
+     *
+     * @param subtractX
+     *            the x value to subtract.
+     * @param subtractY
+     *            the y value to subtract.
+     * @param subtractZ
+     *            the z value to subtract.
+     * @return this
+     */
+    public Vector3f subtractLocal(float subtractX, float subtractY, float subtractZ) {
+        x -= subtractX;
+        y -= subtractY;
+        z -= subtractZ;
+        return this;
     }
 
     /**
