@@ -48,7 +48,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.3 2004-04-12 02:44:22 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.4 2004-04-12 02:49:55 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -202,29 +202,12 @@ public class TestTerrain extends SimpleGame {
 				true);
         ts.setTexture( t2,1);
         t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
-      
-//        glTexEnvi(GL_TEXTURE_ENV,GL_COMBINE_RGB_EXT,GL_INTERPOLATE_EXT);
-//        glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE0_RGB_EXT,GL_PREVIOUS_EXT);
-//        glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND0_RGB_EXT,GL_SRC_COLOR);
-//        glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE1_RGB_EXT,GL_TEXTURE);
-//        glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND1_RGB_EXT,GL_SRC_COLOR);
-//        glTexEnvi(GL_TEXTURE_ENV,GL_SOURCE2_RGB_EXT,GL_TEXTURE);
-//        glTexEnvi(GL_TEXTURE_ENV,GL_OPERAND2_RGB_EXT,GL_SRC_ALPHA);
-        t2.setCombineFuncRGB(Texture.ACF_ADD);
-//        t2.setCombineSrc0RGB(Texture.ACS_PREVIOUS);
-//        t2.setCombineOp0RGB(Texture.ACO_SRC_COLOR);
-//        t2.setCombineSrc1RGB(Texture.ACS_TEXTURE);
-//        t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
-//        t2.setCombineSrc2RGB(Texture.ACS_TEXTURE);
-//        t2.setCombineOp2RGB(Texture.ACO_SRC_ALPHA);
         
         scene.setRenderState(ts);
 
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
-
-        
 
         TextureState font = display.getRenderer().getTextureState();
         font.setTexture(
