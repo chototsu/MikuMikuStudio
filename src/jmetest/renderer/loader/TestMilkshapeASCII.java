@@ -140,7 +140,7 @@ public class TestMilkshapeASCII extends SimpleGame {
     	model = new MilkshapeASCIIModel("Milkshape Model");
         modelURL = TestMilkshapeASCII.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
         model.load(modelURL, "jmetest/data/model/msascii/");
-    	model.getAnimationController().setFrequency(10.0f);
+    	model.getAnimationController().setSpeed(10.0f);
     	model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
     	((DeformationJointController)model.getAnimationController()).setUpdateModelBounds(true);
         scene.attachChild(model);

@@ -55,7 +55,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.6 2004-03-25 17:14:36 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.7 2004-03-26 19:48:03 mojomonkey Exp $
  */
 public class TestBezierCurve extends SimpleGame {
     private TriMesh t, t2, t3, t4;
@@ -195,7 +195,7 @@ public class TestBezierCurve extends SimpleGame {
         box.addController(cc);
         cc.setRepeatType(Controller.RT_CYCLE);
         cc.setUpVector(up);
-        cc.setFrequency(0.5f);
+        cc.setSpeed(0.5f);
         
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);

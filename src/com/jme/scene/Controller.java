@@ -34,11 +34,11 @@ package com.jme.scene;
 /**
  * <code>Controller</code> provides a base class for creation of controllers to
  * modify nodes and render states over time. The base controller provides a 
- * repeat type, min and max time, as well as a phase and frequency. Subclasses
+ * repeat type, min and max time, as well as speed. Subclasses
  * of this will provide the update method that takes the current time and
  * modifies an object in a application specific way.
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.3 2004-01-07 21:00:40 mojomonkey Exp $
+ * @version $Id: Controller.java,v 1.4 2004-03-26 19:48:02 mojomonkey Exp $
  */
 public abstract class Controller {
     public static final int RT_CLAMP = 0;
@@ -48,24 +48,23 @@ public abstract class Controller {
     private int repeatType;
     private float minTime;
     private float maxTime;
-    private float phase;
-    private float frequency;
+    private float speed;
     private boolean active = true;
     
     /**
      * <code>getFrequency</code>
      * @return
      */
-    public float getFrequency() {
-        return frequency;
+    public float getSpeed() {
+        return speed;
     }
 
     /**
      * <code>setFrequency</code>
-     * @param frequency
+     * @param speed
      */
-    public void setFrequency(float frequency) {
-        this.frequency = frequency;
+    public void setSpeed(float frequency) {
+        this.speed = frequency;
     }
 
     /**
@@ -98,22 +97,6 @@ public abstract class Controller {
      */
     public void setMinTime(float minTime) {
         this.minTime = minTime;
-    }
-
-    /**
-     * <code>getPhase</code>
-     * @return
-     */
-    public float getPhase() {
-        return phase;
-    }
-
-    /**
-     * <code>setPhase</code>
-     * @param phase
-     */
-    public void setPhase(float phase) {
-        this.phase = phase;
     }
 
     /**

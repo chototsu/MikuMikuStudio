@@ -56,7 +56,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene4</code>
  * @author Gregg Patton
- * @version $Id: TestScene4.java,v 1.4 2004-02-25 16:36:47 mojomonkey Exp $
+ * @version $Id: TestScene4.java,v 1.5 2004-03-26 19:48:05 mojomonkey Exp $
  */
 public class TestScene4 extends TestAbstractScene {
 
@@ -85,7 +85,7 @@ public class TestScene4 extends TestAbstractScene {
             Model model = new MilkshapeASCIIModel("Milkshape Model");
             URL modelURL = TestScene4.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
             model.load(modelURL, "jmetest/data/model/msascii/");
-            model.getAnimationController().setFrequency(10.0f);
+            model.getAnimationController().setSpeed(10.0f);
             model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
             scene.attachChild(model);
             SpotLight am = new SpotLight();
