@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.15 2004-08-18 20:52:15 cep21 Exp $
+ * @version $Id: FastMath.java,v 1.16 2005-02-25 03:09:44 renanse Exp $
  */
 
 final public class FastMath {
@@ -74,7 +74,7 @@ final public class FastMath {
     public static final float RAD_TO_DEG = 180.0f / PI;
 
     /** A precreated random object for random numbers. */
-    public static final Random rand = new Random();
+    public static final Random rand = new Random(System.currentTimeMillis());
 
     /** If true, fast trig approximations are used for values such as sin/cos/tan. */
     public static boolean USE_FAST_TRIG = false;
