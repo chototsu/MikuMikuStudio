@@ -32,13 +32,105 @@
 package com.jme.scene;
 
 /**
- * <code>Controller</code>
+ * <code>Controller</code> provides a base class for creation of controllers to
+ * modify nodes and render states over time. The base controller provides a 
+ * repeat type, min and max time, as well as a phase and frequency. Subclasses
+ * of this will provide the update method that takes the current time and
+ * modifies an object in a application specific way.
  * @author Mark Powell
- * @version 
+ * @version $Id: Controller.java,v 1.2 2003-10-17 20:45:27 mojomonkey Exp $
  */
-public class Controller {
-
-    public void update(float time) {
-        
+public abstract class Controller {
+    public static final int RT_CLAMP = 0;
+    public static final int RT_WRAP = 1;
+    public static final int RT_CYCLE = 2;
+    
+    private int repeatType;
+    private float minTime;
+    private float maxTime;
+    private float phase;
+    private float frequency;
+    private boolean active;
+    
+    /**
+     * <code>getFrequency</code>
+     * @return
+     */
+    public float getFrequency() {
+        return frequency;
     }
+
+    /**
+     * <code>setFrequency</code>
+     * @param frequency
+     */
+    public void setFrequency(float frequency) {
+        this.frequency = frequency;
+    }
+
+    /**
+     * <code>getMaxTime</code>
+     * @return
+     */
+    public float getMaxTime() {
+        return maxTime;
+    }
+
+    /**
+     * <code>setMaxTime</code>
+     * @param maxTime
+     */
+    public void setMaxTime(float maxTime) {
+        this.maxTime = maxTime;
+    }
+
+    /**
+     * <code>getMinTime</code>
+     * @return
+     */
+    public float getMinTime() {
+        return minTime;
+    }
+
+    /**
+     * <code>setMinTime</code>
+     * @param minTime
+     */
+    public void setMinTime(float minTime) {
+        this.minTime = minTime;
+    }
+
+    /**
+     * <code>getPhase</code>
+     * @return
+     */
+    public float getPhase() {
+        return phase;
+    }
+
+    /**
+     * <code>setPhase</code>
+     * @param phase
+     */
+    public void setPhase(float phase) {
+        this.phase = phase;
+    }
+
+    /**
+     * <code>getRepeatType</code>
+     * @return
+     */
+    public int getRepeatType() {
+        return repeatType;
+    }
+
+    /**
+     * <code>setRepeatType</code>
+     * @param repeatType
+     */
+    public void setRepeatType(int repeatType) {
+        this.repeatType = repeatType;
+    }
+
+    public abstract void update(float time);
 }
