@@ -60,6 +60,7 @@ import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
+import java.util.Arrays;
 import javax.imageio.ImageIO;
 
 import java.awt.image.BufferedImage;
@@ -124,11 +125,11 @@ import com.jme.scene.state.RenderState;
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
  * <code>Renderer</code> interface using the LWJGL API.
- *
+ * 
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.48 2004-09-27 22:30:41 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.49 2004-10-04 14:53:48 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -170,10 +171,18 @@ public class LWJGLRenderer implements Renderer {
 
     DisplayMode window = Display.getDisplayMode();
 
+    private FloatBuffer prevVerts;
+
+    private FloatBuffer prevNorms;
+
+    private FloatBuffer prevColor;
+
+    private FloatBuffer[] prevTex;
+
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
      * size of the rendering window is passed during construction.
-     *
+     * 
      * @param width
      *            the width of the rendering context.
      * @param height
@@ -191,30 +200,34 @@ public class LWJGLRenderer implements Renderer {
         LoggingSystem.getLogger().log(Level.INFO,
                 "LWJGLRenderer created. W:  " + width + "H: " + height);
         queue = new RenderQueue(this);
+        prevTex = new FloatBuffer[createTextureState().getNumberOfUnits()];
     }
 
     /**
-     * Reinitialize the renderer with the given width/height.  Also calls
-     * resize on the attached camera if present.
-     * @param width int
-     * @param height int
+     * Reinitialize the renderer with the given width/height. Also calls resize
+     * on the attached camera if present.
+     * 
+     * @param width
+     *            int
+     * @param height
+     *            int
      */
     public void reinit(int width, int height) {
-      if (width <= 0 || height <= 0) {
-          LoggingSystem.getLogger().log(Level.WARNING,
-                  "Invalid width " + "and/or height values.");
-          throw new JmeException("Invalid width and/or height values.");
-      }
-      this.width = width;
-      this.height = height;
-      if (camera != null) camera.resize(width, height);
-      window = Display.getDisplayMode();
+        if (width <= 0 || height <= 0) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Invalid width " + "and/or height values.");
+            throw new JmeException("Invalid width and/or height values.");
+        }
+        this.width = width;
+        this.height = height;
+        if (camera != null) camera.resize(width, height);
+        window = Display.getDisplayMode();
     }
 
     /**
      * <code>setCamera</code> sets the camera this renderer is using. It
      * asserts that the camera is of type <code>LWJGLCamera</code>.
-     *
+     * 
      * @see com.jme.renderer.Renderer#setCamera(com.jme.renderer.Camera)
      */
     public void setCamera(Camera camera) {
@@ -225,7 +238,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>getCamera</code> returns the camera used by this renderer.
-     *
+     * 
      * @see com.jme.renderer.Renderer#getCamera()
      */
     public Camera getCamera() {
@@ -235,7 +248,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createCamera</code> returns a default camera for use with the
      * LWJGL renderer.
-     *
+     * 
      * @param width
      *            the width of the frame.
      * @param height
@@ -249,7 +262,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createAlphaState</code> returns a new LWJGLAlphaState object as a
      * regular AlphaState.
-     *
+     * 
      * @return an AlphaState object.
      */
     public AlphaState createAlphaState() {
@@ -259,7 +272,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createAttributeState</code> returns a new LWJGLAttributeState
      * object as a regular AttributeState.
-     *
+     * 
      * @return an AttributeState object.
      */
     public AttributeState createAttributeState() {
@@ -269,7 +282,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createCullState</code> returns a new LWJGLCullState object as a
      * regular CullState.
-     *
+     * 
      * @return a CullState object.
      * @see com.jme.renderer.Renderer#createCullState()
      */
@@ -280,7 +293,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createDitherState</code> returns a new LWJGLDitherState object as
      * a regular DitherState.
-     *
+     * 
      * @return an DitherState object.
      */
     public DitherState createDitherState() {
@@ -290,7 +303,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createFogState</code> returns a new LWJGLFogState object as a
      * regular FogState.
-     *
+     * 
      * @return an FogState object.
      */
     public FogState createFogState() {
@@ -300,7 +313,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createLightState</code> returns a new LWJGLLightState object as a
      * regular LightState.
-     *
+     * 
      * @return an LightState object.
      */
     public LightState createLightState() {
@@ -310,7 +323,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createMaterialState</code> returns a new LWJGLMaterialState
      * object as a regular MaterialState.
-     *
+     * 
      * @return an MaterialState object.
      */
     public MaterialState createMaterialState() {
@@ -320,7 +333,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createShadeState</code> returns a new LWJGLShadeState object as a
      * regular ShadeState.
-     *
+     * 
      * @return an ShadeState object.
      */
     public ShadeState createShadeState() {
@@ -330,7 +343,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createTextureState</code> returns a new LWJGLTextureState object
      * as a regular TextureState.
-     *
+     * 
      * @return an TextureState object.
      */
     public TextureState createTextureState() {
@@ -340,7 +353,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createWireframeState</code> returns a new LWJGLWireframeState
      * object as a regular WireframeState.
-     *
+     * 
      * @return an WireframeState object.
      */
     public WireframeState createWireframeState() {
@@ -350,7 +363,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createZBufferState</code> returns a new LWJGLZBufferState object
      * as a regular ZBufferState.
-     *
+     * 
      * @return a ZBufferState object.
      */
     public ZBufferState createZBufferState() {
@@ -360,7 +373,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createVertexProgramState</code> returns a new
      * LWJGLVertexProgramState object as a regular VertexProgramState.
-     *
+     * 
      * @return a LWJGLVertexProgramState object.
      */
     public VertexProgramState createVertexProgramState() {
@@ -370,7 +383,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createFragmentProgramState</code> returns a new
      * LWJGLFragmentProgramState object as a regular FragmentProgramState.
-     *
+     * 
      * @return a LWJGLFragmentProgramState object.
      */
     public FragmentProgramState createFragmentProgramState() {
@@ -380,7 +393,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>createStencilState</code> returns a new LWJGLStencilState object
      * as a regular StencilState.
-     *
+     * 
      * @return a StencilState object.
      */
     public StencilState createStencilState() {
@@ -390,7 +403,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>setBackgroundColor</code> sets the OpenGL clear color to the
      * color specified.
-     *
+     * 
      * @see com.jme.renderer.Renderer#setBackgroundColor(com.jme.renderer.ColorRGBA)
      * @param c
      *            the color to set the background color to.
@@ -412,7 +425,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getBackgroundColor</code> retrieves the clear color of the
      * current OpenGL context.
-     *
+     * 
      * @see com.jme.renderer.Renderer#getBackgroundColor()
      * @return the current clear color.
      */
@@ -422,7 +435,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>clearZBuffer</code> clears the OpenGL depth buffer.
-     *
+     * 
      * @see com.jme.renderer.Renderer#clearZBuffer()
      */
     public void clearZBuffer() {
@@ -436,7 +449,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>clearBackBuffer</code> clears the OpenGL color buffer.
-     *
+     * 
      * @see com.jme.renderer.Renderer#clearBackBuffer()
      */
     public void clearBackBuffer() {
@@ -450,7 +463,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>clearBuffers</code> clears both the color and the depth buffer.
-     *
+     * 
      * @see com.jme.renderer.Renderer#clearBuffers()
      */
     public void clearBuffers() {
@@ -465,7 +478,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>displayBackBuffer</code> renders any queued items then flips the
      * rendered buffer (back) with the currently displayed buffer.
-     *
+     * 
      * @see com.jme.renderer.Renderer#displayBackBuffer()
      */
     public void displayBackBuffer() {
@@ -479,6 +492,9 @@ public class LWJGLRenderer implements Renderer {
           Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
         }
         processingQueue = false;
+
+        prevColor = prevNorms = prevVerts = null;
+        Arrays.fill(prevTex, null);
 
         GL11.glFlush();
         Display.update();
@@ -507,7 +523,8 @@ public class LWJGLRenderer implements Renderer {
         GL11.glLoadIdentity();
         GLU.gluOrtho2D(-window.getWidth() / 2, window.getWidth() / 2, -window
                 .getHeight() / 2, window.getHeight() / 2);
- System.err.println("window: "+window.getWidth()+", "+window.getHeight());
+        System.err.println("window: " + window.getWidth() + ", "
+                + window.getHeight());
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -529,7 +546,7 @@ public class LWJGLRenderer implements Renderer {
      * <code>takeScreenShot</code> saves the current buffer to a file. The
      * file name is provided, and .png will be appended. True is returned if the
      * capture was successful, false otherwise.
-     *
+     * 
      * @param filename
      *            the name of the file to save.
      * @return true if successful, false otherwise.
@@ -569,7 +586,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>grabScreenContents</code> reads a block of pixels from the
      * current framebuffer.
-     *
+     * 
      * @param buff
      *            a buffer to store contents in.
      * @param x -
@@ -590,7 +607,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> draws a point object where a point contains a
      * collection of vertices, normals, colors and texture coordinates.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Point)
      * @param p
      *            the point object to render.
@@ -701,7 +718,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> draws a line object where a line contains a
      * collection of vertices, normals, colors and texture coordinates.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Line)
      * @param l
      *            the line object to render.
@@ -848,7 +865,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>draw</code> renders a curve object.
-     *
+     * 
      * @param c
      *            the curve object to render.
      */
@@ -910,7 +927,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
      * @param t
      *            the mesh to render.
@@ -937,49 +954,59 @@ public class LWJGLRenderer implements Renderer {
 
         // render the object
 
-        GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-        if (t.isVBOVertexEnabled() && GLContext.OpenGL15) {
-            usingVBO = true;
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOVertexID());
-            GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
-        } else {
-            if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-            GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
+        FloatBuffer verticies = t.getVerticeAsFloatBuffer();
+        if (prevVerts != verticies) {
+            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+            if (t.isVBOVertexEnabled() && GLContext.OpenGL15) {
+                usingVBO = true;
+                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOVertexID());
+                GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+            } else {
+                if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+                GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
+            }
         }
+        prevVerts = verticies;
 
         FloatBuffer normals = t.getNormalAsFloatBuffer();
-        if (normals != null || t.getVBONormalID() > 0) {
-            GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-            if (t.isVBONormalEnabled() && GLContext.OpenGL15) {
-                usingVBO = true;
-                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBONormalID());
-                GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
+        if (prevNorms != normals) {
+            if (normals != null || t.getVBONormalID() > 0) {
+                GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+                if (t.isVBONormalEnabled() && GLContext.OpenGL15) {
+                    usingVBO = true;
+                    GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBONormalID());
+                    GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
+                } else {
+                    if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+                    GL11.glNormalPointer(0, normals);
+                }
             } else {
-                if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-                GL11.glNormalPointer(0, normals);
+                GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
             }
-        } else {
-            GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
         }
+        prevNorms = normals;
 
         FloatBuffer colors = t.getColorAsFloatBuffer();
-        if (colors != null || t.getVBOColorID() > 0) {
-            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-            if (t.isVBOColorEnabled() && GLContext.OpenGL15) {
-                usingVBO = true;
-                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOColorID());
-                GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
+        if (prevColor != colors) {
+            if (colors != null || t.getVBOColorID() > 0) {
+                GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+                if (t.isVBOColorEnabled() && GLContext.OpenGL15) {
+                    usingVBO = true;
+                    GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOColorID());
+                    GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
+                } else {
+                    if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+                    GL11.glColorPointer(4, 0, colors);
+                }
             } else {
-                if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
-                GL11.glColorPointer(4, 0, colors);
+                GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
             }
-        } else {
-            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         }
+        prevColor = colors;
 
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureAsFloatBuffer(i);
-            if (textures != null) {
+            if (prevTex[i] != textures && textures != null) {
                 if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
                     GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                 }
@@ -1000,6 +1027,7 @@ public class LWJGLRenderer implements Renderer {
                     GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 }
             }
+            prevTex[i] = textures;
         }
 
         IntBuffer indices = t.getIndexAsBuffer();
@@ -1069,7 +1097,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
      * @param g
      *            the mesh to render.
@@ -1083,7 +1111,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
      * @param bv
      *            the mesh to render.
@@ -1100,7 +1128,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> renders a scene by calling the nodes
      * <code>onDraw</code> method.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
     public void draw(Spatial s) {
@@ -1113,7 +1141,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>drawBounds</code> renders a scene by calling the nodes
      * <code>onDraw</code> method.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
     public void drawBounds(Spatial s) {
@@ -1125,7 +1153,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>draw</code> renders a text object using a predefined font.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Text)
      */
     public void draw(Text t) {
@@ -1139,7 +1167,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>draw</code> renders a WidgetRenderer object to the back buffer.
-     *
+     * 
      * @see com.jme.renderer.Renderer#draw(WidgetRenderer)
      */
     public void draw(WidgetRenderer wr) {
@@ -1148,7 +1176,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>enableStatistics</code> will turn on statistics gathering.
-     *
+     * 
      * @param value
      *            true to use statistics, false otherwise.
      */
@@ -1168,7 +1196,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getStatistics</code> returns a string value of the rendering
      * statistics information (number of triangles and number of vertices).
-     *
+     * 
      * @return the string representation of the current statistics.
      */
     public String getStatistics() {
@@ -1179,7 +1207,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getStatistics</code> returns a string value of the rendering
      * statistics information (number of triangles and number of vertices).
-     *
+     * 
      * @return the string representation of the current statistics.
      */
     public StringBuffer getStatistics(StringBuffer a) {
@@ -1190,10 +1218,10 @@ public class LWJGLRenderer implements Renderer {
     }
 
     /**
-     *
+     * 
      * <code>setBoundsStates</code> sets the rendering states for bounding
      * volumes, this includes wireframe and zbuffer.
-     *
+     * 
      * @param enabled
      *            true if these states are to be enabled, false otherwise.
      */
@@ -1226,7 +1254,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * Return true if the system running this supports VBO
-     *
+     * 
      * @return boolean true if VBO supported
      */
     public boolean supportsVBO() {

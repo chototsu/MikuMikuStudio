@@ -57,408 +57,427 @@ import com.jme.bounding.OBBTree;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.32 2004-09-23 22:47:05 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.33 2004-10-04 14:53:48 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
-	private static final long serialVersionUID = 1L;
 
-	protected int[] indices;
+    private static final long serialVersionUID = 1L;
 
-	private transient IntBuffer indexBuffer;
+    protected int[] indices;
 
-	protected int triangleQuantity = -1;
+    private transient IntBuffer indexBuffer;
 
-	/** This tree is only built on calls too updateCollisionTree. */
-	private OBBTree collisionTree;
+    protected int triangleQuantity = -1;
 
-	/** This is and should only be used by collision detection. */
-	private Matrix3f worldMatrot;
+    /** This tree is only built on calls too updateCollisionTree. */
+    private OBBTree collisionTree;
 
-	/**
-	 * Empty Constructor to be used internally only.
-	 */
-	public TriMesh() {
-	}
+    /** This is and should only be used by collision detection. */
+    private Matrix3f worldMatrot;
 
-	/**
-	 * Constructor instantiates a new <code>TriMesh</code> object.
-	 * 
-	 * @param name
-	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
-	 */
-	public TriMesh(String name) {
-		super(name);
+    /**
+     * Empty Constructor to be used internally only.
+     */
+    public TriMesh() {
+    }
 
-	}
+    /**
+     * Constructor instantiates a new <code>TriMesh</code> object.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     */
+    public TriMesh(String name) {
+        super(name);
 
-	/**
-	 * Constructor instantiates a new <code>TriMesh</code> object. Provided
-	 * are the attributes that make up the mesh all attributes may be null,
-	 * except for vertices and indices.
-	 * 
-	 * @param name
-	 *            the name of the scene element. This is required for
-	 *            identification and comparision purposes.
-	 * @param vertices
-	 *            the vertices of the geometry.
-	 * @param normal
-	 *            the normals of the geometry.
-	 * @param color
-	 *            the colors of the geometry.
-	 * @param texture
-	 *            the texture coordinates of the mesh.
-	 * @param indices
-	 *            the indices of the vertex array.
-	 */
-	public TriMesh(String name, Vector3f[] vertices, Vector3f[] normal,
-			ColorRGBA[] color, Vector2f[] texture, int[] indices) {
+    }
 
-		super(name, vertices, normal, color, texture);
+    /**
+     * Constructor instantiates a new <code>TriMesh</code> object. Provided
+     * are the attributes that make up the mesh all attributes may be null,
+     * except for vertices and indices.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     * @param vertices
+     *            the vertices of the geometry.
+     * @param normal
+     *            the normals of the geometry.
+     * @param color
+     *            the colors of the geometry.
+     * @param texture
+     *            the texture coordinates of the mesh.
+     * @param indices
+     *            the indices of the vertex array.
+     */
+    public TriMesh(String name, Vector3f[] vertices, Vector3f[] normal,
+            ColorRGBA[] color, Vector2f[] texture, int[] indices) {
 
-		if (null == indices) {
-			LoggingSystem.getLogger().log(Level.WARNING,
-					"Indices may not be" + " null.");
-			throw new JmeException("Indices may not be null.");
-		}
-		this.indices = indices;
-		triangleQuantity = indices.length / 3;
-		updateIndexBuffer();
-		LoggingSystem.getLogger().log(Level.INFO, "TriMesh created.");
-	}
+        super(name, vertices, normal, color, texture);
 
-	/**
-	 * Recreates the geometric information of this TriMesh from scratch. The
-	 * index and vertex array must not be null, but the others may be. Every 3
-	 * indices define an index in the <code>vertices</code> array that
-	 * refrences a vertex of a triangle.
-	 * 
-	 * @param vertices
-	 *            The vertex information for this TriMesh.
-	 * @param normal
-	 *            The normal information for this TriMesh.
-	 * @param color
-	 *            The color information for this TriMesh.
-	 * @param texture
-	 *            The texture information for this TriMesh.
-	 * @param indices
-	 *            The index information for this TriMesh.
-	 * @see #reconstruct(com.jme.math.Vector3f[], com.jme.math.Vector3f[],
-	 *      com.jme.renderer.ColorRGBA[], com.jme.math.Vector2f[])
-	 */
-	public void reconstruct(Vector3f[] vertices, Vector3f[] normal,
-			ColorRGBA[] color, Vector2f[] texture, int[] indices) {
+        if (null == indices) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Indices may not be" + " null.");
+            throw new JmeException("Indices may not be null.");
+        }
+        this.indices = indices;
+        triangleQuantity = indices.length / 3;
+        updateIndexBuffer();
+        LoggingSystem.getLogger().log(Level.INFO, "TriMesh created.");
+    }
 
-		super.reconstruct(vertices, normal, color, texture);
+    /**
+     * Recreates the geometric information of this TriMesh from scratch. The
+     * index and vertex array must not be null, but the others may be. Every 3
+     * indices define an index in the <code>vertices</code> array that
+     * refrences a vertex of a triangle.
+     * 
+     * @param vertices
+     *            The vertex information for this TriMesh.
+     * @param normal
+     *            The normal information for this TriMesh.
+     * @param color
+     *            The color information for this TriMesh.
+     * @param texture
+     *            The texture information for this TriMesh.
+     * @param indices
+     *            The index information for this TriMesh.
+     * @see #reconstruct(com.jme.math.Vector3f[], com.jme.math.Vector3f[],
+     *      com.jme.renderer.ColorRGBA[], com.jme.math.Vector2f[])
+     */
+    public void reconstruct(Vector3f[] vertices, Vector3f[] normal,
+            ColorRGBA[] color, Vector2f[] texture, int[] indices) {
 
-		if (null == indices) {
-			LoggingSystem.getLogger().log(Level.WARNING,
-					"Indices may not be" + " null.");
-			throw new JmeException("Indices may not be null.");
-		}
-		this.indices = indices;
-		triangleQuantity = indices.length / 3;
+        super.reconstruct(vertices, normal, color, texture);
 
-		updateIndexBuffer();
-		LoggingSystem.getLogger().log(Level.INFO, "TriMesh reconstructed.");
-	}
+        if (null == indices) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Indices may not be" + " null.");
+            throw new JmeException("Indices may not be null.");
+        }
+        this.indices = indices;
+        triangleQuantity = indices.length / 3;
 
-	/**
-	 * 
-	 * <code>getIndices</code> retrieves the indices into the vertex array.
-	 * 
-	 * @return the indices into the vertex array.
-	 */
-	public int[] getIndices() {
-		return indices;
-	}
+        updateIndexBuffer();
+        LoggingSystem.getLogger().log(Level.INFO, "TriMesh reconstructed.");
+    }
 
-	/**
-	 * 
-	 * <code>getIndexAsBuffer</code> retrieves the indices array as an
-	 * <code>IntBuffer</code>.
-	 * 
-	 * @return the indices array as an <code>IntBuffer</code>.
-	 */
-	public IntBuffer getIndexAsBuffer() {
-		return indexBuffer;
-	}
+    /**
+     * 
+     * <code>getIndices</code> retrieves the indices into the vertex array.
+     * 
+     * @return the indices into the vertex array.
+     */
+    public int[] getIndices() {
+        return indices;
+    }
 
-	/**
-	 * Stores in the <code>storage</code> array the indices of triangle
-	 * <code>i</code>. If <code>i</code> is an invalid index, or if
-	 * <code>storage.length!=3</code>, then nothing happens
-	 * 
-	 * @param i
-	 *            The index of the triangle to get.
-	 * @param storage
-	 *            The array that will hold the i's indexes.
-	 */
-	public void getTriangle(int i, int[] storage) {
-		if (i < triangleQuantity && storage.length == 3) {
+    /**
+     * 
+     * <code>getIndexAsBuffer</code> retrieves the indices array as an
+     * <code>IntBuffer</code>.
+     * 
+     * @return the indices array as an <code>IntBuffer</code>.
+     */
+    public IntBuffer getIndexAsBuffer() {
+        return indexBuffer;
+    }
 
-			int iBase = 3 * i;
-			storage[0] = indices[iBase++];
-			storage[1] = indices[iBase++];
-			storage[2] = indices[iBase];
-		}
-	}
+    /**
+     * Stores in the <code>storage</code> array the indices of triangle
+     * <code>i</code>. If <code>i</code> is an invalid index, or if
+     * <code>storage.length!=3</code>, then nothing happens
+     * 
+     * @param i
+     *            The index of the triangle to get.
+     * @param storage
+     *            The array that will hold the i's indexes.
+     */
+    public void getTriangle(int i, int[] storage) {
+        if (i < triangleQuantity && storage.length == 3) {
 
-	/**
-	 * Stores in the <code>vertices</code> array the vertex values of triangle
-	 * <code>i</code>. If <code>i</code> is an invalid triangle index,
-	 * nothing happens.
-	 * 
-	 * @param i
-	 * @param vertices
-	 */
-	public void getTriangle(int i, Vector3f[] vertices) {
-		//System.out.println(i + ", " + triangleQuantity);
-		if (i < triangleQuantity && i >= 0) {
-			int iBase = 3 * i;
-			vertices[0] = vertex[indices[iBase++]];
-			vertices[1] = vertex[indices[iBase++]];
-			vertices[2] = vertex[indices[iBase]];
-		}
-	}
+            int iBase = 3 * i;
+            storage[0] = indices[iBase++];
+            storage[1] = indices[iBase++];
+            storage[2] = indices[iBase];
+        }
+    }
 
-	/**
-	 * Returns the number of triangles this TriMesh contains.
-	 * 
-	 * @return The current number of triangles.
-	 */
-	public int getTriangleQuantity() {
-		return triangleQuantity;
-	}
+    /**
+     * Stores in the <code>vertices</code> array the vertex values of triangle
+     * <code>i</code>. If <code>i</code> is an invalid triangle index,
+     * nothing happens.
+     * 
+     * @param i
+     * @param vertices
+     */
+    public void getTriangle(int i, Vector3f[] vertices) {
+        //System.out.println(i + ", " + triangleQuantity);
+        if (i < triangleQuantity && i >= 0) {
+            int iBase = 3 * i;
+            vertices[0] = vertex[indices[iBase++]];
+            vertices[1] = vertex[indices[iBase++]];
+            vertices[2] = vertex[indices[iBase]];
+        }
+    }
 
-	/**
-	 * 
-	 * <code>setIndices</code> sets the index array for this
-	 * <code>TriMesh</code>.
-	 * 
-	 * @param indices
-	 *            the index array.
-	 */
-	public void setIndices(int[] indices) {
-		this.indices = indices;
-		triangleQuantity = indices.length / 3;
-		updateIndexBuffer();
-	}
+    /**
+     * Returns the number of triangles this TriMesh contains.
+     * 
+     * @return The current number of triangles.
+     */
+    public int getTriangleQuantity() {
+        return triangleQuantity;
+    }
 
-	/**
-	 * <code>draw</code> calls super to set the render state then passes
-	 * itself to the renderer.
-	 * 
-	 * LOGIC: 1. If we're not RenderQueue calling draw goto 2, if we are, goto 3
-	 * 2. If we are supposed to use queue, add to queue and RETURN, else 3 3.
-	 * call super draw 4. tell renderer to draw me.
-	 * 
-	 * @param r
-	 *            the renderer to display
-	 */
-	public void draw(Renderer r) {
-		if (!r.isProcessingQueue()) {
-			if (r.checkAndAdd(this))
-				return;
-		}
-		super.draw(r);
-		r.draw(this);
-	}
+    /**
+     * 
+     * <code>setIndices</code> sets the index array for this
+     * <code>TriMesh</code>.
+     * 
+     * @param indices
+     *            the index array.
+     */
+    public void setIndices(int[] indices) {
+        this.indices = indices;
+        triangleQuantity = indices.length / 3;
+        updateIndexBuffer();
+    }
 
-	/**
-	 * <code>drawBounds</code> calls super to set the render state then passes
-	 * itself to the renderer.
-	 * 
-	 * @param r
-	 *            the renderer to display
-	 */
-	public void drawBounds(Renderer r) {
-		r.drawBounds(this);
-	}
+    /**
+     * <code>draw</code> calls super to set the render state then passes
+     * itself to the renderer.
+     * 
+     * LOGIC: 1. If we're not RenderQueue calling draw goto 2, if we are, goto 3
+     * 2. If we are supposed to use queue, add to queue and RETURN, else 3 3.
+     * call super draw 4. tell renderer to draw me.
+     * 
+     * @param r
+     *            the renderer to display
+     */
+    public void draw(Renderer r) {
+        if (!r.isProcessingQueue()) {
+            if (r.checkAndAdd(this)) return;
+        }
+        super.draw(r);
+        r.draw(this);
+    }
 
-	/**
-	 * 
-	 * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that
-	 * contains the indices array.
-	 *  
-	 */
-	public void updateIndexBuffer() {
-		if (indices == null) {
-			return;
-		}
-		if (indexBuffer == null || indexBuffer.capacity() < indices.length) {
-			indexBuffer = ByteBuffer.allocateDirect(
-					4 * (triangleQuantity >= 0 ? triangleQuantity * 3
-							: indices.length)).order(ByteOrder.nativeOrder())
-					.asIntBuffer();
-		}
+    /**
+     * <code>drawBounds</code> calls super to set the render state then passes
+     * itself to the renderer.
+     * 
+     * @param r
+     *            the renderer to display
+     */
+    public void drawBounds(Renderer r) {
+        r.drawBounds(this);
+    }
 
-		indexBuffer.clear();
-		indexBuffer.put(indices, 0,
-				triangleQuantity >= 0 ? triangleQuantity * 3 : indices.length);
-		indexBuffer.flip();
-	}
+    /**
+     * 
+     * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that
+     * contains the indices array.
+     *  
+     */
+    public void updateIndexBuffer() {
+        if (indices == null) { return; }
+        if (indexBuffer == null || indexBuffer.capacity() < indices.length) {
+            indexBuffer = ByteBuffer.allocateDirect(
+                    4 * (triangleQuantity >= 0 ? triangleQuantity * 3
+                            : indices.length)).order(ByteOrder.nativeOrder())
+                    .asIntBuffer();
+        }
 
-	/**
-	 * Clears the buffers of this TriMesh. The buffers include its indexBuffer,
-	 * and all Geometry buffers.
-	 */
-	public void clearBuffers() {
-		super.clearBuffers();
-		indexBuffer = null;
-	}
+        indexBuffer.clear();
+        indexBuffer.put(indices, 0,
+                triangleQuantity >= 0 ? triangleQuantity * 3 : indices.length);
+        indexBuffer.flip();
+    }
 
-	/**
-	 * Sets this geometry's index buffer as a refrence to the passed
-	 * <code>IntBuffer</code>. Incorrectly built IntBuffers can have
-	 * undefined results. Use with care.
-	 * 
-	 * @param toSet
-	 *            The <code>IntBuffer</code> to set this geometry's index
-	 *            buffer to
-	 */
-	public void setIndexBuffer(IntBuffer toSet) {
-		indexBuffer = toSet;
-	}
+    /**
+     * Clears the buffers of this TriMesh. The buffers include its indexBuffer,
+     * and all Geometry buffers.
+     */
+    public void clearBuffers() {
+        super.clearBuffers();
+        indexBuffer = null;
+    }
 
-	/**
-	 * Used with Serialization. Do not call this directly.
-	 * 
-	 * @param in
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @see java.io.Serializable
-	 */
-	private void readObject(java.io.ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
-		in.defaultReadObject();
-		updateIndexBuffer();
-	}
+    /**
+     * Sets this geometry's index buffer as a refrence to the passed
+     * <code>IntBuffer</code>. Incorrectly built IntBuffers can have
+     * undefined results. Use with care.
+     * 
+     * @param toSet
+     *            The <code>IntBuffer</code> to set this geometry's index
+     *            buffer to
+     */
+    public void setIndexBuffer(IntBuffer toSet) {
+        indexBuffer = toSet;
+    }
 
-	/**
-	 * This function creates a collision tree from the TriMesh's current
-	 * information. If the information changes, the tree needs to be updated.
-	 */
-	public void updateCollisionTree() {
-		if (collisionTree == null)
-			collisionTree = new OBBTree();
-		collisionTree.construct(this);
-	}
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream in) throws IOException,
+            ClassNotFoundException {
+        in.defaultReadObject();
+        updateIndexBuffer();
+    }
 
-	/**
-	 * determines if a collision between this trimesh and a given spatial occurs
-	 * if it has true is returned, otherwise false is returned.
-	 *  
-	 */
-	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-		if (this == scene) {
-			return false;
-		}
-		if (getWorldBound().intersects(scene.getWorldBound())) {
-			if ((scene instanceof Node)) {
-				Node parent = (Node) scene;
-				for (int i = 0; i < parent.getQuantity(); i++) {
-					if (hasCollision(parent.getChild(i), checkTriangles)) {
-						return true;
-					}
-				}
+    /**
+     * This function creates a collision tree from the TriMesh's current
+     * information. If the information changes, the tree needs to be updated.
+     */
+    public void updateCollisionTree() {
+        if (collisionTree == null) collisionTree = new OBBTree();
+        collisionTree.construct(this);
+    }
 
-				return false;
-			} else {
-				if (!checkTriangles) {
-					return true;
-				} else {
-					return hasTriangleCollision((TriMesh) scene);
-				}
-			}
-		} else {
-			return false;
-		}
-	}
+    /**
+     * determines if a collision between this trimesh and a given spatial occurs
+     * if it has true is returned, otherwise false is returned.
+     *  
+     */
+    public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+        if (this == scene) { return false; }
+        if (getWorldBound().intersects(scene.getWorldBound())) {
+            if ((scene instanceof Node)) {
+                Node parent = (Node) scene;
+                for (int i = 0; i < parent.getQuantity(); i++) {
+                    if (hasCollision(parent.getChild(i), checkTriangles)) { return true; }
+                }
 
-	/**
-	 * determines if this TriMesh has made contact with the give scene. The
-	 * scene is recursively transversed until a trimesh is found, at which time
-	 * the two trimesh OBBTrees are then compared to find the triangles that
-	 * hit.
-	 */
-	public void findCollisions(Spatial scene, CollisionResults results) {
-		if (this == scene) {
-			return;
-		}
+                return false;
+            } else {
+                if (!checkTriangles) {
+                    return true;
+                } else {
+                    return hasTriangleCollision((TriMesh) scene);
+                }
+            }
+        } else {
+            return false;
+        }
+    }
 
-		if (getWorldBound().intersects(scene.getWorldBound())) {
-			if ((scene instanceof Node)) {
-				Node parent = (Node) scene;
-				for (int i = 0; i < parent.getQuantity(); i++) {
-					findCollisions(parent.getChild(i), results);
-				}
-			} else {
-				results.addCollision(this, (Geometry) scene);
-			}
-		}
-	}
+    /**
+     * determines if this TriMesh has made contact with the give scene. The
+     * scene is recursively transversed until a trimesh is found, at which time
+     * the two trimesh OBBTrees are then compared to find the triangles that
+     * hit.
+     */
+    public void findCollisions(Spatial scene, CollisionResults results) {
+        if (this == scene) { return; }
 
-	/**
-	 * This function checks for intersection between this trimesh and the given
-	 * one. On the first intersection, true is returned.
-	 * 
-	 * @param toCheck
-	 *            The intersection testing mesh.
-	 * @return True if they intersect.
-	 */
-	public boolean hasTriangleCollision(TriMesh toCheck) {
-		if (collisionTree == null || toCheck.collisionTree == null)
-			return false;
-		else {
-			if (worldMatrot == null)
-				worldMatrot = worldRotation.toRotationMatrix();
-			else
-				worldMatrot = worldRotation.toRotationMatrix(worldMatrot);
-			collisionTree.bounds.transform(worldMatrot, worldTranslation,
-					worldScale, collisionTree.worldBounds);
-			toCheck.worldMatrot = toCheck.worldRotation.toRotationMatrix();
-			return collisionTree.intersect(toCheck.collisionTree);
-		}
-	}
+        if (getWorldBound().intersects(scene.getWorldBound())) {
+            if ((scene instanceof Node)) {
+                Node parent = (Node) scene;
+                for (int i = 0; i < parent.getQuantity(); i++) {
+                    findCollisions(parent.getChild(i), results);
+                }
+            } else {
+                results.addCollision(this, (Geometry) scene);
+            }
+        }
+    }
 
-	/**
-	 * This function finds all intersections between this trimesh and the
-	 * checking one. The intersections are stored as Integer objects of Triangle
-	 * indexes in each of the parameters.
-	 * 
-	 * @param toCheck
-	 *            The TriMesh to check.
-	 * @param thisIndex
-	 *            The array of triangle indexes intersecting in this mesh.
-	 * @param otherIndex
-	 *            The array of triangle indexes intersecting in the given mesh.
-	 */
-	public void findTriangleCollision(TriMesh toCheck, ArrayList thisIndex,
-			ArrayList otherIndex) {
-		if (collisionTree == null || toCheck.collisionTree == null)
-			return;
-		else {
-			if (worldMatrot == null)
-				worldMatrot = worldRotation.toRotationMatrix();
-			else
-				worldMatrot = worldRotation.toRotationMatrix(worldMatrot);
-			collisionTree.bounds.transform(worldMatrot, worldTranslation,
-					worldScale, collisionTree.worldBounds);
-			toCheck.worldMatrot = toCheck.worldRotation.toRotationMatrix();
-			collisionTree.intersect(toCheck.collisionTree, thisIndex,
-					otherIndex);
-		}
-	}
+    /**
+     * This function checks for intersection between this trimesh and the given
+     * one. On the first intersection, true is returned.
+     * 
+     * @param toCheck
+     *            The intersection testing mesh.
+     * @return True if they intersect.
+     */
+    public boolean hasTriangleCollision(TriMesh toCheck) {
+        if (collisionTree == null || toCheck.collisionTree == null)
+            return false;
+        else {
+            if (worldMatrot == null)
+                worldMatrot = worldRotation.toRotationMatrix();
+            else
+                worldMatrot = worldRotation.toRotationMatrix(worldMatrot);
+            collisionTree.bounds.transform(worldMatrot, worldTranslation,
+                    worldScale, collisionTree.worldBounds);
+            toCheck.worldMatrot = toCheck.worldRotation.toRotationMatrix();
+            return collisionTree.intersect(toCheck.collisionTree);
+        }
+    }
 
-	/**
-	 * This function is <b>ONLY </b> to be used by the intersection testing
-	 * code. It should not be called by users. It returns a matrix3f
-	 * representation of the mesh's world rotation.
-	 * 
-	 * @return This mesh's world rotation.
-	 */
-	public Matrix3f findWorldRotMat() {
-		return worldMatrot;
-	}
+    /**
+     * This function finds all intersections between this trimesh and the
+     * checking one. The intersections are stored as Integer objects of Triangle
+     * indexes in each of the parameters.
+     * 
+     * @param toCheck
+     *            The TriMesh to check.
+     * @param thisIndex
+     *            The array of triangle indexes intersecting in this mesh.
+     * @param otherIndex
+     *            The array of triangle indexes intersecting in the given mesh.
+     */
+    public void findTriangleCollision(TriMesh toCheck, ArrayList thisIndex,
+            ArrayList otherIndex) {
+        if (collisionTree == null || toCheck.collisionTree == null)
+            return;
+        else {
+            if (worldMatrot == null)
+                worldMatrot = worldRotation.toRotationMatrix();
+            else
+                worldMatrot = worldRotation.toRotationMatrix(worldMatrot);
+            collisionTree.bounds.transform(worldMatrot, worldTranslation,
+                    worldScale, collisionTree.worldBounds);
+            toCheck.worldMatrot = toCheck.worldRotation.toRotationMatrix();
+            collisionTree.intersect(toCheck.collisionTree, thisIndex,
+                    otherIndex);
+        }
+    }
+
+    /**
+     * This function is <b>ONLY </b> to be used by the intersection testing
+     * code. It should not be called by users. It returns a matrix3f
+     * representation of the mesh's world rotation.
+     * 
+     * @return This mesh's world rotation.
+     */
+    public Matrix3f findWorldRotMat() {
+        return worldMatrot;
+    }
+
+    public Spatial putClone(Spatial store, CloneCreator properties) {
+        TriMesh toStore;
+        if (store == null) {
+            toStore = new TriMesh(this.getName() + "copy");
+        } else {
+            toStore = (TriMesh) store;
+        }
+        super.putClone(toStore, properties);
+
+        if (properties.isSet("indices")) {
+            toStore.indices = this.indices;
+            toStore.indexBuffer = this.indexBuffer;
+            toStore.triangleQuantity = this.triangleQuantity;
+        } else {
+            int[] temp = new int[this.indices.length];
+            for (int i = 0; i < temp.length; i++) {
+                temp[i] = this.indices[i];
+            }
+            toStore.setIndices(temp);
+        }
+
+        if (properties.isSet("obbtree")) {
+            toStore.collisionTree = this.collisionTree;
+        }
+
+        return toStore;
+    }
 }
