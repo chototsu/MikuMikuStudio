@@ -186,48 +186,6 @@ public class SpatialTransformer extends Controller{
     }
 
     /**
-     * A one time callable function.  If a keyframe exist at time <code>time</code>, then the objects are animated to
-     * that keyframe
-     * @param time The time in this SpatialTransformer to look like.
-     */
-    public void setTimeFrame(float time) {
-        int index;
-        for (index=0;index<keyframes.size();index++)
-            if (((PointInTime)keyframes.get(index)).time==time) break;
-        if (index==keyframes.size()) return;
-        PointInTime thisTime=(PointInTime) keyframes.get(index);
-        boolean[] haveChanged=new boolean[numObjects];
-        for (int i=0;i<thisTime.look.length;i++){
-            if (toChange[i] instanceof Spatial){
-                updatePivot(i,thisTime,haveChanged);
-            }
-        }
-    }
-
-    /**
-     * Called by setTimeFrame.  Similar to the othe updatePivot
-     * @param objIndex The index to change
-     * @param thisTime The PointInTime that it will look like
-     * @param haveChanged Boolean array specifying if it has been changed yet.
-     */
-    private void updatePivot(int objIndex, PointInTime thisTime,boolean []haveChanged) {
-        if (haveChanged[objIndex]){
-            return;
-        }
-        pivots[objIndex].loadIdentity();
-        if (parentIndexes[objIndex]!=-1){
-            updatePivot(parentIndexes[objIndex],thisTime,haveChanged);
-            pivots[objIndex].set(pivots[parentIndexes[objIndex]]);
-        }
-        pivots[objIndex].multLocal(thisTime.look[objIndex],unSyncbeginPos);
-        Spatial thisSpatial=(Spatial) toChange[objIndex];
-        pivots[objIndex].applyToSpatial(thisSpatial);
-
-        haveChanged[objIndex]=true;
-    }
-
-
-    /**
      * This must be called one time, once all translations/rotations/scales have been set.  It will interpolate unset
      * values to make the animation look correct.  Tail and head values are assumed to be the identity.
      */
