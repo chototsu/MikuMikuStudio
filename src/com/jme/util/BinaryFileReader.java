@@ -49,12 +49,19 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the 
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.4 2004-02-16 06:25:42 mojomonkey Exp $
+ * @version $Id: BinaryFileReader.java,v 1.5 2004-04-03 23:22:55 mojomonkey Exp $
  */
 public class BinaryFileReader {
 	private byte[] fileContents;
 	private int fileIndex = 0;
 
+	/**
+	 * Constructor creates a new <code>BinaryFileReader</code> class. This 
+	 * constructor takes the filename string as a parameter. This filename
+	 * is converted into a URL and opened. If the filename is invalid, a
+	 * <code>MalformedURLException</code> will be generated and logged.
+	 * @param f the file to open.
+	 */
 	public BinaryFileReader(String f) {
 		try {
 			URL file = new URL(f);
@@ -75,6 +82,14 @@ public class BinaryFileReader {
 		open(f);
 	}
 
+	/**
+	 * 
+	 * <code>open</code> opens a given URL stream. The data is read completely
+	 * and the stream is then closed. This allows the stream to only be needed
+	 * for the time it takes to read all the data, it is then closed.
+	 *
+	 * @param f the url pointing to the file to be read.
+	 */
 	public void open(URL f) {
 		try {
 			InputStream is = f.openStream();
