@@ -25,7 +25,7 @@ import java.net.URL;
  * won't do anything at all.
  * @author Jack Lindamood
  */
-class DummyDisplaySystem extends DisplaySystem{
+public class DummyDisplaySystem extends DisplaySystem{
     public boolean isValidDisplayMode(int width, int height, int bpp, int freq) {return false;}
     public void setVSyncEnabled(boolean enabled) {}
     public void setTitle(String title) {}
