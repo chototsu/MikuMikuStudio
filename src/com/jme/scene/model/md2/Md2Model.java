@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * mesh.
  *
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.11 2004-02-26 05:37:47 renanse Exp $
+ * @version $Id: Md2Model.java,v 1.12 2004-02-26 14:38:43 mojomonkey Exp $
  */
 public class Md2Model extends Model {
     private BinaryFileReader bis = null;
@@ -367,7 +367,7 @@ public class Md2Model extends Model {
                 if (faces[j].vertIndex[0] == i
                     || faces[j].vertIndex[1] == i
                     || faces[j].vertIndex[2] == i) {
-                    sum.addLocal(tempNormals[j]);
+                    sum = sum.add(tempNormals[j]);
                     shared++;
                 }
             }
