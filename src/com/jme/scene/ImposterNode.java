@@ -39,11 +39,13 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.math.FastMath;
+import com.jme.renderer.Camera;
 
 /**
  * <code>ImposterNode</code>
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.3 2004-03-31 22:58:25 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.4 2004-04-01 00:42:09 renanse Exp $
  */
 public class ImposterNode extends Node {
   private TextureRenderer tRenderer;
@@ -54,6 +56,12 @@ public class ImposterNode extends Node {
   private float redrawRate;
   private float elapsed;
   private float cameraDistance = 10f;
+  private float cameraThreshold;
+  private float oldAngle;
+  private float lastAngle;
+  private boolean haveDrawn;
+  private boolean byCamera;
+  private boolean byTime;
 
   public ImposterNode(String name, float size, int twidth, int theight) {
     super(name);
@@ -75,7 +83,9 @@ public class ImposterNode extends Node {
 
     inode_val++;
     resetTexture();
-    redrawRate = elapsed = .05f;
+    redrawRate = elapsed = .05f; // 20x per sec
+    cameraThreshold = 0; // off
+    haveDrawn = false;
   }
 
   /**
@@ -85,11 +95,16 @@ public class ImposterNode extends Node {
    * @param r the renderer to draw to.
    */
   public void draw(Renderer r) {
-    if (shouldDoUpdate()) {
+    if (!haveDrawn || shouldDoUpdate(r.getCamera())) {
       updateCamera(r.getCamera().getLocation());
-      updateTexture(redrawRate);
+      if (byTime) {
+        updateTexture(redrawRate);
+        elapsed -= redrawRate;
+      } else if (byCamera) {
+        updateTexture(0);
+      }
       renderTexture();
-      elapsed -= redrawRate;
+      haveDrawn = true;
     }
     standIn.onDraw(r);
   }
@@ -111,12 +126,46 @@ public class ImposterNode extends Node {
    *
    * @return boolean
    */
-  private boolean shouldDoUpdate() {
-    if (redrawRate <= 0)return false;
+  private boolean shouldDoUpdate(Camera cam) {
+    byTime = byCamera = false;
     if (redrawRate > 0 && elapsed >= redrawRate) {
+      byTime = true;
       return true;
     }
+    if (cameraThreshold > 0) {
+      float camChange = FastMath.abs(getCameraChange(cam));
+      if (camChange >= cameraThreshold) {
+        byCamera = true;
+        resetCameraChange();
+        return true;
+      }
+    }
     return false;
+  }
+
+  /**
+   * resetCameraChange
+   */
+  private void resetCameraChange() {
+    oldAngle = lastAngle;
+  }
+
+  /**
+   * getCameraChange
+   *
+   * @return float
+   */
+  private float getCameraChange(Camera cam) {
+    // change is last camera angle - this angle
+    Vector3f eye = cam.getLocation();
+    Vector3f spot = standIn.getCenter();
+    float opp = eye.x - spot.x;
+    float adj = eye.z - spot.z;
+    if (adj == 0)return 0;
+    lastAngle = FastMath.atan(opp / adj);
+    opp = eye.y - spot.y;
+    lastAngle += FastMath.atan(opp / adj);
+    return oldAngle - lastAngle;
   }
 
   /**
@@ -169,6 +218,15 @@ public class ImposterNode extends Node {
 
   public Quad getStandIn() {
     return standIn;
+  }
+
+  public void setCameraThreshold(float threshold) {
+    this.cameraThreshold = threshold;
+    this.oldAngle = cameraThreshold + threshold;
+  }
+
+  public float getCameraThreshold() {
+    return cameraThreshold;
   }
 
   public void resetTexture() {

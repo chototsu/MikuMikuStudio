@@ -52,6 +52,7 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jme.math.FastMath;
 
 /**
  * <code>TestImposterNode</code>
@@ -195,6 +196,7 @@ public class TestImposterNode extends VariableTimestepGame {
     iNode.attachChild(fakeScene);
     iNode.setCameraDistance(100);
     iNode.setRedrawRate(.05f); // .05 = update texture 20 times a second on average
+//    iNode.setCameraThreshold(15*FastMath.DEG_TO_RAD);
     BillboardNode bnode = new BillboardNode("imposter bbnode");
     bnode.setType(BillboardNode.SCREEN_ALIGNED);
     bnode.attachChild(iNode);
