@@ -1,0 +1,456 @@
+/*
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without 
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this 
+ * list of conditions and the following disclaimer. 
+ * 
+ * Redistributions in binary form must reproduce the above copyright notice, 
+ * this list of conditions and the following disclaimer in the documentation 
+ * and/or other materials provided with the distribution. 
+ * 
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
+ * names of its contributors may be used to endorse or promote products derived 
+ * from this software without specific prior written permission. 
+ * 
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+package jme.geometry.bounding;
+
+import jme.entity.camera.Frustum;
+import jme.math.Line;
+import jme.math.Approximation;
+import jme.math.Distance;
+import jme.math.Rectangle;
+import jme.math.Vector;
+
+/**
+ * <code>BoundingCapsule</code> defines a bounding volume in the shape of
+ * a capsule, where a capsule is an extension of sphere. A capsule can be
+ * thought of as a cylinder with domed caps.
+ * 
+ * @author Mark Powell
+ * @version $Id: .#BoundingCapsule.java.1.6,v 1.1.1.1 2003-10-29 10:54:18 Anakan Exp $
+ */
+public class BoundingCapsule implements BoundingVolume {
+    private Line lineSegment;
+    private float radius;
+    private float collisionBuffer;
+
+    /**
+     * Default constructor instantiates an empty bounding capsule. Both the
+     * radius and the line segment are initial values. It is recommended to 
+     * use the <code>leastSquaresFit</code> method with an array of points.
+     *
+     */
+    public BoundingCapsule() {
+        lineSegment = new Line();
+    }
+
+    /**
+     * Constructor instantiates a new <code>BoundingCapsule</code> with 
+     * supplied attributes of line segment and radius.
+     * @param lineSegment the line defining the length of center of the
+     *      capsule.
+     * @param radius the radius of the capsule.
+     */
+    public BoundingCapsule(Line lineSegment, float radius) {
+        this.lineSegment = lineSegment;
+        this.radius = radius;
+    }
+
+    /**
+     * <code>getOrigin</code> gets the origin of the line segment that
+     * makes up the capsule.
+     * @return the origin of the line segment.
+     */
+    public Vector getOrigin() {
+        return lineSegment.getOrigin();
+    }
+
+    /**
+     * <code>getDirection</code> gets the direction vector of the line
+     * segment that makes up the capsule.
+     * @return the direction of the line segment.
+     */
+    public Vector getDirection() {
+        return lineSegment.getDirection();
+    }
+
+    /**
+     * <code>getRadius</code> gets the radius of the capsule.
+     * @return the radius of the capsule.
+     */
+    public float getRadius() {
+        return radius;
+    }
+
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
+
+    public void setOrigin(Vector origin) {
+        lineSegment.setOrigin(origin);
+    }
+
+    public void setDirection(Vector direction) {
+        lineSegment.setDirection(direction);
+    }
+
+    /**
+     * <code>leastSquaresFit</code> selects a parameterized equation
+     * that represents a discrete set of points in a continuous manner.
+     * The radius is then found to be the maximum distance from the
+     * data points to the line.
+     * @param points the points to contain.
+     */
+    public void leastSquaresFit(Vector[] points) {
+        Line line = Approximation.orthogonalLineFit(points);
+
+        float maxRadiusSqr = 0.0f;
+
+        for (int i = 0; i < points.length; i++) {
+            float radiusSquared =
+                Distance.distancePointLineSquared(points[i], line);
+            if (radiusSquared > maxRadiusSqr) {
+                maxRadiusSqr = radiusSquared;
+            }
+        }
+
+        Vector u = new Vector();
+        Vector v = new Vector();
+        Vector w = line.getDirection();
+        Vector.generateOrthonormalBasis(u, v, w, true);
+
+        float min = Float.MAX_VALUE;
+        float max = Float.MIN_VALUE;
+        for (int i = 0; i < points.length; i++) {
+            Vector diff = points[i].subtract(line.getOrigin());
+            float uDiff = u.dot(diff);
+            float vDiff = v.dot(diff);
+            float wDiff = w.dot(diff);
+            float discr = maxRadiusSqr - (uDiff * uDiff + vDiff * vDiff);
+            float radical = (float) Math.sqrt(Math.abs(discr));
+
+            float test = wDiff + radical;
+            if (test < min)
+                min = test;
+
+            test = wDiff - radical;
+            if (test > max)
+                max = test;
+        }
+
+        if (min < max) {
+            lineSegment.setOrigin(
+                line.getOrigin().add(line.getDirection().mult(min)));
+            lineSegment.setDirection(line.getDirection().mult(max - min));
+        } else {
+            // enclosing capsule is really a sphere
+            lineSegment.setOrigin(
+                line.getOrigin().add(
+                    line.getDirection().mult((0.5f * (min + max)))));
+            lineSegment.setDirection(new Vector());
+        }
+
+        radius = (float) Math.sqrt(maxRadiusSqr);
+    }
+
+    /**
+     * <code>hasCollision</code> will determine if this volume is colliding
+     * (touching in any way) with another volume.
+     * @param sourceOffset defines the position of the entity containing
+     *      this volume, if null it is ignored.
+     * @param volume the bounding volume to compare.
+     * @param targetOffset defines the position of the entity containing
+     *      the target volume, if null it is ignored.
+     * @return true if there is a collision, false otherwise.
+     */
+    public boolean hasCollision(
+        Vector sourceOffset,
+        BoundingVolume volume,
+        Vector targetOffset) {
+        return false;
+    }
+
+    /**
+     * <code>setCollisionBuffer</code> sets the value that must be reached to
+     * consider bounding volumes colliding. By default this value is 0.
+     * @param buffer the collision buffer.
+     */
+    public void setCollisionBuffer(float buffer) {
+        collisionBuffer = buffer;
+    }
+
+    /**
+     * <code>distance</code> determines the distance from this capsule's center
+     * to the center of a parameter bounding volume. If there is an error during
+     * the check, -1 is returned as the distance.
+     * @param sourceOffset the position of this volume.
+     * @param volume the bounding volume to compare to.
+     * @param targetOffset the position of the volume to compare to.
+     * @return the distance between this bounding volume and a second volume.
+     */
+    public float distance(
+        Vector sourceOffset,
+        BoundingVolume volume,
+        Vector targetOffset) {
+
+        Line line = new Line();
+        line.setOrigin(lineSegment.getOrigin().add(sourceOffset));
+        line.setDirection(lineSegment.getDirection().add(sourceOffset));
+
+        if (volume instanceof BoundingSphere) {
+            Vector testPoint2 =
+                ((BoundingSphere) volume).getCenter().add(targetOffset);
+            return Distance.distancePointSegmentSquared(testPoint2, line);
+        } else if (volume instanceof BoundingBox) {
+            Vector testPoint2 =
+                ((BoundingBox) volume).getCenter().add(targetOffset);
+            return Distance.distancePointSegmentSquared(testPoint2, line);
+        } else if (volume instanceof BoundingCapsule) {
+            Line testLine = new Line();
+            testLine.setOrigin(
+                ((BoundingCapsule) volume).getOrigin().add(targetOffset));
+            testLine.setDirection(
+                ((BoundingCapsule) volume).getDirection().add(targetOffset));
+            return Distance.distanceSegmentSegment(line, testLine);
+        } else if (volume instanceof BoundingCylinder) {
+            Line testLine = new Line();
+            testLine.setOrigin(
+                ((BoundingCylinder) volume).getCenter().add(targetOffset));
+            testLine.setDirection(
+                ((BoundingCylinder) volume).getDirection().add(targetOffset));
+            return Distance.distanceSegmentSegment(line, testLine);
+        } else if (volume instanceof BoundingEllipsoid) {
+            Vector testPoint2 =
+                ((BoundingEllipsoid) volume).getCenter().add(targetOffset);
+            return Distance.distancePointSegment(testPoint2, line);
+        } else if (volume instanceof BoundingLozenge) {
+            Rectangle testRect = new Rectangle();
+            testRect.setOrigin(
+                ((BoundingLozenge) volume).getRectangle().getOrigin().add(
+                    targetOffset));
+            testRect.setFirstEdge(
+                ((BoundingLozenge) volume).getRectangle().getFirstEdge().add(
+                    targetOffset));
+            testRect.setSecondEdge(
+                ((BoundingLozenge) volume).getRectangle().getSecondEdge().add(
+                    targetOffset));
+            return Distance.distanceSegmentRectangle(line, testRect);
+        } else {
+            return -1;
+        }
+    }
+
+    /**
+     * <code>inCapsule</code> determines if a point is inside the capsule or not.
+     * If the point is in the capsule, true is returned, else false.
+     * @param point the point to check. 
+     * @return true if the capsule contains the point, false otherwise.
+     */
+    public boolean inCapsule(Vector point) {
+        float diameter = radius * radius;
+        return (Distance.distancePointSegment(point, lineSegment) <= diameter);
+    }
+
+    /**
+     * <code>inCapsule</code> determines if a sphere is inside the capsule or
+     * not. If the sphere is in the capsule, true is returned, else false.
+     * @param sphere the sphere to check.
+     * @return true if the capsule contains the sphere, false otherwise.
+     */
+    public boolean inCapsule(BoundingSphere sphere) {
+        float radiusDiff = radius - sphere.getRadius();
+        if (radiusDiff >= 0.0) {
+            return Distance.distancePointSegment(
+                sphere.getCenter(),
+                lineSegment)
+                <= radiusDiff * radiusDiff;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * <code>inCapsule</code> determines if another capsule is inside the 
+     * capsule or not. If the capsule is in this capsule, true is returned, 
+     * else false.
+     * @param testCapsule the capsule to check.
+     * @return true if the capsule contains the test capsule, false otherwise.
+     */
+    public boolean inCapsule(BoundingCapsule testCapsule) {
+        BoundingSphere sphere1 = new BoundingSphere();
+        BoundingSphere sphere2 = new BoundingSphere();
+        sphere1.setCenter(testCapsule.getOrigin());
+        sphere1.setRadius(testCapsule.getRadius());
+        sphere2.setCenter(
+            testCapsule.getOrigin().add(testCapsule.getDirection()));
+        sphere2.setRadius(testCapsule.getRadius());
+
+        return inCapsule(sphere1) && inCapsule(sphere2);
+    }
+
+    /**
+     * <code>isVisible</code> determines if a bounding volume is visible to
+     * a view frustum or not. If the volume is visible, true is returned, 
+     * otherwise false is returned.
+     * @param offsetPosition the position of this volume in relation to the
+     *      scene.
+     * @param frustum the view frustum to check against.
+     * @return true if it is visible false otherwise.
+     */
+    public boolean isVisible(Vector offsetPosition, Frustum frustum) {
+        return true;
+    }
+
+    /**
+     * <code>merge</code> creates a new bounding capsule that contains both
+     * this capsule and a given capsule. 
+     * @param volume the volume to combine with this.
+     * @return the new capsule that contains both this and the given capsule.
+     */
+    public BoundingVolume merge(BoundingVolume volume) {
+        if (!(volume instanceof BoundingCapsule)) {
+            return null;
+        }
+
+        BoundingCapsule capsule = (BoundingCapsule) volume;
+
+        if (capsule.inCapsule(this)) {
+            return capsule;
+        }
+
+        if (inCapsule(capsule)) {
+            return this;
+        }
+
+        Vector thisOrigin = getOrigin();
+        Vector targetOrigin = capsule.getOrigin();
+        Vector thisDirection = getDirection();
+        Vector targetDirection = capsule.getDirection();
+
+        // axis of final capsule
+        Line line = new Line();
+
+        // axis center is average of input axis centers
+        line.setOrigin(
+            (thisOrigin
+                .add(targetOrigin)
+                .mult(0.5f)
+                .add((thisDirection.add(targetDirection).mult(0.25f)))));
+
+        // axis unit direction is average of input axis unit directions
+        Vector kDirection0 = thisDirection;
+        Vector kDirection1 = targetDirection;
+        kDirection0.unitize();
+        kDirection1.unitize();
+        Vector rkLineDir = line.getDirection();
+        if (kDirection0.dot(kDirection1) >= 0.0)
+            rkLineDir = kDirection0.add(kDirection1);
+        else
+            rkLineDir = kDirection0.subtract(kDirection1);
+        rkLineDir.unitize();
+
+        // Cylinder with axis 'kLine' must contain the spheres centered at the
+        // end points of the input capsules.
+        float fRadius =
+            Distance.distancePointLine(thisOrigin, line) + getRadius();
+
+        float fDist =
+            Distance.distancePointLine(targetOrigin, line)
+                + capsule.getRadius();
+        if (fDist > fRadius)
+            fRadius = fDist;
+
+        Vector kP0D0 = thisOrigin.add(thisDirection);
+        fDist = Distance.distancePointLine(kP0D0, line) + getRadius();
+        if (fDist > fRadius)
+            fRadius = fDist;
+
+        Vector kP1D1 = targetOrigin.add(targetDirection);
+        fDist = Distance.distancePointLine(kP1D1, line) + capsule.getRadius();
+        if (fDist > fRadius)
+            fRadius = fDist;
+
+        // process sphere <P0,r0>
+        float fRDiff = fRadius - getRadius();
+        float fRDiffSqr = fRDiff * fRDiff;
+        Vector kDiff = line.getOrigin().subtract(thisOrigin);
+        float fK0 = kDiff.lengthSquared() - fRDiffSqr;
+        float fK1 = kDiff.dot(line.getDirection());
+        float fDiscr = fK1 * fK1 - fK0; // assert:  K1*K1-K0 >= 0
+        float fRoot = (float) Math.sqrt(Math.abs(fDiscr));
+        float fTPos = fK1 - fRoot;
+        float fTNeg = fK1 + fRoot;
+        float fTmp;
+
+        // process sphere <P0+D0,r0>
+        kDiff = line.getOrigin().subtract(kP0D0);
+        fK0 = kDiff.lengthSquared() - fRDiffSqr;
+        fK1 = kDiff.dot(line.getDirection());
+        fDiscr = fK1 * fK1 - fK0; // assert:  K1*K1-K0 >= 0
+        fRoot = (float) Math.sqrt(Math.abs(fDiscr));
+        fTmp = fK1 - fRoot;
+        if (fTmp > fTPos)
+            fTPos = fTmp;
+        fTmp = fK1 + fRoot;
+        if (fTmp < fTNeg)
+            fTNeg = fTmp;
+
+        // process sphere <P1,r1>
+        fRDiff = fRadius - capsule.getRadius();
+        fRDiffSqr = fRDiff * fRDiff;
+        kDiff = line.getOrigin().subtract(targetOrigin);
+        fK0 = kDiff.lengthSquared() - fRDiffSqr;
+        fK1 = kDiff.dot(line.getDirection());
+        fDiscr = fK1 * fK1 - fK0; // assert:  K1*K1-K0 >= 0
+        fRoot = (float) Math.sqrt(Math.abs(fDiscr));
+        fTmp = fK1 - fRoot;
+        if (fTmp > fTPos)
+            fTPos = fTmp;
+        fTmp = fK1 + fRoot;
+        if (fTmp < fTNeg)
+            fTNeg = fTmp;
+
+        // process sphere <P1+D1,r1>
+        kDiff = line.getOrigin().subtract(kP1D1);
+        fK0 = kDiff.lengthSquared() - fRDiffSqr;
+        fK1 = kDiff.dot(line.getDirection());
+        fDiscr = fK1 * fK1 - fK0; // assert:  K1*K1-K0 >= 0
+        fRoot = (float) Math.sqrt(Math.abs(fDiscr));
+        fTmp = fK1 - fRoot;
+        if (fTmp > fTPos)
+            fTPos = fTmp;
+        fTmp = fK1 + fRoot;
+        if (fTmp < fTNeg)
+            fTNeg = fTmp;
+
+        if (fTPos < fTNeg) {
+            float fAverage = 0.5f * (fTPos + fTNeg);
+            fTPos = fAverage;
+            fTNeg = fAverage;
+        }
+
+        BoundingCapsule kCapsule = new BoundingCapsule();
+        kCapsule.setRadius(fRadius);
+        kCapsule.setOrigin(
+            line.getOrigin().add(line.getDirection().mult(fTNeg)));
+        kCapsule.setDirection(line.getDirection().mult((fTPos - fTNeg)));
+        return kCapsule;
+    }
+}

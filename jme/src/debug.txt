@@ -1,0 +1,8 @@
+28 oct. 2003 22:50:00 com.jme.app.AbstractGame start
+INFO: Application started.
+28 oct. 2003 22:50:00 com.jme.system.PropertiesIO <init>
+INFO: PropertiesIO created
+28 oct. 2003 22:50:00 com.jme.system.PropertiesIO load
+ATTENTION: Could not load properties: java.io.FileNotFoundException: properties.cfg (The system cannot find the file specified)
+28 oct. 2003 22:50:02 com.jme.system.PropertiesIO save
+INFO: Saved properties

@@ -1,0 +1,10 @@
+28 oct. 2003 23:26:03 com.jme.app.AbstractGame start
+INFO: Application started.
+28 oct. 2003 23:26:03 com.jme.system.PropertiesIO <init>
+INFO: PropertiesIO created
+28 oct. 2003 23:26:03 com.jme.system.PropertiesIO load
+INFO: Read properties
+28 oct. 2003 23:26:09 com.jme.system.PropertiesIO save
+INFO: Saved properties
+28 oct. 2003 23:26:09 com.jme.app.AbstractGame start
+INFO: Application ending.
