@@ -49,11 +49,11 @@ import com.jme.util.LoggingSystem;
 /**
  * Implementation of the GL_ARB_vertex_program extension.
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.9 2004-08-02 23:10:02 ericthered Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.10 2004-08-07 21:53:18 ericthered Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 
-    private byte[] program;
+    private byte[] program = null;
     private int programID = -1;
 
     /**
@@ -72,7 +72,6 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 	public void load(java.net.URL file){
 		int next;
 		Vector bytes = new Vector();
-		program = new byte[0];
 
 		try {
 
@@ -107,6 +106,12 @@ public class LWJGLVertexProgramState extends VertexProgramState {
     }
 
     private void create() {
+        //first assert that the program is loaded
+        if (program == null) {
+            LoggingSystem.getLogger().log(Level.SEVERE, "Attempted to apply unloaded vertex program state.");
+            return;
+        }
+        
         IntBuffer buf = BufferUtils.createIntBuffer(1);
 
         ByteBuffer pbuf = BufferUtils.createByteBuffer(program.length);
