@@ -38,8 +38,7 @@ import com.jme.widget.WidgetAlignmentType;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.border.WidgetBorderType;
 import com.jme.widget.layout.WidgetFlowLayout;
-import com.jme.widget.panel.WidgetPanel;
-import com.jme.widget.text.WidgetText;
+import com.jme.widget.text.WidgetLabel;
 
 /**
  * @author Gregg Patton
@@ -47,9 +46,7 @@ import com.jme.widget.text.WidgetText;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class WidgetButton extends WidgetPanel {
-
-    protected WidgetText text;
+public class WidgetButton extends WidgetLabel {
 
     protected WidgetButtonStateType buttonState = WidgetButtonStateType.BUTTON_UP;
 
@@ -60,19 +57,13 @@ public class WidgetButton extends WidgetPanel {
     }
 
     public WidgetButton(String title) {
-        this(title, WidgetAlignmentType.ALIGN_SW);
+        this(title, WidgetAlignmentType.ALIGN_SOUTHWEST);
     }
 
     public WidgetButton(String title, WidgetAlignmentType textAlignment) {
-        super();
+        super(title, textAlignment);
 
         init();
-
-        text = new WidgetText(title);
-        text.setAlignment(textAlignment);
-        text.setCantOwnMouse(true);
-
-        add(text);
 
     }
 
@@ -141,32 +132,8 @@ public class WidgetButton extends WidgetPanel {
         buttonState = type;
     }
 
-    public String getTitle() {
-        return text.getText();
-    }
-
-    public void setTitle(String title) {
-        text.setText(title);
-    }
-
-    public WidgetAlignmentType getTextAlignment() {
-        return text.getAlignment();
-    }
-
-    public void setTextAlignment(WidgetAlignmentType alignment) {
-        text.setAlignment(alignment);
-    }
-
     public String toString() {
         return "[" + text.getText() + super.toString() + "]";
-    }
-
-    public WidgetText getText() {
-        return text;
-    }
-
-    public void setText(WidgetText text) {
-        this.text = text;
     }
 
 }
