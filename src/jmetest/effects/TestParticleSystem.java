@@ -69,6 +69,10 @@ public class TestParticleSystem extends SimpleGame {
 	private KeyInput key;
 	
 	private Text fps;
+    
+
+    private Vector3f currentPos = new Vector3f();
+    private Vector3f newPos = new Vector3f();
 
 	public static void main(String[] args) {
 		TestParticleSystem app = new TestParticleSystem();
@@ -79,6 +83,23 @@ public class TestParticleSystem extends SimpleGame {
 	protected void update(float interpolation) {
 		timer.update();
         input.update(timer.getTimePerFrame() * 10);
+        
+        if ((int) currentPos.x == (int) newPos.x
+           && (int) currentPos.y == (int) newPos.y
+           && (int) currentPos.z == (int) newPos.z) {
+           newPos.x = (float) Math.random() * 50 - 25;
+           newPos.y = (float) Math.random() * 50 - 25;
+           newPos.z = (float) Math.random() * 50 - 25;
+       }
+
+       currentPos.x -= (currentPos.x - newPos.x)
+           / (timer.getFrameRate() / 2);
+       currentPos.y -= (currentPos.y - newPos.y)
+           / (timer.getFrameRate() / 2);
+       currentPos.z -= (currentPos.z - newPos.z)
+           / (timer.getFrameRate() / 2);
+     
+       ps.setLocalTranslation(currentPos);
         
         fps.print("FPS: " + timer.getFrameRate());
 		root.updateWorldData(timer.getTimePerFrame() * 10);
@@ -167,24 +188,29 @@ public class TestParticleSystem extends SimpleGame {
 						Texture.FM_LINEAR,
 						true));
 		font.setEnabled(true);
+        Node worldToParticle = new Node("world");
+        worldToParticle.setRenderState(ts);
+        worldToParticle.setRenderState(as1);
 
-		ps = new ParticleSystem("Particle System",100);
+		ps = new ParticleSystem("Particle System", worldToParticle,100);
 		ps.setStartColor(
 			new ColorRGBA(1f, 0f, 0f, 1f));
 		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0f));
 		ps.setStartSize(5);
 		ps.setEndSize(1);
-		ps.setGravity(new Vector3f(0, 0, 80));
+		ps.setGravity(new Vector3f(0, 0, 0));
 		ps.setSpeed(1f);
 		ps.setFriction(1f);
-		ps.setFade(0.02f);
+		ps.setFade(0.05f);
 		ps.setStartPosition(new Vector3f(-50, 0, 0));
+        
+        
 
 		pc = new ParticleController(ps);
 		pc.setRepeatType(Controller.RT_WRAP);
 		ps.addController(pc);
-		ps.setRenderState(as1);
-		ps.setRenderState(ts);
+		//ps.setRenderState(as1);
+		//ps.setRenderState(ts);
 		
 		fps = new Text("FPS label","");
 		fps.setRenderState(as1);
@@ -192,6 +218,7 @@ public class TestParticleSystem extends SimpleGame {
 		
 		root.attachChild(ps);
 		root.attachChild(fps);
+        root.attachChild(worldToParticle);
 		root.updateGeometricState(0.0f, true);
 
 	}
