@@ -148,7 +148,7 @@ public class TestImposterNode extends VariableTimestepGame {
     input.setMouseSpeed(1f);
     timer = Timer.getTimer("LWJGL");
 
-    display.setTitle("Render to Texture");
+    display.setTitle("Imposter Test");
     display.getRenderer().enableStatistics(true);
   }
 
