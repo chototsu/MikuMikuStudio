@@ -677,8 +677,10 @@ public class JmeBinaryReader {
             }
             if (p==null)
                 LoggingSystem.getLogger().log(Level.INFO,"Unable to load file: " + atts.get("file"));
-            else
+            else{
                 t.setTexture(p);
+                p.setWrap(((Integer)atts.get("wrap")).intValue());
+            }
         } catch (MalformedURLException e) {
             throw new JmeException("Bad file name: " + atts.get("file") + "*" + atts.get("URL"));
         }

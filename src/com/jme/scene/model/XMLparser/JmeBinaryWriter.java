@@ -739,6 +739,7 @@ public class JmeBinaryWriter {
             atts.put("file",replaceSpecialsForFile(new StringBuffer(s.substring(6))).toString());
         else
             atts.put("URL",new URL(s));
+        atts.put("wrap",new Integer(state.getTexture().getWrap()));
         writeTag("texturestate",atts);
         writeEndTag("texturestate");
     }
