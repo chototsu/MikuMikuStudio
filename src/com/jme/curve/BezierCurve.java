@@ -44,7 +44,7 @@ import com.jme.math.Vector3f;
  * [0,1] where 0 is the first control point and 1 is the second control
  * point.
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.3 2004-01-07 03:52:53 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.4 2004-01-07 21:00:40 mojomonkey Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -121,10 +121,14 @@ public class BezierCurve extends Curve {
         Matrix3f rotation = new Matrix3f();
 
         //calculate tangent
-        Vector3f tangent = getPoint(time).subtract(getPoint(time + precision));
+        Vector3f point = getPoint(time);
+        if(point == vertex[vertex.length-1] || point == vertex[0]) {
+            return rotation;
+        }
+        Vector3f tangent = point.subtract(getPoint(time + precision));
         tangent = tangent.normalize();
         //calculate normal
-        Vector3f tangent2 = getPoint(time - precision).subtract(getPoint(time));
+        Vector3f tangent2 = getPoint(time - precision).subtract(point);
         Vector3f normal = tangent.cross(tangent2);
         normal = normal.normalize();
         //calculate binormal
@@ -134,11 +138,13 @@ public class BezierCurve extends Curve {
         rotation.setColumn(0, tangent);
         rotation.setColumn(1, normal);
         rotation.setColumn(2, binormal);
-
         return rotation;
     }
 
     public Matrix3f getOrientation(float time, float precision, Vector3f up) {
+        if(up == null) {
+            return getOrientation(time, precision);
+        }
         Matrix3f rotation = new Matrix3f();
 
         //calculate tangent
@@ -156,7 +162,7 @@ public class BezierCurve extends Curve {
         rotation.setColumn(0, tangent);
         rotation.setColumn(1, normal);
         rotation.setColumn(2, binormal);
-
+        
         return rotation;
     }
 

@@ -38,7 +38,7 @@ package com.jme.scene;
  * of this will provide the update method that takes the current time and
  * modifies an object in a application specific way.
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.2 2003-10-17 20:45:27 mojomonkey Exp $
+ * @version $Id: Controller.java,v 1.3 2004-01-07 21:00:40 mojomonkey Exp $
  */
 public abstract class Controller {
     public static final int RT_CLAMP = 0;
@@ -50,7 +50,7 @@ public abstract class Controller {
     private float maxTime;
     private float phase;
     private float frequency;
-    private boolean active;
+    private boolean active = true;
     
     /**
      * <code>getFrequency</code>
@@ -130,6 +130,14 @@ public abstract class Controller {
      */
     public void setRepeatType(int repeatType) {
         this.repeatType = repeatType;
+    }
+    
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+    
+    public boolean isActive() {
+        return active;
     }
 
     public abstract void update(float time);

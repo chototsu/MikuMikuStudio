@@ -33,6 +33,7 @@ package com.jme.test.curve;
 
 import com.jme.app.AbstractGame;
 import com.jme.curve.BezierCurve;
+import com.jme.curve.CurveController;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -41,6 +42,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
+import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
@@ -54,7 +56,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.4 2004-01-07 03:52:53 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.5 2004-01-07 21:00:40 mojomonkey Exp $
  */
 public class TestBezierCurve extends AbstractGame {
     private TriMesh t, t2, t3, t4;
@@ -83,20 +85,7 @@ public class TestBezierCurve extends AbstractGame {
      */
     protected void update() {
         input.update(0.2f);
-        box.setLocalTranslation(curve.getPoint(step));
-        box.setLocalRotation(curve.getOrientation(step, 0.1f, up));
-        scene.updateWorldData(0.1f);
-        step += mod;
-        
-        text.print("STEP: " + step);
-        
-        if(step > 1) {
-            mod = mod*-1;
-            step = 1+mod;
-        } else if(step < 0) {
-            mod = mod*-1;
-            step = mod;
-        }
+        scene.updateWorldData(0.0005f);
 
     }
 
@@ -181,6 +170,8 @@ public class TestBezierCurve extends AbstractGame {
         colors[2] = new ColorRGBA(1,1,0,1);
         colors[3] = new ColorRGBA(0,0,1,1);
         curve.setColors(colors);
+        
+        
 
         Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
         Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
@@ -218,6 +209,12 @@ public class TestBezierCurve extends AbstractGame {
         box.updateModelBound();
 
         box.setLocalTranslation(points[0]);
+        
+        CurveController cc = new CurveController(curve, box);
+        box.addController(cc);
+        cc.setRepeatType(Controller.RT_CYCLE);
+        cc.setUpVector(up);
+        
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         ts.setTexture(

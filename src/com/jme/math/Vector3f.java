@@ -38,7 +38,7 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>Vector3f</code> defines a Vector for a three float value tuple. 
  * @author Mark Powell
- * @version $Id: Vector3f.java,v 1.2 2003-10-31 22:02:54 mojomonkey Exp $
+ * @version $Id: Vector3f.java,v 1.3 2004-01-07 21:00:40 mojomonkey Exp $
  */
 public class Vector3f {
     /**
@@ -188,8 +188,11 @@ public class Vector3f {
      */
     public Vector3f normalize() {
         float length = length();
-
-        return divide(length);
+        if(length != 0) {
+            return divide(length);
+        } else {
+            return divide(1);
+        }
     }
     
     /**

@@ -32,6 +32,7 @@
 package com.jme.scene;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import com.jme.math.Matrix3f;
 import com.jme.math.Quaternion;
@@ -46,7 +47,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and 
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.7 2003-12-11 16:03:19 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.8 2004-01-07 21:00:40 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -70,10 +71,12 @@ public abstract class Spatial implements Serializable {
 
     //reference to the parent node.
     private Node parent;
-    
+
     //render states
     protected RenderState[] renderStateList;
     protected RenderState[] parentStateList;
+
+    protected ArrayList geometricalControllers = new ArrayList();
 
     /**
      * Constructor instantiates a new <code>Spatial</code> object setting 
@@ -89,6 +92,34 @@ public abstract class Spatial implements Serializable {
         worldTranslation = new Vector3f();
         localScale = 1.0f;
         worldScale = 1.0f;
+    }
+
+    public void addController(Controller controller) {
+        if (geometricalControllers == null) {
+            geometricalControllers = new ArrayList();
+        }
+        geometricalControllers.add(controller);
+    }
+
+    public boolean removeController(Controller controller) {
+        if (geometricalControllers == null) {
+            geometricalControllers = new ArrayList();
+        }
+        return geometricalControllers.remove(controller);
+    }
+
+    public Controller getController(int i) {
+        if (geometricalControllers == null) {
+            geometricalControllers = new ArrayList();
+        }
+        return (Controller) geometricalControllers.get(i);
+    }
+
+    public ArrayList getControllers() {
+        if (geometricalControllers == null) {
+            geometricalControllers = new ArrayList();
+        }
+        return geometricalControllers;
     }
 
     /**
@@ -140,7 +171,7 @@ public abstract class Spatial implements Serializable {
      * @param r the renderer used for display.
      */
     public abstract void draw(Renderer r);
-    
+
     /**
      * 
      * <code>getWorldRotation</code> retrieves the rotation matrix of the 
@@ -179,7 +210,7 @@ public abstract class Spatial implements Serializable {
     public boolean isForceCulled() {
         return forceCull;
     }
-    
+
     public boolean isForceView() {
         return forceView;
     }
@@ -194,7 +225,7 @@ public abstract class Spatial implements Serializable {
     public void setForceCull(boolean forceCull) {
         this.forceCull = forceCull;
     }
-    
+
     public void setForceView(boolean value) {
         forceView = value;
     }
@@ -221,13 +252,21 @@ public abstract class Spatial implements Serializable {
      * @param time the frame time.
      */
     public void updateWorldData(float time) {
+        //update spatial state via controllers
+        for (int i = 0; i < geometricalControllers.size(); i++) {
+            if (geometricalControllers.get(i) != null) {
+                ((Controller) geometricalControllers.get(i)).update(time);
+            }
+        }
+
+        //update render state via controllers
         Controller[] controls;
-        for(int i = 0; i < renderStateList.length; i++) {
+        for (int i = 0; i < renderStateList.length; i++) {
             RenderState rs = renderStateList[i];
-            if(rs != null) {
+            if (rs != null) {
                 controls = rs.getControllers();
-                for(int j = 0; j < controls.length; j++) {
-                    if(controls[j] != null) {
+                for (int j = 0; j < controls.length; j++) {
+                    if (controls[j] != null) {
                         controls[j].update(time);
                     }
                 }
@@ -264,7 +303,7 @@ public abstract class Spatial implements Serializable {
      *
      */
     public abstract void updateWorldBound();
-    
+
     /**
      * 
      * <code>propagateBoundToRoot</code> passes the new world bound up the
@@ -277,7 +316,7 @@ public abstract class Spatial implements Serializable {
             parent.propagateBoundToRoot();
         }
     }
-    
+
     /**
      * <code>getParent</code> retrieve's this node's parent. If the parent is
      * null this is the root node.
@@ -311,7 +350,7 @@ public abstract class Spatial implements Serializable {
     public void setLocalRotation(Matrix3f localRotation) {
         this.localRotation = localRotation;
     }
-    
+
     /**
      * 
      * <code>setLocalRotation</code> sets the local rotation of this node, using
@@ -355,7 +394,7 @@ public abstract class Spatial implements Serializable {
     public void setLocalTranslation(Vector3f localTranslation) {
         this.localTranslation = localTranslation;
     }
-    
+
     /**
      * 
      * <code>setRenderState</code> sets a render state for this node. Note, 
@@ -371,11 +410,11 @@ public abstract class Spatial implements Serializable {
         renderStateList[rs.getType()] = rs;
         return oldState;
     }
-    
+
     public RenderState[] getRenderStateList() {
         return renderStateList;
     }
-    
+
     /**
      * 
      * <code>setStates</code> activates all the render states for this 
@@ -384,16 +423,16 @@ public abstract class Spatial implements Serializable {
      *
      */
     public void setStates() {
-        if(parent != null) {
+        if (parent != null) {
             parentStateList = parent.getRenderStateList();
         }
-        for(int i = 0; i < renderStateList.length; i++) {
-            if(renderStateList[i] != null ) {
+        for (int i = 0; i < renderStateList.length; i++) {
+            if (renderStateList[i] != null) {
                 renderStateList[i].set();
             }
         }
     }
-    
+
     /**
      * 
      * <code>unsetStates</code> deactivates all the render states for this 
@@ -401,8 +440,8 @@ public abstract class Spatial implements Serializable {
      *
      */
     public void unsetStates() {
-        for(int i = 0; i < renderStateList.length; i++) {
-            if(parentStateList[i] != null ) {
+        for (int i = 0; i < renderStateList.length; i++) {
+            if (parentStateList[i] != null) {
                 parentStateList[i].set();
             } else if (renderStateList[i] != null) {
                 renderStateList[i].unset();
