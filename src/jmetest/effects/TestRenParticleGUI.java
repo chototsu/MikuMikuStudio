@@ -58,11 +58,12 @@ import javax.swing.JOptionPane;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.9 2004-03-25 17:16:52 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.10 2004-03-25 19:26:40 renanse Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
   public static RenParticleManager manager;
+  public static boolean quit = false;
 
   public static Node root;
   private Node main;
@@ -102,6 +103,10 @@ public class TestRenParticleGUI extends SimpleGame {
 
   float tpf = 0;
   protected void update(float interpolation) {
+    if (quit) {
+      finished = true;
+      return;
+    }
     if (noUpdate) return;
     timer.update();
     tpf = timer.getTimePerFrame();

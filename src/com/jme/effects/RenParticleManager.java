@@ -55,18 +55,19 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.7 2004-03-24 23:13:57 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.8 2004-03-25 19:26:41 renanse Exp $
  *
+ * @todo Particle creation variance
+ * @todo Points and Lines (not just quads)
+ * @todo Single run-through and "firing" control
+ * @todo Particles stretched based on historical path
+ * @todo Particle motion models
  */
 public class RenParticleManager {
 
   private final static Vector2f sharedTextureData[] = {
       new Vector2f(0.0f, 0.0f), new Vector2f(1.0f, 0.0f),
       new Vector2f(1.0f, 1.0f), new Vector2f(0.0f, 1.0f)
-  };
-  private final static Vector3f sharedGeometryData[] = {
-      new Vector3f( -1.0f, -1.0f, 0.0f), new Vector3f(1.0f, -1.0f, 0.0f),
-      new Vector3f(1.0f, 1.0f, 0.0f), new Vector3f( -1.0f, 1.0f, 0.0f)
   };
 
   private TriMesh particlesGeometry;

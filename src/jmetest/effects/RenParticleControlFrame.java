@@ -131,7 +131,7 @@ public class RenParticleControlFrame extends JFrame {
    * <code>RenParticleControlFrame</code>
    *
    * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.17 2004-03-25 18:01:34 renanse Exp $
+   * @version $Id: RenParticleControlFrame.java,v 1.18 2004-03-25 19:26:40 renanse Exp $
    *
    */
 
@@ -146,7 +146,12 @@ public class RenParticleControlFrame extends JFrame {
 
   private void jbInit() throws Exception {
     setTitle("Particle System Editor");
-    setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent e) {
+        TestRenParticleGUI.quit = true;
+      }
+    });
     colorBorder = new TitledBorder(" PARTICLE COLOR ");
     sizeBorder = new TitledBorder(" PARTICLE SIZE ");
     ageBorder = new TitledBorder(" PARTICLE AGE ");
