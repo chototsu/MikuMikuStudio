@@ -236,6 +236,7 @@ public class JointController extends Controller {
             int j;
             for (j=0;j<updatingGroup.jointIndex.length;j++){
                 currentBoneIndex=updatingGroup.jointIndex[j];
+                if (currentBoneIndex==-1) continue;
                 unSyncbeginPos.set(updatingGroup.originalVertex[j]);
                 vertexes[j].set(jointMovements[currentBoneIndex].multPoint(unSyncbeginPos));
                 unSyncbeginPos.set(updatingGroup.originalNormal[j]);
