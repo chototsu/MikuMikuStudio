@@ -59,7 +59,7 @@ import com.jme.util.Timer;
  * <code>TestTint</code>
  * 
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.2 2004-03-03 17:30:22 darkprophet Exp $
+ * @version $Id: TestTint.java,v 1.3 2004-03-03 17:38:10 darkprophet Exp $
  */
 public class TestTint extends SimpleGame {
 
@@ -165,7 +165,7 @@ public class TestTint extends SimpleGame {
 		font.setTexture(
 			TextureManager.loadTexture(
 				TestTint.class.getClassLoader().getResource(
-					"jmetest/data/Font/font.png"),
+					"jmetest/data/font/font.png"),
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
