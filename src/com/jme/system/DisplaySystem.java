@@ -38,12 +38,13 @@ package com.jme.system;
 
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
+import com.jme.renderer.TextureRenderer;
 import com.jme.widget.font.WidgetFont;
 
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.13 2004-03-06 00:48:49 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.14 2004-03-06 07:34:21 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -66,7 +67,7 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.13 2004-03-06 00:48:49 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.14 2004-03-06 07:34:21 renanse Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;
@@ -130,7 +131,7 @@ public abstract class DisplaySystem {
      * synchronization. The method is a "best attempt" to change the monitor vertical
      * refresh synchronization, and is <b>not</b> guaranteed to be successful.
      * @param enabled <code>true</code> to synchronize, <code>false</code> to
-	 *                           	  ignore synchronization
+	 *                                                       	  ignore synchronization
      */
     public abstract void setVSyncEnabled(boolean enabled);
 
@@ -275,4 +276,18 @@ public abstract class DisplaySystem {
     public void setMinSamples(int samples){
         this.samples = samples;
     }
+
+    /**
+     * Crate a TextureRenderer using the underlying system.
+     * @param renderer
+     * @param useRGB  if this is true, useRGBA should not be
+     * @param useRGBA  if this is true, useRGB should not be
+     * @param useDepth
+     * @param isRectangle
+     * @param target
+     * @param mipmaps
+     * @return
+     */
+    public abstract TextureRenderer createTextureRenderer(boolean useRGB, boolean useRGBA, boolean useDepth,
+                                                    boolean isRectangle, int target, int mipmaps);
 }

@@ -41,11 +41,14 @@ import java.util.logging.Level;
 
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
+import org.lwjgl.opengl.RenderTexture;
 import org.lwjgl.opengl.Window;
 
 import com.jme.renderer.LWJGLRenderer;
+import com.jme.renderer.LWJGLTextureRenderer;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
+import com.jme.renderer.TextureRenderer;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
@@ -58,7 +61,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.13 2004-03-05 23:09:29 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.14 2004-03-06 07:34:21 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -242,4 +245,21 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         return RendererType.LWJGL;
     }
 
+
+    public TextureRenderer createTextureRenderer(boolean useRGB, boolean useRGBA, boolean useDepth,
+                                                    boolean isRectangle, int target, int mipmaps) {
+                if (!isCreated()) return null;
+
+                if (target == TextureRenderer.RENDER_TEXTURE_1D)
+                    target = RenderTexture.RENDER_TEXTURE_1D;
+                else if (target == TextureRenderer.RENDER_TEXTURE_2D)
+                    target = RenderTexture.RENDER_TEXTURE_2D;
+                else if (target == TextureRenderer.RENDER_TEXTURE_CUBE_MAP)
+                    target = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
+                else if (target == TextureRenderer.RENDER_TEXTURE_RECTANGLE)
+                    target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
+
+                return new LWJGLTextureRenderer((LWJGLRenderer)getRenderer(),
+                        new RenderTexture(useRGB, useRGBA, useDepth, isRectangle, target, mipmaps));
+    }
 }

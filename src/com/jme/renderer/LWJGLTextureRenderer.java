@@ -41,11 +41,12 @@ import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Pbuffer;
+import org.lwjgl.opengl.RenderTexture;
 import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.7 2004-03-05 21:55:17 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.8 2004-03-06 07:34:21 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -58,24 +59,38 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     /** Pbuffer instance */
     private Pbuffer pbuffer;
     private int active = 0;
+    private boolean useDirectRender = false;
 
     private LWJGLRenderer parentRenderer;
+    private RenderTexture texture;
 
     public LWJGLTextureRenderer(LWJGLRenderer parentRenderer) {
+        this(parentRenderer, null);
+    }
+
+    public LWJGLTextureRenderer(LWJGLRenderer parentRenderer, RenderTexture texture) {
         if (!isSupported()) {
             System.err.println("No Pbuffer support!");
-            System.exit(1);  // Clean this up.
-        } else
-            System.err.println("Pbuffer support detected");
+            System.exit(1);  // Clean this up?
+        }
+        if (Pbuffer.RENDER_TEXTURE_SUPPORTED != 0) {
+            System.err.println("Render to Texture Pbuffer supported!");
+            if (texture == null)
+                System.err.println("No RenderTexture used in init, falling back to Copy Texture PBuffer.");
+            else useDirectRender = true;
+        } else if (Pbuffer.PBUFFER_SUPPORTED != 0)
+            System.err.println("Copy Texture Pbuffer supported!");
 
         this.parentRenderer = parentRenderer;
+        this.texture = texture;
         initPbuffer();
     }
 
     public static boolean isSupported() { // Perhaps we should move this to Renderer?
         if ((Pbuffer.getPbufferCaps() & Pbuffer.PBUFFER_SUPPORTED) == 0)
             return false;
-        else return true;
+
+        return true;
     }
 
     /**
@@ -178,12 +193,23 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 initPbuffer();
             }
 
-            activate();
-            parentRenderer.clearBuffers();
-            parentRenderer.draw(spat);
-            GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
-            GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
-            deactivate();
+            if (useDirectRender) {
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+                pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
+                activate();
+                parentRenderer.clearBuffers();
+                parentRenderer.draw(spat);
+                deactivate();
+                pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
+            } else {
+                activate();
+                parentRenderer.clearBuffers();
+                parentRenderer.draw(spat);
+                GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+                GL11.glCopyTexSubImage2D(GL11.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
+                deactivate();
+            }
+
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(), "render(Spatial, Texture)", e);
         }
@@ -192,8 +218,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     private void initPbuffer() {
         try {
-            pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0, 0, null);
+            pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0, 0, texture);
             activate();
+
+            PBUFFER_WIDTH = pbuffer.getWidth();
+            PBUFFER_HEIGHT = pbuffer.getHeight();
 
             GL11.glClearColor(backgroundColor.r, backgroundColor.g, backgroundColor.b, backgroundColor.a);
 

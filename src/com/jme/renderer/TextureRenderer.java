@@ -47,9 +47,14 @@ import com.jme.scene.Spatial;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.1 2004-03-04 19:37:33 renanse Exp $
+ * @version $Id: TextureRenderer.java,v 1.2 2004-03-06 07:34:22 renanse Exp $
  */
 public interface TextureRenderer {
+
+    public static final int RENDER_TEXTURE_1D = 1;
+    public static final int RENDER_TEXTURE_2D = 2;
+    public static final int RENDER_TEXTURE_RECTANGLE = 3;
+    public static final int RENDER_TEXTURE_CUBE_MAP = 4;
 
     /**
      * <code>getCamera</code> retrieves the camera this renderer is using.
