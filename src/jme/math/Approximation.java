@@ -38,7 +38,7 @@ package jme.math;
  * <br><br>
  * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
- * @version $Id: Approximation.java,v 1.2 2003-08-27 21:05:42 mojomonkey Exp $
+ * @version $Id: Approximation.java,v 1.3 2003-09-10 20:32:59 mojomonkey Exp $
  *
  */
 public class Approximation {
@@ -112,21 +112,25 @@ public class Approximation {
      * @param extent storage for the length of the rectangle.
      */
     public static void gaussPointsFit(
+    
         Vector[] points,
         Vector center,
         Vector[] axis,
         float[] extent) {
             
         // compute mean of points
-        center = points[0];
+        center.x = points[0].x;
+        center.y = points[0].y;
+        center.z = points[0].z;
         
         for (int i = 1; i < points.length; i++) {
-            center = center.add(points[i]);
+            center.addToThis(points[i]);
         }
         
+        
         float inverseQuantity = 1.0f / points.length;
-        center = center.mult(inverseQuantity);
-
+        center.multThis(inverseQuantity);
+        
         // compute covariances of points
         float sumXX = 0.0f;
         float sumXY = 0.0f;
@@ -177,7 +181,7 @@ public class Approximation {
         axis[2].x = eigen.getEigenvector(0, 2);
         axis[2].y = eigen.getEigenvector(1, 2);
         axis[2].z = eigen.getEigenvector(2, 2);
-
+        
         extent[0] = eigen.getRealEigenvalue(0);
         extent[1] = eigen.getRealEigenvalue(1);
         extent[2] = eigen.getRealEigenvalue(2);

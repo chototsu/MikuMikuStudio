@@ -76,10 +76,10 @@ import org.lwjgl.opengl.Window;
  * and create a new system.
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.10 2003-09-08 20:29:28 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.11 2003-09-10 20:32:59 mojomonkey Exp $
  */
 public class DisplaySystem {
-    private static String VERSION = "jME version 0.1.0";
+    private static String VERSION = "jME version 0.1.1";
     //Singleton reference.
     private static DisplaySystem instance = null;
 

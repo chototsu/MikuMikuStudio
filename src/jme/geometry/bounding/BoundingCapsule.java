@@ -43,11 +43,12 @@ import jme.math.Vector;
  * thought of as a cylinder with domed caps.
  * 
  * @author Mark Powell
- * @version $Id: BoundingCapsule.java,v 1.5 2003-09-08 20:29:28 mojomonkey Exp $
+ * @version $Id: BoundingCapsule.java,v 1.6 2003-09-10 20:32:59 mojomonkey Exp $
  */
 public class BoundingCapsule implements BoundingVolume {
 	private Line lineSegment;
 	private float radius;
+    private float collisionBuffer;
 
     /**
      * Default constructor instantiates an empty bounding capsule. Both the
@@ -105,8 +106,7 @@ public class BoundingCapsule implements BoundingVolume {
 	 * @param points the points to contain.
 	 */
 	public void leastSquaresFit(Vector[] points) {
-
-		Line line = Approximation.orthogonalLineFit(points);
+        Line line = Approximation.orthogonalLineFit(points);
 
 		float maxRadiusSqr = 0.0f;
 
@@ -154,17 +154,38 @@ public class BoundingCapsule implements BoundingVolume {
 		}
 
 		radius = (float) Math.sqrt(maxRadiusSqr);
-	}
+   }
     
-    public boolean hasCollision(BoundingVolume volume) {
+    /**
+     * <code>hasCollision</code> will determine if this volume is colliding
+     * (touching in any way) with another volume.
+     * @param sourceOffset defines the position of the entity containing
+     *      this volume, if null it is ignored.
+     * @param volume the bounding volume to compare.
+     * @param targetOffset defines the position of the entity containing
+     *      the target volume, if null it is ignored.
+     * @return true if there is a collision, false otherwise.
+     */
+    public boolean hasCollision(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
         return false;
     }
+    
+    /**
+     * <code>setCollisionBuffer</code> sets the value that must be reached to
+     * consider bounding volumes colliding. By default this value is 0.
+     * @param buffer the collision buffer.
+     */
+    public void setCollisionBuffer(float buffer) {
+        collisionBuffer = buffer;
+    }
 
-    public float distance(BoundingVolume volume) {
+    public float distance(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
         return -1.0f;
     }
     
-    public boolean isVisible(Frustum frustum) {
+    public boolean isVisible(Vector offsetPosition, Frustum frustum) {
         return true;
     }
 }

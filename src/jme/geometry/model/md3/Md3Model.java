@@ -96,7 +96,7 @@ import org.lwjgl.opengl.Window;
  * 
  * 
  * @author Mark Powell
- * @version $Id: Md3Model.java,v 1.10 2003-09-09 14:13:10 mojomonkey Exp $
+ * @version $Id: Md3Model.java,v 1.11 2003-09-10 20:32:59 mojomonkey Exp $
  */
 public class Md3Model implements Geometry {
     /**
@@ -743,6 +743,7 @@ public class Md3Model implements Geometry {
 
             // Seek to the start of the vertex/face index information, then read it in.
             buffer.position(meshOffset + meshHeader.vertexStart);
+            Vector temp = new Vector();
             for (i = 0;
                 i < meshHeader.numMeshFrames * meshHeader.numVertices;
                 i++) {
@@ -751,8 +752,10 @@ public class Md3Model implements Geometry {
                 vertices[i].vertex[0] = buffer.getShort();
                 vertices[i].vertex[1] = buffer.getShort();
                 vertices[i].vertex[2] = buffer.getShort();
-                points.add(new Vector(vertices[i].vertex[0], 
-                        vertices[i].vertex[1], vertices[i].vertex[2]));
+                temp.x = vertices[i].vertex[0];
+                temp.y = vertices[i].vertex[1];
+                temp.z = vertices[i].vertex[2];
+                points.add(temp);
                 vertices[i].normal[0] = buffer.get();
                 vertices[i].normal[1] = buffer.get();
             }

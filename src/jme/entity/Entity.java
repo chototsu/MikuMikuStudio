@@ -65,22 +65,10 @@ import org.lwjgl.opengl.Window;
  * <code>Entity</code> to represent something abstract.
  * 
  * @author Mark Powell
- * @version $Id: Entity.java,v 1.8 2003-09-08 20:29:28 mojomonkey Exp $
+ * @version $Id: Entity.java,v 1.9 2003-09-10 20:32:59 mojomonkey Exp $
  */
 public class Entity implements EntityInterface {
-    /**
-     * Defines using simple point tests for visibility calculations.
-     */
-    public static final int VISIBILITY_POINT = 0;
-    /**
-     * Defines using sphere tests for visibility calculations.
-     */
-    public static final int VISIBILITY_SPHERE = 1;
-    /**
-     * Defines using cube tests for visibility calculations.
-     */
-    public static final int VISIBILITY_CUBE = 2;
-
+    
     //The id of the entity
     private int id = 0;
 
@@ -105,8 +93,7 @@ public class Entity implements EntityInterface {
     //visibility    
     private boolean hasMoved;
     private boolean isVisible = true;
-    private int visibilityType;
-
+   
     //physics
     private PhysicsModule physics;
     
@@ -202,7 +189,8 @@ public class Entity implements EntityInterface {
      */
     public boolean hasCollision(Entity ent) {
         if(null != boundingVolume) {
-            return boundingVolume.hasCollision(ent.getBoundingVolume());
+            return boundingVolume.hasCollision(position, 
+                    ent.getBoundingVolume(), ent.getPosition());
         } else {
             return false;
         }
@@ -217,7 +205,8 @@ public class Entity implements EntityInterface {
      */
     public float distance(Entity ent) {
         if(null != boundingVolume) {
-            return boundingVolume.distance(ent.getBoundingVolume());
+            return boundingVolume.distance(position, ent.getBoundingVolume(), 
+                    ent.getPosition());
         } else {
             return -1.0f;
         }
@@ -377,27 +366,10 @@ public class Entity implements EntityInterface {
      */
     public void checkVisibility(Frustum frustum) {
         if(null != boundingVolume) {
-            isVisible = boundingVolume.isVisible(frustum);
+            isVisible = boundingVolume.isVisible(position, frustum);
         } else {
             isVisible = true;
         }
-    }
-
-    /**
-     * <code>setVisibilityType</code> sets what type of visibility check will
-     * be used for this entity. Valid parameters are: VISIBILITY_POINT,
-     * VISIBILITY_SPHERE, and VISIBILITY_CUBE.
-     * @param type what type of test to make for visibilty.
-     * @throws MonkeyRuntimeException if the visibilty flag is not valid.
-     */
-    public void setVisibilityType(int type) {
-        if (type != VISIBILITY_POINT
-            && type != VISIBILITY_SPHERE
-            && type != VISIBILITY_CUBE) {
-
-            throw new MonkeyRuntimeException("Invalid visibility type.");
-        }
-        this.visibilityType = type;
     }
 
     /**

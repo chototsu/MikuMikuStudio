@@ -44,7 +44,7 @@ import jme.math.Vector;
  * also defined by the equation Xi = P + RYi where R = [U V D], and U V causes
  * R to be orthonormal.
  * @author Mark Powell
- * @version $Id: BoundingCylinder.java,v 1.3 2003-09-08 20:29:28 mojomonkey Exp $
+ * @version $Id: BoundingCylinder.java,v 1.4 2003-09-10 20:32:59 mojomonkey Exp $
  */
 public class BoundingCylinder implements BoundingVolume {
     private Vector center; //P
@@ -53,6 +53,63 @@ public class BoundingCylinder implements BoundingVolume {
     private Vector v;
     private float height;
     private float radius;
+    private float collisionBuffer;
+
+    /**
+     * @return
+     */
+    public Vector getCenter() {
+        return center;
+    }
+
+    /**
+     * @param center
+     */
+    public void setCenter(Vector center) {
+        this.center = center;
+    }
+
+    /**
+     * @return
+     */
+    public Vector getDirection() {
+        return direction;
+    }
+
+    /**
+     * @param direction
+     */
+    public void setDirection(Vector direction) {
+        this.direction = direction;
+    }
+
+    /**
+     * @return
+     */
+    public float getHeight() {
+        return height;
+    }
+
+    /**
+     * @param height
+     */
+    public void setHeight(float height) {
+        this.height = height;
+    }
+
+    /**
+     * @return
+     */
+    public float getRadius() {
+        return radius;
+    }
+
+    /**
+     * @param radius
+     */
+    public void setRadius(float radius) {
+        this.radius = radius;
+    }
 
     /**
      * Constructor instantiates a new <code>BoundingCylinder</code> with
@@ -143,15 +200,36 @@ public class BoundingCylinder implements BoundingVolume {
 
     }
     
-    public boolean hasCollision(BoundingVolume volume) {
+    /**
+     * <code>setCollisionBuffer</code> sets the value that must be reached to
+     * consider bounding volumes colliding. By default this value is 0.
+     * @param buffer the collision buffer.
+     */
+    public void setCollisionBuffer(float buffer) {
+        collisionBuffer = buffer;
+    }
+    
+    /**
+     * <code>hasCollision</code> will determine if this volume is colliding
+     * (touching in any way) with another volume.
+     * @param sourceOffset defines the position of the entity containing
+     *      this volume, if null it is ignored.
+     * @param volume the bounding volume to compare.
+     * @param targetOffset defines the position of the entity containing
+     *      the target volume, if null it is ignored.
+     * @return true if there is a collision, false otherwise.
+     */
+    public boolean hasCollision(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
         return false;
     }
 
-    public float distance(BoundingVolume volume) {
+    public float distance(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
         return -1.0f;
     }
     
-    public boolean isVisible(Frustum frustum) {
+    public boolean isVisible(Vector offsetPosition, Frustum frustum) {
         return true;
     }
 

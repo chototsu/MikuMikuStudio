@@ -195,7 +195,6 @@ public class TestKeyController extends AbstractGame {
 		
 		// initialize the pyramid entity
 		entity1 = new Entity(entity_1);
-		entity1.setVisibilityType(Entity.VISIBILITY_CUBE);
 		entity1.setPosition(new Vector(0.0f, 0.0f, 0.0f));
 		entity1.setGeometry(triangle);
 	}

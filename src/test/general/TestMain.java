@@ -47,6 +47,7 @@ import jme.AbstractGame;
 import jme.entity.Entity;
 import jme.geometry.model.md3.Md3Model;
 import jme.geometry.primitive.Pyramid;
+import jme.geometry.bounding.BoundingSphere;
 import jme.geometry.hud.SplashScreen;
 import jme.geometry.hud.text.Font2D;
 import jme.lighting.SlopeLighting;
@@ -81,10 +82,12 @@ public class TestMain extends AbstractGame {
 	private Font2D font = null;
 	private Pyramid object;
 	Entity e;
+    Entity[] elist;
 	private TestController cc = null;
 	protected Logger log = null;
 	private Timer timer;
 	SplashScreen ss;
+    boolean collision = false;
 
 	static {
 		if (GLCaps.WGL_EXT_swap_control) {
@@ -155,6 +158,8 @@ public class TestMain extends AbstractGame {
 					+ 8;
 
 		}
+        
+        
 
 		//      update animation....
 		if (physics.getCurrentVelocity() < -1 && currentAnimation != 4) {
@@ -217,6 +222,7 @@ public class TestMain extends AbstractGame {
 				+ " / "
 				+ world.getTotalEntities(),
 			0);
+        
 
 	}
 	private void initLogger() {
@@ -345,16 +351,18 @@ public class TestMain extends AbstractGame {
 			new Md3Model("data/model/Paladin", "Paladin", "railgun");
 		msmodel.setTorsoAnimation("TORSO_STAND");
 		msmodel.setLegsAnimation("LEGS_IDLE");
-
+        BoundingSphere ebs = new BoundingSphere();
+        ebs.averagePoints(msmodel.getPoints());
+        
 		msmodel.setScale(new Vector(0.15f, 0.15f, 0.15f));
 
 		e.setGeometry(msmodel);
+        e.setBoundingVolume(ebs);
 		e.setPosition(
 			new Vector(
-				1000,
-				hm1.getScaledHeightAtPoint(1000 / 4, 1000 / 4),
-				1000));
-		e.setVisibilityType(Entity.VISIBILITY_SPHERE);
+				400,
+				hm1.getScaledHeightAtPoint(400 / 4, 400 / 4),
+				400));
 		camera.setView(e.getPosition());
 
 		//Move to app specific
@@ -384,18 +392,19 @@ public class TestMain extends AbstractGame {
 		object.setColor(0.5f, 0.85f, 0.5f, 0.5f);
 		object.setTexture("data/texture/plants15.jpg");
 		object.useDisplayList(true);
+        BoundingSphere bs = new BoundingSphere();
+        bs.averagePoints(object.getPoints());
 
 		//object = new MilkshapeModel("data/tree.ms3d");
 
-		Entity[] elist = new Entity[1000];
+		elist = new Entity[1];
 		float x, z;
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < 1; i++) {
 			elist[i] = new Entity(i + 1);
 			elist[i].setGeometry(object);
-			elist[i].setVisibilityType(Entity.VISIBILITY_POINT);
 			do {
-				x = (float) Math.random() * 2000;
-				z = (float) Math.random() * 2000;
+				x = 500;
+				z = 500;
 			} while (
 				hm1.getInterpolatedHeight(x / 2, z / 2) < 75
 					|| hm1.getInterpolatedHeight(x / 4, z / 4) > 200);
@@ -404,8 +413,8 @@ public class TestMain extends AbstractGame {
 					x,
 					hm1.getInterpolatedHeight(x / 4, z / 4) + 1,
 					z));
+            elist[i].setBoundingVolume(bs);
 			world.addEntity(elist[i]);
-			elist[i].setVisibilityType(Entity.VISIBILITY_SPHERE);
 		}
 		cc = new TestController(camera, e, this);
 		cc.setTrackingDistance(30f);

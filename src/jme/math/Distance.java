@@ -51,7 +51,10 @@ public class Distance {
      * @return the distance between point1 and point2.
      */
     public static float distancePointPoint(Vector point1, Vector point2) {
-        return (float) Math.sqrt(distancePointPointSquared(point1, point2));
+        System.out.println("Checking: " + point1 + " " + point2);
+        float value = (float) Math.sqrt(distancePointPointSquared(point1, point2));
+        System.out.println("RETURNING " + value);
+        return value;
     }
 
     /**

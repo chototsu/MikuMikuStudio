@@ -40,12 +40,13 @@ import jme.math.Vector;
  * all vertices that make up the geometry.
  * 
  * @author Mark Powell
- * @version $Id: BoundingBox.java,v 1.6 2003-09-08 20:29:28 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.7 2003-09-10 20:32:59 mojomonkey Exp $
  */
 public class BoundingBox implements BoundingVolume {
 	private Vector center;
 	private Vector minPoint;
 	private Vector maxPoint;
+    private float collisionBuffer;
 
 	/**
 	 * Default constructor instantiates a new <code>BoundingBox</code> 
@@ -93,8 +94,12 @@ public class BoundingBox implements BoundingVolume {
 	 * @param points the list of points to contain.
 	 */
 	public void axisAligned(Vector[] points) {
-		minPoint = points[0];
-		maxPoint = minPoint;
+		minPoint.x = points[0].x;
+        minPoint.y = points[0].y;
+        minPoint.z = points[0].z;
+		maxPoint.x = minPoint.x;
+        maxPoint.y = minPoint.y;
+        maxPoint.z = minPoint.z;
 
 		for (int i = 1; i < points.length; i++) {
 			if (points[i].x < minPoint.x)
@@ -112,6 +117,10 @@ public class BoundingBox implements BoundingVolume {
 			else if (points[i].z > maxPoint.z)
 				maxPoint.z = points[i].z;
 		}
+        
+        center.x = (maxPoint.x + minPoint.x) / 2;
+        center.y = (maxPoint.y + minPoint.y) / 2;
+        center.z = (maxPoint.z + minPoint.z) / 2;
 	}
 
 	/**
@@ -166,15 +175,36 @@ public class BoundingBox implements BoundingVolume {
 		this.maxPoint = maxPoint;
 	}
     
-    public boolean hasCollision(BoundingVolume volume) {
+    /**
+     * <code>hasCollision</code> will determine if this volume is colliding
+     * (touching in any way) with another volume.
+     * @param sourceOffset defines the position of the entity containing
+     *      this volume, if null it is ignored.
+     * @param volume the bounding volume to compare.
+     * @param targetOffset defines the position of the entity containing
+     *      the target volume, if null it is ignored.
+     * @return true if there is a collision, false otherwise.
+     */
+    public boolean hasCollision(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
         return false;
     }
     
-    public float distance(BoundingVolume volume) {
+    /**
+     * <code>setCollisionBuffer</code> sets the value that must be reached to
+     * consider bounding volumes colliding. By default this value is 0.
+     * @param buffer the collision buffer.
+     */
+    public void setCollisionBuffer(float buffer) {
+        collisionBuffer = buffer;
+    }
+    
+    public float distance(Vector sourceOffset, BoundingVolume volume, 
+        Vector targetOffset) {
         return -1.0f;
     }
     
-    public boolean isVisible(Frustum frustum) {
+    public boolean isVisible(Vector offsetPosition, Frustum frustum) {
         return true;
     }
 

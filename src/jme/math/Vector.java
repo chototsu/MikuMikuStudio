@@ -36,7 +36,7 @@ import jme.exception.MonkeyRuntimeException;
 /**
  * <code>Vector</code> defines a three dimensional vector of (x,y,z). 
  * @author Mark Powell
- * @version $Id: Vector.java,v 1.8 2003-09-04 21:17:51 mojomonkey Exp $
+ * @version $Id: Vector.java,v 1.9 2003-09-10 20:32:59 mojomonkey Exp $
  */
 public class Vector {
 	public float x;
@@ -48,7 +48,7 @@ public class Vector {
 	 * (0, 0, 0).
 	 */
 	public Vector() {
-		x = 0;
+        x = 0;
 		y = 0;
 		z = 0;
 	}
@@ -119,6 +119,17 @@ public class Vector {
 	public Vector mult(float scalar) {
 		return new Vector(x * scalar, y * scalar, z * scalar);
 	}
+    
+    /**
+     * <code>multThis</code> multiplies this vector by a given scalar.
+     * 
+     * @param scalar the scalar to multiply by.
+     */
+    public void multThis(float scalar) {
+        x *= scalar;
+        y *= scalar;
+        z *= scalar;
+    }
 
 	/**
 	 * <code>add</code> adds the values of this vector by another 
@@ -130,6 +141,16 @@ public class Vector {
 	public Vector add(Vector v) {
 		return new Vector(x + v.x, y + v.y, z + v.z);
 	}
+    
+    /**
+     * <code>addToThis</code> adds a vector to this vector.
+     * @param v the vector to add to this.
+     */
+    public void addToThis(Vector v) {
+        x += v.x;
+        y += v.y;
+        z += v.z;
+    }
 
 	/**
 	 * <code>subtract</code> subtracts the values of this vector by  
@@ -196,6 +217,12 @@ public class Vector {
        return out;
     }
     
+    /**
+     * <code>inverseRotate</code> rotates this vector inversly by a rotation
+     * matrix. A new Vector is returned.
+     * @param m the rotational matrix.
+     * @return the new vector.
+     */
     public Vector inverseRotate(Matrix m) {
         Vector out = new Vector();
         out.x = x * m.matrix[0][0] + y * m.matrix[1][0] + z * m.matrix[2][0];

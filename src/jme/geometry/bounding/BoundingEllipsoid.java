@@ -41,13 +41,42 @@ import jme.math.Vector;
  * with a center of (0, 0, 0). The ellipsoid can also be expressed as the 
  * center matrix form (and will be in this class) as: (X-C)^T A (X-C) = 1.
  * @author Mark Powell
- * @version $Id: BoundingEllipsoid.java,v 1.3 2003-09-08 20:29:28 mojomonkey Exp $
+ * @version $Id: BoundingEllipsoid.java,v 1.4 2003-09-10 20:32:59 mojomonkey Exp $
  *
  */
 public class BoundingEllipsoid implements BoundingVolume {
     private Vector center;
     private Matrix a;
     private Matrix inverseA;
+    private float collisionBuffer;
+
+    /**
+     * @return
+     */
+    public Matrix getA() {
+        return a;
+    }
+
+    /**
+     * @param a
+     */
+    public void setA(Matrix a) {
+        this.a = a;
+    }
+
+    /**
+     * @return
+     */
+    public Vector getCenter() {
+        return center;
+    }
+
+    /**
+     * @param center
+     */
+    public void setCenter(Vector center) {
+        this.center = center;
+    }
 
     /**
      * Constructor instantiates a new <code>BoundingEllipsoid</code> with default
@@ -81,9 +110,11 @@ public class BoundingEllipsoid implements BoundingVolume {
      */
     public void gaussianDistribution(Vector[] points) {
         Vector[] axis = new Vector[3];
+        for(int i = 0; i < 3; i++) {
+            axis[i] = new Vector();
+        }
         float[] d = new float[3];
         Approximation.gaussPointsFit(points, center, axis, d);
-
         float maxValue = 0.0f;
         for (int i = 0; i < points.length; i++) {
             Vector diff = points[i].subtract(center);
@@ -104,6 +135,9 @@ public class BoundingEllipsoid implements BoundingVolume {
         }
 
         Matrix[] tensor = new Matrix[3];
+        for(int i = 0; i < 3; i++) {
+            tensor[i] = new Matrix();
+        }
         tensor[0].tensorProduct(axis[0], axis[0]);
         tensor[1].tensorProduct(axis[1], axis[1]);
         tensor[2].tensorProduct(axis[2], axis[2]);
@@ -118,15 +152,36 @@ public class BoundingEllipsoid implements BoundingVolume {
 
     }
     
-    public boolean hasCollision(BoundingVolume volume) {
+    /**
+     * <code>setCollisionBuffer</code> sets the value that must be reached to
+     * consider bounding volumes colliding. By default this value is 0.
+     * @param buffer the collision buffer.
+     */
+    public void setCollisionBuffer(float buffer) {
+        collisionBuffer = buffer;
+    }
+    
+    /**
+     * <code>hasCollision</code> will determine if this volume is colliding
+     * (touching in any way) with another volume.
+     * @param sourceOffset defines the position of the entity containing
+     *      this volume, if null it is ignored.
+     * @param volume the bounding volume to compare.
+     * @param targetOffset defines the position of the entity containing
+     *      the target volume, if null it is ignored.
+     * @return true if there is a collision, false otherwise.
+     */
+    public boolean hasCollision(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
         return false;
     }
 
-    public float distance(BoundingVolume volume) {
+    public float distance(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
         return -1.0f;
     }
     
-    public boolean isVisible(Frustum frustum) {
+    public boolean isVisible(Vector offsetPosition, Frustum frustum) {
         return true;
     }
 }

@@ -33,6 +33,7 @@
 package jme.geometry.bounding;
 
 import jme.entity.camera.Frustum;
+import jme.math.Distance;
 import jme.math.Vector;
 
 /**
@@ -46,12 +47,13 @@ import jme.math.Vector;
  * 
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.5 2003-09-08 20:29:28 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.6 2003-09-10 20:32:59 mojomonkey Exp $
  */
 public class BoundingSphere implements BoundingVolume {
 	private float radius;
 	private Vector center;
-
+    private float collisionBuffer;
+    
 	/**
 	 * Default contstructor instantiates a new <code>BoundingSphere</code>
 	 * object. 
@@ -114,8 +116,8 @@ public class BoundingSphere implements BoundingVolume {
 	 * @param points the list of points.
 	 */
 	public void containAABB(Vector[] points) {
-		Vector min = points[0];
-		Vector max = min;
+		Vector min = new Vector(points[0].x,points[0].y,points[0].z);
+        Vector max = new Vector(min.x, min.y, min.z);
 		for (int i = 1; i < points.length; i++) {
 			if (points[i].x < min.x)
 				min.x = points[i].x;
@@ -166,15 +168,83 @@ public class BoundingSphere implements BoundingVolume {
 
 	}
     
-    public boolean hasCollision(BoundingVolume volume) {
-        return false;
-    }
-
-    public float distance(BoundingVolume volume) {
-        return -1.0f;
+    /**
+     * <code>setCollisionBuffer</code> sets the value that must be reached to
+     * consider bounding volumes colliding. By default this value is 0.
+     * @param buffer the collision buffer.
+     */
+    public void setCollisionBuffer(float buffer) {
+        collisionBuffer = buffer;
     }
     
-    public boolean isVisible(Frustum frustum) {
-        return true;
+    /**
+     * <code>hasCollision</code> returns true if an collision is occuring with
+     * the given bounding volume and this volume. Offsets are given to allow
+     * for positional representations of the volumes.
+     * @param sourceOffset defines the position of the entity containing
+     *      this volume, if null it is ignored.
+     * @param volume the bounding volume to compare.
+     * @param targetOffset defines the position of the entity containing
+     *      the target volume, if null it is ignored.
+     * @return true if a collision has occured, false otherwise.
+     */
+    public boolean hasCollision(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
+                
+        float distance = distance(sourceOffset, volume, targetOffset);
+        System.out.println(distance);
+        if(distance <= collisionBuffer && distance != -1.0f) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    /**
+     * <code>distance</code> returns the distance between this volume and 
+     * a given volume. Offsets are used to represent positions of the
+     * entities that may be contained by the volume.
+     * @param sourceOffset defines the position of the entity containing
+     *      this volume, if null it is ignored.
+     * @param volume the bounding volume to compare.
+     * @param targetOffset defines the position of the entity containing
+     *      the target volume, if null it is ignored.
+     * @return the distance between the two bounding volumes. -1 if there is
+     *      a problem.
+     */
+    public float distance(Vector sourceOffset, BoundingVolume volume, 
+            Vector targetOffset) {
+        float rad = ((BoundingSphere)volume).radius + radius;
+        System.out.println(((BoundingSphere)volume).radius + " + " + radius + " = " + rad);
+        float dis =  Distance.distancePointPoint(sourceOffset, targetOffset);
+        if(dis < 0) {
+            return 0;
+        } else {
+            return dis;
+        }
+    }
+    
+    /**
+     * <code>isVisible</code> calculates whether or not this bounding volume
+     * is within a view frustum. The location of the sphere can be modified 
+     * with an offset position to allow for movement of any entity that the
+     * volume is attached to.
+     * @param offsetPosition the offset for the center of the volume.
+     * @param frustum the view frustum to check against.
+     * @return true if the volume is in the volume, false otherwise.
+     */
+    public boolean isVisible(Vector offsetPosition, Frustum frustum) {
+        if(null != frustum) {
+            if(offsetPosition != null) {
+                Vector finalCenter = offsetPosition.add(center);
+                return frustum.containsSphere(finalCenter.x, finalCenter.y, 
+                        finalCenter.z, radius);
+            } else {
+                return frustum.containsSphere(center.x, center.y, center.z, 
+                        radius);
+            }
+        } else {
+            return true;
+        }
     }
 }
