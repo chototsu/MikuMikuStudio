@@ -93,8 +93,8 @@ public class TransformMatrixQuat {
      */
     public TransformMatrixQuat combineWithParent(TransformMatrixQuat parent) {
         scale.multLocal(parent.scale);
-        rot.set(parent.rot.mult(rot));
-            parent
+        rot.multLocal(parent.rot);
+        parent
             .rot
             .multLocal(translation)
             .multLocal(parent.scale)
