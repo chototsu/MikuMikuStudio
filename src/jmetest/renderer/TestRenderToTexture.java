@@ -35,7 +35,6 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
@@ -48,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.21 2004-04-23 01:40:40 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.22 2004-04-23 01:41:48 renanse Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -59,8 +58,8 @@ public class TestRenderToTexture extends SimpleGame {
   private float angle = 0;
   private float angle2 = 0;
 
-  TextureRenderer tRenderer;
-  Texture fakeTex;
+  private TextureRenderer tRenderer;
+  private Texture fakeTex;
 
   /**
    * Entry point for the test,
@@ -179,8 +178,7 @@ public class TestRenderToTexture extends SimpleGame {
     rootNode.setRenderState(ts);
 
     // Since we have 2 textures, the geometry needs to know how to split up the coords.
-    Vector2f[] dirtCoords = realBox.getTextures(0);
-    realBox.setTextures(dirtCoords, 1);
+    realBox.setTextures(realBox.getTextures(0), 1);
 
     fakeScene.updateGeometricState(0.0f, true);
     fakeScene.updateRenderState();
