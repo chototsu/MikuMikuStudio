@@ -24,7 +24,7 @@
 package jmetest.effects;
 
 import com.jme.app.VariableTimestepGame;
-import com.jme.effects.MotionBlur;
+//import com.jme.effects.MotionBlur;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Ahmed
- * @version: $Id: TestMotionBlur.java, Jul 1, 2004 11:56:16 AM
+ * @version $Id: TestMotionBlur.java, Jul 1, 2004 11:56:16 AM
  */
 public class TestMotionBlur extends VariableTimestepGame {
 
