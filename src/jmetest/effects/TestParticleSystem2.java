@@ -141,6 +141,7 @@ public class TestParticleSystem2 extends SimpleGame {
 
 		timer = Timer.getTimer(properties.getRenderer());
 		input = new NodeController(this, camNode, properties.getRenderer());
+        display.setTitle("Snow");
 	}
 
 	protected void initGame() {
@@ -241,7 +242,7 @@ public class TestParticleSystem2 extends SimpleGame {
 		scene.setRenderState(fog);
 		scene.attachChild(box);
 		scene.attachChild(camNode);
-		
+		root.attachChild(scene);
 		root.attachChild(fps);
 		root.attachChild(col);
 		root.updateGeometricState(0.0f, true);
