@@ -32,13 +32,11 @@
 package com.jme.util;
 
 import java.awt.Graphics2D;
-import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
-import java.awt.image.MemoryImageSource;
 import java.awt.image.PixelGrabber;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -62,7 +60,7 @@ import com.jme.renderer.ColorRGBA;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.16 2004-05-15 02:06:56 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.17 2004-05-28 15:57:44 mojomonkey Exp $
  */
 public class TextureManager {
 
@@ -212,37 +210,80 @@ public class TextureManager {
 
         if (null == file) { return null; }
 
-        java.awt.Image image = null;
+        
         String fileName = file.getFile();
         if (fileName == null) return null;
 
+/*
+    // Debugging code; rename every texture request as a TGA file instead
+ 
+	try
+		{
+		String URLstring = file.toString();
+        	URLstring = URLstring.substring(0,URLstring.lastIndexOf('.')) + ".tga";
+		file = new URL(URLstring);
+		fileName = file.getFile();
+		}
+	catch(Exception e)
+		{
+		e.printStackTrace();
+		}
+
+	// Debugging code; validate existence of file as a seperate step
+
+	try
+		{
+		InputStream fileStream = file.openStream();
+		fileStream.close();
+		}
+	catch(IOException e)
+		{
+		LoggingSystem.getLogger().log(Level.WARNING,
+                    "File existence check failed: " + file);
+        return null;
+		}
+*/
+		// Changed: It's the responsibility of each case below to ultimately 
+		// create the com.jme.image.Image imageData object. 
+		// Changed: Exact the file extension only once.
+		// TODO: Some types currently require making a java.awt.Image object as an
+		// intermediate step. Rewrite each type to avoid AWT at all costs.
+
+		com.jme.image.Image imageData = null;
+
         try {
-            if (".TGA".equalsIgnoreCase(fileName.substring(fileName
-                    .lastIndexOf('.')))) {
-                image = loadTGAImage(file.openStream());
-
-            } else if (".BMP".equalsIgnoreCase(fileName.substring(fileName
-                    .lastIndexOf('.')))) {
-                image = loadBMPImage(file.openStream());
-
-            } else {
-                //Load the new image.
-                image = ImageIO.read(file);
-
-            }
-        } catch (IOException e) {
+        	String fileExt = fileName.substring(fileName.lastIndexOf('.'));
+        
+            if (".TGA".equalsIgnoreCase(fileExt)) 		// TGA, direct to imageData
+            	{
+				imageData = TGAtoJMEImage(file.openStream());
+	            }
+	        else 
+	        if (".BMP".equalsIgnoreCase(fileExt)) 		// BMP, awtImage to imageData
+	        	{
+                java.awt.Image image = loadBMPImage(file.openStream());
+				imageData = loadImage(image, flipped);
+            	}
+            else 										// Anything else
+            	{
+                java.awt.Image image = ImageIO.read(file);
+            	imageData = loadImage(image, flipped);
+            	}
+        	} 
+        catch (IOException e) 
+        	{
+		    e.printStackTrace();
             LoggingSystem.getLogger().log(Level.WARNING,
-                    "Could not load: " + file);
+                    "(IOException) Could not load: " + file);
             return null;
-        }
+    	    }
 
-        if (null == image) {
+        if (null == imageData) 
+        	{
             LoggingSystem.getLogger().log(Level.WARNING,
-                    "Could not load: " + file);
+                    "(image null) Could not load: " + file);
             return null;
-        }
-
-        com.jme.image.Image imageData = loadImage(image, flipped);
+        	}
 
         Texture texture = new Texture();
         texture.setApply(Texture.AM_MODULATE);
@@ -251,6 +292,7 @@ public class TextureManager {
         texture.setFilter(magFilter);
         texture.setImage(imageData);
         texture.setMipmapState(minFilter);
+
         return texture;
     }
 
@@ -368,91 +410,6 @@ public class TextureManager {
     }
 
     /**
-     * <code>loadTGAImage</code> because targa is not directly supported by
-     * Java, we must load it manually. The requires opening a stream to the file
-     * and reading in each byte. After the image data is read, it is used to
-     * create a new <code>Image</code> object. This object is returned to be
-     * used for normal use.
-     *
-     * @param file
-     *            the name of the targa file.
-     *
-     * @return <code>Image</code> object that contains the targa information.
-     */
-    private static java.awt.Image loadTGAImage(InputStream fis) {
-        try {
-            int red = 0;
-            int green = 0;
-            int blue = 0;
-            int srcLine = 0;
-            int alpha = FULL_TRANSPARENCY;
-
-            //open a stream to the file
-            BufferedInputStream bis = new BufferedInputStream(fis, 8192);
-            DataInputStream dis = new DataInputStream(bis);
-
-            //Read the TGA header
-            idLength = (short) dis.read();
-            colorMapType = (short) dis.read();
-            imageType = (short) dis.read();
-            cMapStart = flipEndian(dis.readShort());
-            cMapLength = flipEndian(dis.readShort());
-            cMapDepth = (short) dis.read();
-            xOffset = flipEndian(dis.readShort());
-            yOffset = flipEndian(dis.readShort());
-            width = flipEndian(dis.readShort());
-            height = flipEndian(dis.readShort());
-            pixelDepth = (short) dis.read();
-
-            if (pixelDepth == 24) {
-                cm = new DirectColorModel(24, 0xFF0000, 0xFF00, 0xFF);
-            } else if (pixelDepth == 32) {
-                cm = new DirectColorModel(32, 0xFF000000, 0xFF0000, 0xFF00,
-                        0xFF);
-            }
-
-            imageDescriptor = (short) dis.read();
-
-            //Skip image ID
-            if (idLength > 0) {
-                bis.skip(idLength);
-            }
-
-            //create the buffer for the image data.
-            pixels = new int[width * height];
-
-            //read the pixel data.
-            for (int i = (height - 1); i >= 0; i--) {
-                srcLine = i * width;
-
-                for (int j = 0; j < width; j++) {
-                    blue = bis.read() & 0xFF;
-                    green = bis.read() & 0xFF;
-                    red = bis.read() & 0xFF;
-
-                    if (pixelDepth == 32) {
-                        alpha = bis.read() & 0xFF;
-                        pixels[srcLine + j] = alpha << 24 | red << 16
-                                | green << 8 | blue;
-                    } else {
-                        pixels[srcLine + j] = red << 16 | green << 8 | blue;
-                    }
-                }
-            }
-
-            //Close the file, we are done.
-            fis.close();
-        } catch (IOException e) {
-            LoggingSystem.getLogger().log(Level.WARNING,
-                    "Unable to load TGA image.");
-        }
-
-        //create the Image object and return it.
-        return Toolkit.getDefaultToolkit().createImage(
-                new MemoryImageSource(width, height, cm, pixels, 0, width));
-    }
-
-    /**
      * <code>flipEndian</code> is used to flip the endian bit of the header
      * file.
      *
@@ -496,4 +453,232 @@ public class TextureManager {
 
         return false;
     }
+
+   /**
+     * <code>TGAtoJMEImage</code> is a manual image loader which is entirely
+     * independent of AWT.
+     * 
+     * OUT: RGB8888 or RGBA8888 jme.image.Image object
+     *
+     * @param fis
+     *            InputStream of an uncompressed 24b RGB or 32b RGBA TGA
+     *
+     * @return <code>com.jme.image.Image</code> object that contains the image,
+     *			  either as a RGB888 or RGBA8888
+     */
+	public static com.jme.image.Image TGAtoJMEImage (InputStream fis) 
+		throws IOException
+		{
+            byte red = 0;
+            byte green = 0;
+            byte blue = 0;
+            byte alpha = 0;
+
+            //open a stream to the file
+            BufferedInputStream bis = new BufferedInputStream(fis, 8192);
+            DataInputStream dis = new DataInputStream(bis);
+
+            //Read the TGA header
+            idLength = (short) dis.read();
+            colorMapType = (short) dis.read();
+            imageType = (short) dis.read();
+            cMapStart = flipEndian(dis.readShort());
+            cMapLength = flipEndian(dis.readShort());
+            cMapDepth = (short) dis.read();
+            xOffset = flipEndian(dis.readShort());
+            yOffset = flipEndian(dis.readShort());
+            width = flipEndian(dis.readShort());
+            height = flipEndian(dis.readShort());
+            pixelDepth = (short) dis.read();
+            imageDescriptor = (short) dis.read();
+
+            //Skip image ID
+            if (idLength > 0) 
+                bis.skip(idLength);
+
+			// Allocate image data array
+			byte[] rawData = null;
+			if(pixelDepth == 32)
+				rawData = new byte[width * height * 4];
+			else
+				rawData = new byte[width * height * 3];
+            
+			int rawDataIndex = 0;
+
+			// Faster than doing a 24-or-32 check on each individual pixel,
+			// just make a seperate loop for each.
+			if(pixelDepth == 24)
+            	for (int i = 0; i <= (height - 1); i++) 
+            		{
+                	for (int j = 0; j < width; j++) 
+                		{
+                    	blue = dis.readByte();
+                    	green = dis.readByte();
+                    	red = dis.readByte();
+
+						rawData[rawDataIndex++] = (byte) red;
+						rawData[rawDataIndex++] = (byte) green;
+						rawData[rawDataIndex++] = (byte) blue;                    
+						}
+					}
+			else
+			if(pixelDepth == 32)
+            	for (int i = 0; i <= (height - 1); i++) 
+            		{
+                	for (int j = 0; j < width; j++) 
+                		{
+                    	blue = dis.readByte();
+                    	green = dis.readByte();
+                    	red = dis.readByte();
+						alpha = dis.readByte();
+
+						rawData[rawDataIndex++] = (byte) red;
+						rawData[rawDataIndex++] = (byte) green;
+						rawData[rawDataIndex++] = (byte) blue;                    
+	        			rawData[rawDataIndex++] = (byte) alpha;
+	        			}
+                	}
+
+		fis.close();
+
+        //Get a pointer to the image memory
+        ByteBuffer scratch = ByteBuffer.allocateDirect(rawData.length);
+        scratch.clear();
+        scratch.put(rawData);
+        scratch.rewind();
+
+		// Create the jme.image.Image object
+        com.jme.image.Image textureImage = new com.jme.image.Image();
+        
+        if(pixelDepth == 32)
+	        textureImage.setType(com.jme.image.Image.RGBA8888);
+        else
+    	    textureImage.setType(com.jme.image.Image.RGB888);
+
+        textureImage.setWidth(width);
+        textureImage.setHeight(height);
+        textureImage.setData(scratch);
+
+        return textureImage;
+		}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Code Graveyard
+
+    /**
+     * <code>loadTGAImage</code> because targa is not directly supported by
+     * Java, we must load it manually. The requires opening a stream to the file
+     * and reading in each byte. After the image data is read, it is used to
+     * create a new <code>Image</code> object. This object is returned to be
+     * used for normal use.
+     *
+     * @param file
+     *            the name of the targa file.
+     *
+     * @return <code>Image</code> object that contains the targa information.
+     */
+/*
+    private static java.awt.Image loadTGAImage(InputStream fis) {
+        try {
+	    System.out.println("Loading TGA Image...");
+
+            int red = 0;
+            int green = 0;
+            int blue = 0;
+            int srcLine = 0;
+            int alpha = FULL_TRANSPARENCY;
+
+            //open a stream to the file
+            BufferedInputStream bis = new BufferedInputStream(fis, 8192);
+            DataInputStream dis = new DataInputStream(bis);
+
+            //Read the TGA header
+            idLength = (short) dis.read();
+            colorMapType = (short) dis.read();
+            imageType = (short) dis.read();
+            cMapStart = flipEndian(dis.readShort());
+            cMapLength = flipEndian(dis.readShort());
+            cMapDepth = (short) dis.read();
+            xOffset = flipEndian(dis.readShort());
+            yOffset = flipEndian(dis.readShort());
+            width = flipEndian(dis.readShort());
+            height = flipEndian(dis.readShort());
+            pixelDepth = (short) dis.read();
+
+	    System.out.println("Loading TGA Image... 1");
+
+            if (pixelDepth == 24) {
+                cm = new DirectColorModel(24, 0xFF0000, 0xFF00, 0xFF);
+            } else if (pixelDepth == 32) {
+                cm = new DirectColorModel(32, 0xFF000000, 0xFF0000, 0xFF00,
+                        0xFF);
+            }
+
+	    System.out.println("Loading TGA Image... 1a");
+
+            imageDescriptor = (short) dis.read();
+
+	    System.out.println("Loading TGA Image... 2");
+
+            //Skip image ID
+            if (idLength > 0) {
+                bis.skip(idLength);
+            }
+
+            //create the buffer for the image data.
+            pixels = new int[width * height];
+
+	    System.out.println("Loading TGA Image... 3");
+
+            //read the pixel data.
+            for (int i = (height - 1); i >= 0; i--) {
+                srcLine = i * width;
+
+                for (int j = 0; j < width; j++) {
+                    blue = bis.read() & 0xFF;
+                    green = bis.read() & 0xFF;
+                    red = bis.read() & 0xFF;
+
+                    if (pixelDepth == 32) {
+                        alpha = bis.read() & 0xFF;
+                        pixels[srcLine + j] = alpha << 24 | red << 16
+                                | green << 8 | blue;
+                    } else {
+                        pixels[srcLine + j] = red << 16 | green << 8 | blue;
+                    }
+                }
+            }
+
+	    System.out.println("Loading TGA Image... 4");
+
+            //Close the file, we are done.
+            fis.close();
+//        } catch (IOException e) {
+//            LoggingSystem.getLogger().log(Level.WARNING,
+//                    "Unable to load TGA image.");
+        } catch (Exception e) {
+	    e.printStackTrace();
+        }
+	
+	System.out.println("Done loading TGA");
+
+        //create the Image object and return it.
+        return Toolkit.getDefaultToolkit().createImage(
+                new MemoryImageSource(width, height, cm, pixels, 0, width));
+    }
+*/
+

@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.13 2004-04-25 03:03:31 mojomonkey Exp $
+ * @version $Id: TestBoxColor.java,v 1.14 2004-05-28 15:57:44 mojomonkey Exp $
  */
 public class TestBoxColor extends SimpleGame {
   private TriMesh t;
@@ -60,7 +60,7 @@ public class TestBoxColor extends SimpleGame {
    */
   public static void main(String[] args) {
     TestBoxColor app = new TestBoxColor();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
     app.start();
 
   }
@@ -103,7 +103,7 @@ public class TestBoxColor extends SimpleGame {
     ts.setTexture(
         TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.jpg"),
+        "jmetest/data/images/Monkey.tga"),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR,
         true));

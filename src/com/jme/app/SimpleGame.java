@@ -65,7 +65,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.21 2004-05-26 13:33:31 mojomonkey Exp $
+ * @version $Id: SimpleGame.java,v 1.22 2004-05-28 15:57:45 mojomonkey Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -81,7 +81,7 @@ public abstract class SimpleGame extends BaseGame {
   protected WireframeState wireState;
   protected LightState lightState;
 
-  public static String fontLocation = "jmetest/data/font/font.png";
+  public static String fontLocation = "jmetest/data/font/font.tga";
 
   /**
    * @param interpolation unused in this implementation
