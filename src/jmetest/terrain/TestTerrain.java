@@ -33,23 +33,22 @@
 package jmetest.terrain;
 
 import com.jme.app.*;
-import com.jme.bounding.*;
 import com.jme.image.*;
 import com.jme.input.*;
 import com.jme.light.*;
 import com.jme.math.*;
 import com.jme.renderer.*;
 import com.jme.scene.*;
-import com.jme.scene.shape.*;
 import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
+import com.jme.terrain.util.MidPointHeightMap;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.1 2004-04-09 14:40:43 Mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.2 2004-04-12 00:31:21 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
     private Camera cam;
@@ -58,6 +57,8 @@ public class TestTerrain extends SimpleGame {
     private InputHandler input;
     private Timer timer;
     private Text fps;
+    private Vector3f currentPos;
+    private Vector3f newPos;
     /**
      * Entry point for the test,
      * @param args
@@ -128,11 +129,11 @@ public class TestTerrain extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
         camNode = new CameraNode("Camera Node", cam);
-        camNode.setLocalTranslation(new Vector3f(0, 0, -20));
+        camNode.setLocalTranslation(new Vector3f(0, 250, -20));
         camNode.updateWorldData(0);
         //camNode.setLocalTranslation(new Vector3f();
         input = new NodeHandler(this, camNode, "LWJGL");
-        input.setKeySpeed(10f);
+        input.setKeySpeed(50f);
         input.setMouseSpeed(1f);
         display.setTitle("Terrain Test");
         display.getRenderer().enableStatistics(true);
@@ -151,22 +152,46 @@ public class TestTerrain extends SimpleGame {
         WireframeState ws = display.getRenderer().getWireframeState();
         ws.setEnabled(true);
         
+        AlphaState as1 = display.getRenderer().getAlphaState();
+        as1.setBlendEnabled(true);
+        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setTestEnabled(true);
+        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setEnabled(true);
+        
+        DirectionalLight dr = new DirectionalLight();
+        dr.setEnabled(true);
+        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        dr.setAmbient(new ColorRGBA(0.75f, 0.75f, 0.75f, 1.0f));
+        dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
+
+        CullState cs = display.getRenderer().getCullState();
+        cs.setCullMode(CullState.CS_BACK);
+        cs.setEnabled(true);
+        
+        LightState lightstate = display.getRenderer().getLightState();
+        lightstate.setTwoSidedLighting(true);
+        lightstate.setEnabled(true);
+        lightstate.attach(dr);
 
         Node scene = new Node("scene");
         scene.setRenderState(ws);
+        scene.setRenderState(lightstate);
         root = new Node("Root node");
-
-        float[] heights = {0.5f, 0.75f, 1.0f, 0.5f, 0.25f, 0.5f, 0.75f, 0.25f, 1.0f};
-        TerrainBlock tb = new TerrainBlock("Terrain", 3, 2, heights, new Vector3f(0,0,0));
+        
+        MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
+        TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0));
         
         scene.attachChild(tb);
+        scene.setRenderState(cs);
         
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
                 TestTerrain.class.getClassLoader().getResource(
-                    "jmetest/data/images/Monkey.jpg"),
+                    "jmetest/data/texture/dirt.jpg"),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR,
                 true));
@@ -191,6 +216,7 @@ public class TestTerrain extends SimpleGame {
 
         fps = new Text("FPS counter", "");
         fps.setRenderState(font);
+        fps.setRenderState(as1);
 
         
         scene.setRenderState(buf);
