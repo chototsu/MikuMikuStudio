@@ -126,14 +126,14 @@ public class TestDynamicSmoker extends SimpleGame {
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0f, 0f, 1f));
     manager.setEmissionMaximumAngle(0.0f);
-    manager.setSpeed(2.0f);
-    manager.setParticlesMinimumLifeTime(75.0f);
+    manager.setSpeed(1.0f);
+    manager.setParticlesMinimumLifeTime(750.0f);
     manager.setStartSize(1.6f);
-    manager.setEndSize(8.0f);
+    manager.setEndSize(15.0f);
     manager.setStartColor(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
     manager.setEndColor(new ColorRGBA(0.6f, 0.2f, 0.0f, 0.0f));
-    manager.setRandomMod(3.5f);
-    manager.setInitialVelocity(0.57f);
+    manager.setRandomMod(.5f);
+    manager.setInitialVelocity(0.5f);
     manager.setGeometry(emitDisc);
 
     manager.warmUp(60);
