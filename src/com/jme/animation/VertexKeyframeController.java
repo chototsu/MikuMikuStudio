@@ -45,7 +45,7 @@ import com.jme.system.JmeException;
  * the displayed model is morphed from one keyframe to another giving the
  * impression of movement. 
  * @author Mark Powell
- * @version $Id: VertexKeyframeController.java,v 1.2 2004-02-08 20:02:59 mojomonkey Exp $
+ * @version $Id: VertexKeyframeController.java,v 1.3 2004-03-01 22:15:25 mojomonkey Exp $
  */
 public class VertexKeyframeController extends Controller {
 	private TriMesh[] keyframes;
@@ -180,8 +180,8 @@ public class VertexKeyframeController extends Controller {
 
 			//morph texture coordinates if appropriate.
 			if (displayedMesh.getTextures() != null
-				&& keyframes[currentFrame].getTextures() != null
-				&& keyframes[nextFrame].getTextures() != null) {
+				&& keyframes[currentFrame].getTextures().length > 0
+				&& keyframes[nextFrame].getTextures().length > 0) {
 				Vector2f[] texs = displayedMesh.getTextures();
 				texs[i].x =
 					keyframes[currentFrame].getTextures()[i].x
