@@ -40,7 +40,7 @@ import com.jme.scene.TriMesh;
 /**
  * <code>Sphere</code>
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.1 2004-04-02 15:52:07 mojomonkey Exp $
+ * @version $Id: Sphere.java,v 1.2 2004-04-13 01:30:32 renanse Exp $
  */
 public class Sphere extends TriMesh {
     private int zSamples;
@@ -60,7 +60,7 @@ public class Sphere extends TriMesh {
         float radius) {
 
         super(name);
-        setData(new Vector3f(0f,0f,0f), zSamples, radialSamples, radius);
+        setData(new Vector3f(0f,0f,0f), zSamples, radialSamples, radius, true);
     }
 
     public Sphere(
@@ -71,10 +71,10 @@ public class Sphere extends TriMesh {
         float radius) {
 
         super(name);
-        setData(center, zSamples, radialSamples, radius);
+        setData(center, zSamples, radialSamples, radius, true);
     }
 
-    public void setData(Vector3f center, int zSamples, int radialSamples, float radius) {
+    public void setData(Vector3f center, int zSamples, int radialSamples, float radius, boolean updateBuffers) {
         if (center != null)
             this.center = center;
         else this.center = new Vector3f(0,0,0);
@@ -82,9 +82,12 @@ public class Sphere extends TriMesh {
         this.radialSamples = radialSamples;
         this.radius = radius;
 
-        setGeometryData();
-        setIndexData();
-        setColorData();
+        if (updateBuffers) {
+          setGeometryData();
+          setIndexData();
+          setColorData();
+        }
+
     }
 
     private void setGeometryData() {

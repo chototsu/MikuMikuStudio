@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 /*
@@ -51,9 +51,9 @@ import com.jme.util.LoggingSystem;
  * A typical usage is to allow the class define the center and radius by calling
  * either <code>containAABB</code> or <code>averagePoints</code>. A call to
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
- * 
+ *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.3 2004-04-11 16:06:03 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.4 2004-04-13 01:30:31 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -74,15 +74,27 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     /**
      * Constructor instantiates a new <code>BoundingSphere</code> object.
-     * 
+     *
      * @param radius
      *            the radius of the sphere.
      * @param center
      *            the center of the sphere.
      */
     public BoundingSphere(float radius, Vector3f center) {
-        super("bsphere", center, 10, 10, 1);
-        this.radius = radius;
+        super("bsphere", center, 10, 10, radius);
+        initCheckPlanes();
+    }
+
+    /**
+     * Constructor instantiates a new <code>BoundingSphere</code> object.
+     *
+     * @param radius
+     *            the radius of the sphere.
+     * @param center
+     *            the center of the sphere.
+     */
+    public BoundingSphere(String name, float radius, Vector3f center) {
+        super(name, center, 10, 10, radius);
         initCheckPlanes();
     }
 
@@ -97,7 +109,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     /**
      * <code>getRadius</code> returns the radius of the bounding sphere.
-     * 
+     *
      * @return the radius of the bounding sphere.
      */
     public float getRadius() {
@@ -106,7 +118,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     /**
      * <code>getCenter</code> returns the center of the bounding sphere.
-     * 
+     *
      * @return the center of the bounding sphere.
      */
     public Vector3f getCenter() {
@@ -115,7 +127,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     /**
      * <code>setRadius</code> sets the radius of this bounding sphere.
-     * 
+     *
      * @param radius
      *            the new radius of the bounding sphere.
      */
@@ -125,7 +137,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     /**
      * <code>setCenter</code> sets the center of the bounding sphere.
-     * 
+     *
      * @param center
      *            the new center of the bounding sphere.
      */
@@ -137,7 +149,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * <code>computeFromPoints</code> creates a new Bounding Sphere from a
      * given set of points. It uses the <code>containAABB</code> method as
      * default.
-     * 
+     *
      * @param points
      *            the points to contain.
      */
@@ -149,7 +161,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * <code>containAABB</code> creates a minimum-volume axis-aligned bounding
      * box of the points, then selects the smallest enclosing sphere of the box
      * with the sphere centered at the boxes center.
-     * 
+     *
      * @param points
      *            the list of points.
      */
@@ -184,7 +196,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * <code>averagePoints</code> selects the sphere center to be the average
      * of the points and the sphere radius to be the smallest value to enclose
      * all points.
-     * 
+     *
      * @param points
      *            the list of points to contain.
      */
@@ -212,7 +224,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     /**
      * <code>transform</code> modifies the center of the sphere to reflect the
      * change made via a rotation, translation and scale.
-     * 
+     *
      * @param rotate
      *            the rotation change.
      * @param translate
@@ -231,7 +243,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     /**
      * <code>transform</code> modifies the center of the sphere to reflect the
      * change made via a rotation, translation and scale.
-     * 
+     *
      * @param rotate
      *            the rotation change.
      * @param translate
@@ -258,7 +270,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     /**
      * <code>whichSide</code> takes a plane (typically provided by a view
      * frustum) to determine which side this bound is on.
-     * 
+     *
      * @param plane
      *            the plane to check against.
      * @return side
@@ -278,7 +290,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     /**
      * <code>merge</code> combines this sphere with a second bounding sphere.
      * This new sphere contains both bounding spheres and is returned.
-     * 
+     *
      * @param volume
      *            the sphere to combine with this sphere.
      * @return the new sphere
@@ -290,14 +302,14 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             float temp_radius = sphere.getRadius();
             Vector3f temp_center = sphere.getCenter();
             BoundingSphere rVal = new BoundingSphere();
-            return merge(volume, temp_radius, temp_center, rVal);
+            return merge(temp_radius, temp_center, rVal);
         } else if (volume instanceof BoundingBox) {
             BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = new Vector3f(box.xExtent, box.yExtent,
                     box.zExtent);
             Vector3f temp_center = box.getCenter();
             BoundingSphere rVal = new BoundingSphere();
-            return merge(volume, radVect.length(), temp_center, rVal);
+            return merge(radVect.length(), temp_center, rVal);
         } else {
             return null;
         }
@@ -307,7 +319,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * <code>mergeLocal</code> combines this sphere with a second bounding
      * sphere locally. Altering this sphere to contain both the original and the
      * additional sphere volumes;
-     * 
+     *
      * @param volume
      *            the sphere to combine with this sphere.
      * @return this
@@ -318,27 +330,23 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             BoundingSphere sphere = (BoundingSphere) volume;
             float temp_radius = sphere.getRadius();
             Vector3f temp_center = sphere.getCenter();
-            return merge(volume, temp_radius, temp_center, this);
+            return merge(temp_radius, temp_center, this);
         } else if (volume instanceof BoundingBox) {
             BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = new Vector3f(box.xExtent, box.yExtent,
                     box.zExtent);
             Vector3f temp_center = box.getCenter();
-            return merge(volume, radVect.length(), temp_center, this);
+            return merge(radVect.length(), temp_center, this);
         } else {
             return null;
         }
     }
 
-    private BoundingVolume merge(BoundingVolume volume, float temp_radius,
+    private BoundingVolume merge(float temp_radius,
             Vector3f temp_center, BoundingSphere rVal) {
         Vector3f diff = temp_center.subtract(center);
         float lengthSquared = diff.lengthSquared();
         float radiusDiff = temp_radius - radius;
-        float diffSquared = radiusDiff * radiusDiff;
-
-        if (diffSquared >= lengthSquared) { return (radiusDiff >= 0.0 ? volume
-                : this); }
 
         float length = (float) Math.sqrt(lengthSquared);
         float tolerance = 1e-06f;
@@ -354,11 +362,11 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
         return rVal;
     }
-    
+
     /**
      * <code>clone</code> creates a new BoundingSphere object containing the
      * same data as this one.
-     * 
+     *
      * @param store
      *            where to store the cloned information. if null or wrong class,
      *            a new store is created.
@@ -367,10 +375,9 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     public Object clone(BoundingVolume store) {
         if (store != null && store instanceof BoundingSphere) {
             BoundingSphere rVal = (BoundingSphere) store;
-            if (rVal.center == null)
-                rVal.center = new Vector3f(center.x, center.y, center.z);
-            else
-                rVal.center.set(center.x, center.y, center.z);
+            rVal.center.x = center.x;
+            rVal.center.y = center.y;
+            rVal.center.z = center.z;
             rVal.radius = radius;
             rVal.checkPlanes[0] = checkPlanes[0];
             rVal.checkPlanes[1] = checkPlanes[1];
@@ -406,7 +413,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      */
     public void recomputeMesh() {
         if (radius != oldRadius || !center.equals(oldCenter)) {
-            setData(center, 10, 10, radius);
+            setData(center, 10, 10, radius, true);
             oldRadius = radius;
             oldCenter.set(center.x, center.y, center.z);
         }
@@ -415,7 +422,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     /**
      * Find the distance from the center of this Bounding Volume to the given
      * point.
-     * 
+     *
      * @param point
      *            The point to get the distance to
      * @return distance
@@ -427,7 +434,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     /**
      * <code>toString</code> returns the string representation of this object.
      * The form is: "Radius: RRR.SSSS Center: <Vector>".
-     * 
+     *
      * @return the string representation of this.
      */
     public String toString() {
