@@ -34,6 +34,9 @@ package com.jme.renderer;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
+import java.util.Comparator;
+import java.util.Arrays;
+
 /**
  * This optional class supports queueing of rendering states that are drawn when
  * displayBackBuffer is called on the renderer.  All spatials in the opaque bucket
@@ -68,9 +71,9 @@ public class RenderQueue {
    * Creates the buckets needed.
    */
   private void setupBuckets() {
-    opaqueBucket = new SpatialList();
-    transparentBucket = new SpatialList();
-    orthoBucket = new SpatialList();
+    opaqueBucket = new SpatialList(new OpaqueComp());
+    transparentBucket = new SpatialList(new TransparentComp());
+    orthoBucket = new SpatialList(new OrthoComp());
   }
 
   /**
@@ -123,7 +126,7 @@ public class RenderQueue {
    * Renders the opaque buckets.  Those closest to the camera are rendered first.
    */
   private void renderOpaqueBucket() {
-      opaqueBucket.sortCam(0,opaqueBucket.listSize-1);
+      opaqueBucket.sort();
       for (int i=0;i<opaqueBucket.listSize;i++){
           opaqueBucket.list[i].onDraw(renderer);
           opaqueBucket.list[i].queueDistance=Float.NEGATIVE_INFINITY;
@@ -135,8 +138,8 @@ public class RenderQueue {
    * Renders the transparent buckets.  Those farthest from the camera are rendered first.
    */
   private void renderTransparentBucket() {
-      transparentBucket.sortCam(0,transparentBucket.listSize-1);
-      for (int i=transparentBucket.listSize-1;i>=0;i--){
+      transparentBucket.sort();
+      for (int i=0;i<transparentBucket.listSize;i++){
           transparentBucket.list[i].onDraw(renderer);
           transparentBucket.list[i].queueDistance=Float.NEGATIVE_INFINITY;
       }
@@ -148,8 +151,8 @@ public class RenderQueue {
    */
   private void renderOrthoBucket() {
     renderer.setOrtho();
-      orthoBucket.sortOrtho(0,orthoBucket.listSize-1);
-      for (int i=orthoBucket.listSize-1;i>=0;i--){
+      orthoBucket.sort();
+      for (int i=0;i<orthoBucket.listSize;i++){
           orthoBucket.list[i].onDraw(renderer);
       }
       orthoBucket.clear();
@@ -165,9 +168,12 @@ public class RenderQueue {
       Spatial [] list;
       int listSize;
       private static final int DEFAULT_SIZE = 32;
-      SpatialList(){
+      private Comparator c;
+
+      SpatialList(Comparator c){
           listSize=0;
           list=new Spatial[DEFAULT_SIZE];
+          this.c=c;
       }
       /**
        * Adds a spatial to the list.  Lise size is doubled if there is no room.
@@ -187,101 +193,37 @@ public class RenderQueue {
       void clear(){
           listSize=0;
       }
-      /**
-       * Sorts spatial list acording to ZOrder from start to end index inclusive.
-       * @param start Start index.
-       * @param end End index.
-       */
-      void sortOrtho(int start,int end){
-          if (end-start<5){
-	        for (int i=start+1; i<=end; i++)
-    		    for (int j=i; j>start && list[j].getZOrder()<list[j-1].getZOrder(); j--)
-        		    swap(j, j-1);
-        	    return;
-          }
-          int middle=(start+end)/2;
-          med3ortho(start,middle,end);
-          float partDist=list[middle].getZOrder();
-          int i=start+1,j=end-1;
-          while(true){
-              while (list[i].getZOrder() < partDist)
-                  i++;
-              while (list[j].getZOrder() > partDist)
-                  j--;
-              if (i>=j) break;
-              swap(i,j);
-          }
-          sortOrtho(start,i-1);
-          sortOrtho(i+1,end);
-      }
-
-      /**
-       * Sorts spatial list acording to distanceToCam from start to end index inclusive.
-       * @param start Start index.
-       * @param end End index.
-       */
-      void sortCam(int start,int end){
-          if (end-start<5){
-	        for (int i=start+1; i<=end; i++)
-    		    for (int j=i; j>start && distanceToCam(list[j])<distanceToCam(list[j-1]); j--)
-        		    swap(j, j-1);
-        	    return;
-          }
-          int middle=(start+end)/2;
-          med3Cam(start,middle,end);
-          float partDist=distanceToCam(list[middle]);
-          int i=start+1,j=end-1;
-          while(true){
-              while (distanceToCam(list[i]) < partDist)
-                  i++;
-              while (distanceToCam(list[j]) > partDist)
-                  j--;
-              if (i>=j) break;
-              swap(i,j);
-          }
-          sortCam(start,i-1);
-          sortCam(i+1,end);
-      }
-
-      /**
-       * Sorts 3 elements acording to distanceToCam
-       * @param start Index 1.
-       * @param middle Index 2.
-       * @param end Index 3.
-       */
-      private void med3Cam(int start, int middle, int end) {
-          if (distanceToCam(list[start]) > distanceToCam(list[middle]))
-              swap(start,middle);
-          if (distanceToCam(list[start]) > distanceToCam(list[end]))
-              swap(start,end);
-          if (distanceToCam(list[middle]) > distanceToCam(list[end]))
-              swap(middle,end);
-      }
-
-      /**
-       * Sorts 3 elements acording to ZOrder
-       * @param start Index 1.
-       * @param middle Index 2.
-       * @param end Index 3.
-       */
-      private void med3ortho(int start, int middle, int end) {
-          if (list[start].getZOrder() > list[middle].getZOrder())
-              swap(start,middle);
-          if (list[start].getZOrder() > list[end].getZOrder())
-              swap(start,end);
-          if (list[middle].getZOrder() > list[end].getZOrder())
-              swap(middle,end);
-      }
-
-      /**
-       * Swaps index i and j.
-       * @param i First index.
-       * @param j Second index.
-       */
-      private void swap(int i, int j) {
-          Spatial temp=list[i];
-          list[i]=list[j];
-          list[j]=temp;
+      void sort(){
+          if (listSize>1)
+            Arrays.sort(list,0,listSize-1,c);
       }
   }
+    class OpaqueComp implements Comparator {
+      public int compare(Object o1, Object o2) {
+        float d1 = distanceToCam((Spatial)o1);
+        float d2 = distanceToCam((Spatial)o2);
+        if (d1 <= d2)
+          return -1;
+        else return 1;
+      }
+    }
+
+    class TransparentComp implements Comparator {
+      public int compare(Object o1, Object o2) {
+        float d1 = distanceToCam((Spatial)o1);
+        float d2 = distanceToCam((Spatial)o2);
+        if (d1 <= d2)
+          return 1;
+        else return -1;
+      }
+    }
+
+    class OrthoComp implements Comparator {
+      public int compare(Object o1, Object o2) {
+        Spatial s1 = (Spatial)o1;
+        Spatial s2 = (Spatial)o2;
+        if (s1.getZOrder() < s2.getZOrder()) return 1;
+        else return -1;
+      }
+    }
 }
