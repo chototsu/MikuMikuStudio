@@ -61,7 +61,7 @@ import com.jme.renderer.Renderer;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.16 2005-02-23 00:56:17 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.17 2005-02-24 06:59:44 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -211,8 +211,8 @@ private final static Vector2f sharedTextureData[] = {
    * @param secondsPassed float
    */
   public void update(float secondsPassed) {
-    secondsPassed *= getSpeed();
     if (isActive()) {
+        secondsPassed *= getSpeed();
       currentTime += secondsPassed;
       timePassed = currentTime - prevTime;
       if (timePassed < precision)
