@@ -90,13 +90,13 @@ public class SpatialTransformer extends Controller{
         if (haveChanged[objIndex]){
             return;
         }
-        pivots[objIndex].loadIdentity();
-        if (parentIndexes[objIndex]!=-1){
+        int parentIndex=parentIndexes[objIndex];
+        if (parentIndex!=-1){
             updatePivot(parentIndexes[objIndex]);
-            pivots[objIndex].set(pivots[parentIndexes[objIndex]]);
         }
-        temp.interpolateTransforms(beginPointTime.look[objIndex],endPointTime.look[objIndex],delta,unSyncbeginRot,unSyncendRot);
-        pivots[objIndex].multLocal(temp);
+        pivots[objIndex].interpolateTransforms(beginPointTime.look[objIndex],endPointTime.look[objIndex],delta,unSyncbeginRot,unSyncendRot);
+        if (parentIndex!=-1)
+            pivots[objIndex].combineWithParent(pivots[parentIndex]);
         pivots[objIndex].applyToSpatial(thisSpatial);
 
         haveChanged[objIndex]=true;
