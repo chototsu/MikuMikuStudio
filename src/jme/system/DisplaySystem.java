@@ -329,8 +329,7 @@ public class DisplaySystem {
         for (int i = 0; i < modes.length; i++) {
             if (modes[i].width == width
                 && modes[i].height == height
-                && modes[i].bpp == bpp
-                && modes[i].freq == gd[0].getDisplayMode().getRefreshRate()) {
+                && modes[i].bpp == bpp) {
 
                 LoggingSystem.getLoggingSystem().getLogger().log(
                     Level.INFO,
