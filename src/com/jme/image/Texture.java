@@ -47,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.1 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: Texture.java,v 1.2 2004-03-01 16:47:29 mojomonkey Exp $
  */
 public class Texture {
 
@@ -129,12 +129,18 @@ public class Texture {
      * Apply modifier multiples the color of the pixel with the texture color.
      */
     public static final int AM_MODULATE = 2;
+    
     /**
      * Apply modifier that combines the color of the pixel with the texture
      * color, such that the final color value is Cv = (1 - Ct) Cf. Where
      * Ct is the color of the texture and Cf is the initial pixel color.
      */
     public static final int AM_BLEND = 3;
+    
+    /**
+     * Apply modifier combines two textures.
+     */
+    public static final int AM_COMBINE = 4;
 
     /**
      * Correction modifier makes no color corrections, and is the fastest.
@@ -145,6 +151,27 @@ public class Texture {
      * is slower than CM_AFFINE.
      */
     public static final int CM_PERSPECTIVE = 1;
+    
+    public static final int ACF_REPLACE = 0;
+    public static final int ACF_MODULATE = 1;
+    public static final int ACF_ADD = 2;
+    public static final int ACF_ADD_SIGNED = 3;
+    public static final int ACF_SUBTRACT = 4;
+    public static final int ACF_INTERPOLATE = 5;
+    
+    public static final int ACS_TEXTURE = 0;
+    public static final int ACS_PRIMARY_COLOR = 1;
+    public static final int ACS_CONSTANT = 2;
+    public static final int ACS_PREVIOUS = 3;
+    
+    public static final int ACO_SRC_COLOR = 0;
+    public static final int ACO_ONE_MINUS_SRC_COLOR = 1;
+    public static final int ACO_SRC_ALPHA = 2;
+    public static final int ACO_ONE_MINUS_SRC_ALPHA = 3;
+    
+    public static final int ACSC_ONE = 0;
+    public static final int ACSC_TWO = 1;
+    public static final int ACSC_FOUR = 2;
 
     //texture attributes.
     private Image image;
@@ -156,6 +183,24 @@ public class Texture {
     private int apply;
     private int wrap;
     private int filter;
+    
+    //only used if combine apply mode on
+    private int combineFuncRGB;
+    private int combineFuncAlpha;
+    private int combineSrc0RGB;
+    private int combineSrc1RGB;
+    private int combineSrc2RGB;
+    private int combineSrc0Alpha;
+    private int combineSrc1Alpha;
+    private int combineSrc2Alpha;
+    private int combineOp0RGB;
+    private int combineOp1RGB;
+    private int combineOp2RGB;
+    private int combineOp0Alpha;
+    private int combineOp1Alpha;
+    private int combineOp2Alpha;
+    private int combineScaleRGB;
+    private int combineScaleAlpha;
 
     /**
      * Constructor instantiates a new <code>Texture</code> object with 
@@ -232,7 +277,7 @@ public class Texture {
      * @param apply the apply mode for this texture.
      */
     public void setApply(int apply) {
-        if(apply < 0 || apply > 3) {
+        if(apply < 0 || apply > 4) {
             apply = AM_MODULATE;
         }
         this.apply = apply;
@@ -362,4 +407,228 @@ public class Texture {
     public int getFilter() {
         return filter;
     }
+	/**
+	 * @return Returns the combineFuncRGB.
+	 */
+	public int getCombineFuncRGB() {
+		return combineFuncRGB;
+	}
+
+	/**
+	 * @param combineFuncRGB The combineFuncRGB to set.
+	 */
+	public void setCombineFuncRGB(int combineFuncRGB) {
+		this.combineFuncRGB = combineFuncRGB;
+	}
+
+	/**
+	 * @return Returns the combineOp0Alpha.
+	 */
+	public int getCombineOp0Alpha() {
+		return combineOp0Alpha;
+	}
+
+	/**
+	 * @param combineOp0Alpha The combineOp0Alpha to set.
+	 */
+	public void setCombineOp0Alpha(int combineOp0Alpha) {
+		this.combineOp0Alpha = combineOp0Alpha;
+	}
+
+	/**
+	 * @return Returns the combineOp0RGB.
+	 */
+	public int getCombineOp0RGB() {
+		return combineOp0RGB;
+	}
+
+	/**
+	 * @param combineOp0RGB The combineOp0RGB to set.
+	 */
+	public void setCombineOp0RGB(int combineOp0RGB) {
+		this.combineOp0RGB = combineOp0RGB;
+	}
+
+	/**
+	 * @return Returns the combineOp1Alpha.
+	 */
+	public int getCombineOp1Alpha() {
+		return combineOp1Alpha;
+	}
+
+	/**
+	 * @param combineOp1Alpha The combineOp1Alpha to set.
+	 */
+	public void setCombineOp1Alpha(int combineOp1Alpha) {
+		this.combineOp1Alpha = combineOp1Alpha;
+	}
+
+	/**
+	 * @return Returns the combineOp1RGB.
+	 */
+	public int getCombineOp1RGB() {
+		return combineOp1RGB;
+	}
+
+	/**
+	 * @param combineOp1RGB The combineOp1RGB to set.
+	 */
+	public void setCombineOp1RGB(int combineOp1RGB) {
+		this.combineOp1RGB = combineOp1RGB;
+	}
+
+	/**
+	 * @return Returns the combineOp2Alpha.
+	 */
+	public int getCombineOp2Alpha() {
+		return combineOp2Alpha;
+	}
+
+	/**
+	 * @param combineOp2Alpha The combineOp2Alpha to set.
+	 */
+	public void setCombineOp2Alpha(int combineOp2Alpha) {
+		this.combineOp2Alpha = combineOp2Alpha;
+	}
+
+	/**
+	 * @return Returns the combineOp2RGB.
+	 */
+	public int getCombineOp2RGB() {
+		return combineOp2RGB;
+	}
+
+	/**
+	 * @param combineOp2RGB The combineOp2RGB to set.
+	 */
+	public void setCombineOp2RGB(int combineOp2RGB) {
+		this.combineOp2RGB = combineOp2RGB;
+	}
+
+	/**
+	 * @return Returns the combineScaleAlpha.
+	 */
+	public int getCombineScaleAlpha() {
+		return combineScaleAlpha;
+	}
+
+	/**
+	 * @param combineScaleAlpha The combineScaleAlpha to set.
+	 */
+	public void setCombineScaleAlpha(int combineScaleAlpha) {
+		this.combineScaleAlpha = combineScaleAlpha;
+	}
+
+	/**
+	 * @return Returns the combineScaleRGB.
+	 */
+	public int getCombineScaleRGB() {
+		return combineScaleRGB;
+	}
+
+	/**
+	 * @param combineScaleRGB The combineScaleRGB to set.
+	 */
+	public void setCombineScaleRGB(int combineScaleRGB) {
+		this.combineScaleRGB = combineScaleRGB;
+	}
+
+	/**
+	 * @return Returns the combineSrc0Alpha.
+	 */
+	public int getCombineSrc0Alpha() {
+		return combineSrc0Alpha;
+	}
+
+	/**
+	 * @param combineSrc0Alpha The combineSrc0Alpha to set.
+	 */
+	public void setCombineSrc0Alpha(int combineSrc0Alpha) {
+		this.combineSrc0Alpha = combineSrc0Alpha;
+	}
+
+	/**
+	 * @return Returns the combineSrc0RGB.
+	 */
+	public int getCombineSrc0RGB() {
+		return combineSrc0RGB;
+	}
+
+	/**
+	 * @param combineSrc0RGB The combineSrc0RGB to set.
+	 */
+	public void setCombineSrc0RGB(int combineSrc0RGB) {
+		this.combineSrc0RGB = combineSrc0RGB;
+	}
+
+	/**
+	 * @return Returns the combineSrc1Alpha.
+	 */
+	public int getCombineSrc1Alpha() {
+		return combineSrc1Alpha;
+	}
+
+	/**
+	 * @param combineSrc1Alpha The combineSrc1Alpha to set.
+	 */
+	public void setCombineSrc1Alpha(int combineSrc1Alpha) {
+		this.combineSrc1Alpha = combineSrc1Alpha;
+	}
+
+	/**
+	 * @return Returns the combineSrc1RGB.
+	 */
+	public int getCombineSrc1RGB() {
+		return combineSrc1RGB;
+	}
+
+	/**
+	 * @param combineSrc1RGB The combineSrc1RGB to set.
+	 */
+	public void setCombineSrc1RGB(int combineSrc1RGB) {
+		this.combineSrc1RGB = combineSrc1RGB;
+	}
+
+	/**
+	 * @return Returns the combineSrc2Alpha.
+	 */
+	public int getCombineSrc2Alpha() {
+		return combineSrc2Alpha;
+	}
+
+	/**
+	 * @param combineSrc2Alpha The combineSrc2Alpha to set.
+	 */
+	public void setCombineSrc2Alpha(int combineSrc2Alpha) {
+		this.combineSrc2Alpha = combineSrc2Alpha;
+	}
+
+	/**
+	 * @return Returns the combineSrc2RGB.
+	 */
+	public int getCombineSrc2RGB() {
+		return combineSrc2RGB;
+	}
+
+	/**
+	 * @param combineSrc2RGB The combineSrc2RGB to set.
+	 */
+	public void setCombineSrc2RGB(int combineSrc2RGB) {
+		this.combineSrc2RGB = combineSrc2RGB;
+	}
+
+	/**
+	 * @return Returns the combineFuncAlpha.
+	 */
+	public int getCombineFuncAlpha() {
+		return combineFuncAlpha;
+	}
+
+	/**
+	 * @param combineFuncAlpha The combineFuncAlpha to set.
+	 */
+	public void setCombineFuncAlpha(int combineFuncAlpha) {
+		this.combineFuncAlpha = combineFuncAlpha;
+	}
+
 }

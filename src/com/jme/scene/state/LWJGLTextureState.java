@@ -47,14 +47,14 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.6 2004-02-29 23:49:07 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.7 2004-03-01 16:47:30 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 	//OpenGL texture attributes.
 	private int[] textureCorrection = { GL.GL_FASTEST, GL.GL_NICEST };
 
 	private int[] textureApply =
-		{ GL.GL_REPLACE, GL.GL_DECAL, GL.GL_MODULATE, GL.GL_BLEND };
+		{ GL.GL_REPLACE, GL.GL_DECAL, GL.GL_MODULATE, GL.GL_BLEND, GL.GL_COMBINE };
 
 	private int[] textureFilter = { GL.GL_NEAREST, GL.GL_LINEAR };
 
@@ -66,6 +66,25 @@ public class LWJGLTextureState extends TextureState {
 			GL.GL_LINEAR_MIPMAP_NEAREST,
 			GL.GL_LINEAR_MIPMAP_LINEAR };
 
+	private int[] textureCombineFunc = { GL.GL_REPLACE,
+			GL.GL_MODULATE,
+			GL.GL_ADD,
+			GL.GL_ADD_SIGNED,
+			GL.GL_SUBTRACT,
+			GL.GL_INTERPOLATE };
+	
+	private int[] textureCombineSrc = { GL.GL_TEXTURE,
+			GL.GL_PRIMARY_COLOR,
+			GL.GL_CONSTANT,
+			GL.GL_PREVIOUS};
+	
+	private int[] textureCombineOp = { GL.GL_SRC_COLOR,
+			GL.GL_ONE_MINUS_SRC_COLOR,
+			GL.GL_SRC_ALPHA,
+			GL.GL_ONE_MINUS_SRC_ALPHA };
+	
+	private int[] textureCombineScale = { 1,2,4 };
+	
 	private int[] imageComponents =
 		{
 			GL.GL_RGBA4,
@@ -194,11 +213,50 @@ public class LWJGLTextureState extends TextureState {
 					GL.GL_PERSPECTIVE_CORRECTION_HINT,
 					textureCorrection[texture.getCorrection()]);
 
-				// set up apply mode
-				GL.glTexEnvi(
-					GL.GL_TEXTURE_ENV,
-					GL.GL_TEXTURE_ENV_MODE,
-					textureApply[texture.getApply()]);
+				if(texture.getApply() == Texture.AM_COMBINE) {
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV,
+							GL.GL_TEXTURE_ENV_MODE,
+							textureApply[texture.getApply()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_COMBINE_RGB, 
+							textureCombineFunc[texture.getCombineFuncRGB()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_COMBINE_ALPHA,
+							textureCombineFunc[texture.getCombineFuncAlpha()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_SOURCE0_RGB,
+							textureCombineSrc[texture.getCombineSrc0RGB()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_SOURCE1_RGB,
+							textureCombineSrc[texture.getCombineSrc1RGB()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_SOURCE2_RGB,
+							textureCombineSrc[texture.getCombineSrc2RGB()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_SOURCE0_ALPHA,
+							textureCombineSrc[texture.getCombineSrc0Alpha()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_SOURCE1_ALPHA,
+							textureCombineSrc[texture.getCombineSrc1Alpha()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_SOURCE2_ALPHA,
+							textureCombineSrc[texture.getCombineSrc2Alpha()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_OPERAND0_RGB,
+							textureCombineOp[texture.getCombineOp0RGB()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_OPERAND1_RGB,
+							textureCombineOp[texture.getCombineOp1RGB()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_OPERAND2_RGB,
+							textureCombineOp[texture.getCombineOp2RGB()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_OPERAND0_ALPHA,
+							textureCombineOp[texture.getCombineOp0Alpha()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_OPERAND1_ALPHA,
+							textureCombineOp[texture.getCombineOp1Alpha()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_OPERAND2_ALPHA,
+							textureCombineOp[texture.getCombineOp2Alpha()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_RGB_SCALE,
+							textureCombineOp[texture.getCombineScaleRGB()]);
+					GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_ALPHA_SCALE,
+							textureCombineOp[texture.getCombineScaleAlpha()]);
+					
+				} else {
+					// set up apply mode
+					GL.glTexEnvi(
+						GL.GL_TEXTURE_ENV,
+						GL.GL_TEXTURE_ENV_MODE,
+						textureApply[texture.getApply()]);
+				}
 
 				GL.glTexEnv(
 					GL.GL_TEXTURE_ENV,

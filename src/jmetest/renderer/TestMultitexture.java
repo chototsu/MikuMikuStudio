@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.1 2004-02-29 23:49:08 mojomonkey Exp $
+ * @version $Id: TestMultitexture.java,v 1.2 2004-03-01 16:47:29 mojomonkey Exp $
  */
 public class TestMultitexture extends SimpleGame {
     private TriMesh t;
@@ -206,18 +206,19 @@ public class TestMultitexture extends SimpleGame {
         
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
-        ts.setTexture(
-            TextureManager.loadTexture(
-                TestBoxColor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true),0);
-        ts.setTexture(
-            TextureManager.loadTexture(
-                TestBoxColor.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true),1);
+        Texture t1 = TextureManager.loadTexture(
+        		TestBoxColor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true);
+        ts.setTexture(t1 ,0);
+        
+        
+        Texture t2 = TextureManager.loadTexture(TestBoxColor.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
+		        Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true);
+        ts.setTexture( t2,1);
         System.out.println("This video card has " + ts.getNumberOfUnits() + 
                 " texture units.");
         Vector2f[] dirtCoords = t.getTextures(0);
