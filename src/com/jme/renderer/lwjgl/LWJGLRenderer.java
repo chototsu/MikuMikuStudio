@@ -99,7 +99,7 @@ import org.lwjgl.BufferUtils;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.20 2004-05-27 01:09:01 ericthered Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.21 2004-06-04 00:41:16 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1166,6 +1166,7 @@ public class LWJGLRenderer implements Renderer {
         GL11.glLoadIdentity();
         GL11.glTranslatef(m.getLocalTranslation().x, m.getLocalTranslation().y,
                 0);
+        GL11.glColor4f(1.0f, 1.0f, 1.0f, 1.0f);
 
         //render the cursor
         int width = m.getImageWidth();
@@ -1183,9 +1184,9 @@ public class LWJGLRenderer implements Renderer {
         GL11.glVertex2f(0, height);
         GL11.glEnd();
 
-        GL11.glMatrixMode(GL11.GL_PROJECTION);
-        GL11.glPopMatrix();
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPopMatrix();
     }
 
