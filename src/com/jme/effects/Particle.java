@@ -40,23 +40,22 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.10 2004-03-28 18:32:29 renanse Exp $
+ * @version $Id: Particle.java,v 1.11 2004-03-29 16:39:06 renanse Exp $
  */
 public class Particle {
 
   Vector3f verts[];
   Vector3f location;
   ColorRGBA color;
+  int status;
 
   private float currentSize;
   private float lifeSpan;
   private float lifeRatio;
-  private int currentAge, halfAge;
-  private Vector3f speed;
-  private Vector3f randomPoint;
+  private int currentAge;
   private ParticleManager parent;
+  private Vector3f speed;
   private Vector3f bbX, bbY;
-  public int status;
 
   /** Particle is dead -- not in play. */
   public static final int DEAD = 0;
@@ -81,7 +80,6 @@ public class Particle {
     this.parent = parent;
 
     color = (ColorRGBA) parent.getStartColor().clone();
-    randomPoint = new Vector3f();
     currentAge = 0;
     status = AVAILABLE;
     currentSize = parent.getStartSize();
@@ -136,6 +134,7 @@ public class Particle {
    *
    * if this particle's age is greater than its lifespan, it is considered dead.
    *
+   * @param secondsPassed number of seconds passed since last update.
    * @return true if this particle is not ALIVE
    */
   public boolean updateAndCheck(float secondsPassed) {
@@ -144,26 +143,21 @@ public class Particle {
       return true;
     }
     currentAge += secondsPassed * 1000; // add 10ms to age
-//    halfAge = currentAge >> 1;
     if (currentAge > lifeSpan) {
       status = DEAD;
       color.a = 0;
       return true;
     }
-//    location.x = currentAge * ((halfAge*parent.getGravityForce().x) + speed.x) + initialLocation.x;
-//    location.y = currentAge * ((halfAge*parent.getGravityForce().y) + speed.y) + initialLocation.y;
-//    location.z = currentAge * ((halfAge*parent.getGravityForce().z) + speed.z) + initialLocation.z;
 
     speed.scaleAdd(secondsPassed*1000f, parent.getGravityForce(), speed);
     location.scaleAdd(secondsPassed*1000f, speed, location);
 
     if (parent.getRandomMod() != 0.0f) {
-      randomPoint.set(parent.getRandomMod() *
-                      2*( FastMath.nextRandomFloat() - .5f),
-                      0.0f,
-                      parent.getRandomMod() *
-                      2*( FastMath.nextRandomFloat() - .5f));
-      location.addLocal(randomPoint);
+      location.addLocal(parent.getRandomMod() *
+                        2 * (FastMath.nextRandomFloat() - .5f),
+                        0.0f,
+                        parent.getRandomMod() *
+                        2 * (FastMath.nextRandomFloat() - .5f));
     }
 
     lifeRatio = currentAge / lifeSpan;
