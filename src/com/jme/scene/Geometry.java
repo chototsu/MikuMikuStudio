@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.42 2004-05-19 16:20:04 renanse Exp $
+ * @version $Id: Geometry.java,v 1.43 2004-05-19 16:21:13 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -765,7 +765,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         colorBuf.clear();
 
         ColorRGBA tempColor;
-        for (int i = 0; i < bufferLength; i++) {
+        for (int i = 0, max = bufferLength>>2; i < max; i++) {
           tempColor = color[i];
           if (tempColor != null) {
             colorBuf.put(tempColor.r).put(tempColor.g)
