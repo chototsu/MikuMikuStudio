@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.14 2004-04-28 00:03:31 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.15 2004-05-01 03:50:09 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -108,6 +108,11 @@ public abstract class SimpleGame extends BaseGame {
         .getKeyBindingManager()
         .isValidCommand("toggle_bounds", false)) {
       showBounds = !showBounds;
+    }
+    if (KeyBindingManager
+        .getKeyBindingManager()
+        .isValidCommand("camera_out", false)) {
+      System.err.println("Camera at: "+display.getRenderer().getCamera().getLocation());
     }
 
   }
@@ -178,6 +183,9 @@ public abstract class SimpleGame extends BaseGame {
     KeyBindingManager.getKeyBindingManager().set(
         "toggle_bounds",
         KeyInput.KEY_B);
+    KeyBindingManager.getKeyBindingManager().set(
+        "camera_out",
+        KeyInput.KEY_C);
   }
 
   /**
