@@ -120,7 +120,7 @@ import com.jme.widget.text.WidgetText;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.28 2004-03-02 19:41:59 darkprophet Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.29 2004-03-02 21:43:01 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -939,8 +939,8 @@ public class LWJGLRenderer implements Renderer {
 		IntBuffer indices = t.getIndexAsBuffer();
 		if (statisticsOn) {
 			int adder = indices.capacity();
-			numberOfTris += adder;
-			numberOfVerts += adder * 3;
+			numberOfTris += adder / 3;
+			numberOfVerts += adder;
 		}
 		GL.glDrawElements(GL.GL_TRIANGLES, indices);
 
@@ -1015,8 +1015,8 @@ public class LWJGLRenderer implements Renderer {
 		IntBuffer indices = c.getIndexBuffer();
 		if (statisticsOn) {
 			int adder = indices.capacity();
-			numberOfTris += adder;
-			numberOfVerts += adder * 3;
+			numberOfTris += adder/3;
+			numberOfVerts += adder;
 		}
 
 		GL.glDrawElements(GL.GL_TRIANGLES, indices);
