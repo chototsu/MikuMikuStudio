@@ -63,7 +63,7 @@ import com.jme.math.Vector3f;
  * method.
  * 
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.17 2004-04-25 06:35:25 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.18 2004-05-03 15:04:34 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 
@@ -472,6 +472,10 @@ public class MilkshapeASCIIModel extends Model {
      * @return the image address in memory
      */
     private TextureState loadTexture(String file) {
+        if(file == null || file.trim().length() == 0) {
+            return null;
+        }
+        
         URL fileURL = null;
 
         if (file.startsWith(".\\")) {
