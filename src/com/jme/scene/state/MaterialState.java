@@ -39,7 +39,7 @@ import com.jme.renderer.ColorRGBA;
  * ambient color, diffuse color and specular color. The material also defines
  * the shininess of the object and the alpha value of the object.
  * @author Mark Powell
- * @version $Id: MaterialState.java,v 1.3 2004-04-22 22:26:56 renanse Exp $
+ * @version $Id: MaterialState.java,v 1.4 2004-05-02 19:21:07 renanse Exp $
  */
 public abstract class MaterialState extends RenderState {
     //attributes of the material
@@ -71,10 +71,11 @@ public abstract class MaterialState extends RenderState {
      *
      */
     public MaterialState() {
-        emissive = new ColorRGBA();
-        ambient = new ColorRGBA();
-        diffuse = new ColorRGBA();
-        specular = new ColorRGBA();
+        emissive = new ColorRGBA(0,0,0,1);
+        ambient = new ColorRGBA(0,0,0,1);
+        diffuse = new ColorRGBA(1,1,1,1);
+        specular = new ColorRGBA(1,1,1,1);
+        shininess = 64f;
     }
 
     /**
