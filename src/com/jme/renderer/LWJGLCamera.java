@@ -34,8 +34,6 @@ package com.jme.renderer;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLU;
 
-import com.jme.math.Vector3f;
-
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a 
  * <code>AbstractCamera</code> using the LWJGL library for view port setting.
@@ -43,7 +41,7 @@ import com.jme.math.Vector3f;
  * this class handling the OpenGL specific calls to set the frustum and 
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.2 2004-02-19 23:12:03 mojomonkey Exp $
+ * @version $Id: LWJGLCamera.java,v 1.3 2004-02-20 01:27:02 mojomonkey Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
