@@ -30,7 +30,9 @@ public interface BinaryFormatConstants {
     static final byte DATA_URL = 9;
     static final byte DATA_INT = 10;
     static final byte DATA_BOOLEAN = 11;
+    static final byte DATA_QUATARRAY = 12;
     // -- Data type identifiers
+
 
 
 
