@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * renderer the order in which to draw the points, creating triangles on
  * every three points.
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.13 2004-05-07 23:17:54 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.14 2004-05-14 00:10:15 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
     protected int[] indices;
@@ -205,4 +205,11 @@ public class TriMesh extends Geometry implements Serializable {
       indexBuffer.put(indices,0,triangleQuantity >= 0 ? triangleQuantity*3 : indices.length);
       indexBuffer.flip();
     }
+
+
+    public void clearBuffers() {
+      super.clearBuffers();
+      indexBuffer = null;
+    }
+
 }

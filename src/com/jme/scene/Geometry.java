@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.37 2004-05-12 19:01:49 renanse Exp $
+ * @version $Id: Geometry.java,v 1.38 2004-05-14 00:10:15 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -516,7 +516,24 @@ public abstract class Geometry extends Spatial implements Serializable {
       return vertQuantity;
     }
 
-    /**
+    public void setAllTextures(Vector2f[][] texture) {
+      this.texture = texture;
+    }
+
+    public Vector2f[][] getAllTextures() {
+      return texture;
+    }
+
+    public void clearBuffers() {
+      int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
+              .getTextureState().getNumberOfUnits();
+      vertBuf = null;
+      normBuf = null;
+      this.texBuf = new FloatBuffer[textureUnits];
+      colorBuf = null;
+    }
+
+  /**
      * <code>updateBound</code> recalculates the bounding object assigned to
      * the geometry. This resets it parameters to adjust for any changes to the
      * vertex information.
@@ -716,8 +733,10 @@ public abstract class Geometry extends Spatial implements Serializable {
                     ByteOrder.nativeOrder()).asFloatBuffer();
         }
         for (int i = 0; i < vertex.length; i++) {
+          if (texture[0][i] != null) {
             buffer[i * 2] = texture[0][i].x;
             buffer[i * 2 + 1] = texture[0][i].y;
+          }
         }
         texBuf[0].clear();
         texBuf[0].put(buffer);

@@ -43,7 +43,7 @@ import com.jme.scene.TriMesh;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.13 2004-05-12 19:01:49 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.14 2004-05-14 00:10:14 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int currentRecord, targetRecord;
@@ -150,8 +150,8 @@ public class ClodMesh extends TriMesh {
         indices[iC] = rkRecord.vertToKeep;
       }
 
-      // reduce vertex count (vertices are properly ordered)
-      vertQuantity = rkRecord.numbVerts;
+//      // reduce vertex count (vertices are properly ordered)
+//      vertQuantity = rkRecord.numbVerts;
 
       // reduce triangle count (triangles are properly ordered)
       triangleQuantity = rkRecord.numbTriangles;
