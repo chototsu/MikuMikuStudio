@@ -1,8 +1,7 @@
 package jmetest.intersection;
 
-
 import com.jme.app.SimpleGame;
-import com.jme.scene.shape.Sphere;
+import com.jme.scene.shape.CompositeSphere;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
@@ -25,9 +24,11 @@ public class TestOBBTree extends SimpleGame {
 			ColorRGBA.gray };
 
 	TriMesh s, r;
+
 	Node n, m;
 
 	CollisionResults results;
+
 	CollisionData oldData;
 
 	int count = 0;
@@ -40,11 +41,11 @@ public class TestOBBTree extends SimpleGame {
 
 	protected void simpleInitGame() {
 		results = new TriangleCollisionResults();
-		s = new Sphere("sphere", 10, 10, 1);
+		s = new CompositeSphere("sphere", 10, 10, 1);
 		s.updateCollisionTree();
 		s.setModelBound(new BoundingBox());
 		s.updateModelBound();
-		
+
 		n = new Node("sphere node");
 
 		r = new PQTorus("tort", 5, 4, 2f, .5f, 128, 16);
@@ -52,7 +53,7 @@ public class TestOBBTree extends SimpleGame {
 		r.setLocalTranslation(new Vector3f(0, 0, 0));
 		r.setModelBound(new BoundingBox());
 		r.updateModelBound();
-		
+
 		m = new Node("tort node");
 
 		SpatialTransformer st = new SpatialTransformer(1);
@@ -76,7 +77,7 @@ public class TestOBBTree extends SimpleGame {
 
 		n.attachChild(r);
 		m.attachChild(s);
-		
+
 		rootNode.attachChild(n);
 		rootNode.attachChild(m);
 
@@ -91,25 +92,26 @@ public class TestOBBTree extends SimpleGame {
 
 		ColorRGBA[] color1 = s.getColors();
 		ColorRGBA[] color2 = r.getColors();
-		int[] index1 = s.getIndices();
-		int[] index2 = r.getIndices();
+		int[] indexBuffer = new int[3];
 
-		
 		if (oldData != null) {
 
 			for (int i = 0; i < oldData.getSourceTris().size(); i++) {
-				int triIndex = ((Integer) oldData
-						.getSourceTris().get(i)).intValue();
-				color1[index1[triIndex * 3 + 0]] = colorSpread[index1[triIndex * 3 + 0] % 3];
-				color1[index1[triIndex * 3 + 1]] = colorSpread[index1[triIndex * 3 + 1] % 3];
-				color1[index1[triIndex * 3 + 2]] = colorSpread[index1[triIndex * 3 + 2] % 3];
+				int triIndex = ((Integer) oldData.getSourceTris().get(i))
+						.intValue();
+				s.getTriangle(triIndex, indexBuffer);
+				color1[indexBuffer[0]] = colorSpread[indexBuffer[0] % 3];
+				color1[indexBuffer[1]] = colorSpread[indexBuffer[1] % 3];
+				color1[indexBuffer[2]] = colorSpread[indexBuffer[2] % 3];
+
 			}
 			for (int i = 0; i < oldData.getTargetTris().size(); i++) {
-				int triIndex = ((Integer) oldData
-						.getTargetTris().get(i)).intValue();
-				color2[index2[triIndex * 3 + 0]] = colorSpread[index2[triIndex * 3 + 0] % 3];
-				color2[index2[triIndex * 3 + 1]] = colorSpread[index2[triIndex * 3 + 1] % 3];
-				color2[index2[triIndex * 3 + 2]] = colorSpread[index2[triIndex * 3 + 2] % 3];
+				int triIndex = ((Integer) oldData.getTargetTris().get(i))
+						.intValue();
+				r.getTriangle(triIndex, indexBuffer);
+				color2[indexBuffer[0]] = colorSpread[indexBuffer[0] % 3];
+				color2[indexBuffer[1]] = colorSpread[indexBuffer[1] % 3];
+				color2[indexBuffer[2]] = colorSpread[indexBuffer[2] % 3];
 			}
 		}
 
@@ -118,20 +120,25 @@ public class TestOBBTree extends SimpleGame {
 
 		if (results.getNumber() > 0) {
 			oldData = results.getCollisionData(0);
-			for (int i = 0; i < results.getCollisionData(0).getSourceTris().size(); i++) {
+			for (int i = 0; i < results.getCollisionData(0).getSourceTris()
+					.size(); i++) {
 				int triIndex = ((Integer) results.getCollisionData(0)
 						.getSourceTris().get(i)).intValue();
-				color1[index1[triIndex * 3 + 0]] = ColorRGBA.red;
-				color1[index1[triIndex * 3 + 1]] = ColorRGBA.red;
-				color1[index1[triIndex * 3 + 2]] = ColorRGBA.red;
+				s.getTriangle(triIndex, indexBuffer);
+				color1[indexBuffer[0]] = ColorRGBA.red;
+				color1[indexBuffer[1]] = ColorRGBA.red;
+				color1[indexBuffer[2]] = ColorRGBA.red;
 			}
 			s.setColors(color1);
-			for (int i = 0; i < results.getCollisionData(0).getTargetTris().size(); i++) {
+			for (int i = 0; i < results.getCollisionData(0).getTargetTris()
+					.size(); i++) {
 				int triIndex = ((Integer) results.getCollisionData(0)
 						.getTargetTris().get(i)).intValue();
-				color2[index2[triIndex * 3 + 0]] = ColorRGBA.blue;
-				color2[index2[triIndex * 3 + 1]] = ColorRGBA.blue;
-				color2[index2[triIndex * 3 + 2]] = ColorRGBA.blue;
+				r.getTriangle(triIndex, indexBuffer);
+				color2[indexBuffer[0]] = ColorRGBA.blue;
+				color2[indexBuffer[1]] = ColorRGBA.blue;
+				color2[indexBuffer[2]] = ColorRGBA.blue;
+
 			}
 			r.setColors(color2);
 		}

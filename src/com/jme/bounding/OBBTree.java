@@ -66,12 +66,11 @@ public class OBBTree {
      */
     public void construct(TriMesh parent) {
         this.myParent = parent;
-        Vector3f[] verts = parent.getVertices();
-        int[] indices = parent.getIndices();
-        tris = new TreeTriangle[indices.length / 3];
+        Vector3f[] triangles = parent.getMeshAsTriangles(); 
+        tris = new TreeTriangle[triangles.length / 3]; 
         for (int i = 0; i < tris.length; i++) {
-            tris[i] = new TreeTriangle(verts[indices[i * 3 + 0]],
-                    verts[indices[i * 3 + 1]], verts[indices[i * 3 + 2]]);
+        	tris[i] = new TreeTriangle(triangles[i * 3 + 0], 
+        		triangles[i * 3 + 1], triangles[i * 3 + 2]); 
             tris[i].putCentriod();
             tris[i].index = i;
         }

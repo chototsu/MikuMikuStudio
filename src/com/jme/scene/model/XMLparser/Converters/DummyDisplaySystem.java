@@ -199,6 +199,7 @@ public class DummyDisplaySystem extends DisplaySystem{
             public void draw(Curve c) {}
             public void draw(Text t) {}
             public void draw(TriMesh t) {}
+            public void draw(CompositeMesh t) {}
             public void draw(WidgetRenderer wr) {}
             public RenderQueue getQueue() {return null;}
             public boolean isProcessingQueue() {return false;}
