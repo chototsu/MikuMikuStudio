@@ -132,7 +132,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLRenderer.java,v 1.56 2005-01-10 20:29:30 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.57 2005-02-10 19:04:54 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -573,8 +573,7 @@ public class LWJGLRenderer implements Renderer {
         //Create a pointer to the image info and create a buffered image to
         //hold it.
         IntBuffer buff = BufferUtils.createIntBuffer(width * height);
-        GL11.glReadPixels(0, 0, width, height, GL12.GL_BGRA,
-                GL11.GL_UNSIGNED_BYTE, buff);
+        grabScreenContents(buff, 0,0,width,height);
         BufferedImage img = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
 
@@ -612,8 +611,7 @@ public class LWJGLRenderer implements Renderer {
      *            height of block
      */
     public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h) {
-        GL11
-                .glReadPixels(x, y, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE,
+        GL11.glReadPixels(x, y, w, h, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE,
                         buff);
     }
 
