@@ -55,12 +55,11 @@ import javax.swing.ImageIcon;
 
 import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
-import jme.system.DisplaySystem;
 import jme.utility.LoggingSystem;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLU;
+import org.lwjgl.opengl.Window;
 
 /**
  * <code>TextureManager</code> maintains all textures within the running
@@ -122,13 +121,10 @@ public class TextureManager {
      * @throws MonkeyGLException if OpenGL context has not been created.
      */
     private TextureManager() {
-        gl = DisplaySystem.getDisplaySystem().getGL();
-        glu = DisplaySystem.getDisplaySystem().getGLU();
 
-        if (null == gl || null == glu) {
+        if (!Window.isCreated()) {
             throw new MonkeyGLException(
-                "GL/GLU must be initialized before "
-                    + "calling TextureManager.");
+                "Window must be created before " + "TextureManager.");
         }
         textureList = new HashMap();
         keyList = new ArrayList();
@@ -330,7 +326,7 @@ public class TextureManager {
 
             if (id != boundID) {
                 boundID = id;
-                gl.bindTexture(GL.TEXTURE_2D, id);
+                GL.glBindTexture(GL.GL_TEXTURE_2D, id);
             }
 
             return true;
@@ -353,7 +349,7 @@ public class TextureManager {
     public void bind(int id) {
         if (id != boundID) {
             boundID = id;
-            gl.bindTexture(GL.TEXTURE_2D, id);
+            GL.glBindTexture(GL.GL_TEXTURE_2D, id);
         }
     }
 
@@ -378,9 +374,7 @@ public class TextureManager {
                     .order(ByteOrder.nativeOrder())
                     .asIntBuffer();
             buf.put(id);
-            int bufPtr = Sys.getDirectBufferAddress(buf);
-
-            gl.deleteTextures(1, bufPtr);
+            GL.glDeleteTextures(buf);
             textureList.remove(file);
             return true;
         }
@@ -404,16 +398,14 @@ public class TextureManager {
         for (int i = 0; i < keyList.size(); i++) {
             key = ((TextureData) keyList.get(i)).name;
             id = ((Integer) textureList.get(key)).intValue();
-            if (gl.isTexture(id)) {
+            if (GL.glIsTexture(id)) {
                 IntBuffer buf =
                     ByteBuffer
                         .allocateDirect(4)
                         .order(ByteOrder.nativeOrder())
                         .asIntBuffer();
                 buf.put(id);
-                int bufPtr = Sys.getDirectBufferAddress(buf);
-
-                gl.deleteTextures(1, bufPtr);
+                GL.glDeleteTextures(buf);
             }
         }
 
@@ -505,8 +497,6 @@ public class TextureManager {
         //Get a pointer to the image memory
         ByteBuffer scratch =
             ByteBuffer.allocateDirect(4 * tex.getWidth() * tex.getHeight());
-        int dataAddress = Sys.getDirectBufferAddress(scratch);
-
         byte data[] =
             (byte[]) tex.getRaster().getDataElements(
                 0,
@@ -516,47 +506,53 @@ public class TextureManager {
                 null);
         scratch.clear();
         scratch.put(data);
+        scratch.rewind();
 
-        //Create A IntBuffer For Image Address In Memory     
+        // Create A IntBuffer For Image Address In Memory   
         IntBuffer buf =
             ByteBuffer
                 .allocateDirect(4)
                 .order(ByteOrder.nativeOrder())
                 .asIntBuffer();
-        int bufPtr = Sys.getDirectBufferAddress(buf);
 
         //Create the texture
-        gl.genTextures(1, bufPtr);
+        GL.glGenTextures(buf);
 
-        gl.bindTexture(GL.TEXTURE_2D, buf.get(0));
+        GL.glBindTexture(GL.GL_TEXTURE_2D, buf.get(0));
 
         // Linear Filtering
-        gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MIN_FILTER, minFilter);
+        GL.glTexParameteri(
+            GL.GL_TEXTURE_2D,
+            GL.GL_TEXTURE_MIN_FILTER,
+            minFilter);
         // Linear Filtering
-        gl.texParameteri(GL.TEXTURE_2D, GL.TEXTURE_MAG_FILTER, magFilter);
+        GL.glTexParameteri(
+            GL.GL_TEXTURE_2D,
+            GL.GL_TEXTURE_MAG_FILTER,
+            magFilter);
 
         if (isMipmapped) {
             //generate the mipmaps
-            glu.build2DMipmaps(
-                GL.TEXTURE_2D,
+            GLU.gluBuild2DMipmaps(
+                GL.GL_TEXTURE_2D,
                 3,
                 tex.getWidth(),
                 tex.getHeight(),
-                GL.RGB,
-                GL.UNSIGNED_BYTE,
-                dataAddress);
+                GL.GL_RGB,
+                GL.GL_UNSIGNED_BYTE,
+                scratch);
         } else {
             // Generate The Texture
-            gl.texImage2D(
-                GL.TEXTURE_2D,
+            GL.glTexImage2D(
+                GL.GL_TEXTURE_2D,
                 0,
-                GL.RGB,
+                GL.GL_RGB,
                 tex.getWidth(),
                 tex.getHeight(),
                 0,
-                GL.RGB,
-                GL.UNSIGNED_BYTE,
-                dataAddress);
+                GL.GL_RGB,
+                GL.GL_UNSIGNED_BYTE,
+                scratch);
         }
 
         LoggingSystem.getLoggingSystem().getLogger().log(
@@ -893,8 +889,7 @@ public class TextureManager {
 
         private short constructShort(byte[] in, int offset) {
             short ret = (short) (in[offset + 1] & 0xff);
-            ret =
-                (short) ((ret << 8) | (short) (in[offset + 0] & 0xff));
+            ret = (short) ((ret << 8) | (short) (in[offset + 0] & 0xff));
             return (ret);
         }
 

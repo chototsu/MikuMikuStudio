@@ -50,7 +50,7 @@ import jme.math.Vector;
  * the negative x-axis
  * 
  * @author Mark Powell
- * @version $Id: PartialDisk.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
+ * @version $Id: PartialDisk.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class PartialDisk extends Disk {
     
@@ -91,8 +91,8 @@ public class PartialDisk extends Disk {
     public void render() {
         super.preRender();
         
-        glu.partialDisk(quadricPointer, innerRadius, outerRadius, slices,
-                loops, startAngle, endAngle);
+//        glu.partialDisk(quadricPointer, innerRadius, outerRadius, slices,
+//                loops, startAngle, endAngle);
                 
         super.clean();
     }

@@ -37,11 +37,11 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
+import org.lwjgl.opengl.Window;
 
 import jme.exception.MonkeyGLException;
 import jme.geometry.*;
@@ -55,7 +55,6 @@ import jme.geometry.model.Triangle;
 import jme.geometry.model.Vertex;
 import jme.math.Matrix;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 import jme.utility.Conversion;
 import jme.utility.LoggingSystem;
@@ -67,6 +66,7 @@ import jme.utility.LoggingSystem;
  * to version 3. Animation is not currently supported, but planned.
  * 
  * @author Mark Powell
+ * @version $Id: MilkshapeModel.java,v 1.5 2003-09-03 16:20:52 mojomonkey Exp $
  */
 public class MilkshapeModel implements Geometry {
     //defines the bounding volumes of the model.
@@ -77,17 +77,14 @@ public class MilkshapeModel implements Geometry {
     private float animationFPS;
     private float currentTime;
     private int totalFrames;
-    
+
     //model data information
     private String modelFile;
     private ByteBuffer buffer;
     private String id;
     private String path;
     private int version;
-    /**
-     * the OpenGL context object.
-     */
-    private GL gl;
+
     /**
      * the color of the model. This color will be applied as a whole to the
      * model and may be trumped by the material level.
@@ -96,7 +93,7 @@ public class MilkshapeModel implements Geometry {
     /**
      * the scale of the model, where 1.0 is the standard size of the model.
      */
-    private Vector3f scale;
+    private Vector scale;
     /**
      * the number of meshes that makes up the model.
      */
@@ -148,8 +145,7 @@ public class MilkshapeModel implements Geometry {
      * @throws MonkeyGLException if the OpenGL context has not been created.
      */
     public MilkshapeModel(String modelFile) {
-        gl = DisplaySystem.getDisplaySystem().getGL();
-        if (null == gl) {
+        if (!Window.isCreated()) {
             throw new MonkeyGLException(
                 "OpenGL context must be " + "created before MilkshapeModel.");
         }
@@ -160,7 +156,7 @@ public class MilkshapeModel implements Geometry {
         blue = 1.0f;
         green = 1.0f;
         alpha = 1.0f;
-        scale = new Vector3f(1.0f, 1.0f, 1.0f);
+        scale = new Vector(1.0f, 1.0f, 1.0f);
 
         initialize();
         setBoundingVolumes();
@@ -178,7 +174,7 @@ public class MilkshapeModel implements Geometry {
             file.getAbsolutePath().substring(
                 0,
                 file.getAbsolutePath().length() - file.getName().length());
-        int length = (int)file.length();
+        int length = (int) file.length();
         data = new byte[length];
         FileInputStream fis;
         try {
@@ -428,58 +424,56 @@ public class MilkshapeModel implements Geometry {
         Triangle currentTri;
         int triangleIndex;
         int index;
-        ByteBuffer temp = ByteBuffer.allocateDirect(16);
-        temp.order(ByteOrder.nativeOrder());
-        gl.color4f(red, green, blue, alpha);
-        gl.pushMatrix();
-        gl.scalef(scale.x, scale.y, scale.z);
+        FloatBuffer temp =
+            ByteBuffer
+                .allocateDirect(16)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+        GL.glColor4f(red, green, blue, alpha);
+        GL.glPushMatrix();
+        GL.glScalef(scale.x, scale.y, scale.z);
 
         //go through each mesh and render them.
         for (int i = 0; i < numMeshes; i++) {
             int materialIndex = meshes[i].materialIndex;
             //if the material is set, use it to set the texture and lighting.
             if (materialIndex >= 0) {
-
-                gl.materialfv(
-                    GL.FRONT,
-                    GL.AMBIENT,
-                    Sys.getDirectBufferAddress(
-                        temp.asFloatBuffer().put(
-                            materials[materialIndex].ambient)));
-                gl.materialfv(
-                    GL.FRONT,
-                    GL.DIFFUSE,
-                    Sys.getDirectBufferAddress(
-                        temp.asFloatBuffer().put(
-                            materials[materialIndex].diffuse)));
-                gl.materialfv(
-                    GL.FRONT,
-                    GL.SPECULAR,
-                    Sys.getDirectBufferAddress(
-                        temp.asFloatBuffer().put(
-                            materials[materialIndex].specular)));
-                gl.materialfv(
-                    GL.FRONT,
-                    GL.EMISSION,
-                    Sys.getDirectBufferAddress(
-                        temp.asFloatBuffer().put(
-                            materials[materialIndex].emissive)));
-                gl.materialf(
-                    GL.FRONT,
-                    GL.SHININESS,
+                temp.clear();
+                temp.put(materials[materialIndex].ambient);
+                temp.flip();
+                GL.glMaterial(GL.GL_FRONT, GL.GL_AMBIENT, temp);
+                
+                temp.clear();
+                temp.put(materials[materialIndex].diffuse);
+                temp.flip();
+                GL.glMaterial(GL.GL_FRONT, GL.GL_DIFFUSE, temp);
+                
+                temp.clear();
+                temp.put(materials[materialIndex].specular);
+                temp.flip();
+                GL.glMaterial(GL.GL_FRONT, GL.GL_SPECULAR, temp);
+                
+                temp.clear();
+                temp.put(materials[materialIndex].emissive);
+                temp.flip();
+                GL.glMaterial(GL.GL_FRONT, GL.GL_EMISSION, temp);
+                
+                GL.glMaterialf(
+                    GL.GL_FRONT,
+                    GL.GL_SHININESS,
                     materials[materialIndex].shininess);
 
                 if (materials[materialIndex].texture > 0) {
                     TextureManager.getTextureManager().bind(
                         materials[materialIndex].texture);
-                    gl.enable(GL.TEXTURE_2D);
+                    GL.glEnable(GL.GL_TEXTURE_2D);
                 } else
-                    gl.disable(GL.TEXTURE_2D);
+                    GL.glDisable(GL.GL_TEXTURE_2D);
             } else {
-                gl.disable(GL.TEXTURE_2D);
+                GL.glDisable(GL.GL_TEXTURE_2D);
             }
 
-            gl.begin(GL.TRIANGLES);
+            GL.glBegin(GL.GL_TRIANGLES);
             int m = meshes[i].numTriangles;
 
             //render all triangles defined for the current mesh.
@@ -490,21 +484,21 @@ public class MilkshapeModel implements Geometry {
                 for (int k = 0; k < 3; k++) {
                     index = currentTri.vertexIndices[k];
 
-                    gl.normal3f(
+                    GL.glNormal3f(
                         currentTri.vertexNormals[k][0],
                         currentTri.vertexNormals[k][1],
                         currentTri.vertexNormals[k][2]);
-                    gl.texCoord2f(currentTri.s[k], currentTri.t[k]);
-                    gl.vertex3f(
+                    GL.glTexCoord2f(currentTri.s[k], currentTri.t[k]);
+                    GL.glVertex3f(
                         vertices[index].point[0],
                         vertices[index].point[1],
                         vertices[index].point[2]);
                 }
             }
-            gl.end();
+            GL.glEnd();
         }
-        gl.popMatrix();
-        gl.disable(GL.TEXTURE_2D);
+        GL.glPopMatrix();
+        GL.glDisable(GL.GL_TEXTURE_2D);
     }
 
     /**
@@ -538,7 +532,7 @@ public class MilkshapeModel implements Geometry {
      * normal size of the model.
      * @param scale the multiplier of the model's size.
      */
-    public void setScale(Vector3f scale) {
+    public void setScale(Vector scale) {
         this.scale = scale;
     }
 
@@ -578,11 +572,13 @@ public class MilkshapeModel implements Geometry {
             }
         }
         distanceSqr *= scale.x;
-        float distance = (float)Math.sqrt(distanceSqr);
+        float distance = (float) Math.sqrt(distanceSqr);
         boundingSphere = new BoundingSphere(distance, null);
-        boundingBox = new BoundingBox(new Vector(), 
-        	new Vector(-distance, -distance, -distance),
-        	new Vector(distance, distance, distance));
+        boundingBox =
+            new BoundingBox(
+                new Vector(),
+                new Vector(-distance, -distance, -distance),
+                new Vector(distance, distance, distance));
     }
 
     /**
@@ -653,8 +649,8 @@ public class MilkshapeModel implements Geometry {
                 materials[i].texture =
                     TextureManager.getTextureManager().loadTexture(
                         fullFilename,
-                        GL.LINEAR_MIPMAP_LINEAR,
-                        GL.LINEAR,
+                        GL.GL_LINEAR_MIPMAP_LINEAR,
+                        GL.GL_LINEAR,
                         true);
             } else
                 materials[i].texture = 0;

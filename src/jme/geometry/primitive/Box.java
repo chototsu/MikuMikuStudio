@@ -37,7 +37,6 @@ import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
 
@@ -60,7 +59,7 @@ import org.lwjgl.opengl.GL;
  * 7 - Back face, bottom right<br>
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.3 2003-08-08 18:59:01 mojomonkey Exp $
+ * @version $Id: Box.java,v 1.4 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class Box extends Primitive {
     private GL gl;
@@ -71,7 +70,6 @@ public class Box extends Primitive {
      * of the box defined as (0,0,0).
      */
     public Box() {
-		gl = DisplaySystem.getDisplaySystem().getGL();
     	corners = new Vector[8];
     	for(int i = 0; i < 8; i++) {
     		corners[i] = new Vector();
@@ -92,7 +90,6 @@ public class Box extends Primitive {
 			throw new MonkeyRuntimeException("Corners cannot be null.");
 		}
         this.corners = corners;
-        gl = DisplaySystem.getDisplaySystem().getGL();
 		initialize();
 		LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO, 
 					"Box created.");
@@ -105,7 +102,6 @@ public class Box extends Primitive {
      * @param size the length of a side of the cube.
      */
     public Box(float size) {
-		gl = DisplaySystem.getDisplaySystem().getGL();
     	corners = new Vector[8];
     	
     	corners[0] = new Vector(-size/2, size/2, -size/2);
@@ -129,76 +125,76 @@ public class Box extends Primitive {
     public void render() {
         if(getTextureId() > 0) {
             TextureManager.getTextureManager().bind(getTextureId());
-            gl.enable(GL.TEXTURE_2D);
+            GL.glEnable(GL.GL_TEXTURE_2D);
         }
         
-        gl.begin(GL.QUADS);
+        GL.glBegin(GL.GL_QUADS);
         
         //front
-        gl.color4f(red, blue, green, alpha);
-        gl.texCoord2i(1,1);
-        gl.vertex3f(corners[0].x, corners[0].y, corners[0].z);
-        gl.texCoord2i(0,1);
-        gl.vertex3f(corners[1].x, corners[1].y, corners[1].z);
-        gl.texCoord2i(0,0);
-		gl.vertex3f(corners[3].x, corners[3].y, corners[3].z);
-		gl.texCoord2i(1,0);
-		gl.vertex3f(corners[2].x, corners[2].y, corners[2].z);
+        GL.glColor4f(red, blue, green, alpha);
+        GL.glTexCoord2f(1,1);
+        GL.glVertex3f(corners[0].x, corners[0].y, corners[0].z);
+        GL.glTexCoord2f(0,1);
+        GL.glVertex3f(corners[1].x, corners[1].y, corners[1].z);
+        GL.glTexCoord2f(0,0);
+		GL.glVertex3f(corners[3].x, corners[3].y, corners[3].z);
+		GL.glTexCoord2f(1,0);
+		GL.glVertex3f(corners[2].x, corners[2].y, corners[2].z);
 		
 		//back
-		gl.texCoord2i(1,1);
-        gl.vertex3f(corners[5].x, corners[5].y, corners[5].z);
-		gl.texCoord2i(0,1);
-		gl.vertex3f(corners[4].x, corners[4].y, corners[4].z);
-		gl.texCoord2i(0,0);
-		gl.vertex3f(corners[6].x, corners[6].y, corners[6].z);
-		gl.texCoord2i(1,0);
-		gl.vertex3f(corners[7].x, corners[7].y, corners[7].z);
+		GL.glTexCoord2f(1,1);
+        GL.glVertex3f(corners[5].x, corners[5].y, corners[5].z);
+		GL.glTexCoord2f(0,1);
+		GL.glVertex3f(corners[4].x, corners[4].y, corners[4].z);
+		GL.glTexCoord2f(0,0);
+		GL.glVertex3f(corners[6].x, corners[6].y, corners[6].z);
+		GL.glTexCoord2f(1,0);
+		GL.glVertex3f(corners[7].x, corners[7].y, corners[7].z);
 		
         //Top
-		gl.texCoord2i(1,1);
-		gl.vertex3f(corners[4].x, corners[4].y, corners[4].z);
-		gl.texCoord2i(0,1);
-		gl.vertex3f(corners[5].x, corners[5].y, corners[5].z);
-		gl.texCoord2i(0,0);
-		gl.vertex3f(corners[1].x, corners[1].y, corners[1].z);
-		gl.texCoord2i(1,0);
-		gl.vertex3f(corners[0].x, corners[0].y, corners[0].z);
+		GL.glTexCoord2f(1,1);
+		GL.glVertex3f(corners[4].x, corners[4].y, corners[4].z);
+		GL.glTexCoord2f(0,1);
+		GL.glVertex3f(corners[5].x, corners[5].y, corners[5].z);
+		GL.glTexCoord2f(0,0);
+		GL.glVertex3f(corners[1].x, corners[1].y, corners[1].z);
+		GL.glTexCoord2f(1,0);
+		GL.glVertex3f(corners[0].x, corners[0].y, corners[0].z);
 		
 		//Bottom
-		gl.texCoord2i(1,1);
-		gl.vertex3f(corners[6].x, corners[6].y, corners[6].z);
-		gl.texCoord2i(0,1);
-		gl.vertex3f(corners[2].x, corners[2].y, corners[2].z);
-		gl.texCoord2i(0,0);
-		gl.vertex3f(corners[3].x, corners[3].y, corners[3].z);
-		gl.texCoord2i(1,0);
-		gl.vertex3f(corners[7].x, corners[7].y, corners[7].z);
+		GL.glTexCoord2f(1,1);
+		GL.glVertex3f(corners[6].x, corners[6].y, corners[6].z);
+		GL.glTexCoord2f(0,1);
+		GL.glVertex3f(corners[2].x, corners[2].y, corners[2].z);
+		GL.glTexCoord2f(0,0);
+		GL.glVertex3f(corners[3].x, corners[3].y, corners[3].z);
+		GL.glTexCoord2f(1,0);
+		GL.glVertex3f(corners[7].x, corners[7].y, corners[7].z);
 		
 		//left
-		gl.texCoord2i(1,1);
-		gl.vertex3f(corners[4].x, corners[4].y, corners[4].z);
-		gl.texCoord2i(0,1);
-		gl.vertex3f(corners[0].x, corners[0].y, corners[0].z);
-		gl.texCoord2i(0,0);
-		gl.vertex3f(corners[2].x, corners[2].y, corners[2].z);
-		gl.texCoord2i(1,0);
-		gl.vertex3f(corners[6].x, corners[6].y, corners[6].z);
+		GL.glTexCoord2f(1,1);
+		GL.glVertex3f(corners[4].x, corners[4].y, corners[4].z);
+		GL.glTexCoord2f(0,1);
+		GL.glVertex3f(corners[0].x, corners[0].y, corners[0].z);
+		GL.glTexCoord2f(0,0);
+		GL.glVertex3f(corners[2].x, corners[2].y, corners[2].z);
+		GL.glTexCoord2f(1,0);
+		GL.glVertex3f(corners[6].x, corners[6].y, corners[6].z);
 		
 		//right
-		gl.texCoord2i(1,1);
-		gl.vertex3f(corners[1].x, corners[1].y, corners[1].z);
-		gl.texCoord2i(0,1);
-		gl.vertex3f(corners[5].x, corners[5].y, corners[5].z);
-		gl.texCoord2i(0,0);
-		gl.vertex3f(corners[7].x, corners[7].y, corners[7].z);
-		gl.texCoord2i(1,0);
-		gl.vertex3f(corners[3].x, corners[3].y, corners[3].z);
+		GL.glTexCoord2f(1,1);
+		GL.glVertex3f(corners[1].x, corners[1].y, corners[1].z);
+		GL.glTexCoord2f(0,1);
+		GL.glVertex3f(corners[5].x, corners[5].y, corners[5].z);
+		GL.glTexCoord2f(0,0);
+		GL.glVertex3f(corners[7].x, corners[7].y, corners[7].z);
+		GL.glTexCoord2f(1,0);
+		GL.glVertex3f(corners[3].x, corners[3].y, corners[3].z);
         
-        gl.end();
+        GL.glEnd();
         
         if(getTextureId() > 0) {
-        	gl.disable(GL.TEXTURE_2D);
+        	GL.glDisable(GL.GL_TEXTURE_2D);
         }
  
     }

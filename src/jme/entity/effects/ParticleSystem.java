@@ -38,7 +38,6 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.vector.Vector3f;
 
 import jme.entity.EntityInterface;
-import jme.system.DisplaySystem;
 import jme.entity.camera.Frustum;
 import jme.geometry.bounding.BoundingVolume;
 
@@ -47,17 +46,15 @@ import jme.geometry.bounding.BoundingVolume;
  * particle emitters. 
  * 
  * @author Mark Powell
- * @version $Id: ParticleSystem.java,v 1.3 2003-08-31 19:49:49 mojomonkey Exp $
+ * @version $Id: ParticleSystem.java,v 1.4 2003-09-03 16:20:52 mojomonkey Exp $
  */
 public class ParticleSystem implements EntityInterface {
     private ArrayList emitters;
     private Vector3f position;
-    private GL gl;
     private BoundingVolume boundingVolume;
     
     public ParticleSystem() {
         emitters = new ArrayList();
-        gl = DisplaySystem.getDisplaySystem().getGL();
         position = new Vector3f();
     }
 
@@ -65,12 +62,12 @@ public class ParticleSystem implements EntityInterface {
      * @see jme.entity.EntityInterface#render()
      */
     public void render() {
-    	gl.pushMatrix();
-    	gl.translatef(position.x, position.y, position.z);
+        GL.glPushMatrix();
+        GL.glTranslatef(position.x, position.y, position.z);
         for(int i = 0; i < emitters.size(); i++) {
             ((ParticleEmitter)emitters.get(i)).render();
         }
-        gl.popMatrix();
+        GL.glPopMatrix();
     }
 
     /**

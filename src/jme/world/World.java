@@ -43,7 +43,6 @@ import jme.locale.Locale;
 import jme.locale.external.feature.Water;
 import jme.entity.camera.Camera;
 import jme.entity.effects.ParticleSystem;
-import jme.system.DisplaySystem;
 import jme.utility.LoggingSystem;
 
 /**
@@ -78,7 +77,7 @@ public class World {
      */
     public World() {
         entityList = new ArrayList();
-        gl = DisplaySystem.getDisplaySystem().getGL();
+        //gl = DisplaySystem.getDisplaySystem().getGL();
         LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO,
                 "Created World");
     }
@@ -230,9 +229,9 @@ public class World {
                     
                     if(null != locale) {
                     	if(o instanceof ParticleSystem && locale.useDistanceFog()) {
-                    		gl.disable(GL.FOG);
+                    		GL.glDisable(GL.GL_FOG);
                     	} else if(locale.useDistanceFog()) {
-                    		gl.enable(GL.FOG);
+                    		GL.glEnable(GL.GL_FOG);
                     	}
                     }
                     
@@ -241,9 +240,9 @@ public class World {
                     
                     if(null != locale) {
                     	if(o instanceof ParticleSystem && locale.useDistanceFog()) {
-							gl.enable(GL.FOG);
+							GL.glEnable(GL.GL_FOG);
 						} else if(locale.useDistanceFog()) {
-							gl.disable(GL.FOG);
+							GL.glDisable(GL.GL_FOG);
 						}
                     }
                 }

@@ -33,10 +33,10 @@ package jme.geometry.hud;
 
 import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.Window;
 
 /**
  * <code>SplashScreen</code> creates a screen encompassing splash screen to 
@@ -45,10 +45,9 @@ import org.lwjgl.opengl.GL;
  * to be displayed for a set amount of time. 
  * 
  * @author Mark Powell 
- * @version 0.1.0
+ * @version $Id: SplashScreen.java,v 1.2 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class SplashScreen {
-	private GL gl;
 	private int texId;
 	private float x, y;
 	private float width, height;
@@ -62,17 +61,16 @@ public class SplashScreen {
 	 * 		the OpenGL context.
 	 */
 	public SplashScreen() {
-		gl = DisplaySystem.getDisplaySystem().getGL();
-		if(null == gl) {
-			throw new MonkeyGLException("GL is null. Insure Display has been " +				"created.");
+		if(!Window.isCreated()) {
+			throw new MonkeyGLException("Window must be created first.");
 		}
 		red = 1.0f;
 		blue = 1.0f;
 		green = 1.0f;
 		alpha = 1.0f;
 		
-		width = gl.getWidth();
-		height = gl.getHeight();
+		width = Window.getWidth();
+		height = Window.getHeight();
 		
 		isBlended = true;
 	}
@@ -84,8 +82,8 @@ public class SplashScreen {
 	public void setTexture(String filename) {
 		texId = TextureManager.getTextureManager().loadTexture(
 			filename,
-			GL.LINEAR,
-			GL.LINEAR,
+			GL.GL_LINEAR,
+			GL.GL_LINEAR,
 			true);
 	}
 	
@@ -169,46 +167,46 @@ public class SplashScreen {
 		
 		//set the GL states to how we want them.
 		if(isBlended) {
-			gl.enable(GL.BLEND);
+			GL.glEnable(GL.GL_BLEND);
 		}
-		gl.disable(GL.DEPTH_TEST);
-		gl.enable(GL.TEXTURE_2D);
-		gl.matrixMode(GL.PROJECTION);
-		gl.pushMatrix();
-		gl.loadIdentity();
-		gl.ortho(0, gl.getWidth(), 0, gl.getHeight(), -1, 1);
-		gl.matrixMode(GL.MODELVIEW);
-		gl.pushMatrix();
-		gl.loadIdentity();
-		gl.translatef(x,y,0);
-		gl.color4f(red,green,blue,alpha);
+		GL.glDisable(GL.GL_DEPTH_TEST);
+		GL.glEnable(GL.GL_TEXTURE_2D);
+		GL.glMatrixMode(GL.GL_PROJECTION);
+		GL.glPushMatrix();
+		GL.glLoadIdentity();
+		GL.glOrtho(0, Window.getWidth(), 0, Window.getHeight(), -1, 1);
+		GL.glMatrixMode(GL.GL_MODELVIEW);
+		GL.glPushMatrix();
+		GL.glLoadIdentity();
+		GL.glTranslatef(x,y,0);
+		GL.glColor4f(red,green,blue,alpha);
 		TextureManager.getTextureManager().bind(texId);
 		
-		gl.begin(GL.QUADS);
+		GL.glBegin(GL.GL_QUADS);
 		
-		gl.texCoord2i(0,1);
-		gl.vertex3f(0.0f, height, 0.0f);
+		GL.glTexCoord2f(0,1);
+		GL.glVertex3f(0.0f, height, 0.0f);
 		
-		gl.texCoord2i(0,0);
-		gl.vertex3f(0.0f, 0.0f, 0.0f);
+		GL.glTexCoord2f(0,0);
+		GL.glVertex3f(0.0f, 0.0f, 0.0f);
 		
-		gl.texCoord2i(1,0);
-		gl.vertex3f(width, 0.0f, 0.0f);
+		GL.glTexCoord2f(1,0);
+		GL.glVertex3f(width, 0.0f, 0.0f);
 		
-		gl.texCoord2i(1,1);
-		gl.vertex3f(width, height, 0.0f);
+		GL.glTexCoord2f(1,1);
+		GL.glVertex3f(width, height, 0.0f);
 		
-		gl.end();
+		GL.glEnd();
 		
 		if(isBlended) {
-			gl.disable(GL.BLEND);
+			GL.glDisable(GL.GL_BLEND);
 		}
-		gl.matrixMode(GL.PROJECTION);
-		gl.popMatrix();
-		gl.matrixMode(GL.MODELVIEW);
-		gl.popMatrix();
-		gl.enable(GL.DEPTH_TEST);
-		gl.disable(GL.TEXTURE_2D);
+		GL.glMatrixMode(GL.GL_PROJECTION);
+		GL.glPopMatrix();
+		GL.glMatrixMode(GL.GL_MODELVIEW);
+		GL.glPopMatrix();
+		GL.glEnable(GL.GL_DEPTH_TEST);
+		GL.glDisable(GL.GL_TEXTURE_2D);
 	}
 
 	

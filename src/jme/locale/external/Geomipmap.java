@@ -36,7 +36,6 @@ import java.util.logging.Level;
 
 import jme.exception.MonkeyRuntimeException;
 import jme.locale.external.data.AbstractHeightMap;
-import jme.system.DisplaySystem;
 import jme.entity.camera.Camera;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
@@ -70,7 +69,7 @@ import org.lwjgl.opengl.GL;
  * <code>MidPointHeightMap</code> would not work for this.
  * 
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: Geomipmap.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class Geomipmap extends Terrain {
 	private Camera camera;
@@ -96,7 +95,6 @@ public class Geomipmap extends Terrain {
 		if (patchSize <= 0) {
 			throw new MonkeyRuntimeException("patchSize must be greater than 0.");
 		}
-		gl = DisplaySystem.getDisplaySystem().getGL();
 
 		this.heightData = heightMap;
 		this.terrainSize = heightData.getSize();
@@ -190,7 +188,7 @@ public class Geomipmap extends Terrain {
 
 				if (patches[patch].isVisible || camera.hasMoved()) {
 					patches[patch].distance =
-						org.lwjgl.Math.sqrt(
+						(float)Math.sqrt(
 							(patchX - camera.getPosition().x)
 								* (patchX - camera.getPosition().x)
 								+ (patchY - camera.getPosition().y)
@@ -210,20 +208,20 @@ public class Geomipmap extends Terrain {
 	 */
 	public void render() {
 
-		gl.activeTextureARB(GL.TEXTURE0_ARB);
-		gl.enable(GL.TEXTURE_2D);
-		gl.enable(GL.DEPTH_TEST);
+		GL.glActiveTextureARB(GL.GL_TEXTURE0_ARB);
+		GL.glEnable(GL.GL_TEXTURE_2D);
+		GL.glEnable(GL.GL_DEPTH_TEST);
 		if(useDistanceFog || useVolumeFog) {
-			gl.enable(GL.FOG);
+			GL.glEnable(GL.GL_FOG);
 		}
 		TextureManager.getTextureManager().bind(terrainTexture);
 
 		if (isDetailed) {
-			gl.activeTextureARB(GL.TEXTURE1_ARB);
-			gl.enable(GL.TEXTURE_2D);
+			GL.glActiveTextureARB(GL.GL_TEXTURE1_ARB);
+			GL.glEnable(GL.GL_TEXTURE_2D);
 			TextureManager.getTextureManager().bind(detailId);
-			gl.texEnvi(GL.TEXTURE_ENV, GL.TEXTURE_ENV_MODE, GL.COMBINE_ARB);
-			gl.texEnvi(GL.TEXTURE_ENV, GL.RGB_SCALE_ARB, 2);
+			GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_COMBINE_ARB);
+			GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_RGB_SCALE_ARB, 2);
 		}
 
 		patchesRendered = 0;
@@ -236,16 +234,16 @@ public class Geomipmap extends Terrain {
 			}
 		}
 
-		gl.activeTextureARB(GL.TEXTURE1_ARB);
-		gl.disable(GL.TEXTURE_2D);
-		gl.bindTexture(GL.TEXTURE_2D, 0);
+		GL.glActiveTextureARB(GL.GL_TEXTURE1_ARB);
+		GL.glDisable(GL.GL_TEXTURE_2D);
+		GL.glBindTexture(GL.GL_TEXTURE_2D, 0);
 
-		gl.activeTextureARB(GL.TEXTURE0_ARB);
-		gl.disable(GL.TEXTURE_2D);
-		gl.bindTexture(GL.TEXTURE_2D, 0);
-		gl.disable(GL.DEPTH_TEST);
+		GL.glActiveTextureARB(GL.GL_TEXTURE0_ARB);
+		GL.glDisable(GL.GL_TEXTURE_2D);
+		GL.glBindTexture(GL.GL_TEXTURE_2D, 0);
+		GL.glDisable(GL.GL_DEPTH_TEST);
 		if(useDistanceFog || useVolumeFog) {
-			gl.disable(GL.FOG);
+			GL.glDisable(GL.GL_FOG);
 		}
 	}
 
@@ -285,13 +283,13 @@ public class Geomipmap extends Terrain {
 			green = 1.0f;
 			blue = 1.0f;
 		}
-		gl.color3f(red, green, blue);
+		GL.glColor3f(red, green, blue);
 
 		//set up the texture coordinates.
-		gl.multiTexCoord2fARB(GL.TEXTURE0_ARB, u, v);
+		GL.glMultiTexCoord2fARB(GL.GL_TEXTURE0_ARB, u, v);
 		if (isDetailed) {
-			gl.multiTexCoord2fARB(
-				GL.TEXTURE1_ARB,
+			GL.glMultiTexCoord2fARB(
+				GL.GL_TEXTURE1_ARB,
 				u * repeatDetailMap,
 				v * repeatDetailMap);
 		}
@@ -301,7 +299,7 @@ public class Geomipmap extends Terrain {
 				heightData.getScaledHeightAtPoint((int) x, (int) z));
 		}
 		//render the point.
-		gl.vertex3f(
+		GL.glVertex3f(
 			x * xScale,
 			heightData.getScaledHeightAtPoint((int) x, (int) z),
 			z * zScale);
@@ -335,7 +333,7 @@ public class Geomipmap extends Terrain {
 		midX = ((texLeft + texRight) / 2);
 		midZ = ((texBottom + texTop) / 2);
 
-		gl.begin(GL.TRIANGLE_FAN);
+		GL.glBegin(GL.GL_TRIANGLE_FAN);
 
 		//a fan is rendered by drawing a line from the center to the
 		//four corners. If a neighbor side is true, we also draw a 
@@ -371,7 +369,7 @@ public class Geomipmap extends Terrain {
 
 		renderVertex(x - halfSize, z - halfSize, texLeft, texBottom);
 
-		gl.end();
+		GL.glEnd();
 	}
 
 	/**

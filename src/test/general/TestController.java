@@ -66,7 +66,7 @@ public class TestController extends TrackingController {
 		if (isKeyDown("exit")) {
 			return false;
 		}
-
+        
 		if (isKeyDown("640x480")) {
 			if (smode != 0) {
 				smode = 0;
@@ -89,15 +89,15 @@ public class TestController extends TrackingController {
 		}
 
 		if (isKeyDown("linemode")) {
-			DisplaySystem.getDisplaySystem().getGL().polygonMode(
-				GL.FRONT_AND_BACK,
-				GL.LINE);
+			GL.glPolygonMode(
+				GL.GL_FRONT_AND_BACK,
+				GL.GL_LINE);
 		}
 
 		if (isKeyDown("fillmode")) {
-			DisplaySystem.getDisplaySystem().getGL().polygonMode(
-				GL.FRONT_AND_BACK,
-				GL.FILL);
+			GL.glPolygonMode(
+				GL.GL_FRONT_AND_BACK,
+				GL.GL_FILL);
 		}
 
 		if (isKeyDown("screenshot")) {

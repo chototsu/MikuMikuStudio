@@ -36,11 +36,9 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.vector.Vector3f;
 
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 /**
@@ -64,8 +62,6 @@ import jme.texture.TextureManager;
  * @version 1
  */
 public class ParticleEmitter {
-	//gl object for rendering
-	private GL gl;
 
 	//handles the particle objects.
 	private int numParticles;
@@ -110,7 +106,6 @@ public class ParticleEmitter {
 	 * 		on screen at any one time.
 	 */
 	public ParticleEmitter(int numParticles) {
-		gl = DisplaySystem.getDisplaySystem().getGL();
 
 		this.numParticles = numParticles;
 		particles = new Particle[numParticles];
@@ -206,16 +201,15 @@ public class ParticleEmitter {
 	 * effect using two dimensional objects. 
 	 */
 	public void render() {
-		gl.pushMatrix();
+		GL.glPushMatrix();
 		//set gl state.
-		gl.enable(GL.TEXTURE_2D);
-		gl.enable(GL.BLEND);
-		gl.blendFunc(GL.SRC_ALPHA, GL.ONE);
+		GL.glEnable(GL.GL_TEXTURE_2D);
+		GL.glEnable(GL.GL_BLEND);
+		GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
 		TextureManager.getTextureManager().bind(texId);
 
 		//get the view matrix for billboarding.
-		int bufPtr = Sys.getDirectBufferAddress(buf);
-		gl.getFloatv(GL.MODELVIEW_MATRIX, bufPtr);
+        GL.glGetFloat(GL.GL_MODELVIEW_MATRIX, buf);
 		buf.rewind();
 		buf.get(matrix);
 
@@ -230,13 +224,13 @@ public class ParticleEmitter {
 
 		//render each particle
 		for (int i = 0; i < numParticles; i++) {
-			gl.color4f(
+			GL.glColor4f(
 				particles[i].color.x,
 				particles[i].color.y,
 				particles[i].color.z,
 				particles[i].life);
-			gl.begin(GL.TRIANGLE_STRIP);
-			gl.texCoord2d(1, 1);
+			GL.glBegin(GL.GL_TRIANGLE_STRIP);
+			GL.glTexCoord2f(1, 1);
 
 			//top right of quad
 			billboard.x =
@@ -248,8 +242,8 @@ public class ParticleEmitter {
 			billboard.z =
 				(right.z + up.z) * particles[i].size.z
 					+ particles[i].position.z;
-			gl.vertex3f(billboard.x, billboard.y, billboard.z);
-			gl.texCoord2d(0, 1);
+			GL.glVertex3f(billboard.x, billboard.y, billboard.z);
+			GL.glTexCoord2f(0, 1);
 
 			//top left of quad
 			billboard.x =
@@ -262,8 +256,8 @@ public class ParticleEmitter {
 				(up.z - right.z) * particles[i].size.z
 					+ particles[i].position.z;
 			
-			gl.vertex3f(billboard.x, billboard.y, billboard.z);
-			gl.texCoord2d(1, 0);
+			GL.glVertex3f(billboard.x, billboard.y, billboard.z);
+			GL.glTexCoord2f(1, 0);
 
 			//bottom right of quad
 			billboard.x =
@@ -273,8 +267,8 @@ public class ParticleEmitter {
 			billboard.z =
 				(right.z - up.z) * particles[i].size.z + particles[i].position.z;
 			
-			gl.vertex3f(billboard.x, billboard.y, billboard.z);
-			gl.texCoord2d(0, 0);
+			GL.glVertex3f(billboard.x, billboard.y, billboard.z);
+			GL.glTexCoord2f(0, 0);
 
 			//bottom left of quad
 			billboard.x =
@@ -290,15 +284,15 @@ public class ParticleEmitter {
 					- particles[i].size.z
 					+ particles[i].position.z;
 			
-			gl.vertex3f(billboard.x, billboard.y, billboard.z);
-			gl.end();
+			GL.glVertex3f(billboard.x, billboard.y, billboard.z);
+			GL.glEnd();
 
 		}
 
 		//revert open gl state
-		gl.disable(GL.TEXTURE_2D);
-        gl.disable(GL.BLEND);
-		gl.popMatrix();
+		GL.glDisable(GL.GL_TEXTURE_2D);
+        GL.glDisable(GL.GL_BLEND);
+		GL.glPopMatrix();
 	}
 
 	/**
@@ -399,8 +393,8 @@ public class ParticleEmitter {
 	public void setTexture(String filename) {
 		texId = TextureManager.getTextureManager().loadTexture(
 				filename,
-				GL.LINEAR_MIPMAP_LINEAR,
-				GL.LINEAR,
+				GL.GL_LINEAR_MIPMAP_LINEAR,
+				GL.GL_LINEAR,
 				true);
 	}
 	

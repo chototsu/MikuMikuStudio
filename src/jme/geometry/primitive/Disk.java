@@ -38,10 +38,8 @@ import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 import jme.utility.LoggingSystem;
 
-import org.lwjgl.opengl.GLU;
 
 /**
  * <code>Disk</code> defines a disk geometry. The disk is defined by two radii.
@@ -52,7 +50,7 @@ import org.lwjgl.opengl.GLU;
  * determine the number of concentric rings around the center.
  * 
  * @author Mark Powell
- * @version $Id: Disk.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
+ * @version $Id: Disk.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class Disk extends Quadric {
     
@@ -62,8 +60,6 @@ public class Disk extends Quadric {
     protected int slices;
     protected int loops;
     
-    //reference to the GLU object
-    protected GLU glu;
     
     /**
      * Constructor creates a new Disk geometry object. The disk is defined by
@@ -100,8 +96,6 @@ public class Disk extends Quadric {
         		new Vector((float)outerRadius,(float)outerRadius,(float)outerRadius));
         boundingSphere = new BoundingSphere((float)outerRadius, null);
         
-        glu = DisplaySystem.getDisplaySystem().getGLU();
-        
         super.initialize();
         
         LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO,
@@ -113,7 +107,7 @@ public class Disk extends Quadric {
      */
     public void render() {
         super.preRender();
-        glu.disk(quadricPointer, innerRadius, outerRadius, slices, loops);
+        //glu.disk(quadricPointer, innerRadius, outerRadius, slices, loops);
         super.clean();
     }
     

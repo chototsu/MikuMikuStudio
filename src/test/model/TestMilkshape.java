@@ -30,7 +30,7 @@
  *
  */
  
-package test.application;
+package test.model;
 
 import org.lwjgl.Display; 
 import org.lwjgl.opengl.GL; 
@@ -38,102 +38,116 @@ import org.lwjgl.opengl.GLU;
 import org.lwjgl.opengl.Window;
 
 import jme.AbstractGame; 
+import jme.controller.BaseFPSController;
+import jme.entity.camera.Camera;
+import jme.geometry.model.ms.MilkshapeModel;
 import jme.system.DisplaySystem;
+import jme.utility.Timer;
 
 /**
- * <code>TestApplication</code> provides a very basic jME OpenGL construct
- * This code generates a basic OpenGL window with a black background.
- * You will can use this basic construct to build more complex jME applications
- *  
- * @author Samuel Wasson
- * @version $Id: TestApplication.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
+ * 
+ * @author Mark Powell
  */
 
-//Edit: Mark Powell - altered comments slightly. 8/7/03
-
-public class TestApplication extends AbstractGame {
+public class TestMilkshape extends AbstractGame {
+    //our model object
+    private MilkshapeModel model;
+    
+    BaseFPSController controller;
+    Timer timer;
+    Camera camera;
     /**
      * This is where we'll do any updating
      */
     protected void update() {
-	}
-	
+        timer.update();
+        if(!controller.update(timer.getFrameRate())) { 
+          finish();
+        }
+    }
+    
     /**
      * Render is called once per frame to display the data.
      */
-	protected void render() {
-		GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
-		GL.glLoadIdentity();
-	}
-	
+    protected void render() {
+        GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+        GL.glLoadIdentity();
+        controller.render();
+        model.render();
+    }
+    
     /** 
      * This is where we create and initialize the window.
      */
-	protected void initDisplay() {
-		
-		DisplaySystem.createDisplaySystem(
-			"TestApplication", 
-			"data/Images/Monkey.jpg",
-			true
-		);
-	}
-	
-	protected void initGL() {
+    protected void initDisplay() {
+        
+        DisplaySystem.createDisplaySystem(
+            "TestMilkshape", 
+            "data/Images/Monkey.jpg",
+            true
+        );
+    }
+    
+    protected void initGL() {
 
-		 // Here we create the OpenGL bindings.
-		 
-		//Define the clear color to be black
-				
-		GL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+         // Here we create the OpenGL bindings.
+         
+        //Define the clear color to be black
+                
+        GL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-		GL.glMatrixMode(GL.GL_PROJECTION);
-		GL.glLoadIdentity();
-		
-		
-		 // Calculate the aspect ratio
+        GL.glMatrixMode(GL.GL_PROJECTION);
+        GL.glLoadIdentity();
+        
+        
+         // Calculate the aspect ratio
         GLU.gluPerspective(
-			45.0f,
-			(float)Display.getWidth() / (float)Display.getHeight(),
-			0.01f,
-			750.0f);
-		
-		GL.glMatrixMode(GL.GL_MODELVIEW);
-		GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);		
-	}
+            45.0f,
+            (float)Display.getWidth() / (float)Display.getHeight(),
+            0.01f,
+            750.0f);
+        
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);     
+    }
 
     /**
      * Called first to initialize system attributes.
      */
-	protected void initSystem() {
-		initDisplay();
-		initGL();
-	}
+    protected void initSystem() {
+        initDisplay();
+        initGL();
+    }
     /** 
      * Nothing here yet.
      */
-	protected void initGame() {
-	}
+    protected void initGame() {
+        model = new MilkshapeModel("./data/model/arab/ak47.ms3d");
+        camera = new Camera(1,0,0,100,0,10,0,0,1,0);
+        controller = new BaseFPSController(camera);
+        timer = Timer.getTimer();
+    }
 
     /** 
      * Nothing here yet.
      */
-	protected void reinit() {
-	}
+    protected void reinit() {
+    }
 
     /**
      * Clean up the OpenGL resources
      */
-	protected void cleanup() {
-		Window.destroy();
-	}
+    protected void cleanup() {
+        Window.destroy();
+    }
 
     /**
      * <code>main</code> entry point for application.
      * @param args comman line arguments, none used.
-     */	
-	public static void main(String[] args) { 
-	   TestApplication testApp = new TestApplication(); 
-	   testApp.start(); 
-	}	
+     */ 
+    public static void main(String[] args) { 
+       TestMilkshape testApp = new TestMilkshape(); 
+       testApp.start(); 
+    }   
 }
-	
+    

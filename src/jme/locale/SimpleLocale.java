@@ -35,7 +35,6 @@ package jme.locale;
 import java.util.logging.Level;
 
 import jme.exception.MonkeyRuntimeException;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
 
@@ -67,7 +66,7 @@ public class SimpleLocale implements Locale {
     private float alpha = 1.0f;
 
     //gl object.
-    private GL gl;
+    //private GL gl;
 
     /**
      * Constructor builds a new <code>SimpleLocale</code> with the defined,
@@ -88,8 +87,7 @@ public class SimpleLocale implements Locale {
 
         this.center = center;
         this.halfLength = length / 2;
-        gl = DisplaySystem.getDisplaySystem().getGL();
-
+        
         LoggingSystem.getLoggingSystem().getLogger().log(
             Level.INFO,
             "SimpleLocale created.");
@@ -112,29 +110,29 @@ public class SimpleLocale implements Locale {
 
         //bind texture only if one has been set.
         if (textureID > 0) {
-            gl.enable(GL.TEXTURE_2D);
+            GL.glEnable(GL.GL_TEXTURE_2D);
             TextureManager.getTextureManager().bind(textureID);
         }
 
-        gl.color4f(red, green, blue, alpha);
-        gl.begin(GL.QUADS);
+        GL.glColor4f(red, green, blue, alpha);
+        GL.glBegin(GL.GL_QUADS);
 
-        gl.texCoord2f(0f, 1f);
-        gl.vertex3f(center.x - halfLength, center.y, center.z + halfLength);
+        GL.glTexCoord2f(0f, 1f);
+        GL.glVertex3f(center.x - halfLength, center.y, center.z + halfLength);
 
-        gl.texCoord2f(1f, 1f);
-        gl.vertex3f(center.x + halfLength, center.y, center.z + halfLength);
+        GL.glTexCoord2f(1f, 1f);
+        GL.glVertex3f(center.x + halfLength, center.y, center.z + halfLength);
 
-        gl.texCoord2f(1f, 0f);
-        gl.vertex3f(center.x + halfLength, center.y, center.z - halfLength);
+        GL.glTexCoord2f(1f, 0f);
+        GL.glVertex3f(center.x + halfLength, center.y, center.z - halfLength);
 
-        gl.texCoord2f(0f, 0f);
-        gl.vertex3f(center.x - halfLength, center.y, center.z - halfLength);
+        GL.glTexCoord2f(0f, 0f);
+        GL.glVertex3f(center.x - halfLength, center.y, center.z - halfLength);
 
-        gl.end();
+        GL.glEnd();
 
         if (textureID > 0) {
-            gl.disable(GL.TEXTURE_2D);
+            GL.glDisable(GL.GL_TEXTURE_2D);
         }
     }
 
@@ -145,8 +143,8 @@ public class SimpleLocale implements Locale {
     public void setTexture(String filename) {
         textureID = TextureManager.getTextureManager().loadTexture(
             filename,
-            GL.LINEAR_MIPMAP_LINEAR,
-            GL.LINEAR,
+            GL.GL_LINEAR_MIPMAP_LINEAR,
+            GL.GL_LINEAR,
             true);
     }
 

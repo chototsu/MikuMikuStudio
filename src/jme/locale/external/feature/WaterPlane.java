@@ -33,7 +33,6 @@ package jme.locale.external.feature;
 
 import jme.exception.MonkeyRuntimeException;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 import org.lwjgl.opengl.GL;
@@ -46,7 +45,7 @@ import org.lwjgl.opengl.GL;
  * the texture sliding across the plane.
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: WaterPlane.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class WaterPlane implements Water {
 
@@ -77,8 +76,6 @@ public class WaterPlane implements Water {
 	private float changeX = 0.0f;
 	private float changeZ = 0.0f;
 	
-	//opengl object
-	private GL gl;
 	
 	/**
 	 * Constructor instantiates a new <code>WaterPlane</code> object. 
@@ -97,7 +94,6 @@ public class WaterPlane implements Water {
 		this.baseLevel = baseLevel;
 		this.variation = variation;
 		
-		gl = DisplaySystem.getDisplaySystem().getGL();
 	}
 
 	/**
@@ -111,8 +107,8 @@ public class WaterPlane implements Water {
 		}
 		texId = TextureManager.getTextureManager().loadTexture(
 				filename,
-				GL.LINEAR_MIPMAP_LINEAR,
-				GL.LINEAR,
+				GL.GL_LINEAR_MIPMAP_LINEAR,
+				GL.GL_LINEAR,
 				true);
 	}
 
@@ -197,34 +193,34 @@ public class WaterPlane implements Water {
 	 * texture, color and location.
 	 */
 	public void render() {
-		gl.enable(GL.BLEND);
-		gl.enable(GL.TEXTURE_2D);
-		gl.enable(GL.DEPTH_TEST);
-		gl.disable(GL.CULL_FACE);
-		gl.blendFunc(GL.SRC_ALPHA, GL.ONE);
+		GL.glEnable(GL.GL_BLEND);
+		GL.glEnable(GL.GL_TEXTURE_2D);
+		GL.glEnable(GL.GL_DEPTH_TEST);
+		GL.glDisable(GL.GL_CULL_FACE);
+		GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
 		
-		gl.color4f(color.x, color.y, color.z, transparency);
+		GL.glColor4f(color.x, color.y, color.z, transparency);
 		
 		TextureManager.getTextureManager().bind(texId);
 		
-		gl.begin(GL.TRIANGLE_STRIP);
+		GL.glBegin(GL.GL_TRIANGLE_STRIP);
 		
 		
-		gl.texCoord2f(changeX, changeZ);
-		gl.vertex3f(0.0f, currentLevel, 0.0f);
-		gl.texCoord2f(changeX + repeat, changeZ);
-		gl.vertex3f(size, currentLevel, 0.0f);
-		gl.texCoord2f(changeX, changeZ+repeat);
-		gl.vertex3f(0.0f, currentLevel, size);
-		gl.texCoord2f(changeX + repeat, changeZ + repeat);
-		gl.vertex3f(size, currentLevel, size);
+		GL.glTexCoord2f(changeX, changeZ);
+		GL.glVertex3f(0.0f, currentLevel, 0.0f);
+		GL.glTexCoord2f(changeX + repeat, changeZ);
+		GL.glVertex3f(size, currentLevel, 0.0f);
+		GL.glTexCoord2f(changeX, changeZ+repeat);
+		GL.glVertex3f(0.0f, currentLevel, size);
+		GL.glTexCoord2f(changeX + repeat, changeZ + repeat);
+		GL.glVertex3f(size, currentLevel, size);
 		
-		gl.end();
+		GL.glEnd();
 		
-		gl.disable(GL.BLEND);
-		gl.disable(GL.TEXTURE_2D);
-		gl.disable(GL.DEPTH_TEST);
-		gl.enable(GL.CULL_FACE);
+		GL.glDisable(GL.GL_BLEND);
+		GL.glDisable(GL.GL_TEXTURE_2D);
+		GL.glDisable(GL.GL_DEPTH_TEST);
+		GL.glEnable(GL.GL_CULL_FACE);
 	}
 
 }

@@ -39,6 +39,10 @@ import org.lwjgl.Display;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLCaps;
+import org.lwjgl.opengl.GLU;
+import org.lwjgl.opengl.Window;
+
 import jme.AbstractGame;
 import jme.entity.Entity;
 import jme.geometry.model.md3.Md3Model;
@@ -83,10 +87,11 @@ public class TestMain extends AbstractGame {
 	SplashScreen ss;
 
 	static {
-		if (GL.WGL_EXT_swap_control) {
+		if (GLCaps.WGL_EXT_swap_control) {
 			GL.wglSwapIntervalEXT(1);
 		}
 	}
+    
 
 	int tex1, tex2, tex3;
 
@@ -181,8 +186,8 @@ public class TestMain extends AbstractGame {
 
 	}
 	protected void render() {
-		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-		gl.loadIdentity();
+		GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		GL.glLoadIdentity();
 		cc.render();
 		world.render();
 		font.print(
@@ -230,25 +235,23 @@ public class TestMain extends AbstractGame {
 	}
 
 	private void initGL() {
-		gl = DisplaySystem.getDisplaySystem().getGL();
-		glu = DisplaySystem.getDisplaySystem().getGLU();
-		gl.shadeModel(GL.SMOOTH);
-		gl.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.clearDepth(1.0);
-		gl.enable(GL.DEPTH_TEST);
-		gl.depthFunc(GL.LESS);
-		gl.matrixMode(GL.PROJECTION);
-		gl.loadIdentity();
+		GL.glShadeModel(GL.GL_SMOOTH);
+        GL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+        GL.glClearDepth(1.0);
+        GL.glEnable(GL.GL_DEPTH_TEST);
+        GL.glDepthFunc(GL.GL_LESS);
+        GL.glMatrixMode(GL.GL_PROJECTION);
+        GL.glLoadIdentity();
 		// Calculate The Aspect Ratio Of The Window
-		glu.perspective(
+        GLU.gluPerspective(
 			45.0f,
 			(float) Display.getWidth() / (float) Display.getHeight(),
 			0.1f,
-			750.0f);
-		gl.matrixMode(GL.MODELVIEW);
-		gl.hint(GL.PERSPECTIVE_CORRECTION_HINT, GL.NICEST);
-		gl.blendFunc(GL.SRC_ALPHA, GL.ONE);
-		DisplaySystem.getDisplaySystem().cullMode(GL.BACK, true);
+			500.0f);
+		GL.glMatrixMode(GL.GL_MODELVIEW);
+		GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+		GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
+		DisplaySystem.getDisplaySystem().cullMode(GL.GL_BACK, true);
 
 	}
 	protected void reinit() {
@@ -267,7 +270,7 @@ public class TestMain extends AbstractGame {
 		}
 
 		float[] color = { 0.5f, 0.5f, 0.5f, 1.0f };
-		l.setFogAttributes(GL.LINEAR, color, 0.35f, 100.0f, 750.0f);
+		l.setFogAttributes(GL.GL_LINEAR, color, 0.35f, 50.0f, 500.0f);
 		l.setDistanceFog(true);
 	}
 	protected void initSystem() {
@@ -376,7 +379,7 @@ public class TestMain extends AbstractGame {
 		world.setWater(wp);
 		world.setLocale(l);
 		float[] color = { 0.5f, 0.5f, 0.5f, 1.0f };
-		l.setFogAttributes(GL.LINEAR, color, 0.35f, 50.0f, 750.0f);
+		l.setFogAttributes(GL.GL_LINEAR, color, 0.35f, 50.0f, 750.0f);
 		l.setDistanceFog(true);
 		l.setVolumetricFog(false);
 		l.setVolumetricFogDepth(100);
@@ -426,7 +429,7 @@ public class TestMain extends AbstractGame {
 	protected void cleanup() {
 		Keyboard.destroy();
 		Mouse.destroy();
-		gl.destroy();
+		Window.destroy();
 		TextureManager.reset();
 	}
 	public static void main(String[] args) {

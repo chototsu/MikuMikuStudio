@@ -48,6 +48,7 @@ public class KeyController extends BaseFPSController {
 	
 	public void setKeys() {
 	 key.set("triangle", Keyboard.KEY_1);
+     key.set("screenshot", Keyboard.KEY_P);
 	}
 	
 	protected boolean checkAdditionalKeys() {
@@ -60,6 +61,11 @@ public class KeyController extends BaseFPSController {
 		 app.setRenderObject(1);
 		 return true;
 	 }
+     
+     if(isKeyDown("screenshot")) {
+         app.takeScreenShot();
+         return true;
+     }
 	 return true;
 	}
 }

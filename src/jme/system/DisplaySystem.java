@@ -48,11 +48,11 @@ import jme.utility.LoggingSystem;
 
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
-import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLU;
+import org.lwjgl.opengl.GLCaps;
+import org.lwjgl.opengl.Window;
 
 /**
  * <code>DisplaySystem</code> manages the Window and OpenGL context of the 
@@ -81,10 +81,6 @@ import org.lwjgl.opengl.GLU;
 public class DisplaySystem {
     //Singleton reference.
     private static DisplaySystem instance = null;
-
-    //the OpenGL objects
-    private static GL gl;
-    private static GLU glu;
 
     //attributes of the window
     private int height;
@@ -179,7 +175,7 @@ public class DisplaySystem {
         this.title = title;
 
         //recreate the display
-        gl.destroy();
+        Window.destroy();
         initDisplay();
         Keyboard.destroy();
         Mouse.destroy();
@@ -280,30 +276,6 @@ public class DisplaySystem {
     }
 
     /**
-     * <code>getGL</code> returns the OpenGL core object. This <code>GL</code>
-     * object can be used to make any calls to the OpenGL core gl functions.
-     * 
-     * @return the <code>GL</code> object referred to this display. If 
-     *      <code>createDisplaySystem</code> has not been called before invoking
-     *      this method, null will be returned.
-     */
-    public GL getGL() {
-        return gl;
-    }
-
-    /**
-     * <code>getGLU</code> returns the OpenGL utility object. This <code>GLU</code>
-     * object can be used to make any calls to the OpenGL utility functions.
-     * 
-     * @return the <code>GLU</code> object referred to this display. If 
-     *      <code>createDisplaySystem</code> has not been called before invoking
-     *      this method, null will be returned.
-     */
-    public GLU getGLU() {
-        return glu;
-    }
-
-    /**
      * <code>getDisplaySystem</code> returns the reference to the singleton 
      * object of the <code>DisplaySystem</code>. After a call to 
      * <code>createDisplaySystem</code> is made, you can retrieve any 
@@ -359,11 +331,11 @@ public class DisplaySystem {
      * @param on true turn on culling, false turn it off.
      */
     public void cullMode(int mode, boolean on) {
-        gl.cullFace(mode);
+        GL.glCullFace(mode);
         if (on) {
-            gl.enable(GL.CULL_FACE);
+            GL.glEnable(GL.GL_CULL_FACE);
         } else {
-            gl.disable(GL.CULL_FACE);
+            GL.glDisable(GL.GL_CULL_FACE);
         }
     }
 
@@ -395,15 +367,14 @@ public class DisplaySystem {
                 .allocateDirect(width * height * 4)
                 .order(ByteOrder.nativeOrder())
                 .asIntBuffer();
-        int buffh = Sys.getDirectBufferAddress(buff);
-        gl.readPixels(
+        GL.glReadPixels(
             0,
             0,
             width,
             height,
-            GL.BGRA,
-            GL.UNSIGNED_BYTE,
-            buffh);
+            GL.GL_BGRA,
+            GL.GL_UNSIGNED_BYTE,
+            buff);
         BufferedImage img =
             new BufferedImage(
                 width,
@@ -452,7 +423,7 @@ public class DisplaySystem {
 
             if (fullscreen) {
                 Display.setDisplayMode(mode);
-                gl = new GL(title, bpp, 0, 16, 0);
+                Window.create(title, bpp, 0, 16, 0);
             } else {
                 int x, y;
                 x =
@@ -462,11 +433,10 @@ public class DisplaySystem {
                     (Toolkit.getDefaultToolkit().getScreenSize().height
                         - height)
                         / 2;
-                gl = new GL(title, x, y, width, height, bpp, 0, 16, 0);
+                Window.create(title, x, y, width, height, bpp, 0, 16, 0);
             }
 
-            gl.create();
-            gl.determineAvailableExtensions();
+            GLCaps.determineAvailableExtensions();
 
             LoggingSystem.getLoggingSystem().getLogger().log(
                 Level.INFO,
@@ -477,7 +447,5 @@ public class DisplaySystem {
                 "Failed to create display due to " + e);
             System.exit(1);
         }
-
-        glu = new GLU(gl);
     }
 }

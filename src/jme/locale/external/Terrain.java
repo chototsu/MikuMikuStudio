@@ -34,12 +34,13 @@ package jme.locale.external;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
 import javax.swing.ImageIcon;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLCaps;
 
 import jme.exception.MonkeyRuntimeException;
 import jme.lighting.AbstractLightMap;
@@ -153,16 +154,13 @@ public abstract class Terrain implements Locale {
 	 */
 	public void setFogAttributes(int mode, float[] color, 
 			float density, float start, float end) {
-		ByteBuffer temp = ByteBuffer.allocateDirect(16);
-		temp.order(ByteOrder.nativeOrder());
-
-		gl.fogi(GL.FOG_MODE, mode);
-		gl.fogfv(GL.FOG_COLOR, 
-			Sys.getDirectBufferAddress(
-			temp.asFloatBuffer().put(color)));
-		gl.fogf(GL.FOG_DENSITY, density);
-		gl.fogf(GL.FOG_START, start);
-		gl.fogf(GL.FOG_END, end);
+		FloatBuffer buf = ByteBuffer.allocateDirect(16).order(ByteOrder.nativeOrder()).asFloatBuffer();
+		
+		GL.glFogi(GL.GL_FOG_MODE, mode);
+		GL.glFog(GL.GL_FOG_COLOR, buf);
+		GL.glFogf(GL.GL_FOG_DENSITY, density);
+		GL.glFogf(GL.GL_FOG_START, start);
+		GL.glFogf(GL.GL_FOG_END, end);
 	}
 	
 	/**
@@ -192,9 +190,9 @@ public abstract class Terrain implements Locale {
 	public void setDistanceFog(boolean value) {
 		useDistanceFog = value;
 		if(value) {
-			gl.enable(GL.FOG);
+			GL.glEnable(GL.GL_FOG);
 		} else {
-			gl.disable(GL.FOG);
+			GL.glDisable(GL.GL_FOG);
 		}
 	}
 	
@@ -217,10 +215,10 @@ public abstract class Terrain implements Locale {
 		useVolumeFog = value;
 		
 		if(value) {
-			gl.fogi( GL.FOG_COORDINATE_SOURCE_EXT, GL.FOG_COORDINATE_EXT );
-			gl.enable(GL.FOG);
+			GL.glFogi( GL.GL_FOG_COORDINATE_SOURCE_EXT, GL.GL_FOG_COORDINATE_EXT );
+			GL.glEnable(GL.GL_FOG);
 		} else {
-			gl.disable(GL.FOG);
+			GL.glDisable(GL.GL_FOG);
 		}
 	}
 	
@@ -231,9 +229,9 @@ public abstract class Terrain implements Locale {
 	 */
 	protected void setVolumetricFogCoord(float height) {
 		if(height > fogDepth) {
-			gl.fogCoordfEXT(-(height-fogDepth));
+			GL.glFogCoordfEXT(-(height-fogDepth));
 		} else {
-			gl.fogCoordfEXT(0);
+			GL.glFogCoordfEXT(0);
 		}
 	}
 
@@ -247,7 +245,7 @@ public abstract class Terrain implements Locale {
 	public void setDetailTexture(String detailTexture, int repeat) {
 
 		this.repeatDetailMap = repeat;
-		boolean canMulti = gl.ARB_multitexture;
+		boolean canMulti = GLCaps.GL_ARB_multitexture;
 
 		if (!canMulti) {
 			LoggingSystem.getLoggingSystem().getLogger().log(
@@ -258,8 +256,8 @@ public abstract class Terrain implements Locale {
 		if(null != detailTexture && canMulti) {		
 			detailId = TextureManager.getTextureManager().loadTexture(
 					detailTexture,
-					GL.LINEAR_MIPMAP_LINEAR,
-					GL.LINEAR,
+					GL.GL_LINEAR_MIPMAP_LINEAR,
+					GL.GL_LINEAR,
 					true);
 			isDetailed = true;
 		} else {
@@ -277,8 +275,8 @@ public abstract class Terrain implements Locale {
 		if (texture != null) {
 			if((terrainTexture = TextureManager.getTextureManager().loadTexture(
 					texture,
-					GL.LINEAR_MIPMAP_LINEAR,
-					GL.LINEAR,
+					GL.GL_LINEAR_MIPMAP_LINEAR,
+					GL.GL_LINEAR,
 					true)) != -1) {
 				isTextured = true;
 			}
@@ -297,8 +295,8 @@ public abstract class Terrain implements Locale {
 		if (texture != null) {
 			if((terrainTexture = TextureManager.getTextureManager().loadTexture(
 					texture,
-					GL.LINEAR_MIPMAP_LINEAR,
-					GL.LINEAR,
+					GL.GL_LINEAR_MIPMAP_LINEAR,
+					GL.GL_LINEAR,
 					true)) != -1) {
 				isTextured = true;
 			}

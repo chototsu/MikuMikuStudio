@@ -40,7 +40,6 @@ import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 import jme.utility.LoggingSystem;
 
 /**
@@ -52,7 +51,7 @@ import jme.utility.LoggingSystem;
  * However, frame rate will drop accordingly.
  * 
  * @author Mark Powell
- * @version $Id: Sphere.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
+ * @version $Id: Sphere.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class Sphere extends Quadric {
 
@@ -91,8 +90,6 @@ public class Sphere extends Quadric {
         this.slices = slices;
         this.stacks = stacks;
 
-        glu = DisplaySystem.getDisplaySystem().getGLU();
-
         super.initialize();
         
         //build bounding volumes
@@ -110,7 +107,7 @@ public class Sphere extends Quadric {
     public void render() {
         super.preRender();
 
-        glu.sphere(quadricPointer, radius, slices, stacks);
+        //glu.sphere(quadricPointer, radius, slices, stacks);
 
         super.clean();
     }

@@ -34,6 +34,8 @@ package test.keycontroller;
  
 import org.lwjgl.Display; 
 import org.lwjgl.opengl.GL; 
+import org.lwjgl.opengl.GLU;
+import org.lwjgl.opengl.Window;
 
 import jme.AbstractGame; 
 import jme.system.DisplaySystem;
@@ -72,7 +74,7 @@ public class TestKeyController extends AbstractGame {
 	 */
 	protected void update() {
 		if(!controller.update(timer.getFrameRate())) { 
-		finish();
+		  finish();
 		}
 		timer.update();
 	}
@@ -83,26 +85,30 @@ public class TestKeyController extends AbstractGame {
 	protected void setRenderObject(int value) {
 	 Flag = value;
 	}
+    
+    public void takeScreenShot() {
+        DisplaySystem.getDisplaySystem().takeScreenShot("test");
+    }
 	
 	/**
 	 * Render is called once per frame to display the data.
 	 */
 	protected void render() {
-		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-		gl.loadIdentity();
+		GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		GL.glLoadIdentity();
 		
 		controller.render();
 		
 		// Enable texture mapping
-		gl.enable(GL.TEXTURE_2D);
+		GL.glEnable(GL.GL_TEXTURE_2D);
 
 		if(Flag == 1) {
-		  gl.pushMatrix();
+		  GL.glPushMatrix();
 		  entity1.render();
-		  gl.popMatrix();
+		  GL.glPopMatrix();
 		}
 		
-		gl.end();
+		GL.glEnd();
 		
 		/*
 		 * Print out the frame rate.
@@ -124,7 +130,7 @@ public class TestKeyController extends AbstractGame {
 	 */
 	protected void initDisplay() {
 		DisplaySystem.createDisplaySystem(
-			"TestApplication", 
+			"TestKeyController", 
 			"data/Images/Monkey.jpg",
 			true
 		);
@@ -132,26 +138,21 @@ public class TestKeyController extends AbstractGame {
 	
 	protected void initGL() {
 
-		// Here we create the OpenGL bindings.
-		gl = DisplaySystem.getDisplaySystem().getGL();
-		glu = DisplaySystem.getDisplaySystem().getGLU();
-		
-
 		 // Define the clear color to be black
-		gl.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		GL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 
-		gl.matrixMode(GL.PROJECTION);
-		gl.loadIdentity();
+		GL.glMatrixMode(GL.GL_PROJECTION);
+		GL.glLoadIdentity();
 		
 		// Calculate the aspect ratio
-		glu.perspective(
+        GLU.gluPerspective(
 			45.0f,
 			(float)Display.getWidth() / (float)Display.getHeight(),
 			0.01f,
 			750.0f);
 		
-		gl.matrixMode(GL.MODELVIEW);
-		gl.hint(GL.PERSPECTIVE_CORRECTION_HINT, GL.NICEST);		
+		GL.glMatrixMode(GL.GL_MODELVIEW);
+		GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);		
 	}
 
 	protected void initSystem() {
@@ -162,7 +163,7 @@ public class TestKeyController extends AbstractGame {
 	protected void initGame() {
 
 		 // Blend the font together so it doesn't chop the letters off 
-		gl.blendFunc(GL.SRC_ALPHA, GL.ONE);
+		GL.glBlendFunc(GL.GL_SRC_ALPHA, GL.GL_ONE);
 		
 		 //Instantiate a font object
 		font = new Font2D("data/Font/font.png");
@@ -207,7 +208,7 @@ public class TestKeyController extends AbstractGame {
 	 * Clean up the OpenGL resources
 	 */
 	protected void cleanup() {
-		gl.destroy();
+		Window.destroy();
 	}
 	
 	public static void main(String[] args) { 

@@ -33,9 +33,7 @@ package jme.locale.external.feature;
 
 import java.util.logging.Level;
 
-import jme.exception.MonkeyGLException;
 import jme.exception.MonkeyRuntimeException;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
 
@@ -45,10 +43,10 @@ import org.lwjgl.opengl.GL;
  * <code>WaterMesh</code> creates a mesh that represents water height values.
  * This mesh contains a wave origin that causes ripples to flow outward. 
  * @author Mark Powell
+ * @version $Id: WaterMesh.java,v 1.2 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class WaterMesh implements Water {
     private int texId;
-    private GL gl;
     private float height;
     private int size;
     private int spacing;
@@ -74,13 +72,7 @@ public class WaterMesh implements Water {
      * @throws MonkeyRuntimeException if size is negative.
      */
     public WaterMesh(int size, int spacing, float amplitude) {
-        gl = DisplaySystem.getDisplaySystem().getGL();
-
-        if (null == gl) {
-            throw new MonkeyGLException(
-                "OpenGL Context must be created before WaterMesh.");
-        }
-
+        
         water = new float[size][size];
         wt = new float[size][size];
         v = -4;
@@ -111,8 +103,8 @@ public class WaterMesh implements Water {
         texId =
             TextureManager.getTextureManager().loadTexture(
                 filename,
-                GL.LINEAR_MIPMAP_LINEAR,
-                GL.LINEAR,
+                GL.GL_LINEAR_MIPMAP_LINEAR,
+                GL.GL_LINEAR,
                 true);
     }
 
@@ -169,17 +161,17 @@ public class WaterMesh implements Water {
      * <code>render</code> displays the water mesh to the view port.
      */
     public void render() {
-        gl.enable(GL.BLEND);
-        gl.enable(GL.TEXTURE_2D);
-        gl.enable(GL.DEPTH_TEST);
-        gl.disable(GL.CULL_FACE);
+        GL.glEnable(GL.GL_BLEND);
+        GL.glEnable(GL.GL_TEXTURE_2D);
+        GL.glEnable(GL.GL_DEPTH_TEST);
+        GL.glDisable(GL.GL_CULL_FACE);
         TextureManager.getTextureManager().bind(texId);
         float tx, ty;
 
         /* Draw water */
-        gl.color4f(1f, 1f, 1f, 0.6f);
+        GL.glColor4f(1f, 1f, 1f, 0.6f);
 
-        gl.begin(GL.TRIANGLES);
+        GL.glBegin(GL.GL_TRIANGLES);
         float td = (float)1 / size;
 
         for (int i = 0; i < size - 1; i++) {
@@ -188,38 +180,38 @@ public class WaterMesh implements Water {
             for (int j = 0; j < size - 1; j++) {
                 ty = (float)j / size;
                 
-                gl.texCoord2f(tx, ty);
-                gl.vertex3f(spacing * i, water[i][j] + height, spacing * j);
-                gl.texCoord2f(tx + td, ty);
-                gl.vertex3f(
+                GL.glTexCoord2f(tx, ty);
+                GL.glVertex3f(spacing * i, water[i][j] + height, spacing * j);
+                GL.glTexCoord2f(tx + td, ty);
+                GL.glVertex3f(
                     spacing * (i + 1),
                     water[i + 1][j] + height,
                     spacing * j);
-                gl.texCoord2f(tx + td, ty + td);
-                gl.vertex3f(
+                GL.glTexCoord2f(tx + td, ty + td);
+                GL.glVertex3f(
                     spacing * (i + 1),
                     water[i + 1][j + 1] + height,
                     spacing * (j + 1));
 
-                gl.texCoord2f(tx, ty + td);
-                gl.vertex3f(
+                GL.glTexCoord2f(tx, ty + td);
+                GL.glVertex3f(
                     spacing * i,
                     water[i][j + 1] + height,
                     spacing * (j + 1));
-                gl.texCoord2f(tx, ty);
-                gl.vertex3f(spacing * i, water[i][j] + height, spacing * j);
-                gl.texCoord2f(tx + td, ty + td);
-                gl.vertex3f(
+                GL.glTexCoord2f(tx, ty);
+                GL.glVertex3f(spacing * i, water[i][j] + height, spacing * j);
+                GL.glTexCoord2f(tx + td, ty + td);
+                GL.glVertex3f(
                     spacing * (i + 1),
                     water[i + 1][j + 1] + height,
                     spacing * (j + 1));
             }
         }
-        gl.end();
+        GL.glEnd();
         
-        gl.disable(GL.BLEND);
-        gl.disable(GL.TEXTURE_2D);
-        gl.disable(GL.DEPTH_TEST);
-        gl.enable(GL.CULL_FACE);
+        GL.glDisable(GL.GL_BLEND);
+        GL.glDisable(GL.GL_TEXTURE_2D);
+        GL.glDisable(GL.GL_DEPTH_TEST);
+        GL.glEnable(GL.GL_CULL_FACE);
     }
 }

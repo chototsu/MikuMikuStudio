@@ -37,10 +37,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
-import jme.system.DisplaySystem;
 import jme.utility.LoggingSystem;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
 
 /**
@@ -71,7 +69,7 @@ public class Frustum {
      *
      */
     public Frustum() {
-        gl = DisplaySystem.getDisplaySystem().getGL();
+        //gl = DisplaySystem.getDisplaySystem().getGL();
         proj = new float[16];
         modl = new float[16];
         clip = new float[16];
@@ -99,17 +97,14 @@ public class Frustum {
      */
     public void update() {
         float t;
-
-        int projPtr = Sys.getDirectBufferAddress(projBuf);
-        gl.getFloatv(GL.PROJECTION_MATRIX, projPtr);
-        projBuf.rewind();
+        projBuf.clear();
+        modlBuf.clear();
+        GL.glGetFloat(GL.GL_PROJECTION_MATRIX, projBuf);
         projBuf.get(proj);
 
-        int modlPtr = Sys.getDirectBufferAddress(modlBuf);
-        gl.getFloatv(GL.MODELVIEW_MATRIX, modlPtr);
-        modlBuf.rewind();
+        GL.glGetFloat(GL.GL_MODELVIEW_MATRIX, modlBuf);
         modlBuf.get(modl);
-
+       
         clip[0] =
             modl[0] * proj[0]
                 + modl[1] * proj[4]
@@ -202,7 +197,7 @@ public class Frustum {
 
         /* Normalize the result */
         t =
-            org.lwjgl.Math.sqrt(
+            (float)Math.sqrt(
                 frustum[0][0] * frustum[0][0]
                     + frustum[0][1] * frustum[0][1]
                     + frustum[0][2] * frustum[0][2]);
@@ -219,7 +214,7 @@ public class Frustum {
 
         /* Normalize the result */
         t =
-            org.lwjgl.Math.sqrt(
+            (float)Math.sqrt(
                 frustum[1][0] * frustum[1][0]
                     + frustum[1][1] * frustum[1][1]
                     + frustum[1][2] * frustum[1][2]);
@@ -236,7 +231,7 @@ public class Frustum {
 
         /* Normalize the result */
         t =
-            org.lwjgl.Math.sqrt(
+            (float)Math.sqrt(
                 frustum[2][0] * frustum[2][0]
                     + frustum[2][1] * frustum[2][1]
                     + frustum[2][2] * frustum[2][2]);
@@ -253,7 +248,7 @@ public class Frustum {
 
         /* Normalize the result */
         t =
-            org.lwjgl.Math.sqrt(
+            (float)Math.sqrt(
                 frustum[3][0] * frustum[3][0]
                     + frustum[3][1] * frustum[3][1]
                     + frustum[3][2] * frustum[3][2]);
@@ -270,7 +265,7 @@ public class Frustum {
 
         /* Normalize the result */
         t =
-            org.lwjgl.Math.sqrt(
+            (float)Math.sqrt(
                 frustum[4][0] * frustum[4][0]
                     + frustum[4][1] * frustum[4][1]
                     + frustum[4][2] * frustum[4][2]);
@@ -287,7 +282,7 @@ public class Frustum {
 
         /* Normalize the result */
         t =
-            org.lwjgl.Math.sqrt(
+            (float)Math.sqrt(
                 frustum[5][0] * frustum[5][0]
                     + frustum[5][1] * frustum[5][1]
                     + frustum[5][2] * frustum[5][2]);

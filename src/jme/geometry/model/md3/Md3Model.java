@@ -59,8 +59,8 @@ import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
 import jme.geometry.model.Triangle;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.Window;
 
 /**
  * <code>Md3Model</code> handles loading and rendering a Quake 3 MD3 format
@@ -99,6 +99,7 @@ import org.lwjgl.opengl.GL;
  * 
  * 
  * @author Mark Powell
+ * @version $Id: Md3Model.java,v 1.7 2003-09-03 16:20:52 mojomonkey Exp $
  */
 public class Md3Model implements Geometry {
     /**
@@ -153,9 +154,6 @@ public class Md3Model implements Geometry {
     private BoundingSphere boundingSphere;
     private BoundingBox boundingBox;
 
-    //OpenGL context.
-    private GL gl;
-
     //Model constants
     private static final int START_TORSO_ANIMATION = 6;
     private static final int START_LEGS_ANIMATION = 13;
@@ -174,9 +172,8 @@ public class Md3Model implements Geometry {
         if (null == path || null == model) {
             throw new MonkeyRuntimeException("Path and model cannot be null.");
         }
-        gl = DisplaySystem.getDisplaySystem().getGL();
-        if (null == gl) {
-            throw new MonkeyGLException("OpenGL context must be created first.");
+        if (!Window.isCreated()) {
+            throw new MonkeyGLException("Window must be created first.");
         }
         
         buf =
@@ -270,16 +267,16 @@ public class Md3Model implements Geometry {
      * front.
      */
     public void render() {
-        DisplaySystem.getDisplaySystem().cullMode(GL.FRONT, true);
+        DisplaySystem.getDisplaySystem().cullMode(GL.GL_FRONT, true);
         
         //MD3 has Z up, so remedy this.
-		gl.rotatef(-90,0,1,0);
-        gl.rotatef(-90, 1, 0, 0);
+		GL.glRotatef(-90,0,1,0);
+        GL.glRotatef(-90, 1, 0, 0);
         
         //scale by a desired factor
-        gl.scalef(scale.x, scale.y, scale.z);
+        GL.glScalef(scale.x, scale.y, scale.z);
         //set the desired color
-        gl.color4f(r, g, b, a);
+        GL.glColor4f(r, g, b, a);
 
         //Update the leg and torso animations
         updateModel(lower);
@@ -287,8 +284,8 @@ public class Md3Model implements Geometry {
 
         //start rendering with the legs first.
         drawLink(lower);
-        //set culling back to GL.BACK
-        DisplaySystem.getDisplaySystem().cullMode(GL.BACK, true);
+        //set culling back to GL.GL_BACK
+        DisplaySystem.getDisplaySystem().cullMode(GL.GL_BACK, true);
     }
 
     /**
@@ -1047,8 +1044,8 @@ public class Md3Model implements Geometry {
                 ((MaterialInfo)model.materials.get(i)).texureId =
                     TextureManager.getTextureManager().loadTexture(
                         fullPath,
-                        GL.LINEAR_MIPMAP_LINEAR,
-                        GL.LINEAR,
+                        GL.GL_LINEAR_MIPMAP_LINEAR,
+                        GL.GL_LINEAR,
                         true);
             }
         }
@@ -1246,16 +1243,16 @@ public class Md3Model implements Geometry {
                 finalMatrix[14] = position.z;
 
                 //render the model
-                gl.pushMatrix();
+                GL.glPushMatrix();
 
                 buf.clear();
                 buf.put(finalMatrix);
-                int ptr = Sys.getDirectBufferAddress(buf);
-                gl.multMatrixf(ptr);
+                buf.flip();
+                GL.glMultMatrixf(buf);
                 //render the children
                 drawLink(model.links[i]);
 
-                gl.popMatrix();
+                GL.glPopMatrix();
             }
         }
 
@@ -1308,18 +1305,18 @@ public class Md3Model implements Geometry {
             
             //if there is a texture assigned to the model, use it.
             if (object3d.hasTexture) {
-                gl.enable(GL.TEXTURE_2D);
+                GL.glEnable(GL.GL_TEXTURE_2D);
 
                 int textureID = ((MaterialInfo)model.materials.get(
                             object3d.materialID)).texureId;
 
                 TextureManager.getTextureManager().bind(textureID);
             } else {
-                gl.disable(GL.TEXTURE_2D);
+                GL.glDisable(GL.GL_TEXTURE_2D);
             }
 
             //render the model as triangles
-            gl.begin(GL.TRIANGLES);
+            GL.glBegin(GL.GL_TRIANGLES);
 
             for (int j = 0; j < object3d.numOfFaces; j++) {
                 for (int whichVertex = 0; whichVertex < 3; whichVertex++) {
@@ -1327,7 +1324,7 @@ public class Md3Model implements Geometry {
 
                     if (object3d.texVerts != null) {
                         // Assign the texture coordinate to this vertex
-                        gl.texCoord2f(
+                        GL.glTexCoord2f(
                             object3d.texVerts[index].x,
                             object3d.texVerts[index].y);
                     }
@@ -1336,14 +1333,14 @@ public class Md3Model implements Geometry {
                     Vector point2 = object3d.verts[nextIndex + index];
                     
                     //interpolate
-                    gl.vertex3f(
+                    GL.glVertex3f(
                         point1.x + model.t * (point2.x - point1.x),
                         point1.y + model.t * (point2.y - point1.y),
                         point1.z + model.t * (point2.z - point1.z));
 
                 }
             }
-            gl.end();
+            GL.glEnd();
         }
     }
     

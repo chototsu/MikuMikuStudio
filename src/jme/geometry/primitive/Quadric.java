@@ -34,7 +34,6 @@ package jme.geometry.primitive;
 
 import org.lwjgl.opengl.GL;
 
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 /**
@@ -63,7 +62,7 @@ public abstract class Quadric extends Primitive {
 	 * subclass geometry. This creates a new quadric object.
 	 */
 	public void initialize() {
-		quadricPointer = DisplaySystem.getDisplaySystem().getGLU().newQuadric();
+		//quadricPointer = DisplaySystem.getDisplaySystem().getGLU().newQuadric();
 	}
 
 	/**
@@ -72,13 +71,13 @@ public abstract class Quadric extends Primitive {
 	 */
 	public void preRender() {
 		if (getTextureId() > 0) {
-			DisplaySystem.getDisplaySystem().getGL().enable(GL.TEXTURE_2D);
+			//DisplaySystem.getDisplaySystem().getGL().enable(GL.TEXTURE_2D);
 			TextureManager.getTextureManager().bind(getTextureId());
-			DisplaySystem.getDisplaySystem().getGLU().quadricTexture(
-				quadricPointer,
-				true);
+//			DisplaySystem.getDisplaySystem().getGLU().quadricTexture(
+//				quadricPointer,
+//				true);
 		}
-		DisplaySystem.getDisplaySystem().getGL().color4f(
+		GL.glColor4f(
 			red,
 			green,
 			blue,

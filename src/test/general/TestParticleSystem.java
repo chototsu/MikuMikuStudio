@@ -34,6 +34,8 @@ package test.general;
 
 import org.lwjgl.Display;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLU;
+import org.lwjgl.opengl.Window;
 import org.lwjgl.vector.Vector3f;
 
 import jme.AbstractGame;
@@ -57,30 +59,28 @@ public class TestParticleSystem extends AbstractGame {
 	}
 
 	protected void render() {
-		gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-		gl.loadIdentity();
+		GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+		GL.glLoadIdentity();
 		ps.render();
 	}
 
 	protected void initSystem() {
 		//create the window
-		DisplaySystem.createDisplaySystem("Particles", "jme/data/Images/Monkey.jpg", true);
-		//create the OpenGL bindings
-		gl = DisplaySystem.getDisplaySystem().getGL();
-		glu = DisplaySystem.getDisplaySystem().getGLU();
+		DisplaySystem.createDisplaySystem("Particles", "data/Images/Monkey.jpg", true);
+		
 		//Define what the clear color will be (black)
-		gl.clearColor(0.0f, 0.0f, 0.0f, 0.0f);
-		gl.matrixMode(GL.PROJECTION);
-		gl.loadIdentity();
+		GL.glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
+		GL.glMatrixMode(GL.GL_PROJECTION);
+		GL.glLoadIdentity();
 		// Calculate The Aspect Ratio Of The Window
-		glu.perspective(
+        GLU.gluPerspective(
 			45.0f,
 			(float) Display.getWidth() / (float) Display.getHeight(),
 			0.01f,
 			750.0f);
-		gl.matrixMode(GL.MODELVIEW);
-		gl.hint(GL.PERSPECTIVE_CORRECTION_HINT, GL.NICEST);
-		gl.disable(GL.DEPTH_TEST);
+		GL.glMatrixMode(GL.GL_MODELVIEW);
+		GL.glHint(GL.GL_PERSPECTIVE_CORRECTION_HINT, GL.GL_NICEST);
+		GL.glDisable(GL.GL_DEPTH_TEST);
 	}
 
 	protected void initGame() {
@@ -95,7 +95,7 @@ public class TestParticleSystem extends AbstractGame {
 		pe.setSpeed(1);
 		pe.setGravity(new Vector3f(0.0f,-100.0f,10.0f));
 		pe.setFriction(1);
-		pe.setTexture("jme/data/texture/star.png");
+		pe.setTexture("data/texture/star.png");
 		pe.loopAnimation(true);
 		
 		ps = new ParticleSystem();
@@ -106,10 +106,11 @@ public class TestParticleSystem extends AbstractGame {
 	protected void reinit() {
 		//nothing here... YET!
 	}
+    
 
 	protected void cleanup() {
 		//clean up the OpenGL resources
-		gl.destroy();
+		Window.destroy();
 	}
 
 	public static void main(String[] args) {

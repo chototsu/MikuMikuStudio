@@ -35,12 +35,11 @@ package jme.locale.external.feature;
 import java.util.logging.Level;
 
 import jme.exception.MonkeyRuntimeException;
-import jme.system.DisplaySystem;
+import jme.math.Vector;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>SkyBox</code> defines a implementation of the sky interface
@@ -49,7 +48,7 @@ import org.lwjgl.vector.Vector3f;
  * depth buffer for the skybox is turn off so it will always appear behind
  * any object/locale rendered. The skybox moves with the connected entity.
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: SkyBox.java,v 1.2 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class SkyBox implements Sky {
 	/**
@@ -78,15 +77,12 @@ public class SkyBox implements Sky {
 	public static final int BACK = 5;
 
 	//area of the box
-	private Vector3f center;
+	private Vector center;
 	private float size;
 
 	//appearance of box
 	private int[] textures;
-	private Vector3f color;
-
-	//gl object for rendering.
-	private GL gl;
+	private Vector color;
 
 	/**
 	 * Constructor creates a new <code>SkyBox</code> object. The size of
@@ -95,12 +91,11 @@ public class SkyBox implements Sky {
 	 * @param size the size of each side of the box.
 	 */
 	public SkyBox(float size) {
-		center = new Vector3f();
+		center = new Vector();
 		textures = new int[6];
-		gl = DisplaySystem.getDisplaySystem().getGL();
 		this.size = size / 2;
-		this.center = new Vector3f(this.size, 32, this.size);
-		color = new Vector3f(1.0f, 1.0f, 1.0f);
+		this.center = new Vector(this.size, 32, this.size);
+		color = new Vector(1.0f, 1.0f, 1.0f);
 
 		LoggingSystem.getLoggingSystem().getLogger().log(
 			Level.INFO,
@@ -122,8 +117,8 @@ public class SkyBox implements Sky {
 
 		textures[side] = TextureManager.getTextureManager().loadTexture(
 				filename,
-				GL.LINEAR_MIPMAP_LINEAR,
-				GL.LINEAR,
+				GL.GL_LINEAR_MIPMAP_LINEAR,
+				GL.GL_LINEAR,
 				true);
 	}
 	
@@ -145,8 +140,8 @@ public class SkyBox implements Sky {
 		for (int i = 0; i < 6; i++) {
 			this.textures[i] = TextureManager.getTextureManager().loadTexture(
 					textures[i],
-					GL.LINEAR_MIPMAP_LINEAR,
-					GL.LINEAR,
+					GL.GL_LINEAR_MIPMAP_LINEAR,
+					GL.GL_LINEAR,
 					true);
 		}
 	}
@@ -163,7 +158,7 @@ public class SkyBox implements Sky {
 	 * <code>setColor</code> sets the color tint of the skybox. 
 	 * @param color the tint of the box.
 	 */
-	public void setColor(Vector3f color) {
+	public void setColor(Vector color) {
 		if (null == color) {
 			throw new MonkeyRuntimeException("Color cannot be null.");
 		}
@@ -184,93 +179,93 @@ public class SkyBox implements Sky {
 	 */
 	public void render() {
 
-		gl.color4f(color.x, color.y, color.z, 1.0f);
-		gl.enable(GL.TEXTURE_2D);
-		gl.disable(GL.DEPTH_TEST);
+		GL.glColor4f(color.x, color.y, color.z, 1.0f);
+		GL.glEnable(GL.GL_TEXTURE_2D);
+		GL.glDisable(GL.GL_DEPTH_TEST);
 
-		gl.pushMatrix();
-		gl.translatef(center.x, center.y, center.z);
+		GL.glPushMatrix();
+		GL.glTranslatef(center.x, center.y, center.z);
 
 		//front face
 		TextureManager.getTextureManager().bind(textures[FRONT]);
-		gl.begin(GL.TRIANGLE_FAN);
-		gl.texCoord2f(1.0f, 1.0f);
-		gl.vertex3f(size, size, size);
-		gl.texCoord2f(1.0f, 0.0f);
-		gl.vertex3f(size, -size, size);
-		gl.texCoord2f(0.0f, 0.0f);
-		gl.vertex3f(-size, -size, size);
-		gl.texCoord2f(0.0f, 1.0f);
-		gl.vertex3f(-size, size, size);
-		gl.end();
+		GL.glBegin(GL.GL_TRIANGLE_FAN);
+		GL.glTexCoord2f(1.0f, 1.0f);
+		GL.glVertex3f(size, size, size);
+		GL.glTexCoord2f(1.0f, 0.0f);
+		GL.glVertex3f(size, -size, size);
+		GL.glTexCoord2f(0.0f, 0.0f);
+		GL.glVertex3f(-size, -size, size);
+		GL.glTexCoord2f(0.0f, 1.0f);
+		GL.glVertex3f(-size, size, size);
+		GL.glEnd();
 
 		//back face
 		TextureManager.getTextureManager().bind(textures[BACK]);
-		gl.begin(GL.TRIANGLE_FAN);
-		gl.texCoord2f(1.0f, 1.0f);
-		gl.vertex3f(-size, size, -size);
-		gl.texCoord2f(1.0f, 0.0f);
-		gl.vertex3f(-size, -size, -size);
-		gl.texCoord2f(0.0f, 0.0f);
-		gl.vertex3f(size, -size, -size);
-		gl.texCoord2f(0.0f, 1.0f);
-		gl.vertex3f(size, size, -size);
-		gl.end();
+		GL.glBegin(GL.GL_TRIANGLE_FAN);
+		GL.glTexCoord2f(1.0f, 1.0f);
+		GL.glVertex3f(-size, size, -size);
+		GL.glTexCoord2f(1.0f, 0.0f);
+		GL.glVertex3f(-size, -size, -size);
+		GL.glTexCoord2f(0.0f, 0.0f);
+		GL.glVertex3f(size, -size, -size);
+		GL.glTexCoord2f(0.0f, 1.0f);
+		GL.glVertex3f(size, size, -size);
+		GL.glEnd();
 
 		//right face
 		TextureManager.getTextureManager().bind(textures[RIGHT]);
-		gl.begin(GL.TRIANGLE_FAN);
-		gl.texCoord2f(1.0f, 1.0f);
-		gl.vertex3f(size, size, -size);
-		gl.texCoord2f(1.0f, 0.0f);
-		gl.vertex3f(size, -size, -size);
-		gl.texCoord2f(0.0f, 0.0f);
-		gl.vertex3f(size, -size, size);
-		gl.texCoord2f(0.0f, 1.0f);
-		gl.vertex3f(size, size, size);
-		gl.end();
+		GL.glBegin(GL.GL_TRIANGLE_FAN);
+		GL.glTexCoord2f(1.0f, 1.0f);
+		GL.glVertex3f(size, size, -size);
+		GL.glTexCoord2f(1.0f, 0.0f);
+		GL.glVertex3f(size, -size, -size);
+		GL.glTexCoord2f(0.0f, 0.0f);
+		GL.glVertex3f(size, -size, size);
+		GL.glTexCoord2f(0.0f, 1.0f);
+		GL.glVertex3f(size, size, size);
+		GL.glEnd();
 
 		//left face
 		TextureManager.getTextureManager().bind(textures[LEFT]);
-		gl.begin(GL.TRIANGLE_FAN);
-		gl.texCoord2f(1.0f, 1.0f);
-		gl.vertex3f(-size, size, size);
-		gl.texCoord2f(1.0f, 0.0f);
-		gl.vertex3f(-size, -size, size);
-		gl.texCoord2f(0.0f, 0.0f);
-		gl.vertex3f(-size, -size, -size);
-		gl.texCoord2f(0.0f, 1.0f);
-		gl.vertex3f(-size, size, -size);
-		gl.end();
+		GL.glBegin(GL.GL_TRIANGLE_FAN);
+		GL.glTexCoord2f(1.0f, 1.0f);
+		GL.glVertex3f(-size, size, size);
+		GL.glTexCoord2f(1.0f, 0.0f);
+		GL.glVertex3f(-size, -size, size);
+		GL.glTexCoord2f(0.0f, 0.0f);
+		GL.glVertex3f(-size, -size, -size);
+		GL.glTexCoord2f(0.0f, 1.0f);
+		GL.glVertex3f(-size, size, -size);
+		GL.glEnd();
 
 		//top face
 		TextureManager.getTextureManager().bind(textures[TOP]);
-		gl.begin(GL.TRIANGLE_FAN);
-		gl.texCoord2f(0.0f, 0.0f);
-		gl.vertex3f(-size, size, size);
-		gl.texCoord2f(0.0f, 1.0f);
-		gl.vertex3f(-size, size, -size);
-		gl.texCoord2f(1.0f, 1.0f);
-		gl.vertex3f(size, size, -size);
-		gl.texCoord2f(1.0f, 0.0f);
-		gl.vertex3f(size, size, size);
-		gl.end();
+		GL.glBegin(GL.GL_TRIANGLE_FAN);
+		GL.glTexCoord2f(0.0f, 0.0f);
+		GL.glVertex3f(-size, size, size);
+		GL.glTexCoord2f(0.0f, 1.0f);
+		GL.glVertex3f(-size, size, -size);
+		GL.glTexCoord2f(1.0f, 1.0f);
+		GL.glVertex3f(size, size, -size);
+		GL.glTexCoord2f(1.0f, 0.0f);
+		GL.glVertex3f(size, size, size);
+		GL.glEnd();
 
 		//bottom face
 		TextureManager.getTextureManager().bind(textures[BOTTOM]);
-		gl.begin(GL.TRIANGLE_FAN);
-		gl.texCoord2f(0.0f, 0.0f);
-		gl.vertex3f(-size, -size, -size);
-		gl.texCoord2f(0.0f, 1.0f);
-		gl.vertex3f(-size, -size, size);
-		gl.texCoord2f(1.0f, 1.0f);
-		gl.vertex3f(size, -size, size);
-		gl.texCoord2f(1.0f, 0.0f);
-		gl.vertex3f(size, -size, -size);
-		gl.end();
-		gl.popMatrix();
+		GL.glBegin(GL.GL_TRIANGLE_FAN);
+		GL.glTexCoord2f(0.0f, 0.0f);
+		GL.glVertex3f(-size, -size, -size);
+		GL.glTexCoord2f(0.0f, 1.0f);
+		GL.glVertex3f(-size, -size, size);
+		GL.glTexCoord2f(1.0f, 1.0f);
+		GL.glVertex3f(size, -size, size);
+		GL.glTexCoord2f(1.0f, 0.0f);
+		GL.glVertex3f(size, -size, -size);
+		GL.glEnd();
+		GL.glPopMatrix();
 		
-		gl.enable(GL.DEPTH_TEST);
+		GL.glEnable(GL.GL_DEPTH_TEST);
 	}
 
 }

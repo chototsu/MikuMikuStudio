@@ -41,12 +41,12 @@ import jme.exception.MonkeyRuntimeException;
 import jme.geometry.Geometry;
 import jme.geometry.bounding.BoundingVolume;
 import jme.math.Vector;
-import jme.physics.PhysicsModule; 
-import jme.system.DisplaySystem;
+import jme.physics.PhysicsModule;
 import jme.entity.camera.Frustum;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.Window;
 
 /**
  * <code>Entity</code> defines a game entity that consists of a piece of
@@ -65,7 +65,7 @@ import org.lwjgl.opengl.GL;
  * <code>Entity</code> to represent something abstract.
  * 
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: Entity.java,v 1.7 2003-09-03 16:20:52 mojomonkey Exp $
  */
 public class Entity implements EntityInterface {
     /**
@@ -110,9 +110,6 @@ public class Entity implements EntityInterface {
     //physics
     private PhysicsModule physics;
     
-    //the gl object for translation and rotation of the entity.
-    protected GL gl;
-
     /**
      * Constructor initializes the entity. All attributes of the 
      * <code>Entity</code> are empty.
@@ -127,11 +124,9 @@ public class Entity implements EntityInterface {
         }
         children = new ArrayList();
         position = new Vector();
-        
-		gl = DisplaySystem.getDisplaySystem().getGL();
 
-		if(null == gl) {
-			throw new MonkeyGLException("The OpenGL context must be set before " +				"using Entity.");
+		if(!Window.isCreated()) {
+			throw new MonkeyGLException("Window must be created before Entity.");
 		}
 
         LoggingSystem.getLoggingSystem().getLogger().log(
@@ -154,8 +149,6 @@ public class Entity implements EntityInterface {
         children = new ArrayList();
         position = new Vector();
         
-        gl = DisplaySystem.getDisplaySystem().getGL();
-
         children.add(child);
 
         LoggingSystem.getLoggingSystem().getLogger().log(
@@ -318,12 +311,12 @@ public class Entity implements EntityInterface {
      * Each child is then rendered in turn.
      */
     public void render() {
-        gl.pushMatrix();
-		gl.enable(GL.DEPTH_TEST);
-        gl.translatef(position.x, position.y, position.z);
-        gl.rotatef(roll, 0, 0, 1);
-        gl.rotatef(yaw, 0, 1, 0);
-        gl.rotatef(pitch, 1, 0, 1);
+        GL.glPushMatrix();
+        GL.glEnable(GL.GL_DEPTH_TEST);
+        GL.glTranslatef(position.x, position.y, position.z);
+        GL.glRotatef(roll, 0, 0, 1);
+        GL.glRotatef(yaw, 0, 1, 0);
+        GL.glRotatef(pitch, 1, 0, 1);
         
         //no geometry, so don't render.
         if (null != geometry) {
@@ -334,8 +327,8 @@ public class Entity implements EntityInterface {
         for (int i = 0; i < children.size(); i++) {
             ((Entity)children.get(i)).render();
         }
-		gl.disable(GL.DEPTH_TEST);
-        gl.popMatrix();
+        GL.glDisable(GL.GL_DEPTH_TEST);
+        GL.glPopMatrix();
     }
 
     /**

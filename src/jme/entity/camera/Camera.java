@@ -32,10 +32,12 @@
 
 package jme.entity.camera;
 
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.GLU;
+
 import jme.entity.Entity;
 import jme.locale.external.feature.Sky;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 
 /**
  * <code>Camera</code> defines a camera in three dimensional space. The camera
@@ -288,20 +290,20 @@ public class Camera extends Entity{
      * camera to determine the view. 
      */
     public void render() {
-        DisplaySystem.getDisplaySystem().getGLU().lookAt(
+        GLU.gluLookAt(
             getPosition().x, getPosition().y, getPosition().z,
             getView().x, getView().y, getView().z,
             getUp().x, getUp().y, getUp().z);
         
         if(null != sky) {
-            gl.pushMatrix();
+            GL.glPushMatrix();
             float x = getPosition().x - sky.getSize() / 2;
             float y = getPosition().y - sky.getSize() * 0.75f;
             float z = getPosition().z - sky.getSize() / 2;
-            gl.translatef(x, y, z);
+            GL.glTranslatef(x, y, z);
         
             sky.render();
-            gl.popMatrix();
+            GL.glPopMatrix();
         }
         
         for(int i = 0; i < children.size(); i++) {

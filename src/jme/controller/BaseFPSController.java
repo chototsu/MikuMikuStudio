@@ -360,8 +360,8 @@ public class BaseFPSController extends AbstractGameController {
         Vector view =
             entity.getView().subtract(entity.getPosition());
 
-        float cosTheta = org.lwjgl.Math.cos(angle);
-        float sinTheta = org.lwjgl.Math.sin(angle);
+        float cosTheta = (float)Math.cos(angle);
+        float sinTheta = (float)Math.sin(angle);
 
         newView.x = (cosTheta + (1 - cosTheta) * x * x) * view.x;
         newView.x += ((1 - cosTheta) * x * y - z * sinTheta) * view.y;

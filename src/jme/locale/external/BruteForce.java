@@ -36,7 +36,6 @@ import org.lwjgl.opengl.GL;
 
 import jme.exception.MonkeyRuntimeException;
 import jme.locale.external.data.AbstractHeightMap;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 /**
@@ -46,7 +45,7 @@ import jme.texture.TextureManager;
  * distance, etc.
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: BruteForce.java,v 1.2 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class BruteForce extends Terrain {
 	
@@ -66,7 +65,6 @@ public class BruteForce extends Terrain {
 
 		this.heightData = heightData;
 		this.terrainSize = heightData.getSize();
-		gl = DisplaySystem.getDisplaySystem().getGL();
 	}
 
 	
@@ -97,16 +95,16 @@ public class BruteForce extends Terrain {
 
 		//set up the appropriate textures.
 		if (isDetailed && isTextured) {
-			gl.activeTextureARB(GL.TEXTURE0_ARB);
-			gl.enable(GL.TEXTURE_2D);
+			GL.glActiveTextureARB(GL.GL_TEXTURE0_ARB);
+			GL.glEnable(GL.GL_TEXTURE_2D);
 			TextureManager.getTextureManager().bind(terrainTexture);
-			gl.activeTextureARB(GL.TEXTURE1_ARB);
-			gl.enable(GL.TEXTURE_2D);
+			GL.glActiveTextureARB(GL.GL_TEXTURE1_ARB);
+			GL.glEnable(GL.GL_TEXTURE_2D);
 			TextureManager.getTextureManager().bind(detailId);
-			gl.texEnvi(GL.TEXTURE_ENV, GL.TEXTURE_ENV_MODE, GL.COMBINE_ARB);
-			gl.texEnvi(GL.TEXTURE_ENV, GL.RGB_SCALE_ARB, 2);
+			GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_TEXTURE_ENV_MODE, GL.GL_COMBINE_ARB);
+			GL.glTexEnvi(GL.GL_TEXTURE_ENV, GL.GL_RGB_SCALE_ARB, 2);
 		} else if (isTextured) {
-			gl.enable(GL.TEXTURE_2D);
+			GL.glEnable(GL.GL_TEXTURE_2D);
 			TextureManager.getTextureManager().bind(terrainTexture);
 		}
 
@@ -117,7 +115,7 @@ public class BruteForce extends Terrain {
         //be swapped. This will need to be resolved in the loaders, before
         //the terrain can be rendered in a normal fashion.
 		for (int z = 0; z < terrainSize - 1; z++) {
-			gl.begin(GL.TRIANGLE_STRIP);
+			GL.glBegin(GL.GL_TRIANGLE_STRIP);
             
             if (isTextured) {
                  texDown = (float) z / terrainSize;
@@ -138,21 +136,21 @@ public class BruteForce extends Terrain {
 					green = 1.0f;
 					blue = 1.0f;
 				}
-				gl.color3f(red, green, blue);
+				GL.glColor3f(red, green, blue);
 
 				if (isTextured && isDetailed) {
 					texLeft = (float) x / terrainSize;
-					gl.multiTexCoord2fARB(GL.TEXTURE0_ARB, texDown, texLeft);
-					gl.multiTexCoord2fARB(
-						GL.TEXTURE1_ARB,
+					GL.glMultiTexCoord2fARB(GL.GL_TEXTURE0_ARB, texDown, texLeft);
+					GL.glMultiTexCoord2fARB(
+						GL.GL_TEXTURE1_ARB,
 						texLeft * repeatDetailMap,
 						texDown * repeatDetailMap);
 				} else if (isTextured) {
 					texLeft = (float) x / terrainSize;
-					gl.texCoord2f(texLeft, texDown);
+					GL.glTexCoord2f(texLeft, texDown);
 				}
 				
-				gl.vertex3f(x, heightData.getScaledHeightAtPoint(z, x), z);
+				GL.glVertex3f(x, heightData.getScaledHeightAtPoint(z, x), z);
 
 				if (isLit) {
 					shade = lightMap.getShade(z+1,x);
@@ -164,38 +162,38 @@ public class BruteForce extends Terrain {
 					green = 1.0f;
 					blue = 1.0f;
 				}
-				gl.color3f(red, green, blue);
+				GL.glColor3f(red, green, blue);
 				
 				if (isTextured && isDetailed) {
-					gl.multiTexCoord2fARB(GL.TEXTURE0_ARB, texUp, texLeft);
-					gl.multiTexCoord2fARB(
-						GL.TEXTURE1_ARB,
+					GL.glMultiTexCoord2fARB(GL.GL_TEXTURE0_ARB, texUp, texLeft);
+					GL.glMultiTexCoord2fARB(
+						GL.GL_TEXTURE1_ARB,
 						texLeft * repeatDetailMap,
 						texUp * repeatDetailMap);
 				} else if (isTextured) {
-					gl.texCoord2f(texLeft, texUp);
+					GL.glTexCoord2f(texLeft, texUp);
 				}
 
-				gl.vertex3f(
+				GL.glVertex3f(
 					x,
 					heightData.getScaledHeightAtPoint(z+1, x),
 					z + 1);
 			}
 
-			gl.end();
+			GL.glEnd();
 		}
 		
 		
 
 		if (isDetailed) {
-			gl.activeTextureARB(GL.TEXTURE1_ARB);
-			gl.bindTexture(GL.TEXTURE_2D, 0);
-			gl.activeTextureARB(GL.TEXTURE0_ARB);
-			gl.bindTexture(GL.TEXTURE_2D, 0);
+			GL.glActiveTextureARB(GL.GL_TEXTURE1_ARB);
+			GL.glBindTexture(GL.GL_TEXTURE_2D, 0);
+			GL.glActiveTextureARB(GL.GL_TEXTURE0_ARB);
+			GL.glBindTexture(GL.GL_TEXTURE_2D, 0);
 		} 
 
 		if (isTextured) {
-			gl.disable(GL.TEXTURE_2D);
+			GL.glDisable(GL.GL_TEXTURE_2D);
 		}
 		
 	}

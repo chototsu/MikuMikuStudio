@@ -37,7 +37,6 @@ import org.lwjgl.opengl.GL;
 import jme.geometry.Geometry;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 /**
@@ -91,8 +90,8 @@ public abstract class Primitive implements Geometry {
     public void setTexture(String filename) {
         texID = TextureManager.getTextureManager().loadTexture(
                 filename,
-                GL.LINEAR_MIPMAP_LINEAR,
-                GL.LINEAR,
+                GL.GL_LINEAR_MIPMAP_LINEAR,
+                GL.GL_LINEAR,
                 true);
     }
     /**
@@ -131,7 +130,7 @@ public abstract class Primitive implements Geometry {
      */
     public void clean() {
         if (-1 != texID) {
-            DisplaySystem.getDisplaySystem().getGL().disable(GL.TEXTURE_2D);
+            GL.glDisable(GL.GL_TEXTURE_2D);
         }
     }
 

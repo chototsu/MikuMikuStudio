@@ -36,7 +36,6 @@ import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 
 import org.lwjgl.opengl.GL;
@@ -54,7 +53,7 @@ import org.lwjgl.opengl.GL;
  * 3 - BottomLeft<br>
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.4 2003-08-19 02:10:14 mojomonkey Exp $
+ * @version $Id: Quad.java,v 1.5 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class Quad extends Primitive {
     private GL gl;
@@ -70,7 +69,6 @@ public class Quad extends Primitive {
 		if(null == points) {
 			throw new MonkeyRuntimeException("Points cannot be null.");
 		}
-		gl = DisplaySystem.getDisplaySystem().getGL();
 		this.points = points;
 		initialize();
 	}
@@ -111,27 +109,27 @@ public class Quad extends Primitive {
     */
     public void render() {
 		if(getTextureId() > 0) {
-			gl.enable(GL.TEXTURE_2D);
+			GL.glEnable(GL.GL_TEXTURE_2D);
 			TextureManager.getTextureManager().bind(getTextureId());
 		}
 		
-		gl.begin(GL.QUADS);
+		GL.glBegin(GL.GL_QUADS);
 		
-		gl.color4f(red,green,blue,alpha);
+		GL.glColor4f(red,green,blue,alpha);
 		
-		gl.texCoord2i(1,1);
-		gl.vertex3f(points[0].x,points[0].y,points[0].z);
-		gl.texCoord2i(0,1);
-		gl.vertex3f(points[1].x,points[1].y,points[1].z);
-		gl.texCoord2i(0,0);
-		gl.vertex3f(points[2].x,points[2].y,points[2].z);
-		gl.texCoord2i(1,0);
-		gl.vertex3f(points[3].x,points[3].y,points[3].z);
+		GL.glTexCoord2f(1,1);
+		GL.glVertex3f(points[0].x,points[0].y,points[0].z);
+		GL.glTexCoord2f(0,1);
+		GL.glVertex3f(points[1].x,points[1].y,points[1].z);
+		GL.glTexCoord2f(0,0);
+		GL.glVertex3f(points[2].x,points[2].y,points[2].z);
+		GL.glTexCoord2f(1,0);
+		GL.glVertex3f(points[3].x,points[3].y,points[3].z);
 		
-		gl.end();
+		GL.glEnd();
 		
 		if(getTextureId() > 0) {
-			gl.disable(GL.TEXTURE_2D);
+			GL.glDisable(GL.GL_TEXTURE_2D);
 		}
 
     }

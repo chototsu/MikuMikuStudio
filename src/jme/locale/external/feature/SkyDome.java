@@ -35,11 +35,11 @@ import java.util.logging.Level;
 
 import jme.exception.MonkeyGLException;
 import jme.geometry.model.Vertex;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.Window;
 
 /**
  * <code>SkyDome</code> defines an implementation of the sky interface where
@@ -52,11 +52,11 @@ import org.lwjgl.opengl.GL;
  * <a href="http://www.spheregames.com/files/SkyDomesPDF.zip">this</a> 
  * PDF file.
  * @author Mark Powell
+ * @version $Id: SkyDome.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class SkyDome implements Sky {
 
 	private int texId;
-	private GL gl;
 
 	//attributes of the dome
 	private float radius;
@@ -97,11 +97,9 @@ public class SkyDome implements Sky {
 		float hTile,
 		float vTile) {
 
-		gl = DisplaySystem.getDisplaySystem().getGL();
-
-		if (null == gl) {
+		if (!Window.isCreated()) {
 			throw new MonkeyGLException(
-				"GL must be initialized before " + "calling SkyDome.");
+				"Window must be created before SkyDome.");
 		}
 
 		this.radius = radius;
@@ -126,8 +124,8 @@ public class SkyDome implements Sky {
 		texId =
 			TextureManager.getTextureManager().loadTexture(
 				filename,
-				GL.LINEAR_MIPMAP_LINEAR,
-				GL.LINEAR,
+				GL.GL_LINEAR_MIPMAP_LINEAR,
+				GL.GL_LINEAR,
 				true);
 	}
 
@@ -188,31 +186,31 @@ public class SkyDome implements Sky {
 	 * texture. 
 	 */
 	public void render() {
-		gl.enable(GL.TEXTURE_2D);
-		gl.disable(GL.DEPTH_TEST);
-		gl.cullFace(GL.FRONT);
-		gl.bindTexture(GL.TEXTURE_2D, texId);
+		GL.glEnable(GL.GL_TEXTURE_2D);
+		GL.glDisable(GL.GL_DEPTH_TEST);
+		GL.glCullFace(GL.GL_FRONT);
+		GL.glBindTexture(GL.GL_TEXTURE_2D, texId);
 
-		gl.pushMatrix();
-		gl.rotatef(270, 1.0f, 0.0f, 0.0f);
-		gl.rotatef(rotation, 0.0f, 0.0f, 1.0f);
-		gl.begin(GL.TRIANGLE_STRIP);
+		GL.glPushMatrix();
+		GL.glRotatef(270, 1.0f, 0.0f, 0.0f);
+		GL.glRotatef(rotation, 0.0f, 0.0f, 1.0f);
+		GL.glBegin(GL.GL_TRIANGLE_STRIP);
 
 		for (int i = 0; i < numVertices; i++) {
-			gl.color3f(1.0f, 1.0f, 1.0f);
+			GL.glColor3f(1.0f, 1.0f, 1.0f);
 
-			gl.texCoord2f(
+			GL.glTexCoord2f(
 				vertices[i].u + xTexAnimation,
 				vertices[i].v + yTexAnimation);
-			gl.vertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
+			GL.glVertex3f(vertices[i].x, vertices[i].y, vertices[i].z);
 		}
 
-		gl.end();
+		GL.glEnd();
 
-		gl.popMatrix();
-		gl.disable(GL.TEXTURE_2D);
-		gl.enable(GL.DEPTH_TEST);
-		gl.cullFace(GL.BACK);
+		GL.glPopMatrix();
+		GL.glDisable(GL.GL_TEXTURE_2D);
+		GL.glEnable(GL.GL_DEPTH_TEST);
+		GL.glCullFace(GL.GL_BACK);
 	}
 
 	/**

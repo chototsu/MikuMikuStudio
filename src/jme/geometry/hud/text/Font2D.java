@@ -35,11 +35,10 @@ package jme.geometry.hud.text;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
-import org.lwjgl.Sys;
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.Window;
 
 import jme.exception.MonkeyRuntimeException;
-import jme.system.DisplaySystem;
 
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
@@ -60,21 +59,19 @@ import jme.utility.LoggingSystem;
  * 
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: Font2D.java,v 1.3 2003-09-03 16:20:52 mojomonkey Exp $
  */
 public class Font2D {
     public static final int NORMAL = 0;
     public static final int ITALICS = 1;
 
-    private GL gl = null;
-
     //texture name and 
     private int texId;
     private int base;
-    
+
     //Color to render the font.
     private float red, green, blue, alpha;
-    
+
     private boolean isBlended = true;
 
     /**
@@ -85,27 +82,24 @@ public class Font2D {
      * @see jme.texture.TextureManager
      * 
      * @param texture the path to the image that defines the fonts.
-     */ 
+     */
     public Font2D(String texture) {
         red = 1.0f;
         green = 1.0f;
         blue = 1.0f;
         alpha = 1.0f;
-        
-        gl = DisplaySystem.getDisplaySystem().getGL();
-        
-        if(null == gl) {
-            throw new MonkeyRuntimeException("GL must be created before a call " +
-                "to Font2D is allowed.");
+
+        if (!Window.isCreated()) {
+            throw new MonkeyRuntimeException("Window must be created before Font2D.");
         }
-        
+
         setFontTexture(texture);
 
         buildDisplayList();
-        
-        
-        LoggingSystem.getLoggingSystem().getLogger().log(Level.INFO,
-                "Successfully created Font2D using " + texture);
+
+        LoggingSystem.getLoggingSystem().getLogger().log(
+            Level.INFO,
+            "Successfully created Font2D using " + texture);
     }
 
     /**
@@ -115,11 +109,12 @@ public class Font2D {
      * @param texture the new texture to use.
      */
     public void setFontTexture(String texture) {
-        texId = TextureManager.getTextureManager().loadTexture(
-            texture,
-            GL.LINEAR,
-            GL.LINEAR,
-            false);
+        texId =
+            TextureManager.getTextureManager().loadTexture(
+                texture,
+                GL.GL_LINEAR,
+                GL.GL_LINEAR,
+                false);
     }
 
     /**
@@ -137,14 +132,14 @@ public class Font2D {
         blue = b;
         alpha = a;
     }
-    
+
     /**
      * <code>deleteFont</code> deletes the current display list of font objects.
      * The font will be useless until a call to <code>buildDisplayLists</code> 
      * is made.
      */
     public void deleteFont() {
-        gl.deleteLists(base, 256);
+        GL.glDeleteLists(base, 256);
     }
 
     /**
@@ -165,43 +160,42 @@ public class Font2D {
         }
 
         TextureManager.getTextureManager().bind(texId);
-        
+
         //set the GL states to how we want them.
-        if(isBlended) {
-            gl.enable(GL.BLEND);
+        if (isBlended) {
+            GL.glEnable(GL.GL_BLEND);
         }
-        gl.disable(GL.DEPTH_TEST);
-        gl.enable(GL.TEXTURE_2D);
-        gl.matrixMode(GL.PROJECTION);
-        gl.pushMatrix();
-        gl.loadIdentity();
-        gl.ortho(0, gl.getWidth(), 0, gl.getHeight(), -1, 1);
-        gl.matrixMode(GL.MODELVIEW);
-        gl.pushMatrix();
-        gl.loadIdentity();
-        gl.translated(x, y, 0);
-        gl.listBase(base - 32 + (128 * set));
+        GL.glDisable(GL.GL_DEPTH_TEST);
+        GL.glEnable(GL.GL_TEXTURE_2D);
+        GL.glMatrixMode(GL.GL_PROJECTION);
+        GL.glPushMatrix();
+        GL.glLoadIdentity();
+        GL.glOrtho(0, Window.getWidth(), 0, Window.getHeight(), -1, 1);
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glPushMatrix();
+        GL.glLoadIdentity();
+        GL.glTranslatef(x, y, 0);
+        GL.glListBase(base - 32 + (128 * set));
 
         //Put the string into a "pointer"
-        ByteBuffer scratch = ByteBuffer.allocateDirect(text.getBytes().length);
+        ByteBuffer scratch =
+            ByteBuffer.allocateDirect(text.getBytes().length);
         scratch.put(text.getBytes());
-        gl.color4f(red,green,blue,alpha);
+        scratch.flip();
+        GL.glColor4f(red, green, blue, alpha);
         //call the list for each letter in the string.
-        gl.callLists(
-            text.length(),
-            GL.BYTE,
-            Sys.getDirectBufferAddress(scratch));
-        
+        GL.glCallLists(scratch);
+
         //reset the GL states.
-        if(isBlended) {
-            gl.disable(GL.BLEND);
+        if (isBlended) {
+            GL.glDisable(GL.GL_BLEND);
         }
-        gl.matrixMode(GL.PROJECTION);
-        gl.popMatrix();
-        gl.matrixMode(GL.MODELVIEW);
-        gl.popMatrix();
-        gl.enable(GL.DEPTH_TEST);
-        gl.disable(GL.TEXTURE_2D);
+        GL.glMatrixMode(GL.GL_PROJECTION);
+        GL.glPopMatrix();
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glPopMatrix();
+        GL.glEnable(GL.GL_DEPTH_TEST);
+        GL.glDisable(GL.GL_TEXTURE_2D);
     }
 
     /**
@@ -213,29 +207,29 @@ public class Font2D {
         float cx;
         float cy;
 
-        base = gl.genLists(256);
+        base = GL.glGenLists(256);
         TextureManager.getTextureManager().bind(texId);
 
         for (int loop = 0; loop < 256; loop++) {
             cx = (loop % 16) / 16.0f;
             cy = (loop / 16) / 16.0f;
 
-            gl.newList(base + loop, GL.COMPILE);
-            gl.begin(GL.QUADS);
-            gl.texCoord2f(cx, 1 - cy - 0.0625f);
-            gl.vertex2i(0, 0);
-            gl.texCoord2f(cx + 0.0625f, 1 - cy - 0.0625f);
-            gl.vertex2i(16, 0);
-            gl.texCoord2f(cx + 0.0625f, 1 - cy);
-            gl.vertex2i(16, 16);
-            gl.texCoord2f(cx, 1 - cy);
-            gl.vertex2i(0, 16);
-            gl.end();
-            gl.translated(10, 0, 0);
-            gl.endList();
+            GL.glNewList(base + loop, GL.GL_COMPILE);
+            GL.glBegin(GL.GL_QUADS);
+            GL.glTexCoord2f(cx, 1 - cy - 0.0625f);
+            GL.glVertex2i(0, 0);
+            GL.glTexCoord2f(cx + 0.0625f, 1 - cy - 0.0625f);
+            GL.glVertex2i(16, 0);
+            GL.glTexCoord2f(cx + 0.0625f, 1 - cy);
+            GL.glVertex2i(16, 16);
+            GL.glTexCoord2f(cx, 1 - cy);
+            GL.glVertex2i(0, 16);
+            GL.glEnd();
+            GL.glTranslatef(10, 0, 0);
+            GL.glEndList();
         }
     }
-    
+
     /**
      * <code>toString</code> returns the string representation of this
      * font object in the Format:<br><br>
@@ -249,9 +243,9 @@ public class Font2D {
     public String toString() {
         String string = super.toString();
         string += "\nColor: " + red + " " + green + " " + blue + " " + alpha;
-        string += "\nBlended: " + isBlended; 
+        string += "\nBlended: " + isBlended;
         string += "\nTexture: " + texId;
-        
+
         return string;
     }
 }

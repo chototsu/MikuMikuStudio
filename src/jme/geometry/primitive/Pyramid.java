@@ -38,11 +38,11 @@ import jme.exception.MonkeyRuntimeException;
 import jme.geometry.bounding.BoundingBox;
 import jme.geometry.bounding.BoundingSphere;
 import jme.math.Vector;
-import jme.system.DisplaySystem;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.Window;
 
 /**
  * <code>Pyramid</code> defines a primitive object of a pyramid shape. The
@@ -50,7 +50,7 @@ import org.lwjgl.opengl.GL;
  * base and the height.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
+ * @version $Id: Pyramid.java,v 1.3 2003-09-03 16:20:51 mojomonkey Exp $
  */
 public class Pyramid extends Primitive {
     private boolean usingDisplay;
@@ -73,11 +73,10 @@ public class Pyramid extends Primitive {
             throw new MonkeyRuntimeException(
                 "Neither base nor height can be " + "negative.");
         }
-        gl = DisplaySystem.getDisplaySystem().getGL();
 
-        if (null == gl) {
+        if (!Window.isCreated()) {
             throw new MonkeyGLException(
-                "OpenGL context must be created " + "before Pyramid.");
+                "Window must be created before Pyramid.");
         }
         this.base = base;
         this.height = height;
@@ -119,10 +118,11 @@ public class Pyramid extends Primitive {
      */
     public void useDisplayList(boolean value) {
         if (value) {
-            listId = gl.genLists(1);
-            gl.newList(listId, GL.COMPILE);
+            listId = GL.glGenLists(1);
+            GL.glNewList(listId, GL.GL_COMPILE);
             renderPyramid();
-            gl.endList();
+            GL.glEndList();
+            usingDisplay = true;
         } else {
             usingDisplay = false;
         }
@@ -133,7 +133,7 @@ public class Pyramid extends Primitive {
      */
     public void render() {
         if (usingDisplay) {
-            gl.callList(listId);
+            GL.glCallList(listId);
         } else {
             renderPyramid();
         }
@@ -171,62 +171,62 @@ public class Pyramid extends Primitive {
     private void renderPyramid() {
         if (getTextureId() > 0) {
             TextureManager.getTextureManager().bind(getTextureId());
-            gl.enable(GL.TEXTURE_2D);
+            GL.glEnable(GL.GL_TEXTURE_2D);
         }
 
-        gl.color4f(red, green, blue, alpha);
-        gl.begin(GL.TRIANGLES);
+        GL.glColor4f(red, green, blue, alpha);
+        GL.glBegin(GL.GL_TRIANGLES);
 
         //front
-        gl.texCoord2f(1, 0);
-        gl.vertex3f(-base / 2, -height / 2, -base / 2); //f1
-        gl.texCoord2f(0.5f, 1);
-        gl.vertex3f(0, height / 2, 0); //top
-        gl.texCoord2f(0.75f, 0);
-        gl.vertex3f(base / 2, -height / 2, -base / 2); //f2
+        GL.glTexCoord2f(1, 0);
+        GL.glVertex3f(-base / 2, -height / 2, -base / 2); //f1
+        GL.glTexCoord2f(0.5f, 1);
+        GL.glVertex3f(0, height / 2, 0); //top
+        GL.glTexCoord2f(0.75f, 0);
+        GL.glVertex3f(base / 2, -height / 2, -base / 2); //f2
 
         //right
-        gl.texCoord2f(0.75f, 0);
-        gl.vertex3f(base / 2, -height / 2, -base / 2); //f2
-        gl.texCoord2f(0.5f, 1);
-        gl.vertex3f(0, height / 2, 0); //top
-        gl.texCoord2f(0.5f, 0);
-        gl.vertex3f(base / 2, -height / 2, base / 2); //b2
+        GL.glTexCoord2f(0.75f, 0);
+        GL.glVertex3f(base / 2, -height / 2, -base / 2); //f2
+        GL.glTexCoord2f(0.5f, 1);
+        GL.glVertex3f(0, height / 2, 0); //top
+        GL.glTexCoord2f(0.5f, 0);
+        GL.glVertex3f(base / 2, -height / 2, base / 2); //b2
 
         //back
-        gl.texCoord2f(0.5f, 0);
-        gl.vertex3f(base / 2, -height / 2, base / 2); //b2
-        gl.texCoord2f(0.5f, 1);
-        gl.vertex3f(0, height / 2, 0); //top
-        gl.texCoord2f(0.25f, 0);
-        gl.vertex3f(-base / 2, -height / 2, base / 2); //b1
+        GL.glTexCoord2f(0.5f, 0);
+        GL.glVertex3f(base / 2, -height / 2, base / 2); //b2
+        GL.glTexCoord2f(0.5f, 1);
+        GL.glVertex3f(0, height / 2, 0); //top
+        GL.glTexCoord2f(0.25f, 0);
+        GL.glVertex3f(-base / 2, -height / 2, base / 2); //b1
 
         //left
-        gl.texCoord2f(0.25f, 0);
-        gl.vertex3f(-base / 2, -height / 2, base / 2); //b1
-        gl.texCoord2f(0.5f, 1);
-        gl.vertex3f(0, height / 2, 0); //top
-        gl.texCoord2f(0, 0);
-        gl.vertex3f(-base / 2, -height / 2, -base / 2); //f1
+        GL.glTexCoord2f(0.25f, 0);
+        GL.glVertex3f(-base / 2, -height / 2, base / 2); //b1
+        GL.glTexCoord2f(0.5f, 1);
+        GL.glVertex3f(0, height / 2, 0); //top
+        GL.glTexCoord2f(0, 0);
+        GL.glVertex3f(-base / 2, -height / 2, -base / 2); //f1
 
         //bottom
-        gl.texCoord2f(0, 0);
-        gl.vertex3f(-base / 2, -height / 2, -base / 2); //f1
-        gl.texCoord2f(1, 1);
-        gl.vertex3f(base / 2, -height / 2, base / 2); //b2
-        gl.texCoord2f(0, 1);
-        gl.vertex3f(-base / 2, -height / 2, base / 2); //b1
-        gl.texCoord2f(0, 0);
-        gl.vertex3f(-base / 2, -height / 2, -base / 2); //f1
-        gl.texCoord2f(1, 0);
-        gl.vertex3f(base / 2, -height / 2, -base / 2); //f2
-        gl.texCoord2f(1, 1);
-        gl.vertex3f(base / 2, -height / 2, base / 2); //b2
+        GL.glTexCoord2f(0, 0);
+        GL.glVertex3f(-base / 2, -height / 2, -base / 2); //f1
+        GL.glTexCoord2f(1, 1);
+        GL.glVertex3f(base / 2, -height / 2, base / 2); //b2
+        GL.glTexCoord2f(0, 1);
+        GL.glVertex3f(-base / 2, -height / 2, base / 2); //b1
+        GL.glTexCoord2f(0, 0);
+        GL.glVertex3f(-base / 2, -height / 2, -base / 2); //f1
+        GL.glTexCoord2f(1, 0);
+        GL.glVertex3f(base / 2, -height / 2, -base / 2); //f2
+        GL.glTexCoord2f(1, 1);
+        GL.glVertex3f(base / 2, -height / 2, base / 2); //b2
 
-        gl.end();
+        GL.glEnd();
 
         if (getTextureId() > 0) {
-            gl.disable(GL.TEXTURE_2D);
+            GL.glDisable(GL.GL_TEXTURE_2D);
         }
     }
 

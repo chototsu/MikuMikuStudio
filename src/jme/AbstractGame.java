@@ -42,7 +42,7 @@ import org.lwjgl.Display;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLU;
+import org.lwjgl.opengl.Window;
 
 /**
  * <code>AbstractGame</code> defines a common way to organize the flow of a 
@@ -55,18 +55,6 @@ import org.lwjgl.opengl.GLU;
  */
 
 public abstract class AbstractGame {
-
-	/**
-	 * gl is the object to communicate with the OpenGL base context.
-	 * This object must be initialized during the initalization phase.
-	 */
-	protected GL gl = null;
-
-	/**
-	 * glu is the object to communication with the OpenGL utility context.
-	 * This object must be initialized during the initalization phase.
-	 */
-	protected GLU glu = null;
 
 	//Flag for running the system.
 	private boolean finished;
@@ -88,16 +76,15 @@ public abstract class AbstractGame {
 			initSystem();
 			
             //check if user initialized gl and glu;
-			if (null == gl || null == glu) {
+			if (!Window.isCreated()) {
 				throw new MonkeyRuntimeException(
-					"The gl and glu contexts"
-						+ "must be initialized in the init phase");
+					"Window must be created during initialization.");
 			}
 			showTitle();
 			initGame();
 
 			//main loop
-			while (!finished && !gl.isCloseRequested()) {
+			while (!finished && !Window.isCloseRequested()) {
 				//update game state
 				update();
 
@@ -105,8 +92,8 @@ public abstract class AbstractGame {
 				render();
 
 				//swap buffers
-				gl.paint();
-				gl.tick();
+				Window.paint();
+				Window.update();
 			}
 		} catch (Throwable t) {
 			t.printStackTrace();
@@ -125,11 +112,11 @@ public abstract class AbstractGame {
 	public final void showTitle() {
 		
 		for(int i = 0; i < splashScreens.size(); i++) {
-			gl.clear(GL.COLOR_BUFFER_BIT | GL.DEPTH_BUFFER_BIT);
-			gl.loadIdentity();
+			GL.glClear(GL.GL_COLOR_BUFFER_BIT | GL.GL_DEPTH_BUFFER_BIT);
+			GL.glLoadIdentity();
 			((SplashScreen)splashScreens.get(i)).render();
-			gl.paint();
-			gl.tick();
+			Window.paint();
+			Window.update();
 			((SplashScreen)splashScreens.get(i)).holdDisplay();
 		}
 	}
