@@ -167,6 +167,8 @@ public class HelloIntersection extends SimpleGame {
     protected void simpleRender(){
         /** Play laser if I need to*/
         if (playLaser){
+            if (laserSound.isPlaying())
+                laserSound.stop();
             SoundAPIController.getRenderer().draw(laserSound);
             playLaser=false;
         }
