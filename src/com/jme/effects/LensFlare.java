@@ -59,7 +59,7 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.9 2004-06-23 19:15:52 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.10 2004-06-29 20:19:40 renanse Exp $
  */
 
 public class LensFlare extends Node {
@@ -143,8 +143,8 @@ public class LensFlare extends Node {
     tempPoint.z = 0;
 
     tempPoint = sFlare[7].getWorldTranslation();
-    tempPoint.x = 0;
-    tempPoint.y = 0;
+    tempPoint.x = flarePoint.x / 5f;
+    tempPoint.y = flarePoint.y / 5f;
     tempPoint.z = 0;
 
     tempPoint = sFlare[8].getWorldTranslation();
