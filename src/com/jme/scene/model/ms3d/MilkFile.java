@@ -39,11 +39,12 @@ class MilkFile {
 
 
     private void invertWithParents() {
+        Vector3f temp=new Vector3f();
         for (int i=0;i<nNumJoints;i++){
             myJoints[i].inverseChainMatrix=new TransformMatrix(myJoints[i].localRefMatrix);
             myJoints[i].inverseChainMatrix.inverse();
             if (myJoints[i].parentIndex!=-1)
-                myJoints[i].inverseChainMatrix.multLocal(myJoints[myJoints[i].parentIndex].inverseChainMatrix);
+                myJoints[i].inverseChainMatrix.multLocal(myJoints[myJoints[i].parentIndex].inverseChainMatrix,temp);
         }
     }
 
