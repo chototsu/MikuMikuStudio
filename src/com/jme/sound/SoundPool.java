@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 /*
  * Created on 14 juin 2004
@@ -39,7 +39,7 @@ import java.util.Hashtable;
 
 /**
  * @author Arman
- *  
+ *
  */
 public class SoundPool {
 
@@ -63,8 +63,10 @@ public class SoundPool {
         IBuffer loaded = null;
         if (!table.containsKey(url.getFile())) {
             loaded = SoundAPIController.getSoundSystem().loadBuffer(url);
-            
+
             table.put(url.getFile(), loaded);
+        } else {
+          loaded = (IBuffer)table.get(url.getFile());
         }
 
         return loaded;
@@ -90,7 +92,7 @@ public class SoundPool {
         if (programs == null) {
             programs = new IBuffer[1][];
             programs[0] = sequence;
-            programDuration=new float[1]; 
+            programDuration=new float[1];
             for(int a=0; a<sequence.length; a++)
                 programDuration[0]+=sequence[a].getDuration();
             return 0;
@@ -98,7 +100,7 @@ public class SoundPool {
         } else {
             float[] durationTmp=new float[programs.length + 1];
             System.arraycopy(programDuration, 0, durationTmp, 0, programDuration.length);
-            
+
             IBuffer[][] tmp = new IBuffer[programs.length + 1][];
             for (int a = 0; a < programs.length; a++) {
                 tmp[a] = programs[a];
@@ -116,7 +118,7 @@ public class SoundPool {
     public static IBuffer[] getProgram(int programNumber) {
         return programs[programNumber];
     }
-    
+
     public static float getProgramDuration(int programNumber){
         return programDuration[programNumber];
     }
