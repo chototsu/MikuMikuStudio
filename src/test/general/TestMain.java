@@ -110,11 +110,6 @@ public class TestMain extends AbstractGame {
 			finish();
 		}
 		
-		
-			
-			
-		
-		
 		world.update(10 / timer.getFrameRate());
 		timer.update();
 
