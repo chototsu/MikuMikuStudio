@@ -47,6 +47,8 @@ import org.lwjgl.opengl.GLU;
 import org.lwjgl.opengl.Window;
 
 import com.jme.curve.Curve;
+import com.jme.effects.Particle;
+import com.jme.effects.ParticleSystem;
 import com.jme.input.Mouse;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector2f;
@@ -90,7 +92,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.13 2004-01-25 00:57:28 greggpatton Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.14 2004-01-26 21:44:37 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -534,6 +536,87 @@ public class LWJGLRenderer implements Renderer {
         GL.glPopMatrix();
 
     }
+
+    /**
+     * <code>draw</code> renders a particle system object to the buffer.
+     * @param p the ParticleSystem object to be renderer
+     */
+    public void draw(ParticleSystem p) {
+        Matrix3f rotation = p.getWorldRotation();
+        Vector3f translation = p.getWorldTranslation();
+        float scale = p.getWorldScale();
+        float[] modelToWorld =
+            {
+                scale * rotation.get(0, 0),
+                scale * rotation.get(1, 0),
+                scale * rotation.get(2, 0),
+                0.0f,
+                scale * rotation.get(0, 1),
+                scale * rotation.get(1, 1),
+                scale * rotation.get(2, 1),
+                0.0f,
+                scale * rotation.get(0, 2),
+                scale * rotation.get(1, 2),
+                scale * rotation.get(2, 2),
+                0.0f,
+                translation.x,
+                translation.y,
+                translation.z,
+                1.0f };
+
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glPushMatrix();
+        worldBuffer.clear();
+        worldBuffer.put(modelToWorld);
+        worldBuffer.flip();
+        GL.glMultMatrixf(worldBuffer);
+
+        GL.glBegin(GL.GL_QUADS);
+
+        // draw particles 
+        float fSizeAdjust = 1;
+        Vector3f upperLeft = camera.getUp().add(camera.getLeft());
+        Vector3f upperRight = camera.getUp().subtract(camera.getLeft());
+
+        Vector3f scaledUpLeft, scaledUpRight;
+        Vector3f center, cpp, cpm, cmp, cmm;
+        ColorRGBA color;
+        float particleSizeX, particleSizeY;
+
+        for (int i = 0; i < p.getParticles().size(); i++) {
+
+            center = ((Particle) p.getParticles().get(i)).position;
+
+            particleSizeX = ((Particle) p.getParticles().get(i)).size.x;
+            particleSizeY = ((Particle) p.getParticles().get(i)).size.y;
+            scaledUpLeft = upperLeft.mult(particleSizeX);
+            scaledUpRight = upperRight.mult(particleSizeY);
+            cpp = center.add(scaledUpLeft);
+            cpm = center.add(scaledUpRight);
+            cmp = center.subtract(scaledUpRight);
+            cmm = center.subtract(scaledUpLeft);
+
+            GL.glColor4f(
+                ((Particle) p.getParticles().get(i)).color.r,
+                ((Particle) p.getParticles().get(i)).color.g,
+                ((Particle) p.getParticles().get(i)).color.b,
+                ((Particle) p.getParticles().get(i)).color.a);
+
+            GL.glTexCoord2f(0.0f, 0.0f);
+            GL.glVertex3f(cmm.x, cmm.y, cmm.z);
+            GL.glTexCoord2f(0.0f, 1.0f);
+            GL.glVertex3f(cpm.x, cpm.y, cpm.z);
+            GL.glTexCoord2f(1.0f, 1.0f);
+            GL.glVertex3f(cpp.x, cpp.y, cpp.z);
+            GL.glTexCoord2f(1.0f, 0.0f);
+            GL.glVertex3f(cmp.x, cmp.y, cmp.z);
+        }
+        GL.glEnd();
+
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glPopMatrix();
+    }
+    
     /**
      * <code>draw</code> draws a line object where a line contains a 
      * collection of vertices, normals, colors and texture coordinates.
@@ -903,8 +986,7 @@ public class LWJGLRenderer implements Renderer {
         if (s != null) {
             s.onDraw(this);
         }
-        
-        
+
     }
 
     /**
@@ -980,10 +1062,10 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#draw(com.jme.widget.text.WidgetText)
      */
     public void draw(WidgetText wt) {
-        
+
         if (wt.getFgColor() == null)
             return;
-            
+
         initWidgetProjection(wt);
 
         float x = (wt.getX()) + wt.getXOffset();

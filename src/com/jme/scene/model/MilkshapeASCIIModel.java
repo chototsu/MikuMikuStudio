@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003,2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without 
@@ -59,7 +59,7 @@ import com.jme.util.TextureManager;
  * created, attached to the main node, the head <code>TriMesh</code> is
  * then attached to this second node.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.3 2004-01-26 01:30:12 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.4 2004-01-26 21:44:37 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel {
     //contains data structures for the resulting model scene.
@@ -137,11 +137,12 @@ public class MilkshapeASCIIModel {
             meshArray[i].updateModelBound();
 
             if (i == 0) {
-                modelNode.attachChild(meshArray[0]);
+                modelNode.attachChild(meshArray[i]);
                 oldNode = modelNode;
             } else {
                 Node newNode = new Node();
-                newNode.attachChild(meshArray[1]);
+                newNode.attachChild(meshArray[i]);
+                newNode.setName(meshArray[i].getName()+"ParentNode");
                 oldNode.attachChild(newNode);
                 oldNode = newNode;
             }
@@ -158,9 +159,10 @@ public class MilkshapeASCIIModel {
         jointIndices = new int[numberMeshes][0];
         for (int i = 0; i < numberMeshes; i++) {
             String line;
+            String meshName;
             try {
                 line = getNextLine(reader);
-
+                meshName = line.substring(1, line.lastIndexOf("\""));
                 line = getNextLine(reader);
                 int numberVertices = Integer.parseInt(line);
                 Vector3f[] vectors = new Vector3f[numberVertices];
@@ -222,6 +224,7 @@ public class MilkshapeASCIIModel {
                 }
 
                 meshArray[i] = new TriMesh();
+                meshArray[i].setName(meshName);
                 meshArray[i].setVertices(vectors);
                 meshArray[i].setTextures(textures);
                 meshArray[i].setNormals(norms);
@@ -371,7 +374,6 @@ public class MilkshapeASCIIModel {
                 return;
             }
         }
-
     }
 
     /**
