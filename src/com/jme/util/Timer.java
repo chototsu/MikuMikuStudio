@@ -34,10 +34,22 @@ package com.jme.util;
 /**
  * <code>Timer</code>
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.1 2003-11-14 19:37:28 mojomonkey Exp $
+ * @version $Id: Timer.java,v 1.2 2004-02-02 23:03:52 ericthered Exp $
  */
 public abstract class Timer {
     private static Timer instance;
+    
+    /**
+     * @return a long value representing the current time.
+     */
+    public abstract long getTime();
+    
+    /**
+     * @return the number of times per second the timer is updated
+     */
+    public abstract long getResolution();
+    
+    //---
     
     public abstract float getFrameRate();
     

@@ -44,7 +44,7 @@ import org.lwjgl.Sys;
  * method.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.1 2003-11-14 19:37:28 mojomonkey Exp $
+ * @version $Id: LWJGLTimer.java,v 1.2 2004-02-02 23:03:52 ericthered Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;
@@ -58,7 +58,7 @@ public class LWJGLTimer extends Timer {
      * Constructor builds a <code>Timer</code> object. All values will be
      * initialized to it's default values.
      */
-    public LWJGLTimer() {
+    protected LWJGLTimer() {
         //reset time
         Sys.setTime(0);
 
@@ -73,6 +73,20 @@ public class LWJGLTimer extends Timer {
                 + " ticks per second");
     }
 
+    /**
+     * @see com.jme.util.Timer#getTime()
+     */
+    public long getTime(){
+    	return Sys.getTime();
+    }
+    
+    /**
+     * @see com.jme.util.Timer#getResoultion()
+     */
+    public long getResolution(){
+    	return Sys.getTimerResolution();
+    }
+    
     /**
      * <code>getFrameRate</code> returns the current frame rate since the
      * last call to <code>update</code>.
@@ -119,9 +133,6 @@ public class LWJGLTimer extends Timer {
                 / (float)frameDiff;
         oldTime = newTime;
     }
-    
-    
-    
     
     /**
      * <code>toString</code> returns the string representation of this timer
