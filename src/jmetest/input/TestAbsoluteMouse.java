@@ -31,19 +31,15 @@
  */
 package jmetest.input;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputSystem;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 
 /**
@@ -51,11 +47,9 @@ import com.jme.util.TextureManager;
  * @author Mark Powell
  * @version
  */
-public class TestAbsoluteMouse extends BaseGame {
+public class TestAbsoluteMouse extends SimpleGame {
 
     private Text text;
-    private Camera cam;
-    private Node scene;
     private AbsoluteMouse mouse;
 
     public static void main(String[] args) {
@@ -64,72 +58,14 @@ public class TestAbsoluteMouse extends BaseGame {
         app.start();
     }
 
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
-        
-        if( this.finished) {
-            cleanup();
-        }
-        
-        mouse.update();
+    protected void simpleUpdate() {
         text.print("Position: " + mouse.getLocalTranslation().x + " , " +
                 mouse.getLocalTranslation().y);
     }
 
-    /**
-     * draws the scene graph
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-
-        display.getRenderer().draw(scene);
-    }
-
-    /**
-     * initializes the display and camera.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-        	display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-        	display.createWindow(
-        			properties.getWidth(),
-					properties.getHeight(),
-					properties.getDepth(),
-					properties.getFreq(),
-					properties.getFullscreen());
-
-        	cam = display.getRenderer().getCamera(properties.getWidth(), properties.getHeight());
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
+    protected void simpleInitGame() {
         InputSystem.createInputSystem(properties.getRenderer());
-        ColorRGBA blueColor = new ColorRGBA();
-        blueColor.r = 0;
-        blueColor.g = 0;
-        display.getRenderer().setBackgroundColor(blueColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(4.0f, 0.0f, 0.0f);
-        Vector3f left = new Vector3f(0.0f, -1.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 0.0f, 1.0f);
-        Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
-        cam.setFrame(loc, left, up, dir);
-
-        display.getRenderer().setCamera(cam);
-
-    }
-
-    /**
-     * initializes the scene
-     * @see com.jme.app.SimpleGame#initGame()
-     */
-    protected void initGame() {
-
+        display.getRenderer().setBackgroundColor(ColorRGBA.blue);
         mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());
         TextureState cursor = display.getRenderer().getTextureState();
         cursor.setEnabled(true);
@@ -140,6 +76,7 @@ public class TestAbsoluteMouse extends BaseGame {
 					);
         mouse.setRenderState(cursor);
         mouse.setMouseInput(InputSystem.getMouseInput());
+        input.setMouse(mouse);
 
         text = new Text("Text Label","Testing Mouse");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
@@ -160,27 +97,7 @@ public class TestAbsoluteMouse extends BaseGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
         mouse.setRenderState(as1);
-        scene = new Node("Scene node");
-        scene.attachChild(text);
-        scene.attachChild(mouse);
-        cam.update();
-
-        scene.updateGeometricState(0.0f, true);
-        scene.updateRenderState();
+        rootNode.attachChild(text);
+        rootNode.attachChild(mouse);
     }
-
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-
-    }
-
-    /**
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-    }
-
 }
