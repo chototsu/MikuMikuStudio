@@ -46,13 +46,13 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.19 2004-08-30 04:36:42 mojomonkey Exp $
+ * @version $Id: AbstractGame.java,v 1.20 2004-08-31 05:14:29 mojomonkey Exp $
  */
 public abstract class AbstractGame {
     /** Flag for running the system. */
     protected boolean finished;
 
-    private final static String JME_VERSION_TAG = "jME version 0.6";
+    private final static String JME_VERSION_TAG = "jME version 0.8";
     private final static String DEFAULT_IMAGE = "/jmetest/data/images/Monkey.png";
 
     /** Never displays a <code>PropertiesDialog</code> on startup, using defaults
