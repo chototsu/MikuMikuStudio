@@ -45,13 +45,13 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.21 2004-08-14 00:50:00 cep21 Exp $
+ * @version $Id: TestParticleSystem.java,v 1.22 2004-09-16 17:12:23 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
   private ParticleManager manager;
   private Vector3f currentPos = new Vector3f(), newPos = new Vector3f();
-  private float tpf = 0;
+  private float frameRate = 0;
 
   public static void main(String[] args) {
     TestParticleSystem app = new TestParticleSystem();
@@ -60,7 +60,6 @@ public class TestParticleSystem extends SimpleGame {
   }
 
   protected void simpleUpdate() {
-    tpf = timer.getTimePerFrame();
     if (tpf > 1f) tpf = 1.0f; // do this to prevent a long pause at start
 
     if ( (int) currentPos.x == (int) newPos.x
@@ -71,12 +70,13 @@ public class TestParticleSystem extends SimpleGame {
       newPos.z = (float) Math.random() * 50 - 150;
     }
 
+    frameRate = timer.getFrameRate() / 2;
     currentPos.x -= (currentPos.x - newPos.x)
-        / (timer.getFrameRate() / 2);
+        / frameRate;
     currentPos.y -= (currentPos.y - newPos.y)
-        / (timer.getFrameRate() / 2);
+        / frameRate;
     currentPos.z -= (currentPos.z - newPos.z)
-        / (timer.getFrameRate() / 2);
+        / frameRate;
 
     manager.setParticlesOrigin(currentPos);
 
@@ -125,6 +125,7 @@ public class TestParticleSystem extends SimpleGame {
     manager.getParticles().addController(manager);
     manager.getParticles().setModelBound(new BoundingSphere());
     manager.getParticles().updateModelBound();
+
     rootNode.attachChild(manager.getParticles());
   }
 }
