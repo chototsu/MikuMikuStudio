@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.9 2004-08-31 01:48:27 renanse Exp $
+ * @version $Id: TestTorus.java,v 1.10 2004-09-01 05:13:42 mojomonkey Exp $
  */
 public class TestTorus extends BaseGame {
   private Camera cam;
@@ -242,7 +242,7 @@ public class TestTorus extends BaseGame {
     TextureState font = display.getRenderer().createTextureState();
     font.setTexture(
         TextureManager.loadTexture(
-        TestManyChildren.class.getClassLoader().getResource(
+        TestTorus.class.getClassLoader().getResource(
         "jmetest/data/font/font.png"),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR,

@@ -164,7 +164,6 @@ public class DummyDisplaySystem extends DisplaySystem{
             public boolean takeScreenShot(String filename) {return false;}
             public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h) {}
             public void draw(Spatial s) {}
-            public void drawBounds(Clone c) {}
             public void drawBounds(Spatial s) {}
             public void drawBounds(BoundingVolume bv) {}
             public void drawBounds(Geometry g) {}
@@ -174,8 +173,6 @@ public class DummyDisplaySystem extends DisplaySystem{
             public void draw(Curve c) {}
             public void draw(Text t) {}
             public void draw(TriMesh t) {}
-            public void draw(CloneNode cn) {}
-            public void draw(Clone c) {}
             public void draw(WidgetRenderer wr) {}
             public RenderQueue getQueue() {return null;}
             public boolean isProcessingQueue() {return false;}

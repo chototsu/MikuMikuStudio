@@ -82,8 +82,6 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.RenderQueue;
 import com.jme.renderer.Renderer;
-import com.jme.scene.Clone;
-import com.jme.scene.CloneNode;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
@@ -129,7 +127,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.40 2004-08-31 02:05:12 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.41 2004-09-01 05:13:44 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1179,82 +1177,6 @@ public class LWJGLRenderer implements Renderer {
   }
 
   /**
-   * <code>draw</code> draws a clone node object. The data for the geometry
-   * defined in the clone node is set but not rendered. The rendering occurs
-   * by the clone node's children (Clones).
-   *
-   * @param cn
-   *            the clone node to render.
-   * @see com.jme.renderer.Renderer#draw(com.jme.scene.CloneNode)
-   */
-  public void draw(CloneNode cn) {
-    TriMesh t = cn.getGeometry();
-
-    // render the object
-
-    GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
-    GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-
-    FloatBuffer normals = t.getNormalAsFloatBuffer();
-    if (normals != null) {
-      GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-      GL11.glNormalPointer(0, normals);
-    } else {
-      GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
-    }
-
-    FloatBuffer colors = t.getColorAsFloatBuffer();
-    if (colors != null) {
-      GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-      GL11.glColorPointer(4, 0, colors);
-    } else {
-      GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-    }
-
-    FloatBuffer textures = t.getTextureAsFloatBuffer();
-    if (textures != null) {
-      GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-      GL11.glTexCoordPointer(2, 0, textures);
-    } else {
-      GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-    }
-  }
-
-  /**
-   * <code>draw</code> renders a clone object. The depends on the data for
-   * geometry previously being set by a clone node. The world transformations
-   * are then made and the geometry is rendered.
-   *
-   * @param c
-   *            the clone object.
-   * @see com.jme.renderer.Renderer#draw(com.jme.scene.Clone)
-   */
-  public void draw(Clone c) {
-    //set world matrix
-    Quaternion rotation = c.getWorldRotation();
-    Vector3f translation = c.getWorldTranslation();
-    Vector3f scale = c.getWorldScale();
-    float rot = rotation.toAngleAxis(vRot);
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glPushMatrix();
-
-    GL11.glTranslatef(translation.x, translation.y, translation.z);
-    GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-    GL11.glScalef(scale.x, scale.y, scale.z);
-
-    IntBuffer indices = c.getIndexBuffer();
-    if (statisticsOn) {
-      int adder = indices.capacity();
-      numberOfTris += adder / 3;
-    }
-
-    GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
-
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glPopMatrix();
-  }
-
-  /**
    * <code>draw</code> renders a scene by calling the nodes
    * <code>onDraw</code> method.
    *
@@ -1278,16 +1200,6 @@ public class LWJGLRenderer implements Renderer {
       s.onDrawBounds(this);
     }
 
-  }
-
-  /**
-   * <code>drawBounds</code> renders the bounds of a scene by calling the
-   * nodes <code>onDrawBounds</code> method.
-   *
-   * @see com.jme.renderer.Renderer#drawBounds(com.jme.scene.Spatial)
-   */
-  public void drawBounds(Clone c) {
-    drawBounds(c.getWorldBound());
   }
 
   /**

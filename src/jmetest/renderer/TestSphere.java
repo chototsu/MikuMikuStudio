@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestSphere.java,v 1.8 2004-08-14 00:50:07 cep21 Exp $
+ * @version $Id: TestSphere.java,v 1.9 2004-09-01 05:13:42 mojomonkey Exp $
  */
 public class TestSphere extends BaseGame {
     private Camera cam;
@@ -214,7 +214,7 @@ public class TestSphere extends BaseGame {
         TextureState font = display.getRenderer().createTextureState();
         font.setTexture(
             TextureManager.loadTexture(
-                TestManyChildren.class.getClassLoader().getResource(
+                TestSphere.class.getClassLoader().getResource(
                     "jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR,
