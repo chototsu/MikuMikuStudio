@@ -44,7 +44,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.10 2004-07-30 21:09:27 guurk Exp $
+ * @version $Id: InputHandler.java,v 1.11 2004-08-17 19:55:31 cep21 Exp $
  */
 public class InputHandler {
     /** List of keyboard actions. They are performed in update if valid. */
@@ -237,7 +237,7 @@ public class InputHandler {
             }
         }
 
-        if (_useBufferedKeyboard) {
+        if (_useBufferedKeyboard && keyboard!=null) {
             while (keyboard.getKeyInput().next()) {
                 boolean keyPressed = keyboard.getKeyInput().state();
                 if (keyPressed) {
