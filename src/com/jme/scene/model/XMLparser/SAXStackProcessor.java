@@ -26,7 +26,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
-import com.jme.util.Vector3fPool;
 
 /**
  * Started Date: May 31, 2004
@@ -37,7 +36,7 @@ import com.jme.util.Vector3fPool;
  *
  * @author Jack Lindamood
  */
-class SAXStackProcessor {
+public class SAXStackProcessor {
 
     /**
      * The final node of the loaded scene
@@ -78,9 +77,39 @@ class SAXStackProcessor {
             s.push(buildTexture(atts));
         } else if (qName.equals("mesh")){
             s.push(processSpatial(new TriMesh(atts.getValue("name")),atts));
-        } else if (qName.equals("vertex") || qName.equals("normal") ||
-                qName.equals("texturecoords") || qName.equals("index") || qName.equals("color") || qName.equals("sharedtypes")||
-                qName.equals("jointindex") || qName.equals("origvertex") || qName.equals("orignormal")){
+        } else if (qName.equals("vertex")){
+            Geometry geo=(Geometry) s.pop();
+            geo.setVertices(createVector3f(atts.getValue("data")));
+            s.push(geo);
+        } else if (qName.equals("normal")){
+            Geometry geo=(Geometry) s.pop();
+            geo.setNormals(createVector3f(atts.getValue("data")));
+            s.push(geo);
+        } else if (qName.equals("texturecoords")){
+            Geometry geo=(Geometry) s.pop();
+            geo.setTextures(createVector2f(atts.getValue("data")));
+            s.push(geo);
+        } else if (qName.equals("color")){
+            Geometry geo=(Geometry) s.pop();
+            geo.setColors(createColors(atts.getValue("data")));
+            s.push(geo);
+        } else if (qName.equals("index")){
+            TriMesh m=(TriMesh) s.pop();
+            m.setIndices(createIntArray(atts.getValue("data")));
+            s.push(m);
+        } else if (qName.equals("origvertex")){
+            JointMesh jm=(JointMesh) s.pop();
+            jm.originalVertex=createVector3f(atts.getValue("data"));
+            s.push(jm);
+        } else if (qName.equals("orignormal")){
+            JointMesh jm=(JointMesh) s.pop();
+            jm.originalNormal=createVector3f(atts.getValue("data"));
+            s.push(jm);
+        } else if (qName.equals("jointindex")){
+            JointMesh jm=(JointMesh) s.pop();
+            jm.jointIndex=createIntArray(atts.getValue("data"));
+            s.push(jm);
+        } else if (qName.equals("sharedtypes")){
             // Do nothing, these have no attributes
         } else if (qName.equals("primitive")){
             s.push(processPrimitive(atts));
@@ -111,7 +140,6 @@ class SAXStackProcessor {
             } catch (InstantiationException e) {
                 throw new SAXException("XMLloadable classes cannot be abstract: " + atts.getValue("class"));
             }
-
         } else if (qName.equals("jointcontroller")){
             s.push(new JointController(Integer.parseInt(atts.getValue("numJoints"))));
         } else if (qName.equals("keyframe")){
@@ -209,25 +237,10 @@ class SAXStackProcessor {
             parentNode.attachChild(childMesh);
             s.push(parentNode);
         } else if (qName.equals("vertex")){
-            Geometry childGeometry=(Geometry) s.pop();
-            childGeometry.setVertices(createVector3f(data));
-            s.push(childGeometry);
         } else if (qName.equals("normal")){
-            Geometry childGeometry=(Geometry) s.pop();
-            childGeometry.setNormals(createVector3f(data));
-            s.push(childGeometry);
         } else if (qName.equals("color")){
-            Geometry childGeometry=(Geometry) s.pop();
-            childGeometry.setColors(createColors(data));
-            s.push(childGeometry);
         } else if (qName.equals("texturecoords")){
-            Geometry childGeometry=(Geometry) s.pop();
-            childGeometry.setTextures(createVector2f(data));
-            s.push(childGeometry);
         } else if (qName.equals("index")){
-            TriMesh childGeometry=(TriMesh) s.pop();
-            childGeometry.setIndices(createIntArray(data));
-            s.push(childGeometry);
         } else if (qName.equals("primitive")){
             childSpatial=(Spatial) s.pop();
             parentNode=(Node) s.pop();
@@ -281,17 +294,8 @@ class SAXStackProcessor {
         } else if (qName.equals("joint")){
             s.pop();    // remove unneeded information tag
         } else if (qName.equals("jointindex")){
-            JointMesh jm=(JointMesh) s.pop();
-            jm.jointIndex=createIntArray(data);
-            s.push(jm);
         } else if (qName.equals("origvertex")){
-            JointMesh jm=(JointMesh) s.pop();
-            jm.originalVertex=createVector3f(data);
-            s.push(jm);
         } else if (qName.equals("orignormal")){
-            JointMesh jm=(JointMesh) s.pop();
-            jm.originalNormal=createVector3f(data);
-            s.push(jm);
         } else if (qName.equals("keyframecontroller")){
             KeyframeController kc=(KeyframeController) s.pop();
             TriMesh parentMesh=(TriMesh) s.pop();
@@ -452,9 +456,9 @@ class SAXStackProcessor {
      * @return The new Vector2f array
      * @throws SAXException If the string is malformated
      */
-    public static Vector2f[] createVector2f(StringBuffer data) throws SAXException {
-        if (data.length()==0) return null;
-        String [] information=data.toString().trim().split(" ");
+    public static Vector2f[] createVector2f(String data) throws SAXException {
+        if (data==null || data.length()==0) return null;
+        String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
         if (information.length==1 && information[0].equals("")) return null;
         if (information.length%2!=0){
             throw new SAXException("Vector2f length not modulus of 2: " + information.length);
@@ -473,9 +477,9 @@ class SAXStackProcessor {
      * @return The new Vector3f array
      * @throws SAXException
      */
-    public static Vector3f[] createVector3f(StringBuffer data) throws SAXException {
-        if (data.length()==0) return null;
-        String [] information=data.toString().trim().split(" ");
+    public static Vector3f[] createVector3f(String data) throws SAXException {
+        if (data==null || data.length()==0) return null;
+        String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
         if (information.length==1 && information[0].equals("")) return null;
         if (information.length%3!=0){
             throw new SAXException("Vector3f length not modulus of 3: " + information.length);
@@ -489,14 +493,29 @@ class SAXStackProcessor {
         return vecs;
     }
 
+    private static String removeDoubleWhiteSpaces(String data) {
+        StringBuffer toReturn=new StringBuffer();
+        boolean whiteSpaceFlag=false;
+        for (int i=0;i<data.length();i++){
+            if (Character.isWhitespace(data.charAt(i))){
+                if (!whiteSpaceFlag && toReturn.length()!=0) toReturn.append(' ');
+                whiteSpaceFlag = true;
+            } else{
+                toReturn.append(data.charAt(i));
+                whiteSpaceFlag=false;
+            }
+        }
+        return toReturn.toString();
+    }
+
     /**
      * Turns a String into an integer array
      * @param data The string data <i>Example:</i>"1 2 5 1 2"
      * @return The new integer array
      */
-    public static int[] createIntArray(StringBuffer data) {
-        if (data.length()==0) return null;
-        String [] information=data.toString().trim().split("\\p{Space}");
+    public static int[] createIntArray(String data) {
+        if (data==null || data.length()==0) return null;
+        String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
         if (information.length==1 && information[0].equals("")) return null;
         int count=0;
         for (int i=0;i<information.length;i++)
@@ -518,9 +537,9 @@ class SAXStackProcessor {
      * @return The new ColorRGBA array
      * @throws SAXException  If the string is malformated
      */
-    public static ColorRGBA[] createColors(StringBuffer data) throws SAXException {
-        if (data.length()==0) return null;
-        String [] information=data.toString().trim().split(" ");
+    public static ColorRGBA[] createColors(String data) throws SAXException {
+        if (data == null || data.length()==0) return null;
+        String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
         if (information.length==1 && information[0].equals("")) return null;
         if (information.length%4!=0){
             throw new SAXException("Color length not modulus of 4: " + information.length);
