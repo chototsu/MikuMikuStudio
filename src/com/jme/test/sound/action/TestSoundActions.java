@@ -323,7 +323,7 @@ public class TestSoundActions extends AbstractGame {
 	}
 
 	public static void main(String[] args) {
-		TestSoundForwardAction app= new TestSoundForwardAction();
+		TestSoundActions app= new TestSoundActions();
 		app.useDialogAlways(true);
 		app.start();
 	}
