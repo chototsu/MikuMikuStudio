@@ -157,7 +157,7 @@ public class RenParticleControlFrame extends JFrame {
   * <code>RenParticleControlFrame</code>
   *
   * @author Joshua Slack
-  * @version $Id: RenParticleControlFrame.java,v 1.8 2004-03-24 20:14:17 renanse Exp $
+  * @version $Id: RenParticleControlFrame.java,v 1.9 2004-03-24 20:21:04 renanse Exp $
   *
   */
 
@@ -229,9 +229,7 @@ public class RenParticleControlFrame extends JFrame {
     sizeBorder.setTitle(" PARTICLE SIZE ");
     endSizeLabel.setFont(new java.awt.Font("Arial", 1, 13));
     endSizeLabel.setText("End Size: 0.0");
-    endSizeSlider.setMajorTickSpacing(10);
-    endSizeSlider.setMaximum(200);
-    endSizeSlider.setMinorTickSpacing(1);
+    endSizeSlider.setMaximum(400);
     endSizeSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = endSizeSlider.getValue();
@@ -240,9 +238,7 @@ public class RenParticleControlFrame extends JFrame {
         regenCode();
       }
     });
-    startSizeSlider.setMajorTickSpacing(10);
-    startSizeSlider.setMaximum(200);
-    startSizeSlider.setMinorTickSpacing(1);
+    startSizeSlider.setMaximum(400);
     startSizeSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = startSizeSlider.getValue();
@@ -454,7 +450,7 @@ public class RenParticleControlFrame extends JFrame {
     randomSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = randomSlider.getValue();
-        TestRenParticleGUI.manager.setRandomMod((float)val*.01f);
+        TestRenParticleGUI.manager.setRandomMod((float)val*.1f);
         updateRandomLabels();
         regenCode();
       }
