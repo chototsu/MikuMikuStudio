@@ -10,10 +10,13 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.Spatial;
 import com.jme.system.DisplaySystem;
 import com.jme.renderer.ColorRGBA;
+import com.jme.image.Texture;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.net.URL;
+import java.net.MalformedURLException;
 
 
 /**
@@ -30,6 +33,7 @@ public class ObjToJme extends FormatConverter{
     private ArrayList normalList=new ArrayList();
     private MaterialGrouping curGroup;
     private final MaterialGrouping DEFAULT_GROUP=new MaterialGrouping();
+    private HashMap materialNames=new HashMap();
     private HashMap materialSets=new HashMap(); // Maps MaterialGroup to ArraySet
 
     public void convert(InputStream format, OutputStream jMEFormat) throws IOException {
@@ -37,6 +41,7 @@ public class ObjToJme extends FormatConverter{
         textureList.clear();
         normalList.clear();
         materialSets.clear();
+        materialNames.clear();
         inFile=new BufferedReader(new InputStreamReader(format));
         String in;
         curGroup=DEFAULT_GROUP;
@@ -81,7 +86,7 @@ public class ObjToJme extends FormatConverter{
             thisMesh.reconstruct(vert, norm,null,text, indexes);
             if (properties.get("sillycolors")!=null)
                 thisMesh.setRandomColors();
-            thisMesh.setRenderState(thisGroup.ts);
+            if (thisGroup.ts.isEnabled()) thisMesh.setRenderState(thisGroup.ts);
             thisMesh.setRenderState(thisGroup.m);
             toReturn.attachChild(thisMesh);
         }
@@ -91,7 +96,7 @@ public class ObjToJme extends FormatConverter{
             return toReturn;
     }
 
-    private void processLine(String s) {
+    private void processLine(String s) throws IOException {
         if (s==null) return ;
         if (s.length()==0) return;
         String[] parts=s.split(" ");
@@ -99,22 +104,71 @@ public class ObjToJme extends FormatConverter{
         if ("v".equals(parts[0])){
             addVertextoList(parts);
             return;
-        }
-        if ("vt".equals(parts[0])){
+        }else if ("vt".equals(parts[0])){
             addTextoList(parts);
             return;
-        }
-        if ("vn".equals(parts[0])){
+        } else if ("vn".equals(parts[0])){
             addNormalToList(parts);
             return;
-        }
-        if ("g".equals(parts[0])){
+        } else if ("g".equals(parts[0])){
             setDefaultGroup();
             return;
-        }
-        if ("f".equals(parts[0])){
+        } else if ("f".equals(parts[0])){
             addFaces(parts);
             return;
+        } else if ("mtllib".equals(parts[0])){
+            loadMaterials(parts);
+            return;
+        } else if ("newmtl".equals(parts[0])){
+            addMaterial(parts);
+            return;
+        } else if ("usemtl".equals(parts[0])){
+            curGroup=(MaterialGrouping) materialNames.get(parts[1]);
+            return;
+        } else if ("Ka".equals(parts[0])){
+            curGroup.m.setAmbient(new ColorRGBA(Float.parseFloat(parts[1]),Float.parseFloat(parts[2]),Float.parseFloat(parts[3]),1));
+            return;
+        } else if ("Kd".equals(parts[0])){
+            curGroup.m.setDiffuse(new ColorRGBA(Float.parseFloat(parts[1]),Float.parseFloat(parts[2]),Float.parseFloat(parts[3]),1));
+            return;
+        } else if ("Ks".equals(parts[0])){
+            curGroup.m.setSpecular(new ColorRGBA(Float.parseFloat(parts[1]),Float.parseFloat(parts[2]),Float.parseFloat(parts[3]),1));
+            return;
+        } else if ("Ks".equals(parts[0])){
+            curGroup.m.setShininess(Float.parseFloat(parts[1]));
+            return;
+        } else if ("d".equals(parts[0])){
+            curGroup.m.setAlpha(Float.parseFloat(parts[1]));
+            return;
+        } else if ("map_Ka".equals(parts[0])){
+            Texture t=new Texture();
+            t.setImageLocation("file:/"+s.substring(6).trim());
+            curGroup.ts.setTexture(t);
+            curGroup.ts.setEnabled(true);
+            return;
+        }
+    }
+
+    private void addMaterial(String[] parts) {
+        MaterialGrouping newMat=new MaterialGrouping();
+        materialNames.put(parts[1],newMat);
+        materialSets.put(newMat,new ArraySet());
+        curGroup=newMat;
+    }
+
+    private void loadMaterials(String[] fileNames) throws IOException {
+        URL matURL=(URL) properties.get("mtllib");
+        if (matURL==null) return;
+        for (int i=1;i<fileNames.length;i++){
+            processMaterialFile(new URL(matURL,fileNames[i]).openStream());
+        }
+    }
+
+    private void processMaterialFile(InputStream inputStream) throws IOException {
+        BufferedReader matFile=new BufferedReader(new InputStreamReader(inputStream));
+        String in;
+        while ((in=matFile.readLine())!=null){
+            processLine(in);
         }
     }
 
@@ -131,8 +185,6 @@ public class ObjToJme extends FormatConverter{
             thisMat.indexes.add(new Integer(secondIndex));
             int thirdIndex=thisMat.findSet(third);
             thisMat.indexes.add(new Integer(thirdIndex));
-            firstIndex = secondIndex;
-            secondIndex = thirdIndex;
         }
     }
 
@@ -160,8 +212,8 @@ public class ObjToJme extends FormatConverter{
     private class MaterialGrouping{
         public MaterialGrouping(){
             m=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
-            m.setAmbient(ColorRGBA.gray);
-            m.setDiffuse(ColorRGBA.white);
+            m.setAmbient(new ColorRGBA(.2f,.2f,.2f,1));
+            m.setDiffuse(new ColorRGBA(.8f,.8f,.8f,1));
             m.setSpecular(ColorRGBA.white);
             m.setEnabled(true);
             ts=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
@@ -221,15 +273,21 @@ public class ObjToJme extends FormatConverter{
         public int findSet(IndexSet v) {
             int i=0;
             for (i=0;i<normals.size();i++){
-                if (normals.get(i).equals(v.normal) &&
-                        textures.get(i).equals(v.texture) &&
-                        vertexes.get(i).equals(v.vertex))
+                if (compareObjects(v.normal,normals.get(i)) &&
+                        compareObjects(v.texture,textures.get(i)) &&
+                        compareObjects(v.vertex,vertexes.get(i)))
                     return i;
             }
             normals.add(v.normal);
             textures.add(v.texture);
             vertexes.add(v.vertex);
             return i;
+        }
+
+        private boolean compareObjects(Object o1, Object o2) {
+            if (o1==null) return (o2==null);
+            if (o2==null) return false;
+            return o1.equals(o2);
         }
     }
 }
