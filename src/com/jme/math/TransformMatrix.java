@@ -98,7 +98,7 @@ public class TransformMatrix {
      * @param scalar
      */
     public void mult(float scalar) {
-        rot.multiply(scalar);
+        rot.multLocal(scalar);
         translation.mult(scalar);
         scale.multLocal(scalar);
     }
