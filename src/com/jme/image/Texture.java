@@ -34,6 +34,7 @@ package com.jme.image;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.net.URL;
 
 import com.jme.renderer.ColorRGBA;
 
@@ -47,7 +48,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.7 2004-05-23 21:23:08 mojomonkey Exp $
+ * @version $Id: Texture.java,v 1.8 2004-06-08 22:10:31 cep21 Exp $
  */
 public class Texture {
 
@@ -186,6 +187,9 @@ public class Texture {
     public static final int EM_NONE = 0;
     public static final int EM_IGNORE = 1;
     public static final int EM_SPHERE = 2;
+
+    // Optional URL to point to where this texture is located
+    private URL imageLocation;
 
     //texture attributes.
     private Image image;
@@ -654,8 +658,15 @@ public class Texture {
 	    return envMapMode;
 	}
 
-        public String toString() {
-          return "Texture with id: "+textureId;
-        }
+    public String toString() {
+        return "Texture with id: "+textureId;
+    }
 
+    public URL getImageLocation() {
+        return imageLocation;
+    }
+
+    public void setImageLocation(URL imageLocation) {
+        this.imageLocation = imageLocation;
+    }
 }
