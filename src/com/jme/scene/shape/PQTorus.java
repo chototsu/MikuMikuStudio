@@ -42,7 +42,7 @@ import com.jme.math.Vector2f;
  * also known as a pq torus.
  *
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.3 2004-04-22 22:26:53 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.4 2004-08-01 06:55:59 cep21 Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -50,6 +50,17 @@ public class PQTorus extends TriMesh {
     private float radius, width;
     private int steps, radialSamples;
 
+    /**
+     * Creates a parameterized torus.  Steps and radialSamples are both degree of
+     * accuracy values.
+     * @param name The name of the torus.
+     * @param p The x/z oscillation.
+     * @param q The y oscillation.
+     * @param radius The radius of the PQTorus.
+     * @param width The width of the torus.
+     * @param steps The steps along the torus.
+     * @param radialSamples Radial samples for the torus.
+     */
     public PQTorus(String name, float p, float q, float radius, float width,
             int steps, int radialSamples) {
         super(name);
