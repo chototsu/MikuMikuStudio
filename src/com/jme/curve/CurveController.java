@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * curve), the orientation precision defines how accurate the orientation of the
  * spatial will be.
  * @author Mark Powell
- * @version $Id: CurveController.java,v 1.1 2004-01-07 23:00:47 mojomonkey Exp $
+ * @version $Id: CurveController.java,v 1.2 2004-01-15 20:19:52 mojomonkey Exp $
  */
 public class CurveController extends Controller {
     private Spatial mover;
@@ -53,6 +53,7 @@ public class CurveController extends Controller {
     private float deltaTime = 0.0f;
 
     private boolean cycleForward = true;
+    private boolean autoRotation = false;
 
     /**
      * Constructor instantiates a new <code>CurveController</code> object. 
@@ -112,6 +113,14 @@ public class CurveController extends Controller {
     public void setOrientationPrecision(float value) {
         orientationPrecision = value;
     }
+    
+    public void setAutoRotation(boolean value) {
+        autoRotation = value;
+    }
+    
+    public boolean isAutoRotating() {
+        return autoRotation;
+    }
 
     /**
      * <code>update</code> moves a spatial along the given curve for along a
@@ -127,11 +136,13 @@ public class CurveController extends Controller {
                 if (getRepeatType() == RT_CLAMP) {
                     deltaTime = currentTime - getMinTime();
                     mover.setLocalTranslation(curve.getPoint(deltaTime));
-                    mover.setLocalRotation(
-                        curve.getOrientation(
-                            deltaTime,
-                            orientationPrecision,
-                            up));
+                    if(autoRotation) {
+                        mover.setLocalRotation(
+                            curve.getOrientation(
+                                deltaTime,
+                                orientationPrecision,
+                                up));
+                    }
                 } else if (getRepeatType() == RT_WRAP) {
                     deltaTime = (currentTime - getMinTime()) % 1.0f;
                     if (deltaTime > 1) {
@@ -139,11 +150,13 @@ public class CurveController extends Controller {
                         deltaTime = 0;
                     }
                     mover.setLocalTranslation(curve.getPoint(deltaTime));
-                    mover.setLocalRotation(
-                        curve.getOrientation(
-                            deltaTime,
-                            orientationPrecision,
-                            up));
+                    if(autoRotation) {
+                        mover.setLocalRotation(
+                            curve.getOrientation(
+                                deltaTime,
+                                orientationPrecision,
+                                up));
+                    }
                 } else if (getRepeatType() == RT_CYCLE) {
                     float prevTime = deltaTime;
                     deltaTime = (currentTime - getMinTime()) % 1.0f;
@@ -153,19 +166,23 @@ public class CurveController extends Controller {
                     if (cycleForward) {
 
                         mover.setLocalTranslation(curve.getPoint(deltaTime));
-                        mover.setLocalRotation(
-                            curve.getOrientation(
-                                deltaTime,
-                                orientationPrecision,
-                                up));
+                        if(autoRotation) {
+                            mover.setLocalRotation(
+                                curve.getOrientation(
+                                    deltaTime,
+                                    orientationPrecision,
+                                    up));
+                        }
                     } else {
                         mover.setLocalTranslation(
                             curve.getPoint(1.0f - deltaTime));
-                        mover.setLocalRotation(
-                            curve.getOrientation(
-                                1.0f - deltaTime,
-                                orientationPrecision,
-                                up));
+                        if(autoRotation) {
+                            mover.setLocalRotation(
+                                curve.getOrientation(
+                                    1.0f - deltaTime,
+                                    orientationPrecision,
+                                    up));
+                        }
                     }
                 } else {
                     return;
