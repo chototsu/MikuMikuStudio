@@ -55,7 +55,7 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.2 2004-03-21 23:25:34 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.3 2004-03-23 23:46:15 renanse Exp $
  *
  */
 public class RenParticleManager {
@@ -111,11 +111,11 @@ public class RenParticleManager {
 // init non-null, non-zero field members
     rotMatrix = new Matrix3f();
     originCenter = new Vector3f();
-    upVector = new Vector3f(0.0F, 1.0F, 0.0F);
-    gravityForce = new Vector3f(0.0F, 0.0F, 0.0F);
-    emissionDirection = new Vector3f(0.0F, 1.0F, 0.0F);
-    startColor = new ColorRGBA(1.0F, 0.0F, 0.0F, 1.0F);
-    endColor = new ColorRGBA(1.0F, 1.0F, 0.0F, 0.0F);
+    upVector = new Vector3f(0.0f, 1.0f, 0.0f);
+    gravityForce = new Vector3f(0.0f, 0.0f, 0.0f);
+    emissionDirection = new Vector3f(0.0f, 1.0f, 0.0f);
+    startColor = new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f);
+    endColor = new ColorRGBA(1.0f, 1.0f, 0.0f, 0.0f);
     firstRun = true;
     particleSpeed = 1.0f;
     minimumLifeTime = 2500f;
@@ -228,33 +228,33 @@ public class RenParticleManager {
     Vector3f abUpMinUp = new Vector3f();
     Vector3f absUpVector = new Vector3f();
     float matData[][] = new float[3][3];
-    emissionDirection.multLocal(1.0F / emit);
+    emissionDirection.multLocal(1.0f / emit);
     Vector3f upXemit = upVector.cross(emissionDirection);
     float upDotEmit = upVector.dot(emissionDirection);
     if ( ( (double) FastMath.abs(upDotEmit)) > 1.0D - FastMath.DBL_EPSILON) {
-      absUpVector.x = upVector.x <= 0.0F ? -upVector.x : upVector.x;
-      absUpVector.y = upVector.y <= 0.0F ? -upVector.y : upVector.y;
-      absUpVector.z = upVector.z <= 0.0F ? -upVector.z : upVector.z;
+      absUpVector.x = upVector.x <= 0.0f ? -upVector.x : upVector.x;
+      absUpVector.y = upVector.y <= 0.0f ? -upVector.y : upVector.y;
+      absUpVector.z = upVector.z <= 0.0f ? -upVector.z : upVector.z;
       if (absUpVector.x < absUpVector.y) {
         if (absUpVector.x < absUpVector.z) {
-          absUpVector.x = 1.0F;
-          absUpVector.y = absUpVector.z = 0.0F;
+          absUpVector.x = 1.0f;
+          absUpVector.y = absUpVector.z = 0.0f;
         } else {
-          absUpVector.z = 1.0F;
-          absUpVector.x = absUpVector.y = 0.0F;
+          absUpVector.z = 1.0f;
+          absUpVector.x = absUpVector.y = 0.0f;
         }
       } else
       if (absUpVector.y < absUpVector.z) {
-        absUpVector.y = 1.0F;
-        absUpVector.x = absUpVector.z = 0.0F;
+        absUpVector.y = 1.0f;
+        absUpVector.x = absUpVector.z = 0.0f;
       } else {
-        absUpVector.z = 1.0F;
-        absUpVector.x = absUpVector.y = 0.0F;
+        absUpVector.z = 1.0f;
+        absUpVector.x = absUpVector.y = 0.0f;
       }
       abUpMinUp = absUpVector.subtract(upVector);
       upXemit = absUpVector.subtract(emissionDirection);
-      float f4 = 2.0F / abUpMinUp.dot(abUpMinUp);
-      float f6 = 2.0F / upXemit.dot(upXemit);
+      float f4 = 2.0f / abUpMinUp.dot(abUpMinUp);
+      float f6 = 2.0f / upXemit.dot(upXemit);
       float f8 = f4 * f6 * abUpMinUp.dot(upXemit);
       float af1[] = {
           abUpMinUp.x, abUpMinUp.y, abUpMinUp.z
@@ -272,7 +272,7 @@ public class RenParticleManager {
       }
 
     } else {
-      float f2 = 1.0F / (1.0F + upDotEmit);
+      float f2 = 1.0f / (1.0f + upDotEmit);
       float f5 = f2 * upXemit.x;
       float f7 = f2 * upXemit.z;
       float f9 = f5 * upXemit.y;
@@ -368,36 +368,6 @@ public class RenParticleManager {
    */
   public void setParticlesOrigin(Vector3f origin) {
     originCenter.set(origin.x, origin.y, origin.z);
-  }
-
-  /**
-   * Set only the x element of the origin
-   *
-   * @param pos new x position
-   * @see setParticlesOrigin
-   */
-  public void setOriginXElement(float pos) {
-    originCenter.x = pos;
-  }
-
-  /**
-   * Set only the y element of the origin
-   *
-   * @param pos new y position
-   * @see setParticlesOrigin
-   */
-  public void setOriginYElement(float pos) {
-    originCenter.y = pos;
-  }
-
-  /**
-   * Set only the z element of the origin
-   *
-   * @param pos new z position
-   * @see setParticlesOrigin
-   */
-  public void setOriginZElement(float pos) {
-    originCenter.z = pos;
   }
 
   /**
@@ -571,7 +541,7 @@ public class RenParticleManager {
    * @param f float
    */
   public void setEmissionMaximumAngle(float f) {
-    maximumAngle = f >= 0.0F ? f : 0.0f;
+    maximumAngle = f >= 0.0f ? f : 0.0f;
   }
 
   /**
