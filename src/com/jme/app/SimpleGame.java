@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.32 2004-09-20 17:17:10 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.33 2004-11-25 04:04:41 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -95,8 +95,10 @@ public abstract class SimpleGame extends BaseGame {
   protected StringBuffer updateBuffer=new StringBuffer(30);
   /** This is used to recieve getStatistics calls.*/
   protected StringBuffer tempBuffer=new StringBuffer();
+	protected boolean pause;
 
-  /**
+
+	/**
    * This is called every frame in BaseGame.start()
    * @param interpolation unused in this implementation
    * @see AbstractGame#update(float interpolation)
@@ -116,11 +118,13 @@ public abstract class SimpleGame extends BaseGame {
 //    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
 //              display.getRenderer().getStatistics());
     fps.print(updateBuffer);
-      /** Call simpleUpdate in any derived classes of SimpleGame. */
-    simpleUpdate();
 
-      /** Update controllers/render states/transforms/bounds for rootNode. */
-    rootNode.updateGeometricState(tpf, true);
+      /** If toggle_wire is a valid command (via key T), change wirestates. */
+			if (KeyBindingManager
+					.getKeyBindingManager()
+					.isValidCommand("toggle_pause", false)) {
+				pause = !pause;
+			}
 
       /** If toggle_wire is a valid command (via key T), change wirestates. */
     if (KeyBindingManager
@@ -149,6 +153,13 @@ public abstract class SimpleGame extends BaseGame {
       System.err.println("Camera at: " +
                          display.getRenderer().getCamera().getLocation());
     }
+
+		if (pause) return;
+		/** Call simpleUpdate in any derived classes of SimpleGame. */
+	simpleUpdate();
+
+	/** Update controllers/render states/transforms/bounds for rootNode. */
+rootNode.updateGeometricState(tpf, true);
 
   }
 
@@ -235,6 +246,10 @@ public abstract class SimpleGame extends BaseGame {
       /** Signal to the renderer that it should keep track of rendering information. */
     display.getRenderer().enableStatistics(true);
 
+		/** Assign key P to action "toggle_pause". */
+		KeyBindingManager.getKeyBindingManager().set(
+				"toggle_pause",
+				KeyInput.KEY_P);
       /** Assign key T to action "toggle_wire". */
     KeyBindingManager.getKeyBindingManager().set(
         "toggle_wire",
