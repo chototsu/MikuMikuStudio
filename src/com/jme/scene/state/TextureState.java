@@ -41,7 +41,7 @@ import com.jme.image.Texture;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.5 2004-04-22 22:26:56 renanse Exp $
+ * @version $Id: TextureState.java,v 1.6 2004-05-26 00:03:18 mojomonkey Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -139,4 +139,8 @@ public abstract class TextureState extends RenderState {
     public int getNumberOfUnits() {
         return texture.length;
     }
+    
+    public abstract void delete(int unit);
+    
+    public abstract void deleteAll();
 }

@@ -37,6 +37,7 @@ import java.nio.IntBuffer;
 import java.util.Stack;
 import java.util.logging.Level;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -55,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.14 2004-05-23 23:54:05 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.15 2004-05-26 00:03:19 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -396,4 +397,29 @@ public class LWJGLTextureState extends TextureState {
 		newTState.setEnabled(foundEnabled);
 		return newTState;
 	}
+
+    /* (non-Javadoc)
+     * @see com.jme.scene.state.TextureState#delete(int)
+     */
+    public void delete(int unit) {
+        IntBuffer id = BufferUtils.createIntBuffer(1);
+        id.put(texture[unit].getTextureId());
+        id.rewind();
+        GL11.glDeleteTextures(id);
+        
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.scene.state.TextureState#deleteAll()
+     */
+    public void deleteAll() {
+        IntBuffer id = BufferUtils.createIntBuffer(1);
+        for(int i = 0; i < texture.length; i++) {
+            id.clear();
+            id.put(texture[i].getTextureId());
+            id.rewind();
+            GL11.glDeleteTextures(id);
+        }
+        
+    }
 }
