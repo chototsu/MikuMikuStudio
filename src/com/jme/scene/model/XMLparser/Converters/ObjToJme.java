@@ -77,6 +77,7 @@ public class ObjToJme extends FormatConverter{
         normalList.clear();
         curGroup=null;
         materialSets.clear();
+        materialNames.clear();
         inFile.close();
         inFile=null;
     }
