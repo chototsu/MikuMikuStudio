@@ -255,6 +255,7 @@ public class JmeBinaryReader {
             }
         } else if (tagName.equals("jointcontroller")){
             JointController jc=new JointController(((Integer)attributes.get("numJoints")).intValue());
+            processController(jc,attributes);
             jc.FPS = ((Float)attributes.get("fps")).floatValue();
             s.push(jc);
         } else if (tagName.equals("keyframe")){
@@ -370,6 +371,13 @@ public class JmeBinaryReader {
         }
         return;
 
+    }
+
+    private void processController(Controller jc, HashMap attributes) {
+        if (attributes.containsKey("speed"))
+            jc.setSpeed(((Float)attributes.get("speed")).floatValue());
+        if (attributes.containsKey("rptype"))
+            jc.setRepeatType(((Integer)attributes.get("rptype")).intValue());
     }
 
     /**

@@ -499,6 +499,11 @@ public class JmeBinaryWriter {
         }
     }
 
+    private void addControllerBaseAtts(Controller c,HashMap atts){
+        atts.put("rptype",new Integer(c.getRepeatType()));
+        atts.put("speed",new Float(c.getSpeed()));
+    }
+
     private void writeSpatialTransformer(SpatialTransformer st) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
@@ -739,6 +744,7 @@ public class JmeBinaryWriter {
             atts.put("sharedident",sharedObjects.get(jc));
         atts.put("numJoints",new Integer(jc.numJoints));
         atts.put("fps",new Float(jc.FPS));
+        addControllerBaseAtts(jc,atts);
         writeTag("jointcontroller",atts);
         Object[] o=jc.movementInfo.toArray();
         Vector3f tempV=new Vector3f();
