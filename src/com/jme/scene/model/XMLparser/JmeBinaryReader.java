@@ -254,7 +254,9 @@ public class JmeBinaryReader {
                 throw new JmeException("XMLloadable classes cannot be abstract: " + attributes.get("class"));
             }
         } else if (tagName.equals("jointcontroller")){
-            s.push(new JointController(((Integer)attributes.get("numJoints")).intValue()));
+            JointController jc=new JointController(((Integer)attributes.get("numJoints")).intValue());
+            jc.FPS = ((Float)attributes.get("fps")).floatValue();
+            s.push(jc);
         } else if (tagName.equals("keyframe")){
             Integer jointIndex=(Integer) s.pop();
             JointController jc=(JointController) s.pop();
