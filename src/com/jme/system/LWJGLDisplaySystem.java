@@ -58,7 +58,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.12 2004-03-05 21:55:18 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.13 2004-03-05 23:09:29 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -210,17 +210,19 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         try {
             if (fs) {
                 Display.setDisplayMode(mode);
-                Window.create(title, bpp, 0, 8, 0, 0);
+                Window.create(title, bpp, alphaBits, depthBits, stencilBits, samples);
             } else {
                 int x, y;
                 x = (Toolkit.getDefaultToolkit().getScreenSize().width - width) / 2;
                 y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) / 2;
-                Window.create(title, x, y, width, height, bpp, 0, 8, 0, 0);
+                Window.create(title, x, y, width, height, bpp, alphaBits, depthBits, stencilBits, samples);
             }
 
         } catch (Exception e) {
             //System.exit(1);
-            throw new Error("Cannot create window");
+            LoggingSystem.getLogger().log(Level.SEVERE, "Cannot create window");
+            LoggingSystem.getLogger().throwing(this.getClass().toString(), "initDisplay()", e);
+            throw new Error("Cannot create window: "+e.getMessage());
         }
     }
 
@@ -239,4 +241,5 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public RendererType getRendererType() {
         return RendererType.LWJGL;
     }
+
 }
