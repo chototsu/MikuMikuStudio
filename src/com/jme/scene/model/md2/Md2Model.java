@@ -43,15 +43,19 @@ import com.jme.system.JmeException;
 import com.jme.util.BinaryFileReader;
 
 /**
- * <code>Md2Model</code>
+ * <code>Md2Model</code> defines a model using the MD2 model format made
+ * common by Quake 2. This loader builds the mesh of each frame of animation
+ * then builds the animation controller that allows the shown mesh to be 
+ * displayed at any given time. The memory footprint may be quite large
+ * depending on how many key frames exist, and how many vertices within the
+ * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.1 2004-02-05 22:41:37 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.2 2004-02-06 03:55:13 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
-	private int numOfObjects;
-	private ModelObject[] objects;
+	
 	private Header header; // The header data
 	private String[] skins; // The skin data
 	private Vector2f[] texCoords; // The texture coordinates
@@ -104,19 +108,6 @@ public class Md2Model extends Model {
 
 	};
 
-	// This is used to store the vertices that are read in for the current
-	// frame
-//	class FrameTriangle {
-//		int[] vertex; //byte
-//		int lightNormalIndex; //byte
-//
-//		FrameTriangle() {
-//			vertex =
-//				new int[] { bis.readByte(), bis.readByte(), bis.readByte()};
-//			lightNormalIndex = bis.readByte();
-//		}
-//	};
-
 	// This stores the normals and vertices for the frames
 	class Triangle {
 		Vector3f vertex = new Vector3f();
@@ -142,7 +133,7 @@ public class Md2Model extends Model {
 		private Vector3f scale = new Vector3f();
 		private Vector3f translate = new Vector3f();
 		private String name;
-		
+
 		VectorKeyframe() {
 			scale.x = bis.readFloat();
 			scale.y = bis.readFloat();
@@ -171,22 +162,7 @@ public class Md2Model extends Model {
 	// coordinates.
 	public class Face {
 		public int[] vertIndex = new int[3];
-		// indicies for the verts that make up this triangle
 		public int[] coordIndex = new int[3];
-		// indicies for the tex coords to texture this face
-	};
-
-	// This holds all the information for our model/scene.
-	public class ModelObject {
-		public int numOfVerts; // The number of verts in the model
-		public int numOfFaces; // The number of faces in the model
-		public int numTexVertex; // The number of texture coordinates
-
-		public String strName; // The name of the object
-		public Vector3f[] pVerts; // The object's vertices
-		public Vector3f[] pNormals; // The object's normals
-		public Vector2f[] pTexVerts; // The texture's UV coordinates
-		public Face[] pFaces; // The faces information of the object
 	};
 
 	private void parseMesh() {
@@ -228,251 +204,178 @@ public class Md2Model extends Model {
 		// Move the file pointer to the vertices (frames)
 		bis.setOffset(header.offsetFrames);
 
-		// Assign our alias frame to our buffer memory
-		VectorKeyframe pFrame = new VectorKeyframe();
 
-		// Allocate the memory for the first frame of animation's vertices
-		frames[0] = new Md2Frame();
-
-		frames[0].pVertices = new Triangle[header.numVertices];
-		Vector3f[] aliasVertices = new Vector3f[header.numVertices];
-		int[] aliasLightNormals = new int[header.numVertices];
-
-		// Read in the first frame of animation
-		for (int j = 0; j < header.numVertices; j++) {
-			aliasVertices[j] = new Vector3f(bis.readByte(), bis.readByte(), bis.readByte());
-			aliasLightNormals[j] = bis.readByte();
-		}
-
-		// Copy the name of the animation to our frames array
-		frames[0].strName = pFrame.name;
-
-		Triangle[] pVertices = frames[0].pVertices;
-
-		// Go through all of the number of vertices and assign the scale and
-		// translations.
-		// Store the vertices in our current frame's vertex list array, while
-		// swapping Y and Z.
-		// Notice we also negate the Z axis as well to make the swap correctly.
-		for (int j = 0; j < header.numVertices; j++) {
-			pVertices[j] = new Triangle();
-			pVertices[j].vertex.x =
-				aliasVertices[j].x * pFrame.scale.x
-					+ pFrame.translate.x;
-			pVertices[j].vertex.z =
-				-1
-					* (aliasVertices[j].y * pFrame.scale.y
-						+ pFrame.translate.y);
-			pVertices[j].vertex.y =
-				aliasVertices[j].z * pFrame.scale.z
-					+ pFrame.translate.z;
+		for(int i = 0; i < header.numFrames; i++) {
+			// Assign our alias frame to our buffer memory
+			VectorKeyframe pFrame = new VectorKeyframe();
+	
+			// Allocate the memory for the first frame of animation's vertices
+			frames[i] = new Md2Frame();
+	
+			frames[i].pVertices = new Triangle[header.numVertices];
+			Vector3f[] aliasVertices = new Vector3f[header.numVertices];
+			int[] aliasLightNormals = new int[header.numVertices];
+	
+			// Read in the first frame of animation
+			for (int j = 0; j < header.numVertices; j++) {
+				aliasVertices[j] =
+					new Vector3f(bis.readByte(), bis.readByte(), bis.readByte());
+				aliasLightNormals[j] = bis.readByte();
+			}
+	
+			// Copy the name of the animation to our frames array
+			frames[i].strName = pFrame.name;
+	
+			Triangle[] pVertices = frames[i].pVertices;
+	
+			for (int j = 0; j < header.numVertices; j++) {
+				pVertices[j] = new Triangle();
+				pVertices[j].vertex.x =
+					aliasVertices[j].x * pFrame.scale.x + pFrame.translate.x;
+				pVertices[j].vertex.z =
+					-1 * (aliasVertices[j].y * pFrame.scale.y + pFrame.translate.y);
+				pVertices[j].vertex.y =
+					aliasVertices[j].z * pFrame.scale.z + pFrame.translate.z;
+			}
 		}
 	}
 
 	private void convertDataStructures() {
-		// Assign the number of objects, which is 1 since we only want 1 frame
-		// of animation. In the next tutorial each object will be a key frame
-		// to interpolate between.
-		numOfObjects = 1;
-		objects = new ModelObject[numOfObjects];
-		triMesh = new TriMesh[numOfObjects];
+		triMesh = new TriMesh[header.numFrames];
 
-		for (int i = 0; i < numOfObjects; i++) {
+		for (int i = 0; i < header.numFrames; i++) {
 			// Create a local object to store the first frame of animation's
 			// data
-			ModelObject currentFrame = new ModelObject();
-			objects[0] = currentFrame;
 			// Assign the vertex, texture coord and face count to our new
 			// structure
-			currentFrame.numOfVerts = header.numVertices;
-			currentFrame.numTexVertex = header.numTexCoords;
-			currentFrame.numOfFaces = header.numTriangles;
+			int numOfVerts = header.numVertices;
+			int numTexVertex = header.numTexCoords;
+			int numOfFaces = header.numTriangles;
 
 			// Allocate memory for the vertices, texture coordinates and face
 			// data.
-			currentFrame.pVerts = new Vector3f[currentFrame.numOfVerts];
-			currentFrame.pTexVerts = new Vector2f[currentFrame.numTexVertex];
-			currentFrame.pFaces = new Face[currentFrame.numOfFaces];
+			Vector3f[] verts = new Vector3f[numOfVerts];
+			Vector2f[] texVerts = new Vector2f[numTexVertex];
+			Face[] faces = new Face[numOfFaces];
 
 			// Go through all of the vertices and assign them over to our
 			// structure
-			for (int j = 0; j < currentFrame.numOfVerts; j++) {
-				currentFrame.pVerts[j] = new Vector3f();
-				currentFrame.pVerts[j].x = frames[0].pVertices[j].vertex.x;
-				currentFrame.pVerts[j].y = frames[0].pVertices[j].vertex.y;
-				currentFrame.pVerts[j].z = frames[0].pVertices[j].vertex.z;
+			for (int j = 0; j < numOfVerts; j++) {
+				verts[j] = new Vector3f();
+				verts[j].x = frames[i].pVertices[j].vertex.x;
+				verts[j].y = frames[i].pVertices[j].vertex.y;
+				verts[j].z = frames[i].pVertices[j].vertex.z;
 			}
 
 			// Go through all of the face data and assign it over to OUR
 			// structure
-			for (int j = 0; j < currentFrame.numOfFaces; j++) {
-				currentFrame.pFaces[j] = new Face();
+			for (int j = 0; j < numOfFaces; j++) {
+				faces[j] = new Face();
 				// Assign the vertex indices to our face data
-				currentFrame.pFaces[j].vertIndex[0] =
-					triangles[j].vertexIndices[0];
-				currentFrame.pFaces[j].vertIndex[1] =
-					triangles[j].vertexIndices[1];
-				currentFrame.pFaces[j].vertIndex[2] =
-					triangles[j].vertexIndices[2];
+				faces[j].vertIndex[0] = triangles[j].vertexIndices[0];
+				faces[j].vertIndex[1] = triangles[j].vertexIndices[1];
+				faces[j].vertIndex[2] = triangles[j].vertexIndices[2];
 
 				// Assign the texture coord indices to our face data
-				currentFrame.pFaces[j].coordIndex[0] =
-					triangles[j].textureIndices[0];
-				currentFrame.pFaces[j].coordIndex[1] =
-					triangles[j].textureIndices[1];
-				currentFrame.pFaces[j].coordIndex[2] =
-					triangles[j].textureIndices[2];
+				faces[j].coordIndex[0] = triangles[j].textureIndices[0];
+				faces[j].coordIndex[1] = triangles[j].textureIndices[1];
+				faces[j].coordIndex[2] = triangles[j].textureIndices[2];
 			}
 
-			for (int j = 0; j < currentFrame.numTexVertex; j++) {
-				currentFrame.pTexVerts[j] = new Vector2f();
-				currentFrame.pTexVerts[j].x =
-					texCoords[j].x / (float) (header.skinWidth);
-				currentFrame.pTexVerts[j].y =
+			for (int j = 0; j < numTexVertex; j++) {
+				texVerts[j] = new Vector2f();
+				texVerts[j].x = texCoords[j].x / (float) (header.skinWidth);
+				texVerts[j].y =
 					1 - texCoords[j].y / (float) (header.skinHeight);
 			}
 
-			Vector2f[] texCoords2 = new Vector2f[currentFrame.pVerts.length];
+			//texCoords = null;
 
-			for (int j = 0; j < currentFrame.numOfFaces; j++) {
-				int index = currentFrame.pFaces[j].vertIndex[0];
-				texCoords2[index] = new Vector2f();
-				texCoords2[index] =
-					currentFrame
-						.pTexVerts[currentFrame
-						.pFaces[j]
-						.coordIndex[0]];
+			Vector2f[] texCoords2 = new Vector2f[verts.length];
 
-				index = currentFrame.pFaces[j].vertIndex[1];
+			for (int j = 0; j < numOfFaces; j++) {
+				int index = faces[j].vertIndex[0];
 				texCoords2[index] = new Vector2f();
-				texCoords2[index] =
-					currentFrame
-						.pTexVerts[currentFrame
-						.pFaces[j]
-						.coordIndex[1]];
+				texCoords2[index] = texVerts[faces[j].coordIndex[0]];
 
-				index = currentFrame.pFaces[j].vertIndex[2];
+				index = faces[j].vertIndex[1];
 				texCoords2[index] = new Vector2f();
-				texCoords2[index] =
-					currentFrame
-						.pTexVerts[currentFrame
-						.pFaces[j]
-						.coordIndex[2]];
+				texCoords2[index] = texVerts[faces[j].coordIndex[1]];
+
+				index = faces[j].vertIndex[2];
+				texCoords2[index] = new Vector2f();
+				texCoords2[index] = texVerts[faces[j].coordIndex[2]];
 			}
 
-			currentFrame.pTexVerts = texCoords2;
+			//texVerts = texCoords2;
 			// Here we add the current object (or frame) to our list object
 			// list
 
-			int[] indices = new int[currentFrame.numOfFaces * 3];
+			int[] indices = new int[numOfFaces * 3];
 			int count = 0;
-			for (int j = 0; j < currentFrame.numOfFaces; j++) {
-				indices[count] = currentFrame.pFaces[j].vertIndex[0];
+			for (int j = 0; j < numOfFaces; j++) {
+				indices[count] = faces[j].vertIndex[0];
 				count++;
-				indices[count] = currentFrame.pFaces[j].vertIndex[1];
+				indices[count] = faces[j].vertIndex[1];
 				count++;
-				indices[count] = currentFrame.pFaces[j].vertIndex[2];
+				indices[count] = faces[j].vertIndex[2];
 				count++;
 			}
 
-			computeNormals();
+			Vector3f[] normals = computeNormals(faces, verts);
 
-			
 			triMesh[i] = new TriMesh();
-			triMesh[i].setVertices(currentFrame.pVerts);
+			triMesh[i].setLocalTranslation(new Vector3f(i*25,0,0));
+			triMesh[i].setVertices(verts);
 			triMesh[i].setTextures(texCoords2);
-			triMesh[i].setNormals(currentFrame.pNormals);
+			triMesh[i].setNormals(normals);
 			triMesh[i].setIndices(indices);
-			triMesh[i].setName(currentFrame.strName);
+			triMesh[i].setName(frames[i].strName);
 			this.attachChild(triMesh[i]);
 			triMesh[i].setModelBound(new BoundingSphere());
 			triMesh[i].updateModelBound();
+
 		}
+		
 	}
 
-	private void computeNormals() {
-		Vector3f vVector1 = new Vector3f();
-		Vector3f vVector2 = new Vector3f();
-		Vector3f vNormal = new Vector3f();
-		Vector3f[] vPoly = new Vector3f[3];
+	private Vector3f[] computeNormals(Face[] faces, Vector3f[] verts) {
+		Vector3f[] returnNormals = new Vector3f[verts.length];
 
-		// If there are no objects, we can skip this part
-		if (numOfObjects <= 0)
-			return;
+		Vector3f[] normals = new Vector3f[faces.length];
+		Vector3f[] tempNormals = new Vector3f[faces.length];
 
-		// Go through each of the objects to calculate their normals
-		for (int index = 0; index < numOfObjects; index++) {
-			// Get the current object
-			ModelObject object = objects[index];
-
-			// Here we allocate all the memory we need to calculate the normals
-			Vector3f[] pNormals = new Vector3f[object.numOfFaces];
-			Vector3f[] pTempNormals = new Vector3f[object.numOfFaces];
-			object.pNormals = new Vector3f[object.numOfVerts];
-
-			// Go though all of the faces of this object
-			for (int i = 0; i < object.numOfFaces; i++) {
-				// To cut down LARGE code, we extract the 3 points of this face
-				vPoly[0] = object.pVerts[object.pFaces[i].vertIndex[0]];
-				vPoly[1] = object.pVerts[object.pFaces[i].vertIndex[1]];
-				vPoly[2] = object.pVerts[object.pFaces[i].vertIndex[2]];
-
-				// Now let's calculate the face normals (Get 2 vectors and find
-				// the cross product of those 2)
-
-				vVector1 = vPoly[0].subtract(vPoly[2]);
-				// Get the vector of the polygon (we just need 2 sides for the
-				// normal)
-				vVector2 = vPoly[2].subtract(vPoly[1]);
-				// Get a second vector of the polygon
-
-				vNormal = vVector1.cross(vVector2);
-				// Return the cross product of the 2 vectors (normalize vector,
-				// but not a unit vector)
-				pTempNormals[i] = vNormal;
-				// Save the un-normalized normal for the vertex normals
-				vNormal = vNormal.normalize();
-				// Normalize the cross product to give us the polygons normal
-				pNormals[i] = new Vector3f();
-				pNormals[i].x = -vNormal.x;
-				pNormals[i].y = -vNormal.y;
-				pNormals[i].z = -vNormal.z;
-				// Assign the normal to the list of normals
-			}
-
-			//////////////// Now Get The Vertex Normals /////////////////
-
-			Vector3f vSum = new Vector3f();
-			Vector3f vZero = vSum;
-			int shared = 0;
-
-			for (int i = 0;
-				i < object.numOfVerts;
-				i++) // Go through all of the vertices
-				{
-				for (int j = 0;
-					j < object.numOfFaces;
-					j++) // Go through all of the triangles
-					{ // Check if the vertex is shared by another face
-					if (object.pFaces[j].vertIndex[0] == i
-						|| object.pFaces[j].vertIndex[1] == i
-						|| object.pFaces[j].vertIndex[2] == i) {
-						vSum = vSum.add(pTempNormals[j]);
-						// Add the un-normalized normal of the shared face
-						shared++; // Increase the number of shared triangles
-					}
-				}
-
-				// Get the normal by dividing the sum by the shared. We negate
-				// the shared so it has the normals pointing out.
-				object.pNormals[i] = vSum.divide(-shared);
-
-				// Normalize the normal for the final vertex normal
-				object.pNormals[i] = object.pNormals[i].normalize().negate();
-				vSum = vZero; // Reset the sum
-				shared = 0; // Reset the shared
-			}
+		for (int i = 0; i < faces.length; i++) {
+			tempNormals[i] =
+				verts[faces[i].vertIndex[0]].subtract(
+					verts[faces[i].vertIndex[2]]).cross(
+					verts[faces[i].vertIndex[2]].subtract(
+						verts[faces[i].vertIndex[1]]));
+			normals[i] = tempNormals[i].normalize();
 		}
+
+		Vector3f sum = new Vector3f();
+		Vector3f zero = sum;
+		int shared = 0;
+
+		for (int i = 0; i < verts.length; i++) {
+			for (int j = 0; j < faces.length; j++) {
+				if (faces[j].vertIndex[0] == i
+					|| faces[j].vertIndex[1] == i
+					|| faces[j].vertIndex[2] == i) {
+					sum = sum.add(tempNormals[j]);
+					shared++;
+				}
+			}
+
+			returnNormals[i] = sum.divide(-shared);
+			returnNormals[i] = returnNormals[i].normalize().negate();
+
+			sum = zero;
+			shared = 0;
+		}
+
+		return returnNormals;
 	}
 
 	/**

@@ -30,6 +30,7 @@
  */
 package com.jme.test.renderer.loader;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
@@ -170,7 +171,7 @@ public class TestMd2 extends SimpleGame {
 
 		DirectionalLight dr = new DirectionalLight();
 		dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-		dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+		dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
 		dr.setDirection(new Vector3f(0, 0, -150));
 
 		state = display.getRenderer().getLightState();
@@ -178,8 +179,8 @@ public class TestMd2 extends SimpleGame {
 		state.attach(am);
 		state.attach(dr);
 		state.attach(am2);
-		am.setEnabled(true);
-		am2.setEnabled(true);
+		am.setEnabled(false);
+		am2.setEnabled(false);
 		dr.setEnabled(true);
 
 		zstate = display.getRenderer().getZBufferState();
@@ -214,7 +215,7 @@ public class TestMd2 extends SimpleGame {
 
 	public static void main(String[] args) {
 		TestMd2 app = new TestMd2();
-		//app.useDialogAlways(true);
+		app.setDialogBehaviour(AbstractGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 }
