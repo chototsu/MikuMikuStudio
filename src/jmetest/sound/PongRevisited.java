@@ -48,7 +48,7 @@ public class PongRevisited extends SimpleGame {
 
     private Node particleNode;
 
-    private ParticleManager manager;
+    private ParticleManager manager, bmanager;
 
     private SoundNode snode;
 
@@ -149,8 +149,8 @@ public class PongRevisited extends SimpleGame {
         manager.setEmissionMaximumAngle(3.1415927f);
         manager.setSpeed(1.4f);
         manager.setParticlesMinimumLifeTime(1000.0f);
-        manager.setStartSize(4.0f);
-        manager.setEndSize(4.0f);
+        manager.setStartSize(5.0f);
+        manager.setEndSize(5.0f);
         manager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
         manager.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
         manager.setRandomMod(0.0f);
@@ -162,6 +162,33 @@ public class PongRevisited extends SimpleGame {
 
         manager.warmUp(1000);
         manager.getParticles().addController(manager);
+        
+        
+        
+        bmanager = new ParticleManager(100, display.getRenderer().getCamera());
+        bmanager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
+        bmanager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
+        bmanager.setEmissionMaximumAngle(0.0f);
+        bmanager.setSpeed(0.4f);
+        bmanager.setParticlesMinimumLifeTime(100.0f);
+        bmanager.setStartSize(5.0f);
+        bmanager.setEndSize(5.0f);
+        bmanager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
+        bmanager.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
+        bmanager.setRandomMod(0.0f);
+        bmanager.setControlFlow(false);
+        bmanager.setReleaseRate(300);
+        bmanager.setReleaseVariance(0.0f);
+        bmanager.setInitialVelocity(0.3f);
+        bmanager.setParticleSpinSpeed(-0.5f);
+
+        bmanager.warmUp(1000);
+        bmanager.getParticles().addController(bmanager);
+
+       
+        
+        
+        
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -183,9 +210,15 @@ public class PongRevisited extends SimpleGame {
         Node myNode = new Node("Particle Nodes");
         myNode.setRenderState(as1);
         myNode.setRenderState(ts);
-        myNode.attachChild(manager.getParticles());
-        rootNode.attachChild(myNode);
+        Node mybNode = new Node("Particle Nodes");
+        mybNode.setRenderState(as1);
+        mybNode.setRenderState(ts);
         
+        mybNode.attachChild(bmanager.getParticles());
+        myNode.attachChild(manager.getParticles());
+        
+        rootNode.attachChild(myNode);
+        rootNode.attachChild(mybNode);
         
         rootNode.attachChild(player);
         lightState.setEnabled(!lightState.isEnabled());
@@ -268,6 +301,13 @@ public class PongRevisited extends SimpleGame {
     private void moveBall() {
         ball.getLocalTranslation().x += ballXSpeed;
         ball.getLocalTranslation().y += ballYSpeed;
+        bmanager.getParticles().getLocalTranslation().x=ball.getLocalTranslation().x;
+        bmanager.getParticles().getLocalTranslation().y=ball.getLocalTranslation().y;
+        if(ballXSpeed < 0){
+            bmanager.setEmissionDirection(new Vector3f(1,ballYSpeed, 0));
+        }else{
+            bmanager.setEmissionDirection(new Vector3f(-1,-ballYSpeed, 0));
+        }
     }
 
     private void moveComputer() {
