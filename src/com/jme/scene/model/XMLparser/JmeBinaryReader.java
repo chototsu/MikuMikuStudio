@@ -146,7 +146,7 @@ public class JmeBinaryReader {
      * @throws IOException If anything wierd goes on in reading
      */
     private void readBegining() throws IOException {
-        String tagName=myIn.readUTF();
+        String tagName=myIn.readUTF().trim();
         if (DEBUG) System.out.println("Reading tagName:" + tagName);
         readInObjects(attributes);
         if (tagName.equals("scene")){
@@ -374,7 +374,7 @@ public class JmeBinaryReader {
         } else if (tagName.equals("wirestate")){
             s.push(buildWireState(attributes));
         } else{
-            throw new JmeException("Illegale Qualified name: " + tagName);
+            throw new JmeException("Illegale Qualified name: '" + tagName + "'");
         }
         if (attributes.containsKey("sharedident")){
             Object temp=s.pop();
