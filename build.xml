@@ -25,7 +25,7 @@
 <!-- ************************************************************************* -->		
 
  <target name="exec" depends="compile" description="runs TestMain">
-    <java fork="true" classname="test.general.TestMain" classpath="${seg}/lib/lwjgl.jar:${class}"/>
+    <java fork="true" jvmargs="-Djava.library.path=${seg}/lib/" classname="test.general.TestMain" classpath="${seg}/lib/lwjgl.jar:${class}"/>
  </target>
 
   <target name="dist" depends="init" description="generate jme package" >
