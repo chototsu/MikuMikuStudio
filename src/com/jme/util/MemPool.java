@@ -12,6 +12,7 @@ import com.jme.math.Vector2f;
  * @author Jack Lindamood
  */
 public class MemPool {
+
     private MemPool(){}
     public static Vector3f v3a=new Vector3f();
     public static Vector3f v3b=new Vector3f();
@@ -22,4 +23,6 @@ public class MemPool {
     public static Matrix3f m3b=new Matrix3f();
     public static Vector2f v2a=new Vector2f();
     public static Vector2f v2b=new Vector2f();
+    public static Vector2f v2c=new Vector2f();
+    public static Vector2f v2d=new Vector2f();
 }
