@@ -58,7 +58,7 @@ import com.jme.bounding.OBBTree;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.28 2004-09-10 22:36:10 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.29 2004-09-10 23:59:05 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -347,7 +347,6 @@ public class TriMesh extends Geometry implements Serializable {
 	 * hit. 
 	 */
 	public void hasCollision(Spatial scene, CollisionResults results) {
-		System.out.println(getName() + " has collided with " + scene.getName());
 		if (this == scene) {
 			return;
 		}
