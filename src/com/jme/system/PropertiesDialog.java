@@ -37,6 +37,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Level;
 
 import javax.swing.ImageIcon;
@@ -59,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.6 2004-02-01 02:16:54 ericthered Exp $
+ * @version $Id: PropertiesDialog.java,v 1.7 2004-02-08 00:58:20 ericthered Exp $
  */
 public class PropertiesDialog extends JDialog {
 
@@ -67,7 +69,7 @@ public class PropertiesDialog extends JDialog {
 	private PropertiesIO source = null;
 
 	//Title Image
-	String imageFile = null;
+	URL imageFile = null;
 
 	//UI components
 	private JCheckBox fullscreenBox = null;
@@ -93,25 +95,38 @@ public class PropertiesDialog extends JDialog {
 	 *             if the source is null.
 	 */
 	public PropertiesDialog(PropertiesIO source, String imageFile) {
-		try {
-			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
-		} catch (Exception e) {
-			LoggingSystem.getLogger().log(Level.WARNING, "Could not set" + " native look and feel.");
-		}
-
-		if (null == source) {
+		if (null == source)
 			throw new JmeException("PropertyIO source cannot be null");
-		}
+		
+		URL file = null;
+		try {
+			file = new URL("file:" + imageFile);
+		} catch (MalformedURLException e) {}
+		
+		this.source = source;
+		this.imageFile = file;
 
+		init();
+	}
+	
+	/**
+	 * Constructor builds the interface for the <code>PropertiesDialog</code>.
+	 * 
+	 * @param source
+	 *            the <code>PropertiesIO</code> object to use for working
+	 *            with the properties file.
+	 * @param imageFile
+	 *            the file to use as the title of the dialog. Null will result
+	 *            in no picture being used.
+	 * @throws MonkeyRuntimeException
+	 *             if the source is null.
+	 */
+	public PropertiesDialog(PropertiesIO source, URL imageFile) {
+		if (null == source)
+			throw new JmeException("PropertyIO source cannot be null");
+		
 		this.source = source;
 		this.imageFile = imageFile;
-
-		this.addWindowListener(new WindowAdapter() {
-			public void windowClosing(WindowEvent e) {
-				dispose();
-				System.exit(0);
-			}
-		});
 
 		init();
 	}
@@ -130,14 +145,25 @@ public class PropertiesDialog extends JDialog {
 	/**
 	 * <code>setImage</code> sets the background image of the dialog.
 	 * 
-	 * @param image the image file.
+	 * @param image <code>String</code> representing the image file.
 	 */
 	public void setImage(String image) {
-		//ImageIcon dies extremely messily if we pass it null, so we
-		//must convert it to an empty String.
-		String file = (image == null) ? "" : image;
-		
-		icon.setIcon(new ImageIcon(file));
+		URL file = null;
+		try {
+			file = new URL("file:" + image);
+		//We can safely ignore the exception - it just means that
+		//the user gave us a bogus file
+		} catch (MalformedURLException e) {}
+		setImage(file);
+	}
+	
+	/**
+	 * <code>setImage</code> sets the background image of the dialog.
+	 * 
+	 * @param image <code>URL</code> pointing to the image file.
+	 */
+	public void setImage(URL image) {
+		icon.setIcon(new ImageIcon(image));
 		pack(); //Resize to accomodate the new image
 		center();
 	}
@@ -167,6 +193,19 @@ public class PropertiesDialog extends JDialog {
 	 * <code>init</code> creates the components to use the dialog.  
 	 */
 	private void init() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception e) {
+			LoggingSystem.getLogger().log(Level.WARNING, "Could not set native look and feel.");
+		}
+		
+		this.addWindowListener(new WindowAdapter() {
+			public void windowClosing(WindowEvent e) {
+				dispose();
+				System.exit(0);
+			}
+		});
+		
 		this.setTitle("Select Display Settings");
 
 		//The panels...
@@ -181,12 +220,8 @@ public class PropertiesDialog extends JDialog {
 
 		mainPanel.setLayout(new BorderLayout());
 		centerPanel.setLayout(new BorderLayout());
-
-		//ImageIcon dies extremely messily if we pass it null, so we
-		//must convert it to an empty String.
-		String file = (imageFile == null) ? "" : imageFile;
 		
-		icon = new JLabel(new ImageIcon(file));
+		icon = new JLabel(new ImageIcon(imageFile));
 		centerPanel.add(icon, BorderLayout.NORTH);
 
 		displayResCombo = setUpResolutionChooser();

@@ -31,6 +31,8 @@
  */
 package com.jme.app;
 
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.logging.Level;
 
 import com.jme.system.DisplaySystem;
@@ -44,7 +46,7 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  * 
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.5 2004-02-02 23:02:42 ericthered Exp $
+ * @version $Id: AbstractGame.java,v 1.6 2004-02-08 00:57:56 ericthered Exp $
  */
 public abstract class AbstractGame {
 	private final static String JME_VERSION_TAG = "jME version 0.4.1-experimental";
@@ -63,7 +65,7 @@ public abstract class AbstractGame {
 
 	//Default to first-run-only behaviour
 	private int dialogBehaviour = FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG;
-	private String dialogImage = DEFAULT_IMAGE;
+	private URL dialogImage = null;
 
 	/** Game display properties */
 	protected PropertiesIO properties;
@@ -119,6 +121,19 @@ public abstract class AbstractGame {
 	 * 					  will result in no image being used.
 	 */
 	public void setDialogBehaviour(int behaviour, String image){
+		if (behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG)
+			throw new IllegalArgumentException("No such properties dialog behaviour");
+		
+		dialogBehaviour = behaviour;
+		
+		URL file = null;
+		try {
+			file = new URL("file:" + image);
+		} catch (MalformedURLException e) {}
+		dialogImage = file;
+	}
+	
+	public void setDialogBehaviour(int behaviour, URL image){
 		if (behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG)
 			throw new IllegalArgumentException("No such properties dialog behaviour");
 		
