@@ -160,6 +160,7 @@ class MaterialBlock extends ChunkerClass {
 //        myTexState.setTexture(TextureManager.loadTexture(tc.texName,Texture.MM_LINEAR,Texture.FM_LINEAR,false));
         Texture t=new Texture();
         t.setImageLocation("file:/"+tc.texName);
+        t.setWrap(Texture.WM_WRAP_S_WRAP_T);
         myTexState.setTexture(t);
         myTexState.setEnabled(true);
     }
