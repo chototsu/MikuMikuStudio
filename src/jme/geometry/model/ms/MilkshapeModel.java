@@ -77,7 +77,7 @@ import org.lwjgl.opengl.GL;
  *
  * @author naj
  * @author Mark Powell
- * @version $Id: MilkshapeModel.java,v 1.9 2003-09-08 20:29:27 mojomonkey Exp $
+ * @version $Id: MilkshapeModel.java,v 1.10 2003-09-09 14:13:09 mojomonkey Exp $
  */
 public class MilkshapeModel implements Model {
 
@@ -507,7 +507,8 @@ public class MilkshapeModel implements Model {
     }
     
     public Vector[] getPoints() {
-        return (Vector[])points.toArray();
+        Vector v[] = new Vector[points.size()];
+        return (Vector[])points.toArray(v);
     }
     
     /**

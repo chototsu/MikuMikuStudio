@@ -39,6 +39,7 @@ import org.lwjgl.opengl.Window;
 import jme.AbstractGame;
 import jme.controller.BaseFPSController;
 import jme.entity.camera.Camera;
+import jme.geometry.bounding.BoundingSphere;
 import jme.geometry.hud.text.Font2D;
 import jme.geometry.model.Model;
 import jme.geometry.model.ms.MilkshapeModel;
@@ -149,7 +150,12 @@ public class TestMilkshape extends AbstractGame {
      */
     protected void initGame() {
         model = new MilkshapeModel("data/model/msascii/run.txt",true);
-    }
+        BoundingSphere bs = new BoundingSphere();
+        bs.averagePoints(model.getPoints());
+        System.out.println("num of points " + model.getPoints().length);
+        System.out.println("center " + bs.getCenter());
+        System.out.println("radius " + bs.getRadius());
+    } 
 
     /** 
      * Nothing here yet.

@@ -96,7 +96,7 @@ import org.lwjgl.opengl.Window;
  * 
  * 
  * @author Mark Powell
- * @version $Id: Md3Model.java,v 1.9 2003-09-08 20:29:28 mojomonkey Exp $
+ * @version $Id: Md3Model.java,v 1.10 2003-09-09 14:13:10 mojomonkey Exp $
  */
 public class Md3Model implements Geometry {
     /**
@@ -367,7 +367,8 @@ public class Md3Model implements Geometry {
      * @return the list of points.
      */
     public Vector[] getPoints() {
-        return (Vector[])points.toArray();
+        Vector v[] = new Vector[points.size()];
+        return (Vector[])points.toArray(v);
     }
 
     /**
