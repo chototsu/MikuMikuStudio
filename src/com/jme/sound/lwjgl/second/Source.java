@@ -236,7 +236,7 @@ public class Source implements ISource {
 	 * @see com.jme.sound.ISource#setPosition(com.jme.math.Vector3f)
 	 */
 	public void setPosition(Vector3f position) {
-		AL.alListener3f(AL.AL_POSITION, position.x, position.y, position.z);
+		AL.alSource3f(sourceNumber,AL.AL_POSITION, position.x, position.y, position.z);
 
 	}
 
@@ -244,7 +244,7 @@ public class Source implements ISource {
 	 * @see com.jme.sound.ISource#setPosition(float, float, float)
 	 */
 	public void setPosition(float x, float y, float z) {
-		AL.alListener3f(AL.AL_POSITION, x, y, z);
+		AL.alSource3f(sourceNumber,AL.AL_POSITION, x, y, z);
 
 	}
 
