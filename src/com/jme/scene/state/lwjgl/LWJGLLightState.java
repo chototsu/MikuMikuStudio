@@ -50,12 +50,12 @@ import com.jme.scene.Spatial;
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.5 2004-04-22 22:26:58 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.6 2004-05-12 20:52:43 mojomonkey Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.
     private FloatBuffer buffer;
-    private float[] ambient = { 0.0f, 0.0f, 0.0f, 1.0f };;
+    private float[] ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
     private float[] color;
     private float[] posParam = new float[4];
     private float[] spotDir = new float[4];
