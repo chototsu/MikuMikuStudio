@@ -59,7 +59,7 @@ import com.jme.renderer.Renderer;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.10 2004-09-14 21:52:23 mojomonkey Exp $
+ * @version $Id: ParticleManager.java,v 1.11 2004-10-05 21:31:00 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -224,6 +224,7 @@ private final static Vector2f sharedTextureData[] = {
 
 
         int i = 0;
+        boolean dead = true;
         while (i < noParticles) {
           if (particles[i].updateAndCheck(timePassed) &&
               (!controlFlow || particlesToCreate > 0)) {
@@ -231,6 +232,7 @@ private final static Vector2f sharedTextureData[] = {
                 getRepeatType() == RT_CLAMP) {
               ;
             } else {
+              dead = false;
               if (controlFlow) {
                 released++;
                 particlesToCreate--;
@@ -255,12 +257,13 @@ private final static Vector2f sharedTextureData[] = {
               }
               particles[i].updateVerts();
             }
-          }
+          } else dead = false;
           i++;
         }
 
         particlesGeometry.setVertices(geometryCoordinates);
         particlesGeometry.setColors(appearanceColors);
+        if (dead) setActive(false);
       }
       if (particlesGeometry.getModelBound() != null) {
         particlesGeometry.getModelBound().computeFromPoints(particlesGeometry.getVertices());
