@@ -41,7 +41,7 @@ import com.jme.renderer.ColorRGBA;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.7 2004-03-08 23:42:42 renanse Exp $
+ * @version $Id: Box.java,v 1.8 2004-03-11 00:04:47 renanse Exp $
  */
 public class Box extends TriMesh {
     public float xExtent, yExtent, zExtent;
@@ -84,6 +84,16 @@ public class Box extends TriMesh {
         this.xExtent = xExtent;
         this.yExtent = yExtent;
         this.zExtent = zExtent;
+
+        setVertexData();
+        setNormalData();
+        setColorData();
+        setTextureData();
+        setIndexData();
+    }
+
+    public void resetVertices() {
+        setVertexData();
     }
 
     /**
