@@ -120,21 +120,16 @@ public class HelloLOD extends SimpleGame {
         };
         BezierCurve bc=new BezierCurve("camera path",cameraPoints);
         cn=new CameraNode("camera node",display.getRenderer().getCamera());
-        Vector3f left=new Vector3f(-1,0,0);
-        Vector3f up=new Vector3f(0,1,0);
-        Vector3f direction=new Vector3f(0,0,-1);
-        Matrix3f cameraFrame=new Matrix3f();
-        cameraFrame.setColumn(0,left);
-        cameraFrame.setColumn(1,up);
-        cameraFrame.setColumn(2,direction);
-        cn.setLocalRotation(cameraFrame);
+
         CurveController cc=new CurveController(bc,cn);
         cc.setActive(true);
         cc.setUpVector(new Vector3f(0,1,0));
         cc.setAutoRotation(false);
         cc.setRepeatType(Controller.RT_CYCLE);
-        cn.addController(cc);
         cc.setSpeed(.1f);
+
+        cn.addController(cc);
+
 //        rootNode.setForceView(true);
     }
 
