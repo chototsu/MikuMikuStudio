@@ -226,7 +226,7 @@ public class HelloIntersection extends SimpleGame {
             if (Intersection.intersection(bullet.getWorldBound(), target
                     .getWorldBound())) {
                 System.out.println("OWCH!!!");
-                targetSound.setPosition(target.getLocalTranslation());
+                targetSound.setPosition(target.getWorldTranslation());
                 target.setLocalTranslation(new Vector3f(r.nextFloat() * 10, r
                         .nextFloat() * 10, r.nextFloat() * 10));
                 lifeTime = 0;
