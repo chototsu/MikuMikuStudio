@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.5 2003-12-12 21:56:02 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.6 2003-12-13 00:31:23 mojomonkey Exp $
  */
 public class TestPick extends AbstractGame {
     private TriMesh t;
@@ -203,7 +203,7 @@ public class TestPick extends AbstractGame {
         t.setModelBound(new BoundingBox());
         t.updateModelBound();
         
-        t.setLocalTranslation(new Vector3f(0,10,0));
+        t.setLocalTranslation(new Vector3f(50,10,0));
         
         scene.attachChild(t);
         root.attachChild(scene);
