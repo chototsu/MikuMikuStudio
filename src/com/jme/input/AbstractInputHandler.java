@@ -53,7 +53,7 @@ import com.jme.system.DisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Jack Lindamood - (Javadoc only)
- * @version $Id: AbstractInputHandler.java,v 1.5 2004-07-30 20:29:10 cep21 Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.6 2004-07-30 20:33:55 cep21 Exp $
  */
 public abstract class AbstractInputHandler {
 
@@ -63,7 +63,7 @@ public abstract class AbstractInputHandler {
     protected Camera camera;
     /** List of keyboard actions.  They are performed in update if valid.*/
     protected ArrayList keyActions;
-    /** List of mouse actions.  They are performed in update if valid. */
+    /** List of mouse actions.  They are performed in update. */
     protected ArrayList mouseActions;
     /** The keyboard where valid key actions are taken from in update. */
     protected KeyBindingManager keyboard;
