@@ -20,13 +20,9 @@
 
   <target name="compile" depends="init" description="generate jme classes">
     <mkdir dir="${class}"/>
-    <javac srcdir="${src}/jme" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jl030.jar" listfiles="no"/>
+    <javac srcdir="${src}/com" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jl030.jar" listfiles="no"/>
   </target>
 <!-- ************************************************************************* -->		
-
- <target name="exec" depends="compile" description="runs TestMain">
-    <java fork="true" jvmargs="-Djava.library.path=${seg}/lib/" classname="test.general.TestMain" classpath="${seg}/lib/lwjgl.jar:${class}"/>
- </target>
 
   <target name="dist" depends="compile" description="generate jme package" >
     <jar jarfile="${seg}/target/jme.jar"  basedir="${class}" update="no" compress="false"/>
@@ -34,8 +30,8 @@
 
 <!-- java doc ************************************************************************* -->		
   <target name="doc" depends="compile" description="generate the doc">
-     <javadoc destdir="${doc}" author="true" version="true" use="true" package="yes" windowtitle="Test API">
-       <fileset dir="${src}/jme">
+     <javadoc destdir="${doc}" author="true" version="true" use="true" package="yes" windowtitle="jME API">
+       <fileset dir="${src}/com">
          <include name="**/*.java" />
        </fileset>
     </javadoc>
