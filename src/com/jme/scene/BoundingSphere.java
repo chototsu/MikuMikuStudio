@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.12 2004-02-26 18:03:27 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.13 2004-02-26 22:40:34 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -303,6 +303,18 @@ public class BoundingSphere implements BoundingVolume {
 
             return this;
         }
+    }
+
+    /**
+     * <code>clone</code> creates a new BoundingSphere object containing the same
+     * data as this one.
+     * @return the new BoundingSphere
+     */
+    public Object clone() {
+        BoundingSphere rVal = new BoundingSphere();
+        rVal.center = (Vector3f)center.clone();
+        rVal.radius = radius;
+        return rVal;
     }
 
     /**

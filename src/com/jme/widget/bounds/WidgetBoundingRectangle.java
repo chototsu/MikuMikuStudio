@@ -291,6 +291,21 @@ public class WidgetBoundingRectangle implements BoundingVolume {
         return this;
     }
 
+    /**
+     * <code>clone</code> creates a new BoundingSphere object containing the same
+     * data as this one.
+     * @return the new BoundingSphere
+     */
+    public Object clone() {
+        WidgetBoundingRectangle rVal = new WidgetBoundingRectangle();
+        rVal.min = (Vector2f)min.clone();
+        rVal.max = (Vector2f)max.clone();
+        rVal.center = (Vector2f)center.clone();
+        rVal.points = new Vector2f[] { rVal.min, rVal.max };
+        rVal.lockMin = lockMin;
+        return rVal;
+    }
+
     public void setMin(Vector2f min) {
         setMin(min.x, min.y);
     }
