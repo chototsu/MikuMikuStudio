@@ -74,7 +74,6 @@ import org.lwjgl.opengl.Window;
 import org.lwjgl.opengl.glu.GLU;
 import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
-import com.jme.effects.Tint;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -127,7 +126,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.41 2004-09-01 05:13:44 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.42 2004-09-01 05:16:25 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -619,45 +618,6 @@ public class LWJGLRenderer implements Renderer {
    */
   public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h) {
     GL11.glReadPixels(x, y, w, h, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, buff);
-  }
-
-  /**
-   * <code>draw</code> renders a tint to the back buffer
-   *
-   * @param t
-   *            is the tint to render.
-   */
-  public void draw(Tint t) {
-    // set up ortho mode
-    GL11.glMatrixMode(GL11.GL_PROJECTION);
-    GL11.glPushMatrix();
-    GL11.glLoadIdentity();
-    GLU.gluOrtho2D(0, Window.getWidth(), 0, Window.getHeight());
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glPushMatrix();
-    GL11.glLoadIdentity();
-
-    // set the color of the tint
-    GL11.glColor4f(t.getTintColor().r, t.getTintColor().g,
-                   t.getTintColor().b, t.getTintColor().a);
-
-    // drawQuad
-    GL11.glBegin(GL11.GL_QUADS);
-    {
-      GL11.glVertex2f(0, 0);
-      GL11.glVertex2f(0, Window.getHeight());
-      GL11.glVertex2f(Window.getWidth(), Window.getHeight());
-      GL11.glVertex2f(Window.getWidth(), 0);
-    }
-    GL11.glEnd();
-
-    // remove ortho mode, and go back to original
-    // state
-    GL11.glMatrixMode(GL11.GL_PROJECTION);
-    GL11.glPopMatrix();
-    GL11.glMatrixMode(GL11.GL_MODELVIEW);
-    GL11.glPopMatrix();
-
   }
 
   /**

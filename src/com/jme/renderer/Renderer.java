@@ -33,7 +33,6 @@ package com.jme.renderer;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
-import com.jme.effects.Tint;
 import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
@@ -76,7 +75,7 @@ import java.nio.IntBuffer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.43 2004-09-01 05:13:43 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.44 2004-09-01 05:16:25 mojomonkey Exp $
  */
 public interface Renderer {
 
@@ -480,13 +479,6 @@ public interface Renderer {
      * @param g the Geometry to render.
      */
     public void drawBounds(Geometry g);
-
-
-    /**
-     * <code>draw</code> renders a tint to the back buffer
-     * @param t is the tint to render.
-     */
-    public void draw(Tint t);
 
     /**
      * <code>draw</code> renders a single point to the back buffer.

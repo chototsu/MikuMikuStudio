@@ -5,7 +5,6 @@ import com.jme.renderer.*;
 import com.jme.scene.state.*;
 import com.jme.scene.*;
 import com.jme.bounding.BoundingVolume;
-import com.jme.effects.Tint;
 import com.jme.curve.Curve;
 import com.jme.widget.WidgetRenderer;
 import com.jme.widget.font.WidgetFont;
@@ -167,7 +166,6 @@ public class DummyDisplaySystem extends DisplaySystem{
             public void drawBounds(Spatial s) {}
             public void drawBounds(BoundingVolume bv) {}
             public void drawBounds(Geometry g) {}
-            public void draw(Tint t) {}
             public void draw(Point p) {}
             public void draw(Line l) {}
             public void draw(Curve c) {}
