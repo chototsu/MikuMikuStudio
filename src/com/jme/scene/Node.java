@@ -55,7 +55,7 @@ import java.util.Stack;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.22 2004-05-14 19:49:43 renanse Exp $
+ * @version $Id: Node.java,v 1.23 2004-06-17 16:31:12 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -215,12 +215,12 @@ public class Node extends Spatial implements Serializable {
      * @param r the renderer to draw to.
      */
     public void draw(Renderer r) {
-        Spatial child = null;
-        for (int i = 0, cSize = children.size(); i < cSize ; i++) {
-            child = (Spatial) children.get(i);
-            if (child != null)
-                child.onDraw(r);
-        }
+      Spatial child = null;
+      for (int i = 0, cSize = children.size(); i < cSize; i++) {
+        child = (Spatial) children.get(i);
+        if (child != null)
+          child.onDraw(r);
+      }
     }
 
     /**

@@ -50,7 +50,7 @@ import com.jme.scene.Spatial;
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.6 2004-05-12 20:52:43 mojomonkey Exp $
+ * @version $Id: LWJGLLightState.java,v 1.7 2004-06-17 16:31:16 renanse Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.
@@ -105,6 +105,13 @@ public class LWJGLLightState extends LightState {
               int index = GL11.GL_LIGHT0 + i;
 
                 Light light = get(i);
+
+                if (light.getType() == Light.LT_AMBIENT) {
+                  ambient[0] = light.getAmbient().r;
+                  ambient[1] = light.getAmbient().g;
+                  ambient[2] = light.getAmbient().b;
+                }
+
                 if (light.isEnabled()) {
 
                     GL11.glEnable(index);
@@ -157,13 +164,6 @@ public class LWJGLLightState extends LightState {
                         GL11.glLightf(index, GL11.GL_LINEAR_ATTENUATION, 0.0f);
                         GL11.glLightf(index, GL11.GL_QUADRATIC_ATTENUATION, 0.0f);
                     }
-
-                    if (light.getType() == Light.LT_AMBIENT) {
-                        ambient[0] += light.getAmbient().r;
-                        ambient[1] += light.getAmbient().g;
-                        ambient[2] += light.getAmbient().b;
-                    }
-
 
                     switch (light.getType()) {
                         case Light.LT_DIRECTIONAL :

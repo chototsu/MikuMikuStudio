@@ -39,16 +39,29 @@ import com.jme.renderer.ColorRGBA;
  * ambient color, diffuse color and specular color. The material also defines
  * the shininess of the object and the alpha value of the object.
  * @author Mark Powell
- * @version $Id: MaterialState.java,v 1.4 2004-05-02 19:21:07 renanse Exp $
+ * @version $Id: MaterialState.java,v 1.5 2004-06-17 16:31:17 renanse Exp $
  */
 public abstract class MaterialState extends RenderState {
     //attributes of the material
-    private ColorRGBA emissive;
     private ColorRGBA ambient;
     private ColorRGBA diffuse;
     private ColorRGBA specular;
+    private ColorRGBA emissive;
     private float shininess;
-    private float alpha;
+    private float alpha;  // IS THIS PARAM USED??
+
+    protected static ColorRGBA currentAmbient = new ColorRGBA(-1,-1,-1,-1);
+    protected static ColorRGBA currentDiffuse = new ColorRGBA(-1,-1,-1,-1);
+    protected static ColorRGBA currentSpecular = new ColorRGBA(-1,-1,-1,-1);
+    protected static ColorRGBA currentEmissive = new ColorRGBA(-1,-1,-1,-1);
+    protected static float currentShininess = -1;
+
+    public static final ColorRGBA defaultAmbient  = new ColorRGBA(0.2f,0.2f,0.2f,1.0f);
+    public static final ColorRGBA defaultDiffuse  = new ColorRGBA(0.8f,0.8f,0.8f,1.0f);
+    public static final ColorRGBA defaultSpecular = new ColorRGBA(0.0f,0.0f,0.0f,1.0f);
+    public static final ColorRGBA defaultEmissive = new ColorRGBA(0.0f,0.0f,0.0f,1.0f);
+    public static final float defaultShininess = 0.0f;
+
 
     /**
      * <code>getAlpha</code>
@@ -71,11 +84,11 @@ public abstract class MaterialState extends RenderState {
      *
      */
     public MaterialState() {
-        emissive = new ColorRGBA(0,0,0,1);
-        ambient = new ColorRGBA(0,0,0,1);
-        diffuse = new ColorRGBA(1,1,1,1);
-        specular = new ColorRGBA(1,1,1,1);
-        shininess = 64f;
+        emissive = (ColorRGBA)defaultEmissive.clone();
+        ambient = (ColorRGBA)defaultAmbient.clone();
+        diffuse = (ColorRGBA)defaultDiffuse.clone();
+        specular = (ColorRGBA)defaultSpecular.clone();
+        shininess = defaultShininess;
     }
 
     /**

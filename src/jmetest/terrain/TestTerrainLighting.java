@@ -49,11 +49,12 @@ import com.jme.scene.state.TextureState;
 import com.jme.terrain.TerrainBlock;
 import com.jme.terrain.util.MidPointHeightMap;
 import com.jme.util.TextureManager;
+import com.jme.renderer.Renderer;
 
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.17 2004-05-13 23:34:28 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.18 2004-06-17 16:31:21 renanse Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -92,6 +93,8 @@ public class TestTerrainLighting extends SimpleGame {
    * @see com.jme.app.SimpleGame#initGame()
    */
   protected void simpleInitGame() {
+    rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+    fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     currentPos = new Vector3f();
     newPos = new Vector3f();
 

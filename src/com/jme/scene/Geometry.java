@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.49 2004-06-14 07:59:09 cep21 Exp $
+ * @version $Id: Geometry.java,v 1.50 2004-06-17 16:31:11 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -723,7 +723,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      *            the renderer that displays to the context.
      */
     public void draw(Renderer r) {
-        applyStates();
+      applyStates();
     }
 
     /**

@@ -47,7 +47,7 @@ import com.jme.system.JmeException;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.10 2004-04-22 22:26:24 renanse Exp $
+ * @version $Id: Curve.java,v 1.11 2004-06-17 16:31:14 renanse Exp $
  */
 public abstract class Curve extends Geometry {
 
@@ -112,8 +112,12 @@ public abstract class Curve extends Geometry {
      * @param r the renderer used to display the curve.
      */
     public void draw(Renderer r) {
-        super.draw(r);
-        r.draw(this);
+      if (!r.isProcessingQueue()) {
+        if (r.checkAndAdd(this))
+          return;
+      }
+      super.draw(r);
+      r.draw(this);
     }
 
     /**

@@ -43,7 +43,7 @@ import com.jme.util.Timer;
  * the logic based on the time elapsed.
  *
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.7 2004-04-22 22:26:22 renanse Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.8 2004-06-17 16:31:23 renanse Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 
@@ -107,7 +107,8 @@ public abstract class VariableTimestepGame extends AbstractGame {
 		}
 		LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
 
-		display.reset();
+                if (display != null)
+                  display.reset();
 		quit();
 	}
 

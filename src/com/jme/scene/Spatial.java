@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.39 2004-05-12 20:51:47 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.40 2004-06-17 16:31:12 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices
@@ -82,6 +82,10 @@ public abstract class Spatial implements Serializable {
 
   //render states
   protected RenderState[] renderStateList;
+
+  protected int renderQueueMode = Renderer.QUEUE_INHERIT;
+  protected int zOrder = 0;
+  public transient float queueDistance = Float.NEGATIVE_INFINITY;
 
   protected int lightCombineMode = LightState.COMBINE_FIRST;
   protected int textureCombineMode = TextureState.COMBINE_CLOSEST;
@@ -560,6 +564,27 @@ public abstract class Spatial implements Serializable {
 
   public void clearRenderState(int renderStateType) {
     renderStateList[renderStateType] = null;
+  }
+
+  public void setRenderQueueMode(int renderQueueMode) {
+    this.renderQueueMode = renderQueueMode;
+  }
+
+  public int getRenderQueueMode() {
+    if (renderQueueMode != Renderer.QUEUE_INHERIT)
+      return renderQueueMode;
+    else if (parent != null)
+      return parent.getRenderQueueMode();
+    else
+      return Renderer.QUEUE_SKIP;
+  }
+
+  public void setZOrder(int zOrder) {
+    this.zOrder = zOrder;
+  }
+
+  public int getZOrder() {
+    return zOrder;
   }
 
   public void setLightCombineMode(int lightCombineMode) {

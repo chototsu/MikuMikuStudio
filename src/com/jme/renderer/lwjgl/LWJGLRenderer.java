@@ -91,6 +91,7 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.WidgetRenderer;
 import org.lwjgl.BufferUtils;
+import com.jme.renderer.RenderQueue;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -99,7 +100,7 @@ import org.lwjgl.BufferUtils;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.21 2004-06-04 00:41:16 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.22 2004-06-17 16:31:16 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -128,12 +129,14 @@ public class LWJGLRenderer implements Renderer {
     private boolean statisticsOn;
 
     private LWJGLWireframeState boundsWireState = new LWJGLWireframeState();
-
     private LWJGLTextureState boundsTextState = new LWJGLTextureState();
-
     private LWJGLZBufferState boundsZState = new LWJGLZBufferState();
 
     private boolean inOrthoMode;
+    private boolean processingQueue;
+
+    private RenderQueue queue;
+
 
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -157,6 +160,7 @@ public class LWJGLRenderer implements Renderer {
 
         LoggingSystem.getLogger().log(Level.INFO,
                 "LWJGLRenderer created. W:  " + width + "H: " + height);
+        queue = new RenderQueue(this);
     }
 
     /**
@@ -401,14 +405,19 @@ public class LWJGLRenderer implements Renderer {
     }
 
     /**
-     * <code>displayBackBuffer</code> flips the rendered buffer (back) with
-     * the currently displayed buffer.
+     * <code>displayBackBuffer</code> renders any queued items then
+     * flips the rendered buffer (back) with the currently displayed buffer.
      *
      * @see com.jme.renderer.Renderer#displayBackBuffer()
      */
     public void displayBackBuffer() {
-        GL11.glFlush();
-        Window.update();
+      // render queue if needed
+      processingQueue = true;
+      queue.renderBuckets();
+      processingQueue = false;
+
+      GL11.glFlush();
+      Window.update();
     }
 
     public void setOrtho() {
@@ -949,7 +958,7 @@ public class LWJGLRenderer implements Renderer {
     }
 
     IntBuffer buf = BufferUtils.createIntBuffer(16);
-    public void prepVBO(Geometry g) {
+  public void prepVBO(Geometry g) {
       if (!GLContext.GL_ARB_vertex_buffer_object) return;
       if (g.isVBOVertexEnabled() && g.getVBOVertexID() <= 0) {
         ARBBufferObject.glGenBuffersARB(buf);
@@ -1238,7 +1247,7 @@ public class LWJGLRenderer implements Renderer {
      *            true if these states are to be enabled, false otherwise.
      */
     private void setBoundsStates(boolean enabled) {
-        boundsTextState.apply(); // no enabled -- no texture
+        boundsTextState.apply(); // not enabled -- no texture
 
         boundsWireState.setEnabled(enabled);
         boundsWireState.apply();
@@ -1247,4 +1256,20 @@ public class LWJGLRenderer implements Renderer {
         boundsZState.apply();
     }
 
+    public boolean checkAndAdd(Spatial s) {
+      int rqMode = s.getRenderQueueMode();
+      if (rqMode != Renderer.QUEUE_SKIP) {
+        getQueue().addToQueue(s, rqMode);
+        return true;
+      }
+      return false;
+    }
+
+    public RenderQueue getQueue() {
+      return queue;
+    }
+
+    public boolean isProcessingQueue() {
+      return processingQueue;
+    }
 }

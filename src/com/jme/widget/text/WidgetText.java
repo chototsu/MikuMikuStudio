@@ -156,7 +156,7 @@ public class WidgetText extends WidgetAbstractImpl {
 
     public void draw(Renderer r) {
       applyStates();
-        r.draw(getWidgetRenderer());
+      r.draw(getWidgetRenderer());
     }
 
     public void drawBounds(Renderer r) {

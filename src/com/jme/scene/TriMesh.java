@@ -50,9 +50,9 @@ import com.jme.util.LoggingSystem;
  * The points are referenced via a indices array. This array instructs the
  * renderer the order in which to draw the points, creating triangles on every
  * three points.
- * 
+ *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.17 2004-06-02 02:32:48 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.18 2004-06-17 16:31:13 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -67,7 +67,7 @@ public class TriMesh extends Geometry implements Serializable {
 
 	/**
 	 * Constructor instantiates a new <code>TriMesh</code> object.
-	 * 
+	 *
 	 * @param name
 	 *            the name of the scene element. This is required for
 	 *            identification and comparision purposes.
@@ -81,7 +81,7 @@ public class TriMesh extends Geometry implements Serializable {
 	 * Constructor instantiates a new <code>TriMesh</code> object. Provided
 	 * are the attributes that make up the mesh all attributes may be null,
 	 * except for vertices and indices.
-	 * 
+	 *
 	 * @param name
 	 *            the name of the scene element. This is required for
 	 *            identification and comparision purposes.
@@ -113,7 +113,7 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param vertices
 	 * @param normal
 	 * @param color
@@ -137,9 +137,9 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>getIndices</code> retrieves the indices into the vertex array.
-	 * 
+	 *
 	 * @return the indices into the vertex array.
 	 */
 	public int[] getIndices() {
@@ -147,10 +147,10 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>getIndexAsBuffer</code> retrieves the indices array as an
 	 * <code>IntBuffer</code>.
-	 * 
+	 *
 	 * @return the indices array as an <code>IntBuffer</code>.
 	 */
 	public IntBuffer getIndexAsBuffer() {
@@ -176,16 +176,16 @@ public class TriMesh extends Geometry implements Serializable {
 		    vertices[2] = vertex[indices[iBase]];
 		}
 	}
-	
+
 	public int getTriangleQuantity() {
 		return indices.length / 3;
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setIndices</code> sets the index array for this
 	 * <code>TriMesh</code>.
-	 * 
+	 *
 	 * @param indices
 	 *            the index array.
 	 */
@@ -198,19 +198,23 @@ public class TriMesh extends Geometry implements Serializable {
 	/**
 	 * <code>draw</code> calls super to set the render state then passes
 	 * itself to the renderer.
-	 * 
+	 *
 	 * @param r
 	 *            the renderer to display
 	 */
-	public void draw(Renderer r) {
-		super.draw(r);
-		r.draw(this);
-	}
+        public void draw(Renderer r) {
+          if (!r.isProcessingQueue()) {
+            if (r.checkAndAdd(this))
+              return;
+          }
+          super.draw(r);
+          r.draw(this);
+        }
 
 	/**
 	 * <code>drawBounds</code> calls super to set the render state then passes
 	 * itself to the renderer.
-	 * 
+	 *
 	 * @param r
 	 *            the renderer to display
 	 */
@@ -219,10 +223,10 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 * 
+	 *
 	 * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that
 	 * contains the indices array.
-	 *  
+	 *
 	 */
 	public void updateIndexBuffer() {
 		if (indices == null) {

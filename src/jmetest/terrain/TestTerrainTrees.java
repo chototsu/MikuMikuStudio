@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 package jmetest.terrain;
@@ -46,18 +46,19 @@ import com.jme.terrain.TerrainBlock;
 import com.jme.terrain.util.MidPointHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
 import com.jme.util.TextureManager;
+import com.jme.renderer.Renderer;
 
 /**
  * <code>TestTerrain</code>
- * 
+ *
  * @author Mark Powell
- * @version $Id: TestTerrainTrees.java,v 1.1 2004-05-04 18:50:28 mojomonkey Exp $
+ * @version $Id: TestTerrainTrees.java,v 1.2 2004-06-17 16:31:21 renanse Exp $
  */
 public class TestTerrainTrees extends SimpleGame {
 
     /**
      * Entry point for the test,
-     * 
+     *
      * @param args
      */
     public static void main(String[] args) {
@@ -68,10 +69,12 @@ public class TestTerrainTrees extends SimpleGame {
 
     /**
      * builds the trimesh.
-     * 
+     *
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void simpleInitGame() {
+      rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+      fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
         display.setTitle("Terrain Test");
         input.setKeySpeed(50f);
         cam.setLocation(new Vector3f(64 * 5, 250, 64 * 5));

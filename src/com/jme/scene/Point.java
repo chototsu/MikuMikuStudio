@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * <code>Point</code> defines a collection of vertices that are rendered as
  * single points.
  * @author Mark Powell
- * @version $Id: Point.java,v 1.6 2004-04-22 22:26:46 renanse Exp $
+ * @version $Id: Point.java,v 1.7 2004-06-17 16:31:12 renanse Exp $
  */
 public class Point extends Geometry {
 
@@ -75,6 +75,10 @@ public class Point extends Geometry {
      * @param r the renderer used for displaying the data.
      */
     public void draw(Renderer r) {
+      if (!r.isProcessingQueue()) {
+        if (r.checkAndAdd(this))
+          return;
+      }
         super.draw(r);
         r.draw(this);
     }

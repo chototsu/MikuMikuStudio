@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * is the first point of the next line. Therefore, for N points there are
  * N-1 lines.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.7 2004-04-22 22:26:45 renanse Exp $
+ * @version $Id: Line.java,v 1.8 2004-06-17 16:31:12 renanse Exp $
  */
 public class Line extends Geometry {
 
@@ -80,6 +80,10 @@ public class Line extends Geometry {
      * @param r the renderer used to display the lines.
      */
     public void draw(Renderer r) {
+      if (!r.isProcessingQueue()) {
+        if (r.checkAndAdd(this))
+          return;
+      }
         super.draw(r);
         r.draw(this);
     }

@@ -35,7 +35,7 @@ package com.jme.light;
  * <code>AmbientLight</code> defines the natural light of a scene. This is
  * light that affects all color values of the scene.
  * @author Mark Powell
- * @version $Id: AmbientLight.java,v 1.2 2004-04-22 22:26:37 renanse Exp $
+ * @version $Id: AmbientLight.java,v 1.3 2004-06-17 16:31:10 renanse Exp $
  */
 public class AmbientLight extends Light {
 
@@ -56,4 +56,7 @@ public class AmbientLight extends Light {
         return LT_AMBIENT;
     }
 
+    public void setEnabled(boolean enabled) {
+      enabled = false; // ignore
+    }
 }

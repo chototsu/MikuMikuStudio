@@ -47,12 +47,13 @@ import com.jme.terrain.TerrainPage;
 import com.jme.terrain.util.FaultFractalHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
 import com.jme.util.TextureManager;
+import com.jme.renderer.Renderer;
 
 /**
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.18 2004-05-13 00:50:58 mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.19 2004-06-17 16:31:21 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -75,6 +76,8 @@ public class TestTerrainPage extends SimpleGame {
    * @see com.jme.app.SimpleGame#initGame()
    */
   protected void simpleInitGame() {
+      rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+      fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 
     DirectionalLight dl = new DirectionalLight();
     dl.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));

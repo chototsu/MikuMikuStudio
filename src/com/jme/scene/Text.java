@@ -39,7 +39,7 @@ import com.jme.renderer.Renderer;
  *
  * <code>Text</code>
  * @author Mark Powell
- * @version $Id: Text.java,v 1.7 2004-04-22 22:26:47 renanse Exp $
+ * @version $Id: Text.java,v 1.8 2004-06-17 16:31:13 renanse Exp $
  */
 public class Text extends Geometry {
     private StringBuffer text;
@@ -58,6 +58,7 @@ public class Text extends Geometry {
         super(name);
         setForceView(true);
         this.text = new StringBuffer(text);
+        setRenderQueueMode(Renderer.QUEUE_ORTHO);
     }
 
     /**
@@ -86,8 +87,12 @@ public class Text extends Geometry {
      * @param r the renderer used to display the text.
      */
     public void draw(Renderer r) {
-        super.draw(r);
-        r.draw(this);
+      if (!r.isProcessingQueue()) {
+        if (r.checkAndAdd(this))
+          return;
+      }
+      super.draw(r);
+      r.draw(this);
     }
 
     /**

@@ -49,7 +49,7 @@ import com.jme.scene.state.TextureState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.8 2004-06-04 00:41:42 renanse Exp $
+ * @version $Id: Mouse.java,v 1.9 2004-06-17 16:31:18 renanse Exp $
  */
 public abstract class Mouse extends Geometry {
 	/**
@@ -149,8 +149,12 @@ public abstract class Mouse extends Geometry {
 	 * @param r the renderer to use to display the mouse.
 	 */
 	public void draw(Renderer r) {
-		super.draw(r);
-		r.draw(this);
+          if (!r.isProcessingQueue()) {
+            if (r.checkAndAdd(this))
+              return;
+          }
+          super.draw(r);
+          r.draw(this);
 	}
 
 	/**

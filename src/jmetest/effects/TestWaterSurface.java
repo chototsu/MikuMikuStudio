@@ -41,7 +41,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestWaterSurface.java,v 1.4 2004-04-25 21:17:55 renanse Exp $
+ * @version $Id: TestWaterSurface.java,v 1.5 2004-06-17 16:31:22 renanse Exp $
  */
 public class TestWaterSurface extends SimpleGame {
 
@@ -79,7 +79,7 @@ public class TestWaterSurface extends SimpleGame {
     Texture t = TextureManager.loadTexture(
             TestWaterSurface.class.getClassLoader().getResource(
             "jmetest/data/texture/clouds.png"),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true);
     t.setApply(Texture.AM_DECAL);

@@ -77,9 +77,16 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.32 2004-04-30 17:29:47 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.33 2004-06-17 16:31:18 renanse Exp $
  */
 public interface Renderer {
+
+    public final static int QUEUE_INHERIT      = 0;
+    public final static int QUEUE_SKIP         = 1;
+    public final static int QUEUE_OPAQUE       = 2;
+    public final static int QUEUE_TRANSPARENT  = 3;
+    public final static int QUEUE_ORTHO        = 4;
+
     /**
      * <code>setCamera</code> sets the reference to the applications camera
      * object.
@@ -193,7 +200,7 @@ public interface Renderer {
     public ZBufferState getZBufferState();
 
     public VertexProgramState getVertexProgramState();
-    
+
     public StencilState getStencilState();
 
     public void enableStatistics(boolean value);
@@ -248,9 +255,9 @@ public interface Renderer {
      *
      */
     public void displayBackBuffer();
-    
+
     /**
-     * 
+     *
      * <code>setOrtho</code> sets the display system to be in orthographic mode.
      * If the system has already been set to orthographic mode a
      * <code>JmeException</code> is thrown. The origin (0,0) is the bottom left
@@ -258,9 +265,9 @@ public interface Renderer {
      *
      */
     public void setOrtho();
-    
+
     /**
-     * 
+     *
      * <code>setOrthoCenter</code> sets the display system to be in orthographic mode.
      * If the system has already been set to orthographic mode a
      * <code>JmeException</code> is thrown. The origin (0,0) is the center
@@ -269,9 +276,9 @@ public interface Renderer {
      *
      */
     public void setOrthoCenter();
-    
+
     /**
-     * 
+     *
      * <code>unsetOrhto</code> unsets the display system from orthographic mode
      * back into regular projection mode. If the system is not in orthographic
      * mode a <code>JmeException</code> is thrown.
@@ -388,4 +395,25 @@ public interface Renderer {
      * @param wp the WidgetPanel to be rendered.
      */
     public void draw(WidgetRenderer wr);
+
+
+    /**
+     * Get the render queue associated with this Renderer.
+     * @return RenderQueue
+     */
+    public RenderQueue getQueue();
+
+    /**
+     * Return true if this renderer is in the middle of processing
+     * its RenderQueue.
+     * @return boolean
+     */
+    public boolean isProcessingQueue();
+
+    /**
+     * Check a given Spatial to see if it should be queued.  return true if it was queued
+     * @param s Spatial to check
+     * @return true if it was queued.
+     */
+    public boolean checkAndAdd(Spatial s);
 }

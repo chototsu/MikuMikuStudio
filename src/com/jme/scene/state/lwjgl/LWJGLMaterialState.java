@@ -44,7 +44,7 @@ import com.jme.scene.state.MaterialState;
  * LWJGL API to access OpenGL to set the material for a given node and it's
  * children.
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.3 2004-04-22 22:26:58 renanse Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.4 2004-06-17 16:31:16 renanse Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
     //buffer for color
@@ -63,56 +63,66 @@ public class LWJGLMaterialState extends MaterialState {
                 .asFloatBuffer();
     }
 
+    float[] colorArray = new float[4];
     /**
      * <code>set</code> calls the OpenGL material function to set the proper
      * material state.
      * @see com.jme.scene.state.RenderState#set()
      */
     public void apply() {
-        if(isEnabled()) {
-            float[] color = new float[4];
-            color[3] = 1.0f;
-
-            color[0] = getEmissive().r;
-            color[1] = getEmissive().g;
-            color[2] = getEmissive().b;
+//        if(isEnabled()) {
+          if (!currentEmissive.equals(getEmissive())) {
+            colorArray[0] = getEmissive().r;
+            colorArray[1] = getEmissive().g;
+            colorArray[2] = getEmissive().b;
+            colorArray[3] = getEmissive().a;
 
             buffer.clear();
-            buffer.put(color);
+            buffer.put(colorArray);
             buffer.flip();
-
             GL11.glMaterial(GL11.GL_FRONT, GL11.GL_EMISSION, buffer);
+          }
 
-            color[0] = getAmbient().r;
-            color[1] = getAmbient().g;
-            color[2] = getAmbient().b;
+          if (!currentAmbient.equals(getAmbient())) {
+            colorArray[0] = getAmbient().r;
+            colorArray[1] = getAmbient().g;
+            colorArray[2] = getAmbient().b;
+            colorArray[3] = getAmbient().a;
 
             buffer.clear();
-            buffer.put(color);
+            buffer.put(colorArray);
             buffer.flip();
             GL11.glMaterial(GL11.GL_FRONT, GL11.GL_AMBIENT, buffer);
+          }
 
-            color[0] = getDiffuse().r;
-            color[1] = getDiffuse().g;
-            color[2] = getDiffuse().b;
+          if (!currentDiffuse.equals(getDiffuse())) {
+            colorArray[0] = getDiffuse().r;
+            colorArray[1] = getDiffuse().g;
+            colorArray[2] = getDiffuse().b;
+            colorArray[3] = getDiffuse().a;
 
             buffer.clear();
-            buffer.put(color);
+            buffer.put(colorArray);
             buffer.flip();
             GL11.glMaterial(GL11.GL_FRONT, GL11.GL_DIFFUSE, buffer);
+          }
 
-            color[0] = getSpecular().r;
-            color[1] = getSpecular().g;
-            color[2] = getSpecular().b;
+          if (!currentSpecular.equals(getSpecular())) {
+            colorArray[0] = getSpecular().r;
+            colorArray[1] = getSpecular().g;
+            colorArray[2] = getSpecular().b;
+            colorArray[3] = getSpecular().a;
 
             buffer.clear();
-            buffer.put(color);
+            buffer.put(colorArray);
             buffer.flip();
-
             GL11.glMaterial(GL11.GL_FRONT, GL11.GL_SPECULAR, buffer);
+          }
 
+          if (currentShininess != getShininess()) {
             GL11.glMaterialf(GL11.GL_FRONT, GL11.GL_SHININESS, getShininess());
-        }
+          }
+  //      }
     }
 
 }
