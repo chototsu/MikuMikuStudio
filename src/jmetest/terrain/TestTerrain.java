@@ -36,6 +36,7 @@ import javax.swing.ImageIcon;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
+import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
@@ -49,7 +50,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.25 2004-05-01 05:31:27 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.26 2004-06-04 00:23:21 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -84,13 +85,13 @@ public class TestTerrain extends SimpleGame {
     cs.setEnabled(true);
 
     lightState.setTwoSidedLighting(true);
-
+    ((PointLight)lightState.get(0)).setLocation(new Vector3f(100,500,50));
     MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
     Vector3f terrainScale = new Vector3f(5,1,5);
     TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
                                        heightMap.getHeightMap(),
                                        new Vector3f(0, 0, 0), false);
-    tb.setDetailTexture(1, 4);
+    tb.setDetailTexture(1, 16);
     tb.setModelBound(new BoundingBox());
     tb.updateModelBound();
     tb.setLocalTranslation(new Vector3f(0,0,0));
@@ -110,7 +111,7 @@ public class TestTerrain extends SimpleGame {
                   128, 255,
                   384);
 
-    pt.createTexture(512);
+    pt.createTexture(64);
 
     TextureState ts = display.getRenderer().getTextureState();
     ts.setEnabled(true);
