@@ -45,21 +45,80 @@ public class SoundPool {
 
     private static Hashtable table = new Hashtable();
 
+    private static IBuffer[][] programs;
+
+    private static float[] programDuration;
+
     public static IBuffer getBuffer(String fileName) {
+        IBuffer loaded = null;
         if (!table.containsKey(fileName)) {
-            table.put(fileName, SoundAPIController.getSoundSystem().loadBuffer(
-                    fileName));
+            loaded = SoundAPIController.getSoundSystem().loadBuffer(fileName);
+            table.put(fileName, loaded);
         }
-        return (IBuffer) table.get(fileName);
+
+        return loaded;
     }
 
     public static IBuffer getBuffer(URL url) {
+        IBuffer loaded = null;
         if (!table.containsKey(url.getFile())) {
-
-            table.put(url.getFile(), SoundAPIController.getSoundSystem()
-                    .loadBuffer(url));
+            loaded = SoundAPIController.getSoundSystem().loadBuffer(url);
+            
+            table.put(url.getFile(), loaded);
         }
-        return (IBuffer) table.get(url.getFile());
+
+        return loaded;
+    }
+
+    public static int compile(URL[] url) {
+        IBuffer[] tmp = new IBuffer[url.length];
+        for (int a = 0; a < tmp.length; a++) {
+            tmp[a] = getBuffer(url[a]);
+        }
+        return compile(tmp);
+    }
+
+    public static int compile(String[] files) {
+        IBuffer[] tmp = new IBuffer[files.length];
+        for (int a = 0; a < tmp.length; a++) {
+            tmp[a] = getBuffer(files[a]);
+        }
+        return compile(tmp);
+    }
+
+    public static int compile(IBuffer[] sequence) {
+        if (programs == null) {
+            programs = new IBuffer[1][];
+            programs[0] = sequence;
+            programDuration=new float[1]; 
+            for(int a=0; a<sequence.length; a++)
+                programDuration[0]+=sequence[a].getDuration();
+            return 0;
+
+        } else {
+            float[] durationTmp=new float[programs.length + 1];
+            System.arraycopy(programDuration, 0, durationTmp, 0, programDuration.length);
+            
+            IBuffer[][] tmp = new IBuffer[programs.length + 1][];
+            for (int a = 0; a < programs.length; a++) {
+                tmp[a] = programs[a];
+            }
+            for (int a = 0; a < sequence.length; a++) {
+                durationTmp[programDuration.length]+=sequence[a].getDuration();
+            }
+            tmp[programs.length] = sequence;
+            programs = tmp;
+            programDuration=durationTmp;
+        }
+        return programs.length - 1;
+    }
+
+    public static IBuffer[] getProgram(int programNumber) {
+        return programs[programNumber];
+    }
+    
+    public static float getProgramDuration(int programNumber){
+        return programDuration[programNumber];
     }
 
 }

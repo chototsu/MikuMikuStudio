@@ -41,6 +41,7 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.lwjgl.LWJGLCamera;
 import com.jme.sound.ISoundRenderer;
 import com.jme.sound.SoundAPIController;
+import com.jme.sound.scene.ProgrammableSound;
 import com.jme.sound.scene.SoundSpatial;
 import com.jme.sound.scene.SphericalSound;
 import com.jme.util.Timer;
@@ -94,4 +95,21 @@ public class SoundRenderer implements ISoundRenderer {
         }
 
     }
+    
+    
+    public void draw(ProgrammableSound s) {
+        if (s.getCullMode() == SoundSpatial.CULL_DISTANCE) {
+            if (Distance.distance(SoundAPIController.getSoundSystem()
+                    .getListener().getPosition(), s.getPosition()) > s
+                    .getMaxDistance()) {
+                s.pause();
+            } else {
+                if (!s.isPlaying()) {
+                    s.play();
+                }
+            }
+        }
+
+    }
+    
 }

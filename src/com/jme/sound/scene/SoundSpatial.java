@@ -53,6 +53,7 @@ public abstract class SoundSpatial {
 	public static final int CULL_FRONT= 1;
 	public static final int CULL_BACK= 2;
 	public static final int CULL_DISTANCE= 3;
+    
 
 	/**
 	 * <code>setParent</code> sets the parent of this node.
@@ -83,6 +84,7 @@ public abstract class SoundSpatial {
 		orientation[1]=dir.y;
 		orientation[2]=dir.z;
 		SoundAPIController.getSoundSystem().getListener().setOrientation(orientation);
+		
 	
 	}
 
@@ -135,4 +137,8 @@ public abstract class SoundSpatial {
 		forceCull= b;
 	}
 
+	
+	
+	
+	public abstract void fireEvent(int event);
 }

@@ -38,6 +38,7 @@ package com.jme.sound.joal;
 
 import com.jme.renderer.Camera;
 import com.jme.sound.ISoundRenderer;
+import com.jme.sound.scene.ProgrammableSound;
 import com.jme.sound.scene.SoundSpatial;
 import com.jme.sound.scene.SphericalSound;
 
@@ -86,5 +87,13 @@ public class SoundRenderer implements ISoundRenderer {
 		// TODO Auto-generated method stub
 
 	}
+
+    /* (non-Javadoc)
+     * @see com.jme.sound.ISoundRenderer#draw(com.jme.sound.scene.ProgrammableSound)
+     */
+    public void draw(ProgrammableSound s) {
+        // TODO Auto-generated method stub
+        
+    }
 
 }

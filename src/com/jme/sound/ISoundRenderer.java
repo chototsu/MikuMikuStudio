@@ -37,6 +37,7 @@
 package com.jme.sound;
 
 import com.jme.renderer.Camera;
+import com.jme.sound.scene.ProgrammableSound;
 import com.jme.sound.scene.SoundSpatial;
 import com.jme.sound.scene.SphericalSound;
 
@@ -53,6 +54,8 @@ public interface ISoundRenderer {
 	public Camera getCamera(int width, int height);
 
 	public void draw(SphericalSound s);
+	
+	public void draw(ProgrammableSound s);
 
 	public void draw(SoundSpatial s);
 

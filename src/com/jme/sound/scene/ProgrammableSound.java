@@ -30,12 +30,9 @@
  *  
  */
 /*
- * Created on 25 janv. 2004
- *  
+ * Created on 15 juin 2004
  */
 package com.jme.sound.scene;
-
-import java.net.URL;
 
 import com.jme.math.Vector3f;
 import com.jme.sound.IBuffer;
@@ -44,19 +41,22 @@ import com.jme.sound.ISoundRenderer;
 import com.jme.sound.ISource;
 import com.jme.sound.SoundAPIController;
 import com.jme.sound.SoundPool;
-import com.jme.sound.scene.SoundSpatial;
 
 /**
- * @author Arman Ozcelik
+ * @author Arman
  *  
  */
-public class SphericalSound extends SoundSpatial {
-
-    private int cullMode;
+public class ProgrammableSound extends SoundSpatial {
 
     private ISource source;
 
-    private IBuffer[] sequence;
+    private IBuffer[] playingSequence;
+
+    private boolean changed = false;
+
+    private int nextProgram=-1;
+
+    private int cullMode;
 
     private float sequenceDuration;
 
@@ -68,72 +68,14 @@ public class SphericalSound extends SoundSpatial {
 
     private float queueCheckPercentage;
 
-    public SphericalSound(String file) {
+    public ProgrammableSound() {
         source = SoundAPIController.getSoundSystem().generateSources(1)[0];
-        sequence = new IBuffer[1];
-        sequence[0] = SoundPool.getBuffer(file);
-        sequenceDuration = sequence[0].getDuration();
         cullMode = SoundSpatial.CULL_DISTANCE;
     }
 
-    public SphericalSound(URL url) {
-        source = SoundAPIController.getSoundSystem().generateSources(1)[0];
-        sequence = new IBuffer[1];
-        sequence[0] = SoundPool.getBuffer(url);
-        sequenceDuration = sequence[0].getDuration();
-        cullMode = SoundSpatial.CULL_DISTANCE;
-    }
-
-    public SphericalSound(String[] files) {
-
-        sequence = new IBuffer[files.length];
-        source = SoundAPIController.getSoundSystem().generateSources(1)[0];
-        for (int a = 0; a < files.length; a++) {
-            sequence[a] = SoundPool.getBuffer(files[a]);
-            sequenceDuration += sequence[a].getDuration();
-        }
-        if (files.length > 1) {
-            sequenced = true;
-        }
-        cullMode = SoundSpatial.CULL_DISTANCE;
-    }
-
-    public SphericalSound(URL[] urls) {
-        source = SoundAPIController.getSoundSystem().generateSources(1)[0];
-        sequence = new IBuffer[urls.length];
-        for (int a = 0; a < urls.length; a++) {
-            sequence[a] = SoundPool.getBuffer(urls[a]);
-            sequenceDuration += sequence[a].getDuration();
-        }
-        if (urls.length > 1) {
-            sequenced = true;
-        }
-        cullMode = SoundSpatial.CULL_DISTANCE;
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.sound.scene.SoundSpatial#draw(com.jme.sound.scene.SoundRenderer)
-     */
-    public void draw(ISoundRenderer r) {
-        r.draw(this);
-    }
-
-    /**
-     * @deprecated Use methods provided in <code>SphericalSound</code>
-     * @return
-     */
-    public ISource getSource() {
-        return source;
-    }
-
-    /**
-     * @deprecated Use the Constructors provided
-     * @param source
-     */
-    public void setSource(ISource source) {
-        this.source = source;
+    public void setNextProgram(int programNumber) {
+        changed = true;
+        nextProgram = programNumber;
     }
 
     /**
@@ -151,40 +93,43 @@ public class SphericalSound extends SoundSpatial {
     }
 
     /**
-     * Detects if this SphericalSound is sequence playing enabled.
-     * 
-     * @return Returns true if there are more than 2 samples inside this
-     *         SphericalSound.
-     */
-    public boolean isSequenced() {
-        return sequenced;
-    }
-
-    /**
      * Gets the number of samples
      * 
-     * @return the number of sequences
+     * @return the number of sequences; 0 if no sequence has been programmed.
      */
     public int getSequenceSize() {
-        return sequence.length;
+        if (playingSequence != null) { return playingSequence.length; }
+        return 0;
     }
 
     public void updateWorldData(float timeInSeconds) {
-        //check if this sound contains sequences
+        super.updateWorldData(timeInSeconds);
+        if (changed) {
+            if (playingSequence != null) {
+                //if (source.getBuffersProcessed() != playingSequence.length)
+                //        return;
+                unqueueBuffers(playingSequence);
+            }
+            playingSequence = SoundPool.getProgram(nextProgram);
+            sequenceDuration = SoundPool.getProgramDuration(nextProgram);
+            if(playingSequence.length > 1) sequenced=true;
+            setQueueCheckPercentage(queueCheckPercentage);
+            
+            changed = false;
+        }
         if (loopingEnabled) {
             //first time check
             if (sequenceStartTime == 0) sequenceStartTime = timeInSeconds;
             if ((timeInSeconds - sequenceStartTime) >= sequenceDuration) {
-                //stop the playing source
-                unqueueBuffers(sequence);
-                queueBuffers(sequence);
+            	if (playingSequence != null) {
+                    queueBuffers(playingSequence);
+                }
                 //reset timer
                 sequenceStartTime = timeInSeconds;
             }
-
         }
 
-        super.updateWorldData(timeInSeconds);
+        
     }
 
     /**
@@ -210,10 +155,11 @@ public class SphericalSound extends SoundSpatial {
     public void play() {
 
         if (source.isPlaying()) { return; }
-
-        source.queueBuffers(sequence);
-        source.play();
-
+        if (playingSequence != null) {
+        	if(playingSequence.length>1) sequenced=true;
+            source.queueBuffers(playingSequence);
+            source.play();
+        }
     }
 
     /*
@@ -245,18 +191,6 @@ public class SphericalSound extends SoundSpatial {
      */
     public void rewind() {
         source.rewind();
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.sound.ISource#delete()
-     */
-    public void delete() {
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].delete();
-        }
-
     }
 
     /*
@@ -539,8 +473,9 @@ public class SphericalSound extends SoundSpatial {
     public void setLooping(boolean isLooping) {
         if (!sequenced) {
             source.setLooping(isLooping);
-            loopingEnabled = isLooping;
+            
         }
+        loopingEnabled = isLooping;
 
     }
 
@@ -622,8 +557,10 @@ public class SphericalSound extends SoundSpatial {
      * @see com.jme.sound.ISource#setFilter(com.jme.sound.IBufferFilter)
      */
     public void setFilter(IBufferFilter filter) {
-        for (int a = 0; a < sequence.length; a++) {
-            source.setFilter(filter);
+        if (playingSequence != null) {
+            for (int a = 0; a < playingSequence.length; a++) {
+                source.setFilter(filter);
+            }
         }
     }
 
@@ -656,12 +593,50 @@ public class SphericalSound extends SoundSpatial {
 
     }
 
-    /* (non-Javadoc)
-     * @see com.jme.sound.scene.SoundSpatial#fireEvent(int)
-     */
-    public void fireEvent(int event) {
-        // TODO Implement this
-        
+    public void draw(ISoundRenderer r) {
+        r.draw(this);
+
     }
 
+    private int[] event;
+
+    private int[] program;
+
+    public void bindEvent(int eventNumber, int programNumber) {
+        if (event == null) {
+            event = new int[2];
+            event[0] = eventNumber;
+            event[1] = programNumber;
+            return;
+        }
+        int[] tmp = new int[event.length + 2];
+        System.arraycopy(event, 0, tmp, 0, event.length);
+        tmp[event.length] = eventNumber;
+        tmp[event.length + 1] = programNumber;
+        event = tmp;
+    }
+    
+    
+    public void fireEvent(int eventNumber) {
+        if (event != null) {
+            for (int i = 0; i < event.length; i+=2) {
+                if (event[i] == eventNumber) {
+                    setNextProgram(event[i + 1]);
+                    source.stop();
+                    updateWorldData(-1);
+                    play();
+                    return;
+                }
+            }
+        }
+    }
+
+    
+    /**
+     * Get the current running sequence program number
+     * @return the program number in the SoundPool; -1 if no program has been attached
+     */
+    public int getCurrentProgram(){
+    	return nextProgram;
+    }
 }

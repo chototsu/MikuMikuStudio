@@ -45,12 +45,13 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes.
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: SoundNode.java,v 1.2 2004-04-22 22:27:04 renanse Exp $
+ * @version $Id: SoundNode.java,v 1.3 2004-06-17 15:54:36 anakan Exp $
  */
 public class SoundNode extends SoundSpatial{
     //List to hold the children.
     private ArrayList children;
-
+    protected boolean eventStatusChanged;
+    protected int eventNumber;
     /**
      * Constructor instantiates a new <code>Node</code> with a default empty
      * list for containing children.
@@ -159,6 +160,10 @@ public class SoundNode extends SoundSpatial{
             SoundSpatial child = (SoundSpatial) children.get(i);
             if (child != null) {
                 child.updateGeometricState(time, false);
+                if(eventStatusChanged){
+        		    child.fireEvent(eventNumber);
+        		    eventStatusChanged=false;
+        		}
             }
         }
     }
@@ -174,8 +179,22 @@ public class SoundNode extends SoundSpatial{
             SoundSpatial child = (SoundSpatial) children.get(i);
             if (child != null)
                 child.onDraw(r);
+            	
         }
     }
+
+   
+    public void fireEvent(int event) {
+        // dummy        
+    }
+    
+    public void onEvent(int event){
+	    eventStatusChanged=true;
+	    eventNumber=event;
+	}
+    
+    
+   
 
 
 
