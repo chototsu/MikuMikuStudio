@@ -37,9 +37,8 @@ package com.jme.renderer;
 
 import java.util.logging.Level;
 
-import com.jme.math.Quaternion;
-import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.BoundingVolume;
 import com.jme.util.LoggingSystem;
@@ -52,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.10 2004-03-02 16:40:08 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.11 2004-03-02 19:38:54 darkprophet Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
