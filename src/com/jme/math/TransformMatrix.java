@@ -18,6 +18,7 @@ public class TransformMatrix {
 
     private Matrix3f rot=new Matrix3f();
     private Vector3f translation=new Vector3f();
+    private Vector3f scale=new Vector3f(1,1,1);
 
     /**
      * Constructor instantiates a new <code>TransformMatrix</code> that is set to the
@@ -61,6 +62,7 @@ public class TransformMatrix {
         } else {
             rot.copy(matrix.rot);
             translation.set(matrix.translation);
+            scale.set(matrix.scale);
         }
     }
 
@@ -75,6 +77,7 @@ public class TransformMatrix {
     public void set(Quaternion quaternion) {
         rot.set(quaternion);
         translation.zero();
+        scale.set(1,1,1);
     }
 
     /**
@@ -85,6 +88,7 @@ public class TransformMatrix {
     public void loadIdentity() {
         rot.loadIdentity();
         translation.zero();
+        scale.set(1,1,1);
     }
 
     /**
@@ -94,6 +98,7 @@ public class TransformMatrix {
     public void mult(float scalar) {
         rot.multiply(scalar);
         translation.mult(scalar);
+        scale.set(1,1,1);
     }
 
     /**
@@ -108,6 +113,7 @@ public class TransformMatrix {
 //      Math: {this=2: inMatrix=1 } (R2 ( R1 V + T1) + T2) = (R2 R1) V + (R2 T1 + T2)
         translation.addLocal(rot.mult(inMatrix.translation));
         rot.multLocal(inMatrix.rot);
+        scale.multLocal(inMatrix.scale);
         return this;
     }
 
@@ -121,6 +127,7 @@ public class TransformMatrix {
      */
     public void interpolateTransforms(TransformMatrix start,TransformMatrix end,float delta){
         this.translation.set(start.translation).interpolate(end.translation,delta);
+        this.scale.set(start.scale).interpolate(end.scale,delta);
         Quaternion q1=new Quaternion();
         this.getRotation(q1);
         Quaternion q2=new Quaternion();
@@ -144,7 +151,7 @@ public class TransformMatrix {
                 "Source vector is null, null result returned.");
             return null;
         }
-        return rot.multLocal(vec);
+        return rot.multLocal(vec).multLocal(scale);
     }
 
     /**
@@ -160,7 +167,16 @@ public class TransformMatrix {
                 "Source vector is null, null result returned.");
             return null;
         }
-        return rot.multLocal(vec).addLocal(translation);
+        return rot.multLocal(vec).addLocal(translation).multLocal(scale);
+    }
+
+
+    /**
+     * Sets the rotation matrix to the given rotation matrix via a copy.  If null is supplied, the identity is set
+     * @param rot The new rotation
+     */
+    public void setRotation(Matrix3f rot){
+        this.rot.copy(rot);
     }
 
     /**
@@ -226,6 +242,7 @@ public class TransformMatrix {
         rot.m21 = (float) (B * C);
         rot.m22 = (float) (A * C);
         translation.set(0,0,0);
+        scale.set(1,1,1);
     }
 
     /**
@@ -241,6 +258,7 @@ public class TransformMatrix {
         }
         rot.set(quat);
         translation.set(0,0,0);
+        scale.set(1,1,1);
     }
 
     /**
@@ -315,7 +333,8 @@ public class TransformMatrix {
     public String toString() {
         return "com.jme.math.TransformMatrix\n[\n"+
                 rot.toString() + ":" +
-                translation.toString();
+                translation.toString() + ":" +
+                scale.toString();
     }
 
     /**
@@ -325,6 +344,7 @@ public class TransformMatrix {
         invertRotInPlace();
         rot.multLocal(translation);
         translation.multLocal(-1);
+        scale.set(1/scale.x,1/scale.y,1/scale.z);
     }
 
     /**
@@ -345,5 +365,23 @@ public class TransformMatrix {
     public void set(Quaternion rotation, Vector3f translation) {
         this.set(rotation);
         this.setTranslation(translation);
+    }
+
+    /**
+     * Sets this TransformMatrix's scale to the given scale (x,y,z)
+     * @param scale The new scale
+     */
+    public void setScale(Vector3f scale) {
+        this.scale.set(scale);
+    }
+
+    /**
+     * Returns this TransformMatrix's scale factor
+     * @param storeS The place to store the current scale factor
+     * @return The given scale factor
+     */
+    public Vector3f getScale(Vector3f storeS) {
+        if (storeS==null) storeS=new Vector3f();
+        return storeS.set(this.scale);
     }
 }
