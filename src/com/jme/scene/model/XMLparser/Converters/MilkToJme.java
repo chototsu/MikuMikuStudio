@@ -57,6 +57,10 @@ public class MilkToJme extends FormatConverter{
     public void convert(InputStream MSFile,OutputStream o) throws IOException {
         inFile=new LittleEndien(MSFile);
         finalNode=new Node("ms3d file");
+        CullState CS=DisplaySystem.getDisplaySystem().getRenderer().getCullState();
+        CS.setCullMode(CullState.CS_BACK);
+        CS.setEnabled(true);
+        finalNode.setRenderState(CS);
         checkHeader();
         readVerts();
         readTriangles();
@@ -102,8 +106,6 @@ public class MilkToJme extends FormatConverter{
                 if (parentNames[i].equals(jointNames[j])) jc.parentIndex[i]=j;
             }
         }
-//        jc.processController();
-
         finalNode.addController(jc);
         return true;
     }
@@ -112,10 +114,6 @@ public class MilkToJme extends FormatConverter{
         int nNumMaterials=inFile.readUnsignedShort();
         for (int i=0;i<nNumMaterials;i++){
             inFile.skipBytes(32);   // Skip the name, unused
-//            if (!inArray(materialIndexes,i)){ //TODO: Make this work
-//                inFile.skipBytes(329);
-//                continue;
-//            }
             MaterialState matState=new MaterialState(){
                 public void apply() {throw new JmeException("I am not to be used in a real graph");}
             };
@@ -133,9 +131,7 @@ public class MilkToJme extends FormatConverter{
             if (texFile.length()!=0){
                 texState=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
                 Texture tempTex=new Texture();
-//                tempTex.setImageLocation(new URL("file:///./"+texFile));
                 tempTex.setImageLocation("file:/"+texFile);
-                // TODO: Work on proper image locaion
                 texState.setTexture(tempTex);
             }
             inFile.readFully(tempChar,0,128);   // Alpha map, but it is ignored
