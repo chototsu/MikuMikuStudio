@@ -62,7 +62,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone3.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestMilestone3.java,v 1.3 2004-02-26 23:10:50 mojomonkey Exp $
  */
 public class TestMilestone3 extends SimpleGame {
     private TriMesh t;
@@ -99,7 +99,7 @@ public class TestMilestone3 extends SimpleGame {
         timer.update();
         input.update(timer.getTimePerFrame()*20);
 
-        scene.updateWorldData(0.001f);
+        scene.updateGeometricState(0.001f, true);
     }
 
     /** 
@@ -150,6 +150,7 @@ public class TestMilestone3 extends SimpleGame {
         
         timer = Timer.getTimer("LWJGL");
         input = new FirstPersonController(this, cam, "LWJGL");
+        display.setTitle("Milestone 3");
         
     }
 
@@ -185,13 +186,8 @@ public class TestMilestone3 extends SimpleGame {
         points[3] = new Vector3f(4, 0, 0);
 
         curve = new BezierCurve("Bezier Curve", points);
-        ColorRGBA[] colors = new ColorRGBA[4];
-        colors[0] = new ColorRGBA(1, 0, 0, 1);
-        colors[1] = new ColorRGBA(1, 0, 0, 1);
-        colors[2] = new ColorRGBA(1, 0, 0, 1);
-        colors[3] = new ColorRGBA(1, 0, 0, 1);
-        curve.setColors(colors);
-        
+        curve.setModelBound(new BoundingSphere());
+        curve.updateModelBound();
         
 
         BezierPatch bp = new BezierPatch();
@@ -216,6 +212,7 @@ public class TestMilestone3 extends SimpleGame {
         BezierMesh bez = new BezierMesh("Bezier Mesh");
         bez.setPatch(bp);
         bez.setWorldBound(new BoundingSphere());
+        bez.updateWorldBound();
         bez.setForceView(true);
         scene.attachChild(bez);
 
@@ -246,6 +243,8 @@ public class TestMilestone3 extends SimpleGame {
         Vector3f min = new Vector3f(-0.15f, -0.15f, -0.15f);
         Vector3f max = new Vector3f(0.15f, 0.15f, 0.15f);
         Box lightBox = new Box("Light Box", min, max);
+        lightBox.setModelBound(new BoundingSphere());
+        lightBox.updateModelBound();
 
         lightNode.attachChild(lightBox);
         lightNode.setForceView(true);
