@@ -48,7 +48,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.8 2004-06-08 22:10:31 cep21 Exp $
+ * @version $Id: Texture.java,v 1.9 2004-06-12 23:51:38 cep21 Exp $
  */
 public class Texture {
 
@@ -188,8 +188,8 @@ public class Texture {
     public static final int EM_IGNORE = 1;
     public static final int EM_SPHERE = 2;
 
-    // Optional URL to point to where this texture is located
-    private URL imageLocation;
+    // Optional String to point to where this texture is located
+    private String imageLocation;
 
     //texture attributes.
     private Image image;
@@ -662,11 +662,11 @@ public class Texture {
         return "Texture with id: "+textureId;
     }
 
-    public URL getImageLocation() {
+    public String getImageLocation() {
         return imageLocation;
     }
 
-    public void setImageLocation(URL imageLocation) {
+    public void setImageLocation(String imageLocation) {
         this.imageLocation = imageLocation;
     }
 }
