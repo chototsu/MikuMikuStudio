@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.4 2004-03-02 03:56:47 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.5 2004-03-02 17:41:43 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -527,6 +527,15 @@ public class Quaternion {
     public float norm() {
         return w * w + x * x + y * y + z * z;
     }
+
+    public void normalize() {
+        double n = Math.sqrt(x*x + y*y + z*z + w*w);
+        x /= n;
+        y /= n;
+        z /= n;
+        w /= n;
+    }
+
 
     /**
      * <code>inverse</code> returns the inverse of this quaternion as
