@@ -44,6 +44,8 @@ import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
 import org.lwjgl.opengl.RenderTexture;
 import org.lwjgl.opengl.Window;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.glu.GLU;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
@@ -54,6 +56,13 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
+import com.jme.math.Vector3f;
+import com.jme.math.Vector2f;
+import java.nio.FloatBuffer;
+import java.nio.ByteBuffer;
+import java.nio.IntBuffer;
+import java.nio.ByteOrder;
+import org.lwjgl.BufferUtils;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -63,7 +72,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.5 2004-04-16 20:35:57 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.6 2004-04-19 22:05:34 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -249,20 +258,117 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     }
 
 
-    public TextureRenderer createTextureRenderer(int width, int height, boolean useRGB, boolean useRGBA, boolean useDepth,
-                                                    boolean isRectangle, int target, int mipmaps) {
-                if (!isCreated()) return null;
+    public TextureRenderer createTextureRenderer(int width, int height,
+                                                 boolean useRGB, boolean useRGBA,
+                                                 boolean useDepth,
+                                                 boolean isRectangle, int target,
+                                                 int mipmaps) {
+      if (!isCreated())return null;
 
-                if (target == TextureRenderer.RENDER_TEXTURE_1D)
-                    target = RenderTexture.RENDER_TEXTURE_1D;
-                else if (target == TextureRenderer.RENDER_TEXTURE_2D)
-                    target = RenderTexture.RENDER_TEXTURE_2D;
-                else if (target == TextureRenderer.RENDER_TEXTURE_CUBE_MAP)
-                    target = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
-                else if (target == TextureRenderer.RENDER_TEXTURE_RECTANGLE)
-                    target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
+      if (target == TextureRenderer.RENDER_TEXTURE_1D)
+        target = RenderTexture.RENDER_TEXTURE_1D;
+      else if (target == TextureRenderer.RENDER_TEXTURE_2D)
+        target = RenderTexture.RENDER_TEXTURE_2D;
+      else if (target == TextureRenderer.RENDER_TEXTURE_CUBE_MAP)
+        target = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
+      else if (target == TextureRenderer.RENDER_TEXTURE_RECTANGLE)
+        target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
 
-                return new LWJGLTextureRenderer(width, height, (LWJGLRenderer)getRenderer(),
-                        new RenderTexture(useRGB, useRGBA, useDepth, isRectangle, target, mipmaps));
+      return new LWJGLTextureRenderer(width, height, (LWJGLRenderer) getRenderer(),
+                                      new RenderTexture(useRGB, useRGBA, useDepth,
+          isRectangle, target, mipmaps));
+    }
+
+
+    /**
+     * Translate world to screen coordinates
+     * @param worldPosition Vector3f
+     * @return Vector2f
+     * @author Marius
+     * @author Joshua Slack -- rewritten for lwjgl .9
+     */
+    public Vector2f getScreenCoordinates(Vector3f worldPosition) {
+      // Modelview matrix
+      FloatBuffer mvBuffer = BufferUtils.createFloatBuffer(16);
+      GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, mvBuffer);
+      float mvArray[][] = new float[4][4];
+      for (int x = 0; x < 4; x++)
+        for (int y = 0; y < 4; y++)
+          mvArray[x][y] = mvBuffer.get();
+
+      // Projection_matrix
+      FloatBuffer prBuffer = BufferUtils.createFloatBuffer(16);
+      GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, prBuffer);
+      float prArray[][] = new float[4][4];
+      for (int x = 0; x < 4; x++)
+        for (int y = 0; y < 4; y++)
+          prArray[x][y] = prBuffer.get();
+
+      // Viewport matrix
+      IntBuffer vpBuffer = BufferUtils.createIntBuffer(16);
+      GL11.glGetInteger(GL11.GL_VIEWPORT, vpBuffer);
+
+      float[] result = new float[4];
+
+      GLU.gluProject(
+              worldPosition.x,
+              worldPosition.y,
+              worldPosition.z,
+              mvArray,
+              prArray,
+              vpBuffer.array(),
+              result);
+
+      return new Vector2f(result[0], result[1]);
+    }
+
+
+    /**
+     * Translate screen to world coordinates.
+     * @param screenPosition Vector2f
+     * @return Vector3f
+     * @author Marius
+     * @author Joshua Slack -- rewritten for lwjgl .9
+     */
+    public Vector3f getWorldCoordinates(Vector2f screenPosition) {
+
+      // Modelview matrix
+      FloatBuffer mvBuffer = BufferUtils.createFloatBuffer(16);
+      GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, mvBuffer);
+      float mvArray[][] = new float[4][4];
+      for (int x = 0; x < 4; x++)
+        for (int y = 0; y < 4; y++)
+          mvArray[x][y] = mvBuffer.get();
+
+      // Projection_matrix
+      FloatBuffer prBuffer = BufferUtils.createFloatBuffer(16);
+      GL11.glGetFloat(GL11.GL_PROJECTION_MATRIX, prBuffer);
+      float prArray[][] = new float[4][4];
+      for (int x = 0; x < 4; x++)
+        for (int y = 0; y < 4; y++)
+          prArray[x][y] = prBuffer.get();
+
+      // Viewport matrix
+      IntBuffer vpBuffer =
+              ByteBuffer
+                      .allocateDirect(16 * 8)
+                      .order(ByteOrder.nativeOrder())
+                      .asIntBuffer();
+      GL11.glGetInteger(GL11.GL_VIEWPORT, vpBuffer);
+
+      // 3d coordinates
+      float[] result = new float[4];
+
+
+      GLU.gluUnProject(
+              screenPosition.x,
+              screenPosition.y,
+              0, // Take the far plane
+              mvArray,
+              prArray,
+              vpBuffer.array(),
+              result);
+
+        return new Vector3f(result[0], result[1], result[2]);
     }
 }

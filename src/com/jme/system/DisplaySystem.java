@@ -43,11 +43,13 @@ import com.jme.system.lwjgl.*;
 import com.jme.widget.font.WidgetFont;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
+import com.jme.math.Vector3f;
+import com.jme.math.Vector2f;
 
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.20 2004-04-16 20:35:56 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.21 2004-04-19 22:05:33 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -70,7 +72,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.20 2004-04-16 20:35:56 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.21 2004-04-19 22:05:33 renanse Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;
@@ -315,6 +317,23 @@ public abstract class DisplaySystem {
      * @param mipmaps
      * @return
      */
-    public abstract TextureRenderer createTextureRenderer(int width, int height, boolean useRGB, boolean useRGBA, boolean useDepth,
-                                                    boolean isRectangle, int target, int mipmaps);
-}
+    public abstract TextureRenderer createTextureRenderer(int width, int height,
+        boolean useRGB, boolean useRGBA, boolean useDepth,
+        boolean isRectangle, int target, int mipmaps);
+
+
+    /**
+     * Translate world to screen coordinates
+     * @param worldPosition Vector3f
+     * @return Vector2f
+     */
+    public abstract Vector2f getScreenCoordinates(Vector3f worldPosition);
+
+
+    /**
+     * Translate screen to world coordinates.
+     * @param screenPosition Vector2f
+     * @return Vector3f
+     */
+    public abstract Vector3f getWorldCoordinates(Vector2f screenPosition);
+  }
