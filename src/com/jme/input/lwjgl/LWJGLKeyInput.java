@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard.
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.4 2004-07-30 21:07:18 guurk Exp $
+ * @version $Id: LWJGLKeyInput.java,v 1.5 2004-07-30 21:48:42 guurk Exp $
  */
 public class LWJGLKeyInput implements KeyInput {
 
@@ -88,6 +88,15 @@ public class LWJGLKeyInput implements KeyInput {
         return Keyboard.getKeyName(key);
     }
 
+    /**
+     * <code>getKeyIndex</code> returns the value of the key name
+     * @param name the name of the key
+     * @return the value of the key
+     */
+    public int getKeyIndex( String name) {
+        return Keyboard.getKeyIndex( name);
+    }
+    
     /**
      * <code>update</code> updates the keyboard buffer.
      * @see com.jme.input.KeyInput#update()

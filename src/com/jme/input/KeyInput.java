@@ -37,7 +37,7 @@ package com.jme.input;
  * to the LWJGL key bindings. This may require conversion by other subclasses
  * for specific APIs.
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.6 2004-07-30 21:07:18 guurk Exp $
+ * @version $Id: KeyInput.java,v 1.7 2004-07-30 21:48:42 guurk Exp $
  */
 public interface KeyInput {
 
@@ -564,6 +564,13 @@ public interface KeyInput {
      */
     public String getKeyName(int key);
 
+    /**
+     * The reverse of getKeyName, returns the value of the key given the name
+     * @param name
+     * @return
+     */
+    public int getKeyIndex( String name);
+    
     /**
      *
      * <code>update</code> updates the current state of the keyboard, holding
