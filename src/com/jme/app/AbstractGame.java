@@ -46,9 +46,12 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.9 2004-03-13 17:45:17 renanse Exp $
+ * @version $Id: AbstractGame.java,v 1.10 2004-03-25 19:25:47 renanse Exp $
  */
 public abstract class AbstractGame {
+  //Flag for running the system.
+    protected boolean finished;
+
     private final static String JME_VERSION_TAG = "jME version 0.5";
     private final static String DEFAULT_IMAGE = "/jmetest/data/images/Monkey.jpg";
 

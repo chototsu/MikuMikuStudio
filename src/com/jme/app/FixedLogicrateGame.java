@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -39,7 +39,7 @@ import com.jme.util.Timer;
 /**
  * <code>FixedLogicrateGame</code> implements a main-loop designed to acheive
  * frame rate independence. The goal is to keep a consistent gameplay speed
- * regardless of the framerate acheived by the visuals. The game renders as 
+ * regardless of the framerate acheived by the visuals. The game renders as
  * fast as the hardware permits, while running the game logic at a fixed rate.
  * The concept behind this is forcing every game logic tick to represent a fixed
  * amount of real-time. For example, if the logic is updated at a rate of 15
@@ -59,23 +59,20 @@ import com.jme.util.Timer;
  * deterministic (that is to say, it will run the exact same way every time).
  * <br>
  * Further extension of this class could be used to integrate both a fixed logic
- * rate and a fixed frame rate. 
- * 
+ * rate and a fixed frame rate.
+ *
  * @author Eric Woroshow
- * @version $Id: FixedLogicrateGame.java,v 1.2 2004-02-03 01:05:41 ericthered Exp $
+ * @version $Id: FixedLogicrateGame.java,v 1.3 2004-03-25 19:25:48 renanse Exp $
  */
 public abstract class FixedLogicrateGame extends AbstractGame {
 	private static final int MAX_LOOPS = 50;
-	
+
 	//Logic-rate managing variables
 	private Timer timer;
 	private int logicTPS;
 	private long tickTime;
 	private long time0, time1;
 	private int loops;
-	
-	//Flag for running the system.
-	private boolean finished;
 
 	/**
 	 * <code>setLogicTicksPerSecond</code> sets the number of logic times per second
@@ -86,11 +83,11 @@ public abstract class FixedLogicrateGame extends AbstractGame {
 	public void setLogicTicksPerSecond(int tps){
 		if (tps < 0)
 			throw new IllegalArgumentException("Ticks per second cannot be less than zero.");
-		
+
 		logicTPS = tps;
 		tickTime = timer.getResolution() / logicTPS;
 	}
-	
+
 	/**
 	 * Ticks logic at a fixed rate while rendering as fast as hardware permits.
 	 */
@@ -111,14 +108,14 @@ public abstract class FixedLogicrateGame extends AbstractGame {
 			while (!finished && !display.isClosing()) {
 				time1 = timer.getTime();
 				loops = 0;
-				
+
 				while ((time1 - time0) > tickTime && loops < MAX_LOOPS){
 					//update game state, do not use interpolation parameter
 					update(-1.0f);
 					time0 += tickTime;
-					loops++; 
+					loops++;
 				}
-				
+
 				//If the game logic takes far too long, discard the pending time
 				if ((time1 - time0) > tickTime)
 					time0 = time1 - tickTime;
@@ -162,7 +159,7 @@ public abstract class FixedLogicrateGame extends AbstractGame {
 	 */
 	protected abstract void update(float interpolation);
 
-	/** 
+	/**
 	 * Renders the scene. Under no circumstances should the render method
 	 * alter anything that could directly or indirectly modify the game logic.
 	 * @param percentWithinTick decimal value representing the position between update ticks

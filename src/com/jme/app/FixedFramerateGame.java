@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 package com.jme.app;
@@ -36,23 +36,21 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 
 /**
- * <code>FixedFramerateGame</code> attempts to run the game at a fixed frame rate. 
+ * <code>FixedFramerateGame</code> attempts to run the game at a fixed frame rate.
  * The main loop makes every effort to render at the specified rate, however it is
  * not guaranteed that the frame rate will not dip below the desired value. Game
  * logic is updated at the same rate as the rendering. For example, if the rendering
  * is running at 60 frames per second, the logic will also be updated 60 times per
  * second.
- * 
+ *
  * Note that <code>setFrameRate(int)</code> cannot be called prior to calling
  * <code>start()</code> or a <code>NullPointerException</code> will be thrown. If
  * no frame rate is specified, the game will run at 60 frames per second.
- *  
+ *
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.2 2004-02-03 01:05:41 ericthered Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.3 2004-03-25 19:25:47 renanse Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
-	//Flag for running the system.
-	private boolean finished;
 
 	//Frame-rate managing stuff
 	private Timer timer;
@@ -71,52 +69,52 @@ public abstract class FixedFramerateGame extends AbstractGame {
 	public void setFrameRate(int fps) {
 		if (fps <= 0)
 			throw new IllegalArgumentException("Frames per second cannot be less than one.");
-		
+
 		LoggingSystem.getLogger().log(Level.INFO, "Attempting to run at " + fps + " fps.");
 		preferredTicksPerFrame = timer.getResolution() / fps;
 	}
-	
+
 	/**
 	 * Gets the current frame rate.
 	 * @return the current number of frames rendering per second
-	 */    
+	 */
 	public float getFramesPerSecond() {
 		float time =  (timer.getTime() - startTime) / (float)timer.getResolution();
 		float fps  = frames / time;
 
 		startTime = timer.getTime();
 		frames = 0;
-		
+
 		return fps;
 	}
 
 	/**
-	 * <code>startFrame</code> begin monitoring the current frame. This method 
+	 * <code>startFrame</code> begin monitoring the current frame. This method
 	 * should be called every frame before update and drawing code.
 	 */
 	private void startFrame() {
 		frameStartTick = timer.getTime();
 	}
-	
-	/** 
-	 * <code>endFrame</code> ends the current frame.  Pads any excess time in the 
-	 * frame by sleep()-ing the thread in order to maintain the desired frame rate.  
+
+	/**
+	 * <code>endFrame</code> ends the current frame.  Pads any excess time in the
+	 * frame by sleep()-ing the thread in order to maintain the desired frame rate.
 	 * No attempt is made to rectify frames which have taken too much time.
-	 */    
+	 */
 	private void endFrame() {
 		frames++;
-		
+
 		frameDurationTicks = timer.getTime() - frameStartTick;
-		
+
 		while (frameDurationTicks < preferredTicksPerFrame){
 			long sleepTime =  ((preferredTicksPerFrame - frameDurationTicks) * 1000) / timer.getResolution();
-			
+
 			try {
 				Thread.sleep(sleepTime);
 			} catch (InterruptedException e){
 				LoggingSystem.getLogger().log(Level.WARNING, "Error sleeping during main loop.");
 			}
-			
+
 			frameDurationTicks = timer.getTime() - frameStartTick;
 		}
 	}
@@ -149,7 +147,7 @@ public abstract class FixedFramerateGame extends AbstractGame {
 
 				//swap buffers
 				display.getRenderer().displayBackBuffer();
-				
+
 				endFrame();
 			}
 
@@ -173,7 +171,7 @@ public abstract class FixedFramerateGame extends AbstractGame {
 
 	/**
 	 * Quits the program abruptly using <code>System.exit</code>.
-	 * 
+	 *
 	 * @see AbstractGame#quit()
 	 */
 	protected void quit() {

@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 package com.jme.app;
@@ -38,16 +38,14 @@ import com.jme.util.Timer;
 /**
  * <code>VariableTimestepGame</code> implements a very simple loop, updating
  * game logic and rendering as fast as hardware permits. To compensate for the
- * variable framerate, every frame the update method is passed the amount of 
+ * variable framerate, every frame the update method is passed the amount of
  * elapsed time, in seconds, since the previous update. The game should execute
  * the logic based on the time elapsed.
  *
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.2 2004-02-27 19:57:52 mojomonkey Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.3 2004-03-25 19:25:48 renanse Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
-	//Flag for running the system.
-	private boolean finished;
 
 	//Timing stuff
 	private Timer timer;
@@ -63,7 +61,7 @@ public abstract class VariableTimestepGame extends AbstractGame {
 	}
 
     /**
-     * 
+     *
      * <code>updateTime</code> calculates the start and stop time of the
      * frame.
      *
