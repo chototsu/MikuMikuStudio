@@ -44,90 +44,94 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Eric Woroshow
- * @version $Id: TestVertexProgramState.java,v 1.8 2004-04-23 03:10:04 renanse Exp $
+ * @version $Id: TestVertexProgramState.java,v 1.8 2004/04/23 03:10:04 renanse
+ *          Exp $
  */
 public class TestVertexProgramState extends SimpleGame {
 
-  /** The position of the light in object space */
-  private final float[] lightPosition = { -0.8f, 0.8f, 0.8f, 0.0f};
+    /** The position of the light in object space */
+    private final float[] lightPosition = { -0.8f, 0.8f, 0.8f, 0.0f };
 
-  public static void main(String[] args) {
-    TestVertexProgramState app = new TestVertexProgramState();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
+    public static void main(String[] args) {
+        TestVertexProgramState app = new TestVertexProgramState();
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
+    }
 
-  /**
-   * Set up the scene.
-   * @see com.jme.app.AbstractGame#initGame()
-   */
-  protected void simpleInitGame() {
-    display.setTitle("Vertex Programs");
-    cam.setLocation(new Vector3f(0, 0, 45));
-    cam.update();
-    input = new NodeHandler(this, rootNode, properties.getRenderer());
-    input.setKeySpeed(10);
-    input.setMouseSpeed(2);
+    /**
+     * Set up the scene.
+     * 
+     * @see com.jme.app.AbstractGame#initGame()
+     */
+    protected void simpleInitGame() {
+        display.setTitle("Vertex Programs");
+        display.getRenderer().setBackgroundColor(new ColorRGBA(0.02f, 0.0f, 0.776f, 1.0f));
 
-    //To acheive a cartoon render look, we attatch both a cel shaded
-    //torus and its outline to the scene. The two torii occupy the
-    //same space, so the outline will overlap and highlight the lit torus.
-    Torus shaded = createShadedTorus(), outline = createOutlineTorus();
-    rootNode.attachChild(shaded);
-    rootNode.attachChild(outline);
+        cam.setLocation(new Vector3f(0, 0, 45));
+        cam.update();
+        input = new NodeHandler(this, rootNode, properties.getRenderer());
+        input.setKeySpeed(10);
+        input.setMouseSpeed(2);
 
-    //Allow the torus to be controlled by the mouse.
-    //By attatching the controller to the scene root, we can manipulate
-    //both torii at once, thus guaranteeing that the outline and shaded
-    //version will never be out of sync.
-    rootNode.updateRenderState();
-  }
+        //To acheive a cartoon render look, we attatch both a cel shaded
+        //torus and its outline to the scene. The two torii occupy the
+        //same space, so the outline will overlap and highlight the lit torus.
+        Torus shaded = createShadedTorus(), outline = createOutlineTorus();
+        rootNode.attachChild(shaded);
+        rootNode.attachChild(outline);
 
-  private Torus createShadedTorus() {
-    //Load the vertex program from a file and bind it to a render state
-    VertexProgramState vp = display.getRenderer().getVertexProgramState();
-    vp.setParameter(lightPosition, 8);
-    vp.load(TestVertexProgramState.class.getClassLoader().getResource(
-        "jmetest/data/images/celshaderARB.vp"));
-    vp.setEnabled(true);
+        //Allow the torus to be controlled by the mouse.
+        //By attatching the controller to the scene root, we can manipulate
+        //both torii at once, thus guaranteeing that the outline and shaded
+        //version will never be out of sync.
+        rootNode.updateRenderState();
+    }
 
-    //Bind a 1-dimensional luminance texture for use by the vertex program
-    TextureState ts = display.getRenderer().getTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(TextureManager.loadTexture(
-        TestVertexProgramState.class.getClassLoader().getResource(
-        "jmetest/data/images/shader.png"),
-        Texture.MM_NEAREST, Texture.FM_NEAREST, false));
+    private Torus createShadedTorus() {
+        //Load the vertex program from a file and bind it to a render state
+        VertexProgramState vp = display.getRenderer().getVertexProgramState();
+        vp.setParameter(lightPosition, 8);
+        vp.load(TestVertexProgramState.class.getClassLoader().getResource(
+                "jmetest/data/images/celshaderARB.vp"));
+        vp.setEnabled(true);
 
-    //Generate the torus
-    Torus torus = new Torus("shadedTorus", 128, 32, 3.0f, 5.0f);
-    torus.setRenderState(vp);
-    torus.setRenderState(ts);
+        //Bind a 1-dimensional luminance texture for use by the vertex program
+        TextureState ts = display.getRenderer().getTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(TextureManager.loadTexture(
+                TestVertexProgramState.class.getClassLoader().getResource(
+                        "jmetest/data/images/shader.png"), Texture.MM_NEAREST,
+                Texture.FM_NEAREST, false));
 
-    return torus;
-  }
+        //Generate the torus
+        Torus torus = new Torus("shadedTorus", 128, 32, 3.0f, 5.0f);
+        torus.setRenderState(vp);
+        torus.setRenderState(ts);
 
-  private Torus createOutlineTorus() {
-    CullState cs = display.getRenderer().getCullState();
-    cs.setCullMode(CullState.CS_FRONT);
-    cs.setEnabled(true);
+        return torus;
+    }
 
-    WireframeState ws = display.getRenderer().getWireframeState();
-    ws.setLineWidth(6.0f);
-    ws.setFace(WireframeState.WS_FRONT);
-    ws.setEnabled(true);
+    private Torus createOutlineTorus() {
+        CullState cs = display.getRenderer().getCullState();
+        cs.setCullMode(CullState.CS_FRONT);
+        cs.setEnabled(true);
 
-    Torus torus = new Torus("outlineTorus", 128, 32, 3.0f, 5.0f);
+        WireframeState ws = display.getRenderer().getWireframeState();
+        ws.setLineWidth(6.0f);
+        ws.setFace(WireframeState.WS_FRONT);
+        ws.setEnabled(true);
 
-    ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
-    ColorRGBA[] colors = new ColorRGBA[torus.getVertices().length];
-    for (int i = 0; i < colors.length; i++)
-      colors[i] = black;
+        Torus torus = new Torus("outlineTorus", 128, 32, 3.0f, 5.0f);
 
-    torus.setColors(colors);
-    torus.setRenderState(cs);
-    torus.setRenderState(ws);
+        ColorRGBA black = new ColorRGBA(0f, 0f, 0f, 1f);
+        ColorRGBA[] colors = new ColorRGBA[torus.getVertices().length];
+        for (int i = 0; i < colors.length; i++)
+            colors[i] = black;
 
-    return torus;
-  }
+        torus.setColors(colors);
+        torus.setRenderState(cs);
+        torus.setRenderState(ws);
+
+        return torus;
+    }
 }
