@@ -55,7 +55,7 @@ import com.jme.system.DisplaySystem;
  * you.
  *
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.12 2005-04-01 22:49:00 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.13 2005-04-01 22:50:26 renanse Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean,
  *      boolean, boolean, boolean, int, int)
  */
@@ -238,11 +238,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 initPbuffer();
             }
 
-            activate();
-
             if (useDirectRender) {
               // setup and render directly to a 2d texture.
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
+                activate();
                 pbuffer.releaseTexImage(Pbuffer.FRONT_LEFT_BUFFER);
                 parentRenderer.clearBuffers();
                 spat.onDraw(parentRenderer);
@@ -250,6 +249,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 pbuffer.bindTexImage(Pbuffer.FRONT_LEFT_BUFFER);
             } else {
               // render and copy to a texture
+                activate();
                 parentRenderer.clearBuffers();
                 spat.onDraw(parentRenderer);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
