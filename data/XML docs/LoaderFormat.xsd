@@ -9,32 +9,46 @@
 				<xs:element name="Model" minOccurs="0" maxOccurs="unbounded">
 					<xs:annotation>
 						<xs:documentation>Group of meshes making up a drawable thing</xs:documentation>
+						<xs:documentation>Group of meshes making up a drawable thing</xs:documentation>
 					</xs:annotation>
 					<xs:complexType>
-						<xs:sequence>
-							<xs:element name="Mesh" minOccurs="0" maxOccurs="unbounded">
-								<xs:annotation>
-									<xs:documentation>Basicly a TriMesh</xs:documentation>
-								</xs:annotation>
-								<xs:complexType>
-									<xs:sequence>
-										<xs:element name="Color" type="FloatList"/>
-										<xs:element name="Index" type="IntList"/>
-										<xs:element name="Normal" type="FloatList"/>
-										<xs:element name="TextureCoords" type="FloatList"/>
-										<xs:element name="Vertex" type="FloatList"/>
-										<xs:group ref="RenderState" minOccurs="0" maxOccurs="unbounded"/>
-										<xs:group ref="Controller" minOccurs="0" maxOccurs="unbounded"/>
-									</xs:sequence>
-									<xs:attributeGroup ref="WorldRef"/>
-									<xs:attributeGroup ref="Basics"/>
-								</xs:complexType>
-							</xs:element>
-							<xs:group ref="Controller" minOccurs="0" maxOccurs="unbounded"/>
-							<xs:group ref="RenderState" minOccurs="0" maxOccurs="unbounded"/>
-						</xs:sequence>
-						<xs:attributeGroup ref="WorldRef"/>
-						<xs:attributeGroup ref="Basics"/>
+						<xs:complexContent>
+							<xs:extension base="Spatial">
+								<xs:sequence>
+									<xs:element name="Mesh" minOccurs="0" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>Basicly a TriMesh</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:complexContent>
+												<xs:extension base="Spatial">
+													<xs:sequence>
+														<xs:element name="Vertex" type="FloatList"/>
+														<xs:element name="Normal" type="FloatList"/>
+														<xs:element name="Color" type="FloatList"/>
+														<xs:element name="TextureCoords" type="FloatList"/>
+														<xs:element name="Index" type="IntList"/>
+													</xs:sequence>
+												</xs:extension>
+											</xs:complexContent>
+										</xs:complexType>
+									</xs:element>
+									<xs:element name="Primative" minOccurs="0" maxOccurs="unbounded">
+										<xs:annotation>
+											<xs:documentation>Primative jME types</xs:documentation>
+										</xs:annotation>
+										<xs:complexType>
+											<xs:complexContent>
+												<xs:extension base="Spatial">
+													<xs:attribute name="type" type="xs:string" use="required"/>
+													<xs:attribute name="params" type="xs:string" use="required"/>
+												</xs:extension>
+											</xs:complexContent>
+										</xs:complexType>
+									</xs:element>
+								</xs:sequence>
+							</xs:extension>
+						</xs:complexContent>
 					</xs:complexType>
 				</xs:element>
 				<xs:element name="SysEffects" minOccurs="0" maxOccurs="unbounded">
@@ -114,6 +128,16 @@
 				<xs:complexType/>
 			</xs:element>
 			<xs:group ref="Light"/>
+			<xs:element name="MaterialState">
+				<xs:complexType>
+					<xs:attribute name="alpha" type="xs:float" use="optional" default="0"/>
+					<xs:attribute name="ambient" type="ColorRGBA" use="optional" default="0 0 0 0"/>
+					<xs:attribute name="diffuse" type="ColorRGBA" use="optional" default="0 0 0 0"/>
+					<xs:attribute name="emissive" type="ColorRGBA" use="optional" default="0 0 0 0"/>
+					<xs:attribute name="specular" type="ColorRGBA" use="optional" default="0 0 0 0"/>
+					<xs:attribute name="shiny" type="xs:float" use="optional" default="64"/>
+				</xs:complexType>
+			</xs:element>
 		</xs:choice>
 	</xs:group>
 	<xs:complexType name="BaseLightType">
@@ -126,4 +150,12 @@
 			<xs:element name="PointLight" type="BaseLightType"/>
 		</xs:choice>
 	</xs:group>
+	<xs:complexType name="Spatial">
+		<xs:sequence>
+			<xs:group ref="RenderState" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:group ref="Controller" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="WorldRef"/>
+		<xs:attributeGroup ref="Basics"/>
+	</xs:complexType>
 </xs:schema>
