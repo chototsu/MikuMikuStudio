@@ -100,7 +100,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.13 2004-04-27 15:03:36 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.14 2004-04-30 03:38:10 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -325,6 +325,10 @@ public class LWJGLRenderer implements Renderer {
      */
     public StencilState getStencilState() {
         return new LWJGLStencilState();
+    }
+    
+    public ProjectionState getProjectionState() {
+        return new LWJGLProjectionState();
     }
 
     /**

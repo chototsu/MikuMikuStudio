@@ -56,7 +56,7 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.1 2004-04-29 22:56:20 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.2 2004-04-30 03:38:06 mojomonkey Exp $
  */
 
 public class LensFlare extends Node {
@@ -74,9 +74,7 @@ public class LensFlare extends Node {
    * @param r the renderer to draw to.
    */
   public void draw(Renderer r) {
-    r.setOrthoCenter();
     super.draw(r);
-    r.unsetOrtho();
   }
 
   /**

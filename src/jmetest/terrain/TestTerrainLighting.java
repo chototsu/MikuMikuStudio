@@ -34,16 +34,19 @@ package jmetest.terrain;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
+import com.jme.effects.LensFlare;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
 import com.jme.light.LightNode;
 import com.jme.light.PointLight;
 import com.jme.math.FastMath;
+import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CameraNode;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.ProjectionState;
 import com.jme.scene.state.TextureState;
 import com.jme.terrain.TerrainBlock;
 import com.jme.terrain.util.MidPointHeightMap;
@@ -52,7 +55,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.11 2004-04-28 13:37:58 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.12 2004-04-30 03:38:07 mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -126,8 +129,18 @@ public class TestTerrainLighting extends SimpleGame {
     lightNode.attachChild(lightBox);
 
     lightNode.setTarget(rootNode);
-    rootNode.attachChild(lightNode);
 
+    rootNode.attachChild(lightNode);
+    
+    ProjectionState projState = display.getRenderer().getProjectionState();
+    projState.setEnabled(true);
+    projState.setProjection(ProjectionState.PS_ORTHOGRAPHIC);
+    projState.setLeftBottom(new Vector2f(-display.getWidth() / 2, -display.getHeight() / 2));
+    projState.setRightTop(new Vector2f(display.getWidth() / 2, display.getHeight() / 2));
+    LensFlare flare = new LensFlare("flare");
+    flare.setRenderState(projState);
+    //flare.setLocalTranslation(lightNode.getLocalTranslation());
+    lightNode.attachChild(flare);
     MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
     Vector3f terrainScale = new Vector3f(5,1,5);
     TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
@@ -174,7 +187,7 @@ public class TestTerrainLighting extends SimpleGame {
     t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
     t2.setCombineScaleRGB(0);
     rootNode.setRenderState(ts);
-
+    //rootNode.attachChild(flare);
     rootNode.setForceView(true);
   }
 }
