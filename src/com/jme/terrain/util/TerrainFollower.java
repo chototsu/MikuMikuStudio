@@ -12,13 +12,14 @@ import com.jme.util.MemPool;
  *
  * This class takes either a trimesh or a node of trimesh objects and builds 2D
  * float[][] of terrain Y values along the mesh's X/Z axis.  These values are polled and
- * an approximate Y value on the terrain is produced.  This class is not an all purpose terrain
- * follower.  It assumes the terrain can't have more than one Y value for any X and Y.  It
+ * an approximate Y value on the terrain is produced, which can be used for anything from
+ * updating an object's location to adjusting the camera.  This class is not an all purpose terrain
+ * follower.  It assumes the terrain can't have more than one Y value for any X/Z.  It
  * also produces only approximates of distances above the terrain.  Finally, it assumes the terrain
- * is along hte X/Z values with Y going up/down.  If this class is used with a Node passed in
+ * is along the X/Z values with Y going up/down.  If this class is used with a Node passed in
  * its constructor, users should first update that Node and it's children's worldTranslations,rotation,scale
- * before passing it to the TerrainFollower.
- * 
+ * before passing it to the TerrainFollower.<br>
+ *
  * @author Jack Lindamood
  */
 public class TerrainFollower {
@@ -81,9 +82,6 @@ public class TerrainFollower {
         Vector3f tri0=MemPool.v3a,tri1=MemPool.v3b,tri2=MemPool.v3c;
         for (int tri=0;tri<indexes.length;tri+=3){
 
-//            tri0.set(verts[indexes[tri+0]]);
-//            tri1.set(verts[indexes[tri+1]]);
-//            tri2.set(verts[indexes[tri+2]]);
             terrain
                 .getWorldRotation()
                 .mult(verts[indexes[tri+0]], tri0)
@@ -100,25 +98,18 @@ public class TerrainFollower {
                 .multLocal(terrain.getWorldScale())
                 .addLocal(terrain.getWorldTranslation());
             float maxX,minX,maxZ,minZ;
-//            maxX=maxZ=Float.MIN_VALUE;
-//            minX=minZ=Float.MAX_VALUE;
-
-//            if (tri0.x>maxX) maxX=tri0.x;
             maxX=tri0.x;
             if (tri1.x>maxX) maxX=tri1.x;
             if (tri2.x>maxX) maxX=tri2.x;
 
-//            if (tri0.z>maxZ) maxZ=tri0.z;
             maxZ=tri0.z;
             if (tri1.z>maxZ) maxZ=tri1.z;
             if (tri2.z>maxZ) maxZ=tri2.z;
 
-//            if (tri0.x<minX) minX=tri0.x;
             minX=tri0.x;
             if (tri1.x<minX) minX=tri1.x;
             if (tri2.x<minX) minX=tri2.x;
 
-//            if (tri0.z<minZ) minZ=tri0.z;
             minZ=tri0.z;
             if (tri1.z<minZ) minZ=tri1.z;
             if (tri2.z<minZ) minZ=tri2.z;
@@ -271,13 +262,10 @@ public class TerrainFollower {
         float distSquare3=gridDist-distSquare(x,z,bottomXreal,topZreal);
         float distSquare4=gridDist-distSquare(x,z,bottomXreal,bottomZreal);
         float distSum=distSquare1+distSquare2+distSquare3+distSquare4;
-        float toReturn=terrainValues[topX][topZ]*(distSquare1/distSum)+
+        return terrainValues[topX][topZ]*(distSquare1/distSum)+
             terrainValues[topX][bottomZ]*(distSquare2/distSum)+
             terrainValues[bottomX][topZ]*(distSquare3/distSum)+
             terrainValues[bottomX][bottomZ]*(distSquare4/distSum);
-         return toReturn;
-
-
     }
 
     /**
