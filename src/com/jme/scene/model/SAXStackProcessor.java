@@ -4,6 +4,8 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 
 import java.util.Stack;
+import java.util.Hashtable;
+import java.io.File;
 
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
@@ -12,6 +14,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.math.Vector3f;
@@ -19,6 +22,8 @@ import com.jme.math.Vector2f;
 import com.jme.math.Quaternion;
 import com.jme.bounding.BoundingBox;
 import com.jme.system.DisplaySystem;
+import com.jme.util.TextureManager;
+import com.jme.image.Texture;
 
 /**
  * Started Date: May 31, 2004
@@ -30,6 +35,7 @@ class SAXStackProcessor {
 
     Node myScene=new Node("XML node");
     Stack s=new Stack();
+    Hashtable shares=new Hashtable();
     Renderer renderer;
     SAXStackProcessor(){
         renderer=DisplaySystem.getDisplaySystem().getRenderer();
@@ -62,6 +68,25 @@ class SAXStackProcessor {
 
         } else if (qName.equalsIgnoreCase("KeyframeAnimation")){
 
+        } else if (qName.equalsIgnoreCase("SharedElementsBase")){
+
+        } else if (qName.equalsIgnoreCase("SharedTypes")){
+            Object o=shares.get(atts.getValue("identification"));
+            if (o==null) throw new SAXException("Unknown type: " + shares.get(atts.getValue("identification")));
+            if (o instanceof RenderState){
+                Spatial tempSpatial=(Spatial) s.pop();
+                tempSpatial.setRenderState((RenderState) o);
+                s.push(tempSpatial);
+            } else{
+                throw new SAXException("unknown class in object shares: " + o.getClass());
+            }
+
+        } else if (qName.equalsIgnoreCase("SharedMaterialBase")){
+            MaterialState m=buildMaterial(atts);
+            shares.put(atts.getValue("identification"),m);
+        } else if (qName.equalsIgnoreCase("SharedTextureBase")){
+            TextureState t=buildTexture(atts);
+            shares.put(atts.getValue("identification"),t);
         } else if (qName.equalsIgnoreCase("primative")){
             String type=atts.getValue("type");
             if (type==null) throw new SAXException("Must supply primative type");
@@ -69,14 +94,7 @@ class SAXStackProcessor {
             processSpatial(i,atts);
             s.push(i);
         } else if (qName.equalsIgnoreCase("MaterialState")){
-            MaterialState m=renderer.getMaterialState();
-            m.setAlpha(Float.parseFloat(atts.getValue("alpha")));
-            m.setAmbient(createSingleColor(atts.getValue("ambient")));
-            m.setDiffuse(createSingleColor(atts.getValue("diffuse")));
-            m.setEmissive(createSingleColor(atts.getValue("emissive")));
-            m.setShininess(Float.parseFloat(atts.getValue("shiny")));
-            m.setSpecular(createSingleColor(atts.getValue("specular")));
-            m.setEnabled(true);
+            MaterialState m=buildMaterial(atts);
             s.push(m);
         } else{
             throw new SAXException("Illegale Qualified name: " + qName);
@@ -84,31 +102,6 @@ class SAXStackProcessor {
         return;
     }
 
-    private void processSpatial(Spatial toAdd, Attributes atts) {
-        if (atts.getValue("name")!=null){
-            toAdd.setName(atts.getValue("name"));
-        }
-        if (atts.getValue("translation")!=null){
-            String [] split=atts.getValue("translation").trim().split(" ");
-            toAdd.setLocalTranslation(new Vector3f(
-                    Float.parseFloat(split[0]),
-                    Float.parseFloat(split[1]),
-                    Float.parseFloat(split[2])
-            ));
-        }
-        if (atts.getValue("rotation")!=null){
-            String [] split=atts.getValue("rotation").trim().split(" ");
-            toAdd.setLocalRotation(new Quaternion(
-                    Float.parseFloat(split[0]),
-                    Float.parseFloat(split[1]),
-                    Float.parseFloat(split[2]),
-                    Float.parseFloat(split[3])
-            ));
-        }
-        if (atts.getValue("scale")!=null){
-            toAdd.setLocalScale(Float.parseFloat(atts.getValue("scale")));
-        }
-    }
 
     void decreaseStack(String qName,StringBuffer data) throws SAXException {
         Object child,parent;
@@ -165,6 +158,14 @@ class SAXStackProcessor {
             s.push(parentNode);
         } else if (qName.equalsIgnoreCase("KeyframeAnimation")){
 
+        } else if (qName.equalsIgnoreCase("SharedElementsBase")){
+
+        } else if (qName.equalsIgnoreCase("SharedMaterialBase")){
+
+        } else if (qName.equalsIgnoreCase("SharedTypes")){
+
+        } else if (qName.equalsIgnoreCase("SharedTextureBase")){
+
         } else if (qName.equalsIgnoreCase("materialstate")){
             child=s.pop();
             parentSpatial=(Spatial) s.pop();
@@ -175,20 +176,71 @@ class SAXStackProcessor {
         }
     }
 
+    private TextureState buildTexture(Attributes atts) {
+        TextureState t=renderer.getTextureState();
+        t.setTexture(TextureManager.loadTexture(new File(atts.getValue("filename")).toString(),
+            Texture.MM_LINEAR,
+            Texture.FM_LINEAR,
+            true));
+        t.setEnabled(true);
+        return t;
+    }
+
+    private MaterialState buildMaterial(Attributes atts) throws SAXException {
+        MaterialState m=renderer.getMaterialState();
+        m.setAlpha(Float.parseFloat(atts.getValue("alpha")));
+        m.setAmbient(createSingleColor(atts.getValue("ambient")));
+        m.setDiffuse(createSingleColor(atts.getValue("diffuse")));
+        m.setEmissive(createSingleColor(atts.getValue("emissive")));
+        m.setShininess(Float.parseFloat(atts.getValue("shiny")));
+        m.setSpecular(createSingleColor(atts.getValue("specular")));
+        m.setEnabled(true);
+        return m;
+    }
+
+    private void processSpatial(Spatial toAdd, Attributes atts) {
+        if (atts.getValue("name")!=null){
+            toAdd.setName(atts.getValue("name"));
+        }
+        if (atts.getValue("translation")!=null){
+            String [] split=atts.getValue("translation").trim().split(" ");
+            toAdd.setLocalTranslation(new Vector3f(
+                    Float.parseFloat(split[0]),
+                    Float.parseFloat(split[1]),
+                    Float.parseFloat(split[2])
+            ));
+        }
+        if (atts.getValue("rotation")!=null){
+            String [] split=atts.getValue("rotation").trim().split(" ");
+            toAdd.setLocalRotation(new Quaternion(
+                    Float.parseFloat(split[0]),
+                    Float.parseFloat(split[1]),
+                    Float.parseFloat(split[2]),
+                    Float.parseFloat(split[3])
+            ));
+        }
+        if (atts.getValue("scale")!=null){
+            toAdd.setLocalScale(Float.parseFloat(atts.getValue("scale")));
+        }
+    }
+
+
     private Spatial processPrimative(String type, String parameters) throws SAXException {
         if (parameters==null) throw new SAXException("Must specify parameters");
         Spatial toReturn=null;
         String[] parts=parameters.trim().split(" ");
         if (type.equalsIgnoreCase("box")){
             if (parts.length!=7) throw new SAXException("Box must have 7 parameters");
-            toReturn=new Box(parts[0],new Vector3f(
+            Geometry box=new Box(parts[0],new Vector3f(
                     Float.parseFloat(parts[1]),
                     Float.parseFloat(parts[2]),
                     Float.parseFloat(parts[3])),
                     new Vector3f(Float.parseFloat(parts[4]),
                     Float.parseFloat(parts[5]),
                     Float.parseFloat(parts[6])));
-
+            box.setModelBound(new BoundingBox());
+            box.updateModelBound();
+            toReturn=box;
         }
         return toReturn;
     }
