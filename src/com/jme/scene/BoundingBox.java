@@ -47,7 +47,7 @@ import com.jme.math.Vector3f;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.15 2004-03-17 23:16:53 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.16 2004-03-31 17:56:54 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -64,7 +64,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      * object.
      */
     public BoundingBox() {
-        super("aabb", new Vector3f(0,0,0), 1, 1, 1);
+        super("aabb");
         initCheckPlanes();
     }
 
@@ -72,7 +72,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
      */
     public BoundingBox(String name) {
-        super(name, new Vector3f(0,0,0), 1, 1, 1);
+        super(name);
         initCheckPlanes();
     }
 
@@ -80,7 +80,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
      */
     public BoundingBox(Vector3f center, float xExtent, float yExtent, float zExtent) {
-        super("aabb", new Vector3f(0,0,0), xExtent, yExtent, zExtent);
+        super("aabb", center, xExtent, yExtent, zExtent);
         initCheckPlanes();
     }
 
@@ -88,7 +88,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      * Contstructor instantiates a new <code>BoundingBox</code> object with given specs.
      */
     public BoundingBox(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
-        super(name, new Vector3f(0,0,0), xExtent, yExtent, zExtent);
+        super(name, center, xExtent, yExtent, zExtent);
         initCheckPlanes();
     }
 
@@ -181,7 +181,7 @@ public class BoundingBox extends Box implements BoundingVolume {
         BoundingVolume store) {
 
         BoundingBox box = (BoundingBox)store;
-        if (box == null) box = new BoundingBox();
+        if (box == null) box = new BoundingBox(new Vector3f(0,0,0), 1,1,1);
         rotate.mult(center, box.center);
         box.center.multLocal(scale).addLocal(translate);
         box.xExtent = scale*xExtent;
@@ -268,14 +268,7 @@ public class BoundingBox extends Box implements BoundingVolume {
         maxPnt.z = center.z+zExtent;
         if (maxPnt.z < boxCenter.z+boxZ) maxPnt.z = boxCenter.z+boxZ;
 
-        maxPnt.subtractLocal(minPnt).multLocal(0.5f);
-        rVal.xExtent = maxPnt.x;
-        rVal.yExtent = maxPnt.y;
-        rVal.zExtent = maxPnt.z;
-
-        rVal.center.x = minPnt.x + rVal.xExtent;
-        rVal.center.y = minPnt.y + rVal.yExtent;
-        rVal.center.z = minPnt.z + rVal.zExtent;
+        rVal.setData(minPnt, maxPnt);
 
         return rVal;
     }
@@ -316,7 +309,7 @@ public class BoundingBox extends Box implements BoundingVolume {
 
     public void recomputeMesh() {
         if (!center.equals(oldCenter) || xExtent != oldXExtent || yExtent != oldYExtent || zExtent != oldZExtent) {
-            setData(null, xExtent, yExtent, zExtent);
+            setData(center, xExtent, yExtent, zExtent);
             oldXExtent = xExtent;
             oldYExtent = yExtent;
             oldZExtent = zExtent;

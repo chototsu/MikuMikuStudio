@@ -39,7 +39,7 @@ import com.jme.renderer.ColorRGBA;
 /**
  * <code>Sphere</code>
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.5 2004-03-13 05:22:47 renanse Exp $
+ * @version $Id: Sphere.java,v 1.6 2004-03-31 17:56:55 renanse Exp $
  */
 public class Sphere extends TriMesh {
     private int zSamples;
@@ -76,6 +76,7 @@ public class Sphere extends TriMesh {
     public void setData(Vector3f center, int zSamples, int radialSamples, float radius) {
         if (center != null)
             this.center = center;
+        else this.center = new Vector3f(0,0,0);
         this.zSamples = zSamples;
         this.radialSamples = radialSamples;
         this.radius = radius;

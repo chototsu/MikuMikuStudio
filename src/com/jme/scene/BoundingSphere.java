@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.28 2004-03-23 15:27:19 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.29 2004-03-31 17:56:55 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -371,7 +371,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     public void recomputeMesh() {
         if (radius != oldRadius || !center.equals(oldCenter)) {
-            setData(null, 10, 10, radius);
+            setData(center, 10, 10, radius);
             oldRadius = radius;
             oldCenter.set(center.x, center.y, center.z);
         }
