@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
+import com.jme.animation.Joint;
+import com.jme.animation.Keyframe;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -57,7 +59,7 @@ import com.jme.util.TextureManager;
  * created, attached to the main node, the head <code>TriMesh</code> is
  * then attached to this second node.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.2 2004-01-23 03:32:09 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.3 2004-01-26 01:30:12 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel {
     //contains data structures for the resulting model scene.
@@ -78,6 +80,7 @@ public class MilkshapeASCIIModel {
     private static Joint[] joints;
     private static int totalFrames;
     private static int currentFrame;
+    private static int[][] jointIndices;
 
     /**
      * <code>load</code> parses a Milkshape 3D ASCII file and generates
@@ -152,6 +155,7 @@ public class MilkshapeASCIIModel {
          */
     private static void parseMeshes(BufferedReader reader) {
         meshArray = new TriMesh[numberMeshes];
+        jointIndices = new int[numberMeshes][0];
         for (int i = 0; i < numberMeshes; i++) {
             String line;
             try {
@@ -161,6 +165,7 @@ public class MilkshapeASCIIModel {
                 int numberVertices = Integer.parseInt(line);
                 Vector3f[] vectors = new Vector3f[numberVertices];
                 Vector2f[] textures = new Vector2f[numberVertices];
+                jointIndices[i] = new int[numberVertices];
                 for (int j = 0; j < numberVertices; j++) {
                     line = getNextLine(reader);
                     String[] values = line.split(" ");
@@ -173,6 +178,7 @@ public class MilkshapeASCIIModel {
                         new Vector2f(
                             Float.parseFloat(values[4]),
                             1 - Float.parseFloat(values[5]));
+                    jointIndices[i][j] = Integer.parseInt(values[6]);
                 }
 
                 line = getNextLine(reader);
@@ -303,56 +309,54 @@ public class MilkshapeASCIIModel {
             try {
                 String line = getNextLine(reader);
                 Joint joint = new Joint();
-                joint.name = line.substring(1, line.length() - 1);
+                joint.setName(line.substring(1, line.length() - 1));
                 line = getNextLine(reader);
-                joint.parentName = line.substring(1, line.length() - 1);
+                joint.setParentName(line.substring(1, line.length() - 1));
                 line = getNextLine(reader);
                 String[] values = line.split(" ");
-                joint.flags = Integer.parseInt(values[0]);
-                joint.posx = Float.parseFloat(values[1]);
-                joint.posy = Float.parseFloat(values[2]);
-                joint.posz = Float.parseFloat(values[3]);
-                joint.rotx = Float.parseFloat(values[4]);
-                joint.roty = Float.parseFloat(values[5]);
-                joint.rotz = Float.parseFloat(values[6]);
+                //joint.flags = Integer.parseInt(values[0]);
+                joint.setLocalTranslation(new Vector3f(Float.parseFloat(values[1]),Float.parseFloat(values[2]),Float.parseFloat(values[3])));
+                joint.setLocalRotations(new Vector3f(Float.parseFloat(values[4]),Float.parseFloat(values[5]),Float.parseFloat(values[6])));
                 line = getNextLine(reader);
-                joint.numberPosistionKeyframes = Integer.parseInt(line);
+                int numberPosistionKeyframes = Integer.parseInt(line);
                 Keyframe[] positionKeyframes =
-                    new Keyframe[joint.numberPosistionKeyframes];
-                for (int j = 0; j < joint.numberPosistionKeyframes; j++) {
+                    new Keyframe[numberPosistionKeyframes];
+                for (int j = 0; j < numberPosistionKeyframes; j++) {
                     line = getNextLine(reader);
                     values = line.split(" ");
                     positionKeyframes[j] =
                         new Keyframe(
                             Float.parseFloat(values[0]),
+                            new Vector3f(
                             Float.parseFloat(values[1]),
                             Float.parseFloat(values[2]),
-                            Float.parseFloat(values[3]));
+                            Float.parseFloat(values[3])));
                 }
-                joint.positionKeys = positionKeyframes;
+                joint.setPositionFrames(positionKeyframes);
                 line = getNextLine(reader);
-                joint.numberRotationKeyframes = Integer.parseInt(line);
+                int numberRotationKeyframes = Integer.parseInt(line);
                 Keyframe[] rotationKeyframes =
-                    new Keyframe[joint.numberRotationKeyframes];
-                for (int j = 0; j < joint.numberRotationKeyframes; j++) {
+                    new Keyframe[numberRotationKeyframes];
+                for (int j = 0; j < numberRotationKeyframes; j++) {
                     line = getNextLine(reader);
                     values = line.split(" ");
                     rotationKeyframes[j] =
                         new Keyframe(
                             Float.parseFloat(values[0]),
+                            new Vector3f(
                             Float.parseFloat(values[1]),
                             Float.parseFloat(values[2]),
-                            Float.parseFloat(values[3]));
+                            Float.parseFloat(values[3])));
                 }
-                joint.rotationKeys = rotationKeyframes;
+                joint.setRotationFrames(rotationKeyframes);
                 joints[i] = joint;
 
                 int parentIndex = -1;
-                if (joints[i].parentName.length() > 0) {
+                if (joints[i].getParentName().length() > 0) {
                     for (int j = 0; j < numberJoints; j++) {
                         if (joints[j]
-                            .name
-                            .equalsIgnoreCase(joints[i].parentName)) {
+                            .getName()
+                            .equalsIgnoreCase(joints[i].getParentName())) {
                             parentIndex = j;
                             break;
                         }
@@ -361,7 +365,7 @@ public class MilkshapeASCIIModel {
                         return;
                     }
                 }
-                joints[i].parentIndex = parentIndex;
+                joints[i].setParentIndex(parentIndex);
             } catch (IOException e) {
                 e.printStackTrace();
                 return;
@@ -377,26 +381,49 @@ public class MilkshapeASCIIModel {
         for (int jointIndex = 0; jointIndex < numberJoints; jointIndex++) {
             Joint joint = joints[jointIndex];
             Vector3f rotationVector = new Vector3f();
-            rotationVector.x = joint.rotx * 180 / (float) Math.PI;
-            rotationVector.y = joint.roty * 180 / (float) Math.PI;
-            rotationVector.z = joint.rotz * 180 / (float) Math.PI;
-            joints[jointIndex].relativeMatrix.fromAngles(rotationVector);
-            joints[jointIndex].relativeMatrix.set(0, 3, joint.posx);
-            joints[jointIndex].relativeMatrix.set(1, 3, joint.posy);
-            joints[jointIndex].relativeMatrix.set(2, 3, joint.posz);
-            if (joint.parentIndex != -1) {
-                joints[jointIndex].absoluteMatrix =
-                    joints[joint.parentIndex].absoluteMatrix.mult(
-                        joints[jointIndex].relativeMatrix);
-                joints[jointIndex].finalMatrix.copy(
-                    joints[jointIndex].absoluteMatrix);
+            rotationVector.x = joint.getLocalRotations().x * 180 / (float) Math.PI;
+            rotationVector.y = joint.getLocalRotations().y * 180 / (float) Math.PI;
+            rotationVector.z = joint.getLocalRotations().z * 180 / (float) Math.PI;
+            joints[jointIndex].getRelativeMatrix().fromAngles(rotationVector);
+            joints[jointIndex].getRelativeMatrix().set(0, 3, joint.getLocalTranslation().x);
+            joints[jointIndex].getRelativeMatrix().set(1, 3, joint.getLocalTranslation().y);
+            joints[jointIndex].getRelativeMatrix().set(2, 3, joint.getLocalTranslation().z);
+            if (joint.getParentIndex() != -1) {
+                joints[jointIndex].setAbsoluteMatrix(
+                    joints[joint.getParentIndex()].getAbsoluteMatrix().mult(
+                        joints[jointIndex].getRelativeMatrix()));
+                joints[jointIndex].getFinalMatrix().copy(
+                    joints[jointIndex].getAbsoluteMatrix());
             } else {
-                joints[jointIndex].absoluteMatrix.copy(
-                    joints[jointIndex].relativeMatrix);
-                joints[jointIndex].finalMatrix.copy(
-                    joints[jointIndex].relativeMatrix);
+                joints[jointIndex].getAbsoluteMatrix().copy(
+                    joints[jointIndex].getRelativeMatrix());
+                joints[jointIndex].getFinalMatrix().copy(
+                    joints[jointIndex].getRelativeMatrix());
             }
         }
+        
+        
+//        for (int meshIndex = 0; meshIndex < numberMeshes; meshIndex++) {
+//            Mesh pMesh = meshes[meshIndex];
+//            for (int j = 0; j < pMesh.numberVertices; j++) {
+//                Vertex vertex = pMesh.vertices[j];
+//                if (vertex.boneIndex != -1) {
+//                    vertex.x
+//                        -= joints[vertex.boneIndex].absoluteMatrix.matrix[0][3];
+//                    vertex.y
+//                        -= joints[vertex.boneIndex].absoluteMatrix.matrix[1][3];
+//                    vertex.z
+//                        -= joints[vertex.boneIndex].absoluteMatrix.matrix[2][3];
+//                    Vector inverseRotationVector = new Vector();
+//                    inverseRotationVector =
+//                        new Vector(vertex.x, vertex.y, vertex.z).inverseRotate(
+//                            joints[vertex.boneIndex].absoluteMatrix);
+//                    vertex.x = inverseRotationVector.x;
+//                    vertex.y = inverseRotationVector.y;
+//                    vertex.z = inverseRotationVector.z;
+//                }
+//            }
+//        }
     }
 
     /**

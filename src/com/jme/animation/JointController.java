@@ -29,44 +29,40 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+package com.jme.animation;
 
-package com.jme.scene.model;
+import com.jme.scene.Controller;
 
 /**
- * A Keyframe is a point in time which defines when a joint will reach a
- * certain rotation or translation. To perform animation, you interpolate
- * the translation or rotation over the time frame.
- *
- * @author naj
- * @version 0.1
+ * <code>JointController</code>
+ * @author Mark Powell
+ * @version $Id: JointController.java,v 1.1 2004-01-26 01:30:12 mojomonkey Exp $
  */
-public class Keyframe {
+public class JointController extends Controller {
+    private Joint[] joints;
+    private float animationTime;
 
-    /**
-     * The time in milliseconds after the start of the animation for which
-     * that keyframe occurs.
+    /* (non-Javadoc)
+     * @see com.jme.scene.Controller#update(float)
      */
-    public float time;
-
-    /**
-     * For a position keyframe (x,y,z) are the coordinates to translate.
-     * For a rotation keyframe (x,y,z) are angles, in radians, to rotate.
-     */
-    public float x, y, z;
-
-    /**
-     * Create a keyframe at a given time and vector.
-     * @param time the time in milliseconds after the start of the animation
-     * for which that keyframe occurs.
-     * @param x the x value of the translation or rotation for the keyframe.
-     * @param y the y value of the translation or rotation for the keyframe.
-     * @param z the z value of the translation or rotation for the keyframe.
-     */
-    public Keyframe(float time, float x, float y, float z) {
-        this.time = time;
-        this.x = x;
-        this.y = y;
-        this.z = z;
+    public void update(float time) {
+        updateTime(time);
+        for(int i = 0; i < joints.length; i++) {
+            joints[i].update(animationTime);
+        }
     }
-
+    
+    private void updateTime(float time) {
+        animationTime += time;
+        
+        switch(getRepeatType()) {
+            case RT_CLAMP:
+                //one animation run. Stop at the end time of the 
+                //controller.
+            case RT_CYCLE:
+                //After last keyframe reached, travel in reverse.
+            case RT_WRAP:
+                //Default, after last keyframe reached, start over.
+        }
+    }
 }
