@@ -40,7 +40,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.10 2004-07-06 05:00:54 cep21 Exp $
+ * @version $Id: Vector2f.java,v 1.11 2004-07-06 21:34:31 renanse Exp $
  */
 public class Vector2f implements Externalizable{
     /**
@@ -382,10 +382,10 @@ public class Vector2f implements Externalizable{
      * @return the hash code value of this vector.
      */
     public int hashCode() {
-        int hash = 17;
-        hash += 37 * x;
-        hash += 37 * y;
-        return hash;
+      int hash = 7;
+      hash += 31 * hash + Float.floatToIntBits(x);
+      hash += 31 * hash + Float.floatToIntBits(y);
+      return hash;
     }
 
     /**

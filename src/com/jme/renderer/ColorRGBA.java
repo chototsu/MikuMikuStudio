@@ -47,7 +47,7 @@ import java.io.*;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.12 2004-07-06 04:59:06 cep21 Exp $
+ * @version $Id: ColorRGBA.java,v 1.13 2004-07-06 21:34:31 renanse Exp $
  */
 public class ColorRGBA implements Externalizable{
 
@@ -265,11 +265,11 @@ public class ColorRGBA implements Externalizable{
       rVal.clamp();
       return rVal;
     }
-    
+
     public ColorRGBA mult(ColorRGBA c) {
     	return new ColorRGBA(c.r * r, c.g * g, c.b * b, c.a * a);
     }
-    
+
     public ColorRGBA add(ColorRGBA c) {
     	return new ColorRGBA(c.r + r, c.g + g, c.b + b, c.a + a);
     }
@@ -325,12 +325,12 @@ public class ColorRGBA implements Externalizable{
      * @return the hash code value of this color.
      */
     public int hashCode() {
-        int hash = 17;
-        hash += 37 * r;
-        hash += 37 * g;
-        hash += 37 * b;
-        hash += 37 * a;
-        return hash;
+      int hash = 7;
+      hash += 31 * hash + Float.floatToIntBits(r);
+      hash += 31 * hash + Float.floatToIntBits(g);
+      hash += 31 * hash + Float.floatToIntBits(b);
+      hash += 31 * hash + Float.floatToIntBits(a);
+      return hash;
     }
 
     /**
@@ -348,7 +348,7 @@ public class ColorRGBA implements Externalizable{
     }
 
     /**
-     * Used with serialization.  Not to be called manually.     *  
+     * Used with serialization.  Not to be called manually.     *
      * @param out
      * @throws IOException
      * @see java.io.Externalizable

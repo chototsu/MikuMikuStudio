@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.24 2004-07-06 04:59:59 cep21 Exp $
+ * @version $Id: Vector3f.java,v 1.25 2004-07-06 21:34:32 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -735,10 +735,10 @@ public class Vector3f implements Externalizable{
      * @return the hash code value of this vector.
      */
     public int hashCode() {
-        int hash = 17;
-        hash += 37 * x;
-        hash += 37 * y;
-        hash += 37 * z;
+        int hash = 7;
+        hash += 31 * hash + Float.floatToIntBits(x);
+        hash += 31 * hash + Float.floatToIntBits(y);
+        hash += 31 * hash + Float.floatToIntBits(z);
         return hash;
     }
 
