@@ -38,6 +38,8 @@ import com.jme.image.Texture;
 import com.jme.input.InputHandler;
 import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
+import com.jme.light.LightNode;
+import com.jme.light.SpotLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -173,23 +175,30 @@ public class TestCameraMan extends SimpleGame {
         scene = new Node("3D Scene Node");
         root = new Node("Root Scene Node");
 
-        DirectionalLight am = new DirectionalLight();
+       DirectionalLight am = new DirectionalLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.95f, 0.95f, 0.95f, 1.0f));
+        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         am.setDirection(new Vector3f(1, 0, 0));
 
-        DirectionalLight am2 = new DirectionalLight();
-        am2.setDiffuse(new ColorRGBA(1.0f,1.0f,1.0f,1.0f));
-        am2.setDirection(new Vector3f(0,0,-1));
-
+        
         LightState state = display.getRenderer().getLightState();
         state.setEnabled(true);
         state.attach(am);
-        state.attach(am2);
         am.setEnabled(true);
-        am2.setEnabled(true);
-
-        root.setRenderState(state);
+        
+        SpotLight sl = new SpotLight();
+        sl.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        sl.setAmbient(new ColorRGBA(0.75f, 0.75f, 0.75f, 1.0f));
+        sl.setDirection(new Vector3f(0, 0, 1));
+        sl.setLocation(new Vector3f(0, 0, 0));
+        sl.setAngle(25);
+        
+        LightState cameraLightState = display.getRenderer().getLightState();
+        cameraLightState.setEnabled(true);
+        
+        sl.setEnabled(true);
+        
+        scene.setRenderState(state);
 
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
@@ -202,11 +211,16 @@ public class TestCameraMan extends SimpleGame {
         model.getAnimationController().setActive(false);
         scene.attachChild(model);
         root.attachChild(scene);
+        
+        LightNode cameraLight = new LightNode("Camera Light", cameraLightState);
+        cameraLight.setLight(sl);
+        cameraLight.setTarget(model);
 
         Model camBox = new MilkshapeASCIIModel("Camera Box");
         URL camBoxUrl = TestCameraMan.class.getClassLoader().getResource("jmetest/data/model/msascii/camera.txt");
         camBox.load(camBoxUrl, "jmetest/data/model/msascii/");
         camNode.attachChild(camBox);
+        camNode.attachChild(cameraLight);
 
 
         Quad quad = new Quad("Monitor");
@@ -233,7 +247,6 @@ public class TestCameraMan extends SimpleGame {
         screen.setEnabled(true);
         quad.setRenderState(screen);
 
-        // Now add that texture to the "real" cube.
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
 
