@@ -43,6 +43,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
+import com.jme.scene.Pyramid;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -55,7 +56,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.3 2003-11-13 16:15:35 mojomonkey Exp $
+ * @version $Id: TestLightState.java,v 1.4 2003-11-13 17:57:32 mojomonkey Exp $
  */
 public class TestLightState extends AbstractGame {
     private TriMesh t;
@@ -140,7 +141,7 @@ public class TestLightState extends AbstractGame {
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
-        Box t2 = new Box(min, max);
+        Pyramid t2 = new Pyramid(10,20);
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
         
@@ -198,8 +199,8 @@ public class TestLightState extends AbstractGame {
                         true));
                         
         WireframeState ws = display.getRenderer().getWireframeState();
-        ws.setEnabled(true);
-        t2.setRenderState(ws);
+        ws.setEnabled(false);
+        //t2.setRenderState(ws);
                         
         scene.setRenderState(ts);
         
