@@ -31,6 +31,7 @@
  */
 package com.jme.scene;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -49,9 +50,9 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a 
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
-public class Geometry extends Spatial {
+public class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
     //data that specifies how to render this leaf.
     protected Vector3f[] vertex;
@@ -64,7 +65,7 @@ public class Geometry extends Spatial {
     private FloatBuffer normBuf;
     private FloatBuffer vertBuf;
     private FloatBuffer texBuf;
-
+    
     /**
      * Constructor instantiates a new <code>Geometry</code> object. This
      * is the default object which has an empty vertex array. All other
@@ -276,7 +277,7 @@ public class Geometry extends Spatial {
         worldBound =
             bound.transform(worldRotation, worldTranslation, worldScale);
     }
-
+    
     /**
      * <code>setColorBuffer</code> calculates the <code>FloatBuffer</code>
      * that contains all the color information of this geometry.

@@ -31,6 +31,7 @@
  */
 package com.jme.scene;
 
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -50,9 +51,9 @@ import com.jme.util.LoggingSystem;
  * renderer the order in which to draw the points, creating triangles on
  * every three points. 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
-public class TriMesh extends Geometry {
+public class TriMesh extends Geometry implements Serializable {
     private int[] indices;
     private IntBuffer indexBuffer;
 

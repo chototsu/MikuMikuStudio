@@ -48,9 +48,9 @@ import com.jme.renderer.Renderer;
  * that gives a way of displaying data to the created window.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLDisplaySystem.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
-public class LWJGLDisplaySystem implements DisplaySystem {
+public class LWJGLDisplaySystem extends DisplaySystem {
 
     private int width;
     private int height;

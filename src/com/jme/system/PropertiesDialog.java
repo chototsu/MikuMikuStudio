@@ -53,7 +53,7 @@ import javax.swing.JPanel;
  * 
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: PropertiesDialog.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
 public class PropertiesDialog extends JDialog {
 
@@ -237,7 +237,7 @@ public class PropertiesDialog extends JDialog {
      * @return the combo box that contains the display frequencys.
      */
     private JComboBox setUpFreqChooser() {
-        String modes[] = { "60 Hz", "70 Hz", "75 Hz", "80 Hz" };
+        String modes[] = {"0 Hz (Linux)", "60 Hz", "70 Hz", "75 Hz", "80 Hz" };
         JComboBox freqBox = new JComboBox(modes);
         freqBox.setSelectedItem(source.getFreq() + " Hz");
         return freqBox;

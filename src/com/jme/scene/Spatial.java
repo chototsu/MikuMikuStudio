@@ -31,10 +31,13 @@
  */
 package com.jme.scene;
 
+import java.io.Serializable;
+
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
+import com.jme.scene.state.RenderState;
 
 /**
  * <code>Spatial</code> defines the base class for scene graph nodes. It
@@ -42,9 +45,9 @@ import com.jme.renderer.Renderer;
  * transforms. All other nodes, such as <code>Node</code> and 
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
-public abstract class Spatial {
+public abstract class Spatial implements Serializable {
     //rotation matrices
     private Matrix3f localRotation;
     protected Matrix3f worldRotation;
@@ -65,6 +68,9 @@ public abstract class Spatial {
 
     //reference to the parent node.
     private Node parent;
+    
+    //render states
+    RenderState[] renderStateList;
 
     /**
      * Constructor instantiates a new <code>Spatial</code> object setting 
@@ -72,6 +78,7 @@ public abstract class Spatial {
      *
      */
     public Spatial() {
+        renderStateList = new RenderState[RenderState.RS_MAX_STATE];
         localRotation = new Matrix3f();
         worldRotation = new Matrix3f();
         localTranslation = new Vector3f();
@@ -113,7 +120,9 @@ public abstract class Spatial {
         int state = camera.getPlaneState();
         //check to see if we can cull this node
         if (!camera.culled(worldBound)) {
+            setStates();
             draw(r);
+            unsetStates();
         }
 
         camera.setPlaneState(state);
@@ -200,6 +209,18 @@ public abstract class Spatial {
      * @param time the frame time.
      */
     public void updateWorldData(float time) {
+        Controller[] controls;
+        for(int i = 0; i < renderStateList.length; i++) {
+            RenderState rs = renderStateList[i];
+            if(rs != null) {
+                controls = rs.getControllers();
+                for(int j = 0; j < controls.length; j++) {
+                    if(controls[j] != null) {
+                        controls[j].update(time);
+                    }
+                }
+            }
+        }
         // update spatial controllers
         boolean computesWorldTransform = false;
 
@@ -231,7 +252,7 @@ public abstract class Spatial {
      *
      */
     public abstract void updateWorldBound();
-
+    
     /**
      * 
      * <code>propagateBoundToRoot</code> passes the new world bound up the
@@ -244,7 +265,7 @@ public abstract class Spatial {
             parent.propagateBoundToRoot();
         }
     }
-
+    
     /**
      * <code>getParent</code> retrieve's this node's parent. If the parent is
      * null this is the root node.
@@ -311,5 +332,50 @@ public abstract class Spatial {
      */
     public void setLocalTranslation(Vector3f localTranslation) {
         this.localTranslation = localTranslation;
+    }
+    
+    /**
+     * 
+     * <code>setRenderState</code> sets a render state for this node. Note, 
+     * there can only be one render state per type per node. That is, there 
+     * can only be a single AlphaState a single TextureState, etc. If there
+     * is already a render state for a type set the old render state will 
+     * be rendered. Otherwise, null is returned.
+     * @param rs the render state to add.
+     * @return the old render state.
+     */
+    public RenderState setRenderState(RenderState rs) {
+        RenderState oldState = renderStateList[rs.getType()];
+        renderStateList[rs.getType()] = rs;
+        return oldState;
+    }
+    
+    /**
+     * 
+     * <code>setStates</code> activates all the render states for this 
+     * particular node. These states will remain activated until unset is
+     * called.
+     *
+     */
+    public void setStates() {
+        for(int i = 0; i < renderStateList.length; i++) {
+            if(renderStateList[i] != null ) {
+                renderStateList[i].set();
+            }
+        }
+    }
+    
+    /**
+     * 
+     * <code>unsetStates</code> deactivates all the render states for this 
+     * particular node. 
+     *
+     */
+    public void unsetStates() {
+        for(int i = 0; i < renderStateList.length; i++) {
+            if(renderStateList[i] != null ) {
+                renderStateList[i].unset();
+            }
+        }
     }
 }

@@ -35,6 +35,14 @@ import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.DitherState;
+import com.jme.scene.state.FogState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 
 /**
  * <code>Renderer</code> defines an interface that handles displaying 
@@ -55,7 +63,7 @@ import com.jme.scene.TriMesh;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
 public interface Renderer {
     
@@ -71,6 +79,85 @@ public interface Renderer {
      * @return the camera this renderer is using.
      */
     public Camera getCamera();
+    
+    /**
+     * 
+     * <code>getCamera</code> retrieves a default camera for this renderer. 
+     * @param width the width of the frame.
+     * @param height the height of the frame.
+     * @return a default camera for this renderer.
+     */
+    public Camera getCamera(int width, int height);
+    
+    /**
+     * 
+     * <code>getAlphaState</code> retrieves the alpha state object for the 
+     * proper renderer. 
+     * @return the <code>AlphaState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public AlphaState getAlphaState();
+    /**
+     * 
+     * <code>getDitherState</code> retrieves the dither state object for the 
+     * proper renderer. 
+     * @return the <code>DitherState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public DitherState getDitherState();
+    
+    /**
+     * 
+     * <code>getFogState</code> retrieves the fog state object for the 
+     * proper renderer. 
+     * @return the <code>FogState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public FogState getFogState();
+    /**
+     * 
+     * <code>getLightState</code> retrieves the light state object for the 
+     * proper renderer. 
+     * @return the <code>LightState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public LightState getLightState();
+    
+    /**
+     * 
+     * <code>getMaterialState</code> retrieves the material state object for the 
+     * proper renderer. 
+     * @return the <code>MaterialState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public MaterialState getMaterialState();
+    
+    /**
+     * 
+     * <code>getShadeState</code> retrieves the shade state object for the 
+     * proper renderer. 
+     * @return the <code>ShadeState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public ShadeState getShadeState();
+    
+    /**
+     * 
+     * <code>getTextureState</code> retrieves the texture state object for the 
+     * proper renderer. 
+     * @return the <code>TextureState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public TextureState getTextureState();
+    
+    /**
+     * 
+     * <code>getWireframeState</code> retrieves the wireframe state object for the 
+     * proper renderer. 
+     * @return the <code>WireframeState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public WireframeState getWireframeState();
     
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color

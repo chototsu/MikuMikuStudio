@@ -43,7 +43,7 @@ package com.jme.renderer;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: ColorRGBA.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
 public class ColorRGBA {
     public float r;
@@ -107,6 +107,17 @@ public class ColorRGBA {
         } else if (a > 1) {
             a = 1;
         }
+    }
+    
+    /**
+     * 
+     * <code>getColorArray</code> retrieves the color values of this object as
+     * a four element float array.
+     * @return the float array that contains the color elements.
+     */
+    public float[] getColorArray() {
+        float[] f = {r,g,b,a};
+        return f;
     }
     
     /**

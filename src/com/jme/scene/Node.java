@@ -31,6 +31,7 @@
  */
 package com.jme.scene;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.logging.Level;
 
@@ -43,9 +44,9 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes. 
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: Node.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
-public class Node extends Spatial {
+public class Node extends Spatial implements Serializable {
     //List to hold the children.
     private ArrayList children;
 
@@ -159,7 +160,7 @@ public class Node extends Spatial {
             }
         }
     }
-
+   
     /**
      * <code>draw</code> calls the onDraw method for each child maintained
      * by this node.

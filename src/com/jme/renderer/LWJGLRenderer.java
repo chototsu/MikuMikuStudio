@@ -46,6 +46,22 @@ import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.DitherState;
+import com.jme.scene.state.FogState;
+import com.jme.scene.state.LWJGLAlphaState;
+import com.jme.scene.state.LWJGLDitherState;
+import com.jme.scene.state.LWJGLFogState;
+import com.jme.scene.state.LWJGLLightState;
+import com.jme.scene.state.LWJGLMaterialState;
+import com.jme.scene.state.LWJGLShadeState;
+import com.jme.scene.state.LWJGLTextureState;
+import com.jme.scene.state.LWJGLWireframeState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 
@@ -54,7 +70,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -108,6 +124,90 @@ public class LWJGLRenderer implements Renderer {
      */
     public Camera getCamera() {
         return camera;
+    }
+    
+    /**
+     * <code>getCamera</code> returns a default camera for use with the 
+     * LWJGL renderer. 
+     * 
+     * @param width the width of the frame.
+     * @param height the height of the frame.
+     * @return a default LWJGL camera.
+     */
+    public Camera getCamera(int width, int height) {
+        return new LWJGLCamera(width,height);
+    }
+    
+    /**
+     * <code>getAlphaState</code> returns a new LWJGLAlphaState object as
+     * a regular AlphaState. 
+     * @return an AlphaState object.
+     */
+    public AlphaState getAlphaState() {
+        return new LWJGLAlphaState();
+    }
+    
+    /**
+     * <code>getDitherState</code> returns a new LWJGLDitherState object as
+     * a regular DitherState. 
+     * @return an DitherState object.
+     */
+    public DitherState getDitherState() {
+        return new LWJGLDitherState();
+    }
+    
+    /**
+     * <code>getFogState</code> returns a new LWJGLFogState object as
+     * a regular FogState. 
+     * @return an FogState object.
+     */
+    public FogState getFogState() {
+        return new LWJGLFogState();
+    }
+    
+    /**
+     * <code>getLightState</code> returns a new LWJGLLightState object as
+     * a regular LightState. 
+     * @return an LightState object.
+     */
+    public LightState getLightState() {
+        return new LWJGLLightState();
+    }
+    
+    /**
+     * <code>getMaterialState</code> returns a new LWJGLMaterialState object as
+     * a regular MaterialState. 
+     * @return an MaterialState object.
+     */
+    public MaterialState getMaterialState() {
+        return new LWJGLMaterialState();
+    }
+    
+    /**
+     * <code>getShadeState</code> returns a new LWJGLShadeState object as
+     * a regular ShadeState. 
+     * @return an ShadeState object.
+     */
+    public ShadeState getShadeState() {
+        return new LWJGLShadeState();
+    }
+    
+    /**
+     * <code>getTextureState</code> returns a new LWJGLTextureState object as
+     * a regular TextureState. 
+     * @return an TextureState object.
+     */
+    public TextureState getTextureState() {
+        return new LWJGLTextureState();
+    }
+    
+    /**
+     * <code>getWireframeState</code> returns a new LWJGLWireframeState object as
+     * a regular WireframeState. 
+     * @return an WireframeState object.
+     */
+    public WireframeState getWireframeState() {
+        return new LWJGLWireframeState();
     }
 
     /**

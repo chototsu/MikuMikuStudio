@@ -35,14 +35,13 @@ import com.jme.app.AbstractGame;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.LWJGLCamera;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.scene.TriMesh;
+import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.system.LWJGLDisplaySystem;
 
 /**
  * <code>TestMilestone1</code> tests all features of Milestone 1:
@@ -54,7 +53,7 @@ import com.jme.system.LWJGLDisplaySystem;
  * Culling
  * 
  * @author Mark Powell
- * @version $Id: TestMilestone1.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: TestMilestone1.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
 public class TestMilestone1 extends AbstractGame {
     private Node scene;
@@ -86,13 +85,13 @@ public class TestMilestone1 extends AbstractGame {
      */
     protected void initSystem() {
         try {
-            if("LWJGL".equalsIgnoreCase(properties.getRenderer())) {
-                display = new LWJGLDisplaySystem();
-                display.createWindow(properties.getWidth(), properties.getHeight(), 
+            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+            display.createWindow(properties.getWidth(), properties.getHeight(), 
                                 properties.getDepth(), properties.getFreq(), 
                                 properties.getFullscreen());
-                cam = new LWJGLCamera(properties.getWidth(),properties.getHeight());
-            }
+            cam = display.getRenderer().getCamera(properties.getWidth(),
+                                properties.getHeight());
+            
         } catch (JmeException e) {
             e.printStackTrace();
             System.exit(1);

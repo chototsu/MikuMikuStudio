@@ -31,6 +31,8 @@
  */
 package com.jme.renderer;
 
+import java.io.Serializable;
+
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.scene.BoundingVolume;
@@ -41,9 +43,9 @@ import com.jme.scene.BoundingVolume;
  * and the camera model. The frustum is also maintained here to allow for easy
  * frustum culling.
  * @author Mark Powell
- * @version $Id: Camera.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Camera.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
-public interface Camera {
+public interface Camera extends Serializable {
 
     /**
      * <code>getDirection</code> returns the direction the camera is facing.

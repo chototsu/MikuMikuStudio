@@ -46,7 +46,7 @@ import com.jme.renderer.Renderer;
  * Example usage:
  * 
  * <code>
- * DisplaySystem ds = new LWJGLDisplaySystem();<br>
+ * DisplaySystem ds = DisplaySystem.getDisplaySystem("LWJGL");<br>
  * ds.createWindow(640,480,32,60,true);<br>
  * Renderer r = ds.getRenderer();<br>
  * </code>
@@ -54,13 +54,31 @@ import com.jme.renderer.Renderer;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
  */
-public interface DisplaySystem {
+public abstract class DisplaySystem {
     /**
      * The list of current implemented rendering APIs that subclass Display.
      */
     public static final String[] rendererNames = {"LWJGL"};
+    
+    /**
+     * 
+     * <code>getDisplaySystem</code> is a factory method that creates the
+     * appropriate display system specified by the key parameter. If the
+     * key given is not a valid identifier for a specific display system,
+     * null is returned. For valid display systems see the
+     * <code>rendererNames</code> array.
+     * @param key the display system to use.
+     * @return the appropriate display system specified by the key.
+     */
+    public static DisplaySystem getDisplaySystem(String key) {
+        if("LWJGL".equalsIgnoreCase(key)) {
+            return new LWJGLDisplaySystem();
+        }
+        
+        return null;
+    }
 
     /**
      * <code>createWindow</code> creates a window with the desired settings. 
@@ -82,7 +100,7 @@ public interface DisplaySystem {
      * @param fs flag determining if fullscreen is to be used or not. True will
      *      use fullscreen, false will use windowed mode.
      */
-    public void createWindow(int w, int h, int bpp, int frq, boolean fs);
+    public abstract void createWindow(int w, int h, int bpp, int frq, boolean fs);
     
     /**
      * <code>getRenderer</code> returns the <code>Renderer</code> implementation
@@ -93,7 +111,7 @@ public interface DisplaySystem {
      * @return the appropriate <code>Renderer</code> implementation that is
      *      compatible with the used <code>DisplaySystem</code>.
      */
-    public Renderer getRenderer();
+    public abstract Renderer getRenderer();
     
     /**
      * <code>isCreated</code> returns the current status of the display
@@ -102,7 +120,7 @@ public interface DisplaySystem {
      * 
      * @return whether the display system is created.
      */
-    public boolean isCreated();
+    public abstract boolean isCreated();
     
     /**
      * <code>isClosing</code> notifies if the window is currently closing.
@@ -110,11 +128,11 @@ public interface DisplaySystem {
      * such as alt-f4 etc.
      * @return true if the window is closing, false otherwise.
      */
-    public boolean isClosing();
+    public abstract boolean isClosing();
     
     /**
      * <code>reset</code> cleans up the display system for closing or restarting.
      *
      */
-    public void reset();
+    public abstract void reset();
 }
