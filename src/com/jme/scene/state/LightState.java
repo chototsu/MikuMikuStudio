@@ -41,7 +41,7 @@ import com.jme.light.Light;
  * be added to the light state. Each light is processed and used to modify
  * the color of the scene.
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.8 2004-06-26 18:46:33 cep21 Exp $
+ * @version $Id: LightState.java,v 1.9 2004-08-01 23:40:28 cep21 Exp $
  */
 public abstract class LightState extends RenderState {
   /**
@@ -70,6 +70,7 @@ public abstract class LightState extends RenderState {
 
   //holds the lights
   private ArrayList lightList;
+  /** When true, both sides of the model will be lighted. */
   protected boolean twoSidedOn;
 
   /**
@@ -148,7 +149,20 @@ public abstract class LightState extends RenderState {
     return lightList.size();
   }
 
+  /**
+   * Sets if two sided lighting should be enabled for this LightState.
+   * @param twoSidedOn If true, two sided lighting is enabled.
+   */
   public void setTwoSidedLighting(boolean twoSidedOn) {
     this.twoSidedOn = twoSidedOn;
+  }
+
+  /**
+   * Returns the current state of two sided lighting for this LightState.  By default,
+   * it is off.
+   * @return True if two sided lighting is enabled.
+   */
+  public boolean getTwoSidedLighting(){
+      return this.twoSidedOn;
   }
 }

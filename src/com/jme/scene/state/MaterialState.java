@@ -39,7 +39,7 @@ import com.jme.renderer.ColorRGBA;
  * ambient color, diffuse color and specular color. The material also defines
  * the shininess of the object and the alpha value of the object.
  * @author Mark Powell
- * @version $Id: MaterialState.java,v 1.5 2004-06-17 16:31:17 renanse Exp $
+ * @version $Id: MaterialState.java,v 1.6 2004-08-01 23:44:40 cep21 Exp $
  */
 public abstract class MaterialState extends RenderState {
     //attributes of the material
@@ -56,24 +56,34 @@ public abstract class MaterialState extends RenderState {
     protected static ColorRGBA currentEmissive = new ColorRGBA(-1,-1,-1,-1);
     protected static float currentShininess = -1;
 
+    /** Default ambient color for all material states. */
     public static final ColorRGBA defaultAmbient  = new ColorRGBA(0.2f,0.2f,0.2f,1.0f);
+    /** Default diffuse color for all material states. */
     public static final ColorRGBA defaultDiffuse  = new ColorRGBA(0.8f,0.8f,0.8f,1.0f);
+    /** Default specular color for all material states. */
     public static final ColorRGBA defaultSpecular = new ColorRGBA(0.0f,0.0f,0.0f,1.0f);
+    /** Default emissive color for all material states. */
     public static final ColorRGBA defaultEmissive = new ColorRGBA(0.0f,0.0f,0.0f,1.0f);
+    /** Default shininess for all material states. */
     public static final float defaultShininess = 0.0f;
 
 
     /**
-     * <code>getAlpha</code>
-     * @return
+     * <code>getAlpha</code> returns the alpha value for this material state.  This
+     * value isn't actually used directly by jME.  Alpha value is more for a user refrence.
+     * @return The current alpha value.
+     * @see com.jme.scene.state.AlphaState
      */
     public float getAlpha() {
         return alpha;
     }
 
     /**
-     * <code>setAlpha</code>
-     * @param alpha
+     * <code>setAlpha</code> sets the alpha value for this material state.  This
+     * value isn't actually used directly by jME.  Alpha value is more for a user
+     * refrence.
+     * @param alpha The new alpha value of this material state.
+     * @see com.jme.scene.state.AlphaState
      */
     public void setAlpha(float alpha) {
         this.alpha = alpha;

@@ -32,30 +32,47 @@
 package com.jme.scene.state;
 
 /**
- * <code>CullState</code>
+ * <code>CullState</code> determins which side of a model will be visible when
+ * it is rendered.  By default, both sides are visible.  Define front as
+ * the side that traces its vertexes counter clockwise and back as the side
+ * that traces its vertexes clockwise, a side (front or back) can be culled, or
+ * not shown when the model is rendered.  Instead, the side will be transparent.
  * @author Mark Powell
- * @version $Id: CullState.java,v 1.2 2004-04-22 22:26:55 renanse Exp $
+ * @author Jack Lindamood (javadoc only)
+ * @version $Id: CullState.java,v 1.3 2004-08-01 23:37:03 cep21 Exp $
  */
 public abstract class CullState extends RenderState {
 
+    /** No sides of the model's triangles are culled.  This is default. */
     public static final int CS_NONE = 0;
+    /** The front sides are not shown. */
     public static final int CS_FRONT = 1;
+    /** The back sides are not shown. */
     public static final int CS_BACK = 3;
 
     private int cullMode;
 
-	/** <code>getType</code>
-	 * @return
+	/** <code>getType</code> returns RenderState.RS_CULL
+	 * @return RenderState.RS_CULL
 	 * @see com.jme.scene.state.RenderState#getType()
 	 */
 	public int getType() {
 		return RS_CULL;
 	}
 
+    /**
+     * Sets the cull mode to the integer given.  mode most be one of
+     * CS_FRONT, CS_BACK, or CS_NONE
+     * @param mode The new cull mode.
+     */
     public void setCullMode(int mode) {
         cullMode = mode;
     }
 
+    /**
+     * Returns the current cull mode for this CullState.
+     * @return The current cull mode.
+     */
     public int getCullMode() {
         return cullMode;
     }
