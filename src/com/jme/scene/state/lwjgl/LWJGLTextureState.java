@@ -39,8 +39,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.glu.GLU;
 
@@ -52,13 +50,14 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
 import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import java.nio.FloatBuffer;
+import java.io.IOException;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.24 2004-07-06 00:31:03 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.25 2004-07-06 05:11:16 cep21 Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -99,7 +98,7 @@ public class LWJGLTextureState extends TextureState {
   private int[] imageFormats = {GL11.GL_RGBA, GL11.GL_RGB, GL11.GL_RGBA,
       GL11.GL_RGBA, GL11.GL_LUMINANCE_ALPHA};
 
-  private IntBuffer id = BufferUtils.createIntBuffer(1);
+  private transient IntBuffer id = BufferUtils.createIntBuffer(1);
 
   /**
    * Constructor instantiates a new <code>LWJGLTextureState</code> object.
@@ -136,14 +135,14 @@ public class LWJGLTextureState extends TextureState {
   }
 
   /**
-   * <code>set</code> manages the textures being described by the state. If
+   * <code>apply</code> manages the textures being described by the state. If
    * the texture has not been loaded yet, it is generated and loaded using
    * OpenGL11. This means the initial pass to set will be longer than
    * subsequent calls. The multitexture extension is used to define the
    * multiple texture states, with the number of units being determined at
    * construction time.
    *
-   * @see com.jme.scene.state.RenderState#unset()
+   * @see com.jme.scene.state.RenderState#apply()
    */
   public void apply() {
 
@@ -469,4 +468,10 @@ public class LWJGLTextureState extends TextureState {
       texture[i].setTextureId(0);
     }
   }
+
+
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        id = BufferUtils.createIntBuffer(1);
+    }
 }
