@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard.
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.5 2004-07-30 21:48:42 guurk Exp $
+ * @version $Id: LWJGLKeyInput.java,v 1.6 2004-08-24 19:04:44 renanse Exp $
  */
 public class LWJGLKeyInput implements KeyInput {
 
@@ -53,7 +53,7 @@ public class LWJGLKeyInput implements KeyInput {
      */
     public LWJGLKeyInput() {
         try {
-            
+
             Keyboard.create();
         } catch (Exception e) {
             LoggingSystem.getLogger().log(Level.WARNING, "Could not create " +
@@ -96,7 +96,7 @@ public class LWJGLKeyInput implements KeyInput {
     public int getKeyIndex( String name) {
         return Keyboard.getKeyIndex( name);
     }
-    
+
     /**
      * <code>update</code> updates the keyboard buffer.
      * @see com.jme.input.KeyInput#update()
@@ -112,25 +112,32 @@ public class LWJGLKeyInput implements KeyInput {
     public void destroy() {
         Keyboard.destroy();
     }
-    
+
     /**
      * iterates to next key event after poll is called
      */
     public boolean next() {
         return Keyboard.next();
     }
-    
+
     /**
      * returns true if the current event is a keydown event
      */
     public boolean state() {
         return Keyboard.getEventKeyState();
     }
-    
+
     /**
      * the key value of the current event
      */
     public int key() {
         return Keyboard.getEventKey();
+    }
+
+    /**
+     * the char value of the current event
+     */
+    public char keyChar() {
+        return Keyboard.getEventCharacter();
     }
 }

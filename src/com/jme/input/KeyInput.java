@@ -37,7 +37,7 @@ package com.jme.input;
  * to the LWJGL key bindings. This may require conversion by other subclasses
  * for specific APIs.
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.7 2004-07-30 21:48:42 guurk Exp $
+ * @version $Id: KeyInput.java,v 1.8 2004-08-24 19:04:44 renanse Exp $
  */
 public interface KeyInput {
 
@@ -487,7 +487,7 @@ public interface KeyInput {
     public static final int KEY_PRIOR = 0xC9;
     /** PgUp key.*/
     public static final int KEY_PGUP = KEY_PRIOR;
-    
+
     /**
      * left arrow key.
      */
@@ -510,7 +510,7 @@ public interface KeyInput {
     public static final int KEY_NEXT = 0xD1;
     /** PgDn key.*/
     public static final int KEY_PGDN = KEY_NEXT;
-    
+
     /**
      * insert key.
      */
@@ -570,7 +570,7 @@ public interface KeyInput {
      * @return
      */
     public int getKeyIndex( String name);
-    
+
     /**
      *
      * <code>update</code> updates the current state of the keyboard, holding
@@ -585,24 +585,30 @@ public interface KeyInput {
      *
      */
     public void destroy();
-    
+
     /**
      * iterates to the next event when using event
      * based keyboard
      * @return true if there are more events in the list
      */
     public boolean next();
-    
+
     /**
      * The key pressed state of the current key event
      * @return returns true if the key is down
      */
     public boolean state();
-    
+
     /**
      * the key value of the current event
      * @return gives the value of the key for the event
      */
     public int key();
+
+    /**
+     * the char value of the current event
+     * @return gives the char value of the key for the event
+     */
+    public char keyChar();
 
 }

@@ -40,7 +40,7 @@ package com.jme.input.action;
  *
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: AbstractInputAction.java,v 1.3 2004-07-30 21:23:52 cep21 Exp $
+ * @version $Id: AbstractInputAction.java,v 1.4 2004-08-24 19:04:43 renanse Exp $
  */
 public abstract class AbstractInputAction {
 
@@ -50,8 +50,10 @@ public abstract class AbstractInputAction {
   protected float speed = 0;
   /** A name that identifies this action. */
   protected String key;
+  /** The char associated with this event. */
+  protected char keyChar;
 
-    /**
+  /**
      *
      * <code>setSpeed</code> defines the speed at which this action occurs.
      * @param speed the speed at which this action occurs.
@@ -93,6 +95,24 @@ public abstract class AbstractInputAction {
      */
     public void setKey(String key) {
         this.key = key;
+    }
+
+    /**
+     *
+     * <code>getKey</code> retrieves the key associated with this action.
+     * @return the key associated with the action.
+     */
+    public char getKeyChar() {
+        return keyChar;
+    }
+
+    /**
+     *
+     * <code>setKey</code> sets the key associated with this action.
+     * @param key the key associated with the action.
+     */
+    public void setKeyChar(char keyChar) {
+        this.keyChar = keyChar;
     }
 
     /**

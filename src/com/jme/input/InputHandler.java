@@ -41,10 +41,10 @@ import com.jme.input.action.MouseInputAction;
  * and whenever update is called whenever action needs to take place (usually
  * every frame). Mouse actions are performed every update call. Keyboard actions
  * are performed only if the correct key is pressed.
- * 
+ *
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.12 2004-08-17 20:48:33 cep21 Exp $
+ * @version $Id: InputHandler.java,v 1.13 2004-08-24 19:04:44 renanse Exp $
  */
 public class InputHandler {
     /** List of keyboard actions. They are performed in update if valid. */
@@ -72,7 +72,7 @@ public class InputHandler {
 
     /**
      * Sets the keyboard that will receive key inputs by this handler.
-     * 
+     *
      * @param keyboard
      *            The keyboard to receive key inputs.
      */
@@ -82,7 +82,7 @@ public class InputHandler {
 
     /**
      * Returns the currently assigned keybard to receive key inputs.
-     * 
+     *
      * @return This handler's keyboard.
      */
     public KeyBindingManager getKeyBindingManager() {
@@ -91,7 +91,7 @@ public class InputHandler {
 
     /**
      * Sets the mouse to receive mouse inputs from.
-     * 
+     *
      * @param mouse
      *            This handler's new mouse.
      */
@@ -101,7 +101,7 @@ public class InputHandler {
 
     /**
      * Returns the mouse currently receiving inputs by this handler.
-     * 
+     *
      * @return This handler's mouse.
      */
     public Mouse getMouse() {
@@ -111,7 +111,7 @@ public class InputHandler {
     /**
      * Sets the speed of all key actions currently defined by this handler to
      * the given value.
-     * 
+     *
      * @param speed
      *            The new speed for all currently defined key actions.
      * @see com.jme.input.action.AbstractInputAction#setSpeed(float)
@@ -125,7 +125,7 @@ public class InputHandler {
     /**
      * Sets the speed of all mouse actions currently defined by this handler to
      * the given value.
-     * 
+     *
      * @param speed
      *            The new speed for all currently defined mouse actions.
      * @see com.jme.input.action.MouseInputAction#setSpeed(float)
@@ -138,7 +138,7 @@ public class InputHandler {
 
     /**
      * Adds a keyboard input action to be polled by this handler during update.
-     * 
+     *
      * @param inputAction
      *            The input action to be added
      */
@@ -150,7 +150,7 @@ public class InputHandler {
      * Binds to the key an action and an identification string. The
      * identification maps to the key and the action will receive updates on the
      * key.
-     * 
+     *
      * @param keyIdent
      *            A string identifying this key/action purpose. IE "jump_key"
      * @param keyInputValue
@@ -173,7 +173,7 @@ public class InputHandler {
     /**
      * Used to set actions which will be called based on event driven keyboard
      * actions
-     * 
+     *
      * @param keyInputAction
      *            AbstractInputAction that is performed on key event the key
      *            value of the action will be changed dynamically
@@ -185,7 +185,7 @@ public class InputHandler {
 
     /**
      * Adds a mouse input action to be polled by this handler during update.
-     * 
+     *
      * @param mouseAction
      *            The input action to be added
      */
@@ -196,7 +196,7 @@ public class InputHandler {
     /**
      * Removes a keyboard input action from the list of keyActions that are
      * polled during update.
-     * 
+     *
      * @param inputAction
      *            The action to remove.
      */
@@ -221,7 +221,7 @@ public class InputHandler {
     /**
      * Removes a mouse input action from the list of mouseActions that are
      * polled during update.
-     * 
+     *
      * @param mouseAction
      *            The action to remove.
      */
@@ -232,7 +232,7 @@ public class InputHandler {
     /**
      * Checks all key and mouse actions to see if they are valid commands. If
      * so, performAction is called on the command with the given time.
-     * 
+     *
      * @param time
      *            The time to pass to every key and mouse action that is active.
      */
@@ -252,12 +252,15 @@ public class InputHandler {
         }
 
         if (_useBufferedKeyboard && keyboard!=null) {
-            while (keyboard.getKeyInput().next()) {
-                boolean keyPressed = keyboard.getKeyInput().state();
+            KeyInput kInput = keyboard.getKeyInput();
+            while (kInput.next()) {
+                boolean keyPressed = kInput.state();
                 if (keyPressed) {
                     for (int i = 0; i < buffKeyActions.size(); i++) {
-                        ((AbstractInputAction) buffKeyActions.get(i)).setKey(keyboard.getKeyInput()
-                                .getKeyName(keyboard.getKeyInput().key()));
+                        ((AbstractInputAction) buffKeyActions.get(i)).setKey(kInput
+                                .getKeyName(kInput.key()));
+                        ((AbstractInputAction) buffKeyActions.get(i)).setKeyChar(kInput
+                                .keyChar());
                         ((AbstractInputAction) buffKeyActions.get(i)).performAction(time);
                     }
                 }

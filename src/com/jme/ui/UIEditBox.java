@@ -55,7 +55,7 @@ public class UIEditBox extends Node {
     protected InputHandler _inputHandler = null;
 
     boolean _active = false;
-    boolean _activeateOnHover = true;
+    boolean _activateOnHover = true;
 
     int _cursorPos = 0;
     String _curText = "";
@@ -91,7 +91,7 @@ public class UIEditBox extends Node {
         _inputHandler.addBufferedKeyAction( new AbstractInputAction() {
             public void performAction(float time) {
                 if (_active)
-                    KeyPress( this.key);
+                    keyPress(this);
             }
         });
     }
@@ -109,16 +109,16 @@ public class UIEditBox extends Node {
      * @param onHover
      */
     public void setActivateOnHover(boolean onHover) {
-        _activeateOnHover = onHover;
+        _activateOnHover = onHover;
     }
 
     /**
      * Method that is called via inputHandler when a key is pressed
      * @param key
      */
-    protected void KeyPress( String key) {
+    protected void keyPress(AbstractInputAction keyAction) {
 
-        int val = _inputHandler.getKeyBindingManager().getKeyInput().getKeyIndex( key);
+        int val = _inputHandler.getKeyBindingManager().getKeyInput().getKeyIndex(keyAction.getKey());
 
         _oldText = _curText;
 
@@ -133,12 +133,26 @@ public class UIEditBox extends Node {
         	    _cursorPos--;
         	    break;
         	}
-        	case KeyInput.KEY_RIGHT: {
-        	    _cursorPos++;
-        	    break;
-        	}
+                case KeyInput.KEY_RIGHT: {
+                    _cursorPos++;
+                    break;
+                }
+                case KeyInput.KEY_LCONTROL:
+                case KeyInput.KEY_RCONTROL:
+                case KeyInput.KEY_LSHIFT:
+                case KeyInput.KEY_RSHIFT:
+                case KeyInput.KEY_LWIN:
+                case KeyInput.KEY_NUMLOCK:
+                case KeyInput.KEY_CAPITAL:
+                case KeyInput.KEY_ESCAPE:
+                case KeyInput.KEY_PGDN:
+                case KeyInput.KEY_PGUP:
+                case KeyInput.KEY_SCROLL:
+                case KeyInput.KEY_UP:
+                case KeyInput.KEY_DOWN:
+                    break;
         	default: {
-        	    _curText = _curText.substring(0, _cursorPos) + key + _curText.substring( _cursorPos);
+        	    _curText = _curText.substring(0, _cursorPos) + keyAction.getKeyChar() + _curText.substring( _cursorPos);
         	    _cursorPos++;
         	    break;
         	}
@@ -168,11 +182,11 @@ public class UIEditBox extends Node {
         boolean retval = false;
 
         if (_hitArea.hitTest()) {
-            if (_activeateOnHover) {
+            if (_activateOnHover) {
                 _active = true;
             }
         } else {
-            if (_activeateOnHover) {
+            if (_activateOnHover) {
                 _active = false;
             }
         }
