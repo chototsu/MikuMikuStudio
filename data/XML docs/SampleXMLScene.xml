@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="LoaderFormat.xsd">
+	<Model name="Human">
+		<Mesh name="Head">
+			<Color/>
+			<Index> 0 1 2
+            </Index>
+			<Normal/>
+			<TextureCoords/>
+			<Vertex>
+            0 0 0 1 0 0 0 1 0 </Vertex>
+			<DirectionalLight SpecularColor="0 0 0 0"/>
+		</Mesh>
+		<KeyframeAnimation/>
+	</Model>
+</Scene>
