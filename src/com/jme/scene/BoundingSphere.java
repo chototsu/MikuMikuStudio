@@ -42,7 +42,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
 import com.jme.util.LoggingSystem;
-import com.jme.math.FastMath;
 
 /**
  * <code>BoundingSphere</code> defines a sphere that defines a container
@@ -55,7 +54,7 @@ import com.jme.math.FastMath;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.27 2004-03-17 23:16:55 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.28 2004-03-23 15:27:19 mojomonkey Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
