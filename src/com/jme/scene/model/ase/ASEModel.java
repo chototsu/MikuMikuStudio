@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  * 
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.7 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.8 2004-02-21 21:20:57 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -94,7 +94,7 @@ public class ASEModel extends Model {
 	private static final String MATERIAL_SHINE = "*MATERIAL_SHINE";
 
 	//path to the model and texture file.
-	private String absoluteFilePath;
+	private String textureDirectory = "";
 	private BufferedReader reader = null;
 	private StringTokenizer tokenizer;
 	private String fileContents;
@@ -145,6 +145,16 @@ public class ASEModel extends Model {
 					+ file);
 		}
 	}
+    
+    public void load(String file, String textureDirectory) {
+        this.textureDirectory = textureDirectory;
+        load(file);
+    }
+    
+    public void load(URL file, String textureDirectory) {
+        this.textureDirectory = textureDirectory;
+        load(file);
+    }
 	
 	/**
 	 *  <code>load</code> parses a given file, loading the mesh data into
@@ -163,11 +173,11 @@ public class ASEModel extends Model {
 		InputStream is = null;
 		int fileSize = 0;
 		try {
-			absoluteFilePath = file.getPath();
-			absoluteFilePath =
-				absoluteFilePath.substring(
-					0,
-					absoluteFilePath.lastIndexOf("/") + 1);
+//			absoluteFilePath = file.getPath();
+//			absoluteFilePath =
+//				absoluteFilePath.substring(
+//					0,
+//					absoluteFilePath.lastIndexOf("/") + 1);
 			is = file.openStream();
 			fileSize = is.available();
 
@@ -448,7 +458,7 @@ public class ASEModel extends Model {
 			//read texture information.
 			if (strWord.equals(TEXTURE)) {
 				material.file =
-					absoluteFilePath
+					textureDirectory
 						+ tokenizer.nextToken().replace('"', ' ').trim();
 			} else if (strWord.equals(MATERIAL_NAME)) {
 				material.name = tokenizer.nextToken();

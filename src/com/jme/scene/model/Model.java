@@ -43,7 +43,7 @@ import com.jme.scene.Node;
  * to compose a model. <code>Model</code> is abstract and the type of 
  * scene a load will create is dependant on the type of model. 
  * @author Mark Powell
- * @version $Id: Model.java,v 1.4 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: Model.java,v 1.5 2004-02-21 21:20:59 mojomonkey Exp $
  */
 public abstract class Model extends Node{
 	/**
@@ -62,6 +62,8 @@ public abstract class Model extends Node{
 	 * @param filename the file that contains the model data.
 	 */
 	public abstract void load(String filename);
+    
+    public abstract void load(String filename, String textureDirectory);
 	
 	/**
 	 * <code>load</code> takes a url that corresponds to the 
@@ -71,6 +73,8 @@ public abstract class Model extends Node{
 	 * @param filename the url of the file that contains the model data.
 	 */
 	public abstract void load(URL filename);
+    
+    public abstract void load(URL filename, String textureDirectory);
 	
 	/**
 	 * <code>getAnimationController</code> retrieves the 

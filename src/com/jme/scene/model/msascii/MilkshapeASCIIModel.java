@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the 
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.6 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.7 2004-02-21 21:20:58 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -70,7 +70,7 @@ public class MilkshapeASCIIModel extends Model {
 	//the controller that handles this model's animations.
 	private DeformationJointController jointController;
 	//the path to the file.
-	private String absoluteFilePath;
+	private String textureDirectory = "";
 
 	/**
 	 * Constructor creates a new <code>MilkshapeASCIIModel</code> object. 
@@ -111,6 +111,23 @@ public class MilkshapeASCIIModel extends Model {
 					filename);
 		}
 	}
+    
+    public void load(String filename, String textureDirectory) {
+        try {
+            URL file = new URL("file:"+filename);
+            load(file);
+        } catch (MalformedURLException e) {
+            LoggingSystem.getLogger().log(Level.WARNING, "Could not load " + 
+                    filename);
+        }
+        
+        this.textureDirectory = textureDirectory;
+    }
+    
+    public void load(URL filename, String textureDirectory) {
+        this.textureDirectory = textureDirectory;
+        load(filename);
+    }
 
 	/**
 	 * Loads an ascii text model exported from MS3D. The corresponding
@@ -125,11 +142,11 @@ public class MilkshapeASCIIModel extends Model {
 		}
 		//attempt to load and parse the data.
 		try {
-			absoluteFilePath = filename.getPath();
-			absoluteFilePath =
-				absoluteFilePath.substring(
-					0,
-					absoluteFilePath.lastIndexOf("/") + 1);
+//			absoluteFilePath = filename.getPath();
+//			absoluteFilePath =
+//				absoluteFilePath.substring(
+//					0,
+//					absoluteFilePath.lastIndexOf("/") + 1);
 			//add a controller for animations.		
 			jointController = new DeformationJointController();
 			
@@ -466,13 +483,13 @@ public class MilkshapeASCIIModel extends Model {
 	 */
 	private TextureState loadTexture(String file) {
 		URL fileURL = null;
-		fileURL = MilkshapeASCIIModel.class.getClassLoader().getResource(absoluteFilePath + file);
-		//check if null. We may not be running via a jar. If so, try loading normally.
+		fileURL = MilkshapeASCIIModel.class.getClassLoader().getResource(textureDirectory + file);
+        //check if null. We may not be running via a jar. If so, try loading normally.
 		if(fileURL == null) {
 			try {
-				fileURL = new URL("file:"+absoluteFilePath + file);
-			} catch(MalformedURLException e) {
-				LoggingSystem.getLogger().log(Level.WARNING, "Could not load: " +absoluteFilePath + file);
+                fileURL = new URL("file:"+textureDirectory + file);
+        	} catch(MalformedURLException e) {
+				LoggingSystem.getLogger().log(Level.WARNING, "Could not load: " +textureDirectory + file);
 				return null;
 			}
 		}

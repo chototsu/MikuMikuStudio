@@ -31,6 +31,9 @@
  */
 package jmetest.renderer.loader;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import com.jme.app.SimpleGame;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -130,11 +133,14 @@ public class TestMilkshapeASCII extends SimpleGame {
      * @see com.jme.app.AbstractGame#initGame()
      */
     protected void initGame() {
+        URL modelURL = null;
     	ZBufferState zstate = display.getRenderer().getZBufferState();
     	zstate.setEnabled(true);
     	scene = new Node("Model");
     	scene.setRenderState(zstate);
-    	model = new MilkshapeASCIIModel("Milkshape Model","data/model/msascii/run.txt");
+    	model = new MilkshapeASCIIModel("Milkshape Model");
+        modelURL = TestMilkshapeASCII.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
+        model.load(modelURL, "jmetest/data/model/msascii");
     	model.getAnimationController().setFrequency(10.0f);
     	model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
         scene.attachChild(model);

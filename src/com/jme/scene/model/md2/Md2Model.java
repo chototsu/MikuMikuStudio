@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.9 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.10 2004-02-21 21:20:58 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
@@ -114,6 +114,14 @@ public class Md2Model extends Model {
 					filename);
 		}
 	}
+    
+    public void load(String filename, String textureDirectory) {
+        load(filename);
+    }
+    
+    public void load(URL filename, String textureDirectory) {
+        load(filename);
+    }
 
 	/**
 	 * Loads an MD2 model. The corresponding
