@@ -34,6 +34,7 @@ package com.jme.renderer;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
+import java.util.logging.Level;
 
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
@@ -46,7 +47,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.11 2004-03-08 17:07:07 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.12 2004-03-08 17:20:51 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -72,7 +73,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         caps = Pbuffer.getPbufferCaps();
 
         if (((caps & Pbuffer.PBUFFER_SUPPORTED) == 0)) {
-            System.err.println("No Pbuffer support!");
+            LoggingSystem.getLogger().log(Level.SEVERE, "No Pbuffer support detected, exiting!");
             System.exit(1);  // Clean this up?
         }
 
@@ -80,9 +81,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             System.err.println("Render to Texture Pbuffer supported!");
             if (texture == null)
                 System.err.println("No RenderTexture used in init, falling back to Copy Texture PBuffer.");
+            LoggingSystem.getLogger().log(Level.INFO, "Copy Texture Pbuffer supported!");
             else useDirectRender = true;
         } else {
-            System.err.println("Copy Texture Pbuffer supported!");
+            LoggingSystem.getLogger().log(Level.INFO, "Copy Texture Pbuffer supported!");
             texture = null;
         }
 
@@ -185,7 +187,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     public void render(Spatial spat, Texture tex) {
         try {
             if (pbuffer.isBufferLost()) {
-                System.out.println("Buffer contents lost - will recreate the buffer");
+                LoggingSystem.getLogger().log(Level.WARNING, "PBuffer contents lost - will recreate the buffer");
                 deactivate();
                 pbuffer.destroy();
                 initPbuffer();
@@ -219,9 +221,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         try {
             pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0, 0, texture);
         } catch (Exception e) {
-            e.printStackTrace();
+            LoggingSystem.getLogger().throwing(this.getClass().toString(), "initPbuffer()", e);
             if (texture != null && useDirectRender) {
-                System.err.println("Attempting to fall back to Copy Texture.");
+                LoggingSystem.getLogger().log(Level.WARNING, "LWJGL reports this card supports Render to Texture, but fails to enact it.  Please report this to the LWJGL team.");
+                LoggingSystem.getLogger().log(Level.WARNING, "Attempting to fall back to Copy Texture.");
                 texture = null;
                 useDirectRender = false;
                 initPbuffer();
