@@ -51,7 +51,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.1 2004-04-15 02:56:39 mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.2 2004-04-16 21:32:39 mojomonkey Exp $
  */
 public class TestTerrainPage extends SimpleGame {
     private Camera cam;
@@ -153,7 +153,7 @@ public class TestTerrainPage extends SimpleGame {
         Vector3f min = new Vector3f(-0.5f, -0.5f, -0.5f);
         
         WireframeState ws = display.getRenderer().getWireframeState();
-        ws.setEnabled(true);
+        ws.setEnabled(false);
         
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
@@ -175,19 +175,19 @@ public class TestTerrainPage extends SimpleGame {
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
         
-//        LightState lightstate = display.getRenderer().getLightState();
-//        lightstate.setTwoSidedLighting(true);
-//        lightstate.setEnabled(true);
-//        lightstate.attach(dr);
+        LightState lightstate = display.getRenderer().getLightState();
+        lightstate.setTwoSidedLighting(true);
+        lightstate.setEnabled(true);
+        lightstate.attach(dr);
         
         
         Node scene = new Node("scene");
         scene.setRenderState(ws);
-        //scene.setRenderState(lightstate);
+        scene.setRenderState(lightstate);
         root = new Node("Root node");
         
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
-        TerrainPage tb = new TerrainPage("Terrain", 32, heightMap.getSize(), 5, heightMap.getHeightMap(), true);
+        TerrainPage tb = new TerrainPage("Terrain", 32, heightMap.getSize(), 5, heightMap.getHeightMap(), false);
         tb.setDetailTexture(1, 4);
         tb.setModelBound(new BoundingBox());
         tb.updateModelBound();
@@ -219,6 +219,7 @@ public class TestTerrainPage extends SimpleGame {
         root.setForceView(true);
 
         root.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**
