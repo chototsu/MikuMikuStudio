@@ -1,4 +1,4 @@
- /*
+/*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
  * 
@@ -171,18 +171,15 @@ public class SphericalSound extends SoundSpatial implements ISource {
     public void updateWorldData(float time) {
         super.updateWorldData(time);
         if (playTime != null) {
-            
             if (activeSource < sequence.length) {
                 if (sequenceStartTime == 0) sequenceStartTime = time;
                 if ((time - sequenceStartTime) > playTime[activeSource] / 1000) {
-                    System.out.println("Elapsed " + time);
-                    stop(activeSource);
+                    stop();
                     sequenceStartTime = time;
                     activeSource++;
                 }
-            }else{
-                if(loopingEnabled)
-                    activeSource=0;
+            } else {
+                if (loopingEnabled) activeSource = 0;
             }
         }
 
@@ -209,11 +206,8 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#play()
      */
     public void play() {
-        if(activeSource < sequence.length)
-            sequence[activeSource].play();
+        if (activeSource < sequence.length) sequence[activeSource].play();
     }
-    
-  
 
     /*
      * (non-Javadoc)
@@ -225,10 +219,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
             sequence[a].pause();
         }
     }
-    
-    
-    private void pause(int seqNumber) {       
-            sequence[seqNumber].pause();       
+
+    private void pause(int seqNumber) {
+        sequence[seqNumber].pause();
     }
 
     /*
@@ -241,11 +234,11 @@ public class SphericalSound extends SoundSpatial implements ISource {
             sequence[a].stop();
         }
     }
-    
+
     private void stop(int seqNumber) {
-       
-            sequence[seqNumber].stop();
-    
+
+        sequence[seqNumber].stop();
+
     }
 
     /*
@@ -254,13 +247,7 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#rewind()
      */
     public void rewind() {
-        if(!sequenced){
-            activeSource=0;
-            
-        }
-        for (int a = 0; a < sequence.length; a++) {
-            sequence[a].rewind();
-        }
+        activeSource = 0;
     }
 
     /*
@@ -647,11 +634,9 @@ public class SphericalSound extends SoundSpatial implements ISource {
      * @see com.jme.sound.ISource#isPlaying()
      */
     public boolean isPlaying() {
-        if (!sequenced) return sequence[0].isPlaying();
-        for (int a = 0; a < sequence.length; a++) {
-            if (sequence[a].isPlaying()) return true;
-        }
-        return false;
+        
+       return activeSource < sequence.length ? sequence[activeSource].isPlaying() : false;
+        
     }
 
     /*
