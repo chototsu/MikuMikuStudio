@@ -47,10 +47,9 @@ import com.jme.util.LoggingSystem;
 
 
 /**
- * <code>LWJGLVertexProgramState</code>
- *
+ * Implementation of the GL_ARB_vertex_program extension.
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.8 2004-06-28 22:19:12 ericthered Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.9 2004-08-02 23:10:02 ericthered Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 
@@ -67,7 +66,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
     }
 
     /**
-     * Loads the vertex program into a byte array. Note that a
+     * Loads the vertex program into a byte array.
      * @see com.jme.scene.state.VertexProgramState#load(java.net.URL)
      */
 	public void load(java.net.URL file){
@@ -125,6 +124,11 @@ public class LWJGLVertexProgramState extends VertexProgramState {
         programID = buf.get(0);
     }
 
+    /**
+     * Applies this vertex program to the current scene. Checks if the GL_ARB_vertex_program
+     * extension is supported before attempting to enable this program.
+     * @see com.jme.scene.state.RenderState#apply()
+     */
     public void apply() {
       if (isSupported()) {
         if (isEnabled()) {
@@ -133,9 +137,8 @@ public class LWJGLVertexProgramState extends VertexProgramState {
           if (programID == -1)
             create();
 
-          ARBVertexProgram.glBindProgramARB(ARBVertexProgram.
-                                            GL_VERTEX_PROGRAM_ARB, programID);
           GL11.glEnable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
+          ARBVertexProgram.glBindProgramARB(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, programID);
 
           //load environmental parameters...
           for (int i = 0; i < envparameters.length; i++)
@@ -145,7 +148,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
                   envparameters[i][0], envparameters[i][1], envparameters[i][2],
                   envparameters[i][3]);
 
-              //load local parameters...
+          //load local parameters...
           if (usingParameters) //No sense checking array if we are sure no parameters are used
             for (int i = 0; i < parameters.length; i++)
               if (parameters[i] != null)

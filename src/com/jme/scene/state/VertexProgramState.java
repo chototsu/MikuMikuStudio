@@ -34,16 +34,18 @@ package com.jme.scene.state;
 import java.net.URL;
 
 /**
- * <code>ProgramState</code>
- *
+ * Implementation of the GL_ARB_vertex_program extension.
  * @author Eric Woroshow
- * @version $Id: VertexProgramState.java,v 1.4 2004-04-22 22:26:56 renanse Exp $
+ * @version $Id: VertexProgramState.java,v 1.5 2004-08-02 23:10:15 ericthered Exp $
  */
 public abstract class VertexProgramState extends RenderState {
 
+    /** Environmental parameters applied to all vertex programs */
     protected static float[][] envparameters = new float[96][4];
 
+    /** If any local parameters for this VP state are set */
     protected boolean usingParameters = false;
+    /** Parameters local to this vertex program */
     protected float[][] parameters;
 
     /**
@@ -68,6 +70,10 @@ public abstract class VertexProgramState extends RenderState {
      */
     public abstract boolean isSupported();
 
+    /**
+     * Creates a new VertexProgramState. <code>load(URL)</code> must be called before
+     * the state can be used.
+     */
     public VertexProgramState() {
         parameters = new float[96][4];
     }
@@ -100,8 +106,7 @@ public abstract class VertexProgramState extends RenderState {
      * The program must be in ASCII format. We delegate the loading to each
      * implementation because we do not know in what format the underlying API
      * wants the data.
-     *
-     * @param file
+     * @param file text file containing the vertex program
      */
     public abstract void load(URL file);
 }
