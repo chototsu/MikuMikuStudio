@@ -1,23 +1,12 @@
 package com.jme.scene.model.XMLparser;
 
-import org.xml.sax.helpers.DefaultHandler;
-import org.xml.sax.*;
-
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 import com.jme.scene.Node;
 
-import java.util.logging.Level;
-import java.util.Hashtable;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.io.File;
 import java.io.InputStream;
-import java.net.URL;
 
 /**
  * XML file format parser for jME
@@ -28,6 +17,7 @@ public class SAXReader{
     private SAXStackProcessor computer;
     private JMESAXHandler myHandler;
     long time;
+    private static boolean DEBUG=true;
 
 
     /**
@@ -50,7 +40,7 @@ public class SAXReader{
      * @return A Node that represents the XML file
      */
     public Node loadXML(InputStream SAXFile){
-        time=System.currentTimeMillis();
+        if (DEBUG) time=System.currentTimeMillis();
         computer.reInitialize();
         SAXParserFactory factory=SAXParserFactory.newInstance();
         factory.setValidating(true);
@@ -65,7 +55,7 @@ public class SAXReader{
         } catch (Throwable t) {
             throw new JmeException("Parser exception caught:" + " * " + t.getLocalizedMessage() + " * ");
         }
-        System.out.println("Total load time: " + (System.currentTimeMillis()-time));
+        if (DEBUG)System.out.println("Total load time: " + (System.currentTimeMillis()-time));
         return computer.fetchOriginal();
     }
 
