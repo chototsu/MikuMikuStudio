@@ -58,13 +58,21 @@ public class HelloTerrain extends SimpleGame {
                 map,
                 new Vector3f(0,0,0),
                 false);
+
+        // Give the terrain a bounding box.
         tb.setModelBound(new BoundingBox());
         tb.updateModelBound();
+
+        // Attach the terrain TriMesh to our rootNode
         rootNode.attachChild(tb);
     }
 
 
     private void generatedHeightMap() {
+        // This will be the texture for the terrain.
+        URL grass=HelloTerrain.class.getClassLoader().getResource(
+            "jmetest/data/texture/grassb.png");
+
         //  Use the helper class to create a terrain for us.  The terrain will be 64x64
         MidPointHeightMap mph=new MidPointHeightMap(64,1.5f);
         // Create a terrain block from the created terrain map.
@@ -72,31 +80,35 @@ public class HelloTerrain extends SimpleGame {
                 new Vector3f(1,.11f,1),
                 mph.getHeightMap(),
                 new Vector3f(0,-25,0),false);
-        tb.setModelBound(new BoundingBox());
-        tb.updateModelBound();
-        rootNode.attachChild(tb);
 
-        URL grass=HelloTerrain.class.getClassLoader().getResource(
-            "jmetest/data/texture/grassb.png");
+        // Add the texture
         TextureState ts=display.getRenderer().createTextureState();
         ts.setTexture(
                 TextureManager.loadTexture(grass,Texture.MM_LINEAR,Texture.FM_LINEAR,true)
         );
         tb.setRenderState(ts);
+
+        // Give the terrain a bounding box.
+        tb.setModelBound(new BoundingBox());
+        tb.updateModelBound();
+
+        // Attach the terrain TriMesh to rootNode
         rootNode.attachChild(tb);
     }
 
     private void complexTerrain() {
-        URL greyScale=HelloTerrain.class.getClassLoader().getResource("jmetest/data/texture/bubble.jpg");
+        // This grayscale image will be our terrain
+        URL grayScale=HelloTerrain.class.getClassLoader().getResource("jmetest/data/texture/bubble.jpg");
 
+        // These will be the textures of our terrain.
         URL waterImage=HelloTerrain.class.getClassLoader().getResource("jmetest/data/texture/water.png");
         URL dirtImage=HelloTerrain.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg");
         URL highest=HelloTerrain.class.getClassLoader().getResource("jmetest/data/texture/highest.jpg");
 
 
-        //  Create an image height map based on the grey scale of our image.
+        //  Create an image height map based on the gray scale of our image.
         ImageBasedHeightMap ib=new ImageBasedHeightMap(
-                new ImageIcon(greyScale).getImage()
+                new ImageIcon(grayScale).getImage()
         );
         // Create a terrain block from the image's grey scale
         TerrainBlock tb=new TerrainBlock("image icon",ib.getSize(),
@@ -127,11 +139,14 @@ public class HelloTerrain extends SimpleGame {
         );
         tb.setRenderState(ts);
 
+        // Give the terrain a bounding box
         tb.setModelBound(new BoundingBox());
         tb.updateModelBound();
 
+        // Move the terrain in front of the camera
         tb.setLocalTranslation(new Vector3f(0,0,-50));
 
+        // Attach the terrain to our rootNode.
         rootNode.attachChild(tb);
     }
 }
