@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.14 2004-05-24 18:20:29 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.15 2004-05-26 12:15:37 mojomonkey Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -343,7 +343,9 @@ public class Quaternion {
         Quaternion interpolated = new Quaternion();
 
         if (q1.x == q2.x && q1.y == q2.y && q1.z == q2.z && q1.w == q2.w) {
-            return q1;
+            interpolated.set(q1.x, q1.y, q1.z, q1.w);
+            this.set(q1.x, q1.y, q1.z, q1.w);
+            return interpolated; 
         }
 
         float result =
