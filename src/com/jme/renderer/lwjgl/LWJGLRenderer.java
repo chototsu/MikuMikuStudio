@@ -100,7 +100,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.11 2004-04-26 17:24:03 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.12 2004-04-26 20:56:12 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -133,6 +133,8 @@ public class LWJGLRenderer implements Renderer {
     private LWJGLTextureState boundsTextState = new LWJGLTextureState();
 
     private LWJGLZBufferState boundsZState = new LWJGLZBufferState();
+
+    private boolean inOrthoMode;
 
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -204,6 +206,12 @@ public class LWJGLRenderer implements Renderer {
         return new LWJGLAlphaState();
     }
 
+    /**
+     * <code>getAttributeState</code> returns a new LWJGLAttributeState object
+     * as a regular AttributeState.
+     * 
+     * @return an AttributeState object.
+     */
     public AttributeState getAttributeState() {
         return new LWJGLAttributeState();
     }
@@ -289,14 +297,32 @@ public class LWJGLRenderer implements Renderer {
         return new LWJGLWireframeState();
     }
 
+    /**
+     * <code>getZBufferState</code> returns a new LWJGLZBufferState object as
+     * a regular ZBufferState.
+     * 
+     * @return a ZBufferState object.
+     */
     public ZBufferState getZBufferState() {
         return new LWJGLZBufferState();
     }
 
+    /**
+     * <code>getVertexProgramState</code> returns a new
+     * LWJGLVertexProgramState object as a regular VertexProgramState.
+     * 
+     * @return a VertexProgramState object.
+     */
     public VertexProgramState getVertexProgramState() {
         return new LWJGLVertexProgramState();
     }
 
+    /**
+     * <code>getStencilState</code> returns a new LWJGLStencilState object as
+     * a regular StencilState.
+     * 
+     * @return a StencilState object.
+     */
     public StencilState getStencilState() {
         return new LWJGLStencilState();
     }
@@ -385,6 +411,34 @@ public class LWJGLRenderer implements Renderer {
     public void displayBackBuffer() {
         GL11.glFlush();
         Window.update();
+    }
+    
+    public void setOrtho() {
+        if(inOrthoMode) {
+            throw new JmeException("Already in Orthographic mode.");
+        }
+        //set up ortho mode
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        GLU.gluOrtho2D(0, Window.getWidth(), 0, Window.getHeight());
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        inOrthoMode = true;
+    }
+    
+    public void unsetOrtho() {
+        if(!inOrthoMode) {
+            throw new JmeException("Not in Orthographic mode.");
+        }
+        //remove ortho mode, and go back to original
+        // state
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPopMatrix();
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPopMatrix();
+        inOrthoMode = false;
     }
 
     /**
@@ -833,7 +887,7 @@ public class LWJGLRenderer implements Renderer {
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureAsFloatBuffer(i);
             if (textures != null) {
-                if(GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
+                if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
                     GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                 }
                 if (textures != null) {
@@ -887,16 +941,6 @@ public class LWJGLRenderer implements Renderer {
         setBoundsStates(true);
         draw((TriMesh) bv);
         setBoundsStates(false);
-    }
-
-    private void setBoundsStates(boolean enabled) {
-        boundsTextState.apply(); // no enabled -- no texture
-
-        boundsWireState.setEnabled(enabled);
-        boundsWireState.apply();
-
-        boundsZState.setEnabled(enabled);
-        boundsZState.apply();
     }
 
     /**
@@ -1074,19 +1118,52 @@ public class LWJGLRenderer implements Renderer {
         wr.render();
     }
 
+    /**
+     * <code>enableStatistics</code> will turn on statistics gathering.
+     * 
+     * @param value
+     *            true to use statistics, false otherwise.
+     */
     public void enableStatistics(boolean value) {
-        System.out.println("Stats are " + value);
         statisticsOn = value;
     }
 
+    /**
+     * <code>clearStatistics</code> resets the vertices and triangles counter
+     * for the statistics information.
+     */
     public void clearStatistics() {
         numberOfVerts = 0;
         numberOfTris = 0;
     }
 
+    /**
+     * <code>getStatistics</code> returns a string value of the rendering
+     * statistics information (number of triangles and number of vertices).
+     * 
+     * @return the string representation of the current statistics.
+     */
     public String getStatistics() {
         return "Number of Triangles: " + numberOfTris
                 + " : Number of Vertices: " + numberOfVerts;
+    }
+
+    /**
+     * 
+     * <code>setBoundsStates</code> sets the rendering states for bounding
+     * volumes, this includes wireframe and zbuffer.
+     * 
+     * @param enabled
+     *            true if these states are to be enabled, false otherwise.
+     */
+    private void setBoundsStates(boolean enabled) {
+        boundsTextState.apply(); // no enabled -- no texture
+
+        boundsWireState.setEnabled(enabled);
+        boundsWireState.apply();
+
+        boundsZState.setEnabled(enabled);
+        boundsZState.apply();
     }
 
 }

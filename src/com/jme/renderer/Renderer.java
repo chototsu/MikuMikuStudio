@@ -77,7 +77,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.28 2004-04-25 04:35:02 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.29 2004-04-26 20:56:12 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -248,6 +248,25 @@ public interface Renderer {
      *
      */
     public void displayBackBuffer();
+    
+    /**
+     * 
+     * <code>setOrtho</code> sets the display system to be in orthographic mode.
+     * If the system has already been set to orthographic mode a
+     * <code>JmeException</code> is thrown.
+     *
+     */
+    public void setOrtho();
+    
+    /**
+     * 
+     * <code>unsetOrhto</code> unsets the display system from orthographic mode
+     * back into regular projection mode. If the system is not in orthographic
+     * mode a <code>JmeException</code> is thrown.
+     *
+     *
+     */
+    public void unsetOrtho();
 
     /**
      *
