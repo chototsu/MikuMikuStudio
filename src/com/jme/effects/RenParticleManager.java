@@ -55,11 +55,9 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.8 2004-03-25 19:26:41 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.9 2004-03-26 17:58:53 renanse Exp $
  *
- * @todo Particle creation variance
  * @todo Points and Lines (not just quads)
- * @todo Single run-through and "firing" control
  * @todo Particles stretched based on historical path
  * @todo Particle motion models
  */
@@ -72,6 +70,8 @@ public class RenParticleManager {
 
   private TriMesh particlesGeometry;
   private int noParticles;
+  private int releaseRate; // particles per second
+  private int released;
   private Vector3f upVector;
   private Vector3f gravityForce;
   private Vector3f emissionDirection;
@@ -83,14 +83,18 @@ public class RenParticleManager {
   private ColorRGBA startColor;
   private ColorRGBA endColor;
   private float particleSpeed;
+  private float releaseVariance;
   private float minimumLifeTime;
   private float maximumAngle;
   private float startSize, endSize;
   private float randomMod;
   private long currentTime;
   private long previousTime;
+  private long releaseTime;
   private double timePassed;
   private double timeSinceLastUpdate;
+  private boolean respawnParticles;
+  private boolean controlFlow;
   private boolean firstRun;
 
   private int geoToUse;
@@ -124,6 +128,10 @@ public class RenParticleManager {
     startSize = 20f;
     endSize = 4f;
     randomMod = 1.0f;
+    releaseRate = noParticles;
+    releaseVariance = 0;
+    respawnParticles = true;
+    controlFlow = false;
 
     geometryCoordinates = new Vector3f[noParticles << 2];
     int[] indices = new int[noParticles * 6];
@@ -160,17 +168,18 @@ public class RenParticleManager {
     }
     particlesGeometry.updateTextureBuffer();
 
+    warmup();
+
     updateParticles();
     previousTime = getTimerTic();
-
-    warmup();
   }
 
   /**
    * Runs the clock forward to ensure particles are all flowing.
    */
   public void warmup() {
-    timeSinceLastUpdate = 10000d; // run the clock a bit to make sure the particles are flowing...
+    firstRun=true;
+    timeSinceLastUpdate = 5000d; // run the clock a bit to make sure the particles are flowing...
   }
 
 
@@ -182,35 +191,64 @@ public class RenParticleManager {
   public void updateParticles() {
 
     Vector3f speed = new Vector3f();
+    RenParticle particle;
     boolean flag = false;
     currentTime = getTimerTic();
+    if (controlFlow && currentTime - releaseTime > 1000.0) {
+      released = 0;
+      releaseTime = currentTime;
+    }
     timePassed = currentTime - previousTime;
-    for (timeSinceLastUpdate += timePassed; timeSinceLastUpdate > 10D; ) {
-      timeSinceLastUpdate -= 10D;
+    timeSinceLastUpdate += timePassed;
+    int particlesToCreate = 0;
+    if (controlFlow)
+      particlesToCreate = (int) ( (float) releaseRate * timeSinceLastUpdate *
+                                 .001f
+                                 *
+                                 (1.0f +
+                                  releaseVariance *
+                                  (FastMath.nextRandomFloat() - 0.5f)));
+
+    if (controlFlow && particlesToCreate <= 0) particlesToCreate = 1;
+
+    if (controlFlow && releaseRate - released <= 0) particlesToCreate = 0;
+
+    for (; timeSinceLastUpdate > 10d; ) {
+      timeSinceLastUpdate -= 10d;
       flag = true;
       if (firstRun) {
-        timeSinceLastUpdate = 0.0D;
+        timeSinceLastUpdate = 0.0d;
         firstRun = false;
       }
+
       int i = 0;
       while (i < noParticles) {
-        if (particles[i].updateAndCheck()) {
-          getRandomSpeed(speed);
-          particles[i].recreateParticle(speed, getRandomLifeSpan());
+        if (particles[i].updateAndCheck() && (!controlFlow || particlesToCreate > 0)) {
+          if (particles[i].status == RenParticle.DEAD && !respawnParticles) {
+            ;
+          } else {
+            if (controlFlow) {
+              released++;
+              particlesToCreate--;
+            }
+            particle = particles[i];
+            getRandomSpeed(speed);
+            particle.recreateParticle(speed, getRandomLifeSpan());
+            particle.status = RenParticle.ALIVE;
 
-          switch (getGeometry()) {
-            case 1:
-              particles[i].location.set(getLine().random());
-              break;
-            case 2:
-              particles[i].location.set(getRectangle().random());
-              break;
-            default:
-              particles[i].location.set(originCenter);
-              break;
+            switch (getGeometry()) {
+              case 1:
+                particle.location.set(getLine().random());
+                break;
+              case 2:
+                particle.location.set(getRectangle().random());
+                break;
+              default:
+                particle.location.set(originCenter);
+                break;
+            }
+            particle.updateVerts();
           }
-          particles[i].updateVerts();
-
         }
         i++;
       }
@@ -221,6 +259,15 @@ public class RenParticleManager {
       particlesGeometry.setColors(appearanceColors);
     }
     previousTime = currentTime;
+  }
+
+  /**
+   * Force all dead particles back to life.
+   */
+  public void forceRespawn() {
+    for (int i = noParticles; --i >= 0; ) {
+      particles[i].status = RenParticle.AVAILABLE;
+    }
   }
 
   /**
@@ -610,12 +657,86 @@ public class RenParticleManager {
   }
 
   /**
-   * Set the number of particles to be managed by this manager.
+   * Get the number of particles managed by this manager.
    *
    * @return int
    */
   public int getParticlesNumber() {
     return noParticles;
+  }
+
+  /**
+   * Get the number of particles the manager should release per second.
+   *
+   * @return int
+   */
+  public int getReleaseRate() {
+    return releaseRate;
+  }
+
+  /**
+   * Set the number of particles the manager should release per second.
+   *
+   * @param particlesPerSecond number of particles per second
+   */
+  public void setReleaseRate(int particlesPerSecond) {
+    this.releaseRate = particlesPerSecond;
+  }
+
+  /**
+   * Get the variance possible on the release rate.
+   * 0.0f = no variance
+   * 0.5f = between releaseRate / 2f and  1.5f * releaseRate
+   *
+   * @return float
+   */
+  public float getReleaseVariance() {
+    return releaseVariance;
+  }
+
+  /**
+   * Set the variance possible on the release rate.
+   *
+   * @param variance release rate +/- variance as a percent  (eg. .5 = 50%)
+   */
+  public void setReleaseVariance(float variance) {
+    this.releaseVariance = variance;
+  }
+
+  /**
+   * Does this manager respawn particles?
+   *
+   * @return true if this manager recreates 'dead' particles.
+   */
+  public boolean getRespawnsParticles() {
+    return respawnParticles;
+  }
+
+  /**
+   * Set the respawn property on the manager.
+   *
+   * @param respawn recreate particles when they expire.
+   */
+  public void setRespawnsParticles(boolean respawn) {
+    this.respawnParticles = respawn;
+  }
+
+  /**
+   * Does this manager regulate the particle flow?
+   *
+   * @return true if this manager regulates how many particles per sec are emitted.
+   */
+  public boolean getControlFlow() {
+    return controlFlow;
+  }
+
+  /**
+   * Set the regulate flow property on the manager.
+   *
+   * @param regulate regulate particle flow.
+   */
+  public void setControlFlow(boolean regulate) {
+    this.controlFlow = regulate;
   }
 
   /**
@@ -646,7 +767,7 @@ public class RenParticleManager {
    * 2 = rectangle
    * This is already done by setGeometry(Line) and setGeometry(Rectangle)
    * You should not need to use this method unless you are switching between
-   * modes already set by those methods.
+   * geometry already set by those methods.
    *
    * @param type Geometry type to use
    */

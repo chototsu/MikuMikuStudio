@@ -58,7 +58,7 @@ import javax.swing.JOptionPane;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.10 2004-03-25 19:26:40 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.11 2004-03-26 17:58:54 renanse Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
@@ -75,8 +75,6 @@ public class TestRenParticleGUI extends SimpleGame {
 
   private Text fps;
 
-  private Vector3f currentPos = new Vector3f();
-  private Vector3f newPos = new Vector3f();
   private Node fpsNode;
   private static RenParticleControlFrame controlFrame;
   public static boolean noUpdate = false;

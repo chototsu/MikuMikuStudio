@@ -40,7 +40,7 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: RenParticle.java,v 1.3 2004-03-24 18:45:18 renanse Exp $
+ * @version $Id: RenParticle.java,v 1.4 2004-03-26 17:58:53 renanse Exp $
  */
 public class RenParticle {
 
@@ -55,6 +55,11 @@ public class RenParticle {
   private Vector3f randomPoint;
   private RenParticleManager parent;
   private Vector3f bbX, bbY;
+  public int status;
+
+  public static final int AVAILABLE = 0;
+  public static final int ALIVE = 1;
+  public static final int DEAD = 2;
 
   /**
    * RenParticle constructor
@@ -73,6 +78,7 @@ public class RenParticle {
     color = (ColorRGBA) parent.getStartColor().clone();
     randomPoint = new Vector3f();
     currentAge = 0f;
+    status = AVAILABLE;
     currentSize = parent.getStartSize();
     verts = new Vector3f[4];
     for (int i = 0; i < 4; i++) {
@@ -97,6 +103,7 @@ public class RenParticle {
                    parent.getStartColor().b, parent.getStartColor().a);
     currentSize = parent.getStartSize();
     currentAge = 0f;
+    status = AVAILABLE;
   }
 
   /**
@@ -124,11 +131,17 @@ public class RenParticle {
    *
    * if this particle's age is greater than its lifespan, it is considered dead.
    *
-   * @return true if this particle has "died"
+   * @return true if this particle is not ACTIVE
    */
   public boolean updateAndCheck() {
+
+    if (status != ALIVE) {
+      return true;
+    }
     currentAge += 10f; // add 10ms to age
     if (currentAge > lifeSpan) {
+      status = DEAD;
+      color.a = 0;
       return true;
     }
 
@@ -165,6 +178,14 @@ public class RenParticle {
     updateVerts();
 
     return false;
+  }
+
+
+  /**
+   * Resets current age to 0
+   */
+  public void resetAge() {
+    currentAge = 0;
   }
 
 }
