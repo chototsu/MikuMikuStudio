@@ -139,7 +139,6 @@ public class TDSFile extends ChunkerClass{
     }
 
     private int getParentIndex(int objectIndex) {
-        int b=3;
         if (((KeyframeInfoChunk)keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex)))==null)
             return -2;
         short parentID=((KeyframeInfoChunk)keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex))).parent;
@@ -157,7 +156,6 @@ public class TDSFile extends ChunkerClass{
         spatialLights=new ArrayList();
         spatialNodesNames=new ArrayList();   // Their names
         Iterator i=objects.namedObjects.keySet().iterator();
-        int b=3;
         while (i.hasNext()){
             String objectKey=(String) i.next();
             NamedObjectChunk noc=(NamedObjectChunk) objects.namedObjects.get(objectKey);
@@ -212,7 +210,6 @@ public class TDSFile extends ChunkerClass{
     private void putChildMeshes(Node parentNode, TriMeshChunk whatIAm,Vector3f pivotLoc) throws IOException {
         FacesChunk myFace=whatIAm.face;
         if (myFace==null) return;
-        System.out.println(parentNode.getName());
         boolean[] faceHasMaterial=new boolean[myFace.nFaces];
         int noMaterialCount=myFace.nFaces;
         ArrayList normals=new ArrayList(myFace.nFaces);
