@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestDiscreteLOD</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.9 2004-04-23 02:57:23 renanse Exp $
+ * @version $Id: TestDiscreteLOD.java,v 1.10 2004-07-03 21:21:42 renanse Exp $
  */
 public class TestDiscreteLOD extends SimpleGame {
 
@@ -124,7 +124,7 @@ public class TestDiscreteLOD extends SimpleGame {
         TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true));
 
