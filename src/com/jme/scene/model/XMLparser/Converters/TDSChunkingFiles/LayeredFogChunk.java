@@ -13,7 +13,7 @@ import java.io.DataInput;
  *
  * @author Jack Lindamood
  */
-public class LayeredFogChunk extends ChunkerClass{
+class LayeredFogChunk extends ChunkerClass{
     private float nearZ;
     private float farZ;
     private float density;

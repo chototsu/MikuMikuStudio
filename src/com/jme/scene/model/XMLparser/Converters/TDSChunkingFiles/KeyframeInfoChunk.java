@@ -13,7 +13,7 @@ import java.util.ArrayList;
  *
  * @author Jack Lindamood
  */
-public class KeyframeInfoChunk extends ChunkerClass{
+class KeyframeInfoChunk extends ChunkerClass{
     public KeyframeInfoChunk(DataInput myIn, ChunkHeader i) throws IOException {
         super(myIn,i);
     }

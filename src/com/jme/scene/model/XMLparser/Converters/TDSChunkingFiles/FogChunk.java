@@ -13,7 +13,7 @@ import java.io.DataInput;
  *
  * @author Jack Lindamood
  */
-public class FogChunk extends ChunkerClass{
+class FogChunk extends ChunkerClass{
     float nearPlane;
     float nearDensity;
     float farPlane;

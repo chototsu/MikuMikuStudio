@@ -15,7 +15,7 @@ import java.util.ArrayList;
  *
  * @author Jack Lindamood
  */
-public class FacesChunk extends ChunkerClass{
+class FacesChunk extends ChunkerClass{
     int nFaces;
     int[][] faces;
     int [] smoothingGroups;

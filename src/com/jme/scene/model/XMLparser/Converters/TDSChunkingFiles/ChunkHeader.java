@@ -9,7 +9,7 @@ import java.io.IOException;
  * 
  * @author Jack Lindamood
  */
-public class ChunkHeader{
+class ChunkHeader{
     public ChunkHeader(){}
     public int type;
     public int length;

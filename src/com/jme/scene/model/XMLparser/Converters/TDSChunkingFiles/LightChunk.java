@@ -14,7 +14,7 @@ import java.io.IOException;
  *
  * @author Jack Lindamood
  */
-public class LightChunk extends ChunkerClass {
+class LightChunk extends ChunkerClass {
     public LightChunk(DataInput myIn, ChunkHeader i) throws IOException {
         super(myIn,i);
     }

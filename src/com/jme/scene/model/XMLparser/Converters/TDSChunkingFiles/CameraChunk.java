@@ -13,7 +13,7 @@ import java.io.IOException;
  * 
  * @author Jack Lindamood
  */
-public class CameraChunk extends ChunkerClass {
+class CameraChunk extends ChunkerClass {
     Vector3f camPos;
     Vector3f targetLoc;
     float bankAngle;

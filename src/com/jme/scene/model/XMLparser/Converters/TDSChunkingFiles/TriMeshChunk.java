@@ -15,7 +15,7 @@ import java.io.IOException;
  *
  * @author Jack Lindamood
  */
-public class TriMeshChunk extends ChunkerClass {
+class TriMeshChunk extends ChunkerClass {
 
     Vector3f[] vertexes;
     Vector2f[] texCoords;

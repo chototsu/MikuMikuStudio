@@ -11,7 +11,7 @@ import java.io.DataInput;
  *
  * @author Jack Lindamood
  */
-public class DistanceQueueChunk extends ChunkerClass{
+class DistanceQueueChunk extends ChunkerClass{
     boolean activeDistanceQueue;
     float nearPlane;
     float nearDensity;

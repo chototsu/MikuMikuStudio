@@ -13,7 +13,7 @@ import java.io.IOException;
  *
  * @author Jack Lindamood
  */
-public class SpotLightChunk extends ChunkerClass{
+class SpotLightChunk extends ChunkerClass{
     Vector3f target;
     float hotSpot;
     float fallOff;

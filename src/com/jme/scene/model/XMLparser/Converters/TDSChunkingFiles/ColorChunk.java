@@ -14,7 +14,7 @@ import java.io.IOException;
  *
  * @author Jack Lindamood
  */
-public class ColorChunk extends ChunkerClass{
+class ColorChunk extends ChunkerClass{
 
     ColorRGBA gamaColor;
     ColorRGBA regColor;

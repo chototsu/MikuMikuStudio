@@ -18,7 +18,7 @@ import java.io.IOException;
  *
  * @author Jack Lindamood
  */
-public class MaterialBlock extends ChunkerClass {
+class MaterialBlock extends ChunkerClass {
 
     String name;
     MaterialState myMatState;

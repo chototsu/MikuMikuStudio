@@ -18,7 +18,7 @@ import java.util.HashMap;
  * @author Jack Lindamood
  *
  */
-public class EditableObjectChunk extends ChunkerClass{
+class EditableObjectChunk extends ChunkerClass{
 
 
     HashMap materialBlocks;

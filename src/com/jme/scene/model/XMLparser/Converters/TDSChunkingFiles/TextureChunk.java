@@ -13,7 +13,7 @@ import java.io.IOException;
  *
  * @author Jack Lindamood
  */
-public class TextureChunk extends ChunkerClass{
+class TextureChunk extends ChunkerClass{
 
     float percent;
     String texName;

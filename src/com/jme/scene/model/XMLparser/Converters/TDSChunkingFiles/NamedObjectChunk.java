@@ -14,7 +14,7 @@ import java.util.ArrayList;
  *
  * @author Jack Lindamood
  */
-public class NamedObjectChunk extends ChunkerClass{
+class NamedObjectChunk extends ChunkerClass{
     String name;
 //    ArrayList meshList;
 //    ArrayList cameraList;

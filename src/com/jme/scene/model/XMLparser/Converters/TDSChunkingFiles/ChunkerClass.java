@@ -9,7 +9,7 @@ import java.util.ArrayList;
  * 
  * @author Jack Lindamood
  */
-abstract public class ChunkerClass implements MaxChunkIDs{
+abstract class ChunkerClass implements MaxChunkIDs{
     static boolean DEBUG_LIGHT=false;
     static boolean DEBUG=false;
     static boolean DEBUG_SEVERE=false;

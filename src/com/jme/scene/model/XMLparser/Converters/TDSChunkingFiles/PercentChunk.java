@@ -11,7 +11,7 @@ import java.io.DataInput;
  *
  * @author Jack Lindamood
  */
-public class PercentChunk extends ChunkerClass{
+class PercentChunk extends ChunkerClass{
     public PercentChunk(DataInput myIn, ChunkHeader header) throws IOException {
         super(myIn, header);
     }
