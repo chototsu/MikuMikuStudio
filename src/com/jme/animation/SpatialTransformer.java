@@ -5,7 +5,6 @@ import com.jme.scene.Spatial;
 import com.jme.math.TransformMatrix;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
-import com.jme.math.Matrix3f;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -20,7 +19,7 @@ public class SpatialTransformer extends Controller{
     public Object[] toChange;
     private TransformMatrix[] pivots;
     public int[] parentIndexes;
-    private Vector3f[] pivotLocs;
+
     public ArrayList keyframes;
     Vector3f unSyncbeginPos=new Vector3f();
     Vector3f unSyncendPos=new Vector3f();
@@ -35,7 +34,6 @@ public class SpatialTransformer extends Controller{
         toChange=new Object[numObjects];
         pivots=new TransformMatrix[numObjects];
         parentIndexes=new int[numObjects];
-        pivotLocs=new Vector3f[numObjects];
         for (int i=0;i<numObjects;i++){
             parentIndexes[i]=-1;
             pivots[i]=new TransformMatrix();
@@ -48,7 +46,6 @@ public class SpatialTransformer extends Controller{
     public void update(float time) {
         if (!isActive()) return;
         curTime+=time*getSpeed();
-//        curTime=.00001f;
         setBeginAndEnd();
 
         boolean[] haveChanged=new boolean[numObjects];
@@ -60,6 +57,7 @@ public class SpatialTransformer extends Controller{
     }
 
     private void updatePivot(int objIndex, boolean[] haveChanged) {
+        Spatial thisSpatial=(Spatial) toChange[objIndex];
         if (haveChanged[objIndex]){
             return;
         }
@@ -73,7 +71,6 @@ public class SpatialTransformer extends Controller{
         temp.interpolateTransforms(beginPointTime.look[objIndex],endPointTime.look[objIndex],
                 (delta==0f) ? 0 :  (curTime-beginPointTime.time)/delta);
         pivots[objIndex].multLocal(temp);
-        Spatial thisSpatial=(Spatial) toChange[objIndex];
         pivots[objIndex].applyToSpatial(thisSpatial);
 
         haveChanged[objIndex]=true;
@@ -89,7 +86,10 @@ public class SpatialTransformer extends Controller{
             }
         }
         beginPointTime=(PointInTime)keyframes.get(0);
-        endPointTime=(PointInTime)keyframes.get(1);
+        if (keyframes.size()==1)
+            endPointTime=beginPointTime;
+        else
+            endPointTime=(PointInTime)keyframes.get(1);
         curTime=((PointInTime)keyframes.get(0)).time;
     }
 
@@ -98,9 +98,6 @@ public class SpatialTransformer extends Controller{
         parentIndexes[index]=parentIndex;
     }
 
-    public void putPivot(int index, Vector3f pivot) {
-        pivotLocs[index]=pivot;
-    }
 
     private PointInTime findTime(float time) {
         for (int i=0;i<keyframes.size();i++){
@@ -148,10 +145,10 @@ public class SpatialTransformer extends Controller{
 
     private void updatePivot(int objIndex, PointInTime thisTime,boolean []haveChanged) {
         if (haveChanged[objIndex]){
-            Spatial thisSpatial=(Spatial) toChange[objIndex];
-            thisSpatial.setLocalRotation(pivots[objIndex].getRotation((Matrix3f) null));
-            thisSpatial.setLocalTranslation(pivots[objIndex].getTranslation(null));
-            thisSpatial.setLocalScale(pivots[objIndex].getScale(null));
+//            Spatial thisSpatial=(Spatial) toChange[objIndex];
+//            thisSpatial.setLocalRotation(pivots[objIndex].getRotation((Matrix3f) null));
+//            thisSpatial.setLocalTranslation(pivots[objIndex].getTranslation(null));
+//            thisSpatial.setLocalScale(pivots[objIndex].getScale(null));
             return;
         }
         pivots[objIndex].loadIdentity();
@@ -161,16 +158,17 @@ public class SpatialTransformer extends Controller{
         }
         pivots[objIndex].multLocal(thisTime.look[objIndex]);
         Spatial thisSpatial=(Spatial) toChange[objIndex];
-        thisSpatial.setLocalRotation(pivots[objIndex].getRotation((Matrix3f) null));
-        thisSpatial.setLocalTranslation(pivots[objIndex].getTranslation(null));
-        thisSpatial.setLocalScale(pivots[objIndex].getScale(null));
+        pivots[objIndex].applyToSpatial(thisSpatial);
+//        thisSpatial.setLocalRotation(pivots[objIndex].getRotation((Matrix3f) null));
+//        thisSpatial.setLocalTranslation(pivots[objIndex].getTranslation(null));
+//        thisSpatial.setLocalScale(pivots[objIndex].getScale(null));
 
         haveChanged[objIndex]=true;
     }
 
     public void interpolateMissing() {
         if (keyframes.size()==1)
-            keyframes.add(new PointInTime(((PointInTime)keyframes.get(0)).time));
+            return;
         fillTrans();
         fillRots();
         fillScales();
