@@ -38,8 +38,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.PipedInputStream;
-import java.io.PipedOutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
@@ -223,11 +221,10 @@ public class SoundSystem implements ISoundSystem {
 		int length = 0;
 		InputStream input = null;
 		ByteArrayOutputStream baout = new ByteArrayOutputStream();
-		PipedInputStream pis = new PipedInputStream();
-		PipedOutputStream out = null;
+		
 		IBuffer[] tmp = null;
 		try {
-			out = new PipedOutputStream(pis);
+			
 			input = file.openStream();
 			int convsize = 4096 * 2;
 			byte[] convbuffer = new byte[convsize];
@@ -395,7 +392,7 @@ public class SoundSystem implements ISoundSystem {
 										}
 										baout.write(convbuffer, 0, 2
 												* vorbisInfo.channels * bout);
-										out.flush();
+										
 										length += 2 * vorbisInfo.channels
 												* bout;
 										dspState.synthesis_read(bout);
