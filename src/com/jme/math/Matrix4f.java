@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * convinience methods for creating the matrix from a multitude of sources.
  * 
  * @author Mark Powell
- * @version $Id: Matrix4f.java,v 1.1 2004-02-01 07:50:26 mojomonkey Exp $
+ * @version $Id: Matrix4f.java,v 1.2 2004-02-01 17:29:37 mojomonkey Exp $
  */
 public class Matrix4f {
 	private float matrix[][];
@@ -326,36 +326,46 @@ public class Matrix4f {
 				+ matrix[2][2] * in2.matrix[2][3]
 				+ matrix[2][3];
 		out.matrix[3][0] =
-			this.matrix[0][0] * in2.get(3,0)
-				+ this.matrix[1][0] * in2.get(3,1)
-				+ this.matrix[2][0] * in2.get(3,2)
+			this.matrix[0][0] * in2.get(3, 0)
+				+ this.matrix[1][0] * in2.get(3, 1)
+				+ this.matrix[2][0] * in2.get(3, 2)
 				+ this.matrix[3][0];
 		out.matrix[3][1] =
-			this.matrix[0][1] * in2.get(3,0)
-				+ this.matrix[1][1] * in2.get(3,1)
-				+ this.matrix[2][1] * in2.get(3,2)
+			this.matrix[0][1] * in2.get(3, 0)
+				+ this.matrix[1][1] * in2.get(3, 1)
+				+ this.matrix[2][1] * in2.get(3, 2)
 				+ this.matrix[3][1];
 		out.matrix[3][2] =
-			this.matrix[0][2] * in2.get(3,0)
-				+ this.matrix[1][2] * in2.get(3,1)
-				+ this.matrix[2][2] * in2.get(3,2)
+			this.matrix[0][2] * in2.get(3, 0)
+				+ this.matrix[1][2] * in2.get(3, 1)
+				+ this.matrix[2][2] * in2.get(3, 2)
 				+ this.matrix[3][2];
 		out.matrix[3][3] = 1;
 		return out;
 	}
 
 	/**
-	 * <code>rotate</code> rotates a vector about a rotation matrix. The
+	 * <code>mult</code> multiplies a vector about a rotation matrix. The
 	 * resulting vector is returned.
 	 * @param m the rotation matrix.
 	 * @return the rotated vector.
 	 */
-	public Vector3f rotate(Vector3f v) {
-		Vector3f out = new Vector3f();
-		out.x = v.dot(new Vector3f(matrix[0][0], matrix[0][1], matrix[0][2]));
-		out.y = v.dot(new Vector3f(matrix[1][0], matrix[1][1], matrix[1][2]));
-		out.z = v.dot(new Vector3f(matrix[2][0], matrix[2][1], matrix[2][2]));
-		return out;
+	public Vector3f mult(Vector3f vec) {
+		if (null == vec) {
+			LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"Source vector is" + " null, null result returned.");
+			return null;
+		}
+		Vector3f product = new Vector3f();
+		product.x =
+			matrix[0][0] * vec.x + matrix[0][1] * vec.y + matrix[0][2] * vec.z;
+		product.y =
+			matrix[1][0] * vec.x + matrix[1][1] * vec.y + matrix[1][2] * vec.z;
+		product.z =
+			matrix[2][0] * vec.x + matrix[2][1] * vec.y + matrix[2][2] * vec.z;
+
+		return product;
 	}
 
 	/**
@@ -365,7 +375,7 @@ public class Matrix4f {
 	public void add(Matrix4f matrix) {
 		for (int i = 0; i < 4; i++) {
 			for (int j = 0; j < 4; j++) {
-				this.matrix[i][j] += matrix.get(i,j);
+				this.matrix[i][j] += matrix.get(i, j);
 			}
 		}
 	}
@@ -568,7 +578,6 @@ public class Matrix4f {
 		return out;
 	}
 
-	
 	/**
 	 * <code>toString</code> returns the string representation of this object.
 	 * It is in a format of a 4x4 matrix. For example, an identity matrix would
