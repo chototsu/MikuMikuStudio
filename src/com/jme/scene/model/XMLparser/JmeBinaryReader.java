@@ -455,7 +455,7 @@ public class JmeBinaryReader {
                     jc.addJointMesh((JointMesh2) parentNode.getChild(i));
             }
             jc.processController();
-            parentNode.addController(jc);
+            if (jc.numJoints!=0) parentNode.addController(jc);
             s.push(parentNode);
         } else if (tagName.equals("joint")){
             s.pop();    // remove unneeded information tag
