@@ -39,7 +39,7 @@ import com.jme.scene.state.AlphaState;
  * <code>LWJGLAlphaState</code> subclasses the AlphaState using the LWJGL API
  * to set OpenGL's alpha state.
  * @author Mark Powell
- * @version $Id: LWJGLAlphaState.java,v 1.1 2004-04-02 23:28:59 mojomonkey Exp $
+ * @version $Id: LWJGLAlphaState.java,v 1.2 2004-04-16 17:12:51 renanse Exp $
  */
 public class LWJGLAlphaState extends AlphaState {
     //gl alpha values
@@ -92,7 +92,7 @@ public class LWJGLAlphaState extends AlphaState {
      * the alpha functions are set.
      * @see com.jme.scene.state.RenderState#set()
      */
-    public void set() {
+    public void apply() {
         if (blendEnabled) {
             GL11.glEnable(GL11.GL_BLEND);
             GL11.glBlendFunc(
@@ -106,22 +106,6 @@ public class LWJGLAlphaState extends AlphaState {
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GL11.glAlphaFunc(glAlphaTest[test], reference);
         } else {
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
-        }
-
-    }
-
-    /**
-     * <code>unset</code> turns off blending if it is enabled, and turns off
-     * alpha testing if it is enabled.
-     * @see com.jme.scene.state.RenderState#unset()
-     */
-    public void unset() {
-        if(blendEnabled) {
-            GL11.glDisable(GL11.GL_BLEND);
-        }
-
-        if(testEnabled) {
             GL11.glDisable(GL11.GL_ALPHA_TEST);
         }
 

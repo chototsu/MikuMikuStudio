@@ -38,7 +38,7 @@ import com.jme.scene.state.CullState;
 /**
  * <code>LWJGLCullState</code>
  * @author Mark Powell
- * @version $Id: LWJGLCullState.java,v 1.1 2004-04-02 23:29:00 mojomonkey Exp $
+ * @version $Id: LWJGLCullState.java,v 1.2 2004-04-16 17:12:52 renanse Exp $
  */
 public class LWJGLCullState extends CullState {
 
@@ -46,7 +46,7 @@ public class LWJGLCullState extends CullState {
      *
      * @see com.jme.scene.state.RenderState#set()
      */
-    public void set() {
+    public void apply() {
         if (isEnabled()) {
             switch (getCullMode()) {
                 case CS_FRONT :
@@ -64,17 +64,9 @@ public class LWJGLCullState extends CullState {
                     GL11.glDisable(GL11.GL_CULL_FACE);
                     break;
             }
+        } else {
+          GL11.glDisable(GL11.GL_CULL_FACE);
         }
 
-    }
-
-    /** <code>unset</code>
-     *
-     * @see com.jme.scene.state.RenderState#unset()
-     */
-    public void unset() {
-        if(isEnabled() && getCullMode() != CS_NONE) {
-            GL11.glDisable(GL11.GL_CULL_FACE);
-        }
     }
 }

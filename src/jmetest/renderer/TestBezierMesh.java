@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.11 2004-04-02 15:52:15 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.12 2004-04-16 17:12:56 renanse Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -78,7 +78,7 @@ public class TestBezierMesh extends SimpleGame {
     private WireframeState wf;
 
     /**
-     * Entry point for the test, 
+     * Entry point for the test,
      * @param args
      */
     public static void main(String[] args) {
@@ -96,8 +96,8 @@ public class TestBezierMesh extends SimpleGame {
 //      update world data
         timer.update();
         input.update(timer.getTimePerFrame() * 10);
-        
-        
+
+
         //update individual sprites
          if ((int) currentPos.x == (int) newPos.x
              && (int) currentPos.y == (int) newPos.y
@@ -113,13 +113,13 @@ public class TestBezierMesh extends SimpleGame {
              / (timer.getFrameRate() / 2);
          currentPos.z -= (currentPos.z - newPos.z)
              / (timer.getFrameRate() / 2);
-             
+
          lightNode.setLocalTranslation(currentPos);
 
          scene.updateGeometricState(timer.getTimePerFrame(), true);
     }
 
-    /** 
+    /**
      * clears the buffers and then draws the TriMesh.
      * @see com.jme.app.SimpleGame#render()
      */
@@ -127,7 +127,7 @@ public class TestBezierMesh extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
-       
+
 
     }
 
@@ -136,7 +136,7 @@ public class TestBezierMesh extends SimpleGame {
      * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
-        
+
         currentPos = new Vector3f();
         newPos = new Vector3f();
         try {
@@ -171,12 +171,12 @@ public class TestBezierMesh extends SimpleGame {
         display.setTitle("Bezier Mesh Test");
     }
 
-    /** 
+    /**
      * builds the trimesh.
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        
+
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -219,7 +219,7 @@ public class TestBezierMesh extends SimpleGame {
         bez.setModelBound(new BoundingSphere());
         bez.updateModelBound();
         scene.attachChild(bez);
-        
+
         MaterialState ms = display.getRenderer().getMaterialState();
         ms.setEmissive(new ColorRGBA(0,0,0.4f,1.0f));
         ms.setAmbient(new ColorRGBA(0.5f,0.5f,0.5f,1.0f));
@@ -241,19 +241,19 @@ public class TestBezierMesh extends SimpleGame {
         lightNode = new LightNode("Light Node",lightstate);
         lightNode.setLight(pl);
         lightNode.setTarget(bez);
-        
+
         Vector3f min = new Vector3f(-0.15f, -0.15f, -0.15f);
         Vector3f max = new Vector3f(0.15f,0.15f,0.15f);
         Box lightBox = new Box("box", min,max);
         lightBox.setModelBound(new BoundingSphere());
         lightBox.updateModelBound();
-        
-        
+
+
         lightNode.attachChild(lightBox);
         lightNode.setForceView(true);
-        
+
         scene.attachChild(lightNode);
-        
+
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         ts.setTexture(
@@ -266,6 +266,7 @@ public class TestBezierMesh extends SimpleGame {
         bez.setRenderState(ts);
 
         scene.updateGeometricState(0.0f, true);
+        scene.updateRenderState();
 
     }
     /**
@@ -276,7 +277,7 @@ public class TestBezierMesh extends SimpleGame {
 
     }
 
-    /** 
+    /**
      * Not used.
      * @see com.jme.app.SimpleGame#cleanup()
      */

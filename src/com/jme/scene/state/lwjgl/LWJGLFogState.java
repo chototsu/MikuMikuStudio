@@ -43,7 +43,7 @@ import com.jme.scene.state.FogState;
  * <code>LWJGLFogState</code> subclasses the fog state using the LWJGL API
  * to set the OpenGL fog state.
  * @author Mark Powell
- * @version $Id: LWJGLFogState.java,v 1.1 2004-04-02 23:29:01 mojomonkey Exp $
+ * @version $Id: LWJGLFogState.java,v 1.2 2004-04-16 17:12:52 renanse Exp $
  */
 public class LWJGLFogState extends FogState {
     //buffer to hold the color
@@ -71,7 +71,7 @@ public class LWJGLFogState extends FogState {
      * <code>set</code> sets the OpenGL fog values if the state is enabled.
      * @see com.jme.scene.state.RenderState#set()
      */
-    public void set() {
+    public void apply() {
         if (isEnabled()) {
             GL11.glEnable(GL11.GL_FOG);
             GL11.glFogf(GL11.GL_FOG_START, start);
@@ -90,16 +90,4 @@ public class LWJGLFogState extends FogState {
             GL11.glDisable(GL11.GL_FOG);
         }
     }
-
-    /**
-     * <code>unset</code> disables the fog state if it was enabled previously.
-     * @see com.jme.scene.state.RenderState#unset()
-     */
-    public void unset() {
-        if (isEnabled()) {
-            GL11.glDisable(GL11.GL_FOG);
-        }
-
-    }
-
 }

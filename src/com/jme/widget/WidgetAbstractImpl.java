@@ -2,30 +2,30 @@
  * Copyright (c) 2004, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -75,7 +75,7 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
     protected Vector2f preferredSize = new Vector2f(DEFAULT_COMP_WIDTH, DEFAULT_COMP_HEIGHT);
 
     protected WidgetTextureCoords textureCoords;
-    
+
     protected int zOrder;
 
     protected boolean visible;
@@ -127,11 +127,11 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
     public MouseInput getMouseInput() {
         MouseInput mi = null;
         Mouse m = inputHandler.getMouse();
-        
+
         if (m != null) {
             mi = m.getMouseInput();
         }
-        
+
         return mi;
     }
 
@@ -184,7 +184,7 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         lastWidgetUnderMouse = widget;
     }
 
-    /** <code>getWidgetRenderer</code> 
+    /** <code>getWidgetRenderer</code>
      * @return
      * @see com.jme.widget.Widget#getWidgetRenderer()
      */
@@ -192,7 +192,7 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         return renderer;
     }
 
-    /** <code>setWidgetRenderer</code> 
+    /** <code>setWidgetRenderer</code>
      * @param widgetRenderer
      * @see com.jme.widget.Widget#setWidgetRenderer(com.jme.widget.WidgetRenderer)
      */
@@ -544,8 +544,8 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         this.notifierMouseButtonDown.deleteObserver(o);
     }
 
-    /** <code>deleteMouseButtonDownObservers</code> 
-     * 
+    /** <code>deleteMouseButtonDownObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseButtonDownObservers()
      */
     public void deleteMouseButtonDownObservers() {
@@ -575,8 +575,8 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         this.notifierMouseButtonUp.deleteObserver(o);
     }
 
-    /** <code>deleteMouseButtonUpObservers</code> 
-     * 
+    /** <code>deleteMouseButtonUpObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseButtonUpObservers()
      */
     public void deleteMouseButtonUpObservers() {
@@ -594,7 +594,7 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         Widget mouseOwner = getMouseOwner();
 
         if (mouseOwner != null) {
-            
+
             mouseOwner.doMouseButtonUp();
             setMouseOwner(null);
         }
@@ -609,8 +609,8 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         this.notifierMouseMove.deleteObserver(o);
     }
 
-    /** <code>deleteMouseMoveObservers</code> 
-     * 
+    /** <code>deleteMouseMoveObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseMoveObservers()
      */
     public void deleteMouseMoveObservers() {
@@ -629,7 +629,7 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
 
             setWidgetUnderMouse(this);
         }
-            
+
     }
 
     public void addMouseDragObserver(Observer o) {
@@ -640,8 +640,8 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         this.notifierMouseDrag.deleteObserver(o);
     }
 
-    /** <code>deleteMouseDragObservers</code> 
-     * 
+    /** <code>deleteMouseDragObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseDragObservers()
      */
     public void deleteMouseDragObservers() {
@@ -663,8 +663,8 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         this.notifierMouseEnter.deleteObserver(o);
     }
 
-    /** <code>deleteMouseEnterObservers</code> 
-     * 
+    /** <code>deleteMouseEnterObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseEnterObservers()
      */
     public void deleteMouseEnterObservers() {
@@ -686,8 +686,8 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         this.notifierMouseExit.deleteObserver(o);
     }
 
-    /** <code>deleteMouseExitObservers</code> 
-     * 
+    /** <code>deleteMouseExitObservers</code>
+     *
      * @see com.jme.widget.input.mouse.WidgetMouseHandlerInterface#deleteMouseExitObservers()
      */
     public void deleteMouseExitObservers() {
@@ -797,9 +797,9 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
 
         //check to see if we can cull this node
         if (!isCulled((WidgetBoundingRectangle) worldBound) || isForceView()) {
-            setStates();
+//            setStates();
             draw(r);
-            unsetStates();
+//            unsetStates();
         }
 
     }

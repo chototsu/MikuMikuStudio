@@ -45,7 +45,7 @@ import com.jme.widget.renderer.WidgetAbstractRenderer;
 /**
  * <code>WidgetLWJGLAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.2 2004-03-05 21:55:19 renanse Exp $
+ * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.3 2004-04-16 17:12:58 renanse Exp $
  */
 public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer {
 
@@ -160,7 +160,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
 
         if (tc != null) {
 
-            alphaState.set();
+            alphaState.apply();
 
             GL11.glBegin(GL11.GL_QUADS);
 
@@ -178,7 +178,6 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
 
             GL11.glEnd();
 
-            alphaState.unset();
 
         } else if (color != null) {
 

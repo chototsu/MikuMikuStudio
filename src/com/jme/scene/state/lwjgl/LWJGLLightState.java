@@ -42,12 +42,15 @@ import com.jme.light.Light;
 import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.RenderState;
+import java.util.Stack;
+import com.jme.scene.Spatial;
 
 /**
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.2 2004-04-13 23:33:49 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.3 2004-04-16 17:12:52 renanse Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.
@@ -79,7 +82,7 @@ public class LWJGLLightState extends LightState {
      * individual light.
      * @see com.jme.scene.state.RenderState#set()
      */
-    public void set() {
+    public void apply() {
         int quantity = getQuantity();
         ambient[0] = 0;
         ambient[1] = 0;
@@ -91,20 +94,19 @@ public class LWJGLLightState extends LightState {
         color[2] = 0;
         color[3] = 1;
 
-        if(twoSidedOn) {
-            GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
-        }
-
         if (quantity > 0 && isEnabled()) {
             GL11.glEnable(GL11.GL_LIGHTING);
 
+            if(twoSidedOn) {
+                GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
+            }
+
             for (int i = 0; i < quantity; i++) {
+              int index = GL11.GL_LIGHT0 + i;
 
                 Light light = get(i);
                 if (light.isEnabled()) {
-                    numLights++;
 
-                    int index = GL11.GL_LIGHT0 + numLights-1;
                     GL11.glEnable(index);
 
                     color[0] = light.getAmbient().r;
@@ -224,7 +226,7 @@ public class LWJGLLightState extends LightState {
                         GL11.glLightf(index, GL11.GL_SPOT_EXPONENT, 0.0f);
                     }
                 } else {
-                    GL11.glDisable(GL11.GL_LIGHT0 + numLights-1);
+                    GL11.glDisable(index);
                 }
             }
 
@@ -233,31 +235,54 @@ public class LWJGLLightState extends LightState {
             buffer.flip();
             GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, buffer);
 
-            for (int i = numLights; i < MAX_LIGHTS_ALLOWED; i++)
+            for (int i = quantity; i < MAX_LIGHTS_ALLOWED; i++)
                 GL11.glDisable((GL11.GL_LIGHT0 + i));
-        } else if(numLights == 0){
+        } else {
             GL11.glDisable(GL11.GL_LIGHTING);
         }
 
     }
 
-    /**
-     * <code>unset</code> turns off lighting.
-     * @see com.jme.scene.state.RenderState#unset()
-     */
-    public void unset() {
-        if(isEnabled()) {
-            for(int i = 0; i < getQuantity(); i++) {
-                if(((Light)get(i)).isEnabled()) {
-                    numLights--;
-                }
-            }
+    public RenderState extract(Stack stack, Spatial spat) {
+      int mode = spat.getLightCombineMode();
+      if (mode == REPLACE) return (LWJGLLightState) stack.peek();
 
-            if (getQuantity() > 0 && numLights == 0) {
-
-                GL11.glDisable(GL11.GL_LIGHTING);
+      // accumulate the lights in the stack into a single LightState object
+      LWJGLLightState newLState = new LWJGLLightState();
+      newLState.setEnabled(true);
+      Object states[] = stack.toArray();
+      switch (mode) {
+        case COMBINE_CLOSEST:
+        case COMBINE_RECENT_ENABLED:
+          for (int iIndex = states.length-1; iIndex >= 0; iIndex--) {
+            LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
+            if (!pkLState.isEnabled()) {
+              if (mode == COMBINE_RECENT_ENABLED) break;
+              else continue;
             }
-        }
+            if (pkLState.twoSidedOn) newLState.setTwoSidedLighting(true);
+            for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
+              Light pkLight = pkLState.get(i);
+              if (pkLight != null) {
+                newLState.attach(pkLight);
+              }
+            }
+          }
+          break;
+        case COMBINE_FIRST:
+          for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
+            LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
+            if (!pkLState.isEnabled()) continue;
+            if (pkLState.twoSidedOn) newLState.setTwoSidedLighting(true);
+            for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
+              Light pkLight = pkLState.get(i);
+              if (pkLight != null) {
+                newLState.attach(pkLight);
+              }
+            }
+          }
+          break;
+      }
+      return newLState;
     }
-
 }

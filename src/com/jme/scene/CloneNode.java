@@ -36,14 +36,17 @@ import java.util.logging.Level;
 import com.jme.renderer.Renderer;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.scene.state.RenderState;
+import java.util.Stack;
 
 /**
  * <code>CloneNode</code>
  * @author Mark Powell
- * @version $Id: CloneNode.java,v 1.2 2004-03-13 03:07:37 renanse Exp $
+ * @version $Id: CloneNode.java,v 1.3 2004-04-16 17:12:50 renanse Exp $
  */
 public class CloneNode extends Node {
     private TriMesh geometry;
+    RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
     public CloneNode(String name) {
         super(name);
@@ -56,12 +59,36 @@ public class CloneNode extends Node {
      * @param r the renderer to draw to.
      */
     public void draw(Renderer r) {
-        r.draw(this);
-        for (int i = 0, cSize = children.size(); i < cSize ; i++) {
-            Spatial child = (Spatial) children.get(i);
-            if (child != null)
-                child.onDraw(r);
+      setStates();
+      r.draw(this);
+      super.draw(r);
+    }
+
+    protected void applyRenderState(Stack[] states) {
+      for (int x = 0; x < states.length; x++) {
+        if (states[x].size() > 0) {
+          this.states[x] = ((RenderState) states[x].peek()).extract(states[x], this);
+        } else {
+          this.states[x] = (RenderState) defaultStateList[x];
         }
+      }
+    }
+
+    /**
+     *
+     * <code>setStates</code> applies all the render states for this
+     * particular geometry.
+     *
+     */
+    public void setStates() {
+      if (parent == null || isRoot)
+        Spatial.clearCurrentStates();
+      for (int i = 0; i < states.length; i++) {
+        if (states[i] != currentStates[i]) {
+          states[i].apply();
+          currentStates[i] = states[i];
+        }
+      }
     }
 
     /**

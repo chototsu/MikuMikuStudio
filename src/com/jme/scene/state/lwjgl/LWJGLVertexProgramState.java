@@ -1,32 +1,32 @@
-/* 
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding 
- * All rights reserved. 
- * 
- * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met: 
- * 
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE. 
+/*
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
  */
 package com.jme.scene.state.lwjgl;
 
@@ -49,9 +49,9 @@ import com.jme.util.LoggingSystem;
 
 /**
  * <code>LWJGLVertexProgramState</code>
- * 
+ *
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.1 2004-04-02 23:29:02 mojomonkey Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.2 2004-04-16 17:12:53 renanse Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 
@@ -66,18 +66,18 @@ public class LWJGLVertexProgramState extends VertexProgramState {
     public boolean isSupported(){
         return GLContext.GL_ARB_vertex_program;
     }
-    
+
     /**
-     * Loads the vertex program into a byte array. Note that a 
+     * Loads the vertex program into a byte array. Note that a
      * @see com.jme.scene.state.VertexProgramState#load(java.net.URL)
      */
 	public void load(java.net.URL file){
 		int next;
 		Vector bytes = new Vector();
 		program = new byte[0];
-		
+
 		try {
-		    
+
             InputStream is = new BufferedInputStream(file.openStream());
         	while((next = is.read()) != -1)
         		bytes.add(new Byte((byte)next));
@@ -85,19 +85,19 @@ public class LWJGLVertexProgramState extends VertexProgramState {
         	program = new byte[bytes.size()];
         	for (int i = 0; i < program.length; i++)
                 program[i] = ((Byte)bytes.get(i)).byteValue();
-            
+
         } catch (IOException e) {
             LoggingSystem.getLogger().log(Level.WARNING, "Could not load vertex program");
         }
 	}
-	
+
     private void create() {
         IntBuffer buf = BufferUtils.createIntBuffer(1);
-        
+
         ByteBuffer pbuf = BufferUtils.createByteBuffer(program.length);
         pbuf.put(program);
         pbuf.rewind();
-        
+
         ARBVertexProgram.glGenProgramsARB(buf);
         ARBVertexProgram.glBindProgramARB(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, buf.get(0));
         ARBVertexProgram.glProgramStringARB(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB,
@@ -116,18 +116,18 @@ public class LWJGLVertexProgramState extends VertexProgramState {
         programID = buf.get(0);
     }
 
-    public void set() {
+    public void apply() {
         if (isEnabled()) {
-            
+
             //Vertex program not yet loaded
             if (programID == -1)
                 create();
-            
+
             ARBVertexProgram.glBindProgramARB(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB, programID);
             GL11.glEnable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
             //GL11.glEnable(NVVertexProgram.GL_VERTEX_PROGRAM_NV);
             //NVVertexProgram.glBindProgramNV(NVVertexProgram.GL_VERTEX_PROGRAM_NV, programID);
-            
+
             //load local parameters...
             if (usingParameters) //No sense checking array if we are sure no parameters are used
 	            for (int i = 0; i < parameters.length; i++)
@@ -138,11 +138,8 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 	                    //NVVertexProgram.glProgramParameter4fNV(
 	                    //        NVVertexProgram.GL_VERTEX_PROGRAM_NV, i,
 	                    //        parameters[i][0], parameters[i][1], parameters[i][2], parameters[i][3]);
+        } else {
+          GL11.glDisable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
         }
-    }
-
-    public void unset() {
-        if (isEnabled())
-            GL11.glDisable(ARBVertexProgram.GL_VERTEX_PROGRAM_ARB);
     }
 }

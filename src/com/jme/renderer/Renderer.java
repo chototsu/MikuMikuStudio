@@ -76,7 +76,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.25 2004-04-13 01:27:46 renanse Exp $
+ * @version $Id: Renderer.java,v 1.26 2004-04-16 17:12:55 renanse Exp $
  */
 public interface Renderer {
     /**
@@ -354,5 +354,4 @@ public interface Renderer {
      * @param wp the WidgetPanel to be rendered.
      */
     public void draw(WidgetRenderer wr);
-
 }

@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.10 2004-04-02 15:52:17 mojomonkey Exp $
+ * @version $Id: TestManyChildren.java,v 1.11 2004-04-16 17:12:56 renanse Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
@@ -165,18 +165,20 @@ public class TestManyChildren extends SimpleGame {
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         SpotLight am = new SpotLight();
-        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
+        am.setDiffuse(new ColorRGBA(0.0f, 0.0f, 1.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 0));
-        am.setLocation(new Vector3f(25, 10, 0));
+        am.setDirection(new Vector3f(-30, -10, -5).normalizeLocal());
+        am.setLocation(new Vector3f(30, 10, 5));
         am.setAngle(15);
 
         SpotLight am2 = new SpotLight();
         am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am2.setDirection(new Vector3f(0, 0, 0));
-        am2.setLocation(new Vector3f(-25, 10, 0));
-        am2.setAngle(15);
+        am2.setDirection(new Vector3f(-30, -10, -20).normalizeLocal());
+        am2.setLocation(new Vector3f(30, 10, 20));
+//        am2.setDirection(new Vector3f(25, -10, 0).normalizeLocal());
+//        am2.setLocation(new Vector3f(-25, 10, 0));
+        am2.setAngle(10);
 
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
@@ -214,17 +216,22 @@ public class TestManyChildren extends SimpleGame {
         LightState state = display.getRenderer().getLightState();
         state.setEnabled(true);
         state.attach(am);
-        state.attach(dr);
         state.attach(am2);
+        LightState state2 = display.getRenderer().getLightState();
+        state2.setEnabled(true);
+        state2.attach(dr);
         am.setEnabled(true);
         am2.setEnabled(true);
         dr.setEnabled(true);
         scene.setRenderState(state);
+        root.setRenderState(state2);
         scene.setRenderState(buf);
         root.attachChild(scene);
 
         root.updateGeometricState(0.0f, true);
+        root.updateRenderState();
         fpsNode.updateGeometricState(0.0f, true);
+        fpsNode.updateRenderState();
     }
     /**
      * not used.

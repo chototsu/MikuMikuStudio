@@ -41,11 +41,13 @@ import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
 import com.jme.system.lwjgl.*;
 import com.jme.widget.font.WidgetFont;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.RenderState;
 
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.16 2004-04-02 23:28:56 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.17 2004-04-16 17:12:51 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -68,7 +70,7 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.16 2004-04-02 23:28:56 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.17 2004-04-16 17:12:51 renanse Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;
@@ -93,14 +95,12 @@ public abstract class DisplaySystem {
      * @return the appropriate display system specified by the key.
      */
     public static DisplaySystem getDisplaySystem(String key) {
-        if ("LWJGL".equalsIgnoreCase(key)) {
+      if ("LWJGL".equalsIgnoreCase(key)) {
+        display = new LWJGLDisplaySystem();
+      } else
+        display = null;
 
-            display = new LWJGLDisplaySystem();
-
-            return display;
-        }
-
-        return null;
+        return display;
     }
 
     public static DisplaySystem getDisplaySystem() {
@@ -277,6 +277,29 @@ public abstract class DisplaySystem {
     public void setMinSamples(int samples){
         this.samples = samples;
     }
+
+    public void updateStates() {
+
+      if (display != null) {
+        Renderer r = display.getRenderer();
+        Spatial.defaultStateList[RenderState.RS_ALPHA] = r.getAlphaState();
+        Spatial.defaultStateList[RenderState.RS_ATTRIBUTE] = r.getAttributeState();
+        Spatial.defaultStateList[RenderState.RS_CULL] = r.getCullState();
+        Spatial.defaultStateList[RenderState.RS_DITHER] = r.getDitherState();
+        Spatial.defaultStateList[RenderState.RS_FOG] = r.getFogState();
+        Spatial.defaultStateList[RenderState.RS_LIGHT] = r.getLightState();
+        Spatial.defaultStateList[RenderState.RS_MATERIAL] = r.getMaterialState();
+        Spatial.defaultStateList[RenderState.RS_SHADE] = r.getShadeState();
+//          Spatial.defaultStateList[RenderState.RS_SHOW_BOUNDINGS] = r.getSBState();
+        Spatial.defaultStateList[RenderState.RS_TEXTURE] = r.getTextureState();
+//          Spatial.defaultStateList[RenderState.RS_VERTEXCOLOR] = r.getVCState();
+        Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM] = r.getVertexProgramState();
+        Spatial.defaultStateList[RenderState.RS_WIREFRAME] = r.getWireframeState();
+        Spatial.defaultStateList[RenderState.RS_ZBUFFER] = r.getZBufferState();
+      }
+
+    }
+
 
     /**
      * Crate a TextureRenderer using the underlying system.

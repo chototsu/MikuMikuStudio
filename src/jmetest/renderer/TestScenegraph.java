@@ -103,24 +103,28 @@ public class TestScenegraph extends SimpleGame {
                 .getKeyBindingManager()
                 .isValidCommand("tex1")) {
             selectedNode.setRenderState(ts);
+            selectedNode.updateRenderState();
         }
 
         if (KeyBindingManager
                 .getKeyBindingManager()
                 .isValidCommand("tex2")) {
             selectedNode.setRenderState(ts2);
+            root.updateRenderState();
         }
 
         if (KeyBindingManager
                 .getKeyBindingManager()
                 .isValidCommand("tex3")) {
             selectedNode.setRenderState(ts3);
+            root.updateRenderState();
         }
 
         if (KeyBindingManager
                 .getKeyBindingManager()
                 .isValidCommand("notex")) {
             selectedNode.clearRenderState(RenderState.RS_TEXTURE);
+            root.updateRenderState();
         }
 
         if (KeyBindingManager
@@ -228,14 +232,14 @@ public class TestScenegraph extends SimpleGame {
         SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 0));
+        am.setDirection(new Vector3f(-25, -100, 0).normalizeLocal());
         am.setLocation(new Vector3f(25, 100, 0));
         am.setAngle(15);
 
         SpotLight am2 = new SpotLight();
         am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am2.setDirection(new Vector3f(0, 0, 0));
+        am2.setDirection(new Vector3f(-250, -20, -100).normalizeLocal());
         am2.setLocation(new Vector3f(250, 10, 100));
         am2.setAngle(15);
 
@@ -247,8 +251,12 @@ public class TestScenegraph extends SimpleGame {
         LightState state = display.getRenderer().getLightState();
         state.setEnabled(true);
         state.attach(am);
-        state.attach(dr);
-        state.attach(am2);
+        LightState state2 = display.getRenderer().getLightState();
+        state2.setEnabled(true);
+        state2.attach(dr);
+        LightState state3 = display.getRenderer().getLightState();
+        state3.setEnabled(true);
+        state3.attach(am2);
         am.setEnabled(true);
         am2.setEnabled(true);
         dr.setEnabled(true);
@@ -276,9 +284,6 @@ public class TestScenegraph extends SimpleGame {
         scene.setRenderState(cs);
 
 
-
-
-
         // Setup our params for the depth buffer
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
@@ -286,13 +291,8 @@ public class TestScenegraph extends SimpleGame {
 
         scene.setRenderState(buf);
 
-        ColorRGBA[] green = new ColorRGBA[24];
-        for(int i = 0; i < 24; i++) {
-            green[i] = new ColorRGBA(0,1,0,0.5f);
-        }
-
         selectionBox = new Box("Selection", min.mult(1.25f), max.mult(1.25f));
-        selectionBox.setColors(green);
+        selectionBox.setSolidColor(new ColorRGBA(0,1,0,0.5f));
         selectionBox.setRenderState(as1);
         selectionBox.setModelBound(new BoundingSphere());
         selectionBox.updateModelBound();
@@ -314,6 +314,7 @@ public class TestScenegraph extends SimpleGame {
         node2.setLocalTranslation(new Vector3f(-20, -20, 0));
         box2.setModelBound(new BoundingSphere());
         box2.updateModelBound();
+        node2.setRenderState(state2);
 
         node3 = new Node("Node 3");
         box3 = new Box("Box 3", min, max);
@@ -322,6 +323,7 @@ public class TestScenegraph extends SimpleGame {
         node3.setLocalTranslation(new Vector3f(20, -20, 0));
         box3.setModelBound(new BoundingSphere());
         box3.updateModelBound();
+        node3.setRenderState(state3);
 
         node4 = new Node("Node 4");
         box4 = new Box("Box 4", min, max);
@@ -389,6 +391,7 @@ public class TestScenegraph extends SimpleGame {
         scene.attachChild(selectionBox);
         cam.update();
         scene.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
         nc1 = new NodeHandler(this, node1, "LWJGL");
         nc2 = new NodeHandler(this, node2, "LWJGL");

@@ -46,6 +46,7 @@ import java.util.logging.Level;
 import com.jme.bounding.*;
 import com.jme.renderer.Renderer;
 import com.jme.util.LoggingSystem;
+import java.util.Stack;
 
 /**
  * <code>Node</code> defines an internal node of a scene graph. The internal
@@ -54,7 +55,7 @@ import com.jme.util.LoggingSystem;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.18 2004-04-02 15:52:00 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.19 2004-04-16 17:12:50 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -210,6 +211,14 @@ public class Node extends Spatial implements Serializable {
             if (child != null)
                 child.onDrawBounds(r);
         }
+    }
+
+    protected void applyRenderState(Stack[] states) {
+      for (int i = 0, cSize = children.size(); i < cSize; i++) {
+        Spatial pkChild = getChild(i);
+        if (pkChild != null)
+          pkChild.updateRenderState(states);
+      }
     }
 
     /**

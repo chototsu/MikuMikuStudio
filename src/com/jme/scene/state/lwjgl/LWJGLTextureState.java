@@ -44,12 +44,15 @@ import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
+import com.jme.scene.state.RenderState;
+import java.util.Stack;
+import com.jme.scene.Spatial;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.2 2004-04-14 00:48:02 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.3 2004-04-16 17:12:53 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.
@@ -82,7 +85,7 @@ public class LWJGLTextureState extends TextureState {
 
     private int[] textureCombineOpRgb = { GL11.GL_SRC_COLOR,
             GL11.GL_ONE_MINUS_SRC_COLOR};
-    
+
     private int[] textureCombineOpAlpha = { GL11.GL_SRC_ALPHA,
             GL11.GL_ONE_MINUS_SRC_ALPHA };
 
@@ -128,20 +131,6 @@ public class LWJGLTextureState extends TextureState {
     }
 
     /**
-     * <code>unset</code> disables texture mapping.
-     * @see com.jme.scene.state.RenderState#set()
-     */
-    public void unset() {
-        if (isEnabled()) {
-            for (int i = 0; i < getNumberOfUnits(); i++) {
-                GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
-                GL11.glDisable(GL11.GL_TEXTURE_2D);
-            }
-        }
-
-    }
-
-    /**
      * <code>set</code> manages the textures being described by the state. If
      * the texture has not been loaded yet, it is generated and loaded using
      * OpenGL11. This means the initial pass to set will be longer than subsequent
@@ -149,7 +138,7 @@ public class LWJGLTextureState extends TextureState {
      * states, with the number of units being determined at construction time.
      * @see com.jme.scene.state.RenderState#unset()
      */
-    public void set() {
+    public void apply() {
         if (isEnabled()) {
             for (int i = 0; i < getNumberOfUnits(); i++) {
                 if (getTexture(i) == null) {
@@ -328,6 +317,52 @@ public class LWJGLTextureState extends TextureState {
                     textureMipmap[texture.getMipmap()]);
 
             }
+        } else {
+          for (int i = 0; i < getNumberOfUnits(); i++) {
+              GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+              GL11.glDisable(GL11.GL_TEXTURE_2D);
+          }
         }
+    }
+
+    public RenderState extract(Stack stack, Spatial spat) {
+      int mode = spat.getLightCombineMode();
+      if (mode == REPLACE) return (LWJGLLightState) stack.peek();
+
+      // accumulate the lights in the stack into a single LightState object
+      LWJGLTextureState newTState = new LWJGLTextureState();
+      newTState.setEnabled(true);
+      Object states[] = stack.toArray();
+      switch (mode) {
+        case COMBINE_CLOSEST:
+        case COMBINE_RECENT_ENABLED:
+          for (int iIndex = states.length-1; iIndex >= 0; iIndex--) {
+            TextureState pkTState = (TextureState) states[iIndex];
+            if (!pkTState.isEnabled()) {
+              if (mode == COMBINE_RECENT_ENABLED) break;
+              else continue;
+            }
+            for (int i = 0, maxT = pkTState.getNumberOfUnits(); i < maxT; i++) {
+              Texture pkText = pkTState.getTexture(i);
+              if (newTState.getTexture(i) == null) {
+                newTState.setTexture(pkText, i);
+              }
+            }
+          }
+          break;
+        case COMBINE_FIRST:
+          for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
+            TextureState pkTState = (TextureState) states[iIndex];
+            if (!pkTState.isEnabled()) continue;
+            for (int i = 0, maxT = pkTState.getNumberOfUnits(); i < maxT; i++) {
+              Texture pkText = pkTState.getTexture(i);
+              if (newTState.getTexture(i) == null) {
+                newTState.setTexture(pkText, i);
+              }
+            }
+          }
+          break;
+      }
+      return newTState;
     }
 }

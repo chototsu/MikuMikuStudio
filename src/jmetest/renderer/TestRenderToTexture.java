@@ -263,6 +263,10 @@ public class TestRenderToTexture extends SimpleGame {
 
         cam.update();
         scene.updateGeometricState(0.0f, true);
+        scene.updateRenderState();
+
+        fakeScene.updateGeometricState(0.0f, true);
+        fakeScene.updateRenderState();
     }
 
     /**

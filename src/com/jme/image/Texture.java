@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -42,12 +42,12 @@ import com.jme.renderer.ColorRGBA;
  * image on a piece of geometry. The image to be displayed is defined by the
  * <code>Image</code> class. All attributes required for texture mapping are
  * contained within this class. This includes mipmapping if desired, filter
- * options, apply options and correction options. Default values are as 
+ * options, apply options and correction options. Default values are as
  * follows: mipmap - MM_NONE, filter - FM_NEAREST, wrap - WM_CLAMP_S_CLAMP_T,
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.2 2004-03-01 16:47:29 mojomonkey Exp $
+ * @version $Id: Texture.java,v 1.3 2004-04-16 17:12:57 renanse Exp $
  */
 public class Texture {
 
@@ -66,7 +66,7 @@ public class Texture {
      */
     public static final int MM_LINEAR = 2;
     /**
-     * Mipmap option that picks the mipmap that most closely matches the size 
+     * Mipmap option that picks the mipmap that most closely matches the size
      * of the pixel being textured and uses MM_NEAREST criteria.
      */
     public static final int MM_NEAREST_NEAREST = 3;
@@ -121,7 +121,7 @@ public class Texture {
      */
     public static final int AM_REPLACE = 0;
     /**
-     * Apply modifier that replaces the color values of the pixel but makes 
+     * Apply modifier that replaces the color values of the pixel but makes
      * use of the alpha values.
      */
     public static final int AM_DECAL = 1;
@@ -129,14 +129,14 @@ public class Texture {
      * Apply modifier multiples the color of the pixel with the texture color.
      */
     public static final int AM_MODULATE = 2;
-    
+
     /**
      * Apply modifier that combines the color of the pixel with the texture
      * color, such that the final color value is Cv = (1 - Ct) Cf. Where
      * Ct is the color of the texture and Cf is the initial pixel color.
      */
     public static final int AM_BLEND = 3;
-    
+
     /**
      * Apply modifier combines two textures.
      */
@@ -151,24 +151,24 @@ public class Texture {
      * is slower than CM_AFFINE.
      */
     public static final int CM_PERSPECTIVE = 1;
-    
+
     public static final int ACF_REPLACE = 0;
     public static final int ACF_MODULATE = 1;
     public static final int ACF_ADD = 2;
     public static final int ACF_ADD_SIGNED = 3;
     public static final int ACF_SUBTRACT = 4;
     public static final int ACF_INTERPOLATE = 5;
-    
+
     public static final int ACS_TEXTURE = 0;
     public static final int ACS_PRIMARY_COLOR = 1;
     public static final int ACS_CONSTANT = 2;
     public static final int ACS_PREVIOUS = 3;
-    
+
     public static final int ACO_SRC_COLOR = 0;
     public static final int ACO_ONE_MINUS_SRC_COLOR = 1;
     public static final int ACO_SRC_ALPHA = 2;
     public static final int ACO_ONE_MINUS_SRC_ALPHA = 3;
-    
+
     public static final int ACSC_ONE = 0;
     public static final int ACSC_TWO = 1;
     public static final int ACSC_FOUR = 2;
@@ -183,7 +183,7 @@ public class Texture {
     private int apply;
     private int wrap;
     private int filter;
-    
+
     //only used if combine apply mode on
     private int combineFuncRGB;
     private int combineFuncAlpha;
@@ -203,7 +203,7 @@ public class Texture {
     private int combineScaleAlpha;
 
     /**
-     * Constructor instantiates a new <code>Texture</code> object with 
+     * Constructor instantiates a new <code>Texture</code> object with
      * default attributes.
      *
      */
@@ -234,8 +234,8 @@ public class Texture {
     }
 
     /**
-     * 
-     * <code>setBlendColor</code> sets the color to be used to tint the 
+     *
+     * <code>setBlendColor</code> sets the color to be used to tint the
      * texture. This color is used to create the new blend color buffer.
      * @param color the color of the texture tint.
      */
@@ -260,7 +260,7 @@ public class Texture {
     }
 
     /**
-     * <code>setMipmapState</code> sets the mipmap state for this texture. 
+     * <code>setMipmapState</code> sets the mipmap state for this texture.
      * If the state is invalid it is set to MM_NONE.
      * @param mipmapState the new mipmap state.
      */
@@ -296,7 +296,7 @@ public class Texture {
     }
 
     /**
-     * <code>setFilter</code> sets the texture filter mode for this 
+     * <code>setFilter</code> sets the texture filter mode for this
      * texture. If an invalid value is passed, it is set to FM_NEAREST.
      * @param filter the filter mode for this texture.
      */
@@ -339,7 +339,7 @@ public class Texture {
     }
 
     /**
-     * <code>setTextureId</code> returns the texture id assigned to this 
+     * <code>setTextureId</code> returns the texture id assigned to this
      * texture. If no id has been set, zero is returned.
      * @param textureId the texture id of this texture.
      */
@@ -348,7 +348,7 @@ public class Texture {
     }
 
     /**
-     * 
+     *
      * <code>getImage</code> returns the image data that makes up this texture.
      * If no image data has been set, this will return null.
      * @return the image data that makes up the texture.
@@ -358,7 +358,7 @@ public class Texture {
     }
 
     /**
-     * 
+     *
      * <code>getMipmap</code> returns the mipmap mode for the texture.
      * @return the mipmap mode of the texture.
      */
@@ -367,8 +367,8 @@ public class Texture {
     }
 
     /**
-     * <code>getCorrection</code> returns the correction mode for the 
-     * texture. 
+     * <code>getCorrection</code> returns the correction mode for the
+     * texture.
      * @return the correction mode for the texture.
      */
     public int getCorrection() {
@@ -630,5 +630,9 @@ public class Texture {
 	public void setCombineFuncAlpha(int combineFuncAlpha) {
 		this.combineFuncAlpha = combineFuncAlpha;
 	}
+
+        public String toString() {
+          return "Texture with id: "+textureId;
+        }
 
 }

@@ -237,7 +237,6 @@ public class TestCameraMan extends SimpleGame {
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
-        model.setRenderState(buf);
         scene.setRenderState(buf);
         monitorNode.setRenderState(buf);
         monitorNode.attachChild(quad);
@@ -292,8 +291,11 @@ public class TestCameraMan extends SimpleGame {
 
         cam.update();
         scene.updateGeometricState(0.0f, true);
+        scene.updateRenderState();
         fpsNode.updateGeometricState(0.0f, true);
+        fpsNode.updateRenderState();
         monitorNode.updateGeometricState(0.0f, true);
+        monitorNode.updateRenderState();
     }
 
     /**
