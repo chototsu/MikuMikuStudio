@@ -12,8 +12,6 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
-import com.jme.math.Matrix3f;
-import com.jme.math.Quaternion;
 import com.jme.curve.CurveController;
 import com.jme.curve.BezierCurve;
 import com.jme.input.KeyInput;
