@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.15 2004-05-26 12:15:37 mojomonkey Exp $
+ * @version $Id: Quaternion.java,v 1.16 2004-05-27 20:02:56 cep21 Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -94,6 +94,18 @@ public class Quaternion {
         this.y = y;
         this.z = z;
         this.w = w;
+    }
+
+    /**
+     * Sets the data in this <code>Quaternion</code> object
+     * to be equal to the passed <code>Quaternion</code>
+     * @param q The Quaternion to copy values from.
+     */
+    public void set(Quaternion q){
+        this.x = q.x;
+        this.y = q.y;
+        this.z = q.z;
+        this.w = q.w;
     }
 
     /**
