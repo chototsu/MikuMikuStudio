@@ -46,7 +46,7 @@ import com.jme.light.SpotLight;
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.9 2004-03-05 21:55:15 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.10 2004-04-02 21:05:01 mojomonkey Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.
@@ -54,8 +54,8 @@ public class LWJGLLightState extends LightState {
     private float[] ambient = { 0.0f, 0.0f, 0.0f, 1.0f };;
     private float[] color;
     private float[] posParam = new float[4];
-    private float[] spotDir = new float[3];
-    private float[] defaultDirection = new float[3];
+    private float[] spotDir = new float[4];
+    private float[] defaultDirection = new float[4];
 
     /**
      * Constructor instantiates a new <code>LWJGLLightState</code>.
@@ -68,6 +68,7 @@ public class LWJGLLightState extends LightState {
                 .allocateDirect(16*4)
                 .order(ByteOrder.nativeOrder())
                 .asFloatBuffer();
+        
         color = new float[4];
         color[3] = 1.0f;
     }
@@ -79,7 +80,6 @@ public class LWJGLLightState extends LightState {
      */
     public void set() {
         int quantity = getQuantity();
-
         ambient[0] = 0;
         ambient[1] = 0;
         ambient[2] = 0;
@@ -94,14 +94,16 @@ public class LWJGLLightState extends LightState {
             GL11.glLightModeli(GL11.GL_LIGHT_MODEL_TWO_SIDE, GL11.GL_TRUE);
         }
 
-        if (quantity > 0) {
+        if (quantity > 0 && isEnabled()) {
             GL11.glEnable(GL11.GL_LIGHTING);
-
+            
             for (int i = 0; i < quantity; i++) {
-
+                
                 Light light = get(i);
                 if (light.isEnabled()) {
-                    int index = GL11.GL_LIGHT0 + i;
+                    numLights++;
+                    
+                    int index = GL11.GL_LIGHT0 + numLights-1;
                     GL11.glEnable(index);
 
                     color[0] = light.getAmbient().r;
@@ -179,10 +181,10 @@ public class LWJGLLightState extends LightState {
                         case Light.LT_POINT :
                         case Light.LT_SPOT :
                             {
-                                PointLight pkPL = (PointLight) light;
-                                posParam[0] = pkPL.getLocation().x;
-                                posParam[1] = pkPL.getLocation().y;
-                                posParam[2] = pkPL.getLocation().z;
+                                PointLight pointLight = (PointLight) light;
+                                posParam[0] = pointLight.getLocation().x;
+                                posParam[1] = pointLight.getLocation().y;
+                                posParam[2] = pointLight.getLocation().z;
                                 posParam[3] = 1.0f;
                                 buffer.clear();
                                 buffer.put(posParam);
@@ -197,13 +199,13 @@ public class LWJGLLightState extends LightState {
                         GL11.glLightf(
                             index,
                             GL11.GL_SPOT_CUTOFF,
-                            180.0f * spot.getAngle() / (float) Math.PI);
+                            spot.getAngle());
                         buffer.clear();
                         spotDir[0]= spot.getDirection().x;
                         spotDir[1]= spot.getDirection().y;
                         spotDir[2]= spot.getDirection().z;
                         buffer.put(spotDir);
-//                        buffer.flip();
+                        buffer.flip();
                         GL11.glLightfv(index, GL11.GL_SPOT_DIRECTION, buffer);
                         GL11.glLightf(
                             index,
@@ -216,12 +218,12 @@ public class LWJGLLightState extends LightState {
                         GL11.glLightf(index, GL11.GL_SPOT_CUTOFF, 180.0f);
                         buffer.clear();
                         buffer.put(defaultDirection);
-//                        buffer.flip();
+                        buffer.flip();
                         GL11.glLightfv(index, GL11.GL_SPOT_DIRECTION, buffer);
                         GL11.glLightf(index, GL11.GL_SPOT_EXPONENT, 0.0f);
                     }
                 } else {
-                    GL11.glDisable(GL11.GL_LIGHT0 + i);
+                    GL11.glDisable(GL11.GL_LIGHT0 + numLights-1);
                 }
             }
 
@@ -230,9 +232,9 @@ public class LWJGLLightState extends LightState {
             buffer.flip();
             GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, buffer);
 
-            for (int i = quantity; i < MAX_LIGHTS_ALLOWED; i++)
+            for (int i = numLights; i < MAX_LIGHTS_ALLOWED; i++)
                 GL11.glDisable((GL11.GL_LIGHT0 + i));
-        } else {
+        } else if(numLights == 0){
             GL11.glDisable(GL11.GL_LIGHTING);
         }
 
@@ -243,8 +245,17 @@ public class LWJGLLightState extends LightState {
      * @see com.jme.scene.state.RenderState#unset()
      */
     public void unset() {
-        if (getQuantity() > 0) {
-            GL11.glDisable(GL11.GL_LIGHTING);
+        if(isEnabled()) {
+            for(int i = 0; i < getQuantity(); i++) {
+                if(((Light)get(i)).isEnabled()) {
+                    numLights--;
+                }
+            }
+            
+            if (getQuantity() > 0 && numLights == 0) {
+            
+                GL11.glDisable(GL11.GL_LIGHTING);
+            }
         }
     }
 
