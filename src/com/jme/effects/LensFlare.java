@@ -31,12 +31,15 @@
  */
 package com.jme.effects;
 
+import java.util.Iterator;
+
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
@@ -44,6 +47,7 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jme.scene.Geometry;
 
 /**
  * <code>LensFlare</code>
@@ -56,7 +60,7 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.6 2004-06-17 16:31:14 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.7 2004-06-23 02:05:18 renanse Exp $
  */
 
 public class LensFlare extends Node {
@@ -68,21 +72,16 @@ public class LensFlare extends Node {
   public LensFlare(String name) {
     super(name);
     initChildren();
-    setRenderQueueMode(Renderer.QUEUE_ORTHO);
-  }
-
-  /**
-   * <code>draw</code> calls ortho mode before drawing it's children.
-   * @param r the renderer to draw to.
-   */
-  public void draw(Renderer r) {
-    if (!r.isProcessingQueue()) {
-      if (r.checkAndAdd(this))
-        return;
+    Iterator it = children.iterator();
+    while (it.hasNext()) {
+      Geometry spat = (Geometry)it.next();
+      spat.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+      spat.setVBOVertexEnabled(true);
+      spat.setVBONormalEnabled(true);
+      spat.setVBOTextureEnabled(true);
+      spat.setVBOColorEnabled(true);
     }
-    r.setOrthoCenter();
-    super.draw(r);
-    r.unsetOrtho();
+    this.setRenderQueueMode(Renderer.QUEUE_ORTHO);
   }
 
   /**
@@ -210,6 +209,7 @@ public class LensFlare extends Node {
         Texture.FM_LINEAR,
         true));
     ts.setEnabled(true);
+    ts.apply();
 
     TextureState ts2 = display.getRenderer().getTextureState();
     ts2.setTexture(
@@ -220,6 +220,7 @@ public class LensFlare extends Node {
         Texture.FM_LINEAR,
         true));
     ts2.setEnabled(true);
+    ts2.apply();
 
     TextureState ts3 = display.getRenderer().getTextureState();
     ts3.setTexture(
@@ -230,6 +231,7 @@ public class LensFlare extends Node {
         Texture.FM_LINEAR,
         true));
     ts3.setEnabled(true);
+    ts3.apply();
 
     TextureState ts4 = display.getRenderer().getTextureState();
     ts4.setTexture(
@@ -240,6 +242,7 @@ public class LensFlare extends Node {
         Texture.FM_LINEAR,
         true));
     ts4.setEnabled(true);
+    ts4.apply();
 
     LightState blankLightState = display.getRenderer().getLightState();
     blankLightState.setEnabled(false);

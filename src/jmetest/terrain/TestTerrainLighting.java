@@ -54,13 +54,14 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.18 2004-06-17 16:31:21 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.19 2004-06-23 02:05:19 renanse Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
   private Vector3f currentPos;
   private Vector3f newPos;
   private LightNode lightNode;
+  private LensFlare flare;
 
   /**
    * Entry point for the test,
@@ -93,6 +94,7 @@ public class TestTerrainLighting extends SimpleGame {
    * @see com.jme.app.SimpleGame#initGame()
    */
   protected void simpleInitGame() {
+
     rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     currentPos = new Vector3f();
@@ -135,14 +137,14 @@ public class TestTerrainLighting extends SimpleGame {
     lightNode.setTarget(rootNode);
 
     //rootNode.attachChild(lightNode);
-    LensFlare flare = new LensFlare("flare");
+    flare = new LensFlare("flare");
     //flare.setLocalTranslation(lightNode.getLocalTranslation());
     lightNode.attachChild(flare);
     MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
     Vector3f terrainScale = new Vector3f(5,1,5);
     TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), terrainScale,
                                        heightMap.getHeightMap(),
-                                       new Vector3f(0, 0, 0), false);
+                                       new Vector3f(0,0,0), false);
     tb.setDetailTexture(1, 4);
     tb.setModelBound(new BoundingBox());
     tb.updateModelBound();
@@ -184,6 +186,7 @@ public class TestTerrainLighting extends SimpleGame {
     t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
     t2.setCombineScaleRGB(0);
     rootNode.setRenderState(ts);
+
     rootNode.attachChild(lightNode);
     rootNode.attachChild(camNode);
   }
