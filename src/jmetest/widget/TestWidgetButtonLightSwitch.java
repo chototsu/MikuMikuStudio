@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.6 2004-02-28 20:05:01 mojomonkey Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.7 2004-03-04 03:03:35 greggpatton Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
 	static String STARTED_STATE_STRING = " Stop ";
@@ -283,7 +283,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
     private TriMesh t, t2, t3, t4;
 
     private TriMesh box;
-    private Node scene, root;
+    private Node scene;
     private static final float MAX_STEPS = 25;
     private Camera cam;
     private AbstractInputController input;
@@ -321,7 +321,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
     protected void render(float interpolation) {
         Vector3f point;
         display.getRenderer().clearBuffers();
-        display.getRenderer().draw(root);
+        display.getRenderer().draw(frame);
 
     }
 
@@ -453,7 +453,6 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         dr = new DirectionalLight();
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        //dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         dr.setDirection(new Vector3f(0, 0, -1));
 
         LightState lightState = display.getRenderer().getLightState();
@@ -461,12 +460,15 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         lightState.attach(dr);
         lightState.attach(spotlight1);
         lightState.attach(spotlight2);
+
         lightState.setEnabled(true);
 
         am.setEnabled(true);
         spotlight1.setEnabled(true);
         spotlight2.setEnabled(true);
         dr.setEnabled(true);
+
+        lightState.setEnabled(true);
 
         scene = new Node("Scene Node");
 
@@ -480,15 +482,13 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         scene.attachChild(box);
 
         scene.attachChild(curve);
-        root = new Node("Root Node");
-
-        root.attachChild(scene);
 
         scene.updateGeometricState(0.0f, true);
 
         frame = new TestFrame(input);
 
-        root.attachChild(frame);
+        frame.attachChild(scene);
+        
         URL url = TestWidgetButtonLightSwitch.class.getClassLoader().getResource("jmetest/data/sound/click.mp3");
         System.out.println(url);
 
@@ -507,6 +507,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
     public static void main(String[] args) {
         TestWidgetButtonLightSwitch app = new TestWidgetButtonLightSwitch();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        //app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
         app.start();
     }
 
