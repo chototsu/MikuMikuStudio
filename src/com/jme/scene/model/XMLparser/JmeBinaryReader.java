@@ -66,6 +66,8 @@ public class JmeBinaryReader {
      */
     private HashMap properties=new HashMap();
 
+    private Hashtable repeatShare=new Hashtable();
+
     /**
      * The scene that was last loaded.
      */
@@ -116,6 +118,7 @@ public class JmeBinaryReader {
     }
 
     private void clearValues() {
+        repeatShare.clear();
         s.clear();
         shares.clear();
         attributes.clear();
@@ -146,6 +149,8 @@ public class JmeBinaryReader {
 //            s.push(new Node("XML Scene"));    Already on stack
         } else if (tagName.equals("node")){
             s.push(processSpatial(new Node((String) attributes.get("name")),attributes));
+        } else if (tagName.equals("repeatobject")){
+            s.push(repeatShare.get(attributes.get("ident")));
         } else if (tagName.equals("materialstate")){
             s.push(buildMaterial(attributes));
         } else if (tagName.equals("texturestate")){
@@ -332,6 +337,11 @@ public class JmeBinaryReader {
         } else{
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
+        if (attributes.containsKey("sharedident")){
+            Object temp=s.pop();
+            repeatShare.put(attributes.get("sharedident"),temp);
+            s.push(temp);
+        }
         return;
 
     }
@@ -352,6 +362,22 @@ public class JmeBinaryReader {
             parentNode=(Node) s.pop();
             parentNode.attachChild(childNode);
             s.push(parentNode);
+        } else if (tagName.equals("repeatobject")){
+            Object childObject=s.pop();
+            if (childObject instanceof RenderState){
+                parentSpatial=(Spatial) s.pop();
+                parentSpatial.setRenderState((RenderState) childObject);
+                s.push(parentSpatial);
+            } else if (childObject instanceof Controller){
+                parentSpatial=(Spatial) s.pop();
+                parentSpatial.addController((Controller) childObject);
+                s.push(parentSpatial);
+            } else if (childObject instanceof Spatial){
+                parentNode=(Node) s.pop();
+                parentNode.attachChild((Spatial) childObject);
+                s.push(parentNode);
+            } else
+                throw new IOException("Unknown child repeat object " + childObject.getClass());
         } else if (tagName.equals("materialstate")){
             MaterialState childMaterial=(MaterialState) s.pop();
             parentSpatial=(Spatial) s.pop();

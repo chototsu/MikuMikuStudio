@@ -56,7 +56,7 @@ public class JmeBinaryWriter {
      * Holds properties that modify how JmeBinaryWriter writes a file.
      */
     private HashMap properties=new HashMap();
-
+    private int totalShared=0;
 
 
     /**
@@ -76,12 +76,35 @@ public class JmeBinaryWriter {
         myOut=new DataOutputStream(bin);
         sharedObjects.clear();
         entireScene.clear();
+        totalShared=0;
         writeHeader();
         findDuplicates(scene);
-        writeDuplicates();
-        writeNode(scene);
+        entireScene.clear();
+        writeSpatial(scene);
         writeClosing();
         myOut.close();
+    }
+
+    /**
+     * Looks to see if the given Spatial is already contained in the entireScene.
+     * If it is, then place it in sharedObjects.  If not, then look thru its Controllers/RenderStates
+     * and also look thru its children if it is a Node
+     * @param n Spatial to look at
+     */
+    private void findDuplicates(Spatial n) {
+        if (n==null) return;
+        if (entireScene.containsKey(n)){
+            if (!sharedObjects.containsKey(n))
+                sharedObjects.put(n,"sharedSpatial"+totalShared++);
+            return;
+        }
+        entireScene.put(n,null);
+        evaluateSpatialChildrenDuplicates(n);
+        if (!(n instanceof Node)) return;
+        Node temp=(Node)n;
+        for (int i=temp.getQuantity()-1;i>=0;i--){
+            findDuplicates(temp.getChild(i));
+        }
     }
 
     /**
@@ -98,93 +121,6 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * All objects that are twice in the file are written as shared types.
-     * @throws IOException
-     */
-    private void writeDuplicates() throws IOException {
-        if (sharedObjects.size()==0)
-            return;
-
-//        IdentityHashMap temp=sharedObjects;
-//        sharedObjects=new IdentityHashMap();
-
-        writeTag("sharedtypes",null);
-        List l=new ArrayList(sharedObjects.keySet());
-        HashMap atts=new HashMap();
-
-        for (int i=0;i<l.size();i++){   // write renderstates first
-            atts.clear();
-            Object thisType=l.get(i);
-            String name=(String) sharedObjects.get(thisType);
-            atts.put("ident",name);
-
-            if (thisType instanceof RenderState){
-                writeTag("sharedrenderstate",atts);
-                sharedObjects.remove(thisType);
-                writeRenderState((RenderState) thisType);
-                sharedObjects.put(thisType,name);
-                writeEndTag("sharedrenderstate");
-            }
-        }
-
-        for (int i=0;i<l.size();i++){   // write Meshes second
-            atts.clear();
-            Object thisType=l.get(i);
-            String name=(String) sharedObjects.get(thisType);
-            atts.put("ident",name);
-
-            if (thisType instanceof TriMesh){
-                writeTag("sharedtrimesh",atts);
-                sharedObjects.remove(thisType);
-                writeMesh((TriMesh) thisType);
-                sharedObjects.put(thisType,name);
-                writeEndTag("sharedtrimesh");
-            }
-        }
-        for (int i=0;i<l.size();i++){   // write Nodes third
-            atts.clear();
-            Object thisType=l.get(i);
-            String name=(String) sharedObjects.get(thisType);
-            atts.put("ident",name);
-
-            if (thisType instanceof Node){
-                writeTag("sharednode",atts);
-                sharedObjects.remove(thisType);
-                writeNode((Node) thisType);
-                sharedObjects.put(thisType,name);
-                writeEndTag("sharednode");
-            }
-        }
-
-
-        writeEndTag("sharedtypes");
-//        sharedObjects=temp;
-    }
-
-    /**
-     * Looks to see if the given Spatial is already contained in the entireScene.
-     * If it is, then place it in sharedObjects.  If not, then look thru its Controllers/RenderStates
-     * and also look thru its children if it is a Node
-     * @param n Spatial to look at
-     */
-    private void findDuplicates(Spatial n) {
-        if (n==null) return;
-        if (entireScene.containsKey(n)){
-            sharedObjects.put(n,entireScene.get(n));
-            return;
-        } else{
-            entireScene.put(n,n.getName());
-        }
-
-        evaluateSpatialChildrenDuplicates(n);
-        if (n instanceof Node){
-            Node newN=(Node)n;
-            for (int i=0;i<newN.getQuantity();i++)
-                findDuplicates(newN.getChild(i));
-        }
-    }
-
-    /**
      * Looks for duplicate RenderStates and Controllers in a Spatial.  If they are there,
      * place them in then sharedObjects
      * @param s The spatial to examine.
@@ -194,24 +130,28 @@ public class JmeBinaryWriter {
         for (int i=0;i<s.getControllers().size();i++){
             Controller evaluCont=s.getController(i);
             if (evaluCont==null) continue;
+            if (entireScene.containsKey(evaluCont)){
+                if (!sharedObjects.containsKey(evaluCont))
+                    sharedObjects.put(evaluCont,"sharedController"+totalShared++);
+                continue;
+            }
+            entireScene.put(evaluCont,null);
             if (evaluCont instanceof SpatialTransformer){
                 for (int j=0;j<((SpatialTransformer)evaluCont).toChange.length;j++){
                     findDuplicateObjects(((SpatialTransformer)evaluCont).toChange[j]);
                 }
             }
-            if (entireScene.containsKey(evaluCont))
-                sharedObjects.put(evaluCont,entireScene.get(evaluCont));
-            else
-                entireScene.put(evaluCont,"controller"+(s.hashCode()*evaluCont.hashCode()));
         }
 
         for (int i=0;i<s.getRenderStateList().length;i++){
             RenderState evaluRend=s.getRenderStateList()[i];
             if (evaluRend==null) continue;
-            if (entireScene.containsKey(evaluRend))
-                sharedObjects.put(evaluRend,entireScene.get(evaluRend));
-            else
-                entireScene.put(evaluRend,"RenderState"+(s.hashCode()*evaluRend.hashCode()));
+            if (entireScene.containsKey(evaluRend)){
+                if (!sharedObjects.containsKey(evaluRend))
+                    sharedObjects.put(evaluRend,"sharedRenderState"+totalShared++);
+                continue;
+            }
+            entireScene.put(evaluRend,null);
         }
     }
 
@@ -227,11 +167,13 @@ public class JmeBinaryWriter {
      * @throws IOException If anything wierd happens.
      */
     public void writeScene(Geometry geo,OutputStream bin) throws IOException {
+        totalShared=0;
         myOut=new DataOutputStream(bin);
         sharedObjects.clear();
         entireScene.clear();
         writeHeader();
         findDuplicates(geo);
+        entireScene.clear();
         writeSpatial(geo);
         writeClosing();
         myOut.close();
@@ -239,17 +181,27 @@ public class JmeBinaryWriter {
 
     /**
      * Writes a node to binary format.
-     * @param node The node to write
+     * @param node The node to write.
      * @throws IOException If anything bad happens.
      */
     private void writeNode(Node node) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
+        if (sharedObjects.containsKey(node))
+            atts.put("sharedident",sharedObjects.get(node));
         putSpatialAtts(node,atts);
         writeTag("node",atts);
         writeChildren(node);
         writeSpatialChildren(node);
         writeEndTag("node");
+    }
+
+    private void writeSharedObject(Object o) throws IOException {
+        HashMap atts=new HashMap();
+        atts.clear();
+        atts.put("ident",sharedObjects.get(o));
+        writeTag("repeatobject",atts);
+        writeEndTag("repeatobject");
     }
 
     /**
@@ -269,8 +221,11 @@ public class JmeBinaryWriter {
      */
     private void writeSpatial(Spatial s) throws IOException {
         if (sharedObjects.containsKey(s)){
-            writePublicObject(s);
-            return;
+            if (entireScene.containsKey(s)){
+                writeSharedObject(s);
+                return;
+            }
+            entireScene.put(s,null);
         }
         if (s instanceof XMLloadable)
             writeXMLloadable((XMLloadable)s);
@@ -287,6 +242,8 @@ public class JmeBinaryWriter {
     private void writeLoaderNode(LoaderNode loaderNode) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
+        if (sharedObjects.containsKey(loaderNode))
+            atts.put("sharedident",sharedObjects.get(loaderNode));
         atts.put("type",loaderNode.type);
         if (loaderNode.filePath!=null)
             atts.put("file",loaderNode.filePath);
@@ -306,13 +263,10 @@ public class JmeBinaryWriter {
      */
     private void writeMesh(TriMesh triMesh) throws IOException {
         if (triMesh==null) return;
-        if (sharedObjects.containsKey(triMesh)){
-            writePublicObject(triMesh);
-            return;
-        }
-
         HashMap atts=new HashMap();
         atts.clear();
+        if (sharedObjects.containsKey(triMesh))
+            atts.put("sharedident",sharedObjects.get(triMesh));
         putSpatialAtts(triMesh,atts);
         writeTag("mesh",atts);
         writeTriMeshTags(triMesh);
@@ -339,6 +293,8 @@ public class JmeBinaryWriter {
         }
         HashMap atts=new HashMap();
         atts.clear();
+        if (sharedObjects.containsKey(jointMesh))
+            atts.put("sharedident",sharedObjects.get(jointMesh));
         putSpatialAtts(jointMesh,atts);
         writeTag("jointmesh",atts);
         writeJointMeshTags(jointMesh);
@@ -377,6 +333,8 @@ public class JmeBinaryWriter {
      */
     private void writeXMLloadable(XMLloadable xmlloadable) throws IOException {
         HashMap atts=new HashMap();
+        if (sharedObjects.containsKey(xmlloadable))
+            atts.put("sharedident",sharedObjects.get(xmlloadable));
         atts.put("class",xmlloadable.getClass().getName());
         if (xmlloadable instanceof Spatial)
             putSpatialAtts((Spatial) xmlloadable,atts);
@@ -410,6 +368,13 @@ public class JmeBinaryWriter {
         if (conts==null) return;
         for (int i=0;i<conts.size();i++){
             Controller r=(Controller) conts.get(i);
+            if (sharedObjects.containsKey(r)){
+                if (entireScene.containsKey(r)){
+                    writeSharedObject(r);
+                    return;
+                }
+                entireScene.put(r,null);
+            }
             if (r instanceof JointController){
                 writeJointController((JointController)r);
             } else if (r instanceof SpatialTransformer){
@@ -425,6 +390,8 @@ public class JmeBinaryWriter {
     private void writeSpatialTransformer(SpatialTransformer st) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
+        if (sharedObjects.containsKey(st))
+            atts.put("sharedident",sharedObjects.get(st));
         atts.put("numobjects",new Integer(st.getNumObjects()));
         writeTag("spatialtransformer",atts);
         for (int i=0;i<st.toChange.length;i++){
@@ -444,10 +411,8 @@ public class JmeBinaryWriter {
     }
 
     private void writeObject(Object o) throws IOException {
-        if (o instanceof TriMesh){
-            writeMesh((TriMesh) o);
-        } else if (o instanceof Node){
-            writeNode((Node) o);
+        if (o instanceof Spatial ){
+            writeSpatial((Spatial) o);
         }
     }
 
@@ -512,7 +477,11 @@ public class JmeBinaryWriter {
      */
     private void writeKeyframeController(KeyframeController kc) throws IOException {
         // Assume that morphMesh is keyframeController's parent
-        writeTag("keyframecontroller",null);
+        HashMap atts=new HashMap();
+        atts.clear();
+        if (sharedObjects.containsKey(kc))
+            atts.put("sharedident",sharedObjects.get(kc));
+        writeTag("keyframecontroller",atts);
         ArrayList keyframes=kc.keyframes;
         for (int i=0;i<keyframes.size();i++)
             writeKeyFramePointInTime((KeyframeController.PointInTime)keyframes.get(i));
@@ -603,6 +572,8 @@ public class JmeBinaryWriter {
     private void writeJointController(JointController jc) throws IOException{
         HashMap atts=new HashMap();
         atts.clear();
+        if (sharedObjects.containsKey(jc))
+            atts.put("sharedident",sharedObjects.get(jc));
         atts.put("numJoints",new Integer(jc.numJoints));
         writeTag("jointcontroller",atts);
         Object[] o=jc.movementInfo.toArray();
@@ -656,9 +627,14 @@ public class JmeBinaryWriter {
      */
     private void writeRenderState(RenderState renderState) throws IOException {
         if (renderState==null) return;
-        if (sharedObjects.containsKey(renderState))
-            writePublicObject(renderState);
-        else if (renderState instanceof MaterialState)
+        if (sharedObjects.containsKey(renderState)){
+            if (entireScene.containsKey(renderState)){
+                writeSharedObject(renderState);
+                return;
+            }
+            entireScene.put(renderState,null);
+        }
+        if (renderState instanceof MaterialState)
             writeMaterialState((MaterialState) renderState);
         else if (renderState instanceof TextureState)
             writeTextureState((TextureState)renderState);
@@ -675,6 +651,9 @@ public class JmeBinaryWriter {
     private void writeWireframeState(WireframeState wireframeState) throws IOException {
         if (wireframeState==null) return;
         HashMap atts=new HashMap();
+        atts.clear();
+        if (sharedObjects.containsKey(wireframeState))
+            atts.put("sharedident",sharedObjects.get(wireframeState));
         atts.put("width",new Float(wireframeState.getLineWidth()));
         atts.put("facetype",new Integer(wireframeState.getFace()));
         writeTag("wirestate",atts);
@@ -684,6 +663,9 @@ public class JmeBinaryWriter {
     private void writeCullState(CullState cullState) throws IOException {
         if (cullState==null) return;
         HashMap atts=new HashMap();
+        atts.clear();
+        if (sharedObjects.containsKey(cullState))
+            atts.put("sharedident",sharedObjects.get(cullState));
         int i=cullState.getCullMode();
         if (i==CullState.CS_BACK)
             atts.put("cull","back");
@@ -698,6 +680,9 @@ public class JmeBinaryWriter {
     private void writeLightState(LightState lightState) throws IOException {
         if (lightState==null) return;
         HashMap atts=new HashMap();
+        atts.clear();
+        if (sharedObjects.containsKey(lightState))
+            atts.put("sharedident",sharedObjects.get(lightState));
         writeTag("lightstate",null);
         for (int i=0;i<lightState.getQuantity();i++){
             atts.clear();
@@ -737,15 +722,6 @@ public class JmeBinaryWriter {
         writeEndTag("spotlight");
     }
 
-    private void writePublicObject(Object o) throws IOException {
-        String ident=(String) sharedObjects.get(o);
-        HashMap atts=new HashMap();
-        atts.clear();
-        atts.put("ident",ident);
-        writeTag("publicobject",atts);
-        writeEndTag("publicobject");
-    }
-
     /**
      * Writes a TextureState to binary format.  An attempt is made to look at the
      * TextureState's ImageLocation to determine how to point the TextureState's information
@@ -757,6 +733,8 @@ public class JmeBinaryWriter {
         String s=state.getTexture().getImageLocation();
         HashMap atts=new HashMap();
         atts.clear();
+        if (sharedObjects.containsKey(state))
+            atts.put("sharedident",sharedObjects.get(state));
         if ("file:/".equals(s.substring(0,6)))
             atts.put("file",replaceSpecialsForFile(new StringBuffer(s.substring(6))).toString());
         else
@@ -784,6 +762,9 @@ public class JmeBinaryWriter {
         if (state==null) return;
         HashMap atts=new HashMap();
         atts.clear();
+        if (sharedObjects.containsKey(state))
+            atts.put("sharedident",sharedObjects.get(state));
+
         atts.put("emissive",state.getEmissive());
         atts.put("ambient",state.getAmbient());
         atts.put("diffuse",state.getDiffuse());
