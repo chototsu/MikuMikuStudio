@@ -26,7 +26,6 @@ import java.net.URL;
  * @author Jack Lindamood
  */
 public class MilkToXML {
-    OutputStream myOutStream;
     DataInput inFile;
     byte[] tempChar=new byte[128];
     int nNumVertices;
@@ -44,7 +43,6 @@ public class MilkToXML {
      * @throws IOException If anything funky goes wrong with reading information
      */
     public void writeFiletoStream(URL file,OutputStream o) throws IOException {
-        myOutStream=o;
         inFile=new LittleEndien(file.openStream());
         finalNode=new Node(new File(file.getFile()).getName());
         checkHeader();
