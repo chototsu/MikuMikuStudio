@@ -225,7 +225,7 @@ public class TestMain extends AbstractGame {
 	private void initDisplay() {
 		DisplaySystem.createDisplaySystem(
 			"test",
-			"jme/data/Images/Monkey.jpg",
+			"data/Images/Monkey.jpg",
 			true);
 	}
 
@@ -260,7 +260,7 @@ public class TestMain extends AbstractGame {
 			initGL();
 			initTimer();
 			TextureManager.getTextureManager().reload();
-			font = new Font2D("jme/data/Font/font.png");
+			font = new Font2D("data/Font/font.png");
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -272,7 +272,7 @@ public class TestMain extends AbstractGame {
 	}
 	protected void initSystem() {
 		initDisplay();
-		font = new Font2D("jme/data/Font/font.png");
+		font = new Font2D("data/Font/font.png");
 		initLogger();
 		initGL();
 		initCamera();
@@ -280,7 +280,7 @@ public class TestMain extends AbstractGame {
 		initTimer();
 
 		SplashScreen ss3 = new SplashScreen();
-		ss3.setTexture("jme/data/Images/tdemo.jpg");
+		ss3.setTexture("data/Images/tdemo.jpg");
 
 		addSplashScreen(ss3);
 
@@ -291,17 +291,17 @@ public class TestMain extends AbstractGame {
 		hm1.setHeightScale(1.0f);
 		pt = new ProceduralTexture(hm1);
 		pt.addTexture(
-			new ImageIcon("jme/data/texture/plants15.jpg"),
+			new ImageIcon("data/texture/plants15.jpg"),
 			-128,
 			0,
 			128);
 		pt.addTexture(
-			new ImageIcon("jme/data/texture/plants12.jpg"),
+			new ImageIcon("data/texture/plants12.jpg"),
 			0,
 			128,
 			255);
 		pt.addTexture(
-			new ImageIcon("jme/data/texture/highestTile.png"),
+			new ImageIcon("data/texture/highestTile.png"),
 			128,
 			255,
 			384);
@@ -309,40 +309,40 @@ public class TestMain extends AbstractGame {
 
 		//		SkyBox sb = new SkyBox(512);
 		//		String[] tex = new String[6];
-		//		tex[0] = "jme/data/Top.jpg";
-		//		tex[1] = "jme/data/Bottom.jpg";
-		//		tex[2] = "jme/data/Right.jpg";
-		//		tex[3] = "jme/data/Left.jpg";
-		//		tex[4] = "jme/data/Front.jpg";
-		//		tex[5] = "jme/data/Back.jpg";
+		//		tex[0] = "data/Top.jpg";
+		//		tex[1] = "data/Bottom.jpg";
+		//		tex[2] = "data/Right.jpg";
+		//		tex[3] = "data/Left.jpg";
+		//		tex[4] = "data/Front.jpg";
+		//		tex[5] = "data/Back.jpg";
 		//		sb.setTextures(tex);
 
 		SkyDome sd = new SkyDome(16, 15, 15, 1, 1);
-		sd.setTexture("jme/data/texture/clouds.png");
+		sd.setTexture("data/texture/clouds.png");
 		sd.setDomeRotation(0.250f);
 
 		WaterPlane wp = new WaterPlane(1025 * 2, 45, 0.25f);
 		wp.setColor(new Vector(1.0f, 1.0f, 1.0f));
 		wp.setTransparency(0.60f);
-		wp.setTexture("jme/data/texture/water02.jpg");
+		wp.setTexture("data/texture/water02.jpg");
 		wp.setWaveSpeed(0.05f);
 		wp.setTextureAnimation(1.0f, 1.0f);
 
 		//		WaterMesh wp = new WaterMesh(16,64,2);
-		//		wp.setTexture("jme/data/water02.jpg");
+		//		wp.setTexture("data/water02.jpg");
 		//		wp.setBaseHeight(50.0f);
 		//		wp.setWindSpeed(-2);
 
 		sl = new SlopeLighting(hm1, 1, -1, 0.1f, 0.9f, 10);
 		l = new Geomipmap(hm1, 17, camera);
-		l.setDetailTexture("jme/data/texture/Detail.jpg", 64);
+		l.setDetailTexture("data/texture/Detail.jpg", 64);
 		l.setLightMap(sl);
 		camera.setSky(sd);
 
 		e = new Entity(1);
-		//MilkshapeModel msmodel = new MilkshapeModel("jme/data/tris.ms3d");
+		//MilkshapeModel msmodel = new MilkshapeModel("data/tris.ms3d");
 		Md3Model msmodel =
-			new Md3Model("jme/data/model/Paladin", "Paladin", "railgun");
+			new Md3Model("data/model/Paladin", "Paladin", "railgun");
 		msmodel.setTorsoAnimation("TORSO_STAND");
 		msmodel.setLegsAnimation("LEGS_IDLE");
 
@@ -382,10 +382,10 @@ public class TestMain extends AbstractGame {
 		l.setVolumetricFogDepth(100);
 		object = new Pyramid(10, 30);
 		object.setColor(0.5f, 0.85f, 0.5f, 0.5f);
-		object.setTexture("jme/data/texture/plants15.jpg");
+		object.setTexture("data/texture/plants15.jpg");
 		object.useDisplayList(true);
 
-		//object = new MilkshapeModel("jme/data/tree.ms3d");
+		//object = new MilkshapeModel("data/tree.ms3d");
 
 		Entity[] elist = new Entity[1000];
 		float x, z;
