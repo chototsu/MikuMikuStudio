@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.9 2004-04-02 15:52:22 mojomonkey Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.10 2004-04-02 21:26:50 mojomonkey Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
 	static String STARTED_STATE_STRING = " Stop ";
@@ -439,14 +439,14 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         spotlight1 = new SpotLight();
         spotlight1.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         spotlight1.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        spotlight1.setDirection(new Vector3f(0, 0, 0));
+        spotlight1.setDirection(new Vector3f(-1, -0.5f, 0));
         spotlight1.setLocation(new Vector3f(25, 10, 0));
         spotlight1.setAngle(15);
 
         spotlight2 = new SpotLight();
         spotlight2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         spotlight2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        spotlight2.setDirection(new Vector3f(0, 0, 0));
+        spotlight2.setDirection(new Vector3f(1, -0.5f, 0));
         spotlight2.setLocation(new Vector3f(-25, 10, 0));
         spotlight2.setAngle(15);
 

@@ -56,7 +56,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene4</code>
  * @author Gregg Patton
- * @version $Id: TestScene4.java,v 1.5 2004-03-26 19:48:05 mojomonkey Exp $
+ * @version $Id: TestScene4.java,v 1.6 2004-04-02 21:26:50 mojomonkey Exp $
  */
 public class TestScene4 extends TestAbstractScene {
 
@@ -91,14 +91,14 @@ public class TestScene4 extends TestAbstractScene {
             SpotLight am = new SpotLight();
             am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
             am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-            am.setDirection(new Vector3f(0, 0, 0));
+            am.setDirection(new Vector3f(-1, -0.5f, 0));
             am.setLocation(new Vector3f(25, 10, 0));
             am.setAngle(15);
 
             SpotLight am2 = new SpotLight();
             am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
             am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-            am2.setDirection(new Vector3f(0, 0, 0));
+            am2.setDirection(new Vector3f(1, -0.5f, 0));
             am2.setLocation(new Vector3f(-25, 10, 0));
             am2.setAngle(15);
 

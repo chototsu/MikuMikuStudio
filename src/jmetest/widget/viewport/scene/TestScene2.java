@@ -74,7 +74,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene2</code>
  * @author Gregg Patton
- * @version $Id: TestScene2.java,v 1.5 2004-04-02 15:52:23 mojomonkey Exp $
+ * @version $Id: TestScene2.java,v 1.6 2004-04-02 21:26:51 mojomonkey Exp $
  */
 public class TestScene2 extends TestAbstractScene implements Observer {
 
@@ -207,14 +207,14 @@ public class TestScene2 extends TestAbstractScene implements Observer {
             spotlight1 = new SpotLight();
             spotlight1.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
             spotlight1.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-            spotlight1.setDirection(new Vector3f(0, 0, 0));
+            spotlight1.setDirection(new Vector3f(-1, -0.5f, 0));
             spotlight1.setLocation(new Vector3f(25, 10, 0));
             spotlight1.setAngle(15);
 
             spotlight2 = new SpotLight();
             spotlight2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
             spotlight2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-            spotlight2.setDirection(new Vector3f(0, 0, 0));
+            spotlight2.setDirection(new Vector3f(1, -0.5f, 0));
             spotlight2.setLocation(new Vector3f(-25, 10, 0));
             spotlight2.setAngle(15);
 
