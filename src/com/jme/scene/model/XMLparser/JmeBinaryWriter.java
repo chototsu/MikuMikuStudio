@@ -29,6 +29,8 @@ import java.net.URL;
 public class JmeBinaryWriter {
     DataOutputStream myOut;
     private final static boolean DEBUG=false;
+    private IdentityHashMap sharedObjects=new IdentityHashMap(20);
+    private IdentityHashMap entireScene=new IdentityHashMap(256);
 
     private static final Quaternion DEFAULT_ROTATION=new Quaternion();
     private static final Vector3f DEFAULT_TRANSLATION = new Vector3f();
@@ -49,10 +51,73 @@ public class JmeBinaryWriter {
      */
     public void writeScene(Node scene,OutputStream bin) throws IOException {
         myOut=new DataOutputStream(bin);
+        sharedObjects.clear();
+        entireScene.clear();
         writeHeader();
+        findDuplicates(scene);
+        writeDuplicates();
         writeNode(scene);
         writeClosing();
         myOut.close();
+    }
+
+    private void writeDuplicates() throws IOException {
+        if (sharedObjects.size()==0)
+            return;
+
+        IdentityHashMap temp=sharedObjects;
+        sharedObjects=new IdentityHashMap();
+
+        writeTag("sharedtypes",null);
+        List l=new ArrayList(temp.keySet());
+        for (int i=0;i<l.size();i++){
+            String name=(String) temp.get(l.get(i));
+            HashMap atts=new HashMap();
+            atts.put("ident",name);
+            if (l.get(i) instanceof RenderState){
+                writeTag("sharedrenderstate",atts);
+                writeRenderState((RenderState) l.get(i));
+                writeEndTag("sharedrenderstate");
+            }
+        }
+        writeEndTag("sharedtypes");
+        sharedObjects=temp;
+    }
+
+    private void findDuplicates(Spatial n) {
+        if (n==null) return;
+        if (entireScene.containsKey(n)){
+            sharedObjects.put(n,entireScene.get(n));
+            return;
+        }
+        entireScene.put(n,n.getName());
+        evaluateSpatialChildren(n);
+        if (n instanceof Node){
+            Node newN=(Node)n;
+            for (int i=0;i<newN.getQuantity();i++)
+                findDuplicates(newN.getChild(i));
+        }
+    }
+
+    private void evaluateSpatialChildren(Spatial s) {
+        if (s==null) return;
+        for (int i=0;i<s.getControllers().size();i++){
+            Controller evaluCont=s.getController(i);
+            if (evaluCont==null) continue;
+            if (entireScene.containsKey(evaluCont))
+                sharedObjects.put(evaluCont,entireScene.get(evaluCont));
+            else
+                entireScene.put(evaluCont,"controller"+(s.hashCode()*evaluCont.hashCode()));
+        }
+
+        for (int i=0;i<s.getRenderStateList().length;i++){
+            RenderState evaluRend=s.getRenderStateList()[i];
+            if (evaluRend==null) continue;
+            if (entireScene.containsKey(evaluRend))
+                sharedObjects.put(evaluRend,entireScene.get(evaluRend));
+            else
+                entireScene.put(evaluRend,"RenderState"+(s.hashCode()*evaluRend.hashCode()));
+        }
     }
 
     /**
@@ -63,7 +128,10 @@ public class JmeBinaryWriter {
      */
     public void writeScene(Geometry geo,OutputStream bin) throws IOException {
         myOut=new DataOutputStream(bin);
+        sharedObjects.clear();
+        entireScene.clear();
         writeHeader();
+        findDuplicates(geo);
         writeSpatial(geo);
         writeClosing();
         myOut.close();
@@ -320,19 +388,39 @@ public class JmeBinaryWriter {
     }
 
     /**
-     * Writes a spatial's RenderStates to binary format.  Only writes known RenderStates
+     * Writes a spatial's RenderStates to binary format.
      * @param spatial The spatial to look at.
      * @throws IOException
      */
     private void writeRenderStates(Spatial spatial) throws IOException {
         RenderState[] states=spatial.getRenderStateList();
         if (states==null) return;
-        if (states[RenderState.RS_MATERIAL]!=null){
-            writeMaterialState((MaterialState) states[RenderState.RS_MATERIAL]);
-        }
-        if (states[RenderState.RS_TEXTURE]!=null){
-            writeTextureState((TextureState)states[RenderState.RS_TEXTURE]);
-        }
+        for (int i=0;i<states.length;i++)
+            writeRenderState(states[i]);
+    }
+
+    /**
+     * Writes a single render state to binary format.  Only writes known RenderStates
+     * @param renderState The state to write
+     * @throws IOException
+     */
+    private void writeRenderState(RenderState renderState) throws IOException {
+        if (renderState==null) return;
+        if (sharedObjects.containsKey(renderState))
+            writePublicObject(renderState);
+        else if (renderState instanceof MaterialState)
+            writeMaterialState((MaterialState) renderState);
+        else if (renderState instanceof TextureState)
+            writeTextureState((TextureState)renderState);
+    }
+
+    private void writePublicObject(Object o) throws IOException {
+        String ident=(String) sharedObjects.get(o);
+        HashMap atts=new HashMap();
+        atts.clear();
+        atts.put("ident",ident);
+        writeTag("publicobject",atts);
+        writeEndTag("publicobject");
     }
 
     /**
@@ -342,7 +430,7 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeTextureState(TextureState state) throws IOException{
-        if (state.getTexture()==null) return;
+        if (state.getTexture()==null || state.getTexture().getImageLocation()==null) return;
         String s=state.getTexture().getImageLocation();
         HashMap atts=new HashMap();
         atts.clear();
@@ -484,7 +572,7 @@ public class JmeBinaryWriter {
 
     private void writeIntArray(int[] array) throws IOException {
         myOut.writeByte(BinaryFormatConstants.DATA_INTARRAY);
-        myOut.writeShort(array.length);
+        myOut.writeInt(array.length);
         for (int i=0;i<array.length;i++)
             myOut.writeInt(array[i]);
     }
@@ -496,7 +584,7 @@ public class JmeBinaryWriter {
 
     private void writeColorArray(ColorRGBA[] array) throws IOException {
         myOut.writeByte(BinaryFormatConstants.DATA_COLORARRAY);
-        myOut.writeShort(array.length);
+        myOut.writeInt(array.length);
         for (int i=0;i<array.length;i++){
             myOut.writeFloat(array[i].r);
             myOut.writeFloat(array[i].g);
@@ -507,7 +595,7 @@ public class JmeBinaryWriter {
 
     private void writeVec2fArray(Vector2f[] array) throws IOException {
         myOut.writeByte(BinaryFormatConstants.DATA_V2FARRAY);
-        myOut.writeShort(array.length);
+        myOut.writeInt(array.length);
         for (int i=0;i<array.length;i++){
             myOut.writeFloat(array[i].x);
             myOut.writeFloat(array[i].y);
@@ -516,11 +604,17 @@ public class JmeBinaryWriter {
 
     private void writeVec3fArray(Vector3f[] array) throws IOException {
         myOut.writeByte(BinaryFormatConstants.DATA_V3FARRAY);
-        myOut.writeShort(array.length);
+        myOut.writeInt(array.length);
         for (int i=0;i<array.length;i++){
-            myOut.writeFloat(array[i].x);
-            myOut.writeFloat(array[i].y);
-            myOut.writeFloat(array[i].z);
+            if (array[i]==null){
+                myOut.writeFloat(Float.NaN);
+                myOut.writeFloat(Float.NaN);
+                myOut.writeFloat(Float.NaN);
+            } else{
+                myOut.writeFloat(array[i].x);
+                myOut.writeFloat(array[i].y);
+                myOut.writeFloat(array[i].z);
+            }
         }
     }
 

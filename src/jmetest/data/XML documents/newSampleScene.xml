@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="">
 	<sharedtypes>
-		<sharednodeitem ident="red">
-			<materialstate emissive="0 0 0 1" alpha="1" ambient=".1 .1 .1 1" diffuse="1 0 0 1" shiny="64" specular="1 1 1 1"/>
-		</sharednodeitem>
+		<sharedrenderstate ident="red">
+			<materialstate emissive="1 0 0 1" alpha="1" ambient=".1 .1 .1 1" diffuse="1 0 0 1" shiny="64" specular="1 1 1 1"/>
+		</sharedrenderstate>
 	</sharedtypes>
 	<node name="man">
 		<mesh name="head" translation="0 0 3" scale="5 5 5">
-			<materialstate emissive="0 0 0 1" alpha="1" ambient=".1 .1 .1 1" diffuse="0 1 0 1" shiny="64" specular="1 1 1 1"/>
+			<publicobject ident="red"/>
 			<vertex data="0 0 0 1 0 0 0 1 0"/>
 			<normal data="0 0 1 0 0 1 0 0 1"/>
 			<color data="1 0 0 1 0 1 0 1 0 0 1 1"/>
