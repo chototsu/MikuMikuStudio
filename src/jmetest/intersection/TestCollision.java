@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.9 2004-04-02 15:52:13 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.10 2004-04-02 16:28:10 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -260,7 +260,6 @@ public class TestCollision extends SimpleGame {
         am.setDirection(new Vector3f(0, 0, 75));
 
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingBox());
         cam.update();
 
         TextureState ts = display.getRenderer().getTextureState();

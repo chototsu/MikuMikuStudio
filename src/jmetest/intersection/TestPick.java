@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.12 2004-04-02 15:52:14 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.13 2004-04-02 16:28:10 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
     private Camera cam;
@@ -215,7 +215,6 @@ public class TestPick extends SimpleGame {
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingBox());
         cam.update();
 
         root.attachChild(text);
