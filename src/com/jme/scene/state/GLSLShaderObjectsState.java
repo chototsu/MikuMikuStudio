@@ -31,7 +31,7 @@
 package com.jme.scene.state;
 
 import java.net.URL;
-import java.util.HashMap;
+import java.util.ArrayList;
 
 import com.jme.math.Matrix3f;
 import com.jme.math.Matrix4f;
@@ -44,7 +44,7 @@ import com.jme.util.ShaderUniform;
  */
 public abstract class GLSLShaderObjectsState extends RenderState {
 
-    public HashMap uniforms = new HashMap();
+    public ArrayList uniforms = new ArrayList();
 
     /**
      * <code>isSupported</code> determines if the ARB_shader_objects extension
@@ -67,7 +67,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_INT);
         object.vint = new int[1];
         object.vint[0] = value;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -83,7 +83,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_FLOAT);
         object.vfloat = new float[1];
         object.vfloat[0] = value;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -102,7 +102,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.vint = new int[2];
         object.vint[0] = value1;
         object.vint[1] = value2;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -121,7 +121,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.vfloat = new float[2];
         object.vfloat[0] = value1;
         object.vfloat[1] = value2;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -143,7 +143,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.vint[0] = value1;
         object.vint[1] = value2;
         object.vint[2] = value3;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -165,7 +165,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.vfloat[0] = value1;
         object.vfloat[1] = value2;
         object.vfloat[2] = value3;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -191,7 +191,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.vint[1] = value2;
         object.vint[2] = value3;
         object.vint[3] = value4;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -217,7 +217,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.vfloat[1] = value2;
         object.vfloat[2] = value3;
         object.vfloat[3] = value4;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -238,7 +238,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         object.matrix2f = new float[4];
         object.matrix2f = value;
         object.transpose = transpose;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -256,7 +256,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_MATRIX3);
         object.matrix3f = value;
         object.transpose = transpose;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -274,7 +274,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_MATRIX4);
         object.matrix4f = value;
         object.transpose = transpose;
-        uniforms.put(var, object);
+        uniforms.add(object);
     }
 
     /**
@@ -285,11 +285,18 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      * @param sampler
      *            the new value
      */
-
     public void setUniform(String var, com.jme.image.Texture sampler) {
         setUniform(var, sampler.getTextureId());
     }
 
+    /**
+     * <code>clearUniforms</code> clears all uniform values from this state.
+     *
+     */
+    public void clearUniforms() {
+        uniforms.clear();
+    }
+    
     /**
      * @return RS_SHADER_OBJECTS
      * @see com.jme.scene.state.RenderState#getType()

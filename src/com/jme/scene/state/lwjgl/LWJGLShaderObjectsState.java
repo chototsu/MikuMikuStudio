@@ -35,11 +35,13 @@ import java.io.DataInputStream;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
-import java.util.Iterator;
 import java.util.logging.Level;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.ARBFragmentShader;
+import org.lwjgl.opengl.ARBShaderObjects;
+import org.lwjgl.opengl.ARBVertexShader;
+import org.lwjgl.opengl.GLContext;
 
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.util.LoggingSystem;
@@ -51,6 +53,8 @@ import com.jme.util.ShaderUniform;
  * @author Thomas Hourdel
  */
 public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
+
+    private static final long serialVersionUID = 1L;
 
     /** OpenGL id for this program. * */
     private int programID = -1;
@@ -71,14 +75,17 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      * @param name
      *            uniform variable name
      */
-    private int getUniLoc(String name) {
-        ByteBuffer nameBuf = BufferUtils
-                .createByteBuffer(name.getBytes().length);
-        nameBuf.clear();
-        nameBuf.put(name.getBytes());
-        nameBuf.rewind();
-
-        return ARBShaderObjects.glGetUniformLocationARB(programID, nameBuf);
+    private int getUniLoc(ShaderUniform uniform) {
+        if (uniform.uniformID == -1) {
+            ByteBuffer nameBuf = BufferUtils
+            	.createByteBuffer(uniform.name.getBytes().length);
+            nameBuf.clear();
+            nameBuf.put(uniform.name.getBytes());
+            nameBuf.rewind();
+            
+            uniform.uniformID = ARBShaderObjects.glGetUniformLocationARB(programID, nameBuf);
+        }
+        return uniform.uniformID; 
     }
 
     /**
@@ -211,81 +218,87 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
 
                     // Assign uniforms...
                     if (!uniforms.isEmpty()) {
-                        for (Iterator iterator = uniforms.keySet().iterator(); iterator
-                                .hasNext();) {
-                            ShaderUniform uniformVar = (ShaderUniform) uniforms
-                                    .get((String) iterator.next());
+                        for (int x = uniforms.size(); --x >= 0; ) {
+                            ShaderUniform uniformVar = (ShaderUniform) uniforms.get(x);
                             switch (uniformVar.type) {
                             case ShaderUniform.SU_INT:
                                 ARBShaderObjects.glUniform1iARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.vint[0]);
                                 break;
                             case ShaderUniform.SU_INT2:
                                 ARBShaderObjects.glUniform2iARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.vint[0], uniformVar.vint[1]);
                                 break;
                             case ShaderUniform.SU_INT3:
                                 ARBShaderObjects.glUniform3iARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.vint[0], uniformVar.vint[1],
                                         uniformVar.vint[2]);
                                 break;
                             case ShaderUniform.SU_INT4:
                                 ARBShaderObjects.glUniform4iARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
 
                                         uniformVar.vint[0], uniformVar.vint[1],
                                         uniformVar.vint[2], uniformVar.vint[3]);
                                 break;
                             case ShaderUniform.SU_FLOAT:
                                 ARBShaderObjects.glUniform1fARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.vfloat[0]);
                                 break;
                             case ShaderUniform.SU_FLOAT2:
                                 ARBShaderObjects.glUniform2fARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.vfloat[0],
                                         uniformVar.vfloat[1]);
                                 break;
                             case ShaderUniform.SU_FLOAT3:
                                 ARBShaderObjects.glUniform3fARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.vfloat[0],
                                         uniformVar.vfloat[1],
                                         uniformVar.vfloat[2]);
                                 break;
                             case ShaderUniform.SU_FLOAT4:
                                 ARBShaderObjects.glUniform4fARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.vfloat[0],
                                         uniformVar.vfloat[1],
                                         uniformVar.vfloat[2],
                                         uniformVar.vfloat[3]);
                                 break;
                             case ShaderUniform.SU_MATRIX2:
-                                final java.nio.FloatBuffer matrix2f = org.lwjgl.BufferUtils
-                                        .createFloatBuffer(4);
-                                matrix2f.clear();
-                                matrix2f.put(uniformVar.matrix2f);
-                                matrix2f.rewind();
+                                if (uniformVar.matrixBuffer == null)
+                                    uniformVar.matrixBuffer = org.lwjgl.BufferUtils.createFloatBuffer(4);
+                                uniformVar.matrixBuffer.clear();
+                                uniformVar.matrixBuffer.put(uniformVar.matrix2f);
+                                uniformVar.matrixBuffer.rewind();
                                 ARBShaderObjects.glUniformMatrix2ARB(
-                                        getUniLoc(uniformVar.name),
-                                        uniformVar.transpose, matrix2f);
+                                        getUniLoc(uniformVar),
+                                        uniformVar.transpose, uniformVar.matrixBuffer);
                                 break;
                             case ShaderUniform.SU_MATRIX3:
+                                if (uniformVar.matrixBuffer == null)
+                                    uniformVar.matrixBuffer = uniformVar.matrix3f.toFloatBuffer();
+                                else 
+                                    uniformVar.matrix3f.fillFloatBuffer(uniformVar.matrixBuffer);
                                 ARBShaderObjects.glUniformMatrix3ARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.transpose,
-                                        uniformVar.matrix3f.toFloatBuffer());
+                                        uniformVar.matrixBuffer);
                                 break;
                             case ShaderUniform.SU_MATRIX4:
+                                if (uniformVar.matrixBuffer == null)
+                                    uniformVar.matrixBuffer = uniformVar.matrix4f.toFloatBuffer();
+                                else 
+                                    uniformVar.matrix4f.fillFloatBuffer(uniformVar.matrixBuffer);
                                 ARBShaderObjects.glUniformMatrix4ARB(
-                                        getUniLoc(uniformVar.name),
+                                        getUniLoc(uniformVar),
                                         uniformVar.transpose,
-                                        uniformVar.matrix4f.toFloatBuffer());
+                                        uniformVar.matrixBuffer);
                                 break;
                             default: // Sould never happen.
                                 break;

@@ -30,6 +30,8 @@
  */
 package com.jme.util;
 
+import java.nio.FloatBuffer;
+
 import com.jme.math.Matrix3f;
 import com.jme.math.Matrix4f;
 
@@ -70,6 +72,9 @@ public class ShaderUniform {
     /** Type of uniform value. * */
     public int type;
 
+    /** ID of uniform. * */
+    public int uniformID = -1;
+
     /** For int content. * */
     public int vint[];
 
@@ -87,6 +92,8 @@ public class ShaderUniform {
 
     /** Used to transpose the matrix if wanted. * */
     public boolean transpose;
+    
+    public FloatBuffer matrixBuffer = null;
 
     /**
      * Create a new uniform object.

@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.28 2004-12-30 02:28:20 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.29 2005-02-28 01:17:55 renanse Exp $
  */
 public class Matrix3f {
 
@@ -230,11 +230,25 @@ public class Matrix3f {
      * 
      * @return matrix data as a FloatBuffer.
      */
-
     public FloatBuffer toFloatBuffer() {
         FloatBuffer fb = ByteBuffer.allocateDirect(9).order(
                 ByteOrder.nativeOrder()).asFloatBuffer();
 
+        fb.put(m00).put(m01).put(m02);
+        fb.put(m10).put(m11).put(m12);
+        fb.put(m20).put(m21).put(m22);
+        fb.rewind();
+        return fb;
+    }
+
+    /**
+     * <code>fillFloatBuffer</code> fills a FloatBuffer object with
+     * the matrix data.
+     * @param fb the buffer to fill, must be correct size
+     * @return matrix data as a FloatBuffer.
+     */
+    public FloatBuffer fillFloatBuffer(FloatBuffer fb) {
+        fb.clear();
         fb.put(m00).put(m01).put(m02);
         fb.put(m10).put(m11).put(m12);
         fb.put(m20).put(m21).put(m22);
