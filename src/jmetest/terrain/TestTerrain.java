@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.23 2004-04-30 17:29:42 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.24 2004-05-01 03:51:42 renanse Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -94,7 +94,7 @@ public class TestTerrain extends SimpleGame {
     tb.setDetailTexture(1, 4);
     tb.setModelBound(new BoundingBox());
     tb.updateModelBound();
-    tb.setLocalTranslation(new Vector3f(10,10,10));
+    tb.setLocalTranslation(new Vector3f(0,0,0));
     rootNode.attachChild(tb);
     rootNode.setRenderState(cs);
 
@@ -115,33 +115,38 @@ public class TestTerrain extends SimpleGame {
 
     TextureState ts = display.getRenderer().getTextureState();
     ts.setEnabled(true);
-    Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
-                                            Texture.MM_LINEAR,
-                                            Texture.FM_LINEAR, true, true);
+    Texture t1 = TextureManager.loadTexture(
+        pt.getImageIcon().getImage(),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR, true, true);
     ts.setTexture(t1, 0);
 
-    Texture t2 = TextureManager.loadTexture(TestTerrain.class
-                                            .getClassLoader()
-                                            .getResource(
+    Texture t2 = TextureManager.loadTexture(
+        TestTerrain.class.getClassLoader().getResource(
         "jmetest/data/texture/Detail.jpg"),
-                                            Texture.MM_LINEAR,
-                                            Texture.FM_LINEAR, true);
-    
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR, true);
+
     TextureState blah = display.getRenderer().getTextureState();
-    blah.setTexture(TextureManager.loadTexture(TestTerrain.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR, Texture.MM_LINEAR, false));
     blah.setEnabled(true);
+    blah.setTexture(TextureManager.loadTexture(
+      TestTerrain.class.getClassLoader().getResource(
+      "jmetest/data/images/Monkey.jpg"),
+      Texture.MM_LINEAR,
+      Texture.MM_LINEAR, false));
+
     for(int i = 0; i < 100; i++) {
         Sphere s = new Sphere("Sphere" + i, 10, 10, 2);
         s.setRenderState(blah);
-        float randX = (float)Math.random() * 100 * terrainScale.x + 10;
-        float randZ = (float)Math.random() * 100 * terrainScale.z + 10;
+        float randX = (float)Math.random() * 128 * terrainScale.x;
+        float randZ = (float)Math.random() * 128 * terrainScale.z;
         s.setLocalTranslation(new Vector3f(randX, tb.getHeight(randX, randZ), randZ));
         s.setModelBound(new BoundingBox());
         s.updateModelBound();
         rootNode.attachChild(s);
-        
+
     }
-    
+
     ts.setTexture(t2, 1);
     t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 

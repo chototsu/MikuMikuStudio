@@ -47,12 +47,15 @@ import com.jme.terrain.TerrainPage;
 import com.jme.terrain.util.FaultFractalHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
 import com.jme.util.TextureManager;
+import com.jme.scene.shape.Sphere;
+import com.jme.bounding.BoundingBox;
+import com.jme.math.FastMath;
 
 /**
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.13 2004-04-28 13:37:58 mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.14 2004-05-01 03:51:43 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -104,7 +107,7 @@ public class TestTerrainPage extends SimpleGame {
         0.75f);
     Vector3f terrainScale = new Vector3f(10,1,10);
     TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), terrainScale,
-                                     heightMap.getHeightMap(), true);
+                                     heightMap.getHeightMap(), false);
 
     tb.setDetailTexture(1, 16);
     rootNode.attachChild(tb);
@@ -154,16 +157,34 @@ public class TestTerrainPage extends SimpleGame {
     t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
     t2.setCombineScaleRGB(0);
     rootNode.setRenderState(ts);
-    rootNode.setForceView(true);
 
     FogState fs = display.getRenderer().getFogState();
     fs.setDensity(0.5f);
-    fs.setEnabled(true);
+    fs.setEnabled(false);
     fs.setColor(new ColorRGBA(0.5f, 0.5f, 0.5f, 0.5f));
     fs.setEnd(1000);
     fs.setStart(500);
     fs.setDensityFunction(FogState.DF_LINEAR);
     fs.setApplyFunction(FogState.AF_PER_VERTEX);
     rootNode.setRenderState(fs);
+
+    TextureState blah = display.getRenderer().getTextureState();
+    blah.setEnabled(true);
+    blah.setTexture(TextureManager.loadTexture(
+      TestTerrain.class.getClassLoader().getResource(
+      "jmetest/data/images/Monkey.jpg"),
+      Texture.MM_LINEAR,
+      Texture.MM_LINEAR, false));
+
+    for(int i = 0; i < 500; i++) {
+        Sphere s = new Sphere("Sphere" + i, 10, 10, 2);
+        s.setRenderState(blah);
+        float randX = ((FastMath.nextRandomFloat() * (heightMap.getSize()-1))-((heightMap.getSize()-1)>>1)) * terrainScale.x;
+        float randZ = ((FastMath.nextRandomFloat() * (heightMap.getSize()-1))-((heightMap.getSize()-1)>>1)) * terrainScale.z;
+        s.setLocalTranslation(new Vector3f(randX, tb.getHeight(randX, randZ), randZ));
+        s.setModelBound(new BoundingBox());
+        s.updateModelBound();
+        rootNode.attachChild(s);
+    }
   }
 }
