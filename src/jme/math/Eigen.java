@@ -62,7 +62,7 @@ public class Eigen {
 	public void decrementSort3() {
 		tridiagonal3();
 		qLAlgorithm();
-		decreasingSort(size, diagonal, matrix);
+		decreasingSort();
 	}
 
 	public void tridiagonal3() {
@@ -158,9 +158,9 @@ public class Eigen {
 					fG = fCos * fR - fB;
 
 					for (int i4 = 0; i4 < size; i4++) {
-						fF = matrix[i3+1][i4];
-						matrix[i3 + 1][i4] = fSin * matrix[i3][i4] + fCos * fF;
-						matrix[i3][i4] = fCos * matrix[i3][i4] - fSin * fF;
+						fF = matrix[i4][i3+1];
+						matrix[i4][i3 + 1] = fSin * matrix[i4][i3] + fCos * fF;
+						matrix[i4][i3] = fCos * matrix[i4][i3] - fSin * fF;
 					}
 				}
 				diagonal[i0] -= fP;
@@ -174,33 +174,30 @@ public class Eigen {
 		return true;
 	}
 
-	public void decreasingSort(
-		int iSize,
-		float[] afEigval,
-		float[][] aafEigvec) {
+	public void decreasingSort() {
 		// sort eigenvalues in decreasing order, e[0] >= ... >= e[iSize-1]
-		for (int i0 = 0, i1; i0 <= iSize - 2; i0++) {
+		for (int i0 = 0, i1; i0 <= size - 2; i0++) {
 			// locate maximum eigenvalue
 			i1 = i0;
-			float fMax = afEigval[i1];
+			float fMax = diagonal[i1];
 			int i2;
-			for (i2 = i0 + 1; i2 < iSize; i2++) {
-				if (afEigval[i2] > fMax) {
+			for (i2 = i0 + 1; i2 < size; i2++) {
+				if (diagonal[i2] > fMax) {
 					i1 = i2;
-					fMax = afEigval[i1];
+					fMax = diagonal[i1];
 				}
 			}
 
 			if (i1 != i0) {
 				// swap eigenvalues
-				afEigval[i1] = afEigval[i0];
-				afEigval[i0] = fMax;
+				diagonal[i1] = diagonal[i0];
+				diagonal[i0] = fMax;
 
 				// swap eigenvectors
-				for (i2 = 0; i2 < iSize; i2++) {
-					float fTmp = aafEigvec[i2][i0];
-					aafEigvec[i0][i2] = aafEigvec[i2][i1];
-					aafEigvec[i1][i2] = fTmp;
+				for (i2 = 0; i2 < size; i2++) {
+					float fTmp = matrix[i2][i0];
+					matrix[i2][i0] = matrix[i2][i1];
+					matrix[i2][i1] = fTmp;
 				}
 			}
 		}
@@ -221,36 +218,33 @@ public class Eigen {
 	public void IncrSortEigenStuff3() {
 		tridiagonal3();
 		qLAlgorithm();
-		increasingSort(size, diagonal, matrix);
+		increasingSort();
 	}
 
-	public void increasingSort(
-		int iSize,
-		float[] afEigval,
-		float[][] aafEigvec) {
-		// sort eigenvalues in increasing order, e[0] <= ... <= e[iSize-1]
-		for (int i0 = 0, i1; i0 <= iSize - 2; i0++) {
+	public void increasingSort() {
+		// sort eigenvalues in increasing order, e[0] <= ... <= e[size-1]
+		for (int i0 = 0, i1; i0 <= size - 2; i0++) {
 			// locate minimum eigenvalue
 			i1 = i0;
-			float fMin = afEigval[i1];
+			float fMin = diagonal[i1];
 			int i2;
-			for (i2 = i0 + 1; i2 < iSize; i2++) {
-				if (afEigval[i2] < fMin) {
+			for (i2 = i0 + 1; i2 < size; i2++) {
+				if (diagonal[i2] < fMin) {
 					i1 = i2;
-					fMin = afEigval[i1];
+					fMin = diagonal[i1];
 				}
 			}
 
 			if (i1 != i0) {
 				// swap eigenvalues
-				afEigval[i1] = afEigval[i0];
-				afEigval[i0] = fMin;
+				diagonal[i1] = diagonal[i0];
+				diagonal[i0] = fMin;
 
 				// swap eigenvectors
-				for (i2 = 0; i2 < iSize; i2++) {
-					float fTmp = aafEigvec[i2][i0];
-					aafEigvec[i0][i2] = aafEigvec[i2][i1];
-					aafEigvec[i1][i2] = fTmp;
+				for (i2 = 0; i2 < size; i2++) {
+					float fTmp = matrix[i2][i0];
+					matrix[i2][i0] = matrix[i1][i2];
+					matrix[i2][i1] = fTmp;
 				}
 			}
 		}
