@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * point. Where pure black denotes 0 and pure white denotes 255.
  * 
  * @author Mark Powell
- * @version $Id: RawHeightMap.java,v 1.1 2004-04-12 00:30:46 mojomonkey Exp $
+ * @version $Id: RawHeightMap.java,v 1.2 2004-04-13 02:08:26 mojomonkey Exp $
  */
 public class RawHeightMap extends AbstractHeightMap {
     private String filename;
@@ -110,15 +110,18 @@ public class RawHeightMap extends AbstractHeightMap {
         try {
             fis = new FileInputStream(filename);
             
-            DataInputStream bis = new DataInputStream(fis);
+            DataInputStream dis = new DataInputStream(fis);
+            if(heightData.length != dis.available()) {
+                LoggingSystem.getLogger().log(Level.WARNING, "Incorrect map size. Aborting raw load.");
+            }
             //read in each byte from the raw file.
             for (int i = 0; i < size; i++) {
                 for(int j = 0; j < size; j++) {
-                    heightData[i + (j*size)] = bis.readUnsignedByte();
+                    heightData[i + (j*size)] = dis.readUnsignedByte();
                 }
             }
 
-            bis.close();
+            dis.close();
             fis.close();
 
         } catch (FileNotFoundException e) {

@@ -55,13 +55,21 @@ public class TerrainBlock extends TriMesh {
         buildTextureCoordinates();
         buildNormals();
     }
-    
+
+    /**
+     * 
+     * <code>setDetailTexture</code> sets the detail texture unit's repeat
+     * value.
+     *
+     * @param unit
+     * @param repeat
+     */
     public void setDetailTexture(int unit, int repeat) {
         texture[unit] = new Vector2f[texture[0].length];
-        for(int i = 0; i < texture[0].length; i++) {
+        for (int i = 0; i < texture[0].length; i++) {
             texture[unit][i] = texture[0][i].mult(repeat);
         }
-        
+
         setTextures(texture[unit], unit);
     }
 
@@ -141,8 +149,8 @@ public class TerrainBlock extends TriMesh {
 
         //get the first and last normals taken care of.
         normal[0] = vertex[size].cross(vertex[1]).normalize();
-        normal[normal.length - 1] = vertex[normal.length - 1 - size]
-                .cross(vertex[normal.length - 2]).normalize();
+        normal[normal.length - 1] = vertex[normal.length - 1 - size].cross(
+                vertex[normal.length - 2]).normalize();
 
         for (int i = 1; i < normal.length - 1; i++) {
             if (i % ((size * (i / size + 1)) - 1) == 0) {
