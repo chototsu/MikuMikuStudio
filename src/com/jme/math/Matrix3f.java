@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.9 2004-02-03 22:13:25 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.10 2004-02-19 23:12:03 mojomonkey Exp $
  */
 public class Matrix3f {
     private float[][] matrix;
@@ -332,12 +332,16 @@ public class Matrix3f {
     		product = new Vector3f();
     	}
     	
+    	float x = vec.x;
+    	float y = vec.y;
+    	float z = vec.z;
+    	
     	product.x =
-    		matrix[0][0] * vec.x + matrix[0][1] * vec.y + matrix[0][2] * vec.z;
+    		matrix[0][0] * x + matrix[0][1] * y + matrix[0][2] * z;
     	product.y =
-    		matrix[1][0] * vec.x + matrix[1][1] * vec.y + matrix[1][2] * vec.z;
+    		matrix[1][0] * x + matrix[1][1] * y + matrix[1][2] * z;
     	product.z =
-    		matrix[2][0] * vec.x + matrix[2][1] * vec.y + matrix[2][2] * vec.z;
+    		matrix[2][0] * x + matrix[2][1] * y + matrix[2][2] * z;
     	
     }
     

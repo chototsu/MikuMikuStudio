@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * class abstract. API specific classes are expected to extend this class and
  * handle renderer viewport setting.
  * @author Mark Powell
- * @version $Id: AbstractCamera.java,v 1.4 2004-02-09 11:58:54 greggpatton Exp $
+ * @version $Id: AbstractCamera.java,v 1.5 2004-02-19 23:12:03 mojomonkey Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -118,6 +118,7 @@ public abstract class AbstractCamera implements Camera {
     protected float viewPortBottom;
 
     protected Plane[] worldPlane;
+    protected Vector3f lookAt = new Vector3f();
     private int planeState;
 
     /**

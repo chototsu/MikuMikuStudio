@@ -43,7 +43,7 @@ import com.jme.math.Vector3f;
  * this class handling the OpenGL specific calls to set the frustum and 
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: LWJGLCamera.java,v 1.2 2004-02-19 23:12:03 mojomonkey Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -114,7 +114,7 @@ public class LWJGLCamera extends AbstractCamera {
         // set view matrix
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glLoadIdentity();
-        Vector3f lookAt = location.add(direction);
+        location.add(direction, lookAt);
         GLU.gluLookAt(
             location.x,
             location.y,
