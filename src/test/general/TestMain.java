@@ -298,7 +298,7 @@ public class TestMain extends AbstractGame {
 		l.setVolumetricFogDepth(100);
 		object = new Pyramid(10,30);
 		object.setColor(0.5f,0.85f,0.5f,0.5f);
-		object.setTexture("jme/data/Plants15.jpg");
+		object.setTexture("jme/data/texture/Plants15.jpg");
         object.useDisplayList(true);
 
         //object = new MilkshapeModel("jme/data/tree.ms3d");
