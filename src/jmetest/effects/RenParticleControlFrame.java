@@ -146,7 +146,7 @@ public class RenParticleControlFrame extends JFrame {
    * <code>RenParticleControlFrame</code>
    *
    * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.11 2004-03-24 23:47:52 renanse Exp $
+   * @version $Id: RenParticleControlFrame.java,v 1.12 2004-03-25 01:02:05 renanse Exp $
    *
    */
 
@@ -1071,6 +1071,7 @@ public class RenParticleControlFrame extends JFrame {
       chooser.setMultiSelectionEnabled(false);
       int result = chooser.showOpenDialog(this);
       if (result == JFileChooser.CANCEL_OPTION) {
+        TestRenParticleGUI.noUpdate = false;
         return;
       }
       File textFile = chooser.getSelectedFile();
