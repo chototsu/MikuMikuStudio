@@ -47,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.5 2004-04-25 03:06:17 mojomonkey Exp $
+ * @version $Id: Texture.java,v 1.6 2004-05-15 02:06:55 renanse Exp $
  */
 public class Texture {
 
@@ -114,6 +114,14 @@ public class Texture {
      * Wrapping modifier that wraps both the S and T values of the texture.
      */
     public static final int WM_WRAP_S_WRAP_T = 3;
+    /**
+     * Wrapping modifier that clamps both the S and T values of the texture.  Uses CLAMP_TO_EDGE.
+     */
+    public static final int WM_ECLAMP_S_ECLAMP_T = 4;
+    /**
+     * Wrapping modifier that clamps both the S and T values of the texture.  Uses CLAMP_TO_BORDER.
+     */
+    public static final int WM_BCLAMP_S_BCLAMP_T = 5;
 
     /**
      * Apply modifier that replaces the previous pixel color with the texture
@@ -172,7 +180,7 @@ public class Texture {
     public static final int ACSC_ONE = 0;
     public static final int ACSC_TWO = 1;
     public static final int ACSC_FOUR = 2;
-    
+
     public static final int EM_NONE = 0;
     public static final int EM_IGNORE = 1;
     public static final int EM_SPHERE = 2;
@@ -217,7 +225,7 @@ public class Texture {
         filter = FM_NEAREST;
         apply = AM_MODULATE;
         correction = CM_AFFINE;
-        wrap = WM_CLAMP_S_CLAMP_T;
+        wrap = WM_ECLAMP_S_ECLAMP_T;
     }
 
     /**
@@ -326,8 +334,8 @@ public class Texture {
      * @param wrap the wrap mode for this texture.
      */
     public void setWrap(int wrap) {
-        if(wrap < 0 || wrap > 3) {
-            wrap = WM_CLAMP_S_CLAMP_T;
+        if(wrap < 0 || wrap > 5) {
+            wrap = WM_ECLAMP_S_ECLAMP_T;
         }
         this.wrap = wrap;
     }
@@ -635,11 +643,11 @@ public class Texture {
 	public void setCombineFuncAlpha(int combineFuncAlpha) {
 		this.combineFuncAlpha = combineFuncAlpha;
 	}
-	
+
 	public void setEnvironmentalMapMode(int envMapMode) {
 	    this.envMapMode = envMapMode;
 	}
-	
+
 	public int getEnvironmentalMapMode() {
 	    return envMapMode;
 	}

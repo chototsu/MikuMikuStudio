@@ -150,7 +150,6 @@ public abstract class WidgetAbstractFont implements WidgetFont {
             texture.setFilter(Texture.FM_LINEAR);
             texture.setImage(textureImage);
             texture.setMipmapState(Texture.MM_NONE);
-            texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -62,7 +62,7 @@ import com.jme.renderer.ColorRGBA;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.15 2004-04-22 22:27:10 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.16 2004-05-15 02:06:56 renanse Exp $
  */
 public class TextureManager {
 
@@ -251,7 +251,6 @@ public class TextureManager {
         texture.setFilter(magFilter);
         texture.setImage(imageData);
         texture.setMipmapState(minFilter);
-        texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
         return texture;
     }
 
@@ -267,7 +266,6 @@ public class TextureManager {
         texture.setFilter(magFilter);
         texture.setImage(imageData);
         texture.setMipmapState(minFilter);
-        texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
         return texture;
     }
 

@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package com.jme.scene.state.lwjgl;
 
@@ -38,6 +38,7 @@ import java.util.Stack;
 import java.util.logging.Level;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.glu.GLU;
@@ -52,9 +53,9 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
- * 
+ *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.10 2004-04-26 17:24:03 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.11 2004-05-15 02:06:55 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -99,7 +100,7 @@ public class LWJGLTextureState extends TextureState {
      * The number of textures that can be combined is determined during
      * construction. This equates the number of texture units supported by the
      * graphics card.
-     *  
+     *
      */
     public LWJGLTextureState() {
         super();
@@ -108,7 +109,7 @@ public class LWJGLTextureState extends TextureState {
 	            IntBuffer buf = ByteBuffer.allocateDirect(64).order(
 	                    ByteOrder.nativeOrder()).asIntBuffer();
 	            GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
-	
+
 	            numTexUnits = buf.get(0);
             } else {
                 numTexUnits = 1;
@@ -124,7 +125,7 @@ public class LWJGLTextureState extends TextureState {
      * subsequent calls. The multitexture extension is used to define the
      * multiple texture states, with the number of units being determined at
      * construction time.
-     * 
+     *
      * @see com.jme.scene.state.RenderState#unset()
      */
     public void apply() {
@@ -272,30 +273,43 @@ public class LWJGLTextureState extends TextureState {
                         texture.getBlendColor());
 
                 // set up wrap mode
+                System.err.println("wrap: "+texture.getWrap());
                 switch (texture.getWrap()) {
-                case Texture.WM_CLAMP_S_CLAMP_T:
+                  case Texture.WM_ECLAMP_S_ECLAMP_T:
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                            GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+                                         GL11.GL_TEXTURE_WRAP_S, GL12.GL_CLAMP_TO_EDGE);
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                            GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+                                         GL11.GL_TEXTURE_WRAP_T, GL12.GL_CLAMP_TO_EDGE);
                     break;
-                case Texture.WM_CLAMP_S_WRAP_T:
+                  case Texture.WM_BCLAMP_S_BCLAMP_T:
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                            GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
+                                         GL11.GL_TEXTURE_WRAP_S, GL13.GL_CLAMP_TO_BORDER);
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                            GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+                                         GL11.GL_TEXTURE_WRAP_T, GL13.GL_CLAMP_TO_BORDER);
                     break;
-                case Texture.WM_WRAP_S_CLAMP_T:
+                  case Texture.WM_CLAMP_S_CLAMP_T:
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                            GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+                                         GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                            GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+                                         GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
                     break;
-                case Texture.WM_WRAP_S_WRAP_T:
+                  case Texture.WM_CLAMP_S_WRAP_T:
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                            GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+                                         GL11.GL_TEXTURE_WRAP_S, GL11.GL_CLAMP);
                     GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
-                            GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+                                         GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
+                    break;
+                  case Texture.WM_WRAP_S_CLAMP_T:
+                    GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                         GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+                    GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                         GL11.GL_TEXTURE_WRAP_T, GL11.GL_CLAMP);
+                    break;
+                  case Texture.WM_WRAP_S_WRAP_T:
+                    GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                         GL11.GL_TEXTURE_WRAP_S, GL11.GL_REPEAT);
+                    GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
+                                         GL11.GL_TEXTURE_WRAP_T, GL11.GL_REPEAT);
                     break;
                 }
 
