@@ -39,13 +39,13 @@ import com.jme.input.action.MouseInputAction;
 /**
  * <code>InputHandler</code>
  * @author Mark Powell
- * @version $Id: InputHandler.java,v 1.3 2004-04-23 16:39:14 renanse Exp $
+ * @version $Id: InputHandler.java,v 1.4 2004-05-08 02:50:06 renanse Exp $
  */
 public class InputHandler {
-    private ArrayList actions;
-    private ArrayList mouseActions;
-    private KeyBindingManager keyboard;
-    private Mouse mouse;
+    protected ArrayList actions;
+    protected ArrayList mouseActions;
+    protected KeyBindingManager keyboard;
+    protected Mouse mouse;
 
     public InputHandler() {
         actions = new ArrayList();
