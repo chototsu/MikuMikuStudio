@@ -137,6 +137,7 @@ public class ObjToJme extends FormatConverter{
         if (s==null) return ;
         if (s.length()==0) return;
         String[] parts=s.split(" ");
+        parts=removeEmpty(parts);
         if ("#".equals(parts[0])) return;
         if ("v".equals(parts[0])){
             addVertextoList(parts);
@@ -187,6 +188,22 @@ public class ObjToJme extends FormatConverter{
             curGroup.ts.setEnabled(true);
             return;
         }
+    }
+
+    private String[] removeEmpty(String[] parts) {
+        int cnt=0;
+        for (int i=0;i<parts.length;i++){
+            if (!parts[i].equals(""))
+                cnt++;
+        }
+        String[] toReturn=new String[cnt];
+        int index=0;
+        for (int i=0;i<parts.length;i++){
+            if (!parts[i].equals("")){
+                toReturn[index++]=parts[i];
+            }
+        }
+        return toReturn;
     }
 
     private void addMaterial(String[] parts) {
