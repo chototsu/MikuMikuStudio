@@ -168,7 +168,7 @@ public class PongRevisited extends SimpleGame {
         bmanager = new ParticleManager(100, display.getRenderer().getCamera());
         bmanager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
         bmanager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
-        bmanager.setEmissionMaximumAngle(0.0f);
+        bmanager.setEmissionMaximumAngle(0.1f);
         bmanager.setSpeed(0.4f);
         bmanager.setParticlesMinimumLifeTime(100.0f);
         bmanager.setStartSize(5.0f);
