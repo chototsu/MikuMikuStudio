@@ -197,9 +197,9 @@ public class JmeBinaryReader {
             s.push(new XMLSharedNode((String) attributes.get("ident")));
         } else if (tagName.equals("publicobject")){
             Object toAdd=shares.get(attributes.get("ident"));
-            if (toAdd==null){
-                throw new JmeException("Unknown publicobject: " +shares.get(attributes.get("ident")));
-            }
+//            if (toAdd==null){
+//                throw new JmeException("Unknown publicobject: " +shares.get(attributes.get("ident")));
+//            }
             s.push(toAdd);
         } else if (tagName.equals("xmlloadable")){
             try {
@@ -321,6 +321,8 @@ public class JmeBinaryReader {
             s.push(oldTime);
         } else if (tagName.equals("cullstate")){
             s.push(buildCullState(attributes));
+        } else if (tagName.equals("wirestate")){
+            s.push(buildWireState(attributes));
         } else{
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
@@ -401,7 +403,7 @@ public class JmeBinaryReader {
             }
         } else if (tagName.equals("sharedrenderstate")){
             XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
-            shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
+            if (XMLShare.whatIReallyAm!=null) shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
         } else if (tagName.equals("sharedtrimesh")){
             XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
             shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
@@ -475,6 +477,11 @@ public class JmeBinaryReader {
             s.push(parentST);
         } else if (tagName.equals("spatialpointtime")){
             s.pop();
+        } else if (tagName.equals("wirestate")){
+            WireframeState ws=(WireframeState) s.pop();
+            parentSpatial=(Spatial) s.pop();
+            parentSpatial.setRenderState(ws);
+            s.push(parentSpatial);
         } else if (tagName.equals("sptscale") || tagName.equals("sptrot") || tagName.equals("spttrans")){ // nothing to do at these ends
 
         } else {
@@ -544,6 +551,14 @@ public class JmeBinaryReader {
         toReturn.setExponent(((Float)attributes.get("fexponent")).floatValue());
         toReturn.setEnabled(true);
         return toReturn;
+    }
+
+    private WireframeState buildWireState(HashMap attributes) {
+        WireframeState ws=renderer.getWireframeState();
+        ws.setFace(((Integer)attributes.get("facetype")).intValue());
+        ws.setLineWidth(((Float)attributes.get("width")).floatValue());
+        ws.setEnabled(true);
+        return ws;
     }
 
     private void putLightInfo(Light light, HashMap attributes) {
