@@ -45,7 +45,7 @@ import com.jme.image.Texture;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.3 2004-01-22 21:48:55 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.4 2004-02-15 20:10:14 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.
@@ -88,6 +88,10 @@ public class LWJGLTextureState extends TextureState {
      * @see com.jme.scene.state.RenderState#unset()
      */
     public void set() {
+    	if(getTexture() == null) {
+    		return;
+    	}
+    	
         if (isEnabled()) {
             
             GL.glEnable(GL.GL_TEXTURE_2D);
