@@ -48,100 +48,101 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.11 2004-04-22 22:08:19 renanse Exp $
+ * @version $Id: TestBezierCurve.java,v 1.12 2004-04-22 22:09:03 renanse Exp $
  */
 public class TestBezierCurve extends SimpleGame {
 
-    private Vector3f up = new Vector3f(0,1,0);
+  private Vector3f up = new Vector3f(0, 1, 0);
 
-    public static void main(String[] args) {
-        TestBezierCurve app = new TestBezierCurve();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
-    }
+  public static void main(String[] args) {
+    TestBezierCurve app = new TestBezierCurve();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
+  }
 
-    /* (non-Javadoc)
-     * @see com.jme.app.SimpleGame#initGame()
-     */
-    protected void simpleInitGame() {
-      display.setTitle("Bezier Curve Test");
+  /* (non-Javadoc)
+   * @see com.jme.app.SimpleGame#initGame()
+   */
+  protected void simpleInitGame() {
+    lightState.setEnabled(false); // by default for this demo
+    display.setTitle("Bezier Curve Test");
 
-        //create control Points
-        Vector3f[] points = new Vector3f[4];
-        points[0] = new Vector3f(-4, 0, 0);
-        points[1] = new Vector3f(-2, 3, 2);
-        points[2] = new Vector3f(2, -3, -2);
-        points[3] = new Vector3f(4, 0, 0);
+    //create control Points
+    Vector3f[] points = new Vector3f[4];
+    points[0] = new Vector3f( -4, 0, 0);
+    points[1] = new Vector3f( -2, 3, 2);
+    points[2] = new Vector3f(2, -3, -2);
+    points[3] = new Vector3f(4, 0, 0);
 
-        BezierCurve curve = new BezierCurve("Curve",points);
-        ColorRGBA[] colors = new ColorRGBA[4];
-        colors[0] = new ColorRGBA(0,1,0,1);
-        colors[1] = new ColorRGBA(1,0,0,1);
-        colors[2] = new ColorRGBA(1,1,0,1);
-        colors[3] = new ColorRGBA(0,0,1,1);
-        curve.setColors(colors);
+    BezierCurve curve = new BezierCurve("Curve", points);
+    ColorRGBA[] colors = new ColorRGBA[4];
+    colors[0] = new ColorRGBA(0, 1, 0, 1);
+    colors[1] = new ColorRGBA(1, 0, 0, 1);
+    colors[2] = new ColorRGBA(1, 1, 0, 1);
+    colors[3] = new ColorRGBA(0, 0, 1, 1);
+    curve.setColors(colors);
 
-        Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
-        Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
+    Vector3f min = new Vector3f( -0.1f, -0.1f, -0.1f);
+    Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
 
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
+    ZBufferState buf = display.getRenderer().getZBufferState();
+    buf.setEnabled(true);
+    buf.setFunction(ZBufferState.CF_LEQUAL);
 
-        TriMesh t = new Box("Control 1",min, max);
-        t.setModelBound(new BoundingSphere());
-        t.updateModelBound();
+    TriMesh t = new Box("Control 1", min, max);
+    t.setModelBound(new BoundingSphere());
+    t.updateModelBound();
 
-        t.setLocalTranslation(points[0]);
+    t.setLocalTranslation(points[0]);
 
-        TriMesh t2 = new Box("Control 2", min, max);
-        t2.setModelBound(new BoundingSphere());
-        t2.updateModelBound();
+    TriMesh t2 = new Box("Control 2", min, max);
+    t2.setModelBound(new BoundingSphere());
+    t2.updateModelBound();
 
-        t2.setLocalTranslation(points[1]);
+    t2.setLocalTranslation(points[1]);
 
-        TriMesh t3 = new Box("Control 3", min, max);
-        t3.setModelBound(new BoundingSphere());
-        t3.updateModelBound();
+    TriMesh t3 = new Box("Control 3", min, max);
+    t3.setModelBound(new BoundingSphere());
+    t3.updateModelBound();
 
-        t3.setLocalTranslation(points[2]);
+    t3.setLocalTranslation(points[2]);
 
-        TriMesh t4 = new Box("Control 4", min, max);
-        t4.setModelBound(new BoundingSphere());
-        t4.updateModelBound();
+    TriMesh t4 = new Box("Control 4", min, max);
+    t4.setModelBound(new BoundingSphere());
+    t4.updateModelBound();
 
-        t4.setLocalTranslation(points[3]);
+    t4.setLocalTranslation(points[3]);
 
-        TriMesh box = new Box("Controlled Box", min.mult(5), max.mult(5));
-        box.setModelBound(new BoundingSphere());
-        box.updateModelBound();
+    TriMesh box = new Box("Controlled Box", min.mult(5), max.mult(5));
+    box.setModelBound(new BoundingSphere());
+    box.updateModelBound();
 
-        box.setLocalTranslation(points[0]);
+    box.setLocalTranslation(points[0]);
 
-        CurveController cc = new CurveController(curve, box);
-        box.addController(cc);
-        cc.setRepeatType(Controller.RT_CYCLE);
-        cc.setUpVector(up);
-        cc.setSpeed(0.5f);
+    CurveController cc = new CurveController(curve, box);
+    box.addController(cc);
+    cc.setRepeatType(Controller.RT_CYCLE);
+    cc.setUpVector(up);
+    cc.setSpeed(0.5f);
 
-        TextureState ts = display.getRenderer().getTextureState();
-        ts.setEnabled(true);
-        ts.setTexture(
-            TextureManager.loadTexture(
-                TestBezierCurve.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-        box.setRenderState(ts);
+    TextureState ts = display.getRenderer().getTextureState();
+    ts.setEnabled(true);
+    ts.setTexture(
+        TextureManager.loadTexture(
+        TestBezierCurve.class.getClassLoader().getResource(
+        "jmetest/data/images/Monkey.jpg"),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true));
+    box.setRenderState(ts);
 
-        rootNode.setRenderState(buf);
-        rootNode.attachChild(t);
-        rootNode.attachChild(t2);
-        rootNode.attachChild(t3);
-        rootNode.attachChild(t4);
-        rootNode.attachChild(box);
-        rootNode.attachChild(curve);
+    rootNode.setRenderState(buf);
+    rootNode.attachChild(t);
+    rootNode.attachChild(t2);
+    rootNode.attachChild(t3);
+    rootNode.attachChild(t4);
+    rootNode.attachChild(box);
+    rootNode.attachChild(curve);
 
-    }
-
+  }
 }
