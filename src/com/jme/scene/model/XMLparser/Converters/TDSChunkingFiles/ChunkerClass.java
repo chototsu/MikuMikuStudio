@@ -1,8 +1,5 @@
 package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.model.XMLparser.Converters.MaxToJme;
-
 import java.io.DataInput;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,6 +38,16 @@ abstract public class ChunkerClass implements MaxChunkIDs{
         inChunk.length-=6;
     }
 
+    protected void skipSize(int length) throws IOException {
+        int prevSkip;
+        while (length>0){
+            prevSkip=length;
+            length-=myIn.skipBytes(length);
+            if (length>=prevSkip)
+                throw new IOException("Unable to skip bits in InputStream");
+        }
+    }
+
     public void chunk() throws IOException {
         try{
         if (DEBUG_LIGHT) System.out.println("Reading ChunkHeader len=" + header.length);
@@ -54,14 +61,7 @@ abstract public class ChunkerClass implements MaxChunkIDs{
                         Integer.toHexString(i.type) + "*** for parent " +Integer.toHexString(header.type));
                 if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) +
                         ": in readFile" + "for parent " +Integer.toHexString(header.type));
-                int lengthToSkip=i.length;
-                int prevSkip;
-                while (lengthToSkip>0){
-                    prevSkip=lengthToSkip;
-                    lengthToSkip-=myIn.skipBytes(lengthToSkip);
-                    if (lengthToSkip>=prevSkip)
-                        throw new IOException("Unable to skip bits in InputStream");
-                }
+                skipSize(i.length);
             }
             header.length-=i.length;
             if (header.length<0)
@@ -112,4 +112,9 @@ abstract public class ChunkerClass implements MaxChunkIDs{
     protected void setHeader(ChunkHeader header) {
         this.header = header;
     }
+
+    protected void decrHeaderLen(int length){
+        header.length-=length;
+    }
+
 }

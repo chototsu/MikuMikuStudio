@@ -8,13 +8,18 @@ import java.util.HashMap;
 /**
  * Started Date: Jul 2, 2004<br><br>
  *
+ *
+ * parent == 4d4d == MAIN_3DS
+ * type == 3d3d == EDIT_3DS
+ *
  * @author Jack Lindamood
+ *
  */
 public class EditableObjectChunk extends ChunkerClass{
-    // Parent == TDSFile == 0x4d4d
+
 
     ArrayList materialBlocks;
-    HashMap namedObjects;
+    ArrayList namedObjects;
     float masterScale;
     public EditableObjectChunk(DataInput myIn, ChunkHeader header) throws IOException {
         super(myIn,header);
@@ -22,7 +27,7 @@ public class EditableObjectChunk extends ChunkerClass{
 
     protected void initializeVariables(){
         materialBlocks=new ArrayList();
-        namedObjects=new HashMap();
+        namedObjects=new ArrayList();
     }
 
     protected boolean processChildChunk(ChunkHeader i) throws IOException {
@@ -39,11 +44,10 @@ public class EditableObjectChunk extends ChunkerClass{
                     return true;
 
                 case NAMED_OBJECT:
-                    NamedObjectChunk temp=new NamedObjectChunk(myIn,i);
-                    namedObjects.put(temp.name,temp);
+                    namedObjects.add(new NamedObjectChunk(myIn,i));
                     return true;
 /*
-                case VIEWPORT_LAYOUT:
+                case KEY_VIEWPORT:
                     readViewLayout(i.length);
                     break;
                 case SHADOW_MAP_RANGE:

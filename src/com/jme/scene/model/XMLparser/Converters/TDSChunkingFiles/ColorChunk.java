@@ -9,9 +9,13 @@ import java.io.IOException;
 /**
  * Started Date: Jul 2, 2004<br><br>
  *
+ * type == 0010-0014 == various<br>
+ * Parent == Global<br>
+ *
  * @author Jack Lindamood
  */
 public class ColorChunk extends ChunkerClass{
+
     ColorRGBA gamaColor;
     ColorRGBA regColor;
 

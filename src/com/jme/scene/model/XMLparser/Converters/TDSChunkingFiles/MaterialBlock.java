@@ -1,12 +1,9 @@
 package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
-import com.jme.scene.model.XMLparser.Converters.MaxToJme;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
-import com.jme.renderer.ColorRGBA;
 import com.jme.system.DisplaySystem;
-import com.jme.util.TextureManager;
 import com.jme.image.Texture;
 
 import java.io.DataInput;
@@ -15,16 +12,22 @@ import java.io.IOException;
 /**
  * Started Date: Jul 2, 2004<br><br>
  *
+ *
+ * type == afff == MAT_BLOCK<br>
+ * parent == 3d3d == EDIT_3DS<br>
+ *
  * @author Jack Lindamood
  */
 public class MaterialBlock extends ChunkerClass {
+
     String name;
     MaterialState myMatState;
     TextureState myTexState;
     WireframeState myWireState;
+
+
     public MaterialBlock(DataInput myIn, ChunkHeader i) throws IOException {
         super (myIn,i);
-
     }
 
     protected void initializeVariables(){
@@ -41,20 +44,24 @@ public class MaterialBlock extends ChunkerClass {
 
             case MAT_AMB_COLOR:
                 myMatState.setAmbient(new ColorChunk(myIn,i).getBestColor());
+                myMatState.setEnabled(true);
                 if (DEBUG || DEBUG_LIGHT) System.out.println("Ambient color:" + myMatState.getAmbient());
                 return true;
 
             case MAT_DIF_COLOR:
                 myMatState.setDiffuse(new ColorChunk(myIn,i).getBestColor());
+                myMatState.setEnabled(true);
                 if (DEBUG || DEBUG_LIGHT) System.out.println("Diffuse color:" + myMatState.getDiffuse());
                 return true;
 
             case MAT_SPEC_CLR:
                 myMatState.setSpecular(new ColorChunk(myIn,i).getBestColor());
+                myMatState.setEnabled(true);
                 if (DEBUG || DEBUG_LIGHT) System.out.println("Diffuse color:" + myMatState.getSpecular());
                 return true;
             case MAT_SHINE:
                 myMatState.setShininess(128*new PercentChunk(myIn,i).percent);
+                myMatState.setEnabled(true);
                 if (DEBUG || DEBUG_LIGHT) System.out.println("Shinniness:" + myMatState.getShininess());
                 return true;
             case MAT_SHINE_STR:
@@ -62,6 +69,7 @@ public class MaterialBlock extends ChunkerClass {
                 return true;
             case MAT_ALPHA:
                 myMatState.setAlpha(new PercentChunk(myIn,i).percent);
+                myMatState.setEnabled(true);
                 if (DEBUG || DEBUG_LIGHT) System.out.println("Alpha:" + myMatState.getAlpha());
                 return true;
             case MAT_ALPHA_FAL:

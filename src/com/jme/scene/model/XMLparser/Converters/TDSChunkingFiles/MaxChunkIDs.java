@@ -66,7 +66,7 @@ public interface MaxChunkIDs {
     static final int CAMERA_RANGES  =0x4720;
     static final int MAIN_3DS     =0x4D4D;
 
-    static final int VIEWPORT_LAYOUT=0x7001;
+    static final int KEY_VIEWPORT=0x7001;
     static final int VIEWPORT_DATA=0x7011;
     static final int VIEWPORT_DATA3=0x7012;
     static final int VIEWPORT_SIZE=0x7020;
@@ -107,16 +107,16 @@ public interface MaxChunkIDs {
     static final int MAT_BLOCK    =0xafff;
 
     static final int KEYFRAMES    =0xb000;
-    static final int KEY_AMBIENT_NODE=0xb001;
-    static final int KEYFRAME_OBJ =0xb002;
-    static final int CAMERA_INFO_TAG=0xb003;
-    static final int CAMERA_TARG_INF_TAG=0xb004;
+    static final int KEY_AMB_LI_INFO=0xb001;
+    static final int KEY_OBJECT =0xb002;
+    static final int KEY_CAMERA_OBJECT=0xb003;
+    static final int KEY_CAM_TARGET=0xb004;
     static final int KEY_OMNI_LI_INFO=0xb005;
     static final int KEY_SPOT_TARGET =0xb006;
-    static final int KEY_SPOT_INFO  =0xb007;
+    static final int KEY_SPOT_OBJECT  =0xb007;
     static final int KEY_SEGMENT  =0xb008;
     static final int KEY_CURTIME  =0xb009;
-    static final int KEYFRAME_HEAD=0xb00a;
+    static final int KEY_HEADER=0xb00a;
     static final int TRACK_HEADER =0xb010;
     static final int TRACK_PIVOT  =0xb013;
     static final int BOUNDING_BOX   =0xb014;

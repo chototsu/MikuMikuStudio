@@ -2,9 +2,13 @@ package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 
 import java.io.DataInput;
 import java.io.IOException;
+import java.util.ArrayList;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
+ *
+ * Parent == TDSFile == 0x4d4d<br>
+ * type ==  KEYFRAMES == 0xb000<br>
  *
  * @author Jack Lindamood
  */
@@ -13,14 +17,23 @@ public class KeyframeChunk extends ChunkerClass{
         super(myIn,i);
     }
 
+    int animationLen;
+    int begin;
+    int end;
+    ArrayList objKeyframes;
+    ArrayList cameraKeyframes;
+    ArrayList lightKeyframes;
+
+    protected void initializeVariables() throws IOException {
+        objKeyframes=new ArrayList();
+        cameraKeyframes=new ArrayList();
+        lightKeyframes=new ArrayList();
+    }
+
     protected boolean processChildChunk(ChunkHeader i) throws IOException {
         switch (i.type){
-/*
-            case KEYFRAME_HEAD:
+            case KEY_HEADER:
                 readKeyframeHeader();
-                return true;
-            case KEYFRAME_OBJ:
-                readKeyframeObj(i.length);
                 return true;
             case KEY_SEGMENT:
                 readSegment();
@@ -28,30 +41,44 @@ public class KeyframeChunk extends ChunkerClass{
             case KEY_CURTIME:
                 readCurTime();
                 return true;
-            case VIEWPORT_LAYOUT:
-                readViewLayout(i.length);
+            case KEY_VIEWPORT:
+                skipSize(i.length); // Ignore changing viewports, not relevant
                 return true;
-            case CAMERA_TARG_INF_TAG:
-                readCamTargetInfoTag(i.length);
+            case KEY_OBJECT:
+                objKeyframes.add(new KeyframeInfoChunk(myIn,i));
                 return true;
-            case CAMERA_INFO_TAG:
-                readCamInfoTag(i.length);
+            case KEY_CAM_TARGET:
+            case KEY_CAMERA_OBJECT:
+                cameraKeyframes.add(new KeyframeInfoChunk(myIn,i));
                 return true;
             case KEY_OMNI_LI_INFO:
-                readOmniLightKeyframeInfo(i.length);
-                return true;
-            case KEY_AMBIENT_NODE:
-                readAmbientNodeKeyframeInfo(i.length);
-                return true;
+            case KEY_AMB_LI_INFO:
             case KEY_SPOT_TARGET:
-                readSpotLightTarget(i.length);
+            case KEY_SPOT_OBJECT:
+                lightKeyframes.add(new KeyframeInfoChunk(myIn,i));
                 return true;
-            case KEY_SPOT_INFO:
-                readKeySpotLightInfo(i.length);
-                return true;
-*/
             default:
                 return false;
         }
+    }
+
+    private void readSegment() throws IOException {
+        begin=myIn.readInt();
+        end=myIn.readInt();
+        if (DEBUG_LIGHT) System.out.println("Reading segment");
+        if (DEBUG) System.out.println("Segment begins at " + begin + " and ends at " + end);
+    }
+
+    private void readCurTime() throws IOException {
+        int curFrame=myIn.readInt();
+        if (DEBUG) System.out.println("Current frame is " + curFrame);
+    }
+
+    private void readKeyframeHeader() throws IOException {
+        if (DEBUG_LIGHT) System.out.println("Reading keyframeHeader");
+        short revision=myIn.readShort();
+        String flname=readcStr();
+        animationLen=myIn.readInt();
+        if (DEBUG) System.out.println("Revision #" + revision + " with filename " + flname + " and animation len " + animationLen);
     }
 }

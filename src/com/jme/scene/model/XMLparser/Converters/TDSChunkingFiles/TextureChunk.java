@@ -8,6 +8,9 @@ import java.io.IOException;
 /**
  * Started Date: Jul 2, 2004<br><br>
  *
+ * parent=afff=MAT_BLOCK
+ * type=0xA200 - 0xA34C=various
+ *
  * @author Jack Lindamood
  */
 public class TextureChunk extends ChunkerClass{
