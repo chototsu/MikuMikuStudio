@@ -59,7 +59,7 @@ import com.jme.util.Timer;
  * <code>TestTint</code>
  * 
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.3 2004-03-03 17:38:10 darkprophet Exp $
+ * @version $Id: TestTint.java,v 1.4 2004-03-06 23:03:19 darkprophet Exp $
  */
 public class TestTint extends SimpleGame {
 
@@ -145,9 +145,9 @@ public class TestTint extends SimpleGame {
 		AlphaState as1 = display.getRenderer().getAlphaState();
 		as1.setBlendEnabled(true);
 		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		as1.setDstFunction(AlphaState.DB_ONE);
-		as1.setTestEnabled(true);
-		as1.setTestFunction(AlphaState.TF_GREATER);
+		as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
+		as1.setTestEnabled(false);
+		as1.setTestFunction(AlphaState.TF_GEQUAL);
 		as1.setEnabled(true);
 
 		TextureState ts1 = display.getRenderer().getTextureState();
@@ -180,7 +180,7 @@ public class TestTint extends SimpleGame {
 		box.setRenderState(ts1);
 		box.setLocalTranslation(new Vector3f(0, 0, 0));
 
-		tint = new Tint("tint", new ColorRGBA(1, 0, 0, alpha));
+		tint = new Tint("tint", new ColorRGBA(1f, 0f, 0f, alpha));
 		tint.setRenderState(as1);
 
 		instructions =
