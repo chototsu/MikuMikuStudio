@@ -34,6 +34,7 @@ package com.jme.intersection;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.math.Ray;
 
 /**
@@ -44,7 +45,7 @@ import com.jme.math.Ray;
  * the client application need not worry about what type of bounding volume is
  * being used.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.15 2004-08-03 02:04:38 cep21 Exp $
+ * @version $Id: Intersection.java,v 1.16 2004-08-25 22:15:48 cep21 Exp $
  */
 public class Intersection {
 
@@ -69,6 +70,8 @@ public class Intersection {
             return IntersectionSphere.intersection(ray, (BoundingSphere) volume);
         } else if (volume instanceof BoundingBox) {
             return IntersectionBox.intersection(ray, (BoundingBox) volume);
+        } else if (volume instanceof OrientedBoundingBox) {
+            return IntersectionOBB.intersection(ray, (OrientedBoundingBox) volume);
         }
         return false;
     }
@@ -103,6 +106,10 @@ public class Intersection {
             } else {
                 return false;
             }
+        } else if (vol1 instanceof OrientedBoundingBox) {
+            return IntersectionOBB.intersection(
+                (OrientedBoundingBox) vol1,
+                vol2);
         } else {
             return false;
         }
