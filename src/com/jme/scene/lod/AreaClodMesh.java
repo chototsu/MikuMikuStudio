@@ -43,25 +43,46 @@ import com.jme.util.LoggingSystem;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>ClodMesh</code>
+ * <code>AreaClodMesh</code>
  * originally ported from David Eberly's c++, modifications and
- * enhancements made from there.
+ * enhancements made from there.<br><br>
+ * This class is an automatically updating ClodMesh that updates records acording to how much
+ * area the bounding volume takes up on the screen.  Use it just like a normal ClodMesh, but allow
+ * it to update itself.
  * @author Joshua Slack
- * @version $Id: AreaClodMesh.java,v 1.9 2004-07-21 22:12:02 guurk Exp $
+ * @author Jack Lindamood (javadoc only)
+ * @version $Id: AreaClodMesh.java,v 1.10 2004-08-21 00:32:00 cep21 Exp $
  */
 public class AreaClodMesh extends ClodMesh {
-  float trisPerPixel = 1f;
-  float distTolerance = 1f;
-  float lastDistance = 0f;
+  private float trisPerPixel = 1f;
+  private float distTolerance = 1f;
+  private float lastDistance = 0f;
 
   /**
    * Empty Constructor to be used internally only.
    */
   public AreaClodMesh() {}
 
+  /**
+   * Creates a new AreaClodMesh with the given name.  This should only be used if
+   * the users is going to call reconstruct and create on the clod mesh.
+   * @param name The mesh's name.
+   * @see #reconstruct(com.jme.math.Vector3f[], com.jme.math.Vector3f[], com.jme.renderer.ColorRGBA[], com.jme.math.Vector2f[], int[])
+   * @see #create(com.jme.scene.lod.CollapseRecord[])
+   */
   public AreaClodMesh(String name) {
       super(name);
   }
+
+  /**
+   * Creates a clod mesh that mimics the given TriMesh's geometry information.  More specificly,
+   * RenderState and Controller information is <b>not</b> absorbed by this AreaClodMesh.  A null
+   * for records causes the AreaClodMesh to generate its own records information.
+   * @param name The name of this new mesh.
+   * @param data The TriMesh to copy information into for this mesh.
+   * @param records The collapse record(s) this ClodMesh should use.  These modify how the ClodMesh
+   * collapses vertexes.
+   */
   public AreaClodMesh(
       String name,
       TriMesh data,
@@ -70,6 +91,18 @@ public class AreaClodMesh extends ClodMesh {
     super(name, data, records);
   }
 
+  /**
+   * Creates a clod mesh with the given information.  A null for records causes the AreaClodMesh to
+   * generate its own records information.
+   * @param name The name of the ClodMesh.
+   * @param vertices The vertex information of this clod mesh.
+   * @param normal The per vertex normal information of this clod mesh.
+   * @param color The per vertex color information of this clod mesh.
+   * @param texture The per vertex texture information of this clod mesh.
+   * @param indices The index array of this TriMesh's triangles.
+   * @param records The collapse record(s) this ClodMesh should use.  These modify how the ClodMesh
+   * collapses vertexes.
+   */
   public AreaClodMesh(
       String name,
       Vector3f[] vertices,
@@ -82,6 +115,13 @@ public class AreaClodMesh extends ClodMesh {
     
   }
 
+  /**
+   * This function is used during rendering to choose the correct target record for the
+   * AreaClodMesh acording to the information in the renderer.  This should not be called
+   * manually.  Instead, allow it to be called automatically during rendering.
+   * @param r The Renderer to use.
+   * @return the target record this AreaClodMesh will use to collapse vertexes.
+   */
   public int chooseTargetRecord(Renderer r) {
     if (getWorldBound() == null) {
       LoggingSystem.getLogger().log(Level.WARNING,
@@ -113,26 +153,50 @@ public class AreaClodMesh extends ClodMesh {
       if (trisToDraw - records[i].numbTriangles < 0) break;
       targetRecord = i;
     }
-    //System.err.println("choosing record: "+targetRecord);
     return targetRecord;
   }
 
+  /**
+   * This function is ignored by AreaClodMesh because target records are updated automatically
+   *  during draw.
+   * @param target Ignored.
+   */
   public void setTargetRecord(int target) {
     // ignore;
   }
 
+  /**
+   * Returns the currently set number of triangles per pixel this AreaClodMesh should fit on
+   * the screen.  The default value is 1.
+   * @return The current Triangles per pixel.
+   */
   public float getTrisPerPixel() {
     return trisPerPixel;
   }
 
+  /**
+   * Sets the number of triangles per pixel this AreaClodMesh should try to fit on the screen.
+   * The default value is 1.
+   * @param trisPerPixel The new value for Triangles per pixel.
+   */
   public void setTrisPerPixel(float trisPerPixel) {
     this.trisPerPixel = trisPerPixel;
   }
 
+  /**
+   * Returns the amount of distance the camera must move from the center of this AreaClodMesh's
+   * bounding volume before a collapse is initiated.  The default is 1.
+   * @return The current distance tolerance of collapsing.
+   */
   public float getDistanceTolerance() {
     return distTolerance;
   }
 
+  /**
+   * Sets the amount of distance the camera must move from the center of this AreaClodMesh's
+   * bounding volume before a collapse is initiated.  The default is 1.
+   * @param tolerance The new distance tolerance.
+   */
   public void setDistanceTolerance(float tolerance) {
     this.distTolerance = tolerance;
   }

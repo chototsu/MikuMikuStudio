@@ -35,13 +35,23 @@ package com.jme.scene.lod;
 /**
  * <code>CollapseRecord</code>
  * originally ported from David Eberly's c++, modifications and
- * enhancements made from there.
+ * enhancements made from there.<br><br>
+ * This class keeps an array of vertex index positions that are to be collapsed.  It
+ * is used to modify ClodMesh objects so that they contain less information.
  * @author Joshua Slack
- * @version $Id: CollapseRecord.java,v 1.4 2004-04-22 22:26:49 renanse Exp $
+ * @author Jack Lindamood (javadoc only)
+ * @version $Id: CollapseRecord.java,v 1.5 2004-08-21 00:33:04 cep21 Exp $
  */
 
 public class CollapseRecord {
 
+  /**
+   * Creates a new CollapseRecord.
+   * @param toKeep The vertex index that is kept.
+   * @param toThrow The vertex index that is thrown.
+   * @param vertQuantity The new vertex quantity of the mesh using this record.
+   * @param triQuantity The new triangle quantity of the mesh using this record.
+   */
   public CollapseRecord(int toKeep, int toThrow, int vertQuantity,
                         int triQuantity) {
     vertToKeep = toKeep;
@@ -50,19 +60,29 @@ public class CollapseRecord {
     numbTriangles = triQuantity;
   }
 
+  /**
+   * Creates a new collapse record with all values at their default.
+   */
   public CollapseRecord() {
   }
 
   // edge <VKeep,VThrow> collapses so that VThrow is replaced by VKeep
-  int vertToKeep = -1, vertToThrow = -1;
+  /** An int index in the Mesh's vertex array.  It is the vertex assigned from the indices array.
+   *  Used in collapsing the mesh. */
+  public int vertToKeep = -1;
+  /** An int index in the Mesh's vertex array.  It is the vertex assigned from the indices array.
+   * Used in expanding the mesh. */
+  public int vertToThrow = -1;
 
   // number of vertices after edge collapse
-  int numbVerts = 0;
+  public int numbVerts = 0;
 
-  // number of triangles after edge collapse
-  int numbTriangles = 0;
+  /** The number of triangles in the Mesh after edge collapse. */
+  public int numbTriangles = 0;
 
   // connectivity array indices in [0..TQ-1] that contain VThrow
-  int numbIndices = 0;
-  int[] indices = null;
+  /** Lenght of this indices array. */
+  public int numbIndices = 0;
+  /** An integer value in the Mesh's indices array referencing a vertex to keep or throw.*/
+  public int[] indices = null;
 }

@@ -45,9 +45,12 @@ import com.jme.util.MemPool;
 /**
  * <code>ClodCreator</code>
  * originally ported from David Eberly's c++, modifications and
- * enhancements made from there.
+ * enhancements made from there.<br><br>
+ * This class is used by ClodMesh to create automatically generated records.
+ * The reason for lack of documentation is that it should have little use to someone
+ * outside the API, unless they already know how to use it.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.11 2004-08-17 22:16:59 cep21 Exp $
+ * @version $Id: ClodCreator.java,v 1.12 2004-08-21 00:32:22 cep21 Exp $
  */
 
 public class ClodCreator extends VETMesh {

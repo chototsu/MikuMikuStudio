@@ -42,9 +42,12 @@ import java.util.Vector;
 /**
  * <code>VETMesh</code>
  * originally ported from David Eberly's c++, modifications and
- * enhancements made from there.
+ * enhancements made from there.<br><br>
+ * This class is used as a base class for ClodCreator, and should have little use
+ * outside of a base class for clod meshes.
  * @author Joshua Slack
- * @version $Id: VETMesh.java,v 1.6 2004-04-22 22:26:50 renanse Exp $
+ * @version $Id: VETMesh.java,v 1.7 2004-08-21 00:33:45 cep21 Exp $
+ * @see ClodCreator
  */
 
 public class VETMesh {
