@@ -666,6 +666,19 @@ public class JmeBinaryWriter {
             writeLightState((LightState)renderState);
         else if (renderState instanceof CullState)
             writeCullState((CullState)renderState);
+        else if (renderState instanceof WireframeState)
+            writeWireframeState((WireframeState)renderState);
+        else
+            System.out.println("Unknown render state... ut ow!");
+    }
+
+    private void writeWireframeState(WireframeState wireframeState) throws IOException {
+        if (wireframeState==null) return;
+        HashMap atts=new HashMap();
+        atts.put("width",new Float(wireframeState.getLineWidth()));
+        atts.put("facetype",new Integer(wireframeState.getFace()));
+        writeTag("wirestate",atts);
+        writeEndTag("wirestate");
     }
 
     private void writeCullState(CullState cullState) throws IOException {
