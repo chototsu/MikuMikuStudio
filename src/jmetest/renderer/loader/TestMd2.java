@@ -1,20 +1,20 @@
 /*
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -26,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package jmetest.renderer.loader;
 
@@ -57,9 +57,9 @@ import com.jme.util.Timer;
 
 /**
  * <code>TestBackwardAction</code>
- * 
+ *
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.6 2004-03-25 17:14:35 mojomonkey Exp $
+ * @version $Id: TestMd2.java,v 1.7 2004-03-31 21:54:55 renanse Exp $
  */
 public class TestMd2 extends SimpleGame {
 	LightState state;
@@ -79,10 +79,12 @@ public class TestMd2 extends SimpleGame {
 	private float lastTime = 10;
 	/**
 	 * Nothing to update.
-	 * 
+	 *
 	 * @see com.jme.app.AbstractGame#update()
 	 */
 	protected void update(float f) {
+          display.setTitle("MD2 Animation - FPS:" + (int) timer.getFrameRate() +
+                           " - " + display.getRenderer().getStatistics());
 		timer.update();
 		input.update(timer.getTimePerFrame() * 100);
 		model.updateWorldData(timer.getTimePerFrame()*10);
@@ -97,16 +99,17 @@ public class TestMd2 extends SimpleGame {
 				}
 				keyframeSelector.setAnimation(animCounter);
 			}
-			lastTime = 0;	
-		}	
+			lastTime = 0;
+		}
 	}
 
 	/**
 	 * Render the scene
-	 * 
+	 *
 	 * @see com.jme.app.AbstractGame#render()
 	 */
 	protected void render(float f) {
+          display.getRenderer().clearStatistics();
 		display.getRenderer().clearBuffers();
 		display.getRenderer().draw(model);
 
@@ -114,7 +117,7 @@ public class TestMd2 extends SimpleGame {
 
 	/**
 	 * set up the display system and camera.
-	 * 
+	 *
 	 * @see com.jme.app.AbstractGame#initSystem()
 	 */
 	protected void initSystem() {
@@ -156,17 +159,18 @@ public class TestMd2 extends SimpleGame {
 					"selectAnimation",
 					KeyInput.KEY_F1);
 		display.setTitle("MD2 Animation");
+                display.getRenderer().enableStatistics(true);
 	}
 
 	/**
 	 * set up the scene
-	 * 
+	 *
 	 * @see com.jme.app.AbstractGame#initGame()
 	 */
-	protected void initGame() {  
+	protected void initGame() {
 		model = new Md2Model("Dr Freak");
 		model.load(TestMd2.class.getClassLoader().getResource("jmetest/"+FILE_NAME));
-		
+
 		ts = display.getRenderer().getTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(
@@ -175,7 +179,7 @@ public class TestMd2 extends SimpleGame {
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
-		
+
 		SpotLight am = new SpotLight();
 		am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
 		am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
@@ -206,24 +210,24 @@ public class TestMd2 extends SimpleGame {
 
 		zstate = display.getRenderer().getZBufferState();
 		zstate.setEnabled(true);
-		
+
 		WireframeState ws = display.getRenderer().getWireframeState();
 		ws.setEnabled(false);
-		
+
 		model.setRenderState(state);
 		model.setRenderState(ts);
 		model.setRenderState(zstate);
 		model.setRenderState(ws);
-		
+
 		model.getAnimationController().setRepeatType(Controller.RT_WRAP);
 		model.updateGeometricState(0, true);
-		
+
 		keyframeSelector = new Md2KeyframeSelector((VertexKeyframeController)model.getAnimationController());
 	}
 
 	/**
 	 * not used.
-	 * 
+	 *
 	 * @see com.jme.app.AbstractGame#reinit()
 	 */
 	protected void reinit() {
@@ -231,7 +235,7 @@ public class TestMd2 extends SimpleGame {
 
 	/**
 	 * not used.
-	 * 
+	 *
 	 * @see com.jme.app.AbstractGame#cleanup()
 	 */
 	protected void cleanup() {
