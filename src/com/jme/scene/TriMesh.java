@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.15 2004-05-23 21:25:44 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.16 2004-05-28 00:43:03 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -245,5 +245,16 @@ public class TriMesh extends Geometry implements Serializable {
 		super.clearBuffers();
 		indexBuffer = null;
 	}
+
+    /**
+     * Sets this geometry's index buffer as a refrence to
+     * the passed <code>IntBuffer</code>.  Incorrectly built IntBuffers can
+     * have undefined results.  Use with care.
+     * @param toSet The <code>IntBuffer</code> to set this
+     * geometry's index buffer to
+     */
+    public void setIndexBuffer(IntBuffer toSet){
+        indexBuffer=toSet;
+    }
 
 }
