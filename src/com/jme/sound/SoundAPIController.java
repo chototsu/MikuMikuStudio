@@ -44,13 +44,12 @@ package com.jme.sound;
  */
 public class SoundAPIController {
 
-	private static ISoundSystem soundSystem;
-	private static String api;
-	private static ISoundRenderer renderer;
+    private static String api;
+    
+	private static ISoundSystem soundSystem = null;
+	private static ISoundRenderer renderer = null;
 
-	public SoundAPIController() {
-
-	}
+	public SoundAPIController() {}
 
 	public static ISoundSystem getSoundSystem(String apiName) {
 		api= apiName;
@@ -68,10 +67,14 @@ public class SoundAPIController {
 	}
 
 	public static ISoundRenderer getRenderer() {
+        if (renderer == null)
+            throw new IllegalArgumentException("Must first call getSoundSystem(String) to specify the sound API!");
 		return renderer;
 	}
 
 	public static ISoundSystem getSoundSystem() {
+        if (renderer == null)
+            throw new IllegalArgumentException("Must first call getSoundSystem(String) to specify the sound API!");
 		return soundSystem;
 	}
 
