@@ -58,7 +58,7 @@ import com.jme.renderer.ColorRGBA;
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.2 2004-02-10 14:47:22 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.3 2004-02-15 20:11:50 mojomonkey Exp $
  */
 public class TextureManager {
    
@@ -189,7 +189,7 @@ public class TextureManager {
         boolean isMipmapped,
         boolean flipped) {
 
-    	if(null == file) {
+		if(null == file) {
     		return null;
     	}
     	
@@ -298,8 +298,7 @@ public class TextureManager {
     * @return <code>Image</code> object that contains the bitmap information.
     */
     private static java.awt.Image loadBMPImage(URL file) {
-
-        try {
+		try {
             InputStream fs = file.openStream();
             BitmapHeader bh = new BitmapHeader();
             bh.read(fs);
@@ -315,8 +314,7 @@ public class TextureManager {
 
             fs.close();
         } catch (IOException e) {
-            System.err.println("Error while loading " + file);
-            System.exit(1);
+            LoggingSystem.getLogger().log(Level.WARNING, "Error while loading " + file);
         }
 
         return null;
