@@ -31,7 +31,7 @@
  */
 package com.jme.test.renderer;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.LWJGLCamera;
@@ -45,7 +45,7 @@ import com.jme.system.LWJGLDisplaySystem;
  * Test for trimesh part of the renderer.
  * @author Mark Powell
  */
-public class TestLWJGLRendererTriMesh extends AbstractGame {
+public class TestLWJGLRendererTriMesh extends SimpleGame {
     private TriMesh t;
     private LWJGLCamera cam;
     private Node scene;
@@ -56,23 +56,23 @@ public class TestLWJGLRendererTriMesh extends AbstractGame {
      */
     public static void main(String[] args) {
         TestLWJGLRendererTriMesh app = new TestLWJGLRendererTriMesh();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
     /**
      * Not used in this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
      
     }
 
     /** 
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
@@ -81,7 +81,7 @@ public class TestLWJGLRendererTriMesh extends AbstractGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -113,7 +113,7 @@ public class TestLWJGLRendererTriMesh extends AbstractGame {
 
     /** 
      * builds the trimesh.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         Vector3f[] verts = new Vector3f[3];
@@ -164,7 +164,7 @@ public class TestLWJGLRendererTriMesh extends AbstractGame {
     }
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
     
@@ -172,7 +172,7 @@ public class TestLWJGLRendererTriMesh extends AbstractGame {
 
     /** 
      * Not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
     

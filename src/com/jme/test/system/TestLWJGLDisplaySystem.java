@@ -31,7 +31,7 @@
  */
 package com.jme.test.system;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.renderer.ColorRGBA;
 import com.jme.system.JmeException;
 import com.jme.system.LWJGLDisplaySystem;
@@ -41,7 +41,7 @@ import com.jme.system.LWJGLDisplaySystem;
  * of a LWJGL window.
  * @author Mark Powell
  */
-public class TestLWJGLDisplaySystem extends AbstractGame {
+public class TestLWJGLDisplaySystem extends SimpleGame {
     public static void main(String[] args) {
         TestLWJGLDisplaySystem app = new TestLWJGLDisplaySystem();
         app.start();
@@ -49,22 +49,22 @@ public class TestLWJGLDisplaySystem extends AbstractGame {
 
     /**
     `* update is not used for this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
     }
 
     /**
      * render simply clears the buffer.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
     }
 
     /**
      * creates the display sytem and sets the background color to blue.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -82,21 +82,21 @@ public class TestLWJGLDisplaySystem extends AbstractGame {
 
     /**
      * init game is not used.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
     }
 
     /**
      * reinit is not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
     }
 
     /**
      * cleanup not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
     }

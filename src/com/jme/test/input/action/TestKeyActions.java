@@ -31,7 +31,7 @@
  */
 package com.jme.test.input.action;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.input.InputController;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
@@ -61,7 +61,7 @@ import com.jme.system.JmeException;
  * @author Mark Powell
  * @version 
  */
-public class TestKeyActions extends AbstractGame {
+public class TestKeyActions extends SimpleGame {
     private Node scene;
     private Camera cam;
     private Line l;
@@ -72,24 +72,24 @@ public class TestKeyActions extends AbstractGame {
 
     /**
      * Nothing to update.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         input.update(1);
     }
 
     /**
      * Render the scene
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(scene);
     }
 
     /**
      * set up the display system and camera.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -173,7 +173,7 @@ public class TestKeyActions extends AbstractGame {
 
     /**
      * set up the scene
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         Vector3f[] vertex = new Vector3f[1000];
@@ -310,21 +310,21 @@ public class TestKeyActions extends AbstractGame {
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
     }
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
     }
 
     public static void main(String[] args) {
         TestKeyActions app = new TestKeyActions();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 }

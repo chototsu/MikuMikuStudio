@@ -31,7 +31,7 @@
  */
 package com.jme.test.renderer;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -60,9 +60,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoundingBox.java,v 1.1 2003-12-12 21:56:02 mojomonkey Exp $
+ * @version $Id: TestBoundingBox.java,v 1.2 2004-02-02 23:05:05 ericthered Exp $
  */
-public class TestBoundingBox extends AbstractGame {
+public class TestBoundingBox extends SimpleGame {
     private TriMesh t,t2;
     private Camera cam;
     private Text text;
@@ -81,7 +81,7 @@ public class TestBoundingBox extends AbstractGame {
      */
     public static void main(String[] args) {
         TestBoundingBox app = new TestBoundingBox();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
         
     }
@@ -94,9 +94,9 @@ public class TestBoundingBox extends AbstractGame {
 
     /**
      * Not used in this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         if(timer.getTimePerFrame() < 1) {
             angle = angle + (timer.getTimePerFrame() * 1);
             if(angle > 360) {
@@ -117,9 +117,9 @@ public class TestBoundingBox extends AbstractGame {
 
     /** 
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
@@ -128,7 +128,7 @@ public class TestBoundingBox extends AbstractGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -171,7 +171,7 @@ public class TestBoundingBox extends AbstractGame {
 
     /** 
      * builds the trimesh.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         text = new Text("Timer");
@@ -260,7 +260,7 @@ public class TestBoundingBox extends AbstractGame {
     }
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -268,7 +268,7 @@ public class TestBoundingBox extends AbstractGame {
 
     /** 
      * Not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

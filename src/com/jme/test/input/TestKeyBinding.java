@@ -31,7 +31,7 @@
  */
 package com.jme.test.input;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
@@ -53,7 +53,7 @@ import com.jme.util.TextureManager;
  * @author Mark Powell
  * @version 
  */
-public class TestKeyBinding extends AbstractGame {
+public class TestKeyBinding extends SimpleGame {
     private Text text;
     private Camera cam;
     private Node scene;
@@ -61,15 +61,15 @@ public class TestKeyBinding extends AbstractGame {
 
     public static void main(String[] args) {
         TestKeyBinding app = new TestKeyBinding();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
     /**
      * Not used.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         key.update();
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("zero")) {
             text.print("You pressed 0.");
@@ -86,9 +86,9 @@ public class TestKeyBinding extends AbstractGame {
 
     /**
      * draws the scene graph
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
@@ -97,7 +97,7 @@ public class TestKeyBinding extends AbstractGame {
 
     /**
      * initializes the display and camera.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -144,7 +144,7 @@ public class TestKeyBinding extends AbstractGame {
 
     /**
      * initializes the scene
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         text = new Text("Press 0,1, or L");
@@ -174,7 +174,7 @@ public class TestKeyBinding extends AbstractGame {
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -182,7 +182,7 @@ public class TestKeyBinding extends AbstractGame {
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

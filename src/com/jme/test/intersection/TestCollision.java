@@ -31,7 +31,7 @@
  */
 package com.jme.test.intersection;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -60,9 +60,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.5 2003-12-13 00:31:23 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.6 2004-02-02 23:05:05 ericthered Exp $
  */
-public class TestCollision extends AbstractGame {
+public class TestCollision extends SimpleGame {
 
     private TriMesh t;
     private TriMesh t2;
@@ -86,7 +86,7 @@ public class TestCollision extends AbstractGame {
      */
     public static void main(String[] args) {
         TestCollision app = new TestCollision();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
 
     }
@@ -99,9 +99,9 @@ public class TestCollision extends AbstractGame {
 
     /**
      * Not used in this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         if (timer.getTimePerFrame() < 1) {
             angle = angle + (timer.getTimePerFrame() * 1);
             if (angle > 360) {
@@ -150,9 +150,9 @@ public class TestCollision extends AbstractGame {
 
     /** 
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
@@ -161,7 +161,7 @@ public class TestCollision extends AbstractGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -205,7 +205,7 @@ public class TestCollision extends AbstractGame {
 
     /** 
      * builds the trimesh.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         text = new Text("Collision: No");
@@ -280,7 +280,7 @@ public class TestCollision extends AbstractGame {
     }
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -288,7 +288,7 @@ public class TestCollision extends AbstractGame {
 
     /** 
      * Not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

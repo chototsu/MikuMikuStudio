@@ -31,7 +31,7 @@
  */
 package com.jme.test.renderer.loader;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.light.DirectionalLight;
@@ -54,7 +54,7 @@ import com.jme.util.Timer;
  * @author Mark Powell
  * @version 
  */
-public class TestMilkshapeASCII extends AbstractGame {
+public class TestMilkshapeASCII extends SimpleGame {
     private Camera cam;
     private Node scene;
     private InputController input;
@@ -65,7 +65,7 @@ public class TestMilkshapeASCII extends AbstractGame {
      * Nothing to update.
      * @see com.jme.app.AbstractGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
     	timer.update();
         input.update(timer.getTimePerFrame() * 100);
         System.out.println(timer.getFrameRate());
@@ -76,7 +76,7 @@ public class TestMilkshapeASCII extends AbstractGame {
      * Render the scene
      * @see com.jme.app.AbstractGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(scene);
     }
@@ -188,7 +188,7 @@ public class TestMilkshapeASCII extends AbstractGame {
 
     public static void main(String[] args) {
 		TestMilkshapeASCII app = new TestMilkshapeASCII();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 }

@@ -31,7 +31,7 @@
  */
 package com.jme.test.renderer.state;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -57,9 +57,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.5 2003-12-01 13:18:58 mojomonkey Exp $
+ * @version $Id: TestLightState.java,v 1.6 2004-02-02 23:05:06 ericthered Exp $
  */
-public class TestLightState extends AbstractGame {
+public class TestLightState extends SimpleGame {
     private TriMesh t;
     private Camera cam;
     private Node scene;
@@ -71,23 +71,23 @@ public class TestLightState extends AbstractGame {
      */
     public static void main(String[] args) {
         TestLightState app = new TestLightState();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
     /**
      * Not used in this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         input.update(0.25f);
     }
 
     /** 
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
@@ -96,7 +96,7 @@ public class TestLightState extends AbstractGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -133,7 +133,7 @@ public class TestLightState extends AbstractGame {
 
     /** 
      * builds the trimesh.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         Vector3f max = new Vector3f(10,10,10);
@@ -212,7 +212,7 @@ public class TestLightState extends AbstractGame {
     }
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -220,7 +220,7 @@ public class TestLightState extends AbstractGame {
 
     /** 
      * Not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

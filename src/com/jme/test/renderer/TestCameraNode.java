@@ -31,7 +31,7 @@
  */
 package com.jme.test.renderer;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.InputController;
 import com.jme.input.NodeController;
@@ -60,9 +60,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.2 2004-01-27 23:59:22 mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.3 2004-02-02 23:05:05 ericthered Exp $
  */
-public class TestCameraNode extends AbstractGame {
+public class TestCameraNode extends SimpleGame {
     private TriMesh t;
     private CameraNode camNode;
     private Camera cam;
@@ -79,7 +79,7 @@ public class TestCameraNode extends AbstractGame {
      */
     public static void main(String[] args) {
         TestCameraNode app = new TestCameraNode();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
         
     }
@@ -92,9 +92,9 @@ public class TestCameraNode extends AbstractGame {
 
     /**
      * Not used in this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         
         timer.update();
         input.update(timer.getTimePerFrame());
@@ -107,9 +107,9 @@ public class TestCameraNode extends AbstractGame {
 
     /** 
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
@@ -118,7 +118,7 @@ public class TestCameraNode extends AbstractGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -159,7 +159,7 @@ public class TestCameraNode extends AbstractGame {
 
     /** 
      * builds the trimesh.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         text = new Text("Timer");
@@ -264,7 +264,7 @@ public class TestCameraNode extends AbstractGame {
     }
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -272,7 +272,7 @@ public class TestCameraNode extends AbstractGame {
 
     /** 
      * Not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

@@ -34,7 +34,7 @@ package com.jme.test.widget;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
@@ -77,9 +77,9 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.4 2004-01-26 00:08:24 Anakan Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.5 2004-02-02 23:05:06 ericthered Exp $
  */
-public class TestWidgetButtonLightSwitch extends AbstractGame {
+public class TestWidgetButtonLightSwitch extends SimpleGame {
     private ISource clickSource;
 	static String STARTED_STATE_STRING = " Stop ";
     static String STOPPED_STATE_STRING = "Start";
@@ -298,9 +298,9 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
     DirectionalLight dr;
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
 
         frame.fps.setTitle("FPS:  " + WidgetFrameAbstract.getFrameRate().toString());
 
@@ -315,9 +315,9 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         Vector3f point;
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
@@ -325,7 +325,7 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -363,7 +363,7 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
 
@@ -491,18 +491,18 @@ public class TestWidgetButtonLightSwitch extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {}
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {}
 
     public static void main(String[] args) {
         TestWidgetButtonLightSwitch app = new TestWidgetButtonLightSwitch();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

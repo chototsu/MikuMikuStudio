@@ -32,7 +32,7 @@
 package com.jme.test.renderer;
 
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -51,7 +51,7 @@ import com.jme.util.TextureManager;
  * @author Mark Powell
  * @version 
  */
-public class TestText extends AbstractGame {
+public class TestText extends SimpleGame {
 
     private Text text;
     private Camera cam;
@@ -59,23 +59,23 @@ public class TestText extends AbstractGame {
 
     public static void main(String[] args) {
         TestText app = new TestText();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
     /**
      * Not used.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
 
     }
 
     /**
      * draws the scene graph
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
@@ -84,7 +84,7 @@ public class TestText extends AbstractGame {
 
     /**
      * initializes the display and camera.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -116,7 +116,7 @@ public class TestText extends AbstractGame {
 
     /**
      * initializes the scene
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         text = new Text("Testing Text");
@@ -146,7 +146,7 @@ public class TestText extends AbstractGame {
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -154,7 +154,7 @@ public class TestText extends AbstractGame {
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

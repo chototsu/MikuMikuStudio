@@ -31,7 +31,7 @@
  */
 package com.jme.test.renderer.state;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -48,7 +48,7 @@ import com.jme.system.JmeException;
  * @author Mark Powell
  * @version 
  */
-public class TestAlphaState extends AbstractGame {
+public class TestAlphaState extends SimpleGame {
     private TriMesh t, t2;
     private Camera cam;
     private Node scene;
@@ -60,23 +60,23 @@ public class TestAlphaState extends AbstractGame {
      */
     public static void main(String[] args) {
         TestAlphaState app = new TestAlphaState();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
     /**
      * Not used in this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
 
     }
 
     /** 
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
@@ -85,7 +85,7 @@ public class TestAlphaState extends AbstractGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -121,7 +121,7 @@ public class TestAlphaState extends AbstractGame {
 
     /** 
      * builds the trimesh.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         
@@ -222,7 +222,7 @@ public class TestAlphaState extends AbstractGame {
     }
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -230,7 +230,7 @@ public class TestAlphaState extends AbstractGame {
 
     /** 
      * Not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

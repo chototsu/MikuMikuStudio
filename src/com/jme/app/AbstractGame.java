@@ -1,10 +1,10 @@
-/*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
- * All rights reserved.
- *
+/* 
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding 
+ * All rights reserved. 
+ * 
  * Redistribution and use in source and binary forms, with or without 
- * modification, are permitted provided that the following conditions are met:
- *
+ * modification, are permitted provided that the following conditions are met: 
+ * 
  * Redistributions of source code must retain the above copyright notice, this 
  * list of conditions and the following disclaimer. 
  * 
@@ -26,10 +26,9 @@
  * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * POSSIBILITY OF SUCH DAMAGE. 
+ * 
  */
-
 package com.jme.app;
 
 import java.util.logging.Level;
@@ -41,193 +40,187 @@ import com.jme.system.PropertiesIO;
 import com.jme.util.LoggingSystem;
 
 /**
- * <code>AbstractGame</code> defines a common way to organize the flow of a 
- * game. A subclass must override the init, update, render and cleanup methods.
- * A call to the start method causes the mainloop to begin. The main loop
- * continues to run until finish is called.
+ * <code>AbstractGame</code> defines a common method for implementing game functionality.
+ * Client applications should not subclass <code>AbstractGame</code> directly.
  * 
- * @author Mark Powell
- * @version $Id: AbstractGame.java,v 1.4 2004-01-18 22:46:23 mojomonkey Exp $
+ * @author Eric Woroshow
+ * @version $Id: AbstractGame.java,v 1.5 2004-02-02 23:02:42 ericthered Exp $
  */
-
 public abstract class AbstractGame {
-    private final static String JME_VERSION_TAG = "jME version 0.4.0";
+	private final static String JME_VERSION_TAG = "jME version 0.4.1-experimental";
+	private final static String DEFAULT_IMAGE = "data/Images/Monkey.jpg";
 
-    //Flag for running the system.
-    private boolean finished;
-    private boolean dialogRequested = false;
-    private boolean noDialog = false;
-    protected PropertiesIO properties;
-    //display system
-    protected DisplaySystem display;
+	/** Never displays a <code>PropertiesDialog</code> on startup, using defaults 
+	 * if no configuration file is found. */
+	protected final static int NEVER_SHOW_PROPS_DIALOG = 0;
 
-    /**
-     * <code>start</code> begins the game. First, <code>initSystem</code> 
-     * is called, <code>initGame</code> to set up the game data.
-     * After this it enters the main game loop. Here, each frame, 
-     * <code>update</code> is called, then <code>render</code>. After the
-     * game loop is broken out of via a call to <code>finish</code>,
-     * <code>cleanup</code> is called. This method is final and cannot
-     * be overridden by the subclass.
-     */
-    public final void start() {
-        LoggingSystem.getLogger().log(Level.INFO, "Application started.");
-        try {
-            getAttributes();
+	/** Displays a <code>PropertiesDialog</code> only if the properties file is not
+	 * found or could not be loaded. */
+	protected final static int FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG = 1;
 
-            initSystem();
+	/** Always displays a <code>PropertiesDialog</code> on startup. */
+	protected final static int ALWAYS_SHOW_PROPS_DIALOG = 2;
 
-            //check if user initialized gl and glu;
-            if (display == null) {
-                LoggingSystem.getLogger().log(
-                    Level.SEVERE,
-                    "Display system is null.");
+	//Default to first-run-only behaviour
+	private int dialogBehaviour = FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG;
+	private String dialogImage = DEFAULT_IMAGE;
 
-                throw new JmeException("Window must be created during" +                    " initialization.");
-            }
-            if (!display.isCreated()) {
-                LoggingSystem.getLogger().log(
-                    Level.SEVERE,
-                    "Display system not initialized.");
+	/** Game display properties */
+	protected PropertiesIO properties;
 
-                throw new JmeException("Window must be created during" +                    " initialization.");
-            }
-            initGame();
+	/** Renderer used to display the game */
+	protected DisplaySystem display;
 
-            //main loop
-            while (!finished && !display.isClosing()) {
-                //update game state
-                update();
+	//
+	//Utility methods common to all game implementations
+	//
 
-                //render
-                render();
+	/**
+	 * <code>getVersion</code> returns the version of the API.
+	 * @return the version of the API.
+	 */
+	public String getVersion() {
+		return JME_VERSION_TAG;
+	}
 
-                //swap buffers
-                display.getRenderer().displayBackBuffer();
-            }
-        } catch (Throwable t) {
-            t.printStackTrace();
-        } finally {
-            cleanup();
-        }
-        LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+	/**
+	 * @throws JmeException if the display system was not successfully created
+	 */
+	protected void assertDisplayCreated() throws JmeException {
+		if (display == null) {
+			LoggingSystem.getLogger().log(Level.SEVERE, "Display system is null.");
 
-        display.reset();
-        quit();
-    }
+			throw new JmeException("Window must be created during" + " initialization.");
+		}
+		if (!display.isCreated()) {
+			LoggingSystem.getLogger().log(Level.SEVERE, "Display system not initialized.");
 
-    /**
-     * 
-     * <code>getVersion</code> returns the version of the API.
-     * @return the version of the API.
-     */
-    public String getVersion() {
-        return JME_VERSION_TAG;
-    }
+			throw new JmeException("Window must be created during" + " initialization.");
+		}
+	}
 
-    /**
-     * 
-     * <code>useDialogAlways</code> if true will always display a
-     * <code>PropertiesDialog</code> for selection of screen properties.
-     * If this is false AND useDialogNever is false the dialog will be 
-     * displayed only if the properties file is not found.
-     * @param value true if the dialog is always to be display false otherwise.
-     */
-    public void useDialogAlways(boolean value) {
-        dialogRequested = value;
-        noDialog = false;
-    }
+	/**
+	 * <code>setDialogBehaviour</code> defines if and when the display properties
+	 * dialog should be shown. Setting the behaviour after <code>start</code> has
+	 * been called has no effect.
+	 * @param behaviour properties dialog behaviour ID
+	 */
+	public void setDialogBehaviour(int behaviour) {
+		setDialogBehaviour(behaviour, DEFAULT_IMAGE);
+	}
+	
+	/** 
+	 * <code>setDialogBehaviour</code> defines if and when the display properties
+	 * dialog should be shown as well as its accompanying image. Setting the 
+	 * behaviour after <code>start</code> has been called has no effect.
+	 * @param behaviour properties dialog behaviour ID
+	 * @param dialogImage a String specifying the filename of an image to be displayed
+	 * 					  with the <code>PropertiesDialog</code>. Passing <code>null</code>
+	 * 					  will result in no image being used.
+	 */
+	public void setDialogBehaviour(int behaviour, String image){
+		if (behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG)
+			throw new IllegalArgumentException("No such properties dialog behaviour");
+		
+		dialogBehaviour = behaviour;
+		dialogImage = image;
+	}
 
-    /**
-     * 
-     * <code>useDialogNever</code> if true will never display a
-     * <code>PropertiesDialog</code> for selection of screen properties.
-     * If this is false AND useDialogAlways is false the dialog will be 
-     * displayed only if the properties file is not found.
-     * @param value true if the dialog is never to be display false otherwise.
-     */
-    public void useDialogNever(boolean value) {
-        noDialog = value;
-        dialogRequested = false;
-    }
-    
-    /**
-     * <code>finish</code> is called to break out of the main game loop. This
-     * method is final and cannot be overridden.
-     */
-    public final void finish() {
-        finished = true;
-    }
+	/**
+	 * <code>getAttributes</code> attempts to first obtain the properties
+	 * information from the "properties.cfg" file, then a dialog depending
+	 * on the dialog behaviour.
+	 */
+	protected void getAttributes() {
+		properties = new PropertiesIO("properties.cfg");
+		boolean loaded = properties.load();
 
-    /**
-     * <code>quit</code> is called to exit the program. By default it simply
-     * uses the <code>System.exit()</code> method.
-     *
-     */
-    protected void quit() {
-        System.exit(0);
-    }
+		if ((!loaded && dialogBehaviour == FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG) 
+		    || dialogBehaviour == ALWAYS_SHOW_PROPS_DIALOG) {
 
-    /**
-     * <code>update</code> is called each frame and is intended to update 
-     * the game state. That is run physics for game entities, check scores,
-     * etc.
-     */
-    protected abstract void update();
+			PropertiesDialog dialog = new PropertiesDialog(properties, dialogImage);
 
-    /**
-     * <code>render</code> is called each frame and is inteded to display
-     * the game information to the OpenGL context.
-     */
-    protected abstract void render();
+			while (!dialog.isDone()) {
+				try {
+					Thread.sleep(10);
+				} catch (InterruptedException e) {
+					LoggingSystem.getLogger().log(Level.WARNING, "Error waiting for dialog system, using defaults.");
+				}
+			}
+		}
+	}
 
-    /**
-     * <code>initSystem</code> is called once after <code>start</code> is called.
-     * This is meant to create all the necessary system components for the client
-     * application.
-     */
-    protected abstract void initSystem();
+	//
+	//Main game behavior
+	//
 
-    /**
-     * <code>initGame</code> is called after <code>showTitle</code> to allow
-     * the creation of the game data. 
-     */
-    protected abstract void initGame();
+	/**
+	 * <code>start</code> begins the game. The game is initialized by calling
+	 * first <code>initSystem</code> then <code>initGame</code>. Assuming no
+	 * errors were encountered during initialization, the main game loop is
+	 * entered. How the loop operates is implementation-dependent. After the
+	 * game loop is broken out of via a call to <code>finish</code>,
+	 * <code>cleanup</code> is called. Subclasses should declare this method
+	 * final.
+	 */
+	public abstract void start();
 
-    /**
-     * <code>reinit</code> is called at any time by the client application 
-     * to rebuild the sub systems.
-     *
-     */
-    protected abstract void reinit();
+	/**
+	 * <code>finish</code> breaks out of the main game loop. It is preferable to
+	 * call <code>finish</code> instead of <code>quit</code>.
+	 */
+	public abstract void finish();
 
-    /**
-     * <code>cleanup</code> is called once after <code>finish</code> is called.
-     * This is meant to clean up any created objects before exiting the 
-     * application.
-     */
-    protected abstract void cleanup();
+	/**
+	 * <code>quit</code> exits the program. By default, it simply uses the
+	 * <code>System.exit()</code> method.
+	 */
+	protected abstract void quit();
 
-    /**
-     * 
-     * <code>getAttributes</code> obtains the properties information from
-     * either a properties file or dialog.
-     *
-     */
-    private void getAttributes() {
-        properties = new PropertiesIO("properties.cfg");
-        if ((!properties.load() || dialogRequested) && !noDialog) {
-            PropertiesDialog dialog =
-                new PropertiesDialog(properties, "data/Images/Monkey.jpg");
-            while (!dialog.isDone()) {
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    LoggingSystem.getLogger().log(
-                        Level.WARNING,
-                        "Error waiting for dialog system, using defaults.");
-                }
-            }
-        }
-    }
+	//
+	//Should be overridden by classes _extending_ implementations of Game
+	//
+
+	/**
+	 * <code>update</code> updates the game state. Physics, AI, networking, score
+	 * checking and like should be completed in this method. How often and when
+	 * this method is called depends on the main loop implementation.
+	 * @param interpolation definition varies on implementation, -1.0f if unused
+	 */
+	protected abstract void update(float interpolation);
+
+	/**
+	 * <code>render</code> displays the game information to the OpenGL context.
+	 * Nothing altering the game state should be run during a render. How often 
+	 * and when this method is called depends on the main loop implementation.
+	 * @param interpolation definition varies on implementation, -1.0f if unused
+	 */
+	protected abstract void render(float interpolation);
+
+	/**
+	 * <code>initSystem</code> creates all the necessary system components
+	 * for the client application. It is is called once after <code>start</code>
+	 * is called. The display <b>must</b> be initialized within this method.
+	 */
+	protected abstract void initSystem();
+
+	/**
+	 * <code>initGame</code> creates and initializes all game data required
+	 * for startup. It is suggested that caching of frequently used resources
+	 * is done within this method. It is called once after <code>initSystem</code>
+	 * has completed.
+	 */
+	protected abstract void initGame();
+
+	/**
+	 * <code>reinit</code> rebuilds the subsystems. It may be called at any time 
+	 * by the client application.
+	 */
+	protected abstract void reinit();
+
+	/**
+	 * <code>cleanup</code> cleans up any created objects before exiting the 
+	 * application. It is called once after <code>finish</code> is called.
+	 */
+	protected abstract void cleanup();
 }

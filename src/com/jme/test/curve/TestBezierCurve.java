@@ -31,7 +31,7 @@
  */
 package com.jme.test.curve;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
@@ -56,9 +56,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.6 2004-01-14 22:31:54 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.7 2004-02-02 23:05:06 ericthered Exp $
  */
-public class TestBezierCurve extends AbstractGame {
+public class TestBezierCurve extends SimpleGame {
     private TriMesh t, t2, t3, t4;
 
     private Text text;
@@ -76,23 +76,23 @@ public class TestBezierCurve extends AbstractGame {
 
     public static void main(String[] args) {
         TestBezierCurve app = new TestBezierCurve();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         input.update(0.2f);
         scene.updateWorldData(0.0005f);
 
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         Vector3f point;
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
@@ -100,7 +100,7 @@ public class TestBezierCurve extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -135,7 +135,7 @@ public class TestBezierCurve extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         text = new Text("Timer");
@@ -242,7 +242,7 @@ public class TestBezierCurve extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
         // TODO Auto-generated method stub
@@ -250,7 +250,7 @@ public class TestBezierCurve extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
         // TODO Auto-generated method stub

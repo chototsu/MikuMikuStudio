@@ -33,7 +33,7 @@ package com.jme.input;
 
 import java.util.ArrayList;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.input.action.InputAction;
 import com.jme.input.action.MouseInputAction;
 import com.jme.renderer.Camera;
@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * <code>InputController</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: InputControllerAbstract.java,v 1.1 2004-01-25 00:55:07 greggpatton Exp $
+ * @version $Id: InputControllerAbstract.java,v 1.2 2004-02-02 23:04:23 ericthered Exp $
  */
 public abstract class InputControllerAbstract {
     
@@ -54,7 +54,7 @@ public abstract class InputControllerAbstract {
     protected boolean updateKeyboardActionsEnabled = true;
     protected boolean updateMouseActionsEnabled = true;
 
-    public InputControllerAbstract(AbstractGame app, Camera cam, String api) {
+    public InputControllerAbstract(SimpleGame app, Camera cam, String api) {
 
         actions = new ArrayList();
         mouseActions = new ArrayList();
@@ -163,6 +163,6 @@ public abstract class InputControllerAbstract {
 
     protected abstract void setMouse(Camera cam);
     
-    protected abstract void setActions(Camera cam, AbstractGame app);
+    protected abstract void setActions(Camera cam, SimpleGame app);
 
 }

@@ -27,7 +27,7 @@
  */
 package com.jme.widget.input.mouse;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.input.InputControllerAbstract;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
@@ -56,7 +56,7 @@ public class WidgetMouseTestControllerFirstPerson extends InputControllerAbstrac
      * @param cam
      * @param api
      */
-    public WidgetMouseTestControllerFirstPerson(AbstractGame app, Camera cam, String api) {
+    public WidgetMouseTestControllerFirstPerson(SimpleGame app, Camera cam, String api) {
         super(app, cam, api);
     }
 
@@ -93,9 +93,9 @@ public class WidgetMouseTestControllerFirstPerson extends InputControllerAbstrac
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.InputControllerAbstract#setActions(com.jme.renderer.Camera, com.jme.app.AbstractGame)
+     * @see com.jme.input.InputControllerAbstract#setActions(com.jme.renderer.Camera, com.jme.app.SimpleGame)
      */
-    protected void setActions(Camera cam, AbstractGame app) {
+    protected void setActions(Camera cam, SimpleGame app) {
         KeyExitAction exit = new KeyExitAction(app);
         exit.setKey("exit");
         addAction(exit);

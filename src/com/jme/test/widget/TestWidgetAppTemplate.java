@@ -31,7 +31,7 @@
  */
 package com.jme.test.widget;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.input.InputControllerAbstract;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.LWJGLCamera;
@@ -52,7 +52,7 @@ import com.jme.widget.layout.WidgetFlowLayout;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class TestWidgetAppTemplate extends AbstractGame {
+public class TestWidgetAppTemplate extends SimpleGame {
     private class TestFrame extends WidgetFrameAbstract {
         public TestFrame(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
             super(ds, ic, timer);
@@ -74,22 +74,22 @@ public class TestWidgetAppTemplate extends AbstractGame {
     private InputControllerAbstract input;
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         frame.handleInput();
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(frame);
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -120,7 +120,7 @@ public class TestWidgetAppTemplate extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         scene = new Node();
@@ -137,7 +137,7 @@ public class TestWidgetAppTemplate extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
         WidgetFrameAbstract.destroy();
@@ -145,7 +145,7 @@ public class TestWidgetAppTemplate extends AbstractGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
         WidgetFrameAbstract.destroy();
@@ -153,7 +153,7 @@ public class TestWidgetAppTemplate extends AbstractGame {
 
     public static void main(String[] args) {
         TestWidgetAppTemplate app = new TestWidgetAppTemplate();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

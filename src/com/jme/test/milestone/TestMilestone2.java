@@ -31,7 +31,7 @@
  */
 package com.jme.test.milestone;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -57,9 +57,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.3 2003-12-01 13:18:58 mojomonkey Exp $
+ * @version $Id: TestMilestone2.java,v 1.4 2004-02-02 23:05:06 ericthered Exp $
  */
-public class TestMilestone2 extends AbstractGame {
+public class TestMilestone2 extends SimpleGame {
     private TriMesh t;
     private Camera cam;
     private Node root;
@@ -74,7 +74,7 @@ public class TestMilestone2 extends AbstractGame {
      */
     public static void main(String[] args) {
         TestMilestone2 app = new TestMilestone2();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.setGenerator();
         app.start();
         
@@ -95,17 +95,17 @@ public class TestMilestone2 extends AbstractGame {
 
     /**
      * Not used in this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         input.update(0.25f);
     }
 
     /** 
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
@@ -114,7 +114,7 @@ public class TestMilestone2 extends AbstractGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -150,7 +150,7 @@ public class TestMilestone2 extends AbstractGame {
 
     /** 
      * builds the trimesh.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         Text text = new Text("Random boxes. Milestone 2");
@@ -245,7 +245,7 @@ public class TestMilestone2 extends AbstractGame {
     }
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -253,7 +253,7 @@ public class TestMilestone2 extends AbstractGame {
 
     /** 
      * Not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

@@ -30,7 +30,7 @@
  */
 package com.jme.test.effects;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.effects.ParticleController;
 import com.jme.effects.ParticleSystem;
 import com.jme.image.Texture;
@@ -55,7 +55,7 @@ import com.jme.util.Timer;
 /**
  * @author Ahmed
  */
-public class TestParticleSystem extends AbstractGame {
+public class TestParticleSystem extends SimpleGame {
 
 	private ParticleSystem ps;
 	private ParticleController pc;
@@ -70,11 +70,11 @@ public class TestParticleSystem extends AbstractGame {
 
 	public static void main(String[] args) {
 		TestParticleSystem app = new TestParticleSystem();
-		app.useDialogAlways(true);
+		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 
-	protected void update() {
+	protected void update(float interpolation) {
 		timer.update();
         System.out.println(timer.getFrameRate());
         input.update(timer.getTimePerFrame() * 10);
@@ -90,7 +90,7 @@ public class TestParticleSystem extends AbstractGame {
 		}
 	}
 
-	protected void render() {
+	protected void render(float interpolation) {
 		display.getRenderer().clearBuffers();
 		display.getRenderer().draw(root);
 	}

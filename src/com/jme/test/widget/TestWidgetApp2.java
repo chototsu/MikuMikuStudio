@@ -35,7 +35,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.input.InputControllerAbstract;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -59,7 +59,7 @@ import com.jme.widget.layout.WidgetAbsoluteLayout;
  * @author Gregg Patton
  * @version
  */
-public class TestWidgetApp2 extends AbstractGame implements Observer {
+public class TestWidgetApp2 extends SimpleGame implements Observer {
     class TestFrame extends WidgetFrameAbstract {
 
         WidgetButton shuffleButton;
@@ -117,23 +117,23 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
     private InputControllerAbstract input;
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         frame.handleInput();
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -169,7 +169,7 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         scene = new Node();
@@ -235,7 +235,7 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
         WidgetFrameAbstract.destroy();
@@ -243,7 +243,7 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
         WidgetFrameAbstract.destroy();
@@ -251,7 +251,7 @@ public class TestWidgetApp2 extends AbstractGame implements Observer {
 
     public static void main(String[] args) {
         TestWidgetApp2 app = new TestWidgetApp2();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 

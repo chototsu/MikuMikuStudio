@@ -31,7 +31,7 @@
  */
 package com.jme.test.input.action;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.input.NodeController;
 import com.jme.input.InputController;
 import com.jme.math.Vector3f;
@@ -50,9 +50,9 @@ import com.jme.system.JmeException;
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.2 2003-12-12 15:16:15 mojomonkey Exp $
+ * @version $Id: TestNodeController.java,v 1.3 2004-02-02 23:05:06 ericthered Exp $
  */
-public class TestNodeController extends AbstractGame {
+public class TestNodeController extends SimpleGame {
     private Node scene;
     private CameraNode cameraNode;
     private Line l;
@@ -63,24 +63,24 @@ public class TestNodeController extends AbstractGame {
 
     /**
      * Nothing to update.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         input.update(1);
     }
 
     /**
      * Render the scene
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(scene);
     }
 
     /**
      * set up the display system and camera.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         Camera cam = null;
@@ -123,7 +123,7 @@ public class TestNodeController extends AbstractGame {
 
     /**
      * set up the scene
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         Vector3f[] vertex = new Vector3f[1000];
@@ -259,21 +259,21 @@ public class TestNodeController extends AbstractGame {
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
     }
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
     }
 
     public static void main(String[] args) {
         TestNodeController app = new TestNodeController();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 }

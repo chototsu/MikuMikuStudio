@@ -31,7 +31,7 @@
  */
 package com.jme.test.renderer.state;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -53,7 +53,7 @@ import com.jme.util.Timer;
  * @author Mark Powell
  * @version 
  */
-public class TestRenderStateList extends AbstractGame {
+public class TestRenderStateList extends SimpleGame {
     private TriMesh t, t2, t3;
     private Camera cam;
     private Node scene;
@@ -66,24 +66,24 @@ public class TestRenderStateList extends AbstractGame {
      */
     public static void main(String[] args) {
         TestRenderStateList app = new TestRenderStateList();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
     /**
      * Not used in this test.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         timer.update();
         input.update(timer.getTimePerFrame());
     }
 
     /** 
      * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
@@ -92,7 +92,7 @@ public class TestRenderStateList extends AbstractGame {
 
     /**
      * creates the displays and sets up the viewport.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -133,7 +133,7 @@ public class TestRenderStateList extends AbstractGame {
 
     /** 
      * builds the trimesh.
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         Vector3f min = new Vector3f(-5,-5,-5);
@@ -196,7 +196,7 @@ public class TestRenderStateList extends AbstractGame {
     }
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -204,7 +204,7 @@ public class TestRenderStateList extends AbstractGame {
 
     /** 
      * Not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 

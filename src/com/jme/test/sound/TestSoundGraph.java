@@ -36,7 +36,7 @@
  */
 package com.jme.test.sound;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -59,7 +59,7 @@ import com.jme.util.TextureManager;
  * @author Arman Ozcelik
  *
  */
-public class TestSoundGraph extends AbstractGame {
+public class TestSoundGraph extends SimpleGame {
 
 	private Node scene;
 	private SoundNode snode;
@@ -70,18 +70,18 @@ public class TestSoundGraph extends AbstractGame {
 	private InputController input;
 
 	/* (non-Javadoc)
-	 * @see com.jme.app.AbstractGame#update()
+	 * @see com.jme.app.SimpleGame#update()
 	 */
-	protected void update() {
+	protected void update(float interpolation) {
 		input.update(1);
 		snode.updateGeometricState(0.0f, true);
 
 	}
 
 	/* (non-Javadoc)
-	 * @see com.jme.app.AbstractGame#render()
+	 * @see com.jme.app.SimpleGame#render()
 	 */
-	protected void render() {
+	protected void render(float interpolation) {
 		display.getRenderer().clearBuffers();
 		display.getRenderer().draw(scene);
 		SoundAPIController.getRenderer().draw(snode);
@@ -89,7 +89,7 @@ public class TestSoundGraph extends AbstractGame {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.jme.app.AbstractGame#initSystem()
+	 * @see com.jme.app.SimpleGame#initSystem()
 	 */
 	protected void initSystem() {
 		try {
@@ -126,7 +126,7 @@ public class TestSoundGraph extends AbstractGame {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.jme.app.AbstractGame#initGame()
+	 * @see com.jme.app.SimpleGame#initGame()
 	 */
 	protected void initGame() {
 		scene= new Node();
@@ -163,7 +163,7 @@ public class TestSoundGraph extends AbstractGame {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.jme.app.AbstractGame#reinit()
+	 * @see com.jme.app.SimpleGame#reinit()
 	 */
 	protected void reinit() {
 		// TODO Auto-generated method stub
@@ -171,7 +171,7 @@ public class TestSoundGraph extends AbstractGame {
 	}
 
 	/* (non-Javadoc)
-	 * @see com.jme.app.AbstractGame#cleanup()
+	 * @see com.jme.app.SimpleGame#cleanup()
 	 */
 	protected void cleanup() {
 		// TODO Auto-generated method stub
@@ -180,7 +180,7 @@ public class TestSoundGraph extends AbstractGame {
 
 	public static void main(String[] args) {
 		TestSoundGraph app= new TestSoundGraph();
-		app.useDialogAlways(true);
+		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 

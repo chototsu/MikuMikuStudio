@@ -31,7 +31,7 @@
  */
 package com.jme.test.input;
 
-import com.jme.app.AbstractGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
@@ -50,9 +50,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.1 2003-10-23 21:24:43 mojomonkey Exp $
+ * @version $Id: TestKeyInput.java,v 1.2 2004-02-02 23:05:05 ericthered Exp $
  */
-public class TestKeyInput extends AbstractGame {
+public class TestKeyInput extends SimpleGame {
     private Text text;
     private Camera cam;
     private Node scene;
@@ -60,15 +60,15 @@ public class TestKeyInput extends AbstractGame {
 
     public static void main(String[] args) {
         TestKeyInput app = new TestKeyInput();
-        app.useDialogAlways(true);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
     /**
      * Not used.
-     * @see com.jme.app.AbstractGame#update()
+     * @see com.jme.app.SimpleGame#update()
      */
-    protected void update() {
+    protected void update(float interpolation) {
         key.update();
         if(key.isKeyDown(KeyInput.KEY_0)) {
             text.print("You pressed 0.");
@@ -81,9 +81,9 @@ public class TestKeyInput extends AbstractGame {
 
     /**
      * draws the scene graph
-     * @see com.jme.app.AbstractGame#render()
+     * @see com.jme.app.SimpleGame#render()
      */
-    protected void render() {
+    protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
@@ -92,7 +92,7 @@ public class TestKeyInput extends AbstractGame {
 
     /**
      * initializes the display and camera.
-     * @see com.jme.app.AbstractGame#initSystem()
+     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
@@ -132,7 +132,7 @@ public class TestKeyInput extends AbstractGame {
 
     /**
      * initializes the scene
-     * @see com.jme.app.AbstractGame#initGame()
+     * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
         text = new Text("Press 0 and/or 1");
@@ -162,7 +162,7 @@ public class TestKeyInput extends AbstractGame {
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#reinit()
+     * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
 
@@ -170,7 +170,7 @@ public class TestKeyInput extends AbstractGame {
 
     /**
      * not used.
-     * @see com.jme.app.AbstractGame#cleanup()
+     * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
 
