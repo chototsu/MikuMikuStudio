@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * mesh.
  *
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.15 2004-04-02 15:52:04 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.16 2004-04-06 22:13:44 renanse Exp $
  */
 public class Md2Model extends Model {
     private BinaryFileReader bis = null;
@@ -288,7 +288,8 @@ public class Md2Model extends Model {
                 }
 
                 //reorginize coordinates to match the vertex index.
-                for (int j = 0; j < numOfFaces; j++) {
+                if (numTexVertex != 0) {
+                  for (int j = 0; j < numOfFaces; j++) {
                     int index = faces[j].vertIndex[0];
                     texCoords2[index] = new Vector2f();
                     texCoords2[index] = texVerts[faces[j].coordIndex[0]];
@@ -300,6 +301,7 @@ public class Md2Model extends Model {
                     index = faces[j].vertIndex[2];
                     texCoords2[index] = new Vector2f();
                     texCoords2[index] = texVerts[faces[j].coordIndex[2]];
+                  }
                 }
 
                 int[] indices = new int[numOfFaces * 3];
