@@ -59,7 +59,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the 
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.1 2004-02-01 07:50:08 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.2 2004-02-12 23:00:00 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -323,6 +323,7 @@ public class MilkshapeASCIIModel extends Model {
 					Float.parseFloat(values[3])));
 			line = getNextLine(reader);
 			ms.setShininess(Float.parseFloat(line));
+			ms.setEnabled(true);
 			
 			//load texture
 			line = getNextLine(reader);
@@ -333,6 +334,7 @@ public class MilkshapeASCIIModel extends Model {
 			line = getNextLine(reader);
 			textures[i] = loadTexture(colorMap);
 			materials[i] = ms;
+			
 
 			//if the mesh is assigned to this material, set it.
 			for (int j = 0; j < meshes.length; j++) {
