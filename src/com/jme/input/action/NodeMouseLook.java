@@ -40,7 +40,7 @@ import com.jme.scene.Spatial;
  * <code>NodeMouseLook</code> defines a mouse action that detects mouse movement
  * and converts it into node rotations and node tilts.
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.4 2004-04-22 22:26:34 renanse Exp $
+ * @version $Id: NodeMouseLook.java,v 1.5 2004-07-30 21:34:49 cep21 Exp $
  */
 public class NodeMouseLook implements MouseInputAction {
     private RelativeMouse mouse;
@@ -83,6 +83,15 @@ public class NodeMouseLook implements MouseInputAction {
         this.lockAxis = lockAxis;
         rotateLeft.setLockAxis(lockAxis);
         rotateRight.setLockAxis(lockAxis);
+    }
+
+    /**
+     * Returns the axis that is currently locked.
+     * @return The currently locked axis
+     * @see #setLockAxis(com.jme.math.Vector3f)
+     */
+    public Vector3f getLockAxis(){
+        return lockAxis;
     }
 
     /**
