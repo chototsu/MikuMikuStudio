@@ -51,9 +51,7 @@ import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.widget.panel.WidgetPanel;
-import com.jme.widget.scroller.WidgetScrollerButton;
-import com.jme.widget.text.WidgetText;
+import com.jme.widget.WidgetRenderer;
 
 /**
  * <code>Renderer</code> defines an interface that handles displaying 
@@ -74,7 +72,7 @@ import com.jme.widget.text.WidgetText;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.16 2004-03-02 19:41:24 darkprophet Exp $
+ * @version $Id: Renderer.java,v 1.17 2004-03-04 03:16:19 greggpatton Exp $
  */
 public interface Renderer {
     /**
@@ -303,21 +301,10 @@ public interface Renderer {
     public void draw(Clone c);
     
     /**
-     * <code>draw</code> renders a WidgetPanel object to the back buffer.
+     * <code>draw</code> renders a Widget that is associated
+     * with the WidgetRenderer object to the back buffer.
      * @param wp the WidgetPanel to be rendered.
      */
-    public void draw(WidgetPanel wp);
+    public void draw(WidgetRenderer wr);
 
-    /**
-     * <code>draw</code> renders a WidgetText object to the back buffer.
-     * @param wt the WidgetText object to be rendered.
-     */
-    public void draw(WidgetText wt);
-
-    /**
-     * <code>draw</code> renders a WidgetScrollerButton object to the back buffer.
-     * @param wt the WidgetScrollerButton object to be rendered.
-     */
-    public void draw(WidgetScrollerButton wsb);
- 
 }
