@@ -25,6 +25,8 @@ public class XMLWriter {
     final static Vector3f defaultTranslation=new Vector3f(0,0,0);
     final static Quaternion defaultRotation=new Quaternion(0,0,0,1);
     final static float defaultScale=1;
+    StringBuffer tabs=new StringBuffer();
+    StringBuffer currentLine=new StringBuffer();
     public XMLWriter(OutputStream o){
         myStream=o;
     }
@@ -35,19 +37,23 @@ public class XMLWriter {
 
     public void writeScene(Node toWrite) throws IOException {
         writeHeader();
+        increaseTabSize();
         writeNode(toWrite);
+        decreaseTabSize();
         writeClosing();
         myStream.close();
     }
 
     private void writeClosing() throws IOException {
-        myStream.write("</scene>".getBytes());
+        currentLine.append("</scene>");
+        writeLine();
     }
 
     private void writeNode(Node toWrite) throws IOException {
-        StringBuffer header=new StringBuffer();
-        header.append("<node ").append(getSpatialHeader(toWrite)).append(">\n");
-        writeBuffer(header);
+        currentLine.append("<node ").append(getSpatialHeader(toWrite)).append(">");
+        writeLine();
+        increaseTabSize();
+
         writeRenderStates(toWrite);
         for (int i=0;i<toWrite.getQuantity();i++){
             Spatial s=toWrite.getChild(i);
@@ -56,7 +62,9 @@ public class XMLWriter {
             if (s instanceof TriMesh)
                 writeMesh((TriMesh)s);
         }
-        myStream.write("</node>\n".getBytes());
+        decreaseTabSize();
+        currentLine.append("</node>");
+        writeLine();
     }
 
     private void writeRenderStates(Spatial s) throws IOException {
@@ -67,82 +75,94 @@ public class XMLWriter {
     }
 
     private void writeMaterialState(MaterialState state) throws IOException {
-        StringBuffer header=new StringBuffer();
-        myStream.write("<materialstate ".getBytes());
+        currentLine.append("<materialstate ");
+        currentLine.append("emissive=\"");
+        appendColorRGBA(state.getEmissive());
+        currentLine.append("\" ");
 
-        myStream.write("emissive=\"".getBytes());
-        writeColorRGBA(state.getEmissive());
-        myStream.write("\" ".getBytes());
+        currentLine.append("ambient=\"");
+        appendColorRGBA(state.getAmbient());
+        currentLine.append("\" ");
 
-        myStream.write("ambient=\"".getBytes());
-        writeColorRGBA(state.getAmbient());
-        myStream.write("\" ".getBytes());
+        currentLine.append("diffuse=\"");
+        appendColorRGBA(state.getDiffuse());
+        currentLine.append("\" ");
 
-        myStream.write("diffuse=\"".getBytes());
-        writeColorRGBA(state.getDiffuse());
-        myStream.write("\" ".getBytes());
+        currentLine.append("specular=\"");
+        appendColorRGBA(state.getSpecular());
+        currentLine.append("\" ");
 
-        myStream.write("specular=\"".getBytes());
-        writeColorRGBA(state.getSpecular());
-        myStream.write("\" ".getBytes());
+        currentLine.append("alpha=\"");
+        currentLine.append(state.getAlpha());
+        currentLine.append("\" ");
 
-        myStream.write("alpha=\"".getBytes());
-        myStream.write(Float.toString(state.getAlpha()).getBytes());
-        myStream.write("\" ".getBytes());
+        currentLine.append("shiny=\"");
+        currentLine.append(state.getShininess());
+        currentLine.append("\" ");
 
-        myStream.write("shiny=\"".getBytes());
-        myStream.write((Float.toString(state.getShininess())).getBytes());
-        myStream.write("\" ".getBytes());
-
-        myStream.write("/>\n".getBytes());
+        currentLine.append("/>");
+        writeLine();
     }
 
     private void writeMesh(TriMesh toWrite) throws IOException {
-        StringBuffer header=new StringBuffer();
-        header.append("<mesh ").append(getSpatialHeader(toWrite)).append(">\n");
-        writeBuffer(header);
+        currentLine.append("<mesh ").append(getSpatialHeader(toWrite)).append(">");
+        writeLine();
+        increaseTabSize();
 
         writeRenderStates(toWrite);
 
-        myStream.write("<vertex>\n".getBytes());
+        currentLine.append("<vertex>");
+        writeLine();
         Vector3f[] theVerts=toWrite.getVertices();
         if (theVerts!=null)
             writeVec3fArray(theVerts);
-        myStream.write("\n</vertex>\n".getBytes());
+        writeLine();
+        currentLine.append("</vertex>");
+        writeLine();
 
-        myStream.write("<normal>\n".getBytes());
+        currentLine.append("<normal>");
+        writeLine();
         Vector3f[] theNorms=toWrite.getNormals();
         if (theNorms!=null)
             writeVec3fArray(theNorms);
-        myStream.write("\n</normal>\n".getBytes());
+        writeLine();
+        currentLine.append("</normal>");
+        writeLine();
 
-        myStream.write("<color>\n".getBytes());
+        currentLine.append("<color>");
+        writeLine();
         ColorRGBA[] theColors=toWrite.getColors();
         if (theColors!=null)
             writeColorRGBAArray(theColors);
-        myStream.write("\n</color>\n".getBytes());
+        writeLine();
+        currentLine.append("</color>");
+        writeLine();
 
-        myStream.write("<texturecoords>\n".getBytes());
+        currentLine.append("<texturecoords>");
+        writeLine();
         Vector2f[] theTexCoords=toWrite.getTextures();
         if (theTexCoords!=null)
             writeVec2fArray(theTexCoords);
-        myStream.write("\n</texturecoords>\n".getBytes());
+        writeLine();
+        currentLine.append("</texturecoords>");
+        writeLine();
 
-        myStream.write("<index>\n".getBytes());
+        currentLine.append("<index>");
         int[] indexes=toWrite.getIndices();
         if (indexes!=null)
             writeIntArray(indexes);
-        myStream.write("\n</index>\n".getBytes());
-        myStream.write("</mesh>\n".getBytes());
-
+        writeLine();
+        currentLine.append("</index>");
+        writeLine();
+        decreaseTabSize();
+        currentLine.append("</mesh>");
+        writeLine();
     }
 
     private void writeIntArray(int[] indexes) throws IOException {
-        StringBuffer nums=new StringBuffer();
         for (int i=0;i<indexes.length;i++){
-            nums.append(indexes[i]).append(" ");
+            currentLine.append(indexes[i]).append(" ");
         }
-        writeBuffer(nums);
     }
 
     private void writeVec2fArray(Vector2f[] theTexCoords) throws IOException {
@@ -153,23 +173,19 @@ public class XMLWriter {
     }
 
     private void writeVector2f(Vector2f theVec) throws IOException {
-        StringBuffer toWrite=new StringBuffer();
-        toWrite.append(Float.toString(theVec.x)).append(" ").append(Float.toString(theVec.y)).append(" ");
-        writeBuffer(toWrite);
+        currentLine.append(Float.toString(theVec.x)).append(" ").append(Float.toString(theVec.y)).append(" ");
     }
 
     private void writeColorRGBAArray(ColorRGBA[] theColors) throws IOException {
         for (int i=0;i<theColors.length;i++){
             if (theColors[i]!=null)
-                writeColorRGBA(theColors[i]);
+                appendColorRGBA(theColors[i]);
         }
 
     }
 
-    private void writeColorRGBA(ColorRGBA theColor) throws IOException {
-        StringBuffer toWrite=new StringBuffer();
-        toWrite.append(Float.toString(theColor.r)).append(" ").append(Float.toString(theColor.g)).append(" ").append(Float.toString(theColor.b)).append(" ").append(Float.toString(theColor.a)).append(" ");
-        writeBuffer(toWrite);
+    private void appendColorRGBA(ColorRGBA theColor) throws IOException {
+        currentLine.append(Float.toString(theColor.r)).append(" ").append(Float.toString(theColor.g)).append(" ").append(Float.toString(theColor.b)).append(" ").append(Float.toString(theColor.a)).append(" ");
     }
 
     private void writeVec3fArray(Vector3f[] vecs) throws IOException {
@@ -180,15 +196,7 @@ public class XMLWriter {
     }
 
     private void writeVector3f(Vector3f vec) throws IOException {
-        StringBuffer toWrite=new StringBuffer();
-        toWrite.append(Float.toString(vec.x)).append(" ").append(Float.toString(vec.y)).append(" ").append(Float.toString(vec.z)).append(" " );
-        writeBuffer(toWrite);
-    }
-
-    private void writeBuffer(StringBuffer header) throws IOException {
-        myStream.write(header.toString().getBytes());
-        myStream.flush();
-        header.setLength(0);
+        currentLine.append(Float.toString(vec.x)).append(" ").append(Float.toString(vec.y)).append(" ").append(Float.toString(vec.z)).append(" " );
     }
 
     private StringBuffer getSpatialHeader(Spatial toWrite){
@@ -211,8 +219,24 @@ public class XMLWriter {
     }
 
     private void writeHeader() throws IOException {
-        myStream.write("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n".getBytes());
-        myStream.write("<scene xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"\">\n".getBytes());
+        currentLine.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+        writeLine();
+        currentLine.append("<scene xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:noNamespaceSchemaLocation=\"\">\n");
+        writeLine();
+    }
+
+
+    private void writeLine() throws IOException{
+        myStream.write(tabs.toString().getBytes());
+        myStream.write(currentLine.toString().getBytes());
+        myStream.write('\n');
         myStream.flush();
+        currentLine.setLength(0);
+    }
+    private void increaseTabSize(){
+        tabs.append('\t');
+    }
+    private void decreaseTabSize(){
+        tabs.deleteCharAt(0);
     }
 }
