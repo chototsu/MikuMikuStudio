@@ -47,15 +47,9 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.22 2004-12-06 19:04:10 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.23 2005-02-23 00:55:35 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
-
-    /**
-     * When this flag is true, updateModelBound() for BoundingSphere will
-     * calculate the smallest bounding volume.
-     */
-    static public boolean useExactBounds = false;
 
     public int[] checkPlanes = new int[6];
 
@@ -167,10 +161,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      *            the points to contain.
      */
     public void computeFromPoints(Vector3f[] points) {
-        if (useExactBounds)
-            calcWelzl(points);
-        else
-            containAABB(points);
+	    calcWelzl(points);
     }
 
     /**
@@ -309,40 +300,6 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         radius = FastMath.sqrt(((A.x - O.x) * (A.x - O.x) + (A.y - O.y)
                 * (A.y - O.y) + (A.z - O.z) * (A.z - O.z)) / 4);
         center.interpolate(O, A, .5f);
-    }
-
-    /**
-     * <code>containAABB</code> creates a minimum-volume axis-aligned bounding
-     * box of the points, then selects the smallest enclosing sphere of the box
-     * with the sphere centered at the boxes center.
-     * 
-     * @param points
-     *            the list of points.
-     */
-    public void containAABB(Vector3f[] points) {
-        if (points.length <= 0) { return; }
-
-        Vector3f min = tempVeca.set(points[0]);
-        Vector3f max = tempVecb.set(tempVeca);
-
-        for (int i = 1; i < points.length; i++) {
-            if (points[i].x < min.x)
-                min.x = points[i].x;
-            else if (points[i].x > max.x) max.x = points[i].x;
-
-            if (points[i].y < min.y)
-                min.y = points[i].y;
-            else if (points[i].y > max.y) max.y = points[i].y;
-
-            if (points[i].z < min.z)
-                min.z = points[i].z;
-            else if (points[i].z > max.z) max.z = points[i].z;
-        }
-
-        if (center == null) center = new Vector3f();
-        max.add(min, center).multLocal(.5f);
-
-        radius = max.subtractLocal(min).multLocal(.5f).length();
     }
 
     /**

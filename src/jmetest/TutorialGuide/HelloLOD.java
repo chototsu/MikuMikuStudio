@@ -55,9 +55,6 @@ public class HelloLOD extends SimpleGame {
         // This will read the .jme format and convert it into a scene graph
         JmeBinaryReader jbr=new JmeBinaryReader();
 
-        // Use an exact BoundingSphere bounds
-        BoundingSphere.useExactBounds=true;
-
         Node meshParent=null;
         try {
             // Use the format converter to convert .obj to .jme

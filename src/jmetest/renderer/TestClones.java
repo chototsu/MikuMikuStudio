@@ -32,7 +32,6 @@ public class TestClones extends SimpleGame {
         //        Box b=new Box("box",new Vector3f(0,0,0),new Vector3f(1,1,1));
         Sphere b = new Sphere("my sphere", 25, 25, 2);
         b.setRandomColors();
-        BoundingSphere.useExactBounds = true;
         b.setModelBound(new BoundingSphere());
         b.updateModelBound();
         rootNode.attachChild(b);

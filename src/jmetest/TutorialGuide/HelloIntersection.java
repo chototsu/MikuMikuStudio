@@ -78,7 +78,6 @@ public class HelloIntersection extends SimpleGame {
 
 	protected void simpleInitGame() {
 		setupSound();
-		BoundingSphere.useExactBounds = true;
 
 		/** Create a + for the middle of the screen */
 		Text cross = new Text("Crosshairs", "+");

@@ -127,7 +127,6 @@ public class TestOBBPick extends SimpleGame {
 				"jmetest/data/model/maggie.obj");
 		try {
 
-			BoundingSphere.useExactBounds = true;
 			FastMath.USE_FAST_TRIG = true;
 			FormatConverter converter = new ObjToJme();
 			converter.setProperty("mtllib", model);
