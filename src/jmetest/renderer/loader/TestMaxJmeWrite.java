@@ -35,22 +35,13 @@ public class TestMaxJmeWrite extends SimpleGame{
         app.start();
     }
 
-    Node globalLoad=null;
-
     protected void simpleInitGame() {
-
-        MaxToJme C1=new MaxToJme();
-
         try {
+            MaxToJme C1=new MaxToJme();
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
             URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
             C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
             JmeBinaryReader jbr=new JmeBinaryReader();
-            BinaryToXML btx=new BinaryToXML();
-            StringWriter SW=new StringWriter();
-            btx.sendBinarytoXML(new ByteArrayInputStream(BO.toByteArray()),SW);
-            System.out.println(SW);
-
             jbr.setProperty("bound","box");
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
             r.setLocalScale(.1f);
