@@ -139,13 +139,14 @@ public class HelloIntersection extends SimpleGame {
         laserURL = HelloIntersection.class.getClassLoader().getResource(
                 "jmetest/data/sound/laser.ogg");
         hitURL = HelloIntersection.class.getClassLoader().getResource(
-                "jmetest/data/sound/explosion.wav");
+                "jmetest/data/sound/explosion.ogg");
         // Ask the system for a program id for this resource
         int programid = SoundPool.compile(new URL[] { laserURL });
         int hitid = SoundPool.compile(new URL[] { hitURL });
         // Then we bind the programid we received to our laser event id.
         programSound.bindEvent(laserEventID, programid);
         programSound.bindEvent(hitEventID, hitid);
+        programSound.setMaxDistance(20f);
         //        programSound.setNextProgram(programid);
         snode.attachChild(programSound);
         //... repeat above 3 lines to register other sounds.
@@ -182,6 +183,7 @@ public class HelloIntersection extends SimpleGame {
             bullet.updateRenderState();
             /** Signal our sound to play laser during rendering */
             snode.onEvent(laserEventID);
+            programSound.setPosition(cam.getLocation());
         }
     }
 
@@ -224,6 +226,7 @@ public class HelloIntersection extends SimpleGame {
                         .nextFloat() * 10, r.nextFloat() * 10));
                 lifeTime = 0;
                 snode.onEvent(hitEventID);
+                programSound.setPosition(target.getWorldTranslation());
             }
         }
     }
