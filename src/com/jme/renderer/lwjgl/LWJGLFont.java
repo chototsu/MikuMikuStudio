@@ -57,7 +57,7 @@ import com.jme.math.Vector3f;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.6 2004-06-23 18:14:19 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.7 2004-07-08 20:37:06 renanse Exp $
  */
 public class LWJGLFont {
     /**
@@ -77,8 +77,9 @@ public class LWJGLFont {
 
     //buffer that holds the text.
     private ByteBuffer scratch;
+    private char[] charbuf;
 
-    /**
+  /**
      * Constructor instantiates a new <code>LWJGLFont</code> object. The
      * initial color is set to white.
      *
@@ -89,6 +90,7 @@ public class LWJGLFont {
         blue = 1.0f;
         alpha = 1.0f;
         scratch = BufferUtils.createByteBuffer(1);//ByteBuffer.allocateDirect(1).order(ByteOrder.nativeOrder());
+        charbuf = new char[1];
         buildDisplayList();
     }
 
@@ -146,10 +148,13 @@ public class LWJGLFont {
         //Put the string into a "pointer"
         if(text.length() != scratch.capacity()) {
 	        scratch = BufferUtils.createByteBuffer(text.length()); //ByteBuffer.allocateDirect(text.length()).order(ByteOrder.nativeOrder());
+                charbuf = new char[text.length()];
         } else {
             scratch.clear();
         }
-        scratch.put(text.toString().getBytes());
+        text.getChars(0, charbuf.length, charbuf, 0);
+        for (int z = 0; z < charbuf.length; z++)
+          scratch.put((byte)charbuf[z]);
         scratch.flip();
         GL11.glColor4f(red, green, blue, alpha);
         //call the list for each letter in the string.
