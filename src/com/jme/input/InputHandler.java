@@ -46,7 +46,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.14 2004-10-14 01:23:07 mojomonkey Exp $
+ * @version $Id: InputHandler.java,v 1.15 2004-10-18 14:41:19 mojomonkey Exp $
  */
 public class InputHandler {
 
@@ -267,11 +267,10 @@ public class InputHandler {
             // don't need the update when doing poll based
             if (useBufferedKeyboard) keyboard.update();
             for (int i = 0; i < keyActions.size(); i++) {
-                if (keyboard.isValidCommand(
-                        ((InputAction) keyActions.get(i)).getKey(),
-                        ((KeyInputAction) keyActions.get(i)).allowsRepeats())) {
-                    eventList
-                            .add(((InputAction) keyActions.get(i)).getKey());
+                if (keyboard.isValidCommand(((InputAction) keyActions.get(i))
+                        .getKey(), ((KeyInputAction) keyActions.get(i))
+                        .allowsRepeats())) {
+                    eventList.add(((InputAction) keyActions.get(i)).getKey());
                     actionList.add(keyActions.get(i));
                 }
             }
@@ -287,9 +286,9 @@ public class InputHandler {
                                 .getKeyName(kInput.key()));
                         ((KeyInputAction) buffKeyActions.get(i))
                                 .setKeyChar(kInput.keyChar());
-                        eventList.add(((InputAction) keyActions.get(i))
+                        eventList.add(((InputAction) buffKeyActions.get(i))
                                 .getKey());
-                        actionList.add(keyActions.get(i));
+                        actionList.add(buffKeyActions.get(i));
 
                     }
                 }
