@@ -33,10 +33,7 @@ package com.jme.bounding;
 
 import java.util.logging.Level;
 
-import com.jme.math.FastMath;
-import com.jme.math.Plane;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
+import com.jme.math.*;
 import com.jme.scene.shape.Sphere;
 import com.jme.util.LoggingSystem;
 
@@ -50,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.11 2004-07-19 22:11:58 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.12 2004-08-13 06:04:04 cep21 Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -59,6 +56,11 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     private float oldRadius;
 
     private Vector3f oldCenter = new Vector3f();
+
+    static final private float radiusEpsilon = 1+1e-5f;   // NOTE: To avoid numerical inaccuracies
+
+    /** When this flag is true, updateModelBound() for BoundingSphere will calculate the smallest bounding volume.*/ 
+    static public boolean useExactBounds=false;
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -151,7 +153,123 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      *            the points to contain.
      */
     public void computeFromPoints(Vector3f[] points) {
-        containAABB(points);
+        if (useExactBounds)
+            calcWelzl(points);
+        else
+            containAABB(points);
+    }
+
+    /**
+     * Calculates a minimum bounding sphere for the set of points.  The algorithm was originally
+     * found at http://www.flipcode.com/cgi-bin/msg.cgi?showThread=COTD-SmallestEnclosingSpheres&forum=cotd&id=-1
+     * in C++ and translated to java by Cep21
+     * @param points The points to calculate the minimum bounds from.
+     */
+    private void calcWelzl(Vector3f[] points) {
+        if (center==null) center=new Vector3f();
+        Vector3f[] newRef=new Vector3f[points.length];
+        for (int i=0;i<points.length;i++)
+            newRef[i]=points[i];
+		recurseMini(newRef, newRef.length,0,0);
+    }
+
+    /**
+     * Used from calcWelzl.  This function recurses to calculate a minimum bounding sphere
+     * a few points at a time.
+     * @param points The array of points to look through.
+     * @param p The size of the list to be used.
+     * @param b The number of points currently considering to include with the sphere.
+     * @param ap A variable simulating pointer arithmatic from C++, and offset in <code>points</code>.
+     */
+    private void recurseMini(Vector3f[] points, int p, int b,int ap) {
+		switch(b)
+		{
+		case 0:
+            this.radius=0;
+            this.center.set(Float.MAX_VALUE,Float.MAX_VALUE,Float.MAX_VALUE);
+			break;
+		case 1:
+            this.radius=1-radiusEpsilon;
+            this.center.set(points[ap-1]);
+			break;
+		case 2:
+            setSphere(points[ap-1],points[ap-2]);
+			break;
+		case 3:
+            setSphere(points[ap-1],points[ap-2],points[ap-3]);
+			break;
+		case 4:
+            setSphere(points[ap-1],points[ap-2],points[ap-3],points[ap-4]);
+			return;
+		}
+		for(int i = 0; i < p; i++){
+            if (points[i+ap].distanceSquared(center)-radius*radius > radiusEpsilon-1){
+                Vector3f temp=points[i+ap];
+				for(int j = i; j > 0; j--){
+                    points[j+ap]=points[j-1+ap];
+				}
+                points[ap]=temp;
+				recurseMini(points, i, b + 1,ap+1);
+			}
+        }
+    }
+
+    /**
+     * Calculates the minimum bounding sphere of 4 points.  Used in welzl's algorithm.
+     * @param O The 1st point inside the sphere.
+     * @param A The 2nd point inside the sphere.
+     * @param B The 3rd point inside the sphere.
+     * @param C The 4th point inside the sphere.
+     * @see #calcWelzl(com.jme.math.Vector3f[])
+     */
+    private void setSphere(Vector3f O, Vector3f A, Vector3f B, Vector3f C) {
+		Vector3f a = A.subtract(O);
+		Vector3f b = B.subtract(O);
+		Vector3f c = C.subtract(O);
+
+		float Denominator = 2.0f *
+                    (a.x * (b.y * c.z - c.y * b.z) -
+                    b.x * (a.y * c.z - c.y * a.z)  +
+                    c.x * (a.y * b.z - b.y * a.z)  );
+        Vector3f o=a.cross(b).multLocal(c.lengthSquared()).addLocal(
+                c.cross(a).multLocal(b.lengthSquared())).addLocal(
+                        b.cross(c).multLocal(a.lengthSquared())).divideLocal(Denominator);
+
+		radius = o.length() * radiusEpsilon;
+        O.add(o,center);
+    }
+
+    /**
+     * Calculates the minimum bounding sphere of 3 points.  Used in welzl's algorithm.
+     * @param O The 1st point inside the sphere.
+     * @param A The 2nd point inside the sphere.
+     * @param B The 3rd point inside the sphere.
+     * @see #calcWelzl(com.jme.math.Vector3f[])
+     */
+    private void setSphere(Vector3f O, Vector3f A, Vector3f B) {
+        Vector3f a = A.subtract(O);
+        Vector3f b = B.subtract(O);
+        Vector3f acrossB=a.cross(b);
+
+
+        float Denominator = 2.0f * acrossB.dot(acrossB);
+
+         Vector3f o=acrossB.cross(a).multLocal(b.lengthSquared()).addLocal(
+            b.cross(acrossB).multLocal(a.lengthSquared())).divideLocal(Denominator);
+
+        radius = o.length() * radiusEpsilon;
+        O.add(o,center);
+    }
+
+    /**
+     * Calculates the minimum bounding sphere of 2 points.  Used in welzl's algorithm.
+     * @param O The 1st point inside the sphere.
+     * @param A The 2nd point inside the sphere.
+     * @see #calcWelzl(com.jme.math.Vector3f[])
+     */
+    private void setSphere(Vector3f O, Vector3f A) {
+        radius=FastMath.sqrt(((A.x-O.x)*(A.x-O.x) + (A.y-O.y)*(A.y-O.y) + (A.z-O.z)*(A.z-O.z))/4);
+        center.interpolate(O,A,.5f);
     }
 
     /**
