@@ -40,7 +40,7 @@ package com.jme.sound;
  * @author Arman Ozcelik
  *
  */
-public class SoundEffect implements IEffect {
+public class SoundEffect implements ISound {
 	
 	private int name;
 	private int type;
@@ -50,7 +50,7 @@ public class SoundEffect implements IEffect {
 		this.type=type;
 	}
 	
-	public int getName() {
+	public int getID() {
 		return name;
 	}
 

@@ -49,9 +49,9 @@ public interface IEffectPlayer extends ISource {
 	public static final int PAUSED = 3;
 	public static final int STOPPED = 4;
 
-	public void play(IEffect effect);
+	public void play(ISound effect);
 
-	public void loop(IEffect effect);
+	public void loop(ISound effect);
 
 	public void pause();
 

@@ -38,7 +38,7 @@ package com.jme.sound.action;
 
 import com.jme.input.action.KeyForwardAction;
 import com.jme.renderer.Camera;
-import com.jme.sound.IEffect;
+import com.jme.sound.ISound;
 import com.jme.sound.IEffectPlayer;
 import com.jme.sound.utils.EffectRepository;
 
@@ -67,7 +67,7 @@ public class SoundForwardAction extends KeyForwardAction {
 	public void performAction(float time) {
 		super.performAction(time);
 		if (player != null && player.getStatus() != IEffectPlayer.PLAYING) {
-			IEffect effect=EffectRepository.getRepository().getSource(sound);
+			ISound effect=EffectRepository.getRepository().getSource(sound);
 			if(effect !=null){
 				player.play(effect);
 			}

@@ -47,7 +47,8 @@ public interface ISound {
 	public static final int SOUND_TYPE_MUSIC=1;
 	public static final int SOUND_TYPE_EFFECT=2;
 
-	public int getSoundType();		
+	public int getSoundType();
+	public int getID();		
 	
 
 }

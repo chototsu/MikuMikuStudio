@@ -42,7 +42,7 @@ import com.jme.sound.utils.EffectRepository;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: LWJGLSoundRenderer.java,v 1.4 2003-11-01 23:28:10 Anakan Exp $
+ * @version $Id: LWJGLSoundRenderer.java,v 1.5 2004-01-04 14:18:20 Anakan Exp $
  */
 public class LWJGLSoundRenderer implements IRenderer {
 
@@ -52,12 +52,11 @@ public class LWJGLSoundRenderer implements IRenderer {
 	//Orientation of the listener. (first 3 elements are "at", second 3 are "up")
 	private float[] listenerOri= { 0.0f, 0.0f, -1.0f, 0.0f, 1.0f, 0.0f };
 
-	private IMusicPlayer player;
+	
 
 	public LWJGLSoundRenderer() {
 		IntBuffer source= ByteBuffer.allocateDirect(4).order(ByteOrder.nativeOrder()).asIntBuffer();
 		AL.alGenSources(source);
-		player= new LWJGLSource(source.get(0));
 		setListenerValues();
 
 	}
@@ -96,7 +95,7 @@ public class LWJGLSoundRenderer implements IRenderer {
 		if (AL.alGetError() != AL.AL_NO_ERROR) {
 			System.err.println("Error generating audio buffer");
 		}
-		SoundEffect effect= new SoundEffect(buffer.getBufferNumber(), IEffect.SOUND_TYPE_EFFECT);
+		SoundEffect effect= new SoundEffect(buffer.getBufferNumber(), ISound.SOUND_TYPE_EFFECT);
 		EffectRepository.getRepository().bind(name, effect);
 		buffer.release();
 	}
@@ -105,9 +104,6 @@ public class LWJGLSoundRenderer implements IRenderer {
 		return EffectPlayerRepository.getRepository().getSource(name);
 	}
 
-	public IMusicPlayer getMusicPlayer() {
-
-		return player;
-	}
+	
 
 }

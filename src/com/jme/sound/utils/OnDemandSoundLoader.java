@@ -40,7 +40,7 @@ import java.util.ArrayList;
 
 import org.lwjgl.openal.AL;
 
-import com.jme.sound.IEffect;
+import com.jme.sound.ISound;
 import com.jme.sound.ISoundBuffer;
 import com.jme.sound.LWJGLMP3Buffer;
 import com.jme.sound.LWJGLWaveBuffer;
@@ -57,13 +57,18 @@ public class OnDemandSoundLoader extends Thread {
 	private ArrayList output= new ArrayList();
 	private long waitTime;
 
-	protected OnDemandSoundLoader() {
+	public OnDemandSoundLoader(long wait) {
+		waitTime=wait;
 	}
 
-	public OnDemandSoundLoader queueSound(String name, String file) {
+	public synchronized OnDemandSoundLoader queueSound(String name, String file) {
 		batchList.add(name);
 		batchList.add(file);
 		return this;
+	}
+	
+	public void impale(){
+		killed=true;
 	}
 
 	public void run() {
@@ -96,13 +101,17 @@ public class OnDemandSoundLoader extends Thread {
 				if (AL.alGetError() != AL.AL_NO_ERROR) {
 					System.err.println("Error generating audio buffer");
 				}
-				SoundEffect effect= new SoundEffect(buffer.getBufferNumber(), IEffect.SOUND_TYPE_EFFECT);
+				SoundEffect effect= new SoundEffect(buffer.getBufferNumber(), ISound.SOUND_TYPE_EFFECT);
 				EffectRepository rep=EffectRepository.getRepository();
 				synchronized(rep){
 					rep.bind(name, effect);
 				}
 				buffer.release();
 				
+			}
+			try{
+				Thread.sleep(waitTime);
+			}catch(InterruptedException ie){
 			}
 
 		}

@@ -37,7 +37,8 @@
 package com.jme.sound.utils;
 
 import java.util.Hashtable;
-import com.jme.sound.IEffect;
+import com.jme.sound.ISound;
+
 
 /**
  * @author Arman Ozcelik
@@ -60,15 +61,13 @@ public class EffectRepository {
 		return instance;
 	}
 
-	public void bind(String name, IEffect source) {
+	public void bind(String name, ISound source) {
 		repository.put(name, source);
 
 	}
-
-	public IEffect getSource(String name) {
-		return (IEffect)repository.get(name);
-		
-		
+	
+	public ISound getSource(String name) {
+		return (ISound)repository.get(name);		
 	}
 
 }

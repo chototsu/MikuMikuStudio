@@ -50,89 +50,69 @@ public class LWJGLEffectPlayer implements IEffectPlayer {
 	private int status;
 	private Vector3f position;
 	private Vector3f velocity;
-	private float gain=1.0f;
-	private float pitch=1.0f;
-	private static float maxVolume=1.0f;
+	private float gain= 1.0f;
+	private float pitch= 1.0f;
+	private static float maxVolume= 1.0f;
 
 	public LWJGLEffectPlayer(int playerNumber) {
-		sourceNumber = playerNumber;
-		position=new Vector3f(0, 0, 1);
-		velocity=new Vector3f(0,0,.1f);
+		sourceNumber= playerNumber;
+		position= new Vector3f(0, 0, 1);
+		velocity= new Vector3f(0, 0, .1f);
 	}
 
-	public void play(IEffect effect) {
-		if(effect==null) return;
-		status=PLAYING;
+	public void play(ISound effect) {
+		if (effect == null)
+			return;
+		status= PLAYING;
 		AL.alGetError();
 		if (AL.alGetError() != AL.AL_NO_ERROR) {
 			System.err.println("Error generating audio source.");
 		}
-		AL.alSourcei(sourceNumber, AL.AL_BUFFER, effect.getName());
+		AL.alSourcei(sourceNumber, AL.AL_BUFFER, effect.getID());
 		AL.alSourcef(sourceNumber, AL.AL_PITCH, getPitch());
 		AL.alSourcef(sourceNumber, AL.AL_GAIN, getVolume());
-		AL.alSource3f(
-			sourceNumber,
-			AL.AL_POSITION,
-			getPosition().x,
-			getPosition().y,
-			getPosition().z);
-		AL.alSource3f(
-			sourceNumber,
-			AL.AL_VELOCITY,
-			getVelocity().x,
-			getVelocity().y,
-			getVelocity().z);
+		AL.alSource3f(sourceNumber, AL.AL_POSITION, getPosition().x, getPosition().y, getPosition().z);
+		AL.alSource3f(sourceNumber, AL.AL_VELOCITY, getVelocity().x, getVelocity().y, getVelocity().z);
 		AL.alSourcei(sourceNumber, AL.AL_LOOPING, AL.AL_FALSE);
-		
-		AL.alSourcePlay(sourceNumber);	
-		
+
+		AL.alSourcePlay(sourceNumber);
 
 	}
 
 	/* (non-Javadoc)
 	 * @see com.jme.sound.IEffectPlayer#loop(com.jme.sound.IEffect, int)
 	 */
-	public void loop(IEffect effect) {
-		if(effect==null) return;
-		status=LOOPING;
+	public void loop(ISound effect) {
+		if (effect == null)
+			return;
+		status= LOOPING;
 		AL.alGetError();
 		if (AL.alGetError() != AL.AL_NO_ERROR) {
 			System.err.println("Error generating audio source.");
 		}
-		AL.alSourcei(sourceNumber, AL.AL_BUFFER, effect.getName());
+		AL.alSourcei(sourceNumber, AL.AL_BUFFER, effect.getID());
 		AL.alSourcef(sourceNumber, AL.AL_PITCH, getPitch());
 		AL.alSourcef(sourceNumber, AL.AL_GAIN, getVolume());
-		AL.alSource3f(
-			sourceNumber,
-			AL.AL_POSITION,
-			getPosition().x,
-			getPosition().y,
-			getPosition().z);
-		AL.alSource3f(
-			sourceNumber,
-			AL.AL_VELOCITY,
-			getVelocity().x,
-			getVelocity().y,
-			getVelocity().z);
+		AL.alSource3f(sourceNumber, AL.AL_POSITION, getPosition().x, getPosition().y, getPosition().z);
+		AL.alSource3f(sourceNumber, AL.AL_VELOCITY, getVelocity().x, getVelocity().y, getVelocity().z);
 		AL.alSourcei(sourceNumber, AL.AL_LOOPING, AL.AL_TRUE);
-		
+
 		AL.alSourcePlay(sourceNumber);
 
 	}
 
-	
 	public void pause() {
 		AL.alSourcePause(sourceNumber);
 	}
 
 	public void stop() {
 		AL.alSourceStop(sourceNumber);
-		status = STOPPED;
+		status= STOPPED;
 	}
 
 	public int getStatus() {
-		if(AL.alGetSourcei(sourceNumber, AL.AL_SOURCE_STATE) != AL.AL_PLAYING){
-			status=STOPPED;
+		if (AL.alGetSourcei(sourceNumber, AL.AL_SOURCE_STATE) != AL.AL_PLAYING) {
+			status= STOPPED;
 		}
 		return status;
 	}
@@ -145,63 +125,60 @@ public class LWJGLEffectPlayer implements IEffectPlayer {
 		return sourceNumber;
 	}
 
-	
 	public Vector3f getPosition() {
 		return position;
 	}
 
-	
 	public void setPosition(Vector3f pos) {
-		position.x=pos.x;
-		position.y=pos.y;
-		position.z=pos.z;
-		
+		position.x= pos.x;
+		position.y= pos.y;
+		position.z= pos.z;
+		//float length= position.length();
+		if ((status == PLAYING || status == LOOPING) && status != PAUSED)
+			/*
+			 AL.alSource3f(
+				sourceNumber,
+				AL.AL_POSITION,
+				position.x / length,
+				position.y / length,
+				position.z / length);
+			*/
+			AL.alSource3f(sourceNumber, AL.AL_POSITION, position.x, position.y, position.z);
 	}
 
-	
 	public Vector3f getVelocity() {
-		
+
 		return velocity;
 	}
 
-	
 	public void setVelocity(Vector3f vel) {
-		velocity.x=vel.x;
-		velocity.y=vel.y;
-		velocity.z=vel.z;		
+		velocity.x= vel.x;
+		velocity.y= vel.y;
+		velocity.z= vel.z;
 	}
 
-	
-	public float getPitch() {		
+	public float getPitch() {
 		return pitch;
 	}
 
-	
-	
 	public void setPitch(float pitch) {
-		this.pitch=pitch;		
+		this.pitch= pitch;
 	}
 
-	
 	public void setVolume(float volume) {
-		gain=volume*maxVolume;		
+		gain= volume * maxVolume;
 	}
 
-	
-	public float getVolume() {		
+	public float getVolume() {
 		return gain;
 	}
 
-	
 	public void setPlayersVolume(float volume) {
-		maxVolume=volume;		
+		maxVolume= volume;
 	}
 
-	
 	public void setMaxDistance(float maxDistance) {
 		AL.alSourcef(sourceNumber, AL.AL_MAX_DISTANCE, maxDistance);
 	}
-	
-	
 
 }

@@ -33,7 +33,7 @@ package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: IRenderer.java,v 1.1 2003-11-01 23:27:33 Anakan Exp $
+ * @version $Id: IRenderer.java,v 1.2 2004-01-04 14:18:20 Anakan Exp $
  */
 public interface IRenderer {
 
@@ -44,7 +44,7 @@ public interface IRenderer {
 	
 	public IEffectPlayer getSoundPlayer(Object name);
 	
-	public IMusicPlayer getMusicPlayer();
+	
 	
 	
 	
