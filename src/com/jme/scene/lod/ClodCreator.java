@@ -40,13 +40,14 @@ import java.util.Vector;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.MemPool;
 
 /**
  * <code>ClodCreator</code>
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.10 2004-04-22 22:26:48 renanse Exp $
+ * @version $Id: ClodCreator.java,v 1.11 2004-08-17 22:16:59 cep21 Exp $
  */
 
 public class ClodCreator extends VETMesh {
@@ -283,7 +284,7 @@ public class ClodCreator extends VETMesh {
       // length contribution
       Vector3f rkEnd0 = vertices[pkE.vert[0]];
       Vector3f rkEnd1 = vertices[pkE.vert[1]];
-      Vector3f kDiff = rkEnd1.subtract(rkEnd0);
+      Vector3f kDiff = rkEnd1.subtract(rkEnd0,MemPool.v3a);
       float fMetric = fLengthWeight * kDiff.length();
 
       // angle/area contribution
@@ -291,19 +292,19 @@ public class ClodCreator extends VETMesh {
       Vector3f kV0 = vertices[kT.vert[0]];
       Vector3f kV1 = vertices[kT.vert[1]];
       Vector3f kV2 = vertices[kT.vert[2]];
-      Vector3f kE0 = kV1.subtract(kV0);
-      Vector3f kE1 = kV2.subtract(kV0);
-      Vector3f kN0 = kE0.cross(kE1);
+      Vector3f kE0 = kV1.subtract(kV0,MemPool.v3a);
+      Vector3f kE1 = kV2.subtract(kV0,MemPool.v3b);
+      Vector3f kN0 = kE0.cross(kE1,MemPool.v3c);
 
       kT = (Triangle) pkEA.triangleSet.toArray()[1];
       kV0 = vertices[kT.vert[0]];
       kV1 = vertices[kT.vert[1]];
       kV2 = vertices[kT.vert[2]];
-      kE0 = kV1.subtract(kV0);
-      kE1 = kV2.subtract(kV0);
-      Vector3f kN1 = kE0.cross(kE1);
+      kE0 = kV1.subtract(kV0,MemPool.v3a);
+      kE1 = kV2.subtract(kV0,MemPool.v3b);
+      Vector3f kN1 = kE0.crossLocal(kE1);
 
-      Vector3f kCross = kN0.cross(kN1);
+      Vector3f kCross = kN0.cross(kN1,MemPool.v3a);
       fMetric += fAngleWeight * kCross.length();
 
       return fMetric;
