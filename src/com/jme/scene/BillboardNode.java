@@ -45,16 +45,14 @@ import com.jme.renderer.Renderer;
  * is the only camera setting compatible with <code>BillboardNode</code>. 
  * 
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.1 2004-03-03 21:58:07 mojomonkey Exp $
+ * @version $Id: BillboardNode.java,v 1.2 2004-03-03 22:00:52 mojomonkey Exp $
  */
 public class BillboardNode extends Node {
 	private float lastTime;
 	private Matrix3f orient;
 	private Vector3f diff;
 	private Vector3f loc;
-	private Vector3f up;
-	private Vector3f dir;
-	private Vector3f left;
+	
 
 	/**
 	 * Constructor instantiates a new <code>BillboardNode</code>. The name of the node is supplied
@@ -66,9 +64,6 @@ public class BillboardNode extends Node {
 		orient = new Matrix3f();
 		loc = new Vector3f();
 		diff = new Vector3f();
-		up = new Vector3f();
-		dir = new Vector3f();
-		left = new Vector3f();
 	}
 	
 	/**
@@ -114,23 +109,15 @@ public class BillboardNode extends Node {
 		loc.z *= invLength;
 
 		// compute the local orientation matrix for the billboard
-		left.x = loc.z;
-		left.y = 0;
-		left.z = -loc.x;
-		
-		up.x = 0;
-		up.y = 1;
-		up.z = 0;
-		
-		dir.x = loc.x;
-		dir.y = 0;
-		dir.z = loc.z;
-		
-		
-		
-		orient.setColumn(0, left);
-		orient.setColumn(1, up);
-		orient.setColumn(2, dir);
+		orient.m00 = loc.z;
+		orient.m01 = 0;
+		orient.m02 = loc.x;
+		orient.m10 = 0;
+		orient.m11 = 1;
+		orient.m12 = 0;
+		orient.m20 = -loc.x;
+		orient.m21 = 0;
+		orient.m22 = loc.z;
 		
 		//orientate the billboard
 		worldRotation.apply(orient);
