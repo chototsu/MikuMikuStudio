@@ -46,7 +46,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and 
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.6 2003-12-04 20:39:49 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.7 2003-12-11 16:03:19 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -73,6 +73,7 @@ public abstract class Spatial implements Serializable {
     
     //render states
     protected RenderState[] renderStateList;
+    protected RenderState[] parentStateList;
 
     /**
      * Constructor instantiates a new <code>Spatial</code> object setting 
@@ -81,6 +82,7 @@ public abstract class Spatial implements Serializable {
      */
     public Spatial() {
         renderStateList = new RenderState[RenderState.RS_MAX_STATE];
+        parentStateList = new RenderState[RenderState.RS_MAX_STATE];
         localRotation = new Matrix3f();
         worldRotation = new Matrix3f();
         localTranslation = new Vector3f();
@@ -370,6 +372,10 @@ public abstract class Spatial implements Serializable {
         return oldState;
     }
     
+    public RenderState[] getRenderStateList() {
+        return renderStateList;
+    }
+    
     /**
      * 
      * <code>setStates</code> activates all the render states for this 
@@ -378,6 +384,9 @@ public abstract class Spatial implements Serializable {
      *
      */
     public void setStates() {
+        if(parent != null) {
+            parentStateList = parent.getRenderStateList();
+        }
         for(int i = 0; i < renderStateList.length; i++) {
             if(renderStateList[i] != null ) {
                 renderStateList[i].set();
@@ -393,7 +402,9 @@ public abstract class Spatial implements Serializable {
      */
     public void unsetStates() {
         for(int i = 0; i < renderStateList.length; i++) {
-            if(renderStateList[i] != null ) {
+            if(parentStateList[i] != null ) {
+                parentStateList[i].set();
+            } else if (renderStateList[i] != null) {
                 renderStateList[i].unset();
             }
         }
