@@ -47,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.17 2004-09-08 17:40:09 renanse Exp $
+ * @version $Id: Texture.java,v 1.18 2004-10-07 19:27:16 renanse Exp $
  */
 public class Texture {
 
@@ -379,7 +379,7 @@ public class Texture {
 
   /**
    * <code>setWrap</code> sets the wrap mode of this texture. If an invalid
-   * value is passed, it is set to WM_CLAMP_S_CLAMP_T.
+   * value is passed, it is set to WM_ECLAMP_S_ECLAMP_T.
    * @param wrap the wrap mode for this texture.
    */
   public void setWrap(int wrap) {
