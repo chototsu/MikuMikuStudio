@@ -32,11 +32,8 @@
 
 package com.jme.bounding;
 
-import com.jme.math.Quaternion;
-import com.jme.math.Plane;
-import com.jme.math.Vector3f;
 import com.jme.scene.shape.*;
-import com.jme.math.FastMath;
+import com.jme.math.*;
 
 /**
  * <code>BoundingBox</code> defines an axis-aligned cube that defines a container
@@ -49,7 +46,7 @@ import com.jme.math.FastMath;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.10 2004-08-03 12:57:06 cep21 Exp $
+ * @version $Id: BoundingBox.java,v 1.11 2004-08-03 19:48:29 cep21 Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -63,6 +60,7 @@ public class BoundingBox extends Box implements BoundingVolume {
 
     private Vector3f origCenter = new Vector3f();
     private Vector3f origExtent = new Vector3f();
+    private Matrix3f transMatrix = new Matrix3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
@@ -171,6 +169,7 @@ public class BoundingBox extends Box implements BoundingVolume {
         return this.transform(rotate,translate,scale,null);
     }
 
+    int DEBUG=0;
     /**
      * <code>transform</code> modifies the center of the box to reflect the
      * change made via a rotation, translation and scale.
@@ -185,6 +184,8 @@ public class BoundingBox extends Box implements BoundingVolume {
         Vector3f scale,
         BoundingVolume store) {
 
+
+
         BoundingBox box = (BoundingBox)store;
         if (box == null) box = new BoundingBox(new Vector3f(0,0,0), 1,1,1);
 
@@ -192,45 +193,29 @@ public class BoundingBox extends Box implements BoundingVolume {
         rotate.mult(origCenter, box.center);
         box.center.multLocal(scale).addLocal(translate);
 
-        // Rotate a corner
+
+        transMatrix.set(rotate);
+        // Make the rotation matrix all positive to get the maximum x/y/z extent
+        if (transMatrix.m00<0) transMatrix.m00*=-1;
+        if (transMatrix.m01<0) transMatrix.m01*=-1;
+        if (transMatrix.m02<0) transMatrix.m02*=-1;
+        if (transMatrix.m10<0) transMatrix.m10*=-1;
+        if (transMatrix.m11<0) transMatrix.m11*=-1;
+        if (transMatrix.m12<0) transMatrix.m12*=-1;
+        if (transMatrix.m20<0) transMatrix.m20*=-1;
+        if (transMatrix.m21<0) transMatrix.m21*=-1;
+        if (transMatrix.m22<0) transMatrix.m22*=-1;
+
+        // (ab)use origExtent to do the multiplication resulting in the biggest extent
+        // values for a rotation.
+        transMatrix.mult(origExtent,box.origExtent);
+        // Assign the biggest rotations after scales.
+        box.xExtent=box.origExtent.x*scale.x;
+        box.yExtent=box.origExtent.y*scale.y;
+        box.zExtent=box.origExtent.z*scale.z;
+        // reset origExtent back to what it should be.
         box.origExtent.set(origExtent);
-        rotate.multLocal(box.origExtent);
-        box.xExtent = Math.abs(box.origExtent.x);
-        box.yExtent = Math.abs(box.origExtent.y);
-        box.zExtent = Math.abs(box.origExtent.z);
 
-        // Rotate the second corner
-        box.origExtent.x=origExtent.x;
-        box.origExtent.y=-origExtent.y;
-        box.origExtent.z=origExtent.z;
-        rotate.multLocal(box.origExtent);
-        box.xExtent = Math.max(box.xExtent, Math.abs(box.origExtent.x));
-        box.yExtent = Math.max(box.yExtent, Math.abs(box.origExtent.y));
-        box.zExtent = Math.max(box.zExtent, Math.abs(box.origExtent.z));
-
-        // Rotate the third corner
-        box.origExtent.x=-origExtent.x;
-        box.origExtent.y=origExtent.y;
-        box.origExtent.z=origExtent.z;
-        rotate.multLocal(box.origExtent);
-        box.xExtent = Math.max(box.xExtent, Math.abs(box.origExtent.x));
-        box.yExtent = Math.max(box.yExtent, Math.abs(box.origExtent.y));
-        box.zExtent = Math.max(box.zExtent, Math.abs(box.origExtent.z));
-
-        // Rotate the fourth corner
-        box.origExtent.x=-origExtent.x;
-        box.origExtent.y=-origExtent.y;
-        box.origExtent.z=origExtent.z;
-        rotate.multLocal(box.origExtent);
-        box.xExtent = Math.max(box.xExtent, Math.abs(box.origExtent.x));
-        box.yExtent = Math.max(box.yExtent, Math.abs(box.origExtent.y));
-        box.zExtent = Math.max(box.zExtent, Math.abs(box.origExtent.z));
-
-        box.xExtent*=scale.x;
-        box.yExtent*=scale.y;
-        box.zExtent*=scale.z;
-
-        box.origExtent.set(origExtent);
         return box;
     }
 
