@@ -43,7 +43,7 @@ import com.jme.widget.font.WidgetFont;
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.12 2004-03-05 23:09:29 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.13 2004-03-06 00:48:49 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -66,13 +66,13 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.12 2004-03-05 23:09:29 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.13 2004-03-06 00:48:49 renanse Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;
     protected int width, height;
     protected int alphaBits = 0;
-    protected int depthBits = 0;
+    protected int depthBits = 8;
     protected int stencilBits = 0;
     protected int samples = 0;
 
@@ -130,7 +130,7 @@ public abstract class DisplaySystem {
      * synchronization. The method is a "best attempt" to change the monitor vertical
      * refresh synchronization, and is <b>not</b> guaranteed to be successful.
      * @param enabled <code>true</code> to synchronize, <code>false</code> to
-	 *                       	  ignore synchronization
+	 *                           	  ignore synchronization
      */
     public abstract void setVSyncEnabled(boolean enabled);
 
