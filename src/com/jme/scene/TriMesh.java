@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.24 2004-08-28 20:34:34 cep21 Exp $
+ * @version $Id: TriMesh.java,v 1.25 2004-09-06 07:10:23 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -135,6 +135,7 @@ public class TriMesh extends Geometry implements Serializable {
 			throw new JmeException("Indices may not be null.");
 		}
 		this.indices = indices;
+        triangleQuantity=indices.length/3;
 
 		updateIndexBuffer();
 		LoggingSystem.getLogger().log(Level.INFO, "TriMesh reconstructed.");
