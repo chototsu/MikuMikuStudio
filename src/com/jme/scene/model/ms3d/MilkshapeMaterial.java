@@ -57,9 +57,8 @@ class MilkshapeMaterial {
             new File(baseURL.getPath(),texture).toURL().openStream();
             toLoad=new File(baseURL.getPath(),texture).toURL();
         } catch (MalformedURLException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            e.printStackTrace();
         } catch (IOException e) {
-//            throw new JmeException(e.toString()+"\nbase directory wrong(?)"+baseURL.toString());
         }
         myTex.setTexture(TextureManager.loadTexture(toLoad,
             Texture.MM_LINEAR,
