@@ -449,8 +449,9 @@ public class SpatialTransformer extends Controller {
             if (start == keyframes.size()) { // if they are all null then fill
                 // with identity
                 for (int i = 0; i < keyframes.size(); i++)
-                    ((PointInTime) keyframes.get(i)).look[objIndex]
-                            .setTranslation(0, 0, 0);
+                    pivots[objIndex].getTranslation( // pull original translation
+                            ((PointInTime) keyframes.get(i)).look[objIndex]
+                            .getTranslation()); // ...into object translation. 
                 continue; // we're done so lets break
             }
 

@@ -31,11 +31,27 @@ public class TransformMatrixQuat {
     }
 
     /**
+     * Return the translation vector in this matrix.
+     * @return translation vector.
+     */
+    public Vector3f getTranslation() {
+        return translation;
+    }
+
+    /**
      * Sets this scale to the given value.
      * @param scale The new scale for this matrix.
      */
     public void setScale(Vector3f scale) {
         this.scale.set(scale);
+    }
+
+    /**
+     * Return the scale vector in this matrix.
+     * @return scale vector.
+     */
+    public Vector3f getScale() {
+        return scale;
     }
 
     /**
