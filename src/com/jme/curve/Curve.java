@@ -33,32 +33,34 @@ package com.jme.curve;
 
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
+import com.jme.renderer.Renderer;
+import com.jme.scene.Geometry;
 import com.jme.system.JmeException;
 
 /**
  * <code>Curve</code> defines a collection of points that make up a curve.
  * How this curve is constructed is undefined, and the job of a subclass.
+ * The control points are defined as the super class <code>Geometry</code>
+ * vertex array. They can be set and accessed as such.
  * <code>Curve</code> is abstract only maintaining the point collection. It
  * defines <code>getPoint</code> and <code>getOrientation</code>. Extending
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.5 2004-01-07 02:49:38 mojomonkey Exp $
+ * @version $Id: Curve.java,v 1.6 2004-01-07 03:52:53 mojomonkey Exp $
  */
-public abstract class Curve {
+public abstract class Curve extends Geometry {
 
-    /**
-     * The array of control points.
-     */
-    protected Vector3f[] controlPoints;
-
+    protected int steps;
+    
     /**
      * Constructor creates a default <code>Curve</code> object with a
      * zero size array for the points.
      *
      */
     public Curve() {
-        controlPoints = new Vector3f[0];
+        this.vertex = new Vector3f[0];
+        steps = 25;
     }
 
     /**
@@ -76,36 +78,26 @@ public abstract class Curve {
             throw new JmeException("There must be at least two control points.");
         }
 
-        this.controlPoints = controlPoints;
+        this.vertex = controlPoints;
+        steps = 25;
     }
-
-    /**
-     * 
-     * <code>setControlPoints</code> sets the control point list that 
-     * defines the curve. If the control point list is null or has 
-     * fewer than 2 points, an exception is thrown.
-     * @param controlPoints the points that define the curve.
-     */
-    public void setControlPoints(Vector3f[] controlPoints) {
-        if (null == controlPoints) {
-            throw new JmeException("Control Points may not be null.");
-        }
-
-        if (controlPoints.length < 2) {
-            throw new JmeException("There must be at least two control points.");
-        }
-
-        this.controlPoints = controlPoints;
+        
+    public void setSteps(int steps) {
+        this.steps = steps;
+    }
+    
+    public int getSteps() {
+        return steps;
     }
     
     /**
-     * 
-     * <code>getControlPoints</code> retrieves the list of points that
-     * defines the curve.
-     * @return the point list that defines the curve.
+     * <code>draw</code> calls super to set the render state then calls the
+     * renderer to display the curve.
+     * @param r the renderer used to display the curve.
      */
-    public Vector3f[] getControlPoints() {
-        return controlPoints;
+    public void draw(Renderer r) {
+        super.draw(r);
+        r.draw(this);
     }
 
     /**

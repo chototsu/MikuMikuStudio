@@ -31,8 +31,6 @@
  */
 package com.jme.test.curve;
 
-import org.lwjgl.opengl.GL;
-
 import com.jme.app.AbstractGame;
 import com.jme.curve.BezierCurve;
 import com.jme.image.Texture;
@@ -56,7 +54,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.3 2004-01-06 21:02:26 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.4 2004-01-07 03:52:53 mojomonkey Exp $
  */
 public class TestBezierCurve extends AbstractGame {
     private TriMesh t, t2, t3, t4;
@@ -108,18 +106,6 @@ public class TestBezierCurve extends AbstractGame {
     protected void render() {
         Vector3f point;
         display.getRenderer().clearBuffers();
-
-        GL.glLineWidth(1.5f);
-        GL.glColor3f(1, 0, 0);
-        GL.glBegin(GL.GL_LINE_STRIP);
-        for (float t = 0;
-            t <= (1 + (1.0f / MAX_STEPS));
-            t += 1.0f / MAX_STEPS) {
-            point = curve.getPoint(t);
-            GL.glVertex3f(point.x, point.y, point.z);
-        }
-        GL.glEnd();
-
         display.getRenderer().draw(root);
 
     }
@@ -189,6 +175,12 @@ public class TestBezierCurve extends AbstractGame {
         points[3] = new Vector3f(4, 0, 0);
 
         curve = new BezierCurve(points);
+        ColorRGBA[] colors = new ColorRGBA[4];
+        colors[0] = new ColorRGBA(0,1,0,1);
+        colors[1] = new ColorRGBA(1,0,0,1);
+        colors[2] = new ColorRGBA(1,1,0,1);
+        colors[3] = new ColorRGBA(0,0,1,1);
+        curve.setColors(colors);
 
         Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
         Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
@@ -244,6 +236,7 @@ public class TestBezierCurve extends AbstractGame {
         scene.attachChild(t4);
         scene.attachChild(box);
         scene.attachChild(text);
+        scene.attachChild(curve);
         root = new Node();
         root.attachChild(scene);
 

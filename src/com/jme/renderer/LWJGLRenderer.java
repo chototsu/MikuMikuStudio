@@ -45,6 +45,7 @@ import javax.imageio.ImageIO;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.Window;
 
+import com.jme.curve.Curve;
 import com.jme.input.Mouse;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector2f;
@@ -80,7 +81,7 @@ import com.jme.util.LoggingSystem;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.8 2004-01-05 01:44:13 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.9 2004-01-07 03:52:53 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -734,6 +735,77 @@ public class LWJGLRenderer implements Renderer {
         GL.glMatrixMode(GL.GL_MODELVIEW);
         GL.glPopMatrix();
 
+    }
+
+    /**
+     * <code>draw</code> renders a curve object. 
+     * @param c the curve object to render.
+     */
+    public void draw(Curve c) {
+        //      set world matrix
+        Matrix3f rotation = c.getWorldRotation();
+        Vector3f translation = c.getWorldTranslation();
+        float scale = c.getWorldScale();
+        float[] modelToWorld =
+            {
+                scale * rotation.get(0, 0),
+                scale * rotation.get(1, 0),
+                scale * rotation.get(2, 0),
+                0.0f,
+                scale * rotation.get(0, 1),
+                scale * rotation.get(1, 1),
+                scale * rotation.get(2, 1),
+                0.0f,
+                scale * rotation.get(0, 2),
+                scale * rotation.get(1, 2),
+                scale * rotation.get(2, 2),
+                0.0f,
+                translation.x,
+                translation.y,
+                translation.z,
+                1.0f };
+
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glPushMatrix();
+        worldBuffer.clear();
+        worldBuffer.put(modelToWorld);
+        worldBuffer.flip();
+        GL.glMultMatrixf(worldBuffer);
+
+        // render the object
+        GL.glBegin(GL.GL_LINE_STRIP);
+
+        GL.glColor4f(
+            c.getColors()[0].r,
+            c.getColors()[0].g,
+            c.getColors()[0].b,
+            c.getColors()[0].a);
+        float colorInterval = 1f / c.getColors().length;
+        float colorModifier = colorInterval;
+        int colorCounter = 0;
+        Vector3f point;
+        for (float t = 0;
+            t <= (1 + (1.0f / c.getSteps()));
+            t += 1.0f / c.getSteps()) {
+                
+            if (t >= colorInterval) {
+                
+                colorInterval += colorModifier;
+                GL.glColor4f(
+                    c.getColors()[colorCounter].r,
+                    c.getColors()[colorCounter].g,
+                    c.getColors()[colorCounter].b,
+                    c.getColors()[colorCounter].a);
+                colorCounter++;
+            }
+            
+            point = c.getPoint(t);
+            GL.glVertex3f(point.x, point.y, point.z);
+        }
+
+        GL.glEnd();
+        GL.glMatrixMode(GL.GL_MODELVIEW);
+        GL.glPopMatrix();
     }
 
     /**

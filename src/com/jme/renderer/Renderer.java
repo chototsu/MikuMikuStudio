@@ -31,6 +31,7 @@
  */
 package com.jme.renderer;
 
+import com.jme.curve.Curve;
 import com.jme.input.Mouse;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
@@ -66,7 +67,7 @@ import com.jme.scene.state.ZBufferState;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.7 2004-01-05 01:44:13 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.8 2004-01-07 03:52:53 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -263,6 +264,13 @@ public interface Renderer {
      * @param l the line to be rendered.
      */
     public void draw(Line l);
+    
+    /**
+     * 
+     * <code>draw</code> renders a curve to the back buffer.
+     * @param c the curve to be rendered.
+     */
+    public void draw(Curve c);
     
     /**
      * 
