@@ -4,15 +4,14 @@ import com.jme.util.LittleEndien;
 import com.jme.system.JmeException;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
-import com.jme.scene.Node;
-import com.jme.scene.TriMesh;
+import com.jme.scene.*;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.animation.JointController;
 import com.jme.scene.model.JointMesh2;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.TextureState;
-import com.jme.renderer.ColorRGBA;
+import com.jme.scene.state.*;
+import com.jme.renderer.*;
 import com.jme.image.Texture;
+
 
 import java.io.*;
 
@@ -31,6 +30,11 @@ public class MilkToJme extends FormatConverter{
     private int nNumTriangles;
     private MilkTriangle[] myTris;
     private int[] materialIndexes;
+
+    public static void main(String[] args){
+        new DummyDisplaySystem();
+        new MilkToJme().attemptFileConvert(args);
+    }
 
 
     /**

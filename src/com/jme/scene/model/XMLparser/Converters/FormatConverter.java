@@ -1,9 +1,9 @@
 package com.jme.scene.model.XMLparser.Converters;
 
+import com.jme.util.LoggingSystem;
+
 import java.util.HashMap;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Started Date: Jul 1, 2004<br><br>
@@ -25,6 +25,35 @@ abstract public class FormatConverter {
      * @throws IOException If anything goes wrong during the writting
      */
     public abstract void convert(InputStream format,OutputStream jMEFormat) throws IOException;
+
+    /**
+     * Given an array of string arguments representing two files, the first file
+     * will be read and the second file will be deleted (if existing), then created
+     * and written to. Sample Usage "FormatConverter runner.txt runner.jme"
+     * @param args The array representing the from file and to file
+     */
+    public void attemptFileConvert(String[] args){
+        LoggingSystem.getLoggingSystem().loggerOn(false);
+        if (args.length!=2){
+            System.err.println("Correct way to use is: <FormatFile> <jmeoutputfile>");
+            System.err.println("For example: runner.txt runner.jme");
+            return;
+        }
+        File inFile=new File(args[0]);
+        File outFile=new File(args[1]);
+        if (!inFile.canRead()){
+            System.err.println("Cannot read input file " + inFile);
+            return;
+        }
+        try {
+            System.out.println("Converting file " + inFile + " to " + outFile);
+            convert(new FileInputStream(inFile),new FileOutputStream(outFile));
+        } catch (IOException e) {
+            System.err.println("Unable to convert:" + e);
+            return;
+        }
+        System.out.println("Conversion complete!");
+    }
 
     /**
      * Adds a property.  Properties can tell this how to process this format

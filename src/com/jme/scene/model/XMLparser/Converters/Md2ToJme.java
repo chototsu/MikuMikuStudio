@@ -1,9 +1,7 @@
 package com.jme.scene.model.XMLparser.Converters;
 
 import com.jme.util.BinaryFileReader;
-import com.jme.scene.Node;
-import com.jme.scene.Controller;
-import com.jme.scene.TriMesh;
+import com.jme.scene.*;
 import com.jme.scene.model.Face;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.animation.KeyframeController;
@@ -24,6 +22,12 @@ import java.util.Random;
  * @author Jack Lindamood
  */
 public class Md2ToJme extends FormatConverter{
+
+    public static void main(String[] args){
+        new DummyDisplaySystem();
+        new Md2ToJme().attemptFileConvert(args);
+    }
+
 
     Node nodeToReturn;
     /**

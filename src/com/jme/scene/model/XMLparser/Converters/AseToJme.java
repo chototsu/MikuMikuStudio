@@ -2,17 +2,13 @@ package com.jme.scene.model.XMLparser.Converters;
 
 import com.jme.scene.model.Face;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
-import com.jme.scene.Controller;
-import com.jme.scene.TriMesh;
-import com.jme.scene.Node;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.TextureState;
+import com.jme.scene.*;
+import com.jme.scene.state.*;
 import com.jme.util.LoggingSystem;
-import com.jme.util.TextureManager;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.bounding.BoundingBox;
-import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.*;
 import com.jme.image.Texture;
 import com.jme.system.JmeException;
 
@@ -29,6 +25,11 @@ import java.net.MalformedURLException;
  * @author Jack Lindamood
  */
 public class AseToJme extends FormatConverter{
+
+    public static void main(String[] args){
+        new DummyDisplaySystem();
+        new AseToJme().attemptFileConvert(args);
+    }
 
     /**
      * Creates a node from a .ase InputStream and then writes that node to the given
@@ -52,7 +53,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.2 2004-07-02 05:13:51 cep21 Exp $
+     * @version $Id: AseToJme.java,v 1.3 2004-07-02 06:42:55 cep21 Exp $
      */
     private class ASEModelCopy extends Node{
 
