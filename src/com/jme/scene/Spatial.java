@@ -47,7 +47,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.24 2004-03-10 03:58:50 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.25 2004-03-11 00:08:40 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
     //rotation matrices
@@ -79,6 +79,9 @@ public abstract class Spatial implements Serializable {
     protected ArrayList geometricalControllers = new ArrayList();
 
     protected String name;
+
+    //scale values
+    protected int frustrumIntersects = Camera.INTERSECTS_FRUSTUM;
 
     /**
      * Constructor instantiates a new <code>Spatial</code> object setting
@@ -166,9 +169,31 @@ public abstract class Spatial implements Serializable {
         Camera camera = r.getCamera();
         int state = camera.getPlaneState();
         //check to see if we can cull this node
-        if (forceView || !camera.culled(worldBound)) {
+        frustrumIntersects = (parent != null ? parent.frustrumIntersects : Camera.INTERSECTS_FRUSTUM);
+        if (!forceView && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
+            frustrumIntersects = camera.contains(worldBound);
+// useful for debugging
+//            if (frustrumIntersects == Camera.OUTSIDE_FRUSTUM)
+//                System.err.println("out: "+getName());
+//            else if (frustrumIntersects == Camera.INTERSECTS_FRUSTUM)
+//                System.err.println("int: "+getName());
+//            else if (frustrumIntersects == Camera.INSIDE_FRUSTUM)
+//                System.err.println("inside: "+getName());
+        }
+        if (forceView || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
             setStates();
             draw(r);
+// useful for viewing Bounding Volumes -- only boxes for now
+//            if (worldBound instanceof BoundingBox) {
+//                com.jme.scene.state.LWJGLWireframeState bs = new com.jme.scene.state.LWJGLWireframeState();
+//                bs.setEnabled(true);
+//                bs.set();
+//
+//                ((BoundingBox)worldBound).resetVertices();
+//                ((BoundingBox)worldBound).updateVertexBuffer();
+//                ((BoundingBox)worldBound).draw(r);
+//                bs.unset();
+//            }
             unsetStates();
         }
         camera.setPlaneState(state);
@@ -438,7 +463,7 @@ public abstract class Spatial implements Serializable {
     public RenderState[] getRenderStateList() {
         return renderStateList;
     }
-    
+
     public void clearRenderState(int renderStateType) {
         renderStateList[renderStateType] = null;
     }
