@@ -1,5 +1,8 @@
 package com.jme.math;
 
+/**
+ * This class provides static Bessel functions.
+ */
 public final class Bessel {
 
   /**
