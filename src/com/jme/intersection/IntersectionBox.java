@@ -33,7 +33,6 @@ package com.jme.intersection;
 
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.scene.Box;
 import com.jme.scene.BoundingBox;
 
 /**
@@ -41,7 +40,7 @@ import com.jme.scene.BoundingBox;
  * intersection of some objects. All the methods are static to allow for quick
  * and easy calls.
  * @author Mark Powell
- * @version $Id: IntersectionBox.java,v 1.3 2004-03-16 05:07:34 renanse Exp $
+ * @version $Id: IntersectionBox.java,v 1.4 2004-03-23 16:06:18 mojomonkey Exp $
  */
 public class IntersectionBox {
     /**
