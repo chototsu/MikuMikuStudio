@@ -54,18 +54,27 @@ import com.jme.math.FastMath;
 import com.jme.light.PointLight;
 import com.jme.app.VariableTimestepGame;
 import com.jme.scene.BillboardNode;
+import com.jme.scene.model.msascii.MilkshapeASCIIModel;
+import com.jme.animation.DeformationJointController;
+import com.jme.scene.Controller;
+import com.jme.scene.model.Model;
+import java.net.URL;
+import com.jme.scene.model.md2.Md2Model;
 
 /**
  * <code>TestImposterNode</code>
  * @author Joshua Slack
  */
 public class TestImposterNode extends VariableTimestepGame {
-  private Box monkeyBox;
   private Camera cam;
   private Node root, scene;
   private Node fakeScene;
   private InputHandler input;
   private Timer timer;
+  private Model model;
+
+  private String FILE_NAME = "data/model/drfreak.md2";
+  private String TEXTURE_NAME = "data/model/drfreak.jpg";
 
   ImposterNode iNode;
 
@@ -156,15 +165,14 @@ public class TestImposterNode extends VariableTimestepGame {
     root = new Node("Root Scene Node");
     root.attachChild(scene);
 
-    // Setup dimensions for a box
-    monkeyBox = new Box("Fake Monkey Box", new Vector3f(0,0,0), 15, 15, 15);
-    monkeyBox.setModelBound(new BoundingSphere());
-    monkeyBox.updateModelBound();
-    monkeyBox.setLocalTranslation(new Vector3f(0, 0, 0));
-
-    // add the monkey box to a node.  This node is a root node, not part of the "real world" tree.
     fakeScene = new Node("Fake node");
-    fakeScene.attachChild(monkeyBox);
+
+    model = new Md2Model("Dr Freak");
+    model.load(TestImposterNode.class.getClassLoader().getResource("jmetest/"+FILE_NAME));
+    model.getAnimationController().setSpeed(60);
+    model.getAnimationController().setRepeatType(Controller.RT_WRAP);
+    fakeScene.attachChild(model);
+
 
     // Setup our params for the depth buffer
     ZBufferState buf = display.getRenderer().getZBufferState();
@@ -174,41 +182,24 @@ public class TestImposterNode extends VariableTimestepGame {
     scene.setRenderState(buf);
     fakeScene.setRenderState(buf);
 
-    // Add a directional light to the "real world" scene.
-//    DirectionalLight am = new DirectionalLight();
-//    am.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-//    am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-//    am.setDirection(new Vector3f(0, -20, -75));
-//
-//    LightState state = display.getRenderer().getLightState();
-//    state.attach(am);
-//    state.setEnabled(true);
-//    am.setEnabled(true);
-//    scene.setRenderState(state);
-
-    // Lets add a monkey texture to the geometry we are going to rendertotexture...
     TextureState ts = display.getRenderer().getTextureState();
     ts.setEnabled(true);
     ts.setTexture(
-        TextureManager.loadTexture(
-        TestImposterNode.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+            TextureManager.loadTexture(
+                TestImposterNode.class.getClassLoader().getResource("jmetest/"+TEXTURE_NAME),
+                    Texture.MM_LINEAR,
+                    Texture.FM_LINEAR,
+                    true));
     fakeScene.setRenderState(ts);
 
-    iNode = new ImposterNode("model imposter", display, 10,10);
+    iNode = new ImposterNode("model imposter", 10);
     iNode.attachChild(fakeScene);
+    iNode.setCameraDistance(100);
+    iNode.setRedrawRate(.035f);
     BillboardNode bnode = new BillboardNode("imposter bbnode");
     bnode.setType(BillboardNode.SCREEN_ALIGNED);
     bnode.attachChild(iNode);
     scene.attachChild(bnode);
-
-    Box myBox = new Box("atest", new Vector3f(-2, -2, -10), new Vector3f(2, 2, -8));
-    myBox.setModelBound(new BoundingBox());
-    myBox.updateModelBound();
-    scene.attachChild(myBox);
 
     cam.update();
     scene.updateGeometricState(0.0f, true);

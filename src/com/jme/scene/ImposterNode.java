@@ -43,7 +43,7 @@ import com.jme.system.DisplaySystem;
 /**
  * <code>ImposterNode</code>
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.1 2004-03-31 03:08:49 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.2 2004-03-31 21:59:54 renanse Exp $
  */
 public class ImposterNode extends Node {
   private TextureRenderer tRenderer;
@@ -51,15 +51,13 @@ public class ImposterNode extends Node {
   private Node quadScene;
   private static int inode_val = 0;
   private Quad standIn;
-  private DisplaySystem display;
   private float redrawRate;
   private float elapsed;
-  private float cameraDistance = 75f;
+  private float cameraDistance = 10f;
 
-  public ImposterNode(String name, DisplaySystem display, float width, float height) {
+  public ImposterNode(String name, float size) {
     super(name);
-    this.display = display;
-    tRenderer = display.createTextureRenderer(false, true, false, false,
+    tRenderer = DisplaySystem.getDisplaySystem().createTextureRenderer(512,512,false, true, false, false,
                                               TextureRenderer.RENDER_TEXTURE_2D,
                                               4);
 
@@ -70,14 +68,14 @@ public class ImposterNode extends Node {
     quadScene = new Node("imposter_scene_" + inode_val);
 
     standIn = new Quad("imposter_quad_" + inode_val);
-    standIn.initialize(width, height);
+    standIn.initialize(size, size);
     standIn.setModelBound(new BoundingBox());
     standIn.updateModelBound();
     standIn.setParent(this);
 
     inode_val++;
     resetTexture();
-    redrawRate = elapsed = 0.01f;
+    redrawRate = elapsed = 0.02f;
   }
 
   /**
@@ -88,9 +86,10 @@ public class ImposterNode extends Node {
    */
   public void draw(Renderer r) {
     if (shouldDoUpdate()) {
-      updateCamera();
-      updateTexture();
+      updateCamera(r.getCamera().getLocation());
+      updateTexture(redrawRate);
       renderTexture();
+      elapsed-=redrawRate;
     }
     standIn.onDraw(r);
   }
@@ -98,11 +97,10 @@ public class ImposterNode extends Node {
   /**
    * updateCamera
    */
-  private void updateCamera() {
-    Vector3f myLoc = display.getRenderer().getCamera().getLocation();
-    float vDist = myLoc.distance(standIn.getCenter());
+  public void updateCamera(Vector3f eyeLocation) {
+    float vDist = eyeLocation.distance(standIn.getCenter());
     float ratio = cameraDistance / vDist;
-    Vector3f newPos = (myLoc.subtract(standIn.getCenter())).multLocal(ratio).addLocal(standIn.getCenter());
+    Vector3f newPos = (eyeLocation.subtract(standIn.getCenter())).multLocal(ratio).addLocal(standIn.getCenter());
     tRenderer.getCamera().setLocation(newPos);
     tRenderer.getCamera().lookAt(standIn.getCenter());
   }
@@ -113,9 +111,8 @@ public class ImposterNode extends Node {
    * @return boolean
    */
   private boolean shouldDoUpdate() {
-    if (redrawRate <= 0) return true;
+    if (redrawRate <= 0) return false;
     if (redrawRate > 0 && elapsed >= redrawRate) {
-      elapsed = 0f;
       return true;
     }
     return false;
@@ -177,13 +174,13 @@ public class ImposterNode extends Node {
       texture = tRenderer.setupTexture(texture.getTextureId());
     else
       texture = tRenderer.setupTexture();
-    TextureState ts = display.getRenderer().getTextureState();
+    TextureState ts = DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
     ts.setEnabled(true);
     ts.setTexture(texture, 0);
     standIn.setRenderState(ts);
 
     // Add a blending mode...  This is so the background of the texture is transparent.
-    AlphaState as1 = display.getRenderer().getAlphaState();
+    AlphaState as1 = DisplaySystem.getDisplaySystem().getRenderer().getAlphaState();
     as1.setBlendEnabled(true);
     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
     as1.setDstFunction(AlphaState.DB_ONE_MINUS_SRC_ALPHA);
@@ -193,8 +190,8 @@ public class ImposterNode extends Node {
     standIn.setRenderState(as1);
   }
 
-  private void updateTexture() {
-    updateGeometricState(0.0f, true);
+  public void updateTexture(float timePassed) {
+    quadScene.updateGeometricState(timePassed, true);
   }
 
   public void renderTexture() {
@@ -218,7 +215,6 @@ public class ImposterNode extends Node {
    */
   public void updateWorldData(float time) {
     super.updateWorldData(time);
-    quadScene.updateGeometricState(time, true);
     standIn.updateGeometricState(time, false);
     elapsed+=time;
   }
