@@ -65,7 +65,13 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
 import org.lwjgl.BufferUtils;
-import org.lwjgl.opengl.*;
+import org.lwjgl.opengl.Display;
+import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.opengl.GL12;
+import org.lwjgl.opengl.GL13;
+import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.glu.GLU;
 import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
@@ -121,7 +127,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.45 2004-09-13 21:13:12 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.46 2004-09-14 05:05:00 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -201,6 +207,7 @@ public class LWJGLRenderer implements Renderer {
       this.width = width;
       this.height = height;
       if (camera != null) camera.resize(width, height);
+      window = Display.getDisplayMode();
     }
 
     /**
@@ -493,6 +500,7 @@ public class LWJGLRenderer implements Renderer {
         GL11.glLoadIdentity();
         GLU.gluOrtho2D(-window.getWidth() / 2, window.getWidth() / 2, -window
                 .getHeight() / 2, window.getHeight() / 2);
+ System.err.println("window: "+window.getWidth()+", "+window.getHeight());
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();

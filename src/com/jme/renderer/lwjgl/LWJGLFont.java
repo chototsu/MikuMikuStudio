@@ -35,32 +35,32 @@ import java.nio.ByteBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.Display;
-import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.glu.GLU;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.system.DisplaySystem;
 
 /**
  * <code>Font2D</code> maintains display lists for each ASCII character
  * defined by an image. <code>Font2D</code> assumes that the texture is
  * 256x256 and that the characters are 16 pixels high by 16 pixels wide. The
  * order of the characters is also important: <br>
- * 
+ *
  * <img src ="fonttable.gif"> <br>
- * 
+ *
  * After the font is loaded, it can be used with a call to <code>print</code>.
  * The <code>Font2D</code> class is also printed in Ortho mode and
  * billboarded, as well as depth buffering turned off. This means that the font
  * will be placed at a two dimensional coordinate that corresponds to screen
  * coordinates.
- * 
+ *
  * The users is assumed to set a TextureState to the Text Geometry calling this
  * class.
- * 
+ *
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.11 2004-09-10 17:47:20 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.12 2004-09-14 05:05:00 renanse Exp $
  */
 public class LWJGLFont {
 
@@ -83,12 +83,10 @@ public class LWJGLFont {
     //Color to render the font.
     private ColorRGBA fontColor;
 
-    private DisplayMode mode = Display.getDisplayMode();
-
     /**
      * Constructor instantiates a new <code>LWJGLFont</code> object. The
      * initial color is set to white.
-     *  
+     *
      */
     public LWJGLFont() {
         fontColor = new ColorRGBA(1, 1, 1, 1);
@@ -108,7 +106,7 @@ public class LWJGLFont {
     /**
      * <code>setColor</code> sets the RGBA values to render the font as. By
      * default the color is white with no transparency.
-     * 
+     *
      * @param color
      *            the color to set.
      */
@@ -120,7 +118,7 @@ public class LWJGLFont {
      * <code>print</code> renders the specified string to a given (x,y)
      * location. The x, y location is in terms of screen coordinates. There are
      * currently two sets of fonts supported: NORMAL and ITALICS.
-     * 
+     *
      * @param x
      *            the x screen location to start the string render.
      * @param y
@@ -140,7 +138,7 @@ public class LWJGLFont {
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
-        GL11.glOrtho(0, mode.getWidth(), 0, mode.getHeight(), -1, 1);
+        GLU.gluOrtho2D(0, DisplaySystem.getDisplaySystem().getWidth(), 0, DisplaySystem.getDisplaySystem().getHeight());
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -154,7 +152,7 @@ public class LWJGLFont {
         } else {
             scratch.clear();
         }
-       
+
         int charLen = text.length();
         for (int z = 0; z < charLen; z++)
             scratch.put((byte) text.charAt(z));
@@ -206,7 +204,7 @@ public class LWJGLFont {
      * <br>
      * jme.geometry.hud.text.Font2D@1c282a1 <br>
      * Color: {RGBA COLOR} <br>
-     * 
+     *
      * @return the string representation of this object.
      */
     public String toString() {
