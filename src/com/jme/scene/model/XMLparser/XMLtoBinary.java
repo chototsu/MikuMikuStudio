@@ -160,7 +160,7 @@ public class XMLtoBinary {
                 writeShortArray(value);
             } else if ("q3vert".equals(att)){
                 writeByteArray(value);
-            }
+            } else
                 writeString(value);
         }
 
