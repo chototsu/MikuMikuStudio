@@ -33,6 +33,8 @@ package com.jme.renderer;
 
 import com.jme.curve.Curve;
 import com.jme.input.Mouse;
+import com.jme.scene.Clone;
+import com.jme.scene.CloneNode;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
@@ -70,7 +72,7 @@ import com.jme.widget.text.WidgetText;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.12 2004-02-03 22:44:48 darkprophet Exp $
+ * @version $Id: Renderer.java,v 1.13 2004-02-27 23:05:13 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -294,6 +296,10 @@ public interface Renderer {
      * @param t the mesh to be rendered.
      */
     public void draw(TriMesh t);
+    
+    public void draw(CloneNode cn);
+    
+    public void draw(Clone c);
     
     /**
      * <code>draw</code> renders a WidgetPanel object to the back buffer.

@@ -46,12 +46,12 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.1 2004-02-27 19:30:16 renanse Exp $
+ * @version $Id: TestManyChildren.java,v 1.2 2004-02-27 23:05:13 mojomonkey Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
     private CameraNode camNode;
-    private Node scene, root;
+    private Node root;
     private InputController input;
     private Timer timer;
     private Text fps;
@@ -137,18 +137,20 @@ public class TestManyChildren extends SimpleGame {
         Vector3f max = new Vector3f(0.5f,0.5f,0.5f);
         Vector3f min = new Vector3f(-0.5f,-0.5f,-0.5f);
 
-        scene = new Node("Scene graph node");
+        CloneNode scene = new CloneNode("Clone node");
         root = new Node("Root node");
-
+        TriMesh t = new Box("Box", min, max);
+        t.setModelBound(new BoundingSphere());
+        t.updateModelBound();
+        scene.setGeometry(t);
+        
         for(int i = 0; i < 2500; i++) {
             float x = (float)Math.random() * 10;
             float y = (float)Math.random() * 10;
             float z = (float)Math.random() * 10;
-            TriMesh t = new Box("Box", min,max);
-            t.setModelBound(new BoundingSphere());
-            t.updateModelBound();
-            t.setLocalTranslation(new Vector3f(x,y,z));
-            scene.attachChild(t);
+            Clone c = new Clone("Box Clone " + i);
+            c.setLocalTranslation(new Vector3f(x,y,z));
+            scene.attachChild(c);
         }
 
         ZBufferState buf = display.getRenderer().getZBufferState();
