@@ -35,26 +35,22 @@ import java.net.URL;
 
 import com.jme.animation.DeformationJointController;
 import com.jme.app.SimpleGame;
-import com.jme.light.DirectionalLight;
-import com.jme.light.SpotLight;
+import com.jme.effects.ParticleManager;
+import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
+import com.jme.scene.Geometry;
 import com.jme.scene.model.Model;
 import com.jme.scene.model.msascii.MilkshapeASCIIModel;
-import com.jme.effects.ParticleManager;
-import com.jme.bounding.BoundingSphere;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jme.image.Texture;
-import com.jme.scene.Geometry;
-import com.jme.scene.state.LightState;
 
 /**
- * <code>TestBackwardAction</code>
- * @author Mark Powell
+ * <code>TestFireMilk</code>
+ * @author Joshua Slack
  * @version
  */
 public class TestFireMilk extends SimpleGame {
