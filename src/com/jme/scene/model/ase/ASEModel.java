@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  *
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.10 2004-02-26 05:37:45 renanse Exp $
+ * @version $Id: ASEModel.java,v 1.11 2004-02-26 14:41:36 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -805,7 +805,7 @@ public class ASEModel extends Model {
                     if (object.faces[j].vertIndex[0] == i
                         || object.faces[j].vertIndex[1] == i
                         || object.faces[j].vertIndex[2] == i) {
-                        sum.addLocal(tempNormals[j]);
+                        sum = sum.add(tempNormals[j]);
 
                         shared++;
                     }
