@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.6 2004-05-12 19:58:49 renanse Exp $
+ * @version $Id: Vector2f.java,v 1.7 2004-05-15 19:18:28 renanse Exp $
  */
 public class Vector2f {
     /**
@@ -360,6 +360,25 @@ public class Vector2f {
      */
     public Object clone() {
         return new Vector2f(x,y);
+    }
+
+    /**
+     * are these two vectors the same? they are is they both have the same x
+     * and y values.
+     *
+     * @param o
+     *            the object to compare for equality
+     * @return true if they are equal
+     */
+    public boolean equals(Object o) {
+        if (!(o instanceof Vector2f) || o == null) { return false; }
+
+        if (this == o) { return true; }
+
+        Vector2f comp = (Vector2f) o;
+        if (x != comp.x) return false;
+        if (y != comp.y) return false;
+        return true;
     }
 
     /**
