@@ -48,168 +48,202 @@ import com.jme.util.LoggingSystem;
  * <code>TriMesh</code> defines a geometry mesh. This mesh defines a three
  * dimensional object via a collection of points, colors, normals and textures.
  * The points are referenced via a indices array. This array instructs the
- * renderer the order in which to draw the points, creating triangles on
- * every three points.
+ * renderer the order in which to draw the points, creating triangles on every
+ * three points.
+ * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.14 2004-05-14 00:10:15 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.15 2004-05-23 21:25:44 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
-    protected int[] indices;
-    private transient IntBuffer indexBuffer;
-    protected int triangleQuantity = -1;
+	protected int[] indices;
+	private transient IntBuffer indexBuffer;
+	protected int triangleQuantity = -1;
 
-    /**
-     * Empty Constructor to be used internally only.
-     */
-    public TriMesh() {}
+	/**
+	 * Empty Constructor to be used internally only.
+	 */
+	public TriMesh() {
+	}
 
-    /**
-     * Constructor instantiates a new <code>TriMesh</code> object.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     */
-    public TriMesh(String name) {
-        super(name);
+	/**
+	 * Constructor instantiates a new <code>TriMesh</code> object.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 */
+	public TriMesh(String name) {
+		super(name);
 
-    }
+	}
 
-    /**
-     * Constructor instantiates a new <code>TriMesh</code> object. Provided
-     * are the attributes that make up the mesh all attributes may be null,
-     * except for vertices and indices.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     * @param vertices the vertices of the geometry.
-     * @param normal the normals of the geometry.
-     * @param color the colors of the geometry.
-     * @param texture the texture coordinates of the mesh.
-     * @param indices the indices of the vertex array.
-     */
-    public TriMesh(
-        String name,
-        Vector3f[] vertices,
-        Vector3f[] normal,
-        ColorRGBA[] color,
-        Vector2f[] texture,
-        int[] indices) {
+	/**
+	 * Constructor instantiates a new <code>TriMesh</code> object. Provided
+	 * are the attributes that make up the mesh all attributes may be null,
+	 * except for vertices and indices.
+	 * 
+	 * @param name
+	 *            the name of the scene element. This is required for
+	 *            identification and comparision purposes.
+	 * @param vertices
+	 *            the vertices of the geometry.
+	 * @param normal
+	 *            the normals of the geometry.
+	 * @param color
+	 *            the colors of the geometry.
+	 * @param texture
+	 *            the texture coordinates of the mesh.
+	 * @param indices
+	 *            the indices of the vertex array.
+	 */
+	public TriMesh(String name, Vector3f[] vertices, Vector3f[] normal,
+			ColorRGBA[] color, Vector2f[] texture, int[] indices) {
 
-        super(name, vertices, normal, color, texture);
+		super(name, vertices, normal, color, texture);
 
-        if(null == indices) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Indices may not be" +
-                " null.");
-            throw new JmeException("Indices may not be null.");
-        }
-        this.indices = indices;
+		if (null == indices) {
+			LoggingSystem.getLogger().log(Level.WARNING,
+					"Indices may not be" + " null.");
+			throw new JmeException("Indices may not be null.");
+		}
+		this.indices = indices;
 
-        updateIndexBuffer();
-        LoggingSystem.getLogger().log(Level.INFO, "TriMesh created.");
-    }
+		updateIndexBuffer();
+		LoggingSystem.getLogger().log(Level.INFO, "TriMesh created.");
+	}
 
-    /**
-     *
-     * @param vertices
-     * @param normal
-     * @param color
-     * @param texture
-     * @param indices
-     */
-    public void reconstruct(
-        Vector3f[] vertices,
-        Vector3f[] normal,
-        ColorRGBA[] color,
-        Vector2f[] texture,
-        int[] indices) {
+	/**
+	 * 
+	 * @param vertices
+	 * @param normal
+	 * @param color
+	 * @param texture
+	 * @param indices
+	 */
+	public void reconstruct(Vector3f[] vertices, Vector3f[] normal,
+			ColorRGBA[] color, Vector2f[] texture, int[] indices) {
 
-        super.reconstruct(vertices, normal, color, texture);
+		super.reconstruct(vertices, normal, color, texture);
 
-        if(null == indices) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Indices may not be" +
-                " null.");
-            throw new JmeException("Indices may not be null.");
-        }
-        this.indices = indices;
+		if (null == indices) {
+			LoggingSystem.getLogger().log(Level.WARNING,
+					"Indices may not be" + " null.");
+			throw new JmeException("Indices may not be null.");
+		}
+		this.indices = indices;
 
-          updateIndexBuffer();
-        LoggingSystem.getLogger().log(Level.INFO, "TriMesh reconstructed.");
-    }
+		updateIndexBuffer();
+		LoggingSystem.getLogger().log(Level.INFO, "TriMesh reconstructed.");
+	}
 
-    /**
-     *
-     * <code>getIndices</code> retrieves the indices into the vertex array.
-     * @return the indices into the vertex array.
-     */
-    public int[] getIndices() {
-        return indices;
-    }
+	/**
+	 * 
+	 * <code>getIndices</code> retrieves the indices into the vertex array.
+	 * 
+	 * @return the indices into the vertex array.
+	 */
+	public int[] getIndices() {
+		return indices;
+	}
 
-    /**
-     *
-     * <code>getIndexAsBuffer</code> retrieves the indices array as an
-     * <code>IntBuffer</code>.
-     * @return the indices array as an <code>IntBuffer</code>.
-     */
-    public IntBuffer getIndexAsBuffer() {
-        return indexBuffer;
-    }
+	/**
+	 * 
+	 * <code>getIndexAsBuffer</code> retrieves the indices array as an
+	 * <code>IntBuffer</code>.
+	 * 
+	 * @return the indices array as an <code>IntBuffer</code>.
+	 */
+	public IntBuffer getIndexAsBuffer() {
+		return indexBuffer;
+	}
 
-    /**
-     *
-     * <code>setIndices</code> sets the index array for this <code>TriMesh</code>.
-     * @param indices the index array.
-     */
-    public void setIndices(int[] indices) {
-        this.indices = indices;
-        triangleQuantity = indices.length/3;
-        updateIndexBuffer();
-    }
+	public void getTriangle(int i, int[] storage) {
+		if (i < triangleQuantity && storage.length == 3) {
 
-    /**
-     * <code>draw</code> calls super to set the render state then passes itself
-     * to the renderer.
-     * @param r the renderer to display
-     */
-    public void draw(Renderer r) {
-        super.draw(r);
-        r.draw(this);
-    }
+			int iBase = 3 * i;
+			storage[0] = indices[iBase++];
+			storage[1] = indices[iBase++];
+			storage[2] = indices[iBase];
+		}
+	}
 
+	public void getTriangle(int i, Vector3f v0, Vector3f v1, Vector3f v2) {
+		if (i < triangleQuantity) {
 
-    /**
-     * <code>drawBounds</code> calls super to set the render state then passes itself
-     * to the renderer.
-     * @param r the renderer to display
-     */
-    public void drawBounds(Renderer r) {
-        r.drawBounds(this);
-    }
+			int iBase = 3 * i;
+			v0 = vertex[indices[iBase++]];
+			v1 = vertex[indices[iBase++]];
+			v2 = vertex[indices[iBase]];
+		}
+	}
+	
+	public int getTriangleQuantity() {
+		return indices.length / 3;
+	}
 
+	/**
+	 * 
+	 * <code>setIndices</code> sets the index array for this
+	 * <code>TriMesh</code>.
+	 * 
+	 * @param indices
+	 *            the index array.
+	 */
+	public void setIndices(int[] indices) {
+		this.indices = indices;
+		triangleQuantity = indices.length / 3;
+		updateIndexBuffer();
+	}
 
-    /**
-     *
-     * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that
-     * contains the indices array.
-     *
-     */
-    public void updateIndexBuffer() {
-      if (indices == null) {
-          return;
-      }
-      indexBuffer =
-          ByteBuffer
-              .allocateDirect(4 * (triangleQuantity >= 0 ? triangleQuantity * 3 : indices.length))
-              .order(ByteOrder.nativeOrder())
-              .asIntBuffer();
+	/**
+	 * <code>draw</code> calls super to set the render state then passes
+	 * itself to the renderer.
+	 * 
+	 * @param r
+	 *            the renderer to display
+	 */
+	public void draw(Renderer r) {
+		super.draw(r);
+		r.draw(this);
+	}
 
-      indexBuffer.clear();
-      indexBuffer.put(indices,0,triangleQuantity >= 0 ? triangleQuantity*3 : indices.length);
-      indexBuffer.flip();
-    }
+	/**
+	 * <code>drawBounds</code> calls super to set the render state then passes
+	 * itself to the renderer.
+	 * 
+	 * @param r
+	 *            the renderer to display
+	 */
+	public void drawBounds(Renderer r) {
+		r.drawBounds(this);
+	}
 
+	/**
+	 * 
+	 * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that
+	 * contains the indices array.
+	 *  
+	 */
+	public void updateIndexBuffer() {
+		if (indices == null) {
+			return;
+		}
+		indexBuffer = ByteBuffer.allocateDirect(
+				4 * (triangleQuantity >= 0
+						? triangleQuantity * 3
+						: indices.length)).order(ByteOrder.nativeOrder())
+				.asIntBuffer();
 
-    public void clearBuffers() {
-      super.clearBuffers();
-      indexBuffer = null;
-    }
+		indexBuffer.clear();
+		indexBuffer.put(indices, 0, triangleQuantity >= 0
+				? triangleQuantity * 3
+				: indices.length);
+		indexBuffer.flip();
+	}
+
+	public void clearBuffers() {
+		super.clearBuffers();
+		indexBuffer = null;
+	}
 
 }
