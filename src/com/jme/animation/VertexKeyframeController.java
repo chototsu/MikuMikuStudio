@@ -45,7 +45,7 @@ import com.jme.system.JmeException;
  * the displayed model is morphed from one keyframe to another giving the
  * impression of movement.
  * @author Mark Powell
- * @version $Id: VertexKeyframeController.java,v 1.4 2004-03-31 21:59:14 renanse Exp $
+ * @version $Id: VertexKeyframeController.java,v 1.5 2004-03-31 22:57:38 renanse Exp $
  */
 public class VertexKeyframeController extends Controller {
 	private TriMesh[] keyframes;
@@ -75,7 +75,7 @@ public class VertexKeyframeController extends Controller {
 		//and keyframes are loaded.
 		if (getRepeatType() == Controller.RT_CLAMP) {
 			currentTime += time;
-			if (currentTime >= 1) {
+			while (currentTime >= 1) {
 				currentFrame++;
 				nextFrame++;
 				if (currentFrame >= maxFrame) {
@@ -86,12 +86,12 @@ public class VertexKeyframeController extends Controller {
 					nextFrame = maxFrame;
 				}
 
-				currentTime = 0;
+				currentTime--;
 			}
 
 		} else if (getRepeatType() == Controller.RT_WRAP) {
 			currentTime += time;
-			if (currentTime >= 1) {
+			while (currentTime >= 1) {
 				currentFrame++;
 				nextFrame++;
 				if (currentFrame >= maxFrame) {
@@ -102,11 +102,11 @@ public class VertexKeyframeController extends Controller {
 					nextFrame = minFrame;
 				}
 
-				currentTime = 0;
+				currentTime--;
 			}
 		} else if (getRepeatType() == Controller.RT_CYCLE) {
 			currentTime += time;
-			if (currentTime >= 1) {
+			while (currentTime >= 1) {
 
 				currentFrame += cycleModifier;
 				nextFrame += cycleModifier;
@@ -126,7 +126,7 @@ public class VertexKeyframeController extends Controller {
 					cycleModifier = 1;
 				}
 
-				currentTime = 0;
+				currentTime--;
 			}
 		}
 
