@@ -59,7 +59,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.69 2005-01-10 20:32:24 renanse Exp $
+ * @version $Id: Geometry.java,v 1.70 2005-02-28 16:59:30 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -721,6 +721,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 * @return the number of texture units supported by the geometry.
 	 */
 	public int getNumberOfUnits() {
+	    if (texBuf == null) return 0;
 		return texBuf.length;
 	}
 
