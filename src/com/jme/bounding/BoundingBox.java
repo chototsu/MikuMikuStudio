@@ -48,7 +48,7 @@ import com.jme.scene.shape.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.2 2004-04-09 22:39:59 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.3 2004-04-11 16:06:03 mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -300,14 +300,27 @@ public class BoundingBox extends Box implements BoundingVolume {
             return new BoundingBox(name+"_clone", (Vector3f)center.clone(), xExtent, yExtent, zExtent);
     }
 
+    /**
+     * <code>getCheckPlane</code> returns a specific check plane. This plane identitifies the
+     * previous value of the visibility check.
+     */
     public int getCheckPlane(int index) {
         return checkPlanes[index];
     }
 
+    /**
+     * <code>setCheckPlane</code> indentifies the value of one of the spheres
+     * checked planes. That is what plane of the view frustum has been checked
+     * for intersection.
+     */
     public void setCheckPlane(int index, int value) {
         checkPlanes[index] = value;
     }
 
+    /**
+     * <code>recomputeMesh</code> regenerates the <code>BoundingBox</code>
+     * based on new model information.
+     */
     public void recomputeMesh() {
         if (!center.equals(oldCenter) || xExtent != oldXExtent || yExtent != oldYExtent || zExtent != oldZExtent) {
             setData(center, xExtent, yExtent, zExtent);
@@ -330,7 +343,7 @@ public class BoundingBox extends Box implements BoundingVolume {
 
     /**
      * <code>toString</code> returns the string representation of this object.
-     * The form is: "Radius: XXX.YYYY Center: <Vector>".
+     * The form is: "Radius: RRR.SSSS Center: <Vector>".
      * @return the string representation of this.
      */
     public String toString() {
