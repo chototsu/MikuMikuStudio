@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * class abstract. API specific classes are expected to extend this class and
  * handle renderer viewport setting.
  * @author Mark Powell
- * @version $Id: AbstractCamera.java,v 1.7 2004-02-26 02:48:46 mojomonkey Exp $
+ * @version $Id: AbstractCamera.java,v 1.8 2004-02-28 16:30:31 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -368,9 +368,9 @@ public abstract class AbstractCamera implements Camera {
      * @param axes the matrix that defines the orientation of the camera.
      */
     public void setAxes(Matrix3f axes) {
-        left = axes.getColumn(0);
-        up = axes.getColumn(1);
-        direction = axes.getColumn(2);
+        left = axes.getColumn(0, left);
+        up = axes.getColumn(1, up);
+        direction = axes.getColumn(2, direction);
         onFrameChange();
 
     }
@@ -433,9 +433,9 @@ public abstract class AbstractCamera implements Camera {
     public void setFrame(Vector3f location, Matrix3f axes) {
 
         this.location = location;
-        left = axes.getColumn(0);
-        up = axes.getColumn(1);
-        direction = axes.getColumn(2);
+        left = axes.getColumn(0, left);
+        up = axes.getColumn(1, up);
+        direction = axes.getColumn(2, direction);
         onFrameChange();
 
     }
@@ -566,14 +566,14 @@ public abstract class AbstractCamera implements Camera {
         if(bound == null) {
             return false;
         }
-        
+
         int planeCounter = planeQuantity - 1;
         int mask = 1 << planeCounter;
-        
+
         for (int i = 0; i < planeQuantity; i++, planeCounter--, mask >>= 1) {
             if ((planeState & mask) == 0) {
                 int side = bound.whichSide(worldPlane[planeCounter]);
-                
+
                 if (side == Plane.NEGATIVE_SIDE) {
                     //object is outside of frustum
                     return true;

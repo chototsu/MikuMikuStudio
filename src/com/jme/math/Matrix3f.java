@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.12 2004-02-28 02:54:59 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.13 2004-02-28 16:33:06 renanse Exp $
  */
 public class Matrix3f {
     public float[][] matrix;
@@ -110,13 +110,29 @@ public class Matrix3f {
      * @return the column specified by the index.
      */
     public Vector3f getColumn(int i) {
+        return getColumn(i, null);
+    }
+
+    /**
+     * <code>getColumn</code> returns one of three columns specified by the
+     * parameter. This column is returned as a <code>Vector3f</code> object.
+     *
+     * @param i the column to retrieve. Must be between 0 and 2.
+     * @param store the vector object to store the result in.  if null, a new one is created.
+     * @return the column specified by the index.
+     */
+    public Vector3f getColumn(int i, Vector3f store) {
         if (i < 0 || i > 2) {
             LoggingSystem.getLogger().log(
                 Level.WARNING,
                 "Invalid column index.");
             throw new JmeException("Invalid column index. " + i);
         }
-        return new Vector3f(matrix[0][i], matrix[1][i], matrix[2][i]);
+        if (store == null) store = new Vector3f();
+        store.x = matrix[0][i];
+        store.y = matrix[1][i];
+        store.z = matrix[2][i];
+        return store;
     }
 
     /**
@@ -273,7 +289,8 @@ public class Matrix3f {
      * result matrix is returned as a new object. If the given matrix is null,
      * a null matrix is returned.
      * @param mat the matrix to multiply this matrix by.
-     * @param product the matrix to store the result in.
+     * @param product the matrix to store the result in.  if null, a new matrix3f is created.
+     * @return a matrix3f object containing the result of this operation
      */
     public Matrix3f mult(Matrix3f mat, Matrix3f product) {
         if (null == mat) {
