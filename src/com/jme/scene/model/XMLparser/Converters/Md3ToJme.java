@@ -240,7 +240,7 @@ public class Md3ToJme extends FormatConverter{
             for (int i=0;i<texCoords.length;i++){
                 texCoords[i]=new Vector2f();
                 texCoords[i].x=file.readFloat();
-                texCoords[i].y=file.readFloat();
+                texCoords[i].y=1-file.readFloat();
             }
 
         }
