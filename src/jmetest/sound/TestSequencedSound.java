@@ -51,7 +51,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSequencedSound.java,v 1.3 2004-06-14 23:02:15 anakan Exp $
+ * @version $Id: TestSequencedSound.java,v 1.4 2004-06-17 15:52:31 anakan Exp $
  */
 public class TestSequencedSound extends SimpleGame {
 
@@ -106,10 +106,12 @@ public class TestSequencedSound extends SimpleGame {
         urls[1] = TestSequencedSound.class.getClassLoader().getResource(
                 "jmetest/data/sound/foot2.wav");
 
-        URL[] urls2 = new URL[2];
+        URL[] urls2 = new URL[1];
         urls2[0] = TestSequencedSound.class.getClassLoader().getResource(
                 "jmetest/data/sound/iagree.wav");
-        urls2[1] = TestSequencedSound.class.getClassLoader().getResource(
+        
+        URL[] urls2b = new URL[1];
+        urls2b[0] = TestSequencedSound.class.getClassLoader().getResource(
                 "jmetest/data/sound/medical.wav");
 
         URL[] urls3 = new URL[4];
@@ -140,17 +142,17 @@ public class TestSequencedSound extends SimpleGame {
         box = new Box("Box", min, max);
         box.setModelBound(new BoundingSphere());
         box.updateModelBound();
-        box.setLocalTranslation(new Vector3f(0, 0, -100));
+        box.setLocalTranslation(new Vector3f(0, 0, -25));
 
         box2 = new Box("Box", min, max);
         box2.setModelBound(new BoundingSphere());
         box2.updateModelBound();
-        box2.setLocalTranslation(new Vector3f(20, 0, -25));
+        box2.setLocalTranslation(new Vector3f(20, 0, -50));
         
         box3 = new Box("Box", min, max);
         box3.setModelBound(new BoundingSphere());
         box3.updateModelBound();
-        box3.setLocalTranslation(new Vector3f(10, 0, -150));
+        box3.setLocalTranslation(new Vector3f(10, 0, -100));
         
         box4 = new Box("Box", min, max);
         box4.setModelBound(new BoundingSphere());
@@ -172,9 +174,9 @@ public class TestSequencedSound extends SimpleGame {
         snode = new SoundNode();
         
 
-        sequenced = new SphericalSound(urls4);
+        sequenced = new SphericalSound(urls);
         sequenced.setQueueCheckPercentage(1);
-        sequenced.setMaxDistance(10);
+        sequenced.setMaxDistance(35);
         sequenced.setRolloffFactor(.1f);
         sequenced.setPosition(box.getLocalTranslation());
         sequenced.setGain(1.0f);
@@ -183,14 +185,15 @@ public class TestSequencedSound extends SimpleGame {
         
         sequenced3 = new SphericalSound(urls5);
         sequenced3.setQueueCheckPercentage(1);
-        sequenced3.setMaxDistance(20);
+        sequenced3.setMaxDistance(25);
         sequenced3.setRolloffFactor(.1f);
         sequenced3.setPosition(box3.getLocalTranslation());
         sequenced3.setGain(1.0f);
         sequenced3.setLoopingEnabled(false);
         
-        sequenced4 = new SphericalSound(urls);
+        sequenced4 = new SphericalSound(urls2);
         sequenced4.setQueueCheckPercentage(1);
+        
         sequenced4.setMaxDistance(25);
         sequenced4.setRolloffFactor(.1f);
         sequenced4.setPosition(box4.getLocalTranslation());
@@ -199,19 +202,21 @@ public class TestSequencedSound extends SimpleGame {
         
         
         //sequenced.setLooping(true);
-        snode.attachChild(sequenced);
-        sequenced2 = new SphericalSound(urls2);
-        sequenced2.setQueueCheckPercentage(1);
-        sequenced2.setMaxDistance(10);
+       /*
+        sequenced2 = new SphericalSound(urls5);
+        sequenced2.setQueueCheckPercentage(0.005f);
+        sequenced2.setMaxDistance(25);
         sequenced2.setRolloffFactor(.1f);
         sequenced2.setPosition(box2.getLocalTranslation());
         sequenced2.setGain(1.0f);
         sequenced2.setLoopingEnabled(true);
-
+*/
         background = new SphericalSound(urls3);
         background.setLoopingEnabled(true);
         background.setGain(0.5f);
-        snode.attachChild(sequenced2);
+        
+        snode.attachChild(sequenced);
+        //snode.attachChild(sequenced2);
         snode.attachChild(sequenced3);
         snode.attachChild(sequenced4);
         snode.attachChild(background);
