@@ -58,7 +58,7 @@ import com.jme.bounding.OBBTree;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.36 2004-11-17 21:45:32 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.37 2004-11-30 00:32:05 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -288,16 +288,17 @@ public class TriMesh extends Geometry implements Serializable {
 		if (indices == null) {
 			return;
 		}
-		IntBuffer indexBuffer = getIndexAsBuffer();
 		if (indexBuffer == null || indexBuffer.capacity() < indices.length) {
-			indexBuffer = ByteBuffer.allocateDirect(indices.length * 4).order(
-					ByteOrder.nativeOrder()).asIntBuffer();
+			indexBuffer = ByteBuffer.allocateDirect(
+					4 * (triangleQuantity >= 0 ? triangleQuantity * 3
+							: indices.length)).order(ByteOrder.nativeOrder())
+					.asIntBuffer();
 		}
 
 		indexBuffer.clear();
-		indexBuffer.put(indices, 0, indices.length);
+		indexBuffer.put(indices, 0,
+				triangleQuantity >= 0 ? triangleQuantity * 3 : indices.length);
 		indexBuffer.flip();
-		setIndexBuffer(indexBuffer);
 
 	}
 
