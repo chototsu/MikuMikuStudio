@@ -55,7 +55,7 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.1 2004-03-19 23:46:27 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.2 2004-03-21 23:25:34 renanse Exp $
  *
  */
 public class RenParticleManager {
@@ -307,11 +307,11 @@ public class RenParticleManager {
    * @param speed a vector to store the results in.
    */
   private void getRandomSpeed(Vector3f speed) {
-    float randDir = FastMath.PI * 2.0F * FastMath.nextRandomFloat();
+    float randDir = FastMath.TWO_PI * FastMath.nextRandomFloat();
     float clampAngle = clampToMaxAngle(FastMath.PI * FastMath.nextRandomFloat());
-    speed.x = (float) (FastMath.cos(randDir) * FastMath.sin(clampAngle));
-    speed.y = (float) FastMath.cos(clampAngle);
-    speed.z = (float) (FastMath.sin(randDir) * FastMath.sin(clampAngle));
+    speed.x = (float) (FastMath.FastTrig.cos(randDir) * FastMath.FastTrig.sin(clampAngle));
+    speed.y = (float) FastMath.FastTrig.cos(clampAngle);
+    speed.z = (float) (FastMath.FastTrig.sin(randDir) * FastMath.FastTrig.sin(clampAngle));
     rotateVectorSpeed(speed);
   }
 
