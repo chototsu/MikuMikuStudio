@@ -36,9 +36,10 @@ import java.util.ArrayList;
 import com.jme.scene.Geometry;
 
 /**
- * <code>CollisionResults</code>
+ * <code>CollisionResults</code> stores the results of a collision test by storing an ArrayList
+ * of Geometries.
  * @author Mark Powell
- * @version $Id: CollisionResults.java,v 1.2 2004-04-22 22:26:36 renanse Exp $
+ * @version $Id: CollisionResults.java,v 1.3 2004-07-30 21:58:51 cep21 Exp $
  */
 public class CollisionResults {
 
@@ -54,17 +55,17 @@ public class CollisionResults {
 
     /**
      *
-     * <code>addNode</code> places a new <code>Geometry</code> node into the
+     * <code>addGeometry</code> places a new <code>Geometry</code> spatial into the
      * results list.
-     * @param node the node to be placed in the results list.
+     * @param geo The geometry to be placed in the results list.
      */
-    public void addNode(Geometry node) {
-        nodeList.add(node);
+    public void addGeometry(Geometry geo) {
+        nodeList.add(geo);
     }
 
     /**
      *
-     * <code>getNumber</code> retrieves the number of nodes that have been
+     * <code>getNumber</code> retrieves the number of geometries that have been
      * placed in the results.
      * @return the number of nodes in the list.
      */
@@ -74,17 +75,17 @@ public class CollisionResults {
 
     /**
      *
-     * <code>getNode</code> retrieves a node from a specific index.
+     * <code>getGeometry</code> retrieves a geometry from a specific index.
      * @param i the index requested.
      * @return the node at the specified index.
      */
-    public Geometry getNode(int i) {
+    public Geometry getGeometry(int i) {
         return (Geometry)nodeList.get(i);
     }
 
     /**
      *
-     * <code>clear</code> clears the list of all nodes.
+     * <code>clear</code> clears the list of all Geometry.
      *
      */
     public void clear() {

@@ -44,7 +44,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLStandardCursor;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.5 2004-04-22 22:26:35 renanse Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.6 2004-07-30 21:54:56 cep21 Exp $
  */
 public class LWJGLMouseInput implements MouseInput {
 
@@ -239,7 +239,7 @@ public class LWJGLMouseInput implements MouseInput {
     }
 
     /**
-     * <code>isCursorVisible</code>
+     * <code>isCursorVisible</code> Returns true if a cursor is currently bound.
      * @see com.jme.input.MouseInput#isCursorVisible()
      */
     public boolean isCursorVisible() {
@@ -247,7 +247,8 @@ public class LWJGLMouseInput implements MouseInput {
     }
 
     /**
-     * @return
+     *
+     * @return The current state of the mouse's buttons.
      */
     public MouseButtonStateType getButtonType() {
         return buttonType;
