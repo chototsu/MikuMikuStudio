@@ -30,16 +30,19 @@
  */
 package com.jme.effects;
 
+import com.jme.math.Line;
+import com.jme.math.Plane;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.Node;
 
 /**
  * <code>ParticleSystem</code>
  * 
  * @author Ahmed
- * @version $Id: ParticleSystem.java,v 1.4 2004-02-03 22:44:13 darkprophet Exp $
+ * @version $Id: ParticleSystem.java,v 1.5 2004-02-13 23:25:25 darkprophet Exp $
  */
 public class ParticleSystem extends Node {
 
@@ -50,6 +53,10 @@ public class ParticleSystem extends Node {
 
 	private Particle[] particles;
 	private ParticleController pc;
+	
+	private boolean useGeo;
+	private Line psLine;
+	private Plane psPlane;
 
 	public ParticleSystem(int num) {
 		super();
@@ -87,7 +94,7 @@ public class ParticleSystem extends Node {
 			attachChild(particles[i]);
 		}
 	}
-	
+
 	//----
 	// Getter Methods
 	//----
@@ -118,7 +125,7 @@ public class ParticleSystem extends Node {
 	public Vector3f getStartPosition() {
 		return position;
 	}
-	
+
 	//----
 	// Setter Methods
 	//----
@@ -149,14 +156,39 @@ public class ParticleSystem extends Node {
 	public void setStartPosition(Vector3f p) {
 		position = p;
 	}
-	
+
 	//----
 	// misc methods
 	//----
-	public void update(float t) {
-		pc.update(t);
+	public void updateWorldData(float n) {
+		super.updateWorldData(n);
+		pc.update(n);
 	}
-	public void addController(ParticleController p) {
-		pc = p;
+	public void addController(Controller p) {
+		pc = (ParticleController) p;
+	}
+	
+	// ----
+	// geometry stuff
+	// ----
+	public void useGeometry(boolean g) {
+		useGeo = g;
+	}
+	public void setGeometry(Line l) {
+		psLine = l;
+		psPlane = null;
+	}
+	public void setGeometry(Plane p) {
+		psPlane = p;
+		psLine = null;
+	}
+	public boolean useGeometry() {
+		return useGeo;
+	}
+	public Line getLine() {
+		return psLine;
+	}
+	public Plane getPlane() {
+		return psPlane;
 	}
 }
