@@ -49,7 +49,7 @@ import com.jme.math.FastMath;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.8 2004-06-23 18:14:16 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.9 2004-06-25 19:20:28 ericthered Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -145,7 +145,7 @@ public class BoundingBox extends Box implements BoundingVolume {
                 max.z = points[i].z;
         }
 
-        center = max.add(min);
+        center.set(max.add(min));
         center.multLocal(0.5f);
 
         xExtent = max.x - center.x;
@@ -284,12 +284,7 @@ public class BoundingBox extends Box implements BoundingVolume {
     public Object clone(BoundingVolume store) {
         if (store != null && store instanceof BoundingBox) {
             BoundingBox rVal = (BoundingBox)store;
-            if (null == rVal.center) {
-                rVal.center = new Vector3f();
-            }
-            rVal.center.x = center.x;
-            rVal.center.y = center.y;
-            rVal.center.z = center.z;
+            rVal.center.set(center);
             rVal.xExtent = xExtent;
             rVal.yExtent = yExtent;
             rVal.zExtent = zExtent;

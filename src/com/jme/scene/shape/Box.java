@@ -33,7 +33,6 @@ package com.jme.scene.shape;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.math.Quaternion;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 import com.jme.scene.model.XMLparser.XMLloadable;
@@ -45,11 +44,11 @@ import com.jme.bounding.BoundingBox;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.6 2004-06-24 20:37:10 renanse Exp $
+ * @version $Id: Box.java,v 1.7 2004-06-25 19:20:28 ericthered Exp $
  */
-public class Box extends TriMesh implements XMLloadable{
+public class Box extends TriMesh implements XMLloadable {
     public float xExtent, yExtent, zExtent;
-    public Vector3f center;
+    public final Vector3f center = new Vector3f(0f, 0f, 0f);
 
     public final static Vector3f AXIS_X = new Vector3f(1,0,0);
     public final static Vector3f AXIS_Y = new Vector3f(0,1,0);
@@ -105,8 +104,8 @@ public class Box extends TriMesh implements XMLloadable{
 
     public void setData(Vector3f center, float xExtent, float yExtent, float zExtent, boolean updateBuffers) {
         if (center != null)
-            this.center = center;
-        else this.center = new Vector3f(0,0,0);
+            this.center.set(center);
+        
         this.xExtent = xExtent;
         this.yExtent = yExtent;
         this.zExtent = zExtent;
@@ -376,7 +375,7 @@ public class Box extends TriMesh implements XMLloadable{
 		return center;
 	}
 	public void setCenter(Vector3f aCenter){
-		center = aCenter;
+		center.set(aCenter);
 	}
 
     public String writeToXML() {
