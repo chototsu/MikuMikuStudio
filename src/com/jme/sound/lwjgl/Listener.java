@@ -59,7 +59,7 @@ public class Listener implements IListener {
         BufferUtils.createFloatBuffer(3);//ByteBuffer.allocateDirect(4 * 3).order(ByteOrder.nativeOrder()).asFloatBuffer();
     private float[] orientation= new float[6];
     private FloatBuffer orientationBuffer=
-        BufferUtils.createFloatBuffer(3);//ByteBuffer.allocateDirect(4 * 6).order(ByteOrder.nativeOrder()).asFloatBuffer();
+        BufferUtils.createFloatBuffer(6);//ByteBuffer.allocateDirect(4 * 6).order(ByteOrder.nativeOrder()).asFloatBuffer();
 
     /* (non-Javadoc)
      * @see com.jme.sound.IListener#setGain(float)
