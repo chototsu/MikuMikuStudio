@@ -45,7 +45,7 @@ import com.jme.system.JmeException;
  * the displayed model is morphed from one keyframe to another giving the
  * impression of movement.
  * @author Mark Powell
- * @version $Id: VertexKeyframeController.java,v 1.7 2004-04-22 22:26:21 renanse Exp $
+ * @version $Id: VertexKeyframeController.java,v 1.8 2004-05-12 00:14:45 renanse Exp $
  */
 public class VertexKeyframeController extends Controller {
 	private TriMesh[] keyframes;
@@ -130,107 +130,118 @@ public class VertexKeyframeController extends Controller {
 			}
 		}
 
-		//Morph each aspect of the model for every vertex.
-                boolean morphedVerts = false, morphedNorms = false, morphedTexts = false, morphedColors = false;
+                //Morph each aspect of the model for every vertex.
+                boolean morphedVerts = false, morphedNorms = false, morphedTexts = false,
+                    morphedColors = false;
                 Vector3f[] verts = displayedMesh.getVertices();
                 Vector3f[] norms = displayedMesh.getNormals();
                 Vector2f[] texs = displayedMesh.getTextures();
                 ColorRGBA[] colors = displayedMesh.getColors();
-		for (int i = 0; i < displayedMesh.getVertices().length; i++) {
+                Vector3f keyframeA, keyframeB;
+                Vector2f keyframeTA, keyframeTB;
+                ColorRGBA keyframeCA, keyframeCB;
+                for (int i = 0; i < displayedMesh.getVertices().length; i++) {
+                  //morph vertices
+                  if (verts != null
+                      && keyframes[currentFrame].getVertices() != null
+                      && keyframes[nextFrame].getVertices() != null) {
+                    keyframeA = keyframes[currentFrame].getVertices()[i];
+                    keyframeB = keyframes[nextFrame].getVertices()[i];
+                    verts[i].x =
+                        keyframeA.x
+                        + currentTime
+                        * (keyframeB.x
+                           - keyframeA.x);
+                    verts[i].y =
+                        keyframeA.y
+                        + currentTime
+                        * (keyframeB.y
+                           - keyframeA.y);
+                    verts[i].z =
+                        keyframeA.z
+                        + currentTime
+                        * (keyframeB.z
+                           - keyframeA.z);
+                    morphedVerts = true;
+                  }
 
-			//morph vertices
-			if (verts != null
-				&& keyframes[currentFrame].getVertices() != null
-				&& keyframes[nextFrame].getVertices() != null) {
-				verts[i].x =
-					keyframes[currentFrame].getVertices()[i].x
-						+ currentTime
-							* (keyframes[nextFrame].getVertices()[i].x
-								- keyframes[currentFrame].getVertices()[i].x);
-				verts[i].y =
-					keyframes[currentFrame].getVertices()[i].y
-						+ currentTime
-							* (keyframes[nextFrame].getVertices()[i].y
-								- keyframes[currentFrame].getVertices()[i].y);
-				verts[i].z =
-					keyframes[currentFrame].getVertices()[i].z
-						+ currentTime
-							* (keyframes[nextFrame].getVertices()[i].z
-								- keyframes[currentFrame].getVertices()[i].z);
-                                morphedVerts = true;
-			}
+                  //morph normals if appropriate
+                  if (norms != null
+                      && keyframes[currentFrame].getNormals() != null
+                      && keyframes[nextFrame].getNormals() != null) {
+                    keyframeA = keyframes[currentFrame].getNormals()[i];
+                    keyframeB = keyframes[nextFrame].getNormals()[i];
+                    norms[i].x =
+                        keyframeA.x
+                        + currentTime
+                        * (keyframeB.x
+                           - keyframeA.x);
+                    norms[i].y =
+                        keyframeA.y
+                        + currentTime
+                        * (keyframeB.y
+                           - keyframeA.y);
+                    norms[i].z =
+                        keyframeA.z
+                        + currentTime
+                        * (keyframeB.z
+                           - keyframeA.z);
+                    morphedNorms = true;
+                  }
 
-			//morph normals if appropriate
-			if (norms != null
-				&& keyframes[currentFrame].getNormals() != null
-				&& keyframes[nextFrame].getNormals() != null) {
-				norms[i].x =
-					keyframes[currentFrame].getNormals()[i].x
-						+ currentTime
-							* (keyframes[nextFrame].getNormals()[i].x
-								- keyframes[currentFrame].getNormals()[i].x);
-				norms[i].y =
-					keyframes[currentFrame].getNormals()[i].y
-						+ currentTime
-							* (keyframes[nextFrame].getNormals()[i].y
-								- keyframes[currentFrame].getNormals()[i].y);
-				norms[i].z =
-					keyframes[currentFrame].getNormals()[i].z
-						+ currentTime
-							* (keyframes[nextFrame].getNormals()[i].z
-								- keyframes[currentFrame].getNormals()[i].z);
-				morphedNorms = true;
-			}
+                  //morph texture coordinates if appropriate.
+                  if (texs != null
+                      && keyframes[currentFrame].getTextures().length > 0
+                      && keyframes[nextFrame].getTextures().length > 0) {
+                    keyframeTA = keyframes[currentFrame].getTextures()[i];
+                    keyframeTB = keyframes[nextFrame].getTextures()[i];
+                    texs[i].x =
+                        keyframeTA.x
+                        + currentTime
+                        * (keyframes[nextFrame].getTextures()[i].x
+                           - keyframeTA.x);
+                    texs[i].y =
+                        keyframeTA.y
+                        + currentTime
+                        * (keyframeTB.y
+                           - keyframeTA.y);
+                    morphedTexts = true;
+                  }
 
-			//morph texture coordinates if appropriate.
-			if (texs != null
-				&& keyframes[currentFrame].getTextures().length > 0
-				&& keyframes[nextFrame].getTextures().length > 0) {
-				texs[i].x =
-					keyframes[currentFrame].getTextures()[i].x
-						+ currentTime
-							* (keyframes[nextFrame].getTextures()[i].x
-								- keyframes[currentFrame].getTextures()[i].x);
-				texs[i].y =
-					keyframes[currentFrame].getTextures()[i].y
-						+ currentTime
-							* (keyframes[nextFrame].getTextures()[i].y
-								- keyframes[currentFrame].getTextures()[i].y);
-				morphedTexts = true;
-			}
-
-			//morph colors if appropriate.
-			if (colors != null
-				&& keyframes[currentFrame].getColors() != null
-				&& keyframes[nextFrame].getColors() != null) {
-				colors[i].r =
-					keyframes[currentFrame].getColors()[i].r
-						+ currentTime
-							* (keyframes[nextFrame].getColors()[i].r
-								- keyframes[currentFrame].getColors()[i].r);
-				colors[i].g =
-					keyframes[currentFrame].getColors()[i].g
-						+ currentTime
-							* (keyframes[nextFrame].getColors()[i].g
-								- keyframes[currentFrame].getColors()[i].g);
-				colors[i].b =
-					keyframes[currentFrame].getColors()[i].b
-						+ currentTime
-							* (keyframes[nextFrame].getColors()[i].b
-								- keyframes[currentFrame].getColors()[i].b);
-				colors[i].a =
-					keyframes[currentFrame].getColors()[i].a
-						+ currentTime
-							* (keyframes[nextFrame].getColors()[i].a
-								- keyframes[currentFrame].getColors()[i].a);
-				morphedColors = true;
-			}
-		}
+                  //morph colors if appropriate.
+                  if (colors != null
+                      && keyframes[currentFrame].getColors() != null
+                      && keyframes[nextFrame].getColors() != null) {
+                    keyframeCA = keyframes[currentFrame].getColors()[i];
+                    keyframeCB = keyframes[nextFrame].getColors()[i];
+                    colors[i].r =
+                        keyframeCA.r
+                        + currentTime
+                        * (keyframeCB.r
+                           - keyframeCA.r);
+                    colors[i].g =
+                        keyframeCA.g
+                        + currentTime
+                        * (keyframeCB.g
+                           - keyframeCA.g);
+                    colors[i].b =
+                        keyframeCA.b
+                        + currentTime
+                        * (keyframeCB.b
+                           - keyframeCA.b);
+                    colors[i].a =
+                        keyframeCA.a
+                        + currentTime
+                        * (keyframeCB.a
+                           - keyframeCA.a);
+                    morphedColors = true;
+                  }
+                }
                 if (morphedVerts) displayedMesh.updateVertexBuffer();
                 if (morphedNorms) displayedMesh.updateNormalBuffer();
                 if (morphedTexts) displayedMesh.updateTextureBuffer();
                 if (morphedColors) displayedMesh.updateColorBuffer();
-	}
+              }
 
 	/**
 	 * <code>getDisplayedMesh</code> returns the mesh that is being morphed.
