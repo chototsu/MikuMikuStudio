@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector3f</code> defines a Vector for a three float value tuple.
  * @author Mark Powell
  * @author Joshua Slack -- Added *Local methods to cut down on object creation
- * @version $Id: Vector3f.java,v 1.12 2004-03-19 18:15:48 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.13 2004-03-28 17:04:09 greggpatton Exp $
  */
 public class Vector3f {
     /**
@@ -227,6 +227,27 @@ public class Vector3f {
      */
     public float lengthSquared() {
         return x * x + y * y + z * z;
+    }
+
+    /**
+     * <code>distanceSquared</code> calculates the distance squared between this vector and vector v.
+     * @param v
+     * @return
+     */
+    public float distanceSquared(Vector3f v) {
+        double dx = x - v.x;
+        double dy = y - v.y;
+        double dz = z - v.z;
+        return (float) (dx * dx + dy * dy + dz * dz);
+    }
+
+    /**
+     * <code>distance</code> calculates the distance between this vector and vector v.
+     * @param v
+     * @return
+     */
+    public float distance(Vector3f v) {
+        return (float) Math.sqrt(distanceSquared(v));
     }
 
     /**
