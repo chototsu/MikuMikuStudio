@@ -115,6 +115,7 @@ public class TestCameraMan extends SimpleGame {
         //display scene
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
+        display.setTitle("Camera Man - FPS:"+(int)timer.getFrameRate()+" - "+display.getRenderer().getStatistics());
 
     }
 
@@ -190,13 +191,13 @@ public class TestCameraMan extends SimpleGame {
         model.getAnimationController().setActive(false);
         scene.attachChild(model);
         root.attachChild(scene);
-        
+
         Box camBox = new Box("Camera Box", new Vector3f(-1f,-1f,-1f), new Vector3f(1f,1f,1f));
         camBox.setModelBound(new BoundingSphere());
         camBox.updateModelBound();
         camNode.attachChild(camBox);
-        
-        
+
+
         Quad quad = new Quad("Monitor");
         quad.initialize(3,3);
         quad.setLocalTranslation(new Vector3f(3.75f,52.5f,90));
@@ -209,10 +210,10 @@ public class TestCameraMan extends SimpleGame {
         scene.setRenderState(buf);
         scene.attachChild(quad);
         scene.attachChild(camNode);
-        
+
 
         // Ok, now lets create the Texture object that our monkey cube will be rendered to.
-        
+
         tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
         fakeTex = tRenderer.setupTexture();
         TextureState screen = display.getRenderer().getTextureState();
