@@ -147,7 +147,7 @@ public class HelloIntersection extends SimpleGame {
             bullet.addController(new BulletMover(bullet,
                                                new Vector3f(cam.getDirection())));
             rootNode.attachChild(bullet);
-            rootNode.updateRenderState();
+            bullet.updateRenderState();
             /** Signal our sound to play laser during rendering*/
             programSound.fireEvent(laserEventID);
         }
