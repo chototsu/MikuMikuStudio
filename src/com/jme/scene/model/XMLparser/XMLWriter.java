@@ -5,6 +5,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.TextureState;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
@@ -12,6 +13,8 @@ import com.jme.renderer.ColorRGBA;
 
 import java.io.OutputStream;
 import java.io.IOException;
+
+import org.apache.crimson.tree.XmlWritable;
 
 /**
  * Started Date: Jun 5, 2004
@@ -55,16 +58,42 @@ public class XMLWriter {
         increaseTabSize();
 
         writeRenderStates(toWrite);
-        for (int i=0;i<toWrite.getQuantity();i++){
-            Spatial s=toWrite.getChild(i);
-            if (s instanceof Node)
-                writeNode((Node) s);
-            if (s instanceof TriMesh)
-                writeMesh((TriMesh)s);
-        }
+        writeChildren(toWrite);
         decreaseTabSize();
         currentLine.append("</node>");
         writeLine();
+    }
+
+    private void writeXMLloadable(XMLloadable xmlloadable) throws IOException {
+        currentLine.append("<xmlloadable ");
+        currentLine.append("class=\"").append(xmlloadable.getClass().getName()).append("\" ");
+        if (xmlloadable instanceof Spatial){
+            currentLine.append(getSpatialHeader((Spatial) xmlloadable));
+        }
+        currentLine.append("args=\"").append(xmlloadable.writeToXML()).append("\">");
+        writeLine();
+        increaseTabSize();
+        if (xmlloadable instanceof Spatial)
+            writeRenderStates((Spatial) xmlloadable);
+        decreaseTabSize();
+        increaseTabSize();
+        if (xmlloadable instanceof Node)
+            writeChildren((Node)xmlloadable);
+        decreaseTabSize();
+        currentLine.append("</xmlloadable>");
+        writeLine();
+    }
+
+    private void writeChildren(Node node) throws IOException {
+        for (int i=0;i<node.getQuantity();i++){
+            Spatial s=node.getChild(i);
+            if (s instanceof XMLloadable)
+                writeXMLloadable((XMLloadable)s);
+            else if (s instanceof Node)
+                writeNode((Node) s);
+            else if (s instanceof TriMesh)
+                writeMesh((TriMesh)s);
+        }
     }
 
     private void writeRenderStates(Spatial s) throws IOException {
@@ -72,6 +101,16 @@ public class XMLWriter {
         if (states[RenderState.RS_MATERIAL]!=null){
             writeMaterialState((MaterialState) states[RenderState.RS_MATERIAL]);
         }
+        if (states[RenderState.RS_TEXTURE]!=null){
+            writeTextureState((TextureState)states[RenderState.RS_TEXTURE]);
+        }
+    }
+
+    private void writeTextureState(TextureState textureState) throws IOException {
+        currentLine.append("<texturestate file=\"");
+        currentLine.append(textureState.loadedFile);
+        currentLine.append("\"/>");
+        writeLine();
     }
 
     private void writeMaterialState(MaterialState state) throws IOException {
@@ -117,7 +156,7 @@ public class XMLWriter {
         increaseTabSize();
         if (theVerts!=null)
             writeVec3fArray(theVerts);
-        writeLine();
+        if (currentLine.length()!=0) writeLine();
         decreaseTabSize();
         currentLine.append("</vertex>");
         writeLine();
@@ -128,7 +167,7 @@ public class XMLWriter {
         increaseTabSize();
         if (theNorms!=null)
             writeVec3fArray(theNorms);
-        writeLine();
+        if (currentLine.length()!=0) writeLine();
         decreaseTabSize();
         currentLine.append("</normal>");
         writeLine();
@@ -139,7 +178,7 @@ public class XMLWriter {
         increaseTabSize();
         if (theColors!=null)
             writeColorRGBAArray(theColors);
-        writeLine();
+        if (currentLine.length()!=0) writeLine();
         decreaseTabSize();
         currentLine.append("</color>");
         writeLine();
@@ -150,7 +189,7 @@ public class XMLWriter {
         increaseTabSize();
         if (theTexCoords!=null)
             writeVec2fArray(theTexCoords);
-        writeLine();
+        if (currentLine.length()!=0) writeLine();
         decreaseTabSize();
         currentLine.append("</texturecoords>");
         writeLine();
@@ -161,7 +200,7 @@ public class XMLWriter {
         increaseTabSize();
         if (indexes!=null)
             writeIntArray(indexes);
-        writeLine();
+        if (currentLine.length()!=0) writeLine();
         decreaseTabSize();
         currentLine.append("</index>");
         writeLine();
