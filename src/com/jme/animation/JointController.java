@@ -186,6 +186,8 @@ public class JointController extends Controller {
         return storedNext;
     }
 
+    int DEBUG;      // TODO: REMOVE
+
     /**
      * Updates the <code>movingMeshes</code> by updating their joints +=time
      * @param time Time from last update
@@ -337,7 +339,11 @@ public class JointController extends Controller {
                     lastgood=i;
                 }
             }
-            fillQuats(joint,lastgood,movementInfo.size()-1);  // fills tail
+            if (lastgood!=movementInfo.size()-1){ // fills tail
+                ((PointInTime)movementInfo.get(movementInfo.size()-1)).jointRotation[joint]=
+                        new Quaternion(((PointInTime)movementInfo.get(lastgood)).jointRotation[joint]);
+                fillQuats(joint,lastgood,movementInfo.size()-1);  // fills tail
+            }
         }
     }
 
@@ -369,7 +375,11 @@ public class JointController extends Controller {
                     lastgood=i;
                 }
             }
-            fillPos(joint,lastgood,movementInfo.size()-1);  // fills tail
+            if (lastgood!=movementInfo.size()-1){ // fills tail
+                ((PointInTime)movementInfo.get(movementInfo.size()-1)).jointTranslation[joint]=
+                        new Vector3f(((PointInTime)movementInfo.get(lastgood)).jointTranslation[joint]);
+                fillPos(joint,lastgood,movementInfo.size()-1);  // fills tail
+            }            
         }
     }
 
