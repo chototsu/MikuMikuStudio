@@ -75,6 +75,11 @@ public class HelloIntersection extends SimpleGame {
 
         bulletMaterial=display.getRenderer().getMaterialState();
         bulletMaterial.setEmissive(ColorRGBA.green);
+
+        MaterialState redMaterial=display.getRenderer().getMaterialState();
+        redMaterial.setDiffuse(ColorRGBA.red);
+        target.setRenderState(redMaterial);
+
         rootNode.setForceView(true);
     }
 
@@ -95,10 +100,7 @@ public class HelloIntersection extends SimpleGame {
             bullet.addController(new BulletMover(bullet,new Vector3f(cam.getDirection())));
             rootNode.attachChild(bullet);
             rootNode.updateRenderState();
-            if (laserSound.isPlaying()){
-                laserSound.stop();
-            }
-                laserSound.play();
+            SoundAPIController.getRenderer().draw(laserSound);
         }
     }
     class BulletMover extends Controller{
