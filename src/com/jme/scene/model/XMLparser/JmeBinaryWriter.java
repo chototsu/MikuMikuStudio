@@ -85,6 +85,19 @@ public class JmeBinaryWriter {
     }
 
     /**
+     * Writes a spatial to jME's binary format.
+     * @param spatial The spatial to write.
+     * @param jMEFormat The OutputStream to write it too.
+     * @throws IOException If anything wierd happens.
+     */
+    public void writeScene(Spatial spatial, OutputStream jMEFormat) throws IOException {
+        if (spatial instanceof Node)
+            writeScene((Node)spatial,jMEFormat);
+        else if (spatial instanceof Geometry)
+            writeScene((Geometry)spatial,jMEFormat);
+    }
+
+    /**
      * All objects that are twice in the file are written as shared types.
      * @throws IOException
      */
