@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.15 2004-03-04 13:01:54 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.16 2004-03-12 00:31:03 renanse Exp $
  */
 public class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -66,7 +66,7 @@ public class Geometry extends Spatial implements Serializable {
     private FloatBuffer normBuf;
     private FloatBuffer vertBuf;
     private FloatBuffer[] texBuf;
-    
+
     //float arrays for update phase
     float[] colorArray;
 
@@ -76,7 +76,7 @@ public class Geometry extends Spatial implements Serializable {
      * data is null.
      *
       * @param name the name of the scene element. This is required for identification and
-	 *                  		comparision purposes.
+	 *                                                                                          		comparision purposes.
      *
      */
     public Geometry(String name) {
@@ -98,7 +98,7 @@ public class Geometry extends Spatial implements Serializable {
      * texture information. Any part may be null except for the vertex
      * information. If this is null, an exception will be thrown.
      * @param name the name of the scene element. This is required for identification and
-	 *                  		comparision purposes.
+	 *                                                                                          		comparision purposes.
      * @param vertex the points that make up the geometry.
      * @param normal the normals of the geometry.
      * @param color the color of each point of the geometry.
@@ -112,6 +112,45 @@ public class Geometry extends Spatial implements Serializable {
         Vector2f[] texture) {
 
         super(name);
+
+        if (vertex == null) {
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Geometry must" + " include vertex information.");
+            throw new JmeException("Geometry must include vertex information.");
+        }
+
+        int textureUnits =
+            DisplaySystem
+                .getDisplaySystem()
+                .getRenderer()
+                .getTextureState()
+                .getNumberOfUnits();
+        this.texture = new Vector2f[textureUnits][0];
+        this.texBuf = new FloatBuffer[textureUnits];
+        this.vertex = vertex;
+        this.normal = normal;
+        this.color = color;
+        this.texture[0] = texture;
+
+        updateColorBuffer();
+        updateNormalBuffer();
+        updateVertexBuffer();
+        updateTextureBuffer();
+    }
+
+    /**
+     *
+     * @param vertices
+     * @param normal
+     * @param color
+     * @param texture
+     */
+    public void reconstruct(
+        Vector3f[] vertices,
+        Vector3f[] normal,
+        ColorRGBA[] color,
+        Vector2f[] texture) {
 
         if (vertex == null) {
             LoggingSystem.getLogger().log(
@@ -252,6 +291,42 @@ public class Geometry extends Spatial implements Serializable {
     public FloatBuffer getNormalAsFloatBuffer() {
         return normBuf;
     }
+//
+//    public void updateModelNormals ()
+//    {
+//        // Calculate normals from vertices by weighted averages of facet planes
+//        // that contain the vertices.
+//
+//        if ( normal == null )
+//            normal = new Vector3f[vertexQuantity];
+//
+//        int aiConnect = m_aiConnect;
+//        int i;
+//        for (i = 0; i < triangleQuantity; i++)
+//        {
+//            // get vertex indices
+//            int iV0 = aiConnect++;
+//            int iV1 = aiConnect++;
+//            int iV2 = aiConnect++;
+//
+//            // get vertices
+//            Vector3f rkV0 = vertex[iV0];
+//            Vector3f rkV1 = vertex[iV1];
+//            Vector3f rkV2 = vertex[iV2];
+//
+//            // compute the normal (length provides the weighted sum)
+//            Vector3f kEdge1 = rkV1.subtract(rkV0);
+//            Vector3f kEdge2 = rkV2.subtract(rkV0);
+//            Vector3f kNormal = kEdge1.cross(kEdge2);
+//
+//            normal[iV0].addLocal(kNormal);
+//            normal[iV1].addLocal(kNormal);
+//            normal[iV2].addLocal(kNormal);
+//        }
+//
+//        for (i = 0; i < vertexQuantity; i++)
+//            normal[i].normalize();
+//    }
 
     /**
      * <code>getTextures</code> retrieves the texture array that contains this
@@ -423,11 +498,11 @@ public class Geometry extends Spatial implements Serializable {
         if(colorArray == null) {
             colorArray = new float[vertex.length * 4];
         }
-        
+
         if(colorArray.length != vertex.length * 4) {
             colorArray = new float[vertex.length * 4];
         }
-        
+
         if (colorBuf == null) {
             colorBuf =
                 ByteBuffer

@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -47,24 +47,24 @@ import com.jme.util.LoggingSystem;
 /**
  * <code>TriMesh</code> defines a geometry mesh. This mesh defines a three
  * dimensional object via a collection of points, colors, normals and textures.
- * The points are referenced via a indices array. This array instructs the 
+ * The points are referenced via a indices array. This array instructs the
  * renderer the order in which to draw the points, creating triangles on
- * every three points. 
+ * every three points.
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.4 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.5 2004-03-12 00:31:03 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
     private int[] indices;
     private IntBuffer indexBuffer;
-    
+
     /**
      * Constructor instantiates a new <code>TriMesh</code> object.
      * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
      */
     public TriMesh(String name) {
-    	super(name);
-        
+        super(name);
+
     }
 
     /**
@@ -80,7 +80,7 @@ public class TriMesh extends Geometry implements Serializable {
      * @param indices the indices of the vertex array.
      */
     public TriMesh(
-    	String name,
+        String name,
         Vector3f[] vertices,
         Vector3f[] normal,
         ColorRGBA[] color,
@@ -90,7 +90,8 @@ public class TriMesh extends Geometry implements Serializable {
         super(name, vertices, normal, color, texture);
 
         if(null == indices) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Indices may not be" +                " null.");
+            LoggingSystem.getLogger().log(Level.WARNING, "Indices may not be" +
+                " null.");
             throw new JmeException("Indices may not be null.");
         }
         this.indices = indices;
@@ -100,7 +101,35 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
-     * 
+     *
+     * @param vertices
+     * @param normal
+     * @param color
+     * @param texture
+     * @param indices
+     */
+    public void reconstruct(
+        Vector3f[] vertices,
+        Vector3f[] normal,
+        ColorRGBA[] color,
+        Vector2f[] texture,
+        int[] indices) {
+
+        super.reconstruct(vertices, normal, color, texture);
+
+        if(null == indices) {
+            LoggingSystem.getLogger().log(Level.WARNING, "Indices may not be" +
+                " null.");
+            throw new JmeException("Indices may not be null.");
+        }
+        this.indices = indices;
+
+          setIndexBuffers();
+        LoggingSystem.getLogger().log(Level.INFO, "TriMesh reconstructed.");
+    }
+
+    /**
+     *
      * <code>getIndices</code> retrieves the indices into the vertex array.
      * @return the indices into the vertex array.
      */
@@ -109,8 +138,8 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
-     * 
-     * <code>getIndexAsBuffer</code> retrieves the indices array as an 
+     *
+     * <code>getIndexAsBuffer</code> retrieves the indices array as an
      * <code>IntBuffer</code>.
      * @return the indices array as an <code>IntBuffer</code>.
      */
@@ -119,7 +148,7 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setIndices</code> sets the index array for this <code>TriMesh</code>.
      * @param indices the index array.
      */
@@ -127,7 +156,7 @@ public class TriMesh extends Geometry implements Serializable {
         this.indices = indices;
         setIndexBuffers();
     }
-    
+
     /**
      * <code>draw</code> calls super to set the render state then passes itself
      * to the renderer.
@@ -139,7 +168,7 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that
      * contains the indices array.
      *
