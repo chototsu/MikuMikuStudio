@@ -122,11 +122,16 @@ class MilkFile {
             for (int j=0;j<numRot;j++){
                 myTime=(int)(multiplier*file.readFloat()-1);
                 eulerVec.set(file.readFloat(),file.readFloat(),file.readFloat());
+                if (myTime >= myJoints[i].keyframeRot.length) continue;
                 myJoints[i].keyframeRot[myTime]=new Quaternion();
                 myJoints[i].keyframeRot[myTime].fromAngles(new float[]{eulerVec.x,eulerVec.y,eulerVec.z});
             }
             for (int j=0;j<numPos;j++){
                 myTime=(int)(multiplier*file.readFloat()-1);
+                if (myTime >= myJoints[i].keyframeRot.length){
+                    file.skipBytes(12);
+                    continue;
+                }
                 myJoints[i].keyframePos[myTime]=new Vector3f(
                         file.readFloat(),
                         file.readFloat(),
