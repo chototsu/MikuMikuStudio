@@ -8,10 +8,7 @@ import org.xml.sax.helpers.DefaultHandler;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.ParserConfigurationException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.IOException;
-import java.io.DataOutputStream;
+import java.io.*;
 
 /**
  * Started Date: Jun 23, 2004<br><br>
@@ -21,6 +18,32 @@ import java.io.DataOutputStream;
  */
 public class XMLtoBinary {
     private DataOutputStream myOut;
+
+    /**
+     * Converts an XML file to jME binary.  The syntax is: "XMLtoBinary file.xml out.jme"
+     * @param args 2 strings.  The first is the XML file to read, the second is the place to place its output.
+     */
+    public static void main(String[] args) {
+        if (args.length!=2){
+            System.err.println("Correct way to use is: <FormatFile> <jmeoutputfile>");
+            System.err.println("For example: runner.xml runner.jme");
+            return;
+        }
+        File inFile=new File(args[0]);
+        File outFile=new File(args[1]);
+        if (!inFile.canRead()){
+            System.err.println("Cannot read input file " + inFile);
+            return;
+        }
+        try {
+            System.out.println("Converting file " + inFile + " to " + outFile);
+            new XMLtoBinary().sendXMLtoBinary(new FileInputStream(inFile),new FileOutputStream(outFile));
+        } catch (IOException e) {
+            System.err.println("Unable to convert:" + e);
+            return;
+        }
+        System.out.println("Conversion complete!");
+    }
 
     /**
      * Creates a new XMl -> Binary object.
