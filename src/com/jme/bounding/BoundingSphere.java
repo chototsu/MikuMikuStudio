@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.4 2004-04-13 01:30:31 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.5 2004-04-15 02:52:27 mojomonkey Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -375,6 +375,9 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     public Object clone(BoundingVolume store) {
         if (store != null && store instanceof BoundingSphere) {
             BoundingSphere rVal = (BoundingSphere) store;
+            if (null == rVal.center) {
+                rVal.center = new Vector3f(); 
+            }
             rVal.center.x = center.x;
             rVal.center.y = center.y;
             rVal.center.z = center.z;
