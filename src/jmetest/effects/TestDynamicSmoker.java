@@ -74,10 +74,6 @@ public class TestDynamicSmoker extends SimpleGame {
     app.start();
   }
 
-  public void simpleUpdate() {
-    manager.setEmissionDirection(smokeNode.getLocalRotation().mult(new Vector3f(0,0,1)));
-  }
-
   /**
    * builds the trimesh.
    * @see com.jme.app.SimpleGame#initGame()
