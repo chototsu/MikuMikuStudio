@@ -56,7 +56,7 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.3 2004-04-30 17:29:43 mojomonkey Exp $
+ * @version $Id: LensFlare.java,v 1.4 2004-05-01 03:49:17 renanse Exp $
  */
 
 public class LensFlare extends Node {
@@ -248,6 +248,7 @@ public class LensFlare extends Node {
     mainFlare.setRenderState(ts);
     mainFlare.setSolidColor(new ColorRGBA(.95f, .95f, .95f, 1f));
     mainFlare.setLightCombineMode(LightState.REPLACE);
+    mainFlare.setTextureCombineMode(TextureState.REPLACE);
     this.attachChild(mainFlare);
 
     sFlare = new Quad[15];
@@ -310,6 +311,7 @@ public class LensFlare extends Node {
     for (int i = 0; i < sFlare.length; i++) {
       this.attachChild(sFlare[i]);
       sFlare[i].setLightCombineMode(LightState.REPLACE);
+      sFlare[i].setTextureCombineMode(TextureState.REPLACE);
     }
   }
 
