@@ -107,9 +107,9 @@ public class TransformMatrixQuat {
      * @param spatial The spatial to be affected by this matrix.
      */
     public void applyToSpatial(Spatial spatial) {
-        spatial.setLocalScale(scale);
-        spatial.setLocalRotation(rot);
-        spatial.setLocalTranslation(translation);
+        spatial.getLocalScale().set(scale);
+        spatial.getLocalRotation().set(rot);
+        spatial.getLocalTranslation().set(translation);
     }
 
     /**
