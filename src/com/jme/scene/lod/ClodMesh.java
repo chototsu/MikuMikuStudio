@@ -32,19 +32,21 @@
 
 package com.jme.scene.lod;
 
-import com.jme.scene.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jme.scene.TriMesh;
 
 /**
  * <code>ContinuousLodNode</code>
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.2 2004-04-06 22:49:34 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.3 2004-04-07 00:48:13 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int m_iCurrentRecord, m_iTargetRecord;
   CollapseRecord[] m_akRecord;
-
+ClodCreator creator;
   public ClodMesh(
       String name,
       TriMesh data,
@@ -71,7 +73,7 @@ public class ClodMesh extends TriMesh {
     if (records != null && records.length > 0) {
       m_akRecord = records;
     } else {
-      ClodCreator creator = new ClodCreator(vertices, normal, color, texture,
+      creator = new ClodCreator(vertices, normal, color, texture,
                                             indices);
       m_akRecord = creator.getRecords();
     }
@@ -133,7 +135,10 @@ public class ClodMesh extends TriMesh {
       // increase triangle count (triangles are properly ordered)
       triangleQuantity = rkPrevRecord.m_iTQuantity;
     }
-    System.err.println("Current record: "+m_iCurrentRecord);
+    System.err.println("Current record: "+m_iCurrentRecord+" tris: "+triangleQuantity);
+    for (int j = 0; j < triangleQuantity; j++) {
+      System.err.println(j+". tri: " + vertex[indices[j*3]] + "," + vertex[indices[j*3+1]] + "," + vertex[indices[j*3+2]]);
+    }
     updateColorBuffer();
     updateNormalBuffer();
     updateVertexBuffer();

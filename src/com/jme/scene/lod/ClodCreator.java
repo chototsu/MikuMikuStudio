@@ -76,7 +76,7 @@ public class ClodCreator extends VETMesh {
     m_iTCurrent = m_iTQuantity - 1;
     m_aiVOrdered = new int[vertices.length];
     m_aiVPermute = new int[vertices.length];
-    m_aiNewConnect = new int[3*m_iTQuantity];
+    m_aiNewConnect = new int[indices.length];
 
     m_kEDelete = new Vector();
     m_kVDelete = new TreeSet();
@@ -96,9 +96,6 @@ public class ClodCreator extends VETMesh {
 //          *(int*)getData(kT) = i;
     }
 
-    m_iTQuantity = m_kTMap.size();
-    m_iTCurrent = m_iTQuantity - 1;
-
     if (!( (m_kVMap.size()) == m_akVertex.length)) throw new AssertionError();
     if (! ( (m_kTMap.size()) == m_iTQuantity))throw new AssertionError(
         "triangle map size: " + m_kTMap.size() + " != m_iTQuantity: " +
@@ -107,7 +104,7 @@ public class ClodCreator extends VETMesh {
     initializeHeap();
 
     m_bCollapsing = true;
-//    System.err.println("m_iHQuantity: "+m_iHQuantity);
+    System.err.println("m_iHQuantity: "+m_iHQuantity);
     while (m_iHQuantity > 0) {
       if (m_apkHeap[0].m_fMetric == Float.MAX_VALUE) {
         // all remaining heap elements have infinite weight
@@ -135,6 +132,16 @@ public class ClodCreator extends VETMesh {
     // The collapse records store the incremental changes that are used for
     // dynamic LOD changes in the caller of this constructor.
     rakCRecord = computeRecords();
+
+    for (int x = 0; x < rakCRecord.length; x++) {
+      System.err.println("***** record: "+x);
+      System.err.println("keep: "+rakCRecord[x].vertToKeep);
+      System.err.println("throw: "+rakCRecord[x].vertToThrow);
+      System.err.println("indices: "+rakCRecord[x].indices);
+      System.err.println("tris: "+rakCRecord[x].m_iTQuantity);
+      System.err.println("inds: "+rakCRecord[x].m_iIQuantity);
+      System.err.println("verts: "+rakCRecord[x].m_iVQuantity);
+    }
   }
 
   public CollapseRecord[] getRecords() {
@@ -525,7 +532,6 @@ public class ClodCreator extends VETMesh {
       rkRecord.m_iVQuantity = iVQuantity;
       rkRecord.m_iTQuantity = iTQuantity;
       rkRecord.m_iIQuantity = 0;
-      int iQuantity = 0;
 
       if (iTQuantity > 0) {
         int iIMax = 3 * iTQuantity;
@@ -533,7 +539,7 @@ public class ClodCreator extends VETMesh {
         for (i = 0; i < iIMax; i++) {
           if (m_aiConnect[i] == rkRecord.vertToThrow) {
             m_aiConnect[i] = rkRecord.vertToKeep;
-            aiIndex[iQuantity++] = i;
+            aiIndex[rkRecord.m_iIQuantity++] = i;
           }
         }
 
