@@ -13,6 +13,7 @@ import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
+import com.jme.input.action.AbstractInputAction;
 import com.jme.input.action.KeyExitAction;
 import com.jme.input.action.KeyToggleBoolean;
 import com.jme.input.action.KeyToggleRenderState;
@@ -32,9 +33,12 @@ import com.jme.system.JmeException;
 import com.jme.ui.UIBillboard;
 import com.jme.ui.UIButton;
 import com.jme.ui.UICheck;
+import com.jme.ui.UIText;
+import com.jme.ui.UIEditBox;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import jmetest.input.TestAbsoluteMouse;
+import com.jme.util.*;
 
 /**
  * @author schustej
@@ -86,6 +90,8 @@ public class TestUI extends BaseGame {
     UIButton _button = null;
     UICheck  _check = null;
     UIBillboard _bill = null;
+    UIText _text = null;
+    UIEditBox _edit = null;
 
     /*
      * used by a bunch of stuff
@@ -95,7 +101,6 @@ public class TestUI extends BaseGame {
     /**
      * initializes the display and camera.
      *
-     * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
 
@@ -314,7 +319,30 @@ public class TestUI extends BaseGame {
                 					100,
                 					300,
                 					0.5f);
+        
+        _text = new UIText( "text",
+                			"jmetest/data/font/conc_font.png",
+                			400,
+                			100,
+                			1.0f,
+                			50.0f,
+                			5.0f);
 
+        _text.setText( "Test some Text!");
+                
+        _edit = new UIEditBox( "edit",
+                				"jmetest/data/font/conc_font.png",
+                				100,
+                				20,
+                				input,
+                				400,
+                				200,
+                				1.0f,
+                				50.0f,
+                				5.0f);
+        //_edit.setActivateOnHover( false);
+        //_edit.setActive( true);
+        
         /*
          * Put everything together
          */
@@ -337,6 +365,8 @@ public class TestUI extends BaseGame {
         uiNode.attachChild( _button);
         uiNode.attachChild( _check);
         uiNode.attachChild( _bill);
+        uiNode.attachChild( _text);
+        uiNode.attachChild( _edit);
 
         /*
          * root Node
@@ -350,8 +380,8 @@ public class TestUI extends BaseGame {
          * Attach the mouse after the ui to make sure the mouse cursor is over
          * everything else
          */
-        rootNode.attachChild(uiNode);
         rootNode.attachChild(mouseNode);
+        rootNode.attachChild(uiNode);
 
         /*
          * Get it going via final updates
@@ -370,6 +400,21 @@ public class TestUI extends BaseGame {
 		input.addKeyboardAction( "toggle_lights", KeyInput.KEY_L, new KeyToggleRenderState( lightState, rootNode));
 		input.addKeyboardAction( "toggle_bounds", KeyInput.KEY_B, new KeyToggleBoolean( showBounds));
 
+		/*
+		 * tester for doing the bufferered reader
+		 */
+		
+		input.addBufferedKeyAction( new AbstractInputAction() {
+            public void performAction(float time) {
+                LoggingSystem.getLogger().log( java.util.logging.Level.FINE, this.key);
+            }
+        });
+		
+		/*
+		 * Set up logging filtering
+		 */
+		
+		LoggingSystem.getLogger().setLevel( java.util.logging.Level.SEVERE);
     }
 
     /**
@@ -392,13 +437,14 @@ public class TestUI extends BaseGame {
          */
         mouse.update();
         mouseText.print("Position: " + mouse.getLocalTranslation().x + " , " + mouse.getLocalTranslation().y);
-
+        
         /*
          * UI Object Updates, only need to call this for objects
          * that interact with the mouse
          */
         _button.update();
         _check.update();
+        _edit.update();
 
     }
 
