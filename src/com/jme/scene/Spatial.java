@@ -51,47 +51,59 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.45 2004-07-20 19:47:48 Mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.46 2004-07-31 17:54:27 cep21 Exp $
  */
 public abstract class Spatial implements Serializable {
-  //rotation matrices
+  /** Spatial's rotation relative to its parent. */
   protected Quaternion localRotation;
+  /** Spatial's world absolute rotation. */
   protected Quaternion worldRotation;
 
-  //translation vertex
+  /** Spatial's translation relative to its parent. */
   protected Vector3f localTranslation;
+  /** Spatial's world absolute translation. */
   protected Vector3f worldTranslation;
 
-  //scale values
+  /** Spatial's scale relative to its parent. */
   protected Vector3f localScale;
+  /** Spatial's world absolute scale. */
   protected Vector3f worldScale;
 
-  //flag to cull/show node
+  /** If true, spatial and all children are culled from the scene graph. */
   protected boolean forceCull;
+  /** If true, spatial and all children are always rendered in the scene graph. */
   protected boolean forceView;
 
-  //bounding volume of the world.
+  /** Spatial's bounding volume relative to the world. */
   protected BoundingVolume worldBound;
 
-  //reference to the parent node.
+  /** Spatial's parent, or null if it has none. */
   protected transient Node parent;
+  /** If true, spatial is a root node.  */
   protected boolean isRoot;
 
+
+  /** List of default states all spatials take if none is set. */
   public static RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
+  /** RenderStates a Spatial contains during rendering.  */
   protected static RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
 
-  //render states
+  /** The render states of this spatial. */
   protected RenderState[] renderStateList;
 
   protected int renderQueueMode = Renderer.QUEUE_INHERIT;
   protected int zOrder = 0;
   public transient float queueDistance = Float.NEGATIVE_INFINITY;
 
+  /** Flag signaling how lights are combined for this node.  By default set to INHERIT. */
   protected int lightCombineMode = LightState.INHERIT;
+  /** Flag signaling how textures are combined for this node.  By default set to INHERIT. */
   protected int textureCombineMode = TextureState.INHERIT;
 
+  /** ArrayList of controllers for this spatial. */
   protected ArrayList geometricalControllers = new ArrayList();
 
+  /** This spatial's name. */
   protected String name;
 
   //scale values
@@ -119,22 +131,43 @@ public abstract class Spatial implements Serializable {
     worldScale = new Vector3f(1.0f, 1.0f, 1.0f);
   }
 
+  /**
+   * Sets the name of this spatial.
+   * @param name The spatial's new name.
+   */
   public void setName(String name) {
     this.name = name;
   }
 
+  /**
+   * Sets if this spatial is a root spatial.
+   * @param value If true, flag this spatial as a root.
+   */
   public void setIsRoot(boolean value) {
     isRoot = value;
   }
 
-  public boolean isRoot(boolean value) {
+  /**
+   * Returns the flag value for this spatial's root settting.
+   * @return True if this spatial is flagged as a root.
+   */
+  public boolean isRoot() {
     return isRoot;
   }
 
+  /**
+   * Returns the name of this spatial.
+   * @return This spatial's name.
+   */
   public String getName() {
     return name;
   }
 
+  /**
+   * Adds a Controller to this Spatial's list of controllers.
+   * @param controller The Controller to add
+   * @see com.jme.scene.Controller
+   */
   public void addController(Controller controller) {
     if (geometricalControllers == null) {
       geometricalControllers = new ArrayList();
@@ -142,6 +175,12 @@ public abstract class Spatial implements Serializable {
     geometricalControllers.add(controller);
   }
 
+  /**
+   * Removes a Controller to this Spatial's list of controllers, if it exist.
+   * @param controller The Controller to remove
+   * @return True if the Controller was in the list to remove.
+   * @see com.jme.scene.Controller
+   */
   public boolean removeController(Controller controller) {
     if (geometricalControllers == null) {
       geometricalControllers = new ArrayList();
@@ -149,6 +188,12 @@ public abstract class Spatial implements Serializable {
     return geometricalControllers.remove(controller);
   }
 
+  /**
+   * Returns the controller in this list of controllers at index i.
+   * @param i The index to get a controller from.
+   * @return The controller at index i.
+   * @see com.jme.scene.Controller
+   */
   public Controller getController(int i) {
     if (geometricalControllers == null) {
       geometricalControllers = new ArrayList();
@@ -156,6 +201,10 @@ public abstract class Spatial implements Serializable {
     return (Controller) geometricalControllers.get(i);
   }
 
+  /**
+   * Returns the ArrayList that contains this spatial's Controllers.
+   * @return This spatial's geometricalControllers.
+   */
   public ArrayList getControllers() {
     if (geometricalControllers == null) {
       geometricalControllers = new ArrayList();
@@ -401,10 +450,19 @@ public abstract class Spatial implements Serializable {
    */
   public abstract void updateWorldBound();
 
+  /**
+   * Updates the render state values of this Spatial and
+   * and children it has.  Should be called whenever render states change.
+   */
   public void updateRenderState() {
     updateRenderState(null);
   }
 
+  /**
+   * Called internally.  Updates the render states of this Spatial.  The stack contains
+   * parent render states.
+   * @param parentStates The list of parent renderstates.
+   */
   protected void updateRenderState(Stack[] parentStates) {
     boolean initiator = (parentStates == null);
 
@@ -434,8 +492,19 @@ public abstract class Spatial implements Serializable {
 
   }
 
-  protected void applyRenderState(Stack[] states) {}
+  /**
+   * Called during updateRenderState(Stack[]), this function determines how the render
+   * states are actually applied to the spatial and any children it may have.  By default,
+   * this function does nothing.
+   * @param states An array of stacks for each state.
+   */
+  protected void applyRenderState(Stack[] states){}
 
+  /**
+   * Called during updateRenderState(Stack[]), this function goes up the scene graph tree
+   * until the parent is null and pushes RenderStates onto the states Stack array.
+   * @param states The Stack[] to push states onto.
+   */
   protected void propagateStatesFromRoot(Stack[] states) {
     // traverse to root to allow downward state propagation
     if (parent != null)
@@ -566,10 +635,19 @@ public abstract class Spatial implements Serializable {
     return oldState;
   }
 
+  /**
+   * Returns the array of RenerState that this Spatial currently has.
+   * @return This spatial's state array.
+   */
   public RenderState[] getRenderStateList() {
     return renderStateList;
   }
 
+  /**
+   * Clears a given render state index by setting it to 0.
+   * @param renderStateType The index of a RenderState to clear
+   * @see com.jme.scene.state.RenderState#getType()
+   */
   public void clearRenderState(int renderStateType) {
     renderStateList[renderStateType] = null;
   }
@@ -595,10 +673,25 @@ public abstract class Spatial implements Serializable {
     return zOrder;
   }
 
+  /**
+   * Sets how lights from parents should be combined for this spatial.
+   * @param lightCombineMode The light combine mode for this spatial
+   * @see com.jme.scene.state.LightState#COMBINE_CLOSEST
+   * @see com.jme.scene.state.LightState#COMBINE_FIRST
+   * @see com.jme.scene.state.LightState#COMBINE_RECENT_ENABLED
+   * @see com.jme.scene.state.LightState#INHERIT
+   * @see com.jme.scene.state.LightState#OFF
+   * @see com.jme.scene.state.LightState#REPLACE
+   */
   public void setLightCombineMode(int lightCombineMode) {
     this.lightCombineMode = lightCombineMode;
   }
 
+  /**
+   * Returns this spatial's light combine mode.  If the mode is set to inherit,
+   * then the spatial gets its combine mode from its parent.
+   * @return The spatial's light current combine mode.
+   */
   public int getLightCombineMode() {
     if (lightCombineMode != LightState.INHERIT)
       return lightCombineMode;
@@ -608,10 +701,25 @@ public abstract class Spatial implements Serializable {
       return LightState.COMBINE_FIRST;
   }
 
+  /**
+   * Sets how textures from parents should be combined for this Spatial.
+   * @param textureCombineMode The new texture combine mode for this spatial.
+   * @see com.jme.scene.state.TextureState#COMBINE_CLOSEST
+   * @see com.jme.scene.state.TextureState#COMBINE_FIRST
+   * @see com.jme.scene.state.TextureState#COMBINE_RECENT_ENABLED
+   * @see com.jme.scene.state.TextureState#INHERIT
+   * @see com.jme.scene.state.TextureState#OFF
+   * @see com.jme.scene.state.TextureState#REPLACE
+   */
   public void setTextureCombineMode(int textureCombineMode) {
     this.textureCombineMode = textureCombineMode;
   }
 
+  /**
+   * Returns this spatial's texture combine mode.  If the mode is set to inherit,
+   * then the spatial gets its combine mode from its parent.
+   * @return The spatial's texture current combine mode.
+   */
   public int getTextureCombineMode() {
     if (textureCombineMode != TextureState.INHERIT)
       return textureCombineMode;
@@ -627,7 +735,7 @@ public abstract class Spatial implements Serializable {
   }
 
   /**
-   * applyDefaultStates
+   * All non null default states are applied to the renderer.
    */
   public static void applyDefaultStates() {
     for (int i = 0; i < defaultStateList.length; i++) {
