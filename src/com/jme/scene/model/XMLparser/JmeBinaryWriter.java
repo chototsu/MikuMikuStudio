@@ -738,6 +738,7 @@ public class JmeBinaryWriter {
         if (sharedObjects.containsKey(jc))
             atts.put("sharedident",sharedObjects.get(jc));
         atts.put("numJoints",new Integer(jc.numJoints));
+        atts.put("fps",new Float(jc.FPS));
         writeTag("jointcontroller",atts);
         Object[] o=jc.movementInfo.toArray();
         Vector3f tempV=new Vector3f();
