@@ -24,7 +24,6 @@
 package jmetest.effects;
 
 import com.jme.app.VariableTimestepGame;
-//import com.jme.effects.MotionBlur;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -56,26 +55,20 @@ public class TestMotionBlur extends VariableTimestepGame {
 
 	private TextureRenderer tRenderer;
 	private Texture fakeTex;
-	private TextureState blurTS;
 
 	protected void update(float timeD) {
 		float time = timeD * 10;
 		input.update(time);
-		
+
 		tRenderer.updateCamera();
-		tRenderer.render(sceneNode, fakeTex);
+		tRenderer.render(rootNode, fakeTex);
 
 		rootNode.updateGeometricState(time, false);
 	}
 
 	protected void render(float timeD) {
 		display.getRenderer().clearBuffers();
-
-		display.getRenderer().draw(sceneNode);
-
-		display.getRenderer().setOrthoCenter();
-		display.getRenderer().draw(blurNode);
-		display.getRenderer().unsetOrtho();
+		display.getRenderer().draw(rootNode);
 	}
 
 	protected void initSystem() {
@@ -96,7 +89,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 		display.getRenderer().setBackgroundColor(ColorRGBA.black);
 
 		cam.setFrustum(1f, 1000f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-		Vector3f loc = new Vector3f(0, 0, 75);
+		Vector3f loc = new Vector3f(0, 0, 25);
 		Vector3f left = new Vector3f(-1, 0, 0);
 		Vector3f up = new Vector3f(0, 1, 0);
 		Vector3f dir = new Vector3f(0, 0, -1);
@@ -106,15 +99,22 @@ public class TestMotionBlur extends VariableTimestepGame {
 
 		input = new FirstPersonHandler(this, cam, properties.getRenderer());
 		input.setMouseSpeed(0.5f);
-
+		input.setKeySpeed(2f);
 	}
 	protected void initGame() {
 		// init nodes
 		rootNode = new Node("Root Node");
-		sceneNode = new Node("Scene Node");
-		blurNode = new Node("BlurNode");
+		sceneNode = new Node("SceneNode");
+		blurNode = new Node("Blur Node");
+		
+		// set render queues
+		//blurNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
-		// init states
+		// alpha state for the quad
+		AlphaState as = display.getRenderer().getAlphaState();
+		as.setBlendEnabled(true);
+		as.setEnabled(true);
+
 		TextureState ts = display.getRenderer().getTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(TextureManager
@@ -123,19 +123,7 @@ public class TestMotionBlur extends VariableTimestepGame {
 						Texture.MM_LINEAR,
 						Texture.FM_LINEAR,
 						true));
-
-		AlphaState as = display.getRenderer().getAlphaState();
-		as.setBlendEnabled(true);
-		as.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-		as.setDstFunction(AlphaState.DB_ONE);
-		as.setTestEnabled(true);
-		as.setTestFunction(AlphaState.TF_GREATER);
-		as.setEnabled(true);
 		
-		ZBufferState zEnabled = display.getRenderer().getZBufferState();
-		zEnabled.setEnabled(true);
-		zEnabled.setFunction(ZBufferState.CF_LEQUAL);
-
 		tRenderer = display.createTextureRenderer(512,
 				512,
 				false,
@@ -144,43 +132,35 @@ public class TestMotionBlur extends VariableTimestepGame {
 				false,
 				TextureRenderer.RENDER_TEXTURE_2D,
 				0);
-		tRenderer.setBackgroundColor(new ColorRGBA(1, 1, 1, 0.5f));
+		tRenderer.setBackgroundColor(ColorRGBA.white);
 		tRenderer.setCamera(cam);
 		tRenderer.updateCamera();
 		fakeTex = tRenderer.setupTexture();
-		/*
-		 * MotionBlur mb = new MotionBlur(); mb.setBlurValue(0.5f); fakeTex =
-		 * new Texture(); fakeTex.setApply(Texture.AM_MODULATE);
-		 * fakeTex.setBlendColor(new ColorRGBA(1, 1, 1, 1));
-		 * fakeTex.setCorrection(Texture.CM_PERSPECTIVE);
-		 * fakeTex.setFilter(Texture.MM_LINEAR); fakeTex.setImage(mb);
-		 * fakeTex.setMipmapState(Texture.FM_LINEAR); fakeTex.setTextureId(0);
-		 */
 
-		blurTS = display.getRenderer().getTextureState();
-		blurTS.setEnabled(true);
+		TextureState blurTS = display.getRenderer().getTextureState();
 		blurTS.setTexture(fakeTex);
+		blurTS.setEnabled(true);
 
-		// init scene
+		Quad quad = new Quad("Blur Quad", 10, 10);
+		quad.setSolidColor(new ColorRGBA(1, 1, 1, 0.55f));
+		quad.setRenderState(blurTS);
+		quad.setRenderState(as);
+
 		Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
 		Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
+		Box box = new Box("Scene", min.mult(5), max.mult(5));
+		box.setRenderState(ts);
 
-		Box b = new Box("Box", min.mult(5), max.mult(5));
-		b.setRenderState(ts);
+		blurNode.attachChild(quad);
+		sceneNode.attachChild(box);
 
-		// init blurnode
-		Quad q = new Quad("Quad", display.getWidth(), display.getHeight());
-		q.setRenderState(as);
-		q.setRenderState(blurTS);
+		ZBufferState zEnabled = display.getRenderer().getZBufferState();
+		zEnabled.setEnabled(true);
 
-		// attach to nodes
 		rootNode.setRenderState(zEnabled);
-		sceneNode.attachChild(b);
-		blurNode.attachChild(q);
 		rootNode.attachChild(sceneNode);
 		rootNode.attachChild(blurNode);
-
-		rootNode.updateGeometricState(0, true);
+		rootNode.updateGeometricState(0.0f, true);
 		rootNode.updateRenderState();
 	}
 
