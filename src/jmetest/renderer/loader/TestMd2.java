@@ -31,38 +31,25 @@
 package jmetest.renderer.loader;
 
 import com.jme.animation.VertexKeyframeController;
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.light.DirectionalLight;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
-import com.jme.scene.Node;
-import com.jme.scene.Text;
 import com.jme.scene.model.md2.Md2KeyframeSelector;
 import com.jme.scene.model.md2.Md2Model;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.WireframeState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
-import com.jme.app.SimpleGame;
 
 /**
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.13 2004-04-23 04:15:12 renanse Exp $
+ * @version $Id: TestMd2.java,v 1.14 2004-04-23 04:15:33 renanse Exp $
  */
 public class TestMd2 extends SimpleGame {
   TextureState ts = null;
@@ -107,7 +94,7 @@ public class TestMd2 extends SimpleGame {
         KeyInput.KEY_F1);
 
     display.setTitle("MD2 Animation");
-    cam.setLocation(new Vector3f(0,0,200));
+    cam.setLocation(new Vector3f(0, 0, 200));
     cam.update();
 
     input.setKeySpeed(50);
