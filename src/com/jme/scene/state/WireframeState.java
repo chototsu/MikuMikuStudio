@@ -35,10 +35,19 @@ package com.jme.scene.state;
  * <code>WireframeState</code> maintains whether a node and it's children
  * should be drawn in wireframe or solid fill. By default all nodes are
  * rendered solid.
+ * 
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.1 2003-10-13 18:30:08 mojomonkey Exp $
+ * @version $Id: WireframeState.java,v 1.2 2004-03-17 00:52:25 ericthered Exp $
  */
 public abstract class WireframeState extends RenderState {
+
+    public static final int WS_FRONT_AND_BACK = 0;
+    public static final int WS_FRONT = 1;
+    public static final int WS_BACK = 2;
+    
+    protected int face = WS_FRONT_AND_BACK;
+    protected float lineWidth = 1.0f;
+
     /**
      * <code>getType</code> returns the type of render state this is.
      * (RS_WIREFRAME).
@@ -48,5 +57,24 @@ public abstract class WireframeState extends RenderState {
         return RS_WIREFRAME;
     }
 
+    /**
+     * <code>setLineWidth</code> sets the width of lines the wireframe
+     * is drawn in. Attempting to set a line width smaller than 0.0
+     * throws an <code>IllegalArgumentException</code>.
+     * @param width the line width, in pixels
+     */
+    public void setLineWidth(float width){
+        if (width < 0.0f)
+            throw new IllegalArgumentException("Line width must be positive");
+        
+        lineWidth = width;
+    }
     
+    /**
+     * <code>setFace</code>
+     * @param face
+     */
+    public void setFace(int face){
+        this.face = face;
+    }
 }
