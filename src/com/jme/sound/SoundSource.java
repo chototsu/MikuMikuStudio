@@ -36,6 +36,8 @@
  */
 package com.jme.sound;
 
+import com.jme.math.Vector3f;
+
 /**
  * @author Arman Ozcelik
  *
@@ -65,6 +67,12 @@ public interface SoundSource {
 	public boolean isStopped();
 	
 	public void setNumberOfBuffers(int buffers);
+	
+	public Vector3f getPosition();
+	
+	public void setMaxVolume(float value);
+	
+	public void setVolume(float factor);
 	
 	
 

@@ -43,6 +43,7 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.openal.AL;
 
+import com.jme.math.Vector3f;
 import com.jme.sound.utils.StreamRepository;
 
 /**
@@ -56,9 +57,11 @@ public class LWJGLSource implements SoundSource {
 	private boolean paused, playing;
 	private BufferedPlayer player;
 	private int numberOfBuffers = 1;
+	private Vector3f position;
 
 	public LWJGLSource(int sourceNum) {
 		this.sourceNumber = sourceNum;
+		position = new Vector3f();
 		player = new BufferedPlayer();
 	}
 
@@ -69,6 +72,10 @@ public class LWJGLSource implements SoundSource {
 		return sourceNumber;
 	}
 
+	/**
+	 * sets the <code>SoundStream</code> that will be played by this source.
+	 * @param stream the stream to be played
+	 */
 	public void setStream(SoundStream stream) {
 		if (isPlaying() || isPaused()) {
 			stop();
@@ -77,31 +84,79 @@ public class LWJGLSource implements SoundSource {
 		this.stream = stream;
 	}
 
+	/**
+	 * @return the <code>SoundStream</code> is assigned to this source 
+	 */
 	public SoundStream getStream() {
 		return stream;
 	}
 
+	/**
+	 * Plays the sound that is identified by name.
+	 * If the sound type is mp3 the method checks if there are enough back buffers
+	 * for streaming. (At least 8)
+	 * If the sound type is wave then the number of buffers is set to 1.
+	 * @param name the sound name.
+	 */
 	public void play(String name) {
 		String file = StreamRepository.getInstance().getStream(name);
 		if (file.endsWith(".mp3")) {
+			if (numberOfBuffers < 8)
+				numberOfBuffers = 8;
 			setStream(new LWJGLMP3Stream(file));
 		}
 		if (file.endsWith(".wav")) {
+			setNumberOfBuffers(1);
 			setStream(new LWJGLWaveStream(file));
 		}
-
 		player = new BufferedPlayer();
 		player.start();
 		playing = true;
 		paused = false;
 	}
 
+	/**
+	 * Updates the position where the sound is played.
+	 * The values passed to the method will be put in a <code>Vector3f</code>
+	 * and normalized in order to fit with openAL default value ranges.
+	 * @param x the x position of the source
+	 * @param y the y position of the source
+	 * @param z the z position of the source
+	 */
 	public void updatePosition(float x, float y, float z) {
+		Vector3f newPos = new Vector3f(x, y, z);
+		updatePosition(newPos);
+	}
+
+	/**
+	* Updates the position where the sound is played.
+	* The vevtor passed to the method will be normalized in 
+	* order to fit with openAL default value ranges.
+	* @param pos the new position of the source
+	*/
+	public void updatePosition(Vector3f pos) {
+		position.x = pos.x;
+		position.y = pos.y;
+		position.z = pos.z;
+		float length = position.length();
 		if (isPlaying() && !isPaused()) {
-			AL.alSource3f(sourceNumber, AL.AL_POSITION, x, y, z);
+			AL.alSource3f(
+				sourceNumber,
+				AL.AL_POSITION,
+				position.x / length,
+				position.y / length,
+				position.z / length);
 		}
 	}
 
+	/**
+	 * @return The actual position ef the source.
+	 */
+	public Vector3f getPosition() {
+		return position;
+	}
+	
+	
 	public void updateVelocity(float x, float y, float z) {
 		if (isPlaying() && !isPaused()) {
 			AL.alSource3f(sourceNumber, AL.AL_VELOCITY, x, y, z);
@@ -137,6 +192,15 @@ public class LWJGLSource implements SoundSource {
 	public void setNumberOfBuffers(int buffs) {
 		numberOfBuffers = buffs;
 
+	}
+
+	public void setMaxVolume(float value) {
+		AL.alSourcef(sourceNumber, AL.AL_MAX_GAIN, value);
+
+	}
+
+	public void setVolume(float value) {
+		AL.alSourcef(sourceNumber, AL.AL_GAIN, value);
 	}
 
 	private class BufferedPlayer extends Thread {
