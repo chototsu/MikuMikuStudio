@@ -1,5 +1,6 @@
 package jmetest.renderer.loader;
 
+import com.jme.animation.KeyframeController;
 import com.jme.app.SimpleGame;
 import com.jme.scene.CloneCreator;
 import com.jme.scene.Node;
@@ -75,8 +76,11 @@ public class TestModelClones extends SimpleGame {
         for (int i=0;i<3;i++){
             Spatial s=cc.createCopy();
             s.setLocalTranslation(new Vector3f(3*i,4*(i+1),i));
-            Md2ToJme.findController((Node) s).setSpeed((i+1.0f)*4);
-            Md2ToJme.findController((Node) s).setModelUpdate(false);
+            KeyframeController controller = Md2ToJme.findController((Node) s);
+            if(controller != null) {
+                controller.setSpeed((i+1.0f)*4);
+                controller.setModelUpdate(false);
+            }
             s.setForceView(true);
             rootNode.attachChild(s);
         }
