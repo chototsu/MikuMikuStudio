@@ -33,6 +33,7 @@ package com.jme.input;
 
 import com.jme.app.AbstractGame;
 import com.jme.input.action.*;
+import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 
 /**
@@ -42,7 +43,7 @@ import com.jme.scene.Spatial;
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeHandler.java,v 1.2 2004-04-22 22:26:30 renanse Exp $
+ * @version $Id: NodeHandler.java,v 1.3 2004-05-12 20:50:43 mojomonkey Exp $
  */
 public class NodeHandler extends InputHandler {
 
@@ -98,7 +99,9 @@ public class NodeHandler extends InputHandler {
         setMouse(mouse);
 
         NodeMouseLook mouseLook = new NodeMouseLook(mouse, node, 0.1f);
-        mouseLook.setLockAxis(node.getLocalRotation().getRotationColumn(1));
+        mouseLook.setLockAxis(new Vector3f(node.getLocalRotation().getRotationColumn(1).x,
+                node.getLocalRotation().getRotationColumn(1).y,
+                node.getLocalRotation().getRotationColumn(1).z));
         addAction(mouseLook);
     }
 
