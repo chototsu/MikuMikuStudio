@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.18 2004-03-08 23:42:42 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.19 2004-03-09 00:06:22 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
     private float radius;
@@ -239,7 +239,7 @@ public class BoundingSphere implements BoundingVolume {
 
         if (distance <= -radius) {
             return Plane.NEGATIVE_SIDE;
-        } else if (distance >= radius) {
+        } else if (distance > radius) {
             return Plane.POSITIVE_SIDE;
         } else {
             return Plane.NO_SIDE;

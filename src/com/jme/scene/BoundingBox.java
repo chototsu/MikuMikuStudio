@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.5 2004-03-08 23:42:41 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.6 2004-03-09 00:06:22 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -187,7 +187,7 @@ public class BoundingBox extends Box implements BoundingVolume {
 
         if (distance <= -radius) {
             return Plane.NEGATIVE_SIDE;
-        } else if (distance >= radius) {
+        } else if (distance > radius) {
             return Plane.POSITIVE_SIDE;
         } else {
             return Plane.NO_SIDE;
