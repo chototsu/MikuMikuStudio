@@ -6,7 +6,6 @@ import org.xml.sax.SAXException;
 import java.util.Stack;
 import java.util.Hashtable;
 import java.util.HashMap;
-import java.util.logging.Logger;
 import java.util.logging.Level;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -23,7 +22,6 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Quaternion;
 import com.jme.bounding.BoundingBox;
-import com.jme.bounding.BoundingSphere;
 import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
@@ -121,6 +119,16 @@ class SAXStackProcessor {
             s.push(new Integer(atts.getValue("index")));
         } else if (qName.equals("jointmesh")){
             s.push(processSpatial(new JointMesh(atts.getValue("name")),atts));
+        } else if (qName.equals("keyframecontroller")){
+            KeyframeController kc=new KeyframeController();
+            kc.setActive(true);
+            TriMesh parentMesh=(TriMesh) s.pop();
+            kc.setMorphingMesh(parentMesh);
+            s.push(parentMesh);
+            s.push(kc);
+        } else if (qName.equals("keyframepointintime")){
+            s.push(atts.getValue("time"));  // Store the current time on the stack
+            s.push(new EmptyTriMesh());
         } else{
             throw new SAXException("Illegale Qualified name: " + qName);
         }
@@ -159,7 +167,7 @@ class SAXStackProcessor {
             parentSpatial.setRenderState(childMaterial);
             s.push(parentSpatial);
         } else if (qName.equals("mesh") || qName.equals("jointmesh")){
-            TriMesh childMesh=(TriMesh) s.pop();
+            Geometry childMesh=(Geometry) s.pop();
             if (childMesh.getModelBound()==null){
                 childMesh.setModelBound(new BoundingBox());
                 childMesh.updateModelBound();
@@ -235,6 +243,7 @@ class SAXStackProcessor {
                     jc.addJointMesh((JointMesh) parentNode.getChild(i));
             }
             jc.processController();
+            jc.setActive(false);
             parentNode.addController(jc);
             s.push(parentNode);
         } else if (qName.equals("joint")){
@@ -251,6 +260,17 @@ class SAXStackProcessor {
             JointMesh jm=(JointMesh) s.pop();
             jm.originalNormal=createVector3f(data);
             s.push(jm);
+        } else if (qName.equals("keyframecontroller")){
+            KeyframeController kc=(KeyframeController) s.pop();
+            TriMesh parentMesh=(TriMesh) s.pop();
+            parentMesh.addController(kc);
+            s.push(parentMesh);
+        } else if (qName.equals("keyframepointintime")){
+            TriMesh parentMesh=(TriMesh) s.pop();
+            float time=Float.parseFloat((String) s.pop());
+            KeyframeController kc=(KeyframeController)s.pop();
+            kc.setKeyframe(time,parentMesh);
+            s.push(kc);
         } else {
             throw new SAXException("Illegale Qualified name: " + qName);
         }
