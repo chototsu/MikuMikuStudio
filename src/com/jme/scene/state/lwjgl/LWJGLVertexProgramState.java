@@ -31,7 +31,6 @@
 package com.jme.scene.state.lwjgl;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.io.InputStream;
 
 import java.nio.ByteBuffer;
@@ -51,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLVertexProgramState</code>
  *
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.6 2004-04-22 22:26:59 renanse Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.7 2004-04-25 03:05:43 mojomonkey Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 
