@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.6 2004-03-09 03:26:23 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.7 2004-03-17 16:15:51 renanse Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -80,7 +80,7 @@ public class TestCollision extends SimpleGame {
     private float t2Inc = -10.0f;
 
     /**
-     * Entry point for the test, 
+     * Entry point for the test,
      * @param args
      */
     public static void main(String[] args) {
@@ -101,7 +101,9 @@ public class TestCollision extends SimpleGame {
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
-        if (timer.getTimePerFrame() < 1) {
+      timer.update();
+      input.update(timer.getTimePerFrame());
+      if (timer.getTimePerFrame() < 1) {
             angle = angle + (timer.getTimePerFrame() * 1);
             if (angle > 360) {
                 angle = 0;
@@ -109,14 +111,12 @@ public class TestCollision extends SimpleGame {
         }
 
         rotQuat.fromAngleAxis(angle, axis);
-        timer.update();
-        input.update(timer.getTimePerFrame());
 
         t.setLocalRotation(rotQuat);
-        
+
         t.getLocalTranslation().y += tInc * timer.getTimePerFrame();
         t2.getLocalTranslation().x += t2Inc * timer.getTimePerFrame();
-        
+
         if(t.getLocalTranslation().y > 40) {
             t.getLocalTranslation().y = 40;
             tInc *= -1;
@@ -124,7 +124,7 @@ public class TestCollision extends SimpleGame {
             t.getLocalTranslation().y = -40;
             tInc *= -1;
         }
-        
+
         if(t2.getLocalTranslation().x > 40) {
             t2.getLocalTranslation().x = 40;
             t2Inc *= -1;
@@ -132,22 +132,22 @@ public class TestCollision extends SimpleGame {
             t2.getLocalTranslation().x = -40;
             t2Inc *= -1;
         }
-        
+
         CollisionResults results = new CollisionResults();
-        
+
         CollisionDetection.hasCollision(t, scene, results);
-        
+
         if(results.getNumber() > 0) {
             text.print("Collision: YES");
         } else {
             text.print("Collision: NO");
         }
-        
+
         scene.updateGeometricState(0.0f, true);
-    
+
     }
 
-    /** 
+    /**
      * clears the buffers and then draws the TriMesh.
      * @see com.jme.app.SimpleGame#render()
      */
@@ -202,7 +202,7 @@ public class TestCollision extends SimpleGame {
 
     }
 
-    /** 
+    /**
      * builds the trimesh.
      * @see com.jme.app.SimpleGame#initGame()
      */
@@ -218,7 +218,7 @@ public class TestCollision extends SimpleGame {
                 Texture.FM_LINEAR,
                 true));
         text.setRenderState(textImage);
-        
+
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -239,7 +239,7 @@ public class TestCollision extends SimpleGame {
         t.updateModelBound();
 
         t.setLocalTranslation(new Vector3f(0, 30, 0));
-        
+
         t2 = new Box("Box 2", min, max);
         t2.setModelBound(new BoundingBox());
         t2.updateModelBound();
@@ -277,7 +277,7 @@ public class TestCollision extends SimpleGame {
         root.attachChild(text);
 
         scene.updateGeometricState(0.0f, true);
-        
+
     }
     /**
      * not used.
@@ -287,7 +287,7 @@ public class TestCollision extends SimpleGame {
 
     }
 
-    /** 
+    /**
      * Not used.
      * @see com.jme.app.SimpleGame#cleanup()
      */
