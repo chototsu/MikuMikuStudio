@@ -46,6 +46,7 @@ public class TestBinaryXML extends SimpleGame{
 
         // Send jME binary to a jME Scene Graph
         JmeBinaryReader jbr=new JmeBinaryReader();
+        jbr.setProperty("texclasspath","jmetest/data/images/");
         Node fileScene=jbr.loadBinaryFormat(new ByteArrayInputStream(BO1.toByteArray()));
 
         // Send a jME SceneGraph to jME Binary
