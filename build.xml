@@ -20,7 +20,7 @@
 
   <target name="compile" depends="init" description="generate jme classes">
     <mkdir dir="${class}"/>
-    <javac srcdir="${src}/jme" destdir="${class}" classpath="${seg}/lib/lwjgl.jar" listfiles="yes"/>
+    <javac srcdir="${src}/jme" destdir="${class}" classpath="${seg}/lib/lwjgl.jar" listfiles="no"/>
   </target>
 <!-- ************************************************************************* -->		
 
@@ -28,9 +28,8 @@
     <java fork="true" jvmargs="-Djava.library.path=${seg}/lib/" classname="test.general.TestMain" classpath="${seg}/lib/lwjgl.jar:${class}"/>
  </target>
 
-  <target name="dist" depends="init" description="generate jme package" >
-    <javac srcdir="${src}/jme" destdir="${seg}/target" classpath="${seg}/lib/lwjgl.jar" listfiles="yes"/>
-    <jar jarfile="${class}/jme.jar"  basedir="${src}" update="no" includes="contours/**/*.class" compress="false"/>
+  <target name="dist" depends="compile" description="generate jme package" >
+    <jar jarfile="${seg}/target/jme.jar"  basedir="${class}" update="no" compress="false"/>
   </target>
 
 <!-- java doc ************************************************************************* -->		
