@@ -39,16 +39,16 @@ package com.jme.scene.state;
  * not shown when the model is rendered.  Instead, the side will be transparent.
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: CullState.java,v 1.4 2004-08-28 20:33:41 cep21 Exp $
+ * @version $Id: CullState.java,v 1.5 2005-03-06 23:33:54 Mojomonkey Exp $
  */
 public abstract class CullState extends RenderState {
 
     /** No sides of the model's triangles are culled.  This is default. */
     public static final int CS_NONE = 0;
-    /** Only the front sides are shown. */
+    /** Cull the front sides. */
     public static final int CS_FRONT = 1;
-    /** Only the back sides are shown. */
-    public static final int CS_BACK = 3;
+    /** Cull the back sides. */
+    public static final int CS_BACK = 2;
 
     private int cullMode;
 
