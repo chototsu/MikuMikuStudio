@@ -33,6 +33,8 @@ package com.jme.widget;
 
 import java.util.Observer;
 
+import com.jme.input.InputControllerAbstract;
+import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -40,7 +42,6 @@ import com.jme.scene.Spatial;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.bounds.WidgetBoundingRectangle;
 import com.jme.widget.bounds.WidgetViewport;
-import com.jme.widget.input.mouse.*;
 import com.jme.widget.util.WidgetNotifier;
 
 /**
@@ -86,7 +87,8 @@ public class WidgetImpl extends Spatial implements Widget {
     private boolean applyOffsetX = true;
     private boolean applyOffsetY = true;
 
-    private static WidgetMouseStateAbstract mouseState;
+    //private static WidgetMouseStateAbstract mouseState;
+    private static InputControllerAbstract inputController;
 
     private static Widget mouseOwner;
 
@@ -108,13 +110,18 @@ public class WidgetImpl extends Spatial implements Widget {
         updateWorldBound();
     }
 
-    public static WidgetMouseStateAbstract getMouseState() {
-        return WidgetImpl.mouseState;
+    public MouseInput getMouseInput() {
+        return inputController.getMouse().getMouseInput();
     }
 
-    public static void setMouseState(WidgetMouseStateAbstract state) {
-        WidgetImpl.mouseState = state;
+    public InputControllerAbstract getInputController() {
+        return inputController;
     }
+
+    public void setInputController(InputControllerAbstract controller) {
+        inputController = controller;
+    }
+
 
     public Widget getMouseOwner() {
         return WidgetImpl.mouseOwner;
@@ -355,9 +362,10 @@ public class WidgetImpl extends Spatial implements Widget {
         else if (mouseOwner != null && (mouseOwner != getParent() && mouseOwner.getZOrder() > zOrder))
             return false;
 
-        WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
+        //WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
+        MouseInput mi = getMouseInput();
 
-        return getViewport().inside(mouseState.x, mouseState.y);
+        return getViewport().inside(mi.getXAbsolute(), mi.getYAbsolute());
     }
 
     public WidgetAlignmentType getAlignment() {
@@ -407,16 +415,16 @@ public class WidgetImpl extends Spatial implements Widget {
             } else if (getAlignment() == WidgetAlignmentType.ALIGN_SOUTH) {
                 alignCenter(size, insets);
                 alignSouth(size, insets);
-            } else if (getAlignment() == WidgetAlignmentType.ALIGN_NW) {
+            } else if (getAlignment() == WidgetAlignmentType.ALIGN_NORTHWEST) {
                 alignNorth(size, insets);
                 alignWest(size, insets);
-            } else if (getAlignment() == WidgetAlignmentType.ALIGN_SW) {
+            } else if (getAlignment() == WidgetAlignmentType.ALIGN_SOUTHWEST) {
                 alignSouth(size, insets);
                 alignWest(size, insets);
-            } else if (getAlignment() == WidgetAlignmentType.ALIGN_NE) {
+            } else if (getAlignment() == WidgetAlignmentType.ALIGN_NORTHEAST) {
                 alignNorth(size, insets);
                 alignEast(size, insets);
-            } else if (getAlignment() == WidgetAlignmentType.ALIGN_SE) {
+            } else if (getAlignment() == WidgetAlignmentType.ALIGN_SOUTHEAST) {
                 alignSouth(size, insets);
                 alignEast(size, insets);
             }

@@ -34,6 +34,8 @@ package com.jme.widget;
 import java.util.Observer;
 import java.util.logging.Level;
 
+import com.jme.input.InputControllerAbstract;
+import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BoundingVolume;
@@ -246,6 +248,28 @@ public abstract class WidgetContainerAbstract extends Node implements Widget {
 
     public void setMouseOwner(Widget widget) {
         widgetImpl.setMouseOwner(widget);
+    }
+
+    /**
+     * @see com.jme.widget.Widget#getMouseInput()
+     */
+    public MouseInput getMouseInput() {
+        return widgetImpl.getMouseInput();
+    }
+
+    /**
+     * @see com.jme.widget.Widget#getInputController()
+     */
+    public InputControllerAbstract getInputController() {
+        return widgetImpl.getInputController();
+    }
+
+    /** 
+     * @see com.jme.widget.Widget#setInputController(com.jme.input.InputController)
+     */
+    public void setInputController(InputControllerAbstract controller) {
+        widgetImpl.setInputController(controller);
+        
     }
 
     public void handleMouseButtonDown() {

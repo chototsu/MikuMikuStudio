@@ -35,6 +35,8 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 
+import com.jme.input.InputControllerAbstract;
+import com.jme.input.MouseInput;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -42,7 +44,7 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 import com.jme.widget.bounds.WidgetViewport;
 import com.jme.widget.font.WidgetFontManager;
-import com.jme.widget.input.mouse.*;
+import com.jme.widget.input.mouse.WidgetMouseButtonType;
 import com.jme.widget.util.WidgetFrameRate;
 
 /**
@@ -57,7 +59,7 @@ public abstract class WidgetFrameAbstract extends WidgetContainerAbstract implem
     private static WidgetFrameRate frameRate;
     private static DisplaySystem displaySystem;
 
-    public WidgetFrameAbstract(DisplaySystem ds, WidgetMouseStateAbstract mouseState, Timer timer) {
+    public WidgetFrameAbstract(DisplaySystem ds, InputControllerAbstract ic, Timer timer) {
         super();
 
         displaySystem = ds;
@@ -66,8 +68,8 @@ public abstract class WidgetFrameAbstract extends WidgetContainerAbstract implem
 
         frameRate = new WidgetFrameRate(timer);
 
-        WidgetImpl.setMouseState(mouseState);
-
+        setInputController(ic);
+        
         init();
     }
 
@@ -105,8 +107,6 @@ public abstract class WidgetFrameAbstract extends WidgetContainerAbstract implem
 
     public void init() {
 
-        WidgetImpl.getMouseState().init();
-
         WidgetFontManager.init(displaySystem);
 
         setViewport(new WidgetViewport(0, 0, displaySystem.getWidth(), displaySystem.getHeight()));
@@ -118,24 +118,47 @@ public abstract class WidgetFrameAbstract extends WidgetContainerAbstract implem
     }
 
     public static void destroy() {
-        WidgetImpl.getMouseState().destroy();
     }
 
     public void update(Observable o, Object arg) {
     }
 
-    public void handleKeyboard() {
+
+    public void handleInput() {
+        handleInput(true, 0);
+    }
+    
+    public void handleInput(boolean updateController) {
+        handleInput(updateController, 0);
+    }
+            
+    public void handleInput(float time) {
+        handleInput(true, time);
+    }
+    
+    public void handleInput(boolean updateController, float time) {
+        
+        if (updateController) {
+            getInputController().update(time);
+        }
+        
+        handleMouse();
+        handleKeyboard();
+    }
+
+    protected void handleKeyboard() {
         //super.handleKeyboard();
     }
 
-    public void handleMouse() {
-        WidgetMouseStateAbstract mouseState = WidgetImpl.getMouseState();
+    protected void handleMouse() {
+        MouseInput mi = getMouseInput();
 
-        mouseState.setState();
+        WidgetMouseButtonType buttonType = mi.getButtonState();
+        WidgetMouseButtonType lastButtonType = mi.getPreviousButtonState();
 
-        if (mouseState.lastButtonType != mouseState.buttonType) {
+        if (lastButtonType != buttonType) {
 
-            if (mouseState.buttonType != null) {
+            if (buttonType != WidgetMouseButtonType.MOUSE_BUTTON_NONE) {
 
                 handleMouseButtonDown();
 
@@ -146,16 +169,16 @@ public abstract class WidgetFrameAbstract extends WidgetContainerAbstract implem
             }
         }
 
-        if (mouseState.buttonType == null && (mouseState.dx != 0 || mouseState.dy != 0)) {
+        if (buttonType == null && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
 
             handleMouseMove();
 
-        } else if (mouseState.buttonType != null && (mouseState.dx != 0 || mouseState.dy != 0)) {
+        } else if (buttonType != null && (mi.getXDelta() != 0 || mi.getYDelta() != 0)) {
 
             handleMouseDrag();
         }
 
-        mouseState.lastButtonType = mouseState.buttonType;
+        lastButtonType = buttonType;
     }
 
     public void doMouseButtonDown() {
@@ -175,7 +198,7 @@ public abstract class WidgetFrameAbstract extends WidgetContainerAbstract implem
         Widget mouseOwner = getMouseOwner();
 
         if (mouseOwner != null && mouseOwner != this) {
-            mouseOwner.doMouseButtonDown();
+            mouseOwner.doMouseButtonUp();
         }
     }
 
