@@ -50,7 +50,7 @@ import com.jme.scene.Spatial;
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.3 2004-04-16 17:12:52 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.4 2004-04-16 17:50:28 renanse Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.
@@ -249,8 +249,8 @@ public class LWJGLLightState extends LightState {
 
       // accumulate the lights in the stack into a single LightState object
       LWJGLLightState newLState = new LWJGLLightState();
-      newLState.setEnabled(true);
       Object states[] = stack.toArray();
+      boolean foundEnabled = false;
       switch (mode) {
         case COMBINE_CLOSEST:
         case COMBINE_RECENT_ENABLED:
@@ -259,7 +259,7 @@ public class LWJGLLightState extends LightState {
             if (!pkLState.isEnabled()) {
               if (mode == COMBINE_RECENT_ENABLED) break;
               else continue;
-            }
+            } else foundEnabled = true;
             if (pkLState.twoSidedOn) newLState.setTwoSidedLighting(true);
             for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
               Light pkLight = pkLState.get(i);
@@ -273,6 +273,7 @@ public class LWJGLLightState extends LightState {
           for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
             LWJGLLightState pkLState = (LWJGLLightState) states[iIndex];
             if (!pkLState.isEnabled()) continue;
+            else foundEnabled = true;
             if (pkLState.twoSidedOn) newLState.setTwoSidedLighting(true);
             for (int i = 0, maxL = pkLState.getQuantity(); i < maxL; i++) {
               Light pkLight = pkLState.get(i);
@@ -283,6 +284,7 @@ public class LWJGLLightState extends LightState {
           }
           break;
       }
+      newLState.setEnabled(foundEnabled);
       return newLState;
     }
 }

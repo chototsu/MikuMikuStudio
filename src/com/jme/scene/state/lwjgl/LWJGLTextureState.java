@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.3 2004-04-16 17:12:53 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.4 2004-04-16 17:50:28 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.
@@ -331,7 +331,7 @@ public class LWJGLTextureState extends TextureState {
 
       // accumulate the lights in the stack into a single LightState object
       LWJGLTextureState newTState = new LWJGLTextureState();
-      newTState.setEnabled(true);
+      boolean foundEnabled = false;
       Object states[] = stack.toArray();
       switch (mode) {
         case COMBINE_CLOSEST:
@@ -341,7 +341,7 @@ public class LWJGLTextureState extends TextureState {
             if (!pkTState.isEnabled()) {
               if (mode == COMBINE_RECENT_ENABLED) break;
               else continue;
-            }
+            } else foundEnabled = true;
             for (int i = 0, maxT = pkTState.getNumberOfUnits(); i < maxT; i++) {
               Texture pkText = pkTState.getTexture(i);
               if (newTState.getTexture(i) == null) {
@@ -354,6 +354,7 @@ public class LWJGLTextureState extends TextureState {
           for (int iIndex = 0, max = states.length; iIndex < max; iIndex++) {
             TextureState pkTState = (TextureState) states[iIndex];
             if (!pkTState.isEnabled()) continue;
+            else foundEnabled = true;
             for (int i = 0, maxT = pkTState.getNumberOfUnits(); i < maxT; i++) {
               Texture pkText = pkTState.getTexture(i);
               if (newTState.getTexture(i) == null) {
@@ -363,6 +364,7 @@ public class LWJGLTextureState extends TextureState {
           }
           break;
       }
+      newTState.setEnabled(foundEnabled);
       return newTState;
     }
 }
