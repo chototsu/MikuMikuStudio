@@ -418,4 +418,17 @@ public class TransformMatrix {
         spatial.setLocalScale(scale);
     }
 
+    /**
+     * Combines this TransformMatrix with a parent TransformMatrix.
+     * @param parent The parent matrix.
+     * @return This matrix, after it has been updated by it's parent.
+     */
+    public TransformMatrix combineWithParent(TransformMatrix parent){
+        this.scale.multLocal(parent.scale);
+        this.rot.multLocal(parent.rot);
+        parent.rot.multLocal(this.translation).multLocal(parent.scale).addLocal(parent.translation);
+        return this;
+
+    }
+
 }
