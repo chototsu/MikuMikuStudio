@@ -9,7 +9,6 @@ import com.jme.scene.model.EmptyTriMesh;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
-import com.jme.effects.transients.FadeInOut;
 
 import java.io.*;
 import java.util.Random;
