@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.1 2003-10-23 21:24:18 mojomonkey Exp $
+ * @version $Id: InputSystem.java,v 1.2 2003-10-26 17:48:56 mojomonkey Exp $
  */
 public class InputSystem {
     //the input devices.
@@ -85,7 +85,7 @@ public class InputSystem {
      * @return the mouse input device.
      */
     public static MouseInput getMouseInput() {
-        if (keyInput == null) {
+        if (mouseInput == null) {
             LoggingSystem.getLogger().log(
                 Level.WARNING,
                 "MouseInput is null,"
