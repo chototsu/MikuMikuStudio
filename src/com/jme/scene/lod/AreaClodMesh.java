@@ -51,7 +51,7 @@ import com.jme.system.DisplaySystem;
  * it to update itself.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: AreaClodMesh.java,v 1.12 2004-09-14 21:52:23 mojomonkey Exp $
+ * @version $Id: AreaClodMesh.java,v 1.13 2004-11-09 03:10:57 renanse Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   private static final long serialVersionUID = 1L;
@@ -113,7 +113,7 @@ private float trisPerPixel = 1f;
       int[] indices, CollapseRecord[] records) {
 
     super(name, vertices, normal, color, texture, indices, records);
-    
+
   }
 
   /**
@@ -129,7 +129,7 @@ private float trisPerPixel = 1f;
                                     "AreaClodMesh found with no Bounds.");
       return 0;
     }
-      
+
     if (records == null || records.length == 0) {
       LoggingSystem.getLogger().log(Level.WARNING,
                                     "Records was null.");
@@ -147,7 +147,7 @@ private float trisPerPixel = 1f;
     lastDistance = newDistance;
 
     // estimate area of polygon via bounding volume
-    float area = AreaUtils.calcScreenArea(getWorldBound(), lastDistance, DisplaySystem.getDisplaySystem().getWidth());
+    float area = AreaUtils.calcScreenArea(getWorldBound(), lastDistance, r.getWidth());
     float trisToDraw = area * trisPerPixel;
     targetRecord = records.length - 1;
     for (int i = records.length; --i >= 0; ) {
