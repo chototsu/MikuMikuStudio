@@ -1,10 +1,7 @@
 package com.jme.bounding;
 
 import com.jme.scene.shape.OrientedBox;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
-import com.jme.math.Plane;
-import com.jme.math.Matrix3f;
+import com.jme.math.*;
 
 /**
  * Started Date: Aug 24, 2004<br><br>
@@ -49,25 +46,14 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume{
     }
 
     public int whichSide(Plane plane) {
-        if (!correctCorners)
-            computeCorners();
-        boolean posSide=false;
-        boolean negSide=false;
-        for (int i=0;i<vectorStore.length;i++){
-            if (plane.pseudoDistance(vectorStore[i])<0){
-                if (posSide==true)
-                    return Plane.NO_SIDE;
-                negSide=true;
-            } else{
-                if (negSide==true)
-                    return Plane.NO_SIDE;
-                posSide=true;
-            }
-        }
-        if (posSide)
-            return Plane.POSITIVE_SIDE;
-        else
+        float fRadius=FastMath.abs(extent.x*(plane.getNormal().dot(xAxis)))+
+                FastMath.abs(extent.y*(plane.getNormal().dot(yAxis)))+
+                FastMath.abs(extent.z*(plane.getNormal().dot(zAxis)));
+        float fDistance=plane.pseudoDistance(center);
+        if (fDistance <=-fRadius)
             return Plane.NEGATIVE_SIDE;
+        else
+            return Plane.POSITIVE_SIDE;
     }
 
     public void computeFromPoints(Vector3f[] points) {
@@ -127,17 +113,54 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume{
 
     public BoundingVolume mergeLocal(BoundingVolume volume) {
         if (volume==null) return this;
-        OrientedBoundingBox mergeBox=(OrientedBoundingBox) volume;
-        if (!correctCorners) this.computeCorners();
-        if (!mergeBox.correctCorners) mergeBox.computeCorners();
-        Vector3f[] mergeArray=new Vector3f[16];
-        for (int i=0;i<vectorStore.length;i++){
-            mergeArray[i*2+0]=this    .vectorStore[i];
-            mergeArray[i*2+1]=mergeBox.vectorStore[i];
-        }
-        containAABB(mergeArray);
-        correctCorners=false;
-        return this;
+        if (volume instanceof OrientedBoundingBox){
+            OrientedBoundingBox mergeBox=(OrientedBoundingBox) volume;
+            if (!correctCorners) this.computeCorners();
+            if (!mergeBox.correctCorners) mergeBox.computeCorners();
+            Vector3f[] mergeArray=new Vector3f[16];
+            for (int i=0;i<vectorStore.length;i++){
+                mergeArray[i*2+0]=this    .vectorStore[i];
+                mergeArray[i*2+1]=mergeBox.vectorStore[i];
+            }
+            containAABB(mergeArray);
+            correctCorners=false;
+            return this;
+        } else if (volume instanceof BoundingBox){
+            BoundingBox mergeBox=(BoundingBox) volume;
+            if (!correctCorners) this.computeCorners();
+            Vector3f[] mergeArray=new Vector3f[16];
+            for (int i=0;i<vectorStore.length;i++){
+                mergeArray[i]=this    .vectorStore[i];
+            }
+            mergeArray[8]=new Vector3f(mergeBox.center).addLocal(
+                    mergeBox.xExtent, mergeBox.yExtent, mergeBox.zExtent
+            );
+            mergeArray[9]=new Vector3f(mergeBox.center).addLocal(
+                    -mergeBox.xExtent, mergeBox.yExtent, mergeBox.zExtent
+            );
+            mergeArray[10]=new Vector3f(mergeBox.center).addLocal(
+                    mergeBox.xExtent, -mergeBox.yExtent, mergeBox.zExtent
+            );
+            mergeArray[11]=new Vector3f(mergeBox.center).addLocal(
+                    mergeBox.xExtent, mergeBox.yExtent, -mergeBox.zExtent
+            );
+            mergeArray[12]=new Vector3f(mergeBox.center).addLocal(
+                    -mergeBox.xExtent, -mergeBox.yExtent, mergeBox.zExtent
+            );
+            mergeArray[13]=new Vector3f(mergeBox.center).addLocal(
+                    -mergeBox.xExtent, mergeBox.yExtent, -mergeBox.zExtent
+            );
+            mergeArray[14]=new Vector3f(mergeBox.center).addLocal(
+                    mergeBox.xExtent, -mergeBox.yExtent, -mergeBox.zExtent
+            );
+            mergeArray[15]=new Vector3f(mergeBox.center).addLocal(
+                    -mergeBox.xExtent, -mergeBox.yExtent, -mergeBox.zExtent
+            );            
+            containAABB(mergeArray);
+            correctCorners=false;
+            return this;
+        } else
+            return null;
     }
 
     public Object clone(BoundingVolume store) {
