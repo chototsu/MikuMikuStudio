@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.5 2004-04-22 22:26:29 renanse Exp $
+ * @version $Id: KeyBindingManager.java,v 1.6 2004-05-03 21:54:41 renanse Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -195,18 +195,18 @@ public class KeyBindingManager {
         int[] keycodes;
         boolean value = true;
 
-        for(int i = 0; i < keyList.size(); i++) {
+        for(int i = 0, max = keyList.size(); i < max; i++) {
             keycodes = ((KeyCodes)keyList.get(i)).keys;
             value = true;
 
-            for(int j = 0; j < keycodes.length; j++) {
+            for(int j = 0; value && j < keycodes.length; j++) {
               if (allowRepeats)
                 value = value && keyInput.isKeyDown(keycodes[j]);
               else
                 value = value && getStickyKey(keycodes[j]);
             }
 
-            if(value) {
+            if (value) {
                 return true;
             }
         }
