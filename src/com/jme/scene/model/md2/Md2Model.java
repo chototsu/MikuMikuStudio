@@ -39,6 +39,7 @@ import com.jme.math.Vector3f;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
+import com.jme.scene.model.Face;
 import com.jme.scene.model.Model;
 import com.jme.system.JmeException;
 import com.jme.util.BinaryFileReader;
@@ -52,7 +53,7 @@ import com.jme.util.BinaryFileReader;
  * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.4 2004-02-08 20:02:58 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.5 2004-02-12 23:05:00 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
@@ -440,15 +441,5 @@ public class Md2Model extends Model {
 
 		Md2Frame() {
 		}
-	};
-
-	// This is our face structure. This is is used for indexing into the vertex
-	// and texture coordinate arrays. From this information we know which
-	// vertices
-	// from our vertex array go to which face, along with the correct texture
-	// coordinates.
-	private class Face {
-		public int[] vertIndex = new int[3];
-		public int[] coordIndex = new int[3];
 	};
 }
