@@ -37,7 +37,7 @@ import com.jme.scene.state.TextureState;
  * <code>Transient</code>
  * 
  * @author Ahmed
- * @version $Id: Transient.java,v 1.3 2004-04-04 18:16:51 darkprophet Exp $
+ * @version $Id: Transient.java,v 1.4 2004-04-04 18:17:27 darkprophet Exp $
  *          provides a base at which furthur effects can be made of
  */
 public class Transient extends Node {
@@ -45,7 +45,7 @@ public class Transient extends Node {
 	private int maxNumOfStages, currentStage;
 	private TextureState inTex, outTex;
 	
-	public Transient(String name, Texture out, Texture in) {
+	public Transient(String name, TextureState out, TextureState in) {
 		super(name);
 	}
 
