@@ -53,7 +53,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.27 2004-05-19 22:09:33 graum Exp $
+ * @version $Id: TerrainBlock.java,v 1.28 2004-06-25 01:12:09 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -205,12 +205,12 @@ public class TerrainBlock extends AreaClodMesh {
      *            int
      */
     public void setDetailTexture(int unit, int repeat) {
-        texture[unit] = new Vector2f[texture[0].length];
+        Vector2f[] texs = new Vector2f[texture[0].length];
         for (int i = 0; i < texture[0].length; i++) {
-            texture[unit][i] = texture[0][i].mult(repeat);
+            texs[i] = texture[0][i].mult(repeat);
         }
 
-        setTextures(texture[unit], unit);
+        setTextures(texs, unit);
     }
 
     /**
@@ -348,7 +348,7 @@ public class TerrainBlock extends AreaClodMesh {
 
         texture[0] = new Vector2f[vertex.length];
 
-        for (int i = 0; i < texture[0].length; i++) {
+        for (int i = 0; i < vertex.length; i++) {
             texture[0][i] = new Vector2f(
                 (vertex[i].x + offset.x) / (stepScale.x * (totalSize - 1)),
                 (vertex[i].z + offset.y) / (stepScale.z * (totalSize - 1)));
