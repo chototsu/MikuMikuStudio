@@ -38,7 +38,7 @@ import com.jme.system.JmeException;
 /**
  * <code>BezierMesh</code>
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.4 2004-01-14 02:27:24 mojomonkey Exp $
+ * @version $Id: BezierMesh.java,v 1.5 2004-01-14 06:01:18 mojomonkey Exp $
  */
 public class BezierMesh extends TriMesh {
     private BezierPatch patch;
@@ -119,8 +119,6 @@ public class BezierMesh extends TriMesh {
             indices[(i + 5)] = (2 * index) + 1;
         }
 
-        
-
         setVertices(vertex);
         setTextures(texture);
         setIndices(indices);
@@ -129,7 +127,7 @@ public class BezierMesh extends TriMesh {
 
     private Vector3f calcBerstein(float u, Vector3f[] p) {
         if (p.length != 4) {
-            throw new JmeException("Berstein point parameter must be length 4.");
+            throw new JmeException("Point parameter must be length 4.");
         }
         Vector3f a = p[0].mult((float) Math.pow(u, 3));
         Vector3f b = p[1].mult(3 * (float) Math.pow(u, 2) * (1 - u));
@@ -138,5 +136,4 @@ public class BezierMesh extends TriMesh {
 
         return (a.add(b)).add((c.add(d)));
     }
-
 }
