@@ -1,0 +1,328 @@
+package jmetest.TutorialGuide;
+
+import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
+import com.jme.scene.Text;
+import com.jme.scene.shape.Box;
+import com.jme.scene.state.*;
+import com.jme.input.*;
+import com.jme.util.Timer;
+import com.jme.util.TextureManager;
+import com.jme.util.LoggingSystem;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.math.Vector3f;
+import com.jme.image.Texture;
+import com.jme.light.PointLight;
+
+import java.util.logging.Level;
+
+/**
+ * Started Date: Jul 29, 2004<br><br>
+ *
+ * Is used to demonstrate the inner workings of SimpleGame.
+ * 
+ * @author Jack Lindamood
+ */
+public class HelloSimpleGame extends BaseGame {
+    public static void main(String[] args) {
+        HelloSimpleGame app = new HelloSimpleGame();
+        app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
+    }
+
+    /** The camera that we see through. */
+    protected Camera cam;
+      /** The root of our normal scene graph. */
+    protected Node rootNode;
+      /** Handles our mouse/keyboard input. */
+    protected InputHandler input;
+      /** High resolution timer for jME. */
+    protected Timer timer;
+      /** The root node of our text. */
+    protected Node fpsNode;
+      /** Displays all the lovely information at the bottom. */
+    protected Text fps;
+      /** Simply an easy way to get at timer.getTimePerFrame(). */
+    protected float tpf;
+      /** True if the renderer should display bounds. */
+    protected boolean showBounds = false;
+
+      /** A wirestate to turn on and off for the rootNode */
+    protected WireframeState wireState;
+      /** A lightstate to turn on and off for the rootNode */
+    protected LightState lightState;
+
+      /** Location of the font for jME's text at the bottom */
+    public static String fontLocation = "com/jme/app/defaultfont.tga";
+
+    /**
+     * This is called every frame in BaseGame.start()
+     * @param interpolation unused in this implementation
+     * @see com.jme.app.AbstractGame#update(float interpolation)
+     */
+    protected final void update(float interpolation) {
+        /** Recalculate the framerate. */
+      timer.update();
+        /** Update tpf to time per frame according to the Timer. */
+      tpf = timer.getTimePerFrame();
+        /** Check for key/mouse updates. */
+      input.update(tpf);
+        /** Send the fps to our fps bar at the bottom. */
+      fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
+                display.getRenderer().getStatistics());
+        /** Call simpleUpdate in any derived classes of SimpleGame. */
+      simpleUpdate();
+
+        /** Update controllers/render states/transforms/bounds for rootNode. */
+      rootNode.updateGeometricState(tpf, true);
+
+        /** If toggle_wire is a valid command (via key T), change wirestates. */
+      if (KeyBindingManager
+          .getKeyBindingManager()
+          .isValidCommand("toggle_wire", false)) {
+        wireState.setEnabled(!wireState.isEnabled());
+        rootNode.updateRenderState();
+      }
+        /** If toggle_lights is a valid command (via key L), change lightstate. */
+      if (KeyBindingManager
+          .getKeyBindingManager()
+          .isValidCommand("toggle_lights", false)) {
+        lightState.setEnabled(!lightState.isEnabled());
+        rootNode.updateRenderState();
+      }
+        /** If toggle_bounds is a valid command (via key B), change bounds. */
+      if (KeyBindingManager
+          .getKeyBindingManager()
+          .isValidCommand("toggle_bounds", false)) {
+        showBounds = !showBounds;
+      }
+        /** If camera_out is a valid command (via key C), show camera location. */
+      if (KeyBindingManager
+          .getKeyBindingManager()
+          .isValidCommand("camera_out", false)) {
+        System.err.println("Camera at: " +
+                           display.getRenderer().getCamera().getLocation());
+      }
+
+    }
+
+    /**
+     * This is called every frame in BaseGame.start(), after update()
+     * @param interpolation unused in this implementation
+     * @see com.jme.app.AbstractGame#render(float interpolation)
+     */
+    protected final void render(float interpolation) {
+        /** Reset display's tracking information for number of triangles/vertexes */
+      display.getRenderer().clearStatistics();
+        /** Clears the previously rendered information. */
+      display.getRenderer().clearBuffers();
+        /** Draw the rootNode and all its children. */
+      display.getRenderer().draw(rootNode);
+        /** If showing bounds, draw rootNode's bounds, and the bounds of all its children. */
+      if (showBounds)
+        display.getRenderer().drawBounds(rootNode);
+        /** Draw the fps node to show the fancy information at the bottom. */
+      display.getRenderer().draw(fpsNode);
+        /** Call simpleRender() in any derived classes. */
+      simpleRender();
+    }
+
+    /**
+     * Creates display, sets up camera, and binds keys.  Called in BaseGame.start() directly after
+     * the dialog box.
+     * @see com.jme.app.AbstractGame#initSystem()
+     */
+    protected final void initSystem() {
+      try {
+          /** Get a DisplaySystem acording to the renderer selected in the startup box. */
+        display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+         /** Create a window with the startup box's information. */
+        display.createWindow(
+            properties.getWidth(),
+            properties.getHeight(),
+            properties.getDepth(),
+            properties.getFreq(),
+            properties.getFullscreen());
+           /** Create a camera specific to the DisplaySystem that works with
+            * the display's width and height*/
+        cam =
+            display.getRenderer().getCamera(
+            display.getWidth(),
+            display.getHeight());
+
+      }
+      catch (JmeException e) {
+          /** If the displaysystem can't be initialized correctly, exit instantly. */
+        e.printStackTrace();
+        System.exit(1);
+      }
+
+        /** Set a black background.*/
+      display.getRenderer().setBackgroundColor(ColorRGBA.black);
+
+      /** Set up how our camera sees. */
+      cam.setFrustumPerspective(45.0f,
+                                (float) display.getWidth() /
+                                (float) display.getHeight(), 1, 1000);
+      Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
+      Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f);
+      Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
+      Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
+        /** Move our camera to a correct place and orientation. */
+      cam.setFrame(loc, left, up, dir);
+        /** Signal that we've changed our camera's location/frustum. */
+      cam.update();
+        /** Assign the camera to this renderer.*/
+      display.getRenderer().setCamera(cam);
+
+      /** Create a basic input controller. */
+      input = new FirstPersonHandler(this, cam, properties.getRenderer());
+        /** Signal to all key inputs they should work 10x faster. */
+      input.setKeySpeed(10f);
+      input.setMouseSpeed(1f);
+
+        /** Get a high resolution timer for FPS updates. */
+      timer = Timer.getTimer(properties.getRenderer());
+
+        /** Sets the title of our display. */
+      display.setTitle("SimpleGame");
+        /** Signal to the renderer that it should keep track of rendering information. */
+      display.getRenderer().enableStatistics(true);
+
+        /** Assign key T to action "toggle_wire". */
+      KeyBindingManager.getKeyBindingManager().set(
+          "toggle_wire",
+          KeyInput.KEY_T);
+        /** Assign key L to action "toggle_lights". */
+      KeyBindingManager.getKeyBindingManager().set(
+          "toggle_lights",
+          KeyInput.KEY_L);
+        /** Assign key B to action "toggle_bounds". */
+      KeyBindingManager.getKeyBindingManager().set(
+          "toggle_bounds",
+          KeyInput.KEY_B);
+        /** Assign key C to action "camera_out". */
+      KeyBindingManager.getKeyBindingManager().set(
+          "camera_out",
+          KeyInput.KEY_C);
+    }
+
+    /**
+     * Creates rootNode, lighting, statistic text, and other basic render states.
+     * Called in BaseGame.start() after initSystem().
+     * @see com.jme.app.AbstractGame#initGame()
+     */
+    protected final void initGame() {
+        /** Create rootNode */
+      rootNode = new Node("rootNode");
+
+      /** Create a wirestate to toggle on and off.  Starts disabled with
+       * default width of 1 pixel. */
+      wireState = display.getRenderer().getWireframeState();
+      wireState.setEnabled(false);
+      rootNode.setRenderState(wireState);
+
+      /** Create a ZBuffer to display pixels closest to the camera above farther ones.  */
+      ZBufferState buf = display.getRenderer().getZBufferState();
+      buf.setEnabled(true);
+      buf.setFunction(ZBufferState.CF_LEQUAL);
+
+      rootNode.setRenderState(buf);
+
+      // -- FPS DISPLAY
+      // First setup alpha state
+        /** This allows correct blending of text and what is already rendered below it*/
+      AlphaState as1 = display.getRenderer().getAlphaState();
+      as1.setBlendEnabled(true);
+      as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+      as1.setDstFunction(AlphaState.DB_ONE);
+      as1.setTestEnabled(true);
+      as1.setTestFunction(AlphaState.TF_GREATER);
+      as1.setEnabled(true);
+
+      // Now setup font texture
+      TextureState font = display.getRenderer().getTextureState();
+        /** The texture is loaded from fontLocation */
+      font.setTexture(
+          TextureManager.loadTexture(
+          SimpleGame.class.getClassLoader().getResource(
+          fontLocation),
+          Texture.MM_LINEAR,
+          Texture.FM_LINEAR,
+          true));
+      font.setEnabled(true);
+
+      // Then our font Text object.
+        /** This is what will actually have the text at the bottom. */
+      fps = new Text("FPS label", "");
+      fps.setForceView(true);
+      fps.setTextureCombineMode(TextureState.REPLACE);
+
+      // Finally, a stand alone node (not attached to root on purpose)
+      fpsNode = new Node("FPS node");
+      fpsNode.attachChild(fps);
+      fpsNode.setRenderState(font);
+      fpsNode.setRenderState(as1);
+      fpsNode.setForceView(true);
+
+      // ---- LIGHTS
+        /** Set up a basic, default light. */
+      PointLight light = new PointLight();
+      light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+      light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+      light.setLocation(new Vector3f(100, 100, 100));
+      light.setEnabled(true);
+
+        /** Attach the light to a lightState and the lightState to rootNode. */
+      lightState = display.getRenderer().getLightState();
+      lightState.setEnabled(true);
+      lightState.attach(light);
+      rootNode.setRenderState(lightState);
+
+        /** Let derived classes initialize. */
+      simpleInitGame();
+
+        /** Update geometric and rendering information for both the rootNode and fpsNode. */
+      rootNode.updateGeometricState(0.0f, true);
+      rootNode.updateRenderState();
+      fpsNode.updateGeometricState(0.0f, true);
+      fpsNode.updateRenderState();
+    }
+
+    protected void simpleInitGame() {
+        rootNode.attachChild(new Box("my box",new Vector3f(0,0,0),new Vector3f(1,1,1)));
+    }
+
+    /**
+       * Can be defined in derived classes for custom updating.
+       * Called every frame in update.
+       */
+    protected void simpleUpdate() {}
+
+      /**
+       * Can be defined in derived classes for custom rendering.
+       * Called every frame in render.
+       */
+    protected void simpleRender() {}
+
+    /**
+     * unused
+     * @see com.jme.app.AbstractGame#reinit()
+     */
+    protected void reinit() {
+    }
+
+    /**
+     * Cleans up the keyboard.
+     * @see com.jme.app.AbstractGame#cleanup()
+     */
+    protected void cleanup() {
+      LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
+      input.getKeyBindingManager().getKeyInput().destroy();
+      InputSystem.getMouseInput().destroy();
+    }
+}
