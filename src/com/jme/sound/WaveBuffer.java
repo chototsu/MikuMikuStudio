@@ -46,6 +46,8 @@ import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 
+import com.jme.system.JmeException;
+
 /**
  * @author Arman Ozcelik
  *
@@ -108,7 +110,7 @@ public abstract class WaveBuffer implements ISoundBuffer {
 			} else if (format.getSampleSizeInBits() == 16) {
 				channels = MONO16;
 			} else {
-				assert false : "Illegal sample size";
+				throw new JmeException("Illegal sample size");
 			}
 		} else if (format.getChannels() == 2) {
 			if (format.getSampleSizeInBits() == 8) {
@@ -116,10 +118,10 @@ public abstract class WaveBuffer implements ISoundBuffer {
 			} else if (format.getSampleSizeInBits() == 16) {
 				channels = STEREO16;
 			} else {
-				assert false : "Illegal sample size";
+                throw new JmeException("Illegal sample size");
 			}
 		} else {
-			assert false : "Only mono or stereo is supported";
+            throw new JmeException("Only mono or stereo is supported");
 		}
 		System.out.println("Channels "+ channels);
 
