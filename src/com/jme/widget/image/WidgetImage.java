@@ -58,7 +58,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
  *  Alignment code doesn't work properly.
  *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.5 2004-04-25 03:04:38 mojomonkey Exp $$
+ * @version $$Id: WidgetImage.java,v 1.6 2004-05-25 17:52:43 renanse Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
@@ -131,6 +131,10 @@ public class WidgetImage extends WidgetAbstractImpl {
 
     public void setScaleMode(int mode) {
         scaleMode = mode;
+    }
+
+    public Vector2f getPreferredSize() {
+       return new Vector2f( image.getWidth(), image.getHeight());
     }
 
     public void doMouseButtonDown() {
