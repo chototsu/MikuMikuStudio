@@ -47,7 +47,7 @@ import com.jme.math.Vector3f;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.13 2004-03-13 17:17:54 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.14 2004-03-16 05:07:33 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -248,13 +248,19 @@ public class BoundingBox extends Box implements BoundingVolume {
     }
 
     private BoundingBox merge(BoundingBox vBox, BoundingBox rVal) {
-        minPnt.x = Math.min(vBox.center.x-vBox.xExtent, center.x-xExtent);
-        minPnt.y = Math.min(vBox.center.y-vBox.yExtent, center.y-yExtent);
-        minPnt.z = Math.min(vBox.center.z-vBox.zExtent, center.z-zExtent);
+        minPnt.x = center.x-xExtent;
+        if (minPnt.x > vBox.center.x-vBox.xExtent) minPnt.x = vBox.center.x-vBox.xExtent;
+        minPnt.y = center.y-yExtent;
+        if (minPnt.y > vBox.center.y-vBox.yExtent) minPnt.y = vBox.center.y-vBox.yExtent;
+        minPnt.z = center.z-zExtent;
+        if (minPnt.z > vBox.center.z-vBox.zExtent) minPnt.z = vBox.center.z-vBox.zExtent;
 
-        maxPnt.x = Math.max(vBox.center.x+vBox.xExtent, center.x+xExtent);
-        maxPnt.y = Math.max(vBox.center.y+vBox.yExtent, center.y+yExtent);
-        maxPnt.z = Math.max(vBox.center.z+vBox.zExtent, center.z+zExtent);
+        maxPnt.x = center.x+xExtent;
+        if (maxPnt.x < vBox.center.x+vBox.xExtent) maxPnt.x = vBox.center.x+vBox.xExtent;
+        maxPnt.y = center.y+yExtent;
+        if (maxPnt.y < vBox.center.y+vBox.yExtent) maxPnt.y = vBox.center.y+vBox.yExtent;
+        maxPnt.z = center.z+zExtent;
+        if (maxPnt.z < vBox.center.z+vBox.zExtent) maxPnt.z = vBox.center.z+vBox.zExtent;
 
         maxPnt.subtractLocal(minPnt).multLocal(0.5f);
         rVal.xExtent = maxPnt.x;
