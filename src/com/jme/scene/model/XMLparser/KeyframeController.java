@@ -137,7 +137,7 @@ public class KeyframeController extends Controller{
      * This function will do a smooth translation between a keframe's current look, to the look directly at newTimeToReach.  It takes
      * translationLen time (in sec) to do that translation, and once translated will animate like normal between
      * newBeginTime and newEndTime<br><br>This would be usefull for example when a figure stops running and
-     * tries to raise an arm.  Instead of "teleporting" to the raise-arm animnation begining, a smooth translation
+     * tries to raise an arm.  Instead of "teleporting" to the raise-arm animation begining, a smooth translation
      * can occur.
      * @param newTimeToReach The time to reach.
      * @param translationLen How long it takes
