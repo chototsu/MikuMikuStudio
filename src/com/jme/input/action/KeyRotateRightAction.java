@@ -67,9 +67,9 @@ public class KeyRotateRightAction implements InputAction {
     public void performAction(float time) {
         incr.loadIdentity();
         if(lockAxis == null) {
-            incr.fromAxisAngle(camera.getUp(), -speed);
+            incr.fromAxisAngle(camera.getUp(), -speed * time);
         } else {
-            incr.fromAxisAngle(lockAxis, -speed);
+            incr.fromAxisAngle(lockAxis, -speed * time);
         }
         camera.setUp(incr.mult(camera.getUp()));
         

@@ -40,45 +40,45 @@ import com.jme.renderer.Camera;
  * @author Mark Powell
  * @version 
  */
-public class MouseLook implements MouseInputAction{
+public class MouseLook implements MouseInputAction {
     public static final int MOUSE_BUFFER = 1;
     private MouseInput mouse;
     private KeyLookDownAction lookDown;
     private KeyLookUpAction lookUp;
     private KeyRotateLeftAction rotateLeft;
     private KeyRotateRightAction rotateRight;
-    
+
     private Vector3f lockAxis;
-    
+
     private float speed;
     private Camera camera;
-    
+
     public MouseLook(MouseInput mouse, Camera camera, float speed) {
         this.mouse = mouse;
         this.speed = speed;
         this.camera = camera;
-        
+
         lookDown = new KeyLookDownAction(camera, speed);
         lookUp = new KeyLookUpAction(camera, speed);
         rotateLeft = new KeyRotateLeftAction(camera, speed);
         rotateRight = new KeyRotateRightAction(camera, speed);
     }
-    
+
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
         rotateLeft.setLockAxis(lockAxis);
         rotateRight.setLockAxis(lockAxis);
     }
-    
+
     public void setSpeed(float speed) {
         this.speed = speed;
         lookDown.setSpeed(speed);
         lookUp.setSpeed(speed);
         rotateRight.setSpeed(speed);
         rotateLeft.setSpeed(speed);
-        
+
     }
-    
+
     public float getSpeed() {
         return speed;
     }
@@ -86,17 +86,21 @@ public class MouseLook implements MouseInputAction{
      * @see com.jme.input.action.MouseInputAction#performAction(float)
      */
     public void performAction(float time) {
-        if(mouse.getXDelta() > 0) {
-            rotateRight.performAction(time * ((float)mouse.getXDelta()/MOUSE_BUFFER));
-        } else if(mouse.getXDelta() < 0) {
-            rotateLeft.performAction(time * ((float)mouse.getXDelta()/MOUSE_BUFFER));
+        if (mouse.getXDelta() > 0) {
+            rotateRight.performAction(
+                time * ((float) mouse.getXDelta() / MOUSE_BUFFER));
+        } else if (mouse.getXDelta() < 0) {
+            rotateLeft.performAction(
+                time * ((float) mouse.getXDelta() / MOUSE_BUFFER) * -1);
         }
-        if(mouse.getYDelta() > 0) {
-            lookUp.performAction(time * ((float)mouse.getYDelta()/MOUSE_BUFFER));
-        } else if(mouse.getYDelta() < 0) {
-            lookDown.performAction(time * ((float)mouse.getYDelta()/MOUSE_BUFFER));
+        if (mouse.getYDelta() > 0) {
+            lookUp.performAction(
+                time * ((float) mouse.getYDelta() / MOUSE_BUFFER));
+        } else if (mouse.getYDelta() < 0) {
+            lookDown.performAction(
+                time * ((float) mouse.getYDelta() / MOUSE_BUFFER) * -1);
         }
-        
+
     }
     /* (non-Javadoc)
      * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
@@ -104,6 +108,5 @@ public class MouseLook implements MouseInputAction{
     public void setMouse(MouseInput mouse) {
         this.mouse = mouse;
     }
-    
-    
+
 }

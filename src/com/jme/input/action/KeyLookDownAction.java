@@ -62,7 +62,7 @@ public class KeyLookDownAction implements InputAction {
      */
     public void performAction(float time) {
         incr.loadIdentity();
-        incr.fromAxisAngle(camera.getLeft(), speed);
+        incr.fromAxisAngle(camera.getLeft(), speed * time);
         camera.setLeft(incr.mult(camera.getLeft()));
         camera.setDirection(incr.mult(camera.getDirection()));
         camera.setUp(incr.mult(camera.getUp()));
