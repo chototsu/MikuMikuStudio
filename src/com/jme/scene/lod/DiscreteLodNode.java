@@ -40,7 +40,7 @@ import com.jme.scene.SwitchNode;
 /**
  * <code>DiscreteLodNode</code>
  * @author Mark Powell
- * @version $Id: DiscreteLodNode.java,v 1.2 2004-04-22 22:26:49 renanse Exp $
+ * @version $Id: DiscreteLodNode.java,v 1.3 2004-04-29 15:29:40 mojomonkey Exp $
  */
 public class DiscreteLodNode extends SwitchNode {
 	private Vector3f modelCenter;
@@ -69,7 +69,7 @@ public class DiscreteLodNode extends SwitchNode {
 		// compute world squared distance intervals
 		float worldSqrScale = worldScale*worldScale;
 		model.set(worldCenter.subtract(camera.getLocation()));
-		model.set(worldSqrScale);
+		model.set(new Float(worldSqrScale));
 		setActiveChild(model.getSwitchChild());
 
 	}
