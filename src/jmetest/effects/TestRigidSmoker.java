@@ -44,7 +44,9 @@ import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
+import com.jme.scene.TriMesh;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.state.AlphaState;
@@ -57,7 +59,6 @@ import com.jme.util.TextureManager;
  * @author Joshua Slack
  */
 public class TestRigidSmoker extends SimpleGame {
-  private Node smokeNode;
 
   /**
    * Entry point for the test,
@@ -77,9 +78,8 @@ public class TestRigidSmoker extends SimpleGame {
     cam.setLocation(new Vector3f(0.0f, 50.0f, 100.0f));
     cam.update();
 
-    smokeNode = new Node("Smoker Node");
+    Node smokeNode = new Node("Smoker Node");
     smokeNode.setLocalTranslation(new Vector3f(0, 50, -50));
-    smokeNode.updateGeometricState(0, true);
 
     // Setup the input controller and timer
     input = new NodeHandler(this, smokeNode, "LWJGL");
@@ -112,7 +112,9 @@ public class TestRigidSmoker extends SimpleGame {
     } catch (IOException e) {
         System.out.println("darn exceptions:" + e.getMessage());
     }
+    
     camBox.setLocalScale(5f);
+    rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     smokeNode.attachChild(camBox);
     rootNode.attachChild(smokeNode);
 
@@ -137,28 +139,29 @@ public class TestRigidSmoker extends SimpleGame {
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0f, 0f, 1f));
     manager.setEmissionMaximumAngle(0.0f);
-    manager.setSpeed(2.0f);
-    manager.setParticlesMinimumLifeTime(75.0f);
+    manager.setSpeed(1.0f);
+    manager.setParticlesMinimumLifeTime(750.0f);
     manager.setStartSize(1.6f);
-    manager.setEndSize(8.0f);
+    manager.setEndSize(15.0f);
     manager.setStartColor(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
     manager.setEndColor(new ColorRGBA(0.6f, 0.2f, 0.0f, 0.0f));
-    manager.setRandomMod(3.5f);
-    manager.setInitialVelocity(0.57f);
+    manager.setRandomMod(.5f);
+    manager.setInitialVelocity(0.5f);
 
     manager.warmUp(60);
-    manager.getParticles().addController(manager);
+    TriMesh smoke = manager.getParticles();
+    smoke.addController(manager);
 
     ZBufferState zbuf = display.getRenderer().createZBufferState();
     zbuf.setWritable(false);
     zbuf.setEnabled(true);
     zbuf.setFunction(ZBufferState.CF_LEQUAL);
 
-    manager.getParticles().setLocalTranslation(new Vector3f(0,3.75f,11f)); // this places the emitter in the "tail pipe"
-    manager.getParticles().setRenderState(ts);
-    manager.getParticles().setRenderState(as1);
-    manager.getParticles().setRenderState(zbuf);
-    smokeNode.attachChild(manager.getParticles());
+    smoke.setLocalTranslation(new Vector3f(0,3.75f,11f)); // this places the emitter in the "tail pipe"
+    smoke.setRenderState(ts);
+    smoke.setRenderState(as1);
+    smoke.setRenderState(zbuf);
+    smokeNode.attachChild(smoke);
   }
 
 }
