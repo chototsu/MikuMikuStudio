@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.48 2004-08-21 01:34:48 cep21 Exp $
+ * @version $Id: Spatial.java,v 1.49 2004-08-28 20:33:26 cep21 Exp $
  */
 public abstract class Spatial implements Serializable {
   /** Spatial's rotation relative to its parent. */
@@ -410,15 +410,17 @@ public abstract class Spatial implements Serializable {
     }
 
     //update render state via controllers
-    Controller[] controls;
+//    Controller[] controls;
     RenderState rs;
     for (int i = renderStateList.length; --i >= 0; ) {
       rs = renderStateList[i];
       if (rs != null) {
-        controls = rs.getControllers();
-        for (int j = 0; j < controls.length; j++) {
-          if (controls[j] != null) {
-            controls[j].update(time);
+        ArrayList controls = rs.getControllers();
+          if (controls==null) continue;
+        for (int j = controls.size(); --j >=0 ;) {
+            Controller tempC=(Controller) controls.get(j);
+          if (tempC != null) {
+            tempC.update(time);
           }
         }
       }
