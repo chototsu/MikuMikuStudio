@@ -71,6 +71,11 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
         this.fillType = type;
     }
 
+    public WidgetFlowLayout(int hgap, int vgap) {
+        this.hgap = hgap;
+        this.vgap = vgap;
+    }
+
     public WidgetFlowLayout(WidgetAlignmentType alignmentType, WidgetFillType fillType) {
         this.alignmentType = alignmentType;
         this.fillType = fillType;
@@ -107,6 +112,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
             boolean pastParentWidth;
             boolean lastChild;
             boolean atRowStart;
+            boolean fillHorizontal = (fillType == WidgetFillType.HORIZONTAL);
 
             WidgetInsets insets = parent.getInsets();
             WidgetBorder border = parent.getBorder();
@@ -114,7 +120,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
             float parentWidth = parent.getWidth();
             float parentHeight = parent.getHeight();
 
-            float widthStart = 0;
+            float widthStart = insets.getLeft();
             float curWidth = widthStart;
 
             float heightStart = parentHeight - (border.getTop() + insets.getTop());
@@ -140,13 +146,8 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                 if (setPosSize == true) {
 
                     if (fillType == WidgetFillType.HORIZONTAL) {
-                        size.x = parentWidth;
-                    } else if (fillType == WidgetFillType.VERTICAL) {
-                        size.y = parentHeight;
-                    } else if (fillType == WidgetFillType.VERTICAL_HORIZONTAL) {
-                        size.x = parentWidth;
-                        size.y = parentHeight;
-                    }
+                        size.x = parentWidth - (insets.getLeft() + insets.getRight());
+                    } 
                 }
 
                 preferredSizes.add(size);
@@ -174,7 +175,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
                     curWidth += size.x;
 
-                    pastMaxWidth = (maximumSize.x > 0 && maximumSize.x < curWidth);
+                    pastMaxWidth = (maximumSize.x > 0 && maximumSize.x < curWidth || fillHorizontal);
                     pastParentWidth = (!pastMaxWidth && wrap && parentWidth > 0 && parentWidth < curWidth);
                     
                     pastWidth = pastMaxWidth || pastParentWidth;
@@ -213,6 +214,9 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
                              * OR
                              * Last child
                              */
+
+                            if (!atRowStart)
+                                xPos += hgap;
 
                             r.setMinXPreserveSize(xPos); //Set the x location (left)
 
@@ -269,7 +273,7 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
 
                         r.setMinXPreserveSize(xPos); //Set the x location (left)
 
-                        if (xPos != widthStart) { //NOT first in row
+                        if (!atRowStart) { //NOT first in row
                             xPos += hgap; //Add horizontal gap
                         }
 
@@ -332,119 +336,6 @@ public class WidgetFlowLayout extends WidgetLayoutManager {
     public void layoutContainer(WidgetContainerAbstract parent) {
         calcLayout(parent, true);
     }
-
-    //    public void layoutContainer(WidgetContainerAbstract parent) {
-    //        if (parent.isVisible() == false)
-    //            return;
-    //
-    //        Widget w;
-    //
-    //        int childCnt = parent.getWidgetCount();
-    //
-    //        if (childCnt == 0)
-    //            return;
-    //
-    //        WidgetInsets insets = parent.getInsets();
-    //        WidgetBorder border = parent.getBorder();
-    //
-    //
-    //        Vector2f parentDim = new Vector2f();
-    //        parentDim.x = parent.getWidth() - (insets.getLeft() + insets.getRight() + border.getLeft() + border.getRight());
-    //        parentDim.y =
-    //            parent.getHeight() - (insets.getTop() + insets.getBottom() + border.getTop() + border.getBottom());
-    //
-    //        int x = 0, y = (int) parentDim.y;
-    //
-    //        x += insets.getLeft();
-    //        y += insets.getBottom();
-    //
-    //        int childIdx = 0;
-    //        int curRow = 0;
-    //        Vector2f[] dims = new Vector2f[childCnt];
-    //
-    //        while (childIdx < childCnt) {
-    //            int rWidth = 0;
-    //            int column = 0;
-    //            int childIdx1 = childIdx;
-    //            int maxH = 0;
-    //
-    //            while (childIdx < childCnt) {
-    //
-    //                w = parent.getWidget(childIdx);
-    //                Vector2f prefDim = w.isVisible() ? w.getPreferredSize() : new Vector2f();
-    //
-    //                if (fillType == WidgetFillType.HORIZONTAL) {
-    //                    prefDim.x = parentDim.x;
-    //                } else if (fillType == WidgetFillType.VERTICAL) {
-    //                    prefDim.y = parentDim.y;
-    //                } else if (fillType == WidgetFillType.VERTICAL_HORIZONTAL) {
-    //                    prefDim.x = parentDim.x;
-    //                    prefDim.y = parentDim.y;
-    //                }
-    //
-    //                if (column != 0)
-    //                    rWidth += hgap;
-    //
-    //                dims[childIdx - childIdx1] = prefDim;
-    //
-    //                rWidth += prefDim.x;
-    //
-    //                if (column > 0 && rWidth + prefDim.x > parentDim.x)
-    //                    break;
-    //
-    //
-    //                if (prefDim.y > maxH)
-    //                    maxH = (int) prefDim.y;
-    //
-    //                childIdx++;
-    //                column++;
-    //
-    //                if (rWidth + prefDim.x > parentDim.x)
-    //                    break;
-    //
-    //            }
-    //
-    //            if (column == 0)
-    //                break;
-    //
-    //            int leftPos = x;
-    //
-    //            if (this.alignmentType == WidgetAlignmentType.ALIGN_CENTER)
-    //                leftPos = (int) (x + (parentDim.x - rWidth) / 2);
-    //            else if (this.alignmentType == WidgetAlignmentType.ALIGN_EAST)
-    //                leftPos = (int) (x + (parentDim.x - rWidth));
-    //
-    //            column = 0;
-    //            int rowStart = childIdx1;
-    //
-    //            if (curRow != 0) {
-    //                y -= vgap;
-    //            }
-    //
-    //            while (childIdx1 < childIdx) {
-    //                Vector2f dim = dims[childIdx1 - rowStart];
-    //
-    //                if (column != 0)
-    //                    leftPos += hgap;
-    //
-    //                int yPos = (int) (y - ((maxH - dim.y) / 2) - maxH);
-    //
-    //                w = parent.getWidget(childIdx1);
-    //
-    //                w.setLocation(leftPos, yPos);
-    //                w.setSize(dim);
-    //
-    //                leftPos += dim.x;
-    //                ++column;
-    //                ++childIdx1;
-    //            }
-    //
-    //            y -= maxH;
-    //            ++curRow;
-    //
-    //        }
-    //
-    //    }
 
     public int getHgap() {
         return hgap;
