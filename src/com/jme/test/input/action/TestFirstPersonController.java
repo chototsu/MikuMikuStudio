@@ -112,7 +112,7 @@ public class TestFirstPersonController extends AbstractGame {
 
         display.getRenderer().setCamera(cam);
         
-        input = new FirstPersonController(this, cam);
+        input = new FirstPersonController(this, cam, "LWJGL");
         
 
     }
