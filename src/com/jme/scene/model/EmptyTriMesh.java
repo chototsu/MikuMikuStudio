@@ -5,6 +5,11 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
 
+import java.io.Externalizable;
+import java.io.ObjectInput;
+import java.io.IOException;
+import java.io.ObjectOutput;
+
 /**
  * Started Date: Jun 14, 2004<br><br>
  * This class is for use with jME's loader system.  It is the same as a TriMesh but doesn't update its floatbuffers for
@@ -12,7 +17,7 @@ import com.jme.renderer.ColorRGBA;
  * 
  * @author Jack Lindamood
  */
-public class EmptyTriMesh extends TriMesh{
+public class EmptyTriMesh extends TriMesh implements Externalizable{
     public EmptyTriMesh(){
         this.texture=new Vector2f[1][];
     }
@@ -30,5 +35,21 @@ public class EmptyTriMesh extends TriMesh{
     }
     public void setIndices(int[] storageArray){
         this.indices=storageArray;
+    }
+
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        vertex=(Vector3f[]) in.readObject();
+        normal=(Vector3f[]) in.readObject();
+        color=(ColorRGBA[]) in.readObject();
+        texture=(Vector2f[][]) in.readObject();
+        indices=(int[]) in.readObject();
+    }
+
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeObject(vertex);
+        out.writeObject(normal);
+        out.writeObject(color);
+        out.writeObject(texture);
+        out.writeObject(indices);
     }
 }
