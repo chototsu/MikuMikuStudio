@@ -58,7 +58,7 @@ import com.jme.util.TextureManager;
  * <code>ASEModel</code>
  * 
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.1 2004-02-12 23:07:07 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.2 2004-02-13 02:50:10 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -98,39 +98,6 @@ public class ASEModel extends Model {
 	private int numOfMaterials; // The number of materials for the model
 	private ArrayList materials = new ArrayList();
 	private ArrayList objectList = new ArrayList();
-	// The object list for our model
-
-	private class ASEMaterialInfo {
-		String name; // The texture name
-		public String file;
-		// The texture file name (If this is set it's a texture map)
-		public float[] diffuse = new float[3];
-		public float[] ambient = new float[3];
-		public float[] specular = new float[3];
-		public float shine;
-		// The color of the object (R, G, B)
-		float uTile; // u tiling of texture (Currently not used)
-		float vTile; // v tiling of texture (Currently not used)
-		float uOffset; // u offset of texture (Currently not used)
-		float vOffset; // v offset of texture (Currently not used)
-	};
-
-	// This holds all the information for our model/scene.
-	// You should eventually turn into a robust class that
-	// has loading/drawing/querying functions like:
-	// LoadModel(...); DrawObject(...); DrawModel(...); DestroyModel(...);
-	public class ASEObject extends TriMesh {
-		//int numOfVerts; // The number of verts in the model
-		//public int numOfFaces; // The number of faces in the model
-		//int numTexVertex; // The number of texture coordinates
-		public int materialID;
-		// This is TRUE if there is a texture map for this object
-		public String strName; // The name of the object
-		public Vector3f[] tempVertices; // The object's vertices
-		public Vector3f[] tempNormals; // The object's normals
-		public Vector2f[] tempTexVerts; // The texture's UV coordinates
-		public Face[] faces; // The faces information of the object
-	};
 
 	public void load(String file) {
 		InputStream is = null;
@@ -144,11 +111,11 @@ public class ASEModel extends Model {
 					absoluteFilePath.lastIndexOf(File.separator) + 1);
 			is = new FileInputStream(f);
 			fileSize = (int) f.length();
-		
+
 			reader = new BufferedReader(new InputStreamReader(is));
 
 			StringBuffer fc = new StringBuffer();
-		
+
 			String line;
 			while ((line = reader.readLine()) != null) {
 				fc.append(line + "\n");
@@ -168,7 +135,7 @@ public class ASEModel extends Model {
 				"Could not load " + file);
 		}
 	}
-	
+
 	/**
 	 * <code>getAnimationController</code>
 	 * 
@@ -208,7 +175,7 @@ public class ASEModel extends Model {
 
 		for (int i = 0; i < numOfObjects; i++) {
 			ASEObject object = (ASEObject) objectList.get(i);
-			Vector2f[] texCoords2 = new Vector2f[object.tempVertices.length];
+			Vector2f[] texCoords2 = new Vector2f[object.getVertices().length];
 			for (int j = 0; j < object.faces.length; j++) {
 				int index = object.faces[j].vertIndex[0];
 				texCoords2[index] = new Vector2f();
@@ -226,8 +193,7 @@ public class ASEModel extends Model {
 					object.tempTexVerts[object.faces[j].coordIndex[2]];
 			}
 
-			object.tempTexVerts = texCoords2;
-
+			
 			int[] indices = new int[object.faces.length * 3];
 			int count = 0;
 			for (int j = 0; j < object.faces.length; j++) {
@@ -240,22 +206,43 @@ public class ASEModel extends Model {
 			}
 
 			object.setIndices(indices);
-			object.setVertices(object.tempVertices);
-			object.setNormals(object.tempNormals);
-			object.setTextures(object.tempTexVerts);
+			object.updateVertexBuffer();
+			object.updateNormalBuffer();
+			object.setTextures(texCoords2);
+
 			this.attachChild(object);
 
 		}
-		
-		for(int j = 0; j < numOfMaterials; j++) {
-			ASEModel.ASEMaterialInfo mat = (ASEModel.ASEMaterialInfo) materials.get(j);
-			if(mat.file.length() > 0) {
-				MaterialState ms = DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
+
+		for (int j = 0; j < numOfMaterials; j++) {
+			ASEModel.ASEMaterialInfo mat =
+				(ASEModel.ASEMaterialInfo) materials.get(j);
+			if (mat.file.length() > 0) {
+				MaterialState ms =
+					DisplaySystem
+						.getDisplaySystem()
+						.getRenderer()
+						.getMaterialState();
 				ms.setEnabled(true);
-				ms.setAmbient(new ColorRGBA(mat.ambient[0], mat.ambient[1], mat.ambient[2], 1));
-				ms.setDiffuse(new ColorRGBA(mat.diffuse[0], mat.diffuse[1], mat.diffuse[2], 1));
-				ms.setSpecular(new ColorRGBA(mat.specular[0], mat.specular[1], mat.specular[2], 1));
-				ms.setEmissive(new ColorRGBA(0,0,0,1));
+				ms.setAmbient(
+					new ColorRGBA(
+						mat.ambient[0],
+						mat.ambient[1],
+						mat.ambient[2],
+						1));
+				ms.setDiffuse(
+					new ColorRGBA(
+						mat.diffuse[0],
+						mat.diffuse[1],
+						mat.diffuse[2],
+						1));
+				ms.setSpecular(
+					new ColorRGBA(
+						mat.specular[0],
+						mat.specular[1],
+						mat.specular[2],
+						1));
+				ms.setEmissive(new ColorRGBA(0, 0, 0, 1));
 				ms.setShininess(mat.shine);
 				this.setRenderState(ms);
 			}
@@ -323,8 +310,9 @@ public class ASEModel extends Model {
 		return 0;
 	}
 
-	
-	private void getMaterialInfo(ASEMaterialInfo material, int desiredMaterial) {
+	private void getMaterialInfo(
+		ASEMaterialInfo material,
+		int desiredMaterial) {
 		String strWord;
 		int materialCount = 0;
 
@@ -350,11 +338,11 @@ public class ASEModel extends Model {
 			}
 
 			//read material properites.
-			if(strWord.equals(MATERIAL_AMBIENT)) {
+			if (strWord.equals(MATERIAL_AMBIENT)) {
 				material.ambient[0] = Float.parseFloat(tokenizer.nextToken());
 				material.ambient[1] = Float.parseFloat(tokenizer.nextToken());
 				material.ambient[2] = Float.parseFloat(tokenizer.nextToken());
-			}else if (strWord.equals(MATERIAL_DIFFUSE)) {
+			} else if (strWord.equals(MATERIAL_DIFFUSE)) {
 				material.diffuse[0] = Float.parseFloat(tokenizer.nextToken());
 				material.diffuse[1] = Float.parseFloat(tokenizer.nextToken());
 				material.diffuse[2] = Float.parseFloat(tokenizer.nextToken());
@@ -362,10 +350,10 @@ public class ASEModel extends Model {
 				material.specular[0] = Float.parseFloat(tokenizer.nextToken());
 				material.specular[1] = Float.parseFloat(tokenizer.nextToken());
 				material.specular[2] = Float.parseFloat(tokenizer.nextToken());
-			} else if(strWord.equals(MATERIAL_SHINE)) {
+			} else if (strWord.equals(MATERIAL_SHINE)) {
 				material.shine = Float.parseFloat(tokenizer.nextToken());
 			}
-			
+
 			//read texture information.
 			if (strWord.equals(TEXTURE)) {
 				material.file =
@@ -410,7 +398,11 @@ public class ASEModel extends Model {
 
 			if (word.equals(NUM_VERTEX)) {
 				int numOfVerts = Integer.parseInt(tokenizer.nextToken());
-				currentObject.tempVertices = new Vector3f[numOfVerts];
+				Vector3f[] verts = new Vector3f[numOfVerts];
+				for (int i = 0; i < verts.length; i++) {
+					verts[i] = new Vector3f();
+				}
+				currentObject.setVertices(verts);
 			} else if (word.equals(NUM_FACES)) {
 				int numOfFaces = Integer.parseInt(tokenizer.nextToken());
 				currentObject.faces = new Face[numOfFaces];
@@ -450,7 +442,10 @@ public class ASEModel extends Model {
 		getData(currentObject, VTILE, desiredObject);
 	}
 
-	private void getData( ASEObject currentObject, String desiredData, int desiredObject) {
+	private void getData(
+		ASEObject currentObject,
+		String desiredData,
+		int desiredObject) {
 		String word;
 
 		moveToObject(desiredObject);
@@ -479,7 +474,8 @@ public class ASEModel extends Model {
 					// Read in a texture vertex
 					readTextureVertex(
 						currentObject,
-						(ASEMaterialInfo) materials.get(currentObject.materialID));
+						(ASEMaterialInfo) materials.get(
+							currentObject.materialID));
 				}
 			}
 			// If we hit a vertice index to a face
@@ -516,16 +512,21 @@ public class ASEModel extends Model {
 
 		// Read past the vertex index
 		index = Integer.parseInt(tokenizer.nextToken());
-		currentObject.tempVertices[index] = new Vector3f();
+		//currentObject.tempVertices[index] = new Vector3f();
 
 		//convert to standard coordinate axis.
-		currentObject.tempVertices[index].x = Float.parseFloat(tokenizer.nextToken());
-		currentObject.tempVertices[index].z = -Float.parseFloat(tokenizer.nextToken());
-		currentObject.tempVertices[index].y = Float.parseFloat(tokenizer.nextToken());
+		currentObject.getVertices()[index].x =
+			Float.parseFloat(tokenizer.nextToken());
+		currentObject.getVertices()[index].z =
+			-Float.parseFloat(tokenizer.nextToken());
+		currentObject.getVertices()[index].y =
+			Float.parseFloat(tokenizer.nextToken());
 
 	}
 
-	private void readTextureVertex(ASEObject currentObject, ASEMaterialInfo texture) {
+	private void readTextureVertex(
+		ASEObject currentObject,
+		ASEMaterialInfo texture) {
 		int index = 0;
 
 		// Here we read past the index of the texture coordinate
@@ -533,8 +534,10 @@ public class ASEModel extends Model {
 		currentObject.tempTexVerts[index] = new Vector2f();
 
 		// Next, we read in the (U, V) texture coordinates.
-		currentObject.tempTexVerts[index].x = Float.parseFloat(tokenizer.nextToken());
-		currentObject.tempTexVerts[index].y = Float.parseFloat(tokenizer.nextToken());
+		currentObject.tempTexVerts[index].x =
+			Float.parseFloat(tokenizer.nextToken());
+		currentObject.tempTexVerts[index].y =
+			Float.parseFloat(tokenizer.nextToken());
 
 		currentObject.tempTexVerts[index].x *= texture.uTile;
 		currentObject.tempTexVerts[index].y *= texture.vTile;
@@ -580,81 +583,87 @@ public class ASEModel extends Model {
 	}
 
 	private void computeNormals() {
+		if (numOfObjects <= 0) {
+			return;
+		}
+		
 		Vector3f vector1 = new Vector3f();
 		Vector3f vector2 = new Vector3f();
-		Vector3f normal = new Vector3f();
 		Vector3f[] triangle = new Vector3f[3];
-
-		// If there are no objects, we can skip this part
-		if (numOfObjects <= 0)
-			return;
 
 		// Go through each of the objects to calculate their normals
 		for (int index = 0; index < numOfObjects; index++) {
 			// Get the current object
 			ASEObject object = (ASEObject) objectList.get(index);
-
 			// Here we allocate all the memory we need to calculate the normals
-			Vector3f[] pNormals = new Vector3f[object.faces.length];
-			Vector3f[] pTempNormals = new Vector3f[object.faces.length];
-			object.tempNormals = new Vector3f[object.tempVertices.length];
+			Vector3f[] tempNormals = new Vector3f[object.faces.length];
+			Vector3f[] normals = new Vector3f[object.getVertices().length];
 
 			// Go though all of the faces of this object
 			for (int i = 0; i < object.faces.length; i++) {
-				// To cut down LARGE code, we extract the 3 points of this face
-				triangle[0] = object.tempVertices[object.faces[i].vertIndex[0]];
-				triangle[1] = object.tempVertices[object.faces[i].vertIndex[1]];
-				triangle[2] = object.tempVertices[object.faces[i].vertIndex[2]];
+				vector1 =
+					object
+						.getVertices()[object
+						.faces[i]
+						.vertIndex[0]]
+						.subtract(
+						object.getVertices()[object.faces[i].vertIndex[2]]);
+				vector2 =
+					object
+						.getVertices()[object
+						.faces[i]
+						.vertIndex[2]]
+						.subtract(
+						object.getVertices()[object.faces[i].vertIndex[1]]);
 
-				// Now let's calculate the face normals (Get 2 vectors and find
-				// the cross product of those 2)
-
-				vector1 = triangle[0].subtract(triangle[2]);
-				// Get the vector of the polygon (we just need 2 sides for the
-				// normal)
-				vector2 = triangle[2].subtract(triangle[1]);
-				// Get a second vector of the polygon
-
-				normal = vector1.cross(vector2);
-				pTempNormals[i] = normal;
-				normal = normal.normalize();
-				pNormals[i] = normal;
+				tempNormals[i] = vector1.cross(vector2).normalize();
 			}
 
 			Vector3f sum = new Vector3f();
 			Vector3f zero = sum;
 			int shared = 0;
 
-			for (int i = 0;
-				i < object.tempVertices.length;
-				i++) // Go through all of the vertices
-				{
-				for (int j = 0;
-					j < object.faces.length;
-					j++) // Go through all of the triangles
-					{ // Check if the vertex is shared by another face
+			for (int i = 0; i < object.getVertices().length; i++) {
+				for (int j = 0; j < object.faces.length; j++) {
 					if (object.faces[j].vertIndex[0] == i
 						|| object.faces[j].vertIndex[1] == i
 						|| object.faces[j].vertIndex[2] == i) {
-						sum = sum.add(pTempNormals[j]);
-						// Add the un-normalized normal of the shared face
-						shared++; // Increase the number of shared triangles
+						sum = sum.add(tempNormals[j]);
+
+						shared++;
 					}
 				}
 
-				// Get the normal by dividing the sum by the shared. We negate
-				// the shared so it has the normals pointing out.
-				object.tempNormals[i] = sum.divide((float) (-shared));
-
-				// Normalize the normal for the final vertex normal
-				object.tempNormals[i] = object.tempNormals[i].normalize();
+				normals[i] = sum.divide((float) (-shared)).normalize();
 
 				sum = zero; // Reset the sum
 				shared = 0; // Reset the shared
 			}
+
+			object.setNormals(normals);
+
 		}
 	}
 
-	
+	private class ASEMaterialInfo {
+		String name; // The texture name
+		public String file;
+		// The texture file name (If this is set it's a texture map)
+		public float[] diffuse = new float[3];
+		public float[] ambient = new float[3];
+		public float[] specular = new float[3];
+		public float shine;
+		// The color of the object (R, G, B)
+		float uTile; // u tiling of texture (Currently not used)
+		float vTile; // v tiling of texture (Currently not used)
+		float uOffset; // u offset of texture (Currently not used)
+		float vOffset; // v offset of texture (Currently not used)
+	};
+
+	public class ASEObject extends TriMesh {
+		public int materialID;
+		public Vector2f[] tempTexVerts; // The texture's UV coordinates
+		public Face[] faces; // The faces information of the object
+	};
 
 }
