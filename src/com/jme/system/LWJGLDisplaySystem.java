@@ -39,6 +39,8 @@ import org.lwjgl.opengl.Window;
 
 import com.jme.renderer.LWJGLRenderer;
 import com.jme.renderer.Renderer;
+import com.jme.widget.font.WidgetFont;
+import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of 
@@ -47,7 +49,7 @@ import com.jme.renderer.Renderer;
  * that gives a way of displaying data to the created window.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLDisplaySystem.java,v 1.6 2004-01-18 22:46:23 mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.7 2004-01-20 12:52:04 greggpatton Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -212,5 +214,13 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         } catch (Exception e) {
             System.exit(1);
         }
+    }
+
+    /* (non-Javadoc)
+     * @see com.jme.system.DisplaySystem#getFont(java.lang.String)
+     */
+    public WidgetFont getFont(String fontName) {
+        WidgetFont f = new WidgetLWJGLFont("Default");
+        return f;
     }
 }
