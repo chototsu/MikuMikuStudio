@@ -31,209 +31,85 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.InputHandler;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.11 2004-04-22 22:27:39 renanse Exp $
+ * @version $Id: TestBoxColor.java,v 1.12 2004-04-23 03:53:34 renanse Exp $
  */
-public class TestBoxColor extends BaseGame {
-    private TriMesh t;
-    private Camera cam;
-    private Node root;
-    private Node scene;
-    private InputHandler input;
-    private Thread thread;
-    private Timer timer;
-    private Quaternion rotQuat;
-    private float angle = 0;
-    private Vector3f axis;
+public class TestBoxColor extends SimpleGame {
+  private TriMesh t;
+  private Quaternion rotQuat;
+  private float angle = 0;
+  private Vector3f axis;
 
-    /**
-     * Entry point for the test,
-     * @param args
-     */
-    public static void main(String[] args) {
-        TestBoxColor app = new TestBoxColor();
-        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-        app.start();
+  /**
+   * Entry point for the test,
+   * @param args
+   */
+  public static void main(String[] args) {
+    TestBoxColor app = new TestBoxColor();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
 
+  }
+
+  protected void simpleUpdate() {
+    if (timer.getTimePerFrame() < 1) {
+      angle = angle + (timer.getTimePerFrame() * 25);
+      if (angle > 360) {
+        angle = 0;
+      }
     }
 
-    public void addSpatial(Spatial spatial) {
-        scene.attachChild(spatial);
-        scene.updateGeometricState(0.0f, true);
-        System.out.println(scene.getQuantity());
+    rotQuat.fromAngleAxis(angle * FastMath.DEG_TO_RAD, axis);
+    t.setLocalRotation(rotQuat);
+  }
+
+  protected void simpleInitGame() {
+    rotQuat = new Quaternion();
+    axis = new Vector3f(1, 1, 0.5f);
+    display.setTitle("Vertex Colors");
+    lightState.setEnabled(false);
+
+    Vector3f max = new Vector3f(5, 5, 5);
+    Vector3f min = new Vector3f( -5, -5, -5);
+
+    t = new Box("Box", min, max);
+    t.setModelBound(new BoundingBox());
+    t.updateModelBound();
+    t.setLocalTranslation(new Vector3f(0, 0, -15));
+    rootNode.attachChild(t);
+
+    ColorRGBA[] colors = new ColorRGBA[24];
+    for (int i = 0; i < 24; i++) {
+      colors[i] = ColorRGBA.randomColor();
     }
+    t.setColors(colors);
 
-    /**
-     * Not used in this test.
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
-        if(timer.getTimePerFrame() < 1) {
-            angle = angle + (timer.getTimePerFrame() * 1);
-            if(angle > 360) {
-                angle = 0;
-            }
-        }
+    TextureState ts = display.getRenderer().getTextureState();
+    ts.setEnabled(true);
+    ts.setTexture(
+        TextureManager.loadTexture(
+        TestBoxColor.class.getClassLoader().getResource(
+        "jmetest/data/images/Monkey.jpg"),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true));
 
-        rotQuat.fromAngleAxis(angle, axis);
-        timer.update();
-        input.update(timer.getTimePerFrame());
+    rootNode.setRenderState(ts);
 
-        t.setLocalRotation(rotQuat);
-        scene.updateGeometricState(0.0f, true);
-
-
-    }
-
-    /**
-     * clears the buffers and then draws the TriMesh.
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-
-        display.getRenderer().draw(root);
-
-    }
-
-    /**
-     * creates the displays and sets up the viewport.
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
-                    properties.getHeight());
-
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 75.0f);
-        Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-        Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
-        cam.setFrame(loc, left, up, dir);
-        display.getRenderer().setCamera(cam);
-
-        input = new FirstPersonHandler(this, cam, "LWJGL");
-        input.setKeySpeed(15f);
-        input.setMouseSpeed(1);
-        timer = Timer.getTimer("LWJGL");
-
-        rotQuat = new Quaternion();
-        axis = new Vector3f(1,1,0.5f);
-        display.setTitle("Vertex Colors");
-
-    }
-
-    /**
-     * builds the trimesh.
-     * @see com.jme.app.SimpleGame#initGame()
-     */
-    protected void initGame() {
-        TextureState textImage = display.getRenderer().getTextureState();
-        textImage.setEnabled(true);
-        textImage.setTexture(
-            TextureManager.loadTexture(
-                TestBoxColor.class.getClassLoader().getResource("jmetest/data/font/font.png"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-
-        scene = new Node("3D Scene Node");
-        root = new Node("Root Scene Node");
-
-        Vector3f max = new Vector3f(5,5,5);
-        Vector3f min = new Vector3f(-5,-5,-5);
-
-        t = new Box("Box", min, max);
-        t.setModelBound(new BoundingBox());
-        t.updateModelBound();
-
-        t.setLocalTranslation(new Vector3f(0,0,0));
-
-        scene.attachChild(t);
-        root.attachChild(scene);
-
-        ZBufferState buf = display.getRenderer().getZBufferState();
-        buf.setEnabled(true);
-        buf.setFunction(ZBufferState.CF_LEQUAL);
-
-        scene.setRenderState(buf);
-        cam.update();
-
-        ColorRGBA[] colors = new ColorRGBA[24];
-        for(int i = 0; i < 24; i++) {
-            colors[i] = new ColorRGBA((float)Math.random(),
-                    (float)Math.random(),
-                    (float)Math.random(),1);
-        }
-        t.setColors(colors);
-
-        TextureState ts = display.getRenderer().getTextureState();
-                ts.setEnabled(true);
-                ts.setTexture(
-                    TextureManager.loadTexture(
-                        TestBoxColor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                        Texture.MM_LINEAR,
-                        Texture.FM_LINEAR,
-                        true));
-
-        scene.setRenderState(ts);
-
-        scene.updateGeometricState(0.0f, true);
-        root.updateRenderState();
-
-    }
-    /**
-     * not used.
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-
-    }
-
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-
-    }
-
+  }
 }
