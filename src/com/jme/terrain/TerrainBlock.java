@@ -53,7 +53,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.29 2004-08-21 00:43:51 cep21 Exp $
+ * @version $Id: TerrainBlock.java,v 1.30 2004-09-05 16:14:52 cep21 Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -82,6 +82,16 @@ public class TerrainBlock extends AreaClodMesh {
      * Empty Constructor to be used internally only.
      */
     public TerrainBlock() {}
+
+    /**
+     * For internal use only.  Creates a new Terrainblock with the given name by simply calling
+     * super(name)
+     * @param name The name.
+     * @see com.jme.scene.lod.AreaClodMesh#AreaClodMesh(java.lang.String)
+     */
+    public TerrainBlock(String name){
+        super(name);
+    }
 
     /**
      * Constructor instantiates a new <code>TerrainBlock</code> object. The
@@ -161,41 +171,6 @@ public class TerrainBlock extends AreaClodMesh {
             this.setTrisPerPixel(0.02f);
         }
     }
-
-  /**
-   * If true, the terrain is created as a ClodMesh.  This is only usefull as a call after the
-   *  default constructor.
-   * @param useClod
-   */
-  public void setUseClod(boolean useClod) {
-    this.useClod = useClod;
-  }
-
-  /**
-   * Returns the current offset amount.  This is used when building texture coordinates.
-   * @return The current offset amount.
-   */
-  public Vector2f getOffset() {
-      return offset;
-  }
-
-  /**
-   * Sets the value for the current offset amount to use when building texture coordinates.
-   * This function is pretty useless in the current state because an offset amount is only used
-   * during the constructor.
-   * @param offset
-   */
-  public void setOffset(Vector2f offset) {
-      this.offset = offset;
-  }
-
-  /**
-   * Returns true if this TerrainBlock was created as a clod.
-   * @return True if this terrain block is a clod.  False otherwise.
-   */
-  public boolean isUseClod() {
-    return useClod;
-  }
 
   /**
      * <code>chooseTargetRecord</code> determines which level of detail to
@@ -446,5 +421,124 @@ public class TerrainBlock extends AreaClodMesh {
         }
 
         setColors(color);
+    }
+
+    /**
+     * Returns the height map this terrain block is using.
+     * @return This terrain block's height map.
+     */
+    public int[] getHeightMap() {
+        return heightMap;
+    }
+
+    /**
+     * Returns the offset amount this terrain block uses for textures.
+     * @return The current offset amount.
+     */
+    public int getOffsetAmount() {
+        return offsetAmount;
+    }
+
+    /**
+     * Returns the step scale that stretches the height map.
+     * @return The current step scale.
+     */
+    public Vector3f getStepScale() {
+        return stepScale;
+    }
+
+    /**
+     * Returns the total size of the terrain.
+     * @return The terrain's total size.
+     */
+    public int getTotalSize() {
+        return totalSize;
+    }
+
+    /**
+     * Returns the size of this terrain block.
+     * @return The current block size.
+     */
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     * If true, the terrain is created as a ClodMesh.  This is only usefull as a call after the
+     *  default constructor.
+     * @param useClod
+     */
+    public void setUseClod(boolean useClod) {
+      this.useClod = useClod;
+    }
+
+    /**
+     * Returns the current offset amount.  This is used when building texture coordinates.
+     * @return The current offset amount.
+     */
+    public Vector2f getOffset() {
+        return offset;
+    }
+
+    /**
+     * Sets the value for the current offset amount to use when building texture coordinates.
+     * This function is pretty useless in the current state because an offset amount is only used
+     * during the constructor.
+     * @param offset
+     */
+    public void setOffset(Vector2f offset) {
+        this.offset = offset;
+    }
+
+    /**
+     * Returns true if this TerrainBlock was created as a clod.
+     * @return True if this terrain block is a clod.  False otherwise.
+     */
+    public boolean isUseClod() {
+      return useClod;
+    }
+
+    /**
+     * Sets the size of this terrain block.  Note that this does <b>NOT</b> rebuild the terrain
+     * at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param size The new size.
+     */
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    /**
+     * Sets the total size of the terrain .  Note that this does <b>NOT</b> rebuild the terrain
+     * at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param totalSize The new total size.
+     */    public void setTotalSize(int totalSize) {
+        this.totalSize = totalSize;
+    }
+
+    /**
+     * Sets the step scale of this terrain block's height map.  Note that this does <b>NOT</b> rebuild
+     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param stepScale The new step scale.
+     */
+    public void setStepScale(Vector3f stepScale) {
+        this.stepScale = stepScale;
+    }
+
+    /**
+     * Sets the offset of this terrain texture map.  Note that this does <b>NOT</b> rebuild
+     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param offsetAmount The new texture offset.
+     */
+    public void setOffsetAmount(int offsetAmount) {
+        this.offsetAmount = offsetAmount;
+    }
+
+    /**
+     * Sets the terrain's height map.  Note that this does <b>NOT</b> rebuild
+     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param heightMap The new height map.
+     */
+    public void setHeightMap(int[] heightMap) {
+        this.heightMap = heightMap;
     }
 }
