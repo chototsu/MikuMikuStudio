@@ -32,20 +32,32 @@
 package com.jme.intersection;
 
 import com.jme.math.Ray;
-import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.BoundingVolume;
 
 /**
- * <code>Intersection</code>
+ * <code>Intersection</code> provides functional methods for calculating the
+ * intersection of some objects. All the methods are static to allow for quick
+ * and easy calls.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.1 2003-12-04 20:39:49 mojomonkey Exp $
+ * @version $Id: Intersection.java,v 1.2 2003-12-04 22:07:39 mojomonkey Exp $
  */
 public class Intersection {
-
+    /**
+     * EPSILON represents the error buffer used to denote a hit.
+     */
     public static final double EPSILON = 1e-12;
 
+    /**
+     * 
+     * <code>intersection</code> determines if a ray has intersected a given
+     * bounding volume. This method actually delegates the work to another
+     * method depending on what type of bounding volume has been passed.
+     * @param ray the ray to test.
+     * @param volume the bounding volume to test.
+     * @return true if they intersect, false otherwise.
+     */
     public static boolean intersection(Ray ray, BoundingVolume volume) {
         if (volume instanceof BoundingSphere) {
             return intersection(ray, (BoundingSphere) volume);
@@ -53,8 +65,14 @@ public class Intersection {
         return false;
     }
 
+    /**
+     * 
+     * <code>intersection</code> determines if a ray has intersected a sphere.
+     * @param ray the ray to test.
+     * @param sphere the sphere to test.
+     * @return true if they intersect, false otherwise.
+     */
     public static boolean intersection(Ray ray, BoundingSphere sphere) {
-        //      set up quadratic Q(t) = a*t^2 + 2*b*t + c
         Vector3f diff = ray.getOrigin().subtract(sphere.getCenter());
         float a = ray.getDirection().lengthSquared();
         float b = diff.dot(ray.getDirection());
@@ -86,9 +104,5 @@ public class Intersection {
                 return false;
             }
         }
-    }
-
-    public static boolean intersection(Ray ray, Triangle triangle) {
-        return Distance.distance(ray, triangle) <= EPSILON;
     }
 }
