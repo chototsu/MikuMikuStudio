@@ -45,7 +45,7 @@ import com.jme.scene.Spatial;
  * and it is OK to assign to more than one Spatial the same render state.
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.17 2004-08-28 20:34:06 cep21 Exp $
+ * @version $Id: RenderState.java,v 1.18 2004-08-28 20:41:29 cep21 Exp $
  */
 public abstract class RenderState implements Serializable {
 
@@ -137,7 +137,7 @@ public abstract class RenderState implements Serializable {
   public void addController(int index, Controller c) {
 //    controllers[index] = c;
       if (controllers==null)
-        controllers=new ArrayList();
+        controllers=new ArrayList(10);
       controllers.set(index,c);
   }
 
