@@ -49,7 +49,7 @@ import com.jme.sound.ISource;
 
 /**
  * @author Arman Ozcelik
- *  
+ *
  */
 public class Source implements ISource {
 
@@ -76,7 +76,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#play()
 	 */
 	public void play() {
@@ -87,7 +87,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#pause()
 	 */
 	public void pause() {
@@ -97,7 +97,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#stop()
 	 */
 	public void stop() {
@@ -107,7 +107,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#rewind()
 	 */
 	public void rewind() {
@@ -117,7 +117,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#delete()
 	 */
 	public void delete() {
@@ -129,7 +129,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setPitch(float)
 	 */
 	public void setPitch(float pitch) {
@@ -138,7 +138,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getPitch()
 	 */
 	public float getPitch() {
@@ -147,7 +147,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setGain(float)
 	 */
 	public void setGain(float gain) {
@@ -157,7 +157,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getGain()
 	 */
 	public float getGain() {
@@ -166,7 +166,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setMaxDistance(float)
 	 */
 	public void setMaxDistance(float maxDistance) {
@@ -176,7 +176,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getMaxDistance()
 	 */
 	public float getMaxDistance() {
@@ -185,7 +185,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setRolloffFactor(float)
 	 */
 	public void setRolloffFactor(float rolloffFactor) {
@@ -195,7 +195,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getRolloffFactor()
 	 */
 	public float getRolloffFactor() {
@@ -204,7 +204,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setReferenceDistance(float)
 	 */
 	public void setReferenceDistance(float referenceDistance) {
@@ -215,7 +215,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getReferenceDistance()
 	 */
 	public float getReferenceDistance() {
@@ -224,7 +224,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setMinGain(float)
 	 */
 	public void setMinGain(float minGain) {
@@ -234,7 +234,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getMinGain()
 	 */
 	public float getMinGain() {
@@ -243,7 +243,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setMaxGain(float)
 	 */
 	public void setMaxGain(float maxGain) {
@@ -253,7 +253,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getMaxGain()
 	 */
 	public float getMaxGain() {
@@ -262,7 +262,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setConeOuterGain(float)
 	 */
 	public void setConeOuterGain(float coneOuterGain) {
@@ -272,7 +272,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getConeOuterGain()
 	 */
 	public float getConeOuterGain() {
@@ -281,7 +281,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setPosition(com.jme.math.Vector3f)
 	 */
 	public void setPosition(Vector3f position) {
@@ -292,7 +292,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setPosition(float, float, float)
 	 */
 	public void setPosition(float x, float y, float z) {
@@ -302,7 +302,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getPosition()
 	 */
 	public Vector3f getPosition() {
@@ -315,7 +315,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setVelocity(com.jme.math.Vector3f)
 	 */
 	public void setVelocity(Vector3f veloc) {
@@ -325,7 +325,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setVelocity(float, float, float)
 	 */
 	public void setVelocity(float x, float y, float z) {
@@ -334,7 +334,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getVelocity()
 	 */
 	public Vector3f getVelocity() {
@@ -347,7 +347,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setDirection(com.jme.math.Vector3f)
 	 */
 	public void setDirection(Vector3f direct) {
@@ -358,7 +358,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setDirection(float, float, float)
 	 */
 	public void setDirection(float x, float y, float z) {
@@ -367,7 +367,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getDirection()
 	 */
 	public Vector3f getDirection() {
@@ -380,7 +380,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setSourceRelative(boolean)
 	 */
 	public void setSourceRelative(boolean isRelative) {
@@ -391,7 +391,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#isSourceRelative()
 	 */
 	public boolean isSourceRelative() {
@@ -400,7 +400,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setLooping(boolean)
 	 */
 	public void setLooping(boolean isLooping) {
@@ -411,7 +411,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getLooping()
 	 */
 	public boolean getLooping() {
@@ -420,7 +420,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getBuffersQueued()
 	 */
 	public int getBuffersQueued() {
@@ -429,7 +429,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getBuffersProcessed()
 	 */
 	public int getBuffersProcessed() {
@@ -438,7 +438,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#setBuffer(com.jme.sound.IBuffer)
 	 */
 	public void setBuffer(IBuffer buffer) {
@@ -450,7 +450,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#getBuffer()
 	 */
 	public IBuffer getBuffer() {
@@ -459,24 +459,22 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#queueBuffers(com.jme.sound.IBuffer[])
 	 */
-	public void queueBuffers(IBuffer[] buffers) {
-		IntBuffer alBuffer = BufferUtils.createIntBuffer(buffers.length);//ByteBuffer.allocateDirect(4
-																		 // *
-																		 // buffers.length).order(ByteOrder.nativeOrder()).asIntBuffer();
-		for (int i = 0; i < buffers.length; i++) {
-			alBuffer.put(((Buffer) buffers[i]).getBufferNumber());
-		}
-		alBuffer.rewind();
-		AL10.alSourceQueueBuffers(sourceNumber, alBuffer);
+        public void queueBuffers(IBuffer[] buffers) {
+          IntBuffer alBuffer = BufferUtils.createIntBuffer(buffers.length);
+          for (int i = 0; i < buffers.length; i++) {
+            alBuffer.put( ( (Buffer) buffers[i]).getBufferNumber());
+          }
+          alBuffer.rewind();
+          AL10.alSourceQueueBuffers(sourceNumber, alBuffer);
 
-	}
+        }
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#queueBuffers(com.jme.sound.IBuffer[])
 	 */
 	public void queueBuffer(IBuffer buffer) {
@@ -489,7 +487,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#unqueueBuffers(com.jme.sound.IBuffer[])
 	 */
 	public void unqueueBuffers(IBuffer[] buffers) {
@@ -506,7 +504,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.ISource#unqueueBuffers(com.jme.sound.IBuffer[])
 	 */
 	public void unqueueBuffer(IBuffer buffer) {
@@ -524,7 +522,7 @@ public class Source implements ISource {
 
 	/*
 	 * (non-Javadoc)
-	 * 
+	 *
 	 * @see com.jme.sound.second.ISource#setFilter(com.jme.sound.second.IBufferFilter)
 	 */
 	public void setFilter(IBufferFilter filter) {

@@ -59,6 +59,7 @@ public class HelloIntersection extends SimpleGame {
         laserSound=new SphericalSound(laserURL);
         /** Make the sound softer*/
         laserSound.setGain(.5f);
+        laserSound.setLooping(false);
 
         /** Create a + for the middle of the screen*/
         Text cross = new Text("Crosshairs", "+");

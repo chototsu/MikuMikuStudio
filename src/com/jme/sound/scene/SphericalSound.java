@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,11 +27,11 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 /*
  * Created on 25 janv. 2004
- *  
+ *
  */
 package com.jme.sound.scene;
 
@@ -48,7 +48,7 @@ import com.jme.sound.scene.SoundSpatial;
 
 /**
  * @author Arman Ozcelik
- *  
+ *
  */
 public class SphericalSound extends SoundSpatial {
 
@@ -113,7 +113,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.scene.SoundSpatial#draw(com.jme.sound.scene.SoundRenderer)
      */
     public void draw(ISoundRenderer r) {
@@ -152,7 +152,7 @@ public class SphericalSound extends SoundSpatial {
 
     /**
      * Detects if this SphericalSound is sequence playing enabled.
-     * 
+     *
      * @return Returns true if there are more than 2 samples inside this
      *         SphericalSound.
      */
@@ -162,7 +162,7 @@ public class SphericalSound extends SoundSpatial {
 
     /**
      * Gets the number of samples
-     * 
+     *
      * @return the number of sequences
      */
     public int getSequenceSize() {
@@ -170,21 +170,20 @@ public class SphericalSound extends SoundSpatial {
     }
 
     public void updateWorldData(float timeInSeconds) {
-        //check if this sound contains sequences
+      //check if this sound contains sequences
+      //first time check
+      if (sequenceStartTime == 0) sequenceStartTime = timeInSeconds;
+      if ( (timeInSeconds - sequenceStartTime) >= sequenceDuration) {
+        //stop the playing source
+        unqueueBuffers(sequence);
         if (loopingEnabled) {
-            //first time check
-            if (sequenceStartTime == 0) sequenceStartTime = timeInSeconds;
-            if ((timeInSeconds - sequenceStartTime) >= sequenceDuration) {
-                //stop the playing source
-                unqueueBuffers(sequence);
-                queueBuffers(sequence);
-                //reset timer
-                sequenceStartTime = timeInSeconds;
-            }
-
+          queueBuffers(sequence);
+          //reset timer
+          sequenceStartTime = timeInSeconds;
         }
+      }
 
-        super.updateWorldData(timeInSeconds);
+      super.updateWorldData(timeInSeconds);
     }
 
     /**
@@ -204,7 +203,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#play()
      */
     public void play() {
@@ -218,7 +217,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#pause()
      */
     public void pause() {
@@ -229,7 +228,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#stop()
      */
     public void stop() {
@@ -240,7 +239,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#rewind()
      */
     public void rewind() {
@@ -249,7 +248,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#delete()
      */
     public void delete() {
@@ -261,7 +260,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setPitch(float)
      */
     public void setPitch(float pitch) {
@@ -271,7 +270,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getPitch()
      */
     public float getPitch() {
@@ -280,7 +279,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setGain(float)
      */
     public void setGain(float gain) {
@@ -291,7 +290,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getGain()
      */
     public float getGain() {
@@ -300,7 +299,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setMaxDistance(float)
      */
     public void setMaxDistance(float maxDistance) {
@@ -311,7 +310,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getMaxDistance()
      */
     public float getMaxDistance() {
@@ -320,7 +319,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setRolloffFactor(float)
      */
     public void setRolloffFactor(float rolloffFactor) {
@@ -331,7 +330,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getRolloffFactor()
      */
     public float getRolloffFactor() {
@@ -340,7 +339,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setReferenceDistance(float)
      */
     public void setReferenceDistance(float referenceDistance) {
@@ -351,7 +350,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getReferenceDistance()
      */
     public float getReferenceDistance() {
@@ -360,7 +359,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setMinGain(float)
      */
     public void setMinGain(float minGain) {
@@ -371,7 +370,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getMinGain()
      */
     public float getMinGain() {
@@ -380,7 +379,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setMaxGain(float)
      */
     public void setMaxGain(float maxGain) {
@@ -391,7 +390,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getMaxGain()
      */
     public float getMaxGain() {
@@ -400,7 +399,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setConeOuterGain(float)
      */
     public void setConeOuterGain(float coneOuterGain) {
@@ -411,7 +410,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getConeOuterGain()
      */
     public float getConeOuterGain() {
@@ -420,7 +419,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setPosition(com.jme.math.Vector3f)
      */
     public void setPosition(Vector3f position) {
@@ -431,7 +430,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setPosition(float, float, float)
      */
     public void setPosition(float x, float y, float z) {
@@ -442,7 +441,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getPosition()
      */
     public Vector3f getPosition() {
@@ -451,7 +450,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setVelocity(com.jme.math.Vector3f)
      */
     public void setVelocity(Vector3f velocity) {
@@ -462,7 +461,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setVelocity(float, float, float)
      */
     public void setVelocity(float x, float y, float z) {
@@ -473,7 +472,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getVelocity()
      */
     public Vector3f getVelocity() {
@@ -482,7 +481,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setDirection(com.jme.math.Vector3f)
      */
     public void setDirection(Vector3f direction) {
@@ -493,7 +492,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setDirection(float, float, float)
      */
     public void setDirection(float x, float y, float z) {
@@ -504,7 +503,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getDirection()
      */
     public Vector3f getDirection() {
@@ -513,7 +512,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setSourceRelative(boolean)
      */
     public void setSourceRelative(boolean isRelative) {
@@ -524,7 +523,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#isSourceRelative()
      */
     public boolean isSourceRelative() {
@@ -533,7 +532,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setLooping(boolean)
      */
     public void setLooping(boolean isLooping) {
@@ -546,7 +545,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getLooping()
      */
     public boolean getLooping() {
@@ -556,7 +555,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getBuffersQueued()
      */
     public int getBuffersQueued() {
@@ -565,7 +564,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#getBuffersProcessed()
      */
     public int getBuffersProcessed() {
@@ -574,7 +573,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#queueBuffers(com.jme.sound.IBuffer[])
      */
     public void queueBuffers(IBuffer[] buffers) {
@@ -591,7 +590,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#unqueueBuffers(com.jme.sound.IBuffer[])
      */
     public void unqueueBuffers(IBuffer[] buffers) {
@@ -608,7 +607,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#isPlaying()
      */
     public boolean isPlaying() {
@@ -618,7 +617,7 @@ public class SphericalSound extends SoundSpatial {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.sound.ISource#setFilter(com.jme.sound.IBufferFilter)
      */
     public void setFilter(IBufferFilter filter) {
@@ -629,7 +628,7 @@ public class SphericalSound extends SoundSpatial {
 
     /**
      * The playing time the playing sample
-     * 
+     *
      * @return the sample duration in seconds
      */
     public float getPlayingTime() {
@@ -661,7 +660,7 @@ public class SphericalSound extends SoundSpatial {
      */
     public void fireEvent(int event) {
         // TODO Implement this
-        
+
     }
 
 }
