@@ -73,7 +73,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.2 2004-07-02 21:08:59 ericthered Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.3 2004-08-18 21:42:00 ericthered Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
@@ -272,7 +272,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
         int freq = Integer.parseInt(freqString.substring(0, freqString.indexOf(" ")));
 
         boolean fullscreen = fullscreenBox.isSelected();
-        if (!fullscreen) {
+        //FIXME: Does not work in Linux
+        /*if (!fullscreen) {
             //query the current bit depth of the desktop
             int curDepth = GraphicsEnvironment.getLocalGraphicsEnvironment()
                     .getDefaultScreenDevice().getDisplayMode().getBitDepth();
@@ -281,7 +282,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
                                "mode than your current desktop bit depth");
                 return false;
             }            
-        }
+        }*/
         
         String renderer = (String) rendererCombo.getSelectedItem();
 
