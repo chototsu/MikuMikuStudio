@@ -121,7 +121,6 @@ public abstract class SoundSpatial {
 			return;
 		}
 		Camera camera= r.getCamera();
-		System.out.println("Camera dir" + camera.getDirection());
 		//check to see if we can cull this node
 		draw(r);
 
