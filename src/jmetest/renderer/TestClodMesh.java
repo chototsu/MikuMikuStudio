@@ -71,7 +71,7 @@ import com.jme.util.Timer;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.7 2004-04-09 22:39:27 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.8 2004-04-09 22:54:21 renanse Exp $
  */
 
 public class TestClodMesh extends VariableTimestepGame {
@@ -87,7 +87,7 @@ public class TestClodMesh extends VariableTimestepGame {
   private long lastPress = 0;
   private WireframeState wireState;
   private LightState lightState;
-  private boolean useModel = false;
+  private boolean useModel = true;
 
   /**
    * Entry point for the test,
@@ -250,14 +250,14 @@ public class TestClodMesh extends VariableTimestepGame {
     scene.setRenderState(buf);
 
     iNode = new ClodMesh("model", new Disk("disc", 50, 50, 8), null);
-    iNode.setForceCull(false);
+    iNode.setForceCull(true);
 
     TriMesh child = (TriMesh)model.getChild(0);
     iNode2 = new ClodMesh("model", child, null);
-    iNode2.setForceCull(true);
+    iNode2.setForceCull(false);
 
     wireState = display.getRenderer().getWireframeState();
-    wireState.setEnabled(true);
+    wireState.setEnabled(false);
     scene.setRenderState(wireState);
 
     scene.attachChild(iNode);
