@@ -81,7 +81,6 @@ public class HelloIntersection extends SimpleGame {
             TextureManager.loadTexture(monkeyLoc, Texture.MM_LINEAR,
                                        Texture.FM_LINEAR, true)
             );
-        ts.setEnabled(true);
         sb.setRenderState(ts);
 
         // Attach the skybox to our root node, and force the rootnode to show
