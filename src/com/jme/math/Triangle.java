@@ -36,10 +36,12 @@ package com.jme.math;
  * The triangle is defined by a collection of three <code>Vector3f</code>
  * objects.
  * @author Mark Powell
- * @version $Id: Triangle.java,v 1.3 2004-04-22 22:26:40 renanse Exp $
+ * @version $Id: Triangle.java,v 1.4 2004-07-30 23:18:55 cep21 Exp $
  */
 public class Triangle {
-    private Vector3f[] points;
+    private Vector3f pointa;
+    private Vector3f pointb;
+    private Vector3f pointc;
 
     /**
      * Constructor instantiates a new <Code>Triangle</code> object with the
@@ -51,10 +53,9 @@ public class Triangle {
      * @param p3 the third point of the triangle.
      */
     public Triangle(Vector3f p1, Vector3f p2, Vector3f p3) {
-        points = new Vector3f[3];
-        points[0] = p1;
-        points[1] = p2;
-        points[2] = p3;
+        pointa = p1;
+        pointb = p2;
+        pointc = p3;
     }
 
     /**
@@ -65,7 +66,10 @@ public class Triangle {
      * @return the point.
      */
     public Vector3f get(int i) {
-        return points[i];
+        if (i==0) return pointa;
+        else if (i==1) return pointb;
+        else if (i==2) return pointc;
+        return null;
     }
 
     /**
@@ -76,6 +80,8 @@ public class Triangle {
      * @param point the point to set.
      */
     public void set(int i, Vector3f point) {
-        points[i] = point;
+        if (i==0) pointa=point;
+        else if (i==1) pointb=point;
+        else if (i==2) pointc=point;
     }
 }
