@@ -51,7 +51,7 @@ import com.jme.scene.state.RenderState;
  * <code>ParticleSystem</code>
  * 
  * @author Ahmed
- * @version $Id: ParticleSystem.java,v 1.8 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: ParticleSystem.java,v 1.9 2004-02-22 23:45:46 mojomonkey Exp $
  */
 public class ParticleSystem extends Node {
 
@@ -67,6 +67,16 @@ public class ParticleSystem extends Node {
 	private Rectangle psRect;
 
 	private boolean alwaysRotate;
+    
+    private Node particleParent;
+
+	/**
+	 * <code>getParticles</code>
+	 * @return
+	 */
+	public Particle[] getParticles() {
+		return particles;
+	}
 
 	public ParticleSystem(String name, int num) {
 		super(name);
@@ -105,6 +115,45 @@ public class ParticleSystem extends Node {
 		
 		geoToUse = 0;
 	}
+    
+    public ParticleSystem(String name, Node particleParent, int num) {
+            super(name);
+            this.particleParent = particleParent;
+            numOfParticles = num;
+            particles = new Particle[numOfParticles];
+
+            startSize = endSize = 1.0f;
+            fade = speed = friction = 0.0f;
+            startColor = endColor = new ColorRGBA(0, 0, 0, 0);
+            gravity = position = new Vector3f(0, 0, 0);
+
+            Vector3f[] vertices = new Vector3f[4];
+            vertices[0] = new Vector3f(0, 0, 0);
+            vertices[1] = new Vector3f(0, 1, 0);
+            vertices[2] = new Vector3f(1, 1, 0);
+            vertices[3] = new Vector3f(1, 0, 0);
+
+            ColorRGBA[] colors = new ColorRGBA[4];
+            colors[0] = new ColorRGBA(0, 0, 0, 0);
+            colors[1] = new ColorRGBA(0, 0, 0, 0);
+            colors[2] = new ColorRGBA(0, 0, 0, 0);
+            colors[3] = new ColorRGBA(0, 0, 0, 0);
+
+            Vector2f[] tex = new Vector2f[4];
+            tex[0] = new Vector2f(0, 0);
+            tex[1] = new Vector2f(0, 1);
+            tex[2] = new Vector2f(1, 1);
+            tex[3] = new Vector2f(1, 0);
+
+            int[] indices = { 0, 1, 3, 2, 3, 1 };
+
+            for (int i = 0; i < numOfParticles; i++) {
+                particles[i] = new Particle("Particle " + (i + 1),vertices, null, colors, tex, indices);
+                particleParent.attachChild(particles[i]);
+            }
+        
+            geoToUse = 0;
+        }
 
 	//----
 	// Getter Methods
@@ -112,6 +161,13 @@ public class ParticleSystem extends Node {
 	public float getStartSize() {
 		return startSize;
 	}
+    public Node getParticleParent() {
+        if(particleParent == null) {
+            return this;
+        } else {
+            return particleParent;
+        }
+    }
 	public float getEndSize() {
 		return endSize;
 	}
@@ -134,8 +190,8 @@ public class ParticleSystem extends Node {
 		return gravity;
 	}
 	public Vector3f getStartPosition() {
-		return position;
-	}
+        return position;
+    }
 
 	//----
 	// Setter Methods

@@ -31,7 +31,6 @@
 package com.jme.effects;
 
 import com.jme.math.Matrix3f;
-import com.jme.math.Vector3f;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Controller;
 import com.jme.system.DisplaySystem;
@@ -54,8 +53,6 @@ public class ParticleController extends Controller {
 	private float time, averageSize;
 	private Particle currentP;
 
-	private Vector3f[] points = new Vector3f[4];
-
 	private Matrix3f rotationalM;
 
 	public ParticleController(ParticleSystem p) {
@@ -68,8 +65,8 @@ public class ParticleController extends Controller {
 
 	public void update(float timeF) {
 		time = timeF * ps.getSpeed();
-		for (int i = 0; i < ps.getQuantity(); i++) {
-			currentP = (Particle) ps.getChild(i);
+		for (int i = 0; i < ps.getParticles().length; i++) {
+			currentP = ps.getParticles()[i];
 
 			if (isFirst) {
 				averageSize = (float) (ps.getStartSize() + ps.getEndSize()) / 2;
@@ -196,29 +193,64 @@ public class ParticleController extends Controller {
 
 		switch (ps.getGeometry()) {
 			case 1 :
-				currentP.setLocalTranslation(ps.getLine().random());
-				break;
+				if (ps == ps.getParticleParent()) {
+					currentP.setLocalTranslation(ps.getLine().random());
+					break;
+				} else {
+					currentP.setLocalTranslation(ps.getLine().random());
+					currentP.getLocalTranslation().x
+						+= ps.getLocalTranslation().x;
+					currentP.getLocalTranslation().y
+						+= ps.getLocalTranslation().y;
+					currentP.getLocalTranslation().z
+						+= ps.getLocalTranslation().z;
+					break;
+				}
 			case 2 :
-				currentP.setLocalTranslation(ps.getRectangle().random());
-				break;
+				if (ps == ps.getParticleParent()) {
+					currentP.setLocalTranslation(ps.getRectangle().random());
+					break;
+				} else {
+					currentP.setLocalTranslation(ps.getRectangle().random());
+					currentP.getLocalTranslation().x
+						+= ps.getLocalTranslation().x;
+					currentP.getLocalTranslation().y
+						+= ps.getLocalTranslation().y;
+					currentP.getLocalTranslation().z
+						+= ps.getLocalTranslation().z;
+					break;
+				}
 			default :
-				currentP.getLocalTranslation().x = ps.getStartPosition().x;
-				currentP.getLocalTranslation().y = ps.getStartPosition().y;
-				currentP.getLocalTranslation().z = ps.getStartPosition().z;
-				break;
+				if (ps == ps.getParticleParent()) {
+					currentP.getLocalTranslation().x = ps.getStartPosition().x;
+					currentP.getLocalTranslation().y = ps.getStartPosition().y;
+					currentP.getLocalTranslation().z = ps.getStartPosition().z;
+					break;
+				} else {
+					currentP.getLocalTranslation().x =
+						ps.getStartPosition().x + ps.getLocalTranslation().x;
+					currentP.getLocalTranslation().y =
+						ps.getStartPosition().y + ps.getLocalTranslation().y;
+					currentP.getLocalTranslation().z =
+						ps.getStartPosition().z + ps.getLocalTranslation().z;
+					break;
+				}
 
 		}
 
-	currentP.color.r = ps.getStartColor().r;
-	currentP.color.g = ps.getStartColor().g;
-	currentP.color.b = ps.getStartColor().b;
-	currentP.color.a = ps.getStartColor().a;
+		currentP.color.r = ps.getStartColor().r;
+		currentP.color.g = ps.getStartColor().g;
+		currentP.color.b = ps.getStartColor().b;
+		currentP.color.a = ps.getStartColor().a;
 
-	currentP.size = ps.getStartSize();
+		currentP.size = ps.getStartSize();
 
-	currentP.velocity.x = (float) (((Math.random() * 32767) % 50) - 26) * 10;
-	currentP.velocity.y = (float) (((Math.random() * 32767) % 50) - 26) * 10;
-	currentP.velocity.z = (float) (((Math.random() * 32767) % 50) - 26) * 10;
+		currentP.velocity.x =
+			(float) (((Math.random() * 32767) % 50) - 26) * 10;
+		currentP.velocity.y =
+			(float) (((Math.random() * 32767) % 50) - 26) * 10;
+		currentP.velocity.z =
+			(float) (((Math.random() * 32767) % 50) - 26) * 10;
 
-}
+	}
 }
