@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.21 2004-03-13 05:22:47 renanse Exp $
+ * @version $Id: Geometry.java,v 1.22 2004-03-19 18:19:54 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -231,6 +231,7 @@ public abstract class Geometry extends Spatial implements Serializable {
             vertBuf = null;
         }
         this.vertex = vertex;
+
         updateVertexBuffer();
     }
 
@@ -248,6 +249,20 @@ public abstract class Geometry extends Spatial implements Serializable {
         vertBuf.put(index * 3, value.x);
         vertBuf.put(index * 3 + 1, value.y);
         vertBuf.put(index * 3 + 2, value.z);
+    }
+
+    /**
+     *
+     * <code>setTextureCoord</code> sets a single coord into the texture array.
+     * The index to set it is given, and due to speed considerations, no
+     * bounds checking is done. Therefore, if an invalid index is given,
+     * an ArrayIndexOutOfBoundsException will be thrown.
+     * @param textureUnit the textureUnit to set on.
+     * @param index the index of the coord to set.
+     * @param value the vertex to set.
+     */
+    public void setTextureCoord(int textureUnit, int index, Vector2f value) {
+      this.texture[textureUnit][index] = value;
     }
 
     /**
@@ -549,9 +564,11 @@ public abstract class Geometry extends Spatial implements Serializable {
         }
 
         for (int i = 0; i < vertex.length; i++) {
-            buffer[i * 3] = vertex[i].x;
-            buffer[i * 3 + 1] = vertex[i].y;
-            buffer[i * 3 + 2] = vertex[i].z;
+            if (vertex[i] != null) {
+              buffer[i * 3] = vertex[i].x;
+              buffer[i * 3 + 1] = vertex[i].y;
+              buffer[i * 3 + 2] = vertex[i].z;
+            }
         }
 
         vertBuf.clear();
@@ -608,10 +625,10 @@ public abstract class Geometry extends Spatial implements Serializable {
                     .allocateDirect(4 * buffer.length)
                     .order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
-            for (int i = 0; i < vertex.length; i++) {
-                buffer[i * 2] = texture[0][i].x;
-                buffer[i * 2 + 1] = texture[0][i].y;
-            }
+        }
+        for (int i = 0; i < vertex.length; i++) {
+            buffer[i * 2] = texture[0][i].x;
+            buffer[i * 2 + 1] = texture[0][i].y;
         }
         texBuf[0].clear();
         texBuf[0].put(buffer);
@@ -639,8 +656,10 @@ public abstract class Geometry extends Spatial implements Serializable {
                     .order(ByteOrder.nativeOrder())
                     .asFloatBuffer();
             for (int i = 0; i < vertex.length; i++) {
-                buffer[i * 2] = texture[textureUnit][i].x;
-                buffer[i * 2 + 1] = texture[textureUnit][i].y;
+                if (texture[textureUnit][i] != null) {
+                  buffer[i * 2] = texture[textureUnit][i].x;
+                  buffer[i * 2 + 1] = texture[textureUnit][i].y;
+                }
             }
         }
         texBuf[textureUnit].clear();
