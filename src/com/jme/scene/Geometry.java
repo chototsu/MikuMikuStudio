@@ -47,7 +47,6 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import java.util.Stack;
 import com.jme.scene.state.RenderState;
-import com.jme.scene.state.lwjgl.LWJGLTextureState;
 
 /**
  * <code>Geometry</code> defines a leaf node of the scene graph. The leaf
@@ -55,7 +54,7 @@ import com.jme.scene.state.lwjgl.LWJGLTextureState;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.28 2004-04-16 20:35:55 renanse Exp $
+ * @version $Id: Geometry.java,v 1.29 2004-04-20 20:04:56 mojomonkey Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
   protected BoundingVolume bound;
