@@ -40,7 +40,7 @@ package com.jme.input.action;
  *
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: AbstractInputAction.java,v 1.1 2004-04-23 16:39:09 renanse Exp $
+ * @version $Id: AbstractInputAction.java,v 1.2 2004-04-23 20:20:22 renanse Exp $
  */
 public abstract class AbstractInputAction {
 
@@ -84,7 +84,7 @@ public abstract class AbstractInputAction {
      * <code>setKey</code> sets the key associated with this action.
      * @param key the key associated with the action.
      */
-    public final void setKey(String key) {
+    public void setKey(String key) {
         this.key = key;
     }
 
