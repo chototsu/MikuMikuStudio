@@ -84,6 +84,9 @@ public class DisplaySystem {
     //Singleton reference.
     private static DisplaySystem instance = null;
 
+    //Frequency constant
+    private static final int DEFAULT_FREQ = 60;
+
     //the OpenGL objects
     private static GL gl;
     private static GLU glu;
@@ -329,7 +332,8 @@ public class DisplaySystem {
         for (int i = 0; i < modes.length; i++) {
             if (modes[i].width == width
                 && modes[i].height == height
-                && modes[i].bpp == bpp) {
+                && modes[i].bpp == bpp
+                && modes[i].freq == DEFAULT_FREQ) {
 
                 LoggingSystem.getLoggingSystem().getLogger().log(
                     Level.INFO,
