@@ -151,8 +151,7 @@ public class TestRelativeMouse extends BaseGame {
             TextureManager.loadTexture(
                 TestKeyInput.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         text.setRenderState(ts);
         AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);

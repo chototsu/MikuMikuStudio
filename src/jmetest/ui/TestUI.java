@@ -305,7 +305,7 @@ public class TestUI extends BaseGame {
         cursor.setTexture(TextureManager.loadTexture(TestAbsoluteMouse.class
                 .getClassLoader()
                 .getResource("jmetest/data/cursor/cursor1.png"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR, true));
+                Texture.MM_LINEAR, Texture.FM_LINEAR));
 
         /*
          * Add the cursor texture to the mouse
@@ -333,7 +333,7 @@ public class TestUI extends BaseGame {
         TextureState font = display.getRenderer().createTextureState();
         font.setTexture(TextureManager.loadTexture(SimpleGame.class
                 .getClassLoader().getResource(fontLocation), Texture.MM_LINEAR,
-                Texture.FM_LINEAR, true));
+                Texture.FM_LINEAR));
         font.setEnabled(true);
 
         /*

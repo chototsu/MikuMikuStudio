@@ -51,7 +51,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSequencedSound.java,v 1.5 2004-08-14 00:50:08 cep21 Exp $
+ * @version $Id: TestSequencedSound.java,v 1.6 2005-02-10 21:48:31 renanse Exp $
  */
 public class TestSequencedSound extends SimpleGame {
 
@@ -165,7 +165,7 @@ public class TestSequencedSound extends SimpleGame {
         tst.setTexture(TextureManager.loadTexture(
                 TestSequencedSound.class.getClassLoader().getResource(
                         "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR, true));
+                Texture.FM_LINEAR));
         rootNode.setRenderState(tst);
         rootNode.attachChild(box);
         rootNode.attachChild(box2);

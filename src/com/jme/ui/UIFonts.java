@@ -38,10 +38,9 @@ public class UIFonts {
 
 	        if (useClassLoader) {
 	            ts.setTexture(TextureManager.loadTexture(UIText.class.getClassLoader().getResource(fontFileNames[n]),
-	                    Texture.MM_NEAREST, Texture.FM_NEAREST, true));
+	                    Texture.MM_NEAREST, Texture.FM_NEAREST));
 	        } else {
-	            ts.setTexture(TextureManager.loadTexture(fontFileNames[n], Texture.MM_NEAREST, Texture.FM_NEAREST,
-	                    true));
+	            ts.setTexture(TextureManager.loadTexture(fontFileNames[n], Texture.MM_NEAREST, Texture.FM_NEAREST));
 	        }
 	        ts.apply();
 	        _textureStates.put( fontNames[n], ts);

@@ -252,8 +252,7 @@ public class HelloSimpleGame extends BaseGame {
           SimpleGame.class.getClassLoader().getResource(
           fontLocation),
           Texture.MM_LINEAR,
-          Texture.FM_LINEAR,
-          true));
+          Texture.FM_LINEAR));
       font.setEnabled(true);
 
       // Then our font Text object.

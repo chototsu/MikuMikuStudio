@@ -62,7 +62,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone3.java,v 1.10 2004-08-14 00:50:03 cep21 Exp $
+ * @version $Id: TestMilestone3.java,v 1.11 2005-02-10 21:48:29 renanse Exp $
  */
 public class TestMilestone3 extends BaseGame {
     private TriMesh t;
@@ -258,8 +258,7 @@ public class TestMilestone3 extends BaseGame {
             TextureManager.loadTexture(
                 TestMilestone3.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
 
         bez.setRenderState(ts);
         scene.updateGeometricState(0.0f, true);

@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.33 2004-11-30 20:16:52 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.34 2005-02-10 21:48:27 renanse Exp $
  *
  */
 
@@ -1414,8 +1414,7 @@ public class RenParticleControlFrame extends JFrame {
           TextureManager.loadTexture(
           textFile.getAbsolutePath(),
           Texture.MM_LINEAR,
-          Texture.FM_LINEAR,
-          true));
+          Texture.FM_LINEAR));
       ts.setEnabled(true);
       RenParticleEditor.root.setRenderState(ts);
       RenParticleEditor.root.updateRenderState();

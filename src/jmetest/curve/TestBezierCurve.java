@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.15 2004-08-21 06:18:35 cep21 Exp $
+ * @version $Id: TestBezierCurve.java,v 1.16 2005-02-10 21:48:29 renanse Exp $
  */
 public class TestBezierCurve extends SimpleGame {
 
@@ -132,8 +132,7 @@ public class TestBezierCurve extends SimpleGame {
         TestBezierCurve.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     box.setRenderState(ts);
 
     rootNode.setRenderState(buf);

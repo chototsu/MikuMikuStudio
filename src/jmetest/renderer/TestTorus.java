@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.10 2004-09-01 05:13:42 mojomonkey Exp $
+ * @version $Id: TestTorus.java,v 1.11 2005-02-10 21:48:21 renanse Exp $
  */
 public class TestTorus extends BaseGame {
   private Camera cam;
@@ -188,8 +188,7 @@ public class TestTorus extends BaseGame {
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/texture/dirt.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
 
     scene.setRenderState(ts);
 
@@ -245,8 +244,7 @@ public class TestTorus extends BaseGame {
         TestTorus.class.getClassLoader().getResource(
         "jmetest/data/font/font.png"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     font.setEnabled(true);
 
     fps = new Text("FPS counter", "");

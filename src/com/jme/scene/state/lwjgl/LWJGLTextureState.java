@@ -31,11 +31,14 @@
  */
 package com.jme.scene.state.lwjgl;
 
+import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Stack;
 import java.util.logging.Level;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ARBTextureCompression;
+import org.lwjgl.opengl.EXTTextureCompressionS3TC;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -57,7 +60,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.35 2004-09-14 21:52:14 mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.36 2005-02-10 21:48:33 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -98,10 +101,19 @@ public class LWJGLTextureState extends TextureState {
 			GL11.GL_ONE_MINUS_SRC_ALPHA };
 
 	private static int[] imageComponents = { GL11.GL_RGBA4, GL11.GL_RGB8,
-			GL11.GL_RGB5_A1, GL11.GL_RGBA8, GL11.GL_LUMINANCE8_ALPHA8 };
+			GL11.GL_RGB5_A1, GL11.GL_RGBA8, GL11.GL_LUMINANCE8_ALPHA8,
+            EXTTextureCompressionS3TC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
+            EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+            EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+            EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+            EXTTextureCompressionS3TC.GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
+            EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+            EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
+            EXTTextureCompressionS3TC.GL_COMPRESSED_RGBA_S3TC_DXT5_EXT };
 
 	private static int[] imageFormats = { GL11.GL_RGBA, GL11.GL_RGB,
-			GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_LUMINANCE_ALPHA };
+			GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_LUMINANCE_ALPHA,
+            GL11.GL_RGB, GL11.GL_RGBA, GL11.GL_RGBA, GL11.GL_RGBA };
 
 	private transient IntBuffer id = BufferUtils.createIntBuffer(1);
 
@@ -115,6 +127,7 @@ public class LWJGLTextureState extends TextureState {
 	public LWJGLTextureState() {
 		super();
 		supportsMultiTexture = (GLContext.GL_ARB_multitexture && GLContext.OpenGL13);
+		supportsS3TCCompression = GLContext.GL_EXT_texture_compression_s3tc;
 		if (numTexUnits == 0) {
 			if (supportsMultiTexture) {
 				IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
@@ -136,10 +149,9 @@ public class LWJGLTextureState extends TextureState {
 			max_a.rewind();
 
 			// Grab the maximum anisotropic filter.
-			GL11
-					.glGetFloat(
-							EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
-							max_a);
+			GL11.glGetFloat(
+			        EXTTextureFilterAnisotropic.GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT,
+			        max_a);
 
 			// set max.
 			maxAnisotropic = max_a.get(0);
@@ -212,19 +224,56 @@ public class LWJGLTextureState extends TextureState {
 					// texture output, and constants to modify fragments via the
 					// texture units.
 					if (image != null) {
-						if (texture.getMipmap() == Texture.MM_NONE) {
-							GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0,
-									imageComponents[image.getType()], image
-											.getWidth(), image.getHeight(), 0,
-									imageFormats[image.getType()],
-									GL11.GL_UNSIGNED_BYTE, image.getData());
-						} else {
-							GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
-									imageComponents[image.getType()], image
-											.getWidth(), image.getHeight(),
-									imageFormats[image.getType()],
-									GL11.GL_UNSIGNED_BYTE, image.getData());
-						}
+                        // For textures which need mipmaps auto-generating and which
+                        // aren't using compressed images, generate the mipmaps.
+                        // A new mipmap builder may be needed to build mipmaps for
+                        // compressed textures.
+                        if (texture.getMipmap() != Texture.MM_NONE &&
+                            !image.hasMipmaps() && !image.isCompressedType()) {
+                            GLU.gluBuild2DMipmaps(GL11.GL_TEXTURE_2D,
+                                    imageComponents[image.getType()], image
+                                            .getWidth(), image.getHeight(),
+                                    imageFormats[image.getType()],
+                                    GL11.GL_UNSIGNED_BYTE, image.getData());
+                        } else {
+                            // Get mipmap data sizes and amount of mipmaps to send to
+                            // opengl. Then loop through all mipmaps and send them.
+                            int[] mipSizes = image.getMipMapSizes();
+                            ByteBuffer data = image.getData();
+                            int max = 1;
+                            int pos = 0;
+                            if (mipSizes == null) {
+                                mipSizes = new int[] { data.capacity() };
+                            } else if (texture.getMipmap() != Texture.MM_NONE ) {
+                                max = mipSizes.length;
+                            }
+                            
+                            for ( int m = 0; m < max; m++ )
+                            {
+                                int width = Math.max( 1, image.getWidth() >> m );
+                                int height = Math.max( 1, image.getHeight() >> m );
+                                
+                                data.position( pos );
+                                
+                                if ( image.isCompressedType() )
+                                {
+                                    ARBTextureCompression.glCompressedTexImage2DARB(
+                                            GL11.GL_TEXTURE_2D, m,
+                                            imageComponents[image.getType()], width, height,
+                                            0, mipSizes[m], data );
+                                }
+                                else
+                                {
+                                    data.limit( data.position() + mipSizes[m] );
+                                    GL11.glTexImage2D(GL11.GL_TEXTURE_2D, m,
+                                            imageComponents[image.getType()], width,
+                                            height, 0, imageFormats[image.getType()],
+                                            GL11.GL_UNSIGNED_BYTE, data);
+                                }
+                                
+                                pos += mipSizes[ m ];
+                            }
+                        }
 					}
 					switch (texture.getWrap()) {
 					case Texture.WM_ECLAMP_S_ECLAMP_T:

@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.14 2005-01-04 16:35:10 renanse Exp $
+ * @version $Id: TestLightState.java,v 1.15 2005-02-10 21:48:23 renanse Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;
@@ -123,8 +123,7 @@ public class TestLightState extends SimpleGame {
                     TextureManager.loadTexture(
                         TestLightState.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
                         Texture.MM_LINEAR_LINEAR,
-                        Texture.FM_LINEAR,
-                        true));
+                        Texture.FM_LINEAR));
 
         rootNode.setRenderState(ts);
     }

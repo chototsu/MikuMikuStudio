@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestEnvMap.java,v 1.5 2004-09-08 17:06:39 mojomonkey Exp $
+ * @version $Id: TestEnvMap.java,v 1.6 2005-02-10 21:48:21 renanse Exp $
  */
 public class TestEnvMap extends SimpleGame {
 
@@ -73,8 +73,7 @@ public class TestEnvMap extends SimpleGame {
             TestEnvMap.class.getClassLoader().getResource(
             "jmetest/data/texture/clouds.png"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     TextureState bgts = display.getRenderer().createTextureState();
     bgts.setTexture(bg);
     bgts.setEnabled(true);
@@ -86,15 +85,13 @@ public class TestEnvMap extends SimpleGame {
             TestEnvMap.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     //Environmental Map (reflection of clouds)
     Texture t = TextureManager.loadTexture(
             TestEnvMap.class.getClassLoader().getResource(
             "jmetest/data/texture/clouds.png"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     t.setEnvironmentalMapMode(Texture.EM_SPHERE);
     ts.setTexture(t0,0);
     ts.setTexture(t,1);

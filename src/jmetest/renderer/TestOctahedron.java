@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.10 2004-08-14 00:50:07 cep21 Exp $
+ * @version $Id: TestOctahedron.java,v 1.11 2005-02-10 21:48:22 renanse Exp $
  */
 public class TestOctahedron extends SimpleGame {
 
@@ -101,8 +101,7 @@ public class TestOctahedron extends SimpleGame {
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
 
     rootNode.setRenderState(ts);
 

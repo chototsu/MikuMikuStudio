@@ -163,38 +163,32 @@ public class TestSerial extends SimpleGame{
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/north.jpg"),
             Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true);
+            Texture.FM_LINEAR);
         Texture south = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/south.jpg"),
             Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true);
+            Texture.FM_LINEAR);
         Texture east = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/east.jpg"),
             Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true);
+            Texture.FM_LINEAR);
         Texture west = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/west.jpg"),
             Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true);
+            Texture.FM_LINEAR);
         Texture up = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/top.jpg"),
             Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true);
+            Texture.FM_LINEAR);
         Texture down = TextureManager.loadTexture(
             TestSkybox.class.getClassLoader().getResource(
             "jmetest/data/texture/bottom.jpg"),
             Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true);
+            Texture.FM_LINEAR);
 
         m_skybox.setTexture(Skybox.NORTH, north);
         m_skybox.setTexture(Skybox.WEST, west);
@@ -221,8 +215,7 @@ public class TestSerial extends SimpleGame{
             TextureManager.loadTexture(
                 TestTextureState.class.getClassLoader().getResource("jmetest/data/model/drfreak.jpg"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         Md2ToJme mtj=new Md2ToJme();
         ByteArrayOutputStream BO2=new ByteArrayOutputStream();
 
@@ -309,8 +302,7 @@ public class TestSerial extends SimpleGame{
             TestBezierCurve.class.getClassLoader().getResource(
             "jmetest/data/images/Monkey.jpg"),
             Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true));
+            Texture.FM_LINEAR));
         box.setRenderState(ts);
 
         Node it=new Node("blargggg");

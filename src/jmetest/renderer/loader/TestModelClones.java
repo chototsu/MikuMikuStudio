@@ -61,8 +61,7 @@ public class TestModelClones extends SimpleGame {
         TextureManager.loadTexture(
             textu,
             Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true));
+            Texture.FM_LINEAR));
         freakmd2.setRenderState(ts);
 
         freakmd2.setLocalScale(.1f);

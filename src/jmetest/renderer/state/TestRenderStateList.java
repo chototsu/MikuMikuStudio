@@ -187,16 +187,14 @@ public class TestRenderStateList extends BaseGame {
             TextureManager.loadTexture(
                 TestRenderStateList.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         TextureState ts2 = display.getRenderer().createTextureState();
             ts2.setEnabled(true);
             ts2.setTexture(
                 TextureManager.loadTexture(
                     TestRenderStateList.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
                     Texture.MM_LINEAR,
-                    Texture.FM_LINEAR,
-                    true));
+                    Texture.FM_LINEAR));
         t2.setRenderState(ts2);
         scene.setRenderState(ts);
 

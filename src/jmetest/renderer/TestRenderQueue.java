@@ -56,7 +56,7 @@ import com.jme.math.Vector2f;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.10 2005-01-03 19:00:13 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.11 2005-02-10 21:48:22 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -148,8 +148,7 @@ public class TestRenderQueue extends SimpleGame {
         TestRenderQueue.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.tga"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     opaques.setRenderState(ts);
 
     LightState ls = display.getRenderer().createLightState();

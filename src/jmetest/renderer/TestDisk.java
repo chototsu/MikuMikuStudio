@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestDisk.java,v 1.9 2004-08-14 00:50:06 cep21 Exp $
+ * @version $Id: TestDisk.java,v 1.10 2005-02-10 21:48:20 renanse Exp $
  */
 public class TestDisk extends SimpleGame {
 
@@ -99,8 +99,7 @@ public class TestDisk extends SimpleGame {
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/texture/dirt.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
 
     rootNode.setRenderState(ts);
 

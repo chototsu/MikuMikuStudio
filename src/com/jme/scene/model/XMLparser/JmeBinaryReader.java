@@ -781,7 +781,7 @@ public class JmeBinaryReader {
         try {
             if (atts.get("URL")!=null && !atts.get("URL").equals("null")){
                 p=TextureManager.loadTexture((URL) atts.get("URL"),
-                        Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+                        Texture.MM_LINEAR,Texture.FM_LINEAR);
             } else if (atts.get("file")!=null && !atts.get("file").equals("null")){
                 URL context;
                 if (properties.containsKey("texurl")){
@@ -794,7 +794,7 @@ public class JmeBinaryReader {
                     context=new File((String) atts.get("file")).toURI().toURL();
                 }
                 p=TextureManager.loadTexture(context,
-                        Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+                        Texture.MM_LINEAR,Texture.FM_LINEAR);
                 if (p==null) {
                     return p;
                 } else{

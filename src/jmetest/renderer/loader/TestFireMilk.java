@@ -119,8 +119,7 @@ public class TestFireMilk extends SimpleGame {
         TestFireMilk.class.getClassLoader().getResource(
         "jmetest/data/texture/flaresmall.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     ts.setEnabled(true);
 
     ParticleManager manager = new ParticleManager(200, display.getRenderer().getCamera());

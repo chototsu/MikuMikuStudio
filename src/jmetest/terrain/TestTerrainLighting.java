@@ -54,7 +54,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.22 2004-08-14 00:50:08 cep21 Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.23 2005-02-10 21:48:26 renanse Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -156,16 +156,14 @@ public class TestTerrainLighting extends SimpleGame {
         TestTerrain.class.getClassLoader().getResource(
         "jmetest/data/texture/grassb.png"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     ts.setTexture(t1, 0);
 
     Texture t2 = TextureManager.loadTexture(
         TestTerrain.class.getClassLoader().getResource(
         "jmetest/data/texture/Detail.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     ts.setTexture(t2, 1);
     t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 

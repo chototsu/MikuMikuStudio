@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.30 2004-08-14 00:50:08 cep21 Exp $
+ * @version $Id: TestTerrain.java,v 1.31 2005-02-10 21:48:26 renanse Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -121,14 +121,14 @@ public class TestTerrain extends SimpleGame {
     Texture t1 = TextureManager.loadTexture(
         pt.getImageIcon().getImage(),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR, true, true);
+        Texture.FM_LINEAR, true);
     ts.setTexture(t1, 0);
 
     Texture t2 = TextureManager.loadTexture(
         TestTerrain.class.getClassLoader().getResource(
         "jmetest/data/texture/Detail.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR, true);
+        Texture.FM_LINEAR);
 
     ts.setTexture(t2, 1);
     t2.setWrap(Texture.WM_WRAP_S_WRAP_T);

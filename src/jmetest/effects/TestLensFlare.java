@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
  *  Test of the lens flare effect in jME.  Notice that currently it doesn't do
  *  occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.6 2004-11-15 22:04:04 renanse Exp $
+ * @version $Id: TestLensFlare.java,v 1.7 2005-02-10 21:48:27 renanse Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
@@ -101,8 +101,7 @@ public class TestLensFlare extends SimpleGame {
 				LensFlare.class.getClassLoader().getResource(
 				"jmetest/data/texture/flare1.png"),
 				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR,
-				true));
+				Texture.FM_LINEAR));
 		tex[0].setEnabled(true);
 		tex[0].apply();
 
@@ -112,8 +111,7 @@ public class TestLensFlare extends SimpleGame {
 				LensFlare.class.getClassLoader().getResource(
 				"jmetest/data/texture/flare2.png"),
 				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR,
-				true));
+				Texture.FM_LINEAR));
 		tex[1].setEnabled(true);
 		tex[1].apply();
 
@@ -123,8 +121,7 @@ public class TestLensFlare extends SimpleGame {
 				LensFlare.class.getClassLoader().getResource(
 				"jmetest/data/texture/flare3.png"),
 				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR,
-				true));
+				Texture.FM_LINEAR));
 		tex[2].setEnabled(true);
 		tex[2].apply();
 
@@ -134,8 +131,7 @@ public class TestLensFlare extends SimpleGame {
 				LensFlare.class.getClassLoader().getResource(
 				"jmetest/data/texture/flare4.png"),
 				Texture.MM_LINEAR_LINEAR,
-				Texture.FM_LINEAR,
-				true));
+				Texture.FM_LINEAR));
 		tex[3].setEnabled(true);
 		tex[3].apply();
 

@@ -74,7 +74,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene2</code>
  * @author Gregg Patton
- * @version $Id: TestScene2.java,v 1.8 2004-08-14 00:50:11 cep21 Exp $
+ * @version $Id: TestScene2.java,v 1.9 2005-02-10 21:48:32 renanse Exp $
  */
 public class TestScene2 extends TestAbstractScene implements Observer {
 
@@ -196,8 +196,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
                 TextureManager.loadTexture(
                     TestScene2.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
                     Texture.MM_LINEAR,
-                    Texture.FM_LINEAR,
-                    true));
+                    Texture.FM_LINEAR));
             box.setRenderState(ts);
 
             AmbientLight am = new AmbientLight();

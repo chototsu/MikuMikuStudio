@@ -59,7 +59,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.2 2005-01-03 19:00:17 renanse Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.3 2005-02-10 21:48:24 renanse Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
 
@@ -229,8 +229,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
         SimpleHeadlessApp.class.getClassLoader().getResource(
         fontLocation),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     font.setEnabled(true);
 
     // Then our font Text object.

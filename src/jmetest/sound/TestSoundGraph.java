@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.13 2004-08-14 00:50:08 cep21 Exp $
+ * @version $Id: TestSoundGraph.java,v 1.14 2005-02-10 21:48:31 renanse Exp $
  */
 public class TestSoundGraph extends SimpleGame {
   private SoundNode snode;
@@ -89,7 +89,7 @@ public class TestSoundGraph extends SimpleGame {
     tst.setTexture(TextureManager.loadTexture(
         TestSoundGraph.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-        Texture.FM_LINEAR, true));
+        Texture.FM_LINEAR));
     rootNode.setRenderState(tst);
     rootNode.attachChild(box);
     snode = new SoundNode();

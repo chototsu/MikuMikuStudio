@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.15 2004-08-02 19:14:48 cep21 Exp $
+ * @version $Id: TextureState.java,v 1.16 2005-02-10 21:48:29 renanse Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -77,6 +77,9 @@ public abstract class TextureState extends RenderState {
 
     /** True if multitexturing is supported. */
     protected static boolean supportsMultiTexture = false;
+
+    /** True if S3TC compression is supported. */
+    protected static boolean supportsS3TCCompression = false;
 
     protected transient int firstTexture = 0;
     protected transient int lastTexture = 0;
@@ -181,6 +184,14 @@ public abstract class TextureState extends RenderState {
       return maxAnisotropic;
     }
 
+    /**
+     * Returns if S3TC compression is available for textures.
+     * @return true if S3TC is available.
+     */
+    public boolean isS3TCAvailable() {
+      return supportsS3TCCompression;
+    }
+
 
     /**
      * Updates firstTexture to be the first non-null Texture, and lastTexture to be the last
@@ -213,7 +224,7 @@ public abstract class TextureState extends RenderState {
         texture=new Texture[ii];
         for (int i=0;i<texture.length;i++){
             if (in.readBoolean())
-                texture[i]=TextureManager.loadTexture(new URL(in.readUTF()),in.readInt(),in.readInt(), true);
+                texture[i]=TextureManager.loadTexture(new URL(in.readUTF()),in.readInt(),in.readInt());
         }
         resetFirstLast();
     }

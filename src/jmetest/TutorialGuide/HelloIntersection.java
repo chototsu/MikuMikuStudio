@@ -99,7 +99,7 @@ public class HelloIntersection extends SimpleGame {
 				"jmetest/data/texture/clouds.png");
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setTexture(TextureManager.loadTexture(monkeyLoc, Texture.MM_LINEAR,
-				Texture.FM_LINEAR, true));
+				Texture.FM_LINEAR));
 		sb.setRenderState(ts);
 
 		// Attach the skybox to our root node, and force the rootnode to show

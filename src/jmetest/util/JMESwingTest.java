@@ -72,7 +72,7 @@ import com.jme.util.TextureManager;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.4 2005-01-03 19:00:15 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.5 2005-02-10 21:48:34 renanse Exp $
  */
 
 public class JMESwingTest extends SimpleHeadlessApp {
@@ -182,8 +182,7 @@ public class JMESwingTest extends SimpleHeadlessApp {
 					JMESwingTest.class.getClassLoader().getResource(
 					"jmetest/data/images/Monkey.jpg"),
 					Texture.MM_LINEAR,
-					Texture.FM_LINEAR,
-					true));
+					Texture.FM_LINEAR));
 
 			rootNode.setRenderState(ts);
 

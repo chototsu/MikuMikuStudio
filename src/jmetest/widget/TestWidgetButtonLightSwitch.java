@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.15 2004-08-14 00:50:10 cep21 Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.16 2005-02-10 21:48:34 renanse Exp $
  */
 public class TestWidgetButtonLightSwitch extends BaseGame {
 	static String STARTED_STATE_STRING = " Stop ";
@@ -428,8 +428,7 @@ public class TestWidgetButtonLightSwitch extends BaseGame {
         ts.setTexture(TextureManager.loadTexture(
                 TestWidgetButtonLightSwitch.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         box.setRenderState(ts);
 
         AmbientLight am = new AmbientLight();

@@ -48,7 +48,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.28 2004-08-27 07:38:41 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.29 2005-02-10 21:48:20 renanse Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -154,8 +154,7 @@ public class TestRenderToTexture extends SimpleGame {
         TestRenderToTexture.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     ts.setTexture(tex);
     fakeScene.setRenderState(ts);
 
@@ -179,8 +178,7 @@ public class TestRenderToTexture extends SimpleGame {
         TestRenderToTexture.class.getClassLoader().getResource(
         "jmetest/data/texture/dirt.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     ts.setTexture(tex2, 1);
     rootNode.setRenderState(ts);
 

@@ -222,8 +222,7 @@ public class TestTextureState extends BaseGame {
             TextureManager.loadTexture(
                 TestTextureState.class.getClassLoader().getResource("jmetest/data/model/marble.bmp"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         t2.setRenderState(ts);
 
         cam.update();

@@ -99,22 +99,22 @@ public class UICheck extends UIActiveObject {
 	
 	        if( useClassLoader) {
 		        textureStates[0].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
-		                upfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+		                upfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
 		        textureStates[1].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
-		                overfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+		                overfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
 		        textureStates[2].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
-		                downfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+		                downfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
 		        textureStates[3].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader().getResource(
-		                selectedfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+		                selectedfile), Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
 	        } else {
 	            textureStates[0].setTexture(TextureManager.loadTexture(upfile, Texture.MM_NEAREST,
-	                    Texture.FM_NEAREST, true));
+	                    Texture.FM_NEAREST));
 	            textureStates[1].setTexture(TextureManager.loadTexture(overfile, Texture.MM_NEAREST,
-	                    Texture.FM_NEAREST, true));
+	                    Texture.FM_NEAREST));
 	            textureStates[2].setTexture(TextureManager.loadTexture(downfile, Texture.MM_NEAREST,
-	                    Texture.FM_NEAREST, true));
+	                    Texture.FM_NEAREST));
 	            textureStates[3].setTexture(TextureManager.loadTexture(selectedfile, Texture.MM_NEAREST,
-	                    Texture.FM_NEAREST, true));
+	                    Texture.FM_NEAREST));
 	        }
 	        textureStates[0].apply();
 	        textureStates[1].apply();

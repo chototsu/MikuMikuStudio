@@ -55,7 +55,7 @@ import com.jme.util.TextureManager;
  * mapping technique outlined in the paper "Parallax Mapping with Offset Limiting:
  * A PerPixel Approximation of Uneven Surfaces".
  * @author Eric Woroshow
- * @version $Id: TestFragmentProgramState.java,v 1.1 2004-08-20 23:21:22 ericthered Exp $
+ * @version $Id: TestFragmentProgramState.java,v 1.2 2005-02-10 21:48:23 renanse Exp $
  */
 public class TestFragmentProgramState extends SimpleGame {
     private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
@@ -111,24 +111,21 @@ public class TestFragmentProgramState extends SimpleGame {
         Texture tex = TextureManager.loadTexture(
                            TestFragmentProgramState.class.getClassLoader().getResource(BRICK_TEX),
                            Texture.MM_LINEAR_LINEAR,
-                           Texture.FM_LINEAR,
-                           true);
+                           Texture.FM_LINEAR);
         tex.setWrap(Texture.WM_WRAP_S_WRAP_T);
         
         //Height map of the brick wall       
         Texture height = TextureManager.loadTexture(
                             TestFragmentProgramState.class.getClassLoader().getResource(BRICK_HEIGHT),
                             Texture.MM_LINEAR_LINEAR,
-                            Texture.FM_LINEAR,
-                            true);
+                            Texture.FM_LINEAR);
         height.setWrap(Texture.WM_WRAP_S_WRAP_T);
 
         //Normal map of the brick wall
         Texture normal = TextureManager.loadTexture(
                             TestFragmentProgramState.class.getClassLoader().getResource(BRICK_NRML),
                             Texture.MM_LINEAR_LINEAR,
-                            Texture.FM_LINEAR,
-                            true);
+                            Texture.FM_LINEAR);
         normal.setWrap(Texture.WM_WRAP_S_WRAP_T);
         
         brick.setTexture(tex, 0);

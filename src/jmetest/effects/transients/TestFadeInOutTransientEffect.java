@@ -127,7 +127,7 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 		boxTS.setTexture(TextureManager.loadTexture(
 				TestFadeInOutTransientEffect.class.getClassLoader()
 						.getResource("jmetest/data/images/Monkey.png"),
-				Texture.MM_LINEAR, Texture.FM_LINEAR, true));
+				Texture.MM_LINEAR, Texture.FM_LINEAR));
 		boxTS.setEnabled(true);
 		
 		Quaternion quat = new Quaternion();
@@ -146,7 +146,7 @@ public class TestFadeInOutTransientEffect extends VariableTimestepGame {
 		pyramidTS.setTexture(TextureManager.loadTexture(
 				TestFadeInOutTransientEffect.class.getClassLoader()
 						.getResource("jmetest/data/images/Monkey.png"),
-				Texture.MM_LINEAR, Texture.FM_LINEAR, true));
+				Texture.MM_LINEAR, Texture.FM_LINEAR));
 		pyramidTS.setEnabled(true);
 		
 		Quaternion quat = new Quaternion();

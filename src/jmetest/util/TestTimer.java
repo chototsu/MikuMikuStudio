@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.9 2004-08-14 00:50:10 cep21 Exp $
+ * @version $Id: TestTimer.java,v 1.10 2005-02-10 21:48:34 renanse Exp $
  */
 public class TestTimer extends BaseGame {
     private TriMesh t;
@@ -183,8 +183,7 @@ public class TestTimer extends BaseGame {
             TextureManager.loadTexture(
                 TestTimer.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         text.setRenderState(textImage);
 
         AlphaState as1 = display.getRenderer().createAlphaState();
@@ -233,8 +232,7 @@ public class TestTimer extends BaseGame {
                     TextureManager.loadTexture(
                         TestTimer.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
                         Texture.MM_LINEAR,
-                        Texture.FM_LINEAR,
-                        true));
+                        Texture.FM_LINEAR));
 
         scene.setRenderState(ts);
 

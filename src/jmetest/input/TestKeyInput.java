@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.6 2004-08-14 00:50:03 cep21 Exp $
+ * @version $Id: TestKeyInput.java,v 1.7 2005-02-10 21:48:28 renanse Exp $
  */
 public class TestKeyInput extends BaseGame {
     private Text text;
@@ -138,8 +138,7 @@ public class TestKeyInput extends BaseGame {
             TextureManager.loadTexture(
                	TestKeyInput.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         text.setRenderState(ts);
         AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);

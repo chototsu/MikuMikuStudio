@@ -85,8 +85,7 @@ public class IngameState extends StandardGameState {
                 IngameState.class.getClassLoader().getResource(
                 "jmetest/data/texture/dirt.jpg"),
                 Texture.MM_LINEAR_LINEAR,
-                Texture.FM_LINEAR,
-                true);
+                Texture.FM_LINEAR);
 	    texture.setWrap(Texture.WM_WRAP_S_WRAP_T);
 	    ts.setTexture(texture);
 	    ts.setEnabled(true);

@@ -101,7 +101,7 @@ public class TestVertexProgramState extends SimpleGame {
         ts.setTexture(TextureManager.loadTexture(
                 TestVertexProgramState.class.getClassLoader().getResource(
                         "jmetest/data/images/shader.png"), Texture.MM_NEAREST,
-                Texture.FM_NEAREST, false));
+                Texture.FM_NEAREST));
 
         //Generate the torus
         Torus torus = new Torus("shadedTorus", 128, 32, 3.0f, 5.0f);

@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRecreateWindow</code>
  * @author Joshua Slack
- * @version $Id: TestRecreateWindow.java,v 1.2 2004-09-14 03:05:58 renanse Exp $
+ * @version $Id: TestRecreateWindow.java,v 1.3 2005-02-10 21:48:22 renanse Exp $
  */
 public class TestRecreateWindow extends SimpleGame {
 
@@ -151,8 +151,7 @@ public class TestRecreateWindow extends SimpleGame {
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
 
     rootNode.setRenderState(ts);
 

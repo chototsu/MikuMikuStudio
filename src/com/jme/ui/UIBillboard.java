@@ -81,10 +81,9 @@ public class UIBillboard extends UIObject {
             if (useClassLoader) {
                 ts.setTexture(TextureManager.loadTexture(
                         UIObject.class.getClassLoader().getResource(imgfile), Texture.MM_NEAREST,
-                        Texture.FM_NEAREST, true));
+                        Texture.FM_NEAREST));
             } else {
-                ts.setTexture(TextureManager.loadTexture(imgfile, Texture.MM_NEAREST, Texture.FM_NEAREST,
-                        true));
+                ts.setTexture(TextureManager.loadTexture(imgfile, Texture.MM_NEAREST, Texture.FM_NEAREST));
             }
             ts.apply();
 

@@ -50,7 +50,7 @@ public class HelloStates extends SimpleGame {
         // Get a TextureState
         TextureState ts=display.getRenderer().createTextureState();
         // Use the TextureManager to load a texture
-        Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+        Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR,Texture.FM_LINEAR);
         // Assign the texture to the TextureState
         ts.setTexture(t);
 

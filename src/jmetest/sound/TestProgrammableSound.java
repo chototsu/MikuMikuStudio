@@ -79,7 +79,7 @@ public class TestProgrammableSound extends SimpleGame {
         tst.setTexture(TextureManager.loadTexture(
                 TestSequencedSound.class.getClassLoader().getResource(
                         "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR, true));
+                Texture.FM_LINEAR));
         rootNode.setRenderState(tst);
 
         Vector3f max = new Vector3f(5, 5, 5);

@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.9 2004-08-14 00:50:03 cep21 Exp $
+ * @version $Id: TestMilestone2.java,v 1.10 2005-02-10 21:48:29 renanse Exp $
  */
 public class TestMilestone2 extends BaseGame {
     private TriMesh t;
@@ -162,8 +162,7 @@ public class TestMilestone2 extends BaseGame {
             TextureManager.loadTexture(
                 TestMilestone2.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         text.setRenderState(textImage);
         AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setEnabled(true);
@@ -235,8 +234,7 @@ public class TestMilestone2 extends BaseGame {
                     TextureManager.loadTexture(
                         TestMilestone2.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
                         Texture.MM_LINEAR,
-                        Texture.FM_LINEAR,
-                        true));
+                        Texture.FM_LINEAR));
 
         scene.setRenderState(ts);
 

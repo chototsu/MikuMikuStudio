@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestCompositeSphere</code>
  * @author Mark Powell
- * @version $Id: TestCompositeSphere.java,v 1.2 2005-01-03 19:00:13 renanse Exp $
+ * @version $Id: TestCompositeSphere.java,v 1.3 2005-02-10 21:48:21 renanse Exp $
  */
 public class TestCompositeSphere extends SimpleGame {
 
@@ -96,8 +96,7 @@ public class TestCompositeSphere extends SimpleGame {
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
 
     rootNode.setRenderState(ts);
   }

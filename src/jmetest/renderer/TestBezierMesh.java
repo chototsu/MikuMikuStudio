@@ -52,7 +52,7 @@ import com.jme.scene.state.LightState;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.20 2005-01-03 19:00:13 renanse Exp $
+ * @version $Id: TestBezierMesh.java,v 1.21 2005-02-10 21:48:21 renanse Exp $
  */
 public class TestBezierMesh extends SimpleGame {
   private TriMesh t;
@@ -167,8 +167,7 @@ public class TestBezierMesh extends SimpleGame {
         TestBezierMesh.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
 
     bez.setRenderState(ts);
   }

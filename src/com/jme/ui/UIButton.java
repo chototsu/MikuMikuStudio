@@ -111,18 +111,18 @@ public class UIButton extends UIActiveObject {
 	
 	        if (useClassloader) {
 	            textureStates[0].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader()
-	                    .getResource(upfile), Texture.MM_NEAREST, Texture.FM_NEAREST, true));
+	                    .getResource(upfile), Texture.MM_NEAREST, Texture.FM_NEAREST));
 	            textureStates[1].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader()
-	                    .getResource(overfile), Texture.MM_NEAREST, Texture.FM_NEAREST, true));
+	                    .getResource(overfile), Texture.MM_NEAREST, Texture.FM_NEAREST));
 	            textureStates[2].setTexture(TextureManager.loadTexture(UIObject.class.getClassLoader()
-	                    .getResource(downfile), Texture.MM_NEAREST, Texture.FM_NEAREST, true));
+	                    .getResource(downfile), Texture.MM_NEAREST, Texture.FM_NEAREST));
 	        } else {
 	            textureStates[0].setTexture(TextureManager.loadTexture(upfile, Texture.MM_NEAREST,
-	                    Texture.FM_NEAREST, true));
+	                    Texture.FM_NEAREST));
 	            textureStates[1].setTexture(TextureManager.loadTexture(overfile, Texture.MM_NEAREST,
-	                    Texture.FM_NEAREST, true));
+	                    Texture.FM_NEAREST));
 	            textureStates[2].setTexture(TextureManager.loadTexture(downfile, Texture.MM_NEAREST,
-	                    Texture.FM_NEAREST, true));
+	                    Texture.FM_NEAREST));
 	        }
 	
 	        textureStates[0].apply();

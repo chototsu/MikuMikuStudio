@@ -42,7 +42,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.12 2004-08-14 00:50:05 cep21 Exp $
+ * @version $Id: TestBillboardNode.java,v 1.13 2005-02-10 21:48:21 renanse Exp $
  */
 public class TestBillboardNode extends SimpleGame {
 
@@ -75,8 +75,7 @@ public class TestBillboardNode extends SimpleGame {
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     ts.setTexture(t1);
     q.setRenderState(ts);
 

@@ -84,7 +84,7 @@ public class HelloTerrain extends SimpleGame {
         // Add the texture
         TextureState ts=display.getRenderer().createTextureState();
         ts.setTexture(
-                TextureManager.loadTexture(grass,Texture.MM_LINEAR,Texture.FM_LINEAR,true)
+                TextureManager.loadTexture(grass,Texture.MM_LINEAR,Texture.FM_LINEAR)
         );
         tb.setRenderState(ts);
 
@@ -133,7 +133,6 @@ public class HelloTerrain extends SimpleGame {
                         pg.getImageIcon().getImage(),
                         Texture.MM_LINEAR_LINEAR,
                         Texture.FM_LINEAR,
-                        true,
                         true
                 )
         );

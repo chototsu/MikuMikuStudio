@@ -32,6 +32,7 @@
 package com.jme.image;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 /**
  * <code>Image</code> defines a data format for a graphical image. The image
@@ -40,7 +41,7 @@ import java.nio.ByteBuffer;
  * The width and height must be greater than 0. The data is contained in a
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.5 2004-09-06 18:17:45 renanse Exp $
+ * @version $Id: Image.java,v 1.6 2005-02-10 21:48:25 renanse Exp $
  */
 public class Image {
     /**
@@ -64,13 +65,56 @@ public class Image {
      * 16-bit RA with 8 bits for red and 8 bits for alpha.
      */
     public static final int RA88 = 4;
+    
+    /**
+     * RGB888, compressed to DXT-1 internally.
+     */
+    public static final int RGB888_DXT1 = 5;
 
-    public static final int LAST_TYPE = RA88;
+    /**
+     * RGBA8888, compressed to DXT-1A internally.
+     */
+    public static final int RGBA8888_DXT1A = 6;
+
+    /**
+     * RGBA8888, compressed to DXT-3 internally.
+     */
+    public static final int RGBA8888_DXTC3 = 7;
+
+    /**
+     * RGBA8888, compressed to DXT-5 internally.
+     */
+    public static final int RGBA8888_DXT5 = 8;
+    
+    public static final int LAST_UNCOMPRESSED_TYPE = RGBA8888_DXT5;
+
+    /**
+     * DXT-1 compressed format, no alpha.
+     */
+    public static final int DXT1_NATIVE = 9;
+
+    /**
+     * DXT-1 compressed format, one bit alpha.
+     */
+    public static final int DXT1A_NATIVE = 10;
+
+    /**
+     * DXT-3 compressed format, with alpha.
+     */
+    public static final int DXT3_NATIVE = 11;
+
+    /**
+     * DXT-5 compressed format, with alpha.
+     */
+    public static final int DXT5_NATIVE = 12;
+
+    public static final int LAST_TYPE = DXT5_NATIVE;
 
     //image attributes
     protected int type;
     protected int width;
     protected int height;
+    protected int[] mipMapSizes_;
     protected ByteBuffer data;
 
     /**
@@ -89,15 +133,34 @@ public class Image {
      * @param width the width of the image.
      * @param height the height of the image.
      * @param data the image data.
+     * @param mipMapSizes the array of mipmap sizes, or null for no mipmaps.
      */
-    public Image(int type, int width, int height, ByteBuffer data) {
+    public Image(int type, int width, int height, ByteBuffer data, int[] mipMapSizes) {
         if(type < 0 || type > LAST_TYPE) {
             type = 0;
         }
+        
+        if ( mipMapSizes != null && mipMapSizes.length <= 1 ) {
+            mipMapSizes = null;
+        }
+        
         this.type = type;
         this.width = width;
         this.height = height;
         this.data = data;
+        this.mipMapSizes_ = mipMapSizes;
+    }
+    
+    /**
+     * Constructor instantiates a new <code>Image</code> object. The attributes
+     * of the image are defined during construction.
+     * @param type the type of image format.
+     * @param width the width of the image.
+     * @param height the height of the image.
+     * @param data the image data.
+     */
+    public Image(int type, int width, int height, ByteBuffer data) {
+        this(type, width, height, data, null);
     }
 
     /**
@@ -109,6 +172,20 @@ public class Image {
         this.data = data;
     }
 
+    /**
+     * Sets the mipmap sizes stored in this image's data buffer. Mipmaps are stored
+     * sequentially, and the first mipmap is the main image data. To specify no mipmaps,
+     * pass null and this will automatically be expanded into a single mipmap of the full
+     * 
+     * @param mipMapSizes the mipmap sizes array, or null for a single image map.
+     */
+    public void setMipMapSizes( int[] mipMapSizes ) {
+        if ( mipMapSizes != null && mipMapSizes.length <= 1 )
+            mipMapSizes = null;
+        
+        mipMapSizes_ = mipMapSizes;
+    }
+    
     /**
      * <code>setHeight</code> sets the height value of the image. It is
      * typically a good idea to try to keep this as a multiple of 2.
@@ -150,6 +227,14 @@ public class Image {
     }
 
     /**
+     * Returns whether the image type is compressed.
+     * @return true if the image type is compressed, false otherwise.
+     */
+    public boolean isCompressedType() {
+        return type > LAST_UNCOMPRESSED_TYPE;
+    }
+    
+    /**
      *
      * <code>getWidth</code> returns the width of this image.
      * @return the width of this image.
@@ -176,6 +261,24 @@ public class Image {
     public ByteBuffer getData() {
         return data;
     }
+    
+    /**
+     * Returns whether the image data contains mipmaps.
+     * @return true if the image data contains mipmaps, false if not.
+     */
+    public boolean hasMipmaps()
+    {
+        return mipMapSizes_ != null;
+    }
+    
+    /**
+     * Returns the mipmap sizes for this image.
+     * @return the mipmap sizes for this image.
+     */
+    public int[] getMipMapSizes()
+    {
+        return mipMapSizes_;
+    }
 
     public boolean equals(Object other) {
       if (other == this) {
@@ -190,6 +293,8 @@ public class Image {
       if (this.getHeight() != that.getHeight()) return false;
       if (this.getData() != null && !this.getData().equals(that.getData())) return false;
       if (this.getData() == null && that.getData() != null) return false;
+      if (this.getMipMapSizes() != null && !Arrays.equals(this.getMipMapSizes(), that.getMipMapSizes())) return false;
+      if (this.getMipMapSizes() == null && that.getMipMapSizes() != null) return false;
 
       return true;
     }

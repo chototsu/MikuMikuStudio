@@ -34,18 +34,18 @@ package jmetest.renderer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jme.math.FastMath;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.11 2004-08-14 00:50:06 cep21 Exp $
+ * @version $Id: TestMultitexture.java,v 1.12 2005-02-10 21:48:20 renanse Exp $
  */
 public class TestMultitexture extends SimpleGame {
   private TriMesh t;
@@ -110,15 +110,13 @@ public class TestMultitexture extends SimpleGame {
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     ts.setTexture(t1, 0);
 
     Texture t2 = TextureManager.loadTexture(TestBoxColor.class.getClassLoader().
                                             getResource("jmetest/data/texture/dirt.jpg"),
                                             Texture.MM_LINEAR,
-                                            Texture.FM_LINEAR,
-                                            true);
+                                            Texture.FM_LINEAR);
     ts.setTexture(t2, 1);
     System.out.println("This video card has " + ts.getNumberOfUnits() +
                        " texture units.");

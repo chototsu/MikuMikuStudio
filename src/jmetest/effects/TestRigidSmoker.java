@@ -130,8 +130,7 @@ public class TestRigidSmoker extends SimpleGame {
         TestRigidSmoker.class.getClassLoader().getResource(
         "jmetest/data/texture/flaresmall.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     ts.setEnabled(true);
 
     ParticleManager manager = new ParticleManager(300, display.getRenderer().getCamera());

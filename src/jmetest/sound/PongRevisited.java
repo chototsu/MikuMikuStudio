@@ -217,8 +217,7 @@ public class PongRevisited extends SimpleGame {
             RenParticleEditor.class.getClassLoader().getResource(
             "jmetest/data/texture/flaresmall.jpg"),
             Texture.MM_LINEAR_LINEAR,
-            Texture.FM_LINEAR,
-            true));
+            Texture.FM_LINEAR));
         ts.setEnabled(true);
         manager.setRepeatType(Controller.RT_CLAMP);
         Node myNode = new Node("Particle Nodes");

@@ -53,7 +53,7 @@ import com.jme.renderer.Renderer;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.24 2005-01-03 19:00:14 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.25 2005-02-10 21:48:26 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -139,7 +139,6 @@ public class TestTerrainPage extends SimpleGame {
         pt.getImageIcon().getImage(),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
-        true,
         true);
     ts.setTexture(t1, 0);
 
@@ -147,8 +146,7 @@ public class TestTerrainPage extends SimpleGame {
                                             getResource(
         "jmetest/data/texture/Detail.jpg"),
                                             Texture.MM_LINEAR_LINEAR,
-                                            Texture.FM_LINEAR,
-                                            true);
+                                            Texture.FM_LINEAR);
     ts.setTexture(t2, 1);
     t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 

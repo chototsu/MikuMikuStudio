@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.1 2004-11-29 21:24:59 renanse Exp $
+ * @version $Id: TestCloth.java,v 1.2 2005-02-10 21:48:31 renanse Exp $
  */
 public class TestCloth extends SimpleGame {
 
@@ -133,8 +133,7 @@ public class TestCloth extends SimpleGame {
 			TestCloth.class.getClassLoader().getResource(
 			"jmetest/data/images/Monkey.jpg"),
 			Texture.MM_LINEAR_LINEAR,
-			Texture.FM_LINEAR,
-			true));
+			Texture.FM_LINEAR));
 		cloth.setRenderState(ts);
 		rootNode.attachChild(cloth);
 		for (int i = 0; i < 50; i++) {

@@ -45,7 +45,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestSkybox</code>
  * @author Joshua Slack
- * @version $Id: TestSkybox.java,v 1.4 2005-01-03 19:00:13 renanse Exp $
+ * @version $Id: TestSkybox.java,v 1.5 2005-02-10 21:48:21 renanse Exp $
  */
 public class TestSkybox extends SimpleGame {
 
@@ -114,38 +114,32 @@ public class TestSkybox extends SimpleGame {
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/north.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     Texture south = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/south.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     Texture east = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/east.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     Texture west = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/west.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     Texture up = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/top.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
     Texture down = TextureManager.loadTexture(
         TestSkybox.class.getClassLoader().getResource(
         "jmetest/data/texture/bottom.jpg"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true);
+        Texture.FM_LINEAR);
 
     m_skybox.setTexture(Skybox.NORTH, north);
     m_skybox.setTexture(Skybox.WEST, west);

@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.16 2004-08-27 07:38:41 renanse Exp $
+ * @version $Id: TestBoxColor.java,v 1.17 2005-02-10 21:48:22 renanse Exp $
  */
 public class TestBoxColor extends SimpleGame {
   private TriMesh t;
@@ -105,8 +105,7 @@ public class TestBoxColor extends SimpleGame {
         TestBoxColor.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.tga"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
 
     rootNode.setRenderState(ts);
 

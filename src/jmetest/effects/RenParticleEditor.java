@@ -59,7 +59,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.8 2004-08-14 00:50:00 cep21 Exp $
+ * @version $Id: RenParticleEditor.java,v 1.9 2005-02-10 21:48:27 renanse Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -185,8 +185,7 @@ public class RenParticleEditor extends VariableTimestepGame {
         RenParticleEditor.class.getClassLoader().getResource(
         "jmetest/data/texture/flaresmall.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     ts.setEnabled(true);
 
     TextureState font = display.getRenderer().createTextureState();
@@ -195,8 +194,7 @@ public class RenParticleEditor extends VariableTimestepGame {
         RenParticleEditor.class.getClassLoader().getResource(
         "jmetest/data/font/font.png"),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     font.setEnabled(true);
 
     fps = new Text("FPS label", "");

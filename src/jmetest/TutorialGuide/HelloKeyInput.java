@@ -59,7 +59,7 @@ public class HelloKeyInput extends SimpleGame {
         // Get my TextureState
         TextureState ts=display.getRenderer().createTextureState();
         // Get my Texture
-        Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR, Texture.FM_LINEAR,true);
+        Texture t=TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR, Texture.FM_LINEAR);
         // Set a wrap for my texture so it repeats
         t.setWrap(Texture.WM_WRAP_S_WRAP_T);
         // Set the texture to the TextureState

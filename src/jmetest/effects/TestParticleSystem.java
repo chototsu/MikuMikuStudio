@@ -45,7 +45,7 @@ import com.jme.scene.state.ZBufferState;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.24 2005-01-03 19:00:16 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.25 2005-02-10 21:48:27 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -100,8 +100,7 @@ public class TestParticleSystem extends SimpleGame {
         TestParticleSystem.class.getClassLoader().getResource(
         "jmetest/data/texture/flaresmall.jpg"),
         Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     ts.setEnabled(true);
 
     manager = new ParticleManager(300, display.getRenderer().getCamera());

@@ -52,7 +52,7 @@ public class HelloMousePick extends SimpleGame {
 		cursorLoc = HelloMousePick.class.getClassLoader().getResource(
 				"jmetest/data/cursor/cursor1.png");
 		Texture t = TextureManager.loadTexture(cursorLoc, Texture.MM_LINEAR,
-				Texture.FM_LINEAR, true);
+				Texture.FM_LINEAR);
 		ts.setTexture(t);
 		am.setRenderState(ts);
 

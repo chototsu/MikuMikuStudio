@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestText</code> draws text using the scenegraph.
  * @author Mark Powell
- * @version $Id: TestText.java,v 1.9 2004-08-14 00:50:07 cep21 Exp $
+ * @version $Id: TestText.java,v 1.10 2005-02-10 21:48:22 renanse Exp $
  */
 public class TestText extends BaseGame {
 
@@ -123,8 +123,7 @@ public class TestText extends BaseGame {
             TextureManager.loadTexture(
                 TestText.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         ts.setEnabled(true);
 
         text = new Text("text", "Testing Text! Look, symbols: <>?!^&*_");

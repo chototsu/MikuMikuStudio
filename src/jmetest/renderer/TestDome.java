@@ -98,7 +98,7 @@ public class TestDome extends SimpleGame {
 		ts.setTexture(TextureManager.loadTexture(
 				TestBoxColor.class.getClassLoader().getResource(
 						"jmetest/data/images/Monkey.jpg"),
-				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR, true));
+				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
 
 		rootNode.setRenderState(ts);
 	}

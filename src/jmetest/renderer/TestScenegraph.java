@@ -56,7 +56,7 @@ import com.jme.util.TextureManager;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.21 2005-01-03 19:00:13 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.22 2005-02-10 21:48:20 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -252,14 +252,14 @@ public class TestScenegraph extends SimpleGame {
         Texture t1 = TextureManager.loadTexture(
                 TestScenegraph.class.getClassLoader().getResource(
                         "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-                Texture.FM_LINEAR, true);
+                Texture.FM_LINEAR);
         ts.setTexture(t1);
 
         ts2 = display.getRenderer().createTextureState();
         ts2.setEnabled(true);
         Texture t2 = TextureManager.loadTexture(TestScenegraph.class
                 .getClassLoader().getResource("jmetest/data/texture/dirt.jpg"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MM_LINEAR, Texture.FM_LINEAR);
         ts2.setTexture(t2);
 
         ts3 = display.getRenderer().createTextureState();
@@ -267,7 +267,7 @@ public class TestScenegraph extends SimpleGame {
         Texture t3 = TextureManager.loadTexture(TestScenegraph.class
                 .getClassLoader().getResource(
                         "jmetest/data/texture/snowflake.png"),
-                Texture.MM_LINEAR, Texture.FM_LINEAR, true);
+                Texture.MM_LINEAR, Texture.FM_LINEAR);
         ts3.setTexture(t3);
 
         node1.setRenderState(ts);

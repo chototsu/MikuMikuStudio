@@ -93,8 +93,7 @@ public class MenuState extends StandardGameState {
 	    	        MenuState.class.getClassLoader().getResource(
 	    	        "jmetest/data/cursor/cursor1.png"),
 	    	        Texture.MM_LINEAR_LINEAR,
-	    	        Texture.FM_LINEAR,
-	    	        true);
+	    	        Texture.FM_LINEAR);
 		
 		TextureState ts = display.getRenderer().createTextureState();
 		ts.setEnabled(true);

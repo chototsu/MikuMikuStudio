@@ -55,7 +55,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.15 2004-09-08 17:06:40 mojomonkey Exp $
+ * @version $Id: TestImposterNode.java,v 1.16 2005-02-10 21:48:21 renanse Exp $
  */
 public class TestImposterNode extends SimpleGame {
   private Node fakeScene;
@@ -121,8 +121,7 @@ public class TestImposterNode extends SimpleGame {
     TextureManager.loadTexture(
         textu,
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     freakmd2.setRenderState(ts);
     // apply the appropriate texture to the imposter scene
     TextureState ts2 = display.getRenderer().createTextureState();
@@ -132,8 +131,7 @@ public class TestImposterNode extends SimpleGame {
         TestImposterNode.class.getClassLoader().getResource("jmetest/" +
         TEXTURE_NAME),
         Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+        Texture.FM_LINEAR));
     fakeScene.setRenderState(ts2);
 
     ZBufferState buf = display.getRenderer().createZBufferState();

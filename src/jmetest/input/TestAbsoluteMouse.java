@@ -73,7 +73,7 @@ public class TestAbsoluteMouse extends SimpleGame {
         cursor.setTexture(
         			TextureManager.loadTexture(
         					TestAbsoluteMouse.class.getClassLoader().getResource("jmetest/data/cursor/test.PNG"),
-							Texture.MM_LINEAR, Texture.FM_LINEAR, true)
+							Texture.MM_LINEAR, Texture.FM_LINEAR)
 					);
         mouse.setRenderState(cursor);
         mouse.setMouseInput(InputSystem.getMouseInput());
@@ -87,8 +87,7 @@ public class TestAbsoluteMouse extends SimpleGame {
             TextureManager.loadTexture(
                 TestAbsoluteMouse.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+                Texture.FM_LINEAR));
         text.setRenderState(ts);
         AlphaState as1 = display.getRenderer().createAlphaState();
         as1.setBlendEnabled(true);

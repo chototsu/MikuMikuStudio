@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
  * <code>TestCollision</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.20 2004-10-27 22:50:45 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.21 2005-02-10 21:48:28 renanse Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -177,7 +177,7 @@ public class TestCollision extends SimpleGame {
 		ts.setTexture(TextureManager.loadTexture(
 				TestCollision.class.getClassLoader().getResource(
 						"jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-				Texture.FM_LINEAR, true));
+				Texture.FM_LINEAR));
 
 		scene.setRenderState(ts);
 		rootNode.attachChild(scene);
