@@ -163,10 +163,9 @@ public class XMLtoBinary {
             }
                 writeString(value);
         }
-    }
 
 
-    private void writeShortArray(String data) throws IOException {
+        private void writeShortArray(String data) throws IOException {
             myOut.writeByte(BinaryFormatConstants.DATA_SHORTARRAY);
             if (data==null || data.length()==0) {
                 myOut.writeInt(0);
