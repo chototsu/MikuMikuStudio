@@ -152,8 +152,35 @@ public class XMLtoBinary {
                 writeBoolean(value);
             } else if ("numJoints".equals(att) || "index".equals(att) || "parentindex".equals(att)){
                 writeInt(value);
+            } else if ("v3farray".equals(att)){
+                writeVector3fArray(value);
+            } else if ("quatarray".equals(att)){
+                writeQuatArray(value);
             } else{
                 writeString(value);
+            }
+        }
+
+        private void writeQuatArray(String data) throws IOException {
+            myOut.writeByte(BinaryFormatConstants.DATA_QUATARRAY);
+            if (data==null || data.length()==0){
+                myOut.writeInt(0);
+                return;
+            }
+            String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
+            if (information.length==1 && "".equals(information[0])){
+                myOut.writeInt(0);
+                return;
+            }
+            if (information.length%4!=0){
+                throw new IOException("Quat length not modulus of 4: " + information.length);
+            }
+            myOut.writeInt(information.length/4);
+            for (int i=0;i<information.length/4;i++){
+                myOut.writeFloat(Float.parseFloat(information[i*3+0]));
+                myOut.writeFloat(Float.parseFloat(information[i*3+1]));
+                myOut.writeFloat(Float.parseFloat(information[i*3+2]));
+                myOut.writeFloat(Float.parseFloat(information[i*3+3]));
             }
         }
 
