@@ -112,6 +112,7 @@ public class RenderQueue {
   private float distanceToCam(Spatial spat) {
     if (spat.queueDistance != Float.NEGATIVE_INFINITY) return spat.queueDistance;
     Camera cam = renderer.getCamera();
+    spat.queueDistance = 0;
     if (Vector3f.isValidVector(cam.getLocation()) &&
         Vector3f.isValidVector(spat.getWorldTranslation()))
       spat.queueDistance = cam.getLocation().distanceSquared(spat.getWorldTranslation());
@@ -197,7 +198,9 @@ public class RenderQueue {
        * Resets list size to 0.
        */
       void clear(){
-          listSize=0;
+        for (int i = 0; i < listSize; i++)
+          list[i] = null;
+        listSize=0;
       }
       /**
        * Sorts the elements in the list acording to their Comparator.
