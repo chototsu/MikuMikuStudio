@@ -35,9 +35,9 @@ public class FastMath {
       if (fValue < 1.0f)
         return (float) Math.asin( (double) fValue);
       else
-        return -HALF_PI;
+        return HALF_PI;
     } else {
-      return HALF_PI;
+      return -HALF_PI;
     }
   }
 

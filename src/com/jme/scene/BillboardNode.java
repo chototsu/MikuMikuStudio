@@ -35,6 +35,7 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
+import com.jme.math.Quaternion;
 
 /**
  * <code>BillboardNode</code> defines a node that always orients towards the camera. However, it
@@ -46,7 +47,7 @@ import com.jme.renderer.Renderer;
  * is the only camera setting compatible with <code>BillboardNode</code>.
  *
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.5 2004-04-01 17:32:35 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.6 2004-04-14 17:02:16 renanse Exp $
  */
 public class BillboardNode extends Node {
   private float lastTime;
@@ -164,42 +165,20 @@ public class BillboardNode extends Node {
    * @param camera Camera
    */
   private void rotateAxial(Camera camera) {
+    // Inverse-transform the camera to the model space of the billboard.
+    Vector3f kDiff = camera.getLocation().subtract(worldTranslation);
+    Vector3f kCLoc = worldRotation.mult(kDiff).mult(1.0f/worldScale);
 
-    // Compute the additional rotation required for the billboard to face
-    // the camera.  To do this, the camera must be inverse-transformed into
-    // the model space of the billboard.
-    diff = camera.getLocation().subtract(worldTranslation);
-    float invWorldScale = 1.0f / worldScale;
-    worldRotation.mult(diff, loc).multLocal(invWorldScale);
-
-    // squared length of the camera projection in the xz-plane
-    float lengthSquared = loc.x * loc.x + loc.z * loc.z;
-    if (lengthSquared < FastMath.FLT_EPSILON) {
-      // camera on the billboard axis, rotation not defined
-      return;
-    }
-
-    // unitize the projection
-    float invLength = FastMath.invSqrt(lengthSquared);
-    loc.x *= invLength;
-    loc.y = 0.0f;
-    loc.z *= invLength;
-
-    // compute the local orientation matrix for the billboard
-    orient.m00 = loc.z;
-    orient.m01 = 0;
-    orient.m02 = loc.x;
-    orient.m10 = 0;
-    orient.m11 = 1;
-    orient.m12 = 0;
-    orient.m20 = -loc.x;
-    orient.m21 = 0;
-    orient.m22 = loc.z;
-
-    // The billboard must be oriented to face the camera before it is
-    // transformed into the world.
+    // To align the billboard, the projection of the camera to the
+    // xz-plane of the billboard's model space determines the angle of
+    // rotation about the billboard's model y-axis.  If the projected
+    // camera is on the model axis (x = 0 and z = 0), ATan2 returns zero
+    // (rather than NaN), so there is no need to trap this degenerate
+    // case and handle it separately.
+    float angle = FastMath.atan2(kCLoc.x,kCLoc.z);
+    Matrix3f orient = new Matrix3f();
+    orient.fromAxisAngle(new Vector3f(0,1,0), angle);
     worldRotation.apply(orient);
-
   }
 
   public int getType() {
