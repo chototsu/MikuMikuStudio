@@ -5,23 +5,30 @@ package jmetest.sound;
 
 import java.net.URL;
 
+import jmetest.effects.RenParticleEditor;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.effects.ParticleManager;
+import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.action.AbstractInputAction;
 import com.jme.intersection.Intersection;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.TextureState;
 import com.jme.sound.SoundAPIController;
 import com.jme.sound.SoundPool;
 import com.jme.sound.scene.ProgrammableSound;
 import com.jme.sound.scene.SoundNode;
 import com.jme.ui.UIText;
+import com.jme.util.TextureManager;
 
 /**
  * @author Arman OZCELIK
@@ -64,6 +71,8 @@ public class PongRevisited extends SimpleGame {
     private int computerScore, playerScore;
 
     private Node uiNode;
+    
+    
 
     protected void simpleInitGame() {
         SoundAPIController.getSoundSystem(properties.getRenderer());
@@ -71,9 +80,9 @@ public class PongRevisited extends SimpleGame {
 
         snode = new SoundNode();
         uiNode = new Node("UINODE");
-        playerScoreText = new UIText("UINODE", "data/font/conc_font.png", 600,
+        playerScoreText = new UIText("UINODE", "jmetest/data/font/conc_font.png", 600,
                 0, 1.0f, 50.0f, 5.0f);
-        computerScoreText = new UIText("UINODE", "data/font/conc_font.png",
+        computerScoreText = new UIText("UINODE", "jmetest/data/font/conc_font.png",
                 100, 0, 1.0f, 50.0f, 5.0f);
         playerScoreText.setText("Player : 0");
         computerScoreText.setText("Computer : 0");
@@ -113,9 +122,9 @@ public class PongRevisited extends SimpleGame {
                 "data/sound/ESPARK.wav");
                 */
         URL explodeURL = PongRevisited.class.getClassLoader().getResource(
-                "data/sound/explosion.wav");
+                "jmetest/data/sound/explosion.wav");
         URL wallURL = PongRevisited.class.getClassLoader().getResource(
-                "data/sound/turn.wav");
+                "jmetest/data/sound/turn.wav");
         //ballSound.bindEvent(BOUNCE_EVENT, SoundPool
           //      .compile(new URL[] { laserURL }));
         ballSound.bindEvent(MISS_EVENT, SoundPool
@@ -132,6 +141,52 @@ public class PongRevisited extends SimpleGame {
         upperWall = new Box("Right Wall", new Vector3f(0, 300, 0), 450f, 5f, 5f);
         upperWall.setModelBound(new BoundingBox());
         upperWall.updateModelBound();
+        
+        
+        manager = new ParticleManager(300, display.getRenderer().getCamera());
+        manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
+        manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
+        manager.setEmissionMaximumAngle(3.1415927f);
+        manager.setSpeed(1.4f);
+        manager.setParticlesMinimumLifeTime(1000.0f);
+        manager.setStartSize(4.0f);
+        manager.setEndSize(4.0f);
+        manager.setStartColor(new ColorRGBA(1.0f, 0.312f, 0.121f, 1.0f));
+        manager.setEndColor(new ColorRGBA(1.0f, 0.24313726f, 0.03137255f, 0.0f));
+        manager.setRandomMod(0.0f);
+        manager.setControlFlow(false);
+        manager.setReleaseRate(300);
+        manager.setReleaseVariance(0.0f);
+        manager.setInitialVelocity(1.0f);
+        manager.setParticleSpinSpeed(0.0f);
+
+        manager.warmUp(1000);
+        manager.getParticles().addController(manager);
+        AlphaState as1 = display.getRenderer().getAlphaState();
+        as1.setBlendEnabled(true);
+        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setTestEnabled(true);
+        as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setEnabled(true);
+
+        TextureState ts = display.getRenderer().getTextureState();
+        ts.setTexture(
+            TextureManager.loadTexture(
+            RenParticleEditor.class.getClassLoader().getResource(
+            "jmetest/data/texture/flaresmall.jpg"),
+            Texture.MM_LINEAR_LINEAR,
+            Texture.FM_LINEAR,
+            true));
+        ts.setEnabled(true);
+        manager.setRepeatType(Controller.RT_CLAMP);
+        Node myNode = new Node("Particle Nodes");
+        myNode.setRenderState(as1);
+        myNode.setRenderState(ts);
+        myNode.attachChild(manager.getParticles());
+        rootNode.attachChild(myNode);
+        
+        
         rootNode.attachChild(player);
         lightState.setEnabled(!lightState.isEnabled());
         rootNode.attachChild(computer);
@@ -154,6 +209,7 @@ public class PongRevisited extends SimpleGame {
     }
 
     public void simpleUpdate() {
+        manager.setRepeatType(Controller.RT_CLAMP);
         if (checkPlayer()) {
             ballSound.setPosition(cam.getLocation().x - 5, cam.getLocation().y,
                     cam.getLocation().z);
@@ -179,13 +235,11 @@ public class PongRevisited extends SimpleGame {
                     cam.getLocation().z);
             ballSound.fireEvent(MISS_EVENT);
             computerScoreText.setText("Computer : " + (++computerScore));
-
+            manager.setRepeatType(Controller.RT_WRAP);
+            manager.forceRespawn();
+            manager.getParticles().setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
             reset();
-            try {
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
-
-            }
+            
         }
         if (ball.getLocalTranslation().x > computer.getWorldTranslation().x) {
 
@@ -193,6 +247,7 @@ public class PongRevisited extends SimpleGame {
                     cam.getLocation().z);
             ballSound.fireEvent(MISS_EVENT);
             playerScoreText.setText("Player : " + (++playerScore));
+            
             if(difficulty>2) difficulty--;
             reset();
             try {
@@ -291,7 +346,7 @@ public class PongRevisited extends SimpleGame {
 
     public static void main(String[] args) {
         PongRevisited app = new PongRevisited();
-        app.setDialogBehaviour(NEVER_SHOW_PROPS_DIALOG);
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
     }
 
