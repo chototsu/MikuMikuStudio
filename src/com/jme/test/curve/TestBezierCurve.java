@@ -56,7 +56,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.5 2004-01-07 21:00:40 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.6 2004-01-14 22:31:54 mojomonkey Exp $
  */
 public class TestBezierCurve extends AbstractGame {
     private TriMesh t, t2, t3, t4;
@@ -123,7 +123,7 @@ public class TestBezierCurve extends AbstractGame {
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 4.0f);
+        Vector3f loc = new Vector3f(0.0f, 15.0f, 5.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);

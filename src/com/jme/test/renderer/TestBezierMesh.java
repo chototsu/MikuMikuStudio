@@ -36,10 +36,12 @@ import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.light.DirectionalLight;
+import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.BezierMesh;
 import com.jme.scene.BezierPatch;
 import com.jme.scene.BoundingSphere;
@@ -47,6 +49,7 @@ import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
@@ -57,7 +60,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.1 2004-01-11 01:58:12 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.2 2004-01-14 22:31:54 mojomonkey Exp $
  */
 public class TestBezierMesh extends AbstractGame {
     private TriMesh t;
@@ -130,7 +133,7 @@ public class TestBezierMesh extends AbstractGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonController(this, cam, "LWJGL");
-        //display.getRenderer().setCullingMode(Renderer.CULL_BACK);
+        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
 
     }
 
@@ -177,13 +180,21 @@ public class TestBezierMesh extends AbstractGame {
         bp.setAnchor(3, 1, new Vector3f(-0.25f, 0.75f, -1.0f));
         bp.setAnchor(3, 2, new Vector3f(0.25f, 0.75f, -1.0f));
         bp.setAnchor(3, 3, new Vector3f(0.75f, 0.75f, -0.5f));
+        bp.setDetailLevel(100);
 
         BezierMesh bez = new BezierMesh();
-        bez.tessellate(bp, 20);
         bez.setPatch(bp);
         bez.setWorldBound(new BoundingSphere());
         bez.setForceView(true);
         scene.attachChild(bez);
+        
+        MaterialState ms = display.getRenderer().getMaterialState();
+        ms.setEmissive(new ColorRGBA(0,0,0.4f,1.0f));
+        ms.setAmbient(new ColorRGBA(0.5f,0.5f,0.5f,1.0f));
+        ms.setDiffuse(new ColorRGBA(1.0f,0.85f,0.75f,1.0f));
+        ms.setSpecular(new ColorRGBA(0.8f,0.8f,0.8f,1.0f));
+        ms.setShininess(1.0f);
+        bez.setRenderState(ms);
 
         SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
@@ -192,32 +203,32 @@ public class TestBezierMesh extends AbstractGame {
         am.setLocation(new Vector3f(25, 10, 0));
         am.setAngle(15);
 
-        SpotLight am2 = new SpotLight();
+        PointLight am2 = new PointLight();
         am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am2.setDirection(new Vector3f(0, 0, 0));
-        am2.setLocation(new Vector3f(-25, 10, 0));
-        am2.setAngle(15);
+        //am2.setDirection(new Vector3f(0, 0, 0));
+        am2.setLocation(new Vector3f(5, 10, -10));
+        //am2.setAngle(15);
 
         DirectionalLight dr = new DirectionalLight();
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-        dr.setDirection(new Vector3f(150, 0, 150));
+        dr.setDirection(new Vector3f(0, 1, 0));
 
         LightState state = display.getRenderer().getLightState();
-        state.attach(am);
+        //state.attach(am);
         state.attach(dr);
         state.attach(am2);
         am.setEnabled(true);
         am2.setEnabled(true);
         dr.setEnabled(true);
-        // scene.setRenderState(state);
+        scene.setRenderState(state);
 
         WireframeState wf = display.getRenderer().getWireframeState();
         wf.setEnabled(true);
 
-        scene.setRenderState(wf);
+        //scene.setRenderState(wf);
 
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);

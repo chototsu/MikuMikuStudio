@@ -36,28 +36,62 @@ import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
 
 /**
- * <code>BezierMesh</code>
+ * <code>BezierMesh</code> is defined by a collection of <code>BezierPatch</code>
+ * objects that define a 4x4 patch of control anchors. These anchors define the
+ * curve the surface of the mesh will take. The patch also contains information
+ * about it's detail level, which defines how smooth the mesh will be.
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.5 2004-01-14 06:01:18 mojomonkey Exp $
+ * @version $Id: BezierMesh.java,v 1.6 2004-01-14 22:31:54 mojomonkey Exp $
  */
 public class BezierMesh extends TriMesh {
     private BezierPatch patch;
-    
+
+    /**
+     * Constructor creates a default <code>BezierMesh</code> object.
+     *
+     */
     public BezierMesh() {
-        
+
     }
-    
+
+    /**
+     * Constructor creates a new <code>BezierMesh</code> object with the
+     * given <code>BezierPatch</code>. The mesh is then automatically 
+     * tessellated.
+     * @param patch the <code>BezierPatch</code> used to define this mesh.
+     */
     public BezierMesh(BezierPatch patch) {
         this.patch = patch;
+        tessellate();
     }
 
+    /**
+     * 
+     * <code>setPatch</code> sets the <code>BezierPatch</code> of the mesh.
+     * It is then tessellated.
+     * @param patch the patch to use for this mesh.
+     */
     public void setPatch(BezierPatch patch) {
         this.patch = patch;
+        tessellate();
     }
 
-    public void tessellate(BezierPatch patch, int detailLevel) {
+    /**
+     * 
+     * <code>tessellate</code> generates the <code>BezierMesh</code> vertices
+     * from the supplied patch and detail level. This method is called when
+     * patch is set, and therefore, should normally have to be called. However,
+     * if patch is changed externally, and you wish to update the mesh, a 
+     * call to <code>tessellate</code> is appropriate.
+     *
+     */
+    public void tessellate() {
+        if(patch == null) {
+            return;
+        }
         int u = 0, v;
         float py, px, pyold;
+        int detailLevel = patch.getDetailLevel();
 
         Vector3f[] temp = new Vector3f[4];
         Vector3f[] last = new Vector3f[detailLevel + 1];
@@ -101,7 +135,7 @@ public class BezierMesh extends TriMesh {
             }
 
         }
-        
+
         int index = -1;
         for (int i = 0; i < detailLevel * detailLevel * 6; i = i + 6) {
 
@@ -119,12 +153,62 @@ public class BezierMesh extends TriMesh {
             indices[(i + 5)] = (2 * index) + 1;
         }
 
+        int normalIndex = 0;
+        for (int i = 0; i < detailLevel; i++) {
+            for (int j = 0; j < (detailLevel * 2) + 2; j++) {
+                if (j % 2 == 0) {
+                    if (i == 0) {
+                        if (j < (detailLevel * 2)) {
+                            //right cross up
+                            normal[normalIndex] =
+                                vertex[normalIndex
+                                    + 1]
+                                        .cross(vertex[normalIndex + 2])
+                                        .normalize();
+                        } else {
+                            //down cross right
+                            normal[normalIndex] =
+                                vertex[normalIndex
+                                    - 2]
+                                        .cross(vertex[normalIndex + 1])
+                                        .normalize();
+                        }
+                    } else {
+                        normal[normalIndex] =
+                            normal[normalIndex
+                                - (detailLevel * 2 + 1)].normalize();
+                    }
+                } else {
+                    if (j < (detailLevel * 2) + 1) {
+                        //up cross left
+                        normal[normalIndex] =
+                            vertex[normalIndex
+                                + 2].cross(vertex[normalIndex - 1]).normalize();
+                    } else {
+                        //left cross down
+                        normal[normalIndex] =
+                            vertex[normalIndex
+                                - 1].cross(vertex[normalIndex - 2]).normalize();
+                    }
+                }
+                normalIndex++;
+            }
+        }
+
         setVertices(vertex);
         setTextures(texture);
         setIndices(indices);
-        //setNormals(normal);
+        setNormals(normal);
     }
 
+    /**
+     * 
+     * <code>calcBerstein</code> calculates the Berstein number for the 
+     * given u and control points.
+     * @param u the u value.
+     * @param p the control points.
+     * @return the Berstein number.
+     */
     private Vector3f calcBerstein(float u, Vector3f[] p) {
         if (p.length != 4) {
             throw new JmeException("Point parameter must be length 4.");
