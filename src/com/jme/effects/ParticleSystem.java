@@ -28,6 +28,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *  
  */
+ 
+ /*
+  * EDIT: 2/14/2004 - Added a updateWorldData method that will NOT rotate
+  * 		the particle system if the parent is a camera node and alwaysrotate
+  * 		is false. - MP
+  */
 package com.jme.effects;
 
 import com.jme.math.Line;
@@ -35,14 +41,17 @@ import com.jme.math.Plane;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.CameraNode;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.RenderState;
 
 /**
  * <code>ParticleSystem</code>
  * 
  * @author Ahmed
- * @version $Id: ParticleSystem.java,v 1.5 2004-02-13 23:25:25 darkprophet Exp $
+ * @version $Id: ParticleSystem.java,v 1.6 2004-02-14 17:35:23 mojomonkey Exp $
  */
 public class ParticleSystem extends Node {
 
@@ -52,11 +61,12 @@ public class ParticleSystem extends Node {
 	private Vector3f gravity, position;
 
 	private Particle[] particles;
-	private ParticleController pc;
-	
+
 	private boolean useGeo;
 	private Line psLine;
 	private Plane psPlane;
+
+	private boolean alwaysRotate;
 
 	public ParticleSystem(int num) {
 		super();
@@ -160,14 +170,78 @@ public class ParticleSystem extends Node {
 	//----
 	// misc methods
 	//----
-	public void updateWorldData(float n) {
-		super.updateWorldData(n);
-		pc.update(n);
-	}
-	public void addController(Controller p) {
-		pc = (ParticleController) p;
+	/**
+	 * <code>updateWorldData</code> updates the particle system with the
+	 * parent's scale, translation and if the parent is not a CameraNode
+	 * object and alwaysRotate is not true, rotation. The controllers are
+	 * also updated as well as the renderstate.
+	 */
+	public void updateWorldData(float time) {
+		//update spatial state via controllers
+		for (int i = 0; i < geometricalControllers.size(); i++) {
+			if (geometricalControllers.get(i) != null) {
+				((Controller) geometricalControllers.get(i)).update(time);
+			}
+		}
+
+		//update render state via controllers
+		Controller[] controls;
+		for (int i = 0; i < renderStateList.length; i++) {
+			RenderState rs = renderStateList[i];
+			if (rs != null) {
+				controls = rs.getControllers();
+				for (int j = 0; j < controls.length; j++) {
+					if (controls[j] != null) {
+						controls[j].update(time);
+					}
+				}
+			}
+		}
+		// update spatial controllers
+		boolean computesWorldTransform = false;
+
+		// update world transforms
+		if (!computesWorldTransform) {
+			if (parent != null) {
+				worldScale = parent.getWorldScale() * localScale;
+				if (!(parent instanceof CameraNode) || alwaysRotate) {
+					parent.getWorldRotation().mult(
+						localRotation,
+						worldRotation);
+				}
+				worldTranslation =
+					parent.getWorldTranslation().add(
+						(
+							parent.getWorldRotation().mult(
+								localTranslation)).mult(
+							parent.getWorldScale()));
+
+			} else {
+				worldScale = localScale;
+				worldRotation = localRotation;
+				worldTranslation = localTranslation;
+			}
+		}
+
+		for (int i = 0; i < children.size(); i++) {
+			Spatial child = (Spatial) children.get(i);
+			if (child != null) {
+				child.updateGeometricState(time, false);
+			}
+		}
 	}
 	
+	/**
+	 * 
+	 * <code>setAlwaysRotate</code> sets the alwaysRotate value to
+	 * true or false. If true, the particle system will rotate with
+	 * the parent even if it is a camera node.
+	 * @param value true or false.
+	 */
+	public void setAlwaysRotate(boolean value) {
+		alwaysRotate = value;
+	}
+
 	// ----
 	// geometry stuff
 	// ----
