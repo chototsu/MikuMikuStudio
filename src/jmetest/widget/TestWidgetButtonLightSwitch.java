@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.5 2004-02-25 19:25:38 mojomonkey Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.6 2004-02-28 20:05:01 mojomonkey Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
 	static String STARTED_STATE_STRING = " Stop ";
@@ -461,6 +461,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         lightState.attach(dr);
         lightState.attach(spotlight1);
         lightState.attach(spotlight2);
+        lightState.setEnabled(true);
 
         am.setEnabled(true);
         spotlight1.setEnabled(true);
