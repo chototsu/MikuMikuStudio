@@ -30,21 +30,20 @@
  */
 package jmetest.effects;
 
+import java.util.Observable;
+import java.util.Observer;
 import java.util.logging.Level;
 
 import com.jme.app.SimpleGame;
 import com.jme.effects.Tint;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
-import com.jme.input.KeyBindingManager;
-import com.jme.input.KeyInput;
+import com.jme.input.AbstractInputController;
+import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
-import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
@@ -54,43 +53,94 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jme.widget.WidgetAbstractFrame;
+import com.jme.widget.WidgetAlignmentType;
+import com.jme.widget.WidgetInsets;
+import com.jme.widget.WidgetOrientationType;
+import com.jme.widget.border.WidgetBorder;
+import com.jme.widget.border.WidgetBorderType;
+import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
+import com.jme.widget.layout.WidgetBorderLayout;
+import com.jme.widget.layout.WidgetBorderLayoutConstraint;
+import com.jme.widget.slider.WidgetHSlider;
+import com.jme.widget.text.WidgetLabel;
 
 /**
  * <code>TestTint</code>
  * 
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.4 2004-03-06 23:03:19 darkprophet Exp $
+ * @version $Id: TestTint.java,v 1.5 2004-03-07 13:00:10 darkprophet Exp $
  */
 public class TestTint extends SimpleGame {
 
+	class SliderPanel extends WidgetAbstractFrame implements Observer {
+		WidgetHSlider alphaValue;
+		WidgetLabel instructions;
+
+		public SliderPanel(AbstractInputController ic) {
+			super(ic);
+			setLayout(new WidgetBorderLayout());
+			
+			instructions = new WidgetLabel("Increase the slider to change alpha. Observe color changes.", WidgetAlignmentType.ALIGN_CENTER);
+			instructions.setInsets(new WidgetInsets(0, 0, 5, 0));
+			instructions.setFgColor(new ColorRGBA(1, 1, 0, 1));
+			instructions.setBgColor(null);
+			
+			alphaValue = new WidgetHSlider(WidgetOrientationType.DOWN);
+			alphaValue.setInsets(new WidgetInsets(5, 5, 5, 5));
+			alphaValue.setBorder(
+				new WidgetBorder(1, 1, 1, 1, WidgetBorderType.RAISED));
+			alphaValue.setMinimum(0f);
+			alphaValue.setMaximum(1f);
+			alphaValue.addValueChangeObserver(this);
+
+			add(alphaValue, WidgetBorderLayoutConstraint.SOUTH);
+			add(instructions, WidgetBorderLayoutConstraint.NORTH);
+			doLayout();
+		}
+
+		public void update(Observable o, Object obj) {
+			alpha = (float) alphaValue.getValue();
+		}
+	}
+
 	private Camera cam;
 	private Node tintNode, scene;
-	private InputController input;
+	private AbstractInputController input;
 	private Timer timer;
 
 	private Tint tint;
 	private TriMesh box;
+	private Quaternion rotQuat;
+	private float angle = 0;
+	private Vector3f axis;
+
+	private SliderPanel slider;
 
 	private float alpha;
-
-	private Text instructions;
+	private float counter;
 
 	protected void update(float interpolation) {
-		timer.update();
-		input.update(timer.getTimePerFrame() * 35);
-
-		if (KeyBindingManager
-			.getKeyBindingManager()
-			.isValidCommand("Alpha+")) {
-			alpha += 0.01f;
-			tint.getTintColor().a = alpha;
-		} else if (
-			KeyBindingManager.getKeyBindingManager().isValidCommand(
-				"Alpha-")) {
-			alpha -= 0.01f;
-			tint.getTintColor().a = alpha;
+		if (timer.getTimePerFrame() < 1) {
+			angle = angle + (timer.getTimePerFrame() * - 0.5f);
+			if (angle < 0) {
+				angle = 360 - 0.5f;
+			}
+			
 		}
+		rotQuat.fromAngleAxis(angle, axis);
+		box.setLocalRotation(rotQuat);
+		
+		timer.update();
+		slider.handleInput();
+		counter += 0.2f;
+		float counter2 = (float) Math.toRadians(counter);
 
+		tint.getTintColor().a = alpha;
+		tint.getTintColor().r = (float) Math.cos(counter2);
+		tint.getTintColor().g = (float) Math.sin(counter2);
+		tint.getTintColor().b =
+			(float) (Math.cos(counter2) * Math.sin(counter2));
 		scene.updateWorldData(timer.getTimePerFrame() * 10);
 		tintNode.updateWorldData(timer.getTimePerFrame() * 10);
 	}
@@ -99,6 +149,7 @@ public class TestTint extends SimpleGame {
 		display.getRenderer().clearBuffers();
 		display.getRenderer().draw(scene);
 		display.getRenderer().draw(tintNode);
+		display.getRenderer().draw(slider);
 	}
 
 	protected void initSystem() {
@@ -130,17 +181,18 @@ public class TestTint extends SimpleGame {
 		cam.setFrame(loc, left, up, dir);
 		display.getRenderer().setCamera(cam);
 
-		input = new FirstPersonController(this, cam, properties.getRenderer());
+		input = new WidgetMouseTestControllerBasic(this);
 		timer = Timer.getTimer(properties.getRenderer());
 
-		input.getKeyBindingManager().set("Alpha+", KeyInput.KEY_PERIOD);
-		input.getKeyBindingManager().set("Alpha-", KeyInput.KEY_COMMA);
+		rotQuat = new Quaternion();
+		axis = new Vector3f(1, 1, 0.5f);
 	}
 
 	protected void initGame() {
 		tintNode = new Node("tintNode");
 		scene = new Node("scene");
-		alpha = 0.8f;
+		alpha = 0f;
+		counter = 0f;
 
 		AlphaState as1 = display.getRenderer().getAlphaState();
 		as1.setBlendEnabled(true);
@@ -180,25 +232,32 @@ public class TestTint extends SimpleGame {
 		box.setRenderState(ts1);
 		box.setLocalTranslation(new Vector3f(0, 0, 0));
 
-		tint = new Tint("tint", new ColorRGBA(1f, 0f, 0f, alpha));
+		tint =
+			new Tint(
+				"tint",
+				new ColorRGBA(
+					(float) Math.cos(counter),
+					(float) Math.sin(counter),
+					0f,
+					alpha));
 		tint.setRenderState(as1);
-
-		instructions =
-			new Text("Instructions", "WASD to move, < and > to change alpha");
-		instructions.setRenderState(font);
-		instructions.setRenderState(as1);
 
 		scene.setRenderState(zEnabled);
 		scene.attachChild(box);
-		scene.attachChild(instructions);
+
+		slider = new SliderPanel(input);
+		slider.updateGeometricState(0.0f, false);
 
 		tintNode.attachChild(tint);
 	}
 
 	protected void reinit() {
+		WidgetAbstractFrame.destroy();
+		slider.init();
 	}
 
 	protected void cleanup() {
+		WidgetAbstractFrame.destroy();
 	}
 
 	public static void main(String[] args) {
