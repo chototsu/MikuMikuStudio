@@ -1,21 +1,20 @@
 /*
- * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
- * All rights reserved.
- *
+ * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * 
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- *
+ * 
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- *
+ * 
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- *
+ * 
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- *
+ * 
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +26,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *
+ *  
  */
 
 package jmetest.terrain;
@@ -46,24 +45,32 @@ import com.jme.scene.state.*;
 import com.jme.system.*;
 import com.jme.util.*;
 import com.jme.terrain.*;
-import com.jme.terrain.util.FaultFractalHeightMap;
 import com.jme.terrain.util.MidPointHeightMap;
 import com.jme.terrain.util.ProceduralTextureGenerator;
 
 /**
  * <code>TestLightState</code>
+ * 
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.17 2004-04-20 19:01:20 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.18 2004-04-20 20:13:08 mojomonkey Exp $
  */
 public class TestTerrain extends BaseGame {
+
     private Camera cam;
+
     private CameraNode camNode;
+
     private Node root;
+
     private InputHandler input;
+
     private Timer timer;
+
     private Text fps;
+
     /**
      * Entry point for the test,
+     * 
      * @param args
      */
     public static void main(String[] args) {
@@ -75,6 +82,7 @@ public class TestTerrain extends BaseGame {
 
     /**
      * Not used in this test.
+     * 
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
@@ -82,45 +90,34 @@ public class TestTerrain extends BaseGame {
         timer.update();
         input.update(timer.getTimePerFrame());
 
-
-
         root.updateGeometricState(timer.getTimePerFrame(), true);
-        fps.print(
-            "FPS: "
-                + (int) timer.getFrameRate()
-                + " : "
+        fps.print("FPS: " + (int) timer.getFrameRate() + " : "
                 + display.getRenderer().getStatistics());
-        //        System.out.println(timer.getFrameRate());
         display.getRenderer().clearStatistics();
     }
 
     /**
      * clears the buffers and then draws the TriMesh.
+     * 
      * @see com.jme.app.SimpleGame#render()
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
-
         display.getRenderer().draw(root);
-        display.getRenderer().drawBounds(root);
     }
 
     /**
      * creates the displays and sets up the viewport.
+     * 
      * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
         try {
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
+            display.createWindow(properties.getWidth(), properties.getHeight(),
+                    properties.getDepth(), properties.getFreq(), properties
+                            .getFullscreen());
+            cam = display.getRenderer().getCamera(properties.getWidth(),
                     properties.getHeight());
 
         } catch (JmeException e) {
@@ -148,6 +145,7 @@ public class TestTerrain extends BaseGame {
 
     /**
      * builds the trimesh.
+     * 
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
@@ -158,7 +156,7 @@ public class TestTerrain extends BaseGame {
         ws.setEnabled(false);
 
         FogState fs = display.getRenderer().getFogState();
-        
+
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -173,8 +171,6 @@ public class TestTerrain extends BaseGame {
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
 
-
-
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
@@ -184,44 +180,43 @@ public class TestTerrain extends BaseGame {
         lightstate.setEnabled(true);
         lightstate.attach(dr);
 
-
         Node scene = new Node("scene");
         scene.setRenderState(ws);
         scene.setRenderState(lightstate);
         root = new Node("Root node");
 
-        //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
-        FaultFractalHeightMap heightMap = new FaultFractalHeightMap(129, 32, 0, 255, 0.75f);
-        TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0), false);
+        MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
+        TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5,
+                heightMap.getHeightMap(), new Vector3f(0, 0, 0), false);
         tb.setDetailTexture(1, 4);
         tb.setModelBound(new BoundingBox());
         tb.updateModelBound();
         scene.attachChild(tb);
         scene.setRenderState(cs);
 
-        ProceduralTextureGenerator pt = new ProceduralTextureGenerator(heightMap);
-        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/grassb.png")), -128, 0, 128);
-        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/dirt.jpg")), 0, 128, 255);
-        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/highest.jpg")), 128, 255, 384);
+        ProceduralTextureGenerator pt = new ProceduralTextureGenerator(
+                heightMap);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader()
+                .getResource("jmetest/data/texture/grassb.png")), -128, 0, 128);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader()
+                .getResource("jmetest/data/texture/dirt.jpg")), 0, 128, 255);
+        pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader()
+                .getResource("jmetest/data/texture/highest.jpg")), 128, 255,
+                384);
 
         pt.createTexture(512);
 
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
-        Texture t1 = TextureManager.loadTexture(
-        		pt.getImageIcon().getImage(),
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true,
-				true);
-        ts.setTexture(t1 ,0);
+        Texture t1 = TextureManager.loadTexture(pt.getImageIcon().getImage(),
+                Texture.MM_LINEAR, Texture.FM_LINEAR, true, true);
+        ts.setTexture(t1, 0);
 
-
-        Texture t2 = TextureManager.loadTexture(TestTerrain.class.getClassLoader().getResource("jmetest/data/texture/Detail.jpg"),
-		        Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true);
-        ts.setTexture( t2,1);
+        Texture t2 = TextureManager.loadTexture(TestTerrain.class
+                .getClassLoader()
+                .getResource("jmetest/data/texture/Detail.jpg"),
+                Texture.MM_LINEAR, Texture.FM_LINEAR, true);
+        ts.setTexture(t2, 1);
         t2.setWrap(Texture.WM_WRAP_S_WRAP_T);
 
         t1.setApply(Texture.AM_COMBINE);
@@ -240,25 +235,20 @@ public class TestTerrain extends BaseGame {
         t2.setCombineOp1RGB(Texture.ACO_SRC_COLOR);
         t2.setCombineScaleRGB(0);
         scene.setRenderState(ts);
-
+        
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         TextureState font = display.getRenderer().getTextureState();
-        font.setTexture(
-            TextureManager.loadTexture(
-                TestTerrain.class.getClassLoader().getResource(
-                    "jmetest/data/font/font.png"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
+        font.setTexture(TextureManager.loadTexture(TestTerrain.class
+                .getClassLoader().getResource("jmetest/data/font/font.png"),
+                Texture.MM_LINEAR, Texture.FM_LINEAR, true));
         font.setEnabled(true);
 
         fps = new Text("FPS counter", "");
         fps.setRenderState(font);
         fps.setRenderState(as1);
-
 
         scene.setRenderState(buf);
         root.attachChild(scene);
@@ -269,8 +259,10 @@ public class TestTerrain extends BaseGame {
         root.updateRenderState();
 
     }
+
     /**
      * not used.
+     * 
      * @see com.jme.app.SimpleGame#reinit()
      */
     protected void reinit() {
@@ -279,6 +271,7 @@ public class TestTerrain extends BaseGame {
 
     /**
      * Not used.
+     * 
      * @see com.jme.app.SimpleGame#cleanup()
      */
     protected void cleanup() {
