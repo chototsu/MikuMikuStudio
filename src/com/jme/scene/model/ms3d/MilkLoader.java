@@ -80,6 +80,9 @@ public class MilkLoader extends Loader{
      * @see Node
      */
     public Node load(URL url){
+        if (url==null){
+            throw new JmeException("Can't load null models");
+        }
         if (baseUrl==null){
             try {
                 baseUrl=new URL(url.getProtocol(),url.getHost(),url.getPort(),new File(url.getPath()).getParent()+'\\');
