@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.16 2004-05-07 22:03:27 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.17 2004-05-12 00:19:34 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -81,6 +81,9 @@ public class TestTerrainPage extends SimpleGame {
     dl.setDirection(new Vector3f(1, -0.5f, 1));
     dl.setEnabled(true);
     lightState.attach(dl);
+
+    cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+    cam.update();
 
     camNode = new CameraNode("Camera Node", cam);
     camNode.setLocalTranslation(new Vector3f(0, 250, -20));
