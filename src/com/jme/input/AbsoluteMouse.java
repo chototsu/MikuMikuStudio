@@ -46,7 +46,7 @@ package com.jme.input;
  * correspond to the width and height of the window).
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.12 2004-08-06 21:03:06 renanse Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.13 2004-09-14 07:14:07 renanse Exp $
  */
 public class AbsoluteMouse extends Mouse {
     //position
@@ -101,4 +101,13 @@ public class AbsoluteMouse extends Mouse {
         _hotSpotLocation.set(localTranslation).addLocal(_hotSpotOffset);
     }
 
+    /**
+     * set the mouse's limit.
+     * @param width the width of the mouse's limit.
+     * @param height the height of the mouse's limit.
+     */
+    public void setLimit(int width, int height) {
+      this.width = width;
+      this.height = height;
+    }
 }
