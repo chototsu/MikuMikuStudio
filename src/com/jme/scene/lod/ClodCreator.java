@@ -34,7 +34,6 @@ package com.jme.scene.lod;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
 
@@ -50,7 +49,7 @@ import com.jme.renderer.ColorRGBA;
  * The reason for lack of documentation is that it should have little use to someone
  * outside the API, unless they already know how to use it.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.15 2004-08-31 01:50:16 renanse Exp $
+ * @version $Id: ClodCreator.java,v 1.16 2004-09-01 05:20:17 mojomonkey Exp $
  */
 
 public class ClodCreator extends VETMesh {
