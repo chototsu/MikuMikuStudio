@@ -46,7 +46,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.2 2004-02-27 23:05:13 mojomonkey Exp $
+ * @version $Id: TestManyChildren.java,v 1.3 2004-03-02 01:44:56 mojomonkey Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
@@ -117,8 +117,7 @@ public class TestManyChildren extends SimpleGame {
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
 
         display.getRenderer().setCamera(cam);
-        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
-
+        
         camNode = new CameraNode("Camera Node", cam);
         //camNode.setLocalTranslation(new Vector3f();
         input = new NodeController(this, camNode, "LWJGL");

@@ -42,6 +42,7 @@ import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -169,7 +170,17 @@ public class TestRenderStateList extends SimpleGame {
         buf.setFunction(ZBufferState.CF_LEQUAL);
         
         scene.setRenderState(buf);
-
+        
+        CullState cs = display.getRenderer().getCullState();
+        cs.setEnabled(true);
+        cs.setCullMode(CullState.CS_BACK);
+        scene.setRenderState(cs);
+        
+        CullState cs2 = display.getRenderer().getCullState();
+        cs2.setEnabled(true);
+        cs2.setCullMode(CullState.CS_NONE);
+        t3.setRenderState(cs2);
+        
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
         ts.setTexture(

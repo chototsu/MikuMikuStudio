@@ -41,7 +41,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
@@ -60,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.6 2004-02-26 17:42:09 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.7 2004-03-02 01:45:03 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
     private Camera cam;
@@ -154,7 +153,6 @@ public class TestPick extends SimpleGame {
         
         timer = Timer.getTimer(properties.getRenderer());
         
-        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
         axis = new Vector3f(1,0,0);
         

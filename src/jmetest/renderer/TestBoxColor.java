@@ -40,7 +40,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
@@ -58,7 +57,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.3 2004-02-23 21:26:41 mojomonkey Exp $
+ * @version $Id: TestBoxColor.java,v 1.4 2004-03-02 01:44:52 mojomonkey Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;
@@ -159,7 +158,6 @@ public class TestBoxColor extends SimpleGame {
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");
         
-        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
         axis = new Vector3f(1,1,0.5f);
         display.setTitle("Vertex Colors");

@@ -64,9 +64,11 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.LWJGLAlphaState;
+import com.jme.scene.state.LWJGLCullState;
 import com.jme.scene.state.LWJGLDitherState;
 import com.jme.scene.state.LWJGLFogState;
 import com.jme.scene.state.LWJGLLightState;
@@ -97,7 +99,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.23 2004-02-29 23:49:06 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.24 2004-03-02 01:44:50 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -141,32 +143,6 @@ public class LWJGLRenderer implements Renderer {
     }
 
     /**
-     * <code>setCullingMode</code> defines which side of a triangle (if any)
-     * will be culled. Front means the side the normal faces will be culled,
-     * back means the side opposite the normal will be culled.
-     * @param mode the side to cull.
-     */
-    public void setCullingMode(int mode) {
-        switch (mode) {
-            case CULL_FRONT :
-                GL.glCullFace(GL.GL_FRONT);
-                GL.glEnable(GL.GL_CULL_FACE);
-                break;
-            case CULL_BACK :
-                GL.glCullFace(GL.GL_BACK);
-                GL.glEnable(GL.GL_CULL_FACE);
-                break;
-            case CULL_NONE :
-                GL.glCullFace(GL.GL_NONE);
-                GL.glEnable(GL.GL_CULL_FACE);
-                break;
-            default :
-                GL.glDisable(GL.GL_CULL_FACE);
-                break;
-        }
-    }
-
-    /**
      * <code>setCamera</code> sets the camera this renderer is using. It
      * asserts that the camera is of type <code>LWJGLCamera</code>.
      * @see com.jme.renderer.Renderer#setCamera(com.jme.renderer.Camera)
@@ -204,6 +180,16 @@ public class LWJGLRenderer implements Renderer {
      */
     public AlphaState getAlphaState() {
         return new LWJGLAlphaState();
+    }
+    
+    /**
+     *  <code>getCullState</code> returns a new LWJGLCullState object as
+     * a regular CullState.
+     * @return a CullState object.
+     * @see com.jme.renderer.Renderer#getCullState()
+     */
+    public CullState getCullState() {
+        return new LWJGLCullState();
     }
 
     /**

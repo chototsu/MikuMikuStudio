@@ -41,6 +41,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.LightState;
@@ -72,32 +73,9 @@ import com.jme.widget.text.WidgetText;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.13 2004-02-27 23:05:13 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.14 2004-03-02 01:44:51 mojomonkey Exp $
  */
 public interface Renderer {
-    /**
-     * Culls the side opposite the normal.
-     */
-    public final static int CULL_BACK = 0;
-    /**
-     * Culls the side of the normal.
-     */
-    public final static int CULL_FRONT = 1;
-    /**
-     * Culls no sides.
-     */
-    public final static int CULL_NONE = 2;
-    
-    /**
-     * 
-     * <code>setCullingMode</code> sets the culling mode of the renderer. This
-     * defines the side culling. jME is defined as a Right-Handed Coordinate
-     * system. This means that vertex winding should be counter-clockwise to
-     * provide normals that face away from the object. 
-     * @param mode the side to cull.
-     */
-    public void setCullingMode(int mode);
-    
     /**
      * <code>setCamera</code> sets the reference to the applications camera 
      * object.
@@ -128,6 +106,15 @@ public interface Renderer {
      *      proper renderer.
      */
     public AlphaState getAlphaState();
+    
+    /**
+     * 
+     * <code>getCullState</code> retrieves the cull state object for the
+     * proper renderer.
+     * @return the <code>CullState</code> object that can make use of the
+     *      proper renderer.
+     */
+    public CullState getCullState();
     /**
      * 
      * <code>getDitherState</code> retrieves the dither state object for the 

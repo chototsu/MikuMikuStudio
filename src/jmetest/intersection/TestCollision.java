@@ -42,7 +42,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
@@ -60,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.4 2004-02-24 16:46:13 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.5 2004-03-02 01:45:01 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -197,7 +196,6 @@ public class TestCollision extends SimpleGame {
 
         timer = Timer.getTimer(properties.getRenderer());
 
-        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
         axis = new Vector3f(1, 0, 0);
         display.setTitle("Collision Detection");

@@ -40,7 +40,6 @@ import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.CameraNode;
@@ -60,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.3 2004-03-02 01:44:54 mojomonkey Exp $
  */
 public class TestCameraNode extends SimpleGame {
     private TriMesh t;
@@ -153,7 +152,6 @@ public class TestCameraNode extends SimpleGame {
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");
         
-        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         
     }
 

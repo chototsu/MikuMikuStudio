@@ -41,12 +41,12 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.2 2004-03-01 16:47:29 mojomonkey Exp $
+ * @version $Id: TestMultitexture.java,v 1.3 2004-03-02 01:44:58 mojomonkey Exp $
  */
 public class TestMultitexture extends SimpleGame {
     private TriMesh t;
@@ -153,7 +153,6 @@ public class TestMultitexture extends SimpleGame {
         input.setMouseSpeed(1);
         timer = Timer.getTimer(properties.getRenderer());
         
-        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
         axis = new Vector3f(1,1,0.5f);
         display.setTitle("Multitexturing");
@@ -177,13 +176,16 @@ public class TestMultitexture extends SimpleGame {
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
         
-        
+        CullState cs = display.getRenderer().getCullState();
+        cs.setEnabled(true);
+        cs.setCullMode(CullState.CS_BACK);
+        scene.setRenderState(cs);
         
         t = new Box("Box", min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
-        t.setLocalTranslation(new Vector3f(0,0,0));
+        t.setLocalTranslation(new Vector3f(0,100,0));
         
         scene.attachChild(t);
         root.attachChild(scene);

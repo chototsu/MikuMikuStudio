@@ -42,7 +42,6 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Node;
 import com.jme.scene.Pyramid;
@@ -62,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.3 2004-03-02 01:45:11 mojomonkey Exp $
  */
 public class TestTimer extends SimpleGame {
     private TriMesh t;
@@ -166,7 +165,6 @@ public class TestTimer extends SimpleGame {
         timer = Timer.getTimer(properties.getRenderer());
         LoggingSystem.getLogger().log(Level.INFO, "Timer resolution:" + timer.getResolution());
         
-        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
         axis = new Vector3f(1,1,1);
 
