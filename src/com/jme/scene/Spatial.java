@@ -56,7 +56,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.60 2004-10-26 23:26:10 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.61 2004-11-06 18:55:44 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -667,7 +667,7 @@ public abstract class Spatial implements Serializable {
 	 * there can only be one render state per type per node. That is, there can
 	 * only be a single AlphaState a single TextureState, etc. If there is
 	 * already a render state for a type set the old render state will be
-	 * rendered. Otherwise, null is returned.
+	 * returned. Otherwise, null is returned.
 	 * 
 	 * @param rs
 	 *            the render state to add.
