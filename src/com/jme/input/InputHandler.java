@@ -39,70 +39,133 @@ import com.jme.input.action.MouseInputAction;
 /**
  * <code>InputHandler</code>
  * @author Mark Powell
- * @version $Id: InputHandler.java,v 1.6 2004-07-29 07:18:24 cep21 Exp $
+ * @author Jack Lindamood - (javadoc only)
+ * @version $Id: InputHandler.java,v 1.7 2004-07-30 20:49:49 cep21 Exp $
  */
 public class InputHandler {
-    protected ArrayList actions;
+    /** List of keyboard actions.  They are performed in update if valid.*/
+    protected ArrayList keyActions;
+    /** List of mouse actions.  They are performed in update. */
     protected ArrayList mouseActions;
+    /** The keyboard where valid key actions are taken from in update. */
     protected KeyBindingManager keyboard;
+    /** The mouse where valid mouse actions are taken from in update. */
     protected Mouse mouse;
 
+    /**
+     * Creates a new input handler.  By default, there are no keyboard actions or mouse actions
+     * defined.
+     */
     public InputHandler() {
-        actions = new ArrayList();
+        keyActions = new ArrayList();
         mouseActions = new ArrayList();
     }
 
+    /**
+     * Sets the keyboard that will receive key inputs by this handler.
+     * @param keyboard The keyboard to receive key inputs.
+     */
     public void setKeyBindingManager(KeyBindingManager keyboard) {
         this.keyboard = keyboard;
     }
 
+    /**
+     * Returns the currently assigned keybard to receive key inputs.
+     * @return This handler's keyboard.
+     */
     public KeyBindingManager getKeyBindingManager() {
         return keyboard;
     }
 
+    /**
+     * Sets the mouse to receive mouse inputs from.
+     * @param mouse This handler's new mouse.
+     */
     public void setMouse(Mouse mouse) {
         this.mouse = mouse;
     }
 
+    /**
+     * Returns the mouse currently receiving inputs by this handler.
+     * @return This handler's mouse.
+     */
     public Mouse getMouse() {
         return mouse;
     }
 
+    /**
+     * Sets the speed of all key actions currently defined by this handler to the
+     * given value.
+     * @param speed The new speed for all currently defined key actions.
+     * @see com.jme.input.action.AbstractInputAction#setSpeed(float)
+     */
     public void setKeySpeed(float speed) {
-        for(int i = 0; i < actions.size(); i++) {
-            ((AbstractInputAction)actions.get(i)).setSpeed(speed);
+        for(int i = 0; i < keyActions.size(); i++) {
+            ((AbstractInputAction)keyActions.get(i)).setSpeed(speed);
         }
     }
 
+    /**
+     * Sets the speed of all mouse actions currently defined by this handler to the
+     * given value.
+     * @param speed The new speed for all currently defined mouse actions.
+     * @see com.jme.input.action.MouseInputAction#setSpeed(float)
+     */
     public void setMouseSpeed(float speed) {
         for(int i = 0; i < mouseActions.size(); i++) {
             ((MouseInputAction)mouseActions.get(i)).setSpeed(speed);
         }
     }
 
+    /**
+     * Adds a keyboard input action to be polled by this handler during update.
+     * @param inputAction The input action to be added
+     */
     public void addAction(AbstractInputAction inputAction) {
-        actions.add(inputAction);
+        keyActions.add(inputAction);
     }
 
-    public void addKeyboardAction( String key, int keyInputValue, AbstractInputAction action ) {
+    /**
+     * Binds to the key an action and an identification string.  The identification maps
+     * to the key and the action will receive updates on the key.
+     * @param keyIdent A string identifying this key/action purpose.  IE "jump_key"
+     * @param keyInputValue A key that will fire this action.  IE KeyInput.KEY_SPACE
+     * @param action An AbstractInputAction that is performed on the keyInputValue.
+     */
+    public void addKeyboardAction( String keyIdent, int keyInputValue, AbstractInputAction action ) {
+
         if( keyboard == null) {
     		KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
     		keyboard.setKeyInput(InputSystem.getKeyInput());
             setKeyBindingManager(keyboard);
         }
-        keyboard.set( key, keyInputValue);
-        action.setKey( key);
+        keyboard.set( keyIdent, keyInputValue);
+        action.setKey( keyIdent);
         addAction( action);
     }
-    
+
+    /**
+     * Adds a mouse input action to be polled by this handler during update.
+     * @param mouseAction The input action to be added
+     */
     public void addAction(MouseInputAction mouseAction) {
         mouseActions.add(mouseAction);
     }
 
+    /**
+     * Removes a keyboard input action from the list of keyActions that are polled
+     * during update.
+     * @param inputAction The action to remove.
+     */
     public void removeAction(AbstractInputAction inputAction) {
-        actions.remove(inputAction);
+        keyActions.remove(inputAction);
     }
 
+    /**
+     * Removes a mouse input action from the list of mouseActions that are polled
+     * during update.
+     * @param mouseAction The action to remove.
+     */
     public void removeAction(MouseInputAction mouseAction) {
         mouseActions.remove(mouseAction);
     }
@@ -115,12 +178,12 @@ public class InputHandler {
     public void update(float time) {
       if (keyboard != null) {
         keyboard.update();
-        for (int i = 0; i < actions.size(); i++) {
+        for (int i = 0; i < keyActions.size(); i++) {
           if (keyboard
-              .isValidCommand( ( (AbstractInputAction) actions.get(i)).getKey(),
-                              ( (AbstractInputAction) actions.get(i)).
+              .isValidCommand( ( (AbstractInputAction) keyActions.get(i)).getKey(),
+                              ( (AbstractInputAction) keyActions.get(i)).
                               allowsRepeats())) {
-            ( (AbstractInputAction) actions.get(i)).performAction(time);
+            ( (AbstractInputAction) keyActions.get(i)).performAction(time);
           }
         }
       }
