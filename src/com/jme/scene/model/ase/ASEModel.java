@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  * 
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.8 2004-02-21 21:20:57 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.9 2004-02-23 01:06:23 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -109,25 +109,25 @@ public class ASEModel extends Model {
 	 * No data is loaded at this time and a call to <code>load</code>
 	 * is required to initialize the model with data.
 	 * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
+	 * 		comparision purposes.
 	 */
 	public ASEModel(String name) {
 		super(name);
 	}
-	
+
 	/**
 	 * Constructor instantiates a new <code>ASEModel</code> object. The
 	 * file provided is then read and the data loaded. Thefore, a call
 	 * to <code>load</code> is not required.
 	 * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
+	 * 		comparision purposes.
 	 * @param file the ase file to load.
 	 */
 	public ASEModel(String name, String file) {
 		super(name);
 		load(file);
 	}
-	
+
 	/**
 	 *  <code>load</code> parses a given file, loading the mesh data into
 	 * a structure that jME can render. Each Geomobject the ase file defines
@@ -138,24 +138,25 @@ public class ASEModel extends Model {
 	 */
 	public void load(String file) {
 		try {
-			URL url = new URL("file:"+file);
+			URL url = new URL("file:" + file);
 			load(url);
 		} catch (MalformedURLException e) {
-			LoggingSystem.getLogger().log(Level.WARNING, "Could not load: " 
-					+ file);
+			LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"Could not load: " + file);
 		}
 	}
-    
-    public void load(String file, String textureDirectory) {
-        this.textureDirectory = textureDirectory;
-        load(file);
-    }
-    
-    public void load(URL file, String textureDirectory) {
-        this.textureDirectory = textureDirectory;
-        load(file);
-    }
-	
+
+	public void load(String file, String textureDirectory) {
+		this.textureDirectory = textureDirectory;
+		load(file);
+	}
+
+	public void load(URL file, String textureDirectory) {
+		this.textureDirectory = textureDirectory;
+		load(file);
+	}
+
 	/**
 	 *  <code>load</code> parses a given file, loading the mesh data into
 	 * a structure that jME can render. Each Geomobject the ase file defines
@@ -165,19 +166,16 @@ public class ASEModel extends Model {
 	 * @see com.jme.scene.model.Model#load(java.lang.String)
 	 */
 	public void load(URL file) {
-        if(null == file) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Null URL could not " +                "load ASE.");
-            return;
-        }
-        
+		if (null == file) {
+			LoggingSystem.getLogger().log(
+				Level.WARNING,
+				"Null URL could not " + "load ASE.");
+			return;
+		}
+
 		InputStream is = null;
 		int fileSize = 0;
 		try {
-//			absoluteFilePath = file.getPath();
-//			absoluteFilePath =
-//				absoluteFilePath.substring(
-//					0,
-//					absoluteFilePath.lastIndexOf("/") + 1);
 			is = file.openStream();
 			fileSize = is.available();
 
@@ -277,7 +275,6 @@ public class ASEModel extends Model {
 					object.tempTexVerts[object.faces[j].coordIndex[2]];
 			}
 
-			
 			int[] indices = new int[object.faces.length * 3];
 			int count = 0;
 			for (int j = 0; j < object.faces.length; j++) {
@@ -293,9 +290,9 @@ public class ASEModel extends Model {
 			object.updateVertexBuffer();
 			object.updateNormalBuffer();
 			object.setTextures(texCoords2);
-            object.setModelBound(new BoundingSphere());
-            object.updateModelBound();
-            this.attachChild(object);
+			object.setModelBound(new BoundingSphere());
+			object.updateModelBound();
+			this.attachChild(object);
 
 		}
 
@@ -334,9 +331,24 @@ public class ASEModel extends Model {
 		}
 
 		for (int j = 0; j < numOfMaterials; j++) {
+			URL fileURL = null;
 			// Check if the current material has a file name
 			if (((ASEModel.ASEMaterialInfo) materials.get(j)).file.length()
 				> 0) {
+
+				String filename =
+					((ASEModel.ASEMaterialInfo) materials.get(j)).file;
+                fileURL = ASEModel.class.getClassLoader().getResource(filename);
+                if (fileURL == null) {
+					try {
+						fileURL = new URL("file:" + filename);
+					} catch (MalformedURLException e) {
+						LoggingSystem.getLogger().log(
+							Level.WARNING,
+							"Could not load: " + filename);
+						return;
+					}
+				}
 				TextureState ts =
 					DisplaySystem
 						.getDisplaySystem()
@@ -345,7 +357,7 @@ public class ASEModel extends Model {
 				ts.setEnabled(true);
 				ts.setTexture(
 					TextureManager.loadTexture(
-						((ASEModel.ASEMaterialInfo) materials.get(j)).file,
+						fileURL,
 						Texture.MM_LINEAR,
 						Texture.FM_LINEAR,
 						true));
@@ -353,8 +365,7 @@ public class ASEModel extends Model {
 			}
 
 		}
-        
-        
+
 	}
 
 	/**
@@ -752,7 +763,7 @@ public class ASEModel extends Model {
 		if (numOfObjects <= 0) {
 			return;
 		}
-		
+
 		Vector3f vector1 = new Vector3f();
 		Vector3f vector2 = new Vector3f();
 		Vector3f[] triangle = new Vector3f[3];
@@ -838,7 +849,7 @@ public class ASEModel extends Model {
 		public int materialID;
 		public Vector2f[] tempTexVerts; // The texture's UV coordinates
 		public Face[] faces; // The faces information of the object
-		
+
 		public ASEObject(String name) {
 			super(name);
 		}

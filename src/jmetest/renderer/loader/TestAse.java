@@ -54,7 +54,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestAse.java,v 1.1 2004-02-21 21:20:59 mojomonkey Exp $
+ * @version $Id: TestAse.java,v 1.2 2004-02-23 01:06:23 mojomonkey Exp $
  */
 public class TestAse extends SimpleGame {
 	LightState state;
@@ -190,8 +190,7 @@ public class TestAse extends SimpleGame {
 		zstate.setEnabled(true);
 		model = new ASEModel("Statue of Liberty");
         URL data = TestAse.class.getClassLoader().getResource("jmetest/data/model/Statue.ase");
-        System.out.println(data);
-		model.load(data, "jmetest/data/model/");
+        model.load(data, "jmetest/data/model/");
 		model.setRenderState(state);
 		model.setRenderState(zstate);
 		//model.setRenderState(ms);
