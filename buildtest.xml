@@ -43,16 +43,69 @@
     />
   </target>
   
-  <target name ="webdist" depends="dist" description="sign JARs for JNLP distribution" >
+  <target name="webdist" depends="dist" description="sign JARs for JNLP distribution" >
     <signjar jar="${seg}/target/jmetest.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="..."
+             storepass="Password!"
     />
     <signjar jar="${seg}/target/jmetest-data.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="..."
+             storepass="Password!"
+    />
+  </target>
+  
+  <target name="webdist-nativelibs" description="jar and sign native libraries for JNLP distribution" >
+  	<!--  Jar and sign the Windows libraries -->
+    <jar jarfile="${seg}/jnlp/lwjgl-windows.jar"
+    	 basedir="lib"
+         includes="lwjgl.dll"
+         update="yes"
+    />
+    <jar jarfile="${seg}/jnlp/openal-windows.jar"
+         basedir="lib"
+         includes="lwjglaudio.dll"
+         update="yes"
+    />
+    <signjar jar="${seg}/jnlp/lwjgl-windows.jar"
+             alias="jme"
+             keystore="${seg}/jnlp/jmeKeyStore"
+             storepass="Password!"
+    />
+    <signjar jar="${seg}/jnlp/openal-windows.jar"
+             alias="jme"
+             keystore="${seg}/jnlp/jmeKeyStore"
+             storepass="Password!"
+    />
+    
+    <!-- Jar and sign Linux native libraries -->
+    <jar jarfile="${seg}/jnlp/lwjgl-linux.jar"
+         basedir="lib"
+         includes="liblwjgl.so"
+         update="yes"
+    />
+    <jar jarfile="${seg}/jnlp/openal-linux.jar"
+         basedir="lib"
+         includes="libopenal.so"
+         update="yes"
+    />
+    <signjar jar="${seg}/jnlp/lwjgl-linux.jar"
+             alias="jme"
+             keystore="${seg}/jnlp/jmeKeyStore"
+             storepass="Password!"
+    />
+    <signjar jar="${seg}/jnlp/openal-linux.jar"
+             alias="jme"
+             keystore="${seg}/jnlp/jmeKeyStore"
+             storepass="Password!"
+    />
+    
+    <!-- Sign the lwjgl jar -->
+    <signjar jar="${seg}/lib/lwjgl.jar"
+             alias="jme"
+             keystore="${seg}/jnlp/jmeKeyStore"
+             storepass="Password!"
     />
   </target>
 
