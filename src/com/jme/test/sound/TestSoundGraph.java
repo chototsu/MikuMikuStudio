@@ -136,7 +136,7 @@ public class TestSoundGraph extends AbstractGame {
 		box= new Box(min, max);
 		box.setModelBound(new BoundingSphere());
 		box.updateModelBound();
-		box.setLocalTranslation(new Vector3f(0, 0, -50));
+		box.setLocalTranslation(new Vector3f(0, 0, -100));
 		TextureState tst= display.getRenderer().getTextureState();
 		tst.setEnabled(true);
 		tst.setTexture(
@@ -151,8 +151,9 @@ public class TestSoundGraph extends AbstractGame {
 		
 		snode=new SoundNode();
 		footsteps=new SphericalSound("data/sound/Footsteps.wav");
-		footsteps.getSource().setMaxDistance(50);
+		footsteps.getSource().setMaxDistance(250);
 		footsteps.getSource().setPosition(box.getLocalTranslation());				
+		//footsteps.getSource().setSourceRelative(true);
 		snode.attachChild(footsteps);
 		
 		
