@@ -37,8 +37,8 @@ import java.util.logging.Level;
 
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.system.LWJGLPropertiesDialog;
 import com.jme.system.PropertiesIO;
+import com.jme.system.lwjgl.LWJGLPropertiesDialog;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -46,7 +46,7 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.18 2004-08-17 22:46:46 ericthered Exp $
+ * @version $Id: AbstractGame.java,v 1.19 2004-08-30 04:36:42 mojomonkey Exp $
  */
 public abstract class AbstractGame {
     /** Flag for running the system. */
