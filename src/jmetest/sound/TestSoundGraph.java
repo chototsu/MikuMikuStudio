@@ -31,165 +31,87 @@
  */
 
 /*
- * Created on 25 janv. 2004
+ * Created on 25 jan. 2004
  *
  */
 package jmetest.sound;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Node;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.state.ZBufferState;
+import com.jme.sound.SoundAPIController;
 import com.jme.sound.scene.SoundNode;
 import com.jme.sound.scene.SphericalSound;
-import com.jme.sound.SoundAPIController;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 
 /**
  * @author Arman Ozcelik
- *
+ * @version $Id: TestSoundGraph.java,v 1.9 2004-04-23 00:52:44 renanse Exp $
  */
-public class TestSoundGraph extends BaseGame {
+public class TestSoundGraph extends SimpleGame {
 
-	private Node scene;
-	private SoundNode snode;
-	private Camera cam;
-	SphericalSound footsteps;
-	Box box;
+  private SoundNode snode;
+  SphericalSound footsteps;
+  Box box;
 
-	private InputHandler input;
+  public static void main(String[] args) {
+    TestSoundGraph app = new TestSoundGraph();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
+  }
 
-	/* (non-Javadoc)
-	 * @see com.jme.app.SimpleGame#update()
-	 */
-	protected void update(float interpolation) {
-		input.update(1);
-		snode.updateGeometricState(0.0f, true);
+  /* (non-Javadoc)
+   * @see com.jme.app.SimpleGame#update()
+   */
+  protected void simpleUpdate(float interpolation) {
+    snode.updateGeometricState(0.0f, true);
+  }
 
-	}
+  /* (non-Javadoc)
+   * @see com.jme.app.SimpleGame#render()
+   */
+  protected void simpleRender(float interpolation) {
+    SoundAPIController.getRenderer().draw(snode);
+  }
 
-	/* (non-Javadoc)
-	 * @see com.jme.app.SimpleGame#render()
-	 */
-	protected void render(float interpolation) {
-		display.getRenderer().clearBuffers();
-		display.getRenderer().draw(scene);
-		SoundAPIController.getRenderer().draw(snode);
+  /* (non-Javadoc)
+   * @see com.jme.app.SimpleGame#initGame()
+   */
+  protected void simpleInitGame() {
+    display.setTitle("Test Sound Graph");
+    SoundAPIController.getSoundSystem(properties.getRenderer());
+    SoundAPIController.getRenderer().setCamera(cam);
 
-	}
+    Vector3f max = new Vector3f(5, 5, 5);
+    Vector3f min = new Vector3f( -5, -5, -5);
+    box = new Box("Box", min, max);
+    box.setModelBound(new BoundingSphere());
+    box.updateModelBound();
+    box.setLocalTranslation(new Vector3f(0, 0, -50));
+    TextureState tst = display.getRenderer().getTextureState();
+    tst.setEnabled(true);
+    tst.setTexture(
+        TextureManager.loadTexture(
+        TestSoundGraph.class.getClassLoader().getResource(
+        "jmetest/data/images/Monkey.jpg"),
+        Texture.MM_LINEAR,
+        Texture.FM_LINEAR,
+        true));
+    rootNode.setRenderState(tst);
+    rootNode.attachChild(box);
 
-	/* (non-Javadoc)
-	 * @see com.jme.app.SimpleGame#initSystem()
-	 */
-	protected void initSystem() {
-		try {
-			display= DisplaySystem.getDisplaySystem(properties.getRenderer());
-			display.createWindow(
-				properties.getWidth(),
-				properties.getHeight(),
-				properties.getDepth(),
-				properties.getFreq(),
-				properties.getFullscreen());
-			cam= display.getRenderer().getCamera(properties.getWidth(), properties.getHeight());
-
-		} catch (JmeException e) {
-			e.printStackTrace();
-			System.exit(1);
-		}
-		ColorRGBA blackColor= new ColorRGBA();
-		blackColor.r= 0;
-		blackColor.g= 0;
-		blackColor.b= 0;
-		display.getRenderer().setBackgroundColor(blackColor);
-		cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-		Vector3f loc= new Vector3f(0.0f, 0.0f, 20.0f);
-		Vector3f left= new Vector3f(-1.0f, 0.0f, 0.0f);
-		Vector3f up= new Vector3f(0.0f, 1.0f, 0.0f);
-		Vector3f dir= new Vector3f(0.0f, 0f, -1.0f);
-		cam.setFrame(loc, left, up, dir);
-		display.getRenderer().setCamera(cam);
-		input= new FirstPersonHandler(this, cam, "LWJGL");
-		input.setMouseSpeed(0.2f);
-		input.setKeySpeed(.1f);
-		SoundAPIController.getSoundSystem("LWJGL");
-		SoundAPIController.getRenderer().setCamera(cam);
-
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.jme.app.SimpleGame#initGame()
-	 */
-	protected void initGame() {
-		scene= new Node("3D Scene Node");
-		Vector3f max= new Vector3f(5, 5, 5);
-		Vector3f min= new Vector3f(-5, -5, -5);
-		box= new Box("Box", min, max);
-		box.setModelBound(new BoundingSphere());
-		box.updateModelBound();
-		box.setLocalTranslation(new Vector3f(0, 0, -50));
-		TextureState tst= display.getRenderer().getTextureState();
-		tst.setEnabled(true);
-		tst.setTexture(
-			TextureManager.loadTexture(
-                TestSoundGraph.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-		scene.setRenderState(tst);
-		ZBufferState buf= display.getRenderer().getZBufferState();
-		buf.setEnabled(true);
-		buf.setFunction(ZBufferState.CF_LEQUAL);
-		scene.setRenderState(buf);
-		scene.attachChild(box);
-		cam.update();
-
-		snode=new SoundNode();
-		footsteps=new SphericalSound(TestSoundGraph.class.getClassLoader().getResource("jmetest/data/sound/Footsteps.wav"));
-		footsteps.getSource().setMaxDistance(100);
-		footsteps.getSource().setRolloffFactor(.1f);
-		footsteps.getSource().setPosition(box.getLocalTranslation());
-		footsteps.getSource().setGain(1.0f);
-		snode.attachChild(footsteps);
-
-
-
-		scene.updateGeometricState(0.0f, true);
-		snode.updateGeometricState(0.0f, true);
-                scene.updateRenderState();
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.jme.app.SimpleGame#reinit()
-	 */
-	protected void reinit() {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see com.jme.app.SimpleGame#cleanup()
-	 */
-	protected void cleanup() {
-		// TODO Auto-generated method stub
-
-	}
-
-	public static void main(String[] args) {
-		TestSoundGraph app= new TestSoundGraph();
-		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-		app.start();
-	}
-
+    snode = new SoundNode();
+    footsteps = new SphericalSound(TestSoundGraph.class.getClassLoader().
+                                   getResource(
+        "jmetest/data/sound/Footsteps.wav"));
+    footsteps.getSource().setMaxDistance(100);
+    footsteps.getSource().setRolloffFactor(.1f);
+    footsteps.getSource().setPosition(box.getLocalTranslation());
+    footsteps.getSource().setGain(1.0f);
+    snode.attachChild(footsteps);
+    snode.updateGeometricState(0.0f, true);
+  }
 }
