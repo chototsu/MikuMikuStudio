@@ -59,7 +59,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.3 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestMd2.java,v 1.4 2004-02-20 20:51:16 mojomonkey Exp $
  */
 public class TestMd2 extends SimpleGame {
 	LightState state;
@@ -150,12 +150,12 @@ public class TestMd2 extends SimpleGame {
 
 		display.getRenderer().setCamera(cam);
 
-		input = new FirstPersonController(this, cam, "LWJGL");
-		timer = Timer.getTimer("LWJGL");
+		input = new FirstPersonController(this, cam, properties.getRenderer());
+		timer = Timer.getTimer(properties.getRenderer());
 		KeyBindingManager.getKeyBindingManager().set(
 					"selectAnimation",
 					KeyInput.KEY_F1);
-
+		display.setTitle("MD2 Animation");
 	}
 
 	/**

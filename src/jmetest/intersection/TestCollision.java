@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.3 2004-02-20 20:51:16 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -191,15 +191,16 @@ public class TestCollision extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonController(this, cam, properties.getRenderer());
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
 
-        timer = Timer.getTimer("LWJGL");
+        timer = Timer.getTimer(properties.getRenderer());
 
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
         axis = new Vector3f(1, 0, 0);
+        display.setTitle("Collision Detection");
 
     }
 

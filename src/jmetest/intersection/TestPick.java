@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.3 2004-02-20 20:51:16 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
     private TriMesh t;
@@ -155,15 +155,17 @@ public class TestPick extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonController(this, cam, properties.getRenderer());
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         
-        timer = Timer.getTimer("LWJGL");
+        timer = Timer.getTimer(properties.getRenderer());
         
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
         axis = new Vector3f(1,0,0);
+        
+        display.setTitle("Mouse Pick");
 
     }
 
@@ -189,6 +191,7 @@ public class TestPick extends SimpleGame {
         as1.setDstFunction(AlphaState.DB_ONE);
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setEnabled(true);
         text.setRenderState(as1);
         scene = new Node("3D scene node");
         root = new Node("Scene Root");
