@@ -29,6 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  04/02/2004 - Renamed methods get/setInputController to get/setInputHandler. GOP
+ */
+ 
 package com.jme.widget;
 
 import com.jme.input.AbstractInputHandler;
@@ -44,7 +49,7 @@ import com.jme.widget.util.WidgetNotifier;
 /**
  * <code>Widget</code>
  * @author Gregg Patton
- * @version $Id: Widget.java,v 1.5 2004-03-25 17:14:19 mojomonkey Exp $
+ * @version $Id: Widget.java,v 1.6 2004-04-04 12:47:28 greggpatton Exp $
  */
 public interface Widget extends WidgetMouseHandlerInterface {
     
@@ -437,16 +442,16 @@ public interface Widget extends WidgetMouseHandlerInterface {
     public abstract MouseInput getMouseInput();
     
     /**
-     * <code>getInputController</code>
+     * <code>getInputHandler</code>
      * @return
      */
-    public abstract AbstractInputHandler getInputController();
+    public abstract AbstractInputHandler getInputHandler();
     
     /**
-     * <code>setInputController</code>
+     * <code>setInputHandler</code>
      * @param controller
      */
-    public abstract void setInputController(AbstractInputHandler controller);
+    public abstract void setInputHandler(AbstractInputHandler ih);
     
     /**
      * <code>getWidgetRenderer</code>

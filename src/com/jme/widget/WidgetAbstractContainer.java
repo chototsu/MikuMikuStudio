@@ -29,6 +29,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+/*
+ * EDIT:  04/02/2004 - Renamed methods get/setInputController to get/setInputHandler. GOP
+ */
+ 
 package com.jme.widget;
 
 import java.util.ArrayList;
@@ -340,17 +345,17 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     }
 
     /**
-     * @see com.jme.widget.Widget#getInputController()
+     * @see com.jme.widget.Widget#getInputHandler()
      */
-    public AbstractInputHandler getInputController() {
-        return widgetImpl.getInputController();
+    public AbstractInputHandler getInputHandler() {
+        return widgetImpl.getInputHandler();
     }
 
     /** 
-     * @see com.jme.widget.Widget#setInputController(com.jme.input.InputHandler)
+     * @see com.jme.widget.Widget#setInputHandler(com.jme.input.InputHandler)
      */
-    public void setInputController(AbstractInputHandler controller) {
-        widgetImpl.setInputController(controller);
+    public void setInputHandler(AbstractInputHandler ih) {
+        widgetImpl.setInputHandler(ih);
 
     }
 

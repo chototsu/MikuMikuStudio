@@ -75,7 +75,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
     public WidgetAbstractFrame(AbstractInputHandler ic) {
         this();
 
-        setInputController(ic);
+        setInputHandler(ic);
 
     }
 
@@ -184,7 +184,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
     public void handleInput(boolean updateController, float time) {
 
         if (updateController) {
-            getInputController().update(time);
+            getInputHandler().update(time);
         }
 
         handleMouse();
