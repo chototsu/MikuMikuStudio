@@ -27,10 +27,12 @@ import com.jme.image.Texture;
 /**
  * Started Date: May 31, 2004
  * SAX Stack processor.  Helper class for SAXReader
+ * DEPRECIATED DONT USE ME
  * 
  * @author Jack Lindamood
  */
 class SAXStackProcessor {
+    /*
 
     Node myScene=new Node("XML node");
     Stack s=new Stack();
@@ -66,7 +68,7 @@ class SAXStackProcessor {
         } else if (qName.equalsIgnoreCase("DirectionalLight")){
 
         } else if (qName.equalsIgnoreCase("KeyframeAnimation")){
-            
+
         } else if (qName.equalsIgnoreCase("SharedElementsBase")){
 
         } else if (qName.equalsIgnoreCase("SharedTypes")){
@@ -323,4 +325,5 @@ class SAXStackProcessor {
     public Node fetchOriginal() {
         return myScene;
     }
+    */
 }
