@@ -173,7 +173,9 @@ public class HelloIntersection extends SimpleGame {
             SoundAPIController.getRenderer().draw(laserSound);
             playLaser=false;
         }
-       display.getRenderer().draw(sb);
+//       display.getRenderer().draw(sb);
+//        sb.draw(display.getRenderer());
+        sb.onDraw(display.getRenderer());
     }
 
     /**
