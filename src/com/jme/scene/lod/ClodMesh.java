@@ -46,7 +46,7 @@ import com.jme.scene.TriMesh;
  * a trimesh at various degrees of accuracy.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: ClodMesh.java,v 1.17 2004-09-14 21:52:23 mojomonkey Exp $
+ * @version $Id: ClodMesh.java,v 1.18 2005-01-10 20:30:45 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   private static final long serialVersionUID = 1L;
@@ -171,7 +171,7 @@ int currentRecord, targetRecord;
         indices[iC] = rkRecord.vertToKeep;
       }
 
-//      // reduce vertex count (vertices are properly ordered)
+      // reduce vertex count (vertices are properly ordered)
       vertQuantity = rkRecord.numbVerts;
 
       // reduce triangle count (triangles are properly ordered)

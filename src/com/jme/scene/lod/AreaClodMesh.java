@@ -50,11 +50,11 @@ import com.jme.util.LoggingSystem;
  * it to update itself.
  * @author Joshua Slack
  * @author Jack Lindamood (javadoc only)
- * @version $Id: AreaClodMesh.java,v 1.14 2005-01-03 19:00:13 renanse Exp $
+ * @version $Id: AreaClodMesh.java,v 1.15 2005-01-10 20:30:44 renanse Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   private static final long serialVersionUID = 1L;
-private float trisPerPixel = 1f;
+  private float trisPerPixel = 1f;
   private float distTolerance = 1f;
   private float lastDistance = 0f;
 
