@@ -42,10 +42,11 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jme.scene.state.ZBufferState;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.22 2004-09-16 17:12:23 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.23 2004-11-30 20:12:43 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -121,7 +122,9 @@ public class TestParticleSystem extends SimpleGame {
 
     rootNode.setRenderState(ts);
     rootNode.setRenderState(as1);
-    rootNode.clearRenderState(RenderState.RS_ZBUFFER);
+		ZBufferState zstate = display.getRenderer().createZBufferState();
+		zstate.setEnabled(false);
+		manager.getParticles().setRenderState(zstate);
     manager.getParticles().addController(manager);
     manager.getParticles().setModelBound(new BoundingSphere());
     manager.getParticles().updateModelBound();
