@@ -129,7 +129,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.51 2004-10-26 03:36:51 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.52 2004-10-26 23:47:35 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1165,7 +1165,7 @@ public class LWJGLRenderer implements Renderer {
         }
         font.setColor(t.getTextColor());
         font.print((int) t.getWorldTranslation().x, (int) t
-                .getWorldTranslation().y, t.getLocalScale(), t.getText(), 0);
+                .getWorldTranslation().y, t.getWorldScale(), t.getText(), 0);
     }
 
     /**
