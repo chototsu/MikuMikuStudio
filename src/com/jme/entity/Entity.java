@@ -31,6 +31,8 @@
  */
 package com.jme.entity;
 
+import java.util.Properties;
+
 import com.jme.scene.Spatial;
 
 /**
@@ -38,11 +40,12 @@ import com.jme.scene.Spatial;
  * within the game world. The <code>Entity</code> will contain all relevant 
  * game information allowing for easy data reference and control.
  * @author Mark Powell
- * @version $Id: Entity.java,v 1.1 2003-12-11 21:27:40 mojomonkey Exp $
+ * @version $Id: Entity.java,v 1.2 2004-01-20 11:17:59 Anakan Exp $
  */
 public class Entity {
     private Spatial spatial;
     private String id;
+    private Properties properties;
     
     /**
      * Constructor creates a new <code>Entity</code> object. During creation
@@ -51,6 +54,18 @@ public class Entity {
      */
     public Entity(String id) {
         this.id = id;
+    }
+    
+	/**
+		 * Constructor creates a new <code>Entity</code> object. During creation
+		 * a string id is used to denote a unique entity, with predefined properties.
+		 * 
+		 * @param id the entity id.
+		 * @param props the entity properties.
+		 */
+    public Entity(String id, Properties props){
+    	this(id);
+    	this.properties=props;
     }
     
     /**
@@ -81,4 +96,24 @@ public class Entity {
     public String getId() {
         return id;
     }
+    
+    
+	/**
+	 * Get a property of this entity.
+	 * @param propertyName the property name to retrieve.
+	 * @return The entity's property linked to propertyName.
+	 */
+	public Object getProperty(String propertyName) {
+		return properties.get(propertyName);
+	}
+
+	/**
+	 * Binds a property name of the entity with it's property object.
+	 * @param propertName the property name.
+	 * @param property the propery to bind with the name.
+	 */
+	public void setProperty(String propertyName, Object property) {
+		properties.put(propertyName, property);
+	}
+
 }
