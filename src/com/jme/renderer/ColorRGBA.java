@@ -45,9 +45,10 @@ import com.jme.math.FastMath;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.8 2004-04-26 14:10:07 mojomonkey Exp $
+ * @version $Id: ColorRGBA.java,v 1.9 2004-04-28 17:56:08 renanse Exp $
  */
 public class ColorRGBA {
+
     /**
      * the color black (0,0,0).
      */
@@ -56,6 +57,18 @@ public class ColorRGBA {
      * the color white (1,1,1).
      */
     public static final ColorRGBA white = new ColorRGBA(1f, 1f, 1f, 1f);
+    /**
+     * the color gray (.2,.2,.2).
+     */
+    public static final ColorRGBA darkGray = new ColorRGBA(0.2f, 0.2f, 0.2f, 1.0f);
+    /**
+     * the color gray (.5,.5,.5).
+     */
+    public static final ColorRGBA gray = new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f);
+    /**
+     * the color gray (.8,.8,.8).
+     */
+    public static final ColorRGBA lightGray = new ColorRGBA(0.8f, 0.8f, 0.8f, 1.0f);
     /**
      * the color red (1,0,0).
      */
@@ -68,7 +81,7 @@ public class ColorRGBA {
      * the color blue (0,0,1).
      */
     public static final ColorRGBA blue = new ColorRGBA(0f, 0f, 1f, 1f);
-    
+
     /**
      * The red component of the color.
      */
@@ -111,10 +124,10 @@ public class ColorRGBA {
       this.a = a;
       clamp();
     }
-    
+
     /**
      * Copy constructor creates a new <code>ColorRGBA</code> object, based on
-     * a provided color. 
+     * a provided color.
      * @param rgba the <code>ColorRGBA</code> object to copy.
      */
     public ColorRGBA(ColorRGBA rgba) {
@@ -126,10 +139,10 @@ public class ColorRGBA {
     }
 
     /**
-     * 
+     *
      * <code>set</code> sets the RGBA values of this color. The values are then
      * clamped to insure that they are between 0 and 1.
-     * 
+     *
      * @param r the red component of this color.
      * @param g the green component of this color.
      * @param b the blue component of this color.
@@ -142,7 +155,7 @@ public class ColorRGBA {
       this.a = a;
       clamp();
     }
-    
+
     /**
      * <code>set</code> sets the values of this color to those set by a parameter
      * color.
@@ -207,7 +220,7 @@ public class ColorRGBA {
     }
 
     /**
-     * 
+     *
      * <code>randomColor</code> is a utility method that generates a random
      * color.
      *
@@ -241,7 +254,7 @@ public class ColorRGBA {
     public Object clone() {
         return new ColorRGBA(r,g,b,a);
     }
-    
+
     /**
      * <code>equals</code> returns true if this color is logically equivalent
      * to a given color. That is, if the values of the two colors are the same.
@@ -253,11 +266,11 @@ public class ColorRGBA {
         if(!(o instanceof ColorRGBA) || o == null) {
             return false;
         }
-        
+
         if(this == o) {
             return true;
         }
-        
+
         ColorRGBA comp = (ColorRGBA)o;
         if (r != comp.r) return false;
         if (g != comp.g) return false;
@@ -265,7 +278,7 @@ public class ColorRGBA {
         if (a != comp.a) return false;
         return true;
     }
-    
+
     /**
      * <code>hashCode</code> returns a unique code for this color object based
      * on it's values. If two colors are logically equivalent, they will return
