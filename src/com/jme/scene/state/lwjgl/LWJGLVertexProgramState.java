@@ -67,7 +67,7 @@ public class LWJGLVertexProgramState extends VertexProgramState {
 	 * @see com.jme.scene.state.VertexProgramState#isSupported()
 	 */
 	public boolean isSupported() {
-		return GLContext.GL_ARB_vertex_program;
+		return GLContext.getCapabilities().GL_ARB_vertex_program;
 	}
 
 	/**

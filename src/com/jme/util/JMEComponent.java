@@ -38,6 +38,7 @@ import java.nio.IntBuffer;
 
 import java.awt.Component;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 
 import com.jme.system.DisplaySystem;
@@ -48,7 +49,7 @@ import java.awt.image.DataBufferInt;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMEComponent.java,v 1.10 2005-03-30 20:18:05 renanse Exp $
+ * @version $Id: JMEComponent.java,v 1.11 2005-04-04 19:10:56 renanse Exp $
  */
 
 public class JMEComponent extends Component {
@@ -74,6 +75,8 @@ public class JMEComponent extends Component {
 	 * true by default. */
 	protected boolean scaled = true;
 
+	protected boolean didCheck = false;
+
 	/**
 	 * Main Constructor.  Must be set with the width and height of the underlying
 	 * GL context or bad things will happen... (Buffer Over/Underflow exceptions)
@@ -93,7 +96,7 @@ public class JMEComponent extends Component {
 		this.width = width;
 		this.height = height;
 		buf = ByteBuffer.allocateDirect(width * height * 4)
-				.order(ByteOrder.nativeOrder()).asIntBuffer();
+				.order(ByteOrder.LITTLE_ENDIAN).asIntBuffer();
 		img = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		ibuf = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
 
@@ -177,7 +180,11 @@ public class JMEComponent extends Component {
 	    this.img = img;
 		ibuf = ((DataBufferInt)img.getRaster().getDataBuffer()).getData();
 	}
-	
+
+    public void update(Graphics g) {
+	    paint(g);
+	}
+
 	/**
 	 * Overriden paint(Graphics) method.  Does not call super method.
 	 * Clears the component to the current background color (getBackground()).
@@ -186,27 +193,29 @@ public class JMEComponent extends Component {
 	 * @param g Graphics
 	 */
 	public void paint(Graphics g) {
-		synchronized(this) {
-			g.setColor(getBackground());
-			g.fillRect(0, 0, this.getWidth(), this.getHeight());
-			if (DisplaySystem.getDisplaySystem() != null &&
-					DisplaySystem.getDisplaySystem().getRenderer() != null) {
-				buf.clear(); // Note: clear() resets marks and positions, 
-							 //       but not data in buffer.
-				//Grab pixel information and set it to the BufferedImage info.
-				for (int x = height; --x >= 0; ) {
-					buf.get(ibuf, x * width, width);
-				}
-				buf.clear();
-				if (scaled)
-					g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(),
-											getBackground(), null);
-				else
-					g.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), getBackground(), null);
-			}
-
-			// tell the delegate we want new contents from GL on the next pass.
-			HeadlessDelegate.setNeedsRender(this, true);
-		}
-	}
+        if (didCheck
+                || (DisplaySystem.getDisplaySystem() != null && DisplaySystem
+                        .getDisplaySystem().getRenderer() != null)) {
+            didCheck = true;
+            buf.clear(); // Note: clear() resets marks and positions,
+            // but not data in buffer.
+            // Grab pixel information and set it to the BufferedImage info.
+            for (int x = height; --x >= 0;) {
+                buf.get(ibuf, x * width, width);
+            }
+            useImage(g);
+        }
+    }
+	
+	/**
+     * <code>useImage</code> - do something here with the image as desired.
+     * @param g Graphics
+     */
+    private void useImage(Graphics g) {
+        if (scaled)
+        	g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(),
+        							getBackground(), null);
+        else
+        	((Graphics2D)g).drawImage(img, null, 0, 0);
+    }
 }

@@ -67,7 +67,7 @@ public class LWJGLFragmentProgramState extends FragmentProgramState {
 	 * @see com.jme.scene.state.FragmentProgramState#isSupported()
 	 */
 	public boolean isSupported() {
-		return GLContext.GL_ARB_fragment_program;
+		return GLContext.getCapabilities().GL_ARB_fragment_program;
 	}
 
 	/**

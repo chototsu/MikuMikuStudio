@@ -72,7 +72,7 @@ import com.jme.util.TextureManager;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.6 2005-03-08 01:30:55 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.7 2005-04-04 19:10:58 renanse Exp $
  */
 
 public class JMESwingTest extends SimpleHeadlessApp {
@@ -116,7 +116,8 @@ public class JMESwingTest extends SimpleHeadlessApp {
 	float lastCopied = 0;
 	public boolean added = false;
 	protected void simpleUpdate() {
-			// Code for rotating the box...  no surprises here.
+
+	      // Code for rotating the box...  no surprises here.
 			if (tpf < 1) {
 				angle = angle + (tpf * 25);
 				if (angle > 360) {
@@ -141,14 +142,6 @@ public class JMESwingTest extends SimpleHeadlessApp {
 				HeadlessDelegate.copyContents(frame.comp);
 				lastCopied = 0;
 			}
-			// ************* /NEW FOR HEADLESS/SWING *************
-		}
-
-		protected void simpleRender() {
-			// ************* NEW FOR HEADLESS/SWING *************
-			// tell the delegate we got new contents from GL and to hold back
-			// from rendering until set back to true.
-			HeadlessDelegate.setNeedsRender(frame.comp, false);
 			// ************* /NEW FOR HEADLESS/SWING *************
 		}
 
@@ -194,15 +187,15 @@ public class JMESwingTest extends SimpleHeadlessApp {
 			// New code setting the options on the JMEComponent...
 			// Scale the GL image to the size of the component
 			frame.comp.setScaled(true);
-			// Refresh the screen image every 50 ms.  (I like to use twice the value
+			// Refresh the screen image every 30 ms.  (I like to use twice the value
 			// in the lastCopied at least setting.)
-			frame.comp.setRefreshRate(50);
+			frame.comp.setRefreshRate(30);
 			// Set the background color of the component.
 			frame.comp.setBackground(java.awt.Color.black);
 
 			// Now add our JMEComponent to the HeadlessDelegate so it
 			// can be properly tracked and updated as needed.
-			HeadlessDelegate.add(display.getRenderer(), frame.comp);
+			HeadlessDelegate.setRenderer(display.getRenderer());
 
 			// Now validate frame to get the component properly sized and showing.
 			frame.validate();

@@ -61,6 +61,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.UIManager;
 
+import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 
@@ -78,7 +79,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.5 2005-03-30 08:45:55 renanse Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.6 2005-04-04 19:10:54 renanse Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
@@ -91,7 +92,7 @@ public final class LWJGLPropertiesDialog extends JDialog {
     private URL imageFile = null;
     
     //Array of supported display modes
-    private final DisplayMode[] modes;
+    private DisplayMode[] modes = null;
 
     //UI components
     private JCheckBox fullscreenBox = null;
@@ -130,7 +131,11 @@ public final class LWJGLPropertiesDialog extends JDialog {
 
         this.source = source;
         this.imageFile = imageFile;
-        this.modes = Display.getAvailableDisplayModes();
+        try {
+            this.modes = Display.getAvailableDisplayModes();
+        } catch (LWJGLException e) {
+            e.printStackTrace();
+        }
         Arrays.sort(modes, new DisplayModeSorter());
 
         createUI();

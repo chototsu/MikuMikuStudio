@@ -77,22 +77,7 @@ public class SoundSystem implements ISoundSystem {
 	private IListener listener;
 	public SoundSystem() {
 		initializeOpenAL();
-		initalizeEAX();
 		listener = new Listener();
-	}
-	/**
-	 *
-	 */
-	private void initalizeEAX() {
-	    // do not initialize...  non-functioning in support classes.
-//		try {
-//			LoggingSystem.getLogger().log(Level.INFO, "Initalizing EAX");
-//			EAX.create();
-//		} catch (Exception e1) {
-//			LoggingSystem.getLogger().log(Level.WARNING,
-//					"Failed to Initialize EAX");
-//			e1.printStackTrace();
-//		}
 	}
 	/**
 	 *

@@ -41,6 +41,7 @@ import java.nio.IntBuffer;
 import java.util.logging.Level;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.LWJGLException;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL11;
@@ -73,7 +74,7 @@ import java.awt.Toolkit;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.22 2004-11-16 16:42:30 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.23 2005-04-04 19:10:54 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -419,7 +420,13 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     private DisplayMode getValidDisplayMode(int width, int height, int bpp,
             int freq) {
         //get all the modes, and find one that matches our width, height, bpp.
-        DisplayMode[] modes = Display.getAvailableDisplayModes();
+        DisplayMode[] modes;
+        try {
+            modes = Display.getAvailableDisplayModes();
+        } catch (LWJGLException e) {
+            e.printStackTrace();
+            return null;
+        }
         //Make sure that we find the mode that uses our current monitor freq.
 
         for (int i = 0; i < modes.length; i++) {
@@ -483,7 +490,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
         try {
             Display.setDisplayMode(mode); // done so the renderer has access to this information.
-            headlessDisplay = new Pbuffer(width, height, format, null);
+            headlessDisplay = new Pbuffer(width, height, format, null, null);
             headlessDisplay.makeCurrent();
         } catch (Exception e) {
             //System.exit(1);

@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.17 2005-02-10 21:48:22 renanse Exp $
+ * @version $Id: TestBoxColor.java,v 1.18 2005-04-04 19:10:54 renanse Exp $
  */
 public class TestBoxColor extends SimpleGame {
   private TriMesh t;
@@ -65,7 +65,10 @@ public class TestBoxColor extends SimpleGame {
 
   }
 
+  long last=0;
   protected void simpleUpdate() {
+      tpf = (System.currentTimeMillis() - last) * 0.001f;
+      last = System.currentTimeMillis();
     if (tpf < 1) {
       angle = angle + (tpf * 25);
       if (angle > 360) {

@@ -60,7 +60,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.36 2005-02-10 21:48:33 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.37 2005-04-04 19:10:55 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -126,8 +126,8 @@ public class LWJGLTextureState extends TextureState {
 	 */
 	public LWJGLTextureState() {
 		super();
-		supportsMultiTexture = (GLContext.GL_ARB_multitexture && GLContext.OpenGL13);
-		supportsS3TCCompression = GLContext.GL_EXT_texture_compression_s3tc;
+		supportsMultiTexture = (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13);
+		supportsS3TCCompression = GLContext.getCapabilities().GL_EXT_texture_compression_s3tc;
 		if (numTexUnits == 0) {
 			if (supportsMultiTexture) {
 				IntBuffer buf = BufferUtils.createIntBuffer(16); //ByteBuffer.allocateDirect(64).order(ByteOrder.nativeOrder()).asIntBuffer();
@@ -142,7 +142,7 @@ public class LWJGLTextureState extends TextureState {
 			currentTexture = new Texture[numTexUnits];
 
 		if (maxAnisotropic == -1.0
-				&& GLContext.GL_EXT_texture_filter_anisotropic) {
+				&& GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic) {
 			// Due to LWJGL buffer check, you can't use smaller sized buffers
 			// (min_size = 16 for glGetFloat()).
 			FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
@@ -212,7 +212,7 @@ public class LWJGLTextureState extends TextureState {
 					}
 
 					// Set up the anisotropic filter.
-					if (GLContext.GL_EXT_texture_filter_anisotropic)
+					if (GLContext.getCapabilities().GL_EXT_texture_filter_anisotropic)
 						GL11
 								.glTexParameterf(
 										GL11.GL_TEXTURE_2D,
@@ -407,7 +407,7 @@ public class LWJGLTextureState extends TextureState {
 					if (texture.getCombineFuncRGB() == Texture.ACF_DOT3_RGB
 							|| texture.getCombineFuncRGB() == Texture.ACF_DOT3_RGBA) {
 						// check if supported before proceeding
-						if (!GLContext.GL_ARB_texture_env_dot3) {
+						if (!GLContext.getCapabilities().GL_ARB_texture_env_dot3) {
 							GL11.glDisable(GL11.GL_TEXTURE_2D);
 							break;
 						}

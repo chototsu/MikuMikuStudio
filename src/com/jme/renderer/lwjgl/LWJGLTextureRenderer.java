@@ -55,7 +55,7 @@ import com.jme.system.DisplaySystem;
  * you.
  *
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.13 2005-04-01 22:50:26 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.14 2005-04-04 19:10:58 renanse Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean,
  *      boolean, boolean, boolean, int, int)
  */
@@ -86,7 +86,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     public LWJGLTextureRenderer(int width, int height,
             LWJGLRenderer parentRenderer, RenderTexture texture) {
-        caps = Pbuffer.getPbufferCaps();
+        caps = Pbuffer.getCapabilities();
         if (width != height
                 && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
             width = height = Math.max(width, height);
@@ -273,7 +273,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         try {
             pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT,
-                    new PixelFormat(32, 0, 8, 0, 0), texture);
+                    new PixelFormat(32, 0, 8, 0, 0), texture, null);
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
                     "initPbuffer()", e);

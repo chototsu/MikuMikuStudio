@@ -46,7 +46,7 @@ import com.jme.util.Timer;
  * singleton object and must be created via the <code>getTimer</code> method.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.7 2004-09-10 17:47:20 renanse Exp $
+ * @version $Id: LWJGLTimer.java,v 1.8 2005-04-04 19:10:58 renanse Exp $
  */
 public class LWJGLTimer extends Timer {
 
@@ -76,9 +76,6 @@ public class LWJGLTimer extends Timer {
         // set fps... Using 60 to begin with...
         for (int i = TIMER_SMOOTHNESS; --i >= 0;)
             fps[i] = 60f;
-
-        //set priority of this process
-        Sys.setProcessPriority(Sys.LOW_PRIORITY);
 
         //print timer resolution info
         LoggingSystem.getLogger().log(Level.INFO,
@@ -114,16 +111,6 @@ public class LWJGLTimer extends Timer {
 
     public float getTimePerFrame() {
         return 1f / getFrameRate();
-    }
-
-    /**
-     * <code>setProcessPriority</code> sets the priority of this application.
-     * 
-     * @param priority
-     *            the application's priority level.
-     */
-    public void setProcessPriority(int priority) {
-        Sys.setProcessPriority(priority);
     }
 
     /**

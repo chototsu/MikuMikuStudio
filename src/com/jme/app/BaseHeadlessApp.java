@@ -33,9 +33,9 @@
 package com.jme.app;
 
 import java.util.logging.Level;
-import com.jme.util.LoggingSystem;
-import com.jme.util.HeadlessDelegate;
+
 import com.jme.renderer.Renderer;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>BaseHeadlessApp</code> provides the simplest possible implementation
@@ -45,7 +45,7 @@ import com.jme.renderer.Renderer;
  * to add a finer control over the timer.
  *
  * @author Joshua Slack, Mark Powell, Eric Woroshow
- * @version $Id: BaseHeadlessApp.java,v 1.1 2004-11-09 19:54:56 renanse Exp $
+ * @version $Id: BaseHeadlessApp.java,v 1.2 2005-04-04 19:10:57 renanse Exp $
  */
 public abstract class BaseHeadlessApp extends AbstractGame {
 
@@ -70,9 +70,8 @@ public abstract class BaseHeadlessApp extends AbstractGame {
         //update game state, do not use interpolation parameter
         update( -1.0f);
 
-        //render only when necessary.
-        if (HeadlessDelegate.needsRender(r))
-          render( -1.0f);
+        //render
+	    render( -1.0f);
 
         //draw queue contents
         r.displayBackBuffer();

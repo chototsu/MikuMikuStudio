@@ -71,7 +71,7 @@ public class LWJGLShaderObjectsState extends GLSLShaderObjectsState {
      * @see com.jme.scene.state.ShaderObjectsState#isSupported()
      */
     public boolean isSupported() {
-        return GLContext.GL_ARB_shader_objects;
+        return GLContext.getCapabilities().GL_ARB_shader_objects;
     }
 
     /**

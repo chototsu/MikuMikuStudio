@@ -32,19 +32,13 @@
 
 package com.jme.util;
 
-import java.awt.Graphics;
-
-import com.jme.system.DisplaySystem;
-import com.jme.util.HeadlessDelegate;
-import com.jme.util.JMEComponent;
-
 /**
  * <code>JMEHiddenComponent</code> is an integration class allowing jME generated
  * graphics to be rendered and stored in this component for retrieval by other 
  * processes.
  *
  * @author Joshua Slack
- * @version $Id: JMEHiddenComponent.java,v 1.2 2005-03-30 20:18:05 renanse Exp $
+ * @version $Id: JMEHiddenComponent.java,v 1.3 2005-04-04 19:10:57 renanse Exp $
  */
 
 public class JMEHiddenComponent extends JMEComponent {
@@ -77,27 +71,4 @@ public class JMEHiddenComponent extends JMEComponent {
 			ex.printStackTrace();
 		}
     }
-
-	/**
-	 * Overriden paint(Graphics) method.  Does not call super method.
-	 * Copies the image data in the IntBuffer to the BufferedImage.
-	 * @param g Graphics
-	 */
-	public void paint(Graphics g) {
-		synchronized(this) {
-			if (DisplaySystem.getDisplaySystem() != null &&
-					DisplaySystem.getDisplaySystem().getRenderer() != null) {
-				buf.clear(); // Note: clear() resets marks and positions, 
-							 //       but not data in buffer.
-				//Grab pixel information and set it to the BufferedImage info.
-				for (int x = height; --x >= 0; ) {
-					buf.get(ibuf, x * width, width);
-				}
-				buf.clear();
-			}
-
-			// tell the delegate we want new contents from GL on the next pass.
-			HeadlessDelegate.setNeedsRender(this, true);
-		}
-	}
 }

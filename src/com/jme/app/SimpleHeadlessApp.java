@@ -34,7 +34,6 @@ package com.jme.app;
 
 import java.util.logging.Level;
 
-import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
@@ -43,15 +42,11 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
-import com.jme.scene.Text;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
-import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
@@ -59,7 +54,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.3 2005-02-10 21:48:24 renanse Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.4 2005-04-04 19:10:57 renanse Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
 
@@ -71,23 +66,13 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
   protected InputHandler input;
     /** High resolution timer for jME. */
   protected Timer timer;
-    /** The root node of our text. */
-  protected Node fpsNode;
-    /** Displays all the lovely information at the bottom. */
-  protected Text fps;
     /** Simply an easy way to get at timer.getTimePerFrame().  Also saves time so you don't call it more than once per frame. */
   protected float tpf;
-
     /** A lightstate to turn on and off for the rootNode */
   protected LightState lightState;
 
-    /** Location of the font for jME's text at the bottom */
-  public static String fontLocation = "com/jme/app/defaultfont.tga";
-
-  /** This is used to display print text. */
-  protected StringBuffer updateBuffer=new StringBuffer(30);
-  /** This is used to recieve getStatistics calls.*/
-  protected StringBuffer tempBuffer=new StringBuffer();
+  long startTime = 0;
+  long fps = 0;			
 
   /**
    * This is called every frame in BaseGame.start()
@@ -106,13 +91,6 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
       /** Update controllers/render states/transforms/bounds for rootNode. */
     rootNode.updateGeometricState(tpf, true);
 
-		/** Print the FPS info **/
-		updateBuffer.setLength(0);
-		updateBuffer.append("UPS: ").append((int)timer.getFrameRate()).append(" - ");
-		updateBuffer.append(display.getRenderer().getStatistics(tempBuffer));
-
-		fps.print(updateBuffer);
-
   }
 
   /**
@@ -127,10 +105,18 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
     display.getRenderer().clearBuffers();
       /** Draw the rootNode and all its children. */
     display.getRenderer().draw(rootNode);
-      /** Draw the fps node to show the fancy information at the bottom. */
-    display.getRenderer().draw(fpsNode);
       /** Call simpleRender() in any derived classes. */
     simpleRender();
+
+    if (startTime > System.currentTimeMillis()) {
+		fps++;
+	} else {
+		long timeUsed = 5000 + (startTime - System.currentTimeMillis());
+		startTime = System.currentTimeMillis() + 5000;
+		System.out.println(fps + " frames in " + (float) (timeUsed / 1000f) + " seconds = "
+				+ (fps / (timeUsed / 1000f)));
+		fps = 0;
+	}				
   }
 
   /**
@@ -210,41 +196,6 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
 
     rootNode.setRenderState(buf);
 
-    // -- FPS DISPLAY
-    // First setup alpha state
-      /** This allows correct blending of text and what is already rendered below it*/
-    AlphaState as1 = display.getRenderer().createAlphaState();
-    as1.setBlendEnabled(true);
-    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    as1.setDstFunction(AlphaState.DB_ONE);
-    as1.setTestEnabled(true);
-    as1.setTestFunction(AlphaState.TF_GREATER);
-    as1.setEnabled(true);
-
-    // Now setup font texture
-    TextureState font = display.getRenderer().createTextureState();
-      /** The texture is loaded from fontLocation */
-    font.setTexture(
-        TextureManager.loadTexture(
-        SimpleHeadlessApp.class.getClassLoader().getResource(
-        fontLocation),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
-    font.setEnabled(true);
-
-    // Then our font Text object.
-      /** This is what will actually have the text at the bottom. */
-    fps = new Text("FPS label", "");
-    fps.setForceView(true);
-    fps.setTextureCombineMode(TextureState.REPLACE);
-
-    // Finally, a stand alone node (not attached to root on purpose)
-    fpsNode = new Node("FPS node");
-    fpsNode.attachChild(fps);
-    fpsNode.setRenderState(font);
-    fpsNode.setRenderState(as1);
-    fpsNode.setForceView(true);
-
     // ---- LIGHTS
       /** Set up a basic, default light. */
     PointLight light = new PointLight();
@@ -265,8 +216,8 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
       /** Update geometric and rendering information for both the rootNode and fpsNode. */
     rootNode.updateGeometricState(0.0f, true);
     rootNode.updateRenderState();
-    fpsNode.updateGeometricState(0.0f, true);
-    fpsNode.updateRenderState();
+    
+    startTime = System.currentTimeMillis() + 5000;
   }
 
   /**

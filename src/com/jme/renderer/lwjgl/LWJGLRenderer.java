@@ -132,7 +132,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLRenderer.java,v 1.57 2005-02-10 19:04:54 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.58 2005-04-04 19:10:57 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -952,7 +952,7 @@ public class LWJGLRenderer implements Renderer {
             numberOfVerts += verts;
         }
 
-        if (GLContext.OpenGL12)
+        if (GLContext.getCapabilities().OpenGL12)
             GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, verts, indices);
         else
             GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
@@ -1004,7 +1004,7 @@ public class LWJGLRenderer implements Renderer {
                         + ranges[i].getKind());
             }
             indices.limit(indices.position() + ranges[i].getCount());
-            if (GLContext.OpenGL12)
+            if (GLContext.getCapabilities().OpenGL12)
                 GL12.glDrawRangeElements(mode, 0, verts, indices);
             else
                 GL11.glDrawElements(mode, indices);
@@ -1017,14 +1017,14 @@ public class LWJGLRenderer implements Renderer {
     IntBuffer buf = BufferUtils.createIntBuffer(16);
 
     public void prepVBO(Geometry g) {
-        if (!GLContext.OpenGL15) return;
+        if (!GLContext.getCapabilities().OpenGL15) return;
         int verts = g.getVertices().length;
         if (g.isVBOVertexEnabled() && g.getVBOVertexID() <= 0) {
             g.updateVertexBuffer(g.getVertices().length);
             GL15.glGenBuffers(buf);
             g.setVBOVertexID(buf.get(0));
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOVertexID());
-            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4, g
+            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
                     .getVerticeAsFloatBuffer(), GL15.GL_STATIC_DRAW);
             buf.clear();
         }
@@ -1033,7 +1033,7 @@ public class LWJGLRenderer implements Renderer {
             GL15.glGenBuffers(buf);
             g.setVBONormalID(buf.get(0));
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBONormalID());
-            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 3 * 4, g
+            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
                     .getNormalAsFloatBuffer(), GL15.GL_STATIC_DRAW);
             buf.clear();
         }
@@ -1042,7 +1042,7 @@ public class LWJGLRenderer implements Renderer {
             GL15.glGenBuffers(buf);
             g.setVBOColorID(buf.get(0));
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
-            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 4 * 4, g
+            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
                     .getColorAsFloatBuffer(), GL15.GL_STATIC_DRAW);
             buf.clear();
         }
@@ -1056,7 +1056,7 @@ public class LWJGLRenderer implements Renderer {
                     g.setVBOTextureID(i, buf.get(0));
                     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g
                             .getVBOTextureID(i));
-                    GL15.glBufferData(GL15.GL_ARRAY_BUFFER, verts * 2 * 4, g
+                    GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
                             .getTextureAsFloatBuffer(i), GL15.GL_STATIC_DRAW);
                     buf.clear();
                 }
@@ -1230,7 +1230,7 @@ public class LWJGLRenderer implements Renderer {
      * @return boolean true if VBO supported
      */
     public boolean supportsVBO() {
-        return GLContext.OpenGL15;
+        return GLContext.getCapabilities().OpenGL15;
     }
 
     public int getWidth() {
@@ -1277,7 +1277,7 @@ public class LWJGLRenderer implements Renderer {
         FloatBuffer verticies = t.getVerticeAsFloatBuffer();
         if (prevVerts != verticies) {
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-            if (t.isVBOVertexEnabled() && GLContext.OpenGL15) {
+            if (t.isVBOVertexEnabled() && GLContext.getCapabilities().OpenGL15) {
                 usingVBO = true;
                 GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOVertexID());
                 GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
@@ -1292,7 +1292,7 @@ public class LWJGLRenderer implements Renderer {
         if (prevNorms != normals) {
             if (normals != null || t.getVBONormalID() > 0) {
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                if (t.isVBONormalEnabled() && GLContext.OpenGL15) {
+                if (t.isVBONormalEnabled() && GLContext.getCapabilities().OpenGL15) {
                     usingVBO = true;
                     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBONormalID());
                     GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
@@ -1310,7 +1310,7 @@ public class LWJGLRenderer implements Renderer {
         if (colors == null || prevColor != colors) {
             if (colors != null || t.getVBOColorID() > 0) {
                 GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                if (t.isVBOColorEnabled() && GLContext.OpenGL15) {
+                if (t.isVBOColorEnabled() && GLContext.getCapabilities().OpenGL15) {
                     usingVBO = true;
                     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOColorID());
                     GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
@@ -1327,13 +1327,13 @@ public class LWJGLRenderer implements Renderer {
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureAsFloatBuffer(i);
             if (prevTex[i] != textures && textures != null) {
-                if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
+                if (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13) {
                     GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                 }
                 if (textures != null || t.getVBOTextureID(i) > 0) {
 
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                    if (t.isVBOTextureEnabled() && GLContext.OpenGL15) {
+                    if (t.isVBOTextureEnabled() && GLContext.getCapabilities().OpenGL15) {
                         usingVBO = true;
                         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t
                                 .getVBOTextureID(i));
