@@ -65,7 +65,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.24 2004-07-11 12:20:36 cep21 Exp $
+ * @version $Id: SimpleGame.java,v 1.25 2004-07-22 18:21:15 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -151,8 +151,8 @@ public abstract class SimpleGame extends BaseGame {
           properties.getFullscreen());
       cam =
           display.getRenderer().getCamera(
-          properties.getWidth(),
-          properties.getHeight());
+          display.getWidth(),
+          display.getHeight());
 
     }
     catch (JmeException e) {
