@@ -42,7 +42,7 @@ import com.jme.scene.TriMesh;
  * <code>Hexagon</code> provides a regular hexagon with each triangle having side
  * length that is given in the constructor.
  * @author Joel Schuster
- * @version 
+ * @version $Id: Hexagon.java,v 1.2 2004-05-27 02:06:31 guurk Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final int NUM_POINTS = 7;
@@ -192,3 +192,8 @@ public class Hexagon extends TriMesh {
 	}
 
 }
+
+/*
+ * $Log: not supported by cvs2svn $
+ */
+ 
