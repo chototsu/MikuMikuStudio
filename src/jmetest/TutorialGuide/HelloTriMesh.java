@@ -71,5 +71,8 @@ public class HelloTriMesh extends SimpleGame {
 
         // Attach the mesh to my scene graph
         rootNode.attachChild(m);
+
+        // Let us see the per vertex colors
+        lightState.setEnabled(false);
     }
 }
