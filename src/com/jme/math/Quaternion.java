@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.10 2004-03-16 05:07:34 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.11 2004-03-17 23:18:18 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -520,9 +520,13 @@ public class Quaternion {
      */
     public Vector3f mult(Vector3f v, Vector3f store) {
         if (store == null) store = new Vector3f();
-        store.x =   w*w*v.x + 2*y*w*v.z - 2*z*w*v.y +   x*x*v.x + 2*y*x*v.y + 2*z*x*v.z -   z*z*v.x - y*y*v.x;
-        store.y = 2*x*y*v.x +   y*y*v.y + 2*z*y*v.z + 2*w*z*v.x -   z*z*v.y +   w*w*v.y - 2*x*w*v.z - x*x*v.y;
-        store.z = 2*x*z*v.x + 2*y*z*v.y +   z*z*v.z - 2*w*y*v.x -   y*y*v.z + 2*w*x*v.y -   x*x*v.z + w*w*v.z;
+        if (v.x == 0 && v.y == 0 && v.z == 0) {
+          store.set(0,0,0);
+        } else {
+          store.x =   w*w*v.x + 2*y*w*v.z - 2*z*w*v.y +   x*x*v.x + 2*y*x*v.y + 2*z*x*v.z -   z*z*v.x - y*y*v.x;
+          store.y = 2*x*y*v.x +   y*y*v.y + 2*z*y*v.z + 2*w*z*v.x -   z*z*v.y +   w*w*v.y - 2*x*w*v.z - x*x*v.y;
+          store.z = 2*x*z*v.x + 2*y*z*v.y +   z*z*v.z - 2*w*y*v.x -   y*y*v.z + 2*w*x*v.y -   x*x*v.z + w*w*v.z;
+        }
         return store;
     }
 
