@@ -58,7 +58,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.3 2004-03-24 18:46:06 renanse Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.4 2004-03-24 20:22:19 renanse Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
@@ -212,15 +212,16 @@ public class TestRenParticleGUI extends SimpleGame {
     fpsNode.setForceView(true);
 
     manager = new RenParticleManager(300, display.getRenderer().getCamera());
-    manager.setEmissionDirection(new Vector3f(0,1,0));
-    manager.setEmissionMaximumAngle(45f * FastMath.DEG_TO_RAD);
-    manager.setParticlesOrigin(new Vector3f(0,0,0));
-    manager.setParticlesSpeed(2.5f);
-    manager.setStartSize(4.0f);
-    manager.setEndSize(4.0f);
-    manager.setParticlesMinimumLifeTime(2500f);
-    manager.setStartColor(new ColorRGBA(0, 0.1f, 1, 1));
-    manager.setEndColor(new ColorRGBA(0, 0.1f, 1, 0));
+    manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
+    manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
+    manager.setEmissionMaximumAngle(0.2268928f);
+    manager.setParticlesSpeed(7.5f);
+    manager.setParticlesMinimumLifeTime(2000.0f);
+    manager.setStartSize(10.0f);
+    manager.setEndSize(10.0f);
+    manager.setStartColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 1.0f));
+    manager.setEndColor(new ColorRGBA(0.0f, 0.0625f, 1.0f, 0.0f));
+    manager.setRandomMod(1.0f);
 
     root.setRenderState(ts);
     root.setRenderState(as1);
