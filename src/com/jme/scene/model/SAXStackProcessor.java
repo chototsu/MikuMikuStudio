@@ -5,7 +5,6 @@ import org.xml.sax.SAXException;
 
 import java.util.Stack;
 import java.util.Hashtable;
-import java.io.File;
 
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
@@ -67,7 +66,7 @@ class SAXStackProcessor {
         } else if (qName.equalsIgnoreCase("DirectionalLight")){
 
         } else if (qName.equalsIgnoreCase("KeyframeAnimation")){
-
+            
         } else if (qName.equalsIgnoreCase("SharedElementsBase")){
 
         } else if (qName.equalsIgnoreCase("SharedTypes")){
@@ -87,10 +86,10 @@ class SAXStackProcessor {
         } else if (qName.equalsIgnoreCase("SharedTextureBase")){
             TextureState t=buildTexture(atts);
             shares.put(atts.getValue("identification"),t);
-        } else if (qName.equalsIgnoreCase("primative")){
+        } else if (qName.equalsIgnoreCase("primitive")){
             String type=atts.getValue("type");
             if (type==null) throw new SAXException("Must supply primative type");
-            Spatial i=processPrimative(type,atts.getValue("params"));
+            Spatial i=processPrimitive(type,atts.getValue("params"));
             processSpatial(i,atts);
             s.push(i);
         } else if (qName.equalsIgnoreCase("MaterialState")){
@@ -151,7 +150,7 @@ class SAXStackProcessor {
             s.push(parent);
         } else if (qName.equalsIgnoreCase("DirectionalLight")){
 
-        } else if (qName.equalsIgnoreCase("primative")){
+        } else if (qName.equalsIgnoreCase("primitive")){
             childSpatial= (Spatial) s.pop();
             parentNode =(Node) s.pop();
             parentNode.attachChild(childSpatial);
@@ -176,12 +175,12 @@ class SAXStackProcessor {
         }
     }
 
-    private TextureState buildTexture(Attributes atts) {
+    private TextureState buildTexture(Attributes atts) throws SAXException {
         TextureState t=renderer.getTextureState();
-        t.setTexture(TextureManager.loadTexture(new File(atts.getValue("filename")).toString(),
-            Texture.MM_LINEAR,
-            Texture.FM_LINEAR,
-            true));
+            t.setTexture(TextureManager.loadTexture(atts.getValue("filename"),
+                Texture.MM_LINEAR,
+                Texture.FM_LINEAR,
+                true));
         t.setEnabled(true);
         return t;
     }
@@ -225,7 +224,7 @@ class SAXStackProcessor {
     }
 
 
-    private Spatial processPrimative(String type, String parameters) throws SAXException {
+    private Spatial processPrimitive(String type, String parameters) throws SAXException {
         if (parameters==null) throw new SAXException("Must specify parameters");
         Spatial toReturn=null;
         String[] parts=parameters.trim().split(" ");
@@ -241,6 +240,8 @@ class SAXStackProcessor {
             box.setModelBound(new BoundingBox());
             box.updateModelBound();
             toReturn=box;
+        }else{
+            throw new SAXException("Unknown primitive type: " + type);
         }
         return toReturn;
     }
