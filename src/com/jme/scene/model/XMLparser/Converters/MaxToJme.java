@@ -64,7 +64,7 @@ public class MaxToJme extends FormatConverter implements MaxChunkIDs {
 //        }
 //        mainPart.length-=6;
         chunkedTDS=new TDSFile(myIn);
-
+        Node toReturn=chunkedTDS.buildScene();
 //        s.push(new Node("3ds scene"));
 //        readFile(mainPart.length);
 //        Node totalScene=(Node) s.pop();
@@ -106,10 +106,10 @@ public class MaxToJme extends FormatConverter implements MaxChunkIDs {
             length-=6;
             if (DEBUG) System.out.println("Read in keyframer ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
             switch (i.type){
-                case KEYFRAME_HEAD:
+                case KEY_HEADER:
                     readKeyframeHeader();
                     break;
-                case KEYFRAME_OBJ:
+                case KEY_OBJECT:
                     readKeyframeObj(i.length);
                     break;
                 case KEY_SEGMENT:
@@ -118,25 +118,25 @@ public class MaxToJme extends FormatConverter implements MaxChunkIDs {
                 case KEY_CURTIME:
                     readCurTime();
                     break;
-                case VIEWPORT_LAYOUT:
+                case KEY_VIEWPORT:
                     readViewLayout(i.length);
                     break;
-                case CAMERA_TARG_INF_TAG:
+                case KEY_CAM_TARGET:
                     readCamTargetInfoTag(i.length);
                     break;
-                case CAMERA_INFO_TAG:
+                case KEY_CAMERA_OBJECT:
                     readCamInfoTag(i.length);
                     break;
                 case KEY_OMNI_LI_INFO:
                     readOmniLightKeyframeInfo(i.length);
                     break;
-                case KEY_AMBIENT_NODE:
+                case KEY_AMB_LI_INFO:
                     readAmbientNodeKeyframeInfo(i.length);
                     break;
                 case KEY_SPOT_TARGET:
                     readSpotLightTarget(i.length);
                     break;
-                case KEY_SPOT_INFO:
+                case KEY_SPOT_OBJECT:
                     readKeySpotLightInfo(i.length);
                     break;
                 default:
@@ -436,7 +436,7 @@ public class MaxToJme extends FormatConverter implements MaxChunkIDs {
                 case MAT_BLOCK:
                     readMatBlock(i.length);
                     break;
-                case VIEWPORT_LAYOUT:
+                case KEY_VIEWPORT:
                     readViewLayout(i.length);
                     break;
                 case SHADOW_MAP_RANGE:
