@@ -46,7 +46,7 @@ package com.jme.input;
  * correspond to the width and height of the window).
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.10 2004-07-23 20:15:09 renanse Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.11 2004-07-30 20:29:26 cep21 Exp $
  */
 public class AbsoluteMouse extends Mouse {
     //position
@@ -73,8 +73,10 @@ public class AbsoluteMouse extends Mouse {
         update(true);
     }
 
-    /** <code>update</code>
-     * @param updateState
+    /** <code>update</code> updates the mouse's information with the last known mouse
+     * movement and button presses.  If updateState is true, the mouse is polled for new
+     * movement and button press information
+     * @param updateState Mouse information is updated if true
      * @see com.jme.input.Mouse#update(boolean)
      */
     public void update(boolean updateState) {

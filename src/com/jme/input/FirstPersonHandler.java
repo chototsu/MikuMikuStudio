@@ -43,10 +43,17 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
  * the camera.
  * @author Mark Powell
- * @version $Id: FirstPersonHandler.java,v 1.3 2004-05-12 20:50:42 mojomonkey Exp $
+ * @version $Id: FirstPersonHandler.java,v 1.4 2004-07-30 20:29:47 cep21 Exp $
  */
 public class FirstPersonHandler extends InputHandler {
 
+    /**
+     * Creates a first person handler.  The app is used for the exit action, camera
+     * is used for mouse look, and the api string is used to find the correct keyboard input.
+     * @param app The application that is exited on an "exit" action.
+     * @param cam The camera to move by this handler.
+     * @param api The API to create a KeyBindingManager from.
+     */
     public FirstPersonHandler(AbstractGame app, Camera cam, String api) {
 
         setKeyBindings(api);
