@@ -135,7 +135,7 @@ public class RenderQueue {
   private void renderOpaqueBucket() {
       opaqueBucket.sort();
       for (int i=0;i<opaqueBucket.listSize;i++){
-          opaqueBucket.list[i].onDraw(renderer);
+          opaqueBucket.list[i].draw(renderer);
           opaqueBucket.list[i].queueDistance=Float.NEGATIVE_INFINITY;
       }
       opaqueBucket.clear();
@@ -147,7 +147,7 @@ public class RenderQueue {
   private void renderTransparentBucket() {
       transparentBucket.sort();
       for (int i=0;i<transparentBucket.listSize;i++){
-          transparentBucket.list[i].onDraw(renderer);
+          transparentBucket.list[i].draw(renderer);
           transparentBucket.list[i].queueDistance=Float.NEGATIVE_INFINITY;
       }
     transparentBucket.clear();
@@ -160,7 +160,7 @@ public class RenderQueue {
     renderer.setOrtho();
       orthoBucket.sort();
       for (int i=0;i<orthoBucket.listSize;i++){
-          orthoBucket.list[i].onDraw(renderer);
+          orthoBucket.list[i].draw(renderer);
       }
       orthoBucket.clear();
     renderer.unsetOrtho();
