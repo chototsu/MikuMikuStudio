@@ -122,7 +122,7 @@ public class TestFadeInOutTransientEffect extends SimpleGame {
 		fio.addController(fioC);
 		
 		rootNode.attachChild(fps);
-		rootNode.attachChild(fadeOutNode);
+		rootNode.attachChild(fio);
 	}
 	protected void reinit() {
 	}
