@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.8 2004-03-05 21:55:16 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.9 2004-03-24 23:12:57 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.
@@ -102,6 +102,8 @@ public class LWJGLTextureState extends TextureState {
             GL11.GL_RGBA,
             GL11.GL_LUMINANCE_ALPHA };
 
+    private static int numTexUnits = 0;
+
     /**
      * Constructor instantiates a new <code>LWJGLTextureState</code> object.
      * The number of textures that can be combined is determined during
@@ -111,13 +113,15 @@ public class LWJGLTextureState extends TextureState {
      */
     public LWJGLTextureState() {
         super();
-        IntBuffer buf = ByteBuffer
-            .allocateDirect(64)
-            .order(ByteOrder.nativeOrder())
-            .asIntBuffer();
-        GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
+        if (numTexUnits == 0) {
+          IntBuffer buf = ByteBuffer
+              .allocateDirect(64)
+              .order(ByteOrder.nativeOrder())
+              .asIntBuffer();
+          GL11.glGetInteger(GL13.GL_MAX_TEXTURE_UNITS, buf);
 
-        int numTexUnits = buf.get(0);
+          numTexUnits = buf.get(0);
+        }
         texture = new Texture[numTexUnits];
     }
 
