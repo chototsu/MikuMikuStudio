@@ -40,7 +40,7 @@ import com.jme.renderer.Camera;
  * <code>MouseLook</code> defines a mouse action that detects mouse movement
  * and converts it into camera rotations and camera tilts.
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.8 2004-04-22 22:26:34 renanse Exp $
+ * @version $Id: MouseLook.java,v 1.9 2004-07-30 21:33:40 cep21 Exp $
  */
 public class MouseLook implements MouseInputAction {
     private RelativeMouse mouse;
@@ -52,7 +52,7 @@ public class MouseLook implements MouseInputAction {
     private Vector3f lockAxis;
 
     private float speed;
-    private Camera camera;
+//    private Camera camera;
 
     /**
      * Constructor creates a new <code>MouseLook</code> object. It takes the
@@ -64,7 +64,7 @@ public class MouseLook implements MouseInputAction {
     public MouseLook(Mouse mouse, Camera camera, float speed) {
         this.mouse = (RelativeMouse)mouse;
         this.speed = speed;
-        this.camera = camera;
+//        this.camera = camera;
 
         lookDown = new KeyLookDownAction(camera, speed);
         lookUp = new KeyLookUpAction(camera, speed);
@@ -76,13 +76,22 @@ public class MouseLook implements MouseInputAction {
      *
      * <code>setLockAxis</code> sets the axis that should be locked down. This
      * prevents "rolling" about a particular axis. Typically, this is set to
-     * the mouse's up vector.
+     * the mouse's up vector.  Note this is only a shallow copy.
      * @param lockAxis the axis that should be locked down to prevent rolling.
      */
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
         rotateLeft.setLockAxis(lockAxis);
         rotateRight.setLockAxis(lockAxis);
+    }
+
+    /**
+     * Returns the axis that is currently locked.
+     * @return The currently locked axis
+     * @see #setLockAxis(com.jme.math.Vector3f)
+     */
+    public Vector3f getLockAxis(){
+        return lockAxis;
     }
 
     /**
