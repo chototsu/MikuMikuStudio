@@ -27,7 +27,7 @@ public class XMLWriter {
     private Writer myStream;
     private final static Vector3f defaultTranslation=new Vector3f(0,0,0);
     private final static Quaternion defaultRotation=new Quaternion(0,0,0,1);
-    private final static float defaultScale=1;
+    private final static Vector3f defaultScale=new Vector3f(1,1,1);
     private StringBuffer tabs=new StringBuffer();
     private StringBuffer currentLine=new StringBuffer();
 
@@ -464,7 +464,7 @@ public class XMLWriter {
             header.append("rotation=\"");
             header.append(quat.x).append(" ").append(quat.y).append(" ").append(quat.z).append(" ").append(quat.w).append("\" ");
         }
-        if (toWrite.getLocalScale()!=defaultScale){
+        if (!toWrite.getLocalScale().equals(defaultScale)){
             header.append("scale = \"").append(toWrite.getLocalScale()).append("\" ");
         }
         return header;

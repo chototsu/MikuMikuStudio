@@ -36,6 +36,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Plane;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.*;
+import com.jme.math.FastMath;
 
 /**
  * <code>BoundingBox</code> defines an axis-aligned cube that defines a container
@@ -48,7 +49,7 @@ import com.jme.scene.shape.*;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.7 2004-04-29 18:38:17 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.8 2004-06-23 18:14:16 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -162,9 +163,9 @@ public class BoundingBox extends Box implements BoundingVolume {
     public BoundingVolume transform(
         Quaternion rotate,
         Vector3f translate,
-        float scale) {
+        Vector3f scale) {
         Vector3f newCenter = rotate.mult(center).multLocal(scale).addLocal(translate);
-        return new BoundingBox(newCenter, scale * xExtent, scale * yExtent, scale * zExtent);
+        return new BoundingBox(newCenter, scale.x * xExtent, scale.y * yExtent, scale.z * zExtent);
     }
 
     /**
@@ -178,16 +179,16 @@ public class BoundingBox extends Box implements BoundingVolume {
     public BoundingVolume transform(
         Quaternion rotate,
         Vector3f translate,
-        float scale,
+        Vector3f scale,
         BoundingVolume store) {
 
         BoundingBox box = (BoundingBox)store;
         if (box == null) box = new BoundingBox(new Vector3f(0,0,0), 1,1,1);
         rotate.mult(center, box.center);
         box.center.multLocal(scale).addLocal(translate);
-        box.xExtent = scale*xExtent;
-        box.yExtent = scale*yExtent;
-        box.zExtent = scale*zExtent;
+        box.xExtent = scale.x*xExtent;
+        box.yExtent = scale.y*yExtent;
+        box.zExtent = scale.z*zExtent;
         return box;
     }
 
@@ -197,9 +198,9 @@ public class BoundingBox extends Box implements BoundingVolume {
      * @param plane the plane to check against.
      */
     public int whichSide(Plane plane) {
-        float radius = Math.abs(xExtent*plane.normal.x) +
-                       Math.abs(yExtent*plane.normal.y) +
-                       Math.abs(zExtent*plane.normal.z);
+        float radius = FastMath.abs(xExtent*plane.normal.x) +
+                       FastMath.abs(yExtent*plane.normal.y) +
+                       FastMath.abs(zExtent*plane.normal.z);
 
         float distance = plane.pseudoDistance(center);
 

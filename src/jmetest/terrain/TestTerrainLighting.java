@@ -54,7 +54,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.19 2004-06-23 02:05:19 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.20 2004-06-23 18:14:20 renanse Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -136,9 +136,8 @@ public class TestTerrainLighting extends SimpleGame {
 
     lightNode.setTarget(rootNode);
 
-    //rootNode.attachChild(lightNode);
     flare = new LensFlare("flare");
-    //flare.setLocalTranslation(lightNode.getLocalTranslation());
+    flare.setLocalScale(.5f);
     lightNode.attachChild(flare);
     MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
     Vector3f terrainScale = new Vector3f(5,1,5);

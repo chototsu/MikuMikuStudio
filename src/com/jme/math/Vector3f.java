@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.22 2004-06-14 07:56:36 cep21 Exp $
+ * @version $Id: Vector3f.java,v 1.23 2004-06-23 18:14:20 renanse Exp $
  */
 public class Vector3f {
 
@@ -94,7 +94,7 @@ public class Vector3f {
 
     /**
      * Constructor instantiates a new <code>Vector3f</code> that is a copy
-     * of the provided vector 
+     * of the provided vector
      * @param copy The Vector3f to copy
      */
     public Vector3f(Vector3f copy) {
@@ -428,6 +428,25 @@ public class Vector3f {
 
 
     /**
+     * <code>multLocal</code> multiplies a provided vector to this vector
+     * internally, and returns a handle to this vector for easy chaining of
+     * calls. If the provided vector is null, null is returned.
+     *
+     * @param vec
+     *            the vector to mult to this vector.
+     * @return this
+     */
+    public Vector3f mult(Vector3f vec) {
+        if (null == vec) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Provided vector is " + "null, null returned.");
+            return null;
+        }
+        return new Vector3f(x * vec.x, y * vec.y, z * vec.z);
+    }
+
+
+    /**
      * <code>divide</code> divides the values of this vector by a scalar and
      * returns the result. The values of this vector remain untouched.
      *
@@ -452,6 +471,35 @@ public class Vector3f {
         x /= scalar;
         y /= scalar;
         z /= scalar;
+        return this;
+    }
+
+
+    /**
+     * <code>divide</code> divides the values of this vector by a scalar and
+     * returns the result. The values of this vector remain untouched.
+     *
+     * @param scalar
+     *            the value to divide this vectors attributes by.
+     * @return the result <code>Vector</code>.
+     */
+    public Vector3f divide(Vector3f scalar) {
+        return new Vector3f(x / scalar.x, y / scalar.y, z / scalar.z);
+    }
+
+    /**
+     * <code>divideLocal</code> divides this vector by a scalar internally,
+     * and returns a handle to this vector for easy chaining of calls. Dividing
+     * by zero will result in an exception.
+     *
+     * @param scalar
+     *            the value to divides this vector by.
+     * @return this
+     */
+    public Vector3f divideLocal(Vector3f scalar) {
+        x /= scalar.x;
+        y /= scalar.y;
+        z /= scalar.z;
         return this;
     }
 

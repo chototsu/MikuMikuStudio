@@ -48,7 +48,7 @@ import com.jme.system.DisplaySystem;
 
 /**
  * <code>BumpMapNode</code>
- * 
+ *
  * @author Mark Powell
  * @version $id$
  */
@@ -170,7 +170,7 @@ public class BumpMapNode extends Node {
 					.mult(light.getDiffuse()).add(c));
 		}
 	}
-	
+
 	public void computeLightVectors(TriMesh mesh) {
 		// Generate light direction vectors in the surface local space and store
 		// them in the trimesh for interpolation via the rasterizer. This
@@ -201,7 +201,7 @@ public class BumpMapNode extends Node {
 		Vector3f modelLightVector = lightVector.subtract(mesh
 				.getWorldTranslation());
 		modelLightVector = mesh.getWorldRotation().mult(modelLightVector);
-		modelLightVector = modelLightVector.divide(mesh.getWorldScale());
+		modelLightVector.divideLocal(mesh.getWorldScale());
 
 		// The surface local space information is computed for all the vertices.
 		// We iterate over the triangles because we need to know the

@@ -36,6 +36,7 @@ import java.nio.ByteBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.Window;
+import com.jme.math.Vector3f;
 
 /**
  * <code>Font2D</code> maintains display lists for each ASCII character
@@ -56,7 +57,7 @@ import org.lwjgl.opengl.Window;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.5 2004-05-27 01:09:01 ericthered Exp $
+ * @version $Id: LWJGLFont.java,v 1.6 2004-06-23 18:14:19 renanse Exp $
  */
 public class LWJGLFont {
     /**
@@ -73,7 +74,7 @@ public class LWJGLFont {
 
     //Color to render the font.
     private float red, green, blue, alpha;
-    
+
     //buffer that holds the text.
     private ByteBuffer scratch;
 
@@ -124,7 +125,7 @@ public class LWJGLFont {
      * @param text the String to render.
      * @param set the mode of font: NORMAL or ITALICS.
      */
-    public void print(int x, int y, float scale, StringBuffer text, int set) {
+    public void print(int x, int y, Vector3f scale, StringBuffer text, int set) {
         if (set > 1) {
             set = 1;
         } else if (set < 0) {
@@ -139,7 +140,7 @@ public class LWJGLFont {
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
         GL11.glTranslatef(x, y, 0);
-        GL11.glScalef(scale, scale, scale);
+        GL11.glScalef(scale.x, scale.y, scale.z);
         GL11.glListBase(base - 32 + (128 * set));
 
         //Put the string into a "pointer"

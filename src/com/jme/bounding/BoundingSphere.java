@@ -54,7 +54,7 @@ import com.jme.math.FastMath;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.8 2004-05-15 21:23:35 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.9 2004-06-23 18:14:16 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -235,10 +235,10 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @return BoundingVolume
      */
     public BoundingVolume transform(Quaternion rotate, Vector3f translate,
-            float scale) {
+            Vector3f scale) {
         Vector3f newCenter = rotate.mult(center).multLocal(scale).addLocal(
                 translate);
-        return new BoundingSphere(scale * radius, newCenter);
+        return new BoundingSphere(scale.length() * radius, newCenter);
     }
 
     /**
@@ -257,14 +257,14 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @return ref
      */
     public BoundingVolume transform(Quaternion rotate, Vector3f translate,
-            float scale, BoundingVolume store) {
+            Vector3f scale, BoundingVolume store) {
 
         BoundingSphere sphere = (BoundingSphere) store;
         if (sphere == null)
                 sphere = new BoundingSphere(1, new Vector3f(0, 0, 0));
         rotate.mult(center, sphere.center);
         sphere.center.multLocal(scale).addLocal(translate);
-        sphere.radius = scale * radius;
+        sphere.radius = scale.length() * radius;
         return sphere;
     }
 

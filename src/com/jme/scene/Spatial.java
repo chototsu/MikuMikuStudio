@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.40 2004-06-17 16:31:12 renanse Exp $
+ * @version $Id: Spatial.java,v 1.41 2004-06-23 18:14:15 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices
@@ -63,8 +63,8 @@ public abstract class Spatial implements Serializable {
   protected Vector3f worldTranslation;
 
   //scale values
-  protected float localScale;
-  protected float worldScale;
+  protected Vector3f localScale;
+  protected Vector3f worldScale;
 
   //flag to cull/show node
   protected boolean forceCull;
@@ -115,8 +115,8 @@ public abstract class Spatial implements Serializable {
     worldRotation = new Quaternion();
     localTranslation = new Vector3f();
     worldTranslation = new Vector3f();
-    localScale = 1.0f;
-    worldScale = 1.0f;
+    localScale = new Vector3f(1.0f, 1.0f, 1.0f);
+    worldScale = new Vector3f(1.0f, 1.0f, 1.0f);
   }
 
   public void setName(String name) {
@@ -280,7 +280,7 @@ public abstract class Spatial implements Serializable {
    * <code>getWorldScale</code> retrieves the scale factor of the world.
    * @return the world's scale factor.
    */
-  public float getWorldScale() {
+  public Vector3f getWorldScale() {
     return worldScale;
   }
 
@@ -378,7 +378,7 @@ public abstract class Spatial implements Serializable {
     // update world transforms
     if (!computesWorldTransform) {
       if (parent != null) {
-        worldScale = parent.getWorldScale() * localScale;
+        worldScale.set(parent.getWorldScale()).multLocal(localScale);
         parent.getWorldRotation().mult(localRotation, worldRotation);
         worldTranslation =
             parent
@@ -512,15 +512,25 @@ public abstract class Spatial implements Serializable {
    * <code>getLocalScale</code> retrieves the local scale of this node.
    * @return the local scale of this node.
    */
-  public float getLocalScale() {
+  public Vector3f getLocalScale() {
     return localScale;
+  }
+
+  /**
+   * <code>setLocalScale</code> sets the local scale of this node.
+   * @param localScale the new local scale, applied to x, y and z
+   */
+  public void setLocalScale(float localScale) {
+    this.localScale.x = localScale;
+    this.localScale.y = localScale;
+    this.localScale.z = localScale;
   }
 
   /**
    * <code>setLocalScale</code> sets the local scale of this node.
    * @param localScale the new local scale.
    */
-  public void setLocalScale(float localScale) {
+  public void setLocalScale(Vector3f localScale) {
     this.localScale = localScale;
   }
 

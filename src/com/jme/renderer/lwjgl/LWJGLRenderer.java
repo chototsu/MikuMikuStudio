@@ -100,7 +100,7 @@ import com.jme.renderer.RenderQueue;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.22 2004-06-17 16:31:16 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.23 2004-06-23 18:14:19 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -552,14 +552,14 @@ public class LWJGLRenderer implements Renderer {
         // set world matrix
         Quaternion rotation = p.getWorldRotation();
         Vector3f translation = p.getWorldTranslation();
-        float scale = p.getWorldScale();
+        Vector3f scale = p.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
 
         GL11.glTranslatef(translation.x, translation.y, translation.z);
         GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL11.glScalef(scale, scale, scale);
+        GL11.glScalef(scale.x, scale.y, scale.z);
 
         // render the object
         GL11.glBegin(GL11.GL_POINTS);
@@ -663,14 +663,14 @@ public class LWJGLRenderer implements Renderer {
         // set world matrix
         Quaternion rotation = l.getWorldRotation();
         Vector3f translation = l.getWorldTranslation();
-        float scale = l.getWorldScale();
+        Vector3f scale = l.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
 
         GL11.glTranslatef(translation.x, translation.y, translation.z);
         GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL11.glScalef(scale, scale, scale);
+        GL11.glScalef(scale.x, scale.y, scale.z);
 
         // render the object
         GL11.glBegin(GL11.GL_LINES);
@@ -809,14 +809,14 @@ public class LWJGLRenderer implements Renderer {
         //      set world matrix
         Quaternion rotation = c.getWorldRotation();
         Vector3f translation = c.getWorldTranslation();
-        float scale = c.getWorldScale();
+        Vector3f scale = c.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
 
         GL11.glTranslatef(translation.x, translation.y, translation.z);
         GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL11.glScalef(scale, scale, scale);
+        GL11.glScalef(scale.x, scale.y, scale.z);
 
         // render the object
         GL11.glBegin(GL11.GL_LINE_STRIP);
@@ -872,14 +872,14 @@ public class LWJGLRenderer implements Renderer {
         // set world matrix
         Quaternion rotation = t.getWorldRotation();
         Vector3f translation = t.getWorldTranslation();
-        float scale = t.getWorldScale();
+        Vector3f scale = t.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
 
         GL11.glTranslatef(translation.x, translation.y, translation.z);
         GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL11.glScalef(scale, scale, scale);
+        GL11.glScalef(scale.x, scale.y, scale.z);
 
         prepVBO(t);
 
@@ -1087,14 +1087,14 @@ public class LWJGLRenderer implements Renderer {
         //set world matrix
         Quaternion rotation = c.getWorldRotation();
         Vector3f translation = c.getWorldTranslation();
-        float scale = c.getWorldScale();
+        Vector3f scale = c.getWorldScale();
         float rot = rotation.toAngleAxis(vRot);
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPushMatrix();
 
         GL11.glTranslatef(translation.x, translation.y, translation.z);
         GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL11.glScalef(scale, scale, scale);
+        GL11.glScalef(scale.x, scale.y, scale.z);
 
         IntBuffer indices = c.getIndexBuffer();
         if (statisticsOn) {

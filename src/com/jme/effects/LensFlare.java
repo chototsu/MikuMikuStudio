@@ -38,8 +38,8 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
+import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.Spatial;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
@@ -47,7 +47,6 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import com.jme.scene.Geometry;
 
 /**
  * <code>LensFlare</code>
@@ -60,7 +59,7 @@ import com.jme.scene.Geometry;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.7 2004-06-23 02:05:18 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.8 2004-06-23 18:14:18 renanse Exp $
  */
 
 public class LensFlare extends Node {
@@ -86,7 +85,7 @@ public class LensFlare extends Node {
 
   /**
    * <code>updateWorldData</code> updates all the children maintained by
-   * this node.
+   * this node.  It decides where on the screen to draw each flare quad.
    * @param time the frame time.
    */
   public void updateWorldData(float time) {
@@ -95,9 +94,7 @@ public class LensFlare extends Node {
     // Locate light src on screen x,y
     flarePoint = DisplaySystem.getDisplaySystem().getScreenCoordinates(
         worldTranslation).subtractLocal(midPoint.x, midPoint.y, 0);
-    if (Math.abs(flarePoint.x) > midPoint.x ||
-        Math.abs(flarePoint.y) > midPoint.y ||
-        flarePoint.z >= 1.0f) {
+    if (flarePoint.z >= 1.0f) { // if it's behind us
       setForceCull(true);
       return;
     } else setForceCull(false);

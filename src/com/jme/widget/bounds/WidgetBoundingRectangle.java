@@ -560,12 +560,12 @@ public class WidgetBoundingRectangle implements BoundingVolume {
     /* (non-Javadoc)
      * @see com.jme.scene.BoundingVolume#transform(com.jme.math.Matrix3f, com.jme.math.Vector3f, float)
      */
-    public BoundingVolume transform(Quaternion rotate, Vector3f translate, float scale) {
+    public BoundingVolume transform(Quaternion rotate, Vector3f translate, Vector3f scale) {
         // TODO Auto-generated method stub
         return null;
     }
 
-    public BoundingVolume transform(Quaternion rotate, Vector3f translate, float scale, BoundingVolume bv) {
+    public BoundingVolume transform(Quaternion rotate, Vector3f translate, Vector3f scale, BoundingVolume bv) {
         // TODO Auto-generated method stub
         return null;
     }
