@@ -262,15 +262,6 @@ public class TestRenderToTexture extends SimpleGame {
         Vector2f[] dirtCoords = realBox.getTextures(0);
         realBox.setTextures(dirtCoords, 1);
 
-        // Add a blending mode...  This is for multi texturing to work, not needed for render to texture.
-        AlphaState as1 = display.getRenderer().getAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        scene.setRenderState(as1);
-
         cam.update();
         scene.updateGeometricState(0.0f, true);
     }
