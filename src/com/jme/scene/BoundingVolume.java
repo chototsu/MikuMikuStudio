@@ -39,7 +39,7 @@ import com.jme.math.Vector3f;
  * <code>BoundingVolume</code> defines an interface for dealing with containment
  * of a collection of points.
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.9 2004-03-11 02:46:57 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.10 2004-03-13 03:07:37 renanse Exp $
  */
 public interface BoundingVolume {
 
@@ -132,5 +132,10 @@ public interface BoundingVolume {
      * @param value
      */
     public void setCheckPlane(int index, int value);
+
+    /**
+     * Reconstruct a visible mesh for the bound.
+     */
+    public void recomputeMesh();
 
 }

@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -39,7 +39,7 @@ import java.net.URL;
 import java.util.logging.Level;
 
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingSphere;
+import com.jme.scene.BoundingBox;
 import com.jme.scene.Controller;
 import com.jme.scene.model.*;
 import com.jme.scene.state.MaterialState;
@@ -55,14 +55,14 @@ import com.jme.math.Vector3f;
 
 /**
  * <code>MilkshapeASCIIModel</code> defines a model using the data defined
- * in a Milkshape ASCII text file. This model loader builds the mesh of the 
+ * in a Milkshape ASCII text file. This model loader builds the mesh of the
  * model as well as the animation controller. The model's meshes are added
  * to this model as children. The animation controller is set to clamp by
  * default, with frequency of 1. If a faster animation or different repeat
- * type is desired, the controller can be obtained via the 
+ * type is desired, the controller can be obtained via the
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.12 2004-02-25 18:17:15 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.13 2004-03-13 03:07:40 renanse Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -71,11 +71,11 @@ public class MilkshapeASCIIModel extends Model {
 	private DeformationJointController jointController;
 	//the path to the file.
 	private String textureDirectory = "";
-	
+
 	private ColorRGBA color = new ColorRGBA(1,1,1,1);
 
 	/**
-	 * Constructor creates a new <code>MilkshapeASCIIModel</code> object. 
+	 * Constructor creates a new <code>MilkshapeASCIIModel</code> object.
 	 * No data is loaded during this construction.
 	 * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
@@ -89,18 +89,18 @@ public class MilkshapeASCIIModel extends Model {
 	 * the provided file.
 	 * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
-	 * @param filename the name of the file that contains the milkshape 
+	 * @param filename the name of the file that contains the milkshape
 	 * data.
 	 */
 	public MilkshapeASCIIModel(String name, String filename) {
 		super(name);
 		load(filename);
 	}
-	
+
 	/**
 	 * Loads an ascii text model exported from MS3D. The corresponding
-	 * <code>JointMesh</code> objects are created and attached to the 
-	 * model. Materials are then assigned to each mesh. Lastly, the 
+	 * <code>JointMesh</code> objects are created and attached to the
+	 * model. Materials are then assigned to each mesh. Lastly, the
 	 * joints and joint controller are loaded and initialized.
 	 * @param filename the file to load.
 	 */
@@ -109,24 +109,24 @@ public class MilkshapeASCIIModel extends Model {
 			URL file = new URL("file:"+filename);
 			load(file);
 		} catch (MalformedURLException e) {
-			LoggingSystem.getLogger().log(Level.WARNING, "Could not load " + 
+			LoggingSystem.getLogger().log(Level.WARNING, "Could not load " +
 					filename);
 		}
 	}
-    
+
     public void load(String filename, String textureDirectory) {
     	this.textureDirectory = textureDirectory;
         try {
             URL file = new URL("file:"+filename);
             load(file);
         } catch (MalformedURLException e) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Could not load " + 
+            LoggingSystem.getLogger().log(Level.WARNING, "Could not load " +
                     filename);
         }
-        
-        
+
+
     }
-    
+
     public void load(URL filename, String textureDirectory) {
         this.textureDirectory = textureDirectory;
         load(filename);
@@ -134,8 +134,8 @@ public class MilkshapeASCIIModel extends Model {
 
 	/**
 	 * Loads an ascii text model exported from MS3D. The corresponding
-	 * <code>JointMesh</code> objects are created and attached to the 
-	 * model. Materials are then assigned to each mesh. Lastly, the 
+	 * <code>JointMesh</code> objects are created and attached to the
+	 * model. Materials are then assigned to each mesh. Lastly, the
 	 * joints and joint controller are loaded and initialized.
 	 * @param filename the url of the file to load.
 	 */
@@ -145,11 +145,11 @@ public class MilkshapeASCIIModel extends Model {
 		}
 		//attempt to load and parse the data.
 		try {
-			//add a controller for animations.		
+			//add a controller for animations.
 			jointController = new DeformationJointController();
-			
+
 			BufferedReader reader = new BufferedReader(new InputStreamReader(filename.openStream()));
-			
+
 			String line;
 			while ((line = getNextLine(reader)) != null) {
 				if (line.startsWith("Frames: ")) {
@@ -186,7 +186,7 @@ public class MilkshapeASCIIModel extends Model {
 		jointController.setupJointAnimations();
 		this.addController(jointController);
 	}
-	
+
 	/**
 	 * <code>getAnimationController</code> returns the controller assigned
 	 * to this model. This controller handles updating the models joints.
@@ -208,17 +208,17 @@ public class MilkshapeASCIIModel extends Model {
 		for (int i = 0; i < meshes.length; i++) {
 			String line = getNextLine(reader);
 			JointMesh mesh = new JointMesh(line.substring(1, line.lastIndexOf("\"")));
-			
+
 			mesh.setMaterialsIndex(
 				Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1)));
 
 			line = getNextLine(reader);
-			
+
 			int numberVertices = Integer.parseInt(line);
 			Vector3f[] vertices = new Vector3f[numberVertices];
 			Vector2f[] tex = new Vector2f[numberVertices];
 			int[] jointIndices = new int[numberVertices];
-			//load the vertices, textures and joint 
+			//load the vertices, textures and joint
 			for (int j = 0; j < numberVertices; j++) {
 				line = getNextLine(reader);
 				String[] values = line.split(" ");
@@ -233,7 +233,7 @@ public class MilkshapeASCIIModel extends Model {
 						1 - Float.parseFloat(values[5]));
 				jointIndices[j] = Integer.parseInt(values[6]);
 			}
-			
+
 			line = getNextLine(reader);
 			//read in the normals
 			int numberNormals = Integer.parseInt(line);
@@ -254,7 +254,7 @@ public class MilkshapeASCIIModel extends Model {
 			int numberTriangles = Integer.parseInt(line);
 			int[] ind = new int[numberTriangles * 3];
 			int count = 0;
-			
+
 			//read in triangle information and set the corresponding normals.
 			//Milkshape does not assign normals to each vertex, so this is
 			//done to play nice with OpenGL.
@@ -278,7 +278,7 @@ public class MilkshapeASCIIModel extends Model {
 				ind[count] = Integer.parseInt(values[3]);
 				count++;
 			}
-			
+
 			//create a copy of the original vertices so we don't
 			//affect the originals during animation.
 			Vector3f[] vertex =
@@ -286,7 +286,7 @@ public class MilkshapeASCIIModel extends Model {
 			for (int j = 0; j < numberVertices; j++) {
 				vertex[j] = vertices[j];
 			}
-			
+
 			ColorRGBA[] setColors = new ColorRGBA[vertices.length];
 			for(int j = 0; j < numberVertices; j++) {
 				setColors[j] = color;
@@ -303,17 +303,17 @@ public class MilkshapeASCIIModel extends Model {
 
 			//set the model bound and attach it to this node.
 			meshes[i] = mesh;
-			meshes[i].setModelBound(new BoundingSphere());
+			meshes[i].setModelBound(new BoundingBox());
 			meshes[i].updateModelBound();
 			this.attachChild(meshes[i]);
 
-			
+
 		}
 
 	}
 
 	/**
-	 * <code>parseMaterials</code> reads the material section of the 
+	 * <code>parseMaterials</code> reads the material section of the
 	 * model data and assigns the material state and texture state to
 	 * the corresponding mesh.
 	 */
@@ -365,7 +365,7 @@ public class MilkshapeASCIIModel extends Model {
 			line = getNextLine(reader);
 			ms.setShininess(Float.parseFloat(line));
 			ms.setEnabled(true);
-			
+
 			//load texture
 			line = getNextLine(reader);
 			ms.setAlpha(Float.parseFloat(line));
@@ -375,7 +375,7 @@ public class MilkshapeASCIIModel extends Model {
 			line = getNextLine(reader);
 			textures[i] = loadTexture(colorMap);
 			materials[i] = ms;
-			
+
 
 			//if the mesh is assigned to this material, set it.
 			for (int j = 0; j < meshes.length; j++) {
@@ -398,23 +398,23 @@ public class MilkshapeASCIIModel extends Model {
 			DeformationJoint joint = new DeformationJoint();
 			joint.name = line.substring(1, line.length() - 1);
 			line = getNextLine(reader);
-			
+
 			joint.parentName = line.substring(1, line.length() - 1);
 			line = getNextLine(reader);
 			String[] values = line.split(" ");
-			
+
 			joint.pos.x = Float.parseFloat(values[1]);
 			joint.pos.y = Float.parseFloat(values[2]);
 			joint.pos.z = Float.parseFloat(values[3]);
 			joint.rot.x = Float.parseFloat(values[4]);
 			joint.rot.y = Float.parseFloat(values[5]);
 			joint.rot.z = Float.parseFloat(values[6]);
-			
+
 			line = getNextLine(reader);
 			joint.numberPosistionKeyframes = Integer.parseInt(line);
 			Keyframe[] positionKeyframes =
 				new Keyframe[joint.numberPosistionKeyframes];
-			
+
 			for (int j = 0; j < joint.numberPosistionKeyframes; j++) {
 				line = getNextLine(reader);
 				values = line.split(" ");
@@ -426,7 +426,7 @@ public class MilkshapeASCIIModel extends Model {
 						Float.parseFloat(values[3]));
 			}
 			joint.positionKeys = positionKeyframes;
-			
+
 			line = getNextLine(reader);
 			joint.numberRotationKeyframes = Integer.parseInt(line);
 			Keyframe[] rotationKeyframes =
@@ -495,7 +495,7 @@ public class MilkshapeASCIIModel extends Model {
 			try {
                 fileURL = new URL("file:"+textureDirectory + file);
         	} catch(MalformedURLException e) {
-				LoggingSystem.getLogger().log(Level.WARNING, "Could not load: " 
+				LoggingSystem.getLogger().log(Level.WARNING, "Could not load: "
                         + textureDirectory + file);
 				return null;
 			}
@@ -512,6 +512,6 @@ public class MilkshapeASCIIModel extends Model {
 		return ts;
 	}
 
-	
+
 
 }

@@ -39,6 +39,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
+import com.jme.scene.*;
 import com.jme.scene.state.RenderState;
 
 /**
@@ -47,7 +48,7 @@ import com.jme.scene.state.RenderState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.27 2004-03-12 21:35:14 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.28 2004-03-13 03:07:38 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 	//rotation matrices
@@ -176,7 +177,7 @@ public abstract class Spatial implements Serializable {
 		if (!forceView && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
 			frustrumIntersects = camera.contains(worldBound);
 		}
-		
+
         if (forceView || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
 			setStates();
 			draw(r);
@@ -184,7 +185,35 @@ public abstract class Spatial implements Serializable {
 		}
 		camera.setPlaneState(state);
 	}
-    
+
+	/**
+	 *
+	 * <code>onDrawBounds</code> checks the node with the camera to see if it
+	 * should be culled, if not, the node's draw method is called.
+	 * @param r the renderer used for display.
+	 */
+	public void onDrawBounds(Renderer r) {
+		if (forceCull) {
+			return;
+		}
+
+		Camera camera = r.getCamera();
+		int state = camera.getPlaneState();
+		//check to see if we can cull this node
+		frustrumIntersects =
+			(parent != null
+				? parent.frustrumIntersects
+				: Camera.INTERSECTS_FRUSTUM);
+		if (!forceView && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
+			frustrumIntersects = camera.contains(worldBound);
+		}
+
+        if (forceView || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
+            drawBounds(r);
+		}
+		camera.setPlaneState(state);
+	}
+
     /**
 	 *
 	 * <code>draw</code> abstract method that handles drawing data to the
@@ -193,7 +222,16 @@ public abstract class Spatial implements Serializable {
 	 * @param r the renderer used for display.
 	 */
 	public abstract void draw(Renderer r);
-    
+
+    /**
+	 *
+	 * <code>drawBounds</code> abstract method that handles drawing bounds data to the
+	 * renderer if it is geometry and passing the call to it's children if it
+	 * is a node.
+	 * @param r the renderer used for display.
+	 */
+	public abstract void drawBounds(Renderer r);
+
     /**
 	 *
 	 * <code>getWorldRotation</code> retrieves the rotation matrix of the

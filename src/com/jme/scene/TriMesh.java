@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * renderer the order in which to draw the points, creating triangles on
  * every three points.
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.8 2004-03-12 21:35:14 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.9 2004-03-13 03:07:39 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
     protected int[] indices;
@@ -166,8 +166,18 @@ public class TriMesh extends Geometry implements Serializable {
         super.draw(r);
         r.draw(this);
     }
-    
-    
+
+
+    /**
+     * <code>drawBounds</code> calls super to set the render state then passes itself
+     * to the renderer.
+     * @param r the renderer to display
+     */
+    public void drawBounds(Renderer r) {
+        r.drawBounds(this);
+    }
+
+
     /**
      *
      * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that

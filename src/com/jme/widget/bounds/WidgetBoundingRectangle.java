@@ -595,6 +595,10 @@ public class WidgetBoundingRectangle implements BoundingVolume {
         checkPlanes[index] = value;
     }
 
+    public void recomputeMesh() {
+        // TODO Auto-generated method stub
+    }
+
     public String toString() {
         return "[min=" + min + "\nmax=" + max + "\ncenter=" + center + "\nwidth=" + getWidth() + "\nheight=" + getHeight() + "]";
     }

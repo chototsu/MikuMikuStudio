@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.19 2004-03-12 21:35:13 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.20 2004-03-13 03:07:38 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -468,7 +468,16 @@ public abstract class Geometry extends Spatial implements Serializable {
         //set state
 
     }
-    
+
+    /**
+     * <code>drawBounds</code> calls super to set the render state then passes itself
+     * to the renderer.
+     * @param r the renderer to display
+     */
+    public void drawBounds(Renderer r) {
+
+    }
+
     /**
      * <code>updateWorldBound</code> updates the bounding volume that contains
      * this geometry. The location of the geometry is based on the location

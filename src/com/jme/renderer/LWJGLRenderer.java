@@ -74,11 +74,15 @@ import com.jme.input.Mouse;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.scene.BoundingVolume;
 import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
+import com.jme.scene.Geometry;
 import com.jme.scene.Line;
+import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
+import com.jme.scene.Sphere;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
@@ -112,7 +116,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.36 2004-03-12 21:35:15 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.37 2004-03-13 03:07:40 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -438,7 +442,7 @@ public class LWJGLRenderer implements Renderer {
 		}
 	}
 
-	
+
 	/**
 	 * <code>draw</code> renders a tint to the back buffer
 	 *
@@ -906,6 +910,46 @@ public class LWJGLRenderer implements Renderer {
 	}
 
 	/**
+	 * <code>draw</code> renders a <code>TriMesh</code> object including
+	 * it's normals, colors, textures and vertices.
+	 *
+	 * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
+	 * @param t
+	 *            the mesh to render.
+	 */
+	public void drawBounds(Geometry g) {
+		// get the bounds
+        if (!(g.getWorldBound() instanceof TriMesh)) return;
+        g.getWorldBound().recomputeMesh();
+        com.jme.scene.state.LWJGLWireframeState bs =
+            new com.jme.scene.state.LWJGLWireframeState();
+        bs.setEnabled(true);
+        bs.set();
+        draw((TriMesh)g.getWorldBound());
+        bs.unset();
+	}
+
+	/**
+	 * <code>draw</code> renders a <code>TriMesh</code> object including
+	 * it's normals, colors, textures and vertices.
+	 *
+	 * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
+	 * @param t
+	 *            the mesh to render.
+	 */
+	public void drawBounds(BoundingVolume bv) {
+		// get the bounds
+        if (!(bv instanceof TriMesh)) return;
+        bv.recomputeMesh();
+        com.jme.scene.state.LWJGLWireframeState bs =
+            new com.jme.scene.state.LWJGLWireframeState();
+        bs.setEnabled(true);
+        bs.set();
+        draw((TriMesh)bv);
+        bs.unset();
+	}
+
+	/**
 	 * <code>draw</code> draws a clone node object. The data for the geometry
 	 * defined in the clone node is set but not rendered. The rendering occurs
 	 * by the clone node's children (Clones).
@@ -993,6 +1037,29 @@ public class LWJGLRenderer implements Renderer {
 			s.onDraw(this);
 		}
 
+	}
+
+	/**
+	 * <code>drawBounds</code> renders a scene by calling the nodes <code>onDraw</code>
+	 * method.
+	 *
+	 * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
+	 */
+	public void drawBounds(Spatial s) {
+		if (s != null) {
+			s.onDrawBounds(this);
+		}
+
+	}
+
+	/**
+	 * <code>drawBounds</code> renders the bounds of a scene by calling the nodes <code>onDrawBounds</code>
+	 * method.
+	 *
+	 * @see com.jme.renderer.Renderer#drawBounds(com.jme.scene.Spatial)
+	 */
+	public void drawBounds(Clone c) {
+        drawBounds(c.getWorldBound());
 	}
 
 	/**

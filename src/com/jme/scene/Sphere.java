@@ -39,17 +39,18 @@ import com.jme.renderer.ColorRGBA;
 /**
  * <code>Sphere</code>
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.3 2004-03-12 21:35:14 mojomonkey Exp $
+ * @version $Id: Sphere.java,v 1.4 2004-03-13 03:07:38 renanse Exp $
  */
 public class Sphere extends TriMesh {
     private int zSamples;
     private int radialSamples;
 
-    private float radius;
-    private float outerRadius;
-    
+    protected float radius;
+    protected Vector3f center;
+
     public Sphere(String name) {
         super(name);
+        setData(new Vector3f(0f,0f,0f), 10, 10, 1);
     }
 
     public Sphere(
@@ -59,6 +60,23 @@ public class Sphere extends TriMesh {
         float radius) {
 
         super(name);
+        setData(new Vector3f(0f,0f,0f), zSamples, radialSamples, radius);
+    }
+
+    public Sphere(
+        String name,
+        Vector3f center,
+        int zSamples,
+        int radialSamples,
+        float radius) {
+
+        super(name);
+        setData(center, zSamples, radialSamples, radius);
+    }
+
+    public void setData(Vector3f center, int zSamples, int radialSamples, float radius) {
+        if (center != null)
+            this.center = center;
         this.zSamples = zSamples;
         this.radialSamples = radialSamples;
         this.radius = radius;
@@ -66,19 +84,8 @@ public class Sphere extends TriMesh {
         setGeometryData();
         setIndexData();
         setColorData();
-
     }
-    
-    public void setData(int zSamples, int radialSamples, float radius) {
-        this.zSamples = zSamples;
-        this.radialSamples = radialSamples;
-        this.radius = radius;
 
-        setGeometryData();
-        setIndexData();
-        setColorData();
-    }
-    
     private void setGeometryData() {
 
         // allocate vertices
@@ -114,7 +121,8 @@ public class Sphere extends TriMesh {
             float fZ = radius * fZFraction;
 
             // compute center of slice
-            Vector3f kSliceCenter = new Vector3f(0,0,fZ);
+            Vector3f kSliceCenter = (Vector3f)center.clone();
+            kSliceCenter.z+=fZ;
 
             // compute radius of slice
             float fSliceRadius =
@@ -128,7 +136,7 @@ public class Sphere extends TriMesh {
                 Vector3f kRadial = new Vector3f(afCos[iR], afSin[iR], 0);
                 vertex[i] = kSliceCenter.add(kRadial.mult(fSliceRadius));
 
-                kNormal = vertex[i];
+                kNormal = vertex[i].subtract(center);
                 kNormal.normalize();
                 if (true)
                     normal[i] = kNormal;
@@ -156,7 +164,8 @@ public class Sphere extends TriMesh {
         }
 
         // south pole
-        vertex[i] = new Vector3f(0,0,-radius);
+        vertex[i] = (Vector3f)center.clone();
+        vertex[i].z-=radius;
         if (true)
             normal[i] = new Vector3f(0,0,-1);
         else
@@ -170,7 +179,8 @@ public class Sphere extends TriMesh {
         i++;
 
         // north pole
-        vertex[i] = new Vector3f(0,0,radius);
+        vertex[i] = (Vector3f)center.clone();
+        vertex[i].z+=radius;
         if (true)
             normal[i] = new Vector3f(0,0,1);
         else
@@ -262,4 +272,11 @@ public class Sphere extends TriMesh {
         setColors(color);
     }
 
+
+	public Vector3f getCenter(){
+		return center;
+	}
+	public void setCenter(Vector3f aCenter){
+		center = aCenter;
+	}
 }

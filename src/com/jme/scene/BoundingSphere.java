@@ -54,22 +54,18 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.22 2004-03-12 17:16:33 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.23 2004-03-13 03:07:37 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
     public int[] checkPlanes = new int[6];
-
-    private float radius;
-    private Vector3f center;
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
      * object.
      */
     public BoundingSphere() {
-        super("bsphere", 10, 10, 1);
-        center = new Vector3f();
+        super("bsphere", new Vector3f(), 10, 10, 1);
         initCheckPlanes();
     }
 
@@ -79,12 +75,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @param center the center of the sphere.
      */
     public BoundingSphere(float radius, Vector3f center) {
-        super("bsphere", 10, 10, 1);
-        if (null == center) {
-            this.center = new Vector3f();
-        } else {
-            this.center = center;
-        }
+        super("bsphere", center, 10, 10, 1);
         this.radius = radius;
         initCheckPlanes();
     }
@@ -175,8 +166,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         center = max.add(min);
         center.multLocal(0.5f);
 
-        Vector3f halfDiagonal = max.subtract(min);
-        halfDiagonal.multLocal(0.5f);
+        Vector3f halfDiagonal = max.subtract(min).multLocal(0.5f);
         radius = halfDiagonal.length();
     }
 
@@ -377,6 +367,10 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
     public void setCheckPlane(int index, int value) {
         checkPlanes[index] = value;
+    }
+
+    public void recomputeMesh() {
+        setData(null, 10, 10, radius);
     }
 
     /**

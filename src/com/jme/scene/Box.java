@@ -41,11 +41,12 @@ import com.jme.renderer.ColorRGBA;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box.
  * @author Mark Powell
- * @version $Id: Box.java,v 1.9 2004-03-12 21:35:13 mojomonkey Exp $
+ * @version $Id: Box.java,v 1.10 2004-03-13 03:07:37 renanse Exp $
  */
 public class Box extends TriMesh {
     public float xExtent, yExtent, zExtent;
     public Vector3f center;
+
     public final static Vector3f AXIS_X = new Vector3f(1,0,0);
     public final static Vector3f AXIS_Y = new Vector3f(0,1,0);
     public final static Vector3f AXIS_Z = new Vector3f(0,0,1);
@@ -63,42 +64,30 @@ public class Box extends TriMesh {
      */
     public Box(String name, Vector3f min, Vector3f max) {
         super(name);
-
-        center = max.add(min);
-        center.multLocal(0.5f);
-
-        xExtent = max.x - center.x;
-        yExtent = max.y - center.y;
-        zExtent = max.z - center.z;
-
-        setVertexData();
-        setNormalData();
-        setColorData();
-        setTextureData();
-        setIndexData();
+        setData(min, max);
     }
 
     public Box(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
         super(name);
-        this.center = center;
+        setData(center, xExtent, yExtent, zExtent);
+    }
+
+    public void setData(Vector3f minPoint, Vector3f maxPoint) {
+        Vector3f cPoint = maxPoint.add(minPoint);
+        cPoint.multLocal(0.5f);
+
+        float x = maxPoint.x - cPoint.x;
+        float y = maxPoint.y - cPoint.y;
+        float z = maxPoint.z - cPoint.z;
+        setData(cPoint, x, y, z);
+    }
+
+    public void setData(Vector3f center, float xExtent, float yExtent, float zExtent) {
+        if (center != null)
+            this.center = center;
         this.xExtent = xExtent;
         this.yExtent = yExtent;
         this.zExtent = zExtent;
-
-        setVertexData();
-        setNormalData();
-        setColorData();
-        setTextureData();
-        setIndexData();
-    }
-    
-    public void setData(Vector3f minPoint, Vector3f maxPoint) {
-        center = maxPoint.add(minPoint);
-        center.multLocal(0.5f);
-
-        xExtent = maxPoint.x - center.x;
-        yExtent = maxPoint.y - center.y;
-        zExtent = maxPoint.z - center.z;
 
         setVertexData();
         setNormalData();
@@ -357,4 +346,12 @@ public class Box extends TriMesh {
         rVal[7] = center.subtract(akEAxis[0]).addLocal(akEAxis[1]).addLocal(akEAxis[2]);
         return rVal;
     }
+
+
+	public Vector3f getCenter(){
+		return center;
+	}
+	public void setCenter(Vector3f aCenter){
+		center = aCenter;
+	}
 }

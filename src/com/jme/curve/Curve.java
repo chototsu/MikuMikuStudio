@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -47,12 +47,12 @@ import com.jme.system.JmeException;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.8 2004-02-27 19:57:53 mojomonkey Exp $
+ * @version $Id: Curve.java,v 1.9 2004-03-13 03:07:39 renanse Exp $
  */
 public abstract class Curve extends Geometry {
 
     protected int steps;
-    
+
     /**
      * Constructor creates a default <code>Curve</code> object with a
      * zero size array for the points.
@@ -86,18 +86,18 @@ public abstract class Curve extends Geometry {
         this.vertex = controlPoints;
         steps = 25;
     }
-    
+
     /**
-     * 
+     *
      * <code>setSteps</code> sets the number of steps that make up the curve.
      * @param steps the number of steps that make up the curve.
      */
     public void setSteps(int steps) {
         this.steps = steps;
     }
-    
+
     /**
-     * 
+     *
      * <code>getSteps</code> retrieves the number of steps that make up the
      * curve.
      * @return the number of steps that makes up the curve.
@@ -105,7 +105,7 @@ public abstract class Curve extends Geometry {
     public int getSteps() {
         return steps;
     }
-    
+
     /**
      * <code>draw</code> calls super to set the render state then calls the
      * renderer to display the curve.
@@ -117,19 +117,28 @@ public abstract class Curve extends Geometry {
     }
 
     /**
-     * 
-     * <code>getPoint</code> calculates a point on the curve based on 
+     * <code>drawBounds</code> calls super to set the render state then passes itself
+     * to the renderer.
+     * @param r the renderer to display
+     */
+    public void drawBounds(Renderer r) {
+        r.drawBounds(this);
+    }
+
+    /**
+     *
+     * <code>getPoint</code> calculates a point on the curve based on
      * the time, where time is [0, 1]. How the point is calculated is
-     * defined by the subclass. 
+     * defined by the subclass.
      * @param time the time frame on the curve, [0, 1].
      * @return the point on the curve at a specified time.
      */
     public abstract Vector3f getPoint(float time);
-    
+
     /**
-     * 
-     * <code>getOrientation</code> calculates a rotation matrix that 
-     * defines the orientation along a curve. How the matrix is 
+     *
+     * <code>getOrientation</code> calculates a rotation matrix that
+     * defines the orientation along a curve. How the matrix is
      * calculated is defined by the subclass.
      * @param time the time frame on the curve, [0, 1].
      * @param precision the accuracy of the orientation (lower is more
@@ -138,13 +147,13 @@ public abstract class Curve extends Geometry {
      *      along a curve.
      */
     public abstract Matrix3f getOrientation(float time, float precision);
-    
+
     /**
-     * 
-     * <code>getOrientation</code> calculates a rotation matrix that 
+     *
+     * <code>getOrientation</code> calculates a rotation matrix that
      * defines the orientation along a curve. The up vector is provided
      * keeping the orientation from "rolling" along the curve. This is
-     * useful for camera tracks. How the matrix is calculated is defined 
+     * useful for camera tracks. How the matrix is calculated is defined
      * by the subclass.
      * @param time the time frame on the curve, [0, 1].
      * @param precision the accuracy of the orientation (lower is more
