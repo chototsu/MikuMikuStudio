@@ -55,7 +55,7 @@ import com.jme.scene.shape.Disk;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestAutoClodMesh.java,v 1.6 2004-07-21 21:19:49 guurk Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.7 2004-08-25 18:12:20 renanse Exp $
  */
 
 public class TestAutoClodMesh extends SimpleGame {
@@ -111,18 +111,18 @@ public class TestAutoClodMesh extends SimpleGame {
     model.updateGeometricState(0, true);
 
     iNode = new AreaClodMesh("model", new Disk("disc", 50, 50, 8), null);
+    rootNode.attachChild(iNode);
     iNode.setForceCull(true);
     iNode.setModelBound(new BoundingSphere());
     iNode.updateModelBound();
 
     TriMesh child = (TriMesh) model.getChild(0);
     iNode2 = new AreaClodMesh("model", child, null);
+    rootNode.attachChild(iNode2);
     iNode2.setDistanceTolerance( 0.0f);
     iNode2.setForceCull(false);
     iNode2.setModelBound(new BoundingSphere());
     iNode2.updateModelBound();
 
-    rootNode.attachChild(iNode);
-    rootNode.attachChild(iNode2);
   }
 }
