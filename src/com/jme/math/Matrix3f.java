@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.5 2003-12-04 14:40:09 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.6 2003-12-23 03:45:53 mojomonkey Exp $
  */
 public class Matrix3f {
     private float[][] matrix;
@@ -90,6 +90,33 @@ public class Matrix3f {
             throw new JmeException("Invalid column index. " + i);
         }
         return new Vector3f(matrix[0][i], matrix[1][i], matrix[2][i]);
+    }
+    
+    /**
+     * 
+     * <code>setColumn</code> sets a particular column of this matrix to that
+     * represented by the provided vector.
+     * @param i the column to set.
+     * @param column the data to set.
+     */
+    public void setColumn(int i, Vector3f column) {
+        if(i < 0 || i > 2) {
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Invalid column index.");
+            throw new JmeException("Invalid column index. " + i);
+        }
+        
+        if(column == null) {
+            LoggingSystem.getLogger().log(
+                Level.WARNING,
+                "Column is null. Ignoring.");
+            return;
+        }
+        
+        matrix[0][i] = column.x;
+        matrix[1][i] = column.y;
+        matrix[2][i] = column.z;
     }
 
     /**
