@@ -48,7 +48,7 @@ import com.jme.renderer.Renderer;
  * camera setting compatible with <code>BillboardNode</code>.
  * 
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.15 2004-11-22 19:51:42 mojomonkey Exp $
+ * @version $Id: BillboardNode.java,v 1.16 2005-02-23 22:17:55 renanse Exp $
  */
 public class BillboardNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -57,9 +57,9 @@ public class BillboardNode extends Node {
 
 	private Matrix3f orient;
 
-	private Vector3f diff;
-
-	private Vector3f loc;
+	private Vector3f look;
+	private Vector3f left;
+	private Vector3f up;
 
 	private int type;
 
@@ -69,7 +69,8 @@ public class BillboardNode extends Node {
 	/** Alligns this Billboard Node to the screen, but keeps the Y axis fixed. */
 	public static final int AXIAL = 1;
 
-	//  public static final int WORLD_ORIENTED = 2;
+	/** Alligns this Billboard Node to the camera position. */
+	public static final int CAMERA_ALIGNED = 2;
 
 	/**
 	 * Constructor instantiates a new <code>BillboardNode</code>. The name of
@@ -81,8 +82,9 @@ public class BillboardNode extends Node {
 	public BillboardNode(String name) {
 		super(name);
 		orient = new Matrix3f();
-		loc = new Vector3f();
-		diff = new Vector3f();
+		up = new Vector3f();
+		look = new Vector3f();
+		left = new Vector3f();
 		type = SCREEN_ALIGNED;
 	}
 
@@ -142,9 +144,9 @@ public class BillboardNode extends Node {
 		case SCREEN_ALIGNED:
 			rotateScreenAligned(cam);
 			break;
-		//      case WORLD_ORIENTED:
-		//        rotateWorldAligned(cam);
-		//        break;
+		case CAMERA_ALIGNED:
+		    rotateCameraAligned(cam);
+		    break;
 		}
 
 		for (int i = 0, cSize = children.size(); i < cSize; i++) {
@@ -155,25 +157,37 @@ public class BillboardNode extends Node {
 		}
 	}
 
-	//  /**
-	//   * rotateWorldAligned
-	//   *
-	//   * @param camera Camera
-	//   */
-	//  private void rotateWorldAligned(Camera camera) {
-	//
-	//  }
+	/**
+	 * rotateCameraAligned
+	 *
+	 * @param camera Camera
+	 */
+	private void rotateCameraAligned(Camera camera) {
+		look.set(camera.getLocation()).subtractLocal(worldTranslation);
+		look.normalizeLocal();
+
+		left.set(camera.getUp()).crossLocal(look);
+
+		// now redo the up vector
+		up.set(look).crossLocal(left);
+		
+		orient.fromAxes(left, up, look);
+		worldRotation.fromRotationMatrix(orient);	    
+	}
 
 	/**
-	 * Rotate the billboard so it points directly towards the camera
+	 * Rotate the billboard so it points directly opposite the 
+	 * direction the camera's facing
 	 * 
 	 * @param camera
 	 *            Camera
 	 */
 	private void rotateScreenAligned(Camera camera) {
-		diff = camera.getDirection().negate();
-		orient.fromAxes(camera.getLeft().negate(), camera.getUp(), camera
-				.getDirection().negate());
+	    // coopt diff for our in direction:
+	    look.set(camera.getDirection()).negateLocal();
+		// coopt loc for our left direction:
+		left.set(camera.getLeft()).negateLocal();
+		orient.fromAxes(left, camera.getUp(), look);
 		worldRotation.fromRotationMatrix(orient);
 	}
 
@@ -187,14 +201,14 @@ public class BillboardNode extends Node {
 		// Compute the additional rotation required for the billboard to face
 		// the camera. To do this, the camera must be inverse-transformed into
 		// the model space of the billboard.
-		diff = camera.getLocation().subtract(worldTranslation);
-		worldRotation.mult(diff, loc);
-		loc.x *= 1.0f / worldScale.x;
-		loc.y *= 1.0f / worldScale.y;
-		loc.z *= 1.0f / worldScale.z;
+	    look.set(camera.getLocation()).subtractLocal(worldTranslation);
+		worldRotation.mult(look, left); // coopt left for our own purposes.
+		left.x *= 1.0f / worldScale.x;
+		left.y *= 1.0f / worldScale.y;
+		left.z *= 1.0f / worldScale.z;
 
 		// squared length of the camera projection in the xz-plane
-		float lengthSquared = loc.x * loc.x + loc.z * loc.z;
+		float lengthSquared = left.x * left.x + left.z * left.z;
 		if (lengthSquared < FastMath.FLT_EPSILON) {
 			// camera on the billboard axis, rotation not defined
 			return;
@@ -202,20 +216,20 @@ public class BillboardNode extends Node {
 
 		// unitize the projection
 		float invLength = FastMath.invSqrt(lengthSquared);
-		loc.x *= invLength;
-		loc.y = 0.0f;
-		loc.z *= invLength;
+		left.x *= invLength;
+		left.y = 0.0f;
+		left.z *= invLength;
 
 		// compute the local orientation matrix for the billboard
-		orient.m00 = loc.z;
+		orient.m00 = left.z;
 		orient.m01 = 0;
-		orient.m02 = loc.x;
+		orient.m02 = left.x;
 		orient.m10 = 0;
 		orient.m11 = 1;
 		orient.m12 = 0;
-		orient.m20 = -loc.x;
+		orient.m20 = -left.x;
 		orient.m21 = 0;
-		orient.m22 = loc.z;
+		orient.m22 = left.z;
 
 		// The billboard must be oriented to face the camera before it is
 		// transformed into the world.
