@@ -19,41 +19,43 @@ import java.io.InputStream;
  *
  * @author Jack Lindamood
  */
-public class SAXReader extends DefaultHandler{
-    public final static File XSD=new File("data/XML docs/LoaderFormat.xsd");
-    static final String JAXP_SCHEMA_LANGUAGE =
-        "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-    static final String JAXP_SCHEMA_SOURCE =
-        "http://java.sun.com/xml/jaxp/properties/schemaSource";
-    static final String W3C_XML_SCHEMA =
-        "http://www.w3.org/2001/XMLSchema";
-
-
-    private StringBuffer currentData=new StringBuffer();
-    long time;
+public class SAXReader{
     private SAXStackProcessor computer;
+    private JMESAXHandler myHandler;
+    long time;
 
+
+    /**
+     * Constructs a new SAXReader. <code>loadXML</code> should be called afterwards
+     * to load an XML InputStream and return a Node
+     */
     public SAXReader(){
         super();
         try{
             computer=new SAXStackProcessor();
+            myHandler=new JMESAXHandler(computer);
         } catch (NullPointerException np){
             throw new JmeException("Try setting the display system first");
         }
     }
 
+    /**
+     * Loads a Node from an InputStream
+     * @param SAXFile The InputStream containing the XML
+     * @return A Node that represents the XML file
+     */
     public Node loadXML(InputStream SAXFile){
         time=System.currentTimeMillis();
+        computer.reInitialize();
         SAXParserFactory factory=SAXParserFactory.newInstance();
         factory.setValidating(true);
         factory.setNamespaceAware(true);
 
         try {
-            SAXParser parser=factory.newSAXParser();    // Use .xsd validating parser?
-//            parser.setProperty(JAXP_SCHEMA_LANGUAGE,W3C_XML_SCHEMA);
-//            parser.setProperty(JAXP_SCHEMA_SOURCE,XSD);
+            SAXParser parser=factory.newSAXParser();
+            //TODO: Use .xsd validating parser?
 
-            parser.parse(SAXFile,this);
+            parser.parse(SAXFile,myHandler);
 
         } catch (Throwable t) {
             throw new JmeException("Parser exception caught:" + t.getClass() + " * " + t.getMessage());
@@ -62,39 +64,11 @@ public class SAXReader extends DefaultHandler{
         return computer.fetchOriginal();
     }
 
+    /**
+     * Returns a copy of the node last loaded
+     * @return
+     */
     public Node fetchCopy(){
         return computer.fetchCopy();
-    }
-
-    public void startDocument() throws SAXException{
-        LoggingSystem.getLogger().log(
-            Level.INFO,
-            "XML document processing begun");
-    }
-
-    public void endDocument() throws SAXException{
-        LoggingSystem.getLogger().log(
-            Level.INFO,
-            "XML document processing finished");
-    }
-
-    public void startElement(String uri,String localName,String qName, Attributes atts) throws SAXException{
-        currentData.setLength(0);
-        System.out.print("Start: " + qName);
-        computer.increaseStack(qName,atts);
-        System.out.println("*done-increaseStack");
-    }
-
-    public void endElement(String uri,String localName, String qName) throws SAXException{
-        System.out.print("End: " + qName);
-        computer.decreaseStack(qName,currentData);
-        System.out.println("*done-decreaseStack*");
-    }
-
-    public void characters(char[] ch, int start,int length) throws SAXException{
-        currentData.append(ch,start,length);
-    }
-    public InputSource resolveEntity(String publicID,String systemID) throws SAXException{
-        return null;
     }
 }
