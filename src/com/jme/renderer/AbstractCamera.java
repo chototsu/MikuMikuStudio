@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.19 2004-05-10 21:56:24 mojomonkey Exp $
+ * @version $Id: AbstractCamera.java,v 1.20 2004-05-15 19:20:25 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
   //planes of the frustum
@@ -410,7 +410,7 @@ public abstract class AbstractCamera implements Camera {
     frustumBottom = bottom;
     onFrustumChange();
   }
-  
+
   public void setFrustumPerspective(float fovY, float aspect, float near, float far) {
       float h = FastMath.tan(fovY/180 * FastMath.PI) * near / 2;
       float w = h * aspect;
@@ -599,19 +599,20 @@ public abstract class AbstractCamera implements Camera {
       return INSIDE_FRUSTUM;
     }
 
-    int planeCounter = 5;
-    int mask = 1 << planeCounter;
+    int planeCounter = FRUSTUM_PLANES-1;
+    int mask = 0;
 
     int rVal = INSIDE_FRUSTUM;
-    for (; planeCounter >= 0; planeCounter--, mask >>= 1) {
+    for (; planeCounter >= 0; planeCounter--) {
+      mask = 1 << (bound.getCheckPlane(planeCounter));
       if ( (planeState & mask) == 0) {
         int side = bound.whichSide(worldPlane[bound.getCheckPlane(planeCounter)]);
 
         if (side == Plane.NEGATIVE_SIDE) {
           //object is outside of frustum
-          if (planeCounter != 5) {
-            int i = bound.getCheckPlane(5);
-            bound.setCheckPlane(5, bound.getCheckPlane(planeCounter));
+          if (planeCounter != FRUSTUM_PLANES-1) {
+            int i = bound.getCheckPlane(FRUSTUM_PLANES-1);
+            bound.setCheckPlane(FRUSTUM_PLANES-1, bound.getCheckPlane(planeCounter));
             bound.setCheckPlane(planeCounter, i);
           }
           return OUTSIDE_FRUSTUM;
