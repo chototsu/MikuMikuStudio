@@ -22,6 +22,7 @@ import java.util.ArrayList;
  * Class to write a node to a Writer in XML format
  *
  * @author Jack Lindamood
+ * @deprecated Will soon be deleted.  Replaced by jME's binary format. 
  */
 public class XMLWriter {
     private Writer myStream;
