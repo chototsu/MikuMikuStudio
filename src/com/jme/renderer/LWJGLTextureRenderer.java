@@ -46,7 +46,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.9 2004-03-06 08:25:39 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.10 2004-03-08 16:59:04 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -58,7 +58,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     /** Pbuffer instance */
     private Pbuffer pbuffer;
-    private int active = 0;
+    private int active, caps;
     private boolean useDirectRender = false;
 
     private LWJGLRenderer parentRenderer;
@@ -69,28 +69,26 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     public LWJGLTextureRenderer(LWJGLRenderer parentRenderer, RenderTexture texture) {
-        if (!isSupported()) {
+        caps = Pbuffer.getPbufferCaps();
+
+        if (((caps & Pbuffer.PBUFFER_SUPPORTED) == 0)) {
             System.err.println("No Pbuffer support!");
             System.exit(1);  // Clean this up?
         }
-        if (Pbuffer.RENDER_TEXTURE_SUPPORTED != 0) {
+
+        if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
             System.err.println("Render to Texture Pbuffer supported!");
             if (texture == null)
                 System.err.println("No RenderTexture used in init, falling back to Copy Texture PBuffer.");
             else useDirectRender = true;
-        } else if (Pbuffer.PBUFFER_SUPPORTED != 0)
+        } else {
             System.err.println("Copy Texture Pbuffer supported!");
+            texture = null;
+        }
 
         this.parentRenderer = parentRenderer;
         this.texture = texture;
         initPbuffer();
-    }
-
-    public static boolean isSupported() { // Perhaps we should move this to Renderer?
-        if ((Pbuffer.getPbufferCaps() & Pbuffer.PBUFFER_SUPPORTED) == 0)
-            return false;
-
-        return true;
     }
 
     /**
