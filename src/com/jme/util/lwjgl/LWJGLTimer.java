@@ -30,11 +30,14 @@
  *
  */
 
-package com.jme.util;
+package com.jme.util.lwjgl;
 
 import java.util.logging.Level;
 
 import org.lwjgl.Sys;
+
+import com.jme.util.LoggingSystem;
+import com.jme.util.Timer;
 
 /**
  * <code>Timer</code> handles the system's time related functionality. This
@@ -44,7 +47,7 @@ import org.lwjgl.Sys;
  * method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.6 2004-03-19 22:33:46 renanse Exp $
+ * @version $Id: LWJGLTimer.java,v 1.1 2004-04-02 23:29:17 mojomonkey Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;
@@ -61,7 +64,7 @@ public class LWJGLTimer extends Timer {
      * Constructor builds a <code>Timer</code> object. All values will be
      * initialized to it's default values.
      */
-    protected LWJGLTimer() {
+    public LWJGLTimer() {
         //reset time
         Sys.setTime(0);
 

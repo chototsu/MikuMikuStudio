@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.renderer;
+package com.jme.renderer.lwjgl;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -56,7 +56,7 @@ import org.lwjgl.opengl.Window;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.3 2004-03-05 21:55:17 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.1 2004-04-02 23:29:11 mojomonkey Exp $
  */
 public class LWJGLFont {
     /**

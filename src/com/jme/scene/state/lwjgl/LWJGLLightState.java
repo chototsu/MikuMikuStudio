@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -41,12 +41,13 @@ import com.jme.light.DirectionalLight;
 import com.jme.light.Light;
 import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
+import com.jme.scene.state.LightState;
 
 /**
  * <code>LWJGLLightState</code> subclasses the Light class using the LWJGL
  * API to access OpenGL for light processing.
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.10 2004-04-02 21:05:01 mojomonkey Exp $
+ * @version $Id: LWJGLLightState.java,v 1.1 2004-04-02 23:29:01 mojomonkey Exp $
  */
 public class LWJGLLightState extends LightState {
     //buffer for light colors.

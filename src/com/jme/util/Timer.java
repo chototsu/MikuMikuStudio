@@ -31,10 +31,12 @@
  */
 package com.jme.util;
 
+import com.jme.util.lwjgl.*;
+
 /**
  * <code>Timer</code>
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.4 2004-04-01 01:40:33 ericthered Exp $
+ * @version $Id: Timer.java,v 1.5 2004-04-02 23:29:18 mojomonkey Exp $
  */
 public abstract class Timer {
     private static Timer instance;

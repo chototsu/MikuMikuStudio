@@ -39,12 +39,13 @@ package com.jme.system;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
+import com.jme.system.lwjgl.*;
 import com.jme.widget.font.WidgetFont;
 
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.15 2004-03-31 21:58:49 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.16 2004-04-02 23:28:56 mojomonkey Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -67,7 +68,7 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.15 2004-03-31 21:58:49 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.16 2004-04-02 23:28:56 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;

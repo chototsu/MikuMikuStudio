@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.renderer;
+package com.jme.renderer.lwjgl;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -38,6 +38,9 @@ import java.util.logging.Level;
 
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
 import com.jme.util.LoggingSystem;
 import org.lwjgl.opengl.GL11;
@@ -47,7 +50,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.16 2004-04-02 21:04:14 mojomonkey Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.1 2004-04-02 23:29:12 mojomonkey Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 

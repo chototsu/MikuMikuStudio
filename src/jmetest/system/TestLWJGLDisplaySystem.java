@@ -34,7 +34,7 @@ package jmetest.system;
 import com.jme.app.SimpleGame;
 import com.jme.renderer.ColorRGBA;
 import com.jme.system.JmeException;
-import com.jme.system.LWJGLDisplaySystem;
+import com.jme.system.lwjgl.LWJGLDisplaySystem;
 
 /**
  * <code>TestLWJGLDisplaySystem</code> tests the display system for creation

@@ -38,7 +38,7 @@ package com.jme.sound.lwjgl;
 
 import com.jme.intersection.Distance;
 import com.jme.renderer.Camera;
-import com.jme.renderer.LWJGLCamera;
+import com.jme.renderer.lwjgl.LWJGLCamera;
 import com.jme.sound.ISoundRenderer;
 import com.jme.sound.SoundAPIController;
 import com.jme.sound.scene.SoundSpatial;

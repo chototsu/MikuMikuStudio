@@ -52,7 +52,7 @@
  * GOP
  */
 
-package com.jme.renderer;
+package com.jme.renderer.lwjgl;
 
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -75,6 +75,9 @@ import com.jme.input.Mouse;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
 import com.jme.scene.Geometry;
@@ -88,18 +91,6 @@ import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
-import com.jme.scene.state.LWJGLAlphaState;
-import com.jme.scene.state.LWJGLAttributeState;
-import com.jme.scene.state.LWJGLCullState;
-import com.jme.scene.state.LWJGLDitherState;
-import com.jme.scene.state.LWJGLFogState;
-import com.jme.scene.state.LWJGLLightState;
-import com.jme.scene.state.LWJGLMaterialState;
-import com.jme.scene.state.LWJGLShadeState;
-import com.jme.scene.state.LWJGLTextureState;
-import com.jme.scene.state.LWJGLVertexProgramState;
-import com.jme.scene.state.LWJGLWireframeState;
-import com.jme.scene.state.LWJGLZBufferState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.ShadeState;
@@ -107,6 +98,18 @@ import com.jme.scene.state.TextureState;
 import com.jme.scene.state.VertexProgramState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.lwjgl.LWJGLAlphaState;
+import com.jme.scene.state.lwjgl.LWJGLAttributeState;
+import com.jme.scene.state.lwjgl.LWJGLCullState;
+import com.jme.scene.state.lwjgl.LWJGLDitherState;
+import com.jme.scene.state.lwjgl.LWJGLFogState;
+import com.jme.scene.state.lwjgl.LWJGLLightState;
+import com.jme.scene.state.lwjgl.LWJGLMaterialState;
+import com.jme.scene.state.lwjgl.LWJGLShadeState;
+import com.jme.scene.state.lwjgl.LWJGLTextureState;
+import com.jme.scene.state.lwjgl.LWJGLVertexProgramState;
+import com.jme.scene.state.lwjgl.LWJGLWireframeState;
+import com.jme.scene.state.lwjgl.LWJGLZBufferState;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.WidgetRenderer;
@@ -118,7 +121,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.41 2004-04-02 15:51:55 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.1 2004-04-02 23:29:12 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -931,8 +934,8 @@ public class LWJGLRenderer implements Renderer {
 		// get the bounds
         if (!(g.getWorldBound() instanceof TriMesh)) return;
         g.getWorldBound().recomputeMesh();
-        com.jme.scene.state.LWJGLWireframeState bs =
-            new com.jme.scene.state.LWJGLWireframeState();
+        com.jme.scene.state.lwjgl.LWJGLWireframeState bs =
+            new com.jme.scene.state.lwjgl.LWJGLWireframeState();
         bs.setEnabled(true);
         bs.set();
         draw((TriMesh)g.getWorldBound());
@@ -951,8 +954,8 @@ public class LWJGLRenderer implements Renderer {
 		// get the bounds
         if (!(bv instanceof TriMesh)) return;
         bv.recomputeMesh();
-        com.jme.scene.state.LWJGLWireframeState bs =
-            new com.jme.scene.state.LWJGLWireframeState();
+        com.jme.scene.state.lwjgl.LWJGLWireframeState bs =
+            new com.jme.scene.state.lwjgl.LWJGLWireframeState();
         bs.setEnabled(true);
         bs.set();
         draw((TriMesh)bv);

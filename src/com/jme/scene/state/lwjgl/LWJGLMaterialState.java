@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -37,12 +37,14 @@ import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.scene.state.MaterialState;
+
 /**
  * <code>LWJGLMaterialState</code> subclasses MaterialState using the
  * LWJGL API to access OpenGL to set the material for a given node and it's
  * children.
  * @author Mark Powell
- * @version $Id: LWJGLMaterialState.java,v 1.3 2004-03-05 21:55:15 renanse Exp $
+ * @version $Id: LWJGLMaterialState.java,v 1.1 2004-04-02 23:29:01 mojomonkey Exp $
  */
 public class LWJGLMaterialState extends MaterialState {
     //buffer for color

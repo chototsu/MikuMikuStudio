@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -42,13 +42,14 @@ import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using
  * the LWJGL API to access OpenGL for texture processing.
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.9 2004-03-24 23:12:57 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.1 2004-04-02 23:29:02 mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
     //OpenGL texture attributes.

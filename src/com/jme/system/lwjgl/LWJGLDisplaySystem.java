@@ -34,7 +34,7 @@
  * EDIT:  02/09/2004 - Added getRendererType method. GOP
  */
 
-package com.jme.system;
+package com.jme.system.lwjgl;
 
 import java.awt.Toolkit;
 import java.util.logging.Level;
@@ -44,11 +44,13 @@ import org.lwjgl.DisplayMode;
 import org.lwjgl.opengl.RenderTexture;
 import org.lwjgl.opengl.Window;
 
-import com.jme.renderer.LWJGLRenderer;
-import com.jme.renderer.LWJGLTextureRenderer;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
+import com.jme.renderer.lwjgl.LWJGLRenderer;
+import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
@@ -61,7 +63,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.15 2004-03-31 21:57:53 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.1 2004-04-02 23:29:15 mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 

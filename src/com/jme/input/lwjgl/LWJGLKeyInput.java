@@ -29,19 +29,20 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.input;
+package com.jme.input.lwjgl;
 
 import java.util.logging.Level;
 
 import org.lwjgl.input.Keyboard;
 
+import com.jme.input.KeyInput;
 import com.jme.util.LoggingSystem;
 
 /**
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard. 
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.1 2003-10-23 21:24:43 mojomonkey Exp $
+ * @version $Id: LWJGLKeyInput.java,v 1.1 2004-04-02 23:29:16 mojomonkey Exp $
  */
 public class LWJGLKeyInput implements KeyInput {
     

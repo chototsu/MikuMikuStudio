@@ -29,48 +29,42 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.scene.state.DitherState;
+
 /**
- * <code>LWJGLShadeState</code> subclasses the ShadeState class using the
- * LWJGL API to access OpenGL to set the shade state.
+ * <code>LWJGLDitherState</code> subclasses the DitherState using the
+ * LWJGL API to set the dithering state of OpenGL.
  * @author Mark Powell
- * @version $Id: LWJGLShadeState.java,v 1.2 2004-03-05 21:55:16 renanse Exp $
+ * @version $Id: LWJGLDitherState.java,v 1.1 2004-04-02 23:29:00 mojomonkey Exp $
  */
-public class LWJGLShadeState extends ShadeState {
-    //open gl params
-    int[] glShadeState =
-    {
-        GL11.GL_FLAT,
-        GL11.GL_SMOOTH
-    };
+public class LWJGLDitherState extends DitherState {
 
     /**
-     * Constructor instantiates a new <code>LWJGLShadeState</code> object.
-     *
-     */
-    public LWJGLShadeState() {
-        super();
-    }
-
-    /**
-     * <code>set</code> sets the OpenGL shade state to that specified by
-     * the state.
+     * <code>set</code> sets the dithering state on if it is enabled, and
+     * sets it off otherwise.
      * @see com.jme.scene.state.RenderState#set()
      */
     public void set() {
-
-        GL11.glShadeModel(glShadeState[shade]);
+        if(isEnabled()) {
+            GL11.glEnable(GL11.GL_DITHER);
+        } else {
+            GL11.glDisable(GL11.GL_DITHER);
+        }
     }
 
     /**
-     * <code>unset</code> resets the shade state to defaul SMOOTH.
+     * <code>unset</code> sets the dithering state back to default.
      * @see com.jme.scene.state.RenderState#unset()
      */
     public void unset() {
-        GL11.glShadeModel(GL11.GL_SMOOTH);
+        //default is on
+        if(!isEnabled()) {
+            GL11.glEnable(GL11.GL_DITHER);
+        }
     }
 
 }

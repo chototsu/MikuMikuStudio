@@ -29,58 +29,77 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.scene.state.FogState;
+
 /**
- * <code>LWJGLZBufferState</code> subclasses ZBufferState to use the
- * LWJGL API to access OpenGL.
+ * <code>LWJGLFogState</code> subclasses the fog state using the LWJGL API
+ * to set the OpenGL fog state.
  * @author Mark Powell
- * @version $Id: LWJGLZBufferState.java,v 1.2 2004-03-05 21:55:16 renanse Exp $
+ * @version $Id: LWJGLFogState.java,v 1.1 2004-04-02 23:29:01 mojomonkey Exp $
  */
-public class LWJGLZBufferState extends ZBufferState {
-    //the open gl depth tests
-    private int[] glBufferCompare =
-        {
-            GL11.GL_NEVER,
-            GL11.GL_LESS,
-            GL11.GL_EQUAL,
-            GL11.GL_LEQUAL,
-            GL11.GL_GREATER,
-            GL11.GL_NOTEQUAL,
-            GL11.GL_GEQUAL,
-            GL11.GL_ALWAYS };
+public class LWJGLFogState extends FogState {
+    //buffer to hold the color
+    FloatBuffer colorBuf;
+
+    private int[] glFogDensity = { GL11.GL_LINEAR, GL11.GL_EXP, GL11.GL_EXP2 };
+
+    private int[] glFogApply = { GL11.GL_FASTEST, GL11.GL_NICEST };
 
     /**
-     * <code>set</code> turns on the specified depth test specified by the
-     * state.
+     * Constructor instantiates a new <code>LWJGLFogState</code> object with
+     * default values.
+     *
+     */
+    public LWJGLFogState() {
+        super();
+        colorBuf =
+            ByteBuffer
+                .allocateDirect(16)
+                .order(ByteOrder.nativeOrder())
+                .asFloatBuffer();
+    }
+
+    /**
+     * <code>set</code> sets the OpenGL fog values if the state is enabled.
      * @see com.jme.scene.state.RenderState#set()
      */
     public void set() {
         if (isEnabled()) {
-            GL11.glEnable(GL11.GL_DEPTH_TEST);
-            GL11.glDepthFunc(glBufferCompare[function]);
-        } else {
-            GL11.glDisable(GL11.GL_DEPTH_TEST);
-            GL11.glDepthFunc(GL11.GL_ALWAYS);
-        }
+            GL11.glEnable(GL11.GL_FOG);
+            GL11.glFogf(GL11.GL_FOG_START, start);
+            GL11.glFogf(GL11.GL_FOG_END, end);
 
-        if (writable) {
-            GL11.glDepthMask(true);
-        } else {
-            GL11.glDepthMask(false);
-        }
+            colorBuf.clear();
+            colorBuf.put(color.getColorArray());
+            colorBuf.flip();
 
+            GL11.glFog(GL11.GL_FOG_COLOR, colorBuf);
+
+            GL11.glFogf(GL11.GL_FOG_DENSITY, density);
+            GL11.glFogi(GL11.GL_FOG_MODE, glFogDensity[densityFunction]);
+            GL11.glHint(GL11.GL_FOG_HINT, glFogApply[applyFunction]);
+        } else {
+            GL11.glDisable(GL11.GL_FOG);
+        }
     }
 
     /**
-     * <code>unset</code> resets the depth test to disabled.
+     * <code>unset</code> disables the fog state if it was enabled previously.
      * @see com.jme.scene.state.RenderState#unset()
      */
     public void unset() {
-        GL11.glDisable(GL11.GL_DEPTH_TEST);
-        GL11.glDepthFunc(GL11.GL_ALWAYS);
+        if (isEnabled()) {
+            GL11.glDisable(GL11.GL_FOG);
+        }
+
     }
 
 }

@@ -29,50 +29,50 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
-/**
- * <code>LWJGLCullState</code>
- * @author Mark Powell
- * @version $Id: LWJGLCullState.java,v 1.2 2004-03-05 21:55:15 renanse Exp $
- */
-public class LWJGLCullState extends CullState {
+import com.jme.scene.state.ShadeState;
 
-    /** <code>set</code>
+/**
+ * <code>LWJGLShadeState</code> subclasses the ShadeState class using the
+ * LWJGL API to access OpenGL to set the shade state.
+ * @author Mark Powell
+ * @version $Id: LWJGLShadeState.java,v 1.1 2004-04-02 23:29:02 mojomonkey Exp $
+ */
+public class LWJGLShadeState extends ShadeState {
+    //open gl params
+    int[] glShadeState =
+    {
+        GL11.GL_FLAT,
+        GL11.GL_SMOOTH
+    };
+
+    /**
+     * Constructor instantiates a new <code>LWJGLShadeState</code> object.
      *
+     */
+    public LWJGLShadeState() {
+        super();
+    }
+
+    /**
+     * <code>set</code> sets the OpenGL shade state to that specified by
+     * the state.
      * @see com.jme.scene.state.RenderState#set()
      */
     public void set() {
-        if (isEnabled()) {
-            switch (getCullMode()) {
-                case CS_FRONT :
-                    GL11.glCullFace(GL11.GL_FRONT);
-                    GL11.glEnable(GL11.GL_CULL_FACE);
-                    break;
-                case CS_BACK :
-                    GL11.glCullFace(GL11.GL_BACK);
-                    GL11.glEnable(GL11.GL_CULL_FACE);
-                    break;
-                case CS_NONE :
-                    GL11.glDisable(GL11.GL_CULL_FACE);
-                    break;
-                default :
-                    GL11.glDisable(GL11.GL_CULL_FACE);
-                    break;
-            }
-        }
 
+        GL11.glShadeModel(glShadeState[shade]);
     }
 
-    /** <code>unset</code>
-     *
+    /**
+     * <code>unset</code> resets the shade state to defaul SMOOTH.
      * @see com.jme.scene.state.RenderState#unset()
      */
     public void unset() {
-        if(isEnabled() && getCullMode() != CS_NONE) {
-            GL11.glDisable(GL11.GL_CULL_FACE);
-        }
+        GL11.glShadeModel(GL11.GL_SMOOTH);
     }
+
 }

@@ -29,42 +29,21 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
+import com.jme.scene.state.ZBufferState;
+
 /**
- * <code>LWJGLAlphaState</code> subclasses the AlphaState using the LWJGL API
- * to set OpenGL's alpha state.
+ * <code>LWJGLZBufferState</code> subclasses ZBufferState to use the
+ * LWJGL API to access OpenGL.
  * @author Mark Powell
- * @version $Id: LWJGLAlphaState.java,v 1.2 2004-03-05 21:55:14 renanse Exp $
+ * @version $Id: LWJGLZBufferState.java,v 1.1 2004-04-02 23:29:03 mojomonkey Exp $
  */
-public class LWJGLAlphaState extends AlphaState {
-    //gl alpha values
-    private int[] glSrcBlend =
-        {
-            GL11.GL_ZERO,
-            GL11.GL_ONE,
-            GL11.GL_DST_COLOR,
-            GL11.GL_ONE_MINUS_DST_COLOR,
-            GL11.GL_SRC_ALPHA,
-            GL11.GL_ONE_MINUS_SRC_ALPHA,
-            GL11.GL_DST_ALPHA,
-            GL11.GL_ONE_MINUS_DST_ALPHA,
-            GL11.GL_SRC_ALPHA_SATURATE };
-
-    private int[] glDestBlend =
-        {
-            GL11.GL_ZERO,
-            GL11.GL_ONE,
-            GL11.GL_SRC_COLOR,
-            GL11.GL_ONE_MINUS_SRC_COLOR,
-            GL11.GL_SRC_ALPHA,
-            GL11.GL_ONE_MINUS_SRC_ALPHA,
-            GL11.GL_DST_ALPHA,
-            GL11.GL_ONE_MINUS_DST_ALPHA };
-
-    private int[] glAlphaTest =
+public class LWJGLZBufferState extends ZBufferState {
+    //the open gl depth tests
+    private int[] glBufferCompare =
         {
             GL11.GL_NEVER,
             GL11.GL_LESS,
@@ -76,52 +55,34 @@ public class LWJGLAlphaState extends AlphaState {
             GL11.GL_ALWAYS };
 
     /**
-     * Constructor instantiates a new <code>LWJGLAlphaState</code> object with
-     * default values.
-     *
-     */
-    public LWJGLAlphaState() {
-        super();
-    }
-
-    /**
-     * <code>set</code> is called to set the alpha state. If blending is
-     * enabled, the blend function is set up and if alpha testing is enabled
-     * the alpha functions are set.
+     * <code>set</code> turns on the specified depth test specified by the
+     * state.
      * @see com.jme.scene.state.RenderState#set()
      */
     public void set() {
-        if (blendEnabled) {
-            GL11.glEnable(GL11.GL_BLEND);
-            GL11.glBlendFunc(
-                glSrcBlend[srcBlend],
-                glDestBlend[dstBlend]);
+        if (isEnabled()) {
+            GL11.glEnable(GL11.GL_DEPTH_TEST);
+            GL11.glDepthFunc(glBufferCompare[function]);
         } else {
-            GL11.glDisable(GL11.GL_BLEND);
+            GL11.glDisable(GL11.GL_DEPTH_TEST);
+            GL11.glDepthFunc(GL11.GL_ALWAYS);
         }
 
-        if (testEnabled) {
-            GL11.glEnable(GL11.GL_ALPHA_TEST);
-            GL11.glAlphaFunc(glAlphaTest[test], reference);
+        if (writable) {
+            GL11.glDepthMask(true);
         } else {
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
+            GL11.glDepthMask(false);
         }
 
     }
 
     /**
-     * <code>unset</code> turns off blending if it is enabled, and turns off
-     * alpha testing if it is enabled.
+     * <code>unset</code> resets the depth test to disabled.
      * @see com.jme.scene.state.RenderState#unset()
      */
     public void unset() {
-        if(blendEnabled) {
-            GL11.glDisable(GL11.GL_BLEND);
-        }
-
-        if(testEnabled) {
-            GL11.glDisable(GL11.GL_ALPHA_TEST);
-        }
-
+        GL11.glDisable(GL11.GL_DEPTH_TEST);
+        GL11.glDepthFunc(GL11.GL_ALWAYS);
     }
+
 }

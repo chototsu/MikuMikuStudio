@@ -28,7 +28,7 @@
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
  * POSSIBILITY OF SUCH DAMAGE. 
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -43,6 +43,7 @@ import java.util.logging.Level;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.*;
 
+import com.jme.scene.state.VertexProgramState;
 import com.jme.util.LoggingSystem;
 
 
@@ -50,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLVertexProgramState</code>
  * 
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.1 2004-03-20 20:44:25 ericthered Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.1 2004-04-02 23:29:02 mojomonkey Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 

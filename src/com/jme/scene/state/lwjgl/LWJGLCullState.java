@@ -29,40 +29,52 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 
-/**
- * <code>LWJGLDitherState</code> subclasses the DitherState using the
- * LWJGL API to set the dithering state of OpenGL.
- * @author Mark Powell
- * @version $Id: LWJGLDitherState.java,v 1.2 2004-03-05 21:55:15 renanse Exp $
- */
-public class LWJGLDitherState extends DitherState {
+import com.jme.scene.state.CullState;
 
-    /**
-     * <code>set</code> sets the dithering state on if it is enabled, and
-     * sets it off otherwise.
+/**
+ * <code>LWJGLCullState</code>
+ * @author Mark Powell
+ * @version $Id: LWJGLCullState.java,v 1.1 2004-04-02 23:29:00 mojomonkey Exp $
+ */
+public class LWJGLCullState extends CullState {
+
+    /** <code>set</code>
+     *
      * @see com.jme.scene.state.RenderState#set()
      */
     public void set() {
-        if(isEnabled()) {
-            GL11.glEnable(GL11.GL_DITHER);
-        } else {
-            GL11.glDisable(GL11.GL_DITHER);
+        if (isEnabled()) {
+            switch (getCullMode()) {
+                case CS_FRONT :
+                    GL11.glCullFace(GL11.GL_FRONT);
+                    GL11.glEnable(GL11.GL_CULL_FACE);
+                    break;
+                case CS_BACK :
+                    GL11.glCullFace(GL11.GL_BACK);
+                    GL11.glEnable(GL11.GL_CULL_FACE);
+                    break;
+                case CS_NONE :
+                    GL11.glDisable(GL11.GL_CULL_FACE);
+                    break;
+                default :
+                    GL11.glDisable(GL11.GL_CULL_FACE);
+                    break;
+            }
         }
+
     }
 
-    /**
-     * <code>unset</code> sets the dithering state back to default.
+    /** <code>unset</code>
+     *
      * @see com.jme.scene.state.RenderState#unset()
      */
     public void unset() {
-        //default is on
-        if(!isEnabled()) {
-            GL11.glEnable(GL11.GL_DITHER);
+        if(isEnabled() && getCullMode() != CS_NONE) {
+            GL11.glDisable(GL11.GL_CULL_FACE);
         }
     }
-
 }

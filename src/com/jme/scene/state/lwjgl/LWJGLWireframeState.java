@@ -29,16 +29,18 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
+
+import com.jme.scene.state.WireframeState;
 
 /**
  * <code>LWJGLWireframeState</code> subclasses WireframeState to use the
  * LWJGL API to access OpenGL. If the state is enabled, wireframe mode is
  * used, otherwise solid fill is used.
  * @author Mark Powell
- * @version $Id: LWJGLWireframeState.java,v 1.4 2004-03-17 00:52:24 ericthered Exp $
+ * @version $Id: LWJGLWireframeState.java,v 1.1 2004-04-02 23:29:03 mojomonkey Exp $
  */
 public class LWJGLWireframeState extends WireframeState {
     

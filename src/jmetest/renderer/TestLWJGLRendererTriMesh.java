@@ -39,7 +39,7 @@ import com.jme.renderer.Camera;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.system.JmeException;
-import com.jme.system.LWJGLDisplaySystem;
+import com.jme.system.lwjgl.LWJGLDisplaySystem;
 
 /**
  * Test for trimesh part of the renderer.

@@ -40,12 +40,12 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.system.JmeException;
-import com.jme.system.LWJGLDisplaySystem;
+import com.jme.system.lwjgl.LWJGLDisplaySystem;
 
 /**
  * Tests the rendering of lines.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererLine.java,v 1.5 2004-04-02 15:52:17 mojomonkey Exp $
+ * @version $Id: TestLWJGLRendererLine.java,v 1.6 2004-04-02 23:29:19 mojomonkey Exp $
  */
 public class TestLWJGLRendererLine extends SimpleGame {
 

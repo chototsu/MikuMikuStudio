@@ -29,13 +29,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.input;
+package com.jme.input.lwjgl;
 
 import java.util.logging.Level;
 
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Window;
 
+import com.jme.input.MouseInput;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLStandardCursor;
 import com.jme.widget.input.mouse.WidgetMouseButtonType;
@@ -44,7 +45,7 @@ import com.jme.widget.input.mouse.WidgetMouseButtonType;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.4 2004-03-05 21:55:18 renanse Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.1 2004-04-02 23:29:16 mojomonkey Exp $
  */
 public class LWJGLMouseInput implements MouseInput {
     private int x;

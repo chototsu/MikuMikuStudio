@@ -39,12 +39,12 @@ import com.jme.renderer.Camera;
 import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.system.JmeException;
-import com.jme.system.LWJGLDisplaySystem;
+import com.jme.system.lwjgl.LWJGLDisplaySystem;
 
 /**
  * Test of the point renderer for the LWJGL renderer.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererPoint.java,v 1.4 2004-04-02 15:52:17 mojomonkey Exp $
+ * @version $Id: TestLWJGLRendererPoint.java,v 1.5 2004-04-02 23:29:20 mojomonkey Exp $
  */
 public class TestLWJGLRendererPoint extends SimpleGame {
 

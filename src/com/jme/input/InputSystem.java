@@ -33,6 +33,7 @@ package com.jme.input;
 
 import java.util.logging.Level;
 
+import com.jme.input.lwjgl.*;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -43,7 +44,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.2 2003-10-26 17:48:56 mojomonkey Exp $
+ * @version $Id: InputSystem.java,v 1.3 2004-04-02 23:28:58 mojomonkey Exp $
  */
 public class InputSystem {
     //the input devices.

@@ -29,14 +29,16 @@
  * POSSIBILITY OF SUCH DAMAGE. 
  * 
  */
-package com.jme.scene.state;
+package com.jme.scene.state.lwjgl;
 
 import org.lwjgl.opengl.GL11;
+
+import com.jme.scene.state.AttributeState;
 
 /**
  * <code>LWJGLAttributeState</code>
  * @author Mark Powell
- * @version $Id: LWJGLAttributeState.java,v 1.1 2004-03-23 15:54:54 mojomonkey Exp $
+ * @version $Id: LWJGLAttributeState.java,v 1.1 2004-04-02 23:28:59 mojomonkey Exp $
  */
 public class LWJGLAttributeState extends AttributeState {
 	int[] glAttributeState =

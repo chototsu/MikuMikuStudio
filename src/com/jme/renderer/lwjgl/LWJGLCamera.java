@@ -29,10 +29,12 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
-package com.jme.renderer;
+package com.jme.renderer.lwjgl;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
+
+import com.jme.renderer.AbstractCamera;
 
 /**
  * <code>LWJGLCamera</code> defines a concrete implementation of a
@@ -41,7 +43,7 @@ import org.lwjgl.opengl.glu.GLU;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.6 2004-03-31 03:05:52 renanse Exp $
+ * @version $Id: LWJGLCamera.java,v 1.1 2004-04-02 23:29:11 mojomonkey Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
