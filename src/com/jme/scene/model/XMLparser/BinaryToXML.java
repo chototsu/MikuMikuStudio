@@ -155,6 +155,9 @@ public class BinaryToXML {
             case BinaryFormatConstants.DATA_SHORTARRAY:
                 readShortArray();
                 break;
+            case BinaryFormatConstants.DATA_V2F:
+                readVec2f();
+                break;
             default:
                 throw new IOException("Unknown data type:" + type);
         }
@@ -199,6 +202,10 @@ public class BinaryToXML {
     private void readVec3f() throws IOException {
         currentLine.append(myIn.readFloat()).append(' ').append(myIn.readFloat());
         currentLine.append(' ').append(myIn.readFloat());
+    }
+
+    private void readVec2f() throws IOException {
+        currentLine.append(myIn.readFloat()).append(' ').append(myIn.readFloat());
     }
 
 
