@@ -59,7 +59,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.34 2004-10-27 22:36:02 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.35 2004-11-05 18:32:32 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -228,6 +228,26 @@ public class Node extends Spatial implements Serializable {
             ((Spatial) children.get(i)).setForceView(value);
         }
     }
+    
+    /**
+     * determines if the provide Spatial is contained in the children list of
+     * this node.
+     * @param spat the spatial object to check.
+     * @return true if the object is contained, false otherwise.
+     */
+    public boolean hasChild(Spatial spat) { 
+
+        if (children.contains(spat)) return true; 
+
+       for (int i = 0; i < children.size(); i++) {
+			Spatial child = (Spatial) children.get(i);
+			if (child instanceof Node && ((Node) child).hasChild(spat))
+				return true; 
+       } 
+        
+        
+        return false; 
+     } 
 
     /**
      * <code>updateWorldData</code> updates all the children maintained by
