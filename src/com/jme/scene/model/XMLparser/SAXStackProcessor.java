@@ -19,16 +19,18 @@ import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Quaternion;
 import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
 import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 
 /**
  * Started Date: May 31, 2004
- * SAX Stack processor.  Helper class for SAXReader.  Increase Stack is called whenever a new element is encountered
- * in the XML file, decrease stack is called at the end of that element.  Hashtable is to use element sharing, Stack
- * is to keep track of where I am in the XML file.
- * 
+ * SAX Stack processor.  Helper class for SAXReader.  increaseStack is called whenever a new element is encountered
+ * in the XML file, decreaseStack is called at the end of that element.  Each is basicly a large if statement sequence.
+ * The stack can be pop'd to return the element information above the one being processed.Hashtable is to use element
+ * sharing, Stack is to keep track of where I am in the XML file.
+ *
  * @author Jack Lindamood
  */
 class SAXStackProcessor {
@@ -43,7 +45,6 @@ class SAXStackProcessor {
 
     void increaseStack(String qName, Attributes atts) throws SAXException{
 
-        new TriMesh();
         if (qName.equalsIgnoreCase("Scene")){
             s.push(new Node("XML Scene"));
         } else if (qName.equals("node")){
@@ -55,7 +56,8 @@ class SAXStackProcessor {
         } else if (qName.equals("mesh")){
             s.push(processSpatial(new TriMesh(atts.getValue("name")),atts));
         } else if (qName.equals("vertex") || qName.equals("normal") ||
-                qName.equals("texturecoords") || qName.equals("index") || qName.equals("color") || qName.equals("sharedtypes")){
+                qName.equals("texturecoords") || qName.equals("index") || qName.equals("color") || qName.equals("sharedtypes")||
+                qName.equals("jointindex") || qName.equals("origvertex") || qName.equals("orignormal")){
             // Do nothing, these have no attributes
         } else if (qName.equals("primitive")){
             s.push(processPrimitive(atts));
@@ -87,10 +89,45 @@ class SAXStackProcessor {
                 throw new SAXException("XMLloadable classes cannot be abstract: " + atts.getValue("class"));
             }
 
-        }  else{
+        } else if (qName.equals("jointcontroller")){
+            s.push(new JointController(Integer.parseInt(atts.getValue("numJoints"))));
+        } else if (qName.equals("keyframe")){
+            Integer jointIndex=(Integer) s.pop();
+            JointController jc=(JointController) s.pop();
+            if (atts.getValue("rot")!=null){
+                String[] values=atts.getValue("rot").split(" ");
+                jc.setRotation(jointIndex.intValue(),Float.parseFloat(atts.getValue("time")),new Quaternion(
+                        Float.parseFloat(values[0]),Float.parseFloat(values[1]),Float.parseFloat(values[2]),Float.parseFloat(values[3])));
+            }
+            if (atts.getValue("trans")!=null){
+                String[] values=atts.getValue("trans").split(" ");
+                jc.setTranslation(jointIndex.intValue(),Float.parseFloat(atts.getValue("time"))
+                        ,Float.parseFloat(values[0]),Float.parseFloat(values[1]),Float.parseFloat(values[2]));
+            }
+            s.push(jc);
+            s.push(jointIndex);
+        } else if (qName.equals("joint")){
+            JointController jc=(JointController) s.pop();
+            jc.parentIndex[Integer.parseInt(atts.getValue("index"))]=Integer.parseInt(atts.getValue("parentindex"));
+            jc.localRefMatrix[Integer.parseInt(atts.getValue("index"))].set(getQuat(atts.getValue("localrot")),getVec(atts.getValue("localvec")));
+            s.push(jc);
+            s.push(new Integer(atts.getValue("index")));
+        } else if (qName.equals("jointmesh")){
+            s.push(processSpatial(new JointMesh(atts.getValue("name")),atts));
+        } else{
             throw new SAXException("Illegale Qualified name: " + qName);
         }
         return;
+    }
+
+    private Vector3f getVec(String value) {
+        String[] sp=value.split(" ");
+        return new Vector3f(Float.parseFloat(sp[0]),Float.parseFloat(sp[1]),Float.parseFloat(sp[2]));
+    }
+
+    private Quaternion getQuat(String value) {
+        String[] sp=value.split(" ");
+        return new Quaternion(Float.parseFloat(sp[0]),Float.parseFloat(sp[1]),Float.parseFloat(sp[2]),Float.parseFloat(sp[3]));
     }
 
 
@@ -114,7 +151,7 @@ class SAXStackProcessor {
             parentSpatial=(Spatial) s.pop();
             parentSpatial.setRenderState(childMaterial);
             s.push(parentSpatial);
-        } else if (qName.equals("mesh")){
+        } else if (qName.equals("mesh") || qName.equals("jointmesh")){
             TriMesh childMesh=(TriMesh) s.pop();
             if (childMesh.getModelBound()==null){
                 childMesh.setModelBound(new BoundingBox());
@@ -148,7 +185,7 @@ class SAXStackProcessor {
             parentNode=(Node) s.pop();
             parentNode.attachChild(childSpatial);
             s.push(parentNode);
-        } else if (qName.equals("sharedtypes")){
+        } else if (qName.equals("sharedtypes") || qName.equals("keyframe")){
             // Nothing to do, these only identify XML areas
         } else if (qName.equals("xmlloadable")){
             Object o=s.pop();
@@ -183,6 +220,30 @@ class SAXStackProcessor {
                 parentNode.attachChild((Spatial) o);
                 s.push(parentNode);
             }
+        } else if (qName.equals("jointcontroller")){
+            JointController jc=(JointController) s.pop();
+            parentNode=(Node) s.pop();
+            for (int i=0;i<parentNode.getQuantity();i++){
+                if (parentNode.getChild(i) instanceof JointMesh)
+                    jc.addJointMesh((JointMesh) parentNode.getChild(i));
+            }
+            jc.processController();
+            parentNode.addController(jc);
+            s.push(parentNode);
+        } else if (qName.equals("joint")){
+            s.pop();    // remove unneeded information tag
+        } else if (qName.equals("jointindex")){
+            JointMesh jm=(JointMesh) s.pop();
+            jm.jointIndex=createIntArray(data);
+            s.push(jm);
+        } else if (qName.equals("origvertex")){
+            JointMesh jm=(JointMesh) s.pop();
+            jm.originalVertex=createVector3f(data);
+            s.push(jm);
+        } else if (qName.equals("orignormal")){
+            JointMesh jm=(JointMesh) s.pop();
+            jm.originalNormal=createVector3f(data);
+            s.push(jm);
         } else {
             throw new SAXException("Illegale Qualified name: " + qName);
         }
@@ -319,9 +380,12 @@ class SAXStackProcessor {
         if (data.length()==0) return null;
         String [] information=data.toString().trim().split("\\p{Space}");
         if (information.length==1 && information[0].equals("")) return null;
-        int[] indexes=new int[information.length];
         int count=0;
-        for (int i=0;i<indexes.length;i++){
+        for (int i=0;i<information.length;i++)
+            if (information[i].length()!=0) count++;
+        int[] indexes=new int[count];
+        count=0;
+        for (int i=0;i<information.length;i++){
             if (information[i].length()!=0){
                 indexes[count]=Integer.parseInt(information[i]);
                 count++;
