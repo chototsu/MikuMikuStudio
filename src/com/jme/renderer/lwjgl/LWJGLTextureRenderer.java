@@ -49,8 +49,11 @@ import org.lwjgl.opengl.RenderTexture;
 import org.lwjgl.opengl.Window;
 
 /**
+ * This class is used by LWJGL to render textures.  Users should <b>not</b> create this
+ * class directly.  Instead, allow DisplaySystem to create it for you.
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.4 2004-07-12 23:22:49 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.5 2004-07-31 16:38:51 cep21 Exp $
+ * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int)
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
