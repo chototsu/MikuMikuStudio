@@ -199,12 +199,15 @@ public class RenderQueue {
       void clear(){
           listSize=0;
       }
+      /**
+       * Sorts the elements in the list acording to their Comparator.
+       */
       void sort(){
           if (listSize>1)
-            Arrays.sort(list,0,listSize-1,c);
+            Arrays.sort(list,0,listSize,c);
       }
   }
-    class OpaqueComp implements Comparator {
+    private class OpaqueComp implements Comparator {
       public int compare(Object o1, Object o2) {
         float d1 = distanceToCam((Spatial)o1);
         float d2 = distanceToCam((Spatial)o2);
@@ -214,7 +217,7 @@ public class RenderQueue {
       }
     }
 
-    class TransparentComp implements Comparator {
+    private class TransparentComp implements Comparator {
       public int compare(Object o1, Object o2) {
         float d1 = distanceToCam((Spatial)o1);
         float d2 = distanceToCam((Spatial)o2);
@@ -224,7 +227,7 @@ public class RenderQueue {
       }
     }
 
-    class OrthoComp implements Comparator {
+    private class OrthoComp implements Comparator {
       public int compare(Object o1, Object o2) {
         Spatial s1 = (Spatial)o1;
         Spatial s2 = (Spatial)o2;
