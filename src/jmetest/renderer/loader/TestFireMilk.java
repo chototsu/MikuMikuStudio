@@ -47,6 +47,7 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jme.renderer.Renderer;
 
 /**
  * <code>TestFireMilk</code>
@@ -81,6 +82,7 @@ public class TestFireMilk extends SimpleGame {
     model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
     ( (DeformationJointController) model.getAnimationController()).
         setUpdateModelBounds(true);
+    model.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     rootNode.attachChild(model);
 
     AlphaState as1 = display.getRenderer().getAlphaState();
@@ -101,7 +103,7 @@ public class TestFireMilk extends SimpleGame {
         true));
     ts.setEnabled(true);
 
-    ParticleManager manager = new ParticleManager(250, display.getRenderer().getCamera());
+    ParticleManager manager = new ParticleManager(200, display.getRenderer().getCamera());
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
     manager.setEmissionMaximumAngle(0.20943952f);

@@ -105,7 +105,7 @@ public class TestRigidSmoker extends SimpleGame {
         TextureManager.loadTexture(
         TestRigidSmoker.class.getClassLoader().getResource(
         "jmetest/data/texture/flaresmall.jpg"),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true));
     ts.setEnabled(true);

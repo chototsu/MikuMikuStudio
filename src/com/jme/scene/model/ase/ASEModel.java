@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  *
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.15 2004-05-07 22:03:24 renanse Exp $
+ * @version $Id: ASEModel.java,v 1.16 2004-06-26 00:17:59 renanse Exp $
  */
 public class ASEModel extends Model {
 
@@ -359,7 +359,7 @@ public class ASEModel extends Model {
                 ts.setTexture(
                     TextureManager.loadTexture(
                         fileURL,
-                        Texture.MM_LINEAR,
+                        Texture.MM_LINEAR_LINEAR,
                         Texture.FM_LINEAR,
                         true));
                 this.setRenderState(ts);

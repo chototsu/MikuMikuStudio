@@ -41,6 +41,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Geometry;
+import com.jme.renderer.Renderer;
 
 /**
  * <code>ParticleManager</code>
@@ -58,7 +59,7 @@ import com.jme.scene.Geometry;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.6 2004-04-27 17:10:13 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.7 2004-06-26 00:18:00 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
@@ -161,6 +162,7 @@ public class ParticleManager extends Controller {
     particlesGeometry.setVertices(new Vector3f[noParticles << 2]);
     particlesGeometry.setTextures(new Vector2f[noParticles << 2], 0);
     particlesGeometry.setIndices(indices);
+    particlesGeometry.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
 
     Vector3f speed = new Vector3f();
     Vector3f location = new Vector3f();

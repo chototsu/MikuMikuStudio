@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 package com.jme.scene.model.msascii;
@@ -61,9 +61,9 @@ import com.jme.math.Vector3f;
  * frequency of 1. If a faster animation or different repeat type is desired,
  * the controller can be obtained via the <code>getAnimationController</code>
  * method.
- * 
+ *
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.18 2004-05-03 15:04:34 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.19 2004-06-26 00:17:59 renanse Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 
@@ -81,7 +81,7 @@ public class MilkshapeASCIIModel extends Model {
     /**
      * Constructor creates a new <code>MilkshapeASCIIModel</code> object. No
      * data is loaded during this construction.
-     * 
+     *
      * @param name
      *            the name of the scene element. This is required for
      *            identification and comparision purposes.
@@ -93,7 +93,7 @@ public class MilkshapeASCIIModel extends Model {
     /**
      * Constructor creates a new <code>MilkshapeASCIIModel</code> loading the
      * provided file.
-     * 
+     *
      * @param name
      *            the name of the scene element. This is required for
      *            identification and comparision purposes.
@@ -110,7 +110,7 @@ public class MilkshapeASCIIModel extends Model {
      * <code>JointMesh</code> objects are created and attached to the model.
      * Materials are then assigned to each mesh. Lastly, the joints and joint
      * controller are loaded and initialized.
-     * 
+     *
      * @param filename
      *            the file to load.
      */
@@ -146,7 +146,7 @@ public class MilkshapeASCIIModel extends Model {
      * <code>JointMesh</code> objects are created and attached to the model.
      * Materials are then assigned to each mesh. Lastly, the joints and joint
      * controller are loaded and initialized.
-     * 
+     *
      * @param filename
      *            the url of the file to load.
      */
@@ -208,7 +208,7 @@ public class MilkshapeASCIIModel extends Model {
     /**
      * <code>parseMeshes</code> reads the information about the meshes. This
      * includes vertices, texture coordinates, normals and triangle indices.
-     * 
+     *
      * @param reader
      *            the file reader.
      * @throws Exception
@@ -466,7 +466,7 @@ public class MilkshapeASCIIModel extends Model {
 
     /**
      * Loads the assigned image texture as a texture state for the mesh.
-     * 
+     *
      * @param the
      *            relative filename to the bmp
      * @return the image address in memory
@@ -475,7 +475,7 @@ public class MilkshapeASCIIModel extends Model {
         if(file == null || file.trim().length() == 0) {
             return null;
         }
-        
+
         URL fileURL = null;
 
         if (file.startsWith(".\\")) {
@@ -501,7 +501,7 @@ public class MilkshapeASCIIModel extends Model {
             }
         }
 
-        Texture tex = TextureManager.loadTexture(fileURL, Texture.MM_LINEAR,
+        Texture tex = TextureManager.loadTexture(fileURL, Texture.MM_LINEAR_LINEAR,
                 Texture.FM_LINEAR, true);
 
         if (tex != null) {

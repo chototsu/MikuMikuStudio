@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.26 2004-06-04 00:23:21 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.27 2004-06-26 00:13:39 renanse Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -117,14 +117,14 @@ public class TestTerrain extends SimpleGame {
     ts.setEnabled(true);
     Texture t1 = TextureManager.loadTexture(
         pt.getImageIcon().getImage(),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR, true, true);
     ts.setTexture(t1, 0);
 
     Texture t2 = TextureManager.loadTexture(
         TestTerrain.class.getClassLoader().getResource(
         "jmetest/data/texture/Detail.jpg"),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR, true);
 
     ts.setTexture(t2, 1);

@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestSphere.java,v 1.6 2004-04-22 22:27:42 renanse Exp $
+ * @version $Id: TestSphere.java,v 1.7 2004-06-26 00:18:01 renanse Exp $
  */
 public class TestSphere extends BaseGame {
     private Camera cam;
@@ -179,7 +179,7 @@ public class TestSphere extends BaseGame {
             TextureManager.loadTexture(
                 TestBoxColor.class.getClassLoader().getResource(
                     "jmetest/data/images/Monkey.jpg"),
-                Texture.MM_LINEAR,
+                Texture.MM_LINEAR_LINEAR,
                 Texture.FM_LINEAR,
                 true));
 

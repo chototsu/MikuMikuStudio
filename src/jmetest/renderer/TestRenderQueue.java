@@ -56,7 +56,7 @@ import com.jme.scene.state.RenderState;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.5 2004-06-23 19:15:56 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.6 2004-06-26 00:18:01 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -143,7 +143,7 @@ public class TestRenderQueue extends SimpleGame {
         TextureManager.loadTexture(
         TestRenderQueue.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.tga"),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true));
     opaques.setRenderState(ts);

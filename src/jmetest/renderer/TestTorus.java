@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.6 2004-04-22 22:27:42 renanse Exp $
+ * @version $Id: TestTorus.java,v 1.7 2004-06-26 00:18:01 renanse Exp $
  */
 public class TestTorus extends BaseGame {
 	private Camera cam;
@@ -179,7 +179,7 @@ public class TestTorus extends BaseGame {
 			TextureManager.loadTexture(
 				TestBoxColor.class.getClassLoader().getResource(
 					"jmetest/data/texture/dirt.jpg"),
-				Texture.MM_LINEAR,
+				Texture.MM_LINEAR_LINEAR,
 				Texture.FM_LINEAR,
 				true));
 

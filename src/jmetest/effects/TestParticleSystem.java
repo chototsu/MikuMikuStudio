@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.19 2004-04-23 02:57:25 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.20 2004-06-26 00:18:00 renanse Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -99,7 +99,7 @@ public class TestParticleSystem extends SimpleGame {
         TextureManager.loadTexture(
         TestParticleSystem.class.getClassLoader().getResource(
         "jmetest/data/texture/flaresmall.jpg"),
-        Texture.MM_LINEAR,
+        Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true));
     ts.setEnabled(true);

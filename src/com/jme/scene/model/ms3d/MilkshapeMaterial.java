@@ -61,7 +61,7 @@ class MilkshapeMaterial {
         } catch (IOException e) {
         }
         myTex.setTexture(TextureManager.loadTexture(toLoad,
-            Texture.MM_LINEAR,
+            Texture.MM_LINEAR_LINEAR,
             Texture.FM_LINEAR,
             true));
         if (myTex==null) throw new JmeException("Problem loading file " + texture);
