@@ -328,86 +328,6 @@ public class JmeBinaryReader {
 
     }
 
-    private Vector3f[] decodeShortCompress(short[] shorts) throws IOException {
-        if (shorts.length%3!=0)
-            throw new IOException("Illeagle short[] length of " + shorts.length);
-        Vector3f[] toReturn=new Vector3f[shorts.length/3];
-        for (int i=0;i<toReturn.length;i++){
-            toReturn[i]=new Vector3f();
-            toReturn[i].x = shorts[i*3+0]*BinaryFormatConstants.XYZ_SCALE;
-            toReturn[i].y = shorts[i*3+1]*BinaryFormatConstants.XYZ_SCALE;
-            toReturn[i].z = shorts[i*3+2]*BinaryFormatConstants.XYZ_SCALE;
-        }
-        return toReturn;
-    }
-
-    private Vector3f[] decodeLatLong(byte[] bytes) throws IOException {
-        if (bytes==null) return null;
-        if (bytes.length%2!=0){
-            throw new IOException("Illeagle bytes[] length of " + bytes.length);
-        }
-        Vector3f[] vecs=new Vector3f[bytes.length/2];
-        for (int i=0;i<bytes.length;i+=2){
-            vecs[i/2]=new Vector3f();
-            byte lng=bytes[i];
-            byte lat=bytes[i+1];
-            float newlat=FastMath.DEG_TO_RAD*lat;
-            float newlng=FastMath.DEG_TO_RAD*lng;
-            vecs[i/2].x = FastMath.cos(newlat)*FastMath.sin(newlng);
-            vecs[i/2].y = FastMath.sin(newlat)*FastMath.sin(newlng);
-            vecs[i/2].z = FastMath.cos(newlng);
-        }
-        return vecs;
-    }
-
-    private Object buildCullState(HashMap attributes) {
-        CullState cs=renderer.getCullState();
-        cs.setEnabled(true);
-        String state=(String) attributes.get("cull");
-        if ("none".equals(state))
-            cs.setCullMode(CullState.CS_NONE);
-        else if ("back".equals(state))
-            cs.setCullMode(CullState.CS_BACK);
-        else if ("front".equals(state))
-            cs.setCullMode(CullState.CS_FRONT);
-        return cs;
-    }
-
-    private PointLight buildPointLight(HashMap attributes) {
-        PointLight toReturn=new PointLight();
-        putLightInfo(toReturn,attributes);
-        toReturn.setLocation((Vector3f)attributes.get("loc"));
-        toReturn.setEnabled(true);
-        return toReturn;
-    }
-
-    private SpotLight buildSpotLight(HashMap attributes) {
-        SpotLight toReturn=new SpotLight();
-        putLightInfo(toReturn,attributes);
-        toReturn.setLocation((Vector3f)attributes.get("loc"));
-        toReturn.setAngle(((Float)attributes.get("fangle")).floatValue());
-        toReturn.setDirection((Vector3f)attributes.get("dir"));
-        toReturn.setExponent(((Float)attributes.get("fexponent")).floatValue());
-        toReturn.setEnabled(true);
-        return toReturn;
-    }
-
-    private void putLightInfo(Light light, HashMap attributes) {
-        light.setAmbient((ColorRGBA) attributes.get("ambient"));
-        light.setConstant(((Float)attributes.get("fconstant")).floatValue());
-        light.setDiffuse((ColorRGBA) attributes.get("diffuse"));
-        light.setLinear(((Float)attributes.get("flinear")).floatValue());
-        light.setQuadratic(((Float)attributes.get("fquadratic")).floatValue());
-        light.setSpecular((ColorRGBA) attributes.get("specular"));
-        light.setAttenuate(((Boolean)attributes.get("isattenuate")).booleanValue());
-    }
-
-    private LightState buildLightState(HashMap attributes) {
-        LightState ls=renderer.getLightState();
-        ls.setEnabled(true);
-        return ls;
-    }
-
     /**
      * Processes an END_TAG flag, which signals a tag has finished reading all children information.
      * @throws IOException If anything bad happens in reading the binary file
@@ -561,6 +481,87 @@ public class JmeBinaryReader {
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
     }
+
+    private Vector3f[] decodeShortCompress(short[] shorts) throws IOException {
+        if (shorts.length%3!=0)
+            throw new IOException("Illeagle short[] length of " + shorts.length);
+        Vector3f[] toReturn=new Vector3f[shorts.length/3];
+        for (int i=0;i<toReturn.length;i++){
+            toReturn[i]=new Vector3f();
+            toReturn[i].x = shorts[i*3+0]*BinaryFormatConstants.XYZ_SCALE;
+            toReturn[i].y = shorts[i*3+1]*BinaryFormatConstants.XYZ_SCALE;
+            toReturn[i].z = shorts[i*3+2]*BinaryFormatConstants.XYZ_SCALE;
+        }
+        return toReturn;
+    }
+
+    private Vector3f[] decodeLatLong(byte[] bytes) throws IOException {
+        if (bytes==null) return null;
+        if (bytes.length%2!=0){
+            throw new IOException("Illeagle bytes[] length of " + bytes.length);
+        }
+        Vector3f[] vecs=new Vector3f[bytes.length/2];
+        for (int i=0;i<bytes.length;i+=2){
+            vecs[i/2]=new Vector3f();
+            byte lng=bytes[i];
+            byte lat=bytes[i+1];
+            float newlat=FastMath.DEG_TO_RAD*lat;
+            float newlng=FastMath.DEG_TO_RAD*lng;
+            vecs[i/2].x = FastMath.cos(newlat)*FastMath.sin(newlng);
+            vecs[i/2].y = FastMath.sin(newlat)*FastMath.sin(newlng);
+            vecs[i/2].z = FastMath.cos(newlng);
+        }
+        return vecs;
+    }
+
+    private Object buildCullState(HashMap attributes) {
+        CullState cs=renderer.getCullState();
+        cs.setEnabled(true);
+        String state=(String) attributes.get("cull");
+        if ("none".equals(state))
+            cs.setCullMode(CullState.CS_NONE);
+        else if ("back".equals(state))
+            cs.setCullMode(CullState.CS_BACK);
+        else if ("front".equals(state))
+            cs.setCullMode(CullState.CS_FRONT);
+        return cs;
+    }
+
+    private PointLight buildPointLight(HashMap attributes) {
+        PointLight toReturn=new PointLight();
+        putLightInfo(toReturn,attributes);
+        toReturn.setLocation((Vector3f)attributes.get("loc"));
+        toReturn.setEnabled(true);
+        return toReturn;
+    }
+
+    private SpotLight buildSpotLight(HashMap attributes) {
+        SpotLight toReturn=new SpotLight();
+        putLightInfo(toReturn,attributes);
+        toReturn.setLocation((Vector3f)attributes.get("loc"));
+        toReturn.setAngle(((Float)attributes.get("fangle")).floatValue());
+        toReturn.setDirection((Vector3f)attributes.get("dir"));
+        toReturn.setExponent(((Float)attributes.get("fexponent")).floatValue());
+        toReturn.setEnabled(true);
+        return toReturn;
+    }
+
+    private void putLightInfo(Light light, HashMap attributes) {
+        light.setAmbient((ColorRGBA) attributes.get("ambient"));
+        light.setConstant(((Float)attributes.get("fconstant")).floatValue());
+        light.setDiffuse((ColorRGBA) attributes.get("diffuse"));
+        light.setLinear(((Float)attributes.get("flinear")).floatValue());
+        light.setQuadratic(((Float)attributes.get("fquadratic")).floatValue());
+        light.setSpecular((ColorRGBA) attributes.get("specular"));
+        light.setAttenuate(((Boolean)attributes.get("isattenuate")).booleanValue());
+    }
+
+    private LightState buildLightState(HashMap attributes) {
+        LightState ls=renderer.getLightState();
+        ls.setEnabled(true);
+        return ls;
+    }
+
 
     /**
      * Builds a primitive given attributes.
