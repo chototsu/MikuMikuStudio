@@ -31,6 +31,7 @@
  */
 package jmetest.widget;
 
+import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -76,7 +77,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.3 2004-02-24 22:01:32 mojomonkey Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
     private ISource clickSource;
@@ -312,9 +313,10 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
 
         frame.handleInput(0.1f);
         //input.update(0.1f);
-
-        if (frame.startStopButton.getTitle().equals(STARTED_STATE_STRING))
-            scene.updateWorldData(0.0005f);
+        
+        if (frame.startStopButton.getTitle().equals(STARTED_STATE_STRING)) {
+        	scene.updateWorldData(0.0005f);
+        }
 
     }
 
@@ -493,8 +495,9 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         frame = new TestFrame(input);
 
         root.attachChild(frame);
-        
-        clickSource=SoundAPIController.getSoundSystem().loadSource("data/sound/click.mp3");
+        URL url = TestWidgetButtonLightSwitch.class.getClassLoader().getResource("jmetest/data/sound/click.mp3");
+        System.out.println(url);
+        clickSource=SoundAPIController.getSoundSystem().loadSource(url);
 
     }
 
