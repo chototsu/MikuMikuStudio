@@ -48,7 +48,7 @@ import java.awt.image.DataBufferInt;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMEComponent.java,v 1.4 2004-11-10 01:26:25 renanse Exp $
+ * @version $Id: JMEComponent.java,v 1.5 2004-11-10 01:27:45 renanse Exp $
  */
 
 public class JMEComponent extends Component {
@@ -176,7 +176,6 @@ public class JMEComponent extends Component {
 					buf.get(ibuf, x * width, width);
 				}
 				buf.clear();
-//				img.getRaster().setDataElements(0, 0, width, height, ibuf);
 				if (scaled)
 					g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(),
 											getBackground(), null);
