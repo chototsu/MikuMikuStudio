@@ -40,7 +40,7 @@ import java.nio.ByteBuffer;
  * The width and height must be greater than 0. The data is contained in a 
  * byte buffer, and should be packed before creation of the image object.
  * @author Mark Powell
- * @version $Id: Image.java,v 1.2 2003-12-05 20:39:31 mojomonkey Exp $
+ * @version $Id: Image.java,v 1.3 2004-01-20 12:38:14 greggpatton Exp $
  */
 public class Image {
     /**
@@ -59,6 +59,13 @@ public class Image {
      * 32-bit RGBA with 8 bits for each component.
      */
     public static final int RGBA8888 = 3;
+
+    /**
+     * 16-bit RA with 8 bits for red and 8 bits for alpha.
+     */
+    public static final int RA88 = 4;
+
+    public static final int LAST_TYPE = RA88;
 
     //image attributes
     protected int type;
@@ -84,7 +91,7 @@ public class Image {
      * @param data the image data.
      */
     public Image(int type, int width, int height, ByteBuffer data) {
-        if(type < 0 || type > 3) {
+        if(type < 0 || type > LAST_TYPE) {
             type = 0;
         }
         this.type = type;
@@ -127,7 +134,7 @@ public class Image {
      * @param type the image format.
      */
     public void setType(int type) {
-        if(type < 0 || type > 3) {
+        if(type < 0 || type > LAST_TYPE) {
             type = 0;
         }
         this.type = type;
