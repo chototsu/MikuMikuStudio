@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.5 2004-03-02 17:41:43 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.6 2004-03-02 19:55:15 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -443,6 +443,22 @@ public class Quaternion {
         res.z =  x * q.y - y * q.x + z * q.w + w * q.z;
         res.w = -x * q.x - y * q.y - z * q.z + w * q.w;
         return res;
+    }
+
+    /**
+     * <code>apply</code> multiplies this quaternion by a parameter
+     * matrix internally.
+     * @param matrix
+     */
+    public void apply(Matrix3f matrix) {
+        float oldX = x, oldY = y, oldZ = z, oldW = w;
+        fromRotationMatrix(matrix);
+        float tempX = x, tempY = y, tempZ = z, tempW = w;
+
+        x =  oldX * tempW + oldY * tempZ - oldZ * tempY + oldW * tempX;
+        y = -oldX * tempZ + oldY * tempW + oldZ * tempX + oldW * tempY;
+        z =  oldX * tempY - oldY * tempX + oldZ * tempW + oldW * tempZ;
+        w = -oldX * tempX - oldY * tempY - oldZ * tempZ + oldW * tempW;
     }
 
     /**
