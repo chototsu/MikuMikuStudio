@@ -54,9 +54,12 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.20 2004-03-11 00:03:58 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.21 2004-03-11 02:46:57 renanse Exp $
  */
 public class BoundingSphere implements BoundingVolume {
+
+    public int[] checkPlanes = new int[6];
+
     private float radius;
     private Vector3f center;
 
@@ -364,6 +367,14 @@ public class BoundingSphere implements BoundingVolume {
             return rVal;
         } else
             return new BoundingSphere(radius, (Vector3f)center.clone());
+    }
+
+    public int getCheckPlane(int index) {
+        return checkPlanes[index];
+    }
+
+    public void setCheckPlane(int index, int value) {
+        checkPlanes[index] = value;
     }
 
     /**

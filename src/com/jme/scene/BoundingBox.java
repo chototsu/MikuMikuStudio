@@ -47,9 +47,11 @@ import com.jme.math.Vector3f;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.8 2004-03-11 00:02:35 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.9 2004-03-11 02:46:56 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
+
+    public int[] checkPlanes = new int[6];
 
     private Vector3f minPnt = new Vector3f();
     private Vector3f maxPnt = new Vector3f();
@@ -287,6 +289,14 @@ public class BoundingBox extends Box implements BoundingVolume {
             return rVal;
         } else
             return new BoundingBox(name+"_clone", (Vector3f)center.clone(), xExtent, yExtent, zExtent);
+    }
+
+    public int getCheckPlane(int index) {
+        return checkPlanes[index];
+    }
+
+    public void setCheckPlane(int index, int value) {
+        checkPlanes[index] = value;
     }
 
     /**

@@ -45,6 +45,8 @@ import com.jme.scene.BoundingVolume;
  */
 public class WidgetBoundingRectangle implements BoundingVolume {
 
+    public int[] checkPlanes = new int[6];
+
     protected Vector2f min = new Vector2f();
     protected Vector2f max = new Vector2f();
     protected Vector2f center = new Vector2f();
@@ -583,6 +585,14 @@ public class WidgetBoundingRectangle implements BoundingVolume {
     public void computeFromPoints(Vector3f[] points) {
         // TODO Auto-generated method stub
 
+    }
+
+    public int getCheckPlane(int index) {
+        return checkPlanes[index];
+    }
+
+    public void setCheckPlane(int index, int value) {
+        checkPlanes[index] = value;
     }
 
     public String toString() {

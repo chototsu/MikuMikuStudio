@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.13 2004-03-11 00:01:33 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.14 2004-03-11 02:46:56 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -571,14 +571,14 @@ public abstract class AbstractCamera implements Camera {
         int rVal = INSIDE_FRUSTUM;
         for (; planeCounter >= 0; planeCounter--, mask >>= 1) {
             if ((planeState & mask) == 0) {
-                int side = bound.whichSide(worldPlane[bound.checkPlanes[planeCounter]]);
+                int side = bound.whichSide(worldPlane[bound.getCheckPlane(planeCounter)]);
 
                 if (side == Plane.NEGATIVE_SIDE) {
                     //object is outside of frustum
                     if (planeCounter != 5) {
-                        int i = bound.checkPlanes[5];
-                        bound.checkPlanes[5] = bound.checkPlanes[planeCounter];
-                        bound.checkPlanes[planeCounter] = i;
+                        int i = bound.getCheckPlane(5);
+                        bound.setCheckPlane(5, bound.getCheckPlane(planeCounter));
+                        bound.setCheckPlane(planeCounter, i);
                     }
                     return OUTSIDE_FRUSTUM;
                 } else if (side == Plane.POSITIVE_SIDE) {
