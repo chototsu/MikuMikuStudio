@@ -33,6 +33,7 @@ package jmetest.renderer.loader;
 
 import java.net.URL;
 
+import com.jme.animation.DeformationJointController;
 import com.jme.app.SimpleGame;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
@@ -72,6 +73,8 @@ public class TestMilkshapeASCII extends SimpleGame {
         input.update(timer.getTimePerFrame() * 100);
         //System.out.println(timer.getFrameRate());
         scene.updateWorldData(timer.getTimePerFrame());
+        System.out.println("Scene bound: " + scene.getWorldBound());
+        System.out.println("Model bound: " + model.getWorldBound());
     }
 
     /**
@@ -142,6 +145,7 @@ public class TestMilkshapeASCII extends SimpleGame {
         model.load(modelURL, "jmetest/data/model/msascii/");
     	model.getAnimationController().setFrequency(10.0f);
     	model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
+    	((DeformationJointController)model.getAnimationController()).setUpdateModelBounds(true);
         scene.attachChild(model);
 		SpotLight am = new SpotLight();
 		am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
