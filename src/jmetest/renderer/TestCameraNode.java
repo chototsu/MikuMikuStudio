@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.5 2004-04-02 15:52:16 mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.6 2004-04-16 17:56:18 mojomonkey Exp $
  */
 public class TestCameraNode extends SimpleGame {
     private TriMesh t;
@@ -257,6 +257,7 @@ public class TestCameraNode extends SimpleGame {
         
 
         scene.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**

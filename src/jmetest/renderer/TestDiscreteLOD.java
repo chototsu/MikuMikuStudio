@@ -49,7 +49,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.4 2004-04-02 15:52:16 mojomonkey Exp $
+ * @version $Id: TestDiscreteLOD.java,v 1.5 2004-04-16 17:56:18 mojomonkey Exp $
  */
 public class TestDiscreteLOD extends SimpleGame {
 	private Camera cam;
@@ -271,6 +271,7 @@ public class TestDiscreteLOD extends SimpleGame {
 		root.setForceView(true);
 
 		root.updateGeometricState(0.0f, true);
+		root.updateRenderState();
 
 	}
 	/**

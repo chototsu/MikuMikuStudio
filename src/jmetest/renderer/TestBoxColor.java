@@ -54,7 +54,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.8 2004-04-02 15:52:16 mojomonkey Exp $
+ * @version $Id: TestBoxColor.java,v 1.9 2004-04-16 17:56:17 mojomonkey Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;
@@ -217,6 +217,7 @@ public class TestBoxColor extends SimpleGame {
         scene.setRenderState(ts);
 
         scene.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**

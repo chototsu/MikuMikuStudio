@@ -56,7 +56,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.9 2004-04-01 17:32:36 renanse Exp $
+ * @version $Id: TestImposterNode.java,v 1.10 2004-04-16 17:56:17 mojomonkey Exp $
  */
 public class TestImposterNode extends VariableTimestepGame {
   private Camera cam;
@@ -242,6 +242,8 @@ public class TestImposterNode extends VariableTimestepGame {
     cam.update();
     scene.updateGeometricState(0.0f, true);
     fpsNode.updateGeometricState(0.0f, true);
+    scene.updateRenderState();
+    fpsNode.updateRenderState();
   }
 
   /**

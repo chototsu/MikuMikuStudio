@@ -71,7 +71,7 @@ import com.jme.util.Timer;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.8 2004-04-09 22:54:21 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.9 2004-04-16 17:56:17 mojomonkey Exp $
  */
 
 public class TestClodMesh extends VariableTimestepGame {
@@ -311,6 +311,8 @@ public class TestClodMesh extends VariableTimestepGame {
     cam.update();
     scene.updateGeometricState(0.0f, true);
     fpsNode.updateGeometricState(0.0f, true);
+    scene.updateRenderState();
+    fpsNode.updateRenderState();
   }
 
   /**

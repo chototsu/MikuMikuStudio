@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.12 2004-04-16 17:12:56 renanse Exp $
+ * @version $Id: TestBezierMesh.java,v 1.13 2004-04-16 17:56:16 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -266,6 +266,7 @@ public class TestBezierMesh extends SimpleGame {
         bez.setRenderState(ts);
 
         scene.updateGeometricState(0.0f, true);
+        scene.updateRenderState();
         scene.updateRenderState();
 
     }

@@ -50,7 +50,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.5 2004-04-15 02:56:39 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.6 2004-04-16 17:56:18 mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
     private Camera cam;
@@ -284,6 +284,7 @@ public class TestTerrainLighting extends SimpleGame {
         root.setForceView(true);
 
         root.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**

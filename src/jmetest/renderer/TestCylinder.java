@@ -48,7 +48,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.3 2004-04-02 15:52:16 mojomonkey Exp $
+ * @version $Id: TestCylinder.java,v 1.4 2004-04-16 17:56:17 mojomonkey Exp $
  */
 public class TestCylinder extends SimpleGame {
     private Camera cam;
@@ -247,6 +247,7 @@ public class TestCylinder extends SimpleGame {
         root.setForceView(true);
 
         root.updateGeometricState(0.0f, true);
+        root.updateRenderState();
 
     }
     /**
