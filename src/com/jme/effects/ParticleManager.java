@@ -57,7 +57,7 @@ import com.jme.scene.TriMesh;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.1 2004-03-28 03:15:34 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.2 2004-03-28 18:32:30 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
@@ -233,16 +233,16 @@ public class ParticleManager extends Controller {
 
               switch (getGeometry()) {
                 case 1:
-                  particles[i].initialLocation.set(getLine().random());
+                  particles[i].location.set(getLine().random());
                   break;
                 case 2:
-                  particles[i].initialLocation.set(getRectangle().random());
+                  particles[i].location.set(getRectangle().random());
                   break;
                 default:
-                  particles[i].initialLocation.set(originCenter);
+                  particles[i].location.set(originCenter);
                   break;
               }
-              particles[i].location.set(particles[i].initialLocation);
+//              particles[i].location.set(particles[i].initialLocation);
               particles[i].updateVerts();
             }
           }

@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.24 2004-03-28 03:16:02 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.25 2004-03-28 18:32:30 renanse Exp $
  *
  */
 
@@ -871,6 +871,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setReleaseRate(300);
       manager.setReleaseVariance(0.0f);
       manager.setInitialVelocity(0.3f);
+      manager.setRepeatType(Controller.RT_WRAP);
     } else if ("FOUNTAIN".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
@@ -886,6 +887,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setReleaseRate(300);
       manager.setReleaseVariance(0.0f);
       manager.setInitialVelocity(1.1f);
+      manager.setRepeatType(Controller.RT_WRAP);
     } else if ("LAVA".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
@@ -901,6 +903,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setReleaseRate(300);
       manager.setReleaseVariance(0.0f);
       manager.setInitialVelocity(1.1f);
+      manager.setRepeatType(Controller.RT_WRAP);
     } else if ("SMOKE".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
@@ -916,6 +919,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setReleaseRate(300);
       manager.setReleaseVariance(0.0f);
       manager.setInitialVelocity(0.75f);
+      manager.setRepeatType(Controller.RT_WRAP);
     } else if ("RAIN".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
@@ -931,6 +935,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setReleaseRate(300);
       manager.setReleaseVariance(0.0f);
       manager.setInitialVelocity(0.58f);
+      manager.setRepeatType(Controller.RT_WRAP);
     } else if ("SNOW".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
@@ -946,6 +951,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setReleaseRate(300);
       manager.setReleaseVariance(0.0f);
       manager.setInitialVelocity(0.59999996f);
+      manager.setRepeatType(Controller.RT_WRAP);
     } else if ("JET".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
@@ -961,6 +967,7 @@ public class RenParticleControlFrame extends JFrame {
       manager.setReleaseRate(300);
       manager.setReleaseVariance(0.0f);
       manager.setInitialVelocity(1.4599999f);
+      manager.setRepeatType(Controller.RT_WRAP);
     } else if ("EXPLOSION".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));

@@ -40,12 +40,12 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.9 2004-03-28 03:15:33 renanse Exp $
+ * @version $Id: Particle.java,v 1.10 2004-03-28 18:32:29 renanse Exp $
  */
 public class Particle {
 
   Vector3f verts[];
-  Vector3f initialLocation, location;
+  Vector3f location;
   ColorRGBA color;
 
   private float currentSize;
@@ -76,7 +76,7 @@ public class Particle {
                      Vector3f iLocation, float lifeSpan) {
     this.lifeSpan = lifeSpan;
     this.speed = (Vector3f) speed.clone();
-    this.initialLocation = (Vector3f) iLocation.clone();
+    this.location = (Vector3f) iLocation.clone();
     this.location = new Vector3f();
     this.parent = parent;
 
@@ -144,15 +144,18 @@ public class Particle {
       return true;
     }
     currentAge += secondsPassed * 1000; // add 10ms to age
-    halfAge = currentAge >> 1;
+//    halfAge = currentAge >> 1;
     if (currentAge > lifeSpan) {
       status = DEAD;
       color.a = 0;
       return true;
     }
-    location.x = currentAge * ((halfAge*parent.getGravityForce().x) + speed.x) + initialLocation.x;
-    location.y = currentAge * ((halfAge*parent.getGravityForce().y) + speed.y) + initialLocation.y;
-    location.z = currentAge * ((halfAge*parent.getGravityForce().z) + speed.z) + initialLocation.z;
+//    location.x = currentAge * ((halfAge*parent.getGravityForce().x) + speed.x) + initialLocation.x;
+//    location.y = currentAge * ((halfAge*parent.getGravityForce().y) + speed.y) + initialLocation.y;
+//    location.z = currentAge * ((halfAge*parent.getGravityForce().z) + speed.z) + initialLocation.z;
+
+    speed.scaleAdd(secondsPassed*1000f, parent.getGravityForce(), speed);
+    location.scaleAdd(secondsPassed*1000f, speed, location);
 
     if (parent.getRandomMod() != 0.0f) {
       randomPoint.set(parent.getRandomMod() *
