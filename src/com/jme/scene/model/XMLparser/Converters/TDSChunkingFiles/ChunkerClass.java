@@ -10,9 +10,9 @@ import java.util.ArrayList;
  * @author Jack Lindamood
  */
 abstract public class ChunkerClass implements MaxChunkIDs{
-    static boolean DEBUG_LIGHT=true;
-    static boolean DEBUG=true;
-    static boolean DEBUG_SEVERE=true;
+    static boolean DEBUG_LIGHT=false;
+    static boolean DEBUG=false;
+    static boolean DEBUG_SEVERE=false;
 
     public DataInput myIn;
     private ChunkHeader header;
