@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.12 2004-04-22 22:26:39 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.13 2004-05-24 16:44:48 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -365,8 +365,8 @@ public class Quaternion {
         // Check if the angle between the 2 quaternions was big enough to warrant such calculations
         if ((1 - result) > 0.1f) {
             // Get the angle between the 2 quaternions, and then store the sin() of that angle
-            float theta = (float) Math.acos(result);
-            float sinTheta = (float) Math.sin(theta);
+            float theta = FastMath.acos(result);
+            float sinTheta = FastMath.sin(theta);
 
             // Calculate the scale for q1 and q2, according to the angle and it's sine value
             scale0 = (float) Math.sin((1 - t) * theta) / sinTheta;
