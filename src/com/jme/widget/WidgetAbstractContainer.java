@@ -81,6 +81,10 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 			//do nothing
 
 		}
+		
+		public void setForceView(boolean value) {
+	    	forceView = value;
+	    }
 
                 protected void applyRenderState(Stack[] states) {
                 }
@@ -159,6 +163,10 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
                 "WidgetAbstractContainer:  Children must be of type Spatial.");
         }
 
+    }
+    
+    public void setForceView(boolean value) {
+    	forceView = value;
     }
 
     public int getWidgetCount() {

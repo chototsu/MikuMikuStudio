@@ -55,7 +55,7 @@ import java.util.Stack;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.24 2004-07-09 02:03:08 renanse Exp $
+ * @version $Id: Node.java,v 1.25 2004-07-20 19:47:48 Mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -190,6 +190,14 @@ public class Node extends Spatial implements Serializable {
      */
     public Spatial getChild(int i) {
         return (Spatial)children.get(i);
+    }
+    
+    public void setForceView(boolean value) {
+    	forceView = value;
+    	
+    	for(int i = 0; i < children.size(); i++) {
+    		((Spatial)children.get(i)).setForceView(value);
+    	}
     }
 
     /**

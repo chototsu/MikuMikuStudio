@@ -58,7 +58,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
  *  Alignment code doesn't work properly.
  *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.6 2004-05-25 17:52:43 renanse Exp $$
+ * @version $$Id: WidgetImage.java,v 1.7 2004-07-20 19:47:47 Mojomonkey Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
@@ -149,6 +149,10 @@ public class WidgetImage extends WidgetAbstractImpl {
 
     public void setSize(int width, int height) {
         updateWorldBound();
+    }
+    
+    public void setForceView(boolean value) {
+    	forceView = value;
     }
 
     public void setPreferredSize(Vector2f size) {

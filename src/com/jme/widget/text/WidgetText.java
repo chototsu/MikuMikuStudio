@@ -242,6 +242,10 @@ public class WidgetText extends WidgetAbstractImpl {
         setWidgetRenderer(WidgetRendererFactory.getFactory().getRenderer(this));
     }
 
+    public void setForceView(boolean value) {
+    	forceView = value;
+    }
+    
     protected void applyRenderState(Stack[] states) {
       for (int x = 0; x < states.length; x++) {
         if (states[x].size() > 0) {

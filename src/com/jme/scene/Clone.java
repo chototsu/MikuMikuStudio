@@ -45,7 +45,7 @@ import com.jme.renderer.Renderer;
  * clone builds it's bounding volume by transforming the cloned geometry's
  * model bounds by it's current position, orientation and scale.
  * @author Mark Powell
- * @version $Id: Clone.java,v 1.6 2004-04-22 22:26:44 renanse Exp $
+ * @version $Id: Clone.java,v 1.7 2004-07-20 19:47:48 Mojomonkey Exp $
  */
 public class Clone extends Spatial {
 
@@ -104,6 +104,10 @@ public class Clone extends Spatial {
      */
     public void setIndexBuffer(IntBuffer indexBuffer) {
         this.indexBuffer = indexBuffer;
+    }
+    
+    public void setForceView(boolean value) {
+    	forceView = value;
     }
 
     /**

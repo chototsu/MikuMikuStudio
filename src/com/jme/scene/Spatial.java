@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.44 2004-07-07 11:11:03 cep21 Exp $
+ * @version $Id: Spatial.java,v 1.45 2004-07-20 19:47:48 Mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices
@@ -68,7 +68,7 @@ public abstract class Spatial implements Serializable {
 
   //flag to cull/show node
   protected boolean forceCull;
-  private boolean forceView;
+  protected boolean forceView;
 
   //bounding volume of the world.
   protected BoundingVolume worldBound;
@@ -321,9 +321,7 @@ public abstract class Spatial implements Serializable {
    * in the camera frustum or not.
    * @param value true to force viewing, false otherwise.
    */
-  public void setForceView(boolean value) {
-    forceView = value;
-  }
+  public abstract void setForceView(boolean value);
 
   /**
    *

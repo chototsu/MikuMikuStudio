@@ -57,7 +57,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.55 2004-07-17 10:14:12 cep21 Exp $
+ * @version $Id: Geometry.java,v 1.56 2004-07-20 19:47:48 Mojomonkey Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -706,6 +706,10 @@ public abstract class Geometry extends Spatial implements Serializable {
      */
     public void setModelBound(BoundingVolume modelBound) {
         this.bound = modelBound;
+    }
+    
+    public void setForceView(boolean value) {
+    	forceView = value;
     }
 
     /**
