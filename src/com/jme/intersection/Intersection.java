@@ -45,7 +45,7 @@ import com.jme.scene.BoundingVolume;
  * intersection of some objects. All the methods are static to allow for quick
  * and easy calls.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.7 2004-03-09 18:09:10 renanse Exp $
+ * @version $Id: Intersection.java,v 1.8 2004-03-11 00:02:36 renanse Exp $
  */
 public class Intersection {
     /**
@@ -66,7 +66,7 @@ public class Intersection {
         if (volume instanceof BoundingSphere) {
             return intersection(ray, (BoundingSphere) volume);
         } else if (volume instanceof BoundingBox) {
-            return intersection(ray, (BoundingBox) volume);
+            return IntersectionBox.intersection(ray, (BoundingBox) volume);
         }
         return false;
     }
@@ -112,51 +112,6 @@ public class Intersection {
         }
     }
 
-    /**
-     *
-     * <code>intersection</code> determines if a ray has intersected a box.
-     * @param ray the ray to test.
-     * @param box the box to test.
-     * @return true if they intersect, false otherwise.
-     */
-    public static boolean intersection(Ray ray, BoundingBox box) {
-        float absRay[] = new float[3];
-        float absDiff[] = new float[3];
-
-        Vector3f diff = ray.origin.subtract(box.center);
-
-        absRay[0] = Math.abs(ray.direction.x);
-        absDiff[0] = Math.abs(diff.x);
-        if ( absDiff[0] > box.xExtent && diff.x*ray.direction.x >= 0.0f )
-            return false;
-
-        absRay[1] = Math.abs(ray.direction.y);
-        absDiff[1] = Math.abs(diff.y);
-        if ( absDiff[1] > box.yExtent && diff.y*ray.direction.y >= 0.0f )
-            return false;
-
-        absRay[2] = Math.abs(ray.direction.z);
-        absDiff[2] = Math.abs(diff.z);
-        if ( absDiff[2] > box.zExtent && diff.z*ray.direction.z >= 0.0f )
-            return false;
-
-        Vector3f rayXdiff = ray.direction.cross(diff);
-
-        float check;
-        check = box.yExtent*absRay[2] + box.zExtent*absRay[1];
-        if ( Math.abs(rayXdiff.x) > check )
-            return false;
-
-        check = box.xExtent*absRay[2] + box.zExtent*absRay[0];
-        if ( Math.abs(rayXdiff.y) > check )
-            return false;
-
-        check = box.xExtent*absRay[1] + box.yExtent*absRay[0];
-        if ( Math.abs(rayXdiff.z) > check )
-            return false;
-
-        return true;
-    }
 
     /**
      *
@@ -258,7 +213,7 @@ public class Intersection {
             }
         } else if (vol1 instanceof BoundingBox) {
             if (vol2 instanceof BoundingBox) {
-                return intersection(
+                return IntersectionBox.intersection(
                     (BoundingBox) vol1,
                     (BoundingBox) vol2);
             } else {
@@ -284,142 +239,6 @@ public class Intersection {
         Vector3f diff = sphere1.getCenter().subtract(sphere2.getCenter());
         float rsum = sphere1.getRadius() + sphere2.getRadius();
         return (diff.dot(diff) <= rsum * rsum);
-    }
-
-    /**
-     *
-     * <code>intersection</code> compares two static spheres for intersection.
-     * If any part of the two spheres touch, true is returned, otherwise false
-     * will return.
-     * @param box1 the first box to test.
-     * @param box2 the second box to test.
-     * @return true if the spheres are intersecting, false otherwise.
-     */
-    public static boolean intersection(
-        BoundingBox box1,
-        BoundingBox box2) {
-
-        // compute difference of box centers, D = C1-C0
-        Vector3f centDiff = box2.center.subtract(box1.center);
-
-        float fR0, fR1, fR;   // interval radii and distance between centers
-        float fR01;           // = R0 + R1
-
-        // axis C0+t*A0
-        fR = Math.abs(centDiff.x);
-        fR1 = box2.xExtent*1+box2.yExtent*2+box2.zExtent*2;
-        fR01 = box1.xExtent + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A1
-        fR = Math.abs(centDiff.y);
-        fR1 = box2.xExtent*2+box2.yExtent*1+box2.zExtent*2;
-        fR01 = box1.yExtent + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A2
-        fR = Math.abs(centDiff.z);
-        fR1 = box2.xExtent*2+box2.yExtent*2+box2.zExtent*1;
-        fR01 = box1.zExtent + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*B0
-        fR = Math.abs(centDiff.x);
-        fR0 = box1.xExtent*1+box1.yExtent*2+box1.zExtent*2;
-        fR01 = fR0 + box2.xExtent;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*B1
-        fR = Math.abs(centDiff.y);
-        fR0 = box1.xExtent*2+box1.yExtent*1+box1.zExtent*2;
-        fR01 = fR0 + box2.yExtent;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*B2
-        fR = Math.abs(centDiff.z);
-        fR0 = box1.xExtent*2+box1.yExtent*2+box1.zExtent*1;
-        fR01 = fR0 + box2.zExtent;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A0xB0
-        fR = Math.abs(centDiff.z*2-centDiff.y*2);
-        fR0 = box1.yExtent*2 + box1.zExtent*2;
-        fR1 = box2.yExtent*2 + box2.zExtent*2;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A0xB1
-        fR = Math.abs(centDiff.z*1-centDiff.y*2);
-        fR0 = box1.yExtent*2 + box1.zExtent*1;
-        fR1 = box2.xExtent*2 + box2.zExtent*1;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A0xB2
-        fR = Math.abs(centDiff.z*2-centDiff.y*1);
-        fR0 = box1.yExtent*1 + box1.zExtent*2;
-        fR1 = box2.xExtent*2 + box2.yExtent*1;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A1xB0
-        fR = Math.abs(centDiff.x*2-centDiff.z*1);
-        fR0 = box1.xExtent*2 + box1.zExtent*1;
-        fR1 = box2.yExtent*2 + box2.zExtent*1;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A1xB1
-        fR = Math.abs(centDiff.x*2-centDiff.z*2);
-        fR0 = box1.xExtent*2 + box1.zExtent*2;
-        fR1 = box2.xExtent*2 + box2.zExtent*2;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A1xB2
-        fR = Math.abs(centDiff.x*1-centDiff.z*2);
-        fR0 = box1.xExtent*1 + box1.zExtent*2;
-        fR1 = box2.xExtent*1 + box2.yExtent*2;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A2xB0
-        fR = Math.abs(centDiff.y*1-centDiff.x*2);
-        fR0 = box1.xExtent*2 + box1.yExtent*1;
-        fR1 = box2.yExtent*1 + box2.zExtent*2;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A2xB1
-        fR = Math.abs(centDiff.y*2-centDiff.x*1);
-        fR0 = box1.xExtent*1 + box1.yExtent*2;
-        fR1 = box2.xExtent*1 + box2.zExtent*2;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        // axis C0+t*A2xB2
-        fR = Math.abs(centDiff.y*2-centDiff.x*2);
-        fR0 = box1.xExtent*2 + box1.yExtent*2;
-        fR1 = box2.xExtent*2 + box2.yExtent*2;
-        fR01 = fR0 + fR1;
-        if ( fR > fR01 )
-            return false;
-
-        return true;
     }
 
     /**

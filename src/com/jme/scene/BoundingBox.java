@@ -47,9 +47,12 @@ import com.jme.math.Vector3f;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.7 2004-03-09 03:26:22 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.8 2004-03-11 00:02:35 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
+
+    private Vector3f minPnt = new Vector3f();
+    private Vector3f maxPnt = new Vector3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
@@ -57,6 +60,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      */
     public BoundingBox() {
         super("aabb", new Vector3f(0,0,0), 1, 1, 1);
+        initCheckPlanes();
     }
 
     /**
@@ -64,6 +68,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      */
     public BoundingBox(String name) {
         super(name, new Vector3f(0,0,0), 1, 1, 1);
+        initCheckPlanes();
     }
 
     /**
@@ -71,6 +76,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      */
     public BoundingBox(Vector3f center, float xExtent, float yExtent, float zExtent) {
         super("aabb", new Vector3f(0,0,0), xExtent, yExtent, zExtent);
+        initCheckPlanes();
     }
 
     /**
@@ -78,6 +84,16 @@ public class BoundingBox extends Box implements BoundingVolume {
      */
     public BoundingBox(String name, Vector3f center, float xExtent, float yExtent, float zExtent) {
         super(name, new Vector3f(0,0,0), xExtent, yExtent, zExtent);
+        initCheckPlanes();
+    }
+
+    public void initCheckPlanes() {
+        checkPlanes[0] = 0;
+        checkPlanes[1] = 1;
+        checkPlanes[2] = 2;
+        checkPlanes[3] = 3;
+        checkPlanes[4] = 4;
+        checkPlanes[5] = 5;
     }
 
     /**
@@ -175,7 +191,6 @@ public class BoundingBox extends Box implements BoundingVolume {
      * @param plane the plane to check against.
      */
     public int whichSide(Plane plane) {
-
         float radius = Math.abs(xExtent*plane.normal.x) +
                        Math.abs(yExtent*plane.normal.y) +
                        Math.abs(zExtent*plane.normal.z);
@@ -184,7 +199,7 @@ public class BoundingBox extends Box implements BoundingVolume {
 
         if (distance <= -radius) {
             return Plane.NEGATIVE_SIDE;
-        } else if (distance > radius) {
+        } else if (distance >= radius) {
             return Plane.POSITIVE_SIDE;
         } else {
             return Plane.NO_SIDE;
@@ -205,26 +220,7 @@ public class BoundingBox extends Box implements BoundingVolume {
             return this;
         } else {
             BoundingBox vBox = (BoundingBox)volume;
-            BoundingBox rVal = new BoundingBox(new Vector3f(0,0,0), 0, 0, 0);
-            rVal.center.add(this.center).add(vBox.center).multLocal(.5f);
-
-        // check first box for extents
-            rVal.xExtent = Math.max(Math.abs(center.x - xExtent - rVal.center.x), rVal.xExtent);
-            rVal.xExtent = Math.max(Math.abs(center.x + xExtent - rVal.center.x), rVal.xExtent);
-            rVal.yExtent = Math.max(Math.abs(center.y - yExtent - rVal.center.y), rVal.yExtent);
-            rVal.yExtent = Math.max(Math.abs(center.y + yExtent - rVal.center.y), rVal.yExtent);
-            rVal.zExtent = Math.max(Math.abs(center.z - zExtent - rVal.center.z), rVal.zExtent);
-            rVal.zExtent = Math.max(Math.abs(center.z + zExtent - rVal.center.z), rVal.zExtent);
-
-        // check second box for extents
-            rVal.xExtent = Math.max(Math.abs(vBox.center.x - vBox.xExtent - rVal.center.x), rVal.xExtent);
-            rVal.xExtent = Math.max(Math.abs(vBox.center.x + vBox.xExtent - rVal.center.x), rVal.xExtent);
-            rVal.yExtent = Math.max(Math.abs(vBox.center.y - vBox.yExtent - rVal.center.y), rVal.yExtent);
-            rVal.yExtent = Math.max(Math.abs(vBox.center.y + vBox.yExtent - rVal.center.y), rVal.yExtent);
-            rVal.zExtent = Math.max(Math.abs(vBox.center.z - vBox.zExtent - rVal.center.z), rVal.zExtent);
-            rVal.zExtent = Math.max(Math.abs(vBox.center.z + vBox.zExtent - rVal.center.z), rVal.zExtent);
-
-            return rVal;
+            return merge(vBox, new BoundingBox(new Vector3f(0,0,0), 0, 0, 0));
         }
     }
 
@@ -241,41 +237,56 @@ public class BoundingBox extends Box implements BoundingVolume {
         if (!(volume instanceof BoundingBox)) {
             return this;
         } else {
-            float oldcenterX = center.x;
-            float oldcenterY = center.y;
-            float oldcenterZ = center.z;
             BoundingBox vBox = (BoundingBox)volume;
-            this.center.addLocal(vBox.center).multLocal(.5f);
-
-        // check this box for new extents
-            this.xExtent = Math.max(Math.abs(oldcenterX - xExtent - this.center.x), Math.abs(oldcenterX + xExtent - this.center.x));
-            this.yExtent = Math.max(Math.abs(oldcenterY - yExtent - this.center.y), Math.abs(oldcenterY + yExtent - this.center.y));
-            this.zExtent = Math.max(Math.abs(oldcenterZ - zExtent - this.center.z), Math.abs(oldcenterZ + zExtent - this.center.z));
-
-        // check second box for new extents
-            this.xExtent = Math.max(Math.abs(vBox.center.x - vBox.xExtent - this.center.x), this.xExtent);
-            this.xExtent = Math.max(Math.abs(vBox.center.x + vBox.xExtent - this.center.x), this.xExtent);
-            this.yExtent = Math.max(Math.abs(vBox.center.y - vBox.yExtent - this.center.y), this.yExtent);
-            this.yExtent = Math.max(Math.abs(vBox.center.y + vBox.yExtent - this.center.y), this.yExtent);
-            this.zExtent = Math.max(Math.abs(vBox.center.z - vBox.zExtent - this.center.z), this.zExtent);
-            this.zExtent = Math.max(Math.abs(vBox.center.z + vBox.zExtent - this.center.z), this.zExtent);
-
-            return this;
+            return merge(vBox, this);
         }
+    }
+
+    private BoundingBox merge(BoundingBox vBox, BoundingBox rVal) {
+        minPnt.x = Math.min(vBox.center.x-vBox.xExtent, center.x-xExtent);
+        minPnt.y = Math.min(vBox.center.y-vBox.yExtent, center.y-yExtent);
+        minPnt.z = Math.min(vBox.center.z-vBox.zExtent, center.z-zExtent);
+
+        maxPnt.x = Math.max(vBox.center.x+vBox.xExtent, center.x+xExtent);
+        maxPnt.y = Math.max(vBox.center.y+vBox.yExtent, center.y+yExtent);
+        maxPnt.z = Math.max(vBox.center.z+vBox.zExtent, center.z+zExtent);
+
+        maxPnt.subtractLocal(minPnt).multLocal(0.5f);
+        rVal.xExtent = maxPnt.x;
+        rVal.yExtent = maxPnt.y;
+        rVal.zExtent = maxPnt.z;
+
+        rVal.center.x = minPnt.x + rVal.xExtent;
+        rVal.center.y = minPnt.y + rVal.yExtent;
+        rVal.center.z = minPnt.z + rVal.zExtent;
+
+        return rVal;
     }
 
     /**
      * <code>clone</code> creates a new BoundingBox object containing the same
      * data as this one.
+     * @param store where to store the cloned information.  if null or wrong class, a new store is created.
      * @return the new BoundingBox
      */
-    public Object clone() {
-        BoundingBox rVal = new BoundingBox();
-        rVal.center = (Vector3f)center.clone();
-        rVal.xExtent = xExtent;
-        rVal.yExtent = yExtent;
-        rVal.zExtent = zExtent;
-        return rVal;
+    public Object clone(BoundingVolume store) {
+        if (store != null && store instanceof BoundingBox) {
+            BoundingBox rVal = (BoundingBox)store;
+            rVal.center.x = center.x;
+            rVal.center.y = center.y;
+            rVal.center.z = center.z;
+            rVal.xExtent = xExtent;
+            rVal.yExtent = yExtent;
+            rVal.zExtent = zExtent;
+            rVal.checkPlanes[0] = checkPlanes[0];
+            rVal.checkPlanes[1] = checkPlanes[1];
+            rVal.checkPlanes[2] = checkPlanes[2];
+            rVal.checkPlanes[3] = checkPlanes[3];
+            rVal.checkPlanes[4] = checkPlanes[4];
+            rVal.checkPlanes[5] = checkPlanes[5];
+            return rVal;
+        } else
+            return new BoundingBox(name+"_clone", (Vector3f)center.clone(), xExtent, yExtent, zExtent);
     }
 
     /**
@@ -285,6 +296,9 @@ public class BoundingBox extends Box implements BoundingVolume {
      */
     public String toString() {
         return "com.jme.scene.BoundingBox [Center: "
-                + center +"  Vertices: "+computeVertices()+"]";
+                + center
+                +"  xExtent: "+xExtent
+                +"  yExtent: "+yExtent
+                +"  zExtent: "+zExtent+"]";
     }
 }
