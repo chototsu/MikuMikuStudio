@@ -3,6 +3,7 @@ package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Matrix3f;
+import com.jme.math.TransformMatrix;
 
 import java.io.DataInput;
 import java.io.IOException;
@@ -19,12 +20,13 @@ class TriMeshChunk extends ChunkerClass {
 
     Vector3f[] vertexes;
     Vector2f[] texCoords;
-    Vector3f[] faceNormals;
+
 
     Matrix3f rotation;
     Vector3f origin;
     private byte color;
     FacesChunk face;
+    TransformMatrix coordSystem;
 
     public TriMeshChunk(DataInput myIn, ChunkHeader i) throws IOException {
         super(myIn,i);
@@ -45,7 +47,6 @@ class TriMeshChunk extends ChunkerClass {
                 if (face!=null)
                     throw new IOException("Face already non-null... ut ow");
                 face=new FacesChunk(myIn,i);
-                calculateFaceNormals();
                 return true;
             case VERTEX_OPTIONS:
                 readOptions();
@@ -60,20 +61,6 @@ class TriMeshChunk extends ChunkerClass {
                 return false;
             }
     }
-
-    private void calculateFaceNormals() {
-        faceNormals=new Vector3f[face.nFaces];
-        Vector3f tempa=new Vector3f(),tempb=new Vector3f();
-        // Face normals
-        for (int i=0;i<face.nFaces;i++){
-            tempa.set(vertexes[face.faces[i][0]]);  // tempa=a
-            tempa.subtractLocal(vertexes[face.faces[i][1]]);    // tempa-=b (tempa=a-b)
-            tempb.set(vertexes[face.faces[i][0]]);  // tempb=a
-            tempb.subtractLocal(vertexes[face.faces[i][2]]);    // tempb-=c (tempb=a-c)
-            faceNormals[i]=tempa.cross(tempb).normalizeLocal();
-        }
-    }
-
     private void readMeshTextureInfo() throws IOException {
         // currently no idea what this information means, but its here in case I figure it out
         short type=myIn.readShort();
@@ -107,11 +94,15 @@ class TriMeshChunk extends ChunkerClass {
 
     private void readCoordSystem() throws IOException {
         float[] parts=new float[9];
+        coordSystem=new TransformMatrix();
         rotation=new Matrix3f();
         for (int i=0;i<9;i++)
             parts[i]=myIn.readFloat();
         rotation.set(parts);
+        rotation.transposeLocal();
+        coordSystem.setRotation(rotation);
         origin=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
+        coordSystem.setTranslation(origin);
     }
 
     private void readTexCoords() throws IOException {
