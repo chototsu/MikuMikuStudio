@@ -221,56 +221,72 @@ public class OrientedBox extends TriMesh{
      */
     public void computeCorners() {
         correctCorners=true;
-        float xDotYcrossZ=xAxis.dot(yAxis.cross(zAxis,tempVa));
-        Vector3f yCrossZmulX=yAxis.cross(zAxis,tempVa).multLocal(extent.x);
-        Vector3f zCrossXmulY=zAxis.cross(xAxis,tempVb).multLocal(extent.y);
-        Vector3f xCrossYmulZ=xAxis.cross(yAxis,tempVc).multLocal(extent.z);
 
-        vectorStore[0].set(
-                ((yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ)+center.x,
-                ((yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ)+center.y,
-                ((yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ)+center.z
-        );
-        vectorStore[1].set(
-                (-yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
-                (-yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
-                (-yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
-        );
+        tempVa.set(xAxis).multLocal(extent.x);
+        tempVb.set(yAxis).multLocal(extent.y);
+        tempVc.set(zAxis).multLocal(extent.z);
 
-        vectorStore[2].set(
-                (yCrossZmulX.x + -zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
-                (yCrossZmulX.y + -zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
-                (yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
-        );
+        vectorStore[0].set(center).addLocal(tempVa).addLocal(tempVb).addLocal(tempVc);
+        vectorStore[1].set(center).addLocal(tempVa).subtractLocal(tempVb).addLocal(tempVc);
+        vectorStore[2].set(center).addLocal(tempVa).addLocal(tempVb).subtractLocal(tempVc);
+        vectorStore[3].set(center).subtractLocal(tempVa).addLocal(tempVb).addLocal(tempVc);
+        vectorStore[4].set(center).addLocal(tempVa).subtractLocal(tempVb).subtractLocal(tempVc);
+        vectorStore[5].set(center).subtractLocal(tempVa).subtractLocal(tempVb).addLocal(tempVc);
+        vectorStore[6].set(center).subtractLocal(tempVa).addLocal(tempVb).subtractLocal(tempVc);
+        vectorStore[7].set(center).subtractLocal(tempVa).subtractLocal(tempVb).subtractLocal(tempVc);
 
-        vectorStore[3].set(
-                (yCrossZmulX.x + zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
-                (yCrossZmulX.y + zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
-                (yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
-        );
 
-        vectorStore[4].set(
-                (-yCrossZmulX.x + -zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
-                (-yCrossZmulX.y + -zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
-                (-yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
-        );
+//        float xDotYcrossZ=xAxis.dot(yAxis.cross(zAxis,tempVa));
+//        Vector3f yCrossZmulX=yAxis.cross(zAxis,tempVa).multLocal(extent.x);
+//        Vector3f zCrossXmulY=zAxis.cross(xAxis,tempVb).multLocal(extent.y);
+//        Vector3f xCrossYmulZ=xAxis.cross(yAxis,tempVc).multLocal(extent.z);
+//
+//        vectorStore[0].set(
+//                ((yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ)+center.x,
+//                ((yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ)+center.y,
+//                ((yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ)+center.z
+//        );
+//        vectorStore[1].set(
+//                (-yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
+//                (-yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
+//                (-yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
+//        );
+//
+//        vectorStore[2].set(
+//                (yCrossZmulX.x + -zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
+//                (yCrossZmulX.y + -zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
+//                (yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
+//        );
+//
+//        vectorStore[3].set(
+//                (yCrossZmulX.x + zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
+//                (yCrossZmulX.y + zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
+//                (yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
+//        );
+//
+//        vectorStore[4].set(
+//                (-yCrossZmulX.x + -zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
+//                (-yCrossZmulX.y + -zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
+//                (-yCrossZmulX.z + -zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
+//        );
+//
+//        vectorStore[5].set(
+//                (-yCrossZmulX.x + zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
+//                (-yCrossZmulX.y + zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
+//                (-yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
+//        );
+//        vectorStore[6].set(
+//                (yCrossZmulX.x + -zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
+//                (yCrossZmulX.y + -zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
+//                (yCrossZmulX.z + -zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
+//        );
+//
+//        vectorStore[7].set(
+//                -(yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
+//                -(yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
+//                -(yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
+//        );
 
-        vectorStore[5].set(
-                (-yCrossZmulX.x + zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
-                (-yCrossZmulX.y + zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
-                (-yCrossZmulX.z + zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
-        );
-        vectorStore[6].set(
-                (yCrossZmulX.x + -zCrossXmulY.x + -xCrossYmulZ.x)/xDotYcrossZ+center.x,
-                (yCrossZmulX.y + -zCrossXmulY.y + -xCrossYmulZ.y)/xDotYcrossZ+center.y,
-                (yCrossZmulX.z + -zCrossXmulY.z + -xCrossYmulZ.z)/xDotYcrossZ+center.z
-        );
-
-        vectorStore[7].set(
-                -(yCrossZmulX.x + zCrossXmulY.x + xCrossYmulZ.x)/xDotYcrossZ+center.x,
-                -(yCrossZmulX.y + zCrossXmulY.y + xCrossYmulZ.y)/xDotYcrossZ+center.y,
-                -(yCrossZmulX.z + zCrossXmulY.z + xCrossYmulZ.z)/xDotYcrossZ+center.z
-        );
     }
 
     /**
