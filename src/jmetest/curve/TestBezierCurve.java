@@ -50,16 +50,16 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
+import com.jme.util.Timer;
 
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.4 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.5 2004-02-23 20:57:18 mojomonkey Exp $
  */
 public class TestBezierCurve extends SimpleGame {
     private TriMesh t, t2, t3, t4;
-
-   // private Text text;
+    private Timer timer;
     private TriMesh box;
     private Node scene, root;
     private static final float MAX_STEPS = 25;
@@ -82,8 +82,9 @@ public class TestBezierCurve extends SimpleGame {
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
-        input.update(0.2f);
-        scene.updateWorldData(0.0005f);
+    	timer.update();
+        input.update(timer.getTimePerFrame());
+        scene.updateWorldData(timer.getTimePerFrame());
 
     }
 
@@ -127,6 +128,9 @@ public class TestBezierCurve extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonController(this, cam, properties.getRenderer());
+        input.setKeySpeed(10);
+        input.setMouseSpeed(1);
+        timer = Timer.getTimer(properties.getRenderer());
         display.setTitle("Bezier Curve Test");
 
     }
@@ -191,6 +195,7 @@ public class TestBezierCurve extends SimpleGame {
         box.addController(cc);
         cc.setRepeatType(Controller.RT_CYCLE);
         cc.setUpVector(up);
+        cc.setFrequency(0.5f);
         
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
