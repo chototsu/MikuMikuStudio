@@ -36,7 +36,7 @@ import java.util.Observer;
 import java.util.Random;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -64,7 +64,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
         WidgetButton shuffleButton;
         Random random = new Random();
 
-        TestFrame(AbstractInputController ic) {
+        TestFrame(AbstractInputHandler ic) {
             super(ic);
 
             setLayout(new WidgetAbsoluteLayout());
@@ -112,7 +112,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
     private TestFrame frame;
     private Node scene;
     private Camera cam;
-    private AbstractInputController input;
+    private AbstractInputHandler input;
 
     /* (non-Javadoc)
      * @see com.jme.app.SimpleGame#update()

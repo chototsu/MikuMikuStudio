@@ -33,8 +33,8 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
@@ -63,7 +63,7 @@ public class TestRenderToTexture extends SimpleGame {
     private Camera cam;
     private Node root, scene;
     private Node fakeScene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
@@ -160,7 +160,7 @@ public class TestRenderToTexture extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
         // Setup the input controller and timer
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
         input.setKeySpeed(10f);
         input.setMouseSpeed(1f);
         timer = Timer.getTimer("LWJGL");

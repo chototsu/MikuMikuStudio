@@ -33,8 +33,8 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector2f;
@@ -58,14 +58,14 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMultitexture.java,v 1.4 2004-03-02 03:12:27 mojomonkey Exp $
+ * @version $Id: TestMultitexture.java,v 1.5 2004-03-25 17:14:25 mojomonkey Exp $
  */
 public class TestMultitexture extends SimpleGame {
     private TriMesh t;
     private Camera cam;
     private Node root;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
@@ -148,7 +148,7 @@ public class TestMultitexture extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, properties.getRenderer());
+        input = new FirstPersonHandler(this, cam, properties.getRenderer());
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer(properties.getRenderer());

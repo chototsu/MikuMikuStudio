@@ -33,7 +33,7 @@ package com.jme.widget;
 
 import java.util.Observer;
 
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
@@ -88,7 +88,7 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
     private boolean applyOffsetX = true;
     private boolean applyOffsetY = true;
 
-    private static AbstractInputController inputController;
+    private static AbstractInputHandler inputController;
 
     private static Widget mouseOwner;
     private static Widget widgetUnderMouse;
@@ -120,11 +120,11 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
         return inputController.getMouse().getMouseInput();
     }
 
-    public AbstractInputController getInputController() {
+    public AbstractInputHandler getInputController() {
         return inputController;
     }
 
-    public void setInputController(AbstractInputController controller) {
+    public void setInputController(AbstractInputHandler controller) {
         inputController = controller;
     }
 

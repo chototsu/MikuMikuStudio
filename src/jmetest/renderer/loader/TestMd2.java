@@ -33,8 +33,8 @@ package jmetest.renderer.loader;
 import com.jme.animation.VertexKeyframeController;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.light.DirectionalLight;
@@ -59,14 +59,14 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.5 2004-02-24 22:05:19 mojomonkey Exp $
+ * @version $Id: TestMd2.java,v 1.6 2004-03-25 17:14:35 mojomonkey Exp $
  */
 public class TestMd2 extends SimpleGame {
 	LightState state;
 	ZBufferState zstate;
 	TextureState ts = null;
 	private Camera cam;
-	private InputController input;
+	private InputHandler input;
 	private Timer timer;
 	private Md2Model model;
 	private String FILE_NAME = "data/model/drfreak.md2";
@@ -150,7 +150,7 @@ public class TestMd2 extends SimpleGame {
 
 		display.getRenderer().setCamera(cam);
 
-		input = new FirstPersonController(this, cam, properties.getRenderer());
+		input = new FirstPersonHandler(this, cam, properties.getRenderer());
 		timer = Timer.getTimer(properties.getRenderer());
 		KeyBindingManager.getKeyBindingManager().set(
 					"selectAnimation",

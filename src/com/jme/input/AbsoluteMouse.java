@@ -32,7 +32,7 @@
  
 /*
  * EDIT:  02/08/2004 - Added update(boolean updateState) to allow for a 
- *                      WidgetViewport to update an AbstractInputController 
+ *                      WidgetViewport to update an AbstractInputHandler 
  *                      without polling the mouse.  GOP
  */
  
@@ -46,7 +46,7 @@ package com.jme.input;
  * correspond to the width and height of the window).
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.5 2004-03-12 21:35:11 mojomonkey Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.6 2004-03-25 17:14:41 mojomonkey Exp $
  */
 public class AbsoluteMouse extends Mouse {
     //position

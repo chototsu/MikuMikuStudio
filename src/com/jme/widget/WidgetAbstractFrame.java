@@ -35,7 +35,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.input.MouseInput;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
@@ -61,7 +61,7 @@ public abstract class WidgetAbstractFrame extends WidgetAbstractContainer implem
     /**
      * @param ic
      */
-    public WidgetAbstractFrame(AbstractInputController ic) {
+    public WidgetAbstractFrame(AbstractInputHandler ic) {
         super();
 
         WidgetAbstractFrame.timer =

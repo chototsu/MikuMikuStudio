@@ -32,7 +32,7 @@
 
 /*
  * EDIT:  02/08/2004 - Added update(boolean updateState) to allow for a
- *                      WidgetViewport to update an AbstractInputController
+ *                      WidgetViewport to update an AbstractInputHandler
  *                      without polling the mouse.  GOP
  */
 
@@ -49,7 +49,7 @@ import com.jme.scene.state.TextureState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.4 2004-03-13 03:07:41 renanse Exp $
+ * @version $Id: Mouse.java,v 1.5 2004-03-25 17:14:38 mojomonkey Exp $
  */
 public abstract class Mouse extends Geometry {
     /**

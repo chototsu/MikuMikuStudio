@@ -33,8 +33,8 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -57,14 +57,14 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.4 2004-03-02 01:44:52 mojomonkey Exp $
+ * @version $Id: TestBoxColor.java,v 1.5 2004-03-25 17:14:26 mojomonkey Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;
     private Camera cam;
     private Node root;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
@@ -153,7 +153,7 @@ public class TestBoxColor extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");

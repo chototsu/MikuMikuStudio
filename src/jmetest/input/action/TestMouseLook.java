@@ -32,7 +32,7 @@
 package jmetest.input.action;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.InputController;
+import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.RelativeMouse;
 import com.jme.input.action.MouseLook;
@@ -59,7 +59,7 @@ public class TestMouseLook extends SimpleGame {
     private Point p;
     private TriMesh t;
     private TriMesh t2;
-    private InputController input;
+    private InputHandler input;
 
     /**
      * Nothing to update.
@@ -114,7 +114,7 @@ public class TestMouseLook extends SimpleGame {
 
         display.getRenderer().setCamera(cam);
         
-        input = new InputController();
+        input = new InputHandler();
         InputSystem.createInputSystem("LWJGL");
         
         RelativeMouse mouse = new RelativeMouse("Mouse Input");

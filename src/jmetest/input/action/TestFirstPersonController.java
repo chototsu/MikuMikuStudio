@@ -32,8 +32,8 @@
 package jmetest.input.action;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -57,7 +57,7 @@ public class TestFirstPersonController extends SimpleGame {
     private Point p;
     private TriMesh t;
     private TriMesh t2;
-    private InputController input;
+    private InputHandler input;
 
     /**
      * Nothing to update.
@@ -112,7 +112,7 @@ public class TestFirstPersonController extends SimpleGame {
 
         display.getRenderer().setCamera(cam);
         
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
         
 
     }

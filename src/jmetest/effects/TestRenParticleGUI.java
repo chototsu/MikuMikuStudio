@@ -37,7 +37,7 @@ import javax.swing.UIManager;
 import com.jme.app.SimpleGame;
 import com.jme.effects.RenParticleManager;
 import com.jme.image.Texture;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.input.InputSystem;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -57,7 +57,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.7 2004-03-25 16:24:56 mojomonkey Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.8 2004-03-25 17:14:28 mojomonkey Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
@@ -69,7 +69,7 @@ public class TestRenParticleGUI extends SimpleGame {
   private Camera cam;
 
   private Timer timer;
-  private AbstractInputController input;
+  private AbstractInputHandler input;
 
   private Text fps;
 
@@ -240,7 +240,7 @@ public class TestRenParticleGUI extends SimpleGame {
 
   class GUIFrame extends WidgetAbstractFrame implements Observer {
 
-    GUIFrame(AbstractInputController ic) {
+    GUIFrame(AbstractInputHandler ic) {
       super(ic);
       doLayout();
       getMouseInput().setCursorVisible(true);

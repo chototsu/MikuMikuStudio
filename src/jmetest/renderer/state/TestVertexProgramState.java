@@ -32,7 +32,7 @@ package jmetest.renderer.state;
 
 import com.jme.app.VariableTimestepGame;
 import com.jme.image.Texture;
-import com.jme.input.NodeController;
+import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Eric Woroshow
- * @version $Id: TestVertexProgramState.java,v 1.2 2004-03-23 15:55:19 mojomonkey Exp $
+ * @version $Id: TestVertexProgramState.java,v 1.3 2004-03-25 17:14:22 mojomonkey Exp $
  */
 public class TestVertexProgramState extends VariableTimestepGame {
 
@@ -58,7 +58,7 @@ public class TestVertexProgramState extends VariableTimestepGame {
     private final float[] lightPosition = { -0.8f, 0.8f, 0.8f, 0.0f };
     
     private Camera cam;
-    private NodeController control;
+    private NodeHandler control;
     private Node scene;
 
     /**
@@ -142,7 +142,7 @@ public class TestVertexProgramState extends VariableTimestepGame {
         //By attatching the controller to the scene root, we can manipulate
         //both torii at once, thus guaranteeing that the outline and shaded
         //version will never be out of sync.
-        control = new NodeController(this, scene, properties.getRenderer());
+        control = new NodeHandler(this, scene, properties.getRenderer());
     }
 
     private Torus createShadedTorus() {

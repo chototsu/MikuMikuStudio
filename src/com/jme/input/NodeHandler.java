@@ -36,25 +36,25 @@ import com.jme.input.action.*;
 import com.jme.scene.Spatial;
 
 /**
- * <code>NodeController</code> defines an InputController that sets
+ * <code>NodeHandler</code> defines an InputHandler that sets
  * a node that can be controlled via keyboard and mouse inputs. By default the
  * commands are, WSAD moves the node forward, backward and strafes. The
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeController.java,v 1.6 2004-03-05 03:21:07 mojomonkey Exp $
+ * @version $Id: NodeHandler.java,v 1.1 2004-03-25 17:14:37 mojomonkey Exp $
  */
-public class NodeController extends InputController {
+public class NodeHandler extends InputHandler {
 
     /**
-     * Constructor instantiates a new <code>NodeController</code> object. The
+     * Constructor instantiates a new <code>NodeHandler</code> object. The
      * application is set for the use of the exit action. The node is set to
      * control, while the api defines which input api is to be used.
      * @param app the app using the controller, for the exit action.
      * @param node the node to control.
      * @param api the api to use for input.
      */
-    public NodeController(AbstractGame app, Spatial node, String api) {
+    public NodeHandler(AbstractGame app, Spatial node, String api) {
 
         setKeyBindings(api);
         setUpMouse(node);

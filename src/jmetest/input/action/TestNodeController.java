@@ -32,8 +32,8 @@
 package jmetest.input.action;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.NodeController;
-import com.jme.input.InputController;
+import com.jme.input.NodeHandler;
+import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -50,7 +50,7 @@ import com.jme.system.JmeException;
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestNodeController.java,v 1.3 2004-03-25 17:14:31 mojomonkey Exp $
  */
 public class TestNodeController extends SimpleGame {
     private Node scene;
@@ -59,7 +59,7 @@ public class TestNodeController extends SimpleGame {
     private Point p;
     private TriMesh t;
     private TriMesh t2;
-    private InputController input;
+    private InputHandler input;
 
     /**
      * Nothing to update.
@@ -116,7 +116,7 @@ public class TestNodeController extends SimpleGame {
 
         display.getRenderer().setCamera(cam);
         
-        input = new NodeController(this, cameraNode, "LWJGL");
+        input = new NodeHandler(this, cameraNode, "LWJGL");
         
 
     }

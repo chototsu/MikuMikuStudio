@@ -32,7 +32,7 @@
 package jmetest.widget.viewport;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -48,12 +48,12 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerBasic;
  * input.  To activate/deactivate capturing mouse input right-click on the viewport.
  * Not all the viewports will capture mouse input.
  * @author Gregg Patton
- * @version $Id: TestWidgetViewportApp.java,v 1.2 2004-02-25 16:36:46 mojomonkey Exp $
+ * @version $Id: TestWidgetViewportApp.java,v 1.3 2004-03-25 17:14:19 mojomonkey Exp $
  */
 public class TestWidgetViewportApp extends SimpleGame {
 
     private TestWidgetViewportFrame frame;
-    private AbstractInputController input;
+    private AbstractInputHandler input;
 
     /* (non-Javadoc)
      * @see com.jme.app.AbstractGame#update()

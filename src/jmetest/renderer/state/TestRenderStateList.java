@@ -33,8 +33,8 @@ package jmetest.renderer.state;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -58,7 +58,7 @@ public class TestRenderStateList extends SimpleGame {
     private TriMesh t, t2, t3;
     private Camera cam;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Timer timer;
 
     /**
@@ -125,7 +125,7 @@ public class TestRenderStateList extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");

@@ -46,13 +46,13 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.1 2004-03-13 17:23:07 mojomonkey Exp $
+ * @version $Id: TestOctahedron.java,v 1.2 2004-03-25 17:14:24 mojomonkey Exp $
  */
 public class TestOctahedron extends SimpleGame {
     private Camera cam;
     private CameraNode camNode;
     private Node root;
-    private InputController input;
+    private InputHandler input;
     private Timer timer;
     private Text fps;
 
@@ -145,7 +145,7 @@ public class TestOctahedron extends SimpleGame {
         camNode.setLocalTranslation(new Vector3f(0, 0, -100));
         camNode.updateWorldData(0);
         //camNode.setLocalTranslation(new Vector3f();
-        input = new NodeController(this, camNode, "LWJGL");
+        input = new NodeHandler(this, camNode, "LWJGL");
         input.setKeySpeed(10f);
         input.setMouseSpeed(1f);
         display.setTitle("Octahedron Test");

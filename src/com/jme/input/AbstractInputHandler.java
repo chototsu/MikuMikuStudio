@@ -42,15 +42,15 @@ import com.jme.renderer.RendererType;
 import com.jme.system.DisplaySystem;
 
 /**
- * <code>AbstractInputController</code> defines a super abstract class for
+ * <code>AbstractInputHandler</code> defines a super abstract class for
  * input controlling. It maintains a list of actions and mouse actions. These
  * actions are then processed during every update cycle. Subclasses are required
  * to defined to setMouse and setActions methods for custom InputControllers.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbstractInputController.java,v 1.2 2004-02-28 04:41:58 mojomonkey Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.1 2004-03-25 17:14:40 mojomonkey Exp $
  */
-public abstract class AbstractInputController {
+public abstract class AbstractInputHandler {
     
     protected AbstractGame app;
     protected Camera camera;
@@ -63,19 +63,19 @@ public abstract class AbstractInputController {
     protected boolean updateMouseActionsEnabled = true;
 
     /**
-     * Constructor creates a default <code>AbstractInputController</code>.
+     * Constructor creates a default <code>AbstractInputHandler</code>.
      *
      */
-    public AbstractInputController() {
+    public AbstractInputHandler() {
         init(null, null);
     }
     
     /**
-     * Constructor instantiates a new <code>AbstractInputController</code>
+     * Constructor instantiates a new <code>AbstractInputHandler</code>
      * defining the camera that defines the viewing.
      * @param camera the camera that defines the viewport frame.
      */
-    public AbstractInputController(Camera camera) {
+    public AbstractInputHandler(Camera camera) {
         init(null, camera);
     }
     
@@ -83,11 +83,11 @@ public abstract class AbstractInputController {
      * 
      * @param app
      */
-    public AbstractInputController(AbstractGame app) {
+    public AbstractInputHandler(AbstractGame app) {
         init(app, null);
     }
     
-    public AbstractInputController(AbstractGame app, Camera camera) {
+    public AbstractInputHandler(AbstractGame app, Camera camera) {
 
         init(app, camera);
     }

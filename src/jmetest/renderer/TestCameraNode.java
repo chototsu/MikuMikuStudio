@@ -33,8 +33,8 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.InputController;
-import com.jme.input.NodeController;
+import com.jme.input.InputHandler;
+import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.3 2004-03-02 01:44:54 mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.4 2004-03-25 17:14:26 mojomonkey Exp $
  */
 public class TestCameraNode extends SimpleGame {
     private TriMesh t;
@@ -68,7 +68,7 @@ public class TestCameraNode extends SimpleGame {
     private Text text;
     private Node root;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private Timer timer;
     
@@ -147,7 +147,7 @@ public class TestCameraNode extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
         camNode = new CameraNode("Camera Node", cam);
-        input = new NodeController(this, camNode, "LWJGL");
+        input = new NodeHandler(this, camNode, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");

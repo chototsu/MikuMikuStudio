@@ -35,8 +35,8 @@ import com.jme.app.SimpleGame;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -55,7 +55,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.5 2004-02-23 20:57:18 mojomonkey Exp $
+ * @version $Id: TestBezierCurve.java,v 1.6 2004-03-25 17:14:36 mojomonkey Exp $
  */
 public class TestBezierCurve extends SimpleGame {
     private TriMesh t, t2, t3, t4;
@@ -64,7 +64,7 @@ public class TestBezierCurve extends SimpleGame {
     private Node scene, root;
     private static final float MAX_STEPS = 25;
     private Camera cam;
-    private InputController input;
+    private InputHandler input;
     private BezierCurve curve;
     
     private float step = 0;
@@ -127,7 +127,7 @@ public class TestBezierCurve extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, properties.getRenderer());
+        input = new FirstPersonHandler(this, cam, properties.getRenderer());
         input.setKeySpeed(10);
         input.setMouseSpeed(1);
         timer = Timer.getTimer(properties.getRenderer());

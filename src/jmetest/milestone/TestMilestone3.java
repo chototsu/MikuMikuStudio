@@ -35,8 +35,8 @@ import com.jme.app.SimpleGame;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -62,14 +62,14 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone3.java,v 1.4 2004-02-27 00:15:24 mojomonkey Exp $
+ * @version $Id: TestMilestone3.java,v 1.5 2004-03-25 17:14:36 mojomonkey Exp $
  */
 public class TestMilestone3 extends SimpleGame {
     private TriMesh t;
     private Camera cam;
     private Node root;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private LightState lightstate;
     private PointLight pl;
@@ -149,7 +149,7 @@ public class TestMilestone3 extends SimpleGame {
 
         
         timer = Timer.getTimer("LWJGL");
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
         display.setTitle("Milestone 3");
         
     }

@@ -33,8 +33,8 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -60,14 +60,14 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.9 2004-03-12 21:35:16 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.10 2004-03-25 17:14:27 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
     private Camera cam;
     private Node root;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private LightState lightstate;
     private PointLight pl;
@@ -166,7 +166,7 @@ public class TestBezierMesh extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
         timer = Timer.getTimer("LWJGL");
         display.setTitle("Bezier Mesh Test");
     }

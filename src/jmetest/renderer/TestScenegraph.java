@@ -36,7 +36,7 @@ import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.NodeController;
+import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -64,7 +64,7 @@ import com.jme.util.Timer;
 public class TestScenegraph extends SimpleGame {
     private Camera cam;
     private Node root, scene;
-    private NodeController input, nc1, nc2, nc3, nc4, nc5, nc6;
+    private NodeHandler input, nc1, nc2, nc3, nc4, nc5, nc6;
     private Thread thread;
     private Timer timer;
     private Box box1, box2, box3, box4, box5, box6;
@@ -177,7 +177,7 @@ public class TestScenegraph extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
         // Setup the input controller and timer
-        //input = new FirstPersonController(this, cam, "LWJGL");
+        //input = new FirstPersonHandler(this, cam, "LWJGL");
         //input.setKeySpeed(10f);
         //input.setMouseSpeed(1f);
         timer = Timer.getTimer("LWJGL");
@@ -390,12 +390,12 @@ public class TestScenegraph extends SimpleGame {
         cam.update();
         scene.updateGeometricState(0.0f, true);
 
-        nc1 = new NodeController(this, node1, "LWJGL");
-        nc2 = new NodeController(this, node2, "LWJGL");
-        nc3 = new NodeController(this, node3, "LWJGL");
-        nc4 = new NodeController(this, node4, "LWJGL");
-        nc5 = new NodeController(this, node5, "LWJGL");
-        nc6 = new NodeController(this, node6, "LWJGL");
+        nc1 = new NodeHandler(this, node1, "LWJGL");
+        nc2 = new NodeHandler(this, node2, "LWJGL");
+        nc3 = new NodeHandler(this, node3, "LWJGL");
+        nc4 = new NodeHandler(this, node4, "LWJGL");
+        nc5 = new NodeHandler(this, node5, "LWJGL");
+        nc6 = new NodeHandler(this, node6, "LWJGL");
         nc1.setKeySpeed(5);
         nc1.setMouseSpeed(1);
         nc2.setKeySpeed(5);

@@ -28,7 +28,7 @@
 package com.jme.widget.input.mouse;
 
 import com.jme.app.AbstractGame;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
 import com.jme.input.RelativeMouse;
@@ -38,9 +38,9 @@ import com.jme.renderer.RendererType;
 /**
  * <code>WidgetMouseTestControllerBasic</code>
  * @author Gregg Patton
- * @version $Id: WidgetMouseTestControllerBasic.java,v 1.4 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: WidgetMouseTestControllerBasic.java,v 1.5 2004-03-25 17:14:18 mojomonkey Exp $
  */
-public class WidgetMouseTestControllerBasic extends AbstractInputController {
+public class WidgetMouseTestControllerBasic extends AbstractInputHandler {
 
     /**
      * 
@@ -57,7 +57,7 @@ public class WidgetMouseTestControllerBasic extends AbstractInputController {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.AbstractInputController#setKeyBindings(java.lang.String)
+     * @see com.jme.input.AbstractInputHandler#setKeyBindings(java.lang.String)
      */
     protected void setKeyBindings(RendererType rendererType) {
         super.setKeyBindings(rendererType);
@@ -67,7 +67,7 @@ public class WidgetMouseTestControllerBasic extends AbstractInputController {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.AbstractInputController#setMouse(com.jme.renderer.Camera)
+     * @see com.jme.input.AbstractInputHandler#setMouse(com.jme.renderer.Camera)
      */
     protected void setMouse() {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");

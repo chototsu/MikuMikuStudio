@@ -34,13 +34,13 @@ package com.jme.input.action;
 /**
  * <code>InputAction</code> defines an interface for creating input actions. 
  * These actions can correspond to any event defined by a key value. The
- * <code>InputController</code> class typically maintains a collection of
+ * <code>InputHandler</code> class typically maintains a collection of
  * the actions and when required calls the actions <code>performAction</code>
  * method.
  * 
- * @see com.jme.input.InputController
+ * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.3 2003-11-14 19:37:28 mojomonkey Exp $
+ * @version $Id: InputAction.java,v 1.4 2004-03-25 17:14:42 mojomonkey Exp $
  */
 public interface InputAction {
     

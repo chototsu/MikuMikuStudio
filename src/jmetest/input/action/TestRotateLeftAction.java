@@ -32,7 +32,7 @@
 package jmetest.input.action;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.InputController;
+import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -60,7 +60,7 @@ public class TestRotateLeftAction extends SimpleGame {
     private Point p;
     private TriMesh t;
     private TriMesh t2;
-    private InputController input;
+    private InputHandler input;
 
     /**
      * Nothing to update.
@@ -115,7 +115,7 @@ public class TestRotateLeftAction extends SimpleGame {
 
         display.getRenderer().setCamera(cam);
         
-        input = new InputController();
+        input = new InputHandler();
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         InputSystem.createInputSystem("LWJGL");
         

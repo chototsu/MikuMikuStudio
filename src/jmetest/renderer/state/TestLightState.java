@@ -33,8 +33,8 @@ package jmetest.renderer.state;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -56,13 +56,13 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.4 2004-03-02 01:45:07 mojomonkey Exp $
+ * @version $Id: TestLightState.java,v 1.5 2004-03-25 17:14:23 mojomonkey Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;
     private Camera cam;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
 
     /**
      * Entry point for the test, 
@@ -125,7 +125,7 @@ public class TestLightState extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
         
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
         display.setTitle("Light State Test");
 
     }

@@ -37,17 +37,17 @@ import com.jme.input.action.InputAction;
 import com.jme.input.action.MouseInputAction;
 
 /**
- * <code>InputController</code>
+ * <code>InputHandler</code>
  * @author Mark Powell
- * @version $Id: InputController.java,v 1.3 2003-11-14 19:37:28 mojomonkey Exp $
+ * @version $Id: InputHandler.java,v 1.1 2004-03-25 17:14:38 mojomonkey Exp $
  */
-public class InputController {
+public class InputHandler {
     private ArrayList actions;
     private ArrayList mouseActions;
     private KeyBindingManager keyboard;
     private Mouse mouse;
 
-    public InputController() {
+    public InputHandler() {
         actions = new ArrayList();
         mouseActions = new ArrayList();
     }

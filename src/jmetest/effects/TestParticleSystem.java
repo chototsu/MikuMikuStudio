@@ -34,8 +34,8 @@ import com.jme.app.SimpleGame;
 import com.jme.effects.ParticleController;
 import com.jme.effects.ParticleSystem;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -68,7 +68,7 @@ public class TestParticleSystem
   private Camera cam;
 
   private Timer timer;
-  private InputController input;
+  private InputHandler input;
   private KeyInput key;
 
   private Text fps;
@@ -155,7 +155,7 @@ public class TestParticleSystem
     display.getRenderer().setCamera(cam);
 
     timer = Timer.getTimer(properties.getRenderer());
-    input = new FirstPersonController(this, cam, properties.getRenderer());
+    input = new FirstPersonHandler(this, cam, properties.getRenderer());
     input.setMouseSpeed(0.2f);
     input.setKeySpeed(1f);
 

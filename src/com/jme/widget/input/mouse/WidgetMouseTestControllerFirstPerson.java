@@ -28,7 +28,7 @@
 package com.jme.widget.input.mouse;
 
 import com.jme.app.AbstractGame;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
 import com.jme.input.RelativeMouse;
@@ -48,9 +48,9 @@ import com.jme.renderer.RendererType;
 /**
  * <code>WidgetMouseTestControllerFirstPerson</code>
  * @author Gregg Patton
- * @version $Id: WidgetMouseTestControllerFirstPerson.java,v 1.4 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: WidgetMouseTestControllerFirstPerson.java,v 1.5 2004-03-25 17:14:17 mojomonkey Exp $
  */
-public class WidgetMouseTestControllerFirstPerson extends AbstractInputController {
+public class WidgetMouseTestControllerFirstPerson extends AbstractInputHandler {
 
     /**
      * @param camera
@@ -68,7 +68,7 @@ public class WidgetMouseTestControllerFirstPerson extends AbstractInputControlle
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.AbstractInputController#setKeyBindings(java.lang.String)
+     * @see com.jme.input.AbstractInputHandler#setKeyBindings(java.lang.String)
      */
     protected void setKeyBindings(RendererType rendererType) {
         super.setKeyBindings(rendererType);
@@ -86,7 +86,7 @@ public class WidgetMouseTestControllerFirstPerson extends AbstractInputControlle
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.AbstractInputController#setMouse(com.jme.renderer.Camera)
+     * @see com.jme.input.AbstractInputHandler#setMouse(com.jme.renderer.Camera)
      */
     protected void setMouse() {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
@@ -100,7 +100,7 @@ public class WidgetMouseTestControllerFirstPerson extends AbstractInputControlle
     }
 
     /* (non-Javadoc)
-     * @see com.jme.input.AbstractInputController#setActions(com.jme.renderer.Camera, com.jme.app.AbstractGame)
+     * @see com.jme.input.AbstractInputHandler#setActions(com.jme.renderer.Camera, com.jme.app.AbstractGame)
      */
     protected void setActions() {
 

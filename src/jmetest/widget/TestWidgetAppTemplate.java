@@ -32,7 +32,7 @@
 package jmetest.widget;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Camera;
 import com.jme.scene.Node;
@@ -54,7 +54,7 @@ import com.jme.widget.layout.WidgetFlowLayout;
  */
 public class TestWidgetAppTemplate extends SimpleGame {
     class TestFrame extends WidgetAbstractFrame {
-        TestFrame(AbstractInputController ic) {
+        TestFrame(AbstractInputHandler ic) {
             super(ic);
 
             setLayout(new WidgetFlowLayout(WidgetAlignmentType.ALIGN_CENTER));
@@ -71,7 +71,7 @@ public class TestWidgetAppTemplate extends SimpleGame {
     private TestFrame frame;
     private Node scene;
     private Camera cam;
-    private AbstractInputController input;
+    private AbstractInputHandler input;
 
     /* (non-Javadoc)
      * @see com.jme.app.SimpleGame#update()

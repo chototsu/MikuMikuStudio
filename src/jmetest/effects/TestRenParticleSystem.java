@@ -33,8 +33,8 @@ package jmetest.effects;
 import com.jme.app.SimpleGame;
 import com.jme.effects.RenParticleManager;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -52,7 +52,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleSystem.java,v 1.4 2004-03-25 16:24:56 mojomonkey Exp $
+ * @version $Id: TestRenParticleSystem.java,v 1.5 2004-03-25 17:14:28 mojomonkey Exp $
  */
 public class TestRenParticleSystem extends SimpleGame {
 
@@ -64,7 +64,7 @@ public class TestRenParticleSystem extends SimpleGame {
   private Camera cam;
 
   private Timer timer;
-  private InputController input;
+  private InputHandler input;
 
   private Text fps;
 
@@ -149,7 +149,7 @@ public class TestRenParticleSystem extends SimpleGame {
     display.getRenderer().setCamera(cam);
 
     timer = Timer.getTimer(properties.getRenderer());
-    input = new FirstPersonController(this, cam, properties.getRenderer());
+    input = new FirstPersonHandler(this, cam, properties.getRenderer());
     input.setMouseSpeed(0.2f);
     input.setKeySpeed(1f);
 

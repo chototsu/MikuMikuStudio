@@ -38,8 +38,8 @@ package jmetest.sound;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -67,7 +67,7 @@ public class TestSoundGraph extends SimpleGame {
 	SphericalSound footsteps;
 	Box box;
 
-	private InputController input;
+	private InputHandler input;
 
 	/* (non-Javadoc)
 	 * @see com.jme.app.SimpleGame#update()
@@ -118,7 +118,7 @@ public class TestSoundGraph extends SimpleGame {
 		Vector3f dir= new Vector3f(0.0f, 0f, -1.0f);
 		cam.setFrame(loc, left, up, dir);
 		display.getRenderer().setCamera(cam);
-		input= new FirstPersonController(this, cam, "LWJGL");
+		input= new FirstPersonHandler(this, cam, "LWJGL");
 		input.setMouseSpeed(0.2f);
 		input.setKeySpeed(.1f);
 		SoundAPIController.getSoundSystem("LWJGL");

@@ -34,8 +34,8 @@ import java.net.URL;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Quaternion;
@@ -54,7 +54,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestAse.java,v 1.2 2004-02-23 01:06:23 mojomonkey Exp $
+ * @version $Id: TestAse.java,v 1.3 2004-03-25 17:14:35 mojomonkey Exp $
  */
 public class TestAse extends SimpleGame {
 	LightState state;
@@ -62,7 +62,7 @@ public class TestAse extends SimpleGame {
 	ZBufferState zstate;
 	//TextureState ts = null;
 	private Camera cam;
-	private InputController input;
+	private InputHandler input;
 	private Timer timer;
 	private ASEModel model;
 	private String FILE_NAME = "data/model/Statue.ASE";
@@ -138,7 +138,7 @@ public class TestAse extends SimpleGame {
 
 		display.getRenderer().setCamera(cam);
 
-		input = new FirstPersonController(this, cam, "LWJGL");
+		input = new FirstPersonHandler(this, cam, "LWJGL");
 		timer = Timer.getTimer("LWJGL");
 
 	}

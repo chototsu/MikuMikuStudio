@@ -39,7 +39,7 @@ import com.jme.app.SimpleGame;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.light.AmbientLight;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.7 2004-03-04 03:03:35 greggpatton Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.8 2004-03-25 17:14:21 mojomonkey Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
 	static String STARTED_STATE_STRING = " Stop ";
@@ -97,7 +97,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         WidgetPanel buttonPanel;
         WidgetPanel msgPanel;
 
-        TestFrame(AbstractInputController ic) {
+        TestFrame(AbstractInputHandler ic) {
             super(ic);
 
             setLayout(new WidgetBorderLayout());
@@ -286,7 +286,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
     private Node scene;
     private static final float MAX_STEPS = 25;
     private Camera cam;
-    private AbstractInputController input;
+    private AbstractInputHandler input;
     private BezierCurve curve;
 
     private float step = 0;

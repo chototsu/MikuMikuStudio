@@ -35,7 +35,7 @@ import java.util.ArrayList;
 import java.util.Observer;
 import java.util.logging.Level;
 
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
@@ -342,14 +342,14 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
     /**
      * @see com.jme.widget.Widget#getInputController()
      */
-    public AbstractInputController getInputController() {
+    public AbstractInputHandler getInputController() {
         return widgetImpl.getInputController();
     }
 
     /** 
-     * @see com.jme.widget.Widget#setInputController(com.jme.input.InputController)
+     * @see com.jme.widget.Widget#setInputController(com.jme.input.InputHandler)
      */
-    public void setInputController(AbstractInputController controller) {
+    public void setInputController(AbstractInputHandler controller) {
         widgetImpl.setInputController(controller);
 
     }

@@ -46,13 +46,13 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.8 2004-03-11 00:12:18 renanse Exp $
+ * @version $Id: TestManyChildren.java,v 1.9 2004-03-25 17:14:25 mojomonkey Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
     private CameraNode camNode;
     private Node root;
-    private InputController input;
+    private InputHandler input;
     private Timer timer;
     private Text fps;
     private Node fpsNode;
@@ -125,7 +125,7 @@ public class TestManyChildren extends SimpleGame {
 
         camNode = new CameraNode("Camera Node", cam);
         //camNode.setLocalTranslation(new Vector3f();
-        input = new NodeController(this, camNode, "LWJGL");
+        input = new NodeHandler(this, camNode, "LWJGL");
         input.setKeySpeed(2f);
         input.setMouseSpeed(0.5f);
         display.setTitle("2,500 Box Test");

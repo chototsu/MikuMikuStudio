@@ -32,7 +32,7 @@
 package jmetest.widget;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
@@ -84,7 +84,7 @@ public class TestWidgetApp1 extends SimpleGame {
 
         WidgetText fps;
 
-        TestFrame(AbstractInputController ic) {
+        TestFrame(AbstractInputHandler ic) {
             super(ic);
 
             setLayout(new WidgetBorderLayout());
@@ -246,7 +246,7 @@ public class TestWidgetApp1 extends SimpleGame {
     }
 
     private TestFrame frame;
-    private AbstractInputController input;
+    private AbstractInputHandler input;
 
     /* (non-Javadoc)
      * @see com.jme.app.SimpleGame#update()

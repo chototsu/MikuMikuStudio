@@ -36,17 +36,17 @@ import com.jme.input.action.*;
 import com.jme.renderer.Camera;
 
 /**
- * <code>FirsPersonController</code> defines an InputController that sets 
+ * <code>FirsPersonController</code> defines an InputHandler that sets 
  * input to be controlled similar to First Person Shooting games. By default the
  * commands are, WSAD moves the camera forward, backward and strafes. The 
  * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
  * the camera.
  * @author Mark Powell
- * @version $Id: FirstPersonController.java,v 1.6 2004-02-26 03:09:36 mojomonkey Exp $
+ * @version $Id: FirstPersonHandler.java,v 1.1 2004-03-25 17:14:39 mojomonkey Exp $
  */
-public class FirstPersonController extends InputController {
+public class FirstPersonHandler extends InputHandler {
 
-    public FirstPersonController(AbstractGame app, Camera cam, String api) {
+    public FirstPersonHandler(AbstractGame app, Camera cam, String api) {
 
         setKeyBindings(api);
         setMouse(cam);

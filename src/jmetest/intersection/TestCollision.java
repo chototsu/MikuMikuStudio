@@ -33,8 +33,8 @@ package jmetest.intersection;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.intersection.CollisionDetection;
 import com.jme.intersection.CollisionResults;
 import com.jme.light.DirectionalLight;
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.7 2004-03-17 16:15:51 renanse Exp $
+ * @version $Id: TestCollision.java,v 1.8 2004-03-25 17:14:34 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -69,7 +69,7 @@ public class TestCollision extends SimpleGame {
     private Text text;
     private Node root;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
@@ -190,7 +190,7 @@ public class TestCollision extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, properties.getRenderer());
+        input = new FirstPersonHandler(this, cam, properties.getRenderer());
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
 

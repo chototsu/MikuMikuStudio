@@ -35,8 +35,8 @@ import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.InputController;
-import com.jme.input.NodeController;
+import com.jme.input.InputHandler;
+import com.jme.input.NodeHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -64,7 +64,7 @@ public class TestCameraMan extends SimpleGame {
     private Model model;
     private Camera cam;
     private Node root, scene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
@@ -151,8 +151,8 @@ public class TestCameraMan extends SimpleGame {
         camNode.setLocalTranslation(new Vector3f(0,50,-50));
         camNode.updateGeometricState(0,true);
         // Setup the input controller and timer
-        //input = new FirstPersonController(this, cam, "LWJGL");
-        input = new NodeController(this, camNode, "LWJGL");
+        //input = new FirstPersonHandler(this, cam, "LWJGL");
+        input = new NodeHandler(this, camNode, "LWJGL");
         input.setKeySpeed(10f);
         input.setMouseSpeed(1f);
         timer = Timer.getTimer("LWJGL");

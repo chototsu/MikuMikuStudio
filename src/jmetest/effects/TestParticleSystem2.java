@@ -34,8 +34,8 @@ import com.jme.app.SimpleGame;
 import com.jme.effects.ParticleController;
 import com.jme.effects.ParticleSystem;
 import com.jme.image.Texture;
-import com.jme.input.InputController;
-import com.jme.input.NodeController;
+import com.jme.input.InputHandler;
+import com.jme.input.NodeHandler;
 import com.jme.intersection.CollisionDetection;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.Rectangle;
@@ -71,7 +71,7 @@ public class TestParticleSystem2 extends SimpleGame {
 	private CameraNode camNode;
 
 	private Timer timer;
-	private InputController input;
+	private InputHandler input;
 
 	private Text fps, col;
 
@@ -140,7 +140,7 @@ public class TestParticleSystem2 extends SimpleGame {
 		camNode = new CameraNode("Camera node", cam);
 
 		timer = Timer.getTimer(properties.getRenderer());
-		input = new NodeController(this, camNode, properties.getRenderer());
+		input = new NodeHandler(this, camNode, properties.getRenderer());
         display.setTitle("Snow");
 	}
 

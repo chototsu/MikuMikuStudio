@@ -50,14 +50,14 @@ import com.jme.util.*;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.4 2004-03-21 23:22:51 renanse Exp $
+ * @version $Id: TestPQTorus.java,v 1.5 2004-03-25 17:14:24 mojomonkey Exp $
  */
 public class TestPQTorus extends VariableTimestepGame {
 
     private Camera cam;
     private CameraNode camNode;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Timer timer;
     private Text fps;
     private Quaternion rotQuat = new Quaternion();
@@ -146,7 +146,7 @@ public class TestPQTorus extends VariableTimestepGame {
         camNode.setLocalTranslation(new Vector3f(0, 0, -25));
         camNode.updateWorldData(0);
 
-        input = new NodeController(this, camNode, properties.getRenderer());
+        input = new NodeHandler(this, camNode, properties.getRenderer());
         input.setKeySpeed(10f);
         input.setMouseSpeed(1f);
         display.setTitle("PQ Torus Test");

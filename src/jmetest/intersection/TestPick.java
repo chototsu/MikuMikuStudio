@@ -35,8 +35,8 @@ import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Quaternion;
@@ -61,14 +61,14 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.10 2004-03-13 03:17:15 renanse Exp $
+ * @version $Id: TestPick.java,v 1.11 2004-03-25 17:14:34 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
     private Camera cam;
     private Text text;
     private Node root;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
@@ -157,7 +157,7 @@ public class TestPick extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, properties.getRenderer());
+        input = new FirstPersonHandler(this, cam, properties.getRenderer());
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
 

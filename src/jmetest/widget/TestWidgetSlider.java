@@ -36,7 +36,7 @@ import java.util.Observable;
 import java.util.Observer;
 
 import com.jme.app.SimpleGame;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Camera;
 import com.jme.scene.Node;
@@ -78,7 +78,7 @@ public class TestWidgetSlider extends SimpleGame {
 
         WidgetPanel centerPanel;
 
-        TestFrame(AbstractInputController ic) {
+        TestFrame(AbstractInputHandler ic) {
             super(ic);
 
             setLayout(new WidgetBorderLayout());
@@ -197,7 +197,7 @@ public class TestWidgetSlider extends SimpleGame {
     private TestFrame frame;
     private Node scene;
     private Camera cam;
-    private AbstractInputController input;
+    private AbstractInputHandler input;
 
     /* (non-Javadoc)
      * @see com.jme.app.SimpleGame#update()

@@ -35,8 +35,8 @@ import java.net.URL;
 
 import com.jme.animation.DeformationJointController;
 import com.jme.app.SimpleGame;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 public class TestMilkshapeASCII extends SimpleGame {
     private Camera cam;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private Model model;
     private Timer timer;
 
@@ -120,7 +120,7 @@ public class TestMilkshapeASCII extends SimpleGame {
 
         display.getRenderer().setCamera(cam);
         
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
         timer = Timer.getTimer("LWJGL");
         
         

@@ -37,7 +37,7 @@ import java.util.logging.Level;
 import com.jme.app.SimpleGame;
 import com.jme.effects.Tint;
 import com.jme.image.Texture;
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -69,7 +69,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestTint</code>
  * 
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.5 2004-03-07 13:00:10 darkprophet Exp $
+ * @version $Id: TestTint.java,v 1.6 2004-03-25 17:14:28 mojomonkey Exp $
  */
 public class TestTint extends SimpleGame {
 
@@ -77,7 +77,7 @@ public class TestTint extends SimpleGame {
 		WidgetHSlider alphaValue;
 		WidgetLabel instructions;
 
-		public SliderPanel(AbstractInputController ic) {
+		public SliderPanel(AbstractInputHandler ic) {
 			super(ic);
 			setLayout(new WidgetBorderLayout());
 			
@@ -106,7 +106,7 @@ public class TestTint extends SimpleGame {
 
 	private Camera cam;
 	private Node tintNode, scene;
-	private AbstractInputController input;
+	private AbstractInputHandler input;
 	private Timer timer;
 
 	private Tint tint;

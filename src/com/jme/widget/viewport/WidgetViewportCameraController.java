@@ -31,19 +31,19 @@
 */
 package com.jme.widget.viewport;
 
-import com.jme.input.AbstractInputController;
+import com.jme.input.AbstractInputHandler;
 import com.jme.renderer.Camera;
 
 /**
  * <code>WidgetViewportCameraController</code>
  * @author Gregg Patton
- * @version $Id: WidgetViewportCameraController.java,v 1.1 2004-02-09 12:39:25 greggpatton Exp $
+ * @version $Id: WidgetViewportCameraController.java,v 1.2 2004-03-25 17:14:17 mojomonkey Exp $
  */
 public class WidgetViewportCameraController {
     Camera camera;
-    AbstractInputController inputController;
+    AbstractInputHandler inputController;
 
-    public WidgetViewportCameraController(Camera camera, AbstractInputController inputController) {
+    public WidgetViewportCameraController(Camera camera, AbstractInputHandler inputController) {
 
         this.camera = camera;
         this.inputController = inputController;
@@ -65,7 +65,7 @@ public class WidgetViewportCameraController {
      * <code>getInputController</code>
      * @return
      */
-    public AbstractInputController getInputController() {
+    public AbstractInputHandler getInputController() {
         return inputController;
     }
 

@@ -33,8 +33,8 @@ package jmetest.milestone;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -57,14 +57,14 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestMilestone2.java,v 1.3 2004-03-25 17:14:36 mojomonkey Exp $
  */
 public class TestMilestone2 extends SimpleGame {
     private TriMesh t;
     private Camera cam;
     private Node root;
     private Node scene;
-    private InputController input;
+    private InputHandler input;
     private BoxGenerator gen;
     private Thread thread;
 
@@ -144,7 +144,7 @@ public class TestMilestone2 extends SimpleGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonController(this, cam, "LWJGL");
+        input = new FirstPersonHandler(this, cam, "LWJGL");
 
     }
 
