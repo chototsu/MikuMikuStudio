@@ -36,7 +36,7 @@ import com.jme.math.Vector3f;
 /**
  * <code>DistanceSwitchModel</code>
  * @author Mark Powell
- * @version $Id: DistanceSwitchModel.java,v 1.1 2004-03-05 16:50:18 mojomonkey Exp $
+ * @version $Id: DistanceSwitchModel.java,v 1.2 2004-03-13 18:07:56 mojomonkey Exp $
  */
 public class DistanceSwitchModel implements SwitchModel {
 	private float[] modelMin;
@@ -57,19 +57,19 @@ public class DistanceSwitchModel implements SwitchModel {
 		worldMax = new float[numChildren];
 	}
 	
-	public void setModelMinSqrDistance (int index, float minSqrDist) {
+	public void setModelMinDistance (int index, float minDist) {
 		
-		modelMin[index] = minSqrDist;
+		modelMin[index] = minDist;
 	}
 	
-	public void setModelMaxSqrDistance (int index, float maxSqrDist) {
-		modelMax[index] = maxSqrDist;
+	public void setModelMaxDistance (int index, float maxDist) {
+		modelMax[index] = maxDist;
 	}
 	
-	public void setModelSqrDistance (int index, float minSqrDist, float maxSqrDist) {
+	public void setModelDistance (int index, float minDist, float maxDist) {
 		
-		modelMin[index] = minSqrDist;;
-		modelMax[index] = maxSqrDist;
+		modelMin[index] = minDist;
+		modelMax[index] = maxDist;
 	}
 	
 	public void set(float value) {
@@ -87,16 +87,16 @@ public class DistanceSwitchModel implements SwitchModel {
 
 			value = modelMax[i];
 			worldMax[i] = worldScaleSquared*value*value;
-		}
+       }
 
 		// select the LOD child
 		if ( numChildren > 0 ) {
 			float fSqrDist = diff.lengthSquared();
 
-			for ( int i = 0; i < numChildren; i++) {
+            for ( int i = 0; i < numChildren; i++) {
 				if ( worldMin[i] <= fSqrDist
 						&&   fSqrDist < worldMax[i] ) {
-					return i;
+                    return i;
 				}
 			}
 		}
