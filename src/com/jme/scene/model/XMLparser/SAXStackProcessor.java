@@ -5,8 +5,12 @@ import org.xml.sax.SAXException;
 
 import java.util.Stack;
 import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.logging.Logger;
+import java.util.logging.Level;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.io.File;
 
 import com.jme.scene.*;
 import com.jme.scene.shape.Box;
@@ -23,6 +27,7 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
+import com.jme.util.LoggingSystem;
 
 /**
  * Started Date: May 31, 2004
@@ -36,11 +41,13 @@ import com.jme.util.TextureManager;
 class SAXStackProcessor {
 
     Node myScene;
-    Stack s=new Stack();
-    Hashtable shares=new Hashtable();
-    Renderer renderer;
+    private Stack s=new Stack();
+    private Hashtable shares=new Hashtable();
+    private Renderer renderer;
+    HashMap properties;
     SAXStackProcessor(){
         renderer=DisplaySystem.getDisplaySystem().getRenderer();
+        properties=new HashMap();
     }
 
     void increaseStack(String qName, Attributes atts) throws SAXException{
@@ -252,13 +259,25 @@ class SAXStackProcessor {
     private TextureState buildTexture(Attributes atts) throws SAXException {
         TextureState t=renderer.getTextureState();
         try {
+            Texture p=null;
             if (atts.getValue("URL")!=null && !atts.getValue("URL").equals("null")){
-                t.setTexture(TextureManager.loadTexture(new URL(atts.getValue("URL")),
-                        Texture.MM_LINEAR,Texture.FM_LINEAR,true));
+                p=TextureManager.loadTexture(new URL(atts.getValue("URL")),
+                        Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+            }else if (atts.getValue("file")!=null && !atts.getValue("file").equals("null")){
+                URL context;
+                if (properties.containsKey("texurl")){
+                    context=new URL((URL) properties.get("texurl"),atts.getValue("file"));
+                } else{
+                    context=new File(atts.getValue("file")).toURI().toURL();
+                }
+                p=TextureManager.loadTexture(context,
+                        Texture.MM_LINEAR,Texture.FM_LINEAR,true);
+                p.setImageLocation("file:/"+atts.getValue("file"));
             }
-            if (atts.getValue("file")!=null && !atts.getValue("file").equals("null"))
-                t.setTexture(TextureManager.loadTexture(atts.getValue("file"),
-                        Texture.MM_LINEAR,Texture.FM_LINEAR,true));
+            if (p==null)
+                LoggingSystem.getLogger().log(Level.INFO,"Unable to load file: " + atts.getValue("file"));
+            else
+                t.setTexture(p);
         } catch (MalformedURLException e) {
             throw new SAXException("Bad file name: " + atts.getValue("file") + "*" + atts.getValue("URL"));
         }
