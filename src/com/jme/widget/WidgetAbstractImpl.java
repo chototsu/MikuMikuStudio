@@ -29,11 +29,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
+/*
+ * EDIT:  04/01/2004 - Check for null in getMouseInput(). GOP
+ */
+
 package com.jme.widget;
 
 import java.util.Observer;
 
 import com.jme.input.AbstractInputHandler;
+import com.jme.input.Mouse;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
@@ -117,7 +123,14 @@ public abstract class WidgetAbstractImpl extends Spatial implements Widget {
     }
 
     public MouseInput getMouseInput() {
-        return inputController.getMouse().getMouseInput();
+        MouseInput mi = null;
+        Mouse m = inputController.getMouse();
+        
+        if (m != null) {
+            mi = m.getMouseInput();
+        }
+        
+        return mi;
     }
 
     public AbstractInputHandler getInputController() {
