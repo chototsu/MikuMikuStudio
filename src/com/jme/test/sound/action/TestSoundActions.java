@@ -138,7 +138,7 @@ public class TestSoundActions extends AbstractGame {
 		soundRenderer.addSoundPlayer("SHIP1");
 		soundRenderer.addSoundPlayer("BACKGROUND");
 		soundRenderer.loadSoundAs("walk", "../data/sound/tech_idle_loop.wav");
-		soundRenderer.loadSoundAs("turn", "../data/sound/controller_tower_basic_child_05.mp3");
+		soundRenderer.loadSoundAs("turn", "../data/sound/turn.mp3");
 		soundRenderer.loadSoundAs("background", "../data/sound/underwater1.mp3");
 		soundRenderer.getSoundPlayer("BACKGROUND").setVolume(0.6f);
 		keyboard.setKeyInput(InputSystem.getKeyInput());
