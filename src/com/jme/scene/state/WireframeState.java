@@ -37,7 +37,7 @@ package com.jme.scene.state;
  * rendered solid.
  *
  * @author Mark Powell
- * @version $Id: WireframeState.java,v 1.3 2004-04-22 22:26:56 renanse Exp $
+ * @version $Id: WireframeState.java,v 1.4 2004-07-03 01:46:07 cep21 Exp $
  */
 public abstract class WireframeState extends RenderState {
 
@@ -68,6 +68,14 @@ public abstract class WireframeState extends RenderState {
             throw new IllegalArgumentException("Line width must be positive");
 
         lineWidth = width;
+    }
+
+    /**
+     * Returns the current lineWidth.
+     * @return the current LineWidth
+     */
+    public float getLineWidth(){
+        return lineWidth;
     }
 
     /**
