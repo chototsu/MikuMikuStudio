@@ -44,6 +44,7 @@ import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.BoundingSphere;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 import com.jme.scene.model.Face;
@@ -62,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  * 
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.5 2004-02-15 20:22:39 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.6 2004-02-19 03:49:50 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -151,6 +152,11 @@ public class ASEModel extends Model {
 	 * @see com.jme.scene.model.Model#load(java.lang.String)
 	 */
 	public void load(URL file) {
+        if(null == file) {
+            LoggingSystem.getLogger().log(Level.WARNING, "Null URL could not " +                "load ASE.");
+            return;
+        }
+        
 		InputStream is = null;
 		int fileSize = 0;
 		try {
@@ -274,8 +280,9 @@ public class ASEModel extends Model {
 			object.updateVertexBuffer();
 			object.updateNormalBuffer();
 			object.setTextures(texCoords2);
-
-			this.attachChild(object);
+            object.setModelBound(new BoundingSphere());
+            object.updateModelBound();
+            this.attachChild(object);
 
 		}
 
@@ -333,6 +340,8 @@ public class ASEModel extends Model {
 			}
 
 		}
+        
+        
 	}
 
 	/**
