@@ -2,48 +2,50 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
 package com.jme.renderer;
 
+import com.jme.math.FastMath;
+
 /**
- * <code>ColorRGBA</code> defines a color made from a collection of 
- * red, green and blue values. An alpha value determines is transparency. 
+ * <code>ColorRGBA</code> defines a color made from a collection of
+ * red, green and blue values. An alpha value determines is transparency.
  * All values must be between 0 and 1. If any value is set higher or lower
- * than these constraints they are clamped to the min or max. That is, if 
+ * than these constraints they are clamped to the min or max. That is, if
  * a value smaller than zero is set the value clamps to zero. If a value
  * higher than 1 is passed, that value is clamped to 1. However, because the
- * attributes r, g, b, a are public for efficiency reasons, they can be 
- * directly modified with invalid values. The client should take care when 
+ * attributes r, g, b, a are public for efficiency reasons, they can be
+ * directly modified with invalid values. The client should take care when
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: ColorRGBA.java,v 1.3 2004-03-19 18:14:08 renanse Exp $
  */
 public class ColorRGBA {
     public float r;
@@ -53,7 +55,7 @@ public class ColorRGBA {
 
     /**
      * Constructor instantiates a new <code>ColorRGBA</code> object. This
-     * color is the default "white" with all values 1. 
+     * color is the default "white" with all values 1.
      *
      */
     public ColorRGBA() {
@@ -70,11 +72,19 @@ public class ColorRGBA {
      * @param a the alpha component of this color.
      */
     public ColorRGBA(float r, float g, float b, float a) {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
-        clamp();
+      this.r = r;
+      this.g = g;
+      this.b = b;
+      this.a = a;
+      clamp();
+    }
+
+    public void set(float r, float g, float b, float a) {
+      this.r = r;
+      this.g = g;
+      this.b = b;
+      this.a = a;
+      clamp();
     }
 
     /**
@@ -108,9 +118,9 @@ public class ColorRGBA {
             a = 1;
         }
     }
-    
+
     /**
-     * 
+     *
      * <code>getColorArray</code> retrieves the color values of this object as
      * a four element float array.
      * @return the float array that contains the color elements.
@@ -119,7 +129,16 @@ public class ColorRGBA {
         float[] f = {r,g,b,a};
         return f;
     }
-    
+
+    public static ColorRGBA randomColor() {
+      ColorRGBA rVal = new ColorRGBA(0, 0, 0, 1);
+      rVal.r = FastMath.nextRandomFloat();
+      rVal.g = FastMath.nextRandomFloat();
+      rVal.b = FastMath.nextRandomFloat();
+      rVal.clamp();
+      return rVal;
+    }
+
     /**
      * <code>toString</code> returns the string representation of this color.
      * The format of the string is:<br>
@@ -129,4 +148,15 @@ public class ColorRGBA {
     public String toString() {
         return "com.jme.ColorRGBA: [R="+r+", G="+g+", B="+b+", A="+a+"]";
     }
+
+
+    /**
+     * <code>clone</code> creates a new Vector3f object containing the same
+     * data as this one.
+     * @return the new Vector3f
+     */
+    public Object clone() {
+        return new ColorRGBA(r,g,b,a);
+    }
+
 }
