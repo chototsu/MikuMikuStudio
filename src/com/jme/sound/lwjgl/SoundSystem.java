@@ -45,19 +45,16 @@ import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.nio.ShortBuffer;
 import java.util.logging.Level;
+
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
-//import javazoom.jl.decoder.Bitstream;
-//import javazoom.jl.decoder.BitstreamException;
-//import javazoom.jl.decoder.Decoder;
-//import javazoom.jl.decoder.DecoderException;
-//import javazoom.jl.decoder.Header;
-//import javazoom.jl.decoder.SampleBuffer;
+
 import org.lwjgl.BufferUtils;
-import org.lwjgl.openal.*;
-import org.lwjgl.openal.eax.EAX;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
+
 import com.jcraft.jogg.Packet;
 import com.jcraft.jogg.Page;
 import com.jcraft.jogg.StreamState;
@@ -87,14 +84,15 @@ public class SoundSystem implements ISoundSystem {
 	 *
 	 */
 	private void initalizeEAX() {
-		try {
-			LoggingSystem.getLogger().log(Level.INFO, "Initalizing EAX");
-			EAX.create();
-		} catch (Exception e1) {
-			LoggingSystem.getLogger().log(Level.WARNING,
-					"Failed to Initialize EAX");
-			e1.printStackTrace();
-		}
+	    // do not initialize...  non-functioning in support classes.
+//		try {
+//			LoggingSystem.getLogger().log(Level.INFO, "Initalizing EAX");
+//			EAX.create();
+//		} catch (Exception e1) {
+//			LoggingSystem.getLogger().log(Level.WARNING,
+//					"Failed to Initialize EAX");
+//			e1.printStackTrace();
+//		}
 	}
 	/**
 	 *
