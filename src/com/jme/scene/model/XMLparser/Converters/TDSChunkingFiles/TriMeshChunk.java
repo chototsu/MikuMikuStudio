@@ -19,7 +19,6 @@ public class TriMeshChunk extends ChunkerClass {
 
     Vector3f[] vertexes;
     Vector2f[] texCoords;
-    Vector3f[] normals;
     Vector3f[] faceNormals;
 
     Matrix3f rotation;
@@ -72,41 +71,6 @@ public class TriMeshChunk extends ChunkerClass {
             tempb.set(vertexes[face.faces[i][0]]);  // tempb=a
             tempb.subtractLocal(vertexes[face.faces[i][2]]);    // tempb-=c (tempb=a-c)
             faceNormals[i]=tempa.cross(tempb).normalizeLocal();
-        }
-        Vector3f sum=new Vector3f();
-        Vector3f[] smoothNormals=new Vector3f[face.nFaces];
-        for (int i=0;i<face.nFaces;i++){
-            smoothNormals[i]=new Vector3f();
-            if (face.smoothingGroups[i]==0){
-                smoothNormals[i].set(faceNormals[i]);
-                continue;
-            }
-            sum.set(faceNormals[i]);
-            for (int j=0;j<face.nFaces;j++){
-                if (i==j) continue;
-                if ((face.smoothingGroups[i]&face.smoothingGroups[j])==0) continue;
-                boolean shareFlag=false;
-                for (int k=0;k<3 && shareFlag==false;k++)
-                    for (int l=0;l<3 && shareFlag==false;l++){
-                        if (face.faces[i][k]==face.faces[j][l])
-                            shareFlag=true;
-                    }
-                if (shareFlag) sum.addLocal(faceNormals[j]);
-            }
-            smoothNormals[i].set(sum.normalizeLocal());
-        }
-
-        normals=new Vector3f[vertexes.length];
-        for (int i=0;i<vertexes.length;i++){
-            // What faces does this vertex belong to?
-            sum.set(0,0,0);
-            for (int j=0;j<face.nFaces;j++){
-                for (int k=0;k<3;k++)
-                    if (face.faces[j][k]==i){
-                        sum.addLocal(smoothNormals[j]);
-                    }
-            }
-            normals[i]=sum.normalize();
         }
     }
 

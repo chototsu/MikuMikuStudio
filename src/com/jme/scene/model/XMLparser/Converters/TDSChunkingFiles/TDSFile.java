@@ -5,6 +5,9 @@ package com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Spatial;
+import com.jme.scene.model.Face;
+import com.jme.math.Vector3f;
+import com.jme.math.Vector2f;
 
 import java.io.IOException;
 import java.io.DataInput;
@@ -86,24 +89,55 @@ public class TDSFile extends ChunkerClass{
         FacesChunk myFace=whatIAm.face;
         boolean[] faceHasMaterial=new boolean[myFace.nFaces];
         int noMaterialCount=myFace.nFaces;
-        for (int i=0;i<myFace.materialIndexes.size();i++){
-            int[] faceIndexes=(int[])myFace.materialIndexes.get(i);
+        ArrayList normals=new ArrayList();
+        ArrayList indexes=new ArrayList();
+        ArrayList vertexes=new ArrayList();
+        Vector3f tempNormal=new Vector3f();
+        ArrayList texCoords=new ArrayList();
+        for (int i=0;i<myFace.materialIndexes.size();i++){  // For every original material
             String matName=(String) myFace.materialNames.get(i);
-            if (faceIndexes.length!=0){
+            int[] appliedFacesIndexes=(int[])myFace.materialIndexes.get(i);
+            if (appliedFacesIndexes.length!=0){ // If it's got something make a new trimesh for it
                 TriMesh part=new TriMesh(parentNode.getName()+i);
-                part.setVertices(whatIAm.vertexes);
-                part.setNormals(whatIAm.normals);
-                part.setTextures(whatIAm.texCoords);
-                int[] newIndexArray=new int[faceIndexes.length*3];
-                for (int k=0;k<faceIndexes.length;k++){
-                    if (false==faceHasMaterial[k]) noMaterialCount--;
-                    faceHasMaterial[k]=true;
-
-                    newIndexArray[k*3+0]=myFace.faces[faceIndexes[k]][0];
-                    newIndexArray[k*3+1]=myFace.faces[faceIndexes[k]][1];
-                    newIndexArray[k*3+2]=myFace.faces[faceIndexes[k]][2];
+                normals.clear();
+                indexes.clear();
+                vertexes.clear();
+                texCoords.clear();
+                for (int j=0;j<appliedFacesIndexes.length;j++){ // Look thru every face in that new TriMesh
+                    int actuallFace=appliedFacesIndexes[j];
+                    if (faceHasMaterial[actuallFace]==false){
+                        faceHasMaterial[actuallFace]=true;
+                        noMaterialCount--;
+                    }
+                    for (int k=0;k<3;k++){                      //   and every vertex in that face
+                        // what faces contain this vertex index? If they do and are in the same SG, average
+                        int vertexIndex=myFace.faces[actuallFace][k];
+                        tempNormal.set(whatIAm.faceNormals[actuallFace]);
+                        calcFacesWithVertexAndSmoothGroup(whatIAm.faceNormals,myFace,tempNormal,vertexIndex,actuallFace);
+                        // Now can I just index this Vertex/tempNormal combination?
+                        int l=0;
+                        Vector3f vertexValue=whatIAm.vertexes[vertexIndex];
+                        for (l=0;l<normals.size();l++)
+                            if (normals.get(l).equals(tempNormal) && vertexes.get(l).equals(vertexValue))
+                                break;
+                        if (l==normals.size()){ // if new
+                            normals.add(new Vector3f(tempNormal));
+                            vertexes.add(whatIAm.vertexes[vertexIndex]);
+                            texCoords.add(whatIAm.texCoords[vertexIndex]);
+                            indexes.add(new Integer(l));
+                        } else{ // if old
+                            indexes.add(new Integer(l));
+                        }
+                    }
                 }
-                part.setIndices(newIndexArray);
+                part.setVertices((Vector3f[]) vertexes.toArray(new Vector3f[]{}));
+                part.setNormals((Vector3f[]) normals.toArray(new Vector3f[]{}));
+                part.setTextures((Vector2f[]) texCoords.toArray(new Vector2f[]{}));
+                int[] intIndexes=new int[indexes.size()];
+                for (int val=0;val<intIndexes.length;val++)
+                    intIndexes[val]=((Integer)indexes.get(val)).intValue();
+                part.setIndices(intIndexes);
+
                 MaterialBlock myMaterials=(MaterialBlock) objects.materialBlocks.get(matName);
                 if (matName==null)
                     throw new IOException("Couldn't find the correct name of " + myMaterials);
@@ -131,5 +165,22 @@ public class TDSFile extends ChunkerClass{
             noMaterials.setIndices(noMaterialIndexes);
             parentNode.attachChild(noMaterials);
         }
+    }
+
+    // Find all face normals for faces that contain that vertex AND are in that smoothing group.
+    private void calcFacesWithVertexAndSmoothGroup(Vector3f[] faceNormals,FacesChunk myFace, Vector3f tempNormal, int vertexIndex, int faceIndex) {
+        // tempNormal starts out with the face normal value
+        int smoothingGroupValue=myFace.smoothingGroups[faceIndex];
+        if (smoothingGroupValue==0) return; // 0 smoothing group values don't have smooth edges anywhere
+        for (int i=0;i<myFace.nFaces;i++){
+            if (i == faceIndex || (myFace.smoothingGroups[i]&smoothingGroupValue)==0)
+                continue;
+            for (int j=0;j<3;j++)
+                if (myFace.faces[i][j]==vertexIndex){
+                    tempNormal.addLocal(faceNormals[i]);
+                    break;
+                }
+        }
+        tempNormal.normalizeLocal();
     }
 }

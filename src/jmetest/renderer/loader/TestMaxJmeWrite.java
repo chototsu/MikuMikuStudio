@@ -10,6 +10,8 @@ import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.bounding.BoundingSphere;
 import com.jme.renderer.ColorRGBA;
+import com.jme.light.DirectionalLight;
+import com.jme.light.PointLight;
 
 
 import java.io.*;
@@ -37,8 +39,10 @@ public class TestMaxJmeWrite extends SimpleGame{
 
         try {
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
-            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/cubeColoured.3DS");
+//            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/cubeColoured.3DS");
+            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/cutsphere.3DS");
 //            URL maxFile = new File("3dsmodels/sphere.3ds").toURI().toURL();
+//            URL maxFile = new File("3dsmodels/cutsphere.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/cube.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/face.3ds").toURI().toURL();
 //            URL maxFile = new File("3dsmodels/europe.3ds").toURI().toURL();
@@ -54,9 +58,18 @@ public class TestMaxJmeWrite extends SimpleGame{
             System.out.println(SW);
 //            jbr.setProperty("texurl",new File("3dsmodels").toURI().toURL());
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-            r.setLocalScale(.1f);
+//            r.setLocalScale(.1f);
             rootNode.attachChild(r);
-//            drawAxis();
+//            lightState.detachAll();
+            PointLight DL=new PointLight();
+            DL.setLocation(new Vector3f(1000,0,1000));
+            DL.setEnabled(true);
+            DL.setAmbient(new ColorRGBA(.1f,.1f,.1f,.1f));
+            DL.setDiffuse(ColorRGBA.white);
+            DL.setSpecular(ColorRGBA.white);
+//            lightState.attach(DL);
+            rootNode.updateRenderState();
+            //drawAxis();
         } catch (IOException e) {
             System.out.println("Damn exceptions:"+e);
         }
