@@ -33,7 +33,10 @@ package jme.math;
 
 /**
  * <code>Distance</code> is a static class that provides commonly used math
- * functions.
+ * functions. All tests contain a set of three methods. First is a method to
+ * calculate the distance, second is to calculate the distance square and third
+ * is to calculate the distance squared and keep a copy of the parameters 
+ * defined for the distance algorithms.
  * 
  * <br><br>
  * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
@@ -75,19 +78,61 @@ public class Distance {
     }
 
     /**
+     * <code>distancePointLine</code> calculates teh distance between a 
+     * point and a line.
+     * @param point the point to check.
+     * @param line the line to check.
+     * @return the distance between the point and the line.
+     */
+    public static float distancePointLine(Vector point, Line line) {
+        return (float) Math.sqrt(distancePointLineSquared(point, line));
+    }
+
+    /**
+     * <code>distancePointLineSquared</code> calculates the distance squared
+     * between a point and a line.
+     * @param point the point to check.
+     * @param line the line to check.
+     * @return the distance squared between a point and a line.
+     */
+    public static float distancePointLineSquared(Vector point, Line line) {
+        return distancePointLineSquared(point, line, null);
+    }
+
+    /**
      * <code>distancePointLineSquared</code> calculates the distance squared
      * between a point and a line. 
      * @param point the point to check.
      * @param line the line to check.
+     * @param lineParam container for t where L(t) = B + tM.
      * @return the distance squared between a point and line.
      */
-    public static float distancePointLineSquared(Vector point, Line line) {
+    public static float distancePointLineSquared(
+        Vector point,
+        Line line,
+        float[] lineParam) {
+
         Vector diff = point.subtract(line.getOrigin());
         float squareLen = line.getDirection().lengthSquared();
         float t = diff.dot(line.getDirection()) / squareLen;
         diff = diff.subtract(line.getDirection().mult(t));
 
+        if (lineParam != null) {
+            lineParam[0] = t;
+        }
+
         return diff.lengthSquared();
+    }
+
+    /**
+     * <code>distancePointRay</code> calculates the distance between a point
+     * and a line.
+     * @param point the point to check.
+     * @param ray the ray to check.
+     * @return the distance between a point and a ray.
+     */
+    public static float distancePointRay(Vector point, Line ray) {
+        return (float) Math.sqrt(distancePointRaySquared(point, ray));
     }
 
     /**
@@ -98,6 +143,22 @@ public class Distance {
      * @return the distance between a point and ray.
      */
     public static float distancePointRaySquared(Vector point, Line ray) {
+        return distancePointRaySquared(point, ray, null);
+    }
+
+    /**
+     * <code>distancePointRaySquared</code> calculates the distance
+     * squared between a point and a ray.
+     * @param point the point to check.
+     * @param ray the ray to check.
+     * @param rayParam container for t where L(t) = B + tM and t >= 0.
+     * @return the distance between a point and ray.
+     */
+    public static float distancePointRaySquared(
+        Vector point,
+        Line ray,
+        float[] rayParam) {
+
         Vector diff = point.subtract(ray.getOrigin());
         float t = diff.dot(ray.getDirection());
 
@@ -108,7 +169,22 @@ public class Distance {
             diff = diff.subtract(ray.getDirection().mult(t));
         }
 
+        if (rayParam != null) {
+            rayParam[0] = t;
+        }
+
         return diff.lengthSquared();
+    }
+
+    /**
+     * <code>distancePointSegment</code> calculates the distance between a
+     * point and a line segment.
+     * @param point the point to check.
+     * @param seg the line segment to check.
+     * @return the distance between a point and a line segment.
+     */
+    public static float distancePointSegment(Vector point, Line seg) {
+        return (float) Math.sqrt(distancePointSegmentSquared(point, seg));
     }
 
     /**
@@ -119,6 +195,22 @@ public class Distance {
      * @return the distance squared between a point and line segment.
      */
     public static float distancePointSegmentSquared(Vector point, Line seg) {
+        return distancePointSegmentSquared(point, seg, null);
+    }
+
+    /**
+     * <code>distancePointSegmentSquared</code> calculates the distance
+     * squared between a point and a line segment.
+     * @param point the point to check.
+     * @param seg the line segment to check.
+     * @param lineParam storage for t where L(t) = B + tM and t is between (0,1).
+     * @return the distance squared between a point and line segment.
+     */
+    public static float distancePointSegmentSquared(
+        Vector point,
+        Line seg,
+        float[] lineParam) {
+
         Vector diff = point.subtract(seg.getOrigin());
         float t = diff.dot(seg.getDirection());
 
@@ -139,16 +231,14 @@ public class Distance {
     }
 
     /**
-     * <code>distancePointRectangleSquared</code> calculates the distance squared
-     * between a point and a rectangle.
+     * <code>distancePointRectangle</code> calculates the distance between a 
+     * pointa and a rectangle.
      * @param point the point to check.
      * @param rect the rectangle to check.
      * @return the distance between the point and the rectangle.
      */
-    public static float distancePointRectangleSquared(
-        Vector point,
-        Rectangle rect) {
-        return distancePointRectangleSquared(point, rect, null, null);
+    public static float distancePointRectangle(Vector point, Rectangle rect) {
+        return (float) Math.sqrt(distancePointRectangleSquared(point, rect));
     }
 
     /**
@@ -160,9 +250,25 @@ public class Distance {
      */
     public static float distancePointRectangleSquared(
         Vector point,
+        Rectangle rect) {
+
+        return distancePointRectangleSquared(point, rect, null, null);
+    }
+
+    /**
+     * <code>distancePointRectangleSquared</code> calculates the distance squared
+     * between a point and a rectangle.
+     * @param point the point to check.
+     * @param rect the rectangle to check.
+     * @param sParam storage for the s value in the equation: Q(s,t) = |T(s,t) - P|.
+     * @param tParam storage for the t value in the equation: Q(s,t) = |T(s,t) - P|.
+     * @return the distance between the point and the rectangle.
+     */
+    public static float distancePointRectangleSquared(
+        Vector point,
         Rectangle rect,
-        float[] pointParam,
-        float[] rectParam) {
+        float[] sParam,
+        float[] tParam) {
         Vector diff = rect.getOrigin().subtract(point);
         float a00 = rect.getFirstEdge().lengthSquared();
         float a11 = rect.getSecondEdge().lengthSquared();
@@ -192,14 +298,23 @@ public class Distance {
             t = 1.0f;
             distanceSquared += a11 + 2.0 * b1;
         }
-        if (pointParam != null)
-            pointParam[0] = s;
+        if (sParam != null)
+            sParam[0] = s;
 
-        if (rectParam != null)
-            rectParam[0] = t;
+        if (tParam != null)
+            tParam[0] = t;
         return Math.abs(distanceSquared);
     }
 
+    /**
+     * <code>distanceLineLine</code> calculates the distance between two lines.
+     * @param line1 the first line to check.
+     * @param line2 the second line to check.
+     * @return the distance between two lines.
+     */
+    public static float distanceLineLine(Line line1, Line line2) {
+        return (float) Math.sqrt(distanceLineLineSquared(line1, line2));
+    }
     /**
      * <code>distanceLineLineSquared</code> calculates the distance squared
      * between two lines.
@@ -208,6 +323,22 @@ public class Distance {
      * @return the distance squared between two lines.
      */
     public static float distanceLineLineSquared(Line line1, Line line2) {
+        return distanceLineLineSquared(line1, line2, null, null);
+    }
+    /**
+     * <code>distanceLineLineSquared</code> calculates the distance squared
+     * between two lines.
+     * @param line1 the first line to check.
+     * @param line2 the second line to check.
+     * @param sParam container for s in the first line where L0(s) = B0 + sM0.
+     * @param tParam container for t in the second line where L1(t) = B1 + tM1.
+     * @return the distance squared between two lines.
+     */
+    public static float distanceLineLineSquared(
+        Line line1,
+        Line line2,
+        float[] sParam,
+        float[] tParam) {
         Vector diff = line1.getOrigin().subtract(line2.getOrigin());
         float a = line1.getDirection().lengthSquared();
         float b = -line1.getDirection().dot(line2.getDirection());
@@ -237,7 +368,26 @@ public class Distance {
             distanceSquared = d * s + f;
         }
 
+        if (tParam != null) {
+            tParam[0] = t;
+        }
+
+        if (sParam != null) {
+            sParam[0] = s;
+        }
+
         return Math.abs(distanceSquared);
+    }
+
+    /**
+     * <code>distanceLineRay</code> calculates the distance between a line and
+     * a ray.
+     * @param line the line to check.
+     * @param ray the ray to check.
+     * @return the distance between a line and a ray.
+     */
+    public static float distanceLineRay(Line line, Line ray) {
+        return (float) Math.sqrt(distanceLineRaySquared(line, ray));
     }
 
     /**
@@ -248,6 +398,23 @@ public class Distance {
      * @return the distance between the line and the ray.
      */
     public static float distanceLineRaySquared(Line line, Line ray) {
+        return distanceLineRaySquared(line, ray, null, null);
+    }
+
+    /**
+     * <code>distanceLineRaySquared</code> calculates the squared distance
+     * between a line and a ray. 
+     * @param line the line to check.
+     * @param ray the ray to check.
+     * @param sParam container for s where s is L0(s) = B0 + sM0.
+     * @param tParam container for t where t is L1(t) = B1 + tM1.
+     * @return the distance between the line and the ray.
+     */
+    public static float distanceLineRaySquared(
+        Line line,
+        Line ray,
+        float[] sParam,
+        float[] tParam) {
         Vector diff = line.getOrigin().subtract(ray.getOrigin());
         float a = line.getDirection().lengthSquared();
         float b = -line.getDirection().dot(ray.getDirection());
@@ -286,7 +453,26 @@ public class Distance {
             distanceSquared = d * s + f;
         }
 
+        if (tParam != null) {
+            tParam[0] = t;
+        }
+
+        if (sParam != null) {
+            sParam[0] = s;
+        }
+
         return Math.abs(distanceSquared);
+    }
+
+    /**
+     * <code>distanceLineSegment</code> calculates the distance between a 
+     * line and a line segment.
+     * @param line the line to check.
+     * @param seg the line segment to check.
+     * @return the distance between a line and a line segment.
+     */
+    public static float distanceLineSegment(Line line, Line seg) {
+        return (float) Math.sqrt(distanceLineSegmentSquared(line, seg));
     }
 
     /**
@@ -305,15 +491,15 @@ public class Distance {
      * squared between a line and a line segment.
      * @param line the line to check.
      * @param seg the line segment to check.
-     * @param lineParam storage for the line parameter.
-     * @param segParam storage for the segment parameter.
+     * @param sParam container for s where s is L0(s) = B0 + sM0.
+     * @param tParam container for t where t is L1(t) = B1 + tM1.
      * @return the distance squared between a line and a line segment.
      */
     public static float distanceLineSegmentSquared(
         Line line,
         Line seg,
-        float[] lineParam,
-        float[] segParam) {
+        float[] sParam,
+        float[] tParam) {
 
         Vector diff = line.getOrigin().subtract(seg.getOrigin());
         float a = line.getDirection().lengthSquared();
@@ -362,14 +548,25 @@ public class Distance {
             t = 0.0f;
             squareDistance = d * s + f;
         }
-        if (null != lineParam) {
-            lineParam[0] = s;
+        if (null != sParam) {
+            sParam[0] = s;
         }
-        if (null != segParam) {
-            segParam[0] = t;
+        if (null != tParam) {
+            tParam[0] = t;
         }
 
         return Math.abs(squareDistance);
+    }
+
+    /**
+     * <code>distanceLineRectangle</code> calculates the distance between a 
+     * line and a rectangle.
+     * @param line the line to check.
+     * @param rect the rectangle to check.
+     * @return the distance between a line and a rectangle.
+     */
+    public static float distanceLineRectangle(Line line, Rectangle rect) {
+        return (float) Math.sqrt(distanceLineRectangleSquared(line, rect));
     }
 
     /**
@@ -382,6 +579,27 @@ public class Distance {
     public static float distanceLineRectangleSquared(
         Line line,
         Rectangle rect) {
+        return distanceLineRectangleSquared(line, rect, null, null, null);
+    }
+
+    /**
+     * <code>distanceLineRectangleSquared</code> calculates the distance squared
+     * between a line and a rectangle.
+     * @param line the line to check.
+     * @param rect the rectangle to check.
+     * @param rParam container for the Line's r parameter in L(r) = B + rM.
+     * @param sParam container for the rectangle's s parameter in 
+     *      R(s,t) = A + sE0 + tE1.
+     * @param tParam container for the rectangle's t parameter in
+     *      R(s,t) = A + sE0 + tE1.
+     * @return the distance squared.
+     */
+    public static float distanceLineRectangleSquared(
+        Line line,
+        Rectangle rect,
+        float[] rParam,
+        float[] sParam,
+        float[] tParam) {
 
         float[] r = new float[1];
         float[] s = new float[1];
@@ -582,7 +800,40 @@ public class Distance {
             }
         }
 
+        if (rParam != null) {
+            rParam[0] = r[0];
+        }
+
+        if (sParam != null) {
+            sParam[0] = s[0];
+        }
+
+        if (tParam != null) {
+            tParam[0] = t[0];
+        }
+
         return Math.abs(distanceSquared);
+    }
+
+    /**
+     * <code>distanceRayRay</code> returns the distance between two rays.
+     * @param ray1 the first ray to check.
+     * @param ray2 the second ray to check.
+     * @return the distance between two rays.
+     */
+    public static float distanceRayRay(Line ray1, Line ray2) {
+        return (float) Math.sqrt(distanceRayRaySquared(ray1, ray2));
+    }
+
+    /**
+     * <code>distanceRayRaySquared</code> returns the distance squared between
+     * two rays.
+     * @param ray1 the first ray to check.
+     * @param ray2 the second ray to check.
+     * @return the distance squared between the two rays.
+     */
+    public static float distanceRayRaySquared(Line ray1, Line ray2) {
+        return distanceRayRaySquared(ray1, ray2, null, null);
     }
 
     /**
@@ -590,9 +841,15 @@ public class Distance {
      * between two rays.
      * @param ray1 the first ray to check.
      * @param ray2 the second ray to check.
+     * @param sParam container for s in L1(s) = B1 + sM1.
+     * @param tParam container for t in L2(t) = B2 + tM2.
      * @return the distance squared between the two rays.
      */
-    public static float distanceRayRaySquared(Line ray1, Line ray2) {
+    public static float distanceRayRaySquared(
+        Line ray1,
+        Line ray2,
+        float[] sParam,
+        float[] tParam) {
         Vector diff = ray1.getOrigin().subtract(ray2.getOrigin());
         float a = ray1.getDirection().lengthSquared();
         float b = -ray1.getDirection().dot(ray2.getDirection());
@@ -612,8 +869,7 @@ public class Distance {
             t = b * d - a * e;
 
             if (s >= 0.0) {
-                if (t >= 0.0) // region 0 (interior)
-                    {
+                if (t >= 0.0) {
                     // minimum at two interior points of rays
                     float inverseDeterminate = 1.0f / determinate;
                     s *= inverseDeterminate;
@@ -622,8 +878,7 @@ public class Distance {
                         s * (a * s + b * t + 2.0f * d)
                             + t * (b * s + c * t + 2.0f * e)
                             + f;
-                } else // region 3 (side)
-                    {
+                } else {
                     t = 0.0f;
                     if (d >= 0.0) {
                         s = 0.0f;
@@ -634,8 +889,7 @@ public class Distance {
                     }
                 }
             } else {
-                if (t >= 0.0) // region 1 (side)
-                    {
+                if (t >= 0.0) {
                     s = 0.0f;
                     if (e >= 0.0) {
                         t = 0.0f;
@@ -644,8 +898,7 @@ public class Distance {
                         t = -e / c;
                         distanceSquared = e * t + f;
                     }
-                } else // region 2 (corner)
-                    {
+                } else {
                     if (d < 0.0) {
                         s = -d / a;
                         t = 0.0f;
@@ -689,7 +942,26 @@ public class Distance {
             }
         }
 
+        if (sParam != null) {
+            sParam[0] = s;
+        }
+
+        if (tParam != null) {
+            tParam[0] = t;
+        }
+
         return Math.abs(distanceSquared);
+    }
+
+    /**
+     * <code>distanceRaySegment</code> calculates the distance between a ray
+     * and a line segment.
+     * @param ray the ray to check.
+     * @param seg the line segment to check.
+     * @return
+     */
+    public static float distanceRaySegment(Line ray, Line seg) {
+        return (float) Math.sqrt(distanceRaySegmentSquared(ray, seg));
     }
 
     /**
@@ -708,13 +980,15 @@ public class Distance {
      * squared between a ray and a line segment. 
      * @param ray the ray to check.
      * @param seg the line segment to check.
+     * @param sParam container for s where L1(s) = B1 + sM1.
+     * @param tParam container for t where L2(t) = B2 + tM2.
      * @return the distance between the ray and the line segment.
      */
     public static float distanceRaySegmentSquared(
         Line ray,
         Line seg,
-        float[] rayParam,
-        float[] segParam) {
+        float[] sParam,
+        float[] tParam) {
 
         Vector diff = ray.getOrigin().subtract(seg.getOrigin());
         float a = ray.getDirection().lengthSquared();
@@ -852,13 +1126,26 @@ public class Distance {
             }
         }
 
-        if (rayParam != null)
-            rayParam[0] = s;
+        if (sParam != null) {
+            sParam[0] = s;
+        }
 
-        if (segParam != null)
-            segParam[0] = t;
+        if (tParam != null) {
+            tParam[0] = t;
+        }
 
         return Math.abs(distanceSquared);
+    }
+
+    /**
+     * <code>distanceRayRectangle</code> calculates the distance between a 
+     * ray and a rectangle.
+     * @param ray the ray to check.
+     * @param rect the rectangle to check.
+     * @return the distance between a ray and a rectangle.
+     */
+    public static float distanceRayRectangle(Line ray, Rectangle rect) {
+        return (float) Math.sqrt(distanceRayRectangleSquared(ray, rect));
     }
 
     /**
@@ -869,6 +1156,28 @@ public class Distance {
      * @return the distance squared between a ray and a rectangle.
      */
     public static float distanceRayRectangleSquared(Line ray, Rectangle rect) {
+        return distanceRayRectangleSquared(ray, rect, null, null, null);
+    }
+
+    /**
+     * <code>distanceRayRectangleSquared</code> calculates the distance 
+     * squared between a ray and a rectangle.
+     * @param ray the ray to check.
+     * @param rect the rectangle to check.
+     * @param rParam container for the Line's r parameter in L(r) = B + rM.
+     * @param sParam container for the rectangle's s parameter in 
+     *      R(s,t) = A + sE0 + tE1.
+     * @param tParam container for the rectangle's t parameter in
+     *      R(s,t) = A + sE0 + tE1.
+     * 
+     * @return the distance squared between a ray and a rectangle.
+     */
+    public static float distanceRayRectangleSquared(
+        Line ray,
+        Rectangle rect,
+        float[] rParam,
+        float[] sParam,
+        float[] tParam) {
         Vector diff = rect.getOrigin().subtract(ray.getOrigin());
         float a00 = ray.getDirection().lengthSquared();
         float a01 = -ray.getDirection().dot(rect.getFirstEdge());
@@ -1349,15 +1658,38 @@ public class Distance {
             }
         }
 
+        if (rParam != null) {
+            rParam[0] = r[0];
+        }
+
+        if (sParam != null) {
+            sParam[0] = s[0];
+        }
+
+        if (tParam != null) {
+            tParam[0] = t[0];
+        }
+
         return Math.abs(squaredDistance);
     }
+
     /**
-         * <code>distanceSegmentSegmentSquared</code> calculates the distance
-         * squared between two line segments.
-         * @param seg1 the first line segment to check.
-         * @param seg2 the second line segment to check.
-         * @return the distance between two line segments.
-         */
+     * <code>distanceSegmentSegment</code> calculates the distance between
+     * two lien segments.
+     * @param seg1 the first line segment to check.
+     * @param seg2 the second line segment to check.
+     * @return the distance between the two line segments.
+     */
+    public static float distanceSegmentSegment(Line seg1, Line seg2) {
+        return (float) Math.sqrt(distanceSegmentSegment(seg1, seg2));
+    }
+    /**
+     * <code>distanceSegmentSegmentSquared</code> calculates the distance
+     * squared between two line segments.
+     * @param seg1 the first line segment to check.
+     * @param seg2 the second line segment to check.
+     * @return the distance squared between two line segments.
+     */
     public static float distanceSegmentSegmentSquared(Line seg1, Line seg2) {
         return distanceSegmentSegmentSquared(seg1, seg2, null, null);
     }
@@ -1367,13 +1699,15 @@ public class Distance {
      * squared between two line segments.
      * @param seg1 the first line segment to check.
      * @param seg2 the second line segment to check.
-     * @return the distance between two line segments.
+     * @param sParam container for s where s is L1(s) = B1 + sM1.
+     * @param tParam container for t where t is L2(t) = B2 + tM2.
+     * @return the distance squared between two line segments.
      */
     public static float distanceSegmentSegmentSquared(
         Line seg1,
         Line seg2,
-        float[] seg1Param,
-        float[] seg2Param) {
+        float[] sParam,
+        float[] tParam) {
         Vector diff = seg1.getOrigin().subtract(seg2.getOrigin());
         float a = seg1.getDirection().lengthSquared();
         float b = -seg1.getDirection().dot(seg2.getDirection());
@@ -1396,8 +1730,7 @@ public class Distance {
             if (s >= 0.0) {
                 if (s <= determinate) {
                     if (t >= 0.0) {
-                        if (t <= determinate) // region 0 (interior)
-                            {
+                        if (t <= determinate) {
                             // minimum at two interior points of 3D lines
                             float inverseDeterminate = 1.0f / determinate;
                             s *= inverseDeterminate;
@@ -1406,8 +1739,7 @@ public class Distance {
                                 s * (a * s + b * t + 2.0f * d)
                                     + t * (b * s + c * t + 2.0f * e)
                                     + f;
-                        } else // region 3 (side)
-                            {
+                        } else {
                             t = 1.0f;
                             temp = b + d;
                             if (temp >= 0.0f) {
@@ -1421,8 +1753,7 @@ public class Distance {
                                 distanceSquared = temp * s + c + 2.0f * e + f;
                             }
                         }
-                    } else // region 7 (side)
-                        {
+                    } else {
                         t = 0.0f;
                         if (d >= 0.0f) {
                             s = 0.0f;
@@ -1437,8 +1768,7 @@ public class Distance {
                     }
                 } else {
                     if (t >= 0.0f) {
-                        if (t <= determinate) // region 1 (side)
-                            {
+                        if (t <= determinate) {
                             s = 1.0f;
                             temp = b + e;
                             if (temp >= 0.0f) {
@@ -1451,8 +1781,7 @@ public class Distance {
                                 t = -temp / c;
                                 distanceSquared = temp * t + a + 2.0f * d + f;
                             }
-                        } else // region 2 (corner)
-                            {
+                        } else {
                             temp = b + d;
                             if (-temp <= a) {
                                 t = 1.0f;
@@ -1481,8 +1810,7 @@ public class Distance {
                                 }
                             }
                         }
-                    } else // region 8 (corner)
-                        {
+                    } else {
                         if (-d < a) {
                             t = 0.0f;
                             if (d >= 0.0f) {
@@ -1510,8 +1838,7 @@ public class Distance {
                 }
             } else {
                 if (t >= 0.0f) {
-                    if (t <= determinate) // region 5 (side)
-                        {
+                    if (t <= determinate) {
                         s = 0.0f;
                         if (e >= 0.0f) {
                             t = 0.0f;
@@ -1523,8 +1850,7 @@ public class Distance {
                             t = -e / c;
                             distanceSquared = e * t + f;
                         }
-                    } else // region 4 (corner)
-                        {
+                    } else {
                         temp = b + d;
                         if (temp < 0.0f) {
                             t = 1.0f;
@@ -1549,8 +1875,7 @@ public class Distance {
                             }
                         }
                     }
-                } else // region 6 (corner)
-                    {
+                } else {
                     if (d < 0.0f) {
                         t = 0.0f;
                         if (-d >= a) {
@@ -1624,13 +1949,26 @@ public class Distance {
             }
         }
 
-        if (seg1Param != null)
-            seg1Param[0] = s;
+        if (sParam != null) {
+            sParam[0] = s;
+        }
 
-        if (seg2Param != null)
-            seg2Param[0] = t;
+        if (tParam != null) {
+            tParam[0] = t;
+        }
 
         return Math.abs(distanceSquared);
+    }
+
+    /**
+     * <code>distanceSegmentRectangle</code> returns the distance between a
+     * line segment and a rectangle. 
+     * @param seg the line segment to check.
+     * @param rect the rectangle to check.
+     * @return the distance between a line segment and a rectangle.
+     */
+    public static float distanceSegmentRectangle(Line seg, Rectangle rect) {
+        return (float) Math.sqrt(distanceSegmentRectangleSquared(seg, rect));
     }
 
     /**
@@ -1643,6 +1981,28 @@ public class Distance {
     public static float distanceSegmentRectangleSquared(
         Line seg,
         Rectangle rect) {
+        return distanceSegmentRectangleSquared(seg, rect, null, null, null);
+    }
+
+    /**
+     * <code>distanceSegmentRectangleSquared</code> calculates the distance
+     * squared between a line segment and a rectangle.
+     * @param seg the line segment to check.
+     * @param rect the rectangle to check.
+     * @param rParam container for the Line's r parameter in L(r) = B + rM.
+     * @param sParam container for the rectangle's s parameter in 
+     *      R(s,t) = A + sE0 + tE1.
+     * @param tParam container for the rectangle's t parameter in
+     *      R(s,t) = A + sE0 + tE1.
+     * 
+     * @return the distance squared between a line segment and rectangle.
+     */
+    public static float distanceSegmentRectangleSquared(
+        Line seg,
+        Rectangle rect,
+        float[] rParam,
+        float[] sParam,
+        float[] tParam) {
 
         Vector diff = rect.getOrigin().subtract(seg.getOrigin());
         float a00 = seg.getDirection().lengthSquared();
@@ -1722,8 +2082,7 @@ public class Distance {
                             s[0] = s0[0];
                             t[0] = t0[0];
                         }
-                    } else if (t[0] <= 1.0) // region 5m
-                        {
+                    } else if (t[0] <= 1.0) {
                         // min on face s=0 or r=0
                         tempSegment.setOrigin(rect.getOrigin());
                         tempSegment.setDirection(rect.getSecondEdge());
@@ -1914,8 +2273,7 @@ public class Distance {
                             s[0] = s0[0];
                             t[0] = t0[0];
                         }
-                    } else // region 2m
-                        {
+                    } else {
                         // min on face s=1 or t=1 or r=0
                         tempSegment.setOrigin(
                             rect.getOrigin().add(rect.getFirstEdge()));
@@ -2235,8 +2593,7 @@ public class Distance {
                         }
                     }
                 } else if (s[0] <= 1.0) {
-                    if (t[0] < 0.0) // region 7p
-                        {
+                    if (t[0] < 0.0) {
                         // min on face t=0 or r=1
                         tempSegment.setOrigin(rect.getOrigin());
                         tempSegment.setOrigin(rect.getFirstEdge());
@@ -2257,15 +2614,13 @@ public class Distance {
                             s[0] = s0[0];
                             t[0] = t0[0];
                         }
-                    } else if (t[0] <= 1.0) // region 0p
-                        {
+                    } else if (t[0] <= 1.0) {
                         // min on face r=1
                         point = seg.getOrigin().add(seg.getDirection());
                         squaredDistance =
                             distancePointRectangleSquared(point, rect, s, t);
                         r[0] = 1.0f;
-                    } else // region 3p
-                        {
+                    } else {
                         // min on face t=1 or r=1
                         tempSegment.setOrigin(
                             rect.getOrigin().add(rect.getSecondEdge()));
@@ -2289,8 +2644,7 @@ public class Distance {
                         }
                     }
                 } else {
-                    if (t[0] < 0.0) // region 8p
-                        {
+                    if (t[0] < 0.0) {
                         // min on face s=1 or t=0 or r=1
                         tempSegment.setOrigin(
                             rect.getOrigin().add(rect.getFirstEdge()));
@@ -2327,8 +2681,7 @@ public class Distance {
                             s[0] = s0[0];
                             t[0] = t0[0];
                         }
-                    } else if (t[0] <= 1.0) // region 1p
-                        {
+                    } else if (t[0] <= 1.0) {
                         // min on face s=1 or r=1
                         tempSegment.setOrigin(
                             rect.getOrigin().add(rect.getFirstEdge()));
@@ -2350,8 +2703,7 @@ public class Distance {
                             s[0] = s0[0];
                             t[0] = t0[0];
                         }
-                    } else // region 2p
-                        {
+                    } else {
                         // min on face s=1 or t=1 or r=1
                         tempSegment.setOrigin(
                             rect.getOrigin().add(rect.getFirstEdge()));
@@ -2457,6 +2809,196 @@ public class Distance {
             }
         }
 
+        if (rParam != null) {
+            rParam[0] = r[0];
+        }
+
+        if (sParam != null) {
+            sParam[0] = s[0];
+        }
+
+        if (tParam != null) {
+            tParam[0] = t[0];
+        }
+
         return Math.abs(squaredDistance);
+    }
+
+    /**
+     * <code>distanceRectangleRectangle</code> calculates the distance between
+     * two rectangles.
+     * @param rect1 the first rectangle to check.
+     * @param rect2 the second rectangle to check.
+     * @return the distance between two rectangles.
+     */
+    public static float distanceRectangleRectangle(
+        Rectangle rect1,
+        Rectangle rect2) {
+        return (float) Math.sqrt(
+            distanceRectangleRectangleSquared(rect1, rect2));
+    }
+
+    /**
+     * <code>distanceRectangleRectangleSquared</code> calculates the distance
+     * squared between two rectangles.
+     * @param rect1 the first rectangle to check.
+     * @param rect2 the second rectangle to check.
+     * @return the distance squared between these two rectangles.
+     */
+    public static float distanceRectangleRectangleSquared(
+        Rectangle rect1,
+        Rectangle rect2) {
+        return distanceRectangleRectangleSquared(
+            rect1,
+            rect2,
+            null,
+            null,
+            null,
+            null);
+    }
+
+    /**
+     * <code>distanceRectangleRectangleSquared</code> calculates the distance
+     * squared between two rectangles.
+     * @param rect1 the first rectangle to check.
+     * @param rect2 the second rectangle to check.
+     * @param sParam container for s where s is R1(s,t) = A + sE0 + tE1.
+     * @param tParam container for t where t is R1(s,t) = A + sE0 + tE1.
+     * @param uParam container for u where u is R2(u,v) = A + uE0 + vE1.
+     * @param vParam container for v where v is R2(u,v) = A + uE0 + vE1.
+     * @return the distance squared between these two rectangles.
+     */
+    public static float distanceRectangleRectangleSquared(
+        Rectangle rect1,
+        Rectangle rect2,
+        float[] sParam,
+        float[] tParam,
+        float[] uParam,
+        float[] vParam) {
+
+        float[] s = new float[1];
+        float[] t = new float[1];
+        float[] u = new float[1];
+        float[] v = new float[1];
+        float[] t0 = new float[1];
+        float[] u0 = new float[1];
+        float[] v0 = new float[1];
+        float[] s0 = new float[1];
+
+        float distanceSquared, distanceSquared0;
+        Line segment = new Line();
+
+        // compare edges of rct0 against all of rct1
+        segment.setOrigin(rect1.getOrigin());
+        segment.setDirection(rect1.getFirstEdge());
+        distanceSquared =
+            distanceSegmentRectangleSquared(segment, rect2, s, u, v);
+        t[0] = 0.0f;
+
+        segment.setDirection(rect1.getSecondEdge());
+        distanceSquared0 =
+            distanceSegmentRectangleSquared(segment, rect2, t0, u0, v0);
+        s0[0] = 0.0f;
+        if (distanceSquared0 < distanceSquared) {
+            distanceSquared = distanceSquared0;
+            s[0] = s0[0];
+            t[0] = t0[0];
+            u[0] = u0[0];
+            v[0] = v0[0];
+        }
+
+        segment.setOrigin(rect1.getOrigin().add(rect1.getFirstEdge()));
+        distanceSquared0 =
+            distanceSegmentRectangleSquared(segment, rect2, t0, u0, v0);
+        s0[0] = 1.0f;
+        if (distanceSquared0 < distanceSquared) {
+            distanceSquared = distanceSquared0;
+            s[0] = s0[0];
+            t[0] = t0[0];
+            u[0] = u0[0];
+            v[0] = v0[0];
+        }
+
+        segment.setOrigin(rect1.getOrigin().add(rect1.getSecondEdge()));
+        segment.setDirection(rect1.getFirstEdge());
+        distanceSquared0 =
+            distanceSegmentRectangleSquared(segment, rect2, s0, u0, v0);
+        t0[0] = 1.0f;
+        if (distanceSquared0 < distanceSquared) {
+            distanceSquared = distanceSquared0;
+            s[0] = s0[0];
+            t[0] = t0[0];
+            u[0] = u0[0];
+            v[0] = v0[0];
+        }
+
+        // compare edges of pgm1 against all of pgm0
+        segment.setOrigin(rect2.getOrigin());
+        segment.setDirection(rect2.getFirstEdge());
+        distanceSquared0 =
+            distanceSegmentRectangleSquared(segment, rect1, u0, s0, t0);
+        v0[0] = 0.0f;
+        if (distanceSquared0 < distanceSquared) {
+            distanceSquared = distanceSquared0;
+            s[0] = s0[0];
+            t[0] = t0[0];
+            u[0] = u0[0];
+            v[0] = v0[0];
+        }
+
+        segment.setDirection(rect2.getSecondEdge());
+        distanceSquared0 =
+            distanceSegmentRectangleSquared(segment, rect1, v0, s0, t0);
+        u0[0] = 0.0f;
+        if (distanceSquared0 < distanceSquared) {
+            distanceSquared = distanceSquared0;
+            s[0] = s0[0];
+            t[0] = t0[0];
+            u[0] = u0[0];
+            v[0] = v0[0];
+        }
+
+        segment.setOrigin(rect2.getOrigin().add(rect2.getFirstEdge()));
+        distanceSquared0 =
+            distanceSegmentRectangleSquared(segment, rect1, v0, s0, t0);
+        u0[0] = 1.0f;
+        if (distanceSquared0 < distanceSquared) {
+            distanceSquared = distanceSquared0;
+            s[0] = s0[0];
+            t[0] = t0[0];
+            u[0] = u0[0];
+            v[0] = v0[0];
+        }
+
+        segment.setOrigin(rect2.getOrigin().add(rect2.getSecondEdge()));
+        segment.setDirection(rect2.getFirstEdge());
+        distanceSquared0 =
+            distanceSegmentRectangleSquared(segment, rect1, u0, s0, t0);
+        v0[0] = 1.0f;
+        if (distanceSquared0 < distanceSquared) {
+            distanceSquared = distanceSquared0;
+            s[0] = s0[0];
+            t[0] = t0[0];
+            u[0] = u0[0];
+            v[0] = v0[0];
+        }
+
+        if (sParam != null) {
+            sParam[0] = s[0];
+        }
+
+        if (tParam != null) {
+            tParam[0] = t[0];
+        }
+
+        if (uParam != null) {
+            uParam[0] = u[0];
+        }
+
+        if (vParam != null) {
+            vParam[0] = v[0];
+        }
+
+        return Math.abs(distanceSquared);
     }
 }
