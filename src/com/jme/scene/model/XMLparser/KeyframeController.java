@@ -30,19 +30,25 @@ import java.util.logging.Level;
 public class KeyframeController extends Controller{
 
     /**
-     * An array of <code>PointInTime</code>s
+     * An array of <code>PointInTime</code>s that defines the animation
      */
     ArrayList keyframes;
+
+    /**
+     * A special array used with SmoothTransform to store temporary smooth transforms
+     */
     ArrayList prevKeyframes;
 
     /**
      * The mesh that is actually morphed
      */
     TriMesh morphMesh;
+
+    /**
+     * The current time in the animation
+     */
     float curTime;
-    float tempTime;
     int curFrame;
-    int direction;
 
     Vector3f tempV3f=new Vector3f();
     Vector2f tempV2f=new Vector2f();
@@ -62,6 +68,10 @@ public class KeyframeController extends Controller{
      * If true, the animation is moving forward, if false the animation is moving backwards
      */
     boolean movingForward;
+
+    /**
+     * Used with SmoothTransform to signal it is doing a smooth transform
+     */
     private boolean isSmooth;
 
 
@@ -224,6 +234,10 @@ public class KeyframeController extends Controller{
         }
     }
 
+    /**
+     * Saves whatever the current morphMesh looks like into the dataCopy
+     * @param dataCopy The copy to save the current mesh into
+     */
     private void getCurrent(TriMesh dataCopy) {
         if (morphMesh.getColors()!=null){
             ColorRGBA[] newColors=null;

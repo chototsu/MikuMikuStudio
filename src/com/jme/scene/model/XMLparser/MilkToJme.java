@@ -29,6 +29,10 @@ public class MilkToJme {
     int nNumTriangles;
     MilkTriangle[] myTris;
     int[] materialIndexes;
+
+    /**
+     * The node that represents the .ms3d file.  It's chidren are MS meshes
+     */
     Node finalNode;
 
     /**
@@ -123,6 +127,13 @@ public class MilkToJme {
         }
     }
 
+    /**
+     * Every child of finalNode (IE the .ms3d file) whos materialIndex is the given index, gets the two RenderStates applied
+     * @param matState A Material state to apply
+     * @param texState A TextureState to apply
+     * @param index The index that a TriMesh should have from <code>materialIndex</code> to get the given
+     * states
+     */
     private void applyStates(MaterialState matState, TextureState texState,int index) {
         for (int i=0;i<finalNode.getQuantity();i++){
             if (materialIndexes[i]==index){

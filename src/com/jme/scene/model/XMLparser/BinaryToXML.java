@@ -1,6 +1,5 @@
 package com.jme.scene.model.XMLparser;
 
-import com.jme.system.JmeException;
 
 import java.io.InputStream;
 import java.io.Writer;
@@ -18,6 +17,10 @@ public class BinaryToXML {
     DataInputStream myIn;
     Writer XMLFile;
     short tabCount;
+    
+    /**
+     * <code>currentLine</code> contains the String that will be finally written to the XML file via writeLine
+     */
     StringBuffer currentLine;
     private static final boolean DEBUG = false;
 
@@ -31,20 +34,21 @@ public class BinaryToXML {
      * @param binFile The input stream of the jME file
      * @param XML Where to write the XML format too.
      */
-    public void sendBinarytoXML (InputStream binFile,Writer XML){
+    public void sendBinarytoXML (InputStream binFile,Writer XML) throws IOException {
         myIn=new DataInputStream(binFile);
         XMLFile=XML;
         tabCount=0;
         currentLine=new StringBuffer();
-        try {
-            readHeader();
-            while (readPart());
-            XML.close();
-        } catch (IOException e) {
-            throw new JmeException("Error trying to read from binFile: " + e.getMessage());
-        }
+        readHeader();
+        while (readPart());
+        XML.close();
     }
 
+    /**
+     * Reads a block from jME's binary format.
+     * @return True if it is valid to read another block, false if END_FILE block is reached
+     * @throws IOException If anything funny goes on with writting.
+     */
     private boolean readPart() throws IOException{
         byte flag=myIn.readByte();
         if (flag==BinaryFormatConstants.BEGIN_TAG){
@@ -73,10 +77,14 @@ public class BinaryToXML {
         }else if (flag==BinaryFormatConstants.END_FILE){
             return false;
         }else{
-            throw new JmeException("Unknown flag read: " + flag);
+            throw new IOException("Unknown flag read: " + flag);
         }
     }
 
+    /**
+     * Reads a datablock, by first reading in its type.  The type defines how the rest of the block will be read
+     * @throws IOException If anything wierd goes on while reading
+     */
     private void readData() throws IOException {
         byte type=myIn.readByte();
         switch (type){
@@ -170,12 +178,20 @@ public class BinaryToXML {
         }
     }
 
+    /**
+     * Reads the file header.  Throws an IOException if the header doesn't match.
+     * @throws IOException
+     */
     private void readHeader() throws IOException {
         if (BinaryFormatConstants.BEGIN_FILE!=myIn.readLong()){
-            throw new JmeException("Header data doesn't match");
+            throw new IOException("Header data doesn't match");
         }
     }
 
+    /**
+     * Takes currentLine, adds tabs to the begining, and writes it to the XMLFile.
+     * @throws IOException
+     */
     private void writeLine() throws IOException {
         for (int i=0;i<tabCount;i++)
             XMLFile.write('\t');

@@ -16,7 +16,7 @@ import java.io.DataOutputStream;
 /**
  * Started Date: Jun 23, 2004<br><br>
  * This class can read a XML file and convert it into jME binary format.
- * 
+ *
  * @author Jack Lindamood
  */
 public class XMLtoBinary {
@@ -59,6 +59,7 @@ public class XMLtoBinary {
                 throw new SAXException("Unable to write header");
             }
         }
+
         public void endDocument() throws SAXException {
             try {
                 myOut.writeByte(BinaryFormatConstants.END_FILE);
@@ -67,6 +68,7 @@ public class XMLtoBinary {
                 throw new SAXException("Unable to close binFile outStream");
             }
         }
+
         public void startElement(String uri,String localName,String qName, Attributes atts) throws SAXException{
             if (DEBUG) System.out.println("startElement:" + qName);
             try {
@@ -83,6 +85,14 @@ public class XMLtoBinary {
             }
         }
 
+        /**
+         * Takes a tag's name, an attribute's name, and the value of the attribute and writes it in the
+         * appropriate manner.  For example, (&lt vertex data="blarg">)
+         * @param qName Name of tag (example "vertex" )
+         * @param att Name of attribute (example "data" )
+         * @param value Name of the value of the attribute (example "blarg" )
+         * @throws IOException
+         */
         private void processWrite(String qName,String att, String value) throws IOException {
             if (DEBUG) System.out.println("processWrite qName=" + qName + "**att=" + att + "**value="+ value+"**");
             if ("data".equals(att)){
@@ -250,7 +260,11 @@ public class XMLtoBinary {
                 myOut.writeFloat(Float.parseFloat(information[i*3+2]));
             }
         }
-
+        /**
+         * Whenever two or more whitespaces are next to each other, they are removed and replaced by ' '
+         * @param data The string to remove from
+         * @return A new, removed string
+         */
         private String removeDoubleWhiteSpaces(String data) {
             StringBuffer toReturn=new StringBuffer();
             boolean whiteSpaceFlag=false;

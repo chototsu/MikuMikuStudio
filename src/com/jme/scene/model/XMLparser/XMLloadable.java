@@ -6,7 +6,7 @@ package com.jme.scene.model.XMLparser;
  * Is implimented by jME objects to allow them to be saved/loaded to/from jME
  * All implimenting classes must have a default constructor, or they will be
  * unable to be processed.  It is guaranteed that loadFromXML(String args) will
- * be called directly default construction.  The user should make sure that the String
+ * be called directly after default construction.  The user should make sure that the String
  * returned from writeToXML() will duplicate the current object when loadFromXML(String) is
  * called.
  *
@@ -17,7 +17,6 @@ package com.jme.scene.model.XMLparser;
  *
  * <br>
  *
- * //TODO: There is probably a better way to do this.  Find it!
  * @author Jack Lindamood
  */
 public interface XMLloadable {

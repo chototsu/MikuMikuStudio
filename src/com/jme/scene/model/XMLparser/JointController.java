@@ -79,6 +79,10 @@ public class JointController extends Controller {
      */
     private float currentSkip;
 
+    /**
+     * Constructs a new JointController that will hold the given number of joints
+     * @param numJoints The number of joints this jointController will have
+     */
     JointController(int numJoints){
         this.numJoints=numJoints;
         parentIndex=new int[numJoints];
@@ -178,6 +182,7 @@ public class JointController extends Controller {
         }
         return storedNext;
     }
+
     public void update(float time) {
         if (!this.isActive()) return;
         curTime+=time*this.getSpeed();
@@ -296,7 +301,7 @@ public class JointController extends Controller {
 
 
     /**
-     * Gives every point in time for every joint a valid rotation
+     * Gives every PointInTime for every joint a valid rotation
      */
     private void fillRots() {
         for (int joint=0;joint<numJoints;joint++){
@@ -328,7 +333,7 @@ public class JointController extends Controller {
 
 
     /**
-     * Gives every point in time for every joint a valid translation
+     * Gives every PointInTime for every joint a valid translation
      */
     private void fillTrans() {
         for (int joint=0;joint<numJoints;joint++){
@@ -409,7 +414,7 @@ public class JointController extends Controller {
         Quaternion[] jointRotation;
         /**
          * The bitsets specify if the translation/rotation was specified externally, or if it was interpolated.  This
-         * is useful to cut down on stored XML file size.
+         * is useful to cut down on stored file size.
          */
         BitSet usedTrans;
         BitSet usedRot;

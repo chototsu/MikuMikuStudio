@@ -32,15 +32,36 @@ import java.net.MalformedURLException;
 /**
  * Started Date: Jun 23, 2004<br><br>
  *
- * This class converts jME's binary format to a scenegraph
+ * This class converts jME's binary format to a scenegraph.  Even
+ * though this class's name ends with Reader, it does not extend Reader
  * @author Jack Lindamood
  */
 public class JmeBinaryReader {
+
+    /**
+     * Holds a list of objects that have encountered a being_tag but not an end_tag yet
+     */
     Stack s=new Stack();
+
+    /**
+     * Holds already loaded objects that are to be shared at various locations in the file
+     */
     private Hashtable shares=new Hashtable();
+
+    /**
+     * Holds the attributes of a tag for processing
+     */
     private HashMap attributes=new HashMap();
+
+    /**
+     * Holds properties that modify how JmeBinaryReader loads a file
+     */
     HashMap properties=new HashMap();
-    private Node myScene=null;
+
+    /**
+     * The scene that was last loaded
+     */
+    private Node myScene;
 
     private Renderer renderer;
     DataInputStream myIn;
@@ -85,6 +106,10 @@ public class JmeBinaryReader {
         return myScene;
     }
 
+    /**
+     * processes an END_TAG flag, which signals a tag has finished reading all children information
+     * @throws IOException If anything bad happens in reading the binary file
+     */
     private void readEnd() throws IOException {
         String tagName=myIn.readUTF();
         if (DEBUG) System.out.println("reading endtag:" + tagName);
@@ -192,6 +217,12 @@ public class JmeBinaryReader {
         }
     }
 
+
+    /**
+     * Processes a BEGIN_TAG flag, which signals that a tag has begun.  Attributes for the
+     * tag are read, and if needed an object is pushed on the stack
+     * @throws IOException If anything wierd goes on in reading
+     */
     private void readBegining() throws IOException {
         String tagName=myIn.readUTF();
         if (DEBUG) System.out.println("Reading tagName:" + tagName);
@@ -309,12 +340,11 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Loads a primitive tag given attributes from an XML file
-     * @param atts Attributes
+     * Builds a primitive given attributes
+     * @param atts Attributes to build with
      * @return The loaded primitive
      */
     private Spatial processPrimitive(HashMap atts){
-        System.out.println("BLAH" + atts);
         String parameters=(String) atts.get("params");
         String type=(String) atts.get("type");
         if (parameters==null) throw new JmeException("Must specify parameters");
@@ -339,7 +369,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Builds a texture with the given XML attributes
+     * Builds a texture with the given attributes
      * @param atts The attributes of the Texture
      * @return The new texture
      */
@@ -373,7 +403,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Changes a Spatial's parameters acording to the XML attributes
+     * Changes a Spatial's parameters acording to the attributes
      * @param toAdd The spatial to change
      * @param atts The attributes
      * @return The given (<code>toAdd</code>) Spatial
@@ -391,7 +421,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Builds a MaterialState with the given attributes from an XML file
+     * Builds a MaterialState with the given attributes
      * @param atts The attributes
      * @return A new material state
      */
@@ -407,6 +437,12 @@ public class JmeBinaryReader {
         return m;
     }
 
+    /**
+     * Reads byte information from the binary file to put the needed attributes into a hashmap.  For
+     * example, the hashmap may contain {"translation":new Vector3f(1,1,1),"name":new String("guy")}
+     * @param atribMap The hashmap to hold the attributes
+     * @throws IOException If reading goes wrong
+     */
     private void readInObjects(HashMap atribMap) throws IOException {
         atribMap.clear();
         byte numFlags=myIn.readByte();

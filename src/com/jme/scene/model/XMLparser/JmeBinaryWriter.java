@@ -21,17 +21,22 @@ import java.net.URL;
 /**
  * Started Date: Jun 25, 2004<br><br>
  *
- * This class converts a scenegraph to jME binary format
+ * This class converts a scenegraph to jME binary format.  Even though this
+ * class's name ends with Writer, it does not extend Writer
  *
  * @author Jack Lindamood
  */
 public class JmeBinaryWriter {
     DataOutputStream myOut;
+    private final static boolean DEBUG=false;
+
     private static final Quaternion DEFAULT_ROTATION=new Quaternion();
     private static final Vector3f DEFAULT_TRANSLATION = new Vector3f();
-    private final static boolean DEBUG=false;
     private static final Vector3f DEFAULT_SCALE = new Vector3f(1,1,1);
 
+    /**
+     * Creates a new Binary Writer
+     */
     public JmeBinaryWriter(){
 
     }
@@ -64,7 +69,11 @@ public class JmeBinaryWriter {
         myOut.close();
     }
 
-
+    /**
+     * Writes a node to binary format
+     * @param node The node to write
+     * @throws IOException If anything bad happens.
+     */
     private void writeNode(Node node) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
@@ -75,11 +84,21 @@ public class JmeBinaryWriter {
         writeEndTag("node");
     }
 
+    /**
+     * Writes a Node's children.  writeSpatial is called on each child
+     * @param node The node who's children you want to write
+     * @throws IOException
+     */
     private void writeChildren(Node node) throws IOException {
         for (int i=0;i<node.getQuantity();i++)
             writeSpatial(node.getChild(i));
     }
 
+    /**
+     * Writes a Spatial to binary format
+     * @param s The spatial to write
+     * @throws IOException
+     */
     private void writeSpatial(Spatial s) throws IOException {
         if (s instanceof XMLloadable)
             writeXMLloadable((XMLloadable)s);
@@ -91,6 +110,11 @@ public class JmeBinaryWriter {
             writeMesh((TriMesh)s);
     }
 
+    /**
+     * Writes a mesh to binary format
+     * @param triMesh The mesh to write
+     * @throws IOException
+     */
     private void writeMesh(TriMesh triMesh) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
@@ -101,6 +125,11 @@ public class JmeBinaryWriter {
         writeEndTag("mesh");
     }
 
+    /**
+     * Writes a JointMesh to binary format
+     * @param jointMesh
+     * @throws IOException
+     */
     private void writeJointMesh(JointMesh jointMesh) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
@@ -111,6 +140,11 @@ public class JmeBinaryWriter {
         writeEndTag("jointmesh");
     }
 
+    /**
+     * Writes the inner tags of a JointMesh to binary format
+     * @param jointMesh Mesh who's tags are to be written
+     * @throws IOException
+     */
     private void writeJointMeshTags(JointMesh jointMesh) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
@@ -130,6 +164,11 @@ public class JmeBinaryWriter {
         writeTriMeshTags(jointMesh);
     }
 
+    /**
+     * Writes an XMLloadable class to binary format
+     * @param xmlloadable The class to write
+     * @throws IOException
+     */
     private void writeXMLloadable(XMLloadable xmlloadable) throws IOException {
         HashMap atts=new HashMap();
         atts.put("class",xmlloadable.getClass().getName());
@@ -144,11 +183,22 @@ public class JmeBinaryWriter {
         writeEndTag("xmlloadable");
     }
 
+    /**
+     * Writes a spatial's children (RenderStates and Controllers) to binary format
+     * @param spatial Spatial to write
+     * @throws IOException
+     */
     private void writeSpatialChildren(Spatial spatial) throws IOException {
         writeRenderStates(spatial);
         writeControllers(spatial);
     }
 
+    /**
+     * Writes a Controller acording to which type of controller it is.  Only writes
+     * known controllers
+     * @param spatial The spatial who's controllers need to be written
+     * @throws IOException
+     */
     private void writeControllers(Spatial spatial) throws IOException {
         ArrayList conts=spatial.getControllers();
         if (conts==null) return;
@@ -164,6 +214,11 @@ public class JmeBinaryWriter {
         }
     }
 
+    /**
+     * Writes a KeyframeController to binary format
+     * @param kc KeyframeControlelr to write
+     * @throws IOException
+     */
     private void writeKeyframeController(KeyframeController kc) throws IOException {
         // Assume that morphMesh is keyframeController's parent
         writeTag("keyframecontroller",null);
@@ -174,6 +229,11 @@ public class JmeBinaryWriter {
         writeEndTag("keyframecontroller");
     }
 
+    /**
+     * Writes a PointInTime for a KeyframeController
+     * @param pointInTime Which point in time to write
+     * @throws IOException
+     */
     private void writeKeyFramePointInTime(KeyframeController.PointInTime pointInTime) throws IOException {
         HashMap atts=new HashMap();
         atts.clear();
@@ -183,6 +243,11 @@ public class JmeBinaryWriter {
         writeEndTag("keyframepointintime");
     }
 
+    /**
+     * Writes the inner tags of a TriMesh (Verticies, Normals, ect) to binary format
+     * @param triMesh The TriMesh whos tags are to be written
+     * @throws IOException
+     */
     private void writeTriMeshTags(TriMesh triMesh) throws IOException {
         if (triMesh==null) return;
         HashMap atts=new HashMap();
@@ -254,6 +319,11 @@ public class JmeBinaryWriter {
         writeEndTag("jointcontroller");
     }
 
+    /**
+     * Writes a spatial's RenderStates to binary format.  Only writes known RenderStates
+     * @param spatial The spatial to look at.
+     * @throws IOException
+     */
     private void writeRenderStates(Spatial spatial) throws IOException {
         RenderState[] states=spatial.getRenderStateList();
         if (states==null) return;
@@ -265,6 +335,12 @@ public class JmeBinaryWriter {
         }
     }
 
+    /**
+     * Writes a TextureState to binary format.  An attempt is made to look at the
+     * TextureState's ImageLocation to determine how to point the TextureState's information
+     * @param state The state to write
+     * @throws IOException
+     */
     private void writeTextureState(TextureState state) throws IOException{
         if (state.getTexture()==null) return;
         String s=state.getTexture().getImageLocation();
@@ -278,12 +354,21 @@ public class JmeBinaryWriter {
         writeEndTag("texturestate");
     }
 
+    /**
+     * Replaces "%20" with " " to convert from a URL to a file
+     * @param s String to look at
+     * @return A replaced string.
+     */
     private static StringBuffer replaceSpecialsForFile(StringBuffer s) {
         int i=s.indexOf("%20");
         if (i==-1) return s; else return replaceSpecialsForFile(s.replace(i,i+3," "));
     }
 
-
+    /**
+     * Writes a MaterialState to binary format
+     * @param state The state to write
+     * @throws IOException
+     */
     private void writeMaterialState(MaterialState state) throws IOException {
         if (state==null) return;
         HashMap atts=new HashMap();
@@ -298,12 +383,23 @@ public class JmeBinaryWriter {
         writeEndTag("materialstate");
     }
 
+    /**
+     * Writes an END_TAG flag for the given tag
+     * @param name The name of the tag whos end has come
+     * @throws IOException
+     */
     private void writeEndTag(String name) throws IOException{
         if (DEBUG) System.out.println("Writting end tag for *" + name + "*");
         myOut.writeByte(BinaryFormatConstants.END_TAG);
         myOut.writeUTF(name);
     }
 
+    /**
+     * Given the tag's name and it's attributes, the tag is written to the file
+     * @param name The name of the tag
+     * @param atts The tag's attributes
+     * @throws IOException
+     */
     private void writeTag(String name, HashMap atts) throws IOException {
         if (DEBUG) System.out.println("Writting begining tag for *" + name + "*");
         myOut.writeByte(BinaryFormatConstants.BEGIN_TAG);
@@ -428,6 +524,11 @@ public class JmeBinaryWriter {
         }
     }
 
+    /**
+     * Looks at a spatial and puts its attributes into the HashMap
+     * @param spatial The spatial to look at
+     * @param atts The HashMap to put the attributes into
+     */
     private void putSpatialAtts(Spatial spatial, HashMap atts) {
         atts.put("name",spatial.getName());
         if (!spatial.getLocalScale().equals(DEFAULT_SCALE))
@@ -438,12 +539,20 @@ public class JmeBinaryWriter {
             atts.put("translation",spatial.getLocalTranslation());
     }
 
+    /**
+     * Writes the end of the file by writting the end of scene, then the END_FILE flag
+     * @throws IOException
+     */
     private void writeClosing() throws IOException {
         writeEndTag("scene");
         if (DEBUG) System.out.println("Writting file close");
         myOut.writeByte(BinaryFormatConstants.END_FILE);
     }
 
+    /**
+     * Writes the be BEGIN_FILE tag to a file, then the scene tag
+     * @throws IOException
+     */
     private void writeHeader() throws IOException {
         if (DEBUG) System.out.println("Writting file begin");
         myOut.writeLong(BinaryFormatConstants.BEGIN_FILE);
