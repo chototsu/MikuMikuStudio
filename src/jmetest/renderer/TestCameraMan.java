@@ -33,7 +33,7 @@ package jmetest.renderer;
 
 import java.net.URL;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.InputHandler;
 import com.jme.input.NodeHandler;
@@ -64,7 +64,7 @@ import com.jme.scene.state.AlphaState;
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
  */
-public class TestCameraMan extends SimpleGame {
+public class TestCameraMan extends BaseGame {
     private Model model;
     private Camera cam;
     private Node root, scene, monitorNode;

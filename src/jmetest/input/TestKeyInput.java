@@ -31,7 +31,7 @@
  */
 package jmetest.input;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
@@ -49,9 +49,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.3 2004-04-16 19:04:51 mojomonkey Exp $
+ * @version $Id: TestKeyInput.java,v 1.4 2004-04-19 20:44:46 renanse Exp $
  */
-public class TestKeyInput extends SimpleGame {
+public class TestKeyInput extends BaseGame {
     private Text text;
     private Camera cam;
     private Node scene;

@@ -31,7 +31,7 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -54,9 +54,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.9 2004-04-16 17:56:17 mojomonkey Exp $
+ * @version $Id: TestBoxColor.java,v 1.10 2004-04-19 20:44:52 renanse Exp $
  */
-public class TestBoxColor extends SimpleGame {
+public class TestBoxColor extends BaseGame {
     private TriMesh t;
     private Camera cam;
     private Node root;

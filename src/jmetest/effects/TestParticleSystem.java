@@ -28,7 +28,7 @@
  */
 package jmetest.effects;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -50,9 +50,9 @@ import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.15 2004-04-16 17:57:31 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.16 2004-04-19 20:44:58 renanse Exp $
  */
-public class TestParticleSystem extends SimpleGame {
+public class TestParticleSystem extends BaseGame {
 
   private ParticleManager manager;
 

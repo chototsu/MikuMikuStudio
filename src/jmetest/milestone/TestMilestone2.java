@@ -31,7 +31,7 @@
  */
 package jmetest.milestone;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -57,9 +57,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.6 2004-04-16 19:04:51 mojomonkey Exp $
+ * @version $Id: TestMilestone2.java,v 1.7 2004-04-19 20:44:57 renanse Exp $
  */
-public class TestMilestone2 extends SimpleGame {
+public class TestMilestone2 extends BaseGame {
     private TriMesh t;
     private Camera cam;
     private Node root;

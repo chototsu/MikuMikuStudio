@@ -31,7 +31,7 @@
  */
 package jmetest.renderer.state;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
  * @author Mark Powell
  * @version
  */
-public class TestTextureState extends SimpleGame {
+public class TestTextureState extends BaseGame {
     private TriMesh t, t2;
     private Camera cam;
     private Node scene;

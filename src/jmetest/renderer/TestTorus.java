@@ -48,9 +48,9 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.4 2004-04-16 18:47:32 mojomonkey Exp $
+ * @version $Id: TestTorus.java,v 1.5 2004-04-19 20:44:55 renanse Exp $
  */
-public class TestTorus extends SimpleGame {
+public class TestTorus extends BaseGame {
 	private Camera cam;
 	private CameraNode camNode;
 	private Node root;

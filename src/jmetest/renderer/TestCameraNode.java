@@ -31,7 +31,7 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.InputHandler;
@@ -59,9 +59,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.6 2004-04-16 17:56:18 mojomonkey Exp $
+ * @version $Id: TestCameraNode.java,v 1.7 2004-04-19 20:44:52 renanse Exp $
  */
-public class TestCameraNode extends SimpleGame {
+public class TestCameraNode extends BaseGame {
     private TriMesh t;
     private CameraNode camNode;
     private Camera cam;

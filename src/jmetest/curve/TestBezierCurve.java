@@ -31,7 +31,7 @@
  */
 package jmetest.curve;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
@@ -55,9 +55,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.9 2004-04-16 17:12:55 renanse Exp $
+ * @version $Id: TestBezierCurve.java,v 1.10 2004-04-19 20:44:51 renanse Exp $
  */
-public class TestBezierCurve extends SimpleGame {
+public class TestBezierCurve extends BaseGame {
     private TriMesh t, t2, t3, t4;
     private Timer timer;
     private TriMesh box;

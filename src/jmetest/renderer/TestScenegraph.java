@@ -31,7 +31,7 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestScenegraph</code>
  */
-public class TestScenegraph extends SimpleGame {
+public class TestScenegraph extends BaseGame {
     private Camera cam;
     private Node root, scene;
     private NodeHandler input, nc1, nc2, nc3, nc4, nc5, nc6;

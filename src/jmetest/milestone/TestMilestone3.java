@@ -31,7 +31,7 @@
  */
 package jmetest.milestone;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
@@ -62,9 +62,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone3.java,v 1.7 2004-04-16 19:43:00 renanse Exp $
+ * @version $Id: TestMilestone3.java,v 1.8 2004-04-19 20:44:57 renanse Exp $
  */
-public class TestMilestone3 extends SimpleGame {
+public class TestMilestone3 extends BaseGame {
     private TriMesh t;
     private Camera cam;
     private Node root;

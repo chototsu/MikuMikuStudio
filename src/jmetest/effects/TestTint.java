@@ -34,7 +34,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.logging.Level;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.effects.Tint;
 import com.jme.image.Texture;
 import com.jme.input.AbstractInputHandler;
@@ -69,9 +69,9 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestTint</code>
  *
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.10 2004-04-16 19:57:42 renanse Exp $
+ * @version $Id: TestTint.java,v 1.11 2004-04-19 20:44:58 renanse Exp $
  */
-public class TestTint extends SimpleGame {
+public class TestTint extends BaseGame {
 
 	class SliderPanel extends WidgetAbstractFrame implements Observer {
 		WidgetHSlider alphaValue;
@@ -266,7 +266,7 @@ public class TestTint extends SimpleGame {
 	public static void main(String[] args) {
 		LoggingSystem.getLogger().setLevel(Level.ALL);
 		TestTint app = new TestTint();
-		app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
+		app.setDialogBehaviour(BaseGame.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 }

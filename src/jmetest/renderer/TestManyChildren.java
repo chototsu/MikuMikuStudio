@@ -48,9 +48,9 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.11 2004-04-16 17:12:56 renanse Exp $
+ * @version $Id: TestManyChildren.java,v 1.12 2004-04-19 20:44:54 renanse Exp $
  */
-public class TestManyChildren extends SimpleGame {
+public class TestManyChildren extends BaseGame {
     private Camera cam;
     private CameraNode camNode;
     private Node root;

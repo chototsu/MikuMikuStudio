@@ -31,7 +31,7 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -44,9 +44,9 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
 /**
  * Test of the point renderer for the LWJGL renderer.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererPoint.java,v 1.5 2004-04-02 23:29:20 mojomonkey Exp $
+ * @version $Id: TestLWJGLRendererPoint.java,v 1.6 2004-04-19 20:44:53 renanse Exp $
  */
-public class TestLWJGLRendererPoint extends SimpleGame {
+public class TestLWJGLRendererPoint extends BaseGame {
 
     private Point p;
     private Camera cam;

@@ -31,7 +31,7 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -57,9 +57,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.7 2004-04-16 17:56:17 mojomonkey Exp $
+ * @version $Id: TestBillboardNode.java,v 1.8 2004-04-19 20:44:52 renanse Exp $
  */
-public class TestBillboardNode extends SimpleGame {
+public class TestBillboardNode extends BaseGame {
     private TriMesh t;
     private Camera cam;
     private Node root;

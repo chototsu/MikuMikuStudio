@@ -33,7 +33,7 @@ package jmetest.util;
 
 import java.util.logging.Level;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -61,9 +61,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.6 2004-04-16 19:36:29 renanse Exp $
+ * @version $Id: TestTimer.java,v 1.7 2004-04-19 20:45:00 renanse Exp $
  */
-public class TestTimer extends SimpleGame {
+public class TestTimer extends BaseGame {
     private TriMesh t;
     private Camera cam;
     private Text text;

@@ -35,7 +35,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.Random;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.input.AbstractInputHandler;
 import com.jme.math.Vector3f;
@@ -58,7 +58,7 @@ import com.jme.widget.layout.WidgetAbsoluteLayout;
  * @author Gregg Patton
  * @version
  */
-public class TestWidgetApp2 extends SimpleGame implements Observer {
+public class TestWidgetApp2 extends BaseGame implements Observer {
     class TestFrame extends WidgetAbstractFrame {
 
         WidgetButton shuffleButton;

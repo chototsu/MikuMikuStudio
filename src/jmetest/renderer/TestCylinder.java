@@ -48,9 +48,9 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCylinder.java,v 1.4 2004-04-16 17:56:17 mojomonkey Exp $
+ * @version $Id: TestCylinder.java,v 1.5 2004-04-19 20:44:53 renanse Exp $
  */
-public class TestCylinder extends SimpleGame {
+public class TestCylinder extends BaseGame {
     private Camera cam;
     private CameraNode camNode;
     private Node root;

@@ -3,7 +3,7 @@
  */
 package jmetest.effects.transients;
 import com.jme.app.AbstractGame;
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.effects.transients.FadeInOut;
 import com.jme.effects.transients.FadeInOutController;
 import com.jme.image.Texture;
@@ -23,7 +23,7 @@ import com.jme.util.Timer;
 /**
  * @author Ahmed
  */
-public class TestFadeInOutTransientEffect extends SimpleGame {
+public class TestFadeInOutTransientEffect extends BaseGame {
 	private Camera cam;
 	private FadeInOut fio;
 	private FadeInOutController fioC;

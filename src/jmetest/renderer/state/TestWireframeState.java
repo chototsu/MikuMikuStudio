@@ -31,7 +31,7 @@
  */
 package jmetest.renderer.state;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -47,7 +47,7 @@ import com.jme.system.JmeException;
  * @author Mark Powell
  * @version
  */
-public class TestWireframeState extends SimpleGame {
+public class TestWireframeState extends BaseGame {
     private TriMesh t, t2;
     private Camera cam;
     private Node scene;

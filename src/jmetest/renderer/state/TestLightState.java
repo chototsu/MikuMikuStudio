@@ -31,7 +31,7 @@
  */
 package jmetest.renderer.state;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -56,9 +56,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.8 2004-04-16 19:21:38 renanse Exp $
+ * @version $Id: TestLightState.java,v 1.9 2004-04-19 20:44:47 renanse Exp $
  */
-public class TestLightState extends SimpleGame {
+public class TestLightState extends BaseGame {
     private TriMesh t;
     private Camera cam;
     private Node scene;

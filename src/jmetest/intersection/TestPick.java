@@ -33,7 +33,7 @@ package jmetest.intersection;
 
 import java.net.URL;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -61,9 +61,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.14 2004-04-16 19:32:11 renanse Exp $
+ * @version $Id: TestPick.java,v 1.15 2004-04-19 20:44:55 renanse Exp $
  */
-public class TestPick extends SimpleGame {
+public class TestPick extends BaseGame {
     private Camera cam;
     private Text text;
     private Node root;

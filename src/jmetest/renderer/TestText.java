@@ -32,7 +32,7 @@
 package jmetest.renderer;
 
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -48,9 +48,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestText</code> draws text using the scenegraph.
  * @author Mark Powell
- * @version $Id: TestText.java,v 1.6 2004-04-16 18:47:32 mojomonkey Exp $
+ * @version $Id: TestText.java,v 1.7 2004-04-19 20:44:55 renanse Exp $
  */
-public class TestText extends SimpleGame {
+public class TestText extends BaseGame {
 
     private Text text;
     private Camera cam;

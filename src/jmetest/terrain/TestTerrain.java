@@ -52,9 +52,9 @@ import com.jme.terrain.util.ProceduralTextureGenerator;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.15 2004-04-19 02:58:53 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.16 2004-04-19 20:44:59 renanse Exp $
  */
-public class TestTerrain extends SimpleGame {
+public class TestTerrain extends BaseGame {
     private Camera cam;
     private CameraNode camNode;
     private Node root;

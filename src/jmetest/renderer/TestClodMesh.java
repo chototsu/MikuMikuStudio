@@ -71,7 +71,7 @@ import com.jme.util.Timer;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.9 2004-04-16 17:56:17 mojomonkey Exp $
+ * @version $Id: TestClodMesh.java,v 1.10 2004-04-19 20:44:52 renanse Exp $
  */
 
 public class TestClodMesh extends VariableTimestepGame {
@@ -137,6 +137,7 @@ public class TestClodMesh extends VariableTimestepGame {
           .getKeyBindingManager()
           .isValidCommand("toggle_lights")) {
         lightState.setEnabled(!lightState.isEnabled());
+        root.updateRenderState();
       }
       if (KeyBindingManager
           .getKeyBindingManager()

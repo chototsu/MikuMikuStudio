@@ -31,7 +31,7 @@
 package jmetest.renderer.loader;
 
 import com.jme.animation.VertexKeyframeController;
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -61,9 +61,9 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.10 2004-04-16 19:21:40 renanse Exp $
+ * @version $Id: TestMd2.java,v 1.11 2004-04-19 20:44:48 renanse Exp $
  */
-public class TestMd2 extends SimpleGame {
+public class TestMd2 extends BaseGame {
   LightState state;
   ZBufferState zstate;
   TextureState ts = null;

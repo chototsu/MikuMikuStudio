@@ -31,7 +31,7 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
@@ -45,7 +45,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * Test for trimesh part of the renderer.
  * @author Mark Powell
  */
-public class TestLWJGLRendererTriMesh extends SimpleGame {
+public class TestLWJGLRendererTriMesh extends BaseGame {
     private TriMesh t;
     private Camera cam;
     private Node scene;

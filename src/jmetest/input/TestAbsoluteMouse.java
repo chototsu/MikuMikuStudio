@@ -31,7 +31,7 @@
  */
 package jmetest.input;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputSystem;
@@ -51,7 +51,7 @@ import com.jme.util.TextureManager;
  * @author Mark Powell
  * @version 
  */
-public class TestAbsoluteMouse extends SimpleGame {
+public class TestAbsoluteMouse extends BaseGame {
 
     private Text text;
     private Camera cam;

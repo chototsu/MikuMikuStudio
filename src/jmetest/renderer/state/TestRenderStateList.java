@@ -31,7 +31,7 @@
  */
 package jmetest.renderer.state;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -54,7 +54,7 @@ import com.jme.util.Timer;
  * @author Mark Powell
  * @version
  */
-public class TestRenderStateList extends SimpleGame {
+public class TestRenderStateList extends BaseGame {
     private TriMesh t, t2, t3;
     private Camera cam;
     private Node scene;

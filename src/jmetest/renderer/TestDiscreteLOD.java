@@ -49,9 +49,9 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestDiscreteLOD.java,v 1.5 2004-04-16 17:56:18 mojomonkey Exp $
+ * @version $Id: TestDiscreteLOD.java,v 1.6 2004-04-19 20:44:53 renanse Exp $
  */
-public class TestDiscreteLOD extends SimpleGame {
+public class TestDiscreteLOD extends BaseGame {
 	private Camera cam;
 	private CameraNode camNode;
 	private Node root;

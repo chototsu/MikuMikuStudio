@@ -34,7 +34,7 @@ package jmetest.renderer.loader;
 import java.net.URL;
 
 import com.jme.animation.DeformationJointController;
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
@@ -57,7 +57,7 @@ import com.jme.util.Timer;
  * @author Mark Powell
  * @version
  */
-public class TestMilkshapeASCII extends SimpleGame {
+public class TestMilkshapeASCII extends BaseGame {
     private Camera cam;
     private Node scene;
     private InputHandler input;

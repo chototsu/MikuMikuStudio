@@ -34,93 +34,220 @@ package com.jme.app;
 
 import java.util.logging.Level;
 import com.jme.util.LoggingSystem;
+import com.jme.scene.Node;
+import com.jme.input.InputHandler;
+import com.jme.util.Timer;
+import com.jme.scene.Text;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.WireframeState;
+import com.jme.input.KeyBindingManager;
+import com.jme.renderer.ColorRGBA;
+import com.jme.system.DisplaySystem;
+import com.jme.math.Vector3f;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.KeyInput;
+import com.jme.renderer.Camera;
+import com.jme.system.JmeException;
+import com.jme.light.PointLight;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
+import com.jme.image.Texture;
+import com.jme.scene.state.ZBufferState;
 
 /**
- * <code>SimpleGame</code> provides the simplest possible implementation
+ * <code>DemoGame</code> provides the simplest possible implementation
  * of a main game loop. Both logic and graphics are updated as quickly as
  * possible, with no interpolation to account for shifting frame rates.
  * It is suggested that a more complex variant of AbstractGame be used
  * in almost all cases.
  *
- * @author Mark Powell, Eric Woroshow
- * @version $Id: SimpleGame.java,v 1.3 2004-03-27 01:05:07 renanse Exp $
+ * @author Joshua Slack
+ * @version $Id: SimpleGame.java,v 1.4 2004-04-19 20:44:45 renanse Exp $
  */
-public abstract class SimpleGame extends AbstractGame {
+public abstract class SimpleGame extends BaseGame {
 
-	/**
-	 * The simplest main game loop possible: render and update as fast as
-	 * possible.
-	 */
-	public final void start() {
-		LoggingSystem.getLogger().log(Level.INFO, "Application started.");
-		try {
-			getAttributes();
+  private Camera cam;
+  public Node rootNode;
+  private InputHandler input;
+  private Timer timer;
+  private Node fpsNode;
+  private Text fps;
 
-			initSystem();
+  private WireframeState wireState;
+  private LightState lightState;
 
-			assertDisplayCreated();
+  /**
+   * @param interpolation unused in this implementation
+   * @see AbstractGame#update(float interpolation)
+   */
+  protected final void update(float interpolation) {
+    timer.update();
+    input.update(timer.getTimePerFrame());
+    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
+              display.getRenderer().getStatistics());
+    rootNode.updateGeometricState(interpolation, true);
 
-			initGame();
+    if (KeyBindingManager
+        .getKeyBindingManager()
+        .isValidCommand("toggle_wire")) {
+      wireState.setEnabled(!wireState.isEnabled());
+      rootNode.updateRenderState();
+    }
+    if (KeyBindingManager
+        .getKeyBindingManager()
+        .isValidCommand("toggle_lights")) {
+      lightState.setEnabled(!lightState.isEnabled());
+      rootNode.updateRenderState();
+    }
+  }
 
-			//main loop
-			while (!finished && !display.isClosing()) {
-				//update game state, do not use interpolation parameter
-				update(-1.0f);
+  /**
+   * @param interpolation unused in this implementation
+   * @see AbstractGame#render(float interpolation)
+   */
+  protected final void render(float interpolation) {
+    display.getRenderer().clearStatistics();
+    display.getRenderer().clearBuffers();
+    display.getRenderer().draw(rootNode);
+    display.getRenderer().draw(fpsNode);
+  }
 
-				//render, do not use interpolation parameter
-				render(-1.0f);
+  /**
+   * @see AbstractGame#initSystem()
+   */
+  protected final void initSystem() {
+    try {
+      display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+      display.createWindow(
+          properties.getWidth(),
+          properties.getHeight(),
+          properties.getDepth(),
+          properties.getFreq(),
+          properties.getFullscreen());
+      cam =
+          display.getRenderer().getCamera(
+          properties.getWidth(),
+          properties.getHeight());
 
-				//swap buffers
-				display.getRenderer().displayBackBuffer();
-			}
-		} catch (Throwable t) {
-			t.printStackTrace();
-		} finally {
-			cleanup();
-		}
-		LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
+    }
+    catch (JmeException e) {
+      e.printStackTrace();
+      System.exit(1);
+    }
 
-		display.reset();
-		quit();
-	}
+    ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
+    display.getRenderer().setBackgroundColor(blackColor);
 
-	/**
-	 * Quits the program abruptly using <code>System.exit</code>.
-	 * @see AbstractGame#quit()
-	 */
-	protected void quit() {
-		System.exit(0);
-	}
+    // setup our camera
+    cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
+    Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
+    Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f);
+    Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
+    Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
+    cam.setFrame(loc, left, up, dir);
+    display.getRenderer().setCamera(cam);
 
-	/**
-	 * @param interpolation unused in this implementation
-	 * @see AbstractGame#update(float interpolation)
-	 */
-	protected abstract void update(float interpolation);
+    // Setup the input controller and timer
+    input = new FirstPersonHandler(this, cam, properties.getRenderer());
+    input.setKeySpeed(10f);
+    input.setMouseSpeed(1f);
+    timer = Timer.getTimer(properties.getRenderer());
 
-	/**
-	 * @param interpolation unused in this implementation
-	 * @see AbstractGame#render(float interpolation)
-	 */
-	protected abstract void render(float interpolation);
+    display.setTitle("SimpleGame");
+    display.getRenderer().enableStatistics(true);
 
-	/**
-	 * @see AbstractGame#initSystem()
-	 */
-	protected abstract void initSystem();
+    KeyBindingManager.getKeyBindingManager().set(
+        "toggle_wire",
+        KeyInput.KEY_T);
+    KeyBindingManager.getKeyBindingManager().set(
+        "toggle_lights",
+        KeyInput.KEY_L);
+  }
 
-	/**
-	 * @see AbstractGame#initGame()
-	 */
-	protected abstract void initGame();
+  /**
+   * @see AbstractGame#initGame()
+   */
+  protected final void initGame() {
+     rootNode = new Node("rootNode");
 
-	/**
-	 * @see AbstractGame#reinit()
-	 */
-	protected abstract void reinit();
+     // -- WIRESTATE
+     wireState = display.getRenderer().getWireframeState();
+     wireState.setEnabled(false);
+     rootNode.setRenderState(wireState);
 
-	/**
-	 * @see AbstractGame#cleanup()
-	 */
-	protected abstract void cleanup();
+     // -- ZBUFFER
+     ZBufferState buf = display.getRenderer().getZBufferState();
+     buf.setEnabled(true);
+     buf.setFunction(ZBufferState.CF_LEQUAL);
+
+     rootNode.setRenderState(buf);
+
+     // -- FPS DISPLAY
+     // First setup alpha state
+     AlphaState as1 = display.getRenderer().getAlphaState();
+     as1.setBlendEnabled(true);
+     as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+     as1.setDstFunction(AlphaState.DB_ONE);
+     as1.setTestEnabled(true);
+     as1.setTestFunction(AlphaState.TF_GREATER);
+     as1.setEnabled(true);
+
+     // Now setup font texture
+     TextureState font = display.getRenderer().getTextureState();
+     font.setTexture(
+         TextureManager.loadTexture(
+         SimpleGame.class.getClassLoader().getResource(
+         "jmetest/data/font/font.png"),
+         Texture.MM_LINEAR,
+         Texture.FM_LINEAR,
+         true));
+     font.setEnabled(true);
+
+     // Then our font Text object.
+     fps = new Text("FPS label", "");
+     fps.setRenderState(font);
+     fps.setRenderState(as1);
+     fps.setForceView(true);
+
+     // Finally, a stand alone node (not attached to root on purpose)
+     fpsNode = new Node("FPS node");
+     fpsNode.attachChild(fps);
+     fpsNode.setForceView(true);
+
+     // ---- LIGHTS
+     PointLight light = new PointLight();
+     light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+     light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+     light.setLocation(new Vector3f(15, 15, 15));
+     light.setEnabled(true);
+
+     lightState = display.getRenderer().getLightState();
+     lightState.setEnabled(true);
+     lightState.attach(light);
+     rootNode.setRenderState(lightState);
+
+     simpleInitGame();
+
+     rootNode.updateGeometricState(0.0f, true);
+     rootNode.updateRenderState();
+     fpsNode.updateGeometricState(0.0f, true);
+     fpsNode.updateRenderState();
+  }
+
+  protected abstract void simpleInitGame();
+
+  /**
+   * unused
+   * @see AbstractGame#reinit()
+   */
+  protected void reinit() {
+  }
+
+  /**
+   * unused
+   * @see AbstractGame#cleanup()
+   */
+  protected void cleanup() {
+  }
 }

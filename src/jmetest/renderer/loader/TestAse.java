@@ -33,7 +33,7 @@ package jmetest.renderer.loader;
 import java.net.URL;
 
 import com.jme.app.AbstractGame;
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.light.DirectionalLight;
@@ -54,9 +54,9 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestAse.java,v 1.5 2004-04-16 19:21:40 renanse Exp $
+ * @version $Id: TestAse.java,v 1.6 2004-04-19 20:44:48 renanse Exp $
  */
-public class TestAse extends SimpleGame {
+public class TestAse extends BaseGame {
   LightState state;
 
   ZBufferState zstate;

@@ -31,7 +31,7 @@
  */
 package jmetest.input.action;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
@@ -53,7 +53,7 @@ import com.jme.system.JmeException;
  * @author Mark Powell
  * @version 
  */
-public class TestStrafeRightAction extends SimpleGame {
+public class TestStrafeRightAction extends BaseGame {
     private Node scene;
     private Camera cam;
     private Line l;

@@ -35,7 +35,7 @@ import java.text.DecimalFormat;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.input.AbstractInputHandler;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Camera;
@@ -64,7 +64,7 @@ import com.jme.widget.text.WidgetLabel;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class TestWidgetSlider extends SimpleGame {
+public class TestWidgetSlider extends BaseGame {
 
     class TestFrame extends WidgetAbstractFrame implements Observer {
         WidgetLabel northSliderValue = new WidgetLabel("", WidgetAlignmentType.ALIGN_CENTER);

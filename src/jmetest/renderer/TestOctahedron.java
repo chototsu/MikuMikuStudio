@@ -48,9 +48,9 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestOctahedron.java,v 1.5 2004-04-16 18:47:32 mojomonkey Exp $
+ * @version $Id: TestOctahedron.java,v 1.6 2004-04-19 20:44:54 renanse Exp $
  */
-public class TestOctahedron extends SimpleGame {
+public class TestOctahedron extends BaseGame {
     private Camera cam;
     private CameraNode camNode;
     private Node root;

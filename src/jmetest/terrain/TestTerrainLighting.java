@@ -50,9 +50,9 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.6 2004-04-16 17:56:18 mojomonkey Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.7 2004-04-19 20:44:59 renanse Exp $
  */
-public class TestTerrainLighting extends SimpleGame {
+public class TestTerrainLighting extends BaseGame {
     private Camera cam;
     private CameraNode camNode;
     private Node root;

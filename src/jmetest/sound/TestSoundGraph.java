@@ -36,7 +36,7 @@
  */
 package jmetest.sound;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -59,7 +59,7 @@ import com.jme.util.TextureManager;
  * @author Arman Ozcelik
  *
  */
-public class TestSoundGraph extends SimpleGame {
+public class TestSoundGraph extends BaseGame {
 
 	private Node scene;
 	private SoundNode snode;

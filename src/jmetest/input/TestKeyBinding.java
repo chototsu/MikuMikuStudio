@@ -31,7 +31,7 @@
  */
 package jmetest.input;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * @author Mark Powell
  * @version 
  */
-public class TestKeyBinding extends SimpleGame {
+public class TestKeyBinding extends BaseGame {
     private Text text;
     private Camera cam;
     private Node scene;

@@ -31,7 +31,7 @@
  */
 package jmetest.renderer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -60,9 +60,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.13 2004-04-16 17:56:16 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.14 2004-04-19 20:44:52 renanse Exp $
  */
-public class TestBezierMesh extends SimpleGame {
+public class TestBezierMesh extends BaseGame {
     private TriMesh t;
     private Camera cam;
     private Node root;

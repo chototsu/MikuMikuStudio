@@ -31,7 +31,7 @@
  */
 package jmetest.widget;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.input.AbstractInputHandler;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -62,7 +62,7 @@ import com.jme.widget.text.WidgetText;
  * To change the template for this generated type comment go to
  * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
  */
-public class TestWidgetApp1 extends SimpleGame {
+public class TestWidgetApp1 extends BaseGame {
 
     class TestFrame extends WidgetAbstractFrame {
 

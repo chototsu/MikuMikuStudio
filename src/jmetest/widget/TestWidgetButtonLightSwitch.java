@@ -35,7 +35,7 @@ import java.net.URL;
 import java.util.Observable;
 import java.util.Observer;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
@@ -75,9 +75,9 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.12 2004-04-16 20:47:22 renanse Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.13 2004-04-19 20:45:01 renanse Exp $
  */
-public class TestWidgetButtonLightSwitch extends SimpleGame {
+public class TestWidgetButtonLightSwitch extends BaseGame {
 	static String STARTED_STATE_STRING = " Stop ";
     static String STOPPED_STATE_STRING = "Start";
 

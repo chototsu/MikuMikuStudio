@@ -31,7 +31,7 @@
  */
 package jmetest.intersection;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
@@ -59,9 +59,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.11 2004-04-16 19:32:11 renanse Exp $
+ * @version $Id: TestCollision.java,v 1.12 2004-04-19 20:44:55 renanse Exp $
  */
-public class TestCollision extends SimpleGame {
+public class TestCollision extends BaseGame {
 
     private TriMesh t;
     private TriMesh t2;

@@ -32,7 +32,7 @@
 package jmetest.renderer;
 
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -45,9 +45,9 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
 /**
  * Tests the rendering of lines.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererLine.java,v 1.6 2004-04-02 23:29:19 mojomonkey Exp $
+ * @version $Id: TestLWJGLRendererLine.java,v 1.7 2004-04-19 20:44:53 renanse Exp $
  */
-public class TestLWJGLRendererLine extends SimpleGame {
+public class TestLWJGLRendererLine extends BaseGame {
 
     private Line l;
     private Camera cam;

@@ -31,7 +31,7 @@
  */
 package jmetest.system;
 
-import com.jme.app.SimpleGame;
+import com.jme.app.BaseGame;
 import com.jme.renderer.ColorRGBA;
 import com.jme.system.JmeException;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
@@ -41,7 +41,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * of a LWJGL window.
  * @author Mark Powell
  */
-public class TestLWJGLDisplaySystem extends SimpleGame {
+public class TestLWJGLDisplaySystem extends BaseGame {
     public static void main(String[] args) {
         TestLWJGLDisplaySystem app = new TestLWJGLDisplaySystem();
         app.start();
