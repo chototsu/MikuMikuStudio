@@ -35,33 +35,6 @@ public class HelloMousePick extends SimpleGame {
         app.start();
     }
 
-    // This is called every frame.  Do rendering here.
-    protected void simpleRender(){
-        // Draw the mouse
-//        display.getRenderer().draw(am);
-        am.onDraw(display.getRenderer());
-    }
-
-    // This is called every frame.  Do changing of values here.
-    protected void simpleUpdate(){
-        // Get the mouse input device from the jME mouse
-        MouseInput thisMouse=am.getMouseInput();
-        // Is button 0 down?  Button 0 is left click
-        if (thisMouse.isButtonDown(0)){
-            Vector2f screenPos=new Vector2f();
-            // Get the position that the mouse is pointing
-            screenPos.set(thisMouse.getXAbsolute(),thisMouse.getYAbsolute()+am.getImageHeight());
-            // Get the world location of that X,Y value
-            Vector3f worldCoords=display.getWorldCoordinates(screenPos,0);
-            // Create a ray starting from the camera, and going in the direction of the mouse's location
-            Ray mouseRay=new Ray(cam.getLocation(),worldCoords.subtractLocal(cam.getLocation()));
-            // Does the mouse's ray intersect the box's world bounds?
-            if (Intersection.intersection(mouseRay, b.getWorldBound()))
-                b.setRandomColors();
-        }
-    }
-
-
     protected void simpleInitGame() {
         // Create a new mouse.  Restrict its movements to the display screen.
         am=new AbsoluteMouse("The Mouse",display.getWidth(),display.getHeight());
@@ -101,5 +74,31 @@ public class HelloMousePick extends SimpleGame {
 
         // Update the mouse's newly added render states
         am.updateRenderState();
+    }
+
+    // This is called every frame.  Do changing of values here.
+    protected void simpleUpdate(){
+        // Get the mouse input device from the jME mouse
+        MouseInput thisMouse=am.getMouseInput();
+        // Is button 0 down?  Button 0 is left click
+        if (thisMouse.isButtonDown(0)){
+            Vector2f screenPos=new Vector2f();
+            // Get the position that the mouse is pointing
+            screenPos.set(thisMouse.getXAbsolute(),thisMouse.getYAbsolute()+am.getImageHeight());
+            // Get the world location of that X,Y value
+            Vector3f worldCoords=display.getWorldCoordinates(screenPos,0);
+            // Create a ray starting from the camera, and going in the direction of the mouse's location
+            Ray mouseRay=new Ray(cam.getLocation(),worldCoords.subtractLocal(cam.getLocation()));
+            // Does the mouse's ray intersect the box's world bounds?
+            if (Intersection.intersection(mouseRay, b.getWorldBound()))
+                b.setRandomColors();
+        }
+    }
+
+    // This is called every frame.  Do rendering here.
+    protected void simpleRender(){
+        // Draw the mouse
+//        display.getRenderer().draw(am);
+        am.onDraw(display.getRenderer());
     }
 }
