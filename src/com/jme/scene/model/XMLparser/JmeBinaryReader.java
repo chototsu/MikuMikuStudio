@@ -1,6 +1,9 @@
 package com.jme.scene.model.XMLparser;
 
 import com.jme.scene.*;
+import com.jme.scene.lod.ClodMesh;
+import com.jme.scene.lod.CollapseRecord;
+import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.*;
 import com.jme.math.Vector3f;
@@ -17,6 +20,7 @@ import com.jme.util.LoggingSystem;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.OrientedBoundingBox;
+import com.jme.bounding.BoundingVolume;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
 import com.jme.animation.SpatialTransformer;
@@ -25,6 +29,8 @@ import com.jme.scene.model.EmptyTriMesh;
 import com.jme.light.Light;
 import com.jme.light.SpotLight;
 import com.jme.light.PointLight;
+import com.jme.terrain.TerrainBlock;
+import com.jme.terrain.TerrainPage;
 
 import java.io.InputStream;
 import java.io.DataInputStream;
@@ -150,12 +156,30 @@ public class JmeBinaryReader {
 //            s.push(new Node("XML Scene"));    Already on stack
         } else if (tagName.equals("node")){
             s.push(processSpatial(new Node((String) attributes.get("name")),attributes));
+        } else if (tagName.equals("terrainpage")){
+            s.push(processTerrainPage(new TerrainPage((String) attributes.get("name")),attributes));
         } else if (tagName.equals("repeatobject")){
             s.push(repeatShare.get(attributes.get("ident")));
         } else if (tagName.equals("materialstate")){
             s.push(buildMaterial(attributes));
         } else if (tagName.equals("texturestate")){
             s.push(buildTexture(attributes));
+        } else if (tagName.equals("clod")){
+            s.push(processSpatial(new ClodMesh((String) attributes.get("name")),attributes));
+        } else if (tagName.equals("obb")){
+            s.push(processOBB(new OrientedBoundingBox(),attributes));
+        } else if (tagName.equals("boundsphere")){
+            s.push(processBSphere(new BoundingSphere(),attributes));
+        } else if (tagName.equals("boundbox")){
+            s.push(processBBox(new BoundingBox(),attributes));
+        } else if (tagName.equals("terrainblock")){
+            s.push(processTerrainBlock(new TerrainBlock((String) attributes.get("name")),attributes));
+        } else if (tagName.equals("areaclod")){
+            s.push(processAreaClod(new AreaClodMesh((String) attributes.get("name")),attributes));
+        } else if (tagName.equals("clodrecords")){
+            s.push(new CollapseRecord[((Integer)attributes.get("numrec")).intValue()]);
+        } else if (tagName.equals("crecord")){
+            writeCollapseRecord(attributes);
         } else if (tagName.equals("mesh")){
             s.push(processSpatial(new TriMesh((String) attributes.get("name")),attributes));
         } else if (tagName.equals("vertex")){
@@ -358,7 +382,7 @@ public class JmeBinaryReader {
         Spatial parentSpatial,childSpatial;
         if (tagName.equals("scene")){
             myScene=(Node) s.pop();
-        } else if (tagName.equals("node")){
+        } else if (tagName.equals("node") || tagName.equals("terrainpage")){
             childNode=(Node) s.pop();
             parentNode=(Node) s.pop();
             parentNode.attachChild(childNode);
@@ -395,7 +419,8 @@ public class JmeBinaryReader {
             parentSpatial.setRenderState(childCull);
             s.push(parentSpatial);
         }
-        else if (tagName.equals("mesh") || tagName.equals("jointmesh")){
+        else if (tagName.equals("mesh") || tagName.equals("jointmesh")
+                || tagName.equals("clod")|| tagName.equals("areaclod") ||tagName.equals("terrainblock")){
             Geometry childMesh=(Geometry) s.pop();
             if (childMesh.getModelBound()==null){
                 if ("box".equals(properties.get("bound")))
@@ -472,6 +497,11 @@ public class JmeBinaryReader {
             s.push(parentNode);
         } else if (tagName.equals("joint")){
             s.pop();    // remove unneeded information tag
+        } else if (tagName.equals("obb") || tagName.equals("boundsphere") || tagName.equals("boundbox")){
+            BoundingVolume bv=(BoundingVolume) s.pop();
+            Geometry parentGeo=(Geometry) s.pop();
+            parentGeo.setModelBound(bv);
+            s.push(parentGeo);
         } else if (tagName.equals("jointindex")){
         } else if (tagName.equals("origvertex")){
         } else if (tagName.equals("orignormal")){
@@ -512,16 +542,92 @@ public class JmeBinaryReader {
             s.push(parentST);
         } else if (tagName.equals("spatialpointtime")){
             s.pop();
+        } else if (tagName.equals("clodrecords")){
+            CollapseRecord[] toPut=(CollapseRecord[]) s.pop();
+            ClodMesh parentClod=(ClodMesh) s.pop();
+            parentClod.create(toPut);
+            s.push(parentClod);
         } else if (tagName.equals("wirestate")){
             WireframeState ws=(WireframeState) s.pop();
             parentSpatial=(Spatial) s.pop();
             parentSpatial.setRenderState(ws);
             s.push(parentSpatial);
-        } else if (tagName.equals("sptscale") || tagName.equals("sptrot") || tagName.equals("spttrans")){ // nothing to do at these ends
+        } else if (tagName.equals("crecord") || tagName.equals("sptscale") || tagName.equals("sptrot") || tagName.equals("spttrans")){ // nothing to do at these ends
 
         } else {
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
+    }
+
+    private OrientedBoundingBox processOBB(OrientedBoundingBox obb, HashMap attributes) {
+        processSpatial(obb,attributes);
+        obb.setCenter((Vector3f) attributes.get("center"));
+        obb.setxAxis((Vector3f) attributes.get("xaxis"));
+        obb.setyAxis((Vector3f) attributes.get("yaxis"));
+        obb.setzAxis((Vector3f) attributes.get("zaxis"));
+        obb.setExtent((Vector3f) attributes.get("extent"));
+        return obb;
+    }
+
+    private BoundingSphere processBSphere(BoundingSphere v, HashMap attributes) {
+        processSpatial(v,attributes);
+        v.setCenter((Vector3f) attributes.get("center"));
+        v.setRadius(((Float)attributes.get("radius")).floatValue());
+        return v;
+    }
+
+    private BoundingBox processBBox(BoundingBox v, HashMap attributes) {
+        processSpatial(v,attributes);
+        v.setOrigCenter((Vector3f) attributes.get("origcent"));
+        v.setOrigExtent((Vector3f) attributes.get("origext"));
+        v.setCenter((Vector3f) attributes.get("nowcent"));
+        Vector3f ext=(Vector3f) attributes.get("nowext");
+        v.xExtent=ext.x;
+        v.yExtent=ext.y;
+        v.zExtent=ext.z;
+        return v;
+    }
+
+    private void writeCollapseRecord(HashMap attributes) {
+        CollapseRecord temp=new CollapseRecord();
+        temp.indices=(int[]) attributes.get("indexary");
+        temp.numbIndices=((Integer)attributes.get("numi")).intValue();
+        temp.numbTriangles=((Integer)attributes.get("numt")).intValue();
+        temp.numbVerts=((Integer)attributes.get("numv")).intValue();
+        temp.vertToKeep=((Integer)attributes.get("vkeep")).intValue();
+        temp.vertToThrow=((Integer)attributes.get("vthrow")).intValue();
+        CollapseRecord[] toPut=(CollapseRecord[]) s.pop();
+        toPut[((Integer)attributes.get("index")).intValue()]=temp;
+        s.push(toPut);
+    }
+
+    private TerrainPage processTerrainPage(TerrainPage terrainPage, HashMap attributes) {
+        processSpatial(terrainPage,attributes);
+        terrainPage.setOffset((Vector2f) attributes.get("offset"));
+        terrainPage.setTotalSize(((Integer)attributes.get("totsize")).intValue());
+        terrainPage.setSize(((Integer)attributes.get("size")).intValue());
+        terrainPage.setStepScale((Vector3f) attributes.get("stepscale"));
+        terrainPage.setOffsetAmount(((Integer)attributes.get("offamnt")).intValue());
+        return terrainPage;
+    }
+
+    private TerrainBlock processTerrainBlock(TerrainBlock terrainBlock, HashMap attributes) {
+        processAreaClod(terrainBlock,attributes);
+        terrainBlock.setSize(((Integer)attributes.get("tbsize")).intValue());
+        terrainBlock.setTotalSize(((Integer)attributes.get("totsize")).intValue());
+        terrainBlock.setStepScale((Vector3f)attributes.get("step"));
+        terrainBlock.setUseClod(((Boolean)attributes.get("isclod")).booleanValue());
+        terrainBlock.setOffset((Vector2f) attributes.get("offset"));
+        terrainBlock.setOffsetAmount(((Integer)attributes.get("offamnt")).intValue());
+        terrainBlock.setHeightMap((int[]) attributes.get("hmap"));
+        return terrainBlock;
+    }
+
+    private AreaClodMesh processAreaClod(AreaClodMesh areaClodMesh, HashMap attributes) {
+        processSpatial(areaClodMesh,attributes);
+        areaClodMesh.setDistanceTolerance(((Float)attributes.get("disttol")).floatValue());
+        areaClodMesh.setTrisPerPixel(((Float)attributes.get("trisppix")).floatValue());
+        return areaClodMesh;
     }
 
     private Vector3f[] decodeShortCompress(short[] shorts) throws IOException {
@@ -756,6 +862,10 @@ public class JmeBinaryReader {
                     atribMap.put(name,getVec3f());
                     if (DEBUG) System.out.println("readvec:"+atribMap.get(name));
                     break;
+                case BinaryFormatConstants.DATA_V2F:
+                    atribMap.put(name,getVec2f());
+                    if (DEBUG) System.out.println("readvec2f:"+atribMap.get(name));
+                    break;
                 case BinaryFormatConstants.DATA_QUAT:
                     atribMap.put(name,getQuat());
                     if (DEBUG) System.out.println("readquat:"+atribMap.get(name));
@@ -829,6 +939,10 @@ public class JmeBinaryReader {
 
     private ColorRGBA getColor() throws IOException{
         return new ColorRGBA(myIn.readFloat(),myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
+    }
+
+    private Vector2f getVec2f() throws IOException{
+        return new Vector2f(myIn.readFloat(),myIn.readFloat());
     }
 
     private Vector3f getVec3f() throws IOException{
