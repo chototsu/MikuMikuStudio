@@ -46,7 +46,7 @@ import com.jme.util.*;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestManyChildren.java,v 1.7 2004-03-08 23:43:51 renanse Exp $
+ * @version $Id: TestManyChildren.java,v 1.8 2004-03-11 00:12:18 renanse Exp $
  */
 public class TestManyChildren extends SimpleGame {
     private Camera cam;
@@ -55,6 +55,7 @@ public class TestManyChildren extends SimpleGame {
     private InputController input;
     private Timer timer;
     private Text fps;
+    private Node fpsNode;
 
     /**
      * Entry point for the test,
@@ -89,6 +90,7 @@ public class TestManyChildren extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(root);
+        display.getRenderer().draw(fpsNode);
 
 
     }
@@ -195,6 +197,11 @@ public class TestManyChildren extends SimpleGame {
         fps = new Text("FPS counter","");
         fps.setRenderState(font);
         fps.setRenderState(as1);
+        fps.setForceView(true);
+
+        fpsNode = new Node("FPS node");
+        fpsNode.attachChild(fps);
+        fpsNode.setForceView(true);
 
         DirectionalLight dr = new DirectionalLight();
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
@@ -213,11 +220,9 @@ public class TestManyChildren extends SimpleGame {
         scene.setRenderState(state);
         scene.setRenderState(buf);
         root.attachChild(scene);
-        root.attachChild(fps);
-
 
         root.updateGeometricState(0.0f, true);
-
+        fpsNode.updateGeometricState(0.0f, true);
     }
     /**
      * not used.
