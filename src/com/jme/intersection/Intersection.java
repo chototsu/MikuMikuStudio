@@ -35,7 +35,6 @@ import com.jme.math.Line;
 import com.jme.math.Plane;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.scene.BoundingBox;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.BoundingVolume;
 
@@ -44,7 +43,7 @@ import com.jme.scene.BoundingVolume;
  * intersection of some objects. All the methods are static to allow for quick
  * and easy calls.
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.5 2003-12-12 21:56:03 mojomonkey Exp $
+ * @version $Id: Intersection.java,v 1.6 2004-02-26 17:42:10 mojomonkey Exp $
  */
 public class Intersection {
     /**
@@ -64,8 +63,6 @@ public class Intersection {
     public static boolean intersection(Ray ray, BoundingVolume volume) {
         if (volume instanceof BoundingSphere) {
             return intersection(ray, (BoundingSphere) volume);
-        } else if (volume instanceof BoundingBox) {
-            return intersection(ray, (BoundingBox) volume);
         }
         return false;
     }
@@ -109,64 +106,6 @@ public class Intersection {
                 return false;
             }
         }
-    }
-
-    public static boolean intersection(Ray ray, BoundingBox box) {
-        float[] fWdU = new float[3];
-        float[] fAWdU = new float[3];
-        float[] fDdU = new float[3];
-        float[] fADdU = new float[3];
-        float[] fAWxDdU = new float[3];
-        float fRhs;
-
-        Vector3f axis0 = new Vector3f(1, 0, 0);
-        Vector3f axis1 = new Vector3f(0, 1, 0);
-        Vector3f axis2 = new Vector3f(0, 0, 1);
-        float extent0 = (box.getMax().x - box.getMin().x) / 2;
-        float extent1 = (box.getMax().y - box.getMin().y) / 2;
-        float extent2 = (box.getMax().z - box.getMin().z) / 2;
-
-        Vector3f kDiff = ray.getOrigin().subtract(box.getCenter());
-
-        fWdU[0] = ray.getDirection().dot(axis0);
-        fAWdU[0] = Math.abs(fWdU[0]);
-        fDdU[0] = kDiff.dot(axis0);
-        fADdU[0] = Math.abs(fDdU[0]);
-        if (fADdU[0] > extent0 && fDdU[0] * fWdU[0] >= 0.0f)
-            return false;
-
-        fWdU[1] = ray.getDirection().dot(axis1);
-        fAWdU[1] = Math.abs(fWdU[1]);
-        fDdU[1] = kDiff.dot(axis1);
-        fADdU[1] = Math.abs(fDdU[1]);
-        if (fADdU[1] > extent1 && fDdU[1] * fWdU[1] >= 0.0f)
-            return false;
-
-        fWdU[2] = ray.getDirection().dot(axis2);
-        fAWdU[2] = Math.abs(fWdU[2]);
-        fDdU[2] = kDiff.dot(axis2);
-        fADdU[2] = Math.abs(fDdU[2]);
-        if (fADdU[2] > extent2 && fDdU[2] * fWdU[2] >= 0.0f)
-            return false;
-
-        Vector3f kWxD = ray.getDirection().cross(kDiff);
-
-        fAWxDdU[0] = Math.abs(kWxD.dot(axis0));
-        fRhs = extent1 * fAWdU[2] + extent2 * fAWdU[1];
-        if (fAWxDdU[0] > fRhs)
-            return false;
-
-        fAWxDdU[1] = Math.abs(kWxD.dot(axis1));
-        fRhs = extent0 * fAWdU[2] + extent2 * fAWdU[0];
-        if (fAWxDdU[1] > fRhs)
-            return false;
-
-        fAWxDdU[2] = Math.abs(kWxD.dot(axis2));
-        fRhs = extent0 * fAWdU[1] + extent1 * fAWdU[0];
-        if (fAWxDdU[2] > fRhs)
-            return false;
-
-        return true;
     }
 
     /**
@@ -267,12 +206,6 @@ public class Intersection {
             } else {
                 return false;
             }
-        } else if (vol1 instanceof BoundingBox) {
-            if (vol2 instanceof BoundingBox) {
-                return intersection((BoundingBox) vol1, (BoundingBox) vol2);
-            } else {
-                return false;
-            }
         } else {
             return false;
         }
@@ -293,192 +226,6 @@ public class Intersection {
         Vector3f diff = sphere1.getCenter().subtract(sphere2.getCenter());
         float rsum = sphere1.getRadius() + sphere2.getRadius();
         return (diff.dot(diff) <= rsum * rsum);
-    }
-
-    /**
-     * 
-     * <code>intersection</code>
-     * @param box1
-     * @param box2
-     * @return
-     */
-    public static boolean intersection(BoundingBox box1, BoundingBox box2) {
-        // convenience variables
-        
-        Vector3f axis0 = new Vector3f(1, 0, 0);
-        Vector3f axis1 = new Vector3f(0, 1, 0);
-        Vector3f axis2 = new Vector3f(0, 0, 1);
-        float extentA0 = (box1.getMax().x - box1.getMin().x) / 2;
-        float extentA1 = (box1.getMax().y - box1.getMin().y) / 2;
-        float extentA2 = (box1.getMax().z - box1.getMin().z) / 2;
-        
-        float extentB0 = (box2.getMax().x - box2.getMin().x) / 2;
-        float extentB1 = (box2.getMax().y - box2.getMin().y) / 2;
-        float extentB2 = (box2.getMax().z - box2.getMin().z) / 2;
-
-        // compute difference of box centers, D = C1-C0
-        Vector3f kD = box2.getCenter().subtract(box1.getCenter());
-
-        float[][] aafC = new float[3][3]; // matrix C = A^T B, c_{ij} = Dot(A_i,B_j)
-        float[][] aafAbsC = new float[3][3]; // |c_{ij}|
-        float[] afAD = new float[3]; // Dot(A_i,D)
-        float fR0, fR1, fR; // interval radii and distance between centers
-        float fR01; // = R0 + R1
-
-        // axis C0+t*A0
-        aafC[0][0] = axis0.dot(axis0);
-        aafC[0][1] = axis0.dot(axis1);
-        aafC[0][2] = axis0.dot(axis2);
-        afAD[0] = axis0.dot(kD);
-        aafAbsC[0][0] = Math.abs(aafC[0][0]);
-        aafAbsC[0][1] = Math.abs(aafC[0][1]);
-        aafAbsC[0][2] = Math.abs(aafC[0][2]);
-        fR = Math.abs(afAD[0]);
-        fR1 =
-            extentB0 * aafAbsC[0][0]
-                + extentB1 * aafAbsC[0][1]
-                + extentB2 * aafAbsC[0][2];
-        fR01 = extentA0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A1
-        aafC[1][0] = axis1.dot(axis0);
-        aafC[1][1] = axis1.dot(axis1);
-        aafC[1][2] = axis1.dot(axis2);
-        afAD[1] = axis1.dot(kD);
-        aafAbsC[1][0] = Math.abs(aafC[1][0]);
-        aafAbsC[1][1] = Math.abs(aafC[1][1]);
-        aafAbsC[1][2] = Math.abs(aafC[1][2]);
-        fR = Math.abs(afAD[1]);
-        fR1 =
-            extentB0 * aafAbsC[1][0]
-                + extentB1 * aafAbsC[1][1]
-                + extentB2 * aafAbsC[1][2];
-        fR01 = extentA1 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A2
-        aafC[2][0] = axis2.dot(axis0);
-        aafC[2][1] = axis2.dot(axis1);
-        aafC[2][2] = axis2.dot(axis2);
-        afAD[2] = axis2.dot(kD);
-        aafAbsC[2][0] = Math.abs(aafC[2][0]);
-        aafAbsC[2][1] = Math.abs(aafC[2][1]);
-        aafAbsC[2][2] = Math.abs(aafC[2][2]);
-        fR = Math.abs(afAD[2]);
-        fR1 =
-            extentB0 * aafAbsC[2][0]
-                + extentB1 * aafAbsC[2][1]
-                + extentB2 * aafAbsC[2][2];
-        fR01 = extentA2 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*B0
-        fR = Math.abs(axis0.dot(kD));
-        fR0 =
-            extentA0 * aafAbsC[0][0]
-                + extentA1 * aafAbsC[1][0]
-                + extentA2 * aafAbsC[2][0];
-        fR01 = fR0 + extentB0;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*B1
-        fR = Math.abs(axis1.dot(kD));
-        fR0 =
-            extentA0 * aafAbsC[0][1]
-                + extentA1 * aafAbsC[1][1]
-                + extentA2 * aafAbsC[2][1];
-        fR01 = fR0 + extentB1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*B2
-        fR = Math.abs(axis2.dot(kD));
-        fR0 =
-            extentA0 * aafAbsC[0][2]
-                + extentA1 * aafAbsC[1][2]
-                + extentA2 * aafAbsC[2][2];
-        fR01 = fR0 + extentB2;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A0xB0
-        fR = Math.abs(afAD[2] * aafC[1][0] - afAD[1] * aafC[2][0]);
-        fR0 = extentA1 * aafAbsC[2][0] + extentA2 * aafAbsC[1][0];
-        fR1 = extentB1 * aafAbsC[0][2] + extentB2 * aafAbsC[0][1];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A0xB1
-        fR = Math.abs(afAD[2] * aafC[1][1] - afAD[1] * aafC[2][1]);
-        fR0 = extentA1 * aafAbsC[2][1] + extentA2 * aafAbsC[1][1];
-        fR1 = extentB0 * aafAbsC[0][2] + extentB2 * aafAbsC[0][0];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A0xB2
-        fR = Math.abs(afAD[2] * aafC[1][2] - afAD[1] * aafC[2][2]);
-        fR0 = extentA1 * aafAbsC[2][2] + extentA2 * aafAbsC[1][2];
-        fR1 = extentB0 * aafAbsC[0][1] + extentB1 * aafAbsC[0][0];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A1xB0
-        fR = Math.abs(afAD[0] * aafC[2][0] - afAD[2] * aafC[0][0]);
-        fR0 = extentA0 * aafAbsC[2][0] + extentA2 * aafAbsC[0][0];
-        fR1 = extentB1 * aafAbsC[1][2] + extentB2 * aafAbsC[1][1];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A1xB1
-        fR = Math.abs(afAD[0] * aafC[2][1] - afAD[2] * aafC[0][1]);
-        fR0 = extentA0 * aafAbsC[2][1] + extentA2 * aafAbsC[0][1];
-        fR1 = extentB0 * aafAbsC[1][2] + extentB2 * aafAbsC[1][0];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A1xB2
-        fR = Math.abs(afAD[0] * aafC[2][2] - afAD[2] * aafC[0][2]);
-        fR0 = extentA0 * aafAbsC[2][2] + extentA2 * aafAbsC[0][2];
-        fR1 = extentB0 * aafAbsC[1][1] + extentB1 * aafAbsC[1][0];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A2xB0
-        fR = Math.abs(afAD[1] * aafC[0][0] - afAD[0] * aafC[1][0]);
-        fR0 = extentA0 * aafAbsC[1][0] + extentA1 * aafAbsC[0][0];
-        fR1 = extentB1 * aafAbsC[2][2] + extentB2 * aafAbsC[2][1];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A2xB1
-        fR = Math.abs(afAD[1] * aafC[0][1] - afAD[0] * aafC[1][1]);
-        fR0 = extentA0 * aafAbsC[1][1] + extentA1 * aafAbsC[0][1];
-        fR1 = extentB0 * aafAbsC[2][2] + extentB2 * aafAbsC[2][0];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        // axis C0+t*A2xB2
-        fR = Math.abs(afAD[1] * aafC[0][2] - afAD[0] * aafC[1][2]);
-        fR0 = extentA0 * aafAbsC[1][2] + extentA1 * aafAbsC[0][2];
-        fR1 = extentB0 * aafAbsC[2][1] + extentB1 * aafAbsC[2][0];
-        fR01 = fR0 + fR1;
-        if (fR > fR01)
-            return false;
-
-        return true;
     }
 
     /**

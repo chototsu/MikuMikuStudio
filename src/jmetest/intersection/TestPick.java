@@ -42,7 +42,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
-import com.jme.scene.BoundingBox;
 import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
@@ -61,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.5 2004-02-25 18:17:53 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.6 2004-02-26 17:42:09 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
     private Camera cam;
@@ -205,7 +204,7 @@ public class TestPick extends SimpleGame {
         buf.setFunction(ZBufferState.CF_LEQUAL);
         
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingBox());
+        scene.setWorldBound(new BoundingSphere());
         cam.update();
         
         root.attachChild(text);
