@@ -46,14 +46,24 @@ public class TerrainBlock extends AreaClodMesh {
     private float stepScale;
     
     private boolean useClod;
+    
+    private int totalSize;
+    private int offset;
 
     /** Creates a new instance of TerrainBlock */
     public TerrainBlock(String name, int size, float stepScale,
             int[] heightMap, Vector3f origin, boolean clod) {
+        this(name, size, stepScale, heightMap, origin, clod, size, 0);
+    }
+    
+    public TerrainBlock(String name, int size, float stepScale,
+            int[] heightMap, Vector3f origin, boolean clod, int totalSize, int offset) {
         super(name);
         this.useClod = clod;
         this.size = size;
         this.stepScale = stepScale;
+        this.totalSize = totalSize;
+        this.offset = offset;
         setLocalTranslation(origin);
         buildVertices(heightMap);
         buildTextureCoordinates();
@@ -148,7 +158,7 @@ public class TerrainBlock extends AreaClodMesh {
         for (int i = 0; i < texture[0].length; i++) {
             texture[0][i] = new Vector2f(
                     vertex[i].x / (stepScale * (size - 1)),
-                    1.0f - (vertex[i].z / (stepScale * (size - 1))));
+                    (vertex[i].z / (stepScale * (size - 1))));
         }
 
         setTextures(texture[0]);
@@ -172,14 +182,10 @@ public class TerrainBlock extends AreaClodMesh {
         for (int i = 1; i < normal.length - 1; i++) {
             if (i % ((size * (i / size + 1)) - 1) == 0) {
                 //right hand normal
-                if(i - size < 0) {
-                    normal[i] = vertex[i+1].cross(vertex[i+size]).normalize();
-                } else {
-                    normal[i] = vertex[i + 1].cross(vertex[i - size]).normalize();
-                }
+                normal[i] = new Vector3f();
             } else if (i >= size * (size - 1)) {
                 //bottom row
-                normal[i] = vertex[i - 1].cross(vertex[i - size]).normalize();
+                normal[i] = new Vector3f(0,1,0);
             } else {
                 //interior
                 normal[i] = vertex[i + size].cross(vertex[i + 1]).normalize();
