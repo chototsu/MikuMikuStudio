@@ -70,7 +70,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.10 2004-04-22 22:27:06 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.11 2004-04-26 20:31:14 mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -356,14 +356,17 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
       // 3d coordinates
       float[] result = new float[4];
-
+      int[] vpArray = new int[vpBuffer.capacity()];
+      for(int i = 0; i < vpArray.length; i++) {
+          vpArray[i] = vpBuffer.get();
+      }
       GLU.gluUnProject(
               screenPosition.x,
               screenPosition.y,
               zPos,
               mvArray,
               prArray,
-              vpBuffer.array(),
+              vpArray,
               result);
 
         return new Vector3f(result[0], result[1], result[2]);
