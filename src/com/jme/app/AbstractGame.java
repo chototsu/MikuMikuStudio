@@ -46,11 +46,11 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.8 2004-03-03 00:19:37 renanse Exp $
+ * @version $Id: AbstractGame.java,v 1.9 2004-03-13 17:45:17 renanse Exp $
  */
 public abstract class AbstractGame {
     private final static String JME_VERSION_TAG = "jME version 0.5";
-    private final static String DEFAULT_IMAGE = "data/Images/Monkey.jpg";
+    private final static String DEFAULT_IMAGE = "/jmetest/data/images/Monkey.jpg";
 
     /** Never displays a <code>PropertiesDialog</code> on startup, using defaults
      * if no configuration file is found. */
@@ -110,7 +110,17 @@ public abstract class AbstractGame {
      * @param behaviour properties dialog behaviour ID
      */
     public void setDialogBehaviour(int behaviour) {
-        setDialogBehaviour(behaviour, DEFAULT_IMAGE);
+        URL url = null;
+        try {
+            url = AbstractGame.class.getResource(DEFAULT_IMAGE);
+            System.err.println("url: "+url);
+        } catch (Exception e) {
+            LoggingSystem.getLogger().throwing(getClass().toString(), "setDialogBehavior(int)", e);
+        }
+        if (url != null)
+            setDialogBehaviour(behaviour, url);
+        else
+            setDialogBehaviour(behaviour, DEFAULT_IMAGE);
     }
 
     /**
