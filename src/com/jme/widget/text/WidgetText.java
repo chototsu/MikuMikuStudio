@@ -41,7 +41,6 @@ import com.jme.widget.WidgetFrameAbstract;
 import com.jme.widget.WidgetImpl;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.font.WidgetFontManager;
-import com.jme.widget.renderer.WidgetRenderer;
 
 
 /**
@@ -133,9 +132,7 @@ public class WidgetText extends WidgetImpl {
     }
 
     public void draw(Renderer r) {
-
-        ((WidgetRenderer) r).draw(this);
-
+        r.draw(this);
     }
 
     public float getScale() {

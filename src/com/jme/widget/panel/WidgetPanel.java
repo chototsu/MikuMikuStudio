@@ -32,9 +32,7 @@
 package com.jme.widget.panel;
 
 import com.jme.renderer.Renderer;
-import com.jme.widget.Widget;
 import com.jme.widget.WidgetContainerAbstract;
-import com.jme.widget.renderer.WidgetRenderer;
 
 /**
  * @author Gregg Patton
@@ -64,7 +62,7 @@ public class WidgetPanel extends WidgetContainerAbstract {
         if (isVisible() == false)
             return;
 
-        ((WidgetRenderer)r).draw((Widget)this);
+        r.draw(this);
 
         super.draw(r);
     }
