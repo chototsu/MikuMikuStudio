@@ -58,7 +58,7 @@ import com.jme.renderer.ColorRGBA;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.9 2004-08-21 06:18:33 cep21 Exp $
+ * @version $Id: LWJGLFont.java,v 1.10 2004-08-25 02:05:13 renanse Exp $
  */
 public class LWJGLFont {
     /**
@@ -138,7 +138,7 @@ public class LWJGLFont {
         GL11.glListBase(base - 32 + (128 * set));
 
         //Put the string into a "pointer"
-        if(text.length() != scratch.capacity()) {
+        if(text.length() > scratch.capacity()) {
 	        scratch = BufferUtils.createByteBuffer(text.length()); //ByteBuffer.allocateDirect(text.length()).order(ByteOrder.nativeOrder());
 //                charbuf = new char[text.length()];
         } else {

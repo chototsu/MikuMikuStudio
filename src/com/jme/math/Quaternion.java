@@ -47,7 +47,7 @@ import java.io.*;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.27 2004-08-21 06:18:32 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.28 2004-08-25 02:05:14 renanse Exp $
  */
 public class Quaternion implements Externalizable{
     public float x, y, z, w;
@@ -347,6 +347,21 @@ public class Quaternion implements Externalizable{
         x = sin * normAxis.x;
         y = sin * normAxis.y;
         z = sin * normAxis.z;
+    }
+
+    /**
+     * <code>fromAngleNormalAxis</code> sets this quaternion to the values
+     * specified by an angle and a normalized axis of rotation.
+     * @param angle the angle to rotate (in radians).
+     * @param axis the axis of rotation (already normalized).
+     */
+    public void fromAngleNormalAxis(float angle, Vector3f axis) {
+        float halfAngle = 0.5f * angle;
+        float sin = FastMath.sin(halfAngle);
+        w = FastMath.cos(halfAngle);
+        x = sin * axis.x;
+        y = sin * axis.y;
+        z = sin * axis.z;
     }
 
     /**
