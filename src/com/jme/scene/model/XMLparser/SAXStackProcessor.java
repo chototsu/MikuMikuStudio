@@ -85,9 +85,13 @@ class SAXStackProcessor {
             parentSpatial.setRenderState(childMaterial);
             s.push(parentSpatial);
         } else if (qName.equals("mesh")){
-            childSpatial=(Spatial) s.pop();
+            TriMesh childMesh=(TriMesh) s.pop();
+            if (childMesh.getModelBound()==null){
+                childMesh.setModelBound(new BoundingBox());
+                childMesh.updateModelBound();
+            }
             parentNode=(Node) s.pop();
-            parentNode.attachChild(childSpatial);
+            parentNode.attachChild(childMesh);
             s.push(parentNode);
         } else if (qName.equals("vertex")){
             Geometry childGeometry=(Geometry) s.pop();
@@ -237,6 +241,7 @@ class SAXStackProcessor {
     private static Vector2f[] createVector2f(StringBuffer data) throws SAXException {
         if (data.length()==0) return null;
         String [] information=data.toString().trim().split(" ");
+        if (information.length==1 && information[0].equals("")) return null;
         if (information.length%2!=0){
             throw new SAXException("Vector2f length not modulus of 2: " + information.length);
         }
@@ -251,6 +256,7 @@ class SAXStackProcessor {
     private static Vector3f[] createVector3f(StringBuffer data) throws SAXException {
         if (data.length()==0) return null;
         String [] information=data.toString().trim().split(" ");
+        if (information.length==1 && information[0].equals("")) return null;
         if (information.length%3!=0){
             throw new SAXException("Vector3f length not modulus of 3: " + information.length);
         }
@@ -266,6 +272,7 @@ class SAXStackProcessor {
     private static int[] createIntArray(StringBuffer data) {
         if (data.length()==0) return null;
         String [] information=data.toString().trim().split(" ");
+        if (information.length==1 && information[0].equals("")) return null;
         int[] indexes=new int[information.length];
         for (int i=0;i<indexes.length;i++){
             indexes[i]=Integer.parseInt(information[i]);
@@ -275,7 +282,8 @@ class SAXStackProcessor {
 
     private static ColorRGBA[] createColors(StringBuffer data) throws SAXException {
         if (data.length()==0) return null;
-        String [] information=data.toString().split(" ");
+        String [] information=data.toString().trim().split(" ");
+        if (information.length==1 && information[0].equals("")) return null;
         if (information.length%4!=0){
             throw new SAXException("Color length not modulus of 4: " + information.length);
         }
