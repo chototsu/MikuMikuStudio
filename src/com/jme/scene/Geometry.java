@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.48 2004-06-03 22:09:33 renanse Exp $
+ * @version $Id: Geometry.java,v 1.49 2004-06-14 07:59:09 cep21 Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -297,6 +297,24 @@ public abstract class Geometry extends Spatial implements Serializable {
         }
         this.color = color;
         updateColorBuffer();
+    }
+
+    /**
+     *
+     * <code>setColor</code> sets a single colorRGBA into the color array. The
+     * index to set it is given, and due to speed considerations, no bounds
+     * checking is done. Therefore, if an invalid index is given, an
+     * ArrayIndexOutOfBoundsException will be thrown.
+     *
+     * @param index
+     *            the index of the color to set.
+     * @param value
+     *            the color to set.
+     */
+
+    public void setColor(int index, ColorRGBA value) {
+        color[index] = value;
+        colorBuf.put(index * 4, value.r).put(index * 4 + 1 , value.g).put(index * 4 + 2 , value.b).put(index * 4 + 3,value.a);
     }
 
     /**
