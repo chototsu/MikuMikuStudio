@@ -155,7 +155,8 @@ public abstract class Terrain implements Locale {
 	public void setFogAttributes(int mode, float[] color, 
 			float density, float start, float end) {
 		FloatBuffer buf = ByteBuffer.allocateDirect(16).order(ByteOrder.nativeOrder()).asFloatBuffer();
-		
+		buf.put(color);
+        buf.flip();
 		GL.glFogi(GL.GL_FOG_MODE, mode);
 		GL.glFog(GL.GL_FOG_COLOR, buf);
 		GL.glFogf(GL.GL_FOG_DENSITY, density);
