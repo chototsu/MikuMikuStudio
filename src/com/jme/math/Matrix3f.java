@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Optimization
- * @version $Id: Matrix3f.java,v 1.31 2005-03-15 21:08:38 renanse Exp $
+ * @version $Id: Matrix3f.java,v 1.32 2005-04-06 20:24:25 renanse Exp $
  */
 public class Matrix3f {
 
@@ -475,6 +475,55 @@ public class Matrix3f {
     }
 
     /**
+     * <code>fromAngleAxis</code> sets this matrix4f to the values specified
+     * by an angle and an axis of rotation.  This method creates an object, so
+     * use fromAngleNormalAxis if your axis is already normalized.
+     * 
+     * @param angle
+     *            the angle to rotate (in radians).
+     * @param axis
+     *            the axis of rotation.
+     */
+    public void fromAngleAxis(float angle, Vector3f axis) {
+        Vector3f normAxis = axis.normalize();
+        fromAngleNormalAxis(angle, normAxis);
+    }
+
+    /**
+     * <code>fromAngleNormalAxis</code> sets this matrix4f to the values
+     * specified by an angle and a normalized axis of rotation.
+     * 
+     * @param angle
+     *            the angle to rotate (in radians).
+     * @param axis
+     *            the axis of rotation (already normalized).
+     */
+    public void fromAngleNormalAxis(float angle, Vector3f axis) {
+        float fCos = FastMath.cos(angle);
+        float fSin = FastMath.sin(angle);
+        float fOneMinusCos = ((float)1.0)-fCos;
+        float fX2 = axis.x*axis.x;
+        float fY2 = axis.y*axis.y;
+        float fZ2 = axis.z*axis.z;
+        float fXYM = axis.x*axis.y*fOneMinusCos;
+        float fXZM = axis.x*axis.z*fOneMinusCos;
+        float fYZM = axis.y*axis.z*fOneMinusCos;
+        float fXSin = axis.x*fSin;
+        float fYSin = axis.y*fSin;
+        float fZSin = axis.z*fSin;
+        
+        m00 = fX2*fOneMinusCos+fCos;
+        m01 = fXYM-fZSin;
+        m02 = fXZM+fYSin;
+        m10 = fXYM+fZSin;
+        m11 = fY2*fOneMinusCos+fCos;
+        m12 = fYZM-fXSin;
+        m20 = fXZM-fYSin;
+        m21 = fYZM+fXSin;
+        m22 = fZ2*fOneMinusCos+fCos;
+    }
+
+    /**
      * <code>mult</code> multiplies this matrix by a given matrix. The result
      * matrix is returned as a new object. If the given matrix is null, a null
      * matrix is returned.
@@ -802,6 +851,28 @@ public class Matrix3f {
         m22 += mat.m22;
     }
 
+    /**
+     * <code>transpose</code> locally transposes this Matrix.
+     * 
+     * @return this object for chaining.
+     */
+    public Matrix3f transpose() {
+        float temp = 0;
+        temp = m01;
+        m01 = m10;
+        m10 = temp;
+
+        temp = m02;
+        m02 = m20;
+        m20 = temp;
+
+        temp = m12;
+        m12 = m21;
+        m21 = temp;
+        
+        return this;
+    }
+    
     /**
      * 
      * <code>fromAxisAngle</code> creates a rotational matrix given an axis

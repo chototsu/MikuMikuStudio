@@ -31,10 +31,14 @@
  */
 package com.jme.math;
 
-import com.jme.util.LoggingSystem;
-import com.jme.system.JmeException;
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.logging.Level;
-import java.io.*;
+
+import com.jme.system.JmeException;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>Quaternion</code> defines a single example of a more general class of
@@ -47,7 +51,7 @@ import java.io.*;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.32 2004-12-08 22:31:39 mojomonkey Exp $
+ * @version $Id: Quaternion.java,v 1.33 2005-04-06 20:24:25 renanse Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -245,32 +249,8 @@ public class Quaternion implements Externalizable {
      * @return the rotation matrix representation of this quaternion.
      */
     public Matrix3f toRotationMatrix() {
-        float fTx = 2.0f * x;
-        float fTy = 2.0f * y;
-        float fTz = 2.0f * z;
-        float fTwx = fTx * w;
-        float fTwy = fTy * w;
-        float fTwz = fTz * w;
-        float fTxx = fTx * x;
-        float fTxy = fTy * x;
-        float fTxz = fTz * x;
-        float fTyy = fTy * y;
-        float fTyz = fTz * y;
-        float fTzz = fTz * z;
-
         Matrix3f matrix = new Matrix3f();
-
-        matrix.m00 = 1.0f - (fTyy + fTzz);
-        matrix.m01 = fTxy - fTwz;
-        matrix.m02 = fTxz + fTwy;
-        matrix.m10 = fTxy + fTwz;
-        matrix.m11 = 1.0f - (fTxx + fTzz);
-        matrix.m12 = fTyz - fTwx;
-        matrix.m20 = fTxz - fTwy;
-        matrix.m21 = fTyz + fTwx;
-        matrix.m22 = 1.0f - (fTxx + fTyy);
-
-        return matrix;
+        return toRotationMatrix(matrix);
     }
 
     /**
@@ -306,6 +286,45 @@ public class Quaternion implements Externalizable {
         result.m21 = fTyz + fTwx;
         result.m22 = 1.0f - (fTxx + fTyy);
 
+        return result;
+    }
+
+    /**
+     * 
+     * <code>toRotationMatrix</code> converts this quaternion to a rotational
+     * matrix. The result is stored in result.  The outer col, row is 0, with 3,3 = 1
+     * 
+     * @param result
+     *            The Matrix4f to store the result in.
+     * @return the rotation matrix representation of this quaternion.
+     */
+    public Matrix4f toRotationMatrix(Matrix4f result) {
+        float fTx = 2.0f * x;
+        float fTy = 2.0f * y;
+        float fTz = 2.0f * z;
+        float fTwx = fTx * w;
+        float fTwy = fTy * w;
+        float fTwz = fTz * w;
+        float fTxx = fTx * x;
+        float fTxy = fTy * x;
+        float fTxz = fTz * x;
+        float fTyy = fTy * y;
+        float fTyz = fTz * y;
+        float fTzz = fTz * z;
+
+        result.zero();
+        result.m33 = 1;
+
+        result.m00 = 1.0f - (fTyy + fTzz);
+        result.m01 = fTxy - fTwz;
+        result.m02 = fTxz + fTwy;
+        result.m10 = fTxy + fTwz;
+        result.m11 = 1.0f - (fTxx + fTzz);
+        result.m12 = fTyz - fTwx;
+        result.m20 = fTxz - fTwy;
+        result.m21 = fTyz + fTwx;
+        result.m22 = 1.0f - (fTxx + fTyy);
+        
         return result;
     }
 
@@ -376,7 +395,8 @@ public class Quaternion implements Externalizable {
 
     /**
      * <code>fromAngleAxis</code> sets this quaternion to the values specified
-     * by an angle and an axis of rotation.
+     * by an angle and an axis of rotation.  This method creates an object, so
+     * use fromAngleNormalAxis if your axis is already normalized.
      * 
      * @param angle
      *            the angle to rotate (in radians).
@@ -385,12 +405,7 @@ public class Quaternion implements Externalizable {
      */
     public void fromAngleAxis(float angle, Vector3f axis) {
         Vector3f normAxis = axis.normalize();
-        float halfAngle = 0.5f * angle;
-        float sin = FastMath.sin(halfAngle);
-        w = FastMath.cos(halfAngle);
-        x = sin * normAxis.x;
-        y = sin * normAxis.y;
-        z = sin * normAxis.z;
+        fromAngleNormalAxis(angle, normAxis);
     }
 
     /**
@@ -618,6 +633,8 @@ public class Quaternion implements Externalizable {
      * The result is returned as a new quaternion. It should be noted that
      * quaternion multiplication is not cummulative so q * p != p * q.
      * 
+     * It IS safe for q and res to be the same object.
+     * 
      * @param q
      *            the quaternion to multiply this quaternion by.
      * @param res
@@ -627,10 +644,11 @@ public class Quaternion implements Externalizable {
     public Quaternion mult(Quaternion q, Quaternion res) {
         if (res == null)
             res = new Quaternion();
-        res.x = x * q.w + y * q.z - z * q.y + w * q.x;
-        res.y = -x * q.z + y * q.w + z * q.x + w * q.y;
-        res.z = x * q.y - y * q.x + z * q.w + w * q.z;
-        res.w = -x * q.x - y * q.y - z * q.z + w * q.w;
+        float qw = q.w, qx = q.x, qy = q.y, qz = q.z;
+        res.x = x * qw + y * qz - z * qy + w * qx;
+        res.y = -x * qz + y * qw + z * qx + w * qy;
+        res.z = x * qy - y * qx + z * qw + w * qz;
+        res.w = -x * qx - y * qy - z * qz + w * qw;
         return res;
     }
 
@@ -749,6 +767,29 @@ public class Quaternion implements Externalizable {
         float y1 = -x * q.z + y * q.w + z * q.x + w * q.y;
         float z1 = x * q.y - y * q.x + z * q.w + w * q.z;
         w = -x * q.x - y * q.y - z * q.z + w * q.w;
+        x = x1;
+        y = y1;
+        z = z1;
+        return this;
+    }
+
+    /**
+     * Multiplies this Quaternion by the supplied quaternion. The result is
+     * stored in this Quaternion, which is also returned for chaining. Similar
+     * to this *= q.
+     * 
+     * @param qx - quat x value
+     * @param qy - quat y value
+     * @param qz - quat z value
+     * @param qw - quat w value
+     * 
+     * @return This Quaternion, after multiplication.
+     */
+    public Quaternion multLocal(float qx, float qy, float qz, float qw) {
+        float x1 = x * qw + y * qz - z * qy + w * qx;
+        float y1 = -x * qz + y * qw + z * qx + w * qy;
+        float z1 = x * qy - y * qx + z * qw + w * qz;
+        w = -x * qx - y * qy - z * qz + w * qw;
         x = x1;
         y = y1;
         z = z1;

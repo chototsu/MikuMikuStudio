@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.10 2005-03-15 19:53:16 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.11 2005-04-06 20:24:25 renanse Exp $
  */
 public class Matrix4f {
 
@@ -134,6 +134,67 @@ public class Matrix4f {
             m31 = matrix.m31;
             m32 = matrix.m32;
             m33 = matrix.m33;
+        }
+    }
+
+    /**
+     * <code>get</code> retrieves the values of this object into
+     * a float array in row-major order.
+     * 
+     * @param matrix
+     *            the matrix to set the values into.
+     */
+    public void get(float[] matrix) {
+        set(matrix, true);
+    }
+
+    /**
+     * <code>set</code> retrieves the values of this object into
+     * a float array.
+     * 
+     * @param matrix
+     *            the matrix to set the values into.
+     * @param rowMajor
+     *            whether the outgoing data is in row or column major order.
+     */
+    public void get(float[] matrix, boolean rowMajor) {
+        if (matrix.length != 16) throw new JmeException(
+                "Array must be of size 16.");
+
+        if (rowMajor) {
+	        matrix[0] = m00;
+	        matrix[1] = m01;
+	        matrix[2] = m02;
+	        matrix[3] = m03;
+	        matrix[4] = m10;
+	        matrix[5] = m11;
+	        matrix[6] = m12;
+	        matrix[7] = m13;
+	        matrix[8] = m20;
+	        matrix[9] = m21;
+	        matrix[10] = m22;
+	        matrix[11] = m23;
+	        matrix[12] = m30;
+	        matrix[13] = m31;
+	        matrix[14] = m32;
+	        matrix[15] = m33;
+        } else {
+	        matrix[0] = m00;
+	        matrix[4] = m01;
+	        matrix[8] = m02;
+	        matrix[12] = m03;
+	        matrix[1] = m10;
+	        matrix[5] = m11;
+	        matrix[9] = m12;
+	        matrix[13] = m13;
+	        matrix[2] = m20;
+	        matrix[6] = m21;
+	        matrix[10] = m22;
+	        matrix[14] = m23;
+	        matrix[3] = m30;
+	        matrix[7] = m31;
+	        matrix[11] = m32;
+	        matrix[15] = m33;
         }
     }
 
@@ -465,6 +526,40 @@ public class Matrix4f {
     }
 
     /**
+     * <code>transpose</code> locally transposes this Matrix.
+     * 
+     * @return this object for chaining.
+     */
+    public Matrix4f transpose() {
+        float temp = 0;
+        temp = m01;
+        m01 = m10;
+        m10 = temp;
+
+        temp = m02;
+        m02 = m20;
+        m20 = temp;
+
+        temp = m03;
+        m03 = m30;
+        m30 = temp;
+
+        temp = m12;
+        m12 = m21;
+        m21 = temp;
+
+        temp = m13;
+        m13 = m31;
+        m31 = temp;
+
+        temp = m23;
+        m23 = m32;
+        m32 = temp;      
+        
+        return this;
+    }
+    
+    /**
      * <code>toFloatBuffer</code> returns a FloatBuffer object that contains
      * the matrix data.
      * 
@@ -505,6 +600,58 @@ public class Matrix4f {
     public void loadIdentity() {
         zero();
         m00 = m11 = m22 = m33 = 1;
+    }
+
+    /**
+     * <code>fromAngleAxis</code> sets this matrix4f to the values specified
+     * by an angle and an axis of rotation.  This method creates an object, so
+     * use fromAngleNormalAxis if your axis is already normalized.
+     * 
+     * @param angle
+     *            the angle to rotate (in radians).
+     * @param axis
+     *            the axis of rotation.
+     */
+    public void fromAngleAxis(float angle, Vector3f axis) {
+        Vector3f normAxis = axis.normalize();
+        fromAngleNormalAxis(angle, normAxis);
+    }
+
+    /**
+     * <code>fromAngleNormalAxis</code> sets this matrix4f to the values
+     * specified by an angle and a normalized axis of rotation.
+     * 
+     * @param angle
+     *            the angle to rotate (in radians).
+     * @param axis
+     *            the axis of rotation (already normalized).
+     */
+    public void fromAngleNormalAxis(float angle, Vector3f axis) {
+        zero();
+        m33 = 1;
+
+        float fCos = FastMath.cos(angle);
+        float fSin = FastMath.sin(angle);
+        float fOneMinusCos = ((float)1.0)-fCos;
+        float fX2 = axis.x*axis.x;
+        float fY2 = axis.y*axis.y;
+        float fZ2 = axis.z*axis.z;
+        float fXYM = axis.x*axis.y*fOneMinusCos;
+        float fXZM = axis.x*axis.z*fOneMinusCos;
+        float fYZM = axis.y*axis.z*fOneMinusCos;
+        float fXSin = axis.x*fSin;
+        float fYSin = axis.y*fSin;
+        float fZSin = axis.z*fSin;
+        
+        m00 = fX2*fOneMinusCos+fCos;
+        m01 = fXYM-fZSin;
+        m02 = fXZM+fYSin;
+        m10 = fXYM+fZSin;
+        m11 = fY2*fOneMinusCos+fCos;
+        m12 = fYZM-fXSin;
+        m20 = fXZM-fYSin;
+        m21 = fYZM+fXSin;
+        m22 = fZ2*fOneMinusCos+fCos;
     }
 
     /**
@@ -599,6 +746,68 @@ public class Matrix4f {
     }
 
     /**
+     * <code>mult</code> multiplies this matrix with another matrix. The
+     * results are stored internally and a handle to this matrix will 
+     * then be returned. This matrix will be on the left hand
+     * side, while the parameter matrix will be on the right.
+     * 
+     * @param in2
+     *            the matrix to multiply this matrix by.
+     * @return the resultant matrix
+     */
+    public Matrix4f multLocal(Matrix4f in2) {
+        float temp00, temp01, temp02, temp03;
+        float temp10, temp11, temp12, temp13;
+        float temp20, temp21, temp22, temp23;
+        float temp30, temp31, temp32, temp33;
+
+        temp00 = m00 * in2.m00 + m01
+                * in2.m10 + m02 * in2.m20;
+        temp01 = m00 * in2.m01 + m01
+                * in2.m11 + m02 * in2.m21;
+        temp02 = m00 * in2.m02 + m01
+                * in2.m12 + m02 * in2.m22;
+        temp03 = m00 * in2.m03 + m01
+                * in2.m13 + m02 * in2.m23
+                + m03;
+        temp10 = m10 * in2.m00 + m11
+                * in2.m10 + m12 * in2.m20;
+        temp11 = m10 * in2.m01 + m11
+                * in2.m11 + m12 * in2.m21;
+        temp12 = m10 * in2.m02 + m11
+                * in2.m12 + m12 * in2.m22;
+        temp13 = m10 * in2.m03 + m11
+                * in2.m13 + m12 * in2.m23
+                + m13;
+        temp20 = m20 * in2.m00 + m21
+                * in2.m10 + m22 * in2.m20;
+        temp21 = m20 * in2.m01 + m21
+                * in2.m11 + m22 * in2.m21;
+        temp22 = m20 * in2.m02 + m21
+                * in2.m12 + m22 * in2.m22;
+        temp23 = m20 * in2.m03 + m21
+                * in2.m13 + m22 * in2.m23
+                + m23;
+        temp30 = this.m00 * in2.get(3, 0)
+                + this.m10 * in2.get(3, 1) + this.m20
+                * in2.get(3, 2) + this.m30;
+        temp31 = this.m01 * in2.get(3, 0)
+                + this.m11 * in2.get(3, 1) + this.m21
+                * in2.get(3, 2) + this.m31;
+        temp32 = this.m02 * in2.get(3, 0)
+                + this.m12 * in2.get(3, 1) + this.m22
+                * in2.get(3, 2) + this.m32;
+        temp33 = 1;
+
+        m00 = temp00;  m01 = temp01;  m02 = temp02;  m03 = temp03;
+        m10 = temp10;  m11 = temp11;  m12 = temp12;  m13 = temp13;
+        m20 = temp20;  m21 = temp21;  m22 = temp22;  m23 = temp23;
+        m30 = temp30;  m31 = temp31;  m32 = temp32;  m33 = temp33;
+        
+        return this;
+    }
+
+    /**
      * <code>mult</code> multiplies a vector about a rotation matrix. The
      * resulting vector is returned as a new Vector3f.
      * 
@@ -636,6 +845,34 @@ public class Matrix4f {
                 * vec.z;
 
         return store;
+    }
+
+    /**
+     * <code>mult</code> multiplies an array of 4 floats against this rotation 
+     * matrix. The results are stored directly in the array.
+     * 
+     * @param vec4f
+     *            float array (size 4) to multiply against the matrix.
+     * @return the vec4f for chaining.
+     */
+    public float[] mult(float[] vec4f) {
+        if (null == vec4f || vec4f.length != 4) {
+            System.err.println("invalid array given, must be nonnull and length 4");
+            return null;
+        }
+
+        float x = vec4f[0], y = vec4f[1], z = vec4f[2], w = vec4f[3];
+        
+        vec4f[0] = m00 * x + m01 * y 
+		 		 + m02 * z + m03 * z;
+        vec4f[0] = m10 * x + m11 * y 
+		 		 + m12 * z + m13 * z;
+        vec4f[0] = m20 * x + m21 * y 
+		 		 + m22 * z + m23 * z;
+        vec4f[0] = m30 * x + m31 * y 
+		 		 + m32 * z + m33 * z;
+
+        return vec4f;
     }
 
     /**
