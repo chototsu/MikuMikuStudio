@@ -57,9 +57,11 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.28 2004-07-08 20:38:00 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.29 2004-07-10 19:51:55 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
+
+  private static Texture[] currentTexture;
 
   //OpenGL texture attributes.
   private int[] textureCorrection = {GL11.GL_FASTEST, GL11.GL_NICEST};
@@ -119,6 +121,10 @@ public class LWJGLTextureState extends TextureState {
         numTexUnits = 1;
       }
     }
+
+    if (currentTexture == null)
+      currentTexture = new Texture[numTexUnits];
+
     if (maxAnisotropic == -1.0) {
       // Due to LWJGL buffer check, you can't use smaller sized buffers (min_size = 16 for glGetFloat()).
       FloatBuffer max_a = BufferUtils.createFloatBuffer(16);
@@ -147,34 +153,24 @@ public class LWJGLTextureState extends TextureState {
    */
   public void apply() {
 
-    for (int i = 0; i < numTexUnits; i++) {
-      if (!isEnabled() || getTexture(i) == null) {
-        if (supportsMultiTexture) {
-          GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
-        }
-        GL11.glDisable(GL11.GL_TEXTURE_2D);
-      }
-    }
-
-    if (supportsMultiTexture) {
-      GL13.glActiveTexture(GL13.GL_TEXTURE0);
-    }
-
     if (isEnabled()) {
       int index;
       Texture texture;
-      for (int i = firstTexture; i <= lastTexture; i++) {
+      for (int i = 0; i < numTexUnits; i++) {
         index = GL13.GL_TEXTURE0 + i;
         texture = getTexture(i);
-        if (texture == null) {
-          continue;
-        }
+        if (texture == currentTexture[i]) continue;
+        currentTexture[i] = texture;
 
         if (supportsMultiTexture && i != 0) {
           GL13.glActiveTexture(index);
         }
 
-        GL11.glEnable(GL11.GL_TEXTURE_2D);
+        if (texture == null) {
+          GL11.glDisable(GL11.GL_TEXTURE_2D);
+          continue;
+        } else
+          GL11.glEnable(GL11.GL_TEXTURE_2D);
 
         //texture not yet loaded.
         if (texture.getTextureId() == 0) {
@@ -389,6 +385,19 @@ public class LWJGLTextureState extends TextureState {
 
         GL11.glTexEnv(GL11.GL_TEXTURE_ENV, GL11.GL_TEXTURE_ENV_COLOR,
                       texture.getBlendColor());
+      }
+
+      if (supportsMultiTexture) {
+        GL13.glActiveTexture(GL13.GL_TEXTURE0);
+      }
+    } else {
+      if (supportsMultiTexture) {
+        for (int i = 0; i < numTexUnits; i++) {
+          GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+          GL11.glDisable(GL11.GL_TEXTURE_2D);
+        }
+      } else {
+        GL11.glDisable(GL11.GL_TEXTURE_2D);
       }
     }
   }
