@@ -6,10 +6,7 @@ import com.jme.scene.lod.CollapseRecord;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.model.JointMesh;
 import com.jme.scene.state.*;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
-import com.jme.math.Vector2f;
-import com.jme.math.FastMath;
+import com.jme.math.*;
 import com.jme.renderer.ColorRGBA;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
@@ -744,14 +741,15 @@ public class JmeBinaryWriter {
         writeTag("jointcontroller",atts);
         Object[] o=jc.movementInfo.toArray();
         Vector3f tempV=new Vector3f();
-        Quaternion tempQ=new Quaternion();
+//        Quaternion tempQ=new Quaternion();
+        Matrix3f tempM=new Matrix3f();
         for (int j=0;j<jc.numJoints;j++){
             atts.clear();
             atts.put("index",new Integer(j));
             atts.put("parentindex",new Integer(jc.parentIndex[j]));
-            jc.localRefMatrix[j].getRotation(tempQ);
+            jc.localRefMatrix[j].getRotation(tempM);
             jc.localRefMatrix[j].getTranslation(tempV);
-            atts.put("localrot",tempQ);
+            atts.put("localrot",tempM);
             atts.put("localvec",tempV);
 
             writeTag("joint",atts);
@@ -1006,10 +1004,25 @@ public class JmeBinaryWriter {
                 writeByteArray((byte[])attrib);
             else if (attrib instanceof short[])
                 writeShortArray((short[])attrib);
+            else if (attrib instanceof Matrix3f)
+                writeMatrix3((Matrix3f)attrib);
             else
                 throw new IOException("unknown class type for " + attrib + " of " + attrib.getClass());
             i.remove();
         }
+    }
+
+    private void writeMatrix3(Matrix3f m) throws IOException {
+        myOut.writeByte(BinaryFormatConstants.DATA_MATRIX3);
+        myOut.writeFloat(m.m00);
+        myOut.writeFloat(m.m01);
+        myOut.writeFloat(m.m02);
+        myOut.writeFloat(m.m10);
+        myOut.writeFloat(m.m11);
+        myOut.writeFloat(m.m12);
+        myOut.writeFloat(m.m20);
+        myOut.writeFloat(m.m21);
+        myOut.writeFloat(m.m22);
     }
 
     private void writeShortArray(short[] array) throws IOException {
