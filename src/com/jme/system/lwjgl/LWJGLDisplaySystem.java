@@ -36,14 +36,14 @@
 
 package com.jme.system.lwjgl;
 
-import java.awt.Toolkit;
 import java.util.logging.Level;
+
+import java.awt.Toolkit;
 
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
 import org.lwjgl.opengl.RenderTexture;
 import org.lwjgl.opengl.Window;
-
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
@@ -63,7 +63,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.1 2004-04-02 23:29:15 mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.2 2004-04-13 23:33:48 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -82,7 +82,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     public LWJGLDisplaySystem() {
         LoggingSystem.getLogger().log(Level.INFO, "LWJGL Display System created.");
-
     }
 
     /**

@@ -121,7 +121,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.1 2004-04-02 23:29:12 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.2 2004-04-13 23:33:50 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -217,7 +217,7 @@ public class LWJGLRenderer implements Renderer {
 	public AlphaState getAlphaState() {
 		return new LWJGLAlphaState();
 	}
-	
+
 	public AttributeState getAttributeState() {
 		return new LWJGLAttributeState();
 	}
@@ -306,7 +306,7 @@ public class LWJGLRenderer implements Renderer {
 	public ZBufferState getZBufferState() {
 		return new LWJGLZBufferState();
 	}
-	
+
 	public VertexProgramState getVertexProgramState(){
 	    return new LWJGLVertexProgramState();
 	}
@@ -397,7 +397,6 @@ public class LWJGLRenderer implements Renderer {
 	 */
 	public void displayBackBuffer() {
 		GL11.glFlush();
-		Window.paint();
 		Window.update();
 	}
 

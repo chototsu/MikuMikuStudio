@@ -45,15 +45,14 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLStandardCursor;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.2 2004-04-05 11:36:12 greggpatton Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.3 2004-04-13 23:33:49 renanse Exp $
  */
 public class LWJGLMouseInput implements MouseInput {
-    private int x;
-    private int y;
 
     private MouseButtonStateType buttonType = MouseButtonStateType.MOUSE_BUTTON_NONE;
     private MouseButtonStateType previousButtonType = MouseButtonStateType.MOUSE_BUTTON_NONE;
 
+    private int dx, dy;
 
     /**
      * Constructor creates a new <code>LWJGLMouseInput</code> object. A call
@@ -63,9 +62,8 @@ public class LWJGLMouseInput implements MouseInput {
      */
     public LWJGLMouseInput() {
         try {
-
             Mouse.create();
-
+            setCursorVisible(false);
         } catch (Exception e) {
             LoggingSystem.getLogger().log(Level.WARNING, "Problem during " + "creation of Mouse.");
         }
@@ -118,7 +116,8 @@ public class LWJGLMouseInput implements MouseInput {
      * @see com.jme.input.MouseInput#poll()
      */
     public void poll() {
-        Mouse.poll();
+      dx = Mouse.getDX();
+      dy = Mouse.getDY();
     }
 
     /**
@@ -134,14 +133,14 @@ public class LWJGLMouseInput implements MouseInput {
      * @see com.jme.input.MouseInput#getXDelta()
      */
     public int getXDelta() {
-        return Mouse.getDX();
+        return dx;
     }
     /**
      * <code>getYDelta</code> retrieves the change of the y position, if any.
      * @see com.jme.input.MouseInput#getYDelta()
      */
     public int getYDelta() {
-        return Mouse.getDY();
+        return dy;
     }
 
     /**
@@ -149,7 +148,7 @@ public class LWJGLMouseInput implements MouseInput {
      * @see com.jme.input.MouseInput#getXAbsolute()
      */
     public int getXAbsolute() {
-        return x;
+        return Mouse.getX();
     }
 
     /**
@@ -157,7 +156,7 @@ public class LWJGLMouseInput implements MouseInput {
      * @see com.jme.input.MouseInput#getYAbsolute()
      */
     public int getYAbsolute() {
-        return y;
+        return Mouse.getY();
     }
 
     /**
@@ -167,11 +166,7 @@ public class LWJGLMouseInput implements MouseInput {
     public void updateState() {
         poll();
 
-        x += Mouse.getDX();
-        y += Mouse.getDY();
-
         setButtonStateType();
-
     }
 
     private void setButtonStateType() {
@@ -230,12 +225,11 @@ public class LWJGLMouseInput implements MouseInput {
      * @see com.jme.input.MouseInput#setCursorVisible(boolean)
      */
     public void setCursorVisible(boolean v) {
+      Mouse.setGrabbed(!v);
         try {
 
             if (v) {
                 Mouse.setNativeCursor(WidgetLWJGLStandardCursor.cursor);
-                x = Window.getWidth() / 2;
-                y = Window.getHeight() / 2;
             } else {
                 Mouse.setNativeCursor(null);
             }

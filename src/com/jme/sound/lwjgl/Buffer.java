@@ -62,7 +62,7 @@ public class Buffer implements IBuffer {
      */
     public void configure(ByteBuffer data, int format, int freq) {
         this.data= data;
-        AL10.alBufferData(bufferNumber, format, data, data.capacity(), freq);
+        AL10.alBufferData(bufferNumber, format, data, freq);
     }
 
     /* (non-Javadoc)
