@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.14 2004-07-07 19:19:10 renanse Exp $
+ * @version $Id: TextureState.java,v 1.15 2004-08-02 19:14:48 cep21 Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -67,13 +67,15 @@ public abstract class TextureState extends RenderState {
     /** Do not combine texture states, just use the most recent one. */
     public static final int REPLACE = 5;
 
-    //the texture
+    /** The texture(s). */
     protected transient Texture[] texture;
 
+    /** The current number of used texture units. */
     protected static int numTexUnits = 0;
 
     protected static float maxAnisotropic = -1.0f;
 
+    /** True if multitexturing is supported. */
     protected static boolean supportsMultiTexture = false;
 
     protected transient int firstTexture = 0;
@@ -160,15 +162,30 @@ public abstract class TextureState extends RenderState {
         return numTexUnits;
     }
 
+    /**
+     * Removes the texture of the given unit.
+     * @param unit The unit of the Texture to remove.
+     */
     public abstract void delete(int unit);
 
+    /**
+     * Removes all Texture set in this TextureState.
+     */
     public abstract void deleteAll();
 
+    /**
+     * Returns the maximum anisotropic filter.
+     * @return The maximum anisotropic filter.
+     */
     public float getMaxAnisotropic() {
       return maxAnisotropic;
     }
 
 
+    /**
+     * Updates firstTexture to be the first non-null Texture, and lastTexture to be the last
+     * non-null texture.
+     */
     protected void resetFirstLast() {
       boolean foundFirst = false;
       for (int x = 0; x < numTexUnits; x++) {
