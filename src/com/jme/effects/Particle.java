@@ -40,7 +40,7 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.12 2004-04-22 22:26:25 renanse Exp $
+ * @version $Id: Particle.java,v 1.13 2004-06-29 23:08:36 renanse Exp $
  */
 public class Particle {
 
@@ -52,6 +52,7 @@ public class Particle {
   private float currentSize;
   private float lifeSpan;
   private float lifeRatio;
+  private float spinAngle;
   private int currentAge;
   private ParticleManager parent;
   private Vector3f speed;
@@ -92,11 +93,11 @@ public class Particle {
   }
 
   /**
-   * Reset particle conditions.  Besides the passed in speed and lifespan,
+   * Reset particle conditions.  Besides the passed in speeds and lifespan,
    * we also reset color and size to their starting values (as given by parent.)
    *
    * @param speed initial velocity of recreated particle
-   * @param lifeSpan the recreated particles new lifespan
+   * @param lifeSpan the recreated particle's new lifespan
    */
   public void recreateParticle(Vector3f speed, float lifeSpan) {
     this.lifeSpan = lifeSpan;
@@ -106,6 +107,7 @@ public class Particle {
                    parent.getStartColor().b, parent.getStartColor().a);
     currentSize = parent.getStartSize();
     currentAge = 0;
+    spinAngle = 0;
     status = AVAILABLE;
   }
 
@@ -116,13 +118,20 @@ public class Particle {
   public void updateVerts() {
     Camera cam = parent.getCamera();
 
-    bbX.set(cam.getLeft()).multLocal(currentSize);
-    bbY.set(cam.getUp()).multLocal(currentSize);
+    if (spinAngle == 0) {
+      bbX.set(cam.getLeft()).multLocal(currentSize);
+      bbY.set(cam.getUp()).multLocal(currentSize);
+    } else {
+      float cA = FastMath.cos(spinAngle) * currentSize;
+      float sA = FastMath.sin(spinAngle) * currentSize;
+      bbX.set(cam.getLeft()).multLocal(cA).addLocal(cam.getUp().x*sA, cam.getUp().y*sA, cam.getUp().z*sA);
+      bbY.set(cam.getLeft()).multLocal(-sA).addLocal(cam.getUp().x*cA, cam.getUp().y*cA, cam.getUp().z*cA);
+    }
 
-    location.add(bbX, verts[1]).subtractLocal(bbY);
-    location.add(bbX, verts[2]).addLocal(bbY);
-    location.subtract(bbX, verts[3]).addLocal(bbY);
-    location.subtract(bbX, verts[0]).subtractLocal(bbY);
+    location.add(bbX, verts[1]).subtractLocal(bbY);       // Q4
+    location.add(bbX, verts[2]).addLocal(bbY);            // Q1
+    location.subtract(bbX, verts[3]).addLocal(bbY);       // Q2
+    location.subtract(bbX, verts[0]).subtractLocal(bbY);  // Q3
   }
 
   /**
@@ -151,6 +160,7 @@ public class Particle {
 
     speed.scaleAdd(secondsPassed*1000f, parent.getGravityForce(), speed);
     location.scaleAdd(secondsPassed*1000f, speed, location);
+    spinAngle = spinAngle + parent.getParticleSpinSpeed()*secondsPassed*100f;
 
     if (parent.getRandomMod() != 0.0f) {
       location.addLocal(parent.getRandomMod() *

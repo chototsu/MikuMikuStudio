@@ -59,7 +59,7 @@ import com.jme.renderer.Renderer;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.7 2004-06-26 00:18:00 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.8 2004-06-29 23:08:36 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
@@ -90,6 +90,7 @@ public class ParticleManager extends Controller {
   private ColorRGBA endColor;
   private float releaseVariance;
   private float initialVelocity;
+  private float particleSpinSpeed;
   private float minimumLifeTime;
   private float maximumAngle;
   private float startSize, endSize;
@@ -141,6 +142,7 @@ public class ParticleManager extends Controller {
     randomMod = 1.0f;
     releaseRate = noParticles;
     releaseVariance = 0;
+    particleSpinSpeed = 0;
     controlFlow = false;
     precision = .01f; // 10ms
 
@@ -627,6 +629,24 @@ public class ParticleManager extends Controller {
    */
   public float getParticlesMinimumLifeTime() {
     return minimumLifeTime;
+  }
+
+  /**
+   * Set the spinSpeed of new particles managed by this manager.
+   * Setting it to 0 means no spin.
+   * @param speed float
+   */
+  public void setParticleSpinSpeed(float speed) {
+    particleSpinSpeed = speed;
+  }
+
+  /**
+   * getParticleSpinSpeed
+   *
+   * @return float
+   */
+  public float getParticleSpinSpeed() {
+    return particleSpinSpeed;
   }
 
   /**

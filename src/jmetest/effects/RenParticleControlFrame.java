@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.30 2004-04-27 17:10:14 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.31 2004-06-29 23:08:37 renanse Exp $
  *
  */
 
@@ -176,10 +176,13 @@ public class RenParticleControlFrame extends JFrame {
   JSlider rateSlider = new JSlider();
   JCheckBox rateBox = new JCheckBox();
   JPanel velocityPanel = new JPanel();
-  GridBagLayout gridBagLayout1 = new GridBagLayout();
   TitledBorder velocityBorder;
   JLabel velocityLabel = new JLabel();
   JSlider velocitySlider = new JSlider();
+  JPanel spinPanel = new JPanel();
+  TitledBorder spinBorder;
+  JLabel spinLabel = new JLabel();
+  JSlider spinSlider = new JSlider();
 
   public RenParticleControlFrame() {
     try {
@@ -211,6 +214,7 @@ public class RenParticleControlFrame extends JFrame {
     rateBorder = new TitledBorder(" RATE ");
     spawnBorder = new TitledBorder(" SPAWN s");
     velocityBorder = new TitledBorder(" VELOCITY ");
+    spinBorder = new TitledBorder(" PARTICLE SPIN ");
     this.getContentPane().setLayout(new BorderLayout());
     appPanel.setLayout(new GridBagLayout());
     emitPanel.setLayout(new GridBagLayout());
@@ -604,7 +608,7 @@ public class RenParticleControlFrame extends JFrame {
         updateRateLabels();
       }
     });
-    velocityPanel.setLayout(gridBagLayout1);
+    velocityPanel.setLayout(new GridBagLayout());
     velocityPanel.setBorder(velocityBorder);
     velocityBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
     velocityBorder.setBorder(BorderFactory.createEtchedBorder(new Color(240, 217, 205),new Color(117, 106, 100)));
@@ -620,9 +624,30 @@ public class RenParticleControlFrame extends JFrame {
         regenCode();
       }
     });
+    spinPanel.setLayout(new GridBagLayout());
+    spinPanel.setBorder(spinBorder);
+    spinBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
+    spinBorder.setBorder(BorderFactory.createEtchedBorder(new Color(240, 217, 205),new Color(117, 106, 100)));
+    spinLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    spinLabel.setText("Spin Speed: .0001");
+    spinSlider.setMaximum(50);
+    spinSlider.setMinimum(-50);
+    spinSlider.setValue(0);
+    spinSlider.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int val = spinSlider.getValue();
+        RenParticleEditor.manager.setParticleSpinSpeed( (float) val * .01f);
+        updateSpinLabels();
+        regenCode();
+      }
+    });
     this.getContentPane().add(mainTabbedPane1, BorderLayout.CENTER);
     emitPanel.add(directionPanel,     new GridBagConstraints(0, 0, 1, 1, 0.5, 1.0
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 5, 5), 0, 0));
+    emitPanel.add(velocityPanel,    new GridBagConstraints(1, 1, 1, 1, 0.5, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 10, 10), 0, 0));
+    emitPanel.add(spinPanel,    new GridBagConstraints(1, 0, 1, 1, 0.5, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 10, 10), 0, 0));
     directionPanel.add(emitXSlider, new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
         , GridBagConstraints.CENTER, GridBagConstraints.BOTH,
         new Insets(10, 10, 5, 0), 0, 0));
@@ -778,8 +803,6 @@ public class RenParticleControlFrame extends JFrame {
     anglePanel.add(angleSlider, new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
         , GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL,
         new Insets(5, 10, 5, 10), 0, 0));
-    emitPanel.add(velocityPanel,    new GridBagConstraints(1, 1, 1, 1, 0.5, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 5, 10, 10), 0, 0));
     anglePanel.add(angleLabel, null);
     randomPanel.add(randomLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
         , GridBagConstraints.WEST, GridBagConstraints.NONE,
@@ -844,6 +867,10 @@ public class RenParticleControlFrame extends JFrame {
     velocityPanel.add(velocityLabel,   new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 5, 10), 0, 0));
     velocityPanel.add(velocitySlider,   new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 10, 10), 0, 0));
+    spinPanel.add(spinLabel,   new GridBagConstraints(0, 0, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 5, 10), 0, 0));
+    spinPanel.add(spinSlider,   new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 10, 10), 0, 0));
 
     setSize(new Dimension(450, 330));
@@ -1053,6 +1080,9 @@ public class RenParticleControlFrame extends JFrame {
     velocitySlider.setValue( (int) (RenParticleEditor.manager.
                                    getInitialVelocity() * 100));
     updateVelocityLabels();
+    spinSlider.setValue( (int) (RenParticleEditor.manager.
+                                   getParticleSpinSpeed() * 100));
+    updateSpinLabels();
     regenCode();
     validate();
   }
@@ -1126,6 +1156,10 @@ public class RenParticleControlFrame extends JFrame {
     RenParticleEditor.manager.setInitialVelocity( (float) val * .01f);
     updateVelocityLabels();
 
+    val = spinSlider.getValue();
+    RenParticleEditor.manager.setParticleSpinSpeed( (float) val * .01f);
+    updateSpinLabels();
+
     RenParticleEditor.root.attachChild(RenParticleEditor.manager.getParticles());
     RenParticleEditor.root.updateRenderState();
     regenCode();
@@ -1139,6 +1173,14 @@ public class RenParticleControlFrame extends JFrame {
   private void updateVelocityLabels() {
     int val = velocitySlider.getValue();
     velocityLabel.setText("Initial Velocity: " + (val / 100f));
+  }
+
+  /**
+   * updateVelocityLabels
+   */
+  private void updateSpinLabels() {
+    int val = spinSlider.getValue();
+    spinLabel.setText("Spin Speed: " + (val / 100f));
   }
 
   /**
@@ -1301,6 +1343,8 @@ public class RenParticleControlFrame extends JFrame {
                 RenParticleEditor.manager.getReleaseVariance() + "f);\n");
     code.append("manager.setInitialVelocity(" +
                 RenParticleEditor.manager.getInitialVelocity() + "f);\n");
+    code.append("manager.setParticleSpinSpeed(" +
+                RenParticleEditor.manager.getParticleSpinSpeed() + "f);\n");
     code.append("\n");
     code.append("manager.warmUp(1000);\n");
     code.append("manager.getParticles().addController(manager);\n");
@@ -1334,6 +1378,7 @@ public class RenParticleControlFrame extends JFrame {
 
   private void countButton_actionPerformed(ActionEvent e) {
     String response = JOptionPane.showInputDialog(this, "Please enter a new particle count for this system:", "How many particles?", JOptionPane.PLAIN_MESSAGE);
+    if (response == null) return;
     int particles = 100;
     try {
       particles = Integer.parseInt(response);
@@ -1369,6 +1414,7 @@ public class RenParticleControlFrame extends JFrame {
           true));
       ts.setEnabled(true);
       RenParticleEditor.root.setRenderState(ts);
+      RenParticleEditor.root.updateRenderState();
       ImageIcon icon = new ImageIcon(textFile.getAbsolutePath());
       imageLabel.setIcon(icon);
       validate();
