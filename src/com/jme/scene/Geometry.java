@@ -59,7 +59,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.68 2004-11-04 23:53:01 renanse Exp $
+ * @version $Id: Geometry.java,v 1.69 2005-01-10 20:32:24 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -893,14 +893,22 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *
 	 */
 	public void updateColorBuffer() {
+		if (vertQuantity >= 0)
+		    updateColorBuffer(vertQuantity);
+		else
+		    updateColorBuffer(vertex.length);
+	}	
+
+	/**
+	 * <code>setColorBuffer</code> calculates the <code>FloatBuffer</code>
+	 * that contains all the color information of this geometry.
+	 *@param quantity The number of vertices to update the buffer with colors for.
+	 */
+	public void updateColorBuffer(int quantity) {
 		if (color == null) {
 			return;
 		}
-		int bufferLength;
-		if (vertQuantity >= 0)
-			bufferLength = vertQuantity * 4;
-		else
-			bufferLength = vertex.length * 4;
+		int bufferLength = quantity * 4;
 
 		if (colorBuf == null || colorBuf.capacity() < (bufferLength)) {
 			colorBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
@@ -928,14 +936,22 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *
 	 */
 	public void updateVertexBuffer() {
+		if (vertQuantity >= 0)
+		    updateVertexBuffer(vertQuantity);
+		else
+		    updateVertexBuffer(vertex.length);
+	}	
+
+	/**
+	 * <code>updateVertexBuffer</code> sets the float buffer that contains
+	 * this geometry's vertex information.
+	 *@param quantity The number of vertices to update the buffer with.
+	 */
+	public void updateVertexBuffer(int quantity) {
 		if (vertex == null) {
 			return;
 		}
-		int bufferLength;
-		if (vertQuantity >= 0)
-			bufferLength = vertQuantity * 3;
-		else
-			bufferLength = vertex.length * 3;
+		int bufferLength = quantity * 3;
 		if (vertBuf == null || vertBuf.capacity() < (bufferLength)) {
 			vertBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
 					ByteOrder.nativeOrder()).asFloatBuffer();
@@ -957,17 +973,25 @@ public abstract class Geometry extends Spatial implements Serializable {
 	/**
 	 * <code>updateNormalBuffer</code> sets the float buffer that contains
 	 * this geometry's normal information.
-	 *
+	 * 
 	 */
 	public void updateNormalBuffer() {
+		if (vertQuantity >= 0)
+		    updateNormalBuffer(vertQuantity);
+		else
+		    updateNormalBuffer(vertex.length);
+	}	
+
+	/**
+	 * <code>updateNormalBuffer</code> sets the float buffer that contains
+	 * this geometry's normal information.
+	 *@param quantity The number of vertices to update the buffer with normals for.
+	 */
+	public void updateNormalBuffer(int quantity) {
 		if (normal == null) {
 			return;
 		}
-		int bufferLength;
-		if (vertQuantity >= 0)
-			bufferLength = vertQuantity * 3;
-		else
-			bufferLength = vertex.length * 3;
+		int bufferLength = quantity * 3;
 		if (normBuf == null || normBuf.capacity() < (bufferLength)) {
 			normBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
 					ByteOrder.nativeOrder()).asFloatBuffer();
@@ -999,9 +1023,22 @@ public abstract class Geometry extends Spatial implements Serializable {
 	/**
 	 * <code>updateTextureBuffer</code> sets the float buffer that contains
 	 * this geometry's texture information.
-	 *
+	 * @param textureUnit
 	 */
 	public void updateTextureBuffer(int textureUnit) {
+		if (vertQuantity >= 0)
+		    updateTextureBuffer(textureUnit, vertQuantity);
+		else
+		    updateTextureBuffer(textureUnit, vertex.length);
+	}
+
+	/**
+	 * <code>updateTextureBuffer</code> sets the float buffer that contains
+	 * this geometry's texture information.
+	 * @param textureUnit
+	 * @param quantity
+	 */
+	public void updateTextureBuffer(int textureUnit, int quantity) {
 		if (texture == null) {
 			return;
 		}
@@ -1009,11 +1046,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 			texBuf[textureUnit] = null;
 			return;
 		}
-		int bufferLength;
-		if (vertQuantity >= 0)
-			bufferLength = vertQuantity * 2;
-		else
-			bufferLength = vertex.length * 2;
+		int bufferLength = quantity * 2;
 
 		if (texBuf[textureUnit] == null
 				|| texBuf[textureUnit].capacity() < (bufferLength)) {
