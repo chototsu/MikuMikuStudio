@@ -36,10 +36,7 @@ import com.jme.input.action.MouseInputAction;
 import com.jme.intersection.Pick;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
-import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 
@@ -57,7 +54,7 @@ public class MousePick implements MouseInputAction {
     private int hits = 0;
     private int shots = 0;
     private Text text;
-    private Line l;
+    private String hitItems;
 
     public MousePick(Camera camera, Node scene, Text text) {
         this.camera = camera;
@@ -73,33 +70,23 @@ public class MousePick implements MouseInputAction {
             shotTime = 0;
             Ray ray = new Ray(camera.getLocation(), camera.getLocation().add(camera.getDirection().mult(1000)));
             PickResults results = new PickResults();
-            Vector3f[] vertex = new Vector3f[2];
-            vertex[0] = new Vector3f();
-            vertex[0] = ray.getOrigin();
-            vertex[1] = new Vector3f();
-            vertex[1] = ray.getDirection();
-            ColorRGBA[] colors = new ColorRGBA[2];
-            
-            
             
             Pick.doPick(scene,ray,results);
             
             
             hits += results.getNumber();
-            shots++;
+            hitItems = "";
             if(results.getNumber() > 0) {
-            
-                colors[0] = new ColorRGBA(1,0,0,1);
-                colors[1] = new ColorRGBA(1,0,0,1);
-            } else {
-                colors[0] = new ColorRGBA(0,0,1,1);
-                colors[1] = new ColorRGBA(0,0,1,1);
+            	for(int i = 0; i < results.getNumber(); i++) {
+            		hitItems += results.getNode(i).getName();
+            		if(i != results.getNumber() -1) {
+            			hitItems += ", ";
+            		}
+            	}
             }
-            l = new Line("Line Group",vertex, null, colors, null);
-            scene.attachChild(l);
-                        scene.updateGeometricState(0.0f, true);
+            shots++;
             results.clear();
-            text.print("Hits: " + hits + " Shots: " + shots);
+            text.print("Hits: " + hits + " Shots: " + shots + " : " + hitItems);
         }
     }
 

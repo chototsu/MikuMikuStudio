@@ -31,22 +31,25 @@
  */
 package jmetest.intersection;
 
+import java.net.URL;
+
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
-import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingBox;
-import com.jme.scene.Box;
+import com.jme.scene.BoundingSphere;
+import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
-import com.jme.scene.TriMesh;
+import com.jme.scene.model.Model;
+import com.jme.scene.model.msascii.MilkshapeASCIIModel;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -58,10 +61,9 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.4 2004-02-24 01:32:23 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.5 2004-02-25 18:17:53 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
-    private TriMesh t;
     private Camera cam;
     private Text text;
     private Node root;
@@ -72,6 +74,8 @@ public class TestPick extends SimpleGame {
     private Quaternion rotQuat;
     private float angle = 0;
     private Vector3f axis;
+
+    private Model model;
 
     /**
      * Entry point for the test, 
@@ -95,19 +99,9 @@ public class TestPick extends SimpleGame {
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
-//        if(timer.getTimePerFrame() < 1) {
-//            angle = angle + (timer.getTimePerFrame() * 1);
-//            if(angle > 360) {
-//                angle = 0;
-//            }
-//        }
-//        
-//        rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
-        
-        //t.setLocalRotation(rotQuat);
-        scene.updateGeometricState(0.0f, true);
+        scene.updateGeometricState(timer.getTimePerFrame(), true);
         
        
     }
@@ -148,7 +142,7 @@ public class TestPick extends SimpleGame {
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 75.0f);
+        Vector3f loc = new Vector3f(0.0f, 50.0f, 100.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
@@ -175,7 +169,9 @@ public class TestPick extends SimpleGame {
      */
     protected void initGame() {
         text = new Text("Test Label","Hits: 0 Shots: 0");
+        Text cross = new Text("Crosshairs", "+");
         text.setLocalTranslation(new Vector3f(1,60,0));
+        cross.setLocalTranslation(new Vector3f((float)(display.getWidth()/2), (float)(display.getHeight()/2),0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
         textImage.setTexture(
@@ -185,6 +181,7 @@ public class TestPick extends SimpleGame {
                 Texture.FM_LINEAR,
                 true));
         text.setRenderState(textImage);
+        cross.setRenderState(textImage);
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -193,55 +190,60 @@ public class TestPick extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         as1.setEnabled(true);
         text.setRenderState(as1);
+        cross.setRenderState(as1);
         scene = new Node("3D scene node");
         root = new Node("Scene Root");
-        root.attachChild(text);
+        root.setForceView(true);
         
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
         
-        
-        
-        t = new Box("Target Box",min,max);
-        t.setModelBound(new BoundingBox());
-        t.updateModelBound();
-        
-        t.setLocalTranslation(new Vector3f(100,10,0));
-        
-        scene.attachChild(t);
         root.attachChild(scene);
         
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
         
-        DirectionalLight am = new DirectionalLight();
-        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 75));
-        
         scene.setRenderState(buf);
         scene.setWorldBound(new BoundingBox());
         cam.update();
         
-        TextureState ts = display.getRenderer().getTextureState();
-                ts.setEnabled(true);
-                ts.setTexture(
-                    TextureManager.loadTexture(
-                        TestPick.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
-                        Texture.MM_LINEAR,
-                        Texture.FM_LINEAR,
-                        true));
-                        
-        scene.setRenderState(ts);
-        
         root.attachChild(text);
+        root.attachChild(cross);
         
+        model = new MilkshapeASCIIModel("Milkshape Model");
+        URL modelURL = TestPick.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
+        model.load(modelURL, "jmetest/data/model/msascii/");
+        model.getAnimationController().setActive(false);
 
+        
+        Vector3f[] vertex = new Vector3f[1000];
+        ColorRGBA[] color = new ColorRGBA[1000];
+        for (int i = 0; i < 1000; i++) {
+        	vertex[i] = new Vector3f();
+        	vertex[i].x = (float) Math.random() * -100 - 50;
+        	vertex[i].y = (float) Math.random() * 50 - 25;
+        	vertex[i].z = (float) Math.random() * 50 - 25;
+        	color[i] = new ColorRGBA();
+        	color[i].r = (float) Math.random();
+        	color[i].g = (float) Math.random();
+        	color[i].b = (float) Math.random();
+        	color[i].a = 1.0f;
+        }
+
+        Line l = new Line("Line Group",vertex, null, color, null);
+        l.setModelBound(new BoundingSphere());
+        l.updateModelBound();
+        
+        scene.attachChild(l);
+        
+        
+        scene.attachChild(model);
         scene.updateGeometricState(0.0f, true);
+        
         MousePick pick = new MousePick(cam, scene, text);
-                pick.setMouse(input.getMouse());
-                input.addAction(pick);
+        pick.setMouse(input.getMouse());
+        input.addAction(pick);
 
     }
     /**
