@@ -34,7 +34,7 @@ public class TestKeyframeController extends SimpleGame{
         kc.setKeyframe(3,big);
         kc.setRepeatType(KeyframeController.RT_CYCLE);
         thisone.addController(kc);
-        ByteArrayOutputStream BO=new ByteArrayOutputStream();
+        StringWriter BO=new StringWriter();
         XMLWriter xw=new XMLWriter(BO);
         try {
             xw.writeScene(thisone);
