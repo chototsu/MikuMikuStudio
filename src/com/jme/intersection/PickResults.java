@@ -36,30 +36,59 @@ import java.util.ArrayList;
 import com.jme.scene.Geometry;
 
 /**
- * <code>PickResults</code>
+ * <code>PickResults</code> contains information resulting from a pick test. 
+ * The results will contain a list of every node that was "struck" during a 
+ * pick test. 
  * @author Mark Powell
- * @version 
+ * @version $Id: PickResults.java,v 1.2 2003-12-04 22:29:23 mojomonkey Exp $
  */
 public class PickResults {
 
-    ArrayList nodeList;
+    private ArrayList nodeList;
 
+    /**
+     * Constructor instantiates a new <code>PickResults</code> object.
+     *
+     */
     public PickResults() {
         nodeList = new ArrayList();
     }
     
+    /**
+     * 
+     * <code>addNode</code> places a new <code>Geometry</code> node into the
+     * results list.
+     * @param node the node to be placed in the results list.
+     */
     public void addNode(Geometry node) {
         nodeList.add(node);
     }
     
+    /**
+     * 
+     * <code>getNumber</code> retrieves the number of nodes that have been
+     * placed in the results.
+     * @return the number of nodes in the list.
+     */
     public int getNumber() {
         return nodeList.size();
     }
     
+    /**
+     * 
+     * <code>getNode</code> retrieves a node from a specific index.
+     * @param i the index requested.
+     * @return the node at the specified index.
+     */
     public Geometry getNode(int i) {
         return (Geometry)nodeList.get(i);
     }
 
+    /**
+     * 
+     * <code>clear</code> clears the list of all nodes.
+     *
+     */
     public void clear() {
         nodeList.clear();
     }
