@@ -47,7 +47,7 @@ import com.jme.math.Vector3f;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.9 2004-03-11 02:46:56 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.10 2004-03-12 21:35:13 mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -298,7 +298,6 @@ public class BoundingBox extends Box implements BoundingVolume {
     public void setCheckPlane(int index, int value) {
         checkPlanes[index] = value;
     }
-
     /**
      * <code>toString</code> returns the string representation of this object.
      * The form is: "Radius: XXX.YYYY Center: <Vector>".

@@ -50,6 +50,7 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -59,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.8 2004-02-27 19:21:04 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.9 2004-03-12 21:35:16 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -74,6 +75,7 @@ public class TestBezierMesh extends SimpleGame {
     private Vector3f currentPos;
     private Vector3f newPos;
     private Timer timer;
+    private WireframeState wf;
 
     /**
      * Entry point for the test, 
@@ -125,6 +127,7 @@ public class TestBezierMesh extends SimpleGame {
         display.getRenderer().clearBuffers();
 
         display.getRenderer().draw(scene);
+       
 
     }
 
@@ -133,6 +136,7 @@ public class TestBezierMesh extends SimpleGame {
      * @see com.jme.app.SimpleGame#initSystem()
      */
     protected void initSystem() {
+        
         currentPos = new Vector3f();
         newPos = new Vector3f();
         try {
@@ -172,7 +176,7 @@ public class TestBezierMesh extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-
+        
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);

@@ -38,7 +38,7 @@ import com.jme.scene.Geometry;
 /**
  * <code>Tint</code>
  * @author Ahmed
- * @version $Id: Tint.java,v 1.3 2004-03-12 17:37:33 mojomonkey Exp $
+ * @version $Id: Tint.java,v 1.4 2004-03-12 21:35:17 mojomonkey Exp $
  */
 public class Tint extends Geometry {
 	
@@ -66,8 +66,4 @@ public class Tint extends Geometry {
 	public void setTintColor(ColorRGBA c) {
 		tintColor = c;
 	}
-    
-    public void resetVertices() {
-        
-    }
 }

@@ -41,7 +41,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BoundingBox;
+import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.8 2004-03-11 00:10:23 renanse Exp $
+ * @version $Id: TestPick.java,v 1.9 2004-03-12 21:35:16 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
     private Camera cam;
@@ -202,7 +202,7 @@ public class TestPick extends SimpleGame {
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
         scene.setRenderState(buf);
-        scene.setWorldBound(new BoundingBox());
+        scene.setWorldBound(new BoundingSphere());
         cam.update();
 
         root.attachChild(text);
@@ -229,7 +229,7 @@ public class TestPick extends SimpleGame {
         }
 
         Line l = new Line("Line Group",vertex, null, color, null);
-        l.setModelBound(new BoundingBox());
+        l.setModelBound(new BoundingSphere());
         l.updateModelBound();
 
         scene.attachChild(l);

@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.15 2004-03-11 00:06:33 renanse Exp $
+ * @version $Id: Node.java,v 1.16 2004-03-12 21:35:14 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -195,7 +195,7 @@ public class Node extends Spatial implements Serializable {
                 child.onDraw(r);
         }
     }
-
+    
     /**
      * <code>updateWorldBound</code> merges the bounds of all the children
      * maintained by this node. This will allow for faster culling operations.

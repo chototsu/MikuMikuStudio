@@ -45,7 +45,7 @@ import com.jme.renderer.Renderer;
  * clone builds it's bounding volume by transforming the cloned geometry's 
  * model bounds by it's current position, orientation and scale.
  * @author Mark Powell
- * @version $Id: Clone.java,v 1.3 2004-02-28 04:41:59 mojomonkey Exp $
+ * @version $Id: Clone.java,v 1.4 2004-03-12 21:35:13 mojomonkey Exp $
  */
 public class Clone extends Spatial {
 
@@ -71,7 +71,7 @@ public class Clone extends Spatial {
     public void draw(Renderer r) {
         r.draw(this);
     }
-
+    
     /** <code>updateWorldBound</code> updates the bounding volume of this
      * object. The geometry maintained by <code>CloneNode</code> is transformed
      * by this object's rotation, translation and scale. If the parent is 

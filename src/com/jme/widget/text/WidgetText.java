@@ -135,6 +135,10 @@ public class WidgetText extends WidgetAbstractImpl {
     public void draw(Renderer r) {
         r.draw(getWidgetRenderer());
     }
+    
+    public void drawBounds(Renderer r) {
+        //ignore
+    }
 
     public float getScale() {
         return scale;

@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.18 2004-03-12 17:36:47 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.19 2004-03-12 21:35:13 mojomonkey Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -468,7 +468,7 @@ public abstract class Geometry extends Spatial implements Serializable {
         //set state
 
     }
-
+    
     /**
      * <code>updateWorldBound</code> updates the bounding volume that contains
      * this geometry. The location of the geometry is based on the location
@@ -641,7 +641,5 @@ public abstract class Geometry extends Spatial implements Serializable {
         texBuf[textureUnit].flip();
 
     }
-    
-    public abstract void resetVertices();
 
 }

@@ -46,7 +46,7 @@ package com.jme.input;
  * correspond to the width and height of the window).
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.4 2004-03-12 17:36:46 mojomonkey Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.5 2004-03-12 21:35:11 mojomonkey Exp $
  */
 public class AbsoluteMouse extends Mouse {
     //position
@@ -99,9 +99,6 @@ public class AbsoluteMouse extends Mouse {
             localTranslation.y =
                 height - imageHeight;
         }
-    }
-    
-    public void resetVertices() {
     }
     
 }

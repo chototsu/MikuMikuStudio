@@ -40,7 +40,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
-import com.jme.scene.state.ShowBoundingState;
 
 /**
  * <code>Spatial</code> defines the base class for scene graph nodes. It
@@ -48,7 +47,7 @@ import com.jme.scene.state.ShowBoundingState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.26 2004-03-12 17:37:15 mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.27 2004-03-12 21:35:14 mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 	//rotation matrices
@@ -181,25 +180,12 @@ public abstract class Spatial implements Serializable {
         if (forceView || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
 			setStates();
 			draw(r);
-			// useful for viewing Bounding Volumes -- only boxes for now
-			if (worldBound != null && ShowBoundingState.isShown()) {
-				com.jme.scene.state.LWJGLWireframeState bs =
-					new com.jme.scene.state.LWJGLWireframeState();
-				bs.setEnabled(true);
-				bs.set();
-
-				((Geometry) worldBound).resetVertices();
-				((Geometry) worldBound).updateVertexBuffer();
-				((Geometry) worldBound).draw(r);
-				bs.unset();
-			}
-            
 			unsetStates();
 		}
 		camera.setPlaneState(state);
 	}
-
-	/**
+    
+    /**
 	 *
 	 * <code>draw</code> abstract method that handles drawing data to the
 	 * renderer if it is geometry and passing the call to it's children if it
@@ -207,8 +193,8 @@ public abstract class Spatial implements Serializable {
 	 * @param r the renderer used for display.
 	 */
 	public abstract void draw(Renderer r);
-
-	/**
+    
+    /**
 	 *
 	 * <code>getWorldRotation</code> retrieves the rotation matrix of the
 	 * world.

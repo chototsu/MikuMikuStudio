@@ -39,6 +39,7 @@ import com.jme.input.AbstractInputController;
 import com.jme.input.MouseInput;
 import com.jme.math.Vector2f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingVolume;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
@@ -65,6 +66,15 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
          * @see com.jme.widget.Widget#initWidgetRenderer()
          */
         public void initWidgetRenderer() {}
+
+		/** <code>drawBounds</code> 
+		 * @param r
+		 * @see com.jme.scene.Spatial#drawBounds(com.jme.renderer.Renderer)
+		 */
+		public void drawBounds(Renderer r) {
+			//do nothing
+			
+		}
     }
 
     protected Vector2f panOffset = new Vector2f();

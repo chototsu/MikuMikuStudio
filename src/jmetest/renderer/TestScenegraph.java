@@ -43,7 +43,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Box;
-import com.jme.scene.BoundingBox;
+import com.jme.scene.BoundingSphere;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
@@ -280,7 +280,7 @@ public class TestScenegraph extends SimpleGame {
         selectionBox = new Box("Selection", min.mult(1.25f), max.mult(1.25f));
         selectionBox.setColors(green);
         selectionBox.setRenderState(as1);
-        selectionBox.setModelBound(new BoundingBox());
+        selectionBox.setModelBound(new BoundingSphere());
         selectionBox.updateModelBound();
 
 
@@ -290,7 +290,7 @@ public class TestScenegraph extends SimpleGame {
         node1.setLocalTranslation(new Vector3f(0, 30, 0));
         selectedNode = node1;
         node1.setRenderState(state);
-        box1.setModelBound(new BoundingBox());
+        box1.setModelBound(new BoundingSphere());
         box1.updateModelBound();
 
         node2 = new Node("Node 2");
@@ -298,7 +298,7 @@ public class TestScenegraph extends SimpleGame {
         node2.attachChild(box2);
         node1.attachChild(node2);
         node2.setLocalTranslation(new Vector3f(-20, -20, 0));
-        box2.setModelBound(new BoundingBox());
+        box2.setModelBound(new BoundingSphere());
         box2.updateModelBound();
 
         node3 = new Node("Node 3");
@@ -306,7 +306,7 @@ public class TestScenegraph extends SimpleGame {
         node3.attachChild(box3);
         node1.attachChild(node3);
         node3.setLocalTranslation(new Vector3f(20, -20, 0));
-        box3.setModelBound(new BoundingBox());
+        box3.setModelBound(new BoundingSphere());
         box3.updateModelBound();
 
         node4 = new Node("Node 4");
@@ -314,7 +314,7 @@ public class TestScenegraph extends SimpleGame {
         node4.attachChild(box4);
         node2.attachChild(node4);
         node4.setLocalTranslation(new Vector3f(-20, -20, 0));
-        box4.setModelBound(new BoundingBox());
+        box4.setModelBound(new BoundingSphere());
         box4.updateModelBound();
 
         node5 = new Node("Node 5");
@@ -322,7 +322,7 @@ public class TestScenegraph extends SimpleGame {
         node5.attachChild(box5);
         node2.attachChild(node5);
         node5.setLocalTranslation(new Vector3f(20, -20, 0));
-        box5.setModelBound(new BoundingBox());
+        box5.setModelBound(new BoundingSphere());
         box5.updateModelBound();
 
         node6 = new Node("Node 6");
@@ -330,7 +330,7 @@ public class TestScenegraph extends SimpleGame {
         node6.attachChild(box6);
         node3.attachChild(node6);
         node6.setLocalTranslation(new Vector3f(0, -20, 0));
-        box6.setModelBound(new BoundingBox());
+        box6.setModelBound(new BoundingSphere());
         box6.updateModelBound();
 
         Vector3f[] lines = {node1.getWorldTranslation(), node2.getWorldTranslation(),
