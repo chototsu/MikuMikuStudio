@@ -31,12 +31,12 @@
 package com.jme.effects;
 
 import com.jme.math.Matrix3f;
-import com.jme.scene.BoundingSphere;
 import com.jme.scene.Controller;
 import com.jme.system.DisplaySystem;
 
 /*
  * NOTE: 2/15/04 - Fixed random point using line. MP
+ * 		 2/24/04 - Removed initialization of particles and place in particle constructor. MP
  */
 
 /**
@@ -48,16 +48,14 @@ import com.jme.system.DisplaySystem;
  */
 public class ParticleController extends Controller {
 
-	private boolean isFirst;
 	private ParticleSystem ps;
-	private float time, averageSize;
+	private float time;
 	private Particle currentP;
 
 	private Matrix3f rotationalM;
 
 	public ParticleController(ParticleSystem p) {
 		super();
-		isFirst = true;
 		ps = p;
 		time = 0.0f;
 		rotationalM = new Matrix3f();
@@ -67,15 +65,6 @@ public class ParticleController extends Controller {
 		time = timeF * ps.getSpeed();
 		for (int i = 0; i < ps.getParticles().length; i++) {
 			currentP = ps.getParticles()[i];
-
-			if (isFirst) {
-				averageSize = (float) (ps.getStartSize() + ps.getEndSize()) / 2;
-				BoundingSphere sphere = new BoundingSphere();
-				sphere.setCenter(currentP.getLocalTranslation());
-				sphere.setRadius(averageSize);
-				currentP.setModelBound(sphere);
-				currentP.updateModelBound();
-			}
 
 			if (getRepeatType() == RT_WRAP) {
 				// check if dead
@@ -88,10 +77,7 @@ public class ParticleController extends Controller {
 
 			} else if (getRepeatType() == RT_CLAMP) {
 				// if its the first time, generate
-				if (isFirst) {
-					regenerateParticle();
-					continue;
-				} else if (currentP.life <= 0.0f) {
+					if (currentP.life <= 0.0f) {
 					// if particle is dead, bury it
 					killParticle();
 				}
@@ -103,7 +89,6 @@ public class ParticleController extends Controller {
 				setRepeatType(RT_WRAP);
 			}
 		}
-		isFirst = false;
 	}
 
 	public void updateParticle() {

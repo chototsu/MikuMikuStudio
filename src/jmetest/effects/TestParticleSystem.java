@@ -103,8 +103,7 @@ public class TestParticleSystem extends SimpleGame {
        ps.setLocalTranslation(currentPos);
         
         fps.print("FPS: " + timer.getFrameRate());
-		root.updateWorldData(timer.getTimePerFrame() * 10);
-
+		main.updateGeometricState(timer.getTimePerFrame(), true);
 		if (KeyBindingManager
 			.getKeyBindingManager()
 			.isValidCommand("PrintScrn")) {
@@ -164,6 +163,7 @@ public class TestParticleSystem extends SimpleGame {
 
 	protected void initGame() {
 		root = new Node("Scene graph root");
+		root.setForceView(true);
         main = new Node("Main node");
         main.setForceView(true);
         
@@ -192,7 +192,7 @@ public class TestParticleSystem extends SimpleGame {
 						Texture.FM_LINEAR,
 						true));
 		font.setEnabled(true);
-        Node worldToParticle = new Node("world");
+        Node worldToParticle = new Node("Particle World");
         worldToParticle.setRenderState(ts);
         worldToParticle.setRenderState(as1);
 
@@ -200,14 +200,13 @@ public class TestParticleSystem extends SimpleGame {
 		ps.setStartColor(
 			new ColorRGBA(1f, 0f, 0f, 1f));
 		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0f));
-		ps.setStartSize(5);
-		ps.setEndSize(1);
+		ps.setSize(5,1);
 		ps.setGravity(new Vector3f(0, 0, 0));
 		ps.setSpeed(1f);
 		ps.setFriction(1f);
-		ps.setFade(0.01f);
+		ps.setFade(0.05f);
 		ps.setStartPosition(new Vector3f(-50, 0, 0));
-        
+        ps.setSpeed(10);
         
 
 		pc = new ParticleController(ps);

@@ -201,8 +201,7 @@ public class TestParticleSystem2 extends SimpleGame {
 		ps = new ParticleSystem("Particle System",1000);
 		ps.setStartColor(new ColorRGBA(0f, 1f, 0f, 0.9f));
 		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0.0f));
-		ps.setStartSize(0.2f);
-		ps.setEndSize(0.1f);
+		ps.setSize(0.2f, 0.1f);
 		ps.setGravity(new Vector3f(0, -25, 0));
 		ps.setSpeed(1f);
 		ps.setFriction(3f);

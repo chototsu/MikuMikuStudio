@@ -33,13 +33,18 @@ package com.jme.effects;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.BoundingSphere;
 import com.jme.scene.TriMesh;
+
+/*
+ * NOTE: 2/24/2004 - Particle now handles own initialization. -MP
+ */
 
 /**
  * <code>Particle</code>
  * 
  * @author Ahmed
- * @version $Id: Particle.java,v 1.4 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: Particle.java,v 1.5 2004-02-24 14:59:43 mojomonkey Exp $
  */
 public class Particle extends TriMesh {
 
@@ -63,9 +68,21 @@ public class Particle extends TriMesh {
 		super(name, vertices, normal, color, texture, indices);
 		
 		cornerColors = new ColorRGBA[color.length];
-		size = fade = life = 0.0f;
+		size = life = 0.0f;
+		fade = 1.0f;
 		velocity = new Vector3f(0, 0, 0);
 		this.color = new ColorRGBA(0, 0, 0, 0);
+		
+		//averageSize = (float) (ps.getStartSize() + ps.getEndSize()) / 2;
+		BoundingSphere sphere = new BoundingSphere();
+		sphere.setCenter(getLocalTranslation());
+		sphere.setRadius(1.0f);
+		setModelBound(sphere);
+		updateModelBound();
+	}
+	
+	public void setAverageSize(float size) {
+		((BoundingSphere)getModelBound()).setRadius(size);
 	}
 
 	public void updateColor() {

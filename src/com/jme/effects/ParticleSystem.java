@@ -33,6 +33,7 @@
   * EDIT: 2/14/2004 - Added a updateWorldData method that will NOT rotate
   * 		the particle system if the parent is a camera node and alwaysrotate
   * 		is false. - MP
+  *       2/24/2004 - setSize handles both end and start sizes, and sets average size. -MP
   */
 package com.jme.effects;
 
@@ -51,7 +52,7 @@ import com.jme.scene.state.RenderState;
  * <code>ParticleSystem</code>
  *
  * @author Ahmed
- * @version $Id: ParticleSystem.java,v 1.10 2004-02-24 01:32:22 mojomonkey Exp $
+ * @version $Id: ParticleSystem.java,v 1.11 2004-02-24 14:59:42 mojomonkey Exp $
  */
 public class ParticleSystem extends Node {
 
@@ -147,11 +148,14 @@ public class ParticleSystem extends Node {
 
             int[] indices = { 0, 1, 3, 2, 3, 1 };
 
+            
+            
             for (int i = 0; i < numOfParticles; i++) {
                 particles[i] = new Particle("Particle " + (i + 1),vertices, null, colors, tex, indices);
                 particleParent.attachChild(particles[i]);
             }
 
+            
             geoToUse = 0;
         }
 
@@ -196,12 +200,14 @@ public class ParticleSystem extends Node {
     //----
     // Setter Methods
     //----
-    public void setStartSize(float s) {
+    public void setSize(float s, float e) {
         startSize = s;
+        endSize = e;
+        for(int i = 0; i < particles.length; i++) {
+        	particles[i].setAverageSize((s+e)/2f);
+        }
     }
-    public void setEndSize(float s) {
-        endSize = s;
-    }
+    
     public void setFade(float f) {
         fade = f;
     }
