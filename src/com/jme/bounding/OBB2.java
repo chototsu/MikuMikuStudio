@@ -7,7 +7,7 @@ import com.jme.math.*;
  * This class is like an OrientedBoundingBox, but lacks the overhead of extending TriMesh.
  * @author Jack Lindamood
  */
-class OBB2 implements BoundingVolume{
+public class OBB2 implements BoundingVolume{
 
     static private final Vector3f tempVa=new Vector3f();
     static private final Vector3f tempVb=new Vector3f();
