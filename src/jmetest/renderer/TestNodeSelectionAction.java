@@ -31,27 +31,15 @@
  */
  package jmetest.renderer;
 
-import com.jme.input.action.InputAction;
+import com.jme.input.action.AbstractInputAction;
 
-public class TestNodeSelectionAction implements InputAction {
+public class TestNodeSelectionAction extends AbstractInputAction {
     private int node;
-    private String key;
     private TestScenegraph app;
 
     public TestNodeSelectionAction(TestScenegraph app, int node) {
         this.node = node;
         this.app = app;
-    }
-
-
-
-    /** <code>setSpeed</code> is ignored for this action.
-     * @param speed not needed.
-     * @see com.jme.input.action.InputAction#setSpeed(float)
-     */
-    public void setSpeed(float speed) {
-        //ignored.
-
     }
 
     /** <code>performAction</code>
@@ -61,21 +49,4 @@ public class TestNodeSelectionAction implements InputAction {
     public void performAction(float time) {
         app.setSelectedNode(node);
     }
-
-    /** <code>getKey</code>
-     * @return
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /** <code>setKey</code>
-     * @param key
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-    }
-
 }

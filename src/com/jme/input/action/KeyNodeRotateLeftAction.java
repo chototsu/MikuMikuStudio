@@ -44,13 +44,11 @@ import com.jme.scene.Spatial;
  * rotate about the world. The locking of the axis is particularly useful for
  * control schemes similar to first person shooters.
  * @author Mark Powell
- * @version $Id: KeyNodeRotateLeftAction.java,v 1.6 2004-04-22 22:26:32 renanse Exp $
+ * @version $Id: KeyNodeRotateLeftAction.java,v 1.7 2004-04-23 16:39:11 renanse Exp $
  */
-public class KeyNodeRotateLeftAction implements InputAction {
+public class KeyNodeRotateLeftAction extends AbstractInputAction {
     private Matrix3f incr;
     private Spatial node;
-    private float speed;
-    private String key;
     private Vector3f lockAxis;
 
     /**
@@ -63,16 +61,6 @@ public class KeyNodeRotateLeftAction implements InputAction {
         incr = new Matrix3f();
         this.node = node;
         this.speed = speed;
-    }
-
-    /**
-     *
-     * <code>setSpeed</code> sets the speed in units/second that the
-     * node can move.
-     * @param movementSpeed the units/second of the node.
-     */
-    public void setSpeed(float movementSpeed) {
-        this.speed = movementSpeed;
     }
 
     /**
@@ -101,30 +89,8 @@ public class KeyNodeRotateLeftAction implements InputAction {
         } else {
             incr.fromAxisAngle(lockAxis, speed * time);
         }
-//        System.err.println("incr: "+incr);
-//        System.err.println("old rot: "+node.getLocalRotation());
         node.getLocalRotation().fromRotationMatrix(incr.mult(node.getLocalRotation().toRotationMatrix()));
         node.getLocalRotation().normalize();
-//        System.err.println("new rot: "+node.getLocalRotation());
         node.updateWorldData(time);
-
     }
-
-    /**
-     * <code>getKey</code> retrieves the key associated with this action.
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * <code>setKey</code> sets the key associated with this action.
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-
-    }
-
 }

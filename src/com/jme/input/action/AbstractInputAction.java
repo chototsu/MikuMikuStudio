@@ -40,35 +40,59 @@ package com.jme.input.action;
  *
  * @see com.jme.input.InputHandler
  * @author Mark Powell
- * @version $Id: InputAction.java,v 1.5 2004-04-22 22:26:31 renanse Exp $
+ * @version $Id: AbstractInputAction.java,v 1.1 2004-04-23 16:39:09 renanse Exp $
  */
-public interface InputAction {
+public abstract class AbstractInputAction {
+
+  protected boolean allowsRepeats = true;
+  protected float speed = 0;
+  protected String key;
 
     /**
      *
      * <code>setSpeed</code> defines the speed at which this action occurs.
      * @param speed the speed at which this action occurs.
      */
-    public void setSpeed(float speed);
+    public void setSpeed(float speed) {
+        this.speed = speed;
+    }
+
+    public float getSpeed() {
+      return speed;
+    }
+
+
     /**
      *
      * <code>performAction</code> defines the appropriate action to take when
      * called. The action is completely class specific.
      * @param time the time value for the action.
      */
-    public void performAction(float time);
+    public abstract void performAction(float time);
 
     /**
      *
      * <code>getKey</code> retrieves the key associated with this action.
      * @return the key associated with the action.
      */
-    public String getKey();
+    public String getKey() {
+        return key;
+    }
 
     /**
      *
      * <code>setKey</code> sets the key associated with this action.
      * @param key the key associated with the action.
      */
-    public void setKey(String key);
+    public final void setKey(String key) {
+        this.key = key;
+    }
+
+    public boolean allowsRepeats() {
+      return allowsRepeats;
+    }
+
+    public void setAllowsRepeats(boolean allow) {
+      allowsRepeats = allow;
+    }
 }

@@ -33,13 +33,13 @@ package com.jme.input;
 
 import java.util.ArrayList;
 
-import com.jme.input.action.InputAction;
+import com.jme.input.action.AbstractInputAction;
 import com.jme.input.action.MouseInputAction;
 
 /**
  * <code>InputHandler</code>
  * @author Mark Powell
- * @version $Id: InputHandler.java,v 1.2 2004-04-22 22:26:29 renanse Exp $
+ * @version $Id: InputHandler.java,v 1.3 2004-04-23 16:39:14 renanse Exp $
  */
 public class InputHandler {
     private ArrayList actions;
@@ -70,7 +70,7 @@ public class InputHandler {
 
     public void setKeySpeed(float speed) {
         for(int i = 0; i < actions.size(); i++) {
-            ((InputAction)actions.get(i)).setSpeed(speed);
+            ((AbstractInputAction)actions.get(i)).setSpeed(speed);
         }
     }
 
@@ -80,7 +80,7 @@ public class InputHandler {
         }
     }
 
-    public void addAction(InputAction inputAction) {
+    public void addAction(AbstractInputAction inputAction) {
         actions.add(inputAction);
     }
 
@@ -88,7 +88,7 @@ public class InputHandler {
         mouseActions.add(mouseAction);
     }
 
-    public void removeAction(InputAction inputAction) {
+    public void removeAction(AbstractInputAction inputAction) {
         actions.remove(inputAction);
     }
 
@@ -97,21 +97,23 @@ public class InputHandler {
     }
 
     public void update(float time) {
-        if (keyboard != null) {
-            keyboard.update();
-            for (int i = 0; i < actions.size(); i++) {
-                if (keyboard
-                    .isValidCommand(((InputAction) actions.get(i)).getKey())) {
-                    ((InputAction) actions.get(i)).performAction(time);
-                }
-            }
+      if (keyboard != null) {
+        keyboard.update();
+        for (int i = 0; i < actions.size(); i++) {
+          if (keyboard
+              .isValidCommand( ( (AbstractInputAction) actions.get(i)).getKey(),
+                              ( (AbstractInputAction) actions.get(i)).
+                              allowsRepeats())) {
+            ( (AbstractInputAction) actions.get(i)).performAction(time);
+          }
         }
+      }
 
-        if(mouse != null) {
-            mouse.update();
-            for(int i = 0; i < mouseActions.size(); i++) {
-                ((MouseInputAction)mouseActions.get(i)).performAction(time);
-            }
+      if (mouse != null) {
+        mouse.update();
+        for (int i = 0; i < mouseActions.size(); i++) {
+          ( (MouseInputAction) mouseActions.get(i)).performAction(time);
         }
+      }
     }
 }

@@ -38,14 +38,12 @@ import com.jme.renderer.Camera;
  * <code>KeyLookUpAction</code> tilts a camera up a given angle. This angle
  * should be represented as a radian.
  * @author Mark Powell
- * @version $Id: KeyLookUpAction.java,v 1.6 2004-04-22 22:26:32 renanse Exp $
+ * @version $Id: KeyLookUpAction.java,v 1.7 2004-04-23 16:39:10 renanse Exp $
  */
-public class KeyLookUpAction implements InputAction {
+public class KeyLookUpAction extends AbstractInputAction {
 
     private Matrix3f incr;
     private Camera camera;
-    private float speed;
-    private String key;
 
     /**
      * Constructor instantiates a new <code>KeyLookUpAction</code> object.
@@ -57,17 +55,6 @@ public class KeyLookUpAction implements InputAction {
         this.speed = speed;
         incr = new Matrix3f();
     }
-
-    /**
-     *
-     * <code>setSpeed</code> sets the speed at which the camera is allowed to
-     * tilt.
-     * @param speed the speed the camera is allowed to tilt.
-     */
-    public void setSpeed(float speed) {
-        this.speed = speed;
-    }
-
 
     /**
      * <code>performAction</code> adjusts the view of the camera to tilt up
@@ -82,23 +69,5 @@ public class KeyLookUpAction implements InputAction {
         incr.mult(camera.getDirection(), camera.getDirection());
         incr.mult(camera.getUp(), camera.getUp());
         camera.update();
-
-    }
-
-    /**
-     * <code>getKey</code> retrieves the key associated with this action.
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * <code>setKey</code> sets the key associated with this action.
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-
     }
 }

@@ -33,67 +33,39 @@ package com.jme.input.action;
 
 import com.jme.system.DisplaySystem;
 
-
 /**
  * <code>KeyScreenShotAction</code> allows the user to press a key to take
  * a screenshot of the current display. This screenshot is saved in the
  * current running directory with a supplied filename.png. If no filename is
  * supplied it is saved as screenshot.png.
  * @author Mark Powell
- * @version $Id: KeyScreenShotAction.java,v 1.2 2004-04-22 22:26:33 renanse Exp $
+ * @version $Id: KeyScreenShotAction.java,v 1.3 2004-04-23 16:39:12 renanse Exp $
  */
-public class KeyScreenShotAction implements InputAction {
+public class KeyScreenShotAction extends AbstractInputAction {
 
-    private String filename;
-    private String key;
+  private String filename;
 
-    public KeyScreenShotAction() {
-        filename = "screenshot";
-    }
+  public KeyScreenShotAction() {
+    filename = "screenshot";
+  }
 
-    public KeyScreenShotAction(String filename) {
-        this.filename = filename;
-    }
+  public KeyScreenShotAction(String filename) {
+    this.filename = filename;
+  }
 
-	/** <code>setSpeed</code> is ignored for this action.
-	 * @param speed not needed.
-	 * @see com.jme.input.action.InputAction#setSpeed(float)
-	 */
-	public void setSpeed(float speed) {
-		//ignored.
+  /** <code>performAction</code>
+   * @param time
+   * @see com.jme.input.action.InputAction#performAction(float)
+   */
+  public void performAction(float time) {
+    DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot(filename);
+  }
 
-	}
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
 
-	/** <code>performAction</code>
-	 * @param time
-	 * @see com.jme.input.action.InputAction#performAction(float)
-	 */
-	public void performAction(float time) {
-		DisplaySystem.getDisplaySystem().getRenderer().takeScreenShot(filename);
-	}
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
-    public String getFilename() {
-        return filename;
-    }
-
-	/** <code>getKey</code>
-	 * @return
-	 * @see com.jme.input.action.InputAction#getKey()
-	 */
-	public String getKey() {
-		return key;
-	}
-
-	/** <code>setKey</code>
-	 * @param key
-	 * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-	 */
-	public void setKey(String key) {
-		this.key = key;
-	}
-
+  public String getFilename() {
+    return filename;
+  }
 }

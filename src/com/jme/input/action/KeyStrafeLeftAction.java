@@ -39,13 +39,11 @@ import com.jme.renderer.Camera;
  * move along the positive left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyStrafeLeftAction.java,v 1.5 2004-04-22 22:26:34 renanse Exp $
+ * @version $Id: KeyStrafeLeftAction.java,v 1.6 2004-04-23 16:39:13 renanse Exp $
  */
-public class KeyStrafeLeftAction implements InputAction {
+public class KeyStrafeLeftAction extends AbstractInputAction {
 
     private Camera camera;
-    private float speed;
-    private String key;
 
     /**
      * Constructor instantiates a new <code>KeyStrafeLeftAction</code> object.
@@ -54,10 +52,6 @@ public class KeyStrafeLeftAction implements InputAction {
      */
     public KeyStrafeLeftAction(Camera camera, float speed) {
         this.camera = camera;
-        this.speed = speed;
-    }
-
-    public void setSpeed(float speed) {
         this.speed = speed;
     }
 
@@ -71,22 +65,5 @@ public class KeyStrafeLeftAction implements InputAction {
         loc.addLocal(camera.getLeft().mult((speed * time)));
         camera.setLocation(loc);
         camera.update();
-    }
-
-    /**
-     * <code>getKey</code> retrieves the key associated with this action.
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * <code>setKey</code> sets the key associated with this action.
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-
     }
 }

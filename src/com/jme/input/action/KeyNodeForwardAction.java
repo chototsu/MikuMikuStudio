@@ -41,12 +41,10 @@ import com.jme.scene.Spatial;
  * <code>performAction</code> method. The speed is set with construction or
  * the <code>setSpeed</code> method. This can be thought as units/second.
  * @author Mark Powell
- * @version $Id: KeyNodeForwardAction.java,v 1.6 2004-04-22 22:26:32 renanse Exp $
+ * @version $Id: KeyNodeForwardAction.java,v 1.7 2004-04-23 16:39:11 renanse Exp $
  */
-public class KeyNodeForwardAction implements InputAction {
+public class KeyNodeForwardAction extends AbstractInputAction {
     private Spatial node;
-    private float speed;
-    private String key;
 
     /**
      * Constructor creates a new <code>KeyNodeForwardAction</code> object.
@@ -61,16 +59,6 @@ public class KeyNodeForwardAction implements InputAction {
     }
 
     /**
-     *
-     * <code>setSpeed</code> sets the speed in units/second that the
-     * node can move.
-     * @param movementSpeed the units/second of the node.
-     */
-    public void setSpeed(float movementSpeed) {
-        this.speed = movementSpeed;
-    }
-
-    /**
      * <code>performAction</code> moves the node along it's positive
      * direction vector at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
@@ -81,24 +69,5 @@ public class KeyNodeForwardAction implements InputAction {
         loc.addLocal(node.getLocalRotation().getRotationColumn(2).mult((speed*time)));
         node.setLocalTranslation(loc);
         node.updateWorldData(time);
-
     }
-
-    /**
-     * <code>getKey</code> retrieves the key associated with this action.
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * <code>setKey</code> sets the key associated with this action.
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-
-    }
-
 }

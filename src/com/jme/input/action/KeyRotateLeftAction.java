@@ -40,13 +40,11 @@ import com.jme.renderer.Camera;
  * a certain angle. This angle is determined by the speed at which the camera
  * can turn and the time between frames.
  * @author Mark Powell
- * @version $Id: KeyRotateLeftAction.java,v 1.6 2004-04-22 22:26:33 renanse Exp $
+ * @version $Id: KeyRotateLeftAction.java,v 1.7 2004-04-23 16:39:12 renanse Exp $
  */
-public class KeyRotateLeftAction implements InputAction {
+public class KeyRotateLeftAction extends AbstractInputAction {
     private Matrix3f incr;
     private Camera camera;
-    private float speed;
-    private String key;
     private Vector3f lockAxis;
 
     /**
@@ -58,15 +56,6 @@ public class KeyRotateLeftAction implements InputAction {
         this.camera = camera;
         this.speed = speed;
         incr = new Matrix3f();
-    }
-
-    /**
-     *
-     * <code>setSpeed</code> sets the speed at which the camera can rotate.
-     * @param speed the speed at which the camera can rotate.
-     */
-    public void setSpeed(float speed) {
-        this.speed = speed;
     }
 
     /**
@@ -98,24 +87,5 @@ public class KeyRotateLeftAction implements InputAction {
         incr.mult(camera.getLeft(), camera.getLeft());
         incr.mult(camera.getDirection(), camera.getDirection());
         camera.update();
-
     }
-
-    /**
-     * <code>getKey</code> retrieves the key associated with this action.
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * <code>setKey</code> sets the key associated with this action.
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-
-    }
-
 }

@@ -39,13 +39,11 @@ import com.jme.scene.Spatial;
  * the negative left vector. The speed at which it moves is set and
  * of the form units per second.
  * @author Mark Powell
- * @version $Id: KeyNodeStrafeRightAction.java,v 1.6 2004-04-22 22:26:33 renanse Exp $
+ * @version $Id: KeyNodeStrafeRightAction.java,v 1.7 2004-04-23 16:39:12 renanse Exp $
  */
-public class KeyNodeStrafeRightAction implements InputAction {
+public class KeyNodeStrafeRightAction extends AbstractInputAction {
 
     private Spatial node;
-    private float speed;
-    private String key;
 
     /**
      * Constructor instantiates a new <code>KeyNodeStrafeRightAction</code> object.
@@ -54,16 +52,6 @@ public class KeyNodeStrafeRightAction implements InputAction {
      */
     public KeyNodeStrafeRightAction(Spatial node, float speed) {
         this.node = node;
-        this.speed = speed;
-    }
-
-    /**
-     *
-     * <code>setSpeed</code> sets the speed in units/second that the
-     * node can move.
-     * @param movementSpeed the units/second of the node.
-     */
-    public void setSpeed(float speed) {
         this.speed = speed;
     }
 
@@ -77,22 +65,5 @@ public class KeyNodeStrafeRightAction implements InputAction {
         loc = loc.addLocal(node.getLocalRotation().getRotationColumn(0).multLocal((-speed * time)));
         node.setLocalTranslation(loc);
         node.updateWorldData(time);
-    }
-
-    /**
-     * <code>getKey</code> retrieves the key associated with this action.
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * <code>setKey</code> sets the key associated with this action.
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-
     }
 }

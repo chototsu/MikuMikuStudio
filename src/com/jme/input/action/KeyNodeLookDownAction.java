@@ -39,13 +39,11 @@ import com.jme.scene.Spatial;
  * towards the worlds negative y-axis. The rotation is along the node's left
  * vector (the first column of it's rotation matrix).
  * @author Mark Powell
- * @version $Id: KeyNodeLookDownAction.java,v 1.6 2004-04-22 22:26:32 renanse Exp $
+ * @version $Id: KeyNodeLookDownAction.java,v 1.7 2004-04-23 16:39:11 renanse Exp $
  */
-public class KeyNodeLookDownAction implements InputAction {
+public class KeyNodeLookDownAction extends AbstractInputAction {
     private Matrix3f incr;
     private Spatial node;
-    private float speed;
-    private String key;
 
     /**
      * Constructor instatiates a new <code>KeyNodeLookDownAction</code> object
@@ -60,16 +58,6 @@ public class KeyNodeLookDownAction implements InputAction {
     }
 
     /**
-     *
-     * <code>setSpeed</code> sets the speed in units/second that the
-     * node can move.
-     * @param movementSpeed the units/second of the node.
-     */
-    public void setSpeed(float movementSpeed) {
-        this.speed = movementSpeed;
-    }
-
-    /**
      * <code>performAction</code> rotates the node towards the world's negative
      * y-axis at a speed of movement speed * time. Where time is
      * the time between frames and 1 corresponds to 1 second.
@@ -81,24 +69,5 @@ public class KeyNodeLookDownAction implements InputAction {
         node.getLocalRotation().fromRotationMatrix(incr.mult(node.getLocalRotation().toRotationMatrix()));
         node.getLocalRotation().normalize();
         node.updateWorldData(time);
-
     }
-
-    /**
-     * <code>getKey</code> retrieves the key associated with this action.
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * <code>setKey</code> sets the key associated with this action.
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-
-    }
-
 }

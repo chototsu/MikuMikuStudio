@@ -39,7 +39,7 @@ package com.jme.input;
 import java.util.ArrayList;
 
 import com.jme.app.AbstractGame;
-import com.jme.input.action.InputAction;
+import com.jme.input.action.AbstractInputAction;
 import com.jme.input.action.MouseInputAction;
 import com.jme.renderer.Camera;
 import com.jme.renderer.RendererType;
@@ -52,7 +52,7 @@ import com.jme.system.DisplaySystem;
  * to defined to setMouse and setActions methods for custom InputControllers.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbstractInputHandler.java,v 1.3 2004-04-22 22:26:29 renanse Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.4 2004-04-23 16:39:13 renanse Exp $
  */
 public abstract class AbstractInputHandler {
 
@@ -159,7 +159,7 @@ public abstract class AbstractInputHandler {
 
     public void setKeySpeed(float speed) {
         for(int i = 0; i < actions.size(); i++) {
-            ((InputAction)actions.get(i)).setSpeed(speed);
+            ((AbstractInputAction)actions.get(i)).setSpeed(speed);
         }
     }
 
@@ -169,7 +169,7 @@ public abstract class AbstractInputHandler {
         }
     }
 
-    public void addAction(InputAction inputAction) {
+    public void addAction(AbstractInputAction inputAction) {
         actions.add(inputAction);
     }
 
@@ -177,7 +177,7 @@ public abstract class AbstractInputHandler {
         mouseActions.add(mouseAction);
     }
 
-    public void removeAction(InputAction inputAction) {
+    public void removeAction(AbstractInputAction inputAction) {
         actions.remove(inputAction);
     }
 
@@ -198,8 +198,8 @@ public abstract class AbstractInputHandler {
             if (updateKeyboardActionsEnabled) {
                 for (int i = 0; i < actions.size(); i++) {
                     if (keyboard
-                        .isValidCommand(((InputAction) actions.get(i)).getKey())) {
-                        ((InputAction) actions.get(i)).performAction(time);
+                        .isValidCommand(((AbstractInputAction) actions.get(i)).getKey(), ((AbstractInputAction) actions.get(i)).allowsRepeats())) {
+                        ((AbstractInputAction) actions.get(i)).performAction(time);
                     }
                 }
             }

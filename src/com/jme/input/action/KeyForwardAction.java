@@ -41,13 +41,11 @@ import com.jme.renderer.Camera;
  * of the camera can be thought of as how many units per second the camera
  * can travel.
  * @author Mark Powell
- * @version $Id: KeyForwardAction.java,v 1.4 2004-04-22 22:26:31 renanse Exp $
+ * @version $Id: KeyForwardAction.java,v 1.5 2004-04-23 16:39:10 renanse Exp $
  */
-public class KeyForwardAction implements InputAction {
+public class KeyForwardAction extends AbstractInputAction {
 
     private Camera camera;
-    private float speed;
-    private String key;
 
     /**
     * Constructor instantiates a new <code>KeyForwardAction</code> object.
@@ -57,16 +55,6 @@ public class KeyForwardAction implements InputAction {
     public KeyForwardAction(Camera camera, float speed) {
         this.camera = camera;
         this.speed = speed;
-    }
-
-    /**
-     *
-     * <code>setSpeed</code> sets the speed in units/second that the
-     * camera can move.
-     * @param movementSpeed the units/second of the camera.
-     */
-    public void setSpeed(float movementSpeed) {
-        this.speed = movementSpeed;
     }
 
     /**
@@ -82,22 +70,4 @@ public class KeyForwardAction implements InputAction {
         camera.setLocation(loc);
         camera.update();
     }
-
-    /**
-     * <code>getKey</code> retrieves the key associated with this action.
-     * @see com.jme.input.action.InputAction#getKey()
-     */
-    public String getKey() {
-        return key;
-    }
-
-    /**
-     * <code>setKey</code> sets the key associated with this action.
-     * @see com.jme.input.action.InputAction#setKey(java.lang.String)
-     */
-    public void setKey(String key) {
-        this.key = key;
-
-    }
-
 }
