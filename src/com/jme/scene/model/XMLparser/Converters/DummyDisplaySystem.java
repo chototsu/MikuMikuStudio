@@ -33,47 +33,75 @@ class DummyDisplaySystem extends DisplaySystem{
         return new Renderer(){
             public void setCamera(Camera camera) {}
             public Camera getCamera() {return null;}
-            public Camera getCamera(int width, int height) {return null;}
-            public AlphaState getAlphaState() {
+            public Camera createCamera(int width, int height) {return null;}
+
+            public Camera getCamera(int width, int height) {
+                return null;
+            }
+
+            public AlphaState createAlphaState() {
                 return new AlphaState(){
                     public void apply() {}
                 };
             }
-            public AttributeState getAttributeState() {
+
+            public AlphaState getAlphaState() {return null;}
+
+            public AttributeState createAttributeState() {
                 return new AttributeState(){
                     public void apply() {}
                 };
             }
-            public CullState getCullState() {
+
+            public AttributeState getAttributeState() {return null;}
+
+            public CullState createCullState() {
                 return new CullState(){
                     public void apply() {}
                 };
             }
-            public DitherState getDitherState() {
+
+            public CullState getCullState() {return null;}
+
+            public DitherState createDitherState() {
                 return new DitherState(){
                     public void apply() {
                     }
                 };}
-            public FogState getFogState() {
+
+            public DitherState getDitherState() {return null;}
+
+            public FogState createFogState() {
                 return new FogState(){
                     public void apply() {}
                 };
             }
-            public LightState getLightState() {
+
+            public FogState getFogState() {return null;}
+
+            public LightState createLightState() {
                 return new LightState(){
                     public void apply() {}
                 };
             }
-            public MaterialState getMaterialState() {
+
+            public LightState getLightState() {return null;}
+
+            public MaterialState createMaterialState() {
                 return new MaterialState(){
                     public void apply() {}
                 };
             }
-            public ShadeState getShadeState() {
+
+            public MaterialState getMaterialState() {return null;}
+
+            public ShadeState createShadeState() {
                 return new ShadeState(){
                     public void apply(){}
                 };
             }
+
+            public ShadeState getShadeState() {return null;}
             class TextureStateN extends TextureState{
                 TextureStateN(){
                     numTexUnits=1;
@@ -82,31 +110,46 @@ class DummyDisplaySystem extends DisplaySystem{
                 public void deleteAll() {}
                 public void apply() {}
             }
-            public TextureState getTextureState() {
+            public TextureState createTextureState() {
                 return new TextureStateN();
             }
-            public WireframeState getWireframeState() {
+
+            public TextureState getTextureState() {return null;}
+
+            public WireframeState createWireframeState() {
                 return new WireframeState(){
                     public void apply(){}
                 };
             }
-            public ZBufferState getZBufferState() {
+
+            public WireframeState getWireframeState() {return null;}
+
+            public ZBufferState createZBufferState() {
                 return new ZBufferState(){
                     public void apply(){}
                 };
             }
-            public VertexProgramState getVertexProgramState() {
+
+            public ZBufferState getZBufferState() {return null;}
+
+            public VertexProgramState createVertexProgramState() {
                 return new VertexProgramState(){
                     public boolean isSupported() {return false;}
                     public void load(URL file) {}
                     public void apply() {}
                 };
             }
-            public StencilState getStencilState() {
+
+            public VertexProgramState getVertexProgramState() {return null;}
+
+            public StencilState createStencilState() {
                 return new StencilState(){
                     public void apply() {}
                 };
             }
+
+            public StencilState getStencilState() {return null;}
+
             public void enableStatistics(boolean value){}
             public void clearStatistics() {}
             public String getStatistics() {return null;}
