@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.19 2004-05-15 19:17:28 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.20 2004-05-27 20:18:11 cep21 Exp $
  */
 public class Vector3f {
 
@@ -593,6 +593,19 @@ public class Vector3f {
      */
     public void zero() {
         x = y = z = 0;
+    }
+
+    /**
+     * Sets this vector to the interpolation by changeAmnt from this to the finalVec
+     * this=(1-changeAmnt)*this + changeAmnt * finalVec
+     * @param finalVec The final vector to interpolate towards
+     * @param changeAmnt An amount between 0.0 - 1.0 representing a precentage
+     *  change from this towards finalVec
+     */
+    public void interpolate(Vector3f finalVec, float changeAmnt) {
+        this.x=(1-changeAmnt)*this.x + changeAmnt*finalVec.x;
+        this.y=(1-changeAmnt)*this.y + changeAmnt*finalVec.y;
+        this.z=(1-changeAmnt)*this.z + changeAmnt*finalVec.z;
     }
 
     /**
