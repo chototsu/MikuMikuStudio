@@ -31,8 +31,8 @@
  */
 package jmetest.milestone;
 
+import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 
 /**
@@ -63,7 +63,9 @@ public class BoxGenerator implements Runnable {
                 float y = (float)Math.random() * 10;
                 float z = (float)Math.random() * 10;
                 String name = x + "," + y + "," + z;
-                Spatial s = new Box(name, min, max);
+                Box s = new Box(name, min, max);
+                s.setModelBound(new BoundingSphere());
+                s.updateModelBound();
                 System.out.println("creating box at: " + x + " " + y + " " + z);
                 
                 s.setLocalTranslation(new Vector3f(x,y,z));

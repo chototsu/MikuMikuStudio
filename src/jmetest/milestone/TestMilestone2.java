@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.4 2004-04-02 15:52:15 mojomonkey Exp $
+ * @version $Id: TestMilestone2.java,v 1.5 2004-04-02 21:22:29 mojomonkey Exp $
  */
 public class TestMilestone2 extends SimpleGame {
     private TriMesh t;
@@ -145,6 +145,7 @@ public class TestMilestone2 extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonHandler(this, cam, "LWJGL");
+        display.setTitle("Milestone 1");
 
     }
 
@@ -165,14 +166,13 @@ public class TestMilestone2 extends SimpleGame {
                 true));
         text.setRenderState(textImage);
         AlphaState as1 = display.getRenderer().getAlphaState();
+        as1.setEnabled(true);
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
-        scene = new Node("3D Scene root");
-        scene.attachChild(text);
         
         Vector3f max = new Vector3f(10,10,10);
         Vector3f min = new Vector3f(0,0,0);
@@ -189,6 +189,8 @@ public class TestMilestone2 extends SimpleGame {
         scene.attachChild(t);
         root = new Node("Root Scene Node");
         root.attachChild(scene);
+        root.attachChild(text);
+        
         
         ZBufferState buf = display.getRenderer().getZBufferState();
         buf.setEnabled(true);
@@ -197,14 +199,14 @@ public class TestMilestone2 extends SimpleGame {
         SpotLight am = new SpotLight();
         am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
         am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 0));
+        am.setDirection(new Vector3f(-1, -0.5f, 0));
         am.setLocation(new Vector3f(25, 10, 0));
         am.setAngle(15);
         
         SpotLight am2 = new SpotLight();
         am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
         am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am2.setDirection(new Vector3f(0, 0, 0));
+        am2.setDirection(new Vector3f(1, -0.5f, 0));
         am2.setLocation(new Vector3f(-25, 10, 0));
         am2.setAngle(15);
 
@@ -222,6 +224,7 @@ public class TestMilestone2 extends SimpleGame {
         am.setEnabled(true);
         am2.setEnabled(true);
         dr.setEnabled(true);
+        state.setEnabled(true);
         scene.setRenderState(state);
         scene.setRenderState(buf);
         cam.update();
