@@ -168,7 +168,7 @@ public class JmeBinaryReader {
                 parentNode.attachChild((Spatial) o);
                 s.push(parentNode);
             }
-        } else if (tagName.equals("sharednodeitem")){
+        } else if (tagName.equals("sharedrenderstate")){
             XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
             shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
         } else if (tagName.equals("publicobject")){
@@ -273,7 +273,7 @@ public class JmeBinaryReader {
             // Do nothing, these have no attributes
         } else if (tagName.equals("primitive")){
             s.push(processPrimitive(attributes));
-        } else if (tagName.equals("sharednodeitem")){
+        } else if (tagName.equals("sharedrenderstate")){
             s.push(new XMLSharedNode((String) attributes.get("ident")));
         } else if (tagName.equals("publicobject")){
             Object toAdd=shares.get(attributes.get("ident"));
@@ -503,7 +503,7 @@ public class JmeBinaryReader {
     }
 
     private int[] getIntArray() throws IOException {
-        int length=myIn.readShort();
+        int length=myIn.readInt();
         if (length==0) return null;
         int[] array=new int[length];
         for (int i=0;i<length;i++){
@@ -513,7 +513,7 @@ public class JmeBinaryReader {
     }
 
     private Vector2f[] getVec2fArray() throws IOException {
-        int length=myIn.readShort();
+        int length=myIn.readInt();
         if (length==0) return null;
         Vector2f[] array=new Vector2f[length];
         for (int i=0;i<length;i++){
@@ -523,7 +523,7 @@ public class JmeBinaryReader {
     }
 
     private ColorRGBA[] getColorArray() throws IOException {
-        int length=myIn.readShort();
+        int length=myIn.readInt();
         if (length==0) return null;
         ColorRGBA[] array=new ColorRGBA[length];
         for (int i=0;i<length;i++)
@@ -531,12 +531,14 @@ public class JmeBinaryReader {
         return array;
     }
 
+    // Note, a vector3f that is all NaN is considered null
     private Vector3f[] getVec3fArray() throws IOException {
-        int length=myIn.readShort();
+        int length=myIn.readInt();
         if (length==0) return null;
         Vector3f[] array=new Vector3f[length];
         for (int i=0;i<length;i++){
             array[i]=new Vector3f(myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
+            if (array[i].x==Float.NaN && array[i].y==Float.NaN && array[i].z==Float.NaN) array[i]=null;
         }
         return array;
     }
