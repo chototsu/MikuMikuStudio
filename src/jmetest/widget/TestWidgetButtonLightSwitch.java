@@ -54,8 +54,6 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.sound.ISource;
-import com.jme.sound.SoundAPIController;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
@@ -77,10 +75,9 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.3 2004-02-24 22:01:32 mojomonkey Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.4 2004-02-25 18:25:31 mojomonkey Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
-    private ISource clickSource;
 	static String STARTED_STATE_STRING = " Stop ";
     static String STOPPED_STATE_STRING = "Start";
 
@@ -273,10 +270,8 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         public void update(Observable o, Object arg) {
             if (arg == startStopButton) {
                 toggleStartStop();
-				clickSource.play();
             } else if (arg == onOffButton) {
                 toggleOnOff();
-				clickSource.play();
             }
 
         }
@@ -364,8 +359,6 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         display.getRenderer().setCamera(cam);
 
         input = new WidgetMouseTestControllerFirstPerson(this, cam);
-
-    	SoundAPIController.getSoundSystem(properties.getRenderer());
     }
 
     /* (non-Javadoc)
@@ -497,7 +490,6 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         root.attachChild(frame);
         URL url = TestWidgetButtonLightSwitch.class.getClassLoader().getResource("jmetest/data/sound/click.mp3");
         System.out.println(url);
-        clickSource=SoundAPIController.getSoundSystem().loadSource(url);
 
     }
 
