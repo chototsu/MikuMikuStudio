@@ -47,7 +47,7 @@ import com.jme.scene.TriMesh;
  * being used.
  *
  * @author Mark Powell
- * @version $Id: Intersection.java,v 1.18 2004-09-02 18:02:01 mojomonkey Exp $
+ * @version $Id: Intersection.java,v 1.19 2004-09-07 07:01:27 cep21 Exp $
  */
 public class Intersection {
 
@@ -55,6 +55,15 @@ public class Intersection {
      * EPSILON represents the error buffer used to denote a hit.
      */
     public static final double EPSILON = 1e-12;
+    private static final Vector3f tempVa=new Vector3f();
+    private static final Vector3f tempVb=new Vector3f();
+    private static final Vector3f tempVc=new Vector3f();
+    private static final Vector3f tempVd=new Vector3f();
+    private static final Vector3f tempVe=new Vector3f();
+    private static final float[] tempFa=new float[2];
+    private static final float[] tempFb=new float[2];
+    private static final Vector2f tempV2a=new Vector2f();
+    private static final Vector2f tempV2b=new Vector2f();
 
     /**
      * <code>intersection</code> determines if a ray has intersected a given
@@ -168,15 +177,15 @@ public class Intersection {
      */
     public static boolean intersection(Vector3f v0, Vector3f v1, Vector3f v2,
                                        Vector3f u0, Vector3f u1, Vector3f u2) {
-        Vector3f e1 = new Vector3f();
-        Vector3f e2 = new Vector3f();
-        Vector3f n1 = new Vector3f();
-        Vector3f n2 = new Vector3f();
+        Vector3f e1 = tempVa;
+        Vector3f e2 = tempVb;
+        Vector3f n1 = tempVc;
+        Vector3f n2 = tempVd;
         float d1, d2;
         float du0, du1, du2, dv0, dv1, dv2;
-        Vector3f d = new Vector3f();
-        float[] isect1 = new float[2];
-        float[] isect2 = new float[2];
+        Vector3f d = tempVe;
+        float[] isect1 = tempFa;
+        float[] isect2 = tempFb;
         float du0du1, du0du2, dv0dv1, dv0dv2;
         short index;
         float vp0, vp1, vp2;
@@ -271,15 +280,15 @@ public class Intersection {
         }
 
         /* compute interval for triangle 1 */
-        Vector3f abc = new Vector3f();
-        Vector2f x0x1 = new Vector2f();
+        Vector3f abc = tempVa;
+        Vector2f x0x1 = tempV2a;
         if (newComputeIntervals(vp0, vp1, vp2, dv0, dv1, dv2, dv0dv1, dv0dv2, abc, x0x1)) {
             return coplanarTriTri(n1, v0, v1, v2, u0, u1, u2);
         }
 
         /* compute interval for triangle 2 */
-        Vector3f def = new Vector3f();
-        Vector2f y0y1 = new Vector2f();
+        Vector3f def = tempVb;
+        Vector2f y0y1 = tempV2b;
         if (newComputeIntervals(up0, up1, up2, du0, du1, du2, du0du1, du0du2, def, y0y1)) {
             return coplanarTriTri(n1, v0, v1, v2, u0, u1, u2);
         }
