@@ -9,7 +9,8 @@ import com.jme.math.Matrix3f;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
-import com.jme.scene.model.XMLparser.Converters.MaxChunkIDs;
+import com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.TDSFile;
+import com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.ChunkerClass;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
@@ -36,7 +37,7 @@ import java.util.BitSet;
  *
  * @author Jack Lindamood
  */
-public class MaxToJme implements MaxChunkIDs{
+public class MaxToJme extends FormatConverter{
     private LittleEndien myIn;
     private static boolean DEBUG=true;
     private static boolean DEBUG_SEVERE=true;
@@ -44,6 +45,7 @@ public class MaxToJme implements MaxChunkIDs{
 
     private Stack s=new Stack();
     private HashMap readObject=new HashMap();
+    private TDSFile chunkedTDS=null;
 
     /**
      * Converts a .3ds file (represented by the InputStream) to jME format.
@@ -54,21 +56,24 @@ public class MaxToJme implements MaxChunkIDs{
     public void convert(InputStream max,OutputStream bin) throws IOException {
         s.clear();
         myIn=new LittleEndien(max);
-        Chunk mainPart=readChunk();
-        if (mainPart.type!=MAIN_3DS){
-            throw new IOException("Header doesn't match.  Probably not a 3ds file");
-        }
-        mainPart.length-=6;
-        s.push(new Node("3ds scene"));
-        readFile(mainPart.length);
-        Node totalScene=(Node) s.pop();
-        new JmeBinaryWriter().writeScene(totalScene,bin);
-    }
+//        com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.ChunkHeader mainPart=
+//                new com.jme.scene.model.XMLparser.Converters.TDSChunkingFiles.ChunkHeader();
+//        if (mainPart.type!=MAIN_3DS){
+//            throw new IOException("Header doesn't match.  Probably not a 3ds file");
+//        }
+//        mainPart.length-=6;
+        chunkedTDS=new TDSFile(myIn);
 
+//        s.push(new Node("3ds scene"));
+//        readFile(mainPart.length);
+//        Node totalScene=(Node) s.pop();
+//        new JmeBinaryWriter().writeScene(totalScene,bin);
+    }
+/*
     private void readFile(int length) throws IOException {
         if (DEBUG_LIGHT) System.out.println("Reading file");
         while (length>0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in readFile chunk ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -95,7 +100,7 @@ public class MaxToJme implements MaxChunkIDs{
     private void readKeyframes(int length) throws IOException {
         if (DEBUG_LIGHT) System.out.println("Reading Keyframes");
         while (length>0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in keyframer ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -196,7 +201,7 @@ public class MaxToJme implements MaxChunkIDs{
     private void readKeyframeObj(int length) throws IOException{
         if (DEBUG_LIGHT) System.out.println("Reading readingkeyframeobject");
         while (length>0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in KeyframeObj ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -413,7 +418,7 @@ public class MaxToJme implements MaxChunkIDs{
         if (DEBUG_LIGHT) System.out.println("Reading editableObject");
         s.push(new Node("3ds editable object"));
         while (length>0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in editable object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -504,7 +509,7 @@ public class MaxToJme implements MaxChunkIDs{
         }
         length-=4*4;
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in readFog ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -535,7 +540,7 @@ public class MaxToJme implements MaxChunkIDs{
         length-=4*4;
         if (DEBUG) System.out.println("nearZ:"+nearZ+" farZ:"+farZ+" density:"+density+" type:"+type);
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in layeredFogOptions ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -563,7 +568,7 @@ public class MaxToJme implements MaxChunkIDs{
         if (DEBUG) System.out.println("@distanceQueue nearPlane:"+nearPlane+" nearDensity:"+nearDensity+" farPlane"+farPlane+" farDensity"+farDensity);
         length-=4*4;
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in readDistanceQueue ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -585,7 +590,7 @@ public class MaxToJme implements MaxChunkIDs{
         if (DEBUG_LIGHT) System.out.println("Reading defaultView");
         if (DEBUG) System.out.println("Reading default view");
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in readDefaultView ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -663,7 +668,7 @@ public class MaxToJme implements MaxChunkIDs{
         }
         length-=14;
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in ViewLayout ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -730,7 +735,7 @@ public class MaxToJme implements MaxChunkIDs{
         s.push(new MaterialBlock());
         if (DEBUG_LIGHT) System.out.println("reading MatBlock");
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in Material Block ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -845,7 +850,7 @@ public class MaxToJme implements MaxChunkIDs{
         s.push(t);
         if (DEBUG_LIGHT) System.out.println("Reading map info");
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             float value;
@@ -980,7 +985,7 @@ public class MaxToJme implements MaxChunkIDs{
     }
 
     private float readPercent() throws IOException{
-        Chunk i=readChunk();
+        ChunkHeader i=readChunk();
         float value=0;
         if (DEBUG) System.out.println("Read in readPercent ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
         switch (i.type){
@@ -1027,7 +1032,7 @@ public class MaxToJme implements MaxChunkIDs{
         ColorRGBA color1=null;
         ColorRGBA color2=null;
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             if (DEBUG) System.out.println("Read in readColor ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
             switch (i.type){
                 case COLOR_BYTE:
@@ -1069,7 +1074,7 @@ public class MaxToJme implements MaxChunkIDs{
         s.push(new Node(name));
         if (DEBUG_LIGHT) System.out.println("Reading named object " + name);
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in named object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -1103,7 +1108,7 @@ public class MaxToJme implements MaxChunkIDs{
         if (DEBUG || DEBUG_LIGHT) System.out.println("Reading Light with position " + lightPos);
         length-=4*3;
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in readLightObject object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -1144,7 +1149,7 @@ public class MaxToJme implements MaxChunkIDs{
         }
         length-=4*5;
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in readSpotLight object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -1213,7 +1218,7 @@ public class MaxToJme implements MaxChunkIDs{
             System.out.println("Camera Position:" + camPos+" TargetLoc:"+targetLoc+" bankAngle:"+bankAngle+" focus:"+focus);
         length-=8*4;
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in readCameraFlag object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -1243,7 +1248,7 @@ public class MaxToJme implements MaxChunkIDs{
         TriMesh me=new TriMesh("Mesh Object");
         s.push(me);
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in TriMesh object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -1425,7 +1430,7 @@ public class MaxToJme implements MaxChunkIDs{
         parentMesh.setIndices(indexes);
         s.push(parentMesh);
         while (length > 0){
-            Chunk i=readChunk();
+            ChunkHeader i=readChunk();
             i.length-=6;
             length-=6;
             if (DEBUG) System.out.println("Read in faces object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
@@ -1537,12 +1542,12 @@ public class MaxToJme implements MaxChunkIDs{
         if (DEBUG || DEBUG_LIGHT) System.out.println("Version:" + i);
     }
 
-    private Chunk readChunk() throws IOException {
-        return new Chunk(myIn.readUnsignedShort(),myIn.readInt());
+    private ChunkHeader readChunk() throws IOException {
+        return new ChunkHeader(myIn.readUnsignedShort(),myIn.readInt());
     }
 
-    private static class Chunk{
-        Chunk(int t,int l){
+    private static class ChunkHeader{
+        ChunkHeader(int t,int l){
             type=t;
             length=l;
         }
@@ -1560,5 +1565,5 @@ public class MaxToJme implements MaxChunkIDs{
             mat=DisplaySystem.getDisplaySystem().getRenderer().getMaterialState();
             tex=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
         }
-    }
+    }*/
 }
