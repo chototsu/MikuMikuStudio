@@ -49,6 +49,8 @@ import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.logging.Level;
 
+import javax.imageio.ImageIO;
+
 import com.jme.image.BitmapHeader;
 import com.jme.image.Texture;
 import com.jme.renderer.ColorRGBA;
@@ -60,30 +62,44 @@ import com.jme.renderer.ColorRGBA;
  * filename and the texture properties.
  * 
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.13 2004-04-13 16:43:09 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.14 2004-04-19 02:20:18 mojomonkey Exp $
  */
 public class TextureManager {
 
-	// For TGA loading
-	private static final int NO_TRANSPARENCY = 255;
-	private static final int FULL_TRANSPARENCY = 0;
+    // For TGA loading
+    private static final int NO_TRANSPARENCY = 255;
 
-	private static short idLength;
-	private static short colorMapType;
-	private static short imageType;
-	private static int cMapStart;
-	private static int cMapLength;
-	private static short cMapDepth;
-	private static int xOffset;
-	private static int yOffset;
-	private static int width;
-	private static int height;
-	private static short pixelDepth;
-	private static short imageDescriptor;
-	private static DirectColorModel cm;
-	private static int[] pixels;
+    private static final int FULL_TRANSPARENCY = 0;
 
-	/**
+    private static short idLength;
+
+    private static short colorMapType;
+
+    private static short imageType;
+
+    private static int cMapStart;
+
+    private static int cMapLength;
+
+    private static short cMapDepth;
+
+    private static int xOffset;
+
+    private static int yOffset;
+
+    private static int width;
+
+    private static int height;
+
+    private static short pixelDepth;
+
+    private static short imageDescriptor;
+
+    private static DirectColorModel cm;
+
+    private static int[] pixels;
+
+    /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * string. Filter parameters are used to define the filtering of the
      * texture. Whether the texture is to be mipmapped or not is denoted by the
@@ -106,15 +122,12 @@ public class TextureManager {
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
-	public static com.jme.image.Texture loadTexture(
-		String file,
-		int minFilter,
-		int magFilter,
-		boolean isMipMapped) {
-		return loadTexture(file, minFilter, magFilter, isMipMapped, true);
-	}
+    public static com.jme.image.Texture loadTexture(String file, int minFilter,
+            int magFilter, boolean isMipMapped) {
+        return loadTexture(file, minFilter, magFilter, isMipMapped, true);
+    }
 
-	/**
+    /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * string. Filter parameters are used to define the filtering of the
      * texture. Whether the texture is to be mipmapped or not is denoted by the
@@ -134,23 +147,19 @@ public class TextureManager {
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
-	public static com.jme.image.Texture loadTexture(
-		String file,
-		int minFilter,
-		int magFilter,
-		boolean isMipmapped,
-		boolean flipped) {
+    public static com.jme.image.Texture loadTexture(String file, int minFilter,
+            int magFilter, boolean isMipmapped, boolean flipped) {
 
-		URL url = null;
-		try {
-			url = new URL("file:" + file);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		return loadTexture(url, minFilter, magFilter, isMipmapped, flipped);
-	}
+        URL url = null;
+        try {
+            url = new URL("file:" + file);
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
+        return loadTexture(url, minFilter, magFilter, isMipmapped, flipped);
+    }
 
-	/**
+    /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * url. Filter parameters are used to define the filtering of the texture.
      * Whether the texture is to be mipmapped or not is denoted by the
@@ -173,15 +182,12 @@ public class TextureManager {
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
-	public static com.jme.image.Texture loadTexture(
-		URL file,
-		int minFilter,
-		int magFilter,
-		boolean isMipMapped) {
-		return loadTexture(file, minFilter, magFilter, isMipMapped, true);
-	}
+    public static com.jme.image.Texture loadTexture(URL file, int minFilter,
+            int magFilter, boolean isMipMapped) {
+        return loadTexture(file, minFilter, magFilter, isMipMapped, true);
+    }
 
-	/**
+    /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * url. Filter parameters are used to define the filtering of the texture.
      * Whether the texture is to be mipmapped or not is denoted by the
@@ -201,79 +207,71 @@ public class TextureManager {
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
-	public static com.jme.image.Texture loadTexture(
-		URL file,
-		int minFilter,
-		int magFilter,
-		boolean isMipmapped,
-		boolean flipped) {
+    public static com.jme.image.Texture loadTexture(URL file, int minFilter,
+            int magFilter, boolean isMipmapped, boolean flipped) {
 
-		if (null == file) {
-			return null;
-		}
+        if (null == file) { return null; }
 
-		java.awt.Image image = null;
-		String fileName = file.getFile();
-		if (fileName == null)
-			return null;
+        java.awt.Image image = null;
+        String fileName = file.getFile();
+        if (fileName == null) return null;
 
-		if (fileName.lastIndexOf('.') >= 0) {
-			if (".TGA"
-				.equalsIgnoreCase(
-					fileName.substring(fileName.lastIndexOf('.')))) {
-				//Load the TGA file
-				image = loadTGAImage(file);
-			} else if (
-				".BMP".equalsIgnoreCase(
-					fileName.substring(fileName.lastIndexOf('.')))) {
-				image = loadBMPImage(file);
-			} else {
-				//Load the new image.
-				image = (new javax.swing.ImageIcon(file)).getImage();
-			}
-		} else {
-			//Load the new image.
-			image = (new javax.swing.ImageIcon(file)).getImage();
-		}
+        try {
+            if (".TGA".equalsIgnoreCase(fileName.substring(fileName
+                    .lastIndexOf('.')))) {
+                image = loadTGAImage(file.openStream());
 
-		if (null == image) {
-			LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"Could not load: " + file);
-			return null;
-		}
+            } else if (".BMP".equalsIgnoreCase(fileName.substring(fileName
+                    .lastIndexOf('.')))) {
+                image = loadBMPImage(file.openStream());
 
-		com.jme.image.Image imageData = loadImage(image, flipped);
+            } else {
+                //Load the new image.
+                image = ImageIO.read(file);
 
-		Texture texture = new Texture();
-		texture.setApply(Texture.AM_MODULATE);
-		texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
-		texture.setCorrection(Texture.CM_PERSPECTIVE);
-		texture.setFilter(magFilter);
-		texture.setImage(imageData);
-		texture.setMipmapState(minFilter);
-		texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-		return texture;
-	}
-	
-	public static com.jme.image.Texture loadTexture(java.awt.Image image, 
-	        int minFilter, int magFilter, boolean isMipmapped, 
-	        boolean flipped) {
-	    
-	    com.jme.image.Image imageData = loadImage(image, flipped);
+            }
+        } catch (IOException e) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Could not load: " + file);
+            return null;
+        }
 
-		Texture texture = new Texture();
-		texture.setApply(Texture.AM_MODULATE);
-		texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
-		texture.setCorrection(Texture.CM_PERSPECTIVE);
-		texture.setFilter(magFilter);
-		texture.setImage(imageData);
-		texture.setMipmapState(minFilter);
-		texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-		return texture;
-	}
+        if (null == image) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Could not load: " + file);
+            return null;
+        }
 
-	/**
+        com.jme.image.Image imageData = loadImage(image, flipped);
+
+        Texture texture = new Texture();
+        texture.setApply(Texture.AM_MODULATE);
+        texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
+        texture.setCorrection(Texture.CM_PERSPECTIVE);
+        texture.setFilter(magFilter);
+        texture.setImage(imageData);
+        texture.setMipmapState(minFilter);
+        texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+        return texture;
+    }
+
+    public static com.jme.image.Texture loadTexture(java.awt.Image image,
+            int minFilter, int magFilter, boolean isMipmapped, boolean flipped) {
+
+        com.jme.image.Image imageData = loadImage(image, flipped);
+
+        Texture texture = new Texture();
+        texture.setApply(Texture.AM_MODULATE);
+        texture.setBlendColor(new ColorRGBA(1, 1, 1, 1));
+        texture.setCorrection(Texture.CM_PERSPECTIVE);
+        texture.setFilter(magFilter);
+        texture.setImage(imageData);
+        texture.setMipmapState(minFilter);
+        texture.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
+        return texture;
+    }
+
+    /**
      * 
      * <code>loadImage</code> sets the image data.
      * 
@@ -283,74 +281,60 @@ public class TextureManager {
      *            if true will flip the image's y values.
      * @return the loaded image.
      */
-	public static com.jme.image.Image loadImage(
-		java.awt.Image image,
-		boolean flipImage) {
+    public static com.jme.image.Image loadImage(java.awt.Image image,
+            boolean flipImage) {
 
-		boolean hasAlpha = hasAlpha(image);
+        boolean hasAlpha = hasAlpha(image);
 
-		//      Obtain the image data.
-		BufferedImage tex = null;
-		try {
+        //      Obtain the image data.
+        BufferedImage tex = null;
+        try {
 
-			tex =
-				new BufferedImage(
-					image.getWidth(null),
-					image.getHeight(null),
-					hasAlpha
-						? BufferedImage.TYPE_4BYTE_ABGR
-						: BufferedImage.TYPE_3BYTE_BGR);
+            tex = new BufferedImage(image.getWidth(null),
+                    image.getHeight(null),
+                    hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR
+                            : BufferedImage.TYPE_3BYTE_BGR);
 
-		} catch (IllegalArgumentException e) {
-			LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"Problem creating buffered Image: " + e.getMessage());
-			return null;
-		}
+        } catch (IllegalArgumentException e) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Problem creating buffered Image: " + e.getMessage());
+            return null;
+        }
 
-		Graphics2D g = (Graphics2D) tex.getGraphics();
-		g.drawImage(image, null, null);
-		g.dispose();
+        Graphics2D g = (Graphics2D) tex.getGraphics();
+        g.drawImage(image, null, null);
+        g.dispose();
 
-		if (flipImage) {
-			//Flip the image
-			AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
-			tx.translate(0, -image.getHeight(null));
-			AffineTransformOp op =
-				new AffineTransformOp(
-					tx,
-					AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
-			tex = op.filter(tex, null);
-		}
+        if (flipImage) {
+            //Flip the image
+            AffineTransform tx = AffineTransform.getScaleInstance(1, -1);
+            tx.translate(0, -image.getHeight(null));
+            AffineTransformOp op = new AffineTransformOp(tx,
+                    AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
+            tex = op.filter(tex, null);
+        }
 
-		//Get a pointer to the image memory
-		ByteBuffer scratch =
-			ByteBuffer.allocateDirect(4 * tex.getWidth() * tex.getHeight());
-		byte data[] =
-			(byte[]) tex.getRaster().getDataElements(
-				0,
-				0,
-				tex.getWidth(),
-				tex.getHeight(),
-				null);
-		scratch.clear();
-		scratch.put(data);
-		scratch.rewind();
+        //Get a pointer to the image memory
+        ByteBuffer scratch = ByteBuffer.allocateDirect(4 * tex.getWidth()
+                * tex.getHeight());
+        byte data[] = (byte[]) tex.getRaster().getDataElements(0, 0,
+                tex.getWidth(), tex.getHeight(), null);
+        scratch.clear();
+        scratch.put(data);
+        scratch.rewind();
 
-		com.jme.image.Image textureImage = new com.jme.image.Image();
-		textureImage.setType(
-			hasAlpha
-				? com.jme.image.Image.RGBA8888
-				: com.jme.image.Image.RGB888);
-		textureImage.setWidth(tex.getWidth());
-		textureImage.setHeight(tex.getHeight());
-		textureImage.setData(scratch);
+        com.jme.image.Image textureImage = new com.jme.image.Image();
+        textureImage.setType(hasAlpha ? com.jme.image.Image.RGBA8888
+                : com.jme.image.Image.RGB888);
+        textureImage.setWidth(tex.getWidth());
+        textureImage.setHeight(tex.getHeight());
+        textureImage.setData(scratch);
 
-		return textureImage;
+        return textureImage;
 
-	}
+    }
 
-	/**
+    /**
      * <code>loadBMPImage</code> because bitmap is not directly supported by
      * Java, we must load it manually. The requires opening a stream to the file
      * and reading in each byte. After the image data is read, it is used to
@@ -362,38 +346,30 @@ public class TextureManager {
      * 
      * @return <code>Image</code> object that contains the bitmap information.
      */
-	private static java.awt.Image loadBMPImage(URL file) {
-		try {
-			InputStream fs = file.openStream();
-			DataInputStream dis = new DataInputStream(fs);
-			BitmapHeader bh = new BitmapHeader();
-			byte[] data = new byte[dis.available()];
-			dis.readFully(data);
-			dis.close();
-			bh.read(data);
+    private static java.awt.Image loadBMPImage(InputStream fs) {
+        try {
+            DataInputStream dis = new DataInputStream(fs);
+            BitmapHeader bh = new BitmapHeader();
+            byte[] data = new byte[dis.available()];
+            dis.readFully(data);
+            dis.close();
+            bh.read(data);
 
-			if (bh.bitcount == 24) {
-				return (bh.readMap24(data));
-			}
+            if (bh.bitcount == 24) { return (bh.readMap24(data)); }
 
-			if (bh.bitcount == 32) {
-				return (bh.readMap32(data));
-			}
+            if (bh.bitcount == 32) { return (bh.readMap32(data)); }
 
-			if (bh.bitcount == 8) {
-				return (bh.readMap8(data));
-			}
+            if (bh.bitcount == 8) { return (bh.readMap8(data)); }
 
-		} catch (IOException e) {
-			LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"Error while loading " + file);
-		}
+        } catch (IOException e) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Error while loading bitmap texture.");
+        }
 
-		return null;
-	}
+        return null;
+    }
 
-	/**
+    /**
      * <code>loadTGAImage</code> because targa is not directly supported by
      * Java, we must load it manually. The requires opening a stream to the file
      * and reading in each byte. After the image data is read, it is used to
@@ -405,87 +381,80 @@ public class TextureManager {
      * 
      * @return <code>Image</code> object that contains the targa information.
      */
-	private static java.awt.Image loadTGAImage(URL file) {
-		try {
-			int red = 0;
-			int green = 0;
-			int blue = 0;
-			int srcLine = 0;
-			int alpha = FULL_TRANSPARENCY;
+    private static java.awt.Image loadTGAImage(InputStream fis) {
+        try {
+            int red = 0;
+            int green = 0;
+            int blue = 0;
+            int srcLine = 0;
+            int alpha = FULL_TRANSPARENCY;
 
-			//open a stream to the file
-			InputStream fis = file.openStream();
-			BufferedInputStream bis = new BufferedInputStream(fis, 8192);
-			DataInputStream dis = new DataInputStream(bis);
+            //open a stream to the file
+            BufferedInputStream bis = new BufferedInputStream(fis, 8192);
+            DataInputStream dis = new DataInputStream(bis);
 
-			//Read the TGA header
-			idLength = (short) dis.read();
-			colorMapType = (short) dis.read();
-			imageType = (short) dis.read();
-			cMapStart = flipEndian(dis.readShort());
-			cMapLength = flipEndian(dis.readShort());
-			cMapDepth = (short) dis.read();
-			xOffset = flipEndian(dis.readShort());
-			yOffset = flipEndian(dis.readShort());
-			width = flipEndian(dis.readShort());
-			height = flipEndian(dis.readShort());
-			pixelDepth = (short) dis.read();
+            //Read the TGA header
+            idLength = (short) dis.read();
+            colorMapType = (short) dis.read();
+            imageType = (short) dis.read();
+            cMapStart = flipEndian(dis.readShort());
+            cMapLength = flipEndian(dis.readShort());
+            cMapDepth = (short) dis.read();
+            xOffset = flipEndian(dis.readShort());
+            yOffset = flipEndian(dis.readShort());
+            width = flipEndian(dis.readShort());
+            height = flipEndian(dis.readShort());
+            pixelDepth = (short) dis.read();
 
-			if (pixelDepth == 24) {
-				cm = new DirectColorModel(24, 0xFF0000, 0xFF00, 0xFF);
-			} else if (pixelDepth == 32) {
-				cm =
-					new DirectColorModel(
-						32,
-						0xFF000000,
-						0xFF0000,
-						0xFF00,
-						0xFF);
-			}
+            if (pixelDepth == 24) {
+                cm = new DirectColorModel(24, 0xFF0000, 0xFF00, 0xFF);
+            } else if (pixelDepth == 32) {
+                cm = new DirectColorModel(32, 0xFF000000, 0xFF0000, 0xFF00,
+                        0xFF);
+            }
 
-			imageDescriptor = (short) dis.read();
+            imageDescriptor = (short) dis.read();
 
-			//Skip image ID
-			if (idLength > 0) {
-				bis.skip(idLength);
-			}
+            //Skip image ID
+            if (idLength > 0) {
+                bis.skip(idLength);
+            }
 
-			//create the buffer for the image data.
-			pixels = new int[width * height];
+            //create the buffer for the image data.
+            pixels = new int[width * height];
 
-			//read the pixel data.
-			for (int i = (height - 1); i >= 0; i--) {
-				srcLine = i * width;
+            //read the pixel data.
+            for (int i = (height - 1); i >= 0; i--) {
+                srcLine = i * width;
 
-				for (int j = 0; j < width; j++) {
-					blue = bis.read() & 0xFF;
-					green = bis.read() & 0xFF;
-					red = bis.read() & 0xFF;
+                for (int j = 0; j < width; j++) {
+                    blue = bis.read() & 0xFF;
+                    green = bis.read() & 0xFF;
+                    red = bis.read() & 0xFF;
 
-					if (pixelDepth == 32) {
-						alpha = bis.read() & 0xFF;
-						pixels[srcLine + j] =
-							alpha << 24 | red << 16 | green << 8 | blue;
-					} else {
-						pixels[srcLine + j] = red << 16 | green << 8 | blue;
-					}
-				}
-			}
+                    if (pixelDepth == 32) {
+                        alpha = bis.read() & 0xFF;
+                        pixels[srcLine + j] = alpha << 24 | red << 16
+                                | green << 8 | blue;
+                    } else {
+                        pixels[srcLine + j] = red << 16 | green << 8 | blue;
+                    }
+                }
+            }
 
-			//Close the file, we are done.
-			fis.close();
-		} catch (IOException e) {
-			LoggingSystem.getLogger().log(
-				Level.WARNING,
-				"Unable to load " + file);
-		}
+            //Close the file, we are done.
+            fis.close();
+        } catch (IOException e) {
+            LoggingSystem.getLogger().log(Level.WARNING,
+                    "Unable to load TGA image.");
+        }
 
-		//create the Image object and return it.
-		return Toolkit.getDefaultToolkit().createImage(
-			new MemoryImageSource(width, height, cm, pixels, 0, width));
-	}
+        //create the Image object and return it.
+        return Toolkit.getDefaultToolkit().createImage(
+                new MemoryImageSource(width, height, cm, pixels, 0, width));
+    }
 
-	/**
+    /**
      * <code>flipEndian</code> is used to flip the endian bit of the header
      * file.
      * 
@@ -494,12 +463,12 @@ public class TextureManager {
      * 
      * @return the flipped bit.
      */
-	private static short flipEndian(short signedShort) {
-		int input = signedShort & 0xFFFF;
-		return (short) (input << 8 | (input & 0xFF00) >>> 8);
-	}
+    private static short flipEndian(short signedShort) {
+        int input = signedShort & 0xFFFF;
+        return (short) (input << 8 | (input & 0xFF00) >>> 8);
+    }
 
-	/**
+    /**
      * <code>hasAlpha</code> returns true if the specified image has
      * transparent pixels
      * 
@@ -507,28 +476,26 @@ public class TextureManager {
      *            Image to check
      * @return true if the specified image has transparent pixels
      */
-	public static boolean hasAlpha(java.awt.Image image) {
-		if (null == image) {
-			return false;
-		}
-		if (image instanceof BufferedImage) {
-			BufferedImage bufferedImage = (BufferedImage) image;
-			return bufferedImage.getColorModel().hasAlpha();
-		}
+    public static boolean hasAlpha(java.awt.Image image) {
+        if (null == image) { return false; }
+        if (image instanceof BufferedImage) {
+            BufferedImage bufferedImage = (BufferedImage) image;
+            return bufferedImage.getColorModel().hasAlpha();
+        }
 
-		PixelGrabber pixelGrabber = new PixelGrabber(image, 0, 0, 1, 1, false);
+        PixelGrabber pixelGrabber = new PixelGrabber(image, 0, 0, 1, 1, false);
 
-		try {
-			pixelGrabber.grabPixels();
-			ColorModel colorModel = pixelGrabber.getColorModel();
-			if(colorModel != null) {
-				return colorModel.hasAlpha();
-			} else {
-				return false;
-			}
-		} catch (InterruptedException e) {
-		}
+        try {
+            pixelGrabber.grabPixels();
+            ColorModel colorModel = pixelGrabber.getColorModel();
+            if (colorModel != null) {
+                return colorModel.hasAlpha();
+            } else {
+                return false;
+            }
+        } catch (InterruptedException e) {
+        }
 
-		return false;
-	}
+        return false;
+    }
 }
