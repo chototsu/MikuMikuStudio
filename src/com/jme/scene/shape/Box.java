@@ -35,8 +35,6 @@ import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
-import com.jme.scene.model.XMLparser.XMLloadable;
-import com.jme.bounding.BoundingBox;
 
 /**
  * <code>Box</code> provides an extension of <code>TriMesh</code>. A
@@ -45,9 +43,9 @@ import com.jme.bounding.BoundingBox;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.9 2004-09-14 21:52:21 mojomonkey Exp $
+ * @version $Id: Box.java,v 1.10 2004-11-13 01:23:31 cep21 Exp $
  */
-public class Box extends TriMesh implements XMLloadable {
+public class Box extends TriMesh {
 	private static final long serialVersionUID = 1L;
 
 	public float xExtent, yExtent, zExtent;
@@ -423,25 +421,5 @@ public class Box extends TriMesh implements XMLloadable {
 	 */
 	public void setCenter(Vector3f aCenter) {
 		center.set(aCenter);
-	}
-
-	public String writeToXML() {
-		StringBuffer returnedValue = new StringBuffer();
-		returnedValue.append(center.x).append(' ').append(center.y).append(' ')
-				.append(center.z).append(' ');
-		returnedValue.append(xExtent).append(' ').append(yExtent).append(' ')
-				.append(zExtent).append(' ');
-		return returnedValue.toString();
-	}
-
-	public Object loadFromXML(String args) {
-		String[] parts = args.split(" ");
-		setData(new Vector3f(Float.parseFloat(parts[0]), Float
-				.parseFloat(parts[1]), Float.parseFloat(parts[2])), Float
-				.parseFloat(parts[3]), Float.parseFloat(parts[4]), Float
-				.parseFloat(parts[5]), true);
-		this.setModelBound(new BoundingBox());
-		this.updateModelBound();
-		return this;
 	}
 }

@@ -20,6 +20,7 @@ import com.jme.bounding.BoundingVolume;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.OrientedBoundingBox;
+import com.jme.image.Texture;
 
 
 import java.io.OutputStream;
@@ -655,10 +656,19 @@ public class JmeBinaryWriter {
         writeEndTag("color");
 
         atts.clear();
-        if (triMesh.getTextures()!=null)
-            atts.put("data",triMesh.getTextures());
-        writeTag("texturecoords",atts);
-        writeEndTag("texturecoords");
+        try{
+            for (int i=0;i<triMesh.getNumberOfUnits();i++){
+                if (triMesh.getTextures(i)!=null){
+                    if (i!=0)
+                        atts.put("texindex",new Integer(i));
+                    atts.put("data",triMesh.getTextures(i));
+                }
+                writeTag("texturecoords",atts);
+                writeEndTag("texturecoords");
+            }
+        } catch(NullPointerException e){  // in this case, there is no texture defined
+            // just do nothing
+        }
 
         atts.clear();
         if (triMesh.getIndices()!=null)
@@ -900,18 +910,25 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeTextureState(TextureState state) throws IOException{
-        if (state.getTexture()==null || state.getTexture().getImageLocation()==null) return;
-        String s=state.getTexture().getImageLocation();
-        HashMap atts=new HashMap();
-        atts.clear();
-        if (sharedObjects.containsKey(state))
-            atts.put("sharedident",sharedObjects.get(state));
-        if ("file:/".equals(s.substring(0,6)))
-            atts.put("file",replaceSpecialsForFile(new StringBuffer(s.substring(6))).toString());
-        else
-            atts.put("URL",new URL(s));
-        atts.put("wrap",new Integer(state.getTexture().getWrap()));
-        writeTag("texturestate",atts);
+        writeTag("texturestate",null);
+        for (int i=0;i<state.getNumberOfUnits();i++){
+            if (state.getTexture(i)==null || state.getTexture(i).getImageLocation()==null)
+                continue;
+            HashMap atts=new HashMap();
+            atts.clear();
+            Texture toTest=state.getTexture(i);
+            String s=toTest.getImageLocation();
+            if (sharedObjects.containsKey(state))
+                atts.put("sharedident",sharedObjects.get(state));
+            if ("file:/".equals(s.substring(0,6)))
+                atts.put("file",replaceSpecialsForFile(new StringBuffer(s.substring(6))).toString());
+            else
+                atts.put("URL",new URL(s));
+            atts.put("wrap",new Integer(toTest.getWrap()));
+            atts.put("texnum",new Integer(i));
+            writeTag("texture",atts);
+            writeEndTag("texture");
+        }
         writeEndTag("texturestate");
     }
 

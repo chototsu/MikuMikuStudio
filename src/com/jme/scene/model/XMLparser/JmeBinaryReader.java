@@ -160,7 +160,16 @@ public class JmeBinaryReader {
         } else if (tagName.equals("materialstate")){
             s.push(buildMaterial(attributes));
         } else if (tagName.equals("texturestate")){
-            s.push(buildTexture(attributes));
+            s.push(renderer.createTextureState());
+        } else if (tagName.equals("texture")){
+            Texture t=buildTexture(attributes);
+            if (t!=null){
+                TextureState ts=(TextureState) s.pop();
+                Integer retrieveNumber=(Integer)attributes.get("texnum");
+                int textureNum=(retrieveNumber==null ? 0 : retrieveNumber.intValue());
+                ts.setTexture(t,textureNum);
+                s.push(ts);
+            }
         } else if (tagName.equals("clod")){
             s.push(processSpatial(new ClodMesh((String) attributes.get("name")),attributes));
         } else if (tagName.equals("obb")){
@@ -195,7 +204,10 @@ public class JmeBinaryReader {
             s.push(geo);
         } else if (tagName.equals("texturecoords")){
             Geometry geo=(Geometry) s.pop();
-            geo.setTextures((Vector2f[]) attributes.get("data"));
+            if (attributes.get("texindex")==null)
+                geo.setTextures((Vector2f[]) attributes.get("data"));
+            else
+                geo.setTextures((Vector2f[]) attributes.get("data"),((Integer)attributes.get("texindex")).intValue());
             s.push(geo);
         } else if (tagName.equals("color")){
             Geometry geo=(Geometry) s.pop();
@@ -422,6 +434,7 @@ public class JmeBinaryReader {
             parentSpatial=(Spatial) s.pop();
             parentSpatial.setRenderState(childMaterial);
             s.push(parentSpatial);
+        } else if (tagName.equals("texture")){
         } else if (tagName.equals("cullstate")){
             CullState childCull=(CullState) s.pop();
             parentSpatial=(Spatial)s.pop();
@@ -763,10 +776,9 @@ public class JmeBinaryReader {
      * @param atts The attributes of the Texture
      * @return The new texture
      */
-    private TextureState buildTexture(HashMap atts){
-        TextureState t=renderer.createTextureState();
+    private Texture buildTexture(HashMap atts){
+        Texture p=null;
         try {
-            Texture p=null;
             if (atts.get("URL")!=null && !atts.get("URL").equals("null")){
                 p=TextureManager.loadTexture((URL) atts.get("URL"),
                         Texture.MM_LINEAR,Texture.FM_LINEAR,true);
@@ -784,8 +796,7 @@ public class JmeBinaryReader {
                 p=TextureManager.loadTexture(context,
                         Texture.MM_LINEAR,Texture.FM_LINEAR,true);
                 if (p==null) {
-                    t.setEnabled(false);
-                    return t;
+                    return p;
                 } else{
                     p.setImageLocation("file:/"+atts.get("file"));
                 }
@@ -793,14 +804,16 @@ public class JmeBinaryReader {
             if (p==null)
                 LoggingSystem.getLogger().log(Level.INFO,"Unable to load file: " + atts.get("file"));
             else{
-                t.setTexture(p);
-                p.setWrap(((Integer)atts.get("wrap")).intValue());
+//                t.setTexture(p);
+                if (atts.get("wrap")!=null)
+                    p.setWrap(((Integer)atts.get("wrap")).intValue());
             }
         } catch (MalformedURLException e) {
             throw new JmeException("Bad file name: " + atts.get("file") + "*" + atts.get("URL"));
         }
-        t.setEnabled(true);
-        return t;
+//        t.setEnabled(true);
+//        return t;
+        return p;
     }
 
     /**

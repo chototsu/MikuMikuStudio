@@ -16,8 +16,9 @@
 		</mesh>
 		<primitive type="box" params="MyBox -1 -1 -1 1 1 1" translation="7 7 7">
 			<publicobject ident="red"/>
-			<texturestate file="src/jmetest/data/images/Monkey.tga"/>
+			<texturestate>
+                <texture file="Monkey.tga"/>
+            </texturestate>
 		</primitive>
-		<xmlloadable class="com.jme.scene.shape.Box" name="loadedBox" args="0 0 0 1 1 1"/>
 	</node>
 </scene>
