@@ -40,14 +40,12 @@ import jme.math.Vector;
  * all vertices that make up the geometry.
  * 
  * @author Mark Powell
- * @version $Id: BoundingBox.java,v 1.2 2003-08-07 21:24:37 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.3 2003-08-08 18:46:54 mojomonkey Exp $
  */
 public class BoundingBox {
 	private Vector center;
-	private Vector axis;
-	private Vector extent;
-	
-	
+	private Vector minPoint;
+	private Vector maxPoint;
 
 	/**
 	 * Default constructor instantiates a new <code>BoundingBox</code> 
@@ -56,63 +54,92 @@ public class BoundingBox {
 	 */
 	public BoundingBox() {
 		center = new Vector();
-		axis = new Vector();
-		extent = new Vector();
+		minPoint = new Vector();
+		maxPoint = new Vector();
 	}
-	
+
 	/**
 	 * Constructor creates a new <code>BoundingBox</code> object
 	 * with the defined attributes.
 	 * @param center the center of the box.
-	 * @param axis the minimum point of the box.
-	 * @param extent the maximum point of the box.
+	 * @param minPoint the minimum point of the box.
+	 * @param maxPoint the maximum point of the box.
 	 */
-	public BoundingBox(Vector center, Vector axis, Vector extent) {
-		if(null == center) {
+	public BoundingBox(Vector center, Vector minPoint, Vector maxPoint) {
+		if (null == center) {
 			center = new Vector();
 		} else {
 			this.center = center;
 		}
-		
-		if(null == axis) {
-			this.axis = new Vector();
+
+		if (null == minPoint) {
+			this.minPoint = new Vector();
 		} else {
-			this.axis = axis;
+			this.minPoint = minPoint;
 		}
-		
-		if(null == extent) {
-			this.extent = new Vector();
+
+		if (null == maxPoint) {
+			this.maxPoint = new Vector();
 		} else {
-			this.extent = extent;
+			this.maxPoint = maxPoint;
 		}
-	}
-	
-	/**
-	 * <code>getRadius</code> calculates the distance between
-	 * the center point and the axis point.
-	 * @return the distance between the center of the box and
-	 * 		the axis point.
-	 */
-	public double getRadius() {
-		return MathUtils.distance(center, axis);
-	}
-	
-	/**
-	 * <code>getAxis</code> returns the axis or minimum point of 
-	 * the bounding box.
-	 * @return the axis point of the box.
-	 */
-	public Vector getAxis() {
-		return axis;
 	}
 
 	/**
-	 * <code>setAxis</code> sets the axis or maximum point of the 
-	 * bounding box.
-	 * @param axis the new axis point of the box.
+	 * <code>axisAligned</code> creates a minimal box around all
+	 * supplied points. The orientation is always aligned with the
+	 * local entity's coordinate system and therefore is axis 
+	 * aligned.
+	 * @param points the list of points to contain.
 	 */
-	public void setAxis(Vector axis) {
-		this.axis = axis;
+	public void axisAligned(Vector[] points) {
+		minPoint = points[0];
+		maxPoint = minPoint;
+
+		for (int i = 1; i < points.length; i++) {
+			if (points[i].x < minPoint.x)
+				minPoint.x = points[i].x;
+			else if (points[i].x > maxPoint.x)
+				maxPoint.x = points[i].x;
+
+			if (points[i].y < minPoint.y)
+				minPoint.y = points[i].y;
+			else if (points[i].y > maxPoint.y)
+				maxPoint.y = points[i].y;
+
+			if (points[i].z < minPoint.z)
+				minPoint.z = points[i].z;
+			else if (points[i].z > maxPoint.z)
+				maxPoint.z = points[i].z;
+		}
+	}
+
+	/**
+	 * <code>getRadius</code> calculates the distance between
+	 * the center point and the minPoint point.
+	 * @return the distance between the center of the box and
+	 * 		the minPoint point.
+	 */
+	public double getRadius() {
+		return MathUtils.distance(center, minPoint);
+	}
+
+	/**
+	 * <code>getMinPoint</code> returns the minPoint or minimum point of 
+	 * the bounding box.
+	 * @return the minPoint point of the box.
+	 */
+	public Vector getMinPoint() {
+		return minPoint;
+	}
+
+	/**
+	 * <code>setMinPoint</code> sets the minPoint or maximum point of the 
+	 * bounding box.
+	 * @param minPoint the new minPoint point of the box.
+	 */
+	public void setMinPoint(Vector minPoint) {
+		this.minPoint = minPoint;
 	}
 
 	/**
@@ -133,20 +160,20 @@ public class BoundingBox {
 	}
 
 	/**
-	 * <code>getExtent</code> returns the extent of maximum point of 
+	 * <code>getMaxPoint</code> returns the maxPoint of maximum point of 
 	 * the box.
-	 * @return the extent of the box.
+	 * @return the maxPoint of the box.
 	 */
-	public Vector getExtent() {
-		return extent;
+	public Vector getMaxPoint() {
+		return maxPoint;
 	}
 
 	/**
-	 * <code>setExtent</code> sets the new maximum point of the box.
-	 * @param extent the new extent of the box.
+	 * <code>setMaxPoint</code> sets the new maximum point of the box.
+	 * @param maxPoint the new maxPoint of the box.
 	 */
-	public void setExtent(Vector extent) {
-		this.extent = extent;
+	public void setMaxPoint(Vector maxPoint) {
+		this.maxPoint = maxPoint;
 	}
-	
+
 }
