@@ -44,7 +44,7 @@ public class TestSerial extends SimpleGame{
 
     public static void main(String[] args){
         TestSerial app=new TestSerial();
-        JOptionPane.showMessageDialog(null,"This will take a while to load.\nPress P to load Dr.Freak, Press O to load skybox, Press I to load curve");
+        JOptionPane.showMessageDialog(null,"This will take a while to load.\nPress U to load Dr.Freak, Press O to load skybox, Press I to load curve");
         app.setDialogBehaviour(SimpleGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
         app.start();
     }
@@ -114,7 +114,7 @@ public class TestSerial extends SimpleGame{
             throw new JmeException("damn");
         }
         KeyBindingManager.getKeyBindingManager().set("load_sky",KeyInput.KEY_O);
-        KeyBindingManager.getKeyBindingManager().set("load_freak",KeyInput.KEY_P);
+        KeyBindingManager.getKeyBindingManager().set("load_freak",KeyInput.KEY_U);
         KeyBindingManager.getKeyBindingManager().set("load_curve",KeyInput.KEY_I);
         rootNode.attachChild(mainNode);
     }
