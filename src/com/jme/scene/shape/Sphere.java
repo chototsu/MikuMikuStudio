@@ -38,9 +38,9 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
 
 /**
- * <code>Sphere</code>
+ * <code>Sphere</code> is um ... a sphere :)
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.4 2004-07-03 21:19:13 renanse Exp $
+ * @version $Id: Sphere.java,v 1.5 2004-08-01 07:04:18 cep21 Exp $
  */
 public class Sphere extends TriMesh {
     private int zSamples;
@@ -49,20 +49,42 @@ public class Sphere extends TriMesh {
     public float radius;
     public Vector3f center;
 
+    /**
+     * Constructs a sphere.  By default the Sphere has not geometry data or center.
+     * @param name The name of the sphere.
+     */
     public Sphere(String name) {
         super(name);
     }
 
+    /**
+     * Constructs a sphere with center at the origin.  For details, see
+     * the other constructor.
+     * @param name Name of sphere.
+     * @param zSamples The samples along the Z.
+     * @param radialSamples The samples along the radial.
+     * @param radius Radius of the sphere.
+     * @see #Sphere(java.lang.String, com.jme.math.Vector3f, int, int, float)
+     */
     public Sphere(
         String name,
         int zSamples,
         int radialSamples,
         float radius) {
-
-        super(name);
-        setData(new Vector3f(0f,0f,0f), zSamples, radialSamples, radius, true);
+        this(name,new Vector3f(0,0,0),zSamples,radialSamples,radius);
+//        super(name);
+//        setData(new Vector3f(0f,0f,0f), zSamples, radialSamples, radius, true);
     }
 
+    /**
+     * Constructs a sphere.  All geometry data buffers are updated automatically.  Both
+     * zSamples and radialSamples increase the quality of the generated sphere.
+     * @param name Name of the sphere.
+     * @param center Center of the sphere.
+     * @param zSamples The number of samples along the Z.
+     * @param radialSamples The number of samples along the radial.
+     * @param radius The radius of the sphere.
+     */
     public Sphere(
         String name,
         Vector3f center,
@@ -74,6 +96,16 @@ public class Sphere extends TriMesh {
         setData(center, zSamples, radialSamples, radius, true);
     }
 
+    /**
+     * Changes the information of the sphere into the given values.  The boolean at
+     * the end signals if buffer data should be updated as well.  If the sphere is to be rendered,
+     * then that value should be true.
+     * @param center The new center of the sphere.
+     * @param zSamples The new number of zSamples of the sphere.
+     * @param radialSamples The new number of radial samples of the sphere.
+     * @param radius The new radius of the sphere.
+     * @param updateBuffers If true, buffer information is updated as well.
+     */
     public void setData(Vector3f center, int zSamples, int radialSamples, float radius, boolean updateBuffers) {
         if (center != null)
             this.center = center;
@@ -276,10 +308,21 @@ public class Sphere extends TriMesh {
         setColors(color);
     }
 
-
+    /**
+     * Returns the center of this sphere.
+     * @return The sphere's center.
+     */
 	public Vector3f getCenter(){
 		return center;
 	}
+
+    /**
+     * Sets the center of this sphere.  Note that other information (such as
+     * geometry buffers and actual vertex information) is not changed.
+     * In most cases, you'll want to use setData()
+     * @param aCenter The new center.
+     * @see #setData(com.jme.math.Vector3f, int, int, float, boolean)
+     */
 	public void setCenter(Vector3f aCenter){
 		center = aCenter;
 	}
