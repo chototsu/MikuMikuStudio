@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.11 2004-04-23 00:47:06 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.12 2004-04-23 02:27:05 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -223,6 +223,7 @@ public abstract class SimpleGame extends BaseGame {
      // Then our font Text object.
      fps = new Text("FPS label", "");
      fps.setForceView(true);
+     fps.setTextureCombineMode(TextureState.REPLACE);
 
      // Finally, a stand alone node (not attached to root on purpose)
      fpsNode = new Node("FPS node");
