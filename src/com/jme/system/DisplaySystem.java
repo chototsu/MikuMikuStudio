@@ -51,25 +51,25 @@ import com.jme.math.Vector2f;
  * Specifically, any implementing class will create a window for rendering. It
  * also should create the appropriate <code>Renderer</code> object that allows
  * the client to render to this window.
- *
+ * 
  * Implmenting classes should check for the appropriate libraries to insure
  * these libraries are indeed installed on the system. This will allow users to
  * cleanly exit if an improper library was chosen for rendering.
- *
+ * 
  * Example usage:
- *
+ * 
  * <code>
  * DisplaySystem ds = DisplaySystem.getDisplaySystem("LWJGL");<br>
  * ds.createWindow(640,480,32,60,true);<br>
  * Renderer r = ds.getRenderer();<br>
  * </code>
- *
+ * 
  * @see com.jme.renderer.Renderer
- *
+ * 
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.36 2004-11-09 19:55:49 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.37 2004-12-30 02:28:23 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
 
@@ -78,14 +78,19 @@ public abstract class DisplaySystem {
 
     /** Width selected for the renderer. */
     protected int width;
+
     /** height selected for the renderer. */
     protected int height;
+
     /** Bit depth selected for renderer. */
     protected int bpp;
+
     /** Frequency selected for renderer. */
     protected int frq;
+
     /** Is the display full screen? */
     protected boolean fs;
+
     /** Is the display created already? */
     protected boolean created;
 
@@ -104,11 +109,11 @@ public abstract class DisplaySystem {
     /**
      * The list of current implemented rendering APIs that subclass Display.
      */
-    public static final String[] rendererNames = { "LWJGL"};
+    public static final String[] rendererNames = { "LWJGL" };
 
     /**
-     * A new display system has been created.  The default static display system is set to the
-     * newly created display system.
+     * A new display system has been created. The default static display system
+     * is set to the newly created display system.
      */
     protected DisplaySystem() {
         display = this;
@@ -120,7 +125,7 @@ public abstract class DisplaySystem {
      * given is not a valid identifier for a specific display system, null is
      * returned. For valid display systems see the <code>rendererNames</code>
      * array.
-     *
+     * 
      * @param key
      *            the display system to use.
      * @return the appropriate display system specified by the key.
@@ -137,6 +142,7 @@ public abstract class DisplaySystem {
 
     /**
      * Returns the currently created display system.
+     * 
      * @return The current display system.
      */
     public static DisplaySystem getDisplaySystem() {
@@ -145,6 +151,7 @@ public abstract class DisplaySystem {
 
     /**
      * Returns the set width for the display system.
+     * 
      * @return The set width.
      */
     public int getWidth() {
@@ -153,6 +160,7 @@ public abstract class DisplaySystem {
 
     /**
      * Returns the set height for the display system.
+     * 
      * @return The set height.
      */
     public int getHeight() {
@@ -161,26 +169,29 @@ public abstract class DisplaySystem {
 
     /**
      * Returns the set bitdepth for the display system.
+     * 
      * @return the set bit depth
      */
     public int getBitDepth() {
-      return bpp;
+        return bpp;
     }
 
     /**
      * Returns the set frequency for the display system.
+     * 
      * @return the set frequency
      */
     public int getFrequency() {
-      return frq;
+        return frq;
     }
 
     /**
      * Returns whether or not the display system is set to be full screen.
+     * 
      * @return true if full screen
      */
     public boolean isFullScreen() {
-      return fs;
+        return fs;
     }
 
     /**
@@ -188,7 +199,7 @@ public abstract class DisplaySystem {
      * constitute a valid display mode on this system. Returning true does not
      * necessarily guarantee that the system is capable of running in the
      * specified display mode, merely that it <i>believes </i> it is possible.
-     *
+     * 
      * @param width
      *            the width/horizontal resolution of the display.
      * @param height
@@ -206,7 +217,7 @@ public abstract class DisplaySystem {
      * vertical synchronization. The method is a "best attempt" to change the
      * monitor vertical refresh synchronization, and is <b>not </b> guaranteed
      * to be successful.
-     *
+     * 
      * @param enabled
      *            <code>true</code> to synchronize, <code>false</code> to
      *            ignore synchronization
@@ -214,9 +225,11 @@ public abstract class DisplaySystem {
     public abstract void setVSyncEnabled(boolean enabled);
 
     /**
-     * Sets the title of the display system.  This is usually reflected by the renderer as text
-     * in the menu bar.
-     * @param title The new display title.
+     * Sets the title of the display system. This is usually reflected by the
+     * renderer as text in the menu bar.
+     * 
+     * @param title
+     *            The new display title.
      */
     public abstract void setTitle(String title);
 
@@ -232,7 +245,7 @@ public abstract class DisplaySystem {
      * should be windowed or fullscreen. If false, windowed is chosen. This
      * window will be placed in the center of the screen initially. If true
      * fullscreen mode will be entered with the appropriate settings.
-     *
+     * 
      * @param w
      *            the width/horizontal resolution of the display.
      * @param h
@@ -249,14 +262,13 @@ public abstract class DisplaySystem {
 
     /**
      * <code>createHeadlessWindow</code> creates a headless window with the
-     * desired settings.  A headless window is a rendering target that is not
-     * shown on screen.  It is useful for doing offline rendering, integration
-     * (such as swing) and so forth.  You can not have a regular and headless
-     * window at the same time.
-     * The width and height defined by w and h define the size of the window if
-     * fullscreen is false, otherwise it defines the resolution of the
-     * fullscreen display. The color depth is defined by bpp.
-     *
+     * desired settings. A headless window is a rendering target that is not
+     * shown on screen. It is useful for doing offline rendering, integration
+     * (such as swing) and so forth. You can not have a regular and headless
+     * window at the same time. The width and height defined by w and h define
+     * the size of the window if fullscreen is false, otherwise it defines the
+     * resolution of the fullscreen display. The color depth is defined by bpp.
+     * 
      * @param w
      *            the width/horizontal resolution of the display.
      * @param h
@@ -267,8 +279,9 @@ public abstract class DisplaySystem {
     public abstract void createHeadlessWindow(int w, int h, int bpp);
 
     /**
-     * <code>recreateWindow</code> recreates a window with the desired settings.
-     *
+     * <code>recreateWindow</code> recreates a window with the desired
+     * settings.
+     * 
      * @param w
      *            the width/horizontal resolution of the display.
      * @param h
@@ -281,7 +294,8 @@ public abstract class DisplaySystem {
      *            flag determining if fullscreen is to be used or not. True will
      *            use fullscreen, false will use windowed mode.
      */
-    public abstract void recreateWindow(int w, int h, int bpp, int frq, boolean fs);
+    public abstract void recreateWindow(int w, int h, int bpp, int frq,
+            boolean fs);
 
     /**
      * <code>getRenderer</code> returns the <code>Renderer</code>
@@ -289,7 +303,7 @@ public abstract class DisplaySystem {
      * <code>DisplaySystem</code>. For example, if
      * <code>LWJGLDisplaySystem</code> is used, the returned
      * <code>Renderer</code> will be</code> LWJGLRenderer</code>.
-     *
+     * 
      * @see com.jme.renderer.Renderer
      * @return the appropriate <code>Renderer</code> implementation that is
      *         compatible with the used <code>DisplaySystem</code>.
@@ -300,7 +314,7 @@ public abstract class DisplaySystem {
      * <code>getRendererType</code> returns an instance of a strongly typed
      * enumeration that can be used to determine the renderer that the
      * DisplaySystem is currently using.
-     *
+     * 
      * @see com.jme.util.JmeType
      * @return
      */
@@ -310,7 +324,7 @@ public abstract class DisplaySystem {
      * <code>isCreated</code> returns the current status of the display
      * system. If the window and renderer are created, true is returned,
      * otherwise false.
-     *
+     * 
      * @return whether the display system is created.
      */
     public boolean isCreated() {
@@ -321,7 +335,7 @@ public abstract class DisplaySystem {
      * <code>isClosing</code> notifies if the window is currently closing.
      * This could be caused via the application itself or external interrupts
      * such as alt-f4 etc.
-     *
+     * 
      * @return true if the window is closing, false otherwise.
      */
     public abstract boolean isClosing();
@@ -329,13 +343,13 @@ public abstract class DisplaySystem {
     /**
      * <code>reset</code> cleans up the display system for closing or
      * restarting.
-     *
+     *  
      */
     public abstract void reset();
 
     /**
      * <code>close</code> shutdowns and destroys any window contexts.
-     *
+     *  
      */
     public abstract void close();
 
@@ -348,6 +362,7 @@ public abstract class DisplaySystem {
 
     /**
      * Returns the minimum bits per pixel in the alpha buffer.
+     * 
      * @return the int value of alphaBits.
      */
     public int getMinAlphaBits() {
@@ -356,6 +371,7 @@ public abstract class DisplaySystem {
 
     /**
      * Sets the minimum bits per pixel in the alpha buffer.
+     * 
      * @param alphaBits -
      *            the new value for alphaBits
      */
@@ -365,6 +381,7 @@ public abstract class DisplaySystem {
 
     /**
      * Returns the minimum bits per pixel in the depth buffer.
+     * 
      * @return the int value of depthBits.
      */
     public int getMinDepthBits() {
@@ -373,6 +390,7 @@ public abstract class DisplaySystem {
 
     /**
      * Sets the minimum bits per pixel in the depth buffer.
+     * 
      * @param depthBits -
      *            the new value for depthBits
      */
@@ -382,6 +400,7 @@ public abstract class DisplaySystem {
 
     /**
      * Returns the minimum bits per pixel in the stencil buffer.
+     * 
      * @return the int value of stencilBits.
      */
     public int getMinStencilBits() {
@@ -390,6 +409,7 @@ public abstract class DisplaySystem {
 
     /**
      * Sets the minimum bits per pixel in the stencil buffer.
+     * 
      * @param stencilBits -
      *            the new value for stencilBits
      */
@@ -398,7 +418,8 @@ public abstract class DisplaySystem {
     }
 
     /**
-     * Returns the  minimum samples in multisample buffer.
+     * Returns the minimum samples in multisample buffer.
+     * 
      * @return the int value of samples.
      */
     public int getMinSamples() {
@@ -407,6 +428,7 @@ public abstract class DisplaySystem {
 
     /**
      * Sets the minimum samples in the multisample buffer.
+     * 
      * @param samples -
      *            the new value for samples
      */
@@ -414,16 +436,19 @@ public abstract class DisplaySystem {
         this.samples = samples;
     }
 
-
     /**
-     * Called when the display system is created, this function sets the default render states for
-     * the renderer.  It should not be called directly by the user.
-     * @param r The renderer to get the default states from.
+     * Called when the display system is created, this function sets the default
+     * render states for the renderer. It should not be called directly by the
+     * user.
+     * 
+     * @param r
+     *            The renderer to get the default states from.
      */
     public static void updateStates(Renderer r) {
         Spatial.defaultStateList[RenderState.RS_ALPHA] = r.createAlphaState();
         Spatial.defaultStateList[RenderState.RS_ALPHA].setEnabled(false);
-        Spatial.defaultStateList[RenderState.RS_ATTRIBUTE] = r.createAttributeState();
+        Spatial.defaultStateList[RenderState.RS_ATTRIBUTE] = r
+                .createAttributeState();
         Spatial.defaultStateList[RenderState.RS_ATTRIBUTE].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_CULL] = r.createCullState();
         Spatial.defaultStateList[RenderState.RS_CULL].setEnabled(false);
@@ -433,28 +458,41 @@ public abstract class DisplaySystem {
         Spatial.defaultStateList[RenderState.RS_FOG].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_LIGHT] = r.createLightState();
         Spatial.defaultStateList[RenderState.RS_LIGHT].setEnabled(false);
-        Spatial.defaultStateList[RenderState.RS_MATERIAL] = r.createMaterialState();
+        Spatial.defaultStateList[RenderState.RS_MATERIAL] = r
+                .createMaterialState();
         Spatial.defaultStateList[RenderState.RS_MATERIAL].setEnabled(false);
         Spatial.defaultStateList[RenderState.RS_SHADE] = r.createShadeState();
         Spatial.defaultStateList[RenderState.RS_SHADE].setEnabled(false);
-        Spatial.defaultStateList[RenderState.RS_TEXTURE] = r.createTextureState();
+        Spatial.defaultStateList[RenderState.RS_TEXTURE] = r
+                .createTextureState();
         Spatial.defaultStateList[RenderState.RS_TEXTURE].setEnabled(false);
-        Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM] = r.createVertexProgramState();
-        Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM].setEnabled(false);
-        Spatial.defaultStateList[RenderState.RS_FRAGMENT_PROGRAM] = r.createFragmentProgramState();
-        Spatial.defaultStateList[RenderState.RS_FRAGMENT_PROGRAM].setEnabled(false);
-        Spatial.defaultStateList[RenderState.RS_WIREFRAME] = r.createWireframeState();
+        Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM] = r
+                .createVertexProgramState();
+        Spatial.defaultStateList[RenderState.RS_VERTEX_PROGRAM]
+                .setEnabled(false);
+        Spatial.defaultStateList[RenderState.RS_FRAGMENT_PROGRAM] = r
+                .createFragmentProgramState();
+        Spatial.defaultStateList[RenderState.RS_FRAGMENT_PROGRAM]
+                .setEnabled(false);
+        Spatial.defaultStateList[RenderState.RS_WIREFRAME] = r
+                .createWireframeState();
         Spatial.defaultStateList[RenderState.RS_WIREFRAME].setEnabled(false);
-        Spatial.defaultStateList[RenderState.RS_ZBUFFER] = r.createZBufferState();
+        Spatial.defaultStateList[RenderState.RS_ZBUFFER] = r
+                .createZBufferState();
         Spatial.defaultStateList[RenderState.RS_ZBUFFER].setEnabled(false);
-        Spatial.defaultStateList[RenderState.RS_STENCIL] = r.createStencilState();
+        Spatial.defaultStateList[RenderState.RS_STENCIL] = r
+                .createStencilState();
         Spatial.defaultStateList[RenderState.RS_STENCIL].setEnabled(false);
+        Spatial.defaultStateList[RenderState.RS_GLSL_SHADER_OBJECTS] = r
+                .createGLSLShaderObjectsState();
+        Spatial.defaultStateList[RenderState.RS_GLSL_SHADER_OBJECTS]
+                .setEnabled(false);
     }
 
     /**
-     * Crate a TextureRenderer using the underlying system.  This should not be user called.  It
-     * is called when the display system is created.
-     *
+     * Crate a TextureRenderer using the underlying system. This should not be
+     * user called. It is called when the display system is created.
+     * 
      * @param width
      *            width of texture
      * @param height
@@ -473,43 +511,52 @@ public abstract class DisplaySystem {
             int height, boolean useRGB, boolean useRGBA, boolean useDepth,
             boolean isRectangle, int target, int mipmaps);
 
-        /**
-         * Translate world to screen coordinates
-         *
-         * @param worldPosition
-         *            Vector3f representing the world position to retrieve.
-         * @return Vector2f The screen position of that vector3f world position.
-         */
-        public abstract Vector3f getScreenCoordinates(Vector3f worldPosition);
+    /**
+     * Translate world to screen coordinates
+     * 
+     * @param worldPosition
+     *            Vector3f representing the world position to retrieve.
+     * @return Vector2f The screen position of that vector3f world position.
+     */
+    public abstract Vector3f getScreenCoordinates(Vector3f worldPosition);
 
-        /**
-         * Translate world to screen coordinates
-         *
-         * @param worldPosition Vector3f representing the world position to retrieve.
-         * @param store Vector3f to store the world position in.
-         * @return Vector3f The store vector3f, after storing.
-         */
-        public abstract Vector3f getScreenCoordinates(Vector3f worldPosition, Vector3f store);
+    /**
+     * Translate world to screen coordinates
+     * 
+     * @param worldPosition
+     *            Vector3f representing the world position to retrieve.
+     * @param store
+     *            Vector3f to store the world position in.
+     * @return Vector3f The store vector3f, after storing.
+     */
+    public abstract Vector3f getScreenCoordinates(Vector3f worldPosition,
+            Vector3f store);
 
-        /**
-         * Translate screen to world coordinates.
-         *
-         * @param screenPosition
-         *            Vector2f representing the screen position with 0,0 at the bottom left.
-         * @param zPos float The z position away from the viewing plane.
-         * @return Vector3f A vector3f representing the vector's world position.
-         */
-        public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
-                float zPos);
+    /**
+     * Translate screen to world coordinates.
+     * 
+     * @param screenPosition
+     *            Vector2f representing the screen position with 0,0 at the
+     *            bottom left.
+     * @param zPos
+     *            float The z position away from the viewing plane.
+     * @return Vector3f A vector3f representing the vector's world position.
+     */
+    public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
+            float zPos);
 
-  /**
-   * Translate screen to world coordinates.
-   *
-   * @param screenPosition Vector2f representing the screen position with 0,0 at the bottom left
-   * @param zPos float The z position away from the viewing plane.
-   * @param store Vector3f The vector to store the result in.
-   * @return Vector3f The store vector, after storing it's result.
-   */
-  public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
-          float zPos, Vector3f store);
+    /**
+     * Translate screen to world coordinates.
+     * 
+     * @param screenPosition
+     *            Vector2f representing the screen position with 0,0 at the
+     *            bottom left
+     * @param zPos
+     *            float The z position away from the viewing plane.
+     * @param store
+     *            Vector3f The vector to store the result in.
+     * @return Vector3f The store vector, after storing it's result.
+     */
+    public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
+            float zPos, Vector3f store);
 }

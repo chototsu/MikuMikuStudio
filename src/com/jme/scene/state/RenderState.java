@@ -47,7 +47,7 @@ import com.jme.scene.Spatial;
  * 
  * @author Mark Powell
  * @author Jack Lindamood (javadoc only)
- * @version $Id: RenderState.java,v 1.20 2004-10-26 23:26:10 mojomonkey Exp $
+ * @version $Id: RenderState.java,v 1.21 2004-12-30 02:28:18 mojomonkey Exp $
  */
 public abstract class RenderState implements Serializable {
 
@@ -92,9 +92,12 @@ public abstract class RenderState implements Serializable {
 
 	/** The value returned by getType() for StencilState. */
 	public final static int RS_STENCIL = 13;
+	
+	/** The value returned by getType() for ShaderObjectsState. */
+	public final static int RS_GLSL_SHADER_OBJECTS = 14;
 
 	/** The total number of diffrent types of RenderState. */
-	public final static int RS_MAX_STATE = 14;
+	public final static int RS_MAX_STATE = 15; 
 
 	private boolean enabled = true;
 
