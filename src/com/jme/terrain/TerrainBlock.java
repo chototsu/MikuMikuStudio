@@ -61,7 +61,7 @@ public class TerrainBlock extends AreaClodMesh {
         
         if(useClod) {
             this.create(null);
-            this.setTrisPerPixel(0.075f);
+            this.setTrisPerPixel(0.05f);
         }
     }
 
