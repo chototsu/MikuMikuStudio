@@ -16,6 +16,7 @@ import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
 import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingBox;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
 import com.jme.scene.model.JointMesh2;
@@ -287,7 +288,10 @@ public class JmeBinaryReader {
         } else if (tagName.equals("mesh") || tagName.equals("jointmesh")){
             Geometry childMesh=(Geometry) s.pop();
             if (childMesh.getModelBound()==null){
-                childMesh.setModelBound(new BoundingSphere());
+                if ("box".equals(properties.get("bound")))
+                    childMesh.setModelBound(new BoundingBox());
+                else
+                    childMesh.setModelBound(new BoundingSphere());
                 childMesh.updateModelBound();
             }
             parentNode=(Node) s.pop();
@@ -599,6 +603,7 @@ public class JmeBinaryReader {
      * The only keys currently used are:<br>
      * key -> PropertyDataType<br>
      * "texurl" --> (URL) When loading a texture, will use this directory as the base texture directory <br>
+     * "bound" --> "box","sphere"  "box" uses BoundingBoxes, "sphere" uses boundingspheres.  "sphere" is default
      *
      * @param key Key to add (For example "texdir")
      * @param property Property for that key to have (For example "c:\\blarg\\")
@@ -608,7 +613,7 @@ public class JmeBinaryReader {
     }
 
     /**
-     * Removes a property.
+     * Removes a property.  This is equivalent to setProperty(key,null)
      * @param key The property to remove
      */
     public void clearProperty(String key){
