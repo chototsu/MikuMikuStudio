@@ -10,7 +10,6 @@ import com.jme.math.Vector3f;
 import com.jme.bounding.BoundingBox;
 import com.jme.renderer.*;
 import com.jme.image.Texture;
-import com.jme.system.JmeException;
 import com.jme.system.DisplaySystem;
 
 import java.io.*;
@@ -60,7 +59,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.6 2004-08-17 18:09:58 cep21 Exp $
+     * @version $Id: AseToJme.java,v 1.7 2004-08-17 18:13:11 cep21 Exp $
      */
     private class ASEModelCopy extends Node{
 
