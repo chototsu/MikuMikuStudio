@@ -11,6 +11,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
@@ -778,10 +779,32 @@ public class JmeBinaryReader {
      */
     private Texture buildTexture(HashMap atts){
         Texture p=null;
+        int mipMap = Texture.MM_LINEAR;
+        int filter = Texture.FM_LINEAR;
+        int imageType = Image.GUESS_FORMAT;
+        float aniso = 1.0f;
+        boolean flip = true;
+        
+        if (properties.containsKey("tex_mm"))
+            mipMap = ((Integer)properties.get("tex_mm")).intValue();
+        if (properties.containsKey("tex_fm"))
+            filter = ((Integer)properties.get("tex_fm")).intValue();
+        if (properties.containsKey("tex_type"))
+            imageType = ((Integer)properties.get("tex_type")).intValue();
+        if (properties.containsKey("tex_aniso"))
+            aniso = ((Float)properties.get("tex_aniso")).floatValue();
+        if (properties.containsKey("tex_flip"))
+            flip = ((Boolean)properties.get("tex_flip")).booleanValue();
+        
         try {
             if (atts.get("URL")!=null && !atts.get("URL").equals("null")){
-                p=TextureManager.loadTexture((URL) atts.get("URL"),
-                        Texture.MM_LINEAR,Texture.FM_LINEAR);
+                p=TextureManager.loadTexture(
+                        (URL) atts.get("URL"),
+                        mipMap,
+                        filter,
+                        imageType,
+                        aniso,
+                        flip);
             } else if (atts.get("file")!=null && !atts.get("file").equals("null")){
                 URL context;
                 if (properties.containsKey("texurl")){
@@ -794,7 +817,11 @@ public class JmeBinaryReader {
                     context=new File((String) atts.get("file")).toURI().toURL();
                 }
                 p=TextureManager.loadTexture(context,
-                        Texture.MM_LINEAR,Texture.FM_LINEAR);
+                        mipMap,
+                        filter,
+                        imageType,
+                        aniso,
+                        flip);
                 if (p==null) {
                     return p;
                 } else{
