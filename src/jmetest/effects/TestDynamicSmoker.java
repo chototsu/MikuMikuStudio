@@ -48,6 +48,7 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Disk;
+import com.jme.renderer.Renderer;
 
 /**
  * <code>TestDynamicSmoker</code>
@@ -98,6 +99,7 @@ public class TestDynamicSmoker extends SimpleGame {
         "jmetest/data/model/msascii/camera.txt");
     camBox.load(camBoxUrl, "jmetest/data/model/msascii/");
     camBox.setLocalScale(5f);
+    camBox.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
     smokeNode.attachChild(camBox);
     Disk emitDisc = new Disk("disc", 6, 6, 1.5f);
     emitDisc.setLocalTranslation(offset);

@@ -45,7 +45,7 @@ import com.jme.widget.WidgetRenderer;
 /**
  * <code>WidgetAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetAbstractRenderer.java,v 1.5 2004-08-14 00:49:59 cep21 Exp $
+ * @version $Id: WidgetAbstractRenderer.java,v 1.6 2004-08-25 18:32:35 renanse Exp $
  */
 public abstract class WidgetAbstractRenderer implements WidgetRenderer {
 
@@ -78,8 +78,8 @@ public abstract class WidgetAbstractRenderer implements WidgetRenderer {
             Texture t =
                 TextureManager.loadTexture(
                     imageUrl,
-                    Texture.MM_NONE,
-                    Texture.MM_NONE,
+                    Texture.MM_LINEAR,
+                    Texture.FM_LINEAR,
                     false);
 
             t.setApply(Texture.AM_REPLACE);

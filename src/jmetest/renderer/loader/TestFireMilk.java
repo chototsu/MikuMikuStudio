@@ -48,6 +48,7 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.renderer.Renderer;
+import com.jme.scene.state.ZBufferState;
 
 /**
  * <code>TestFireMilk</code>
@@ -69,6 +70,7 @@ public class TestFireMilk extends SimpleGame {
    */
   protected void simpleInitGame() {
     display.setTitle("Joint Animation");
+    display.setVSyncEnabled(true);
     cam.setLocation(new Vector3f(0.0f, 0.0f, 200.0f));
     cam.update();
     input.setKeySpeed(100);
@@ -123,7 +125,10 @@ public class TestFireMilk extends SimpleGame {
     manager.getParticles().setRenderState(ts);
     manager.getParticles().setRenderState(as1);
     manager.getParticles().setLightCombineMode(LightState.OFF);
-    manager.getParticles().setRenderState(display.getRenderer().createZBufferState());
+    manager.getParticles().setTextureCombineMode(TextureState.REPLACE);
+    ZBufferState zstate = display.getRenderer().createZBufferState();
+    zstate.setEnabled(false);
+    manager.getParticles().setRenderState(zstate);
     rootNode.attachChild(manager.getParticles());
   }
 }
