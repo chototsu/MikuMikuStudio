@@ -43,8 +43,8 @@ public class TestMaxJmeWrite extends SimpleGame{
 
         try {
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
-//            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
-            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/tpot.3ds");
+            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
+//            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/tpot.3ds");
 //            URL maxFile=new File("3dsmodels/tpot.3ds").toURL();
             C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
             JmeBinaryReader jbr=new JmeBinaryReader();

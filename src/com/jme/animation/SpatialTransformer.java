@@ -73,9 +73,7 @@ public class SpatialTransformer extends Controller{
         Arrays.fill(haveChanged,false);
 
         for (int i=0;i<numObjects;i++){
-            if (toChange[i] instanceof Spatial){
-                updatePivot(i);
-            }
+            updatePivot(i);
         }
     }
 
@@ -255,7 +253,7 @@ public class SpatialTransformer extends Controller{
             if (start==keyframes.size()){    // if they are all null then fill with identity
                 for (int i=0;i<keyframes.size();i++)
                     ((PointInTime)keyframes.get(i)).look[objIndex].setScale(1,1,1);
-                break;  // we're done so lets break
+                continue;  // we're done so lets break
             }
 
             if (start!=0){  // if there -are- null elements at the begining, then fill with first non-null
@@ -318,7 +316,7 @@ public class SpatialTransformer extends Controller{
             if (start==keyframes.size()){    // if they are all null then fill with identity
                 for (int i=0;i<keyframes.size();i++)
                     ((PointInTime)keyframes.get(i)).look[joint].setRotationQuaternion(new Quaternion());
-                break;  // we're done so lets break
+                continue;  // we're done so lets break
             }
             if (start!=0){  // if there -are- null elements at the begining, then fill with first non-null
 
@@ -376,7 +374,7 @@ public class SpatialTransformer extends Controller{
             if (start==keyframes.size()){    // if they are all null then fill with identity
                 for (int i=0;i<keyframes.size();i++)
                     ((PointInTime)keyframes.get(i)).look[objIndex].setTranslation(0,0,0);
-                break;  // we're done so lets break
+                continue;  // we're done so lets break
             }
 
             if (start!=0){  // if there -are- null elements at the begining, then fill with first non-null
