@@ -83,7 +83,7 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.22 2004-03-27 04:04:31 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.23 2004-03-28 03:06:31 renanse Exp $
  *
  */
 
@@ -904,13 +904,13 @@ public class RenParticleControlFrame extends JFrame {
     } else if ("SMOKE".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
-      manager.setEmissionMaximumAngle(0.38397244f);
-      manager.setSpeed(0.1f);
+      manager.setEmissionMaximumAngle(0.36651915f);
+      manager.setSpeed(0.2f);
       manager.setParticlesMinimumLifeTime(1000.0f);
-      manager.setStartSize(25.5f);
+      manager.setStartSize(32.5f);
       manager.setEndSize(40.0f);
       manager.setStartColor(new ColorRGBA(0.375f, 0.375f, 0.375f, 1.0f));
-      manager.setEndColor(new ColorRGBA(0.375f, 0.375f, 0.375f, 0.0f));
+      manager.setEndColor(new ColorRGBA(0.0f, 0.0f, 0.0f, 0.0f));
       manager.setRandomMod(0.1f);
       manager.setControlFlow(false);
       manager.setReleaseRate(300);

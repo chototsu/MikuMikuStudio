@@ -47,16 +47,17 @@ import com.jme.scene.TriMesh;
  * Example usage:
  * <code>
  *   RenParticleManager manager = new RenParticleManager(300, display.getRenderer().getCamera());
+ *   manager.getParticles().addController(manager);
  *   someNode.attachChild(manager.getParticles());
  * </code>
  *
  * See the method comments for more usage information.
  *
  * note: The idea of using one TriMesh to control particles and much of the code
- *       related to picking angles was kindly donated by Java Cool Dude.
+ *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.12 2004-03-27 04:04:32 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.13 2004-03-28 03:05:00 renanse Exp $
  *
  * @todo Points and Lines (not just quads)
  * @todo Particles stretched based on historical path
@@ -92,7 +93,10 @@ public class RenParticleManager extends Controller {
   private float startSize, endSize;
   private float randomMod;
   private float currentTime;
+  private float prevTime;
   private float releaseTime;
+  private float timePassed;
+  private float precision;
   private boolean controlFlow;
 
   private int geoToUse;
@@ -135,6 +139,7 @@ public class RenParticleManager extends Controller {
     releaseRate = noParticles;
     releaseVariance = 0;
     controlFlow = false;
+    precision = .01f; // 10ms
 
     geometryCoordinates = new Vector3f[noParticles << 2];
     int[] indices = new int[noParticles * 6];
@@ -185,6 +190,12 @@ public class RenParticleManager extends Controller {
     secondsPassed *= getSpeed();
     if (isActive()) {
       currentTime += secondsPassed;
+      timePassed = currentTime - prevTime;
+      if (timePassed < precision)
+        return;
+
+      prevTime = currentTime;
+
       if (currentTime >= getMinTime() && currentTime <= getMaxTime()) {
 
         if (controlFlow) {
@@ -192,7 +203,7 @@ public class RenParticleManager extends Controller {
             released = 0;
             releaseTime = currentTime;
           }
-          particlesToCreate = (int) ( (float) releaseRate * secondsPassed *
+          particlesToCreate = (int) ( (float) releaseRate * timePassed *
                                      (1.0f +
                                       releaseVariance *
                                       (FastMath.nextRandomFloat() - 0.5f)));
@@ -206,7 +217,7 @@ public class RenParticleManager extends Controller {
 
         int i = 0;
         while (i < noParticles) {
-          if (particles[i].updateAndCheck(secondsPassed) &&
+          if (particles[i].updateAndCheck(timePassed) &&
               (!controlFlow || particlesToCreate > 0)) {
             if (particles[i].status == RenParticle.DEAD &&
                 getRepeatType() == RT_CLAMP) {
@@ -377,7 +388,7 @@ public class RenParticleManager extends Controller {
   /**
    * Apply the rotation matrix to a given vector representing a particle velocity.
    *
-   * @param speed the velocity vector to be modified.
+   * @param pSpeed the velocity vector to be modified.
    */
   private void rotateVectorSpeed(Vector3f pSpeed) {
 
@@ -652,6 +663,28 @@ public class RenParticleManager extends Controller {
    */
   public void setReleaseRate(int particlesPerSecond) {
     this.releaseRate = particlesPerSecond;
+  }
+
+  /**
+   * Get how soon after the last update the manager will send updates to the particles.
+   *
+   * @return float
+   */
+  public float getPrecision() {
+    return precision;
+  }
+
+  /**
+   * Set how soon after the last update the manager will send updates to the particles.
+   * Defaults to .01f (10ms)<br><br>
+   * This means that if an update is called every 2ms (e.g. running at 500 FPS)
+   * the particles position and stats will be updated every fifth frame with the
+   * elapsed time (in this case, 10ms) since previous update.
+   *
+   * @param precision in seconds
+   */
+  public void setPrecision(float precision) {
+    this.precision = precision;
   }
 
   /**

@@ -40,7 +40,7 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: RenParticle.java,v 1.5 2004-03-27 00:59:33 renanse Exp $
+ * @version $Id: RenParticle.java,v 1.6 2004-03-28 03:04:59 renanse Exp $
  */
 public class RenParticle {
 
@@ -51,16 +51,19 @@ public class RenParticle {
   private float currentSize;
   private float lifeSpan;
   private float lifeRatio;
-  private float currentAge, halfAge;
+  private int currentAge, halfAge;
   private Vector3f speed;
   private Vector3f randomPoint;
   private RenParticleManager parent;
   private Vector3f bbX, bbY;
   public int status;
 
-  public static final int AVAILABLE = 0;
+  /** Particle is dead -- not in play. */
+  public static final int DEAD = 0;
+  /** Particle is currently active. */
   public static final int ALIVE = 1;
-  public static final int DEAD = 2;
+  /** Particle is available for spawning. */
+  public static final int AVAILABLE = 2;
 
   /**
    * RenParticle constructor
@@ -79,7 +82,7 @@ public class RenParticle {
 
     color = (ColorRGBA) parent.getStartColor().clone();
     randomPoint = new Vector3f();
-    currentAge = 0f;
+    currentAge = 0;
     status = AVAILABLE;
     currentSize = parent.getStartSize();
     verts = new Vector3f[4];
@@ -104,7 +107,7 @@ public class RenParticle {
     this.color.set(parent.getStartColor().r, parent.getStartColor().g,
                    parent.getStartColor().b, parent.getStartColor().a);
     currentSize = parent.getStartSize();
-    currentAge = 0f;
+    currentAge = 0;
     status = AVAILABLE;
   }
 
@@ -140,8 +143,8 @@ public class RenParticle {
     if (status != ALIVE) {
       return true;
     }
-    currentAge += secondsPassed * 1000f; // add 10ms to age
-    halfAge = currentAge*.5f;
+    currentAge += secondsPassed * 1000; // add 10ms to age
+    halfAge = currentAge >> 1;
     if (currentAge > lifeSpan) {
       status = DEAD;
       color.a = 0;
