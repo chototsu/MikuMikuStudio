@@ -59,7 +59,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.35 2004-11-05 18:32:32 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.36 2005-01-13 04:12:08 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -357,32 +357,38 @@ public class Node extends Spatial implements Serializable {
      *      com.jme.intersection.CollisionResults)
      */
     public void findCollisions(Spatial scene, CollisionResults results) {
-        if (getWorldBound().intersects(scene.getWorldBound())) {
-            //further checking needed.
-            for (int i = 0; i < getQuantity(); i++) {
-                getChild(i).findCollisions(scene, results);
-            }
+        if(getWorldBound() != null) {
+	        if (getWorldBound().intersects(scene.getWorldBound())) {
+	            //further checking needed.
+	            for (int i = 0; i < getQuantity(); i++) {
+	                getChild(i).findCollisions(scene, results);
+	            }
+	        }
         }
     }
 
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        if (getWorldBound().intersects(scene.getWorldBound())) {
-            //further checking needed.
-            for (int i = 0; i < getQuantity(); i++) {
-                if (getChild(i).hasCollision(scene, checkTriangles)) { return true; }
-            }
+        if(getWorldBound() != null) {
+	        if (getWorldBound().intersects(scene.getWorldBound())) {
+	            //further checking needed.
+	            for (int i = 0; i < getQuantity(); i++) {
+	                if (getChild(i).hasCollision(scene, checkTriangles)) { return true; }
+	            }
+	        }
         }
 
         return false;
     }
     
     public void findPick(Ray toTest, PickResults results){
-		if(getWorldBound().intersects(toTest)) {
-			//further checking needed.
-			for(int i = 0; i < getQuantity(); i++) {
-				((Spatial)children.get(i)).findPick(toTest, results);
+        if(getWorldBound() != null) {
+			if(getWorldBound().intersects(toTest)) {
+				//further checking needed.
+				for(int i = 0; i < getQuantity(); i++) {
+					((Spatial)children.get(i)).findPick(toTest, results);
+				}
 			}
-		}
+        }
     }
 
 

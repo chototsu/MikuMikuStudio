@@ -58,7 +58,7 @@ import com.jme.bounding.OBBTree;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.37 2004-11-30 00:32:05 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.38 2005-01-13 04:12:08 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -466,6 +466,9 @@ public class TriMesh extends Geometry implements Serializable {
 	 *            the indices to the triangles.
 	 */
 	public void findTrianglePick(Ray toTest, ArrayList results) {
+	    if(worldBound == null) {
+	        return;
+	    }
 		if (worldBound.intersects(toTest)) {
 			if (worldMatrot == null) {
 				worldMatrot = worldRotation.toRotationMatrix();
