@@ -34,41 +34,196 @@ package com.jme.widget.input.mouse;
 import java.util.Observer;
 
 /**
+ * <code>WidgetMouseHandlerInterface</code>
  * @author Gregg Patton
- *
- * To change the template for this generated type comment go to
- * Window&gt;Preferences&gt;Java&gt;Code Generation&gt;Code and Comments
+ * @version $Id: WidgetMouseHandlerInterface.java,v 1.2 2004-02-09 12:32:45 greggpatton Exp $
  */
 public interface WidgetMouseHandlerInterface {
 
-	public void addMouseButtonDownObserver(Observer o);
-	public void deleteMouseButtonDownObserver(Observer o);
-	public void doMouseButtonDown();
-	public void handleMouseButtonDown();
+	/**
+     * <code>addMouseButtonDownObserver</code>
+     * @param o
+     */
+    public void addMouseButtonDownObserver(Observer o);
 
-	public void addMouseButtonUpObserver(Observer o);
-	public void deleteMouseButtonUpObserver(Observer o);
-	public void doMouseButtonUp();
-	public void handleMouseButtonUp();
+    /**
+     * <code>deleteMouseButtonDownObserver</code>
+     * @param o
+     */
+    public void deleteMouseButtonDownObserver(Observer o);
 
-	public void addMouseMoveObserver(Observer o);
-	public void deleteMouseMoveObserver(Observer o);
-	public void doMouseMove();
-	public void handleMouseMove();
+    /**
+     * <code>deleteMouseButtonDownObservers</code>
+     * 
+     */
+    public void deleteMouseButtonDownObservers();
 
-	public void addMouseDragObserver(Observer o);
-	public void deleteMouseDragObserver(Observer o);
-	public void doMouseDrag();
-	public void handleMouseDrag();
+	/**
+     * <code>doMouseButtonDown</code>
+     * 
+     */
+    public void doMouseButtonDown();
+	/**
+     * <code>handleMouseButtonDown</code>
+     * 
+     */
+    public void handleMouseButtonDown();
 
-	public void addMouseEnterObserver(Observer o);
-	public void deleteMouseEnterObserver(Observer o);
-	public void doMouseEnter();
-	public void handleMouseEnter();
 
-	public void addMouseExitObserver(Observer o);
-	public void deleteMouseExitObserver(Observer o);
-	public void doMouseExit();
-	public void handleMouseExit();
+
+
+	/**
+     * <code>addMouseButtonUpObserver</code>
+     * @param o
+     */
+    public void addMouseButtonUpObserver(Observer o);
+
+    /**
+     * <code>deleteMouseButtonUpObserver</code>
+     * @param o
+     */
+    public void deleteMouseButtonUpObserver(Observer o);
+
+    /**
+     * <code>deleteMouseButtonUpObservers</code>
+     * 
+     */
+    public void deleteMouseButtonUpObservers();
+
+	/**
+     * <code>doMouseButtonUp</code>
+     * 
+     */
+    public void doMouseButtonUp();
+
+	/**
+     * <code>handleMouseButtonUp</code>
+     * 
+     */
+    public void handleMouseButtonUp();
+
+
+
+
+	/**
+     * <code>addMouseMoveObserver</code>
+     * @param o
+     */
+    public void addMouseMoveObserver(Observer o);
+
+    /**
+     * <code>deleteMouseMoveObserver</code>
+     * @param o
+     */
+    public void deleteMouseMoveObserver(Observer o);
+
+    /**
+     * <code>deleteMouseMoveObservers</code>
+     * 
+     */
+    public void deleteMouseMoveObservers();
+
+	/**
+     * <code>doMouseMove</code>
+     * 
+     */
+    public void doMouseMove();
+
+	/**
+     * <code>handleMouseMove</code>
+     * 
+     */
+    public void handleMouseMove();
+
+
+
+
+	/**
+     * <code>addMouseDragObserver</code>
+     * @param o
+     */
+    public void addMouseDragObserver(Observer o);
+
+    /**
+     * <code>deleteMouseDragObserver</code>
+     * @param o
+     */
+    public void deleteMouseDragObserver(Observer o);
+
+    /**
+     * <code>deleteMouseDragObservers</code>
+     * 
+     */
+    public void deleteMouseDragObservers();
+
+	/**
+     * <code>doMouseDrag</code>
+     * 
+     */
+    public void doMouseDrag();
+
+	/**
+     * <code>handleMouseDrag</code>
+     * 
+     */
+    public void handleMouseDrag();
+
+
+
+
+	/**
+     * <code>addMouseEnterObserver</code>
+     * @param o
+     */
+    public void addMouseEnterObserver(Observer o);
+    /**
+     * <code>deleteMouseEnterObserver</code>
+     * @param o
+     */
+    public void deleteMouseEnterObserver(Observer o);
+    /**
+     * <code>deleteMouseEnterObservers</code>
+     * 
+     */
+    public void deleteMouseEnterObservers();
+	/**
+     * <code>doMouseEnter</code>
+     * 
+     */
+    public void doMouseEnter();
+	/**
+     * <code>handleMouseEnter</code>
+     * 
+     */
+    public void handleMouseEnter();
+
+
+
+
+	/**
+     * <code>addMouseExitObserver</code>
+     * @param o
+     */
+    public void addMouseExitObserver(Observer o);
+    /**
+     * <code>deleteMouseExitObserver</code>
+     * @param o
+     */
+    public void deleteMouseExitObserver(Observer o);
+    /**
+     * <code>deleteMouseExitObservers</code>
+     * 
+     */
+    public void deleteMouseExitObservers();
+	/**
+     * <code>doMouseExit</code>
+     * 
+     */
+    public void doMouseExit();
+	/**
+     * <code>handleMouseExit</code>
+     * 
+     */
+    public void handleMouseExit();
 
 }
