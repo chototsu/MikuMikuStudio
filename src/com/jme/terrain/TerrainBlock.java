@@ -33,6 +33,7 @@
 package com.jme.terrain;
 
 import com.jme.renderer.Renderer;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -52,7 +53,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.26 2004-05-12 19:58:48 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.27 2004-05-19 22:09:33 graum Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -144,14 +145,16 @@ public class TerrainBlock extends AreaClodMesh {
         this.heightMap = heightMap;
 
         setLocalTranslation(origin);
+
         buildVertices();
         buildTextureCoordinates();
         buildNormals();
+        buildColors();
+
         setVBOVertexEnabled(true);
         setVBONormalEnabled(true);
         setVBOTextureEnabled(true);
-        color = null;
-        colorBuf = null;
+        setVBOColorEnabled(true);
 
         if (useClod) {
             this.create(null);
@@ -410,5 +413,19 @@ public class TerrainBlock extends AreaClodMesh {
         }
 
         setNormals(normal);
+    }
+
+    /**
+     * Sets the colors for each vertex to the color white.
+     */
+    private void buildColors()
+    {
+        color = new ColorRGBA[vertex.length];
+        //initialize colors to white
+        for (int x = 0; x < vertex.length; x++) {
+            color[x] = new ColorRGBA();
+        }
+
+        setColors(color);
     }
 }
