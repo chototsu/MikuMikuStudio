@@ -53,7 +53,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  *
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.53 2004-09-16 17:10:59 renanse Exp $
+ * @version $Id: Spatial.java,v 1.54 2004-09-20 17:17:29 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 	/** Spatial's rotation relative to its parent. */
@@ -804,10 +804,18 @@ public abstract class Spatial implements Serializable {
 			return TextureState.COMBINE_CLOSEST;
 	}
 
-	public static void clearCurrentStates() {
-		for (int i = 0; i < currentStates.length; i++)
-			currentStates[i] = null;
-	}
+        public static void clearCurrentStates() {
+          for (int i = 0; i < currentStates.length; i++)
+            currentStates[i] = null;
+        }
+
+        public static void clearCurrentState(int state) {
+          currentStates[state] = null;
+        }
+
+        public static RenderState getCurrentState(int state) {
+          return currentStates[state];
+        }
 
 	/**
 	 * All non null default states are applied to the renderer.

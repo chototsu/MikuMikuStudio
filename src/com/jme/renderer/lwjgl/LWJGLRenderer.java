@@ -119,6 +119,7 @@ import com.jme.scene.state.lwjgl.LWJGLZBufferState;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.WidgetRenderer;
+import com.jme.scene.state.RenderState;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -127,7 +128,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.46 2004-09-14 05:05:00 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.47 2004-09-20 17:17:29 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -471,6 +472,10 @@ public class LWJGLRenderer implements Renderer {
         // render queue if needed
         processingQueue = true;
         queue.renderBuckets();
+        if (!((ZBufferState)Spatial.getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
+          Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
+          Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
+        }
         processingQueue = false;
 
         GL11.glFlush();
