@@ -46,11 +46,10 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.20 2004-06-24 04:41:21 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.21 2004-07-05 22:54:35 cep21 Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
-    private Vector3f uv, uuv; // work horses
 
     /**
      * Constructor instantiates a new <code>Quaternion</code> object
@@ -62,8 +61,6 @@ public class Quaternion {
         y = 0;
         z = 0;
         w = 1;
-        uv = new Vector3f();
-        uuv = new Vector3f();
     }
 
     /**
