@@ -125,7 +125,7 @@ public class TestKeyController extends AbstractGame {
 	protected void initDisplay() {
 		DisplaySystem.createDisplaySystem(
 			"TestApplication", 
-			"jme/data/Images/Monkey.jpg",
+			"data/Images/Monkey.jpg",
 			true
 		);
 	}
@@ -165,7 +165,7 @@ public class TestKeyController extends AbstractGame {
 		gl.blendFunc(GL.SRC_ALPHA, GL.ONE);
 		
 		 //Instantiate a font object
-		font = new Font2D("jme/data/Font/font.png");
+		font = new Font2D("data/Font/font.png");
 		
 		 // Instantiate a new timer object
 		timer = Timer.getTimer();
