@@ -40,7 +40,7 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  *
  * @author Joshua Slack
- * @version $Id: RenParticle.java,v 1.1 2004-03-19 23:46:26 renanse Exp $
+ * @version $Id: RenParticle.java,v 1.2 2004-03-24 01:38:25 renanse Exp $
  */
 public class RenParticle {
 
@@ -140,7 +140,7 @@ public class RenParticle {
                       0.0F,
                       parent.getRandomMod() *
                       ( -FastMath.nextRandomFloat() + FastMath.nextRandomFloat()));
-      location.add(randomPoint);
+      location.addLocal(randomPoint);
     }
 
     float lifeRatio = currentAge / lifeSpan;

@@ -55,7 +55,7 @@ import com.jme.scene.TriMesh;
  *       related to picking angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: RenParticleManager.java,v 1.3 2004-03-23 23:46:15 renanse Exp $
+ * @version $Id: RenParticleManager.java,v 1.4 2004-03-24 01:38:26 renanse Exp $
  *
  */
 public class RenParticleManager {
@@ -231,7 +231,7 @@ public class RenParticleManager {
     emissionDirection.multLocal(1.0f / emit);
     Vector3f upXemit = upVector.cross(emissionDirection);
     float upDotEmit = upVector.dot(emissionDirection);
-    if ( ( (double) FastMath.abs(upDotEmit)) > 1.0D - FastMath.DBL_EPSILON) {
+    if ( ( (double) FastMath.abs(upDotEmit)) > 1.0d - FastMath.DBL_EPSILON) {
       absUpVector.x = upVector.x <= 0.0f ? -upVector.x : upVector.x;
       absUpVector.y = upVector.y <= 0.0f ? -upVector.y : upVector.y;
       absUpVector.z = upVector.z <= 0.0f ? -upVector.z : upVector.z;
@@ -335,7 +335,7 @@ public class RenParticleManager {
    * @return the generated lifespan value
    */
   private float getRandomLifeSpan() {
-    float life = minimumLifeTime * (0.5F + FastMath.nextRandomFloat());
+    float life = minimumLifeTime * (0.5f + FastMath.nextRandomFloat());
     if (life <= minimumLifeTime) {
       return minimumLifeTime;
     } else {
@@ -349,14 +349,14 @@ public class RenParticleManager {
    * @param speed the velocity vector to be modified.
    */
   private void rotateVectorSpeed(Vector3f speed) {
-    float f = speed.x;
-    float f1 = speed.y;
-    float f2 = speed.z;
-    speed.x = -1F *
-        (rotMatrix.m00 * f + rotMatrix.m10 * f1 + rotMatrix.m20 * f2);
-    speed.y = rotMatrix.m01 * f + rotMatrix.m11 * f1 + rotMatrix.m21 * f2;
-    speed.z = -1F *
-        (rotMatrix.m02 * f + rotMatrix.m12 * f1 + rotMatrix.m22 * f2);
+    speed.x = -1f *
+        ((rotMatrix.m00 * speed.x) + (rotMatrix.m10 * speed.y) +
+         (rotMatrix.m20 * speed.z));
+    speed.y = (rotMatrix.m01 * speed.x) + (rotMatrix.m11 * speed.y) +
+        (rotMatrix.m21 * speed.z);
+    speed.z = -1f *
+        ((rotMatrix.m02 * speed.x) + (rotMatrix.m12 * speed.y) +
+         (rotMatrix.m22 * speed.z));
   }
 
   /**

@@ -135,7 +135,7 @@ public class RenParticleControlFrame extends JFrame {
   * <code>RenParticleControlFrame</code>
   *
   * @author Joshua Slack
-  * @version $Id: RenParticleControlFrame.java,v 1.4 2004-03-24 01:08:21 renanse Exp $
+  * @version $Id: RenParticleControlFrame.java,v 1.5 2004-03-24 01:38:26 renanse Exp $
   *
   */
 
@@ -278,7 +278,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravXSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.025f;
+          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.05f;
       }
     });
 
@@ -297,7 +297,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravYSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.025f;
+          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.05f;
       }
     });
 
@@ -316,7 +316,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravZSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.025f;
+          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.05f;
       }
     });
 
@@ -350,7 +350,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = emitZSlider.getValue();
         if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().z = (float) val;
+          TestRenParticleGUI.manager.getEmissionDirection().z = (float) val * .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
       }
@@ -365,7 +365,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = emitYSlider.getValue();
         if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().y = (float)val;
+          TestRenParticleGUI.manager.getEmissionDirection().y = (float)val * .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
       }
@@ -380,7 +380,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = emitXSlider.getValue();
         if (TestRenParticleGUI.manager != null) {
-          TestRenParticleGUI.manager.getEmissionDirection().x = (float)val;
+          TestRenParticleGUI.manager.getEmissionDirection().x = (float)val * .1f;
           TestRenParticleGUI.manager.updateRotationMatrix();
         }
       }
@@ -418,7 +418,7 @@ public class RenParticleControlFrame extends JFrame {
     randomSlider.addChangeListener(new ChangeListener() {
       public void stateChanged(ChangeEvent e) {
         int val = randomSlider.getValue();
-        TestRenParticleGUI.manager.setRandomMod((float)val*.1f);
+        TestRenParticleGUI.manager.setRandomMod((float)val*.01f);
         updateRandomLabels();
       }
     });
@@ -555,9 +555,9 @@ public class RenParticleControlFrame extends JFrame {
     updateAgeLabels();
     speedSlider.setValue((int)(TestRenParticleGUI.manager.getParticlesSpeed() * 1000));
     updateSpeedLabels();
-    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 250));
-    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 250));
-    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 250));
+    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 500));
+    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 500));
+    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 500));
     emitXSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().x * 10));
     emitYSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().y * 10));
     emitZSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().z * 10));
