@@ -69,5 +69,9 @@ public class EffectRepository {
 	public ISound getSource(String name) {
 		return (ISound)repository.get(name);		
 	}
+	
+	public void remove(String name){
+		repository.remove(name);
+	}
 
 }
