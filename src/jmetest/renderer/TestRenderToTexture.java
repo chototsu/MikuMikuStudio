@@ -57,17 +57,13 @@ public class TestRenderToTexture extends SimpleGame {
     private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
+    private Quaternion rotQuat2;
     private float angle = 0;
+    private float angle2 = 0;
     private Vector3f axis;
 
-    private static int PBUFFER_WIDTH = 512;
-    private static int PBUFFER_HEIGHT = 512;
-
-  /** Pbuffer instance */
-  private static Pbuffer pbuffer;
-
-  /** The shared texture */
-  private static int tex_handle;
+    LWJGLTextureRenderer tRenderer;
+    Texture fakeTex;
 
     /**
      * Entry point for the test,
@@ -77,7 +73,6 @@ public class TestRenderToTexture extends SimpleGame {
         TestRenderToTexture app = new TestRenderToTexture();
         app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
         app.start();
-
     }
 
     /**
@@ -86,36 +81,26 @@ public class TestRenderToTexture extends SimpleGame {
      */
     protected void update(float interpolation) {
         if(timer.getTimePerFrame() < 1) {
-            angle = angle + (timer.getTimePerFrame() * 1);
-            if(angle > 360) {
-                angle = 0;
+            angle = angle + (timer.getTimePerFrame() * -.25f);
+            angle2 = angle2 + (timer.getTimePerFrame() * 1);
+            if(angle < 0) {
+                angle = 360-.25f;
+            }
+            if(angle2 >= 360) {
+                angle2 = 0;
             }
         }
         rotQuat.fromAngleAxis(angle, axis);
+        rotQuat2.fromAngleAxis(angle2, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
         display.setTitle("Render to Texture - FPS:"+(int)timer.getFrameRate()+" - "+display.getRenderer().getStatistics());
 
-//        t.setLocalRotation(rotQuat);
-        t2.setLocalRotation(rotQuat);
+        t.setLocalRotation(rotQuat);
+        t2.setLocalRotation(rotQuat2);
         scene.updateGeometricState(0.0f, true);
         fake.updateGeometricState(0.0f, true);
     }
-
-  private void initPbuffer() {
-      try {
-          pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT, 32, 0, 8, 0);
-          pbuffer.makeCurrent();
-
-          GL.glClearColor(.667f, .667f, .851f, 1f);
-          display.getRenderer().getCamera().update();
-
-          GL.glBindTexture(GL.GL_TEXTURE_2D, tex_handle);
-          Pbuffer.releaseContext();
-      } catch (Exception e) {
-          e.printStackTrace();
-      }
-  }
 
     /**
      * clears the buffers and then draws the TriMesh.
@@ -123,28 +108,7 @@ public class TestRenderToTexture extends SimpleGame {
      */
     protected void render(float interpolation) {
         display.getRenderer().clearStatistics();
-////////////////////////////////////////
-        try {
-
-            if (pbuffer.isBufferLost()) {
-                System.out.println("Buffer contents lost - will recreate the buffer");
-                Pbuffer.releaseContext();
-                pbuffer.destroy();
-                initPbuffer();
-            }
-
-            pbuffer.makeCurrent();
-            display.getRenderer().clearBuffers();
-            display.getRenderer().draw(fake);
-            GL.glBindTexture(GL.GL_TEXTURE_2D, tex_handle);
-            GL.glCopyTexSubImage2D(GL.GL_TEXTURE_2D, 0, 0, 0, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT);
-            pbuffer.releaseContext();
-        } catch (Exception e) {
-            System.err.println("ouch");
-            e.printStackTrace();
-            System.exit(0);
-        }
-////////////////////////////////////////
+        tRenderer.render(fake, fakeTex);
         display.getRenderer().clearBuffers();
         display.getRenderer().draw(root);
 
@@ -172,17 +136,11 @@ public class TestRenderToTexture extends SimpleGame {
             e.printStackTrace();
             System.exit(1);
         }
-////////////////////////////////////////
-      if ((Pbuffer.getPbufferCaps() & Pbuffer.PBUFFER_SUPPORTED) == 0) {
-          System.out.println("No Pbuffer support!");
-          System.exit(1);
-      }
-      System.out.println("Pbuffer support detected");
-////////////////////////////////////////
+
         ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 75.0f);
+        Vector3f loc = new Vector3f(0.0f, 0.0f, 25.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
@@ -195,28 +153,9 @@ public class TestRenderToTexture extends SimpleGame {
         timer = Timer.getTimer("LWJGL");
 
         rotQuat = new Quaternion();
+        rotQuat2 = new Quaternion();
         axis = new Vector3f(1,1,0.5f);
         display.setTitle("Render to Texture");
-////////////////////////////////////////
-        IntBuffer buf =
-            ByteBuffer
-                .allocateDirect(4)
-                .order(ByteOrder.nativeOrder())
-                .asIntBuffer();
-
-        //Create the texture
-        GL.glGenTextures(buf);
-        tex_handle = buf.get(0);
-        GL.glBindTexture(GL.GL_TEXTURE_2D, tex_handle);
-        GL.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MIN_FILTER, GL.GL_LINEAR );
-        GL.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR );
-//        GL.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_S, GL.GL_CLAMP_TO_EDGE );
-//        GL.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_TEXTURE_WRAP_T, GL.GL_CLAMP_TO_EDGE );
-        GL.glTexEnvi(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_ENV_MODE, GL.GL_MODULATE);
-        GL.glCopyTexImage2D(GL.GL_TEXTURE_2D, 0, GL.GL_RGBA, 0, 0, PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
-//        GL.glTexParameteri( GL.GL_TEXTURE_2D, GL.GL_GENERATE_MIPMAP, GL.GL_TRUE);
-        initPbuffer();
-////////////////////////////////////////
         display.getRenderer().enableStatistics(true);
     }
 
@@ -255,18 +194,6 @@ public class TestRenderToTexture extends SimpleGame {
         scene.setRenderState(buf);
         fake.setRenderState(buf);
 
-        DirectionalLight am = new DirectionalLight();
-        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(0, 0, 75));
-
-        LightState state = display.getRenderer().getLightState();
-        state.attach(am);
-        am.setEnabled(true);
-        scene.setRenderState(state);
-
-        cam.update();
-
         TextureState ts = display.getRenderer().getTextureState();
             ts.setEnabled(true);
             ts.setTexture(
@@ -277,19 +204,16 @@ public class TestRenderToTexture extends SimpleGame {
                     true));
         fake.setRenderState(ts);
 
-////////////////////////////////////////
+        tRenderer = new LWJGLTextureRenderer((LWJGLRenderer)display.getRenderer());
+        tRenderer.setBackgroundColor(new ColorRGBA(.667f, .667f, .851f, 1f));
+        fakeTex = tRenderer.setupTexture();
+
         ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
-        Texture tex = new Texture();
-        ts.setEnabled(true);
-        tex.setTextureId(tex_handle);
-        tex.setApply(Texture.AM_MODULATE);
-        tex.setBlendColor(new ColorRGBA(1, 1, 1, 1f));
-        tex.setWrap(Texture.WM_CLAMP_S_CLAMP_T);
-        ts.setTexture(tex);
-////////////////////////////////////////
-
+        ts.setTexture(fakeTex);
         scene.setRenderState(ts);
+
+        cam.update();
 
         scene.updateGeometricState(0.0f, true);
     }
