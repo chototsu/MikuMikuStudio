@@ -44,6 +44,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
@@ -75,7 +76,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.22 2004-03-20 20:41:42 ericthered Exp $
+ * @version $Id: Renderer.java,v 1.23 2004-03-23 15:54:56 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -108,6 +109,15 @@ public interface Renderer {
      *      proper renderer.
      */
     public AlphaState getAlphaState();
+    
+    /**
+     * 
+     * <code>getAttributeState</code> retrieves the attribute saving state 
+     * object for the proper renderer.
+     * @return the <code>AttributeState</code> object that can make use of
+     * 		the proper renderer.
+     */
+    public AttributeState getAttributeState();
 
     /**
      *

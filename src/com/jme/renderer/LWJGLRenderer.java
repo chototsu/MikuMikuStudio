@@ -84,10 +84,12 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.LWJGLAlphaState;
+import com.jme.scene.state.LWJGLAttributeState;
 import com.jme.scene.state.LWJGLCullState;
 import com.jme.scene.state.LWJGLDitherState;
 import com.jme.scene.state.LWJGLFogState;
@@ -116,7 +118,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.39 2004-03-20 20:41:42 ericthered Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.40 2004-03-23 15:54:57 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -211,6 +213,10 @@ public class LWJGLRenderer implements Renderer {
 	 */
 	public AlphaState getAlphaState() {
 		return new LWJGLAlphaState();
+	}
+	
+	public AttributeState getAttributeState() {
+		return new LWJGLAttributeState();
 	}
 
 	/**
