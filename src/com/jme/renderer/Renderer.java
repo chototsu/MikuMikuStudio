@@ -50,7 +50,6 @@ import com.jme.scene.state.DitherState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.ProjectionState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.StencilState;
 import com.jme.scene.state.TextureState;
@@ -78,7 +77,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.31 2004-04-30 03:38:08 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.32 2004-04-30 17:29:47 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -196,8 +195,6 @@ public interface Renderer {
     public VertexProgramState getVertexProgramState();
     
     public StencilState getStencilState();
-    
-    public ProjectionState getProjectionState();
 
     public void enableStatistics(boolean value);
 

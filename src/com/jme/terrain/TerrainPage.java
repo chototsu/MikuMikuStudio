@@ -180,6 +180,43 @@ public class TerrainPage extends Node {
             }
         }
     }
+    
+    public float getHeight(Vector2f position) {
+        return getHeight(position.x, position.y);
+    }
+    
+    public float getHeight(Vector3f position) {
+        return getHeight(position.x, position.y);
+    }
+    
+    public float getHeight(float x, float z) {
+        //determine which quadrant this is in.
+        if(x > 0) {
+            //to the right
+            if(z > 0) {
+                //down
+                //our point falls in child 3. Adjust offset of the x,z point 
+                //and call this childs method.
+                //add the offset (size/4) (negative or positive depending on 
+                //child) from x,z
+                
+                // x += offsetX;
+                // y += offsetY;
+                //
+                //Have to cast to either TerrainPage or TerrainBlock depending
+                //on the child's type.
+                //return getChild(3).getHeight(x,y);
+                
+            }
+            
+        } else if(x < 0) {
+            
+        }
+        //x is 0, we can pick either right or left. Pick Left by default.
+        //then check for up/down.
+        
+        return 0;
+    }
 
     /**
      * <code>split</code> divides the heightmap data for four children. The

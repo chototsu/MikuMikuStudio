@@ -51,7 +51,7 @@ import com.jme.math.Vector3f;
  * use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.18 2004-04-30 14:40:57 mojomonkey Exp $
+ * @version $Id: TerrainBlock.java,v 1.19 2004-04-30 17:29:45 mojomonkey Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
     //size of the block, totalSize is the total size of the heightmap if this
@@ -163,31 +163,36 @@ public class TerrainBlock extends AreaClodMesh {
         return getHeight(position.x, position.y);
     }
     
-    public float getHeight(float x, float y) {
+    public float getHeight(float x, float z) {
         x /= stepScale.x;
-        y /= stepScale.z;
+        z /= stepScale.z;
+        
+        if(x + z*size < 0 || x + z*size > vertex.length) {
+            return Float.NaN;
+        }
+        
         float low, highX, highZ;
         float intX, intY;
         float interpolation;
 
-        low = vertex[(int)x + (int) y*size].y;
+        low = vertex[(int)x + (int) z*size].y;
         
         if (x + 1 > size) {
             return low;
         } else {
-            highX = vertex[(int)x + (int) (y+1)*size].y;;
+            highX = vertex[(int)x + (int) (z+1)*size].y;
         }
 
         interpolation = x - (int) x;
         intX = ((highX - low) * interpolation) + low;
 
-        if (y + 1 > size) {
+        if (z + 1 > size) {
             return low;
         } else {
-            highZ = vertex[(int)(x + 1) + (int) y*size].y;;
+            highZ = vertex[(int)(x + 1) + (int) z*size].y;
         }
 
-        interpolation = y - (int) y;
+        interpolation = z - (int) z;
         intY = ((highZ - low) * interpolation) + low;
 
         return ((intX + intY) / 2);

@@ -42,7 +42,6 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
-import com.jme.scene.state.ProjectionState;
 import com.jme.scene.state.RenderState;
 
 /**
@@ -50,7 +49,7 @@ import com.jme.scene.state.RenderState;
  *  First crack at a lens flare for jme.  Notice that currently,
  *  it doesn't do occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.2 2004-04-30 03:38:05 mojomonkey Exp $
+ * @version $Id: TestLensFlare.java,v 1.3 2004-04-30 17:29:46 mojomonkey Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
@@ -95,12 +94,7 @@ public class TestLensFlare extends SimpleGame {
 
     LensFlare flare = new LensFlare("flare");
     flare.setLocalTranslation(lightNode.getLocalTranslation());
-    ProjectionState projState = display.getRenderer().getProjectionState();
-    projState.setEnabled(true);
-    projState.setProjection(ProjectionState.PS_ORTHOGRAPHIC);
-    projState.setLeftBottom(new Vector2f(-display.getWidth() / 2, -display.getHeight() / 2));
-    projState.setRightTop(new Vector2f(display.getWidth() / 2, display.getHeight() / 2));
-    flare.setRenderState(projState);
+    
     //lightNode.attachChild(flare);
     Box box = new Box("my box", new Vector3f(0, 0, 0), 10, 10, 10);
     box.setModelBound(new BoundingBox());

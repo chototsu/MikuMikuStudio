@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrain.java,v 1.22 2004-04-30 14:41:41 mojomonkey Exp $
+ * @version $Id: TestTerrain.java,v 1.23 2004-04-30 17:29:42 mojomonkey Exp $
  */
 public class TestTerrain extends SimpleGame {
 
@@ -94,6 +94,7 @@ public class TestTerrain extends SimpleGame {
     tb.setDetailTexture(1, 4);
     tb.setModelBound(new BoundingBox());
     tb.updateModelBound();
+    tb.setLocalTranslation(new Vector3f(10,10,10));
     rootNode.attachChild(tb);
     rootNode.setRenderState(cs);
 
@@ -135,7 +136,10 @@ public class TestTerrain extends SimpleGame {
         float randX = (float)Math.random() * 100 * terrainScale.x + 10;
         float randZ = (float)Math.random() * 100 * terrainScale.z + 10;
         s.setLocalTranslation(new Vector3f(randX, tb.getHeight(randX, randZ), randZ));
+        s.setModelBound(new BoundingBox());
+        s.updateModelBound();
         rootNode.attachChild(s);
+        
     }
     
     ts.setTexture(t2, 1);
