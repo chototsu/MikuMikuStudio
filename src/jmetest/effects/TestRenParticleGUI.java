@@ -54,10 +54,11 @@ import com.jme.util.Timer;
 import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.input.mouse.WidgetMouseButtonType;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
+import javax.swing.JOptionPane;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleGUI.java,v 1.8 2004-03-25 17:14:28 mojomonkey Exp $
+ * @version $Id: TestRenParticleGUI.java,v 1.9 2004-03-25 17:16:52 renanse Exp $
  */
 public class TestRenParticleGUI extends SimpleGame {
 
@@ -128,12 +129,14 @@ public class TestRenParticleGUI extends SimpleGame {
     controlFrame.setVisible(true);
     try {
       display = DisplaySystem.getDisplaySystem(properties.getRenderer());
+      if (properties.getFullscreen())
+        JOptionPane.showMessageDialog(null, "Sorry, this application does not run in full screen...  Using windowed mode.", "Sorry", JOptionPane.WARNING_MESSAGE);
       display.createWindow(
           properties.getWidth(),
           properties.getHeight(),
           properties.getDepth(),
           properties.getFreq(),
-          properties.getFullscreen());
+          false);
 
       cam =
           display.getRenderer().getCamera(
