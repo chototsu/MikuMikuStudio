@@ -51,29 +51,56 @@ import com.jme.math.Vector3f;
  * use of the <code>TerrainPage</code> class.
  * 
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.14 2004-04-25 03:57:13 mojomonkey Exp $
+ * @version $Id: TerrainBlock.java,v 1.15 2004-04-26 16:00:55 mojomonkey Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
-
+    //size of the block, totalSize is the total size of the heightmap if this
+    //block is just a small section of it.
     private int size;
-
-    private float stepScale;
-
-    private boolean useClod;
-
     private int totalSize;
 
+    //x/z step
+    private float stepScale;
+    //use lod or not
+    private boolean useClod;
+    
+    //center of the block in relation to (0,0,0)
     private Vector2f offset;
-
+    //amount the block has been shifted.
     private int offsetAmount;
 
-    /** Creates a new instance of TerrainBlock */
+    /**
+     * Constructor instantiates a new <code>TerrainBlock</code> object. The 
+     * parameters and heightmap data are then processed to generate a 
+     * <code>TriMesh</code> object for renderering.
+     * @param name the name of the terrain block.
+     * @param size the size of the heightmap.
+     * @param stepScale the scale for the x/z axes.
+     * @param heightMap the height data.
+     * @param origin the origin offset of the block.
+     * @param clod true will use level of detail, false will not.
+     */
     public TerrainBlock(String name, int size, float stepScale,
             int[] heightMap, Vector3f origin, boolean clod) {
         this(name, size, stepScale, heightMap, origin, clod, size,
                 new Vector2f(), 0);
     }
 
+    /**
+     * Constructor instantiates a new <code>TerrainBlock</code> object. The
+     * parameters and heightmap data are then processed to generate a 
+     * <code>TriMesh</code> object for renderering.
+     * @param name the name of the terrain block.
+     * @param size the size of the block.
+     * @param stepScale the scale for the x/z axes.
+     * @param heightMap the height data.
+     * @param origin the origin offset of the block.
+     * @param clod true will use level of detail, false will not.
+     * @param totalSize the total size of the terrain. (Higher if the block
+     * 		is part of a <code>TerrainPage</code> tree.
+     * @param offset the offset for texture coordinates.
+     * @param offsetAmount the total offset amount.
+     */
     public TerrainBlock(String name, int size, float stepScale,
             int[] heightMap, Vector3f origin, boolean clod, int totalSize,
             Vector2f offset, int offsetAmount) {
@@ -96,6 +123,13 @@ public class TerrainBlock extends AreaClodMesh {
         }
     }
 
+    /**
+     * <code>chooseTargetRecord</code> determines which level of detail to use.
+     * If CLOD is not used, the index 0 is always returned.
+     * 
+     * @param r the renderer to use for determining the LOD record.
+     * @return the index of the record to use.
+     */
     public int chooseTargetRecord(Renderer r) {
         if (useClod) {
             return super.chooseTargetRecord(r);
@@ -130,7 +164,6 @@ public class TerrainBlock extends AreaClodMesh {
      */
     private void buildVertices(int[] heightMap) {
         vertex = new Vector3f[heightMap.length];
-        System.out.println(vertex.length);
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 vertex[x + (y * size)] = new Vector3f(x * stepScale,
