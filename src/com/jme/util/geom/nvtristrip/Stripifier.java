@@ -73,7 +73,6 @@ class Stripifier {
 				else
 					infoIter = infoIter.m_nextV0;
 			} else {
-				assert(infoIter.m_v1 == v0);
 				if (infoIter.m_v0 == v1)
 					return infoIter;
 				else
@@ -98,7 +97,6 @@ class Stripifier {
 			return null;
 		}
 
-		assert(edgeInfo != null);
 		return (edgeInfo.m_face0 == faceInfo ? edgeInfo.m_face1
 				: edgeInfo.m_face0);
 	}
@@ -295,8 +293,7 @@ class Stripifier {
 	static int getNextIndex(IntVec indices, FaceInfo face) {
 
 		int numIndices = indices.size();
-		assert(numIndices >= 2);
-
+		
 		int v0 = indices.get(numIndices - 2);
 		int v1 = indices.get(numIndices - 1);
 
@@ -796,8 +793,7 @@ class Stripifier {
 
 		FaceInfo tLastFace = new FaceInfo(0, 0, 0);
 		int nStripCount = allStrips.size();
-		assert(nStripCount > 0);
-
+		
 		//we infer the cw/ccw ordering depending on the number of indices
 		//this is screwed up by the fact that we insert -1s to denote changing
 		// strips
@@ -807,8 +803,7 @@ class Stripifier {
 		for (int i = 0; i < nStripCount; i++) {
 			StripInfo strip = allStrips.at(i);
 			int nStripFaceCount = strip.m_faces.size();
-			assert(nStripFaceCount > 0);
-
+			
 			// Handle the first face in the strip
 			{
 				FaceInfo tFirstFace = new FaceInfo(strip.m_faces.at(0).m_v0,
@@ -974,8 +969,7 @@ class Stripifier {
 
 				// otherwise, we shall now try experiments for starting on the
 				// 01,12, and 20 edges
-				assert(nextFace.m_stripId < 0);
-
+				
 				// build the strip off of this face's 0-1 edge
 				EdgeInfo edge01 = findEdgeInfo(allEdgeInfos, nextFace.m_v0,
 						nextFace.m_v1);

@@ -246,8 +246,6 @@ public class GeometryInfo {
 		ts.setListsOnly(true);
 		PrimitiveGroup[] pg = ts.generateStrips(triangles);
 
-		assert (pg.length == 1);
-		assert (pg[0].type == PrimitiveGroup.PT_LIST);
 		smoothGroups = null;
 		triangles = pg[0].getTrimmedIndices();
 
@@ -271,9 +269,7 @@ public class GeometryInfo {
 		ts.setStitchStrips(true);
 		PrimitiveGroup[] pg = ts.generateStrips(triangles);
 
-		assert (pg.length == 1);
-		assert (pg[0].type == PrimitiveGroup.PT_STRIP);
-
+		
 		return pg[0].getTrimmedIndices();
 	}
 
@@ -398,7 +394,6 @@ public class GeometryInfo {
 		CompositeMesh.IndexRange[] strips = new CompositeMesh.IndexRange[pg.length];
 		int totalCount = 0;
 		for (int i = 0; i < strips.length; i++) {
-			assert (pg[i].type == PrimitiveGroup.PT_STRIP);
 			strips[i] = CompositeMesh.createTriangleStrip(pg[i].numIndices);
 			totalCount += pg[i].numIndices;
 		}
@@ -410,8 +405,7 @@ public class GeometryInfo {
 			current += pg[i].numIndices;
 		}
 
-		assert (current == totalCount);
-
+		
 		CompositeMesh mesh = new CompositeMesh(name);
 		fillData(mesh);
 		mesh.setIndices(flow);
@@ -455,8 +449,7 @@ public class GeometryInfo {
 			current += pg[i].numIndices;
 		}
 
-		assert (current == totalCount);
-
+		
 		CompositeMesh mesh = new CompositeMesh(name);
 		fillData(mesh);
 		mesh.setIndices(flow);

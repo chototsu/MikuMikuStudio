@@ -85,13 +85,11 @@ class StripInfo {
 // Marks the face with the current strip ID
 //
     void markTriangle(FaceInfo faceInfo){
-        assert(!isMarked(faceInfo));
         if (isExperiment()){
             faceInfo.m_experimentId = m_experimentId;
             faceInfo.m_testStripId  = m_stripId;
         }
         else{
-            assert(faceInfo.m_stripId == -1);
             faceInfo.m_experimentId = -1;
             faceInfo.m_stripId      = m_stripId;
         }

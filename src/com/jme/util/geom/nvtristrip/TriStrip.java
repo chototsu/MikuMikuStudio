@@ -191,8 +191,7 @@ public class TriStrip {
 
             //if we're stitching strips together, we better get back only one
             // strip from CreateStrips()
-            assert((bStitchStrips && (numSeparateStrips == 1)) || !bStitchStrips);
-
+            
             //convert to output format
             numGroups = numSeparateStrips; //for the strips
             if (tempFaces.size() != 0)
