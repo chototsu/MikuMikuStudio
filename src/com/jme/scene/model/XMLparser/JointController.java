@@ -114,6 +114,18 @@ public class JointController extends Controller {
     }
 
     /**
+     * Tells JointController that at time <code>time</code> the joint <code>jointNumber</code> will translate
+     * to x,y,z relative to its parent
+     * @param jointNumber Index of joint to affect
+     * @param time Which time the joint will take these values
+     * @param trans Joint's translation
+
+     */
+    public void setTranslation(int jointNumber,float time,Vector3f trans){
+        findUpToTime(time).setTranslation(jointNumber,trans);
+    }
+
+    /**
      * Tells JointController that at time <code>time</code> the joint <code>jointNumber</code> will rotate
      * acording to the euler angles x,y,z relative to its parent's rotation
      * @param jointNumber Index of joint to affect
