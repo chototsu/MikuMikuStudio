@@ -34,6 +34,7 @@ package jmetest.renderer;
 import java.net.URL;
 
 import com.jme.app.VariableTimestepGame;
+import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
@@ -46,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
-import com.jme.scene.lod.ClodMesh;
+import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.model.Model;
 import com.jme.scene.model.ase.ASEModel;
 //import com.jme.scene.model.md2.Md2Model;
@@ -62,26 +63,25 @@ import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
- * <code>TestClodMesh</code> shows off the use of the ClodMesh in jME.
+ * <code>TestAutoClodMesh</code> shows off the use of the AreaClodMesh in jME.
  *
  * keys:
- * +,-  Change level of detail
  * L    Toggle lights
  * T    Toggle Wireframe mode
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.7 2004-04-09 22:39:27 renanse Exp $
+ * @version $Id: TestAutoClodMesh.java,v 1.1 2004-04-09 22:39:26 renanse Exp $
  */
 
-public class TestClodMesh extends VariableTimestepGame {
+public class TestAutoClodMesh extends VariableTimestepGame {
   private Camera cam;
   private Node root, scene;
   private InputHandler input;
   private Timer timer;
   private Model model;
 
-  private ClodMesh iNode, iNode2;
+  private AreaClodMesh iNode, iNode2;
   private Node fpsNode;
   private Text fps;
   private long lastPress = 0;
@@ -94,7 +94,7 @@ public class TestClodMesh extends VariableTimestepGame {
    * @param args
    */
   public static void main(String[] args) {
-    TestClodMesh app = new TestClodMesh();
+    TestAutoClodMesh app = new TestAutoClodMesh();
     app.setDialogBehaviour(VariableTimestepGame.ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
   }
@@ -109,25 +109,7 @@ public class TestClodMesh extends VariableTimestepGame {
               display.getRenderer().getStatistics());
     scene.updateGeometricState(interpolation, true);
 
-    if (System.currentTimeMillis() - lastPress > 100) {
-      if (KeyBindingManager
-          .getKeyBindingManager()
-          .isValidCommand("detail_down")) {
-        if (useModel)
-          iNode2.setTargetRecord( (iNode2.getTargetRecord()) + 10);
-        else
-          iNode.setTargetRecord( (iNode.getTargetRecord()) + 25);
-        lastPress = System.currentTimeMillis();
-      }
-      if (KeyBindingManager
-          .getKeyBindingManager()
-          .isValidCommand("detail_up")) {
-        if (useModel)
-          iNode2.setTargetRecord( (iNode2.getTargetRecord()) - 10);
-        else
-          iNode.setTargetRecord( (iNode.getTargetRecord()) - 25);
-        lastPress = System.currentTimeMillis();
-      }
+    if (System.currentTimeMillis() - lastPress > 500) {
       if (KeyBindingManager
           .getKeyBindingManager()
           .isValidCommand("toggle_wire")) {
@@ -197,19 +179,13 @@ public class TestClodMesh extends VariableTimestepGame {
 
     // Setup the input controller and timer
     input = new FirstPersonHandler(this, cam, "LWJGL");
-    input.setKeySpeed(10f);
+    input.setKeySpeed(50f);
     input.setMouseSpeed(1f);
     timer = Timer.getTimer("LWJGL");
 
-    display.setTitle("Imposter Test");
+    display.setTitle("Auto-Change Clod Test (using AreaClodMesh)");
     display.getRenderer().enableStatistics(true);
 
-    KeyBindingManager.getKeyBindingManager().set(
-        "detail_up",
-        KeyInput.KEY_ADD);
-    KeyBindingManager.getKeyBindingManager().set(
-        "detail_down",
-        KeyInput.KEY_SUBTRACT);
     KeyBindingManager.getKeyBindingManager().set(
         "toggle_wire",
         KeyInput.KEY_T);
@@ -232,12 +208,12 @@ public class TestClodMesh extends VariableTimestepGame {
     root.attachChild(scene);
 
     model = new ASEModel("Statue of Liberty");
-    URL data = TestClodMesh.class.getClassLoader()
+    URL data = TestAutoClodMesh.class.getClassLoader()
         .getResource("jmetest/data/model/Statue.ase");
     model.load(data, "jmetest/data/model/");
 
 //    model = new Md2Model("Dr Freak");
-//    model.load(TestClodMesh.class.getClassLoader()
+//    model.load(TestAutoClodMesh.class.getClassLoader()
 //               .getResource("jmetest/data/model/drfreak.md2"));
 
     model.updateGeometricState(0, true);
@@ -249,12 +225,16 @@ public class TestClodMesh extends VariableTimestepGame {
 
     scene.setRenderState(buf);
 
-    iNode = new ClodMesh("model", new Disk("disc", 50, 50, 8), null);
+    iNode = new AreaClodMesh("model", new Disk("disc", 50, 50, 8), null);
     iNode.setForceCull(false);
+    iNode.setModelBound(new BoundingSphere());
+    iNode.updateModelBound();
 
     TriMesh child = (TriMesh)model.getChild(0);
-    iNode2 = new ClodMesh("model", child, null);
+    iNode2 = new AreaClodMesh("model", child, null);
     iNode2.setForceCull(true);
+    iNode2.setModelBound(new BoundingSphere());
+    iNode2.updateModelBound();
 
     wireState = display.getRenderer().getWireframeState();
     wireState.setEnabled(true);
@@ -277,7 +257,7 @@ public class TestClodMesh extends VariableTimestepGame {
     TextureState font = display.getRenderer().getTextureState();
     font.setTexture(
         TextureManager.loadTexture(
-        TestClodMesh.class.getClassLoader().getResource(
+        TestAutoClodMesh.class.getClassLoader().getResource(
         "jmetest/data/font/font.png"),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR,

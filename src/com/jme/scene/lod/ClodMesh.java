@@ -43,7 +43,7 @@ import com.jme.scene.TriMesh;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.8 2004-04-09 17:06:55 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.9 2004-04-09 22:39:25 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int currentRecord, targetRecord;
@@ -92,11 +92,11 @@ public class ClodMesh extends TriMesh {
     updateModelBound();
   }
 
-  public void selectLevelOfDetail() {
+  public void selectLevelOfDetail(Renderer r) {
     // Get target record.  The function may be overridden by a derived
     // class to obtain a desired automated change in the target.
 
-    int iTargetRecord = getAutomatedTargetRecord();
+    int iTargetRecord = chooseTargetRecord(r);
     if (iTargetRecord == currentRecord) {
       return;
     }
@@ -141,20 +141,21 @@ public class ClodMesh extends TriMesh {
       triangleQuantity = rkPrevRecord.numbTriangles;
     }
 
-    updateColorBuffer();
-    updateNormalBuffer();
     updateVertexBuffer();
-    updateTextureBuffer();
     updateIndexBuffer();
   }
 
   public void draw(Renderer r) {
-    selectLevelOfDetail();
+    selectLevelOfDetail(r);
     super.draw(r);
   }
 
   public int getRecordQuantity() {
     return records.length;
+  }
+
+  public int chooseTargetRecord(Renderer r) {
+    return targetRecord;
   }
 
   public int getTargetRecord() {
@@ -167,9 +168,5 @@ public class ClodMesh extends TriMesh {
       targetRecord = 0;
     else if (targetRecord > records.length - 1)
       targetRecord = records.length - 1;
-  }
-
-  public int getAutomatedTargetRecord() {
-    return targetRecord;
   }
 }
