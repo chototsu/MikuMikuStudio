@@ -6,10 +6,7 @@ import com.jme.scene.lod.CollapseRecord;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.*;
-import com.jme.math.Vector3f;
-import com.jme.math.Vector2f;
-import com.jme.math.Quaternion;
-import com.jme.math.FastMath;
+import com.jme.math.*;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
@@ -273,7 +270,9 @@ public class JmeBinaryReader {
         } else if (tagName.equals("joint")){
             JointController jc=(JointController) s.pop();
             jc.parentIndex[((Integer)attributes.get("index")).intValue()]=((Integer)attributes.get("parentindex")).intValue();
-            jc.localRefMatrix[((Integer)attributes.get("index")).intValue()].set((Quaternion) attributes.get("localrot"),(Vector3f) attributes.get("localvec"));
+//            jc.localRefMatrix[((Integer)attributes.get("index")).intValue()].set((Matrix3f) attributes.get("localrot"),(Vector3f) attributes.get("localvec"));
+            jc.localRefMatrix[((Integer)attributes.get("index")).intValue()].setRotation((Matrix3f) attributes.get("localrot"));
+            jc.localRefMatrix[((Integer)attributes.get("index")).intValue()].setTranslation((Vector3f) attributes.get("localvec"));
             s.push(jc);
             s.push(attributes.get("index"));
         } else if (tagName.equals("jointmesh")){
@@ -897,10 +896,27 @@ public class JmeBinaryReader {
                 case BinaryFormatConstants.DATA_SHORTARRAY:
                     atribMap.put(name,getShortArray());
                     break;
+                case BinaryFormatConstants.DATA_MATRIX3:
+                    atribMap.put(name,getMat3());
+                    break;
                 default:
                     throw new IOException("Unknown data type:" + type);
             }
         }
+    }
+
+    private Matrix3f getMat3() throws IOException {
+        Matrix3f m=new Matrix3f();
+        m.m00=myIn.readFloat();
+        m.m01=myIn.readFloat();
+        m.m02=myIn.readFloat();
+        m.m10=myIn.readFloat();
+        m.m11=myIn.readFloat();
+        m.m12=myIn.readFloat();
+        m.m20=myIn.readFloat();
+        m.m21=myIn.readFloat();
+        m.m22=myIn.readFloat();
+        return m;
     }
 
     private short[] getShortArray() throws IOException {
