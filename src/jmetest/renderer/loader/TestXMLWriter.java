@@ -44,7 +44,6 @@ public class TestXMLWriter extends SimpleGame{
         SAXReader sr=new SAXReader();
         Node qq=sr.loadXML(new ByteArrayInputStream(BO.toByteArray()));
         rootNode.attachChild(qq);
-
+        System.out.println(BO);
     }
-
 }
