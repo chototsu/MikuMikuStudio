@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector3f</code> defines a Vector for a three float value tuple.
  * @author Mark Powell
  * @author Joshua Slack -- Added *Local methods to cut down on object creation
- * @version $Id: Vector3f.java,v 1.13 2004-03-28 17:04:09 greggpatton Exp $
+ * @version $Id: Vector3f.java,v 1.14 2004-04-20 19:37:52 mojomonkey Exp $
  */
 public class Vector3f {
     /**
@@ -476,6 +476,14 @@ public class Vector3f {
         if (y != comp.y) return false;
         if (z != comp.z) return false;
         return true;
+    }
+    
+    public int hashCode() {
+        int hash = 17;
+        hash += 37 * x;
+        hash += 37 * y;
+        hash += 37 * z;
+        return hash;
     }
 
 
