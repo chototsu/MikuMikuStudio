@@ -6,6 +6,7 @@ import com.jme.scene.state.*;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Quaternion;
+import com.jme.math.FastMath;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.system.DisplaySystem;
@@ -133,7 +134,6 @@ public class JmeBinaryReader {
      */
     private void readBegining() throws IOException {
         String tagName=myIn.readUTF();
-        int debug=234;
         if (DEBUG) System.out.println("Reading tagName:" + tagName);
         readInObjects(attributes);
         if (tagName.equals("scene")){
@@ -148,11 +148,17 @@ public class JmeBinaryReader {
             s.push(processSpatial(new TriMesh((String) attributes.get("name")),attributes));
         } else if (tagName.equals("vertex")){
             Geometry geo=(Geometry) s.pop();
-            geo.setVertices((Vector3f[]) attributes.get("data"));
+            if (attributes.get("q3vert")!=null)
+                geo.setVertices(decodeShortCompress((short[])attributes.get("q3vert")));
+            else
+                geo.setVertices((Vector3f[]) attributes.get("data"));
             s.push(geo);
         } else if (tagName.equals("normal")){
             Geometry geo=(Geometry) s.pop();
-            geo.setNormals((Vector3f[]) attributes.get("data"));
+            if (attributes.get("q3norm")!=null)
+                geo.setNormals(decodeLatLong((byte[])attributes.get("q3norm")));
+            else
+                geo.setNormals((Vector3f[]) attributes.get("data"));
             s.push(geo);
         } else if (tagName.equals("texturecoords")){
             Geometry geo=(Geometry) s.pop();
@@ -320,6 +326,38 @@ public class JmeBinaryReader {
         }
         return;
 
+    }
+
+    private Vector3f[] decodeShortCompress(short[] shorts) throws IOException {
+        if (shorts.length%3!=0)
+            throw new IOException("Illeagle short[] length of " + shorts.length);
+        Vector3f[] toReturn=new Vector3f[shorts.length/3];
+        for (int i=0;i<toReturn.length;i++){
+            toReturn[i]=new Vector3f();
+            toReturn[i].x = shorts[i*3+0]*BinaryFormatConstants.XYZ_SCALE;
+            toReturn[i].y = shorts[i*3+1]*BinaryFormatConstants.XYZ_SCALE;
+            toReturn[i].z = shorts[i*3+2]*BinaryFormatConstants.XYZ_SCALE;
+        }
+        return toReturn;
+    }
+
+    private Vector3f[] decodeLatLong(byte[] bytes) throws IOException {
+        if (bytes==null) return null;
+        if (bytes.length%2!=0){
+            throw new IOException("Illeagle bytes[] length of " + bytes.length);
+        }
+        Vector3f[] vecs=new Vector3f[bytes.length/2];
+        for (int i=0;i<bytes.length;i+=2){
+            vecs[i/2]=new Vector3f();
+            byte lng=bytes[i];
+            byte lat=bytes[i+1];
+            float newlat=FastMath.DEG_TO_RAD*lat;
+            float newlng=FastMath.DEG_TO_RAD*lng;
+            vecs[i/2].x = FastMath.cos(newlat)*FastMath.sin(newlng);
+            vecs[i/2].y = FastMath.sin(newlat)*FastMath.sin(newlng);
+            vecs[i/2].z = FastMath.cos(newlng);
+        }
+        return vecs;
     }
 
     private Object buildCullState(HashMap attributes) {
@@ -685,10 +723,34 @@ public class JmeBinaryReader {
                 case BinaryFormatConstants.DATA_QUATARRAY:
                     atribMap.put(name,getQuatArray());
                     break;
+                case BinaryFormatConstants.DATA_BYTEARRAY:
+                    atribMap.put(name,getByteArray());
+                    break;
+                case BinaryFormatConstants.DATA_SHORTARRAY:
+                    atribMap.put(name,getShortArray());
+                    break;
                 default:
                     throw new IOException("Unknown data type:" + type);
             }
         }
+    }
+
+    private short[] getShortArray() throws IOException {
+        int length=myIn.readInt();
+        if (length==0) return null;
+        short[] array=new short[length];
+        for (int i=0;i<length;i++)
+            array[i]=myIn.readShort();
+        return array;
+    }
+
+    private byte[] getByteArray() throws IOException {
+        int length=myIn.readInt();
+        if (length==0) return null;
+        byte[] array=new byte[length];
+        for (int i=0;i<length;i++)
+            array[i]=myIn.readByte();
+        return array;
     }
 
     // Note, a quat that is all NaN for values is considered null

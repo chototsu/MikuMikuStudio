@@ -44,6 +44,8 @@ public class Md2ToJme extends FormatConverter{
         if (Md2Stream==null)
             throw new NullPointerException("Unable to load null streams");
         JmeBinaryWriter i=new JmeBinaryWriter();
+        i.setProperty("q3norm","true");
+        i.setProperty("q3vert","true");
         i.writeScene(new Md2ConverterCopy(Md2Stream),o);
     }
 

@@ -4,12 +4,10 @@ import com.jme.app.SimpleGame;
 import com.jme.scene.model.XMLparser.Converters.Md3ToJme;
 import com.jme.scene.model.XMLparser.Converters.Md2ToJme;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
+import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.Node;
 
-import java.io.File;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ByteArrayInputStream;
+import java.io.*;
 import java.net.URL;
 import java.net.MalformedURLException;
 
@@ -28,9 +26,10 @@ public class TestMd3JmeWrite extends SimpleGame{
     }
     protected void simpleInitGame() {
         Md3ToJme converter=new Md3ToJme();
+        BinaryToXML btx=new BinaryToXML();
         URL laura=null;
         try {
-            laura=new File("data/model/lara/lara_upper.md3").toURL();
+            laura=new File("data/model/Paladin/Paladin_upper.md3").toURL();
 //            laura=new File("3dsmodels/box.md3").toURL();
         } catch (MalformedURLException e) {
             e.printStackTrace();
@@ -38,6 +37,9 @@ public class TestMd3JmeWrite extends SimpleGame{
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
             converter.convert(laura.openStream(),BO);
+//            StringWriter SW=new StringWriter();
+//            btx.sendBinarytoXML(new ByteArrayInputStream(BO.toByteArray()),SW);
+//            System.out.println(SW);
             JmeBinaryReader jbr=new JmeBinaryReader();
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
 //            r.setLocalScale(.1f);

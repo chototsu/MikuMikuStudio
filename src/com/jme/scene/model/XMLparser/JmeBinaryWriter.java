@@ -6,6 +6,7 @@ import com.jme.scene.state.*;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
+import com.jme.math.FastMath;
 import com.jme.renderer.ColorRGBA;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
@@ -529,14 +530,22 @@ public class JmeBinaryWriter {
         if (triMesh==null) return;
         HashMap atts=new HashMap();
         atts.clear();
-        if (triMesh.getVertices()!=null)
-            atts.put("data",triMesh.getVertices());
+        if (triMesh.getVertices()!=null){
+            if (properties.get("q3vert")!=null)
+                atts.put("q3vert",vertsToShorts(triMesh.getVertices()));
+            else
+                atts.put("data",triMesh.getVertices());
+        }
         writeTag("vertex",atts);
         writeEndTag("vertex");
 
         atts.clear();
-        if (triMesh.getNormals()!=null)
-            atts.put("data",triMesh.getNormals());
+        if (triMesh.getNormals()!=null){
+            if (properties.get("q3norm")!=null)
+                atts.put("q3norm",normsToShorts(triMesh.getNormals()));
+            else
+                atts.put("data",triMesh.getNormals());
+        }
         writeTag("normal",atts);
         writeEndTag("normal");
 
@@ -557,6 +566,25 @@ public class JmeBinaryWriter {
             atts.put("data",triMesh.getIndices());
         writeTag("index",atts);
         writeEndTag("index");
+    }
+
+    private short[] vertsToShorts(Vector3f[] vertices) {
+        short[] parts=new short[vertices.length*3];
+        for (int i=0;i<vertices.length;i++){
+            parts[i*3+0]=(short) (vertices[i].x/BinaryFormatConstants.XYZ_SCALE);
+            parts[i*3+1]=(short) (vertices[i].y/BinaryFormatConstants.XYZ_SCALE);
+            parts[i*3+2]=(short) (vertices[i].z/BinaryFormatConstants.XYZ_SCALE);
+        }
+        return parts;
+    }
+
+    private byte[] normsToShorts(Vector3f[] normals) {
+        byte[] parts=new byte[normals.length*2];
+        for (int i=0;i<parts.length;i+=2){
+            parts[i]=(byte) (FastMath.RAD_TO_DEG*FastMath.acos(normals[i/2].z));
+            parts[i+1]=(byte) (FastMath.DEG_TO_RAD*FastMath.atan(normals[i/2].y/normals[i/2].x));
+        }
+        return parts;
     }
 
     private void writeJointController(JointController jc) throws IOException{
@@ -798,10 +826,28 @@ public class JmeBinaryWriter {
                 writeBoolean((Boolean)attrib);
             else if (attrib instanceof Quaternion[])
                 writeQuatArray((Quaternion[])attrib);
+            else if (attrib instanceof byte[])
+                writeByteArray((byte[])attrib);
+            else if (attrib instanceof short[])
+                writeShortArray((short[])attrib);
             else
                 throw new IOException("unknown class type for " + attrib + " of " + attrib.getClass());
             i.remove();
         }
+    }
+
+    private void writeShortArray(short[] array) throws IOException {
+        myOut.writeByte(BinaryFormatConstants.DATA_SHORTARRAY);
+        myOut.writeInt(array.length);
+        for (int i=0;i<array.length;i++)
+            myOut.writeShort(array[i]);
+    }
+
+    private void writeByteArray(byte[] array) throws IOException {
+        myOut.writeByte(BinaryFormatConstants.DATA_BYTEARRAY);
+        myOut.writeInt(array.length);
+        for (int i=0;i<array.length;i++)
+            myOut.writeByte(array[i]);
     }
 
     private void writeQuatArray(Quaternion[] array) throws IOException {

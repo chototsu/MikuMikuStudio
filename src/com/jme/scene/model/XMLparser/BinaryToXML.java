@@ -149,8 +149,30 @@ public class BinaryToXML {
             case BinaryFormatConstants.DATA_QUATARRAY:
                 readQuatArray();
                 break;
+            case BinaryFormatConstants.DATA_BYTEARRAY:
+                readByteArray();
+                break;
+            case BinaryFormatConstants.DATA_SHORTARRAY:
+                readShortArray();
+                break;
             default:
                 throw new IOException("Unknown data type:" + type);
+        }
+    }
+
+    private void readShortArray() throws IOException {
+        int length=myIn.readInt();
+        for (int i=0;i<length;i++){
+            currentLine.append(myIn.readShort());
+            if (i!=length-1) currentLine.append(' ');
+        }
+    }
+
+    private void readByteArray() throws IOException {
+        int length=myIn.readInt();
+        for (int i=0;i<length;i++){
+            currentLine.append(myIn.readByte());
+            if (i!=length-1) currentLine.append(' ');
         }
     }
 

@@ -156,10 +156,50 @@ public class XMLtoBinary {
                 writeVector3fArray(value);
             } else if ("quatarray".equals(att)){
                 writeQuatArray(value);
-            } else{
+            } else if ("q3norm".equals(att)){
+                writeShortArray(value);
+            } else if ("q3vert".equals(att)){
+                writeByteArray(value);
+            }
                 writeString(value);
+        }
+    }
+
+
+    private void writeShortArray(String data) throws IOException {
+            myOut.writeByte(BinaryFormatConstants.DATA_SHORTARRAY);
+            if (data==null || data.length()==0) {
+                myOut.writeInt(0);
+                return;
+            }
+            String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
+            if (information.length==1 && "".equals(information[0])){
+                myOut.writeInt(0);
+                return;
+            }
+            myOut.writeInt(information.length);
+            for (int i=0;i<information.length;i++){
+                myOut.writeShort(Short.parseShort(information[i]));
             }
         }
+
+        private void writeByteArray(String data) throws IOException {
+            myOut.writeByte(BinaryFormatConstants.DATA_BYTEARRAY);
+            if (data==null || data.length()==0) {
+                myOut.writeInt(0);
+                return;
+            }
+            String [] information=removeDoubleWhiteSpaces(data).trim().split(" ");
+            if (information.length==1 && "".equals(information[0])){
+                myOut.writeInt(0);
+                return;
+            }
+            myOut.writeInt(information.length);
+            for (int i=0;i<information.length;i++){
+                myOut.writeShort(Byte.parseByte(information[i]));
+            }
+        }
+
 
         private void writeQuatArray(String data) throws IOException {
             myOut.writeByte(BinaryFormatConstants.DATA_QUATARRAY);
@@ -263,7 +303,6 @@ public class XMLtoBinary {
             for (int i=0;i<information.length;i++){
                 myOut.writeInt(Integer.parseInt(information[i]));
             }
-
         }
 
         private void writeVector2fArray(String data) throws IOException {
