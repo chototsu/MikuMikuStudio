@@ -4,7 +4,6 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Node;
 import com.jme.scene.Controller;
 import com.jme.scene.state.RenderState;
-import com.jme.renderer.Renderer;
 
 /**
  * Started Date: Jun 5, 2004
