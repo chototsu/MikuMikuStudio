@@ -38,31 +38,14 @@ public class TestMaxJmeWrite extends SimpleGame{
     Node globalLoad=null;
 
     protected void simpleInitGame() {
+
         MaxToJme C1=new MaxToJme();
 
         try {
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
-//            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/cutsphere.3DS");
-            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
-//            URL maxFile = new File("3dsmodels/sphere.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/cobra.3DS").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/movedpivot.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/Character.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/test1.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/cutsphere.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/cube.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/face.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/pitbull.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/celt.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/tpot.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/europe.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/sphere.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/cow.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/growingcube.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/simpani.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/tank.3ds").toURI().toURL();
-//            URL maxFile = new File("3dsmodels/simpmovement.3DS").toURI().toURL();
-
+//            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Character.3DS");
+            URL maxFile=TestMaxJmeWrite.class.getClassLoader().getResource("jmetest/data/model/tpot.3ds");
+//            URL maxFile=new File("3dsmodels/tpot.3ds").toURL();
             C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
             JmeBinaryReader jbr=new JmeBinaryReader();
 //            jbr.setProperty("texulr",new File("3dsmodels").toURL());
@@ -78,7 +61,6 @@ public class TestMaxJmeWrite extends SimpleGame{
                 r.getChild(0).getController(0).setSpeed(20);
             Quaternion temp=new Quaternion();
             temp.fromAngleAxis(FastMath.PI/2,new Vector3f(-1,0,0));
-            rootNode.setForceView(true);
             rootNode.setLocalRotation(temp);
             rootNode.attachChild(r);
 
@@ -88,6 +70,10 @@ public class TestMaxJmeWrite extends SimpleGame{
         }
 
         drawAxis();
+        TextureState ts=display.getRenderer().getTextureState();
+        ts.setEnabled(true);
+        rootNode.setRenderState(ts);
+
     }
 
     private void drawAxis() {
@@ -124,4 +110,3 @@ public class TestMaxJmeWrite extends SimpleGame{
 
     }
 }
-
