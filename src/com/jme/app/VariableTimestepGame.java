@@ -43,7 +43,7 @@ import com.jme.util.Timer;
  * the logic based on the time elapsed.
  *
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.8 2004-06-17 16:31:23 renanse Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.9 2004-08-02 22:28:40 cep21 Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 
@@ -121,7 +121,7 @@ public abstract class VariableTimestepGame extends AbstractGame {
 	}
 
 	/**
-	 * @param interpolation the time elapsed since the last frame, in seconds
+	 * @param deltaTime the time elapsed since the last frame, in seconds
 	 * @see AbstractGame#update(float interpolation)
 	 */
 	protected abstract void update(float deltaTime);

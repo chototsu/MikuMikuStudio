@@ -13,13 +13,13 @@ import java.util.BitSet;
 /**
  * Started Date: Jun 9, 2004<br>
  *
- * This controller animates a Node's JointMesh2 children acording to the joints stored inside <code>movementInfo</code>
+ * This controller animates a Node's JointMesh2 children acording to the joints stored inside <code>movementInfo</code>.
  * 
  * @author Jack Lindamood
  */
 public class JointController extends Controller {
     /**
-     * It is JointController's responsibility to keep changePoints sorted by <code>time</code> at all times
+     * It is JointController's responsibility to keep changePoints sorted by <code>time</code> at all times.
      */
     public int numJoints;
 
@@ -36,30 +36,31 @@ public class JointController extends Controller {
      */
     public int[] parentIndex;
     /**
-     * Local refrence matrix that can determine a joint's position in space relative to its parent
+     * Local refrence matrix that can determine a joint's position in space relative to its parent.
      */
     public TransformMatrix[] localRefMatrix;
+    /**Currently unused. */
     public float FPS;
 
     /**
-     * Array of all the meshes this controller should consider animating
+     * Array of all the meshes this controller should consider animating.
      */
     public ArrayList movingMeshes;
 
 
     /**
-     * This controller's internal current time
+     * This controller's internal current time.
      */
     private float curTime;
 
     /**
-     * This controller's internal current PointInTime index
+     * This controller's internal current PointInTime index.
      */
     private int curTimePoint;
 
 
     /**
-     * Used internally, they are updated every update(float) call to tell points how to change
+     * Used internally, they are updated every update(float) call to tell points how to change.
      */
     private TransformMatrix[] jointMovements;
 
@@ -78,12 +79,12 @@ public class JointController extends Controller {
      */
     public float skipRate;
     /**
-     * Used with skipRate internally
+     * Used with skipRate internally.
      */
     private float currentSkip;
 
     /**
-     * Constructs a new JointController that will hold the given number of joints
+     * Constructs a new JointController that will hold the given number of joints.
      * @param numJoints The number of joints this jointController will have
      */
     public JointController(int numJoints){
@@ -146,7 +147,7 @@ public class JointController extends Controller {
 
     /**
      * Tells JointController that at time <code>time</code> the joint <code>jointNumber</code> will rotate
-     * acording to <code>quaternion</code>
+     * acording to <code>Quaternion</code>.
      * @param jointNumber Index of joint to affect
      * @param time Which time the joint will take these values
      * @param quaternion The joint's new rotation
@@ -159,7 +160,7 @@ public class JointController extends Controller {
      * Used with setRotation and setTranslation.  This function finds a point in time for given time.  If one doesn't
      * exist then a new PointInTime is created and returned.
      * @param time
-     * @return
+     * @return The PointInTime at that given time, or a new one if none exist so far.
      */
     private PointInTime findUpToTime(float time) {
         Iterator I=movementInfo.iterator();
@@ -274,7 +275,7 @@ public class JointController extends Controller {
 
 
     /**
-     * Called with update to create the needed joint transforms for that point in time
+     * Called with update to create the needed joint transforms for that point in time.
      * @param changeAmnt The % diffrence (from 0-1) between two points in time
      */
     private void createJointTransforms(float changeAmnt) {
@@ -302,7 +303,7 @@ public class JointController extends Controller {
 
 
     /**
-     * Fills null rotations and translations for any joint at any point in time
+     * Fills null rotations and translations for any joint at any point in time.
      */
     private void fillHoles() {
         fillRots();
@@ -311,7 +312,7 @@ public class JointController extends Controller {
 
 
     /**
-     * Gives every PointInTime for every joint a valid rotation
+     * Gives every PointInTime for every joint a valid rotation.
      */
     private void fillRots() {
         for (int joint=0;joint<numJoints;joint++){
@@ -347,7 +348,7 @@ public class JointController extends Controller {
 
 
     /**
-     * Gives every PointInTime for every joint a valid translation
+     * Gives every PointInTime for every joint a valid translation.
      */
     private void fillTrans() {
         for (int joint=0;joint<numJoints;joint++){
@@ -382,7 +383,7 @@ public class JointController extends Controller {
     }
 
     /**
-     * Interpolates missing quats that weren't specified to the JointController
+     * Interpolates missing quats that weren't specified to the JointController.
      * @param jointIndex Index of the joint that has missing quats
      * @param startRotIndex Begining index of a valid non-null quat
      * @param endRotIndex Ending index of a valid non-null quat
@@ -398,7 +399,7 @@ public class JointController extends Controller {
     }
 
     /**
-     * Interpolates missing vector that weren't specified to the JointController
+     * Interpolates missing vector that weren't specified to the JointController.
      * @param jointIndex Index of the joint that has missing vector
      * @param startPosIndex Begining index of a valid non-null vector
      * @param endPosIndex Ending index of a valid non-null vector
@@ -414,7 +415,7 @@ public class JointController extends Controller {
     }
 
     /**
-     * Adds a jointmesh for this JointController to consider animating
+     * Adds a jointmesh for this JointController to consider animating.
      * @param child Child JointMesh2 to consider
      */
     public void addJointMesh(JointMesh2 child) {
@@ -427,22 +428,33 @@ public class JointController extends Controller {
      * <code>time</code>
      */
     public class PointInTime{
+        /** The time represented by this PointInTime. */
         public float time;
+        /** Array of translations for this PointInTime.  Each value represents a translation.*/
         public Vector3f[] jointTranslation;
+        /** Array of rotations for this PointInTime.  Each value represents a joint. */
         public Quaternion[] jointRotation;
         /**
          * The bitsets specify if the translation/rotation was specified externally, or if it was interpolated.  This
          * is useful to cut down on stored file size.
          */
         public BitSet usedTrans;
+        /**
+         * The bitsets specify if the translation/rotation was specified externally, or if it was interpolated.  This
+         * is useful to cut down on stored file size.
+         */
         public BitSet usedRot;
+        /** Creates a new PointInTime with everything false or null to start with.*/
         PointInTime(){
             jointTranslation=new Vector3f[numJoints];
             usedRot = new BitSet(numJoints);
             usedTrans=new BitSet(numJoints);
             jointRotation=new Quaternion[numJoints];
         }
-
+        /**
+         * Constructs a new PointInTime at the given time.
+         * @param time The time for the new PointInTime.
+         */
         public PointInTime(int time) {
             this();
             this.time=time;
@@ -466,6 +478,11 @@ public class JointController extends Controller {
             usedTrans.set(jointIndex);
         }
 
+        /**
+         * Sets for the given joint to have the given rotation.
+         * @param jointIndex The joint index.
+         * @param quaternion The rotation for this point in time.
+         */
         public void setRotation(int jointIndex, Quaternion quaternion) {
             if (jointRotation[jointIndex]==null) jointRotation[jointIndex]=new Quaternion();
             jointRotation[jointIndex].set(quaternion);

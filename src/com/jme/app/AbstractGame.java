@@ -47,10 +47,10 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  *
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.16 2004-06-28 21:18:22 ericthered Exp $
+ * @version $Id: AbstractGame.java,v 1.17 2004-08-02 22:27:13 cep21 Exp $
  */
 public abstract class AbstractGame {
-  //Flag for running the system.
+    /** Flag for running the system. */
     protected boolean finished;
 
     private final static String JME_VERSION_TAG = "jME version 0.6";
@@ -71,7 +71,7 @@ public abstract class AbstractGame {
     private int dialogBehaviour = FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG;
     private URL dialogImage = null;
 
-    /** Game display properties */
+    /** Game display properties. */
     protected PropertiesIO properties;
 
     /** Renderer used to display the game */
@@ -131,7 +131,7 @@ public abstract class AbstractGame {
      * dialog should be shown as well as its accompanying image. Setting the
      * behaviour after <code>start</code> has been called has no effect.
      * @param behaviour properties dialog behaviour ID
-     * @param dialogImage a String specifying the filename of an image to be displayed
+     * @param image a String specifying the filename of an image to be displayed
 	 *                       	  with the <code>PropertiesDialog</code>. Passing <code>null</code>
 	 *                       	  will result in no image being used.
      */

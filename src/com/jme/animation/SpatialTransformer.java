@@ -406,7 +406,7 @@ public class SpatialTransformer extends Controller{
 
         /**
          * Constructs a new PointInTime with the time <code>time</code>
-         * @param time
+         * @param time The the for this PointInTime.
          */
         PointInTime(float time){
             look=new TransformMatrixQuat[numObjects];
