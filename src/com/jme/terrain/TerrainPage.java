@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.20 2004-08-21 00:44:36 cep21 Exp $
+ * @version $Id: TerrainPage.java,v 1.21 2004-09-05 16:18:54 cep21 Exp $
  */
 public class TerrainPage extends Node {
 
@@ -74,6 +74,15 @@ public class TerrainPage extends Node {
      * Empty Constructor to be used internally only.
      */
     public TerrainPage() {}
+
+    /**
+     * Creates a TerrainPage to be filled later.  Usually, users don't want to call this function
+     * unless they have a terrain page already built.
+     * @param name The name of the page node.
+     */
+    public TerrainPage(String name){
+        super(name);
+    }
 
     /**
      * Constructor instantiates a new <code>TerrainPage</code> object. The
@@ -529,4 +538,89 @@ public class TerrainPage extends Node {
 
     }
 
+    /**
+     * Returns the current offset amount.  This is used when building texture coordinates.
+     * @return The current offset amount.
+     */
+    public Vector2f getOffset() {
+        return offset;
+    }
+
+    /**
+     * Returns the total size of the terrain.
+     * @return The terrain's total size.
+     */
+    public int getTotalSize() {
+        return totalSize;
+    }
+
+    /**
+     * Returns the size of this terrain page.
+     * @return The current block size.
+     */
+    public int getSize() {
+        return size;
+    }
+
+    /**
+     * Returns the step scale that stretches the height map.
+     * @return The current step scale.
+     */
+    public Vector3f getStepScale() {
+        return stepScale;
+    }
+
+    /**
+     * Returns the offset amount this terrain block uses for textures.
+     * @return The current offset amount.
+     */
+    public int getOffsetAmount() {
+        return offsetAmount;
+    }
+
+    /**
+     * Sets the value for the current offset amount to use when building texture coordinates.
+     * Note that this does <b>NOT</b> rebuild the terrain at all.  This is mostly used for
+     * outside constructors of terrain blocks.
+     * @param offset The new texture offset.
+     */
+    public void setOffset(Vector2f offset) {
+        this.offset = offset;
+    }
+
+    /**
+     * Sets the total size of the terrain .  Note that this does <b>NOT</b> rebuild the terrain
+     * at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param totalSize The new total size.
+     */
+    public void setTotalSize(int totalSize) {
+        this.totalSize = totalSize;
+    }
+
+    /**
+     * Sets the size of this terrain page.  Note that this does <b>NOT</b> rebuild the terrain
+     * at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param size The new size.
+     */
+    public void setSize(int size) {
+        this.size = size;
+    }
+
+    /**
+     * Sets the step scale of this terrain page's height map.  Note that this does <b>NOT</b> rebuild
+     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param stepScale The new step scale.
+     */
+    public void setStepScale(Vector3f stepScale) {
+        this.stepScale = stepScale;
+    }
+
+    /**
+     * Sets the offset of this terrain texture map.  Note that this does <b>NOT</b> rebuild
+     * the terrain at all.  This is mostly used for outside constructors of terrain blocks.
+     * @param offsetAmount The new texture offset.
+     */
+    public void setOffsetAmount(int offsetAmount) {
+        this.offsetAmount = offsetAmount;
+    }
 }
