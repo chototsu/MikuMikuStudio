@@ -41,7 +41,7 @@ import com.jme.scene.TriMesh;
 /**
  * <code>ContinuousLodNode</code>
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.4 2004-04-07 21:47:00 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.5 2004-04-08 02:51:37 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
   int m_iCurrentRecord, m_iTargetRecord;
@@ -137,11 +137,11 @@ ClodCreator creator;
       // increase triangle count (triangles are properly ordered)
       triangleQuantity = rkPrevRecord.m_iTQuantity;
     }
-    System.err.println("Current record: "+m_iCurrentRecord+" tris: "+triangleQuantity);
-    for (int j = 0; j < triangleQuantity; j++) {
-      System.err.println(j+". tri: " + indices[j*3] + "," + indices[j*3+1] + "," + indices[j*3+2]);
-      System.err.println(j+". tri: " + vertex[indices[j*3]] + "," + vertex[indices[j*3+1]] + "," + vertex[indices[j*3+2]]);
-    }
+//    System.err.println("Current record: "+m_iCurrentRecord+" tris: "+triangleQuantity);
+//    for (int j = 0; j < triangleQuantity; j++) {
+//      System.err.println(j+". tri: " + indices[j*3] + "," + indices[j*3+1] + "," + indices[j*3+2]);
+//      System.err.println(j+". tri: " + vertex[indices[j*3]] + "," + vertex[indices[j*3+1]] + "," + vertex[indices[j*3+2]]);
+//    }
     updateColorBuffer();
     updateNormalBuffer();
     updateVertexBuffer();

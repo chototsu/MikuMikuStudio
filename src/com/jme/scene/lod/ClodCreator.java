@@ -81,10 +81,6 @@ public class ClodCreator extends VETMesh {
 
     m_kEDelete = new Vector();
     m_kVDelete = new TreeSet();
-    for (int j = 0; j < m_iTQuantity; j++) {
-      System.err.println(j+". tri: " + indices[j*3] + "," + indices[j*3+1] + "," + indices[j*3+2]);
-      System.err.println(j+". tri: " + vertices[indices[j*3]] + "," + vertices[indices[j*3+1]] + "," + vertices[indices[j*3+2]]);
-    }
 
     // Insert the triangles into the mesh.  The triangle indices are attached
     // as extra data.
@@ -99,10 +95,6 @@ public class ClodCreator extends VETMesh {
       insertTriangle(kT);
       setData(kT, new Integer(i));
     }
-    for (int j = 0; j < m_kTMap.size(); j++) {
-      Triangle t = (Triangle)m_kTMap.keySet().toArray()[j];
-      System.err.println("tri: "+j+"  v: "+t.m_aiV[0]+", "+t.m_aiV[1]+", "+t.m_aiV[2]);
-    }
 
     if (m_kVMap.size() != m_akVertex.length)throw new AssertionError();
     if (m_kTMap.size() != m_iTQuantity)throw new AssertionError(
@@ -112,10 +104,8 @@ public class ClodCreator extends VETMesh {
     initializeHeap();
 
     m_bCollapsing = true;
+//    System.err.println("m_iHQuantity: "+m_iHQuantity);
     while (m_iHQuantity > 0) {
-      System.err.println("m_iHQuantity: "+m_iHQuantity);
-      for (int i = 0; i < m_iHQuantity; i++)
-        System.err.println("met: "+i+"  metric: "+(m_apkHeap[i] != null ? m_apkHeap[i].m_fMetric : -1)+"  index: "+(m_apkHeap[i] != null ? m_apkHeap[i].m_iHIndex : -100));
       if (m_apkHeap[0].m_fMetric == Float.MAX_VALUE) {
         // all remaining heap elements have infinite weight
         flushVertices();
@@ -127,10 +117,6 @@ public class ClodCreator extends VETMesh {
 //      System.err.println("triangle map size: " + m_kTMap.size() + " m_iTCurrent+1: " +
 //          (m_iTCurrent + 1));
 
-      for (int j = 0; j < m_kTMap.size(); j++) {
-        Triangle t = (Triangle)m_kTMap.keySet().toArray()[j];
-        System.err.println("tri: "+j+"  v: "+t.m_aiV[0]+", "+t.m_aiV[1]+", "+t.m_aiV[2]);
-      }
       if (! ( (m_kVMap.size()) == m_iVCurrent + 1))throw new AssertionError();
       if (! ( (m_kTMap.size()) == m_iTCurrent + 1))throw new AssertionError(
           "triangle map size: " + m_kTMap.size() + " != m_iTCurrent+1: " +
@@ -162,15 +148,15 @@ public class ClodCreator extends VETMesh {
 //      System.err.println("tri: "+j+"  v: "+t.m_aiV[0]+", "+t.m_aiV[1]+", "+t.m_aiV[2]);
 //    }
 
-    for (int x = 0; x < rakCRecord.length; x++) {
-      System.err.println("***** record: "+x);
-      System.err.println("keep: "+rakCRecord[x].vertToKeep);
-      System.err.println("throw: "+rakCRecord[x].vertToThrow);
-      System.err.println("indices: "+rakCRecord[x].indices);
-      System.err.println("tris: "+rakCRecord[x].m_iTQuantity);
-      System.err.println("inds: "+rakCRecord[x].m_iIQuantity);
-      System.err.println("verts: "+rakCRecord[x].m_iVQuantity);
-    }
+//    for (int x = 0; x < rakCRecord.length; x++) {
+//      System.err.println("***** record: "+x);
+//      System.err.println("keep: "+rakCRecord[x].vertToKeep);
+//      System.err.println("throw: "+rakCRecord[x].vertToThrow);
+//      System.err.println("indices: "+rakCRecord[x].indices);
+//      System.err.println("tris: "+rakCRecord[x].m_iTQuantity);
+//      System.err.println("inds: "+rakCRecord[x].m_iIQuantity);
+//      System.err.println("verts: "+rakCRecord[x].m_iVQuantity);
+//    }
   }
 
   public CollapseRecord[] getRecords() {
@@ -530,7 +516,7 @@ public class ClodCreator extends VETMesh {
   public CollapseRecord[] computeRecords() {
     // build the collapse records for the caller
     int riCQuantity = (int) m_kEDelete.size() + 1;
-    System.err.println("riCQuantity: "+riCQuantity);
+//    System.err.println("riCQuantity: "+riCQuantity);
     CollapseRecord[] rakCRecord = new CollapseRecord[riCQuantity];
     for (int i = 0; i < riCQuantity; i++)
       rakCRecord[i] = new CollapseRecord();

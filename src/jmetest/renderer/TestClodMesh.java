@@ -31,37 +31,46 @@
  */
 package jmetest.renderer;
 
+import java.net.URL;
+
 import com.jme.app.VariableTimestepGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
+import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.BillboardNode;
-import com.jme.scene.Controller;
-import com.jme.scene.lod.*;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.model.Model;
-import com.jme.scene.model.md2.Md2Model;
+import com.jme.scene.model.ase.ASEModel;
+import com.jme.scene.shape.Disk;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
-import com.jme.scene.TriMesh;
-import com.jme.input.KeyBindingManager;
-import com.jme.input.KeyInput;
-import com.jme.scene.shape.Sphere;
-import com.jme.scene.shape.Disk;
+import com.jme.scene.*;
 
 /**
  * <code>TestClodMesh</code> shows off the use of the ClodMesh in jME.
+ *
+ * keys:
+ * +,-  Change level of detail
+ * L    Toggle lights
+ * T    Toggle Wireframe mode
+ * M    Toggle Model or Disc
+ *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.3 2004-04-07 21:47:01 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.4 2004-04-08 02:51:37 renanse Exp $
  */
 public class TestClodMesh extends VariableTimestepGame {
   private Camera cam;
@@ -70,13 +79,13 @@ public class TestClodMesh extends VariableTimestepGame {
   private Timer timer;
   private Model model;
 
-  private String FILE_NAME = "data/model/drfreak.md2";
-  private String TEXTURE_NAME = "data/model/drfreak.jpg";
-
-  private ClodMesh iNode;
+  private ClodMesh iNode, iNode2;
   private Node fpsNode;
   private Text fps;
   private long lastPress = 0;
+  private WireframeState wireState;
+  private LightState lightState;
+  private boolean useModel = false;
 
   /**
    * Entry point for the test,
@@ -84,7 +93,7 @@ public class TestClodMesh extends VariableTimestepGame {
    */
   public static void main(String[] args) {
     TestClodMesh app = new TestClodMesh();
-    app.setDialogBehaviour(VariableTimestepGame.FIRSTRUN_OR_NOCONFIGFILE_SHOW_PROPS_DIALOG);
+    app.setDialogBehaviour(VariableTimestepGame.ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
   }
 
@@ -102,14 +111,37 @@ public class TestClodMesh extends VariableTimestepGame {
       if (KeyBindingManager
           .getKeyBindingManager()
           .isValidCommand("detail_down")) {
-        iNode.setTargetRecord( (iNode.getAutomatedTargetRecord()) - 1);
+        if (useModel)
+          iNode2.setTargetRecord( (iNode2.getAutomatedTargetRecord()) + 10);
+        else
+          iNode.setTargetRecord( (iNode.getAutomatedTargetRecord()) + 25);
         lastPress = System.currentTimeMillis();
       }
       if (KeyBindingManager
           .getKeyBindingManager()
           .isValidCommand("detail_up")) {
-        iNode.setTargetRecord( (iNode.getAutomatedTargetRecord()) + 1);
+        if (useModel)
+          iNode2.setTargetRecord( (iNode2.getAutomatedTargetRecord()) - 10);
+        else
+          iNode.setTargetRecord( (iNode.getAutomatedTargetRecord()) - 25);
         lastPress = System.currentTimeMillis();
+      }
+      if (KeyBindingManager
+          .getKeyBindingManager()
+          .isValidCommand("toggle_wire")) {
+        wireState.setEnabled(!wireState.isEnabled());
+      }
+      if (KeyBindingManager
+          .getKeyBindingManager()
+          .isValidCommand("toggle_lights")) {
+        lightState.setEnabled(!lightState.isEnabled());
+      }
+      if (KeyBindingManager
+          .getKeyBindingManager()
+          .isValidCommand("switch_models")) {
+        useModel = !useModel;
+        iNode.setForceCull(useModel);
+        iNode2.setForceCull(!useModel);
       }
     }
   }
@@ -176,6 +208,15 @@ public class TestClodMesh extends VariableTimestepGame {
     KeyBindingManager.getKeyBindingManager().set(
         "detail_down",
         KeyInput.KEY_SUBTRACT);
+    KeyBindingManager.getKeyBindingManager().set(
+        "toggle_wire",
+        KeyInput.KEY_T);
+    KeyBindingManager.getKeyBindingManager().set(
+        "toggle_lights",
+        KeyInput.KEY_L);
+    KeyBindingManager.getKeyBindingManager().set(
+        "switch_models",
+        KeyInput.KEY_M);
   }
 
   /**
@@ -188,23 +229,12 @@ public class TestClodMesh extends VariableTimestepGame {
     root = new Node("Root Scene Node");
     root.attachChild(scene);
 
-    // setup the scene to be 'impostered'
-    model = new Md2Model("Dr. Freak");
-    model.load(TestClodMesh.class.getClassLoader().getResource("jmetest/" +
-        FILE_NAME));
-    model.getAnimationController().setSpeed(10);
-    model.getAnimationController().setRepeatType(Controller.RT_WRAP);
+    model = new ASEModel("Statue of Liberty");
+    URL data = TestClodMesh.class.getClassLoader().getResource(
+        "jmetest/data/model/Statue.ase");
+    model.load(data, "jmetest/data/model/");
 
-    // apply the appropriate texture to the imposter scene
-    TextureState ts = display.getRenderer().getTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestClodMesh.class.getClassLoader().getResource("jmetest/" +
-        TEXTURE_NAME),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+    model.updateGeometricState(10, true);
 
     // Setup our params for the depth buffer
     ZBufferState buf = display.getRenderer().getZBufferState();
@@ -213,22 +243,19 @@ public class TestClodMesh extends VariableTimestepGame {
 
     scene.setRenderState(buf);
 
-    // setup the imposter node...
-    // we first determine a good texture size (must be equal to or less than the display size)
+    iNode = new ClodMesh("model", new Disk("disc", 50, 50, 8), null);
+    iNode.setForceCull(false);
+
     TriMesh child = (TriMesh)model.getChild(0);
-    iNode = new ClodMesh("model", new Disk("disk", 3, 4, 8), null);
-//    iNode = new ClodMesh("model", child, null);
-//    iNode.setRenderState(ts);
-    com.jme.scene.state.lwjgl.LWJGLWireframeState bs =
-            new com.jme.scene.state.lwjgl.LWJGLWireframeState();
-        bs.setEnabled(true);
-    iNode.setRenderState(bs);
-com.jme.scene.state.lwjgl.LWJGLCullState cs =
-            new com.jme.scene.state.lwjgl.LWJGLCullState();
-        cs.setCullMode(com.jme.scene.state.lwjgl.LWJGLCullState.CS_NONE);
-        cs.setEnabled(true);
-        iNode.setRenderState(cs);
+    iNode2 = new ClodMesh("model", child, null);
+    iNode2.setForceCull(true);
+
+    wireState = display.getRenderer().getWireframeState();
+    wireState.setEnabled(true);
+    scene.setRenderState(wireState);
+
     scene.attachChild(iNode);
+    scene.attachChild(iNode2);
 
     //This code is all for the FPS display...
     // First setup alpha state
@@ -261,6 +288,19 @@ com.jme.scene.state.lwjgl.LWJGLCullState cs =
     fpsNode = new Node("FPS node");
     fpsNode.attachChild(fps);
     fpsNode.setForceView(true);
+
+    // add some light...
+
+    PointLight am = new PointLight();
+    am.setDiffuse(new ColorRGBA(1f, 1.0f, 1.0f, 1.0f));
+    am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+    am.setLocation(new Vector3f(15, 15, 15));
+    am.setEnabled(true);
+
+    lightState = display.getRenderer().getLightState();
+    lightState.setEnabled(true);
+    lightState.attach(am);
+    scene.setRenderState(lightState);
 
     cam.update();
     scene.updateGeometricState(0.0f, true);
