@@ -46,14 +46,13 @@ import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.scene.TriMesh;
 
-import com.jme.sound.IEffectPlayer;
-import com.jme.sound.IRenderer;
+import com.jme.sound.IPlayer;
+
 import com.jme.sound.SoundSystem;
 import com.jme.sound.action.SoundBackwardAction;
 import com.jme.sound.action.SoundForwardAction;
 import com.jme.sound.action.SoundRotateLeftAction;
 import com.jme.sound.action.SoundRotateRightAction;
-import com.jme.sound.utils.EffectRepository;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 
@@ -70,7 +69,7 @@ public class TestSoundActions extends AbstractGame {
 	private TriMesh t;
 	private TriMesh t2;
 	private InputController input;
-	IRenderer soundRenderer;
+	SoundSystem soundRenderer;
 
 	/**
 	 * Nothing to update.
@@ -78,10 +77,8 @@ public class TestSoundActions extends AbstractGame {
 	 */
 	protected void update() {
 		input.update(1);
-		if (soundRenderer.getSoundPlayer("BACKGROUND").getStatus() != IEffectPlayer.LOOPING) {
-			System.out.println("Play background");
-			soundRenderer.getSoundPlayer("BACKGROUND").loop(
-				EffectRepository.getRepository().getSource("background"));
+		if (soundRenderer.getPlayer("BACKGROUND").getStatus() != IPlayer.LOOPING) {
+			soundRenderer.getPlayer("BACKGROUND").loop("background");
 		}
 
 	}
@@ -132,15 +129,15 @@ public class TestSoundActions extends AbstractGame {
 		KeyBindingManager keyboard= KeyBindingManager.getKeyBindingManager();
 		InputSystem.createInputSystem("LWJGL");
 
-		SoundSystem system= SoundSystem.getSoundEffectSystem("LWJGL");
-		soundRenderer= system.getRenderer();
-		soundRenderer.addSoundPlayer("SHIP0");
-		soundRenderer.addSoundPlayer("SHIP1");
-		soundRenderer.addSoundPlayer("BACKGROUND");
-		soundRenderer.loadSoundAs("walk", "data/sound/tech_idle_loop.wav");
-		soundRenderer.loadSoundAs("turn", "data/sound/turn.mp3");
-		soundRenderer.loadSoundAs("background", "data/sound/underwater1.mp3");
-		soundRenderer.getSoundPlayer("BACKGROUND").setVolume(0.6f);
+		soundRenderer= SoundSystem.getSoundEffectSystem("LWJGL");
+
+		soundRenderer.addSource("SHIP0");
+		soundRenderer.addSource("SHIP1");
+		soundRenderer.addSource("BACKGROUND");
+		soundRenderer.load("data/sound/tech_idle_loop.wav", "walk");
+		soundRenderer.load("data/sound/turn.mp3", "turn");
+		soundRenderer.load("data/sound/underwater1.mp3", "background");
+		soundRenderer.getPlayer("BACKGROUND").setVolume(0.6f);
 		keyboard.setKeyInput(InputSystem.getKeyInput());
 		keyboard.set("forward", KeyInput.KEY_UP);
 		keyboard.set("backward", KeyInput.KEY_DOWN);
@@ -152,13 +149,13 @@ public class TestSoundActions extends AbstractGame {
 		KeyExitAction exitAction= new KeyExitAction(this);
 		exitAction.setKey("exit");
 		SoundForwardAction forward=
-			new SoundForwardAction(cam, 0.5f, soundRenderer.getSoundPlayer("SHIP0"), "walk");
+			new SoundForwardAction(cam, 0.5f, soundRenderer.getPlayer("SHIP0"), "walk");
 		SoundBackwardAction backward=
-			new SoundBackwardAction(cam, 0.5f, soundRenderer.getSoundPlayer("SHIP0"), "walk");
+			new SoundBackwardAction(cam, 0.5f, soundRenderer.getPlayer("SHIP0"), "walk");
 		SoundRotateLeftAction leftSound=
-			new SoundRotateLeftAction(cam, 0.01f, soundRenderer.getSoundPlayer("SHIP1"), "turn");
+			new SoundRotateLeftAction(cam, 0.01f, soundRenderer.getPlayer("SHIP1"), "turn");
 		SoundRotateRightAction rightSound=
-			new SoundRotateRightAction(cam, 0.01f, soundRenderer.getSoundPlayer("SHIP1"), "turn");
+			new SoundRotateRightAction(cam, 0.01f, soundRenderer.getPlayer("SHIP1"), "turn");
 		forward.setKey("forward");
 		backward.setKey("backward");
 		rightSound.setKey("right");
@@ -325,6 +322,7 @@ public class TestSoundActions extends AbstractGame {
 	public static void main(String[] args) {
 		TestSoundActions app= new TestSoundActions();
 		app.useDialogAlways(true);
+		System.out.println(System.getProperty("java.library.path"));
 		app.start();
 	}
 }

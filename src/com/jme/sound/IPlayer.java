@@ -29,29 +29,61 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+
 /*
- * Created on 18 oct. 2003
+ * Created on 31 oct. 2003
  *
  */
-package com.jme.test.sound;
+package com.jme.sound;
 
-import com.jme.sound.IPlayer;
-import com.jme.sound.SoundSystem;
+import com.jme.math.Vector3f;
+import com.jme.sound.filter.*;
 
 /**
  * @author Arman Ozcelik
  *
  */
-public class TestSound {
+public interface IPlayer extends ISource {
 
-	public static void main(String[] args) throws InterruptedException {
-		SoundSystem system= SoundSystem.getSoundEffectSystem("LWJGL");
-		system.addSource("NPC");
-		system.load("data/sound/walk.mp3", "music");
-		system.getPlayer("NPC").play("music");
-		while (system.getPlayer("NPC").getStatus() == IPlayer.PLAYING) {
-			Thread.sleep(1000);
-		}
+	public static final int PLAYING = 1;
+	public static final int LOOPING = 2;
+	public static final int PAUSED = 3;
+	public static final int STOPPED = 4;
 
-	}
+	public void play(String effect);
+
+	public void loop(String effect);
+
+	public void pause();
+
+	public void stop();
+
+	public int getStatus();
+
+	public Vector3f getPosition();
+	
+	public void setPosition(Vector3f pos);
+	
+	public Vector3f getVelocity();
+	
+	public void setVelocity(Vector3f vel);
+
+	public float getPitch();
+	
+	public void setPitch(float pitch);
+
+	public void setVolume(float volume);
+	
+	public void setPlayersVolume(float volume);
+	
+	public void setMaxDistance(float maxDistance);
+	
+	public float getVolume();
+	
+	public void applyFilter(BufferFilter bf);
+	
+	public void applyFilter(ListenerFilter lf);
+	
+	
+
 }

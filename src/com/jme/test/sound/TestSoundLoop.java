@@ -49,7 +49,7 @@ import com.jme.system.LWJGLDisplaySystem;
 import com.jme.util.TextureManager;
 
 
-import com.jme.sound.IRenderer;
+
 import com.jme.sound.SoundSystem;
 
 /**
@@ -62,7 +62,7 @@ public class TestSoundLoop extends AbstractGame {
     private Text text;
     private Camera cam;
     private Node scene;
-    private IRenderer soundRenderer;
+    private SoundSystem soundRenderer;
     
     public static void main(String[] args) {
         TestSoundLoop app = new TestSoundLoop();
@@ -107,8 +107,8 @@ public class TestSoundLoop extends AbstractGame {
             System.exit(1);
         }
         
-        SoundSystem system=SoundSystem.getSoundEffectSystem("LWJGL");
-        soundRenderer=system.getRenderer();
+		soundRenderer=SoundSystem.getSoundEffectSystem("LWJGL");
+        
         
         
         ColorRGBA blueColor = new ColorRGBA();
@@ -155,11 +155,11 @@ public class TestSoundLoop extends AbstractGame {
         
         scene.updateGeometricState(0.0f, true);
         
-        soundRenderer.addSoundPlayer("MONSTER");
-        soundRenderer.addSoundPlayer("NPC");
+        soundRenderer.addSource("MONSTER");
+        soundRenderer.addSource("NPC");
 		
-        soundRenderer.loadSoundAs("music", "cu.wav");
-        soundRenderer.loadSoundAs("bored", "../data/sound/03.mp3");
+        soundRenderer.load("cu.wav","music");
+        soundRenderer.load("../data/sound/03.mp3", "bored");
 
        
         

@@ -49,8 +49,9 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.sound.IEffectPlayer;
-import com.jme.sound.IRenderer;
+import com.jme.sound.IPlayer;
+import com.jme.sound.SoundSystem;
+
 import com.jme.sound.utils.EffectRepository;
 import com.jme.sound.utils.OnDemandSoundLoader;
 
@@ -64,12 +65,12 @@ import com.jme.util.Timer;
  */
 public class SoundPlayingScene implements Scene {
 
-	private IRenderer soundRenderer;
 	private Node soundNode;
 	private Text text;
 	private float timeElapsed;
 	private Timer timer;
 	private Vector3f soundPosition= new Vector3f(-50, 0, 0);
+	private SoundSystem soundRenderer;
 
 	private Entity backgroundMusic, e;
 
@@ -91,11 +92,7 @@ public class SoundPlayingScene implements Scene {
 		TextureState ts= game.getDisplaySystem().getRenderer().getTextureState();
 		ts.setEnabled(true);
 		ts.setTexture(
-			TextureManager.loadTexture(
-				"data/Font/font.png",
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true));
+			TextureManager.loadTexture("data/Font/font.png", Texture.MM_LINEAR, Texture.FM_LINEAR, true));
 		text.setRenderState(ts);
 
 		AlphaState as1= game.getDisplaySystem().getRenderer().getAlphaState();
@@ -106,16 +103,14 @@ public class SoundPlayingScene implements Scene {
 		as1.setTestFunction(AlphaState.TF_GREATER);
 		text.setRenderState(as1);
 
-		soundRenderer= game.getSoundSystem().getRenderer();
+		soundRenderer= game.getSoundSystem();
 		backgroundMusic= new Entity("BACKGROUND");
-		soundRenderer.addSoundPlayer(backgroundMusic);
-		soundRenderer.getSoundPlayer(backgroundMusic).setPosition(soundPosition);
-		soundRenderer.getSoundPlayer(backgroundMusic).setMaxDistance(30.0f);
+		soundRenderer.addSource(backgroundMusic);
+		soundRenderer.getPlayer(backgroundMusic).setPosition(soundPosition);
+		soundRenderer.getPlayer(backgroundMusic).setMaxDistance(30.0f);
 		soundLoader= new OnDemandSoundLoader(10);
 		soundLoader.start();
-		soundLoader.queueSound(
-			backgroundMusic.getId(),
-			"data/sound/0.mp3");
+		soundLoader.queueSound(backgroundMusic.getId(), "data/sound/0.mp3");
 		soundNode= new Node();
 		soundNode.attachChild(text);
 		status= Scene.LOADING_NEXT_SCENE;
@@ -130,15 +125,11 @@ public class SoundPlayingScene implements Scene {
 		TextureState tst= game.getDisplaySystem().getRenderer().getTextureState();
 		tst.setEnabled(true);
 		tst.setTexture(
-			TextureManager.loadTexture(
-				"data/Images/Monkey.jpg",
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true));
+			TextureManager.loadTexture("data/Images/Monkey.jpg", Texture.MM_LINEAR, Texture.FM_LINEAR, true));
 
 		soundNode.setRenderState(tst);
 
-		ZBufferState buf=  game.getDisplaySystem().getRenderer().getZBufferState();
+		ZBufferState buf= game.getDisplaySystem().getRenderer().getZBufferState();
 		buf.setEnabled(true);
 		buf.setFunction(ZBufferState.CF_LEQUAL);
 		soundNode.setRenderState(buf);
@@ -170,14 +161,12 @@ public class SoundPlayingScene implements Scene {
 		}
 		timer.update();
 		timeElapsed += timer.getTimePerFrame();
-		if (soundRenderer.getSoundPlayer(backgroundMusic).getStatus() != IEffectPlayer.PLAYING) {
-			soundRenderer.getSoundPlayer(backgroundMusic).play(
-				EffectRepository.getRepository().getSource(backgroundMusic.getId()));
-
+		if (soundRenderer.getPlayer(backgroundMusic).getStatus() != IPlayer.PLAYING) {
+			soundRenderer.getPlayer(backgroundMusic).play(backgroundMusic.getId());
 		}
 		if (toRight) {
 			soundPosition.x += 0.2;
-			
+
 			if (soundPosition.x > 30) {
 				ascending= false;
 				toRight= false;
@@ -185,20 +174,20 @@ public class SoundPlayingScene implements Scene {
 		}
 		if (!ascending) {
 			soundPosition.x -= 0.2;
-			
+
 			if (soundPosition.x < -30) {
 				toRight= true;
 				ascending= true;
 			}
 		}
-		
+
 		soundPosition.y= (float)Math.sin(soundPosition.x);
-		soundRenderer.getSoundPlayer(backgroundMusic).setPosition(soundPosition);
-		if(timeElapsed >0.5){
-			timeElapsed=0;
+		soundRenderer.getPlayer(backgroundMusic).setPosition(soundPosition);
+		if (timeElapsed > 0.5) {
+			timeElapsed= 0;
 			text.print("Position " + soundPosition);
 		}
-		
+
 		t.setLocalTranslation(soundPosition);
 		soundNode.updateGeometricState(0.0f, true);
 		return true;
@@ -217,7 +206,7 @@ public class SoundPlayingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#cleanup()
 	 */
 	public void cleanup() {
-		soundRenderer.getSoundPlayer(backgroundMusic).stop();
+		soundRenderer.getPlayer(backgroundMusic).stop();
 		EffectRepository.getRepository().remove(backgroundMusic.getId());
 		soundNode= null;
 	}

@@ -51,7 +51,7 @@ import com.jme.system.JmeException;
 import com.jme.system.LWJGLDisplaySystem;
 import com.jme.util.TextureManager;
 
-import com.jme.sound.IRenderer;
+
 import com.jme.sound.SoundSystem;
 
 /**
@@ -63,7 +63,7 @@ public class TestSoundMove extends AbstractGame {
 	private Text text;
 	private Camera cam;
 	private Node scene;
-	private IRenderer soundRenderer;
+	private SoundSystem soundRenderer;
 	private RelativeMouse mouse;
 	float x;
 	float y;
@@ -116,8 +116,8 @@ public class TestSoundMove extends AbstractGame {
 			System.exit(1);
 		}
 		InputSystem.createInputSystem(properties.getRenderer());
-		SoundSystem system = SoundSystem.getSoundEffectSystem("LWJGL");
-		soundRenderer = system.getRenderer();
+		soundRenderer  = SoundSystem.getSoundEffectSystem("LWJGL");
+		
 
 		ColorRGBA blueColor = new ColorRGBA();
 		blueColor.r = 0;
@@ -185,11 +185,11 @@ public class TestSoundMove extends AbstractGame {
 
 		scene.updateGeometricState(0.0f, true);
 
-		soundRenderer.addSoundPlayer("MONSTER");
-		soundRenderer.addSoundPlayer("NPC");
+		soundRenderer.addSource("MONSTER");
+		soundRenderer.addSource("NPC");
 
-		soundRenderer.loadSoundAs("music", "walk.wav");
-		soundRenderer.loadSoundAs("bored", "03.mp3");
+		soundRenderer.load("walk.wav", "music");
+		soundRenderer.load("03.mp3", "bored");
 
 
 
