@@ -47,13 +47,17 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.scene.state.LightState;
 import com.jme.light.AmbientLight;
 import com.jme.light.DirectionalLight;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.1 2004-06-17 16:31:20 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.2 2004-06-17 16:45:18 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
+  private boolean useQueue = false;
+  protected Node opaques, transps;
 
   /**
    * Entry point for the test,
@@ -66,18 +70,36 @@ public class TestRenderQueue extends SimpleGame {
 
   }
 
+  protected void simpleUpdate() {
+
+    if (KeyBindingManager.getKeyBindingManager().isValidCommand("queue", false)) {
+        if (useQueue) {
+          display.setTitle("Test Render Queue - off - hit Q to toggle Queue mode");
+          transps.setRenderQueueMode(Renderer.QUEUE_INHERIT);
+          opaques.setRenderQueueMode(Renderer.QUEUE_INHERIT);
+        } else {
+          display.setTitle("Test Render Queue - on - hit Q to toggle Queue mode");
+          transps.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+          opaques.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+        }
+        useQueue = !useQueue;
+    }
+
+  }
+
   protected void simpleInitGame() {
-    display.setTitle("Vertex Colors");
+    display.setTitle("Test Render Queue - off - hit Q to toggle Queue mode");
+    KeyBindingManager.getKeyBindingManager().set("queue", KeyInput.KEY_Q);
+    cam.setLocation(new Vector3f(10, 0, 50));
+    cam.update();
 
     Vector3f max = new Vector3f(5, 5, 5);
     Vector3f min = new Vector3f( -5, -5, -5);
 
-    Node opaques = new Node("Opaques");
-    Node transps = new Node("Transps");
+    opaques = new Node("Opaques");
+    transps = new Node("Transps");
     rootNode.attachChild(transps);
     rootNode.attachChild(opaques);
-    transps.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-    opaques.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 
     Box b1 = new Box("Box", min, max);
     b1.setModelBound(new BoundingBox());
