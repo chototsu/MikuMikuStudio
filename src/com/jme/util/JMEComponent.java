@@ -47,7 +47,7 @@ import com.jme.system.DisplaySystem;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMEComponent.java,v 1.2 2004-11-09 23:37:54 renanse Exp $
+ * @version $Id: JMEComponent.java,v 1.3 2004-11-10 00:06:04 renanse Exp $
  */
 
 public class JMEComponent extends Component {
@@ -164,24 +164,27 @@ public class JMEComponent extends Component {
 	 * @param g Graphics
 	 */
 	public void paint(Graphics g) {
-		g.setColor(getBackground());
-		g.fillRect(0, 0, this.getWidth(), this.getHeight());
-		if (DisplaySystem.getDisplaySystem() != null &&
-				DisplaySystem.getDisplaySystem().getRenderer() != null) {
-			//Grab pixel information and set it to the BufferedImage info.
-			buf.clear();
-			for (int x = height; --x >= 0; ) {
-				buf.get(ibuf, x * width, width);
+		synchronized(this) {
+			g.setColor(getBackground());
+			g.fillRect(0, 0, this.getWidth(), this.getHeight());
+			if (DisplaySystem.getDisplaySystem() != null &&
+					DisplaySystem.getDisplaySystem().getRenderer() != null) {
+				//Grab pixel information and set it to the BufferedImage info.
+				buf.clear();
+				for (int x = height; --x >= 0; ) {
+					buf.get(ibuf, x * width, width);
+				}
+				buf.clear();
+				img.getRaster().setDataElements(0, 0, width, height, ibuf);
+				if (scaled)
+					g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(),
+											getBackground(), null);
+				else
+					g.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), getBackground(), null);
 			}
-			buf.clear();
-			img.getRaster().setDataElements(0, 0, width, height, ibuf);
-			if (scaled)
-				g.drawImage(img, 0, 0, this.getWidth(), this.getHeight(), getBackground(), null);
-			else
-				g.drawImage(img, 0, 0, img.getWidth(), img.getHeight(), getBackground(), null);
-		}
 
-		// tell the delegate we want new contents from GL on the next pass.
-		HeadlessDelegate.setNeedsRender(this, true);
+			// tell the delegate we want new contents from GL on the next pass.
+			HeadlessDelegate.setNeedsRender(this, true);
+		}
 	}
 }

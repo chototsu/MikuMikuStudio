@@ -41,7 +41,7 @@ import com.jme.renderer.Renderer;
  * and the GL renderers.
  *
  * @author Joshua Slack
- * @version $Id: HeadlessDelegate.java,v 1.2 2004-11-09 23:37:54 renanse Exp $
+ * @version $Id: HeadlessDelegate.java,v 1.3 2004-11-10 00:06:04 renanse Exp $
  */
 
 public class HeadlessDelegate {
@@ -90,7 +90,10 @@ public class HeadlessDelegate {
 		MapClass res = lookup(comp);
 		if (res == null) return;
 		// Copy renderer's context to the component's image buffer.
-		res.r.grabScreenContents(comp.getBuffer(), 0, 0, res.r.getWidth(), res.r.getHeight());
+		synchronized (comp) {
+			res.r.grabScreenContents(comp.getBuffer(), 0, 0, res.r.getWidth(),
+															 res.r.getHeight());
+		}
  	}
 
 	/**
