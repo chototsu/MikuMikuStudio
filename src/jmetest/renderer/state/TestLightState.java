@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.12 2004-08-14 00:50:05 cep21 Exp $
+ * @version $Id: TestLightState.java,v 1.13 2005-01-04 16:33:54 renanse Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;
@@ -89,19 +89,19 @@ public class TestLightState extends SimpleGame {
         rootNode.attachChild(t);
         rootNode.attachChild(t2);
 
-        SpotLight am = new SpotLight();
-        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
-        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am.setDirection(new Vector3f(-1, -0.5f, 0));
-        am.setLocation(new Vector3f(25, 10, 0));
-        am.setAngle(15);
+        SpotLight sp1 = new SpotLight();
+        sp1.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
+        sp1.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        sp1.setDirection(new Vector3f(-1, -0.5f, 0));
+        sp1.setLocation(new Vector3f(25, 10, 0));
+        sp1.setAngle(15);
 
-        SpotLight am2 = new SpotLight();
-        am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-        am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        am2.setDirection(new Vector3f(1, -0.5f, 0));
-        am2.setLocation(new Vector3f(-25, 10, 0));
-        am2.setAngle(15);
+        SpotLight sp2 = new SpotLight();
+        sp2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        sp2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        sp2.setDirection(new Vector3f(1, -0.5f, 0));
+        sp2.setLocation(new Vector3f(-25, 10, 0));
+        sp2.setAngle(15);
 
         DirectionalLight dr = new DirectionalLight();
         dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
@@ -110,11 +110,12 @@ public class TestLightState extends SimpleGame {
         dr.setDirection(new Vector3f(150, 0 , 150));
 
         lightState.detachAll();
-        lightState.attach(am);
+        lightState.attach(sp1);
         lightState.attach(dr);
-        lightState.attach(am2);
-        am.setEnabled(true);
-        am2.setEnabled(true);
+        lightState.attach(sp2);
+        lightState.attach(sp2);
+        sp1.setEnabled(true);
+        sp2.setEnabled(true);
         dr.setEnabled(true);
 
         TextureState ts = display.getRenderer().createTextureState();
