@@ -54,10 +54,8 @@ public class Distance {
      * @return the distance between point1 and point2.
      */
     public static float distancePointPoint(Vector point1, Vector point2) {
-        System.out.println("Checking: " + point1 + " " + point2);
         float value =
             (float) Math.sqrt(distancePointPointSquared(point1, point2));
-        System.out.println("RETURNING " + value);
         return value;
     }
 
@@ -353,7 +351,7 @@ public class Distance {
 
         if (determinate >= TOLERANCE) {
             // lines are not parallel
-            e = -diff.dot(line2.getDirection());
+            e = -1 * diff.dot(line2.getDirection());
             float inverseDeterminate = 1.0f / determinate;
             s = (b * e - c * d) * inverseDeterminate;
             t = (b * d - a * e) * inverseDeterminate;
