@@ -59,7 +59,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.4 2004-02-20 20:51:16 mojomonkey Exp $
+ * @version $Id: TestMd2.java,v 1.5 2004-02-24 22:05:19 mojomonkey Exp $
  */
 public class TestMd2 extends SimpleGame {
 	LightState state;
@@ -87,7 +87,7 @@ public class TestMd2 extends SimpleGame {
 		input.update(timer.getTimePerFrame() * 100);
 		model.updateWorldData(timer.getTimePerFrame()*10);
 		lastTime += timer.getTimePerFrame();
-		if(lastTime > 0.25) {
+		if(lastTime > 0.12) {
 			if (KeyBindingManager
 				.getKeyBindingManager()
 				.isValidCommand("selectAnimation")) {

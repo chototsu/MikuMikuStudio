@@ -45,7 +45,7 @@ import com.jme.scene.model.JointMesh;
  * call to <code>setupJointAnimations</code> to properly position and
  * initialize the joints (Milkshape). 
  * @author Mark Powell
- * @version $Id: DeformationJointController.java,v 1.3 2004-02-01 17:47:08 mojomonkey Exp $
+ * @version $Id: DeformationJointController.java,v 1.4 2004-02-24 22:05:22 mojomonkey Exp $
  */
 public class DeformationJointController extends Controller {
 	//keyframe information
@@ -395,6 +395,9 @@ public class DeformationJointController extends Controller {
 	 * and relative matrices for each joint in the controller.
 	 */
 	public void setupJointAnimations() {
+		if(joints == null) {
+			return;
+		}
 		for (int jointIndex = 0; jointIndex < joints.length; jointIndex++) {
 			DeformationJoint joint = joints[jointIndex];
 			Vector3f rotationVector3f = new Vector3f();

@@ -36,6 +36,8 @@
  */
 package com.jme.sound;
 
+import java.net.URL;
+
 /**
  * @author Arman Ozcelik
  *
@@ -48,7 +50,11 @@ public interface ISoundSystem {
 	
 	public IBuffer loadBuffer(String file);
 	
+	public IBuffer loadBuffer(URL file);
+	
 	public ISource loadSource(String file);
+	
+	public ISource loadSource(URL file);
 	
 	public ISource[] generateSources(int numOfSources);
 	

@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the 
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.10 2004-02-24 18:00:35 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.11 2004-02-24 22:05:21 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -113,6 +113,7 @@ public class MilkshapeASCIIModel extends Model {
 	}
     
     public void load(String filename, String textureDirectory) {
+    	this.textureDirectory = textureDirectory;
         try {
             URL file = new URL("file:"+filename);
             load(file);
@@ -121,7 +122,7 @@ public class MilkshapeASCIIModel extends Model {
                     filename);
         }
         
-        this.textureDirectory = textureDirectory;
+        
     }
     
     public void load(URL filename, String textureDirectory) {
@@ -142,11 +143,6 @@ public class MilkshapeASCIIModel extends Model {
 		}
 		//attempt to load and parse the data.
 		try {
-//			absoluteFilePath = filename.getPath();
-//			absoluteFilePath =
-//				absoluteFilePath.substring(
-//					0,
-//					absoluteFilePath.lastIndexOf("/") + 1);
 			//add a controller for animations.		
 			jointController = new DeformationJointController();
 			

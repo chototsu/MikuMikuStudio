@@ -36,6 +36,8 @@
  */
 package com.jme.sound.joal;
 
+import java.net.URL;
+
 import com.jme.sound.IBuffer;
 import com.jme.sound.IListener;
 import com.jme.sound.ISoundSystem;
@@ -99,6 +101,26 @@ public class SoundSystem implements ISoundSystem {
 	 * @see com.jme.sound.ISoundSystem#getListener()
 	 */
 	public IListener getListener() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/** <code>loadBuffer</code> 
+	 * @param file
+	 * @return
+	 * @see com.jme.sound.ISoundSystem#loadBuffer(java.net.URL)
+	 */
+	public IBuffer loadBuffer(URL file) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	/** <code>loadSource</code> 
+	 * @param file
+	 * @return
+	 * @see com.jme.sound.ISoundSystem#loadSource(java.net.URL)
+	 */
+	public ISource loadSource(URL file) {
 		// TODO Auto-generated method stub
 		return null;
 	}

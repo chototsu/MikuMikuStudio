@@ -38,10 +38,11 @@ package com.jme.sound.lwjgl;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
@@ -132,15 +133,31 @@ public class SoundSystem implements ISoundSystem {
 		}
 		return result;
 	}
+	
+	/** <code>loadBuffer</code> 
+	 * @param file
+	 * @return
+	 * @see com.jme.sound.ISoundSystem#loadBuffer(java.lang.String)
+	 */
+	public IBuffer loadBuffer(String file) {
+		try {
+			URL url = new URL("file:"+file);
+			return loadBuffer(url);
+		} catch (MalformedURLException e) {
+			LoggingSystem.getLogger().log(Level.WARNING, "Could not load: "+file);
+			return null;
+		}
+	}
 
 	/* (non-Javadoc)
 	 * @see com.jme.sound.ISoundSystem#loadBuffer(java.lang.String)
 	 */
-	public IBuffer loadBuffer(String file) {
-		if (file.endsWith(".wav")) {
+	public IBuffer loadBuffer(URL file) {
+		String fileName = file.getFile();
+		if (".wav".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.')))) {
 			return loadWAV(file);
 		}
-		if (file.endsWith(".mp3")) {
+		if (".mp3".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.')))) {
 			return loadMP3(file);
 		}
 		return null;
@@ -149,7 +166,7 @@ public class SoundSystem implements ISoundSystem {
 	/**
 	 * @return
 	 */
-	private IBuffer loadMP3(String file) {
+	private IBuffer loadMP3(URL file) {
 		Decoder decoder= null;
 		Bitstream stream= null;
 		SampleBuffer sampleBuf= null;
@@ -158,7 +175,7 @@ public class SoundSystem implements ISoundSystem {
 		ByteBuffer data= null;
 		try {
 
-			InputStream in= new FileInputStream(file);
+			InputStream in= file.openStream();
 			BufferedInputStream bin= new BufferedInputStream(in);
 			decoder= new Decoder();
 			stream= new Bitstream(bin);
@@ -230,10 +247,10 @@ public class SoundSystem implements ISoundSystem {
 	/**
 	 * @return
 	 */
-	private IBuffer loadWAV(String file) {
+	private IBuffer loadWAV(URL file) {
 		AudioInputStream audioStream= null;
 		try {
-			audioStream= AudioSystem.getAudioInputStream(new FileInputStream(file));
+			audioStream= AudioSystem.getAudioInputStream(file.openStream());
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedAudioFileException e) {
@@ -303,6 +320,11 @@ public class SoundSystem implements ISoundSystem {
 		IBuffer buffer= loadBuffer(file);
 		return generateSource(buffer);
 	}
+	
+	public ISource loadSource(URL file) {
+		IBuffer buffer= loadBuffer(file);
+		return generateSource(buffer);
+	}
 
 	/* (non-Javadoc)
 	 * @see com.jme.sound.ISoundSystem#generateSources(int)
@@ -333,5 +355,7 @@ public class SoundSystem implements ISoundSystem {
 	public IListener getListener() {
 		return listener;
 	}
+
+	
 
 }
