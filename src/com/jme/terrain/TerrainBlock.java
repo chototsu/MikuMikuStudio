@@ -172,10 +172,10 @@ public class TerrainBlock extends AreaClodMesh {
         for (int i = 1; i < normal.length - 1; i++) {
             if (i % ((size * (i / size + 1)) - 1) == 0) {
                 //right hand normal
-                normal[i] = vertex[i - 1].cross(vertex[i + size]).normalize();
+                normal[i] = vertex[i + 1].cross(vertex[i + size]).normalize();
             } else if (i >= size * (size - 1)) {
                 //bottom row
-                normal[i] = vertex[i + 1].cross(vertex[i - size]).normalize();
+                normal[i] = vertex[i - 1].cross(vertex[i - size]).normalize();
             } else {
                 //interior
                 normal[i] = vertex[i + size].cross(vertex[i + 1]).normalize();
