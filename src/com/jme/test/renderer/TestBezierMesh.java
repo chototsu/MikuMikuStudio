@@ -36,6 +36,7 @@ import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
 import com.jme.light.DirectionalLight;
+import com.jme.light.Light;
 import com.jme.light.PointLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -56,11 +57,12 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
+import com.jme.util.Timer;
 
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.2 2004-01-14 22:31:54 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.3 2004-01-15 15:09:20 mojomonkey Exp $
  */
 public class TestBezierMesh extends AbstractGame {
     private TriMesh t;
@@ -69,6 +71,11 @@ public class TestBezierMesh extends AbstractGame {
     private Node scene;
     private InputController input;
     private Thread thread;
+    private LightState lightstate;
+    private PointLight pl;
+    private Vector3f currentPos;
+    private Vector3f newPos;
+    private Timer timer;
 
     /**
      * Entry point for the test, 
@@ -86,7 +93,28 @@ public class TestBezierMesh extends AbstractGame {
      * @see com.jme.app.AbstractGame#update()
      */
     protected void update() {
-        input.update(0.02f);
+//      update world data
+        timer.update();
+        input.update(timer.getTimePerFrame() * 10);
+        
+        
+        //update individual sprites
+         if ((int) currentPos.x == (int) newPos.x
+             && (int) currentPos.y == (int) newPos.y
+             && (int) currentPos.z == (int) newPos.z) {
+             newPos.x = (float) Math.random() * 100;
+             newPos.y = (float) Math.random() * 100;
+             newPos.z = (float) Math.random() * 100;
+         }
+
+         currentPos.x -= (currentPos.x - newPos.x)
+             / (timer.getFrameRate() / 2);
+         currentPos.y -= (currentPos.y - newPos.y)
+             / (timer.getFrameRate() / 2);
+         currentPos.z -= (currentPos.z - newPos.z)
+             / (timer.getFrameRate() / 2);
+             
+         pl.setLocation(currentPos);
     }
 
     /** 
@@ -105,6 +133,8 @@ public class TestBezierMesh extends AbstractGame {
      * @see com.jme.app.AbstractGame#initSystem()
      */
     protected void initSystem() {
+        currentPos = new Vector3f();
+        newPos = new Vector3f();
         try {
             display = DisplaySystem.getDisplaySystem(properties.getRenderer());
             display.createWindow(
@@ -133,8 +163,8 @@ public class TestBezierMesh extends AbstractGame {
         display.getRenderer().setCamera(cam);
 
         input = new FirstPersonController(this, cam, "LWJGL");
-        display.getRenderer().setCullingMode(Renderer.CULL_BACK);
-
+        //display.getRenderer().setCullingMode(Renderer.CULL_BACK);
+        timer = Timer.getTimer("LWJGL");
     }
 
     /** 
@@ -210,20 +240,31 @@ public class TestBezierMesh extends AbstractGame {
         am2.setLocation(new Vector3f(5, 10, -10));
         //am2.setAngle(15);
 
-        DirectionalLight dr = new DirectionalLight();
-        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
-        dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
-        dr.setDirection(new Vector3f(0, 1, 0));
+//        DirectionalLight dr = new DirectionalLight();
+//        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+//        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+//        dr.setSpecular(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+//        dr.setDirection(new Vector3f(0, 1, 0));
+//
+//        LightState state = display.getRenderer().getLightState();
+//        //state.attach(am);
+//        state.attach(dr);
+//        state.attach(am2);
+//        am.setEnabled(true);
+//        am2.setEnabled(true);
+//        dr.setEnabled(true);
+//        scene.setRenderState(state);
 
-        LightState state = display.getRenderer().getLightState();
-        //state.attach(am);
-        state.attach(dr);
-        state.attach(am2);
-        am.setEnabled(true);
-        am2.setEnabled(true);
-        dr.setEnabled(true);
-        scene.setRenderState(state);
+        pl = new PointLight();
+        pl.setAmbient(new ColorRGBA(0, 0, 0, 1));
+        pl.setDiffuse(new ColorRGBA(0, 1, 0, 1));
+        pl.setSpecular(new ColorRGBA(0, 0, 1, 1));
+        pl.setEnabled(true);
+
+        lightstate = display.getRenderer().getLightState();
+        lightstate.attach(pl);
+        
+        scene.setRenderState(lightstate);
 
         WireframeState wf = display.getRenderer().getWireframeState();
         wf.setEnabled(true);
