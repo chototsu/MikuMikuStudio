@@ -5,6 +5,7 @@ import com.jme.scene.model.JointMesh2;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.LightState;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
@@ -12,6 +13,9 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.animation.VertexKeyframeController;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
+import com.jme.light.Light;
+import com.jme.light.SpotLight;
+import com.jme.light.PointLight;
 
 
 import java.io.OutputStream;
@@ -458,6 +462,50 @@ public class JmeBinaryWriter {
             writeMaterialState((MaterialState) renderState);
         else if (renderState instanceof TextureState)
             writeTextureState((TextureState)renderState);
+        else if (renderState instanceof LightState)
+            writeLightState((LightState)renderState);
+    }
+
+    private void writeLightState(LightState lightState) throws IOException {
+        if (lightState==null) return;
+        HashMap atts=new HashMap();
+        writeTag("lightstate",null);
+        for (int i=0;i<lightState.getQuantity();i++){
+            atts.clear();
+            Light thisChild=lightState.get(i);
+            putLightProperties(thisChild,atts);
+            if (thisChild.getType()==Light.LT_SPOT)
+                writeSpotLight((SpotLight)thisChild,atts);
+            else if (thisChild.getType()==Light.LT_POINT)
+                writePointLight((PointLight)thisChild,atts);
+        }
+
+        writeEndTag("lightstate");
+    }
+
+    private void writePointLight(PointLight pointLight, HashMap atts) throws IOException {
+        atts.put("loc",pointLight.getLocation());
+        writeTag("pointlight",atts);
+        writeEndTag("pointlight");
+    }
+
+    private void putLightProperties(Light child, HashMap atts) {
+        atts.put("ambient",child.getAmbient());
+        atts.put("fconstant",new Float(child.getConstant()));
+        atts.put("diffuse",child.getDiffuse());
+        atts.put("flinear",new Float(child.getLinear()));
+        atts.put("fquadratic",new Float(child.getQuadratic()));
+        atts.put("specular",child.getSpecular());
+        atts.put("isattenuate",new Boolean(child.isAttenuate()));
+    }
+
+    private void writeSpotLight(SpotLight spotLight,HashMap atts) throws IOException {
+        atts.put("loc",spotLight.getLocation());
+        atts.put("fangle",new Float(spotLight.getAngle()));
+        atts.put("dir",spotLight.getDirection());
+        atts.put("fexponent",new Float(spotLight.getExponent()));
+        writeTag("spotlight",atts);
+        writeEndTag("spotlight");
     }
 
     private void writePublicObject(Object o) throws IOException {
@@ -571,11 +619,17 @@ public class JmeBinaryWriter {
                 writeURL((URL) attrib);
             else if (attrib instanceof Integer)
                 writeInt((Integer) attrib);
-            else{
+            else if (attrib instanceof Boolean)
+                writeBoolean((Boolean)attrib);
+            else
                 throw new IOException("unknown class type for " + attrib + " of " + attrib.getClass());
-            }
             i.remove();
         }
+    }
+
+    private void writeBoolean(Boolean aBoolean) throws IOException {
+        myOut.writeByte(BinaryFormatConstants.DATA_BOOLEAN);
+        myOut.writeBoolean(aBoolean.booleanValue());
     }
 
     private void writeInt(Integer i) throws IOException {

@@ -5,6 +5,7 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.LightState;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Quaternion;
@@ -21,6 +22,9 @@ import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;
 import com.jme.scene.model.JointMesh2;
 import com.jme.scene.model.EmptyTriMesh;
+import com.jme.light.Light;
+import com.jme.light.SpotLight;
+import com.jme.light.PointLight;
 
 import java.io.InputStream;
 import java.io.DataInputStream;
@@ -238,6 +242,16 @@ public class JmeBinaryReader {
         } else if (tagName.equals("keyframepointintime")){
             s.push(attributes.get("time"));  // Store the current time on the stack
             s.push(new EmptyTriMesh());
+        } else if (tagName.equals("lightstate")){
+            s.push(buildLightState(attributes));
+        } else if (tagName.equals("spotlight")){
+            LightState parentLS=(LightState) s.pop();
+            parentLS.attach(buildSpotLight(attributes));
+            s.push(parentLS);
+        } else if (tagName.equals("pointlight")){
+            LightState parentLS=(LightState) s.pop();
+            parentLS.attach(buildPointLight(attributes));
+            s.push(parentLS);
         } else if (tagName.equals("jmefile")){
             if (attributes.get("file")!=null){
                 LoaderNode i=new LoaderNode("file "+(String) attributes.get("file"));
@@ -257,6 +271,41 @@ public class JmeBinaryReader {
         }
         return;
 
+    }
+
+    private PointLight buildPointLight(HashMap attributes) {
+        PointLight toReturn=new PointLight();
+        putLightInfo(toReturn,attributes);
+        toReturn.setLocation((Vector3f)attributes.get("loc"));
+        toReturn.setEnabled(true);
+        return toReturn;
+    }
+
+    private SpotLight buildSpotLight(HashMap attributes) {
+        SpotLight toReturn=new SpotLight();
+        putLightInfo(toReturn,attributes);
+        toReturn.setLocation((Vector3f)attributes.get("loc"));
+        toReturn.setAngle(((Float)attributes.get("fangle")).floatValue());
+        toReturn.setDirection((Vector3f)attributes.get("dir"));
+        toReturn.setExponent(((Float)attributes.get("fexponent")).floatValue());
+        toReturn.setEnabled(true);
+        return toReturn;
+    }
+
+    private void putLightInfo(Light light, HashMap attributes) {
+        light.setAmbient((ColorRGBA) attributes.get("ambient"));
+        light.setConstant(((Float)attributes.get("fconstant")).floatValue());
+        light.setDiffuse((ColorRGBA) attributes.get("diffuse"));
+        light.setLinear(((Float)attributes.get("flinear")).floatValue());
+        light.setQuadratic(((Float)attributes.get("fquadratic")).floatValue());
+        light.setSpecular((ColorRGBA) attributes.get("specular"));
+        light.setAttenuate(((Boolean)attributes.get("isattenuate")).booleanValue());
+    }
+
+    private LightState buildLightState(HashMap attributes) {
+        LightState ls=renderer.getLightState();
+        ls.setEnabled(true);
+        return ls;
     }
 
     /**
@@ -307,7 +356,7 @@ public class JmeBinaryReader {
             parentNode=(Node) s.pop();
             parentNode.attachChild(childSpatial);
             s.push(parentNode);
-        } else if (tagName.equals("sharedtypes") || tagName.equals("keyframe")){
+        } else if (tagName.equals("pointlight") || tagName.equals("spotlight") || tagName.equals("sharedtypes") || tagName.equals("keyframe")){
             // Nothing to do, these only identify XML areas
         } else if (tagName.equals("xmlloadable")){
             Object o=s.pop();
@@ -362,6 +411,11 @@ public class JmeBinaryReader {
             TriMesh parentMesh=(TriMesh) s.pop();
             parentMesh.addController(kc);
             s.push(parentMesh);
+        } else if (tagName.equals("lightstate")){
+            LightState ls=(LightState) s.pop();
+            parentSpatial=(Spatial) s.pop();
+            parentSpatial.setRenderState(ls);
+            s.push(parentSpatial);
         } else if (tagName.equals("keyframepointintime")){
             TriMesh parentMesh=(TriMesh) s.pop();
             float time=((Float) s.pop()).floatValue();
@@ -532,6 +586,9 @@ public class JmeBinaryReader {
                     break;
                 case BinaryFormatConstants.DATA_INT:
                     atribMap.put(name,new Integer(myIn.readInt()));
+                    break;
+                case BinaryFormatConstants.DATA_BOOLEAN:
+                    atribMap.put(name,new Boolean(myIn.readBoolean()));
                     break;
                 default:
                     throw new IOException("Unknown data type:" + type);
