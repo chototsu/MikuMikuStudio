@@ -309,7 +309,7 @@ public class ObjToJme extends FormatConverter{
                     texture=(Vector2f) textureList.get(tIndex-1); // obj is 1 indexed
                 }
             }
-            if (triplet[2]==null || triplet[2].equals("")){
+            if (triplet.length!=3 || triplet[2]==null || triplet[2].equals("")){
                 normal=null;
             } else{
                 nIndex=Integer.parseInt(triplet[2]);
