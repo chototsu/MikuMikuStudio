@@ -406,8 +406,8 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                         samples);
             } else {
                 int x, y;
-                x = (Toolkit.getDefaultToolkit().getScreenSize().width - width) / 2;
-                y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) / 2;
+                x = (Toolkit.getDefaultToolkit().getScreenSize().width - width) >> 1;
+                y = (Toolkit.getDefaultToolkit().getScreenSize().height - height) >> 1;
                 Window.create(title, x, y, width, height, bpp, alphaBits,
                         depthBits, stencilBits, samples);
             }
