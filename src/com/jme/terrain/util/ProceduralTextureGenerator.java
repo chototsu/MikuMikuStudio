@@ -62,7 +62,7 @@ import com.jme.util.LoggingSystem;
  * heightmap.
  *
  * @author Mark Powell
- * @version $Id: ProceduralTextureGenerator.java,v 1.7 2004-07-21 22:13:53 guurk Exp $
+ * @version $Id: ProceduralTextureGenerator.java,v 1.8 2004-08-21 00:52:57 cep21 Exp $
  */
 public class ProceduralTextureGenerator {
   //output image
@@ -171,6 +171,13 @@ public class ProceduralTextureGenerator {
                                   "Created procedural texture successfully.");
   }
 
+  /**
+   * Saves the final texture this class has created to the given filename as a png.  Note that
+   * this function will fail if createTexture is not called first.
+   * @param filename The filename to save the texture too.
+   * @return False if the texture could not be written.
+   * @see #createTexture(int)
+   */
   public boolean saveTexture(String filename) {
 
     if (null == filename) {

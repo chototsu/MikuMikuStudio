@@ -51,17 +51,20 @@ import com.jme.util.LoggingSystem;
  * heightfield with these new parameters.
  *
  * @author Mark Powell
- * @version $Id: AbstractHeightMap.java,v 1.5 2004-08-02 21:48:16 cep21 Exp $
+ * @version $Id: AbstractHeightMap.java,v 1.6 2004-08-21 00:47:44 cep21 Exp $
  */
 public abstract class AbstractHeightMap {
 
-    //Height data information
+    /** Height data information. */
     protected int[] heightData = null;
 
+    /** The size of hte height map's width. */
     protected int size = 0;
 
+    /** Allows scaling the Y height of the map. */
     protected float heightScale = 1.0f;
 
+    /** The filter is used to erode the terrain. */
     protected float filter = 0.5f;
 
     /**

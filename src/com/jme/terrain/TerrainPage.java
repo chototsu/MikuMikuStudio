@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.19 2004-05-16 20:49:43 darkprophet Exp $
+ * @version $Id: TerrainPage.java,v 1.20 2004-08-21 00:44:36 cep21 Exp $
  */
 public class TerrainPage extends Node {
 
@@ -243,7 +243,7 @@ public class TerrainPage extends Node {
      * float value is returned (Float.NaN).
      *
      * @param x the x coordinate to check.
-     * @param y the y coordinate to check.
+     * @param z the z coordinate to check.
      * @return the height at the provided location.
      */
     public float getHeight(float x, float z) {

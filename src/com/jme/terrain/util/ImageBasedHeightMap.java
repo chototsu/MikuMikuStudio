@@ -193,7 +193,7 @@ public class ImageBasedHeightMap extends AbstractHeightMap {
     }
 
     /*
-     * (non-Javadoc)
+     * This does nothing because heightData is loaded when this class is created.
      * 
      * @see com.jme.terrain.util.AbstractHeightMap#load()
      */

@@ -53,7 +53,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.28 2004-06-25 01:12:09 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.29 2004-08-21 00:43:51 cep21 Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -130,7 +130,7 @@ public class TerrainBlock extends AreaClodMesh {
      * @param offset
      *            the offset for texture coordinates.
      * @param offsetAmount
-     *            the total offset amount.
+     *            the total offset amount.  Used for texture coordinates.
      */
     protected TerrainBlock(String name, int size, Vector3f stepScale,
             int[] heightMap, Vector3f origin, boolean clod, int totalSize,
@@ -162,18 +162,37 @@ public class TerrainBlock extends AreaClodMesh {
         }
     }
 
-    public void setOffset(Vector2f offset) {
-      this.offset = offset;
-    }
-
+  /**
+   * If true, the terrain is created as a ClodMesh.  This is only usefull as a call after the
+   *  default constructor.
+   * @param useClod
+   */
   public void setUseClod(boolean useClod) {
     this.useClod = useClod;
   }
 
+  /**
+   * Returns the current offset amount.  This is used when building texture coordinates.
+   * @return The current offset amount.
+   */
   public Vector2f getOffset() {
       return offset;
-    }
+  }
 
+  /**
+   * Sets the value for the current offset amount to use when building texture coordinates.
+   * This function is pretty useless in the current state because an offset amount is only used
+   * during the constructor.
+   * @param offset
+   */
+  public void setOffset(Vector2f offset) {
+      this.offset = offset;
+  }
+
+  /**
+   * Returns true if this TerrainBlock was created as a clod.
+   * @return True if this terrain block is a clod.  False otherwise.
+   */
   public boolean isUseClod() {
     return useClod;
   }
@@ -256,8 +275,8 @@ public class TerrainBlock extends AreaClodMesh {
      *
      * @param x
      *            the x coordinate to check.
-     * @param y
-     *            the y coordinate to check.
+     * @param z
+     *            the z coordinate to check.
      * @return the height at the provided location.
      */
     public float getHeight(float x, float z) {
