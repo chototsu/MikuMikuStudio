@@ -41,15 +41,16 @@ package com.jme.scene;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Stack;
 import java.util.logging.Level;
 
-import com.jme.bounding.*;
+import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.renderer.Renderer;
 import com.jme.util.LoggingSystem;
-import java.util.Stack;
 
 /**
  * <code>Node</code> defines an internal node of a scene graph. The internal
@@ -59,7 +60,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.36 2005-01-13 04:12:08 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.37 2005-02-20 23:24:23 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -120,7 +121,7 @@ public class Node extends Spatial implements Serializable {
         LoggingSystem.getLogger().log(
                 Level.INFO,
                 "Child (" + child.getName() + ") attached to this" + " node ("
-                        + name + ")");
+                        + getName() + ")");
 
         return children.size();
     }
@@ -219,6 +220,24 @@ public class Node extends Spatial implements Serializable {
      */
     public Spatial getChild(int i) {
         return (Spatial) children.get(i);
+    }
+
+    /**
+     * 
+     * <code>getChild</code> returns the first child found with
+     * exactly the given name (case sensitive.)
+     * 
+     * @param name
+     *            the name of the child to retrieve.
+     * @return the child if found, or null.
+     */
+    public Spatial getChild(String name) {
+        Iterator it = children.iterator();
+        while (it.hasNext()) {
+            Spatial child = (Spatial)it.next();
+            if (name.equals(child.getName())) return child;
+        }
+        return null;
     }
 
     public void setForceView(boolean value) {
