@@ -44,9 +44,9 @@ import com.jme.input.*;
 
 /**
  * UIEditBox is a Node based aggrigation b/t a UIText and UIActiveArea
- * 
+ *
  * @author schustej
- *  
+ *
  */
 public class UIEditBox extends Node {
 
@@ -56,9 +56,10 @@ public class UIEditBox extends Node {
 
     boolean _active = false;
     boolean _activeateOnHover = true;
-    
+
     int _cursorPos = 0;
     String _curText = "";
+    String _oldText = "";
 
     /**
      * Constructor.
@@ -82,11 +83,11 @@ public class UIEditBox extends Node {
         _text = new UIText(name + "TEXT", fontFileName, x, y, scale, xtrim, ytrim);
         _hitArea = new UIActiveArea(x, y, (int) (_text._texSizeX * charsDisWidth), (int) (_text._texSizeY),
                 inputHandler);
-        
+
         _text.setText( _curText);
-        
+
         this.attachChild(_text);
-        
+
         _inputHandler.addBufferedKeyAction( new AbstractInputAction() {
             public void performAction(float time) {
                 if (_active)
@@ -118,7 +119,9 @@ public class UIEditBox extends Node {
     protected void KeyPress( String key) {
 
         int val = _inputHandler.getKeyBindingManager().getKeyInput().getKeyIndex( key);
-        
+
+        _oldText = _curText;
+
         switch( val) {
         	case KeyInput.KEY_BACK: {
         	    if( _cursorPos > 0)
@@ -142,7 +145,7 @@ public class UIEditBox extends Node {
         }
         checkPos();
     }
-    
+
     /**
      * Checks the position of the cursor, making sure that it's not out-of-bounds
      *
@@ -155,7 +158,7 @@ public class UIEditBox extends Node {
             _cursorPos = _curText.length();
         }
     }
-    
+
     /**
      * used to update the active flag and the text in the box to be rendered
      * @return
@@ -174,8 +177,9 @@ public class UIEditBox extends Node {
             }
         }
 
-        if (_active) {
-    	    _text.setText( _curText);
+        if (_active && !_oldText.equals(_curText)) {
+          _oldText = _curText;
+          _text.setText( _curText);
         }
 
         return retval;

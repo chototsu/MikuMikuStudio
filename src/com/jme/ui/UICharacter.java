@@ -46,9 +46,9 @@ import com.jme.system.DisplaySystem;
 /**
  * UICharacter is used by UIText to create text strings on screen.
  * Each UICharacter is unique and a part of the whole font file texture.
- * 
+ *
  * @author schustej
- *  
+ *
  */
 public class UICharacter extends UIObject {
 
@@ -58,7 +58,7 @@ public class UICharacter extends UIObject {
      * of the corners of the quad
      * @param name unique
      * @param ts the texture state that contains the texture that has the characters
-     * @param tx 
+     * @param tx
      * @param ty
      * @param tx2
      * @param ty2
@@ -81,7 +81,8 @@ public class UICharacter extends UIObject {
 
         setTextures(texCoords);
 
-        _scale = scale;
+        _xscale = scale;
+        _yscale = scale;
     }
 
     /**
@@ -92,7 +93,7 @@ public class UICharacter extends UIObject {
      * @param tmp
      */
     public UICharacter(String name, UICharacter tmp) {
-        super( name + tmp.getName(), null, 0, 0, tmp._scale);
+        super( name + tmp.getName(), null, 0, 0, tmp._xscale, tmp._yscale);
 
         this._textureStates = tmp._textureStates;
         this._width = tmp._width;
@@ -107,7 +108,8 @@ public class UICharacter extends UIObject {
         setTextures(tmp.getTextures());
         setIndices(tmp.getIndices());
 
-        setLocalScale(_scale);
+        getLocalScale().x = _xscale;
+        getLocalScale().y = _yscale;
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
     }
 
@@ -122,7 +124,8 @@ public class UICharacter extends UIObject {
 
         initialize(_width, _height);
 
-        setLocalScale(_scale);
+        getLocalScale().x = _xscale;
+        getLocalScale().y = _yscale;
 
         /*
          * doesn't seem to work right. It ends up being in the wrong place.

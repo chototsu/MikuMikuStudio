@@ -37,19 +37,18 @@
 package com.jme.ui;
 
 import com.jme.image.Texture;
+import com.jme.input.InputHandler;
 import com.jme.input.MouseButtonStateType;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import com.jme.input.*;
-import com.jme.math.Vector3f;
 
 /**
  * UIButton is a UIObject derived class that uses mouse input to change out the
  * texture that is shown on the button
- * 
+ *
  * @author schustej
- *  
+ *
  */
 public class UIButton extends UIObject {
 
@@ -57,11 +56,11 @@ public class UIButton extends UIObject {
      * Constructor requires the unique name, the inputhandler with the mouse
      * that will be monitored for hit tests and the 3 files for the states that
      * it will show.
-     * 
+     *
      * The states may be up, over and down. Up is the steady state. Over, is
      * used for when the mouse is over the button. Down is when the left mouse
      * button is down and the mouse is over the button.
-     * 
+     *
      * @param name
      * @param inputHandler
      * @param upfile
@@ -69,17 +68,17 @@ public class UIButton extends UIObject {
      * @param downfile
      * @param x
      * @param y
-     * @param scale
+     * @param scale - used for both x and y scale
      */
     public UIButton(String name, InputHandler inputHandler, String upfile, String overfile, String downfile,
             int x, int y, float scale) {
-        this(name, inputHandler, upfile, overfile, downfile, x, y, scale, true);
+        this(name, inputHandler, upfile, overfile, downfile, x, y, scale, scale, true);
     }
 
     /**
      * Difference allows for the images to be loaded directly from the file
      * system instead of via the classloader
-     * 
+     *
      * @param name
      * @param inputHandler
      * @param upfile
@@ -91,8 +90,8 @@ public class UIButton extends UIObject {
      * @param useClassloader
      */
     public UIButton(String name, InputHandler inputHandler, String upfile, String overfile, String downfile,
-            int x, int y, float scale, boolean useClassloader) {
-        super(name, inputHandler, x, y, scale);
+            int x, int y, float xscale, float yscale, boolean useClassloader) {
+        super(name, inputHandler, x, y, xscale, yscale);
 
         _textureStates = new TextureState[3];
 
@@ -129,7 +128,7 @@ public class UIButton extends UIObject {
     /**
      * Needs to be called during the update cycle to allow for
      * the mouse to be checked for hit test and mouse button state.
-     * 
+     *
      */
     public boolean update() {
 

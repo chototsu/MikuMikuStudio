@@ -46,10 +46,10 @@ import com.jme.math.Vector3f;
  * in a Orthogonal way. Also has a couple of convienience methods
  * to center the image in the screen and to change the width and height on
  * the screen.
- * 
+ *
  * The image file that is specified still needs to be sized by the standard
- * texture power of 2 rule. 
- * 
+ * texture power of 2 rule.
+ *
  * @author schustej
  *
  */
@@ -58,17 +58,17 @@ public class UIBillboard extends UIObject {
     /**
      * Specific the image file to be shown. Just like all objects in jME, name it
      * with a unique name.
-     * 
+     *
      * @param name
      * @param imgfile
      * @param x
      * @param y
-     * @param scale
+     * @param scale - used for both x and y scale
      */
 	public UIBillboard( String name, String imgfile, int x, int y, float scale) {
-	    this( name, imgfile, x, y, scale, true);
-	}	    
-	    
+	    this( name, imgfile, x, y, scale, scale, true);
+	}
+
 	/**
 	 * Allows developer to load the image file directly from the file system instead of using
 	 * the classloader by default
@@ -79,15 +79,15 @@ public class UIBillboard extends UIObject {
 	 * @param scale
 	 * @param useClassLoader
 	 */
-	public UIBillboard( String name, String imgfile, int x, int y, float scale, boolean useClassLoader) {
-	    
-		super(name, null, x, y, scale);
-		
+	public UIBillboard( String name, String imgfile, int x, int y, float xscale, float yscale, boolean useClassLoader) {
+
+		super(name, null, x, y, xscale, yscale);
+
 		_textureStates = new TextureState[1];
-		
+
 		_textureStates[0] = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 		_textureStates[0].setEnabled(true);
-		
+
 		if( useClassLoader) {
 			_textureStates[0].setTexture(TextureManager.loadTexture(UIObject.class
 					.getClassLoader().getResource( imgfile),
@@ -102,7 +102,7 @@ public class UIBillboard extends UIObject {
 		setup();
 
 	}
-	
+
 	/**
 	 * Easy way to combine construction and a new image size with centering.
 	 * @param name
@@ -119,7 +119,7 @@ public class UIBillboard extends UIObject {
 	    if( center)
 	        center();
 	}
-	
+
 	/**
 	 * Easy method that will center the image within the display.
 	 *
@@ -127,19 +127,20 @@ public class UIBillboard extends UIObject {
 	public void center() {
 		_x = DisplaySystem.getDisplaySystem().getWidth() / 2 - _width / 2;
 		_y = DisplaySystem.getDisplaySystem().getHeight() / 2 - _height / 2;
-		setLocalScale(_scale);
+                getLocalScale().x = _xscale;
+                getLocalScale().y = _yscale;
 		setLocalTranslation(new Vector3f(_x + _width / 2, _y + _height / 2,
 				0.0f));
 	}
-	
+
 	/**
 	 * Used to set the wrapping parameters.
-	 * Use Texture.WM_* wrapping parameters. 
+	 * Use Texture.WM_* wrapping parameters.
 	 */
 	public void setWrap( int wrap) {
 	    _textureStates[0].getTexture().setWrap( wrap);
 	}
-	
+
 	/**
 	 * Non-functionaly method since there is no user interaction with this object
 	 */

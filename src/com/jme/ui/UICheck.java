@@ -42,18 +42,17 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.input.*;
-import com.jme.math.Vector3f;
 
 /**
  * UIObject derrived object that adds another state beyond the UIButton, a
  * checked state.
- * 
+ *
  * The UICheck may be Up, Over, Down or Checked. When the state is Checked, then
  * the other states are disabled. When UnChecked the Up, Over and Down states
  * apply.
- * 
+ *
  * @author schustej
- *  
+ *
  */
 public class UICheck extends UIObject {
 
@@ -71,13 +70,13 @@ public class UICheck extends UIObject {
      * @param selectedfile
      * @param x
      * @param y
-     * @param scale
+     * @param scale - used for both x and y scale
      */
     public UICheck(String name, InputHandler inputHandler, String upfile, String overfile, String downfile,
             String selectedfile, int x, int y, float scale) {
-        this( name, inputHandler, upfile, overfile, downfile, selectedfile, x, y, scale, true);
+        this( name, inputHandler, upfile, overfile, downfile, selectedfile, x, y, scale, scale, true);
     }
-    
+
     /**
      * Alternate constructer allow developer to load directly from file system
      * @param name
@@ -92,10 +91,10 @@ public class UICheck extends UIObject {
      * @param useClassLoader
      */
     public UICheck(String name, InputHandler inputHandler, String upfile, String overfile, String downfile,
-                String selectedfile, int x, int y, float scale, boolean useClassLoader) {
-        
-        
-        super(name, inputHandler, x, y, scale);
+                String selectedfile, int x, int y, float xscale, float yscale, boolean useClassLoader) {
+
+
+        super(name, inputHandler, x, y, xscale, yscale);
 
         _textureStates = new TextureState[4];
 
@@ -156,12 +155,12 @@ public class UICheck extends UIObject {
                 // button is up
                 if (_state == DOWN) {
                     // Fire action. here
+                    retval = true;
                     if (!_selected) {
                         this.setRenderState(_textureStates[3]);
                         this.updateRenderState();
                         _selected = true;
                         _state = OVER;
-                        retval = true;
                     } else {
                         _selected = false;
                     }
@@ -184,7 +183,7 @@ public class UICheck extends UIObject {
 
     /**
      * Override of the UIObject getState() which returns also the checked or selected
-     * state. 
+     * state.
      */
     public int getState() {
         if (_selected) {
@@ -192,5 +191,18 @@ public class UICheck extends UIObject {
         } else {
             return _state;
         }
+    }
+
+    /**
+     * sets the current state of the button.
+     */
+    public void setSelected(boolean sel) {
+      int newState = sel ? SELECTED : UP;
+      _selected = sel;
+      if (_state != newState) {
+        _state = newState;
+        this.setRenderState(_textureStates[_state]);
+        this.updateRenderState();
+      }
     }
 }

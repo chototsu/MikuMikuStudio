@@ -69,7 +69,8 @@ public abstract class UIObject extends Quad {
     protected int _width = 0;
     protected int _height = 0;
 
-    protected float _scale = 1.0f;
+    protected float _xscale = 1.0f;
+    protected float _yscale = 1.0f;
 
     protected int _state = UP;
 
@@ -94,7 +95,26 @@ public abstract class UIObject extends Quad {
         _inputHandler = inputHandler;
         _x = x;
         _y = y;
-        _scale = scale;
+        _xscale = scale;
+        _yscale = scale;
+        _actions = new Vector();
+    }
+
+    /**
+     * Constructor.
+     * @param name
+     * @param inputHandler
+     * @param x
+     * @param y
+     * @param scale
+     */
+    public UIObject(String name, InputHandler inputHandler, int x, int y, float xscale, float yscale) {
+        super(name);
+        _inputHandler = inputHandler;
+        _x = x;
+        _y = y;
+        _xscale = xscale;
+        _yscale = yscale;
         _actions = new Vector();
     }
 
@@ -120,10 +140,11 @@ public abstract class UIObject extends Quad {
         this.setRenderState(as1);
 
         initialize(_width, _height);
-        setLocalTranslation(new Vector3f(_x + (_width * _scale / 2), _y + (_height * _scale / 2), 0.0f));
-        setLocalScale(_scale);
+        setLocalTranslation(new Vector3f(_x + (_width * _xscale * .5f), _y + (_height * _yscale * .5f), 0.0f));
+        getLocalScale().x = _xscale;
+        getLocalScale().y = _yscale;
 
-        _hitArea = new UIActiveArea(_x, _y, (int) (_width * _scale), (int) (_height * _scale), _inputHandler);
+        _hitArea = new UIActiveArea(_x, _y, (int) (_width * _xscale), (int) (_height * _yscale), _inputHandler);
 
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
     }
@@ -203,6 +224,7 @@ public abstract class UIObject extends Quad {
 			((UIInputAction) actionIter.next()).performAction( this);
 		}
     }
+
     /**
      * After loading the image this method may be called to resize the image to
      * any on-screen size. Note that this WILL cause distortion of the images.
@@ -214,10 +236,26 @@ public abstract class UIObject extends Quad {
         _width = w;
         _height = h;
         initialize(_width, _height);
-        setLocalScale(_scale);
-        setLocalTranslation(new Vector3f(_x + _width / 2, _y + _height / 2, 0.0f));
+        getLocalScale().x = _xscale;
+        getLocalScale().y = _yscale;
+        setLocalTranslation(new Vector3f(_x + _width>>1, _y + _height>>1, 0.0f));
     }
 
+
+    /**
+     * After loading the image this method may be called to rescale the image.
+     * Note that this WILL cause distortion of the image.
+     *
+     * @param xscale
+     * @param yscale
+     */
+    public void setScale(float xscale, float yscale) {
+        _xscale = xscale;
+        _yscale = yscale;
+        getLocalScale().x = _xscale;
+        getLocalScale().y = _yscale;
+        setLocalTranslation(new Vector3f(_x + _width>>1, _y + _height>>1, 0.0f));
+    }
 
     /**
      * Moves the quad around the screen, properly setting local params at the
@@ -226,7 +264,7 @@ public abstract class UIObject extends Quad {
     public void setLocation(int x, int y) {
       _x = x;
       _y = y;
-      setLocalTranslation(new Vector3f(_x + _width / 2, _y + _height / 2,
+      setLocalTranslation(new Vector3f(_x + _width>>1, _y + _height>>1,
                                        0.0f));
       _hitArea._x = _x;
       _hitArea._y = _y;
