@@ -32,6 +32,7 @@
 package com.jme.renderer;
 
 import com.jme.curve.Curve;
+import com.jme.effects.Tint;
 import com.jme.input.Mouse;
 import com.jme.scene.Clone;
 import com.jme.scene.CloneNode;
@@ -73,7 +74,7 @@ import com.jme.widget.text.WidgetText;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.15 2004-03-02 14:57:58 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.16 2004-03-02 19:41:24 darkprophet Exp $
  */
 public interface Renderer {
     /**
@@ -250,6 +251,13 @@ public interface Renderer {
      * @param s the scene to render.
      */
     public void draw(Spatial s);
+    
+    
+    /**
+     * <code>draw</code> renders a tint to the back buffer
+     * @param t is the tint to render.
+     */
+    public void draw(Tint t);
     
     /**
      * <code>draw</code> renders a single point to the back buffer. 
