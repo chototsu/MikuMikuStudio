@@ -5,6 +5,7 @@ import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.model.XMLparser.Converters.MaxToJme;
 import com.jme.scene.Node;
+import com.jme.scene.state.CullState;
 import com.jme.scene.shape.Box;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
@@ -12,6 +13,7 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.renderer.ColorRGBA;
 import com.jme.light.DirectionalLight;
 import com.jme.light.PointLight;
+import com.jme.system.DisplaySystem;
 
 
 import java.io.*;
@@ -58,7 +60,7 @@ public class TestMaxJmeWrite extends SimpleGame{
             System.out.println(SW);
 //            jbr.setProperty("texurl",new File("3dsmodels").toURI().toURL());
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-//            r.setLocalScale(.1f);
+            rootNode.setLocalTranslation(new Vector3f(0,0,10));
             rootNode.attachChild(r);
 //            lightState.detachAll();
             PointLight DL=new PointLight();
