@@ -31,6 +31,7 @@
  */
 /*
  * EDIT:  02/09/2004 - Added viewport accessors. GOP
+ * EDIT:  03/30/2004 - Added frustum accessors. GOP
  */
 
 package com.jme.renderer;
@@ -48,7 +49,7 @@ import com.jme.scene.BoundingVolume;
  * frustum culling.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.6 2004-03-11 00:05:14 renanse Exp $
+ * @version $Id: Camera.java,v 1.7 2004-03-30 11:56:38 greggpatton Exp $
  */
 public interface Camera extends Serializable {
 
@@ -134,6 +135,80 @@ public interface Camera extends Serializable {
      */
     public void setFrustum(float near, float far, float left,
             float right, float top, float bottom);
+
+    /**
+     * <code>getFrustumBottom</code> returns the value of the bottom frustum
+     * plane.
+     * @return the value of the bottom frustum plane.
+     */
+    public float getFrustumBottom();
+
+    /**
+     * <code>setFrustumBottom</code> sets the value of the bottom frustum
+     * plane.
+     * @param frustumBottom the value of the bottom frustum plane.
+     */
+    public void setFrustumBottom(float frustumBottom);
+
+    /**
+     * <code>getFrustumFar</code> gets the value of the far frustum plane.
+     * @return the value of the far frustum plane.
+     */
+    public float getFrustumFar();
+
+    /**
+     * <code>setFrustumFar</code> sets the value of the far frustum plane.
+     * @param frustumFar the value of the far frustum plane.
+     */
+    public void setFrustumFar(float frustumFar);
+
+    /**
+     * <code>getFrustumLeft</code> gets the value of the left frustum plane.
+     * @return the value of the left frustum plane.
+     */
+    public float getFrustumLeft();
+
+    /**
+     * <code>setFrustumLeft</code> sets the value of the left frustum plane.
+     * @param frustumLeft the value of the left frustum plane.
+     */
+    public void setFrustumLeft(float frustumLeft);
+
+    /**
+     * <code>getFrustumNear</code> gets the value of the near frustum plane.
+     * @return the value of the near frustum plane.
+     */
+    public float getFrustumNear();
+
+    /**
+     * <code>setFrustumNear</code> sets the value of the near frustum plane.
+     * @param frustumNear the value of the near frustum plane.
+     */
+    public void setFrustumNear(float frustumNear);
+
+    /**
+     * <code>getFrustumRight</code> gets the value of the right frustum plane.
+     * @return frustumRight the value of the right frustum plane.
+     */
+    public float getFrustumRight();
+
+    /**
+     * <code>setFrustumRight</code> sets the value of the right frustum plane.
+     * @param frustumRight the value of the right frustum plane.
+     */
+    public void setFrustumRight(float frustumRight);
+
+    /**
+     * <code>getFrustumTop</code> gets the value of the top frustum plane.
+     * @return the value of the top frustum plane.
+     */
+    public float getFrustumTop();
+
+    /**
+     * <code>setFrustumTop</code> sets the value of the top frustum plane.
+     * @param frustumTop the value of the top frustum plane.
+     */
+    public void setFrustumTop(float frustumTop);
 
     /**
      * <code>setFrame</code> sets the view frame of the camera by setting the
