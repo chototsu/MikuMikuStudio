@@ -41,6 +41,7 @@ public class HelloIntersection extends SimpleGame {
     SphericalSound laserSound;
     /** Flag for playing laser*/
     boolean playLaser;
+    Skybox sb;
     public static void main(String[] args) {
         HelloIntersection app = new HelloIntersection();
         app.setDialogBehaviour(SimpleGame.ALWAYS_SHOW_PROPS_DIALOG);
@@ -76,14 +77,14 @@ public class HelloIntersection extends SimpleGame {
         target.updateModelBound();
         rootNode.attachChild(target);
         /** Create a skybox to suround our world*/
-        Skybox sb=new Skybox("skybox",200,200,200);
+        sb=new Skybox("skybox",200,200,200);
         URL monkeyLoc=HelloIntersection.class.getClassLoader().getResource("jmetest/data/texture/clouds.png");
         TextureState ts=display.getRenderer().getTextureState();
         ts.setTexture(
             TextureManager.loadTexture(monkeyLoc,Texture.MM_LINEAR,Texture.FM_LINEAR,true)
         );
+        ts.setEnabled(true);
         sb.setRenderState(ts);
-        rootNode.attachChild(sb);
 
         /** Set the action called "firebullet", bound to KEY_F, to performAction FireBullet*/
         input.addKeyboardAction("firebullet",KeyInput.KEY_F,new FireBullet());
@@ -172,13 +173,13 @@ public class HelloIntersection extends SimpleGame {
             SoundAPIController.getRenderer().draw(laserSound);
             playLaser=false;
         }
+       display.getRenderer().draw(sb);
     }
 
     /**
      * Called every frame for updating
      */
     protected void simpleUpdate(){
-        /** Update laser sound*/
-        laserSound.updateGeometricState(timer.getTimeInSeconds(),true);
+        sb.setLocalTranslation(cam.getLocation());
     }
 }
