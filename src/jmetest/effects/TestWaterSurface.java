@@ -48,7 +48,7 @@ import com.jme.input.KeyInput;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestWaterSurface.java,v 1.1 2004-04-24 23:12:49 renanse Exp $
+ * @version $Id: TestWaterSurface.java,v 1.2 2004-04-25 00:09:48 renanse Exp $
  */
 public class TestWaterSurface extends SimpleGame {
 
@@ -69,14 +69,14 @@ public class TestWaterSurface extends SimpleGame {
         KeyInput.KEY_Q);
 
     display.setTitle("Water Surface");
-    water = new WaterSurface("water", 50, 50, .5f);
+    water = new WaterSurface("water", 64, 64, .1f);
     rootNode.attachChild(water);
 
     TextureState ts = display.getRenderer().getTextureState();
     ts.setEnabled(true);
     Texture t1 = TextureManager.loadTexture(
         TestWaterSurface.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.jpg"),
+        "jmetest/data/texture/water.png"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR,
         true);

@@ -47,14 +47,14 @@ import com.jme.math.Vector2f;
  * Portions from Game Programming Gems 4 article by Jerry Tessendorf
  *
  * @author Joshua Slack
- * @version $Id: WaterSurface.java,v 1.1 2004-04-24 23:12:50 renanse Exp $
+ * @version $Id: WaterSurface.java,v 1.2 2004-04-25 00:09:48 renanse Exp $
  */
 
 public class WaterSurface extends TriMesh {
   private int iwidth, iheight, size;
   private float[] vertical_derivative, height, previous_height;
   float kernel[][] = new float[13][13];
-  float gravity, alpha;
+  float gravity, tension;
   float display_map[];
   float obstruction[];
   float source[];
@@ -69,7 +69,7 @@ public class WaterSurface extends TriMesh {
 
     size = iwidth * iheight;
 
-    alpha = 0.3f;
+    tension = .4f;
 
     scaling_factor = 1.0f;
 //    toggle_animation_on_off = true;
@@ -251,13 +251,13 @@ public class WaterSurface extends TriMesh {
     if (KeyBindingManager
         .getKeyBindingManager()
         .isValidCommand("drip", false)) {
-      int spot = (int)(FastMath.nextRandomFloat()*size);
+      int spot = (int)(FastMath.nextRandomFloat()*(size-iwidth*2))+iwidth;
       System.err.println("hit");
-      source[spot]+=.5f;
-      source[spot-1]+=.25f;
-      source[spot+1]+=.25f;
-      source[spot+iwidth]+=.25f;
-      source[spot-iwidth]+=.25f;
+      source[spot]+=.25f;
+//      source[spot-1]+=.125f;
+//      source[spot+1]+=.125f;
+//      source[spot+iwidth]+=.125f;
+//      source[spot-iwidth]+=.125f;
     }
     propagate(dt);
     convertToDisplay();
@@ -291,6 +291,7 @@ public class WaterSurface extends TriMesh {
   }
 
   void propagate(float dt) {
+    dt *= 3;
     // apply obstruction
     gravity = 9.8f * dt * dt;
     for (int i = 0; i < size; i++)
@@ -300,7 +301,7 @@ public class WaterSurface extends TriMesh {
     computeVerticalDerivative();
 
     // advance surface
-    float adt = alpha * dt;
+    float adt = tension * dt;
     float adt2 = 1.0f / (1.0f + adt);
     for (int i = 0; i < size; i++) {
       float temp = height[i];
