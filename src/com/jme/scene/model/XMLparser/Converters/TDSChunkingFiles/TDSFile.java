@@ -87,21 +87,29 @@ public class TDSFile extends ChunkerClass{
         }
         if (ls!=null)
             uberNode.setRenderState(ls);
-        uberNode.addController(st);
+        if (st.keyframes.size()==1)
+            st.setTimeFrame(0);
+        else
+            uberNode.addController(st);
         st.setActive(true);
         return uberNode;
     }
 
     private void putTranslations() {
-        st=new SpatialTransformer(spatialNodes.size());
+        int spatialCount=0;
+        for (int i=0;i<spatialNodes.size();i++)
+            if (spatialNodes.get(i) instanceof Spatial) spatialCount++;
+        st=new SpatialTransformer(spatialCount);
+        spatialCount=0;
         for (int i=0;i<spatialNodes.size();i++){
-            st.setObject(spatialNodes.get(i),i,getParentIndex(i));
+            if (spatialNodes.get(i) instanceof Spatial){
+                st.setObject(spatialNodes.get(i),spatialCount++,getParentIndex(i));
+            }
         }
         Object[] keysetKeyframe=keyframes.objKeyframes.keySet().toArray();
         for (int i=0;i<keysetKeyframe.length;i++){
             KeyframeInfoChunk thisOne=(KeyframeInfoChunk) keyframes.objKeyframes.get(keysetKeyframe[i]);
             int indexInST=findIndex(thisOne.name);
-            st.putPivot(indexInST,thisOne.pivot);
             for (int j=0;j<thisOne.track.size();j++){
                 KeyframeInfoChunk.KeyPointInTime thisTime=(KeyframeInfoChunk.KeyPointInTime) thisOne.track.get(j);
                 if (thisTime.rot!=null)
@@ -112,19 +120,23 @@ public class TDSFile extends ChunkerClass{
                     st.setScale(indexInST,thisTime.frame,thisTime.scale);
             }
         }
-        st.interpolateMissing();
         st.setSpeed(10);
     }
 
 
     private int findIndex(String name) {
+        int j=0;
         for (int i=0;i<spatialNodesNames.size();i++){
-            if (spatialNodesNames.get(i).equals(name)) return i;
+            if (spatialNodesNames.get(i).equals(name)) return j;
+            if (spatialNodes.get(i) instanceof Spatial) j++;
         }
         throw new JmeException("Logic error.  Unknown keyframe name " + name);
     }
 
     private int getParentIndex(int objectIndex) {
+        int b=3;
+        if (((KeyframeInfoChunk)keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex)))==null)
+            return -2;
         short parentID=((KeyframeInfoChunk)keyframes.objKeyframes.get(spatialNodesNames.get(objectIndex))).parent;
         if (parentID==-1) return -1;
         Object[] objs=keyframes.objKeyframes.keySet().toArray();
