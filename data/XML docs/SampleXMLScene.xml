@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--Sample scene to load-->
 <Scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="LoaderFormat.xsd">
 	<Model name="Human">
 		<Mesh name="Head">
-			<Color/>
-			<Index> 0 1 2
-            </Index>
-			<Normal/>
-			<TextureCoords/>
+			<MaterialState emissive="0 0 0 1" alpha="1" ambient="0 0 0 1" diffuse="0 1 0 1" shiny="64" specular="1 1 1 1"/>
 			<Vertex>
             0 0 0 1 0 0 0 1 0 </Vertex>
-			<DirectionalLight SpecularColor="0 0 0 0"/>
+			<Normal>0 0 1 0 0 1 0 0 1</Normal>
+			<Color>1 0 0 1 0 1 0 1 0 0 0 1 </Color>
+			<TextureCoords/>
+			<Index> 0 1 2
+            </Index>
 		</Mesh>
-		<KeyframeAnimation/>
+		<Primative type="Box" params="MyBox -1 -1 -1 1 1 1" translation="7 7 7"/>
 	</Model>
 </Scene>
