@@ -133,7 +133,7 @@ public class TestImposterNode extends VariableTimestepGame {
       System.exit(1);
     }
 
-    ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
+    ColorRGBA blackColor = new ColorRGBA(1, 1, 1, 1);
     display.getRenderer().setBackgroundColor(blackColor);
 
     // setup our camera
@@ -169,7 +169,7 @@ public class TestImposterNode extends VariableTimestepGame {
 
     model = new Md2Model("Dr Freak");
     model.load(TestImposterNode.class.getClassLoader().getResource("jmetest/"+FILE_NAME));
-    model.getAnimationController().setSpeed(60);
+    model.getAnimationController().setSpeed(10);
     model.getAnimationController().setRepeatType(Controller.RT_WRAP);
     fakeScene.attachChild(model);
 
@@ -192,10 +192,10 @@ public class TestImposterNode extends VariableTimestepGame {
                     true));
     fakeScene.setRenderState(ts);
 
-    iNode = new ImposterNode("model imposter", 10);
+    iNode = new ImposterNode("model imposter", 10, 512, 512);
     iNode.attachChild(fakeScene);
     iNode.setCameraDistance(100);
-    iNode.setRedrawRate(.035f);
+    iNode.setRedrawRate(.05f); // .05 = update texture 20 times a second on average
     BillboardNode bnode = new BillboardNode("imposter bbnode");
     bnode.setType(BillboardNode.SCREEN_ALIGNED);
     bnode.attachChild(iNode);
