@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.25 2004-05-12 19:07:11 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.26 2004-05-12 19:58:48 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -163,11 +163,19 @@ public class TerrainBlock extends AreaClodMesh {
       this.offset = offset;
     }
 
-    public Vector2f getOffset() {
+  public void setUseClod(boolean useClod) {
+    this.useClod = useClod;
+  }
+
+  public Vector2f getOffset() {
       return offset;
     }
 
-    /**
+  public boolean isUseClod() {
+    return useClod;
+  }
+
+  /**
      * <code>chooseTargetRecord</code> determines which level of detail to
      * use. If CLOD is not used, the index 0 is always returned.
      *

@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector2f</code> defines a Vector for a two float value vector.
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector2f.java,v 1.5 2004-04-22 22:26:40 renanse Exp $
+ * @version $Id: Vector2f.java,v 1.6 2004-05-12 19:58:49 renanse Exp $
  */
 public class Vector2f {
     /**
@@ -338,6 +338,19 @@ public class Vector2f {
      */
     public void zero() {
         x = y = 0;
+    }
+
+    /**
+     * <code>hashCode</code> returns a unique code for this vector object based
+     * on it's values. If two vectors are logically equivalent, they will return
+     * the same hash code value.
+     * @return the hash code value of this vector.
+     */
+    public int hashCode() {
+        int hash = 17;
+        hash += 37 * x;
+        hash += 37 * y;
+        return hash;
     }
 
     /**
