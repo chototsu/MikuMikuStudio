@@ -51,8 +51,8 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.sound.ISource;
-import com.jme.sound.SoundAPIController;
+//import com.jme.sound.ISource;
+//import com.jme.sound.SoundAPIController;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
@@ -74,7 +74,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene2</code>
  * @author Gregg Patton
- * @version $Id: TestScene2.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: TestScene2.java,v 1.3 2004-02-25 16:36:47 mojomonkey Exp $
  */
 public class TestScene2 extends TestAbstractScene implements Observer {
 
@@ -93,7 +93,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
     private SpotLight spotlight2;
     private DirectionalLight dr;
 
-    private ISource clickSource;
+   // private ISource clickSource;
 
     /**
      * 
@@ -101,7 +101,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
     public TestScene2() {
         super();
 
-        clickSource = SoundAPIController.getSoundSystem().loadSource("data/sound/click.mp3");
+        //clickSource = SoundAPIController.getSoundSystem().loadSource("data/sound/click.mp3");
 
     }
 
@@ -113,10 +113,10 @@ public class TestScene2 extends TestAbstractScene implements Observer {
     public void update(Observable o, Object arg) {
         if (arg == startStopButton) {
             toggleStartStop();
-            clickSource.play();
+            //clickSource.play();
         } else if (arg == onOffButton) {
             toggleOnOff();
-            clickSource.play();
+            //clickSource.play();
         }
     }
 

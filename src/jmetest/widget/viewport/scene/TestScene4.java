@@ -31,6 +31,8 @@
 */
 package jmetest.widget.viewport.scene;
 
+import java.net.URL;
+
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -54,7 +56,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene4</code>
  * @author Gregg Patton
- * @version $Id: TestScene4.java,v 1.3 2004-02-24 22:03:13 mojomonkey Exp $
+ * @version $Id: TestScene4.java,v 1.4 2004-02-25 16:36:47 mojomonkey Exp $
  */
 public class TestScene4 extends TestAbstractScene {
 
@@ -81,7 +83,8 @@ public class TestScene4 extends TestAbstractScene {
             scene = new Node("Scene Node");
             scene.setRenderState(zstate);
             Model model = new MilkshapeASCIIModel("Milkshape Model");
-            model.load("data/model/msascii/run.txt", "data/model/msascii/");
+            URL modelURL = TestScene4.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
+            model.load(modelURL, "jmetest/data/model/msascii/");
             model.getAnimationController().setFrequency(10.0f);
             model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
             scene.attachChild(model);

@@ -34,7 +34,7 @@ package jmetest.widget.viewport;
 import com.jme.input.AbstractInputController;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Spatial;
-import com.jme.sound.SoundAPIController;
+//import com.jme.sound.SoundAPIController;
 import com.jme.system.DisplaySystem;
 import jmetest.widget.viewport.scene.TestAbstractScene;
 import jmetest.widget.viewport.scene.TestScene1;
@@ -50,7 +50,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestWidgetViewportFrame</code>
  * @author Gregg Patton
- * @version $Id: TestWidgetViewportFrame.java,v 1.1 2004-02-14 22:19:56 ericthered Exp $
+ * @version $Id: TestWidgetViewportFrame.java,v 1.2 2004-02-25 16:36:46 mojomonkey Exp $
  */
 public class TestWidgetViewportFrame extends WidgetAbstractFrame {
 
@@ -73,7 +73,7 @@ public class TestWidgetViewportFrame extends WidgetAbstractFrame {
     public TestWidgetViewportFrame(AbstractInputController ic) {
         super(ic);
 
-        SoundAPIController.getSoundSystem(DisplaySystem.getDisplaySystem().getRendererType().getName());
+        //SoundAPIController.getSoundSystem(DisplaySystem.getDisplaySystem().getRendererType().getName());
 
         scene1 = new TestScene1();
         scene2 = new TestScene2();
@@ -97,7 +97,7 @@ public class TestWidgetViewportFrame extends WidgetAbstractFrame {
         scene4.init(vp2, scene4.getCameraController2());
         add(vp2);
 
-        scene4.init(vp3, scene4.getCameraController3());
+        scene3.init(vp3, scene4.getCameraController3());
         add(vp3);
 
         scene1.init(vp4, scene1.getCameraController4());
