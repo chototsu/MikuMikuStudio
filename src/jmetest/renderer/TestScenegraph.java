@@ -33,19 +33,21 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonController;
-import com.jme.input.InputController;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.NodeController;
+import com.jme.light.DirectionalLight;
+import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Box;
+import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -54,8 +56,7 @@ import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
- * <code>TestRenderToTexture</code>
- * @author Joshua Slack
+ * <code>TestScenegraph</code>
  */
 public class TestScenegraph extends SimpleGame {
 	private Camera cam;
@@ -155,6 +156,35 @@ public class TestScenegraph extends SimpleGame {
 		as1.setTestEnabled(true);
 		as1.setTestFunction(AlphaState.TF_GREATER);
 		as1.setEnabled(true);
+        
+        SpotLight am = new SpotLight();
+        am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
+        am.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        am.setDirection(new Vector3f(0, 0, 0));
+        am.setLocation(new Vector3f(25, 100, 0));
+        am.setAngle(15);
+
+        SpotLight am2 = new SpotLight();
+        am2.setDiffuse(new ColorRGBA(1.0f, 0.0f, 0.0f, 1.0f));
+        am2.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        am2.setDirection(new Vector3f(0, 0, 0));
+        am2.setLocation(new Vector3f(250, 10, 100));
+        am2.setAngle(15);
+        
+        DirectionalLight dr = new DirectionalLight();
+        dr.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+        dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+        dr.setDirection(new Vector3f(0, 0 , 150));
+
+        LightState state = display.getRenderer().getLightState();
+        state.setEnabled(true);
+        state.attach(am);
+        state.attach(dr);
+        state.attach(am2);
+        am.setEnabled(true);
+        am2.setEnabled(true);
+        dr.setEnabled(true);
+        
 		TextureState font = display.getRenderer().getTextureState();
 		font.setTexture(
 			TextureManager.loadTexture(
@@ -176,6 +206,10 @@ public class TestScenegraph extends SimpleGame {
 		cs.setCullMode(CullState.CS_BACK);
 		cs.setEnabled(true);
 		scene.setRenderState(cs);
+        
+        scene.setRenderState(state);
+        
+        
 
 		// Setup our params for the depth buffer
 		ZBufferState buf = display.getRenderer().getZBufferState();
@@ -218,8 +252,27 @@ public class TestScenegraph extends SimpleGame {
 		node6.attachChild(box6);
 		node3.attachChild(node6);
 		node6.setLocalTranslation(new Vector3f(0, -20, 0));
+        
+        Vector3f[] lines = {node1.getWorldTranslation(), node2.getWorldTranslation(),
+                            node1.getWorldTranslation(), node3.getWorldTranslation(),
+                            node2.getWorldTranslation(), node4.getWorldTranslation(),
+                            node2.getWorldTranslation(), node5.getWorldTranslation(),
+                            node3.getWorldTranslation(), node6.getWorldTranslation()};
+        Line line = new Line("Connection", lines, null, null, null);
+        
+        TextureState ts = display.getRenderer().getTextureState();
+        ts.setEnabled(true);
+        Texture t1 = TextureManager.loadTexture(
+                TestBoxColor.class.getClassLoader().getResource("jmetest/data/images/Monkey.jpg"),
+                Texture.MM_LINEAR,
+                Texture.FM_LINEAR,
+                true);
+        ts.setTexture(t1);
+        
+        scene.setRenderState(ts);
 
 		scene.attachChild(node1);
+        root.attachChild(line);
 		root.attachChild(scene);
 		cam.update();
 		scene.updateGeometricState(0.0f, true);
@@ -304,7 +357,6 @@ public class TestScenegraph extends SimpleGame {
 	}
 
 	public void setSelectedNode(int node) {
-		System.out.println("Number pressed");
 		switch (node) {
 			case 1 :
 				input = nc1;

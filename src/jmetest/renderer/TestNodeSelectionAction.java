@@ -59,7 +59,6 @@ public class TestNodeSelectionAction implements InputAction {
      * @see com.jme.input.action.InputAction#performAction(float)
      */
     public void performAction(float time) {
-        System.out.println("Performing");
         app.setSelectedNode(node);
     }
     
