@@ -30,11 +30,14 @@
  */
 package com.jme.test.renderer.loader;
 
+import com.jme.animation.VertexKeyframeController;
 import com.jme.app.AbstractGame;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Quaternion;
@@ -42,6 +45,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
+import com.jme.scene.model.md2.Md2KeyframeSelector;
 import com.jme.scene.model.md2.Md2Model;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
@@ -56,7 +60,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.3 2004-02-06 21:14:24 mojomonkey Exp $
+ * @version $Id: TestMd2.java,v 1.4 2004-02-08 20:02:59 mojomonkey Exp $
  */
 public class TestMd2 extends SimpleGame {
 	LightState state;
@@ -71,6 +75,9 @@ public class TestMd2 extends SimpleGame {
 	private float rotate;
 	private Quaternion quat = new Quaternion();
 	private Vector3f up = new Vector3f(0,1,0);
+	private Md2KeyframeSelector keyframeSelector;
+	private int animCounter = 0;
+	private float lastTime = 10;
 	/**
 	 * Nothing to update.
 	 * 
@@ -80,7 +87,19 @@ public class TestMd2 extends SimpleGame {
 		timer.update();
 		input.update(timer.getTimePerFrame() * 100);
 		model.updateWorldData(timer.getTimePerFrame()*10);
-		
+		lastTime += timer.getTimePerFrame();
+		if(lastTime > 0.25) {
+			if (KeyBindingManager
+				.getKeyBindingManager()
+				.isValidCommand("selectAnimation")) {
+				animCounter++;
+				if(animCounter >= keyframeSelector.getNumberOfAnimations()) {
+					animCounter = 0;
+				}
+				keyframeSelector.setAnimation(animCounter);
+			}
+			lastTime = 0;	
+		}	
 	}
 
 	/**
@@ -134,6 +153,9 @@ public class TestMd2 extends SimpleGame {
 
 		input = new FirstPersonController(this, cam, "LWJGL");
 		timer = Timer.getTimer("LWJGL");
+		KeyBindingManager.getKeyBindingManager().set(
+					"selectAnimation",
+					KeyInput.KEY_F1);
 
 	}
 
@@ -196,8 +218,10 @@ public class TestMd2 extends SimpleGame {
 		model.setRenderState(zstate);
 		model.setRenderState(ws);
 		
-		model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
+		model.getAnimationController().setRepeatType(Controller.RT_WRAP);
 		model.updateGeometricState(0, true);
+		
+		keyframeSelector = new Md2KeyframeSelector((VertexKeyframeController)model.getAnimationController());
 	}
 
 	/**

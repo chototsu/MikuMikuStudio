@@ -31,110 +31,206 @@
  */
 package com.jme.animation;
 
+import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
+import com.jme.system.JmeException;
 
 /**
- * <code>VertexKeyframeController</code>
+ * <code>VertexKeyframeController</code> controls animation of a particular
+ * model using a collection of keyframe models. Each model represents a 
+ * state of the displayed model at a certain (regular) time frame. Essentially,
+ * the displayed model is morphed from one keyframe to another giving the
+ * impression of movement. 
  * @author Mark Powell
- * @version $Id: VertexKeyframeController.java,v 1.1 2004-02-06 21:14:47 mojomonkey Exp $
+ * @version $Id: VertexKeyframeController.java,v 1.2 2004-02-08 20:02:59 mojomonkey Exp $
  */
 public class VertexKeyframeController extends Controller {
-	TriMesh[] keyframes;
-	TriMesh displayedMesh;
-	float currentTime;
-	int minFrame = 0;
-	int maxFrame;
-	int currentFrame;
-	int nextFrame = 1;
-	int cycleModifier = 1;
-	
-	
-	
-	/** <code>update</code> 
-	 * @param time
+	private TriMesh[] keyframes;
+	private TriMesh displayedMesh;
+	private float currentTime;
+	private int minFrame = 0;
+	private int maxFrame;
+	private int currentFrame;
+	private int nextFrame = 1;
+	private int cycleModifier = 1;
+
+	/** <code>update</code> updates the displayed mesh by interpolating
+	 * between two animation frames. These frames, denoted current frame
+	 * and next frame, are combined to determine each in-between frame
+	 * required to make smooth animation. All aspects of the tri mesh
+	 * are interpolated if they are set in the keyframes. This means,
+	 * you can morph colors, texture coordinates, normals and vertices.
+	 * Most animation deals strictly with morphing of vertices, so all
+	 * other aspects of the keyframe TriMeshes should be null.
+	 * @param time the time between frames. This time is added to a counter
+	 * 		to determine when the next keyframe should be loaded.
 	 * @see com.jme.scene.Controller#update(float)
 	 */
 	public void update(float time) {
-		if(getRepeatType() == Controller.RT_CLAMP) {
+		//determine repeat type. This defines how the current time
+		//and keyframes are loaded.
+		if (getRepeatType() == Controller.RT_CLAMP) {
 			currentTime += time;
-			if(currentTime >= 1) {
+			if (currentTime >= 1) {
 				currentFrame++;
 				nextFrame++;
-				if(currentFrame >= maxFrame) {
+				if (currentFrame >= maxFrame) {
 					currentFrame = maxFrame;
 				}
-				
-				if(nextFrame >= maxFrame) {
+
+				if (nextFrame >= maxFrame) {
 					nextFrame = maxFrame;
 				}
-				
+
 				currentTime = 0;
 			}
-			
-		} else if(getRepeatType()== Controller.RT_WRAP) {
+
+		} else if (getRepeatType() == Controller.RT_WRAP) {
 			currentTime += time;
-			if(currentTime >= 1) {
+			if (currentTime >= 1) {
 				currentFrame++;
 				nextFrame++;
-				if(currentFrame >= maxFrame) {
+				if (currentFrame >= maxFrame) {
 					currentFrame = minFrame;
 				}
-				
-				if(nextFrame >= maxFrame) {
+
+				if (nextFrame >= maxFrame) {
 					nextFrame = minFrame;
 				}
-				
-				
+
 				currentTime = 0;
 			}
-		} else if(getRepeatType() == Controller.RT_CYCLE) {
+		} else if (getRepeatType() == Controller.RT_CYCLE) {
 			currentTime += time;
-			if(currentTime >= 1) {
-				
+			if (currentTime >= 1) {
+
 				currentFrame += cycleModifier;
 				nextFrame += cycleModifier;
-				if(currentFrame >= maxFrame) {
+				if (currentFrame >= maxFrame) {
 					currentFrame = maxFrame;
 					cycleModifier = -1;
-				} else if(currentFrame <= minFrame) {
+				} else if (currentFrame <= minFrame) {
 					currentFrame = minFrame;
 					cycleModifier = 1;
 				}
-				
-				if(nextFrame >= maxFrame) {
+
+				if (nextFrame >= maxFrame) {
 					nextFrame = maxFrame - 2;
 					cycleModifier = -1;
 				} else if (currentFrame <= minFrame) {
 					nextFrame = minFrame + 1;
 					cycleModifier = 1;
 				}
-				
-				
+
 				currentTime = 0;
 			}
 		}
-		
-		
-		Vector3f[] verts = displayedMesh.getVertices();
-		Vector3f[] norms = displayedMesh.getNormals();
-		for(int i = 0; i < verts.length; i++) {
-			
-			verts[i].x = keyframes[currentFrame].getVertices()[i].x + currentTime * (keyframes[nextFrame].getVertices()[i].x - keyframes[currentFrame].getVertices()[i].x);
-			verts[i].y = keyframes[currentFrame].getVertices()[i].y + currentTime * (keyframes[nextFrame].getVertices()[i].y - keyframes[currentFrame].getVertices()[i].y);
-			verts[i].z = keyframes[currentFrame].getVertices()[i].z + currentTime * (keyframes[nextFrame].getVertices()[i].z - keyframes[currentFrame].getVertices()[i].z);
-		
-			norms[i].x = keyframes[currentFrame].getNormals()[i].x + currentTime * (keyframes[nextFrame].getNormals()[i].x - keyframes[currentFrame].getNormals()[i].x);
-			norms[i].y = keyframes[currentFrame].getNormals()[i].y + currentTime * (keyframes[nextFrame].getNormals()[i].y - keyframes[currentFrame].getNormals()[i].y);
-			norms[i].z = keyframes[currentFrame].getNormals()[i].z + currentTime * (keyframes[nextFrame].getNormals()[i].z - keyframes[currentFrame].getNormals()[i].z);
-			
+
+		//Morph each aspect of the model for every vertex.
+		for (int i = 0; i < displayedMesh.getVertices().length; i++) {
+
+			//morph vertices
+			if (displayedMesh.getVertices() != null
+				&& keyframes[currentFrame].getVertices() != null
+				&& keyframes[nextFrame].getVertices() != null) {
+				Vector3f[] verts = displayedMesh.getVertices();
+				verts[i].x =
+					keyframes[currentFrame].getVertices()[i].x
+						+ currentTime
+							* (keyframes[nextFrame].getVertices()[i].x
+								- keyframes[currentFrame].getVertices()[i].x);
+				verts[i].y =
+					keyframes[currentFrame].getVertices()[i].y
+						+ currentTime
+							* (keyframes[nextFrame].getVertices()[i].y
+								- keyframes[currentFrame].getVertices()[i].y);
+				verts[i].z =
+					keyframes[currentFrame].getVertices()[i].z
+						+ currentTime
+							* (keyframes[nextFrame].getVertices()[i].z
+								- keyframes[currentFrame].getVertices()[i].z);
+				displayedMesh.updateVertexBuffer();
+			}
+
+			//morph normals if appropriate
+			if (displayedMesh.getNormals() != null
+				&& keyframes[currentFrame].getNormals() != null
+				&& keyframes[nextFrame].getNormals() != null) {
+				Vector3f[] norms = displayedMesh.getNormals();
+				norms[i].x =
+					keyframes[currentFrame].getNormals()[i].x
+						+ currentTime
+							* (keyframes[nextFrame].getNormals()[i].x
+								- keyframes[currentFrame].getNormals()[i].x);
+				norms[i].y =
+					keyframes[currentFrame].getNormals()[i].y
+						+ currentTime
+							* (keyframes[nextFrame].getNormals()[i].y
+								- keyframes[currentFrame].getNormals()[i].y);
+				norms[i].z =
+					keyframes[currentFrame].getNormals()[i].z
+						+ currentTime
+							* (keyframes[nextFrame].getNormals()[i].z
+								- keyframes[currentFrame].getNormals()[i].z);
+				displayedMesh.updateNormalBuffer();
+			}
+
+			//morph texture coordinates if appropriate.
+			if (displayedMesh.getTextures() != null
+				&& keyframes[currentFrame].getTextures() != null
+				&& keyframes[nextFrame].getTextures() != null) {
+				Vector2f[] texs = displayedMesh.getTextures();
+				texs[i].x =
+					keyframes[currentFrame].getTextures()[i].x
+						+ currentTime
+							* (keyframes[nextFrame].getTextures()[i].x
+								- keyframes[currentFrame].getTextures()[i].x);
+				texs[i].y =
+					keyframes[currentFrame].getTextures()[i].y
+						+ currentTime
+							* (keyframes[nextFrame].getTextures()[i].y
+								- keyframes[currentFrame].getTextures()[i].y);
+				displayedMesh.updateTextureBuffer();
+			}
+
+			//morph colors if appropriate.
+			if (displayedMesh.getColors() != null
+				&& keyframes[currentFrame].getColors() != null
+				&& keyframes[nextFrame].getColors() != null) {
+				ColorRGBA[] colors = displayedMesh.getColors();
+				colors[i].r =
+					keyframes[currentFrame].getColors()[i].r
+						+ currentTime
+							* (keyframes[nextFrame].getColors()[i].r
+								- keyframes[currentFrame].getColors()[i].r);
+				colors[i].g =
+					keyframes[currentFrame].getColors()[i].g
+						+ currentTime
+							* (keyframes[nextFrame].getColors()[i].g
+								- keyframes[currentFrame].getColors()[i].g);
+				colors[i].b =
+					keyframes[currentFrame].getColors()[i].b
+						+ currentTime
+							* (keyframes[nextFrame].getColors()[i].b
+								- keyframes[currentFrame].getColors()[i].b);
+				colors[i].a =
+					keyframes[currentFrame].getColors()[i].a
+						+ currentTime
+							* (keyframes[nextFrame].getColors()[i].a
+								- keyframes[currentFrame].getColors()[i].a);
+
+				displayedMesh.updateColorBuffer();
+			}
 		}
-		displayedMesh.updateVertexBuffer();
-		displayedMesh.updateNormalBuffer();
+
 	}
-	
+
 	/**
+	 * <code>getDisplayedMesh</code> returns the mesh that is being morphed.
+	 * This mesh is typically attached to a scene node.
 	 * @return Returns the displayedMesh.
 	 */
 	public TriMesh getDisplayedMesh() {
@@ -142,6 +238,7 @@ public class VertexKeyframeController extends Controller {
 	}
 
 	/**
+	 * <code>setDisplayedMesh</code> sets the mesh that is to be morphed.
 	 * @param displayedMesh The displayedMesh to set.
 	 */
 	public void setDisplayedMesh(TriMesh displayedMesh) {
@@ -149,25 +246,32 @@ public class VertexKeyframeController extends Controller {
 	}
 
 	/**
+	 * <code>getKeyframes</code> returns an array of triangle meshes that
+	 * is used to define the keyframes of the animation.
 	 * @return Returns the keyframes.
 	 */
 	public TriMesh[] getKeyframes() {
 		return keyframes;
-		
+
 	}
 
 	/**
+	 * <code>setKeyframes</code> sets the array of triangle meshes that
+	 * defines the keyframes of the animation.
 	 * @param keyframes The keyframes to set.
 	 */
 	public void setKeyframes(TriMesh[] keyframes) {
 		this.keyframes = keyframes;
-		maxFrame = keyframes.length-1;
-		
+		maxFrame = keyframes.length - 1;
+
 	}
-	
-	
 
 	/**
+	 * <code>getMaxFrame</code> returns the current maximum frame used
+	 * for the animation. This frame may be smaller than the total number
+	 * of keyframes. This allows the keyframes to define a number of
+	 * different animations, and setting the minimum and maximum frame
+	 * allows the user to switch between animations.
 	 * @return Returns the maxFrame.
 	 */
 	public int getMaxFrame() {
@@ -175,13 +279,26 @@ public class VertexKeyframeController extends Controller {
 	}
 
 	/**
+	 * <code>setMaxFrame</code> sets the maximum keyframe to display. 
+	 * This allows the user to define a subgroup of the total keyframes
+	 * to display. Effectively allowing the keyframes to define multiple
+	 * animations and the user to switch between different animations.
 	 * @param maxFrame The maxFrame to set.
 	 */
 	public void setMaxFrame(int maxFrame) {
+		if(maxFrame >= keyframes.length) {
+			throw new JmeException("Max Frame out of bounds. " + maxFrame);
+		}
 		this.maxFrame = maxFrame;
+		currentTime = 0;
 	}
 
 	/**
+	 * <code>getMinFrame</code> returns the current minimum frame used
+	 * for the animation. This frame may be larger than the initial
+	 * keyframe. This allows the keyframes to define a number of
+	 * different animations, and setting the minimum and maximum frame
+	 * allows the user to switch between animations.
 	 * @return Returns the minFrame.
 	 */
 	public int getMinFrame() {
@@ -189,10 +306,20 @@ public class VertexKeyframeController extends Controller {
 	}
 
 	/**
+	 * <code>setMinFrame</code> sets the minimum keyframe to display. 
+	 * This allows the user to define a subgroup of the total keyframes
+	 * to display. Effectively allowing the keyframes to define multiple
+	 * animations and the user to switch between different animations.
 	 * @param minFrame The minFrame to set.
 	 */
 	public void setMinFrame(int minFrame) {
+		if(minFrame < 0) {
+			throw new JmeException("Min Frame out of bounds. " + minFrame);
+		}
 		this.minFrame = minFrame;
+		currentTime = 0;
+		currentFrame = minFrame;
+		nextFrame = minFrame + 1;
 	}
 
 }

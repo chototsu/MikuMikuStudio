@@ -52,29 +52,56 @@ import com.jme.util.BinaryFileReader;
  * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.3 2004-02-06 21:14:24 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.4 2004-02-08 20:02:58 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
 
-	private Header header; // The header data
+	private Header header;
 
-	private Vector2f[] texCoords; // The texture coordinates
-	private Md2Face[] triangles; // Face index information
-	private Md2Frame[] frames; // The frames of animation (vertices)
+	private Vector2f[] texCoords;
+	private Md2Face[] triangles;
+	private Md2Frame[] frames;
 
 	//holds each keyframe.
 	private TriMesh[] triMesh;
-
+	//controller responsible for handling keyframe morphing.
 	private VertexKeyframeController controller;
 
 	/**
-	 * <code>load</code>
-	 * 
-	 * @param filename
-	 * @see com.jme.scene.model.Model#load(java.lang.String)
+	 * Constructor creates a new <code>Md2Model</code> object. A
+	 * later call to <code>load</code> is required to initialize
+	 * the model with MD2 data.
+	 *
+	 */
+	public Md2Model() {
+		super();
+	}
+	
+	/**
+	 * Constructor creates a new <code>Md2Mode</code> object. The
+	 * filename corresponding to the MD2 model is provided, loading
+	 * the data of the model.
+	 * @param filename the filename of the model to load.
+	 */
+	public Md2Model(String filename) {
+		super();
+		load(filename);
+	}
+
+	/**
+	 * Loads an MD2 model. The corresponding
+	 * <code>TriMesh</code> objects are created and attached to the 
+	 * model. Each keyframe is then loaded and assigned to a 
+	 * <code>VertexKeyframeController</code>. MD2 does not keep track 
+	 * of it's own texture or material settings, so the user is 
+	 * responsible for setting these.
+	 * @param filename the file to load.
 	 */
 	public void load(String filename) {
+		if(null == filename) {
+			throw new JmeException("Null data. Cannot load.");
+		}
 		InputStream is = null;
 		int fileSize = 0;
 		File file = new File(filename);
@@ -96,7 +123,8 @@ public class Md2Model extends Model {
 	}
 
 	/**
-	 * <code>getAnimationController</code>
+	 * <code>getAnimationController</code> returns the animation controller
+	 * used for MD2 animation (VertexKeyframeController).
 	 * 
 	 * @return @see com.jme.scene.model.Model#getAnimationController()
 	 */
@@ -104,53 +132,49 @@ public class Md2Model extends Model {
 		return controller;
 	}
 
+	/**
+	 * 
+	 * <code>parseMesh</code> reads the MD2 file and builds the 
+	 * necessary data structures. These structures are specific to
+	 * MD2 and therefore require later conversion to jME data structures.
+	 *
+	 */
 	private void parseMesh() {
-		// Here we allocate all of our memory from the header's information
 		String[] skins = new String[header.numSkins];
 		texCoords = new Vector2f[header.numTexCoords];
 		triangles = new Md2Face[header.numTriangles];
 		frames = new Md2Frame[header.numFrames];
 
-		// Next, we start reading in the data by seeking to our skin names
-		// offset
+		//start with skins. Move the file pointer to the correct position.
 		bis.setOffset(header.offsetSkins);
 
-		// Depending on the skin count, we read in each skin for this model
+		// Read in each skin for this model
 		for (int j = 0; j < header.numSkins; j++) {
 			skins[j] = bis.readString(64);
 		}
 
-		// Move the file pointer to the position in the file for texture
-		// coordinates
+		//Now read in texture coordinates.
 		bis.setOffset(header.offsetTexCoords);
-
-		// Read in all the texture coordinates in one fell swoop
 		for (int j = 0; j < header.numTexCoords; j++) {
 			texCoords[j] = new Vector2f();
 			texCoords[j].x = bis.readShort();
 			texCoords[j].y = bis.readShort();
 		}
 
-		// Move the file pointer to the triangles/face data offset
+		//read the vertex data.
 		bis.setOffset(header.offsetTriangles);
-
-		// Read in the face data for each triangle (vertex and texCoord
-		// indices)
 		for (int j = 0; j < header.numTriangles; j++) {
 			triangles[j] = new Md2Face();
 		}
-
-		// Move the file pointer to the vertices (frames)
 		bis.setOffset(header.offsetFrames);
 
+		//Each keyframe has the same type of data, so read each
+		//keyframe one at a time.
 		for (int i = 0; i < header.numFrames; i++) {
-			// Assign our alias frame to our buffer memory
-			VectorKeyframe pFrame = new VectorKeyframe();
-
-			// Allocate the memory for the first frame of animation's vertices
+			VectorKeyframe frame = new VectorKeyframe();
 			frames[i] = new Md2Frame();
 
-			frames[i].pVertices = new Triangle[header.numVertices];
+			frames[i].vertices = new Triangle[header.numVertices];
 			Vector3f[] aliasVertices = new Vector3f[header.numVertices];
 			int[] aliasLightNormals = new int[header.numVertices];
 
@@ -165,24 +189,29 @@ public class Md2Model extends Model {
 			}
 
 			// Copy the name of the animation to our frames array
-			frames[i].strName = pFrame.name;
-
-			Triangle[] pVertices = frames[i].pVertices;
+			frames[i].name = frame.name;
+			Triangle[] verices = frames[i].vertices;
 
 			for (int j = 0; j < header.numVertices; j++) {
-				pVertices[j] = new Triangle();
-				pVertices[j].vertex.x =
-					aliasVertices[j].x * pFrame.scale.x + pFrame.translate.x;
-				pVertices[j].vertex.z =
+				verices[j] = new Triangle();
+				verices[j].vertex.x =
+					aliasVertices[j].x * frame.scale.x + frame.translate.x;
+				verices[j].vertex.z =
 					-1
-						* (aliasVertices[j].y * pFrame.scale.y
-							+ pFrame.translate.y);
-				pVertices[j].vertex.y =
-					aliasVertices[j].z * pFrame.scale.z + pFrame.translate.z;
+						* (aliasVertices[j].y * frame.scale.y
+							+ frame.translate.y);
+				verices[j].vertex.y =
+					aliasVertices[j].z * frame.scale.z + frame.translate.z;
 			}
 		}
 	}
 
+	/**
+	 * 
+	 * <code>convertDataStructures</code> takes the loaded MD2 data and
+	 * converts it into jME data.
+	 *
+	 */
 	private void convertDataStructures() {
 		triMesh = new TriMesh[header.numFrames];
 		Vector2f[] texCoords2 = new Vector2f[header.numVertices];
@@ -197,31 +226,28 @@ public class Md2Model extends Model {
 			
 			Face[] faces = new Face[numOfFaces];
 
-			// Go through all of the vertices and assign them over to our
-			// structure
+			//assign a vector array for the trimesh.
 			for (int j = 0; j < numOfVerts; j++) {
 				verts[j] = new Vector3f();
-				verts[j].x = frames[i].pVertices[j].vertex.x;
-				verts[j].y = frames[i].pVertices[j].vertex.y;
-				verts[j].z = frames[i].pVertices[j].vertex.z;
+				verts[j].x = frames[i].vertices[j].vertex.x;
+				verts[j].y = frames[i].vertices[j].vertex.y;
+				verts[j].z = frames[i].vertices[j].vertex.z;
 			}
 
-			// Go through all of the face data and assign it over to OUR
-			// structure
+			//set up the initial indices array.
 			for (int j = 0; j < numOfFaces; j++) {
 				faces[j] = new Face();
-				// Assign the vertex indices to our face data
 				faces[j].vertIndex[0] = triangles[j].vertexIndices[0];
 				faces[j].vertIndex[1] = triangles[j].vertexIndices[1];
 				faces[j].vertIndex[2] = triangles[j].vertexIndices[2];
 
-				// Assign the texture coord indices to our face data
 				faces[j].coordIndex[0] = triangles[j].textureIndices[0];
 				faces[j].coordIndex[1] = triangles[j].textureIndices[1];
 				faces[j].coordIndex[2] = triangles[j].textureIndices[2];
 			}
 
 			if (i == 0) {
+				//texture coordinates.
 				for (int j = 0; j < numTexVertex; j++) {
 					texVerts[j] = new Vector2f();
 					texVerts[j].x = texCoords[j].x / (float) (header.skinWidth);
@@ -229,6 +255,7 @@ public class Md2Model extends Model {
 						1 - texCoords[j].y / (float) (header.skinHeight);
 				}
 
+				//reorginize coordinates to match the vertex index.
 				for (int j = 0; j < numOfFaces; j++) {
 					int index = faces[j].vertIndex[0];
 					texCoords2[index] = new Vector2f();
@@ -258,7 +285,7 @@ public class Md2Model extends Model {
 
 			triMesh[i].setVertices(verts);
 			triMesh[i].setNormals(computeNormals(faces, verts));
-			triMesh[i].setName(frames[i].strName);
+			triMesh[i].setName(frames[i].name);
 			
 			if (i == 0) {
 				triMesh[i].setTextures(texCoords2);
@@ -267,6 +294,8 @@ public class Md2Model extends Model {
 			}
 		}
 
+
+		//build controller. Attach everything.
 		controller = new VertexKeyframeController();
 		controller.setKeyframes(triMesh);
 		controller.setDisplayedMesh(triMesh[0]);
@@ -275,6 +304,14 @@ public class Md2Model extends Model {
 
 	}
 
+	/**
+	 * 
+	 * <code>computeNormals</code> calculates the normals of
+	 * the model.
+	 * @param faces the faces of the model.
+	 * @param verts the vertices of the model.
+	 * @return the array of normals.
+	 */	
 	private Vector3f[] computeNormals(Face[] faces, Vector3f[] verts) {
 		Vector3f[] returnNormals = new Vector3f[verts.length];
 
@@ -398,8 +435,8 @@ public class Md2Model extends Model {
 
 	// This stores the frames vertices after they have been transformed
 	private class Md2Frame {
-		String strName; // char [16]
-		Triangle[] pVertices;
+		String name; // char [16]
+		Triangle[] vertices;
 
 		Md2Frame() {
 		}
