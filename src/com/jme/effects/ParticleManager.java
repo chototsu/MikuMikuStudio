@@ -41,6 +41,8 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Geometry;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
 import com.jme.renderer.Renderer;
 
 /**
@@ -59,7 +61,7 @@ import com.jme.renderer.Renderer;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.14 2004-12-09 00:00:09 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.15 2005-02-20 16:28:44 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -169,13 +171,15 @@ private final static Vector2f sharedTextureData[] = {
     particlesGeometry = new TriMesh("particles") {
 			public void updateGeometricState(float time, boolean initiator) {
 				super.updateGeometricState(time, initiator);
-				worldRotation.set(0,0,0,1);
+				getWorldRotation().set(0,0,0,1);
 			}
 		};
     particlesGeometry.setVertices(new Vector3f[noParticles << 2]);
     particlesGeometry.setTextures(new Vector2f[noParticles << 2], 0);
     particlesGeometry.setIndices(indices);
     particlesGeometry.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+    particlesGeometry.setLightCombineMode(LightState.OFF);
+    particlesGeometry.setTextureCombineMode(TextureState.REPLACE);
 
     Vector3f speed = new Vector3f();
     Vector3f location = new Vector3f();
