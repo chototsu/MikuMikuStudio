@@ -40,6 +40,8 @@ import java.util.Iterator;
 
 public class RenderQueue {
 
+    //TODO: Javadoc
+
   private TreeSet opaqueBucket, transparentBucket, orthoBucket;
   private Renderer renderer;
 
