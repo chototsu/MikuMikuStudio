@@ -43,7 +43,7 @@ import com.jme.renderer.AbstractCamera;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.3 2004-09-13 21:13:12 renanse Exp $
+ * @version $Id: LWJGLCamera.java,v 1.4 2004-09-14 03:05:35 renanse Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -81,9 +81,7 @@ public class LWJGLCamera extends AbstractCamera {
     public void resize(int width, int height) {
       this.width = width;
       this.height = height;
-      onFrustumChange();
       onViewPortChange();
-      onFrameChange();
     }
 
     /**
