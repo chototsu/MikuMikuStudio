@@ -107,7 +107,7 @@ public abstract class WidgetFrameAbstract extends WidgetContainerAbstract implem
 
         WidgetImpl.getMouseState().init();
 
-        WidgetFontManager.init(displaySystem.getRenderer());
+        WidgetFontManager.init(displaySystem);
 
         setViewport(new WidgetViewport(0, 0, displaySystem.getWidth(), displaySystem.getHeight()));
 
