@@ -169,7 +169,7 @@ public class TransformMatrix {
                 "Source vector is null, null result returned.");
             return null;
         }
-        return rot.multLocal(vec).multLocal(scale);
+        return rot.multLocal(vec);
     }
 
     /**
@@ -185,7 +185,7 @@ public class TransformMatrix {
                 "Source vector is null, null result returned.");
             return null;
         }
-        return rot.multLocal(vec).addLocal(translation).multLocal(scale);
+        return rot.multLocal(vec).multLocal(scale).addLocal(translation);
     }
 
 
