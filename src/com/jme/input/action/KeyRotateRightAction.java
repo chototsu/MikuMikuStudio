@@ -36,9 +36,11 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 /**
- * <code>KeyRotateLeftAction</code>
+ * <code>KeyRotateRightAction</code> performs the action of rotating a camera
+ * a certain angle. This angle is determined by the speed at which the camera
+ * can turn and the time between frames.
  * @author Mark Powell
- * @version 
+ * @version $Id: KeyRotateRightAction.java,v 1.4 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public class KeyRotateRightAction implements InputAction {
     private Matrix3f incr;
@@ -47,21 +49,41 @@ public class KeyRotateRightAction implements InputAction {
     private String key;
     private Vector3f lockAxis;
     
+    /**
+     * Constructor instantiates a new <code>KeyRotateLeftAction</code> object.
+     * @param camera the camera to rotate.
+     * @param speed the speed at which to rotate.
+     */
     public KeyRotateRightAction(Camera camera, float speed) {
         this.camera = camera;
         this.speed = speed;
         incr = new Matrix3f();
     }
     
+    /**
+     * 
+     * <code>setSpeed</code> sets the speed at which the camera can rotate.
+     * @param speed the speed at which the camera can rotate.
+     */
     public void setSpeed(float speed) {
         this.speed = speed;
     }
     
+    /**
+     * 
+     * <code>setLockAxis</code> allows a certain axis to be locked, meaning
+     * the camera will always be within the plane of the locked axis. For 
+     * example, if the camera is a first person camera, the user might lock
+     * the camera's up vector. This will keep the camera vertical of the 
+     * ground.
+     * @param lockAxis the axis to lock.
+     */
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>performAction</code> rotates the camera a certain angle.
      * @see com.jme.input.action.InputAction#performAction(float)
      */
     public void performAction(float time) {
@@ -79,18 +101,21 @@ public class KeyRotateRightAction implements InputAction {
         
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>getKey</code> retrieves the key associated with this action.
      * @see com.jme.input.action.InputAction#getKey()
      */
     public String getKey() {
         return key;
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>setKey</code> sets the key associated with this action.
      * @see com.jme.input.action.InputAction#setKey(java.lang.String)
      */
     public void setKey(String key) {
         this.key = key;
+
     }
 
 }

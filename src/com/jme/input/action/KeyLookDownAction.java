@@ -35,9 +35,10 @@ import com.jme.math.Matrix3f;
 import com.jme.renderer.Camera;
 
 /**
- * <code>KeyLookDownAction</code>
+ * <code>KeyLookDownAction</code> tilts a camera down a given angle. This angle
+ * should be represented as a radian.
  * @author Mark Powell
- * @version 
+ * @version $Id: KeyLookDownAction.java,v 1.3 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public class KeyLookDownAction implements InputAction {
 
@@ -46,18 +47,32 @@ public class KeyLookDownAction implements InputAction {
     private float speed;
     private String key;
     
+    /**
+     * Constructor instantiates a new <code>KeyLookDownAction</code> object.
+     * @param camera the camera to tilt.
+     * @param speed the speed at which the camera tilts.
+     */
     public KeyLookDownAction(Camera camera, float speed) {
         this.camera = camera;
         this.speed = speed;
         incr = new Matrix3f();
     }
     
+    /**
+     * 
+     * <code>setSpeed</code> sets the speed at which the camera is allowed to
+     * tilt.
+     * @param speed the speed the camera is allowed to tilt.
+     */
     public void setSpeed(float speed) {
         this.speed = speed;
     }
 
 
-    /* (non-Javadoc)
+    /**
+     * <code>performAction</code> adjusts the view of the camera to tilt down
+     * a given angle. This angle is determined by the camera's speed and the
+     * time which has passed.
      * @see com.jme.input.action.InputAction#performAction(float)
      */
     public void performAction(float time) {
@@ -70,17 +85,20 @@ public class KeyLookDownAction implements InputAction {
 
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>getKey</code> retrieves the key associated with this action.
      * @see com.jme.input.action.InputAction#getKey()
      */
     public String getKey() {
         return key;
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>setKey</code> sets the key associated with this action.
      * @see com.jme.input.action.InputAction#setKey(java.lang.String)
      */
     public void setKey(String key) {
         this.key = key;
+
     }
 }

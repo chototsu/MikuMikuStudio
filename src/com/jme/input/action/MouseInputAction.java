@@ -34,12 +34,26 @@ package com.jme.input.action;
 import com.jme.input.Mouse;
 
 /**
- * <code>MouseInputAction</code>
+ * <code>MouseInputAction</code> defines a input action that makes use of the
+ * mouse for events. Mouse events are processed by the 
+ * <code>InputController</code> each frame.
+ * 
+ * @see com.jme.input.InputController
  * @author Mark Powell
- * @version 
+ * @version $Id: MouseInputAction.java,v 1.3 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public interface MouseInputAction {
+    /**
+     * 
+     * <code>performAction</code> defines the action to be performed by the
+     * subclass.
+     * @param time the time between frames.
+     */
     public void performAction(float time);
-    
+    /**
+     * 
+     * <code>setMouse</code> sets the mouse type used by this action.
+     * @param mouse the mouse used by this mouse.
+     */
     public void setMouse(Mouse mouse);
 }

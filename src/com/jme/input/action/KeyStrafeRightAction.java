@@ -35,9 +35,11 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 /**
- * <code>KeyStrafeRightAction</code>
+ * <code>KeyStrafeLeftAction</code> defines an action that causes the camera to
+ * move along the negative left vector. The speed at which it moves is set and
+ * of the form units per second.
  * @author Mark Powell
- * @version 
+ * @version $Id: KeyStrafeRightAction.java,v 1.2 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public class KeyStrafeRightAction implements InputAction {
 
@@ -45,12 +47,19 @@ public class KeyStrafeRightAction implements InputAction {
     private float speed;
     private String key;
 
+    /**
+     * Constructor instantiates a new <code>KeyStrafeLeftAction</code> object.
+     * @param camera the camera to move along the negative left vector.
+     * @param speed the speed at which to move the camera.
+     */
     public KeyStrafeRightAction(Camera camera, float speed) {
         this.camera = camera;
         this.speed = speed;
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>performAction</code> moves the camera along the negative left 
+     * vector for a given distance of speed * time. 
      * @see com.jme.input.action.InputAction#performAction(float)
      */
     public void performAction(float time) {
@@ -60,18 +69,21 @@ public class KeyStrafeRightAction implements InputAction {
         camera.update();
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>getKey</code> retrieves the key associated with this action.
      * @see com.jme.input.action.InputAction#getKey()
      */
     public String getKey() {
         return key;
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>setKey</code> sets the key associated with this action.
      * @see com.jme.input.action.InputAction#setKey(java.lang.String)
      */
     public void setKey(String key) {
         this.key = key;
+
     }
 
 }

@@ -131,7 +131,7 @@ public class TestSoundForwardAction extends AbstractGame {
         keyboard.setKeyInput(InputSystem.getKeyInput());
         keyboard.set("forward", KeyInput.KEY_W);
         input.setKeyBindingManager(keyboard);
-        SoundForwardAction forward = new SoundForwardAction(cam, 0.005f, soundRenderer.getSoundPlayer("NPC"), "walk");
+        SoundForwardAction forward = new SoundForwardAction(cam, 0.5f, soundRenderer.getSoundPlayer("NPC"), "walk");
         forward.setKey("forward");
         input.addAction(forward);
         

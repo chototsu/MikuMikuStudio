@@ -35,9 +35,13 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 /**
- * <code>KeyForwardAction</code>
+ * <code>KeyForwardAction</code> provides the action of moving a camera along
+ * it's direction vector. How fast the camera moves in a single frame is
+ * defined by the speed of the camera times the time between frames. The speed
+ * of the camera can be thought of as how many units per second the camera
+ * can travel.
  * @author Mark Powell
- * @version 
+ * @version $Id: KeyForwardAction.java,v 1.2 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public class KeyForwardAction implements InputAction {
 
@@ -45,16 +49,30 @@ public class KeyForwardAction implements InputAction {
     private float speed;
     private String key;
 
+    /**
+    * Constructor instantiates a new <code>KeyForwardAction</code> object.
+    * @param camera the camera that will be affected by this action.
+    * @param speed the speed at which the camera can move.
+    */
     public KeyForwardAction(Camera camera, float speed) {
         this.camera = camera;
         this.speed = speed;
     }
     
+    /**
+     * 
+     * <code>setSpeed</code> sets the speed in units/second that the 
+     * camera can move.
+     * @param movementSpeed the units/second of the camera.
+     */
     public void setSpeed(float movementSpeed) {
         this.speed = movementSpeed;
     }
 
     /**
+     * <code>performAction</code> moves the camera along it's positive
+     * direction vector at a speed of movement speed * time. Where time is
+     * the time between frames and 1 corresponds to 1 second.
      * @see com.jme.input.action.InputAction#performAction(float)
      */
     public void performAction(float time) {
@@ -66,6 +84,7 @@ public class KeyForwardAction implements InputAction {
     }
 
     /**
+     * <code>getKey</code> retrieves the key associated with this action.
      * @see com.jme.input.action.InputAction#getKey()
      */
     public String getKey() {
@@ -73,10 +92,12 @@ public class KeyForwardAction implements InputAction {
     }
 
     /**
+     * <code>setKey</code> sets the key associated with this action.
      * @see com.jme.input.action.InputAction#setKey(java.lang.String)
      */
     public void setKey(String key) {
         this.key = key;
+
     }
 
 }

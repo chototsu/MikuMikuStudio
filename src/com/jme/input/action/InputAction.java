@@ -32,12 +32,36 @@
 package com.jme.input.action;
 
 /**
- * <code>InputAction</code>
+ * <code>InputAction</code> defines an interface for creating input actions. 
+ * These actions can correspond to any event defined by a key value. The
+ * <code>InputController</code> class typically maintains a collection of
+ * the actions and when required calls the actions <code>performAction</code>
+ * method.
+ * 
+ * @see com.jme.input.InputController
  * @author Mark Powell
- * @version 
+ * @version $Id: InputAction.java,v 1.2 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public interface InputAction {
+    /**
+     * 
+     * <code>performAction</code> defines the appropriate action to take when
+     * called. The action is completely class specific.
+     * @param time the time value for the action.
+     */
     public void performAction(float time);
+    
+    /**
+     * 
+     * <code>getKey</code> retrieves the key associated with this action. 
+     * @return the key associated with the action.
+     */
     public String getKey();
+    
+    /**
+     * 
+     * <code>setKey</code> sets the key associated with this action.
+     * @param key the key associated with the action.
+     */
     public void setKey(String key);
 }

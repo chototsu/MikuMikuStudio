@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * methods are used for matrix operations as well as generating a matrix from
  * a given set of values.
  * @author Mark Powell
- * @version $Id: Matrix3f.java,v 1.2 2003-10-27 21:27:21 mojomonkey Exp $
+ * @version $Id: Matrix3f.java,v 1.3 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public class Matrix3f {
     private float[][] matrix;
@@ -181,6 +181,13 @@ public class Matrix3f {
         }
     }
 
+    /**
+     * 
+     * <code>fromAxisAngle</code> creates a rotational matrix given an axis
+     * and an angle. The angle is expected to be in radians.
+     * @param axis the axis to rotate about.
+     * @param radian the angle to rotate.
+     */
     public void fromAxisAngle(Vector3f axis, float radian) {
         float fCos = (float)Math.cos(radian);
         float fSin = (float)Math.sin(radian);

@@ -35,15 +35,14 @@ import com.jme.input.Mouse;
 import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
-import com.jme.system.JmeException;
 
 /**
- * <code>MouseLook</code>
+ * <code>MouseLook</code> defines a mouse action that detects mouse movement
+ * and converts it into camera rotations and camera tilts. 
  * @author Mark Powell
- * @version 
+ * @version $Id: MouseLook.java,v 1.5 2003-10-30 20:41:23 mojomonkey Exp $
  */
 public class MouseLook implements MouseInputAction {
-    public static final int MOUSE_BUFFER = 1;
     private RelativeMouse mouse;
     private KeyLookDownAction lookDown;
     private KeyLookUpAction lookUp;
@@ -55,12 +54,15 @@ public class MouseLook implements MouseInputAction {
     private float speed;
     private Camera camera;
 
+    /**
+     * Constructor creates a new <code>MouseLook</code> object. It takes the
+     * mouse, camera and speed of the looking.
+     * @param mouse the mouse to calculate view changes.
+     * @param camera the camera to move.
+     * @param speed the speed at which to alter the camera.
+     */
     public MouseLook(Mouse mouse, Camera camera, float speed) {
-        if(mouse instanceof RelativeMouse) {
-            this.mouse = (RelativeMouse)mouse;
-        } else {
-            throw new JmeException("MouseLook must take a RelativeMouse.");
-        }
+        this.mouse = (RelativeMouse)mouse;
         this.speed = speed;
         this.camera = camera;
 
@@ -70,12 +72,24 @@ public class MouseLook implements MouseInputAction {
         rotateRight = new KeyRotateRightAction(camera, speed);
     }
 
+    /**
+     * 
+     * <code>setLockAxis</code> sets the axis that should be locked down. This
+     * prevents "rolling" about a particular axis. Typically, this is set to 
+     * the mouse's up vector.
+     * @param lockAxis the axis that should be locked down to prevent rolling.
+     */
     public void setLockAxis(Vector3f lockAxis) {
         this.lockAxis = lockAxis;
         rotateLeft.setLockAxis(lockAxis);
         rotateRight.setLockAxis(lockAxis);
     }
 
+    /**
+     * 
+     * <code>setSpeed</code> sets the speed of the mouse look.
+     * @param speed the speed of the mouse look.
+     */
     public void setSpeed(float speed) {
         this.speed = speed;
         lookDown.setSpeed(speed);
@@ -85,38 +99,44 @@ public class MouseLook implements MouseInputAction {
 
     }
 
+    /**
+     * 
+     * <code>getSpeed</code> retrieves the speed of the mouse look.
+     * @return the speed of the mouse look.
+     */
     public float getSpeed() {
         return speed;
     }
-    /* (non-Javadoc)
+    
+    /**
+     * <code>performAction</code> checks for any movement of the mouse, and
+     * calls the appropriate method to alter the camera's orientation when
+     * applicable.
      * @see com.jme.input.action.MouseInputAction#performAction(float)
      */
     public void performAction(float time) {
         if (mouse.getLocalTranslation().x > 0) {
             rotateRight.performAction(
-                time * (mouse.getLocalTranslation().x / MOUSE_BUFFER));
+                time * mouse.getLocalTranslation().x);
         } else if (mouse.getLocalTranslation().x < 0) {
             rotateLeft.performAction(
-                time * (mouse.getLocalTranslation().x / MOUSE_BUFFER) * -1);
+                time * mouse.getLocalTranslation().x * -1);
         }
         if (mouse.getLocalTranslation().y > 0) {
             lookUp.performAction(
-                time * (mouse.getLocalTranslation().y / MOUSE_BUFFER));
+                time * mouse.getLocalTranslation().y);
         } else if (mouse.getLocalTranslation().y < 0) {
             lookDown.performAction(
-                time * (mouse.getLocalTranslation().y / MOUSE_BUFFER) * -1);
+                time * mouse.getLocalTranslation().y * -1);
         }
 
     }
-    /* (non-Javadoc)
+    /**
+     * <code>setMouse</code> sets the mouse used to check for movement.
      * @see com.jme.input.action.MouseInputAction#setMouse(com.jme.input.Mouse)
      */
     public void setMouse(Mouse mouse) {
-        if(mouse instanceof RelativeMouse) {
-            this.mouse = (RelativeMouse)mouse;
-        } else {
-            throw new JmeException("MouseLook must take a RelativeMouse.");
-        }
+        this.mouse = (RelativeMouse)mouse;
     }
 
 }

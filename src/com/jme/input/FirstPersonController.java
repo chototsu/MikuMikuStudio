@@ -42,11 +42,19 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
  * the camera.
  * @author Mark Powell
- * @version $Id: FirstPersonController.java,v 1.3 2003-10-29 18:14:50 mojomonkey Exp $
+ * @version $Id: FirstPersonController.java,v 1.4 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public class FirstPersonController extends InputController {
 
     public FirstPersonController(AbstractGame app, Camera cam, String api) {
+
+        setKeyBindings(api);
+        setMouse(cam);
+        setActions(cam, app);
+
+    }
+
+    private void setKeyBindings(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         InputSystem.createInputSystem(api);
 
@@ -62,16 +70,19 @@ public class FirstPersonController extends InputController {
         keyboard.set("exit", KeyInput.KEY_ESCAPE);
 
         setKeyBindingManager(keyboard);
-        
+    }
+
+    private void setMouse(Camera cam) {
         RelativeMouse mouse = new RelativeMouse();
         mouse.setMouseInput(InputSystem.getMouseInput());
         setMouse(mouse);
 
-        MouseLook mouseLook =
-            new MouseLook(mouse, cam, 0.1f);
+        MouseLook mouseLook = new MouseLook(mouse, cam, 0.1f);
         mouseLook.setLockAxis(cam.getUp());
         addAction(mouseLook);
+    }
 
+    private void setActions(Camera cam, AbstractGame app) {
         KeyExitAction exit = new KeyExitAction(app);
         exit.setKey("exit");
         addAction(exit);
@@ -99,6 +110,5 @@ public class FirstPersonController extends InputController {
         KeyRotateLeftAction rotateLeft = new KeyRotateLeftAction(cam, 0.01f);
         rotateLeft.setKey("turnLeft");
         addAction(rotateLeft);
-
     }
 }

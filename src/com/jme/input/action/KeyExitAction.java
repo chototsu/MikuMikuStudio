@@ -34,37 +34,48 @@ package com.jme.input.action;
 import com.jme.app.AbstractGame;
 
 /**
- * <code>KeyExitAction</code>
+ * <code>KeyExitAction</code> is used to call <code>finish</code> on the 
+ * application. This action can be assigned to an event, such as the escape
+ * key being pressed, or a exit button being chosen.
  * @author Mark Powell
- * @version 
+ * @version $Id: KeyExitAction.java,v 1.2 2003-10-30 20:41:24 mojomonkey Exp $
  */
 public class KeyExitAction implements InputAction{
     private AbstractGame app;
     private String key;
     
+    /**
+     * Constructor instantiates a new <code>KeyExitAction</code> object.
+     * @param app the reference to the application.
+     */
     public KeyExitAction(AbstractGame app) {
         this.app = app;
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>performAction</code> calls the <code>finish</code> method of the
+     * provided application.
      * @see com.jme.input.action.InputAction#performAction(float)
      */
     public void performAction(float time) {
         app.finish();
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>getKey</code> retrieves the key associated with this action.
      * @see com.jme.input.action.InputAction#getKey()
      */
     public String getKey() {
         return key;
     }
 
-    /* (non-Javadoc)
+    /**
+     * <code>setKey</code> sets the key associated with this action.
      * @see com.jme.input.action.InputAction#setKey(java.lang.String)
      */
     public void setKey(String key) {
         this.key = key;
+
     }
 
 }
