@@ -61,7 +61,7 @@ import com.jme.util.Timer;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.8 2004-04-22 21:47:08 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.9 2004-04-22 22:08:19 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -88,9 +88,9 @@ public abstract class SimpleGame extends BaseGame {
     fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
               display.getRenderer().getStatistics());
 
-    simpleUpdate(interpolation);
+    simpleUpdate(timer.getTimePerFrame());
 
-    rootNode.updateGeometricState(interpolation, true);
+    rootNode.updateGeometricState(timer.getTimePerFrame(), true);
 
     if (KeyBindingManager
         .getKeyBindingManager()

@@ -31,44 +31,26 @@
  */
 package jmetest.curve;
 
-import com.jme.app.BaseGame;
+import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.image.Texture;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.InputHandler;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
-import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
-import com.jme.util.Timer;
 
 /**
  * <code>TestBezierCurve</code>
  * @author Mark Powell
- * @version $Id: TestBezierCurve.java,v 1.10 2004-04-19 20:44:51 renanse Exp $
+ * @version $Id: TestBezierCurve.java,v 1.11 2004-04-22 22:08:19 renanse Exp $
  */
-public class TestBezierCurve extends BaseGame {
-    private TriMesh t, t2, t3, t4;
-    private Timer timer;
-    private TriMesh box;
-    private Node scene, root;
-    private static final float MAX_STEPS = 25;
-    private Camera cam;
-    private InputHandler input;
-    private BezierCurve curve;
-
-    private float step = 0;
-    private float mod = 0.0005f;
+public class TestBezierCurve extends SimpleGame {
 
     private Vector3f up = new Vector3f(0,1,0);
 
@@ -79,66 +61,11 @@ public class TestBezierCurve extends BaseGame {
     }
 
     /* (non-Javadoc)
-     * @see com.jme.app.SimpleGame#update()
-     */
-    protected void update(float interpolation) {
-    	timer.update();
-        input.update(timer.getTimePerFrame());
-        scene.updateWorldData(timer.getTimePerFrame());
-
-    }
-
-    /* (non-Javadoc)
-     * @see com.jme.app.SimpleGame#render()
-     */
-    protected void render(float interpolation) {
-        display.getRenderer().clearBuffers();
-        display.getRenderer().draw(root);
-    }
-
-    /* (non-Javadoc)
-     * @see com.jme.app.SimpleGame#initSystem()
-     */
-    protected void initSystem() {
-        try {
-            display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-            display.createWindow(
-                properties.getWidth(),
-                properties.getHeight(),
-                properties.getDepth(),
-                properties.getFreq(),
-                properties.getFullscreen());
-            cam =
-                display.getRenderer().getCamera(
-                    properties.getWidth(),
-                    properties.getHeight());
-
-        } catch (JmeException e) {
-            e.printStackTrace();
-            System.exit(1);
-        }
-        ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-        display.getRenderer().setBackgroundColor(blackColor);
-        cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 15.0f);
-        Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-        Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
-        cam.setFrame(loc, left, up, dir);
-        display.getRenderer().setCamera(cam);
-
-        input = new FirstPersonHandler(this, cam, properties.getRenderer());
-        input.setKeySpeed(10);
-        input.setMouseSpeed(1);
-        timer = Timer.getTimer(properties.getRenderer());
-        display.setTitle("Bezier Curve Test");
-
-    }
-
-    /* (non-Javadoc)
      * @see com.jme.app.SimpleGame#initGame()
      */
-    protected void initGame() {
+    protected void simpleInitGame() {
+      display.setTitle("Bezier Curve Test");
+
         //create control Points
         Vector3f[] points = new Vector3f[4];
         points[0] = new Vector3f(-4, 0, 0);
@@ -146,7 +73,7 @@ public class TestBezierCurve extends BaseGame {
         points[2] = new Vector3f(2, -3, -2);
         points[3] = new Vector3f(4, 0, 0);
 
-        curve = new BezierCurve("Curve",points);
+        BezierCurve curve = new BezierCurve("Curve",points);
         ColorRGBA[] colors = new ColorRGBA[4];
         colors[0] = new ColorRGBA(0,1,0,1);
         colors[1] = new ColorRGBA(1,0,0,1);
@@ -161,31 +88,31 @@ public class TestBezierCurve extends BaseGame {
         buf.setEnabled(true);
         buf.setFunction(ZBufferState.CF_LEQUAL);
 
-        t = new Box("Control 1",min, max);
+        TriMesh t = new Box("Control 1",min, max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
 
         t.setLocalTranslation(points[0]);
 
-        t2 = new Box("Control 2", min, max);
+        TriMesh t2 = new Box("Control 2", min, max);
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
 
         t2.setLocalTranslation(points[1]);
 
-        t3 = new Box("Control 3", min, max);
+        TriMesh t3 = new Box("Control 3", min, max);
         t3.setModelBound(new BoundingSphere());
         t3.updateModelBound();
 
         t3.setLocalTranslation(points[2]);
 
-        t4 = new Box("Control 4", min, max);
+        TriMesh t4 = new Box("Control 4", min, max);
         t4.setModelBound(new BoundingSphere());
         t4.updateModelBound();
 
         t4.setLocalTranslation(points[3]);
 
-        box = new Box("Controlled Box", min.mult(5), max.mult(5));
+        TriMesh box = new Box("Controlled Box", min.mult(5), max.mult(5));
         box.setModelBound(new BoundingSphere());
         box.updateModelBound();
 
@@ -207,35 +134,13 @@ public class TestBezierCurve extends BaseGame {
                 true));
         box.setRenderState(ts);
 
-        scene = new Node("Main 3D scene");
-        scene.setRenderState(buf);
-        scene.attachChild(t);
-        scene.attachChild(t2);
-        scene.attachChild(t3);
-        scene.attachChild(t4);
-        scene.attachChild(box);
-        scene.attachChild(curve);
-        root = new Node("Scene graph Root");
-        root.attachChild(scene);
-
-        root.updateGeometricState(0.0f, true);
-        root.updateRenderState();
-
-    }
-
-    /* (non-Javadoc)
-     * @see com.jme.app.SimpleGame#reinit()
-     */
-    protected void reinit() {
-        // TODO Auto-generated method stub
-
-    }
-
-    /* (non-Javadoc)
-     * @see com.jme.app.SimpleGame#cleanup()
-     */
-    protected void cleanup() {
-        // TODO Auto-generated method stub
+        rootNode.setRenderState(buf);
+        rootNode.attachChild(t);
+        rootNode.attachChild(t2);
+        rootNode.attachChild(t3);
+        rootNode.attachChild(t4);
+        rootNode.attachChild(box);
+        rootNode.attachChild(curve);
 
     }
 
