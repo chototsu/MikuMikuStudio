@@ -57,7 +57,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.27 2004-07-07 21:03:38 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.28 2004-07-08 20:38:00 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -275,8 +275,8 @@ public class LWJGLTextureState extends TextureState {
 
         // If texture data was changed, (eg. render to texture) the
         // filtering needs to be redone.
-//        if (texture.needsRefresh()) {
-//          texture.setNeedsRefresh(false);
+        if (texture.needsRefresh()) {
+          texture.setNeedsRefresh(false);
 
           // set up filter mode
           GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
@@ -289,7 +289,7 @@ public class LWJGLTextureState extends TextureState {
                                GL11.GL_TEXTURE_MIN_FILTER,
                                textureMipmap[texture
                                .getMipmap()]);
-//        }
+        }
 
 
         // set up correction mode
