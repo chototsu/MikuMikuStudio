@@ -47,7 +47,7 @@ import com.jme.scene.state.RenderState;
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.17 2004-04-16 17:12:51 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.18 2004-04-16 18:36:02 mojomonkey Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -70,7 +70,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.17 2004-04-16 17:12:51 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.18 2004-04-16 18:36:02 mojomonkey Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;
@@ -85,6 +85,10 @@ public abstract class DisplaySystem {
      */
     public static final String[] rendererNames = { "LWJGL" };
 
+    protected DisplaySystem() {
+        display = this;
+    }
+    
     /**
      * <code>getDisplaySystem</code> is a factory method that creates the
      * appropriate display system specified by the key parameter. If the
