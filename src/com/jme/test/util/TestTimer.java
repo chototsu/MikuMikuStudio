@@ -42,8 +42,8 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
 import com.jme.scene.Node;
+import com.jme.scene.Pyramid;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.8 2003-12-11 21:00:09 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.9 2003-12-11 21:04:56 mojomonkey Exp $
  */
 public class TestTimer extends AbstractGame {
     private TriMesh t;
@@ -200,7 +200,7 @@ public class TestTimer extends AbstractGame {
         
         
         
-        t = new Box(min,max);
+        t = new Pyramid(10,10);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
