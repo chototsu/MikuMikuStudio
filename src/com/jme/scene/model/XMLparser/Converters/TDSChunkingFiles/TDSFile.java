@@ -123,7 +123,8 @@ public class TDSFile extends ChunkerClass{
                         if (l==normals.size()){ // if new
                             normals.add(new Vector3f(tempNormal));
                             vertexes.add(whatIAm.vertexes[vertexIndex]);
-                            texCoords.add(whatIAm.texCoords[vertexIndex]);
+                            if (whatIAm.texCoords!=null)
+                                texCoords.add(whatIAm.texCoords[vertexIndex]);
                             indexes.add(new Integer(l));
                         } else{ // if old
                             indexes.add(new Integer(l));
@@ -132,7 +133,7 @@ public class TDSFile extends ChunkerClass{
                 }
                 part.setVertices((Vector3f[]) vertexes.toArray(new Vector3f[]{}));
                 part.setNormals((Vector3f[]) normals.toArray(new Vector3f[]{}));
-                part.setTextures((Vector2f[]) texCoords.toArray(new Vector2f[]{}));
+                if (whatIAm.texCoords!=null) part.setTextures((Vector2f[]) texCoords.toArray(new Vector2f[]{}));
                 int[] intIndexes=new int[indexes.size()];
                 for (int val=0;val<intIndexes.length;val++)
                     intIndexes[val]=((Integer)indexes.get(val)).intValue();
