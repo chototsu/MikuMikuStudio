@@ -2,10 +2,7 @@ package com.jme.scene.model.XMLparser;
 
 import com.jme.scene.*;
 import com.jme.scene.model.JointMesh2;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.state.*;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
@@ -625,6 +622,22 @@ public class JmeBinaryWriter {
             writeTextureState((TextureState)renderState);
         else if (renderState instanceof LightState)
             writeLightState((LightState)renderState);
+        else if (renderState instanceof CullState)
+            writeCullState((CullState)renderState);
+    }
+
+    private void writeCullState(CullState cullState) throws IOException {
+        if (cullState==null) return;
+        HashMap atts=new HashMap();
+        int i=cullState.getCullMode();
+        if (i==CullState.CS_BACK)
+            atts.put("cull","back");
+        else if (i==CullState.CS_FRONT)
+            atts.put("cull","front");
+        else if (i==CullState.CS_NONE)
+            atts.put("cull","none");
+        writeTag("cullstate",atts);
+        writeEndTag("cullstate");
     }
 
     private void writeLightState(LightState lightState) throws IOException {

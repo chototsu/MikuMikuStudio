@@ -2,10 +2,7 @@ package com.jme.scene.model.XMLparser;
 
 import com.jme.scene.*;
 import com.jme.scene.shape.Box;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.RenderState;
-import com.jme.scene.state.LightState;
+import com.jme.scene.state.*;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.math.Quaternion;
@@ -316,11 +313,26 @@ public class JmeBinaryReader {
                     st.setPosition(transIndexes[i],time,transvalues[i]);
             s.push(st);
             s.push(oldTime);
+        } else if (tagName.equals("cullstate")){
+            s.push(buildCullState(attributes));
         } else{
             throw new JmeException("Illegale Qualified name: " + tagName);
         }
         return;
 
+    }
+
+    private Object buildCullState(HashMap attributes) {
+        CullState cs=renderer.getCullState();
+        cs.setEnabled(true);
+        String state=(String) attributes.get("cull");
+        if ("none".equals(state))
+            cs.setCullMode(CullState.CS_NONE);
+        else if ("back".equals(state))
+            cs.setCullMode(CullState.CS_BACK);
+        else if ("front".equals(state))
+            cs.setCullMode(CullState.CS_FRONT);
+        return cs;
     }
 
     private PointLight buildPointLight(HashMap attributes) {
@@ -384,7 +396,13 @@ public class JmeBinaryReader {
             parentSpatial=(Spatial) s.pop();
             parentSpatial.setRenderState(childMaterial);
             s.push(parentSpatial);
-        } else if (tagName.equals("mesh") || tagName.equals("jointmesh")){
+        } else if (tagName.equals("cullstate")){
+            CullState childCull=(CullState) s.pop();
+            parentSpatial=(Spatial)s.pop();
+            parentSpatial.setRenderState(childCull);
+            s.push(parentSpatial);
+        }
+        else if (tagName.equals("mesh") || tagName.equals("jointmesh")){
             Geometry childMesh=(Geometry) s.pop();
             if (childMesh.getModelBound()==null){
                 if ("box".equals(properties.get("bound")))
