@@ -45,7 +45,7 @@ import com.jme.math.FastMath;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.7 2004-04-26 14:05:21 mojomonkey Exp $
+ * @version $Id: ColorRGBA.java,v 1.8 2004-04-26 14:10:07 mojomonkey Exp $
  */
 public class ColorRGBA {
     /**
@@ -110,6 +110,19 @@ public class ColorRGBA {
       this.b = b;
       this.a = a;
       clamp();
+    }
+    
+    /**
+     * Copy constructor creates a new <code>ColorRGBA</code> object, based on
+     * a provided color. 
+     * @param rgba the <code>ColorRGBA</code> object to copy.
+     */
+    public ColorRGBA(ColorRGBA rgba) {
+        this.a = rgba.a;
+        this.r = rgba.r;
+        this.g = rgba.g;
+        this.b = rgba.b;
+        clamp();
     }
 
     /**
