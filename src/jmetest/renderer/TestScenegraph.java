@@ -55,7 +55,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestScenegraph</code>
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.14 2004-04-23 02:57:24 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.15 2004-04-23 04:15:12 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
   private Node scene;
@@ -87,28 +87,28 @@ public class TestScenegraph extends SimpleGame {
 
     if (KeyBindingManager
         .getKeyBindingManager()
-        .isValidCommand("tex1")) {
+        .isValidCommand("tex1", false)) {
       selectedNode.setRenderState(ts);
       selectedNode.updateRenderState();
     }
 
     if (KeyBindingManager
         .getKeyBindingManager()
-        .isValidCommand("tex2")) {
+        .isValidCommand("tex2", false)) {
       selectedNode.setRenderState(ts2);
       rootNode.updateRenderState();
     }
 
     if (KeyBindingManager
         .getKeyBindingManager()
-        .isValidCommand("tex3")) {
+        .isValidCommand("tex3", false)) {
       selectedNode.setRenderState(ts3);
       rootNode.updateRenderState();
     }
 
     if (KeyBindingManager
         .getKeyBindingManager()
-        .isValidCommand("notex")) {
+        .isValidCommand("notex", false)) {
       selectedNode.clearRenderState(RenderState.RS_TEXTURE);
       rootNode.updateRenderState();
     }

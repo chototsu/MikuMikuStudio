@@ -56,20 +56,16 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jme.app.SimpleGame;
 
 /**
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.12 2004-04-22 22:27:43 renanse Exp $
+ * @version $Id: TestMd2.java,v 1.13 2004-04-23 04:15:12 renanse Exp $
  */
-public class TestMd2 extends BaseGame {
-  LightState state;
-  ZBufferState zstate;
+public class TestMd2 extends SimpleGame {
   TextureState ts = null;
-  private Camera cam;
-  private InputHandler input;
-  private Timer timer;
   private Md2Model model;
   private String FILE_NAME = "data/model/drfreak.md2";
   private String TEXTURE_NAME = "data/model/drfreak.jpg";
@@ -77,25 +73,19 @@ public class TestMd2 extends BaseGame {
   private int animCounter = 0;
   private float lastTime = 10;
 
-  private Node fpsNode;
-  private Text fps;
+  public static void main(String[] args) {
+    TestMd2 app = new TestMd2();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
+  }
 
-  /**
-   * Nothing to update.
-   *
-   * @see com.jme.app.AbstractGame#update()
-   */
-  protected void update(float f) {
-    fps.print("FPS: " + (int) timer.getFrameRate() + " - " +
-              display.getRenderer().getStatistics());
-    timer.update();
-    input.update(timer.getTimePerFrame() * 100);
+  protected void simpleUpdate() {
     model.updateWorldData(timer.getTimePerFrame() * 10);
     lastTime += timer.getTimePerFrame();
     if (lastTime > 0.12) {
       if (KeyBindingManager
           .getKeyBindingManager()
-          .isValidCommand("selectAnimation")) {
+          .isValidCommand("selectAnimation", false)) {
         animCounter++;
         if (animCounter >= keyframeSelector.getNumberOfAnimations()) {
           animCounter = 0;
@@ -107,81 +97,20 @@ public class TestMd2 extends BaseGame {
   }
 
   /**
-   * Render the scene
-   *
-   * @see com.jme.app.AbstractGame#render()
-   */
-  protected void render(float f) {
-    display.getRenderer().clearStatistics();
-    display.getRenderer().clearBuffers();
-    display.getRenderer().draw(model);
-    display.getRenderer().draw(fpsNode);
-
-  }
-
-  /**
-   * set up the display system and camera.
-   *
-   * @see com.jme.app.AbstractGame#initSystem()
-   */
-  protected void initSystem() {
-    try {
-      display = DisplaySystem.getDisplaySystem(properties.getRenderer());
-      display.createWindow(
-          properties.getWidth(),
-          properties.getHeight(),
-          properties.getDepth(),
-          properties.getFreq(),
-          properties.getFullscreen());
-      display.setTitle("MD2 Animation");
-      cam =
-          display.getRenderer().getCamera(
-          properties.getWidth(),
-          properties.getHeight());
-
-    }
-    catch (JmeException e) {
-      e.printStackTrace();
-      System.exit(1);
-    }
-    ColorRGBA blackColor = new ColorRGBA(0, 0, 0, 1);
-    display.getRenderer().setBackgroundColor(blackColor);
-    cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-    Vector3f loc = new Vector3f(0.0f, 0.0f, 200.0f);
-    Vector3f left = new Vector3f( -1.0f, 0.0f, 0.0f);
-    Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-    Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
-    cam.setFrame(loc, left, up, dir);
-
-    display.getRenderer().setCamera(cam);
-
-    input = new FirstPersonHandler(this, cam, properties.getRenderer());
-    timer = Timer.getTimer(properties.getRenderer());
-    KeyBindingManager.getKeyBindingManager().set(
-        "selectAnimation",
-        KeyInput.KEY_F1);
-    display.setTitle("MD2 Animation");
-    display.getRenderer().enableStatistics(true);
-  }
-
-  /**
    * set up the scene
    *
    * @see com.jme.app.AbstractGame#initGame()
    */
-  protected void initGame() {
-    model = new Md2Model("Dr Freak");
-    model.load(TestMd2.class.getClassLoader().getResource("jmetest/" +
-        FILE_NAME));
+  protected void simpleInitGame() {
+    KeyBindingManager.getKeyBindingManager().set(
+        "selectAnimation",
+        KeyInput.KEY_F1);
 
-    ts = display.getRenderer().getTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestMd2.class.getClassLoader().getResource("jmetest/" + TEXTURE_NAME),
-        Texture.MM_LINEAR,
-        Texture.FM_LINEAR,
-        true));
+    display.setTitle("MD2 Animation");
+    cam.setLocation(new Vector3f(0,0,200));
+    cam.update();
+
+    input.setKeySpeed(50);
 
     PointLight am = new PointLight();
     am.setDiffuse(new ColorRGBA(0.0f, 1.0f, 0.0f, 1.0f));
@@ -198,83 +127,33 @@ public class TestMd2 extends BaseGame {
     dr.setAmbient(new ColorRGBA(0.25f, 0.25f, 0.25f, 1.0f));
     dr.setDirection(new Vector3f(0, 0, -150));
 
-    state = display.getRenderer().getLightState();
-    state.setEnabled(true);
-    state.attach(am);
-    state.attach(dr);
-    state.attach(am2);
+    lightState.detachAll();
+    lightState.attach(am);
+    lightState.attach(dr);
+    lightState.attach(am2);
     am.setEnabled(true);
     am2.setEnabled(true);
     dr.setEnabled(true);
 
-    zstate = display.getRenderer().getZBufferState();
-    zstate.setEnabled(true);
+    model = new Md2Model("Dr Freak");
+    model.load(TestMd2.class.getClassLoader().getResource("jmetest/" +
+        FILE_NAME));
+    rootNode.attachChild(model);
 
-    WireframeState ws = display.getRenderer().getWireframeState();
-    ws.setEnabled(false);
-
-    model.setRenderState(state);
-    model.setRenderState(ts);
-    model.setRenderState(zstate);
-    model.setRenderState(ws);
-
-    model.getAnimationController().setRepeatType(Controller.RT_WRAP);
-    model.updateGeometricState(0, true);
-    model.updateRenderState();
-
-    AlphaState as1 = display.getRenderer().getAlphaState();
-    as1.setBlendEnabled(true);
-    as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-    as1.setDstFunction(AlphaState.DB_ONE);
-    as1.setTestEnabled(true);
-    as1.setTestFunction(AlphaState.TF_GREATER);
-    as1.setEnabled(true);
-
-    TextureState font = display.getRenderer().getTextureState();
-    font.setTexture(
+    ts = display.getRenderer().getTextureState();
+    ts.setEnabled(true);
+    ts.setTexture(
         TextureManager.loadTexture(
-        TestMd2.class.getClassLoader().getResource(
-        "jmetest/data/font/font.png"),
+        TestMd2.class.getClassLoader().getResource("jmetest/" + TEXTURE_NAME),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR,
         true));
-    font.setEnabled(true);
 
-    fps = new Text("FPS label", "");
-    fps.setRenderState(font);
-    fps.setRenderState(as1);
-    fps.setForceView(true);
+    model.setRenderState(ts);
 
-    fpsNode = new Node("FPS node");
-    fpsNode.attachChild(fps);
-    fpsNode.setForceView(true);
-
-    fpsNode.updateGeometricState(0.0f, true);
-    fpsNode.updateRenderState();
+    model.getAnimationController().setRepeatType(Controller.RT_WRAP);
 
     keyframeSelector = new Md2KeyframeSelector( (VertexKeyframeController)
                                                model.getAnimationController());
-  }
-
-  /**
-   * not used.
-   *
-   * @see com.jme.app.AbstractGame#reinit()
-   */
-  protected void reinit() {
-  }
-
-  /**
-   * not used.
-   *
-   * @see com.jme.app.AbstractGame#cleanup()
-   */
-  protected void cleanup() {
-  }
-
-  public static void main(String[] args) {
-    TestMd2 app = new TestMd2();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
   }
 }
