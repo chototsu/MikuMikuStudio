@@ -30,10 +30,9 @@
  * 
  */
 
-package com.jme.system;
+package com.jme.system.lwjgl;
 
 import java.awt.BorderLayout;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -62,6 +61,9 @@ import javax.swing.UIManager;
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
 
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.system.PropertiesIO;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -73,7 +75,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.3 2004-08-18 21:42:00 ericthered Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.1 2004-08-30 04:36:11 mojomonkey Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
