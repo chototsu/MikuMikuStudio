@@ -1,10 +1,7 @@
 package com.jme.scene.model.XMLparser;
 
 
-import java.io.InputStream;
-import java.io.Writer;
-import java.io.DataInputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Started Date: Jun 23, 2004<br><br>
@@ -23,6 +20,33 @@ public class BinaryToXML {
      */
     private StringBuffer currentLine;
     private static final boolean DEBUG = false;
+
+
+    /**
+     * Converts jME binary to XML.  The syntax is: "BinaryToXML file.jme out.xml"
+     * @param args 2 strings.  The first is the jME binary file to read, the second is the place to place its output.
+     */
+    public static void main(String[] args) {
+        if (args.length!=2){
+            System.err.println("Correct way to use is: <FormatFile> <XMLoutputout>");
+            System.err.println("For example: runner.jme runner.xml");
+            return;
+        }
+        File inFile=new File(args[0]);
+        File outFile=new File(args[1]);
+        if (!inFile.canRead()){
+            System.err.println("Cannot read input file " + inFile);
+            return;
+        }
+        try {
+            System.out.println("Converting file " + inFile + " to " + outFile);
+            new BinaryToXML().sendBinarytoXML(new FileInputStream(inFile),new FileWriter(outFile));
+        } catch (IOException e) {
+            System.err.println("Unable to convert:" + e);
+            return;
+        }
+        System.out.println("Conversion complete!");
+    }
 
 
     /**
