@@ -6,10 +6,18 @@ import com.jme.scene.model.XMLparser.Converters.ObjToJme;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.scene.CameraNode;
+import com.jme.scene.Controller;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.Vector3f;
+import com.jme.math.Matrix3f;
+import com.jme.curve.CurveController;
+import com.jme.curve.BezierCurve;
+import com.jme.renderer.Camera;
+import com.jme.input.KeyInput;
+import com.jme.input.action.KeyExitAction;
 
 import java.net.URL;
 import java.io.ByteArrayOutputStream;
@@ -95,5 +103,39 @@ public class HelloLOD extends SimpleGame {
         meshParent.setLocalScale(.1f);
         meshParent.setLocalTranslation(new Vector3f(-15,0,0));
         rootNode.attachChild(meshParent);
+        input.clearKeyboardActions();
+        input.clearMouseActions();
+        input.addKeyboardAction("exit",KeyInput.KEY_ESCAPE,new KeyExitAction(this));
+
+        Vector3f[]cameraPoints=new Vector3f[]{
+            new Vector3f(0,0,0),
+            new Vector3f(0,5,20),
+            new Vector3f(0,10,40),
+            new Vector3f(0,45,60),
+        };
+        BezierCurve bc=new BezierCurve("camera path",cameraPoints);
+        CameraNode cn=new CameraNode("camera node",display.getRenderer().getCamera());
+        Vector3f left=new Vector3f(-1,0,0);
+        Vector3f up=new Vector3f(0,1,0);
+        Vector3f direction=new Vector3f(0,0,-1);
+        Matrix3f cameraFrame=new Matrix3f();
+        cameraFrame.setColumn(0,left);
+        cameraFrame.setColumn(1,up);
+        cameraFrame.setColumn(2,direction);
+        cn.setLocalRotation(cameraFrame);
+        CurveController cc=new CurveController(bc,cn);
+        cc.setActive(true);
+        cc.setUpVector(new Vector3f(0,1,0));
+        cc.setAutoRotation(false);
+        cc.setRepeatType(Controller.RT_CYCLE);
+        cn.addController(cc);
+        cc.setSpeed(.1f);
+        rootNode.attachChild(cn);
+    }
+    protected void simpleUpdate(){
+        Camera c=display.getRenderer().getCamera();
+        c.lookAt(new Vector3f(0,0,0));
+//        c.setFrame(c.getLocation(),new Vector3f(-1,0,0),new Vector3f(0,1,0),new Vector3f(c.getLocation()).negateLocal());
+        c.update();
     }
 }
