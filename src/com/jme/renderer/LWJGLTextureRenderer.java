@@ -31,64 +31,20 @@
  */
 package com.jme.renderer;
 
-import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
-
-import javax.imageio.ImageIO;
-
-import org.lwjgl.opengl.*;
-import org.lwjgl.opengl.GLU;
-import org.lwjgl.opengl.Window;
-
-import com.jme.curve.Curve;
-import com.jme.effects.Tint;
-import com.jme.input.Mouse;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
-import com.jme.math.Vector3f;
-import com.jme.scene.Clone;
-import com.jme.scene.CloneNode;
-import com.jme.scene.Line;
-import com.jme.scene.Point;
-import com.jme.scene.Spatial;
-import com.jme.scene.Text;
-import com.jme.scene.TriMesh;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.CullState;
-import com.jme.scene.state.DitherState;
-import com.jme.scene.state.FogState;
-import com.jme.scene.state.LWJGLAlphaState;
-import com.jme.scene.state.LWJGLCullState;
-import com.jme.scene.state.LWJGLDitherState;
-import com.jme.scene.state.LWJGLFogState;
-import com.jme.scene.state.LWJGLLightState;
-import com.jme.scene.state.LWJGLMaterialState;
-import com.jme.scene.state.LWJGLShadeState;
-import com.jme.scene.state.LWJGLTextureState;
-import com.jme.scene.state.LWJGLWireframeState;
-import com.jme.scene.state.LWJGLZBufferState;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.ShadeState;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.WireframeState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
-import com.jme.widget.WidgetRenderer;
 
 import com.jme.image.Texture;
+import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
+import com.jme.util.LoggingSystem;
+import org.lwjgl.opengl.GL;
+import org.lwjgl.opengl.Pbuffer;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.1 2004-03-04 19:37:32 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.2 2004-03-04 19:43:26 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
