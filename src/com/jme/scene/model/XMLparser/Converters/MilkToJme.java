@@ -70,13 +70,14 @@ public class MilkToJme extends FormatConverter{
         if (!readJoints()){
             jbw.setProperty("jointmesh","astrimesh");
         }
-        nullAll();
         jbw.writeScene(finalNode,o);
+        nullAll();
     }
 
     private void nullAll() {
         myTris=null;
         myVerts=null;
+        finalNode=null;
     }
 
     private boolean readJoints() throws IOException {
