@@ -38,12 +38,12 @@ import com.jme.renderer.ColorRGBA;
 /**
  * <code>Quad</code>
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.2 2004-03-05 02:31:06 renanse Exp $
+ * @version $Id: Quad.java,v 1.3 2004-03-31 03:07:46 renanse Exp $
  */
 public class Quad extends TriMesh {
+
     public Quad(String name) {
         super(name);
-//        initialize(1,1);
     }
 
     public void initialize(float width, float height) {
@@ -86,4 +86,13 @@ public class Quad extends TriMesh {
         setTextures(texCoords);
         setIndices(indices);
     }
+
+  /**
+   * getCenter
+   *
+   * @return Vector3f
+   */
+  public Vector3f getCenter() {
+    return worldTranslation;
+  }
 }
