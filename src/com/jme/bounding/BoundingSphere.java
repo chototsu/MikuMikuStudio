@@ -42,6 +42,7 @@ import com.jme.math.Plane;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.*;
 import com.jme.util.LoggingSystem;
+import com.jme.math.FastMath;
 
 /**
  * <code>BoundingSphere</code> defines a sphere that defines a container for a
@@ -53,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.7 2004-04-29 18:38:18 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.8 2004-05-15 21:23:35 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -348,10 +349,19 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         float lengthSquared = diff.lengthSquared();
         float radiusDiff = temp_radius - radius;
 
-        float length = (float) Math.sqrt(lengthSquared);
-        float tolerance = 1e-06f;
+        float fRDiffSqr = radiusDiff*radiusDiff;
 
-        if (length > tolerance) {
+        if ( fRDiffSqr >= lengthSquared ) {
+          if (radiusDiff >= 0.0f) {
+            return this;
+          } else {
+            return rVal;
+          }
+        }
+
+        float length = (float) Math.sqrt(lengthSquared);
+
+        if (length > FastMath.FLT_EPSILON) {
             float coeff = (length + radiusDiff) / (2.0f * length);
             rVal.setCenter(center.addLocal(diff.multLocal(coeff)));
         } else {
@@ -359,7 +369,6 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         }
 
         rVal.setRadius(0.5f * (length + radius + temp_radius));
-
         return rVal;
     }
 
