@@ -57,7 +57,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBillboardNode.java,v 1.4 2004-03-25 17:14:27 mojomonkey Exp $
+ * @version $Id: TestBillboardNode.java,v 1.5 2004-03-31 03:08:11 renanse Exp $
  */
 public class TestBillboardNode extends SimpleGame {
     private TriMesh t;
@@ -169,6 +169,7 @@ public class TestBillboardNode extends SimpleGame {
 
         root = new Node("Root Scene Node");
         BillboardNode billboard = new BillboardNode("Billboard");
+        billboard.setType(BillboardNode.AXIAL);
 
         Quad q = new Quad("Quad");
         q.initialize(1,1);
