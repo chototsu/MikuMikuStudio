@@ -113,6 +113,7 @@ public class MilkToJme extends FormatConverter{
                 if (parentNames[i].equals(jointNames[j])) jc.parentIndex[i]=j;
             }
         }
+        jc.setRepeatType(Controller.RT_WRAP);
         finalNode.addController(jc);
         return true;
     }
@@ -276,11 +277,16 @@ public class MilkToJme extends FormatConverter{
     }
 
     /**
-     * This function returns the controller of a loaded Milkshape3D model.
+     * This function returns the controller of a loaded Milkshape3D model.  Will return
+     * null if a correct JointController could not be found, or if one does not exist.
      * @param model The model that was loaded.
      * @return The controller for that milkshape model.
      */
     public static JointController findController(Node model){
+        if (model.getQuantity()==0 ||
+                model.getChild(0).getControllers().size()==0 ||
+                !(model.getChild(0).getController(0) instanceof JointController))
+            return null;
         return (JointController) (model.getChild(0)).getController(0);
     }
 }
