@@ -74,7 +74,7 @@ class DummyDisplaySystem extends DisplaySystem{
                     public void apply(){}
                 };
             }
-            private class TextureStateN extends TextureState{
+            class TextureStateN extends TextureState{
                 TextureStateN(){
                     numTexUnits=1;
                 }
