@@ -37,13 +37,17 @@
 package com.jme.test.demo;
 
 import com.jme.entity.Entity;
+import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.TextureState;
 import com.jme.sound.IEffectPlayer;
 import com.jme.sound.IRenderer;
 import com.jme.sound.utils.EffectRepository;
 import com.jme.sound.utils.OnDemandSoundLoader;
+import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 
 /**
@@ -57,7 +61,7 @@ public class SoundPlayingScene implements Scene {
 	private Text text;
 	private float timeElapsed;
 	private Timer timer;
-	private Vector3f soundPosition= new Vector3f(0, 0, 0);
+	private Vector3f soundPosition= new Vector3f(-15, 0, 0);
 
 	private Entity backgroundMusic, e;
 
@@ -67,10 +71,28 @@ public class SoundPlayingScene implements Scene {
 
 	private int status;
 
+	boolean toRight= true, ascending= true;
+
 	public void init(SceneEnabledGame game) {
 		this.game= game;
 		timer= game.getTimer();
 		text= new Text("Playing sound");
+		TextureState ts= game.getDisplaySystem().getRenderer().getTextureState();
+		ts.setEnabled(true);
+		ts.setTexture(
+			TextureManager.loadTexture(
+				"C:/eclipse/workspace/JavaMonkeyEngine/jme/data/Font/font.png",
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true));
+		text.setRenderState(ts);
+		AlphaState as1= game.getDisplaySystem().getRenderer().getAlphaState();
+		as1.setBlendEnabled(true);
+		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+		as1.setDstFunction(AlphaState.DB_ONE);
+		as1.setTestEnabled(true);
+		as1.setTestFunction(AlphaState.TF_GREATER);
+		text.setRenderState(as1);
 		soundRenderer= game.getSoundSystem().getRenderer();
 		backgroundMusic= new Entity("BACKGROUND");
 		soundRenderer.addSoundPlayer(backgroundMusic);
@@ -78,12 +100,16 @@ public class SoundPlayingScene implements Scene {
 		soundRenderer.getSoundPlayer(backgroundMusic).setMaxDistance(25.0f);
 		soundLoader= new OnDemandSoundLoader(10);
 		soundLoader.start();
-		soundLoader.queueSound(backgroundMusic.getId(), "C:/eclipse/workspace/JavaMonkeyEngine/jme/data/sound/0.mp3");
+		soundLoader.queueSound(
+			backgroundMusic.getId(),
+			"C:/eclipse/workspace/JavaMonkeyEngine/jme/data/sound/0.mp3");
 		soundNode= new Node();
 		soundNode.attachChild(text);
+		soundNode.updateGeometricState(0.0f, true);
 		status= Scene.LOADING_NEXT_SCENE;
 		System.out.println("LOADING Sound");
 		text.print("Position " + soundPosition);
+		text.setLocalTranslation(new Vector3f(1, 60, 0));
 
 	}
 
@@ -98,23 +124,37 @@ public class SoundPlayingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#update()
 	 */
 	public boolean update() {
-		if(soundNode==null){ 
+		if (soundNode == null) {
 			return false;
 		}
-		if(EffectRepository.getRepository().getSource(backgroundMusic.getId()) !=null){
-			status=READY;
-			
-		}else{
+		if (EffectRepository.getRepository().getSource(backgroundMusic.getId()) != null) {
+			status= READY;
+		} else {
 			return false;
 		}
-		
 		timer.update();
 		if (soundRenderer.getSoundPlayer(backgroundMusic).getStatus() != IEffectPlayer.LOOPING) {
 			soundRenderer.getSoundPlayer(backgroundMusic).loop(
 				EffectRepository.getRepository().getSource(backgroundMusic.getId()));
-				
+
+		}
+		if (toRight) {
+				soundPosition.x += 0.1;
+			if (soundPosition.x > 15) {
+				ascending= false;
+				toRight=false;
+			}
+		}
+		if (!ascending) {
+			soundPosition.x -= 0.1;
+			if (soundPosition.x < -15) {
+				toRight= true;
+				ascending=true;
+			}
 		}
 		
+		soundRenderer.getSoundPlayer(backgroundMusic).setPosition(soundPosition);
+		text.print("Position " + soundPosition);
 		return true;
 	}
 
@@ -139,7 +179,7 @@ public class SoundPlayingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#getSceneClassName()
 	 */
 	public String getSceneClassName() {
-		
+
 		return "com.jme.test.demo.SoundPlayingScene";
 	}
 
@@ -155,7 +195,7 @@ public class SoundPlayingScene implements Scene {
 	 * @see com.jme.test.demo.Scene#setStatus(int)
 	 */
 	public void setStatus(int status) {
-		this.status=status;
+		this.status= status;
 	}
 
 }
