@@ -131,7 +131,7 @@ public class RenParticleControlFrame extends JFrame {
    * <code>RenParticleControlFrame</code>
    *
    * @author Joshua Slack
-   * @version $Id: RenParticleControlFrame.java,v 1.16 2004-03-25 17:54:52 renanse Exp $
+   * @version $Id: RenParticleControlFrame.java,v 1.17 2004-03-25 18:01:34 renanse Exp $
    *
    */
 
@@ -759,13 +759,13 @@ public class RenParticleControlFrame extends JFrame {
     } else if ("SNOW".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
       manager.setEmissionDirection(new Vector3f(0.0f, -1.0f, 0.0f));
-      manager.setEmissionMaximumAngle(3.1415927f);
-      manager.setParticlesSpeed(0.6f);
-      manager.setParticlesMinimumLifeTime(8211.0f);
-      manager.setStartSize(20.0f);
-      manager.setEndSize(40.0f);
+      manager.setEmissionMaximumAngle(1.5707964f);
+      manager.setParticlesSpeed(1.5f);
+      manager.setParticlesMinimumLifeTime(2195.0f);
+      manager.setStartSize(30.0f);
+      manager.setEndSize(30.0f);
       manager.setStartColor(new ColorRGBA(0.3764706f, 0.3764706f, 0.3764706f, 1.0f));
-      manager.setEndColor(new ColorRGBA(0.3764706f, 0.3764706f, 0.3764706f, 0.15686275f));
+      manager.setEndColor(new ColorRGBA(0.3764706f, 0.3764706f, 0.3764706f, 0.1882353f));
       manager.setRandomMod(1.0f);
     } else if ("JET".equalsIgnoreCase(examType)) {
       manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
