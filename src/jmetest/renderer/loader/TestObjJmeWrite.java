@@ -3,7 +3,6 @@ package jmetest.renderer.loader;
 import com.jme.app.SimpleGame;
 import com.jme.scene.model.XMLparser.Converters.ObjToJme;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.Node;
 
 import java.net.URL;
@@ -25,19 +24,21 @@ public class TestObjJmeWrite extends SimpleGame{
     protected void simpleInitGame() {
         ObjToJme converter=new ObjToJme();
         try {
-//            URL objFile=new File("obj/ninja.obj").toURL();
-            URL objFile=TestObjJmeWrite.class.getClassLoader().getResource("jmetest/data/model/ninja.obj");
+            URL objFile=TestObjJmeWrite.class.getClassLoader().getResource("jmetest/data/model/maggie.obj");
+            converter.setProperty("mtllib",objFile);
             ByteArrayOutputStream BO=new ByteArrayOutputStream();
-            converter.setProperty("sillycolors","true");
+            System.out.println("Starting to convert .obj to .jme");
             converter.convert(objFile.openStream(),BO);
             JmeBinaryReader jbr=new JmeBinaryReader();
-            BinaryToXML btx=new BinaryToXML();
-            btx.sendBinarytoXML(new ByteArrayInputStream(BO.toByteArray()),new PrintWriter(System.out));
+            jbr.setProperty("texurl",new File(".").toURL());
+            System.out.println("Done converting, now watch how fast it loads!");
+            long time=System.currentTimeMillis();
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            System.out.println("Finished loading time is "+(System.currentTimeMillis()-time));
+            r.setLocalScale(.1f);
             rootNode.attachChild(r);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        lightState.detachAll();
     }
 }

@@ -73,7 +73,6 @@ public class JmeBinaryWriter {
      * @throws IOException If anything wierd happens.
      */
     public void writeScene(Node scene,OutputStream bin) throws IOException {
-        int DEBUGGGG;// TODO
         myOut=new DataOutputStream(bin);
         sharedObjects.clear();
         entireScene.clear();
