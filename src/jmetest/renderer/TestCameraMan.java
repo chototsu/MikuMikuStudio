@@ -44,8 +44,6 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.LWJGLRenderer;
 import com.jme.renderer.LWJGLTextureRenderer;
-import com.jme.scene.BoundingSphere;
-import com.jme.scene.Box;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
 import com.jme.scene.Quad;
