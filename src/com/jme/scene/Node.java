@@ -29,6 +29,13 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
+ 
+ /*
+  * EDIT:  02/05/2004 - Added detachAllChildren method. GOP
+  * EDIT:  02/05/2004 - Added check for null on first child before setting 
+  *                     firstBound to true in updateWorldBound method.  GOP
+  */
+  
 package com.jme.scene;
 
 import java.io.Serializable;
@@ -44,7 +51,8 @@ import com.jme.util.LoggingSystem;
  * into a single bound to allow for very fast culling of multiple nodes. 
  * Node allows for any number of children to be attached.
  * @author Mark Powell
- * @version $Id: Node.java,v 1.6 2004-02-03 22:13:25 mojomonkey Exp $
+ * @author Gregg Patton
+ * @version $Id: Node.java,v 1.7 2004-02-09 12:12:19 greggpatton Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -121,6 +129,15 @@ public class Node extends Spatial implements Serializable {
     
     /**
      * 
+     * <code>detachAllChildren</code> removes all children attached to this node. 
+     */
+    public void detachAllChildren() {
+        LoggingSystem.getLogger().log(Level.INFO, "All children removed.");
+        children.clear();
+    }
+    
+    /**
+     * 
      * <code>setChild</code> places a child at a given index. If a child is
      * already set to that index the old child is returned.
      * @param i the index to set the child to.
@@ -191,10 +208,13 @@ public class Node extends Spatial implements Serializable {
                 if (foundFirstBound) {
                 	// merge current world bound with child world bound
                     worldBound = worldBound.merge(child.getWorldBound());
+
                 } else {
                     // set world bound to first non-null child world bound
-                    foundFirstBound = true;
                     worldBound = child.getWorldBound();
+                    
+                    if (worldBound != null)
+                        foundFirstBound = true;
                 }
             }
         }
