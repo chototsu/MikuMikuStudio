@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.7 2004-02-15 20:22:39 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.8 2004-02-16 06:25:42 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
@@ -126,7 +126,6 @@ public class Md2Model extends Model {
 			throw new JmeException("Null data. Cannot load.");
 		}
 		InputStream is = null;
-		int fileSize = 0;
 		bis = new BinaryFileReader(filename);
 
 		header = new Header();

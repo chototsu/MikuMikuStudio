@@ -49,7 +49,7 @@ import com.jme.system.JmeException;
  * the reading point. The index can be manually adjusted via the 
  * <code>setOffset</code> method.
  * @author Mark Powell
- * @version $Id: BinaryFileReader.java,v 1.3 2004-02-15 20:09:50 mojomonkey Exp $
+ * @version $Id: BinaryFileReader.java,v 1.4 2004-02-16 06:25:42 mojomonkey Exp $
  */
 public class BinaryFileReader {
 	private byte[] fileContents;
@@ -85,7 +85,7 @@ public class BinaryFileReader {
 			fileContents = new byte[bis.available()];
 
 			// Read the entire file into memory
-			bis.read(fileContents);
+			bis.readFully(fileContents);
 			bis.close();
 		} catch (IOException ioe) {
 			throw new JmeException("Could not read: " + f);
