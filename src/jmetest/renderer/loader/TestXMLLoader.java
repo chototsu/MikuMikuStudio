@@ -15,6 +15,8 @@ import java.net.URL;
  * Started Date: May 30, 2004 <br><br>
  * Test class for XML loading/writting with jME.  I load an XML doc, write the node I loaded, then load that write and
  * finally attach that to the SceneGraph
+ *
+ * @deprecated soon to go byebye
  * @author Jack Lindamood
  */
 public class TestXMLLoader extends SimpleGame{
@@ -25,6 +27,7 @@ public class TestXMLLoader extends SimpleGame{
     }
 
     protected void simpleInitGame() {
+        /*
         lightState.get(0).setSpecular(new ColorRGBA(1,1,1,1));
 
         SAXReader r=new SAXReader();
@@ -51,6 +54,6 @@ public class TestXMLLoader extends SimpleGame{
         r.loadXML(new ByteArrayInputStream(BO.toString().getBytes()));
         Node mi2=r.fetchCopy();
         rootNode.attachChild(mi2);
-
+        */
     }
 }
