@@ -31,30 +31,28 @@
  */
 package com.jme.util;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.PixelGrabber;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
-import javax.imageio.ImageIO;
 
-import java.awt.Graphics2D;
-import java.awt.geom.AffineTransform;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.PixelGrabber;
+import javax.imageio.ImageIO;
 
 import com.jme.image.BitmapHeader;
 import com.jme.image.Texture;
-import com.jme.system.DisplaySystem;
 import com.jme.scene.state.TextureState;
-import java.nio.ByteOrder;
+import com.jme.system.DisplaySystem;
 
 /**
  *
@@ -64,7 +62,7 @@ import java.nio.ByteOrder;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.28 2004-11-16 16:46:27 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.29 2004-11-30 16:37:57 renanse Exp $
  */
 final public class TextureManager {
 
@@ -281,6 +279,20 @@ final public class TextureManager {
     return texture;
   }
 
+		public static com.jme.image.Texture loadTexture(java.awt.Image image,
+																										int minFilter, int magFilter,
+																										float anisoLevel,
+																										boolean isMipmapped,
+																										boolean flipped) {
+			com.jme.image.Image imageData = loadImage(image, flipped);
+			Texture texture = new Texture(anisoLevel);
+			texture.setCorrection(Texture.CM_PERSPECTIVE);
+			texture.setFilter(magFilter);
+			texture.setImage(imageData);
+			texture.setMipmapState(minFilter);
+			return texture;
+		}
+
   /**
    *
    * <code>loadImage</code> sets the image data.
@@ -308,14 +320,14 @@ final public class TextureManager {
                                     e.getMessage());
       return null;
 		}
-		AffineTransform tx = null;
-		if (flipImage) {
-			tx = AffineTransform.getScaleInstance(1, -1);
-			tx.translate(0, -image.getHeight(null));
-		}
+		int width = image.getWidth(null);
+		int height = image.getHeight(null);
 
 		Graphics2D g = (Graphics2D) tex.getGraphics();
-    g.drawImage(image, tx, null);
+		if (flipImage)
+			g.drawImage(image, 0, height, width, -height, null);
+		else
+			g.drawImage(image, 0, 0, width, height, null);
     g.dispose();
 
     //Get a pointer to the image memory
