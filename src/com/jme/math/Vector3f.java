@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector3f</code> defines a Vector for a three float value tuple.
  * @author Mark Powell
  * @author Joshua Slack -- Added *Local methods to cut down on object creation
- * @version $Id: Vector3f.java,v 1.10 2004-03-03 00:19:38 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.11 2004-03-13 17:17:54 renanse Exp $
  */
 public class Vector3f {
     /**
@@ -395,6 +395,22 @@ public class Vector3f {
     public Object clone() {
         return new Vector3f(x,y,z);
     }
+
+
+    /**
+     * are these two vectors the same?  they are is they both have the same x,y, and z
+     * values.
+     * @param o the object to compare for equality
+     * @return this vector
+     */
+    public boolean equals(Object o) {
+        Vector3f comp = (Vector3f)o;
+        if (x != comp.x) return false;
+        if (y != comp.y) return false;
+        if (z != comp.z) return false;
+        return true;
+    }
+
 
     /**
      * <code>toString</code> returns the string representation of this

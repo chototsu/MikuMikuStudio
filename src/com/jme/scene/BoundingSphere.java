@@ -54,12 +54,13 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.24 2004-03-13 05:22:47 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.25 2004-03-13 17:17:54 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
     public int[] checkPlanes = new int[6];
     private float oldRadius;
+    private Vector3f oldCenter = new Vector3f();
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -371,9 +372,11 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     }
 
     public void recomputeMesh() {
-        if (radius == oldRadius) return;
+        if (radius != oldRadius || !center.equals(oldCenter)) {
             setData(null, 10, 10, radius);
-        oldRadius = radius;
+            oldRadius = radius;
+            oldCenter.set(center.x, center.y, center.z);
+        }
     }
 
     /**
