@@ -2,9 +2,9 @@ package com.jme.animation;
 
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
-import com.jme.math.TransformMatrix;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
+import com.jme.math.TransformMatrixQuat;
 
 import java.util.ArrayList;
 import java.util.BitSet;
@@ -27,7 +27,7 @@ public class SpatialTransformer extends Controller{
     /** Refrences to the objects that will be changed.*/
     public Spatial[] toChange;
     /** Used internally by update specifying how to change each object.*/
-    private TransformMatrix[] pivots;
+    private TransformMatrixQuat[] pivots;
     /** parentIndexes[i] states that toChange[i]'s parent is toChange[parentIndex[i]].*/
     public int[] parentIndexes;
 
@@ -49,7 +49,6 @@ public class SpatialTransformer extends Controller{
     /** Used internally in update to flag that a pivot has been updated*/
     private boolean[] haveChanged;
     private float delta;
-    private TransformMatrix temp;
 
     /**
      * Constructs a new SpatialTransformer that will operate on <code>numObjects</code> Spatials
@@ -58,14 +57,13 @@ public class SpatialTransformer extends Controller{
     public SpatialTransformer(int numObjects){
         this.numObjects=numObjects;
         toChange=new Spatial[numObjects];
-        pivots=new TransformMatrix[numObjects];
+        pivots=new TransformMatrixQuat[numObjects];
         parentIndexes=new int[numObjects];
         haveChanged=new boolean[numObjects];
         Arrays.fill(parentIndexes,-1);
         for (int i=0;i<numObjects;i++)
-            pivots[i]=new TransformMatrix();
+            pivots[i]=new TransformMatrixQuat();
         keyframes=new ArrayList();
-        temp=new TransformMatrix();
     }
 
 
@@ -94,7 +92,7 @@ public class SpatialTransformer extends Controller{
         if (parentIndex!=-1){
             updatePivot(parentIndexes[objIndex]);
         }
-        pivots[objIndex].interpolateTransforms(beginPointTime.look[objIndex],endPointTime.look[objIndex],delta,unSyncbeginRot,unSyncendRot);
+        pivots[objIndex].interpolateTransforms(beginPointTime.look[objIndex],endPointTime.look[objIndex],delta);
         if (parentIndex!=-1)
             pivots[objIndex].combineWithParent(pivots[parentIndex]);
         pivots[objIndex].applyToSpatial(thisSpatial);
@@ -447,19 +445,19 @@ public class SpatialTransformer extends Controller{
         /**The time of this TransformationMatrix. */
         public float time;
         /** toChange[i] looks like look[i] at time.*/
-        public TransformMatrix[] look;
+        public TransformMatrixQuat[] look;
 
         /**
          * Constructs a new PointInTime with the time <code>time</code>
          * @param time
          */
         PointInTime(float time){
-            look=new TransformMatrix[numObjects];
+            look=new TransformMatrixQuat[numObjects];
             usedRot=new BitSet(numObjects);
             usedTrans=new BitSet(numObjects);
             usedScale=new BitSet(numObjects);
             for (int i=0;i<look.length;i++)
-                look[i]=new TransformMatrix();
+                look[i]=new TransformMatrixQuat();
             this.time=time;
         }
 
