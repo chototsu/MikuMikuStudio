@@ -39,7 +39,7 @@ import com.jme.util.LoggingSystem;
  * <code>Vector3f</code> defines a Vector for a three float value tuple.
  * @author Mark Powell
  * @author Joshua Slack -- Added *Local methods to cut down on object creation
- * @version $Id: Vector3f.java,v 1.6 2004-02-24 01:32:23 mojomonkey Exp $
+ * @version $Id: Vector3f.java,v 1.7 2004-02-26 17:05:04 renanse Exp $
  */
 public class Vector3f {
     /**
@@ -362,6 +362,13 @@ public class Vector3f {
         } else {
             return divideLocal(1);
         }
+    }
+
+    /**
+     * <code>zero</code> resets this vector's data to zero internally.
+     */
+    public void zero() {
+        x = y = z = 0;
     }
 
     /**

@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  *
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.11 2004-02-26 14:41:36 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.12 2004-02-26 17:05:03 renanse Exp $
  */
 public class ASEModel extends Model {
 
@@ -109,7 +109,7 @@ public class ASEModel extends Model {
      * No data is loaded at this time and a call to <code>load</code>
      * is required to initialize the model with data.
      * @param name the name of the scene element. This is required for identification and
-	 *          		comparision purposes.
+	 *                                                          		comparision purposes.
      */
     public ASEModel(String name) {
         super(name);
@@ -120,7 +120,7 @@ public class ASEModel extends Model {
      * file provided is then read and the data loaded. Thefore, a call
      * to <code>load</code> is not required.
      * @param name the name of the scene element. This is required for identification and
-	 *          		comparision purposes.
+	 *                                                          		comparision purposes.
      * @param file the ase file to load.
      */
     public ASEModel(String name, String file) {
@@ -138,6 +138,7 @@ public class ASEModel extends Model {
      */
     public void load(String file) {
         try {
+            System.err.println("file: "+file);
             URL url = new URL("file:" + file);
             load(url);
         } catch (MalformedURLException e) {
@@ -797,7 +798,6 @@ public class ASEModel extends Model {
             }
 
             Vector3f sum = new Vector3f();
-            Vector3f zero = sum;
             int shared = 0;
 
             for (int i = 0; i < object.getVertices().length; i++) {
@@ -805,15 +805,15 @@ public class ASEModel extends Model {
                     if (object.faces[j].vertIndex[0] == i
                         || object.faces[j].vertIndex[1] == i
                         || object.faces[j].vertIndex[2] == i) {
-                        sum = sum.add(tempNormals[j]);
+                        sum.addLocal(tempNormals[j]);
 
                         shared++;
                     }
                 }
 
-                normals[i] = sum.divide((float) (-shared)).normalize();
+                normals[i] = sum.divide((float) (-shared)).normalizeLocal();
 
-                sum = zero; // Reset the sum
+                sum.zero(); // Reset the sum
                 shared = 0; // Reset the shared
             }
 
