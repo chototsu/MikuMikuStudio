@@ -136,6 +136,7 @@ public class JmeBinaryReader {
      */
     private void readBegining() throws IOException {
         String tagName=myIn.readUTF();
+        int debug=234;
         if (DEBUG) System.out.println("Reading tagName:" + tagName);
         readInObjects(attributes);
         if (tagName.equals("scene")){
@@ -188,6 +189,8 @@ public class JmeBinaryReader {
 
             s.push(new XMLSharedNode((String) attributes.get("ident")));
         } else if (tagName.equals("sharedtrimesh")){
+            s.push(new XMLSharedNode((String) attributes.get("ident")));
+        } else if (tagName.equals("sharednode")){
             s.push(new XMLSharedNode((String) attributes.get("ident")));
         } else if (tagName.equals("publicobject")){
             Object toAdd=shares.get(attributes.get("ident"));
@@ -424,6 +427,9 @@ public class JmeBinaryReader {
             XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
             shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
         } else if (tagName.equals("sharedtrimesh")){
+            XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
+            shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
+        } else if (tagName.equals("sharednode")){
             XMLSharedNode XMLShare=(XMLSharedNode) s.pop();
             shares.put(XMLShare.myIdent,XMLShare.whatIReallyAm);
         } else if (tagName.equals("publicobject")){
