@@ -64,10 +64,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
 
     public void setUniform(String var, int value) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_INT);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_INT);
         object.vint = new int[1];
         object.vint[0] = value;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -80,10 +81,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
 
     public void setUniform(String var, float value) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_FLOAT);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_FLOAT);
         object.vfloat = new float[1];
         object.vfloat[0] = value;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -98,11 +100,12 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
 
     public void setUniform(String var, int value1, int value2) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_INT2);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_INT2);
         object.vint = new int[2];
         object.vint[0] = value1;
         object.vint[1] = value2;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -117,11 +120,12 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
 
     public void setUniform(String var, float value1, float value2) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_FLOAT2);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_FLOAT2);
         object.vfloat = new float[2];
         object.vfloat[0] = value1;
         object.vfloat[1] = value2;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -138,12 +142,13 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
 
     public void setUniform(String var, int value1, int value2, int value3) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_INT3);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_INT3);
         object.vint = new int[3];
         object.vint[0] = value1;
         object.vint[1] = value2;
         object.vint[2] = value3;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -160,12 +165,13 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
 
     public void setUniform(String var, float value1, float value2, float value3) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_FLOAT3);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_FLOAT3);
         object.vfloat = new float[3];
         object.vfloat[0] = value1;
         object.vfloat[1] = value2;
         object.vfloat[2] = value3;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -185,13 +191,14 @@ public abstract class GLSLShaderObjectsState extends RenderState {
 
     public void setUniform(String var, int value1, int value2, int value3,
             int value4) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_INT4);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_INT4);
         object.vint = new int[4];
         object.vint[0] = value1;
         object.vint[1] = value2;
         object.vint[2] = value3;
         object.vint[3] = value4;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -211,13 +218,14 @@ public abstract class GLSLShaderObjectsState extends RenderState {
 
     public void setUniform(String var, float value1, float value2,
             float value3, float value4) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_FLOAT4);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_FLOAT4);
         object.vfloat = new float[4];
         object.vfloat[0] = value1;
         object.vfloat[1] = value2;
         object.vfloat[2] = value3;
         object.vfloat[3] = value4;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -234,11 +242,12 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     public void setUniform(String var, float value[], boolean transpose) {
         if (value.length != 4) return;
 
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_MATRIX2);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_MATRIX2);
         object.matrix2f = new float[4];
         object.matrix2f = value;
         object.transpose = transpose;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -253,10 +262,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
 
     public void setUniform(String var, Matrix3f value, boolean transpose) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_MATRIX3);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_MATRIX3);
         object.matrix3f = value;
         object.transpose = transpose;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -271,10 +281,11 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      */
 
     public void setUniform(String var, Matrix4f value, boolean transpose) {
-        ShaderUniform object = new ShaderUniform(var, ShaderUniform.SU_MATRIX4);
+        ShaderUniform object = getShaderUniform(var, ShaderUniform.SU_MATRIX4);
         object.matrix4f = value;
         object.transpose = transpose;
-        uniforms.add(object);
+        if (object.uniformID == -1)
+            uniforms.add(object);
     }
 
     /**
@@ -305,6 +316,16 @@ public abstract class GLSLShaderObjectsState extends RenderState {
         return RS_GLSL_SHADER_OBJECTS;
     }
 
+    private ShaderUniform getShaderUniform(String name, int type) {
+        for (int x = uniforms.size(); --x >= 0; ) {
+            ShaderUniform temp = (ShaderUniform)uniforms.get(x);
+            if (name.equals(temp.name))
+                return temp;
+        }
+
+        return new ShaderUniform(name, type);
+    }
+        
     /**
      * <code>load</code> loads the shader object from the specified file. The
      * program must be in ASCII format. We delegate the loading to each

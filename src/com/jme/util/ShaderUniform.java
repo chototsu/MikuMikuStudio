@@ -108,4 +108,11 @@ public class ShaderUniform {
         this.type = type;
     }
 
+    public boolean equals(Object obj) {
+        if (obj instanceof ShaderUniform) {
+            ShaderUniform temp = (ShaderUniform)obj;
+            if (name.equals(temp.name)) return true;
+        }
+        return false;
+    }
 }
