@@ -100,7 +100,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.12 2004-04-26 20:56:12 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.13 2004-04-27 15:03:36 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -412,11 +412,10 @@ public class LWJGLRenderer implements Renderer {
         GL11.glFlush();
         Window.update();
     }
-    
+
     public void setOrtho() {
-        if(inOrthoMode) {
-            throw new JmeException("Already in Orthographic mode.");
-        }
+        if (inOrthoMode) { throw new JmeException(
+                "Already in Orthographic mode."); }
         //set up ortho mode
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
@@ -427,11 +426,24 @@ public class LWJGLRenderer implements Renderer {
         GL11.glLoadIdentity();
         inOrthoMode = true;
     }
-    
+
+    public void setOrthoCenter() {
+        if (inOrthoMode) { throw new JmeException(
+                "Already in Orthographic mode."); }
+        //set up ortho mode
+        GL11.glMatrixMode(GL11.GL_PROJECTION);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        GLU.gluOrtho2D(-Window.getWidth() / 2, Window.getWidth() / 2, -Window
+                .getHeight() / 2, Window.getHeight() / 2);
+        GL11.glMatrixMode(GL11.GL_MODELVIEW);
+        GL11.glPushMatrix();
+        GL11.glLoadIdentity();
+        inOrthoMode = true;
+    }
+
     public void unsetOrtho() {
-        if(!inOrthoMode) {
-            throw new JmeException("Not in Orthographic mode.");
-        }
+        if (!inOrthoMode) { throw new JmeException("Not in Orthographic mode."); }
         //remove ortho mode, and go back to original
         // state
         GL11.glMatrixMode(GL11.GL_PROJECTION);

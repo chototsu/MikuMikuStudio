@@ -77,7 +77,7 @@ import com.jme.widget.WidgetRenderer;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.29 2004-04-26 20:56:12 mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.30 2004-04-27 15:03:35 mojomonkey Exp $
  */
 public interface Renderer {
     /**
@@ -253,10 +253,22 @@ public interface Renderer {
      * 
      * <code>setOrtho</code> sets the display system to be in orthographic mode.
      * If the system has already been set to orthographic mode a
-     * <code>JmeException</code> is thrown.
+     * <code>JmeException</code> is thrown. The origin (0,0) is the bottom left
+     * of the screen.
      *
      */
     public void setOrtho();
+    
+    /**
+     * 
+     * <code>setOrthoCenter</code> sets the display system to be in orthographic mode.
+     * If the system has already been set to orthographic mode a
+     * <code>JmeException</code> is thrown. The origin (0,0) is the center
+     * of the screen.
+     *
+     *
+     */
+    public void setOrthoCenter();
     
     /**
      * 
