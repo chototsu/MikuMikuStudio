@@ -51,7 +51,6 @@ import org.lwjgl.DisplayMode;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.GL;
-import org.lwjgl.opengl.GLCaps;
 import org.lwjgl.opengl.Window;
 
 /**
@@ -76,7 +75,7 @@ import org.lwjgl.opengl.Window;
  * and create a new system.
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.12 2003-09-15 22:17:55 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.13 2003-10-29 16:26:10 mojomonkey Exp $
  */
 public class DisplaySystem {
     private static String VERSION = "jME version 0.1.2";
@@ -446,7 +445,7 @@ public class DisplaySystem {
                 Window.create(title, x, y, width, height, bpp, 0, 8, 0);
             }
 
-            GLCaps.determineAvailableExtensions();
+            //GLCaps.determineAvailableExtensions();
 
             LoggingSystem.getLoggingSystem().getLogger().log(
                 Level.INFO,

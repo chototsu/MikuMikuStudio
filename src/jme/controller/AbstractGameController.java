@@ -48,7 +48,7 @@ import org.lwjgl.input.Mouse;
  * <code>EntityController</code>.
  * 
  * @author Mark Powell
- * @version $Id: AbstractGameController.java,v 1.3 2003-09-03 18:05:36 mojomonkey Exp $
+ * @version $Id: AbstractGameController.java,v 1.4 2003-10-29 16:26:10 mojomonkey Exp $
  */
 public abstract class AbstractGameController
     implements KeyboardController, MouseController, EntityController {
@@ -114,7 +114,12 @@ public abstract class AbstractGameController
      * @see jme.controller.KeyboardController#setBuffered()
      */
     public void setBuffered() {
-        Keyboard.enableBuffer();
+        
+        try {
+            Keyboard.enableBuffer();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

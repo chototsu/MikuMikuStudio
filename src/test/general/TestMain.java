@@ -91,7 +91,7 @@ public class TestMain extends AbstractGame {
 
 	static {
 		if (GLCaps.WGL_EXT_swap_control) {
-			GL.wglSwapIntervalEXT(1);
+			//GL.wglSwapIntervalEXT(1);
 		}
 	}
     
