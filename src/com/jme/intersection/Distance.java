@@ -32,36 +32,64 @@
 package com.jme.intersection;
 
 import com.jme.math.Ray;
-import com.jme.math.Triangle;
 import com.jme.math.Vector3f;
 import com.jme.scene.BoundingSphere;
 
 /**
- * <code>Distance</code>
+ * <code>Distance</code> provides functional methods for determining the 
+ * distances between one object and another. These methods are static to allow
+ * for easy calling.
  * @author Mark Powell
- * @version $Id: Distance.java,v 1.1 2003-12-04 20:39:49 mojomonkey Exp $
+ * @version $Id: Distance.java,v 1.2 2003-12-04 22:55:46 mojomonkey Exp $
  */
 public class Distance {
 
+    /**
+     * 
+     * <code>distance</code> calculates the distance between two points.
+     * @param point1 the first point to test.
+     * @param point2 the second point to test.
+     * @return the distance between the two points.
+     */
     public static float distance(Vector3f point1, Vector3f point2) {
         return (float) Math.sqrt(distanceSquared(point1, point2));
 
     }
 
+    /**
+     * 
+     * <code>distanceSquared</code> returns the distance between two points, 
+     * with the distance squared. This allows for faster comparisons if relation
+     * is important but actual distance is not.
+     * @param p1 the first point to test.
+     * @param p2 the second point to test.
+     * @return the distance squared between two points.
+     */
     public static float distanceSquared(Vector3f p1, Vector3f p2) {
         return ((p1.x - p2.x) * (p1.x - p2.x))
             + ((p1.y - p2.y) * (p1.y - p2.y))
             + ((p1.z - p2.z) * (p1.z - p2.z));
     }
 
+    /**
+     * 
+     * <code>distance</code> calculates the distance between a point and a
+     * sphere. 
+     * @param point the point to test.
+     * @param sphere the sphere to test.
+     * @return the distance between a point and a sphere.
+     */
     public static float distance(Vector3f point, BoundingSphere sphere) {
         return distance(point, sphere.getCenter()) - sphere.getRadius();
     }
 
-    public static float distance(Vector3f point, Triangle tri) {
-        return 0;
-    }
-
+    /**
+     * 
+     * <code>distance</code> calculates the distance between a point and a ray.
+     * @param point the point to test.
+     * @param ray the ray to test.
+     * @return the distance between the point and the ray.
+     */
     public static float distance(Vector3f point, Ray ray) {
         Vector3f diff = point.subtract(ray.getOrigin());
         float t = diff.dot(ray.getDirection());
@@ -75,8 +103,4 @@ public class Distance {
 
         return diff.length();
     }
-
-    public static float distance(Ray ray, Triangle tri) {
-        return 0;
-    }  
 }
