@@ -53,7 +53,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestRenParticleSystem.java,v 1.1 2004-03-19 23:45:54 renanse Exp $
+ * @version $Id: TestRenParticleSystem.java,v 1.2 2004-03-19 23:48:55 renanse Exp $
  */
 public class TestRenParticleSystem extends SimpleGame {
 
@@ -66,7 +66,6 @@ public class TestRenParticleSystem extends SimpleGame {
 
   private Timer timer;
   private InputController input;
-  private KeyInput key;
 
   private Text fps;
 
