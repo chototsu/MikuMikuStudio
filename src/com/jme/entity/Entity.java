@@ -40,22 +40,22 @@ import com.jme.scene.Spatial;
  * within the game world. The <code>Entity</code> will contain all relevant 
  * game information allowing for easy data reference and control.
  * @author Mark Powell
- * @version $Id: Entity.java,v 1.2 2004-01-20 11:17:59 Anakan Exp $
+ * @version $Id: Entity.java,v 1.3 2004-01-20 11:18:27 Anakan Exp $
  */
 public class Entity {
-    private Spatial spatial;
-    private String id;
-    private Properties properties;
-    
-    /**
-     * Constructor creates a new <code>Entity</code> object. During creation
-     * a string id is used to denote a unique entity.
-     * @param id the entity id.
-     */
-    public Entity(String id) {
-        this.id = id;
-    }
-    
+	private Spatial spatial;
+	private String id;
+	private Properties properties;
+
+	/**
+	 * Constructor creates a new <code>Entity</code> object. During creation
+	 * a string id is used to denote a unique entity.
+	 * @param id the entity id.
+	 */
+	public Entity(String id) {
+		this.id= id;
+	}
+
 	/**
 		 * Constructor creates a new <code>Entity</code> object. During creation
 		 * a string id is used to denote a unique entity, with predefined properties.
@@ -63,41 +63,40 @@ public class Entity {
 		 * @param id the entity id.
 		 * @param props the entity properties.
 		 */
-    public Entity(String id, Properties props){
-    	this(id);
-    	this.properties=props;
-    }
-    
-    /**
-     * 
-     * <code>setSpatial</code> sets the spatial object used to define the 
-     * entitie's graphical representation.
-     * @param spatial the spatial object used to describe the geometry of the
-     * entity.
-     */
-    public void setSpatial(Spatial spatial) {
-        this.spatial = spatial;
-    }
-    
-    /**
-     * 
-     * <code>getSpatial</code> retrieves the spatial object of the entity.
-     * @return the spatial object of the entity.
-     */
-    public Spatial getSpatial() {
-        return spatial;
-    }
-    
-    /**
-     * 
-     * <code>getId</code> returns this entity's id.
-     * @return the id of the entity.
-     */
-    public String getId() {
-        return id;
-    }
-    
-    
+	public Entity(String id, Properties props) {
+		this(id);
+		this.properties= props;
+	}
+
+	/**
+	 * 
+	 * <code>setSpatial</code> sets the spatial object used to define the 
+	 * entitie's graphical representation.
+	 * @param spatial the spatial object used to describe the geometry of the
+	 * entity.
+	 */
+	public void setSpatial(Spatial spatial) {
+		this.spatial= spatial;
+	}
+
+	/**
+	 * 
+	 * <code>getSpatial</code> retrieves the spatial object of the entity.
+	 * @return the spatial object of the entity.
+	 */
+	public Spatial getSpatial() {
+		return spatial;
+	}
+
+	/**
+	 * 
+	 * <code>getId</code> returns this entity's id.
+	 * @return the id of the entity.
+	 */
+	public String getId() {
+		return id;
+	}
+
 	/**
 	 * Get a property of this entity.
 	 * @param propertyName the property name to retrieve.
