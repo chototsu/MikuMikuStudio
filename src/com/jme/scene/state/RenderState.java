@@ -39,7 +39,7 @@ import com.jme.scene.Spatial;
 /**
  * <code>RenderState</code>
  * @author Mark Powell
- * @version $Id: RenderState.java,v 1.8 2004-04-22 22:26:56 renanse Exp $
+ * @version $Id: RenderState.java,v 1.9 2004-04-25 04:35:00 mojomonkey Exp $
  */
 public abstract class RenderState {
 
@@ -57,7 +57,8 @@ public abstract class RenderState {
   public final static int RS_SHOW_BOUNDINGS = 11;
   public final static int RS_VERTEX_PROGRAM = 12;
   public final static int RS_ATTRIBUTE = 13;
-  public final static int RS_MAX_STATE = 14;
+  public final static int RS_STENCIL = 14;
+  public final static int RS_MAX_STATE = 15;
 
   public final static int MAX_CONTROLLERS = 10;
 
