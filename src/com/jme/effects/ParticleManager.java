@@ -59,7 +59,7 @@ import com.jme.renderer.Renderer;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.12 2004-11-05 18:23:09 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.13 2004-12-08 23:27:26 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -163,7 +163,12 @@ private final static Vector2f sharedTextureData[] = {
     appearanceColors = new ColorRGBA[noParticles << 2];
     particles = new Particle[noParticles];
 
-    particlesGeometry = new TriMesh("particles");
+    particlesGeometry = new TriMesh("particles") {
+			public void updateGeometricState(float time, boolean initiator) {
+				super.updateGeometricState(time, initiator);
+				worldRotation.set(0,0,0,1);
+			}
+		};
     particlesGeometry.setVertices(new Vector3f[noParticles << 2]);
     particlesGeometry.setTextures(new Vector2f[noParticles << 2], 0);
     particlesGeometry.setIndices(indices);
