@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.20 2004-05-15 19:20:25 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.21 2004-05-24 21:04:00 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
   //planes of the frustum
@@ -412,7 +412,7 @@ public abstract class AbstractCamera implements Camera {
   }
 
   public void setFrustumPerspective(float fovY, float aspect, float near, float far) {
-      float h = FastMath.tan(fovY/180 * FastMath.PI) * near / 2;
+      float h = FastMath.tan(fovY/180 * FastMath.PI) * near / 2f;
       float w = h * aspect;
       frustumLeft = -w;
       frustumRight = w;
