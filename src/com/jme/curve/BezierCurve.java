@@ -45,7 +45,7 @@ import com.jme.scene.Spatial;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.12 2004-09-14 21:52:15 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.13 2004-09-23 22:47:07 mojomonkey Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -212,9 +212,13 @@ public class BezierCurve extends Curve {
 	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
 	 *      com.jme.intersection.CollisionResults)
 	 */
-	public void hasCollision(Spatial scene, CollisionResults results) {
+	public void findCollisions(Spatial scene, CollisionResults results) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+		return false;
 	}
 
 }

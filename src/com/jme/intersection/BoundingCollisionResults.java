@@ -31,70 +31,39 @@
  */
 package com.jme.intersection;
 
-import java.util.ArrayList;
-
 import com.jme.scene.Geometry;
+import com.jme.scene.TriMesh;
 
 /**
- * <code>CollisionResults</code> stores the results of a collision test by
- * storing an ArrayList of CollisionData.
- * 
+ * BoundingCollisionResults creates a CollisionResults object that only cares
+ * about bounding volume accuracy. CollisionData objects are added to the 
+ * collision list as they happen, these data objects only refer to the two 
+ * meshes, not their triangle lists. While BoundingCollisionResults defines
+ * a processCollisions method, it is empty and should be further defined by
+ * the user if so desired. 
  * @author Mark Powell
- * @version $Id: CollisionResults.java,v 1.7 2004-09-23 22:47:06 mojomonkey Exp $
+ * @version $Id: BoundingCollisionResults.java,v 1.1 2004-09-23 22:47:06 mojomonkey Exp $
  */
-public abstract class CollisionResults {
-
-	private ArrayList nodeList;
+public class BoundingCollisionResults extends CollisionResults {
 
 	/**
-	 * Constructor instantiates a new <code>PickResults</code> object.
+	 * adds a CollisionData object to this results list, the objects only refer
+	 * to the collision meshes, not the triangles.
+	 * @see com.jme.intersection.CollisionResults#addCollision(com.jme.scene.Geometry,
+	 *      com.jme.scene.Geometry)
 	 */
-	public CollisionResults() {
-		nodeList = new ArrayList();
+	public void addCollision(Geometry s, Geometry t) {
+		CollisionData data = new CollisionData((TriMesh) s, (TriMesh) t);
+		addCollisionData(data);
 	}
 
 	/**
-	 * <code>addCollisionData</code> places a new <code>CollisionData</code>
-	 * object into the results list.
-	 * 
-	 * @param col
-	 *            The collision data to be placed in the results list.
+	 * empty implementation, it is highly recommended that you override this
+	 * method to handle any collisions as needed.
+	 * @see com.jme.intersection.CollisionResults#processCollisions()
 	 */
-	public void addCollisionData(CollisionData col) {
-		nodeList.add(col);
-	}
+	public void processCollisions() {
 
-	/**
-	 * <code>getNumber</code> retrieves the number of collisions that have
-	 * been placed in the results.
-	 * 
-	 * @return the number of collisions in the list.
-	 */
-	public int getNumber() {
-		return nodeList.size();
 	}
-
-	/**
-	 * <code>getCollisionData</code> retrieves a CollisionData from a specific
-	 * index.
-	 * 
-	 * @param i
-	 *            the index requested.
-	 * @return the CollisionData at the specified index.
-	 */
-	public CollisionData getCollisionData(int i) {
-		return (CollisionData) nodeList.get(i);
-	}
-
-	/**
-	 * <code>clear</code> clears the list of all CollisionData.
-	 */
-	public void clear() {
-		nodeList.clear();
-	}
-	
-	public abstract void addCollision(Geometry s, Geometry t);
-	
-	public abstract void processCollisions();
 
 }

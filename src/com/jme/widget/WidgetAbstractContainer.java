@@ -96,15 +96,20 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
 		protected void applyRenderState(Stack[] states) {
 		}
 
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
-		 *      com.jme.intersection.CollisionResults)
+		/* (non-Javadoc)
+		 * @see com.jme.scene.Spatial#findCollisions(com.jme.scene.Spatial, com.jme.intersection.CollisionResults)
 		 */
-		public void hasCollision(Spatial scene, CollisionResults results) {
+		public void findCollisions(Spatial scene, CollisionResults results) {
 			// TODO Auto-generated method stub
+			
+		}
 
+		/* (non-Javadoc)
+		 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial, boolean)
+		 */
+		public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+			// TODO Auto-generated method stub
+			return false;
 		}
 	}
 

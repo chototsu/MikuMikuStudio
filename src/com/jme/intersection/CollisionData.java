@@ -38,60 +38,92 @@ import com.jme.scene.TriMesh;
 /**
  * CollisionData contains information about a collision between two TriMesh
  * objects. The mesh that was hit by the relevant TriMesh (the one making the
- * collision check) is referenced as well as an ArrayList for the triangles
- * that collided. 
+ * collision check) is referenced as well as an ArrayList for the triangles that
+ * collided.
+ * 
  * @author Mark Powell
  */
 public class CollisionData {
-	private TriMesh mesh;
-	private ArrayList source;
-	private ArrayList target;
+	private TriMesh targetMesh;
+
+	private TriMesh sourceMesh;
+
+	private ArrayList sourceTris;
+
+	private ArrayList targetTris;
 	
+	public CollisionData(TriMesh sourceMesh, TriMesh targetMesh) {
+		this(sourceMesh, targetMesh, null, null);
+	}
+
 	/**
 	 * instantiates a new CollisionData object.
-	 * @param mesh the mesh the relevant TriMesh collided with.
-	 * @param source the triangles of the relevant TriMesh that made contact.
-	 * @param target the triangles of the second mesh that made contact.
+	 * 
+	 * @param mesh
+	 *            the mesh the relevant TriMesh collided with.
+	 * @param source
+	 *            the triangles of the relevant TriMesh that made contact.
+	 * @param target
+	 *            the triangles of the second mesh that made contact.
 	 */
-	public CollisionData(TriMesh mesh, ArrayList source, ArrayList target) {
-		this.mesh = mesh;
-		this.source = source;
-		this.target = target;
+	public CollisionData(TriMesh sourceMesh, TriMesh targetMesh,
+			ArrayList sourceTris, ArrayList targetTris) {
+		this.targetMesh = targetMesh;
+		this.sourceMesh = sourceMesh;
+		this.targetTris = targetTris;
+		this.sourceTris = sourceTris;
 	}
+
 	/**
-	 * @return Returns the mesh.
+	 * @return Returns the source mesh.
 	 */
-	public TriMesh getMesh() {
-		return mesh;
+	public TriMesh getSourceMesh() {
+		return sourceMesh;
 	}
+	
+	public TriMesh getTargetMesh() {
+		return targetMesh;
+	}
+
 	/**
-	 * @param mesh The mesh to set.
+	 * @param mesh
+	 *            The mesh to set.
 	 */
-	public void setMesh(TriMesh mesh) {
-		this.mesh = mesh;
+	public void setSourceMesh(TriMesh mesh) {
+		this.sourceMesh = mesh;
 	}
+	
+	public void setTargetMesh(TriMesh mesh) {
+		this.targetMesh = mesh;
+	}
+
 	/**
 	 * @return Returns the source.
 	 */
-	public ArrayList getSource() {
-		return source;
+	public ArrayList getSourceTris() {
+		return sourceTris;
 	}
+
 	/**
-	 * @param source The source to set.
+	 * @param source
+	 *            The source to set.
 	 */
-	public void setSource(ArrayList source) {
-		this.source = source;
+	public void setSourceTris(ArrayList source) {
+		this.sourceTris = source;
 	}
+
 	/**
 	 * @return Returns the target.
 	 */
-	public ArrayList getTarget() {
-		return target;
+	public ArrayList getTargetTris() {
+		return targetTris;
 	}
+
 	/**
-	 * @param target The target to set.
+	 * @param target
+	 *            The target to set.
 	 */
-	public void setTarget(ArrayList target) {
-		this.target = target;
+	public void setTargetTris(ArrayList target) {
+		this.targetTris = target;
 	}
 }

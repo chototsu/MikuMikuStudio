@@ -34,67 +34,36 @@ package com.jme.intersection;
 import java.util.ArrayList;
 
 import com.jme.scene.Geometry;
+import com.jme.scene.TriMesh;
 
 /**
- * <code>CollisionResults</code> stores the results of a collision test by
- * storing an ArrayList of CollisionData.
- * 
  * @author Mark Powell
- * @version $Id: CollisionResults.java,v 1.7 2004-09-23 22:47:06 mojomonkey Exp $
  */
-public abstract class CollisionResults {
+public class TriangleCollisionResults extends CollisionResults {
 
-	private ArrayList nodeList;
-
-	/**
-	 * Constructor instantiates a new <code>PickResults</code> object.
-	 */
-	public CollisionResults() {
-		nodeList = new ArrayList();
-	}
-
-	/**
-	 * <code>addCollisionData</code> places a new <code>CollisionData</code>
-	 * object into the results list.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @param col
-	 *            The collision data to be placed in the results list.
+	 * @see com.jme.intersection.CollisionResults#addCollision(com.jme.scene.Geometry,
+	 *      com.jme.scene.Geometry)
 	 */
-	public void addCollisionData(CollisionData col) {
-		nodeList.add(col);
+	public void addCollision(Geometry s, Geometry t) {
+		ArrayList a = new ArrayList();
+		ArrayList b = new ArrayList();
+		//find the triangle that is being hit.
+		//add this node and the triangle to the CollisionResults list.
+		((TriMesh) s).findTriangleCollision((TriMesh) t, a, b);
+		CollisionData data = new CollisionData((TriMesh) s, (TriMesh) t, a, b);
+		addCollisionData(data);
 	}
 
-	/**
-	 * <code>getNumber</code> retrieves the number of collisions that have
-	 * been placed in the results.
+	/*
+	 * (non-Javadoc)
 	 * 
-	 * @return the number of collisions in the list.
+	 * @see com.jme.intersection.CollisionResults#processCollisions()
 	 */
-	public int getNumber() {
-		return nodeList.size();
-	}
+	public void processCollisions() {
 
-	/**
-	 * <code>getCollisionData</code> retrieves a CollisionData from a specific
-	 * index.
-	 * 
-	 * @param i
-	 *            the index requested.
-	 * @return the CollisionData at the specified index.
-	 */
-	public CollisionData getCollisionData(int i) {
-		return (CollisionData) nodeList.get(i);
 	}
-
-	/**
-	 * <code>clear</code> clears the list of all CollisionData.
-	 */
-	public void clear() {
-		nodeList.clear();
-	}
-	
-	public abstract void addCollision(Geometry s, Geometry t);
-	
-	public abstract void processCollisions();
 
 }

@@ -57,7 +57,7 @@ import java.util.Stack;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.29 2004-09-14 21:52:12 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.30 2004-09-23 22:47:05 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -323,20 +323,41 @@ public class Node extends Spatial implements Serializable {
 			}
 		}
 	}
-
+	
+	/**
+     * @see Spatial#updateCollisionTree()
+     */
+    public void updateCollisionTree(){
+        for (int i=children.size()-1;i>=0;i--){
+            ((Spatial)children.get(i)).updateCollisionTree();
+        }
+    }
+	
 	/*
 	 * (non-Javadoc)
 	 * 
 	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
 	 *      com.jme.intersection.CollisionResults)
 	 */
-	public void hasCollision(Spatial scene, CollisionResults results) {
+	public void findCollisions(Spatial scene, CollisionResults results) {
 		if (getWorldBound().intersects(scene.getWorldBound())) {
 			//further checking needed.
 			for (int i = 0; i < getQuantity(); i++) {
-				getChild(i).hasCollision(scene, results);
+				getChild(i).findCollisions(scene, results);
 			}
 		}
 	}
-
+	
+	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+		if (getWorldBound().intersects(scene.getWorldBound())) {
+			//further checking needed.
+			for (int i = 0; i < getQuantity(); i++) {
+				if(getChild(i).hasCollision(scene, checkTriangles)) {
+					return false;
+				}
+			}
+		}
+		
+		return false;
+	}
 }

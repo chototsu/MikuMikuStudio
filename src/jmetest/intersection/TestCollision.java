@@ -34,6 +34,7 @@ package jmetest.intersection;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Texture;
+import com.jme.intersection.BoundingCollisionResults;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -48,7 +49,7 @@ import com.jme.util.TextureManager;
  * <code>TestCollision</code>
  * 
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.17 2004-09-10 22:36:11 mojomonkey Exp $
+ * @version $Id: TestCollision.java,v 1.18 2004-09-23 22:47:04 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -69,6 +70,8 @@ public class TestCollision extends SimpleGame {
 	private float tInc = -40.0f;
 
 	private float t2Inc = -10.0f;
+	
+	private CollisionResults results;
 
 	/**
 	 * Entry point for the test,
@@ -112,15 +115,10 @@ public class TestCollision extends SimpleGame {
 			t2Inc *= -1;
 		}
 
-		CollisionResults results = new CollisionResults();
-
-		t.hasCollision(scene, results);
-
-		if (results.getNumber() > 0) {
-			text.print("Collision: YES");
-		} else {
-			text.print("Collision: NO");
-		}
+		
+		results.clear();
+		t.findCollisions(scene, results);
+		results.processCollisions();
 	}
 
 	/**
@@ -129,6 +127,16 @@ public class TestCollision extends SimpleGame {
 	 * @see com.jme.app.SimpleGame#initGame()
 	 */
 	protected void simpleInitGame() {
+		results = new BoundingCollisionResults() {
+			public void processCollisions() {
+				if (getNumber() > 0) {
+					text.print("Collision: YES");
+				} else {
+					text.print("Collision: NO");
+				}
+			}
+		};
+		
 		display.setTitle("Collision Detection");
 		cam.setLocation(new Vector3f(0.0f, 0.0f, 75.0f));
 		cam.update();

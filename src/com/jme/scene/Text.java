@@ -42,7 +42,7 @@ import com.jme.renderer.ColorRGBA;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.14 2004-09-14 21:52:12 mojomonkey Exp $
+ * @version $Id: Text.java,v 1.15 2004-09-23 22:47:05 mojomonkey Exp $
  */
 public class Text extends Geometry {
 	private static final long serialVersionUID = 1L;
@@ -155,7 +155,11 @@ public class Text extends Geometry {
 	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
 	 *      com.jme.intersection.CollisionResults)
 	 */
-	public void hasCollision(Spatial scene, CollisionResults results) {
+	public void findCollisions(Spatial scene, CollisionResults results) {
 		//Do nothing.
+	}
+	
+	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+		return false;
 	}
 }

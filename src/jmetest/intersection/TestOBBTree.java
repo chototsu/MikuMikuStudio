@@ -1,11 +1,14 @@
 package jmetest.intersection;
 
+
 import com.jme.app.SimpleGame;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
+import com.jme.intersection.CollisionData;
 import com.jme.intersection.CollisionResults;
+import com.jme.intersection.TriangleCollisionResults;
 import com.jme.math.Vector3f;
 import com.jme.animation.SpatialTransformer;
 import com.jme.bounding.BoundingBox;
@@ -25,6 +28,7 @@ public class TestOBBTree extends SimpleGame {
 	Node n, m;
 
 	CollisionResults results;
+	CollisionData oldData;
 
 	int count = 0;
 
@@ -35,7 +39,7 @@ public class TestOBBTree extends SimpleGame {
 	}
 
 	protected void simpleInitGame() {
-		results = new CollisionResults();
+		results = new TriangleCollisionResults();
 		s = new Sphere("sphere", 10, 10, 1);
 		s.updateCollisionTree();
 		s.setModelBound(new BoundingBox());
@@ -90,43 +94,41 @@ public class TestOBBTree extends SimpleGame {
 		int[] index1 = s.getIndices();
 		int[] index2 = r.getIndices();
 
-		if (results.getNumber() > 0) {
+		
+		if (oldData != null) {
 
-			for (int i = 0; i < results.getCollisionData(0).getSource().size(); i++) {
-				int triIndex = ((Integer) results.getCollisionData(0)
-						.getSource().get(i)).intValue();
+			for (int i = 0; i < oldData.getSourceTris().size(); i++) {
+				int triIndex = ((Integer) oldData
+						.getSourceTris().get(i)).intValue();
 				color1[index1[triIndex * 3 + 0]] = colorSpread[index1[triIndex * 3 + 0] % 3];
 				color1[index1[triIndex * 3 + 1]] = colorSpread[index1[triIndex * 3 + 1] % 3];
 				color1[index1[triIndex * 3 + 2]] = colorSpread[index1[triIndex * 3 + 2] % 3];
 			}
-			for (int i = 0; i < results.getCollisionData(0).getTarget().size(); i++) {
-				int triIndex = ((Integer) results.getCollisionData(0)
-						.getTarget().get(i)).intValue();
+			for (int i = 0; i < oldData.getTargetTris().size(); i++) {
+				int triIndex = ((Integer) oldData
+						.getTargetTris().get(i)).intValue();
 				color2[index2[triIndex * 3 + 0]] = colorSpread[index2[triIndex * 3 + 0] % 3];
 				color2[index2[triIndex * 3 + 1]] = colorSpread[index2[triIndex * 3 + 1] % 3];
 				color2[index2[triIndex * 3 + 2]] = colorSpread[index2[triIndex * 3 + 2] % 3];
 			}
 		}
-		//        a.clear();
-		//        b.clear();
 
 		results.clear();
-
-		//s.findIntersection(r,a,b);
-		m.hasCollision(n, results);
+		m.findCollisions(n, results);
 
 		if (results.getNumber() > 0) {
-			for (int i = 0; i < results.getCollisionData(0).getSource().size(); i++) {
+			oldData = results.getCollisionData(0);
+			for (int i = 0; i < results.getCollisionData(0).getSourceTris().size(); i++) {
 				int triIndex = ((Integer) results.getCollisionData(0)
-						.getSource().get(i)).intValue();
+						.getSourceTris().get(i)).intValue();
 				color1[index1[triIndex * 3 + 0]] = ColorRGBA.red;
 				color1[index1[triIndex * 3 + 1]] = ColorRGBA.red;
 				color1[index1[triIndex * 3 + 2]] = ColorRGBA.red;
 			}
 			s.setColors(color1);
-			for (int i = 0; i < results.getCollisionData(0).getTarget().size(); i++) {
+			for (int i = 0; i < results.getCollisionData(0).getTargetTris().size(); i++) {
 				int triIndex = ((Integer) results.getCollisionData(0)
-						.getTarget().get(i)).intValue();
+						.getTargetTris().get(i)).intValue();
 				color2[index2[triIndex * 3 + 0]] = ColorRGBA.blue;
 				color2[index2[triIndex * 3 + 1]] = ColorRGBA.blue;
 				color2[index2[triIndex * 3 + 2]] = ColorRGBA.blue;

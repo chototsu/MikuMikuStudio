@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.9 2004-09-14 21:52:12 mojomonkey Exp $
+ * @version $Id: Point.java,v 1.10 2004-09-23 22:47:05 mojomonkey Exp $
  */
 public class Point extends Geometry {
 
@@ -108,8 +108,12 @@ public class Point extends Geometry {
 	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial,
 	 *      com.jme.intersection.CollisionResults)
 	 */
-	public void hasCollision(Spatial scene, CollisionResults results) {
+	public void findCollisions(Spatial scene, CollisionResults results) {
 		// TODO Auto-generated method stub
 
+	}
+	
+	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+		return false;
 	}
 }

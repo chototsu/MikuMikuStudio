@@ -60,7 +60,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLImage;
  *  Alignment code doesn't work properly.
  *
  * @since 0.6
- * @version $$Id: WidgetImage.java,v 1.9 2004-09-14 21:52:09 mojomonkey Exp $$
+ * @version $$Id: WidgetImage.java,v 1.10 2004-09-23 22:47:06 mojomonkey Exp $$
  */
 public class WidgetImage extends WidgetAbstractImpl {
 
@@ -259,9 +259,13 @@ public class WidgetImage extends WidgetAbstractImpl {
 	/* (non-Javadoc)
 	 * @see com.jme.scene.Spatial#hasCollision(com.jme.scene.Spatial, com.jme.intersection.CollisionResults)
 	 */
-	public void hasCollision(Spatial scene, CollisionResults results) {
+	public void findCollisions(Spatial scene, CollisionResults results) {
 		// TODO Auto-generated method stub
 		
+	}
+	
+	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
+		return false;
 	}
 
 }
