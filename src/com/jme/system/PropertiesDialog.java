@@ -36,6 +36,9 @@ import java.awt.BorderLayout;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.util.logging.Level;
 
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -44,6 +47,9 @@ import javax.swing.JComboBox;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.UIManager;
+
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>PropertiesDialog</code> provides an interface to make use of the
@@ -53,7 +59,7 @@ import javax.swing.JPanel;
  * 
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
- * @version $Id: PropertiesDialog.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: PropertiesDialog.java,v 1.3 2003-10-22 13:56:35 mojomonkey Exp $
  */
 public class PropertiesDialog extends JDialog {
 
@@ -83,6 +89,11 @@ public class PropertiesDialog extends JDialog {
      * @throws MonkeyRuntimeException if the source is null.
      */
     public PropertiesDialog(PropertiesIO source, String imageFile) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e) {
+            LoggingSystem.getLogger().log(Level.WARNING, "Could not set" +                " native look and feel.");
+        }
 
         if (null == source) {
             throw new JmeException("PropertyIO source cannot be null");
@@ -90,6 +101,13 @@ public class PropertiesDialog extends JDialog {
 
         this.source = source;
         this.imageFile = imageFile;
+
+        this.addWindowListener(new WindowAdapter() {
+           public void windowClosing(WindowEvent e) {
+               dispose();
+               System.exit(0);
+           } 
+        });
 
         init();
     }
