@@ -453,7 +453,7 @@ public class KeyframeController extends Controller{
      * This class defines a point in time that states <code>morphShape</code> should look like <code>newShape</code> at
      * <code>time</code> seconds
      */
-    public class PointInTime implements Serializable{
+    public static class PointInTime implements Serializable{
         public TriMesh newShape;
         public float time;
 
