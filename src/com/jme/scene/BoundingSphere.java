@@ -54,18 +54,19 @@ import com.jme.util.LoggingSystem;
  * <code>containAABB</code>.
  *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.23 2004-03-13 03:07:37 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.24 2004-03-13 05:22:47 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
     public int[] checkPlanes = new int[6];
+    private float oldRadius;
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
      * object.
      */
     public BoundingSphere() {
-        super("bsphere", new Vector3f(), 10, 10, 1);
+        super("bsphere");
         initCheckPlanes();
     }
 
@@ -228,7 +229,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         BoundingVolume store) {
 
         BoundingSphere sphere = (BoundingSphere)store;
-        if (sphere == null) sphere = new BoundingSphere();
+        if (sphere == null) sphere = new BoundingSphere(1, new Vector3f(0,0,0));
         rotate.mult(center, sphere.center);
         sphere.center.multLocal(scale).addLocal(translate);
         sphere.radius = scale*radius;
@@ -370,7 +371,9 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     }
 
     public void recomputeMesh() {
-        setData(null, 10, 10, radius);
+        if (radius == oldRadius) return;
+            setData(null, 10, 10, radius);
+        oldRadius = radius;
     }
 
     /**

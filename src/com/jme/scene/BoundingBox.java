@@ -47,7 +47,7 @@ import com.jme.math.Vector3f;
  * <code>containAABB</code>.
  *
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.11 2004-03-13 03:07:36 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.12 2004-03-13 05:22:47 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -55,6 +55,8 @@ public class BoundingBox extends Box implements BoundingVolume {
 
     private Vector3f minPnt = new Vector3f();
     private Vector3f maxPnt = new Vector3f();
+
+    private float oldXExtent, oldYExtent, oldZExtent;
 
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
@@ -300,7 +302,12 @@ public class BoundingBox extends Box implements BoundingVolume {
     }
 
     public void recomputeMesh() {
-        setData(null, xExtent, yExtent, zExtent);
+        if (xExtent != oldXExtent || yExtent != oldYExtent || zExtent != oldZExtent) {
+            setData(null, xExtent, yExtent, zExtent);
+            oldXExtent = xExtent;
+            oldYExtent = yExtent;
+            oldZExtent = zExtent;
+        }
     }
 
     /**

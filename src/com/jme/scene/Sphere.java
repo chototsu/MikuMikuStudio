@@ -39,7 +39,7 @@ import com.jme.renderer.ColorRGBA;
 /**
  * <code>Sphere</code>
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.4 2004-03-13 03:07:38 renanse Exp $
+ * @version $Id: Sphere.java,v 1.5 2004-03-13 05:22:47 renanse Exp $
  */
 public class Sphere extends TriMesh {
     private int zSamples;
@@ -50,7 +50,6 @@ public class Sphere extends TriMesh {
 
     public Sphere(String name) {
         super(name);
-        setData(new Vector3f(0f,0f,0f), 10, 10, 1);
     }
 
     public Sphere(
