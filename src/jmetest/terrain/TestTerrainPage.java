@@ -51,7 +51,7 @@ import com.jme.terrain.util.ProceduralTextureGenerator;
  * <code>TestLightState</code>
  * 
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.6 2004-04-20 14:57:09 mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.7 2004-04-20 19:01:20 mojomonkey Exp $
  */
 public class TestTerrainPage extends BaseGame {
     private Camera cam;
@@ -169,6 +169,7 @@ public class TestTerrainPage extends BaseGame {
         dr.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
         dr.setDirection(new Vector3f(0.5f, -0.5f, 0));
 
+
         CullState cs = display.getRenderer().getCullState();
         cs.setCullMode(CullState.CS_BACK);
         cs.setEnabled(true);
@@ -183,7 +184,7 @@ public class TestTerrainPage extends BaseGame {
         root = new Node("Root node");
         //MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
         FaultFractalHeightMap heightMap = new FaultFractalHeightMap(129, 32, 0, 255, 0.75f);
-        TerrainPage tb = new TerrainPage("Terrain", 17, heightMap.getSize(), 5, heightMap.getHeightMap(), false);
+        TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), 5, heightMap.getHeightMap(), false);
 
         tb.setDetailTexture(1, 4);
         scene.attachChild(tb);

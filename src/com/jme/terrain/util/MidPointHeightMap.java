@@ -34,6 +34,7 @@ package com.jme.terrain.util;
 
 import java.util.logging.Level;
 
+import com.jme.math.FastMath;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 
@@ -49,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * two.
  * 
  * @author Mark Powell
- * @version $Id: MidPointHeightMap.java,v 1.2 2004-04-15 02:54:31 mojomonkey Exp $
+ * @version $Id: MidPointHeightMap.java,v 1.3 2004-04-20 19:01:19 mojomonkey Exp $
  */
 public class MidPointHeightMap extends AbstractHeightMap {
     private float roughness;
@@ -69,6 +70,9 @@ public class MidPointHeightMap extends AbstractHeightMap {
 	 * 		zero or roughtness is less than 0.
 	 */
     public MidPointHeightMap(int size, float roughness) {
+        if(!FastMath.isPowerOfTwo(size)) {
+            throw new JmeException("Size must be (2^N) sized.");
+        }
         if (roughness < 0 || size <= 0) {
             throw new JmeException("size and roughness must be " +
             	"greater than 0");

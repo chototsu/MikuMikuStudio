@@ -112,6 +112,7 @@ public class TerrainBlock extends AreaClodMesh {
      */
     private void buildVertices(int[] heightMap) {
         vertex = new Vector3f[heightMap.length];
+        System.out.println(vertex.length);
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
                 vertex[x + (y * size)] = new Vector3f(x * stepScale,
@@ -170,7 +171,7 @@ public class TerrainBlock extends AreaClodMesh {
         setTextures(texture[0]);
     }
 
-    /**
+        /**
      * 
      * <code>buildNormals</code> calculates the normals of each vertex that
      * makes up the block of terrain.
@@ -178,26 +179,40 @@ public class TerrainBlock extends AreaClodMesh {
      *  
      */
     private void buildNormals() {
-        Vector3f[] normal = new Vector3f[vertex.length];
-
-        //get the first and last normals taken care of.
-        normal[0] = vertex[size].cross(vertex[1]).normalize();
-        normal[normal.length - 1] = vertex[normal.length - 1 - size].cross(
-                vertex[normal.length - 2]).normalize();
-
-        for (int i = 1; i < normal.length - 1; i++) {
-            if (i % ((size * (i / size + 1)) - 1) == 0) {
-                //right hand normal
-                normal[i] = new Vector3f();
-            } else if (i >= size * (size - 1)) {
-                //bottom row
-                normal[i] = new Vector3f(0,1,0);
-            } else {
-                //interior
-                normal[i] = vertex[i + size].cross(vertex[i + 1]).normalize();
+      Vector3f[] normal = new Vector3f[vertex.length];
+  
+      int normalIndex = 0;
+      for (int row = 0; row < size; row++) {
+        for (int col = 0; col < size; col++) {
+          if (row == size - 1) {
+            if (col == size - 1) { // last row, last col
+              // up cross left
+              normal[normalIndex] = vertex[normalIndex -
+                  size].subtract(vertex[normalIndex]).cross(vertex[normalIndex -
+                  1].subtract(vertex[normalIndex])).normalize();
+            } else { // last row, except for last col
+              // right cross up
+              normal[normalIndex] = vertex[normalIndex +
+                  1].subtract(vertex[normalIndex]).cross(vertex[normalIndex -
+                  size].subtract(vertex[normalIndex])).normalize();
             }
+          } else {
+            if (col == size - 1) { // last column except for last row
+              // left cross down
+              normal[normalIndex] = vertex[normalIndex -
+                  1].subtract(vertex[normalIndex]).cross(vertex[normalIndex +
+                  size].subtract(vertex[normalIndex])).normalize();
+            } else { // most cases
+              // down cross right
+              normal[normalIndex] = vertex[normalIndex +
+                  size].subtract(vertex[normalIndex]).cross(vertex[normalIndex +
+                  1].subtract(vertex[normalIndex])).normalizeLocal();
+            }
+          }
+          normalIndex++;
         }
-
-        setNormals(normal);
+      }
+      
+      setNormals(normal);
     }
 }

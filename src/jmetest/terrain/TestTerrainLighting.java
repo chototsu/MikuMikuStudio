@@ -50,7 +50,7 @@ import com.jme.terrain.util.MidPointHeightMap;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.7 2004-04-19 20:44:59 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.8 2004-04-20 19:01:20 mojomonkey Exp $
  */
 public class TestTerrainLighting extends BaseGame {
     private Camera cam;
@@ -218,7 +218,7 @@ public class TestTerrainLighting extends BaseGame {
         root = new Node("Root node");
         
         MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.5f);
-        TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0), true);
+        TerrainBlock tb = new TerrainBlock("Terrain", heightMap.getSize(), 5, heightMap.getHeightMap(), new Vector3f(0,0,0), false);
         tb.setDetailTexture(1, 4);
         tb.setModelBound(new BoundingBox());
         tb.updateModelBound();

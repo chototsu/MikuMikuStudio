@@ -33,9 +33,11 @@ package com.jme.terrain;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingVolume;
+import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.Node;
+import com.jme.system.JmeException;
 
 
 /**
@@ -57,6 +59,9 @@ public class TerrainPage extends Node {
     public TerrainPage(String name, int blockSize, int size, float stepScale,
             int[] heightMap, boolean clod, int totalSize, Vector2f offset, int offsetAmount) {
         super(name);
+        if(!FastMath.isPowerOfTwo(size-1)) {
+            throw new JmeException("Terrain page sizes may only be (2^N + 1)");
+        }
         this.offset = offset;
         this.offsetAmount = offsetAmount;
         this.totalSize = totalSize;
