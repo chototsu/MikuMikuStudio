@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -75,7 +75,7 @@ import com.jme.widget.text.WidgetLabel;
  * <code>TestWidgetButtonLightSwitch</code>
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: TestWidgetButtonLightSwitch.java,v 1.11 2004-04-05 11:36:14 greggpatton Exp $
+ * @version $Id: TestWidgetButtonLightSwitch.java,v 1.12 2004-04-16 20:47:22 renanse Exp $
  */
 public class TestWidgetButtonLightSwitch extends SimpleGame {
 	static String STARTED_STATE_STRING = " Stop ";
@@ -83,8 +83,8 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
 
     static String ON_STATE_STRING = "Off";
     static String OFF_STATE_STRING = "On";
-    
-    
+
+
 
     class TestFrame extends WidgetAbstractFrame implements Observer {
 
@@ -256,7 +256,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
 
             if (frame.isMouseCursorOn() && getMouseInput().getButtonState() != MouseButtonStateType.MOUSE_BUTTON_2) {
                 super.handleMouseButtonDown();
-                
+
             }
         }
 
@@ -308,7 +308,7 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
 
         frame.handleInput(0.1f);
         //input.update(0.1f);
-        
+
         if (frame.startStopButton.getTitle().equals(STARTED_STATE_STRING)) {
         	scene.updateWorldData(0.0005f);
         }
@@ -484,11 +484,12 @@ public class TestWidgetButtonLightSwitch extends SimpleGame {
         scene.attachChild(curve);
 
         scene.updateGeometricState(0.0f, true);
+        scene.updateRenderState();
 
         frame = new TestFrame(input);
 
         frame.attachChild(scene);
-        
+
         URL url = TestWidgetButtonLightSwitch.class.getClassLoader().getResource("jmetest/data/sound/click.mp3");
         System.out.println(url);
 

@@ -31,22 +31,25 @@
 */
 package com.jme.widget.impl.lwjgl;
 
+import java.util.Vector;
+
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
-
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Spatial;
 import com.jme.widget.Widget;
 import com.jme.widget.WidgetTextureCoords;
 import com.jme.widget.border.WidgetBorder;
 import com.jme.widget.border.WidgetBorderType;
 import com.jme.widget.bounds.WidgetViewRectangle;
 import com.jme.widget.renderer.WidgetAbstractRenderer;
-import com.jme.scene.Spatial;
+import com.jme.scene.state.RenderState;
+import java.util.Iterator;
 
 /**
  * <code>WidgetLWJGLAbstractRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.4 2004-04-16 20:35:58 renanse Exp $
+ * @version $Id: WidgetLWJGLAbstractRenderer.java,v 1.5 2004-04-16 20:47:22 renanse Exp $
  */
 public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer {
 
@@ -54,7 +57,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         super(w);
     }
 
-    protected void drawBox2d(Widget w) {
+    protected void drawBox2d(Widget w, Vector states) {
         initWidgetProjection(w);
 
         int l = w.getX() + w.getXOffset();
@@ -63,7 +66,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         int r = l + w.getWidth();
         int t = b + w.getHeight();
 
-        drawBox2d(t, l, b, r, w.getBorder(), w.getBgColor(), w.getTextureCoords());
+        drawBox2d(t, l, b, r, w.getBorder(), w.getBgColor(), w.getTextureCoords(), states);
 
         resetWidgetProjection();
     }
@@ -135,7 +138,7 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         WidgetBorder border,
         ColorRGBA color) {
 
-        drawBox2d(top, left, bottom, right, border, color, null);
+        drawBox2d(top, left, bottom, right, border, color, null, null);
     }
 
     protected void drawBox2d(
@@ -145,8 +148,12 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
         int right,
         WidgetBorder border,
         ColorRGBA color,
-        WidgetTextureCoords tc) {
-          Spatial.applyDefaultStates();
+        WidgetTextureCoords tc,
+        Vector states) {
+
+        Spatial.applyDefaultStates();
+        applyStates(states);
+
         int l = left;
         int b = bottom;
         int r = right;
@@ -199,7 +206,21 @@ public abstract class WidgetLWJGLAbstractRenderer extends WidgetAbstractRenderer
 
     }
 
-    protected void drawBoxBorder2d(
+  /**
+   * applyStates
+   *
+   * @param states Vector
+   */
+  private void applyStates(Vector states) {
+    if (states == null) return;
+    Iterator it = states.iterator();
+    while (it.hasNext()) {
+      RenderState state = (RenderState)it.next();
+      state.apply();
+    }
+  }
+
+  protected void drawBoxBorder2d(
         int top,
         int left,
         int bottom,

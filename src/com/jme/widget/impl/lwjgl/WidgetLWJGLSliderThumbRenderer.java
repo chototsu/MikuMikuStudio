@@ -33,11 +33,12 @@ package com.jme.widget.impl.lwjgl;
 
 import com.jme.widget.Widget;
 import com.jme.widget.slider.WidgetSliderThumb;
+import java.util.Vector;
 
 /**
  * <code>WidgetLWJGLSliderThumbRenderer</code>
  * @author Gregg Patton
- * @version $Id: WidgetLWJGLSliderThumbRenderer.java,v 1.2 2004-04-16 17:12:58 renanse Exp $
+ * @version $Id: WidgetLWJGLSliderThumbRenderer.java,v 1.3 2004-04-16 20:47:23 renanse Exp $
  */
 public class WidgetLWJGLSliderThumbRenderer extends WidgetLWJGLAbstractRenderer {
 
@@ -61,9 +62,11 @@ public class WidgetLWJGLSliderThumbRenderer extends WidgetLWJGLAbstractRenderer 
         textureState.setEnabled(true);
         alphaState.setEnabled(true);
 
-        textureState.apply();
+        Vector applyStates = new Vector();
+        applyStates.add(textureState);
+        applyStates.add(alphaState);
 
-        drawBox2d(wst);
+        drawBox2d(wst, applyStates);
 
         textureState.setEnabled(false);
         alphaState.setEnabled(false);
