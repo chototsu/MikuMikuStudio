@@ -15,7 +15,6 @@ import com.jme.system.JmeException;
 import com.jme.image.Texture;
 import com.jme.util.TextureManager;
 import com.jme.util.LoggingSystem;
-import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.animation.JointController;
 import com.jme.animation.KeyframeController;

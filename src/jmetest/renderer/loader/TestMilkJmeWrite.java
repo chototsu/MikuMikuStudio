@@ -1,7 +1,7 @@
 package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.MilkToJme;
+import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.Node;
 import com.jme.scene.shape.Box;

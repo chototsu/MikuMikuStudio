@@ -1,22 +1,18 @@
 package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.MaxToJme;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.model.XMLparser.JmeBinaryWriter;
+import com.jme.scene.model.XMLparser.Converters.MaxToJme;
 import com.jme.scene.Node;
 import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.TextureState;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Pyramid;
 import com.jme.math.Vector3f;
 import com.jme.bounding.BoundingSphere;
 import com.jme.renderer.ColorRGBA;
 import com.jme.light.DirectionalLight;
-import com.jme.system.DisplaySystem;
-import com.jme.util.TextureManager;
-import com.jme.image.Texture;
 
 
 import java.io.*;

@@ -1,10 +1,8 @@
 package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.ase.ASEModel;
-import com.jme.scene.model.XMLparser.JmeBinaryWriter;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.BinaryToXML;
+import com.jme.scene.model.XMLparser.Converters.AseToJme;
 import com.jme.scene.Node;
 
 import java.net.URL;
@@ -22,25 +20,21 @@ public class TestASEJmeWrite extends SimpleGame{
         app.start();
     }
     protected void simpleInitGame() {
-        ASEModel mod=new ASEModel("statue");
         URL statue=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/Statue.ase");
-//        URL statueDIR=TestASEJmeWrite.class.getClassLoader().getResource("");
         if (statue==null){
             System.out.println("Unable to find statue file, did you include jme-test.jar in classpath?");
             System.exit(0);
         }
-        mod.load(statue,"jmetest/data/model/");
-        JmeBinaryWriter jbw=new JmeBinaryWriter();
-        JmeBinaryReader jbr=new JmeBinaryReader();
+        AseToJme i=new AseToJme();
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
-        Node stateBinary=null;
         try {
-            jbw.writeScene(mod,BO);
-            stateBinary=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            i.writeFiletoStream(statue,BO);
+            JmeBinaryReader jbr=new JmeBinaryReader();
+            Node file=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            rootNode.attachChild(file);
         } catch (IOException e) {
-            System.out.println("damn exceptions:" + e);
+            System.out.println("Damn exceptions:"+e);
         }
-        rootNode.attachChild(stateBinary);
 
 
     }
