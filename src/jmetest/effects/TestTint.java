@@ -37,12 +37,14 @@ import com.jme.effects.Tint;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonController;
 import com.jme.input.InputController;
-import com.jme.math.Vector2f;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Box;
 import com.jme.scene.Node;
+import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
@@ -57,7 +59,7 @@ import com.jme.util.Timer;
  * <code>TestTint</code>
  * 
  * @author Ahmed
- * @version $Id: TestTint.java,v 1.1 2004-03-02 19:42:53 darkprophet Exp $
+ * @version $Id: TestTint.java,v 1.2 2004-03-03 17:30:22 darkprophet Exp $
  */
 public class TestTint extends SimpleGame {
 
@@ -69,9 +71,25 @@ public class TestTint extends SimpleGame {
 	private Tint tint;
 	private TriMesh box;
 
+	private float alpha;
+
+	private Text instructions;
+
 	protected void update(float interpolation) {
 		timer.update();
 		input.update(timer.getTimePerFrame() * 35);
+
+		if (KeyBindingManager
+			.getKeyBindingManager()
+			.isValidCommand("Alpha+")) {
+			alpha += 0.01f;
+			tint.getTintColor().a = alpha;
+		} else if (
+			KeyBindingManager.getKeyBindingManager().isValidCommand(
+				"Alpha-")) {
+			alpha -= 0.01f;
+			tint.getTintColor().a = alpha;
+		}
 
 		scene.updateWorldData(timer.getTimePerFrame() * 10);
 		tintNode.updateWorldData(timer.getTimePerFrame() * 10);
@@ -103,9 +121,9 @@ public class TestTint extends SimpleGame {
 			e.printStackTrace();
 			System.exit(1);
 		}
-		display.getRenderer().setBackgroundColor(new ColorRGBA(0, 0, 1, 0));
+		display.getRenderer().setBackgroundColor(new ColorRGBA(0, 0, 0, 0));
 		cam.setFrustum(1f, 1000f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-		Vector3f loc = new Vector3f(0, 0, 15);
+		Vector3f loc = new Vector3f(0, 0, 3);
 		Vector3f left = new Vector3f(-1, 0, 0);
 		Vector3f up = new Vector3f(0, 1, 0);
 		Vector3f dir = new Vector3f(0, 0, -1);
@@ -114,11 +132,15 @@ public class TestTint extends SimpleGame {
 
 		input = new FirstPersonController(this, cam, properties.getRenderer());
 		timer = Timer.getTimer(properties.getRenderer());
+
+		input.getKeyBindingManager().set("Alpha+", KeyInput.KEY_PERIOD);
+		input.getKeyBindingManager().set("Alpha-", KeyInput.KEY_COMMA);
 	}
 
 	protected void initGame() {
 		tintNode = new Node("tintNode");
 		scene = new Node("scene");
+		alpha = 0.8f;
 
 		AlphaState as1 = display.getRenderer().getAlphaState();
 		as1.setBlendEnabled(true);
@@ -128,21 +150,22 @@ public class TestTint extends SimpleGame {
 		as1.setTestFunction(AlphaState.TF_GREATER);
 		as1.setEnabled(true);
 
-		TextureState ts = display.getRenderer().getTextureState();
-		ts.setEnabled(true);
-		ts.setTexture(
-			TextureManager.loadTexture(
-				TestTint.class.getClassLoader().getResource(
-					"jmetest/data/images/logo.jpg"),
-				Texture.MM_LINEAR,
-				Texture.FM_LINEAR,
-				true));
 		TextureState ts1 = display.getRenderer().getTextureState();
 		ts1.setEnabled(true);
 		ts1.setTexture(
 			TextureManager.loadTexture(
 				TestTint.class.getClassLoader().getResource(
 					"jmetest/data/images/Monkey.jpg"),
+				Texture.MM_LINEAR,
+				Texture.FM_LINEAR,
+				true));
+
+		TextureState font = display.getRenderer().getTextureState();
+		font.setEnabled(true);
+		font.setTexture(
+			TextureManager.loadTexture(
+				TestTint.class.getClassLoader().getResource(
+					"jmetest/data/Font/font.png"),
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
@@ -157,15 +180,17 @@ public class TestTint extends SimpleGame {
 		box.setRenderState(ts1);
 		box.setLocalTranslation(new Vector3f(0, 0, 0));
 
-		tint = new Tint("tint", new ColorRGBA(0, 1, 0, 0.8f));
-		tint.setTextureColor(new ColorRGBA(1, 0, 0, 1f));
-		tint.setTextureLocation(new Vector2f(550, -40));
-		tint.setTextureSize(new Vector2f(128, 128));
+		tint = new Tint("tint", new ColorRGBA(1, 0, 0, alpha));
 		tint.setRenderState(as1);
-		tint.setRenderState(ts);
+
+		instructions =
+			new Text("Instructions", "WASD to move, < and > to change alpha");
+		instructions.setRenderState(font);
+		instructions.setRenderState(as1);
 
 		scene.setRenderState(zEnabled);
 		scene.attachChild(box);
+		scene.attachChild(instructions);
 
 		tintNode.attachChild(tint);
 	}
