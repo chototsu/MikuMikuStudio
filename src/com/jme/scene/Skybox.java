@@ -51,7 +51,7 @@ import com.jme.system.JmeException;
  * set this skybox at the camera's position.
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.4 2004-08-31 01:26:46 renanse Exp $
+ * @version $Id: Skybox.java,v 1.5 2004-08-31 01:47:34 renanse Exp $
  */
 public class Skybox extends Node {
   /** The +Z side of the skybox. */
@@ -216,6 +216,10 @@ public class Skybox extends Node {
     return skyboxQuads[direction];
   }
 
+  /**
+   * Force all of the textures to load.  This prevents pauses later during the
+   * application as you pan around the world.
+   */
   public void preloadTextures() {
     for (int x = 0; x < 6; x++) {
       TextureState ts = (TextureState) skyboxQuads[x].
