@@ -61,6 +61,7 @@ public class HelloIntersection extends SimpleGame {
         /** Make the sound softer*/
         laserSound.setGain(.5f);
         laserSound.setLooping(false);
+        laserSound.stop();
 
         /** Create a + for the middle of the screen*/
         Text cross = new Text("Crosshairs", "+");
@@ -85,6 +86,7 @@ public class HelloIntersection extends SimpleGame {
         );
         ts.setEnabled(true);
         sb.setRenderState(ts);
+        rootNode.attachChild(sb);
 
         /** Set the action called "firebullet", bound to KEY_F, to performAction FireBullet*/
         input.addKeyboardAction("firebullet",KeyInput.KEY_F,new FireBullet());
@@ -124,7 +126,7 @@ public class HelloIntersection extends SimpleGame {
             rootNode.attachChild(bullet);
             rootNode.updateRenderState();
             /** Signal to play laser during rendering*/
-            playLaser=true;
+            laserSound.play();
         }
     }
     class BulletMover extends Controller{
@@ -167,15 +169,7 @@ public class HelloIntersection extends SimpleGame {
      */
     protected void simpleRender(){
         /** Play laser if I need to*/
-        if (playLaser){
-            if (laserSound.isPlaying())
-                laserSound.stop();
-            SoundAPIController.getRenderer().draw(laserSound);
-            playLaser=false;
-        }
-//       display.getRenderer().draw(sb);
-//        sb.draw(display.getRenderer());
-        sb.onDraw(display.getRenderer());
+        SoundAPIController.getRenderer().draw(laserSound);
     }
 
     /**
@@ -183,5 +177,6 @@ public class HelloIntersection extends SimpleGame {
      */
     protected void simpleUpdate(){
         sb.setLocalTranslation(cam.getLocation());
+        laserSound.updateGeometricState(timer.getTimePerFrame(),true);
     }
 }
