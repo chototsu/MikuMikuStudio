@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * three points.
  *
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.21 2004-07-31 17:16:41 cep21 Exp $
+ * @version $Id: TriMesh.java,v 1.22 2004-08-21 01:35:02 cep21 Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 	protected int[] indices;
@@ -114,12 +114,15 @@ public class TriMesh extends Geometry implements Serializable {
 	}
 
 	/**
-	 *
-	 * @param vertices
-	 * @param normal
-	 * @param color
-	 * @param texture
-	 * @param indices
+	 * Recreates the geometric information of this TriMesh from scratch.  The index and
+     * vertex array must not be null, but the others may be.  Every 3 indices define an
+     * index in the <code>vertices</code> array that refrences a vertex of a triangle.
+	 * @param vertices The vertex information for this TriMesh.
+	 * @param normal The normal information for this TriMesh.
+	 * @param color The color information for this TriMesh.
+	 * @param texture The texture information for this TriMesh.
+	 * @param indices The index information for this TriMesh.
+     * @see #reconstruct(com.jme.math.Vector3f[], com.jme.math.Vector3f[], com.jme.renderer.ColorRGBA[], com.jme.math.Vector2f[])
 	 */
 	public void reconstruct(Vector3f[] vertices, Vector3f[] normal,
 			ColorRGBA[] color, Vector2f[] texture, int[] indices) {

@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.47 2004-08-07 01:07:50 renanse Exp $
+ * @version $Id: Spatial.java,v 1.48 2004-08-21 01:34:48 cep21 Exp $
  */
 public abstract class Spatial implements Serializable {
   /** Spatial's rotation relative to its parent. */
@@ -223,8 +223,12 @@ public abstract class Spatial implements Serializable {
 
   /**
    *
-   * <code>setWorldBound</code> sets the world bound for this node level.
+   * <code>setWorldBound</code> sets the world bound for this node level.  This function
+   * should only be used in rare situations.  In most cases,
+   * users will let jME's engine set the world bound and will instead call setModelBound
+   * on the leaf nodes.
    * @param worldBound the world bound at this level.
+   * @see com.jme.scene.Geometry#setModelBound(com.jme.bounding.BoundingVolume)
    */
   public void setWorldBound(BoundingVolume worldBound) {
     this.worldBound = worldBound;
@@ -306,9 +310,9 @@ public abstract class Spatial implements Serializable {
 
   /**
    *
-   * <code>getWorldRotation</code> retrieves the rotation matrix of the
-   * world.
-   * @return the world's rotation matrix.
+   * <code>getWorldRotation</code> retrieves the absolute rotation of
+   * the Spatial.
+   * @return the Spatial's world rotation matrix.
    */
   public Quaternion getWorldRotation() {
     return worldRotation;
@@ -316,8 +320,8 @@ public abstract class Spatial implements Serializable {
 
   /**
    *
-   * <code>getWorldTranslation</code> retrieves the translation vector of
-   * the world.
+   * <code>getWorldTranslation</code> retrieves the absolute translation of
+   * the spatial.
    * @return the world's tranlsation vector.
    */
   public Vector3f getWorldTranslation() {
@@ -326,7 +330,8 @@ public abstract class Spatial implements Serializable {
 
   /**
    *
-   * <code>getWorldScale</code> retrieves the scale factor of the world.
+   * <code>getWorldScale</code> retrieves the absolute scale factor of
+   * the spatial.
    * @return the world's scale factor.
    */
   public Vector3f getWorldScale() {
@@ -445,7 +450,9 @@ public abstract class Spatial implements Serializable {
    *
    * <code>updateWorldBound</code> updates the bounding volume of the
    * world. Abstract, geometry transforms the bound while node merges
-   * the children's bound.
+   * the children's bound.  In most cases, users will want to call
+   * updateModelBound() and let this function be called automatically during
+   * updateGeometricState().
    *
    */
   public abstract void updateWorldBound();
