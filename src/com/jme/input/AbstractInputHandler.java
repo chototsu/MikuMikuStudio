@@ -52,11 +52,11 @@ import com.jme.system.DisplaySystem;
  * controlling. It maintains a list of actions and mouse actions. These actions
  * are then processed during every update cycle. Subclasses are required to
  * defined to setMouse and setActions methods for custom InputControllers.
- * 
+ *
  * @author Mark Powell
  * @author Gregg Patton
  * @author Jack Lindamood - (Javadoc only)
- * @version $Id: AbstractInputHandler.java,v 1.7 2004-10-14 01:23:07 mojomonkey Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.8 2004-10-22 23:17:34 renanse Exp $
  */
 public abstract class AbstractInputHandler {
 
@@ -96,7 +96,7 @@ public abstract class AbstractInputHandler {
     /**
      * Constructor creates a default <code>AbstractInputHandler</code>. It
      * has no set AbstractGame or Camera.
-     *  
+     *
      */
     public AbstractInputHandler() {
         init(null, null);
@@ -106,7 +106,7 @@ public abstract class AbstractInputHandler {
      * Constructor instantiates a new <code>AbstractInputHandler</code>
      * defining the camera that defines the viewing. The AbstractGame app is by
      * default null.
-     * 
+     *
      * @param camera
      *            the camera that defines the viewport frame.
      */
@@ -118,7 +118,7 @@ public abstract class AbstractInputHandler {
      * Constructor instantiates a new <code>AbstractInputHandler</code>
      * defining the app that defines the application actions. The Camera cam is
      * by default null.
-     * 
+     *
      * @param app
      *            The AbstractGame that will take application actions.
      */
@@ -130,7 +130,7 @@ public abstract class AbstractInputHandler {
      * Constructor instantiates a new <code>AbstractInputHandler</code>
      * defining the app that defines the application actions and the camera that
      * will define viewing.
-     * 
+     *
      * @param app
      *            The AbstractGame that will take application actions.
      * @param camera
@@ -144,7 +144,7 @@ public abstract class AbstractInputHandler {
     /**
      * Called internally after the constructor. Sets up mouse and key inputs to
      * be received by update.
-     * 
+     *
      * @param app
      *            The game controlling this handler.
      * @param camera
@@ -152,11 +152,12 @@ public abstract class AbstractInputHandler {
      */
     private void init(AbstractGame app, Camera camera) {
         this.app = app;
-
-        this.camera = camera;
-
         keyActions = new ArrayList();
         mouseActions = new ArrayList();
+        event = new InputActionEvent();
+        actionList = new ArrayList();
+        eventList = new ArrayList();
+        this.camera = camera;
 
         setKeyBindings(DisplaySystem.getDisplaySystem().getRendererType());
         setMouse();
@@ -165,7 +166,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * <code>getApp</code> returns the AbstractGame controlling this handler.
-     * 
+     *
      * @return This handler's AbstractGame.
      */
     public AbstractGame getApp() {
@@ -174,7 +175,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * <code>setApp</code> sets the AbstractGame controlling this handler.
-     * 
+     *
      * @param game
      *            The game to set.
      */
@@ -185,7 +186,7 @@ public abstract class AbstractInputHandler {
     /**
      * <code>getCamera</code> returns the camera that defines the viewing for
      * this handler.
-     * 
+     *
      * @return This handler's camera.
      */
     public Camera getCamera() {
@@ -195,7 +196,7 @@ public abstract class AbstractInputHandler {
     /**
      * <code>setCamera</code> sets this handler's camera that will define
      * viewing.
-     * 
+     *
      * @param camera
      *            The new camera.
      */
@@ -205,7 +206,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Sets the keyboard that will receive key inputs by this handler.
-     * 
+     *
      * @param keyboard
      *            The keyboard to receive key inputs.
      */
@@ -215,7 +216,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Returns the currently assigned keybard to receive key inputs.
-     * 
+     *
      * @return This handler's keyboard.
      */
     public KeyBindingManager getKeyBindingManager() {
@@ -224,7 +225,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Sets the mouse to receive mouse inputs from.
-     * 
+     *
      * @param mouse
      *            This handler's new mouse.
      */
@@ -234,7 +235,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Returns the mouse currently receiving inputs by this handler.
-     * 
+     *
      * @return This handler's mouse.
      */
     public Mouse getMouse() {
@@ -244,7 +245,7 @@ public abstract class AbstractInputHandler {
     /**
      * Sets the speed of all key actions currently defined by this handler to
      * the given value.
-     * 
+     *
      * @param speed
      *            The new speed for all currently defined key actions.
      * @see com.jme.input.action.KeyInputAction#setSpeed(float)
@@ -258,7 +259,7 @@ public abstract class AbstractInputHandler {
     /**
      * Sets the speed of all mouse actions currently defined by this handler to
      * the given value.
-     * 
+     *
      * @param speed
      *            The new speed for all currently defined mouse actions.
      * @see com.jme.input.action.MouseInputAction#setSpeed(float)
@@ -271,7 +272,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Adds a keyboard input action to be polled by this handler during update.
-     * 
+     *
      * @param inputAction
      *            The input action to be added
      */
@@ -281,7 +282,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Adds a mouse input action to be polled by this handler during update.
-     * 
+     *
      * @param mouseAction
      *            The input action to be added
      */
@@ -292,7 +293,7 @@ public abstract class AbstractInputHandler {
     /**
      * Removes a keyboard input action from the list of keyActions that are
      * polled during update.
-     * 
+     *
      * @param inputAction
      *            The action to remove.
      */
@@ -303,7 +304,7 @@ public abstract class AbstractInputHandler {
     /**
      * Removes a mouse input action from the list of mouseActions that are
      * polled during update.
-     * 
+     *
      * @param mouseAction
      *            The action to remove.
      */
@@ -313,7 +314,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Equivalent to <code>update(true,true,time)</code>
-     * 
+     *
      * @param time
      *            The time to pass to update.
      * @see #update(boolean, boolean, float)
@@ -327,7 +328,7 @@ public abstract class AbstractInputHandler {
      * <code>updateKeyboard</code> is true, the keyboard is updated for
      * inputs. If updating of keyboard actions is enabled, all key actions that
      * are active are performed. The same is true for mouse inputs.
-     * 
+     *
      * @param updateMouseState
      *            If true, the mouse state is updated.
      * @param updateKeyboard
@@ -383,7 +384,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Sets up a keyboard to receive inputs acording to the RenderType.
-     * 
+     *
      * @param rendererType
      *            The render type to create a keyboard input from.
      * @see #setKeyBindingManager(com.jme.input.KeyBindingManager)
@@ -402,7 +403,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Returns if keyboard actions are performed during update.
-     * 
+     *
      * @return True if update will perform keyboard actions.
      * @see #update(boolean, boolean, float)
      */
@@ -412,7 +413,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Keyboard actions are performed during update only if this value is true.
-     * 
+     *
      * @param b
      *            If true, keyboard actions are performed during update.
      * @see #update(boolean, boolean, float)
@@ -423,7 +424,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Returns if mouse actions are performed during update.
-     * 
+     *
      * @return True if update will perform mouse actions.
      * @see #update(boolean, boolean, float)
      */
@@ -433,7 +434,7 @@ public abstract class AbstractInputHandler {
 
     /**
      * Mouse actions are performed during update only if this value is true.
-     * 
+     *
      * @param b
      *            If true, mouse actions are performed during update.
      * @see #update(boolean, boolean, float)
