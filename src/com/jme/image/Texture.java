@@ -47,7 +47,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.4 2004-04-22 22:26:28 renanse Exp $
+ * @version $Id: Texture.java,v 1.5 2004-04-25 03:06:17 mojomonkey Exp $
  */
 public class Texture {
 
@@ -172,6 +172,10 @@ public class Texture {
     public static final int ACSC_ONE = 0;
     public static final int ACSC_TWO = 1;
     public static final int ACSC_FOUR = 2;
+    
+    public static final int EM_NONE = 0;
+    public static final int EM_IGNORE = 1;
+    public static final int EM_SPHERE = 2;
 
     //texture attributes.
     private Image image;
@@ -183,6 +187,7 @@ public class Texture {
     private int apply;
     private int wrap;
     private int filter;
+    private int envMapMode;
 
     //only used if combine apply mode on
     private int combineFuncRGB;
@@ -629,6 +634,14 @@ public class Texture {
 	 */
 	public void setCombineFuncAlpha(int combineFuncAlpha) {
 		this.combineFuncAlpha = combineFuncAlpha;
+	}
+	
+	public void setEnvironmentalMapMode(int envMapMode) {
+	    this.envMapMode = envMapMode;
+	}
+	
+	public int getEnvironmentalMapMode() {
+	    return envMapMode;
 	}
 
         public String toString() {
