@@ -31,7 +31,6 @@
  */
 package jmetest.renderer.loader;
 
-import java.net.MalformedURLException;
 import java.net.URL;
 
 import com.jme.app.SimpleGame;
@@ -71,7 +70,7 @@ public class TestMilkshapeASCII extends SimpleGame {
     protected void update(float interpolation) {
     	timer.update();
         input.update(timer.getTimePerFrame() * 100);
-        System.out.println(timer.getFrameRate());
+        //System.out.println(timer.getFrameRate());
         scene.updateWorldData(timer.getTimePerFrame());
     }
 
@@ -140,7 +139,7 @@ public class TestMilkshapeASCII extends SimpleGame {
     	scene.setRenderState(zstate);
     	model = new MilkshapeASCIIModel("Milkshape Model");
         modelURL = TestMilkshapeASCII.class.getClassLoader().getResource("jmetest/data/model/msascii/run.txt");
-        model.load(modelURL, "jmetest/data/model/msascii");
+        model.load(modelURL, "jmetest/data/model/msascii/");
     	model.getAnimationController().setFrequency(10.0f);
     	model.getAnimationController().setRepeatType(Controller.RT_CYCLE);
         scene.attachChild(model);
