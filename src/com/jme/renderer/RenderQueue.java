@@ -42,9 +42,12 @@ import java.util.Arrays;
  * displayBackBuffer is called on the renderer.  All spatials in the opaque bucket
  * are rendered first in order closest to farthest.  Then all spatials in the opaque
  * bucket are rendered in order farthest to closest.  Finally all spatials in the
- * ortho bucket are rendered in ortho mode from highest to lowest Z order.
+ * ortho bucket are rendered in ortho mode from highest to lowest Z order.  As
+ * a user, you shouldn't need to use this class directly.  All you'll need to
+ * do is call Spatial.setRenderQueueMode .
  * @author renanse
  * @author Jack Lindamood (javadoc + SpatialList only)
+   * @see com.jme.scene.Spatial#setRenderQueueMode(int)
  *
  */
 public class RenderQueue {
@@ -77,9 +80,12 @@ public class RenderQueue {
   }
 
   /**
-   * Add a given Spatial to the RenderQueue
+   * Add a given Spatial to the RenderQueue. This is how jME adds data tothe render queue.
+   * As a user, in 99% of casees you'll want to use the function
+   * Spatail.setRenderQueueMode and let jME add the item to the queue itself.
    * @param s Spatial to add.
    * @param bucket A bucket type to add to.
+   * @see com.jme.scene.Spatial#setRenderQueueMode(int)
    * @see com.jme.renderer.Renderer#QUEUE_OPAQUE
    * @see com.jme.renderer.Renderer#QUEUE_ORTHO
    * @see com.jme.renderer.Renderer#QUEUE_TRANSPARENT
