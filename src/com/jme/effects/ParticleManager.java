@@ -61,7 +61,7 @@ import com.jme.renderer.Renderer;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.15 2005-02-20 16:28:44 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.16 2005-02-23 00:56:17 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -86,6 +86,7 @@ private final static Vector2f sharedTextureData[] = {
   private Vector3f gravityForce;
   private Vector3f emissionDirection;
   private Vector3f originCenter;
+  private Vector3f invScale; 
   private Matrix3f rotMatrix;
   private Particle particles[];
   private Vector3f geometryCoordinates[];
@@ -181,6 +182,8 @@ private final static Vector2f sharedTextureData[] = {
     particlesGeometry.setLightCombineMode(LightState.OFF);
     particlesGeometry.setTextureCombineMode(TextureState.REPLACE);
 
+    invScale = new Vector3f();
+    
     Vector3f speed = new Vector3f();
     Vector3f location = new Vector3f();
     updateRotationMatrix();
@@ -235,7 +238,8 @@ private final static Vector2f sharedTextureData[] = {
         }
 
 
-
+        invScale.set(particlesGeometry.getLocalScale());
+        invScale.set(1f/invScale.x,1f/invScale.y,1f/invScale.z);
         int i = 0;
         boolean dead = true;
         while (i < noParticles) {
@@ -268,6 +272,7 @@ private final static Vector2f sharedTextureData[] = {
                   particles[i].location.set(originCenter);
                   break;
               }
+              particles[i].location.multLocal(invScale);
               particles[i].updateVerts();
             }
           } else dead = false;
@@ -289,8 +294,9 @@ private final static Vector2f sharedTextureData[] = {
    */
   public void forceRespawn() {
     for (int i = noParticles; --i >= 0; ) {
-      particles[i].status = Particle.AVAILABLE;
+        particles[i].status = Particle.AVAILABLE;
     }
+    setActive(true);
   }
 
   /**
