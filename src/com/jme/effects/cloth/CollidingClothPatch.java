@@ -45,9 +45,10 @@ import com.jme.scene.TriMesh;
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.1 2004-11-29 21:24:55 renanse Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.2 2005-03-08 01:30:55 renanse Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
+    private static final long serialVersionUID = 1L;
 
 	/** Used for storing the results of collisions. */
 	protected TriangleCollisionResults results;

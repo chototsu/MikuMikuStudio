@@ -43,11 +43,12 @@ import com.jme.scene.TriMesh;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.1 2004-11-29 21:24:54 renanse Exp $
+ * @version $Id: ClothPatch.java,v 1.2 2005-03-08 01:30:55 renanse Exp $
  */
 public class ClothPatch extends TriMesh {
+    private static final long serialVersionUID = 1L;
 
-	/** width, number of nodes wide on x axis. */
+    /** width, number of nodes wide on x axis. */
 	protected int clothNodesX;
 	/** height, number of nodes high on y axis. */
 	protected int clothNodesY;

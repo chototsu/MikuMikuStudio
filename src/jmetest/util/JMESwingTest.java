@@ -72,7 +72,7 @@ import com.jme.util.TextureManager;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.5 2005-02-10 21:48:34 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.6 2005-03-08 01:30:55 renanse Exp $
  */
 
 public class JMESwingTest extends SimpleHeadlessApp {
@@ -216,6 +216,7 @@ public class JMESwingTest extends SimpleHeadlessApp {
 
 // Our custom Swing frame...  Nothing really special here.
 	class SwingFrame extends JFrame {
+	    private static final long serialVersionUID = 1L;
 		JPanel contentPane;
 		JPanel mainPanel = new JPanel();
 		JMEComponent comp = null;

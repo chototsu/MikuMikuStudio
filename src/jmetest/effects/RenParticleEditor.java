@@ -59,7 +59,7 @@ import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.9 2005-02-10 21:48:27 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.10 2005-03-08 01:30:55 renanse Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -239,6 +239,7 @@ public class RenParticleEditor extends VariableTimestepGame {
   }
 
   class GUIFrame extends WidgetAbstractFrame implements Observer {
+      private static final long serialVersionUID = 1L;
 
     GUIFrame(AbstractInputHandler ic) {
       super(ic);

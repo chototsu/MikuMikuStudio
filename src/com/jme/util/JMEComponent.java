@@ -48,10 +48,11 @@ import java.awt.image.DataBufferInt;
  * graphics to be displayed in a AWT/Swing interface.
  *
  * @author Joshua Slack
- * @version $Id: JMEComponent.java,v 1.7 2005-02-10 19:01:16 renanse Exp $
+ * @version $Id: JMEComponent.java,v 1.8 2005-03-08 01:30:07 renanse Exp $
  */
 
 public class JMEComponent extends Component {
+    private static final long serialVersionUID = 1L;
 
 /** The buffer that holds our render results in anticipation of converting it to an image */
 	private IntBuffer buf;

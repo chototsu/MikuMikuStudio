@@ -83,11 +83,12 @@ import com.jme.util.TextureManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.34 2005-02-10 21:48:27 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.35 2005-03-08 01:30:56 renanse Exp $
  *
  */
 
 public class RenParticleControlFrame extends JFrame {
+    private static final long serialVersionUID = 1L;
   JTabbedPane mainTabbedPane1 = new JTabbedPane();
   JPanel appPanel = new JPanel();
   JPanel emitPanel = new JPanel();
