@@ -61,7 +61,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.14 2004-03-06 07:34:21 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.15 2004-03-31 21:57:53 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -246,7 +246,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     }
 
 
-    public TextureRenderer createTextureRenderer(boolean useRGB, boolean useRGBA, boolean useDepth,
+    public TextureRenderer createTextureRenderer(int width, int height, boolean useRGB, boolean useRGBA, boolean useDepth,
                                                     boolean isRectangle, int target, int mipmaps) {
                 if (!isCreated()) return null;
 
@@ -259,7 +259,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                 else if (target == TextureRenderer.RENDER_TEXTURE_RECTANGLE)
                     target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
 
-                return new LWJGLTextureRenderer((LWJGLRenderer)getRenderer(),
+                return new LWJGLTextureRenderer(width, height, (LWJGLRenderer)getRenderer(),
                         new RenderTexture(useRGB, useRGBA, useDepth, isRectangle, target, mipmaps));
     }
 }

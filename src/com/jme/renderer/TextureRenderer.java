@@ -47,7 +47,7 @@ import com.jme.scene.Spatial;
  * </code>
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.2 2004-03-06 07:34:22 renanse Exp $
+ * @version $Id: TextureRenderer.java,v 1.3 2004-03-31 21:57:54 renanse Exp $
  */
 public interface TextureRenderer {
 
@@ -61,6 +61,18 @@ public interface TextureRenderer {
      * @return the camera this renderer is using.
      */
     public Camera getCamera();
+
+
+    /**
+     * <code>setCamera</code> sets the camera this renderer should use.
+     * @param camera the camera this renderer should use.
+     */
+    public void setCamera(Camera camera);
+
+    /**
+     * <code>updateCamera</code> updates the camera in the pbuffer context.
+     */
+    public void updateCamera();
 
     /**
      * <code>render</code> renders a scene. As it recieves a base class of

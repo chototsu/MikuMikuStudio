@@ -44,7 +44,7 @@ import com.jme.widget.font.WidgetFont;
 /**
  * <code>DisplaySystem</code>
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.14 2004-03-06 07:34:21 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.15 2004-03-31 21:58:49 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -67,7 +67,7 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.14 2004-03-06 07:34:21 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.15 2004-03-31 21:58:49 renanse Exp $
  */
 public abstract class DisplaySystem {
     private static DisplaySystem display;
@@ -279,7 +279,8 @@ public abstract class DisplaySystem {
 
     /**
      * Crate a TextureRenderer using the underlying system.
-     * @param renderer
+     * @param width width of texture
+     * @param height height of texture
      * @param useRGB  if this is true, useRGBA should not be
      * @param useRGBA  if this is true, useRGB should not be
      * @param useDepth
@@ -288,6 +289,6 @@ public abstract class DisplaySystem {
      * @param mipmaps
      * @return
      */
-    public abstract TextureRenderer createTextureRenderer(boolean useRGB, boolean useRGBA, boolean useDepth,
+    public abstract TextureRenderer createTextureRenderer(int width, int height, boolean useRGB, boolean useRGBA, boolean useDepth,
                                                     boolean isRectangle, int target, int mipmaps);
 }

@@ -47,7 +47,7 @@ import org.lwjgl.opengl.Window;
 
 /**
  * @author Joshua Slack
- * @version $Id: LWJGLTextureRenderer.java,v 1.13 2004-03-08 17:36:46 renanse Exp $
+ * @version $Id: LWJGLTextureRenderer.java,v 1.14 2004-03-31 21:58:20 renanse Exp $
  */
 public class LWJGLTextureRenderer implements TextureRenderer {
 
@@ -65,12 +65,13 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     private LWJGLRenderer parentRenderer;
     private RenderTexture texture;
 
-    public LWJGLTextureRenderer(LWJGLRenderer parentRenderer) {
-        this(parentRenderer, null);
-    }
-
-    public LWJGLTextureRenderer(LWJGLRenderer parentRenderer, RenderTexture texture) {
+    public LWJGLTextureRenderer(int width, int height, LWJGLRenderer parentRenderer, RenderTexture texture) {
+      if (width > 0) PBUFFER_WIDTH = width;
+      if (height > 0) PBUFFER_HEIGHT = height;
         caps = Pbuffer.getPbufferCaps();
+        if (width != height && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
+          width = height = Math.max(width,height);
+        }
 
         if (((caps & Pbuffer.PBUFFER_SUPPORTED) == 0)) {
             LoggingSystem.getLogger().log(Level.SEVERE, "No Pbuffer support detected, exiting!");
@@ -98,6 +99,15 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      */
     public Camera getCamera() {
         return camera;
+    }
+
+    /**
+     * <code>setCamera</code> sets the camera this renderer should use.
+     * @param camera the camera this renderer should use.
+     */
+    public void setCamera(Camera camera) {
+
+        this.camera = (LWJGLCamera)camera;
     }
 
     /**
@@ -242,7 +252,6 @@ public class LWJGLTextureRenderer implements TextureRenderer {
             camera.update();
 
             deactivate();
-            parentRenderer.getCamera().update();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -270,5 +279,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         camera.setFrame(loc, left, up, dir);
+    }
+
+    public void updateCamera() {
+      activate();
+      camera.update();
+      deactivate();
     }
 }
