@@ -56,7 +56,7 @@ import org.lwjgl.opengl.Window;
  * @see com.jme.scene.Text
  * @see com.jme.scene.state.TextureState
  * @author Mark Powell
- * @version $Id: LWJGLFont.java,v 1.2 2004-04-22 22:26:42 renanse Exp $
+ * @version $Id: LWJGLFont.java,v 1.3 2004-05-21 15:41:27 mojomonkey Exp $
  */
 public class LWJGLFont {
     /**
@@ -121,7 +121,7 @@ public class LWJGLFont {
      * @param text the String to render.
      * @param set the mode of font: NORMAL or ITALICS.
      */
-    public void print(int x, int y, StringBuffer text, int set) {
+    public void print(int x, int y, float scale, StringBuffer text, int set) {
         if (set > 1) {
             set = 1;
         } else if (set < 0) {
@@ -136,6 +136,7 @@ public class LWJGLFont {
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
         GL11.glTranslatef(x, y, 0);
+        GL11.glScalef(scale, scale, scale);
         GL11.glListBase(base - 32 + (128 * set));
 
         //Put the string into a "pointer"
