@@ -36,16 +36,21 @@
 
 package com.jme.system.lwjgl;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.logging.Level;
 
 import java.awt.Toolkit;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.Display;
 import org.lwjgl.DisplayMode;
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.RenderTexture;
 import org.lwjgl.opengl.Window;
-import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.glu.GLU;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.renderer.RendererType;
 import com.jme.renderer.TextureRenderer;
@@ -56,13 +61,6 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.font.WidgetFont;
 import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
-import com.jme.math.Vector3f;
-import com.jme.math.Vector2f;
-import java.nio.FloatBuffer;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-import java.nio.ByteOrder;
-import org.lwjgl.BufferUtils;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -72,7 +70,7 @@ import org.lwjgl.BufferUtils;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: LWJGLDisplaySystem.java,v 1.6 2004-04-19 22:05:34 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.7 2004-04-19 22:33:07 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -349,16 +347,11 @@ public class LWJGLDisplaySystem extends DisplaySystem {
           prArray[x][y] = prBuffer.get();
 
       // Viewport matrix
-      IntBuffer vpBuffer =
-              ByteBuffer
-                      .allocateDirect(16 * 8)
-                      .order(ByteOrder.nativeOrder())
-                      .asIntBuffer();
+      IntBuffer vpBuffer = BufferUtils.createIntBuffer(16);
       GL11.glGetInteger(GL11.GL_VIEWPORT, vpBuffer);
 
       // 3d coordinates
       float[] result = new float[4];
-
 
       GLU.gluUnProject(
               screenPosition.x,
