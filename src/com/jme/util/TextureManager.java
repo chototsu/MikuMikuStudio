@@ -58,7 +58,7 @@ import com.jme.renderer.ColorRGBA;
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.6 2004-02-24 22:01:13 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.7 2004-02-27 20:18:50 mojomonkey Exp $
  */
 public class TextureManager {
    
@@ -307,23 +307,20 @@ public class TextureManager {
             DataInputStream dis = new DataInputStream(fs);
             BitmapHeader bh = new BitmapHeader();
             byte[] data = new byte[dis.available()];
-            System.out.println(data.length);
-            System.out.println(data[0]);
             dis.readFully(data);
-            System.out.println(data[0]);
             dis.close();
             bh.read(data);
 
             if (bh.bitcount == 24) {
-                return (bh.readMap24(data, bh));
+                return (bh.readMap24(data));
             }
             
             if (bh.bitcount == 32) {
-                return (bh.readMap32(data, bh));
+                return (bh.readMap32(data));
             }
             
             if (bh.bitcount == 8) {
-                return (bh.readMap8(data, bh));
+                return (bh.readMap8(data));
             }
             
         } catch (IOException e) {

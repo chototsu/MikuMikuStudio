@@ -39,29 +39,40 @@ import java.io.IOException;
  * <code>BitmapHeader</code> defines header information about a bitmap (BMP) image
  * file format.
  * @author Mark Powell
- * @version $Id: BitmapHeader.java,v 1.7 2004-02-24 18:00:35 mojomonkey Exp $
+ * @version $Id: BitmapHeader.java,v 1.8 2004-02-27 20:18:49 mojomonkey Exp $
  */
 public class BitmapHeader {
-    public int size;
-    public int bisize;
-    public int width;
-    public int height;
-    public int planes;
+    /**
+     * the number of bits that makes up the image.
+     */
     public int bitcount;
-    public int compression;
-    public int sizeimage;
-    public int xpm;
-    public int ypm;
-    public int clrused;
-    public int clrimp;
+    
+    private int size;
+    private int bisize;
+    private int width;
+    private int height;
+    private int planes;
+    
+    private int compression;
+    private int sizeimage;
+    private int xpm;
+    private int ypm;
+    private int clrused;
+    private int clrimp;
 
-    public java.awt.Image readMap32(byte[] data, BitmapHeader bh) {
+    /**
+     * 
+     * <code>readMap32</code> reads a 32 bit bitmap file. 
+     * @param data the byte data that contains the file information.
+     * @return the Image that contains the bitmap.
+     */
+    public java.awt.Image readMap32(byte[] data) {
         java.awt.Image image;
-        int xwidth = bh.sizeimage / bh.height;
-        int ndata[] = new int[bh.height * bh.width];
-        byte brgb[] = new byte[bh.width * 4 * bh.height];
+        int xwidth = sizeimage / height;
+        int ndata[] = new int[height * width];
+        byte brgb[] = new byte[width * 4 * height];
         
-        for(int i = 0; i < bh.width * 4 * bh.height; i++) {
+        for(int i = 0; i < width * 4 * height; i++) {
             if(i+54 >= data.length) {
                 break;
             }
@@ -69,9 +80,9 @@ public class BitmapHeader {
         }
         int nindex = 0;
 
-        for (int j = 0; j < bh.height; j++) {
-            for (int i = 0; i < bh.width; i++) {
-                ndata[bh.width * (bh.height - j - 1) + i] =
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                ndata[width * (height - j - 1) + i] =
                     constructInt3(brgb, nindex);
                 nindex += 4;
             }
@@ -79,16 +90,22 @@ public class BitmapHeader {
 
         image =
             Toolkit.getDefaultToolkit().createImage(
-                new MemoryImageSource(bh.width, bh.height, ndata, 0, bh.width));
+                new MemoryImageSource(width, height, ndata, 0, width));
         return (image);
     }
 
-    public java.awt.Image readMap24(byte[] data, BitmapHeader bh)
+    /**
+     * 
+     * <code>readMap24</code> reads a 24 bit bitmap file. 
+     * @param data the byte data that contains the file information.
+     * @return the Image that contains the bitmap.
+     */
+    public java.awt.Image readMap24(byte[] data)
         throws IOException {
         java.awt.Image image;
-        int npad = (bh.sizeimage / bh.height) - bh.width * 3;
-        int ndata[] = new int[bh.height * bh.width];
-        byte brgb[] = new byte[(bh.width + npad) * 3 * bh.height];
+        int npad = (sizeimage / height) - width * 3;
+        int ndata[] = new int[height * width];
+        byte brgb[] = new byte[(width + npad) * 3 * height];
         for(int i = 0; i < brgb.length; i++) {
             if(i + 54>= data.length) {
                 break;
@@ -98,9 +115,9 @@ public class BitmapHeader {
         
         int nindex = 0;
 
-        for (int j = 0; j < bh.height; j++) {
-            for (int i = 0; i < bh.width; i++) {
-                ndata[bh.width * (bh.height - j - 1) + i] =
+        for (int j = 0; j < height; j++) {
+            for (int i = 0; i < width; i++) {
+                ndata[width * (height - j - 1) + i] =
                     constructInt3(brgb, nindex);
                 nindex += 3;
             }
@@ -109,23 +126,29 @@ public class BitmapHeader {
 
         image =
             Toolkit.getDefaultToolkit().createImage(
-                new MemoryImageSource(bh.width, bh.height, ndata, 0, bh.width));
+                new MemoryImageSource(width, height, ndata, 0, width));
         return image;
     }
 
-    public java.awt.Image readMap8(byte[] data, BitmapHeader bh) {
+    /**
+     * 
+     * <code>readMap8</code> reads a 8 bit bitmap file. 
+     * @param data the byte data that contains the file information.
+     * @return the Image that contains the bitmap.
+     */
+    public java.awt.Image readMap8(byte[] data) {
     	 java.awt.Image image;
         int nNumColors = 0;
 
-        if (bh.clrused > 0) {
-            nNumColors = bh.clrused;
+        if (clrused > 0) {
+            nNumColors = clrused;
         } else {
-            nNumColors = (1 & 0xff) << bh.bitcount;
+            nNumColors = (1 & 0xff) << bitcount;
         }
 
-        if (bh.sizeimage == 0) {
-            bh.sizeimage = ((((bh.width * bh.bitcount) + 31) & ~31) >> 3);
-            bh.sizeimage *= bh.height;
+        if (sizeimage == 0) {
+            sizeimage = ((((width * bitcount) + 31) & ~31) >> 3);
+            sizeimage *= height;
         }
 
         int npalette[] = new int[nNumColors];
@@ -142,17 +165,17 @@ public class BitmapHeader {
             nindex8 += 4;
         }
 
-        int npad8 = (bh.sizeimage / bh.height) - bh.width;
-        int ndata8[] = new int[bh.width * bh.height];
-        byte bdata[] = new byte[(bh.width + npad8) * bh.height];
+        int npad8 = (sizeimage / height) - width;
+        int ndata8[] = new int[width * height];
+        byte bdata[] = new byte[(width + npad8) * height];
         for(int i = 0; i < bdata.length; i++) {
             bdata[i] = data[i + bpalette.length + 54];
         }
         nindex8 = 0;
 
-        for (int j8 = 0; j8 < bh.height; j8++) {
-            for (int i8 = 0; i8 < bh.width; i8++) {
-                ndata8[bh.width * (bh.height - j8 - 1) + i8] =
+        for (int j8 = 0; j8 < height; j8++) {
+            for (int i8 = 0; i8 < width; i8++) {
+                ndata8[width * (height - j8 - 1) + i8] =
                     npalette[(bdata[nindex8] & 0xff)];
                 nindex8++;
             }
@@ -163,11 +186,11 @@ public class BitmapHeader {
         image =
             Toolkit.getDefaultToolkit().createImage(
                 new MemoryImageSource(
-                    bh.width,
-                    bh.height,
+                    width,
+                    height,
                     ndata8,
                     0,
-                    bh.width));
+                    width));
 
         return image;
     }
