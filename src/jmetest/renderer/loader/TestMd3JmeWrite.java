@@ -2,14 +2,15 @@ package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
 import com.jme.scene.model.XMLparser.Converters.Md3ToJme;
-import com.jme.scene.model.XMLparser.Converters.Md2ToJme;
 import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.Node;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
+import com.jme.image.Texture;
 
 import java.io.*;
 import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * Started Date: Jul 15, 2004<br><br>
@@ -28,12 +29,8 @@ public class TestMd3JmeWrite extends SimpleGame{
         Md3ToJme converter=new Md3ToJme();
         BinaryToXML btx=new BinaryToXML();
         URL laura=null;
-        try {
-            laura=new File("data/model/Paladin/Paladin_upper.md3").toURL();
-//            laura=new File("3dsmodels/box.md3").toURL();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
+        laura=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/lara/lara_lower.md3");
+        URL tex=TestMd3JmeWrite.class.getClassLoader().getResource("jmetest/data/model/lara/default.bmp");
         ByteArrayOutputStream BO=new ByteArrayOutputStream();
         try {
             converter.convert(laura.openStream(),BO);
@@ -42,6 +39,10 @@ public class TestMd3JmeWrite extends SimpleGame{
 //            System.out.println(SW);
             JmeBinaryReader jbr=new JmeBinaryReader();
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
+            TextureState ts=display.getRenderer().getTextureState();
+            ts.setTexture(TextureManager.loadTexture(tex,Texture.MM_LINEAR,Texture.FM_LINEAR,true));
+            ts.setEnabled(true);
+            r.setRenderState(ts);
 //            r.setLocalScale(.1f);
             rootNode.attachChild(r);
         } catch (IOException e) {
