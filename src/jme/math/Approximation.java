@@ -33,11 +33,12 @@ package jme.math;
 
 /**
  * <code>Approximation</code> is a static class that will create a
- * line that best fits a collection of points. The method that this line is
- * created by depends on the static method called.
+ * piece of geometry (line, rectangle, etc) that best fits a collection of 
+ * points.
  * <br><br>
  * <b>NOTE:</b> See 3D Game Engine Design. David H. Eberly.
  * @author Mark Powell
+ * @version $Id: Approximation.java,v 1.2 2003-08-27 21:05:42 mojomonkey Exp $
  *
  */
 public class Approximation {
@@ -101,69 +102,84 @@ public class Approximation {
         return new Line(origin, direction);
     }
 
+    /**
+     * <code>gaussPointsFit</code> generates a rectangle based on supplied
+     * points such that the center is calculated as the average of points and
+     * the extents are determined by the eigenvectors.
+     * @param points the collection of points to generate the rectangle.
+     * @param center storage for the center point of the points.
+     * @param axis storage for the orientation of the rectangle.
+     * @param extent storage for the length of the rectangle.
+     */
     public static void gaussPointsFit(
-        Vector[] akPoint,
-        Vector rkCenter,
-        Vector[] akAxis,
-        float[] afExtent) {
+        Vector[] points,
+        Vector center,
+        Vector[] axis,
+        float[] extent) {
             
         // compute mean of points
-        rkCenter = akPoint[0];
-        int i;
-        for (i = 1; i < akPoint.length; i++) {
-            rkCenter = rkCenter.add(akPoint[i]);
+        center = points[0];
+        
+        for (int i = 1; i < points.length; i++) {
+            center = center.add(points[i]);
         }
-        float fInvQuantity = 1.0f / akPoint.length;
-        rkCenter = rkCenter.mult(fInvQuantity);
+        
+        float inverseQuantity = 1.0f / points.length;
+        center = center.mult(inverseQuantity);
 
         // compute covariances of points
-        float fSumXX = 0.0f, fSumXY = 0.0f, fSumXZ = 0.0f;
-        float fSumYY = 0.0f, fSumYZ = 0.0f, fSumZZ = 0.0f;
-        for (i = 0; i < akPoint.length; i++) {
-            Vector kDiff = akPoint[i].subtract(rkCenter);
-            fSumXX += kDiff.x * kDiff.x;
-            fSumXY += kDiff.x * kDiff.y;
-            fSumXZ += kDiff.x * kDiff.z;
-            fSumYY += kDiff.y * kDiff.y;
-            fSumYZ += kDiff.y * kDiff.z;
-            fSumZZ += kDiff.z * kDiff.z;
+        float sumXX = 0.0f;
+        float sumXY = 0.0f;
+        float sumXZ = 0.0f;
+        float sumYY = 0.0f;
+        float sumYZ = 0.0f;
+        float sumZZ = 0.0f;
+        
+        for (int i = 0; i < points.length; i++) {
+            Vector diff = points[i].subtract(center);
+            sumXX += diff.x * diff.x;
+            sumXY += diff.x * diff.y;
+            sumXZ += diff.x * diff.z;
+            sumYY += diff.y * diff.y;
+            sumYZ += diff.y * diff.z;
+            sumZZ += diff.z * diff.z;
         }
-        fSumXX *= fInvQuantity;
-        fSumXY *= fInvQuantity;
-        fSumXZ *= fInvQuantity;
-        fSumYY *= fInvQuantity;
-        fSumYZ *= fInvQuantity;
-        fSumZZ *= fInvQuantity;
+        sumXX *= inverseQuantity;
+        sumXY *= inverseQuantity;
+        sumXZ *= inverseQuantity;
+        sumYY *= inverseQuantity;
+        sumYZ *= inverseQuantity;
+        sumZZ *= inverseQuantity;
         float[][] matrix = new float[3][3];
         // compute eigenvectors for covariance matrix
        
-        matrix[0][0] = fSumXX;
-        matrix[0][1] = fSumXY;
-        matrix[0][2] = fSumXZ;
-        matrix[1][0] = fSumXY;
-        matrix[1][1] = fSumYY;
-        matrix[1][2] = fSumYZ;
-        matrix[2][0] = fSumXZ;
-        matrix[2][1] = fSumYZ;
-        matrix[2][2] = fSumZZ;
+        matrix[0][0] = sumXX;
+        matrix[0][1] = sumXY;
+        matrix[0][2] = sumXZ;
+        matrix[1][0] = sumXY;
+        matrix[1][1] = sumYY;
+        matrix[1][2] = sumYZ;
+        matrix[2][0] = sumXZ;
+        matrix[2][1] = sumYZ;
+        matrix[2][2] = sumZZ;
         
-        EigenSystem kES = new EigenSystem(matrix);
-        kES.tridiagonalReduction();
-        kES.tridiagonalQL();
-        kES.increasingSort();
+        EigenSystem eigen = new EigenSystem(matrix);
+        eigen.tridiagonalReduction();
+        eigen.tridiagonalQL();
+        eigen.increasingSort();
         
-        akAxis[0].x = kES.getEigenvector(0, 0);
-        akAxis[0].y = kES.getEigenvector(1, 0);
-        akAxis[0].z = kES.getEigenvector(2, 0);
-        akAxis[1].x = kES.getEigenvector(0, 1);
-        akAxis[1].y = kES.getEigenvector(1, 1);
-        akAxis[1].z = kES.getEigenvector(2, 1);
-        akAxis[2].x = kES.getEigenvector(0, 2);
-        akAxis[2].y = kES.getEigenvector(1, 2);
-        akAxis[2].z = kES.getEigenvector(2, 2);
+        axis[0].x = eigen.getEigenvector(0, 0);
+        axis[0].y = eigen.getEigenvector(1, 0);
+        axis[0].z = eigen.getEigenvector(2, 0);
+        axis[1].x = eigen.getEigenvector(0, 1);
+        axis[1].y = eigen.getEigenvector(1, 1);
+        axis[1].z = eigen.getEigenvector(2, 1);
+        axis[2].x = eigen.getEigenvector(0, 2);
+        axis[2].y = eigen.getEigenvector(1, 2);
+        axis[2].z = eigen.getEigenvector(2, 2);
 
-        afExtent[0] = kES.getRealEigenvalue(0);
-        afExtent[1] = kES.getRealEigenvalue(1);
-        afExtent[2] = kES.getRealEigenvalue(2);
+        extent[0] = eigen.getRealEigenvalue(0);
+        extent[1] = eigen.getRealEigenvalue(1);
+        extent[2] = eigen.getRealEigenvalue(2);
     }
 }
