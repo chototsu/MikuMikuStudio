@@ -42,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * convinience methods for creating the matrix from a multitude of sources.
  *
  * @author Mark Powell
- * @version $Id: Matrix4f.java,v 1.5 2004-05-24 18:20:29 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.6 2004-06-03 20:38:17 renanse Exp $
  */
 public class Matrix4f {
 	private float matrix[][];
@@ -420,13 +420,13 @@ public class Matrix4f {
 		float angle;
 		float sr, sp, sy, cr, cp, cy;
 
-		angle = (angles.z * FastMath.RAD_TO_DEG);
+		angle = (angles.z * FastMath.DEG_TO_RAD);
 		sy = FastMath.sin(angle);
 		cy = FastMath.cos(angle);
-		angle = (angles.y * FastMath.RAD_TO_DEG);
+		angle = (angles.y * FastMath.DEG_TO_RAD);
 		sp = FastMath.sin(angle);
 		cp = FastMath.cos(angle);
-		angle = (angles.x * FastMath.RAD_TO_DEG);
+		angle = (angles.x * FastMath.DEG_TO_RAD);
 		sr = FastMath.sin(angle);
 		cr = FastMath.cos(angle);
 
