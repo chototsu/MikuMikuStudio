@@ -9,6 +9,8 @@ import com.jme.math.Matrix3f;
 import com.jme.scene.TriMesh;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
+import com.jme.scene.shape.Box;
+import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.bounding.BoundingSphere;
@@ -23,6 +25,7 @@ import java.io.DataInputStream;
 import java.util.ArrayList;
 import java.util.Stack;
 import java.util.HashMap;
+import java.util.BitSet;
 
 /**
  * Started Date: Jun 26, 2004<br><br>
@@ -1000,7 +1003,7 @@ public class MaxToJme implements MaxChunkIDs{
                 default:
                     if (DEBUG) System.out.println("Unknown type***:" + Integer.toHexString(i.type) + "***");
                     if (DEBUG_SEVERE) throw new IOException("Unknown type:" + Integer.toHexString(i.type) + ": in readMatAmb");
-                    myIn.skipBytes(i.length-6);
+                    myIn.skipBytes(i.length);
                     return null;
             }
             length-=i.length;
@@ -1225,9 +1228,11 @@ public class MaxToJme implements MaxChunkIDs{
         TriMesh finishedMesh=(TriMesh) s.pop();
         finishedMesh.setModelBound(new BoundingSphere());
         finishedMesh.updateModelBound();
-        finishedMesh.setSolidColor(ColorRGBA.randomColor());
+//        finishedMesh.setSolidColor(ColorRGBA.randomColor());
         Node parentNode=(Node) s.pop();
         parentNode.attachChild(finishedMesh);
+
+
         s.push(parentNode);
         if (DEBUG_LIGHT) System.out.println("Finished reading trimesh");
     }
@@ -1268,13 +1273,69 @@ public class MaxToJme implements MaxChunkIDs{
 
     }
 
-    private void readSmoothing(short nFaces) throws IOException{
+    private void readSmoothing(short nFaces,Vector3f[] faceNormals) throws IOException{
         if (DEBUG || DEBUG_LIGHT) System.out.println("Reading smoothing");
-        for (int i=0;i<nFaces;i++){
-            short part=myIn.readShort();
-            part=myIn.readShort();
-//            if (DEBUG) System.out.println("Smoothing group for face " + i + " is " + part);
+        TriMesh parentMesh=(TriMesh) s.pop();
+        Vector3f[] norms=new Vector3f[parentMesh.getVertices().length];
+        int [] parts=new int[nFaces];
+        Vector3f[] smoothingGroupNormalCalculation=new Vector3f[33];
+        int []totalNormalsInASmoothingGroup=new int[33];
+        for (int i=0;i<totalNormalsInASmoothingGroup.length;i++){
+            smoothingGroupNormalCalculation[i]=new Vector3f();
+            totalNormalsInASmoothingGroup[i]=0;
         }
+
+        for (int i=0;i<nFaces;i++){
+            parts[i]=myIn.readInt();
+            for (int j=0;j<totalNormalsInASmoothingGroup.length;j++){
+                if ((parts[i]& (1<<j))!=0){
+                    smoothingGroupNormalCalculation[j].addLocal(faceNormals[i]);
+                    totalNormalsInASmoothingGroup[j]++;
+                }
+            }
+        }
+        for (int i=0;i<totalNormalsInASmoothingGroup.length;i++){
+            smoothingGroupNormalCalculation[i].normalizeLocal();
+        }
+
+
+        Vector3f temp=new Vector3f();
+        // Change each face's normal to a new normal dependant upon Smoothing Groups
+        for (int i=0;i<nFaces;i++){
+            temp.set(0,0,0);
+            int totalSmoothingGroups=0;
+            for (int j=0;j<totalNormalsInASmoothingGroup.length;j++){
+                if ((parts[i] & (1<<j))!=0){
+                    totalSmoothingGroups++;
+                    temp.addLocal(smoothingGroupNormalCalculation[j]);
+                }
+            }
+            if (totalSmoothingGroups!=0){   // If it's not in a smoothing group, then the face normal doesn't change
+                faceNormals[i].set(temp);
+                faceNormals[i].normalizeLocal();
+            }
+        }
+
+        // Now set the normal at a vertex to the average of the normals of every face
+        //  that contains that vertex
+        // For every vertex in the mesh
+        int[] indexes=parentMesh.getIndices();
+        for (int i=0;i<norms.length;i++){
+            int count=0;
+            temp.set(0,0,0);
+            for (int j=0;j<indexes.length;j++){  // for every vertex that is shown (IE every face)
+                if (indexes[j]==i){
+                    temp.addLocal(faceNormals[j/3]);
+                    count++;
+                }
+            }
+            if (count!=0)
+                norms[i]=temp.normalize();
+        }
+
+        parentMesh.setNormals(norms);
+        s.push(parentMesh);
+
     }
 
     private void readFaces(int length) throws IOException{
@@ -1282,6 +1343,12 @@ public class MaxToJme implements MaxChunkIDs{
         short nFaces=myIn.readShort();
         if (DEBUG || DEBUG_LIGHT) System.out.println("Reading faces #=" + nFaces);
         int[] indexes=new int[nFaces*3];
+        Vector3f[]faceNormal=new Vector3f[nFaces];
+        TriMesh parentMesh=(TriMesh) s.pop();
+        Vector3f[] vertexes=parentMesh.getVertices();
+        Vector3f tempA=new Vector3f();
+        Vector3f tempB=new Vector3f();
+
         for (int i=0;i<nFaces;i++){
             short[] parts=new short[3];
             for (int j=0;j<3;j++){
@@ -1289,10 +1356,16 @@ public class MaxToJme implements MaxChunkIDs{
                 indexes[i*3+j]=parts[j];
             }
             short flag=myIn.readShort();
-//            System.out.println("Read vertex indexes:" + parts[0] + " , " + parts[1] + " , " + parts[2] + ": with flag:" + flag);
+            if (DEBUG || DEBUG_LIGHT) System.out.println("Read vertex indexes:" + parts[0] + " , " + parts[1] + " , " + parts[2] + ": with flag:" + flag);
+            vertexes[parts[1]].subtract(vertexes[parts[0]],tempA);
+            vertexes[parts[2]].subtract(vertexes[parts[0]],tempB);
+            faceNormal[i]=tempA.cross(tempB);
+            faceNormal[i].normalizeLocal();
+            if (DEBUG || DEBUG_LIGHT) System.out.println("Normal for face " + i + " is " + faceNormal[i]
+            );
+
         }
         length -= 2 + nFaces*(3*2+2);
-        TriMesh parentMesh=(TriMesh) s.pop();
         parentMesh.setIndices(indexes);
         s.push(parentMesh);
         while (length > 0){
@@ -1302,7 +1375,7 @@ public class MaxToJme implements MaxChunkIDs{
             if (DEBUG) System.out.println("Read in faces object ID:" + Integer.toHexString(i.type) + "* with known length " + i.length);
             switch (i.type){
                 case SMOOTH_GROUP:
-                    readSmoothing(nFaces);
+                    readSmoothing(nFaces,faceNormal);
                     break;
                 case MESH_MAT_GROUP:
                     readMeshMaterialGroup();
