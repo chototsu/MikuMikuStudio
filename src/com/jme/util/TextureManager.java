@@ -56,7 +56,7 @@ import com.jme.renderer.ColorRGBA;
  * filename and the texture properties.
  *
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.19 2004-06-04 00:42:37 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.20 2004-06-08 22:06:17 cep21 Exp $
  */
 public class TextureManager {
 	// For TGA loading
@@ -242,6 +242,7 @@ public class TextureManager {
 		texture.setFilter(magFilter);
 		texture.setImage(imageData);
 		texture.setMipmapState(minFilter);
+        texture.setImageLocation(file);
 		return texture;
 	}
 	public static com.jme.image.Texture loadTexture(java.awt.Image image,
