@@ -5,21 +5,15 @@ import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.model.XMLparser.Converters.MaxToJme;
 import com.jme.scene.Node;
-import com.jme.scene.state.CullState;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.shape.Box;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.math.FastMath;
-import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingBox;
 import com.jme.renderer.ColorRGBA;
-import com.jme.light.DirectionalLight;
-import com.jme.light.PointLight;
-import com.jme.light.Light;
-import com.jme.system.DisplaySystem;
+
 
 
 import java.io.*;
@@ -44,7 +38,6 @@ public class TestMaxJmeWrite extends SimpleGame{
     Node globalLoad=null;
 
     protected void simpleInitGame() {
-        /*
         MaxToJme C1=new MaxToJme();
 
         try {
@@ -72,7 +65,7 @@ public class TestMaxJmeWrite extends SimpleGame{
 
             C1.convert(new BufferedInputStream(maxFile.openStream()),BO);
             JmeBinaryReader jbr=new JmeBinaryReader();
-            jbr.setProperty("texulr",new File("3dsmodels").toURL());
+//            jbr.setProperty("texulr",new File("3dsmodels").toURL());
             BinaryToXML btx=new BinaryToXML();
             StringWriter SW=new StringWriter();
             btx.sendBinarytoXML(new ByteArrayInputStream(BO.toByteArray()),SW);
@@ -80,9 +73,9 @@ public class TestMaxJmeWrite extends SimpleGame{
 
             jbr.setProperty("bound","box");
             Node r=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
-//            r.setLocalScale(.01f);
+            r.setLocalScale(.1f);
             if (r.getChild(0).getControllers().size()!=0)
-                r.getChild(0).getController(0).setSpeed(10);
+                r.getChild(0).getController(0).setSpeed(20);
             Quaternion temp=new Quaternion();
             temp.fromAngleAxis(FastMath.PI/2,new Vector3f(-1,0,0));
             rootNode.setForceView(true);
@@ -93,7 +86,7 @@ public class TestMaxJmeWrite extends SimpleGame{
             System.out.println("Damn exceptions:"+e);
             e.printStackTrace();
         }
-        */
+
         drawAxis();
     }
 
@@ -105,7 +98,7 @@ public class TestMaxJmeWrite extends SimpleGame{
         MaterialState red=display.getRenderer().getMaterialState();
         red.setEmissive(ColorRGBA.red);
         red.setEnabled(true);
-//        Xaxis.setRenderState(red);
+        Xaxis.setRenderState(red);
 
         Box Yaxis=new Box("axisY",new Vector3f(0,5,0),.1f,5f,.1f);
         Yaxis.setModelBound(new BoundingBox());
@@ -114,7 +107,7 @@ public class TestMaxJmeWrite extends SimpleGame{
         MaterialState green=display.getRenderer().getMaterialState();
         green.setEmissive(ColorRGBA.green);
         green.setEnabled(true);
-//        Yaxis.setRenderState(green);
+        Yaxis.setRenderState(green);
 
         Box Zaxis=new Box("axisZ",new Vector3f(0,0,5),.1f,.1f,5f);
         Zaxis.setSolidColor(ColorRGBA.blue);
@@ -123,23 +116,12 @@ public class TestMaxJmeWrite extends SimpleGame{
         MaterialState blue=display.getRenderer().getMaterialState();
         blue.setEmissive(ColorRGBA.blue);
         blue.setEnabled(true);
-//        Zaxis.setRenderState(blue);
+        Zaxis.setRenderState(blue);
 
         rootNode.attachChild(Xaxis);
-        rootNode.setTextureCombineMode(TextureState.COMBINE_CLOSEST);
-//        rootNode.attachChild(Yaxis);
-//        rootNode.attachChild(Zaxis);
-//      rootNode.setIsRoot(true);
+        rootNode.attachChild(Yaxis);
+        rootNode.attachChild(Zaxis);
 
-    }
-    int iii;
-    protected void simpleUpdate(){
-        if (iii==1000){
-            System.out.println(timer.getFrameRate());
-            iii=0;
-        } else{
-            iii++;
-        }
     }
 }
 
