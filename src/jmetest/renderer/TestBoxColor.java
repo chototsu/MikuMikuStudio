@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoxColor.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestBoxColor.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TestBoxColor extends SimpleGame {
     private TriMesh t;
@@ -184,15 +184,15 @@ public class TestBoxColor extends SimpleGame {
         as1.setDstFunction(AlphaState.DB_ONE);
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
-        scene = new Node();
-        root = new Node();
+        scene = new Node("3D Scene Node");
+        root = new Node("Root Scene Node");
         
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
         
         
         
-        t = new Box(min,max);
+        t = new Box("Box", min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         

@@ -142,7 +142,7 @@ public class TestKeyBinding extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Press 0,1, or L");
+        text = new Text("Text Label", "Press 0,1, or L");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
@@ -160,7 +160,7 @@ public class TestKeyBinding extends SimpleGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
-        scene = new Node();
+        scene = new Node("Scene graph node");
         scene.attachChild(text);
         cam.update();
 

@@ -49,7 +49,7 @@ import com.jme.scene.state.TextureState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.2 2004-02-09 11:55:25 greggpatton Exp $
+ * @version $Id: Mouse.java,v 1.3 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public abstract class Mouse extends Geometry {
     /**
@@ -67,9 +67,11 @@ public abstract class Mouse extends Geometry {
     
     /**
      * Constructor creates a new <code>Mouse</code> object.
-     *
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      */
-    public Mouse() {
+    public Mouse(String name) {
+    	super(name);
         setForceView(true);
     }
     

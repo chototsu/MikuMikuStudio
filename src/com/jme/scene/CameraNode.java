@@ -42,7 +42,7 @@ import com.jme.renderer.Camera;
  * column 1 is used for the camera up vector, column 2 is used for the 
  * camera direction vector.
  * @author Mark Powell
- * @version $Id: CameraNode.java,v 1.2 2004-02-19 03:51:03 mojomonkey Exp $
+ * @version $Id: CameraNode.java,v 1.3 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class CameraNode extends Node {
     private Camera camera;
@@ -50,10 +50,12 @@ public class CameraNode extends Node {
     /**
      * Constructor instantiates a new <code>CameraNode</code> object setting
      * the camera to use for the frame reference.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param camera the camera this node controls.
      */
-    public CameraNode(Camera camera) {
-        super();
+    public CameraNode(String name, Camera camera) {
+        super(name);
         this.camera = camera;
     }
     

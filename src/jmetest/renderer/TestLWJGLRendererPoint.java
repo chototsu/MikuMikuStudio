@@ -44,7 +44,7 @@ import com.jme.system.LWJGLDisplaySystem;
 /**
  * Test of the point renderer for the LWJGL renderer.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererPoint.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestLWJGLRendererPoint.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TestLWJGLRendererPoint extends SimpleGame {
 
@@ -129,12 +129,12 @@ public class TestLWJGLRendererPoint extends SimpleGame {
             color[i].a = 1.0f;
         }
 
-        p = new Point(vertex, null, color, null);
+        p = new Point("Point Group",vertex, null, color, null);
         p.setModelBound(new BoundingSphere());
         p.updateModelBound();
         System.out.println(p.getModelBound());
         
-        scene = new Node();
+        scene = new Node("3D Scene Node");
         scene.attachChild(p);
         cam.update();
         

@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBoundingBox.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestBoundingBox.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TestBoundingBox extends SimpleGame {
     private TriMesh t,t2;
@@ -174,7 +174,7 @@ public class TestBoundingBox extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Timer");
+        text = new Text("Text Label","Timer");
         text.setLocalTranslation(new Vector3f(1,60,0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
@@ -192,20 +192,20 @@ public class TestBoundingBox extends SimpleGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
-        scene = new Node();
-        root = new Node();
+        scene = new Node("3D Scene Node");
+        root = new Node("Root Node");
         root.attachChild(text);
         
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
         
         
-        t2 = new Box(min,max);
+        t2 = new Box("Box", min,max);
         t2.setModelBound(new BoundingBox());
         t2.updateModelBound();
         t2.setLocalTranslation(new Vector3f( 20,0,0));
         
-        t = new Pyramid(10,20);
+        t = new Pyramid("Pyramid", 10,20);
         t.setModelBound(new BoundingBox());
         t.updateModelBound();
         

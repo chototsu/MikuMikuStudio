@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * <code>Point</code> defines a collection of vertices that are rendered as
  * single points. 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Point.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class Point extends Geometry {
 
@@ -51,18 +51,21 @@ public class Point extends Geometry {
      * Constructor instantiates a new <code>Point</code> object with a given
      * set of data. Any data may be null, except the vertex array. If this
      * is null an exception is thrown.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param vertex the vertices or points.
      * @param normal the normals of the points.
      * @param color the color of the points.
      * @param texture the texture coordinates of the points.
      */
     public Point(
+    	String name,
         Vector3f[] vertex,
         Vector3f[] normal,
         ColorRGBA[] color,
         Vector2f[] texture) {
 
-        super(vertex, normal, color, texture);
+        super(name, vertex, normal, color, texture);
         LoggingSystem.getLogger().log(Level.INFO,"Point created.");
     }
 

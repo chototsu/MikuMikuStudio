@@ -54,7 +54,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene1</code>
  * @author Gregg Patton
- * @version $Id: TestScene1.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestScene1.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestScene1 extends TestAbstractScene implements Observer {
     private WidgetButton shuffleButton;
@@ -116,11 +116,11 @@ public class TestScene1 extends TestAbstractScene implements Observer {
             color[2].a = 1;
             int[] indices = { 0, 1, 2 };
 
-            TriMesh t = new TriMesh(verts, null, color, null, indices);
+            TriMesh t = new TriMesh("Triangle", verts, null, color, null, indices);
             t.setModelBound(new BoundingSphere());
             t.updateModelBound();
 
-            scene = new Node();
+            scene = new Node("Scene Node");
 
             scene.setWorldBound(new BoundingSphere());
 

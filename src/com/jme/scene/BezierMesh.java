@@ -41,26 +41,30 @@ import com.jme.system.JmeException;
  * curve the surface of the mesh will take. The patch also contains information
  * about it's detail level, which defines how smooth the mesh will be.
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.6 2004-01-14 22:31:54 mojomonkey Exp $
+ * @version $Id: BezierMesh.java,v 1.7 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class BezierMesh extends TriMesh {
     private BezierPatch patch;
 
     /**
      * Constructor creates a default <code>BezierMesh</code> object.
-     *
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      */
-    public BezierMesh() {
-
+    public BezierMesh(String name) {
+    	super(name);
     }
 
     /**
      * Constructor creates a new <code>BezierMesh</code> object with the
      * given <code>BezierPatch</code>. The mesh is then automatically 
      * tessellated.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param patch the <code>BezierPatch</code> used to define this mesh.
      */
-    public BezierMesh(BezierPatch patch) {
+    public BezierMesh(String name, BezierPatch patch) {
+    	super(name);
         this.patch = patch;
         tessellate();
     }

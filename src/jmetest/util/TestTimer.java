@@ -62,7 +62,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.1 2004-02-14 22:19:56 ericthered Exp $
+ * @version $Id: TestTimer.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TestTimer extends SimpleGame {
     private TriMesh t;
@@ -177,7 +177,7 @@ public class TestTimer extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Timer");
+        text = new Text("Text Label", "Timer");
         text.setLocalTranslation(new Vector3f(1,60,0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
@@ -197,14 +197,14 @@ public class TestTimer extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
         
-        scene = new Node();
-        root = new Node();
+        scene = new Node("Scene Node");
+        root = new Node("Root Scene Node");
         root.attachChild(text);
         
         Vector3f max = new Vector3f(5,5,5);
         Vector3f min = new Vector3f(-5,-5,-5);
         
-        t = new Pyramid(10,10);
+        t = new Pyramid("Pyramid", 10,10);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         

@@ -46,7 +46,7 @@ import com.jme.system.LWJGLDisplaySystem;
 /**
  * Tests the rendering of lines.
  * @author Mark Powell
- * @version $Id: TestLWJGLRendererLine.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestLWJGLRendererLine.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TestLWJGLRendererLine extends SimpleGame {
 
@@ -130,12 +130,12 @@ public class TestLWJGLRendererLine extends SimpleGame {
             color[i].a = 1.0f;
         }
 
-        l = new Line(vertex, null, color, null);
+        l = new Line("Line Group",vertex, null, color, null);
         l.setModelBound(new BoundingSphere());
         l.updateModelBound();
         System.out.println(l.getModelBound());
         
-        scene = new Node();
+        scene = new Node("3D Scene Node");
         scene.attachChild(l);
         cam.update();
         

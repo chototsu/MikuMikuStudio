@@ -48,7 +48,7 @@ import com.jme.renderer.RendererType;
 /**
  * <code>WidgetMouseTestControllerFirstPerson</code>
  * @author Gregg Patton
- * @version $Id: WidgetMouseTestControllerFirstPerson.java,v 1.3 2004-02-09 12:33:19 greggpatton Exp $
+ * @version $Id: WidgetMouseTestControllerFirstPerson.java,v 1.4 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class WidgetMouseTestControllerFirstPerson extends AbstractInputController {
 
@@ -89,7 +89,7 @@ public class WidgetMouseTestControllerFirstPerson extends AbstractInputControlle
      * @see com.jme.input.AbstractInputController#setMouse(com.jme.renderer.Camera)
      */
     protected void setMouse() {
-        RelativeMouse mouse = new RelativeMouse();
+        RelativeMouse mouse = new RelativeMouse("Mouse Input");
         mouse.setMouseInput(InputSystem.getMouseInput());
         setMouse(mouse);
 

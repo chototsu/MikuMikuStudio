@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestCameraNode.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TestCameraNode extends SimpleGame {
     private TriMesh t;
@@ -147,7 +147,7 @@ public class TestCameraNode extends SimpleGame {
         Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
-        camNode = new CameraNode(cam);
+        camNode = new CameraNode("Camera Node", cam);
         input = new NodeController(this, camNode, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
@@ -162,7 +162,7 @@ public class TestCameraNode extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Timer");
+        text = new Text("Text Label", "Timer");
         text.setLocalTranslation(new Vector3f(1,60,0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
@@ -181,7 +181,7 @@ public class TestCameraNode extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         as1.setEnabled(true);
         text.setRenderState(as1);
-        scene = new Node();
+        scene = new Node("3D Scene Node");
         scene.attachChild(text);
         
         Vector3f max = new Vector3f(5,5,5);
@@ -189,18 +189,17 @@ public class TestCameraNode extends SimpleGame {
         
         
         
-        t = new Box(min,max);
+        t = new Box("Box 1", min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
         t.setLocalTranslation(new Vector3f(0,0,0));
         
-        Box t2 = new Box(min.divide(4), max.divide(4));
+        Box t2 = new Box("Box 2", min.divide(4), max.divide(4));
         t2.setLocalTranslation(new Vector3f(-5,0,10));
         
-        scene = new Node();
         scene.attachChild(t);
-        root = new Node();
+        root = new Node("Root Node");
         root.attachChild(scene);
         
         ZBufferState buf = display.getRenderer().getZBufferState();

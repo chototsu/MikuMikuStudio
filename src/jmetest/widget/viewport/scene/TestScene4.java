@@ -54,7 +54,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene4</code>
  * @author Gregg Patton
- * @version $Id: TestScene4.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestScene4.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestScene4 extends TestAbstractScene {
 
@@ -78,7 +78,7 @@ public class TestScene4 extends TestAbstractScene {
 
             ZBufferState zstate = display.getRenderer().getZBufferState();
             zstate.setEnabled(true);
-            scene = new Node();
+            scene = new Node("Scene Node");
             scene.setRenderState(zstate);
             Model model = new MilkshapeASCIIModel("data/model/msascii/run.txt");
             model.getAnimationController().setFrequency(10.0f);

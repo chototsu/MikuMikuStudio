@@ -95,7 +95,7 @@ public class MousePick implements MouseInputAction {
                 colors[0] = new ColorRGBA(0,0,1,1);
                 colors[1] = new ColorRGBA(0,0,1,1);
             }
-            l = new Line(vertex, null, colors, null);
+            l = new Line("Line Group",vertex, null, colors, null);
             scene.attachChild(l);
                         scene.updateGeometricState(0.0f, true);
             results.clear();

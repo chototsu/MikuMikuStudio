@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  * 
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.6 2004-02-19 03:49:50 mojomonkey Exp $
+ * @version $Id: ASEModel.java,v 1.7 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class ASEModel extends Model {
 
@@ -108,20 +108,23 @@ public class ASEModel extends Model {
 	 * Constructor instantiates a new <code>ASEModel</code> object. 
 	 * No data is loaded at this time and a call to <code>load</code>
 	 * is required to initialize the model with data.
-	 *
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
 	 */
-	public ASEModel() {
-		super();
+	public ASEModel(String name) {
+		super(name);
 	}
 	
 	/**
 	 * Constructor instantiates a new <code>ASEModel</code> object. The
 	 * file provided is then read and the data loaded. Thefore, a call
 	 * to <code>load</code> is not required.
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
 	 * @param file the ase file to load.
 	 */
-	public ASEModel(String file) {
-		super();
+	public ASEModel(String name, String file) {
+		super(name);
 		load(file);
 	}
 	
@@ -211,7 +214,7 @@ public class ASEModel extends Model {
 	 */
 	private void parseFile() {
 		ASEMaterialInfo textureInfo = new ASEMaterialInfo();
-		ASEObject mesh = new ASEObject();
+		ASEObject mesh = new ASEObject("ASEMesh");
 
 		numOfObjects = getObjectCount();
 		numOfMaterials = getMaterialCount();
@@ -825,6 +828,10 @@ public class ASEModel extends Model {
 		public int materialID;
 		public Vector2f[] tempTexVerts; // The texture's UV coordinates
 		public Face[] faces; // The faces information of the object
+		
+		public ASEObject(String name) {
+			super(name);
+		}
 	};
 
 }

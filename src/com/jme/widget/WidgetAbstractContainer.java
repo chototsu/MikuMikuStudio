@@ -71,12 +71,12 @@ public abstract class WidgetAbstractContainer extends Node implements Widget {
         new WidgetInsets(DEFAULT_INSET_SIZE, DEFAULT_INSET_SIZE, DEFAULT_INSET_SIZE, DEFAULT_INSET_SIZE);
 
     public WidgetAbstractContainer() {
-        super();
+        super("");
         init();
     }
 
     public WidgetAbstractContainer(int width, int height) {
-        super();
+        super("");
         widgetImpl.setSize(width, height);
         init();
     }

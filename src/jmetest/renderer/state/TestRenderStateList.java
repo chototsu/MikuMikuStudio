@@ -139,18 +139,18 @@ public class TestRenderStateList extends SimpleGame {
         Vector3f min = new Vector3f(-5,-5,-5);
         Vector3f max = new Vector3f(5,5,5);        
 
-        t = new Box(min, max);
+        t = new Box("Box 1", min, max);
         t.setModelBound(new BoundingSphere());
         t.setLocalTranslation(new Vector3f(-15,0,-20));
         t.updateModelBound();
 
-        t2 = new Box(min, max);
+        t2 = new Box("Box 2", min, max);
         t2.setModelBound(new BoundingSphere());
         t2.setLocalTranslation(new Vector3f(0,0,-20));
         
         t2.updateModelBound();
         
-        t3 = new Box(min, max);
+        t3 = new Box("Box 3", min, max);
         t3.setModelBound(new BoundingSphere());
         t3.setLocalTranslation(new Vector3f(15,0,-20));
         
@@ -158,7 +158,7 @@ public class TestRenderStateList extends SimpleGame {
         
         cam.update();
 
-        scene = new Node();
+        scene = new Node("Scene Node");
         scene.attachChild(t);
         scene.attachChild(t2);
         scene.attachChild(t3);

@@ -139,11 +139,11 @@ public class TestRelativeMouse extends SimpleGame {
      */
     protected void initGame() {
         
-        mouse = new RelativeMouse();
+        mouse = new RelativeMouse("Mouse Input");
         
         mouse.setMouseInput(InputSystem.getMouseInput());
        
-        text = new Text("Testing Mouse");
+        text = new Text("Text Input", "Testing Mouse");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
@@ -162,7 +162,7 @@ public class TestRelativeMouse extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
         mouse.setRenderState(as1);
-        scene = new Node();
+        scene = new Node("Scene graph node");
         scene.attachChild(text);
         scene.attachChild(mouse);
         cam.update();

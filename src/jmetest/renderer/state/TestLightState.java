@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestLightState.java,v 1.2 2004-02-19 21:02:04 mojomonkey Exp $
+ * @version $Id: TestLightState.java,v 1.3 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TestLightState extends SimpleGame {
     private TriMesh t;
@@ -140,11 +140,11 @@ public class TestLightState extends SimpleGame {
         Vector3f max = new Vector3f(10,10,10);
         Vector3f min = new Vector3f(0,0,0);
         
-        t = new Box(min,max);
+        t = new Box("Box", min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
-        Pyramid t2 = new Pyramid(10,20);
+        Pyramid t2 = new Pyramid("Pyramid", 10,20);
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
         
@@ -152,7 +152,7 @@ public class TestLightState extends SimpleGame {
         
         t2.setLocalTranslation(new Vector3f(-20,0,0));
         
-        scene = new Node();
+        scene = new Node("Scene graph node");
         scene.attachChild(t);
         scene.attachChild(t2);
         

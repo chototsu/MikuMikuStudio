@@ -149,13 +149,13 @@ public class TestLWJGLRendererTriMesh extends SimpleGame {
         color[2].a = 1;
         int[] indices = { 0, 1, 2 };
 
-        t = new TriMesh(verts, null, color, null, indices);
+        t = new TriMesh("Triangle", verts, null, color, null, indices);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         System.out.println(t.getModelBound());
         cam.update();
         
-        scene = new Node();
+        scene = new Node("3D Scene Node");
         scene.attachChild(t);
         cam.update();
 

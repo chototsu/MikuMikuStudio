@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the 
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.5 2004-02-18 14:36:04 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.6 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -75,20 +75,23 @@ public class MilkshapeASCIIModel extends Model {
 	/**
 	 * Constructor creates a new <code>MilkshapeASCIIModel</code> object. 
 	 * No data is loaded during this construction.
-	 *
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
 	 */
-	public MilkshapeASCIIModel() {
-		super();
+	public MilkshapeASCIIModel(String name) {
+		super(name);
 	}
 
 	/**
 	 * Constructor creates a new <code>MilkshapeASCIIModel</code> loading
 	 * the provided file.
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
 	 * @param filename the name of the file that contains the milkshape 
 	 * data.
 	 */
-	public MilkshapeASCIIModel(String filename) {
-		super();
+	public MilkshapeASCIIModel(String name, String filename) {
+		super(name);
 		load(filename);
 	}
 	
@@ -188,10 +191,8 @@ public class MilkshapeASCIIModel extends Model {
 	private void parseMeshes(BufferedReader reader) throws Exception {
 		//load in each mesh individually.
 		for (int i = 0; i < meshes.length; i++) {
-			JointMesh mesh = new JointMesh();
 			String line = getNextLine(reader);
-			
-			mesh.setName(line.substring(1, line.lastIndexOf("\"")));
+			JointMesh mesh = new JointMesh(line.substring(1, line.lastIndexOf("\"")));
 			
 			mesh.setMaterialsIndex(
 				Integer.parseInt(line.substring(line.lastIndexOf(" ") + 1)));

@@ -122,7 +122,7 @@ public class TestWidgetAppTemplate extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        scene = new Node();
+        scene = new Node("Scene Node");
 
         frame = new TestFrame(input);
 

@@ -43,9 +43,17 @@ import com.jme.scene.Node;
  * to compose a model. <code>Model</code> is abstract and the type of 
  * scene a load will create is dependant on the type of model. 
  * @author Mark Powell
- * @version $Id: Model.java,v 1.3 2004-02-15 20:22:39 mojomonkey Exp $
+ * @version $Id: Model.java,v 1.4 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public abstract class Model extends Node{
+	/**
+	 * Constructor creates a new <code>Model</code> object.
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
+	 */
+	public Model(String name) {
+		super(name);
+	}
 	/**
 	 * <code>load</code> takes a filename that corresponds to the 
 	 * location of the model. This data is than parsed and used to

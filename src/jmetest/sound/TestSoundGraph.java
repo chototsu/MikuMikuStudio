@@ -129,10 +129,10 @@ public class TestSoundGraph extends SimpleGame {
 	 * @see com.jme.app.SimpleGame#initGame()
 	 */
 	protected void initGame() {
-		scene= new Node();
+		scene= new Node("3D Scene Node");
 		Vector3f max= new Vector3f(5, 5, 5);
 		Vector3f min= new Vector3f(-5, -5, -5);
-		box= new Box(min, max);
+		box= new Box("Box", min, max);
 		box.setModelBound(new BoundingSphere());
 		box.updateModelBound();
 		box.setLocalTranslation(new Vector3f(0, 0, -100));

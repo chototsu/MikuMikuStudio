@@ -44,25 +44,28 @@ import com.jme.math.Vector3f;
  * [0,1] where 0 is the first control point and 1 is the second control
  * point.
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.4 2004-01-07 21:00:40 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.5 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class BezierCurve extends Curve {
 
     /**
      * Constructor instantiates a new <code>BezierCurve</code> object.
-     *
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      */
-    public BezierCurve() {
-        super();
+    public BezierCurve(String name) {
+        super(name);
     }
 
     /**
      * Constructor instantiates a new <code>BezierCurve</code> object. 
      * The control points that define the curve are supplied.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param controlPoints the points that define the curve.
      */
-    public BezierCurve(Vector3f[] controlPoints) {
-        super(controlPoints);
+    public BezierCurve(String name, Vector3f[] controlPoints) {
+        super(name, controlPoints);
     }
 
     /**

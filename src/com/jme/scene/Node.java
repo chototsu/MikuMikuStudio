@@ -53,7 +53,7 @@ import com.jme.util.LoggingSystem;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.9 2004-02-20 16:29:18 mojomonkey Exp $
+ * @version $Id: Node.java,v 1.10 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
@@ -62,10 +62,11 @@ public class Node extends Spatial implements Serializable {
     /**
      * Constructor instantiates a new <code>Node</code> with a default empty
      * list for containing children.
-     *
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      */
-    public Node() {
-        super();
+    public Node(String name) {
+        super(name);
         children = new ArrayList();
         LoggingSystem.getLogger().log(Level.INFO, "Node created.");
     }

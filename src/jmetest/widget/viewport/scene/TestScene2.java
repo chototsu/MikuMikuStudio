@@ -74,7 +74,7 @@ import com.jme.widget.viewport.WidgetViewportCameraController;
 /**
  * <code>TestScene2</code>
  * @author Gregg Patton
- * @version $Id: TestScene2.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestScene2.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestScene2 extends TestAbstractScene implements Observer {
 
@@ -140,7 +140,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
             points[2] = new Vector3f(2, -3, -2);
             points[3] = new Vector3f(4, 0, 0);
 
-            curve = new BezierCurve(points);
+            curve = new BezierCurve("Bezier Curve", points);
             ColorRGBA[] colors = new ColorRGBA[4];
             colors[0] = new ColorRGBA(0, 1, 0, 1);
             colors[1] = new ColorRGBA(1, 0, 0, 1);
@@ -155,31 +155,31 @@ public class TestScene2 extends TestAbstractScene implements Observer {
             buf.setEnabled(true);
             buf.setFunction(ZBufferState.CF_LEQUAL);
 
-            t = new Box(min, max);
+            t = new Box("Box 1", min, max);
             t.setModelBound(new BoundingSphere());
             t.updateModelBound();
 
             t.setLocalTranslation(points[0]);
 
-            t2 = new Box(min, max);
+            t2 = new Box("Box 2", min, max);
             t2.setModelBound(new BoundingSphere());
             t2.updateModelBound();
 
             t2.setLocalTranslation(points[1]);
 
-            t3 = new Box(min, max);
+            t3 = new Box("Box 3", min, max);
             t3.setModelBound(new BoundingSphere());
             t3.updateModelBound();
 
             t3.setLocalTranslation(points[2]);
 
-            t4 = new Box(min, max);
+            t4 = new Box("Box 4", min, max);
             t4.setModelBound(new BoundingSphere());
             t4.updateModelBound();
 
             t4.setLocalTranslation(points[3]);
 
-            box = new Box(min.mult(5), max.mult(5));
+            box = new Box("Box 5", min.mult(5), max.mult(5));
             box.setModelBound(new BoundingSphere());
             box.updateModelBound();
 
@@ -235,7 +235,7 @@ public class TestScene2 extends TestAbstractScene implements Observer {
             spotlight2.setEnabled(true);
             dr.setEnabled(true);
 
-            scene = new Node();
+            scene = new Node("Scene Node");
 
             scene.setRenderState(lightState);
             scene.setRenderState(buf);

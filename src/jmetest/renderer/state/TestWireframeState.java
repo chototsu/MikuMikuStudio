@@ -155,7 +155,7 @@ public class TestWireframeState extends SimpleGame {
         color[2].a = 1;
         int[] indices = { 0, 1, 2 };
 
-        t = new TriMesh(verts, null, color, null, indices);
+        t = new TriMesh("Triangle", verts, null, color, null, indices);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
@@ -192,13 +192,13 @@ public class TestWireframeState extends SimpleGame {
         color2[2].a = 1;
         int[] indices2 = { 0, 1, 2 };
 
-        t2 = new TriMesh(verts2, null, color2, null, indices2);
+        t2 = new TriMesh("Triangle 2", verts2, null, color2, null, indices2);
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
         System.out.println(t.getModelBound());
         cam.update();
 
-        scene = new Node();
+        scene = new Node("Scene Node");
         scene.attachChild(t);
         scene.attachChild(t2);
         scene.setLocalTranslation(new Vector3f(0,-25,0));

@@ -56,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * mesh.
  * 
  * @author Mark Powell
- * @version $Id: Md2Model.java,v 1.8 2004-02-16 06:25:42 mojomonkey Exp $
+ * @version $Id: Md2Model.java,v 1.9 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class Md2Model extends Model {
 	private BinaryFileReader bis = null;
@@ -76,20 +76,23 @@ public class Md2Model extends Model {
 	 * Constructor creates a new <code>Md2Model</code> object. A
 	 * later call to <code>load</code> is required to initialize
 	 * the model with MD2 data.
-	 *
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
 	 */
-	public Md2Model() {
-		super();
+	public Md2Model(String name) {
+		super(name);
 	}
 	
 	/**
 	 * Constructor creates a new <code>Md2Mode</code> object. The
 	 * filename corresponding to the MD2 model is provided, loading
 	 * the data of the model.
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
 	 * @param filename the filename of the model to load.
 	 */
-	public Md2Model(String filename) {
-		super();
+	public Md2Model(String name, String filename) {
+		super(name);
 		load(filename);
 	}
 	
@@ -241,7 +244,7 @@ public class Md2Model extends Model {
 			int numOfVerts = header.numVertices;
 			int numTexVertex = header.numTexCoords;
 			int numOfFaces = header.numTriangles;
-			triMesh[i] = new TriMesh();
+			triMesh[i] = new TriMesh(frames[i].name);
 			Vector3f[] verts = new Vector3f[numOfVerts];
 			Vector2f[] texVerts = new Vector2f[numTexVertex];
 			
@@ -306,7 +309,6 @@ public class Md2Model extends Model {
 
 			triMesh[i].setVertices(verts);
 			triMesh[i].setNormals(computeNormals(faces, verts));
-			triMesh[i].setName(frames[i].name);
 			
 			if (i == 0) {
 				triMesh[i].setTextures(texCoords2);

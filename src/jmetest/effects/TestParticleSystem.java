@@ -140,8 +140,7 @@ public class TestParticleSystem extends SimpleGame {
 	}
 
 	protected void initGame() {
-		root = new Node();
-
+		root = new Node("Scene graph root");
 		AlphaState as1 = display.getRenderer().getAlphaState();
 		as1.setBlendEnabled(true);
 		as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
@@ -168,7 +167,7 @@ public class TestParticleSystem extends SimpleGame {
 						true));
 		font.setEnabled(true);
 
-		ps = new ParticleSystem(100);
+		ps = new ParticleSystem("Particle System",100);
 		ps.setStartColor(
 			new ColorRGBA(1f, 1f, 0f, 1f));
 		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0f));
@@ -185,12 +184,10 @@ public class TestParticleSystem extends SimpleGame {
 		ps.addController(pc);
 		ps.setRenderState(as1);
 		ps.setRenderState(ts);
-		ps.setName("Particle System");
 		
-		fps = new Text("");
+		fps = new Text("FPS label","");
 		fps.setRenderState(as1);
 		fps.setRenderState(font);
-		fps.setName("FPS Counter");
 		
 		root.attachChild(ps);
 		root.attachChild(fps);

@@ -47,7 +47,7 @@ import com.jme.scene.state.LightState;
  * is a Directional light rotation determines it's direction. It has no
  * concept of location.
  * @author Mark Powell
- * @version $Id: LightNode.java,v 1.2 2004-01-15 17:45:42 mojomonkey Exp $
+ * @version $Id: LightNode.java,v 1.3 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class LightNode extends Node {
     private Light light;
@@ -56,10 +56,12 @@ public class LightNode extends Node {
     /**
      * Constructor creates a new <code>LightState</code> object. The light
      * state the node controls is required at construction time.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param lightState the lightstate that this node will control.
      */
-    public LightNode(LightState lightState) {
-        super();
+    public LightNode(String name, LightState lightState) {
+        super(name);
         this.lightState = lightState;
     }
 

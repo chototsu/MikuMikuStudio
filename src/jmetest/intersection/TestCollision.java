@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestCollision</code>
  * @author Mark Powell
- * @version $Id: TestCollision.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestCollision.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestCollision extends SimpleGame {
 
@@ -208,38 +208,40 @@ public class TestCollision extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Collision: No");
+        text = new Text("Text Label","Collision: No");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
         textImage.setTexture(
             TextureManager.loadTexture(
-                TestCollision.class.getClassLoader().getResource("jmetest/font/font.png"),
+                TestCollision.class.getClassLoader().getResource("jmetest/data/Font/font.png"),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR,
                 true));
         text.setRenderState(textImage);
+        
         AlphaState as1 = display.getRenderer().getAlphaState();
         as1.setBlendEnabled(true);
         as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
         as1.setDstFunction(AlphaState.DB_ONE);
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
+        as1.setEnabled(true);
         text.setRenderState(as1);
-        scene = new Node();
-        root = new Node();
+        scene = new Node("3D Scene Root");
+        root = new Node("Scene Root");
         root.attachChild(text);
 
         Vector3f max = new Vector3f(5, 5, 5);
         Vector3f min = new Vector3f(-5, -5, -5);
 
-        t = new Box(min, max);
+        t = new Box("Box 1", min, max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
 
         t.setLocalTranslation(new Vector3f(0, 30, 0));
         
-        t2 = new Box(min, max);
+        t2 = new Box("Box 2", min, max);
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
 

@@ -57,7 +57,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone2.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestMilestone2.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestMilestone2 extends SimpleGame {
     private TriMesh t;
@@ -153,7 +153,7 @@ public class TestMilestone2 extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        Text text = new Text("Random boxes. Milestone 2");
+        Text text = new Text("Text Label","Random boxes. Milestone 2");
         text.setLocalTranslation(new Vector3f(1,60,0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
@@ -171,7 +171,7 @@ public class TestMilestone2 extends SimpleGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
-        scene = new Node();
+        scene = new Node("3D Scene root");
         scene.attachChild(text);
         
         Vector3f max = new Vector3f(10,10,10);
@@ -179,15 +179,15 @@ public class TestMilestone2 extends SimpleGame {
         
         
         
-        t = new Box(min,max);
+        t = new Box("Main box", min,max);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         
         t.setLocalTranslation(new Vector3f(0,0,-10));
         
-        scene = new Node();
+        scene = new Node("3D Scene Node");
         scene.attachChild(t);
-        root = new Node();
+        root = new Node("Root Scene Node");
         root.attachChild(scene);
         
         ZBufferState buf = display.getRenderer().getZBufferState();

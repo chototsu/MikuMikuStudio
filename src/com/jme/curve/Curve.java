@@ -47,7 +47,7 @@ import com.jme.system.JmeException;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.6 2004-01-07 03:52:53 mojomonkey Exp $
+ * @version $Id: Curve.java,v 1.7 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public abstract class Curve extends Geometry {
 
@@ -56,9 +56,11 @@ public abstract class Curve extends Geometry {
     /**
      * Constructor creates a default <code>Curve</code> object with a
      * zero size array for the points.
-     *
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      */
-    public Curve() {
+    public Curve(String name) {
+    	super(name);
         this.vertex = new Vector3f[0];
         steps = 25;
     }
@@ -67,9 +69,12 @@ public abstract class Curve extends Geometry {
      * Constructor creates a <code>Curve</code> object. The control
      * point list is set during creation. If the control point list is
      * null or has fewer than 2 points, an exception is thrown.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param controlPoints the points that define the curve.
      */
-    public Curve(Vector3f[] controlPoints) {
+    public Curve(String name, Vector3f[] controlPoints) {
+    	super(name);
         if (null == controlPoints) {
             throw new JmeException("Control Points may not be null.");
         }

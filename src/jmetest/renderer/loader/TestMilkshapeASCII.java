@@ -132,7 +132,7 @@ public class TestMilkshapeASCII extends SimpleGame {
     protected void initGame() {
     	ZBufferState zstate = display.getRenderer().getZBufferState();
     	zstate.setEnabled(true);
-    	scene = new Node();
+    	scene = new Node("Milkshape Model");
     	scene.setRenderState(zstate);
     	model = new MilkshapeASCIIModel("data/model/msascii/run.txt");
     	model.getAnimationController().setFrequency(10.0f);

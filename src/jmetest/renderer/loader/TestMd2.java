@@ -30,8 +30,6 @@
  */
 package jmetest.renderer.loader;
 
-import javax.swing.JOptionPane;
-
 import com.jme.animation.VertexKeyframeController;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
@@ -61,7 +59,7 @@ import com.jme.util.Timer;
  * <code>TestBackwardAction</code>
  * 
  * @author Mark Powell
- * @version $Id: TestMd2.java,v 1.2 2004-02-16 04:39:56 ericthered Exp $
+ * @version $Id: TestMd2.java,v 1.3 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestMd2 extends SimpleGame {
 	LightState state;
@@ -166,7 +164,7 @@ public class TestMd2 extends SimpleGame {
 	 * @see com.jme.app.AbstractGame#initGame()
 	 */
 	protected void initGame() {  
-		model = new Md2Model();
+		model = new Md2Model("Dr Freak");
 		model.load(TestMd2.class.getClassLoader().getResource("jmetest/"+FILE_NAME));
 		
 		ts = display.getRenderer().getTextureState();

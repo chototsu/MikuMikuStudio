@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * rendering information such as a collection of states and the data for a 
  * model. Subclasses define what the model data is.
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.8 2004-02-20 16:28:29 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.9 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class Geometry extends Spatial implements Serializable {
     protected BoundingVolume bound;
@@ -70,9 +70,13 @@ public class Geometry extends Spatial implements Serializable {
      * Constructor instantiates a new <code>Geometry</code> object. This
      * is the default object which has an empty vertex array. All other
      * data is null.
+     * 
+      * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      *
      */
-    public Geometry() {
+    public Geometry(String name) {
+    	super(name);
         vertex = new Vector3f[0];
     }
 
@@ -81,18 +85,21 @@ public class Geometry extends Spatial implements Serializable {
      * instantiation the geometry is set including vertex, normal, color and
      * texture information. Any part may be null except for the vertex 
      * information. If this is null, an exception will be thrown.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param vertex the points that make up the geometry.
      * @param normal the normals of the geometry.
      * @param color the color of each point of the geometry.
      * @param texture the texture coordinates of the geometry.
      */
     public Geometry(
+    	String name,
         Vector3f[] vertex,
         Vector3f[] normal,
         ColorRGBA[] color,
         Vector2f[] texture) {
 
-        super();
+        super(name);
 
         if (vertex == null) {
             LoggingSystem.getLogger().log(Level.WARNING, "Geometry must" +                " include vertex information.");

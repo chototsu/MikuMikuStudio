@@ -46,7 +46,7 @@ package com.jme.input;
  * correspond to the width and height of the window).
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.2 2004-02-09 11:51:28 greggpatton Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.3 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class AbsoluteMouse extends Mouse {
     //position
@@ -55,11 +55,13 @@ public class AbsoluteMouse extends Mouse {
     /**
      * Constructor instantiates a new <code>AbsoluteMouse</code> object. The
      * limits of the mouse movements are provided.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param width the width of the mouse's limit.
      * @param height the height of the mouse's limit.
      */
-    public AbsoluteMouse(int width, int height) {
-        super();
+    public AbsoluteMouse(String name, int width, int height) {
+        super(name);
         this.width = width;
         this.height = height;
     }

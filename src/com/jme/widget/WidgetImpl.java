@@ -95,6 +95,7 @@ public class WidgetImpl extends Spatial implements Widget {
     private Widget owner;
 
     public WidgetImpl() {
+    	super("");
         init();
     }
 

@@ -170,7 +170,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        scene = new Node();
+        scene = new Node("Scene Node");
 
         initTriMesh();
 
@@ -222,7 +222,7 @@ public class TestWidgetApp2 extends SimpleGame implements Observer {
         color[2].a = 1;
         int[] indices = { 0, 1, 2 };
 
-        TriMesh t = new TriMesh(verts, null, color, null, indices);
+        TriMesh t = new TriMesh("Triangle", verts, null, color, null, indices);
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
         System.out.println(t.getModelBound());

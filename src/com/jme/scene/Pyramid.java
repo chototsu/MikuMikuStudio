@@ -42,7 +42,7 @@ import com.jme.renderer.ColorRGBA;
  * with the peak being on the positive y axis and the base being in the x-z
  * plane.
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.3 2003-12-11 21:04:56 mojomonkey Exp $
+ * @version $Id: Pyramid.java,v 1.4 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class Pyramid extends TriMesh {
     private float height;
@@ -51,10 +51,13 @@ public class Pyramid extends TriMesh {
     /**
      * Constructor instantiates a new <code>Pyramid</code> object. The base
      * width and the height are provided.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param width the base width of the pyramid.
      * @param height the height of the pyramid from the base to the peak.
      */
-    public Pyramid(float width, float height) {
+    public Pyramid(String name, float width, float height) {
+    	super(name);
         this.width = width;
         this.height = height;
         

@@ -58,10 +58,12 @@ public class BoxGenerator implements Runnable {
         while(true) {
             try {
                 Thread.sleep(3000);
-                Spatial s = new Box(min, max);
+                
                 float x = (float)Math.random() * 10;
                 float y = (float)Math.random() * 10;
                 float z = (float)Math.random() * 10;
+                String name = x + "," + y + "," + z;
+                Spatial s = new Box(name, min, max);
                 System.out.println("creating box at: " + x + " " + y + " " + z);
                 
                 s.setLocalTranslation(new Vector3f(x,y,z));

@@ -148,7 +148,7 @@ public class TestRotateRightAction extends SimpleGame {
             color[i].a = 1.0f;
         }
 
-        l = new Line(vertex, null, color, null);
+        l = new Line("Line Group", vertex, null, color, null);
         l.setLocalTranslation(new Vector3f(-200.0f, -25, -25));
         l.setModelBound(new BoundingSphere());
         l.updateModelBound();
@@ -168,11 +168,11 @@ public class TestRotateRightAction extends SimpleGame {
             color2[i].a = 1.0f;
         }
 
-        p = new Point(vertex2, null, color2, null);
+        p = new Point("Point Group", vertex2, null, color2, null);
         p.setLocalTranslation(new Vector3f(0.0f, 25, 0));
         p.setModelBound(new BoundingSphere());
         p.updateModelBound();
-        Node pointNode = new Node();
+        Node pointNode = new Node("Point Node");
         pointNode.attachChild(p);
 
         Vector3f[] verts = new Vector3f[3];
@@ -208,7 +208,7 @@ public class TestRotateRightAction extends SimpleGame {
         color3[2].a = 1;
         int[] indices = { 0, 1, 2 };
 
-        t = new TriMesh(verts, null, color3, null, indices);
+        t = new TriMesh("Triangle 1", verts, null, color3, null, indices);
         t.setLocalTranslation(new Vector3f(-150, 0, 0));
         t.setModelBound(new BoundingSphere());
         t.updateModelBound();
@@ -251,12 +251,12 @@ public class TestRotateRightAction extends SimpleGame {
         color4[2].a = 1;
         int[] indices2 = { 0, 1, 2 };
 
-        t2 = new TriMesh(verts2, null, color4, null, indices2);
+        t2 = new TriMesh("Triangle 2", verts2, null, color4, null, indices2);
         t2.setLocalTranslation(new Vector3f(150, 0, 0));
         t2.setModelBound(new BoundingSphere());
         t2.updateModelBound();
 
-        scene = new Node();
+        scene = new Node("Scene graph Node");
         scene.attachChild(l);
         scene.attachChild(pointNode);
         scene.attachChild(t2);

@@ -44,7 +44,7 @@ import com.jme.scene.TriMesh;
  * maintains a list of the original mesh vertices while the altered vertices
  * are used to render the mesh to the graphics context.
  * @author Mark Powell
- * @version $Id: JointMesh.java,v 1.1 2004-02-01 07:51:39 mojomonkey Exp $
+ * @version $Id: JointMesh.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class JointMesh extends TriMesh {
 	//used to define which material and texture to set.
@@ -56,25 +56,29 @@ public class JointMesh extends TriMesh {
 
 	/**
 	 * Constructor creates a default <code>JointMesh</code>. 
-	 *
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
 	 */
-	public JointMesh() {
-
+	public JointMesh(String name) {
+		super(name);
 	}
 
 	/**
 	 * Constructor creates a <code>JointMesh</code> with the provided
 	 * parameters set as it's attributes.
+	 * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
 	 * @param materialsIndex the index into the material used.
 	 * @param originalVertices the original vertices that define the 
 	 * 		mesh.
 	 * @param jointIndices the indices of the joints that alter the mesh.
 	 */
 	public JointMesh(
+		String name,
 		int materialsIndex,
 		Vector3f[] originalVertices,
 		int[] jointIndices) {
-
+		super(name);
 		this.materialsIndex = materialsIndex;
 		this.originalVertices = originalVertices;
 		this.jointIndices = jointIndices;

@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * renderer the order in which to draw the points, creating triangles on
  * every three points. 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.3 2003-10-27 21:31:33 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.4 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
     private int[] indices;
@@ -59,9 +59,11 @@ public class TriMesh extends Geometry implements Serializable {
     
     /**
      * Constructor instantiates a new <code>TriMesh</code> object.
-     *
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      */
-    public TriMesh() {
+    public TriMesh(String name) {
+    	super(name);
         
     }
 
@@ -69,6 +71,8 @@ public class TriMesh extends Geometry implements Serializable {
      * Constructor instantiates a new <code>TriMesh</code> object. Provided
      * are the attributes that make up the mesh all attributes may be null,
      * except for vertices and indices.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param vertices the vertices of the geometry.
      * @param normal the normals of the geometry.
      * @param color the colors of the geometry.
@@ -76,13 +80,14 @@ public class TriMesh extends Geometry implements Serializable {
      * @param indices the indices of the vertex array.
      */
     public TriMesh(
+    	String name,
         Vector3f[] vertices,
         Vector3f[] normal,
         ColorRGBA[] color,
         Vector2f[] texture,
         int[] indices) {
 
-        super(vertices, normal, color, texture);
+        super(name, vertices, normal, color, texture);
 
         if(null == indices) {
             LoggingSystem.getLogger().log(Level.WARNING, "Indices may not be" +                " null.");

@@ -125,7 +125,7 @@ public class TestAbsoluteMouse extends SimpleGame {
      */
     protected void initGame() {
         
-        mouse = new AbsoluteMouse(display.getWidth(), display.getHeight());
+        mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());
         TextureState cursor = display.getRenderer().getTextureState();
         cursor.setEnabled(true);
         cursor.setTexture(
@@ -136,7 +136,7 @@ public class TestAbsoluteMouse extends SimpleGame {
         mouse.setRenderState(cursor);
         mouse.setMouseInput(InputSystem.getMouseInput());
        
-        text = new Text("Testing Mouse");
+        text = new Text("Text Label","Testing Mouse");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
@@ -155,7 +155,7 @@ public class TestAbsoluteMouse extends SimpleGame {
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
         mouse.setRenderState(as1);
-        scene = new Node();
+        scene = new Node("Scene node");
         scene.attachChild(text);
         scene.attachChild(mouse);
         cam.update();

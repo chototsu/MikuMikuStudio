@@ -94,7 +94,7 @@ public class TestParticleSystem2 extends SimpleGame {
 		CollisionDetection.hasCollision(ps, root, cs);
 
 		if (cs.getNumber() > 0) {
-			col.print("Collided:  YES");
+			col.print("Collided:  YES " + cs.getNumber());
 		} else if (cs.getNumber() <= 0) {
 			col.print("Collided:  NO");
 		}
@@ -137,14 +137,15 @@ public class TestParticleSystem2 extends SimpleGame {
 
 		display.getRenderer().setCamera(cam);
 
-		camNode = new CameraNode(cam);
+		camNode = new CameraNode("Camera node", cam);
 
 		timer = Timer.getTimer(properties.getRenderer());
 		input = new NodeController(this, camNode, properties.getRenderer());
 	}
 
 	protected void initGame() {
-		root = scene = new Node();
+		root = new Node("Scene graph Root");
+		scene = new Node("3D Scene");
 		
 		FogState fog = display.getRenderer().getFogState();
 		fog.setColor(new ColorRGBA(0.3f, 0.3f, 0.3f, 0.5f));
@@ -196,7 +197,7 @@ public class TestParticleSystem2 extends SimpleGame {
 				true));
 		mojo.setEnabled(true);
 
-		ps = new ParticleSystem(1000);
+		ps = new ParticleSystem("Particle System",1000);
 		ps.setStartColor(new ColorRGBA(0f, 1f, 0f, 0.9f));
 		ps.setEndColor(new ColorRGBA(0f, 1f, 0f, 0.0f));
 		ps.setStartSize(0.2f);
@@ -217,26 +218,22 @@ public class TestParticleSystem2 extends SimpleGame {
 		ps.addController(pc);
 		ps.setRenderState(as1);
 		ps.setRenderState(ts);
-		ps.setName("Particle System");
-
-		fps = new Text("");
+		
+		fps = new Text("FPS counter","");
 		fps.setRenderState(as1);
 		fps.setRenderState(font);
-		fps.setName("FPS Counter");
-
-		col = new Text("");
+		
+		col = new Text("Collisions","");
 		col.setLocalTranslation(new Vector3f(0, 20, 0));
 		col.setRenderState(as1);
 		col.setRenderState(font);
-		col.setName("Collisions");
-
+		
 		Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);
 		Vector3f min = new Vector3f(-0.1f, -0.1f, -0.1f);
-		box = new Box(min.mult(10), max.mult(10));
+		box = new Box("Box",min.mult(10), max.mult(10));
 		box.setLocalTranslation(new Vector3f(-0.5f, 0, 0));
 		box.setRenderState(mojo);
-		box.setName("Box");
-
+		
 		camNode.attachChild(ps);
 		camNode.setLocalTranslation(new Vector3f(0, 0, -25));
 		

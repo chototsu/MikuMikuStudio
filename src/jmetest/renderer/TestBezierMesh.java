@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.2 2004-02-19 03:48:44 mojomonkey Exp $
+ * @version $Id: TestBezierMesh.java,v 1.3 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class TestBezierMesh extends SimpleGame {
     private TriMesh t;
@@ -179,10 +179,8 @@ public class TestBezierMesh extends SimpleGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
 
-        scene = new Node();
-
-        scene = new Node();
-        root = new Node();
+        scene = new Node("3D Scene Node");
+        root = new Node("Scene Root Node");
         root.attachChild(scene);
 
         ZBufferState buf = display.getRenderer().getZBufferState();
@@ -211,7 +209,7 @@ public class TestBezierMesh extends SimpleGame {
         bp.setAnchor(3, 3, new Vector3f(0.75f, 0.75f, -0.5f));
         bp.setDetailLevel(100);
 
-        BezierMesh bez = new BezierMesh();
+        BezierMesh bez = new BezierMesh("Bezier Mesh");
         bez.setPatch(bp);
         bez.setWorldBound(new BoundingSphere());
         bez.setForceView(true);
@@ -234,13 +232,13 @@ public class TestBezierMesh extends SimpleGame {
 
         lightstate = display.getRenderer().getLightState();
         lightstate.setEnabled(true);
-        lightNode = new LightNode(lightstate);
+        lightNode = new LightNode("Light Node",lightstate);
         lightNode.setLight(pl);
         lightNode.setTarget(bez);
         
         Vector3f min = new Vector3f(-0.15f, -0.15f, -0.15f);
         Vector3f max = new Vector3f(0.15f,0.15f,0.15f);
-        Box lightBox = new Box(min,max);
+        Box lightBox = new Box("box", min,max);
         
         
         lightNode.attachChild(lightBox);

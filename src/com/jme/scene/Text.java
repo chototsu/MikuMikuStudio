@@ -39,7 +39,7 @@ import com.jme.renderer.Renderer;
  * 
  * <code>Text</code>
  * @author Mark Powell
- * @version $Id: Text.java,v 1.2 2003-12-01 13:18:58 mojomonkey Exp $
+ * @version $Id: Text.java,v 1.3 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class Text extends Geometry {
     private StringBuffer text;
@@ -50,11 +50,12 @@ public class Text extends Geometry {
      * image types. 
      * 
      * @see jme.texture.TextureManager
-     * 
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param texture the path to the image that defines the fonts.
      */
-    public Text(String text) {
-        
+    public Text(String name,String text) {
+        super(name);
         setForceView(true);
         this.text = new StringBuffer(text);
     }

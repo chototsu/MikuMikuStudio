@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestKeyInput.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestKeyInput extends SimpleGame {
     private Text text;
@@ -130,7 +130,7 @@ public class TestKeyInput extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Press 0 and/or 1");
+        text = new Text("Text Label", "Press 0 and/or 1");
         text.setLocalTranslation(new Vector3f(1, 60, 0));
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
@@ -148,7 +148,7 @@ public class TestKeyInput extends SimpleGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
-        scene = new Node();
+        scene = new Node("Scene graph node");
         scene.attachChild(text);
         cam.update();
 

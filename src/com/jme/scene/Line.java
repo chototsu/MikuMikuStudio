@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * is the first point of the next line. Therefore, for N points there are
  * N-1 lines.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.1 2003-10-02 15:01:17 mojomonkey Exp $
+ * @version $Id: Line.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class Line extends Geometry {
     
@@ -53,17 +53,20 @@ public class Line extends Geometry {
      * Constructor instantiates a new <code>Line</code> object with a given
      * set of data. Any data can be null except for the vertex list. If 
      * vertices are null an exception will be thrown.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param vertex the vertices that make up the lines.
      * @param normal the normals of the lines.
      * @param color the color of each point of the lines.
      * @param texture the texture coordinates of the lines.
      */
     public Line(
+    	String name,
         Vector3f[] vertex,
         Vector3f[] normal,
         ColorRGBA[] color,
         Vector2f[] texture) {
-        super(vertex, normal, color, texture);
+        super(name, vertex, normal, color, texture);
         LoggingSystem.getLogger().log(Level.INFO, "Line created.");
     }
 

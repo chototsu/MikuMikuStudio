@@ -58,7 +58,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestPick.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
     private TriMesh t;
@@ -172,7 +172,7 @@ public class TestPick extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Hits: 0 Shots: 0");
+        text = new Text("Test Label","Hits: 0 Shots: 0");
         text.setLocalTranslation(new Vector3f(1,60,0));
         TextureState textImage = display.getRenderer().getTextureState();
         textImage.setEnabled(true);
@@ -190,8 +190,8 @@ public class TestPick extends SimpleGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
-        scene = new Node();
-        root = new Node();
+        scene = new Node("3D scene node");
+        root = new Node("Scene Root");
         root.attachChild(text);
         
         Vector3f max = new Vector3f(5,5,5);
@@ -199,7 +199,7 @@ public class TestPick extends SimpleGame {
         
         
         
-        t = new Box(min,max);
+        t = new Box("Target Box",min,max);
         t.setModelBound(new BoundingBox());
         t.updateModelBound();
         

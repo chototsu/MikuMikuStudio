@@ -51,7 +51,7 @@ import com.jme.scene.state.RenderState;
  * <code>ParticleSystem</code>
  * 
  * @author Ahmed
- * @version $Id: ParticleSystem.java,v 1.7 2004-02-17 13:32:05 darkprophet Exp $
+ * @version $Id: ParticleSystem.java,v 1.8 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class ParticleSystem extends Node {
 
@@ -68,8 +68,8 @@ public class ParticleSystem extends Node {
 
 	private boolean alwaysRotate;
 
-	public ParticleSystem(int num) {
-		super();
+	public ParticleSystem(String name, int num) {
+		super(name);
 		numOfParticles = num;
 		particles = new Particle[numOfParticles];
 
@@ -99,8 +99,7 @@ public class ParticleSystem extends Node {
 		int[] indices = { 0, 1, 3, 2, 3, 1 };
 
 		for (int i = 0; i < numOfParticles; i++) {
-			particles[i] = new Particle(vertices, null, colors, tex, indices);
-			particles[i].setName("Particle " + (i + 1));
+			particles[i] = new Particle("Particle " + (i + 1),vertices, null, colors, tex, indices);
 			attachChild(particles[i]);
 		}
 		

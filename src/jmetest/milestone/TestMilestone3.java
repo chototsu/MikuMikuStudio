@@ -62,7 +62,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestMilestone3.java,v 1.1 2004-02-14 22:19:55 ericthered Exp $
+ * @version $Id: TestMilestone3.java,v 1.2 2004-02-20 20:17:50 mojomonkey Exp $
  */
 public class TestMilestone3 extends SimpleGame {
     private TriMesh t;
@@ -165,11 +165,9 @@ public class TestMilestone3 extends SimpleGame {
         as1.setDstFunction(AlphaState.DB_ONE);
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
-
-        scene = new Node();
-
-        scene = new Node();
-        root = new Node();
+        
+        scene = new Node("3D Scene Node");
+        root = new Node("Root Node");
         root.attachChild(scene);
 
         ZBufferState buf = display.getRenderer().getZBufferState();
@@ -186,7 +184,7 @@ public class TestMilestone3 extends SimpleGame {
         points[2] = new Vector3f(2, -3, -2);
         points[3] = new Vector3f(4, 0, 0);
 
-        curve = new BezierCurve(points);
+        curve = new BezierCurve("Bezier Curve", points);
         ColorRGBA[] colors = new ColorRGBA[4];
         colors[0] = new ColorRGBA(1, 0, 0, 1);
         colors[1] = new ColorRGBA(1, 0, 0, 1);
@@ -215,7 +213,7 @@ public class TestMilestone3 extends SimpleGame {
         bp.setAnchor(3, 3, new Vector3f(0.75f, 0.75f, -0.5f));
         bp.setDetailLevel(100);
 
-        BezierMesh bez = new BezierMesh();
+        BezierMesh bez = new BezierMesh("Bezier Mesh");
         bez.setPatch(bp);
         bez.setWorldBound(new BoundingSphere());
         bez.setForceView(true);
@@ -237,7 +235,7 @@ public class TestMilestone3 extends SimpleGame {
 
         lightstate = display.getRenderer().getLightState();
 
-        lightNode = new LightNode(lightstate);
+        lightNode = new LightNode("Light Node", lightstate);
         lightNode.setLight(pl);
         lightNode.setTarget(bez);
         
@@ -247,7 +245,7 @@ public class TestMilestone3 extends SimpleGame {
         
         Vector3f min = new Vector3f(-0.15f, -0.15f, -0.15f);
         Vector3f max = new Vector3f(0.15f, 0.15f, 0.15f);
-        Box lightBox = new Box(min, max);
+        Box lightBox = new Box("Light Box", min, max);
 
         lightNode.attachChild(lightBox);
         lightNode.setForceView(true);

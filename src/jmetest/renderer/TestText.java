@@ -119,7 +119,7 @@ public class TestText extends SimpleGame {
      * @see com.jme.app.SimpleGame#initGame()
      */
     protected void initGame() {
-        text = new Text("Testing Text");
+        text = new Text("Text Label","Testing Text");
         text.setLocalTranslation(new Vector3f(1,60,0));
         TextureState ts = display.getRenderer().getTextureState();
         ts.setEnabled(true);
@@ -137,7 +137,7 @@ public class TestText extends SimpleGame {
         as1.setTestEnabled(true);
         as1.setTestFunction(AlphaState.TF_GREATER);
         text.setRenderState(as1);
-        scene = new Node();
+        scene = new Node("3D Scene Node");
         scene.attachChild(text);
         cam.update();
         

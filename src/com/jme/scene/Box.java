@@ -41,7 +41,7 @@ import com.jme.renderer.ColorRGBA;
  * eight vertices that make the box are then computed. They are computed in
  * such a way as to generate an axis-aligned box. 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.5 2003-12-11 21:00:09 mojomonkey Exp $
+ * @version $Id: Box.java,v 1.6 2004-02-20 20:17:49 mojomonkey Exp $
  */
 public class Box extends TriMesh {
     private Vector3f min;
@@ -53,10 +53,13 @@ public class Box extends TriMesh {
      * of the box, but not it's orientation or position. You should use the
      * <code>setLocalTranslation</code> and <code>setLocalRotation</code> for
      * those attributes.
+     * @param name the name of the scene element. This is required for identification and
+     * 		comparision purposes.
      * @param min the minimum point that defines the box.
      * @param max the maximum point that defines the box.
      */
-    public Box(Vector3f min, Vector3f max) {
+    public Box(String name, Vector3f min, Vector3f max) {
+    	super(name);
         this.min = min;
         this.max = max;
 
