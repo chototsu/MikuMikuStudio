@@ -112,6 +112,25 @@ public class TransformMatrix {
     }
 
     /**
+     * Sets this transform to an interpolation between the start and end transforms.  Note that
+     * this function isn't very efficient as it has to create 2 new Quaternions to do the
+     * rotation interpolation
+     * @param start Begining transform (delta=0)
+     * @param end Ending transform (delta=1)
+     * @param delta Value between 0.0 and 1.0 to show which side the transform leans towards
+     */
+    public void interpolateTransforms(TransformMatrix start,TransformMatrix end,float delta){
+        this.translation.set(start.translation).interpolate(end.translation,delta);
+        Quaternion q1=new Quaternion();
+        this.getRotation(q1);
+        Quaternion q2=new Quaternion();
+        this.getRotation(q2);
+        q1.slerp(q2,delta);
+        this.setRotationQuaternion(q1);
+    }
+
+
+    /**
      * <code>mult</code> multiplies a normal about a transform matrix and
      * stores the result back in vec. The resulting vector is returned
      * with translational ignored.
@@ -250,11 +269,41 @@ public class TransformMatrix {
      * chaining
      *
      * @param rotStore The matrix to store rotation values
-     * @return Matrix3f The given matrix with updated values
+     * @return The given matrix with updated values
      */
     public Matrix3f getRotation(Matrix3f rotStore){
         if (rotStore==null) rotStore=new Matrix3f();
         rotStore.copy(rot);
+        return rotStore;
+    }
+
+    /**
+     * Stores the translational part of this matrix into the passed matrix.
+     * Will create a new Vector3f if given vector is null.  Returns the
+     * given vector after it has been loaded with translation values, to allow
+     * chaining
+     *
+     * @param tranStore The vector to store translation values
+     * @return The given Vector with updated values
+     */
+    public Vector3f getTranslation(Vector3f tranStore){
+        if (tranStore==null) tranStore=new Vector3f();
+        tranStore.set(translation);
+        return tranStore;
+    }
+
+    /**
+     * Stores the rotational part of this matrix into the passed Quaternion.
+     * Will create a new Quaternion if given quaternion is null.  Returns the
+     * given Quaternion after it has been loaded with rotation values, to allow
+     * chaining
+     *
+     * @param rotStore The Quat to store translation values
+     * @return The given Vector with updated values
+     */
+    public Quaternion getRotation(Quaternion rotStore){
+        if (rotStore==null) rotStore=new Quaternion();
+        rotStore.fromRotationMatrix(rot);
         return rotStore;
     }
 
