@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * two.
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: MidPointHeightMap.java,v 1.2 2004-04-15 02:54:31 mojomonkey Exp $
  */
 public class MidPointHeightMap extends AbstractHeightMap {
     private float roughness;

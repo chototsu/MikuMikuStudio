@@ -49,7 +49,7 @@ import com.jme.util.LoggingSystem;
  * into the volcano, creating the caldera. 
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: ParticleDepositionHeightMap.java,v 1.2 2004-04-15 02:54:31 mojomonkey Exp $
  */
 public class ParticleDepositionHeightMap extends AbstractHeightMap {
 

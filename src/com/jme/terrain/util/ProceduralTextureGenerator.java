@@ -62,7 +62,7 @@ import com.jme.util.LoggingSystem;
  * heightmap.
  * 
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: ProceduralTextureGenerator.java,v 1.2 2004-04-15 02:54:31 mojomonkey Exp $
  */
 public class ProceduralTextureGenerator {
 	//output image
