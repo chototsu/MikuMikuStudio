@@ -32,10 +32,6 @@
 package com.jme.scene.state;
 
 import com.jme.image.Texture;
-import com.jme.util.TextureManager;
-
-import java.net.MalformedURLException;
-import java.net.URL;
 
 /**
  * <code>TextureState</code> maintains a texture state for a given node and
@@ -45,7 +41,7 @@ import java.net.URL;
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.8 2004-06-06 08:56:56 cep21 Exp $
+ * @version $Id: TextureState.java,v 1.9 2004-06-08 22:08:25 cep21 Exp $
  */
 public abstract class TextureState extends RenderState {
 
@@ -63,10 +59,6 @@ public abstract class TextureState extends RenderState {
 
     //the texture
     protected Texture[] texture;
-
-    // An optional String to tell this state what file it comes from
-    public URL loadedFile;
-
 
     /**
      * Constructor instantiates a new <code>TextureState</code> object.
@@ -138,21 +130,6 @@ public abstract class TextureState extends RenderState {
         }
     }
 
-    /**
-     * Optional function that loads from a file and sets loadedFile to the given file
-     * @param name name of file
-     * @param minFilter
-     * @param magFilter
-     * @param isMipMapped
-     * @throws MalformedURLException
-     */
-    public void loadFromFile(URL name,int minFilter,int magFilter,boolean isMipMapped) throws MalformedURLException {
-        loadedFile=name;
-        this.setTexture(TextureManager.loadTexture(name,
-                Texture.MM_LINEAR,
-                Texture.FM_LINEAR,
-                true));
-    }
     /**
      *
      * <code>getNumberOfUnits</code> returns the number of texture units
