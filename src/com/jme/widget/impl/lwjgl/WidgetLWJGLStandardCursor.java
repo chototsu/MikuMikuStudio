@@ -230,7 +230,7 @@ public class WidgetLWJGLStandardCursor extends Cursor {
 
     private WidgetLWJGLStandardCursor()
         throws Exception {
-        super(32, 32, 0, 19, 1, cursor_image, null);
+        super(size, size, 0, 19, 1, cursor_image, null);
     }
 
 }
