@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLVertexProgramState</code>
  *
  * @author Eric Woroshow
- * @version $Id: LWJGLVertexProgramState.java,v 1.7 2004-04-25 03:05:43 mojomonkey Exp $
+ * @version $Id: LWJGLVertexProgramState.java,v 1.8 2004-06-28 22:19:12 ericthered Exp $
  */
 public class LWJGLVertexProgramState extends VertexProgramState {
 
@@ -90,6 +90,22 @@ public class LWJGLVertexProgramState extends VertexProgramState {
           LoggingSystem.getLogger().throwing(getClass().getName(), "load(URL)", e);
         }
 	}
+    
+    /**
+     * Queries OpenGL for errors in the vertex program. Errors are logged as SEVERE,
+     * noting both the line number and message.
+     */
+    private void checkProgramError() {
+        if (GL11.glGetError() == GL11.GL_INVALID_OPERATION) {
+            //retrieve the error position
+            IntBuffer errorloc = BufferUtils.createIntBuffer(16);
+            GL11.glGetInteger(ARBProgram.GL_PROGRAM_ERROR_POSITION_ARB, errorloc);
+            
+            LoggingSystem.getLogger().log(Level.SEVERE,
+                            "Error " + GL11.glGetString(ARBProgram.GL_PROGRAM_ERROR_STRING_ARB)
+                          + " in vertex program on line " + errorloc.get(0));
+        }
+    }
 
     private void create() {
         IntBuffer buf = BufferUtils.createIntBuffer(1);
@@ -104,6 +120,8 @@ public class LWJGLVertexProgramState extends VertexProgramState {
                 							ARBVertexProgram.GL_PROGRAM_FORMAT_ASCII_ARB,
                 							pbuf);
 
+        checkProgramError();
+        
         programID = buf.get(0);
     }
 
