@@ -37,9 +37,9 @@
 package com.jme.sound.joal.second;
 
 import com.jme.renderer.Camera;
-import com.jme.sound.second.ISoundRenderer;
-import com.jme.sound.scene.second.SoundSpatial;
-import com.jme.sound.scene.second.SphericalSound;
+import com.jme.sound.ISoundRenderer;
+import com.jme.sound.scene.SoundSpatial;
+import com.jme.sound.scene.SphericalSound;
 
 /**
  * @author Arman Ozcelik

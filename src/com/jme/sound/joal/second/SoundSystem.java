@@ -36,10 +36,10 @@
  */
 package com.jme.sound.joal.second;
 
-import com.jme.sound.second.IBuffer;
-import com.jme.sound.second.IListener;
-import com.jme.sound.second.ISoundSystem;
-import com.jme.sound.second.ISource;
+import com.jme.sound.IBuffer;
+import com.jme.sound.IListener;
+import com.jme.sound.ISoundSystem;
+import com.jme.sound.ISource;
 
 /**
  * @author Arman Ozcelik

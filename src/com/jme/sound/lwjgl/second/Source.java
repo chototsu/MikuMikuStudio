@@ -44,9 +44,9 @@ import java.nio.IntBuffer;
 import org.lwjgl.openal.AL;
 
 import com.jme.math.Vector3f;
-import com.jme.sound.second.IBuffer;
-import com.jme.sound.second.IBufferFilter;
-import com.jme.sound.second.ISource;
+import com.jme.sound.IBuffer;
+import com.jme.sound.IBufferFilter;
+import com.jme.sound.ISource;
 
 /**
  * @author Arman Ozcelik

@@ -62,10 +62,10 @@ import javazoom.jl.decoder.SampleBuffer;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.eax.EAX;
 
-import com.jme.sound.second.IBuffer;
-import com.jme.sound.second.IListener;
-import com.jme.sound.second.ISoundSystem;
-import com.jme.sound.second.ISource;
+import com.jme.sound.IBuffer;
+import com.jme.sound.IListener;
+import com.jme.sound.ISoundSystem;
+import com.jme.sound.ISource;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 

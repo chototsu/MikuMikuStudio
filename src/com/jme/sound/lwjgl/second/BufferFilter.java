@@ -37,7 +37,7 @@
 package com.jme.sound.lwjgl.second;
 
 import org.lwjgl.openal.eax.EAXBufferProperties;
-import com.jme.sound.second.IBufferFilter;
+import com.jme.sound.IBufferFilter;
 
 /**
  * @author Arman Ozcelik

@@ -42,7 +42,7 @@ import java.nio.IntBuffer;
 
 import org.lwjgl.openal.AL;
 
-import com.jme.sound.second.IBuffer;
+import com.jme.sound.IBuffer;
 
 /**
  * @author Arman Ozcelik

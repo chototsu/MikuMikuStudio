@@ -38,7 +38,7 @@ package com.jme.sound.lwjgl.second;
 
 import org.lwjgl.openal.eax.EAXListenerProperties;
 
-import com.jme.sound.second.IListenerFilter;
+import com.jme.sound.IListenerFilter;
 
 /**
  * @author Arman Ozcelik

@@ -43,8 +43,8 @@ import java.nio.FloatBuffer;
 import org.lwjgl.openal.AL;
 
 import com.jme.math.Vector3f;
-import com.jme.sound.second.IListener;
-import com.jme.sound.second.IListenerFilter;
+import com.jme.sound.IListener;
+import com.jme.sound.IListenerFilter;
 
 /**
  * @author Arman Ozcelik
