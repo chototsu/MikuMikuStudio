@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.21 2004-10-14 01:23:05 mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.22 2004-12-06 19:04:10 mojomonkey Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -182,7 +182,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @param points
      *            The points to calculate the minimum bounds from.
      */
-    private void calcWelzl(Vector3f[] points) {
+    public void calcWelzl(Vector3f[] points) {
         if (center == null) center = new Vector3f();
         Vector3f[] newRef = new Vector3f[points.length];
         for (int i = 0; i < points.length; i++)
@@ -697,32 +697,40 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         return (diff.dot(diff) <= rsum * rsum);
     }
 
-    /*
-     * (non-Javadoc)
+    /* 
+     * (non-Javadoc) 
      * 
-     * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox)
-     */
-    public boolean intersectsBoundingBox(BoundingBox bb) {
-        return false;
-    }
+     * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox) 
+     */ 
+    public boolean intersectsBoundingBox(BoundingBox bb) { 
+        if(FastMath.abs(bb.center.x-getCenter().x)<getRadius()+bb.xExtent 
+        && FastMath.abs(bb.center.y-getCenter().y)<getRadius()+bb.yExtent 
+        && FastMath.abs(bb.center.z-getCenter().z)<getRadius()+bb.zExtent) 
+            return true;      
+        
+        return false; 
+    } 
 
-    /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox)
-     */
-    public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) {
-        return false;
-    }
 
-    /*
-     * (non-Javadoc)
+    /* 
+     * (non-Javadoc) 
      * 
-     * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2)
-     */
-    public boolean intersectsOBB2(OBB2 obb) {
-        return false;
-    }
+     * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox) 
+     */ 
+    public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) { 
+        return obb.intersectsSphere(this); 
+    } 
+
+
+    /* 
+     * (non-Javadoc) 
+     * 
+     * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2) 
+     */ 
+    public boolean intersectsOBB2(OBB2 obb) { 
+        return obb.intersectsSphere(this); 
+    } 
+
 
     /*
      * (non-Javadoc)

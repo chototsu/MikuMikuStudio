@@ -45,7 +45,7 @@ import com.jme.math.*;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.23 2004-10-14 01:23:04 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.24 2004-12-06 19:04:10 mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -555,15 +555,21 @@ public class BoundingBox extends Box implements BoundingVolume {
             return bv.intersectsBoundingBox(this);
     }
 
-    /**
+    /** 
      * determines if this bounding box intersects a given bounding sphere. 
-     * 
-     * NOTE: Not currently supported, false always returned.
-     * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
-     */
-    public boolean intersectsSphere(BoundingSphere bs) {
-        return false;
-    }
+     *  
+     * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere) 
+     */ 
+    public boolean intersectsSphere(BoundingSphere bs) { 
+        
+        if(FastMath.abs(center.x-bs.getCenter().x)<bs.getRadius()+xExtent 
+        && FastMath.abs(center.y-bs.getCenter().y)<bs.getRadius()+yExtent 
+        && FastMath.abs(center.z-bs.getCenter().z)<bs.getRadius()+zExtent) 
+            return true;      
+        
+        return false; 
+    } 
+
 
     /**
      * determines if this bounding box intersects a given bounding box. If the two
@@ -584,28 +590,28 @@ public class BoundingBox extends Box implements BoundingVolume {
             return true;
     }
 
-    /**
+    /** 
      * 
-     * determines if this bounding box intersects with a given oriented bounding box.
+     * determines if this bounding box intersects with a given oriented bounding box. 
      * 
-     * NOTE: Not currently supported, false always returned.
+     * NOTE: Not currently supported, false always returned. 
      * 
-     * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox)
-     */
-    public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) {
-        return false;
-    }
+     * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox) 
+     */ 
+    public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) { 
+        return obb.intersectsBoundingBox(this); 
+    } 
 
-    /**
-     * determines if this bounding box intersects with a given OBB2 bounding.
+
+    /** 
+     * determines if this bounding box intersects with a given OBB2 bounding. 
      * 
-     * NOTE: Not currently supported, false always returned.
-     * 
-     * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2)
-     */
-    public boolean intersectsOBB2(OBB2 obb) {
-        return false;
-    }
+     * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2) 
+     */ 
+    public boolean intersectsOBB2(OBB2 obb) { 
+        return obb.intersectsBoundingBox(this); 
+    } 
+
 
     /**
      * determines if this bounding box intersects with a given ray object.

@@ -54,6 +54,14 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 
 	static private final Quaternion tempQb = new Quaternion();
 
+	static private final Vector3f tempVk = new Vector3f();
+
+	static private final Vector3f tempForword = new Vector3f(0, 0, 1);
+
+	static private final Vector3f tempLeft = new Vector3f(1, 0, 0);
+
+	static private final Vector3f tempUp = new Vector3f(0, 1, 0);
+
 	public int[] checkPlanes = new int[6];
 
 	/**
@@ -74,7 +82,7 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 		if (store == null || !(store instanceof OrientedBoundingBox)) {
 			store = new OrientedBoundingBox();
 		}
-		
+
 		OrientedBoundingBox toReturn = (OrientedBoundingBox) store;
 		toReturn.extent.set(extent.x * scale.x, extent.y * scale.y, extent.z
 				* scale.z);
@@ -417,6 +425,16 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
 	 */
 	public boolean intersectsSphere(BoundingSphere bs) {
+		tempVa.set(bs.getCenter()).subtractLocal(getCenter());
+		tempMa.fromAxes(getxAxis(), getyAxis(), getzAxis());
+
+		tempMa.mult(tempVa, tempVb);
+
+		if (FastMath.abs(tempVb.x) < bs.getRadius() + getExtent().x
+				&& FastMath.abs(tempVb.y) < bs.getRadius() + getExtent().y
+				&& FastMath.abs(tempVb.z) < bs.getRadius() + getExtent().z)
+			return true;
+
 		return false;
 	}
 
@@ -426,7 +444,199 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox)
 	 */
 	public boolean intersectsBoundingBox(BoundingBox bb) {
-		return false;
+		//       Cutoff for cosine of angles between box axes. This is used to catch
+		// the cases when at least one pair of axes are parallel. If this
+		// happens,
+		// there is no need to test for separation along the Cross(A[i],B[j])
+		// directions.
+		float cutoff = 0.999999f;
+		boolean parallelPairExists = false;
+		int i;
+
+		// convenience variables
+		Vector3f akA[] = new Vector3f[] { getxAxis(), getyAxis(), getzAxis() };
+		Vector3f[] akB = new Vector3f[] { tempForword, tempLeft, tempUp };
+		Vector3f afEA = getExtent();
+		Vector3f afEB = tempVk.set(bb.xExtent, bb.yExtent, bb.zExtent);
+
+		// compute difference of box centers, D = C1-C0
+		Vector3f kD = bb.getCenter().subtract(getCenter(), tempVa);
+
+		float[][] aafC = { fWdU, fAWdU, fDdU };
+
+		float[][] aafAbsC = { fADdU, fAWxDdU, tempFa };
+
+		float[] afAD = tempFb;
+		float fR0, fR1, fR; // interval radii and distance between centers
+		float fR01; // = R0 + R1
+
+		// axis C0+t*A0
+		for (i = 0; i < 3; i++) {
+			aafC[0][i] = akA[0].dot(akB[i]);
+			aafAbsC[0][i] = FastMath.abs(aafC[0][i]);
+			if (aafAbsC[0][i] > cutoff) {
+				parallelPairExists = true;
+			}
+		}
+		afAD[0] = akA[0].dot(kD);
+		fR = FastMath.abs(afAD[0]);
+		fR1 = afEB.x * aafAbsC[0][0] + afEB.y * aafAbsC[0][1] + afEB.z
+				* aafAbsC[0][2];
+		fR01 = afEA.x + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A1
+		for (i = 0; i < 3; i++) {
+			aafC[1][i] = akA[1].dot(akB[i]);
+			aafAbsC[1][i] = FastMath.abs(aafC[1][i]);
+			if (aafAbsC[1][i] > cutoff) {
+				parallelPairExists = true;
+			}
+		}
+		afAD[1] = akA[1].dot(kD);
+		fR = FastMath.abs(afAD[1]);
+		fR1 = afEB.x * aafAbsC[1][0] + afEB.y * aafAbsC[1][1] + afEB.z
+				* aafAbsC[1][2];
+		fR01 = afEA.y + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A2
+		for (i = 0; i < 3; i++) {
+			aafC[2][i] = akA[2].dot(akB[i]);
+			aafAbsC[2][i] = FastMath.abs(aafC[2][i]);
+			if (aafAbsC[2][i] > cutoff) {
+				parallelPairExists = true;
+			}
+		}
+		afAD[2] = akA[2].dot(kD);
+		fR = FastMath.abs(afAD[2]);
+		fR1 = afEB.x * aafAbsC[2][0] + afEB.y * aafAbsC[2][1] + afEB.z
+				* aafAbsC[2][2];
+		fR01 = afEA.z + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*B0
+		fR = FastMath.abs(akB[0].dot(kD));
+		fR0 = afEA.x * aafAbsC[0][0] + afEA.y * aafAbsC[1][0] + afEA.z
+				* aafAbsC[2][0];
+		fR01 = fR0 + afEB.x;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*B1
+		fR = FastMath.abs(akB[1].dot(kD));
+		fR0 = afEA.x * aafAbsC[0][1] + afEA.y * aafAbsC[1][1] + afEA.z
+				* aafAbsC[2][1];
+		fR01 = fR0 + afEB.y;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*B2
+		fR = FastMath.abs(akB[2].dot(kD));
+		fR0 = afEA.x * aafAbsC[0][2] + afEA.y * aafAbsC[1][2] + afEA.z
+				* aafAbsC[2][2];
+		fR01 = fR0 + afEB.z;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// At least one pair of box axes was parallel, so the separation is
+		// effectively in 2D where checking the "edge" normals is sufficient for
+		// the separation of the boxes.
+		if (parallelPairExists) {
+			return true;
+		}
+
+		// axis C0+t*A0xB0
+		fR = FastMath.abs(afAD[2] * aafC[1][0] - afAD[1] * aafC[2][0]);
+		fR0 = afEA.y * aafAbsC[2][0] + afEA.z * aafAbsC[1][0];
+		fR1 = afEB.y * aafAbsC[0][2] + afEB.z * aafAbsC[0][1];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A0xB1
+		fR = FastMath.abs(afAD[2] * aafC[1][1] - afAD[1] * aafC[2][1]);
+		fR0 = afEA.y * aafAbsC[2][1] + afEA.z * aafAbsC[1][1];
+		fR1 = afEB.x * aafAbsC[0][2] + afEB.z * aafAbsC[0][0];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A0xB2
+		fR = FastMath.abs(afAD[2] * aafC[1][2] - afAD[1] * aafC[2][2]);
+		fR0 = afEA.y * aafAbsC[2][2] + afEA.z * aafAbsC[1][2];
+		fR1 = afEB.x * aafAbsC[0][1] + afEB.y * aafAbsC[0][0];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A1xB0
+		fR = FastMath.abs(afAD[0] * aafC[2][0] - afAD[2] * aafC[0][0]);
+		fR0 = afEA.x * aafAbsC[2][0] + afEA.z * aafAbsC[0][0];
+		fR1 = afEB.y * aafAbsC[1][2] + afEB.z * aafAbsC[1][1];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A1xB1
+		fR = FastMath.abs(afAD[0] * aafC[2][1] - afAD[2] * aafC[0][1]);
+		fR0 = afEA.x * aafAbsC[2][1] + afEA.z * aafAbsC[0][1];
+		fR1 = afEB.x * aafAbsC[1][2] + afEB.z * aafAbsC[1][0];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A1xB2
+		fR = FastMath.abs(afAD[0] * aafC[2][2] - afAD[2] * aafC[0][2]);
+		fR0 = afEA.x * aafAbsC[2][2] + afEA.z * aafAbsC[0][2];
+		fR1 = afEB.x * aafAbsC[1][1] + afEB.y * aafAbsC[1][0];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A2xB0
+		fR = FastMath.abs(afAD[1] * aafC[0][0] - afAD[0] * aafC[1][0]);
+		fR0 = afEA.x * aafAbsC[1][0] + afEA.y * aafAbsC[0][0];
+		fR1 = afEB.y * aafAbsC[2][2] + afEB.z * aafAbsC[2][1];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A2xB1
+		fR = FastMath.abs(afAD[1] * aafC[0][1] - afAD[0] * aafC[1][1]);
+		fR0 = afEA.x * aafAbsC[1][1] + afEA.y * aafAbsC[0][1];
+		fR1 = afEB.x * aafAbsC[2][2] + afEB.z * aafAbsC[2][0];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		// axis C0+t*A2xB2
+		fR = FastMath.abs(afAD[1] * aafC[0][2] - afAD[0] * aafC[1][2]);
+		fR0 = afEA.x * aafAbsC[1][2] + afEA.y * aafAbsC[0][2];
+		fR1 = afEB.x * aafAbsC[2][1] + afEB.y * aafAbsC[2][0];
+		fR01 = fR0 + fR1;
+		if (fR > fR01) {
+			return false;
+		}
+
+		return true;
 	}
 
 	/*
@@ -637,7 +847,7 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 	 * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2)
 	 */
 	public boolean intersectsOBB2(OBB2 obb) {
-		return false;
+		return obb.intersectsOrientedBoundingBox(this);
 	}
 
 	/*
