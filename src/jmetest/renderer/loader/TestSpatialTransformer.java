@@ -23,11 +23,9 @@ public class TestSpatialTransformer extends SimpleGame{
     }
     protected void simpleInitGame() {
         Box b=new Box("box",new Vector3f(-1,-1,-1),new Vector3f(1,1,1));
-        for (int i=0;i<b.getVertQuantity();i++)
-            b.setColor(i,ColorRGBA.randomColor());
+        b.setRandomColors();
         Sphere s=new Sphere("sphere",new Vector3f(0,0,5),10,10,1);
-        for (int i=0;i<s.getVertQuantity();i++)
-            s.setColor(i,ColorRGBA.randomColor());
+        s.setRandomColors();
         SpatialTransformer st=new SpatialTransformer(2);
 
         st.setObject(b,0,-1);
@@ -52,9 +50,9 @@ public class TestSpatialTransformer extends SimpleGame{
         st.setScale(0,2,new Vector3f(2,2,2));
         st.setScale(0,4,new Vector3f(.25f,.25f,2));
 
-        st.setPosition(0,0,new Vector3f(0,10,0));
-        st.setPosition(0,2,new Vector3f(0,0,0));
-        st.setPosition(0,4,new Vector3f(0,10,0));
+        st.setPosition(0,0,new Vector3f(0,0,0));
+        st.setPosition(0,2,new Vector3f(0,7,0));
+        st.setPosition(0,4,new Vector3f(0,0,0));
 
         st.setPosition(1,0,new Vector3f(0,0,0));
         st.setPosition(1,2,new Vector3f(0,0,-5));

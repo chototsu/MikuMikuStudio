@@ -57,7 +57,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.54 2004-07-08 05:25:39 renanse Exp $
+ * @version $Id: Geometry.java,v 1.55 2004-07-17 10:14:12 cep21 Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -330,6 +330,16 @@ public abstract class Geometry extends Spatial implements Serializable {
         ColorRGBA colors[] = new ColorRGBA[vertex.length];
         for (int x = 0; x < colors.length; x++)
             colors[x] = (ColorRGBA) color.clone();
+        setColors(colors);
+    }
+
+    /**
+     * Sets every color of this geometry's color array to a random color.
+     */
+    public void setRandomColors(){
+        ColorRGBA colors[] = new ColorRGBA[vertex.length];
+        for (int x = 0; x < colors.length; x++)
+            colors[x] = ColorRGBA.randomColor();
         setColors(colors);
     }
 
