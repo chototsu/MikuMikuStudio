@@ -45,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * convinience methods for creating the matrix from a multitude of sources.
  * 
  * @author Mark Powell
- * @version $Id: Matrix4f.java,v 1.8 2005-02-28 01:17:55 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.9 2005-03-08 01:29:09 renanse Exp $
  */
 public class Matrix4f {
 
@@ -254,7 +254,7 @@ public class Matrix4f {
      * @return matrix data as a FloatBuffer.
      */
     public FloatBuffer toFloatBuffer() {
-        FloatBuffer fb = ByteBuffer.allocateDirect(16).order(
+        FloatBuffer fb = ByteBuffer.allocateDirect(64).order(
                 ByteOrder.nativeOrder()).asFloatBuffer();
         fb.put(matrix[0]).put(matrix[1]).put(matrix[2]).put(matrix[3]);
         fb.rewind();
