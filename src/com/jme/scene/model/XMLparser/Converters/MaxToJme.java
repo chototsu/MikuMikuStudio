@@ -18,6 +18,7 @@ import java.io.IOException;
  */
 public class MaxToJme extends FormatConverter {
     private LittleEndien myIn;
+    private Node lastLoad;
 
     private TDSFile chunkedTDS=null;
 
@@ -32,5 +33,14 @@ public class MaxToJme extends FormatConverter {
         chunkedTDS=new TDSFile(myIn);
         Node toReturn=chunkedTDS.buildScene();
         new JmeBinaryWriter().writeScene(toReturn,bin);
+        lastLoad=toReturn;
+    }
+
+    /**
+     * Returns the last loaded node which was used as a dummy to convert
+     * @return The last node that was loaded
+     */
+    public Node getLastLoad(){
+        return lastLoad;
     }
 }
