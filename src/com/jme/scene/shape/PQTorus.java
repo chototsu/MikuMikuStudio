@@ -42,7 +42,7 @@ import com.jme.math.Vector2f;
  * also known as a pq torus.
  *
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.1 2004-04-02 15:52:06 mojomonkey Exp $
+ * @version $Id: PQTorus.java,v 1.2 2004-04-11 15:58:54 mojomonkey Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -135,8 +135,7 @@ public class PQTorus extends TriMesh {
         setNormals(normal);
         setTextures(texture[0]);
 
-        //TODO:
-        // - small optimizations (code for clarity to begin, then optimize! :)
+        //TODO: - small optimizations (code for clarity to begin, then optimize! :)
     }
 
     private void setIndexData() {
