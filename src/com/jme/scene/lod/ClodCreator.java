@@ -6,6 +6,7 @@ import com.jme.math.Vector2f;
 import java.util.TreeSet;
 import java.util.Vector;
 import java.util.Iterator;
+import java.util.Map.Entry;
 
 /**
  * <p>Title: </p>
@@ -80,6 +81,10 @@ public class ClodCreator extends VETMesh {
 
     m_kEDelete = new Vector();
     m_kVDelete = new TreeSet();
+    for (int j = 0; j < m_iTQuantity; j++) {
+      System.err.println(j+". tri: " + indices[j*3] + "," + indices[j*3+1] + "," + indices[j*3+2]);
+      System.err.println(j+". tri: " + vertices[indices[j*3]] + "," + vertices[indices[j*3+1]] + "," + vertices[indices[j*3+2]]);
+    }
 
     // Insert the triangles into the mesh.  The triangle indices are attached
     // as extra data.
@@ -93,19 +98,22 @@ public class ClodCreator extends VETMesh {
                                  indices[3 * i + 2]);
       insertTriangle(kT);
       setData(kT, new Integer(i));
-//          *(int*)getData(kT) = i;
+    }
+    for (int j = 0; j < m_kTMap.size(); j++) {
+      Triangle t = (Triangle)m_kTMap.keySet().toArray()[j];
+      System.err.println("tri: "+j+"  v: "+t.m_aiV[0]+", "+t.m_aiV[1]+", "+t.m_aiV[2]);
     }
 
-    if (!( (m_kVMap.size()) == m_akVertex.length)) throw new AssertionError();
-    if (! ( (m_kTMap.size()) == m_iTQuantity))throw new AssertionError(
+    if (m_kVMap.size() != m_akVertex.length)throw new AssertionError();
+    if (m_kTMap.size() != m_iTQuantity)throw new AssertionError(
         "triangle map size: " + m_kTMap.size() + " != m_iTQuantity: " +
         m_iTQuantity);
 
     initializeHeap();
 
     m_bCollapsing = true;
-    System.err.println("m_iHQuantity: "+m_iHQuantity);
     while (m_iHQuantity > 0) {
+      System.err.println("m_iHQuantity: "+m_iHQuantity);
       if (m_apkHeap[0].m_fMetric == Float.MAX_VALUE) {
         // all remaining heap elements have infinite weight
         flushVertices();
@@ -117,21 +125,40 @@ public class ClodCreator extends VETMesh {
 //      System.err.println("triangle map size: " + m_kTMap.size() + " m_iTCurrent+1: " +
 //          (m_iTCurrent + 1));
 
+      for (int j = 0; j < m_kTMap.size(); j++) {
+        Triangle t = (Triangle)m_kTMap.keySet().toArray()[j];
+        System.err.println("tri: "+j+"  v: "+t.m_aiV[0]+", "+t.m_aiV[1]+", "+t.m_aiV[2]);
+      }
       if (! ( (m_kVMap.size()) == m_iVCurrent + 1))throw new AssertionError();
       if (! ( (m_kTMap.size()) == m_iTCurrent + 1))throw new AssertionError(
           "triangle map size: " + m_kTMap.size() + " != m_iTCurrent+1: " +
           (m_iTCurrent + 1));
     }
+//    System.err.println("done with while");
+//    for (int j = 0; j < m_kTMap.size(); j++) {
+//      Triangle t = (Triangle)m_kTMap.keySet().toArray()[j];
+//      System.err.println("tri: "+j+"  v: "+t.m_aiV[0]+", "+t.m_aiV[1]+", "+t.m_aiV[2]);
+//    }
     m_bCollapsing = false;
 
     // Permute the vertices and triangle connectivity so that the last
     // vertex/triangle in the array is the first vertex/triangle to be
     // removed.
     reorder();
+//    System.err.println("done with reorder");
+//    for (int j = 0; j < m_kTMap.size(); j++) {
+//      Triangle t = (Triangle)m_kTMap.keySet().toArray()[j];
+//      System.err.println("tri: "+j+"  v: "+t.m_aiV[0]+", "+t.m_aiV[1]+", "+t.m_aiV[2]);
+//    }
 
     // The collapse records store the incremental changes that are used for
     // dynamic LOD changes in the caller of this constructor.
     rakCRecord = computeRecords();
+//    System.err.println("done with computeRecords");
+//    for (int j = 0; j < m_kTMap.size(); j++) {
+//      Triangle t = (Triangle)m_kTMap.keySet().toArray()[j];
+//      System.err.println("tri: "+j+"  v: "+t.m_aiV[0]+", "+t.m_aiV[1]+", "+t.m_aiV[2]);
+//    }
 
     for (int x = 0; x < rakCRecord.length; x++) {
       System.err.println("***** record: "+x);
@@ -165,7 +192,7 @@ public class ClodCreator extends VETMesh {
     // test end points to see if either has only 2-edges sharing it
     int i;
     for (i = 0; i < 2; i++) {
-      TreeSet pkESet = getEdges(kEdge.m_aiV[i]);
+      ExVector pkESet = getEdges(kEdge.m_aiV[i]);
       int j;
       for (j = 0; j < pkESet.size(); j++) {
         EdgeAttribute pkEM = (EdgeAttribute)m_kEMap.get(pkESet.toArray()[j]);
@@ -185,7 +212,6 @@ public class ClodCreator extends VETMesh {
       int iVKeep = kEdge.m_aiV[1 - i];
       if (!collapseCausesFolding(iVKeep, iVThrow)) {
         remove();
-//        System.err.println("collapsing edge: "+iVKeep+","+iVThrow);
         collapseEdge(iVKeep, iVThrow);
         return;
       }
@@ -333,7 +359,7 @@ public class ClodCreator extends VETMesh {
     // find the edge to collapse
     Edge kCollapse = new Edge(iVKeep, iVThrow);
     EdgeAttribute pkEM = (EdgeAttribute) m_kEMap.get(kCollapse);
-//    if (!(pkEM != null);
+    if (pkEM == null) throw new AssertionError("Edge unexpectedly missing from EdgeMap!");
 
     // keep track of vertices that are deleted in the collapse
     m_kVDelete.clear();
@@ -343,11 +369,10 @@ public class ClodCreator extends VETMesh {
     // last triangle sharing the collapse edge will remove that edge from
     // the edge map, thereby invalidating any iterator that points to data
     // in the collapse edge.
-    TreeSet kTSet = pkEM.m_kTSet; // <Triangle>
+    ExVector kTSet = pkEM.m_kTSet; // <Triangle>
     int iTDeletions = kTSet.size();
     if (!(iTDeletions > 0)) throw new AssertionError();
-    int j;
-    for (j = 0; j < kTSet.size(); j++)
+    for (int j = 0; j < kTSet.size(); j++)
       removeTriangle( (Triangle) kTSet.toArray()[j]);
 
       // Replace 'throw' vertices by 'keep' vertices in the remaining triangles
@@ -357,7 +382,7 @@ public class ClodCreator extends VETMesh {
     VertexAttribute pkVM = (VertexAttribute) m_kVMap.get(new Integer(iVThrow));
     if (pkVM != null) {
       kTSet = pkVM.m_kTSet;
-      for (j = 0; j < kTSet.size(); j++) {
+      for (int j = 0; j < kTSet.size(); j++) {
         kT = (Triangle) kTSet.toArray()[j];
         modifyTriangle(kT, iVKeep, iVThrow);
       }
@@ -367,10 +392,10 @@ public class ClodCreator extends VETMesh {
     // are shared by the triangles containing the 'keep' vertex.  Modify these
     // metrics and update the heap.
     TreeSet kModified = new TreeSet(); // <Edge>
-    TreeSet pkTSet = getTriangles(iVKeep); // <Triangle>
+    ExVector pkTSet = getTriangles(iVKeep); // <Triangle>
     if (pkTSet != null) {
       kTSet = pkTSet;
-      for (j = 0; j < kTSet.size(); j++) {
+      for (int j = 0; j < kTSet.size(); j++) {
         kT = (Triangle) kTSet.toArray()[j];
         kModified.add(new Edge(kT.m_aiV[0], kT.m_aiV[1]));
         kModified.add(new Edge(kT.m_aiV[1], kT.m_aiV[2]));
@@ -399,8 +424,11 @@ public class ClodCreator extends VETMesh {
 
     // save vertex reordering information
     Iterator it = m_kVDelete.iterator();
+    int iV;
     while (it.hasNext()) {
-      int iV = ((Integer)it.next()).intValue();
+      if(!( 0 <= m_iVCurrent && m_iVCurrent < m_akVertex.length )) throw new AssertionError();
+      iV = ((Integer)it.next()).intValue();
+      if(!( 0 <= iV && iV < m_akVertex.length )) throw new AssertionError();
       m_aiVOrdered[m_iVCurrent] = iV;
       m_aiVPermute[iV] = m_iVCurrent;
       m_iVCurrent--;
@@ -427,10 +455,10 @@ public class ClodCreator extends VETMesh {
 
   public void flushTriangles() {
 //    System.err.println("TRI MAP SIZE (b4 flush): "+m_kTMap.size());
-    Iterator it = m_kTMap.keySet().iterator();
+    Iterator it = m_kTMap.entrySet().iterator();
     while (it.hasNext()) {
-      Triangle pkT = (Triangle)it.next();
-      TriangleAttribute pkTA = (TriangleAttribute)m_kTMap.get(pkT);
+      Entry entry = (Entry)it.next();
+      TriangleAttribute pkTA = (TriangleAttribute)entry.getValue();
       int iTIndex = ( (Integer) pkTA.m_pvData).intValue();
 //      System.err.println("flushing tri... index: "+iTIndex);
       if (iTIndex >= 0) {
@@ -451,9 +479,8 @@ public class ClodCreator extends VETMesh {
     int i;
     for (i = 0; i < m_akVertex.length; i++)
       akNewVertex[i] = m_akVertex[m_aiVOrdered[i]];
-    for (i = 0; i < akNewVertex.length; i++)
+    for (i = 0; i < m_akVertex.length; i++)
       m_akVertex[i] = akNewVertex[i];
-//    memcpy(m_akVertex, akNewVertex, m_akVertex.length * sizeof(Vector3f));
     akNewVertex = null;
 
     // permute the normal vectors (if any)
@@ -461,9 +488,8 @@ public class ClodCreator extends VETMesh {
       Vector3f[] akNewNormal = new Vector3f[m_akVertex.length];
       for (i = 0; i < m_akVertex.length; i++)
         akNewNormal[i] = m_akNormal[m_aiVOrdered[i]];
-      for (i = 0; i < akNewNormal.length; i++)
+      for (i = 0; i < m_akVertex.length; i++)
         m_akNormal[i] = akNewNormal[i];
-//      memcpy(m_akNormal, akNewNormal, m_akVertex.length * sizeof(Vector3f));
       akNewNormal = null;
     }
 
@@ -472,9 +498,8 @@ public class ClodCreator extends VETMesh {
       ColorRGBA[] akNewColor = new ColorRGBA[m_akVertex.length];
       for (i = 0; i < m_akVertex.length; i++)
         akNewColor[i] = m_akColor[m_aiVOrdered[i]];
-      for (i = 0; i < akNewColor.length; i++)
+      for (i = 0; i < m_akVertex.length; i++)
         m_akColor[i] = akNewColor[i];
-//      memcpy(m_akColor, akNewColor, m_akVertex.length * sizeof(ColorRGB));
       akNewColor = null;
     }
 
@@ -483,9 +508,8 @@ public class ClodCreator extends VETMesh {
       Vector2f[] akNewTexture = new Vector2f[m_akVertex.length];
       for (i = 0; i < m_akVertex.length; i++)
         akNewTexture[i] = m_akTexture[m_aiVOrdered[i]];
-      for (i = 0; i < akNewTexture.length; i++)
+      for (i = 0; i < m_akVertex.length; i++)
         m_akTexture[i] = akNewTexture[i];
-//      memcpy(m_akTexture, akNewTexture, m_akVertex.length * sizeof(Vector2f));
       akNewTexture = null;
     }
 
@@ -517,12 +541,8 @@ public class ClodCreator extends VETMesh {
     int iVQuantity = m_akVertex.length, iTQuantity = m_iTQuantity;
     int iR, i;
     for (iR = 0; iR < (int) m_kEDelete.size(); iR++) {
-//      System.err.println("IR: "+iR);
       CollapseRecord rkERecord = (CollapseRecord) m_kEDelete.get(iR);
       CollapseRecord rkRecord = rakCRecord[iR + 1];
-//      System.err.println("rkERecord: "+rkERecord.indices);
-//      System.err.println("rkERecord: "+rkERecord.vertToKeep);
-//      System.err.println("rkERecord: "+rkERecord.vertToThrow);
 
       iVQuantity -= rkERecord.m_iVQuantity;
       iTQuantity -= rkERecord.m_iTQuantity;
@@ -545,9 +565,8 @@ public class ClodCreator extends VETMesh {
 
         if (rkRecord.m_iIQuantity > 0) {
           rkRecord.indices = new int[rkRecord.m_iIQuantity];
-          for (i = 0; i < aiIndex.length; i++)
+          for (i = 0; i < rkRecord.m_iIQuantity; i++)
             rkRecord.indices[i] = aiIndex[i];
-//          memcpy(rkRecord.m_aiIndex, aiIndex, rkRecord.m_iIQuantity * 4); // 4 = sizeof(int)
         }
 
         aiIndex = null;
@@ -580,10 +599,11 @@ public class ClodCreator extends VETMesh {
     m_apkHeap = new HeapRecord[2 * m_iHQuantity];
 
     int iHIndex = 0;
-    Iterator it = m_kEMap.keySet().iterator();
+    Iterator it = m_kEMap.entrySet().iterator();
     while (it.hasNext()) {
-      Edge pkE = (Edge)it.next();
-      EdgeAttribute pkEA = (EdgeAttribute)m_kEMap.get(pkE);
+      Entry entry = (Entry)it.next();
+      Edge pkE = (Edge)entry.getKey();
+      EdgeAttribute pkEA = (EdgeAttribute)entry.getValue();
       m_apkHeap[iHIndex] = (HeapRecord) pkEA.m_pvData;
       m_apkHeap[iHIndex].m_kEdge = pkE;
       m_apkHeap[iHIndex].m_iHIndex = iHIndex;
@@ -602,9 +622,8 @@ public class ClodCreator extends VETMesh {
       int iPa = iLeft, iCh = 2 * iLeft + 1;
       while (iCh <= iLast) {
         if (iCh < iLast) {
-          int iChP = iCh + 1;
-          if (m_apkHeap[iCh].m_fMetric > m_apkHeap[iChP].m_fMetric)
-            iCh = iChP;
+          if (m_apkHeap[iCh].m_fMetric > m_apkHeap[iCh + 1].m_fMetric)
+            iCh++;
         }
 
         if (m_apkHeap[iCh].m_fMetric >= pkRecord.m_fMetric)

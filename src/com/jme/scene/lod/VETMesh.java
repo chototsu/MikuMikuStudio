@@ -59,10 +59,10 @@ public class VETMesh {
 
     public int compareTo(Object o) {
       Edge e = (Edge)o;
-      if (this.equals(e))
-        return 0;
-      else if (this.lessThan(e))
+      if (lessThan(e))
         return -1;
+      else if (equals(e))
+        return 0;
       else
         return 1;
     }
@@ -135,15 +135,15 @@ public class VETMesh {
       Triangle rkT = (Triangle)obj;
       return (m_aiV[0] == rkT.m_aiV[0]) &&
           ( (m_aiV[1] == rkT.m_aiV[1] && m_aiV[2] == rkT.m_aiV[2]) ||
-           (m_aiV[1] == rkT.m_aiV[2] && m_aiV[2] == rkT.m_aiV[1]));
+           (m_aiV[1] == rkT.m_aiV[2] && m_aiV[2] == rkT.m_aiV[1]) );
     }
 
     public int compareTo(Object o) {
       Triangle t = (Triangle)o;
-      if (this.equals(t))
-        return 0;
-      else if (this.lessThan(t))
+      if (lessThan(t))
         return -1;
+      else if (equals(t))
+        return 0;
       else
         return 1;
     }
@@ -179,25 +179,25 @@ public class VETMesh {
 
   public class VertexAttribute {
     public VertexAttribute() {
-      m_kESet = new TreeSet();
-      m_kTSet = new TreeSet();
+      m_kESet = new ExVector(8,8);
+      m_kTSet = new ExVector(8,8);
       m_pvData = null;
     }
 
     public Object m_pvData;
-    public TreeSet m_kESet; //<Edge>
-    public TreeSet m_kTSet; //<Triangle>
+    public ExVector m_kESet; //<Edge>
+    public ExVector m_kTSet; //<Triangle>
   };
 
   public class EdgeAttribute {
 
     public EdgeAttribute() {
-      m_kTSet = new TreeSet();
+      m_kTSet = new ExVector(2,2);
       m_pvData = null;
     }
 
     public Object m_pvData;
-    public TreeSet m_kTSet; //<Triangle>
+    public ExVector m_kTSet; //<Triangle>
   };
 
   public class TriangleAttribute {
@@ -446,9 +446,9 @@ public class VETMesh {
   // destructor call.
 
   public void removeAllTriangles() {
-    Iterator iter = m_kTMap.keySet().iterator();
-    while (iter.hasNext()) {
-      Triangle tri = (Triangle) iter.next();
+    Object[] tris = m_kTMap.keySet().toArray();
+    for (int x = 0; x < tris.length; x++) {
+      Triangle tri = (Triangle) tris[x];
       int iV0 = tri.m_aiV[0];
       int iV1 = tri.m_aiV[1];
       int iV2 = tri.m_aiV[2];
@@ -526,7 +526,7 @@ public class VETMesh {
     return m_kEMap;
   }
 
-  public TreeSet getTriangles(int iV0, int iV1) { //<Triangle>
+  public ExVector getTriangles(int iV0, int iV1) { //<Triangle>
     EdgeAttribute pkE = (EdgeAttribute) m_kEMap.get(new Edge(iV0, iV1));
     return (pkE != null ? pkE.m_kTSet : null);
   }
@@ -593,7 +593,7 @@ public class VETMesh {
         EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(new Edge(kT.m_aiV[i], kT.m_aiV[ (i + 1) % 3]));
 
         // visit each adjacent triangle
-        TreeSet rkTSet = pkE.m_kTSet; // <Triangle>
+        ExVector rkTSet = pkE.m_kTSet; // <Triangle>
         triIt = rkTSet.iterator();
         while (triIt.hasNext()) {
           Triangle rkTAdj = (Triangle)triIt.next();
@@ -661,7 +661,7 @@ public class VETMesh {
           EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(kE);
 
           // visit each adjacent triangle
-          TreeSet rkTSet = pkE.m_kTSet; // <Triangle>
+          ExVector rkTSet = pkE.m_kTSet; // <Triangle>
           triIt = rkTSet.iterator();
           while (triIt.hasNext()) {
             Triangle rkTAdj = (Triangle)triIt.next();
@@ -728,7 +728,7 @@ public class VETMesh {
           EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(kE);
 
           // visit each adjacent triangle
-          TreeSet rkTSet = pkE.m_kTSet; // <Triangle>
+          ExVector rkTSet = pkE.m_kTSet; // <Triangle>
           triIt = rkTSet.iterator();
           while (triIt.hasNext()) {
             Triangle rkTAdj = (Triangle)triIt.next();
@@ -808,7 +808,7 @@ public class VETMesh {
 //        assert(pkE != null);
 
         // visit each adjacent triangle
-        TreeSet rkTSet = pkE.m_kTSet; // <Triangle>
+        ExVector rkTSet = pkE.m_kTSet; // <Triangle>
         triIt = rkTSet.iterator();
         while (triIt.hasNext()) {
           Triangle kTAdj = (Triangle)triIt.next();
@@ -960,12 +960,12 @@ public class VETMesh {
     return (pkV != null ? pkV.m_pvData : null);
   }
 
-  public TreeSet getEdges(int iV) { // <Edge>
+  public ExVector getEdges(int iV) { // <Edge>
     VertexAttribute pkV = (VertexAttribute)m_kVMap.get(new Integer(iV));
     return (pkV != null ? pkV.m_kESet : null);
   }
 
-  public TreeSet getTriangles(int iV) // <Triangle>
+  public ExVector getTriangles(int iV) // <Triangle>
   {
     VertexAttribute pkV = (VertexAttribute)m_kVMap.get(new Integer(iV));
     return (pkV != null ? pkV.m_kTSet : null);
@@ -1006,12 +1006,10 @@ public class VETMesh {
     TriangleAttribute pkT =
         (TriangleAttribute)m_kTMap.get(new Triangle(iV0, iV1, iV2));
     if (pkT != null) pkT.m_pvData = data;
+//    else System.err.println("PKT WAS NULL!  Could not set data!");
   }
 
   public Object getData(Triangle rkT) {
-//    TriangleAttribute pkT =
-//        (TriangleAttribute)m_kTMap.get(rkT);
-//    return (pkT != null ? pkT.m_pvData : null);
     return getData(rkT.m_aiV[0], rkT.m_aiV[1], rkT.m_aiV[2]);
   }
 
