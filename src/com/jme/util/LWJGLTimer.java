@@ -44,7 +44,7 @@ import org.lwjgl.Sys;
  * method.
  *
  * @author Mark Powell
- * @version $Id: LWJGLTimer.java,v 1.3 2004-02-24 01:32:22 mojomonkey Exp $
+ * @version $Id: LWJGLTimer.java,v 1.4 2004-03-08 01:40:17 renanse Exp $
  */
 public class LWJGLTimer extends Timer {
     private long frameDiff;
@@ -52,8 +52,9 @@ public class LWJGLTimer extends Timer {
     //frame rate parameters.
     private long oldTime = 0;
     private long newTime = 0;
-    private final static int TIMER_SMOOTHNESS = 20;
-    private float[] fps = new float[TIMER_SMOOTHNESS];
+    private final static int TIMER_SMOOTHNESS = 16;
+    private long[] fps = new long[TIMER_SMOOTHNESS];
+    private final static long timerRez = Sys.getTimerResolution();
 
     /**
      * Constructor builds a <code>Timer</code> object. All values will be
@@ -73,7 +74,7 @@ public class LWJGLTimer extends Timer {
         LoggingSystem.getLogger().log(
             Level.INFO,
             "Timer resolution: "
-                + Sys.getTimerResolution()
+                + timerRez
                 + " ticks per second");
     }
 
@@ -88,7 +89,7 @@ public class LWJGLTimer extends Timer {
      * @see com.jme.util.Timer#getResoultion()
      */
     public long getResolution(){
-        return Sys.getTimerResolution();
+        return timerRez;
     }
 
     /**
@@ -135,9 +136,7 @@ public class LWJGLTimer extends Timer {
         newTime = Sys.getTime();
         frameDiff = newTime - oldTime;
         for (int i = 0; i<TIMER_SMOOTHNESS-1; i++) fps[i] = fps[i+1];
-        fps[TIMER_SMOOTHNESS-1] =
-            (float) Sys.getTimerResolution()
-                / (float)frameDiff;
+        fps[TIMER_SMOOTHNESS-1] = timerRez / frameDiff;
         oldTime = newTime;
     }
 
@@ -146,14 +145,14 @@ public class LWJGLTimer extends Timer {
      * in the format:<br><br>
      * jme.utility.Timer@1db699b<br>
      * Time: {LONG}<br>
-     * FPS: {FLOAT}<br>
+     * FPS: {LONG}<br>
      *
      * @return the string representation of this object.
      */
     public String toString() {
         String string = super.toString();
         string += "\nTime: " + newTime;
-        string += "\nFPS: " + fps;
+        string += "\nFPS: " + getFrameRate();
         return string;
     }
 }
