@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * a weapon has hit it's target, calculating line of sight, etc. The methods
  * of <code>Pick</code> are static allowing for easy usage of the class.
  * @author Mark Powell
- * @version $Id: Pick.java,v 1.4 2004-04-22 22:26:37 renanse Exp $
+ * @version $Id: Pick.java,v 1.5 2004-07-31 03:09:55 cep21 Exp $
  */
 public class Pick {
 
@@ -67,7 +67,7 @@ public class Pick {
             } else {
                 //find the triangle that is being hit.
                 //add this node and the triangle to the PickResults list.
-                results.addNode((Geometry)node);
+                results.addGeometry((Geometry)node);
             }
         }
     }

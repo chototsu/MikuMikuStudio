@@ -78,7 +78,7 @@ public class MousePick implements MouseInputAction {
             hitItems = "";
             if(results.getNumber() > 0) {
                 for(int i = 0; i < results.getNumber(); i++) {
-                    hitItems += results.getNode(i).getName();
+                    hitItems += results.getGeometry(i).getName();
                     if(i != results.getNumber() -1) {
                         hitItems += ", ";
                     }
