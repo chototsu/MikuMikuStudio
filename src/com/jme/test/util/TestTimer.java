@@ -59,7 +59,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.6 2003-12-03 19:57:31 mojomonkey Exp $
+ * @version $Id: TestTimer.java,v 1.7 2003-12-04 02:43:36 mojomonkey Exp $
  */
 public class TestTimer extends AbstractGame {
     private TriMesh t;
@@ -106,9 +106,9 @@ public class TestTimer extends AbstractGame {
         rotQuat.fromAngleAxis(angle, axis);
         timer.update();
         input.update(timer.getTimePerFrame());
-        text.print("Frame Rate: " + timer.getFrameRate());
+        //text.print("Frame Rate: " + timer.getFrameRate());
         
-        //t.setLocalRotation(rotQuat);
+        t.setLocalRotation(rotQuat);
         scene.updateGeometricState(0.0f, true);
         
        
@@ -164,7 +164,7 @@ public class TestTimer extends AbstractGame {
         
         display.getRenderer().setCullingMode(Renderer.CULL_BACK);
         rotQuat = new Quaternion();
-        axis = new Vector3f(1,0,0);
+        axis = new Vector3f(1,1,0.5f);
 
     }
 
@@ -221,7 +221,7 @@ public class TestTimer extends AbstractGame {
         LightState state = display.getRenderer().getLightState();
         state.attach(am);
         am.setEnabled(true);
-        scene.setRenderState(state);
+        //scene.setRenderState(state);
         scene.setRenderState(buf);
         cam.update();
         
