@@ -56,7 +56,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.35 2004-05-07 23:17:54 renanse Exp $
+ * @version $Id: Geometry.java,v 1.36 2004-05-12 00:15:27 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -74,18 +74,28 @@ public abstract class Geometry extends Spatial implements Serializable {
     protected int vertQuantity = -1;
 
     //buffers that allow for faster data processing.
-    private transient FloatBuffer colorBuf;
+    protected transient FloatBuffer colorBuf;
 
-    private transient FloatBuffer normBuf;
+    protected transient FloatBuffer normBuf;
 
-    private transient FloatBuffer vertBuf;
+    protected transient FloatBuffer vertBuf;
 
-    private transient FloatBuffer[] texBuf;
+    protected transient FloatBuffer[] texBuf;
 
     //float arrays for update phase
     private float[] colorArray;
 
     private RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
+
+    private boolean useVBOVertex = false;
+    private boolean useVBOTexture = false;
+    private boolean useVBOColor = false;
+    private boolean useVBONormal = false;
+
+    private int vboVertexID = -1;
+    private int vboColorID = -1;
+    private int vboNormalID = -1;
+    private int[] vboTextureIDs;
 
     /**
      * Empty Constructor to be used internally only.
@@ -109,6 +119,7 @@ public abstract class Geometry extends Spatial implements Serializable {
                 .getTextureState().getNumberOfUnits();
         texture = new Vector2f[textureUnits][0];
         texBuf = new FloatBuffer[textureUnits];
+        vboTextureIDs = new int[textureUnits];
     }
 
     /**
@@ -144,6 +155,7 @@ public abstract class Geometry extends Spatial implements Serializable {
                 .getTextureState().getNumberOfUnits();
         this.texture = new Vector2f[textureUnits][0];
         this.texBuf = new FloatBuffer[textureUnits];
+        this.vboTextureIDs = new int[textureUnits];
         this.vertex = vertex;
         this.vertQuantity = vertex.length;
         this.normal = normal;
@@ -187,6 +199,26 @@ public abstract class Geometry extends Spatial implements Serializable {
         updateVertexBuffer();
         updateTextureBuffer();
     }
+
+    public boolean isVBOVertexEnabled() { return useVBOVertex; }
+    public boolean isVBOTextureEnabled() { return useVBOTexture; }
+    public boolean isVBONormalEnabled() { return useVBONormal; }
+    public boolean isVBOColorEnabled() { return useVBOColor; }
+
+    public void setVBOVertexEnabled(boolean enabled) { useVBOVertex = enabled; }
+    public void setVBOTextureEnabled(boolean enabled) { useVBOTexture = enabled; }
+    public void setVBONormalEnabled(boolean enabled) { useVBONormal = enabled; }
+    public void setVBOColorEnabled(boolean enabled) { useVBOColor = enabled; }
+
+    public int getVBOVertexID() { return vboVertexID; }
+    public int getVBOTextureID(int index) { return vboTextureIDs[index]; }
+    public int getVBONormalID() { return vboNormalID; }
+    public int getVBOColorID() { return vboColorID; }
+
+    public void setVBOVertexID(int id) { vboVertexID = id; }
+    public void setVBOTextureID(int index, int id) { vboTextureIDs[index] = id; }
+    public void setVBONormalID(int id) { vboNormalID = id; }
+    public void setVBOColorID(int id) { vboColorID = id; }
 
     /**
      * <code>getColors</code> returns the color information of the geometry.

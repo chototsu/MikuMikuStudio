@@ -52,7 +52,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.23 2004-05-07 22:03:27 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.24 2004-05-12 00:15:28 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -147,6 +147,11 @@ public class TerrainBlock extends AreaClodMesh {
         buildVertices();
         buildTextureCoordinates();
         buildNormals();
+        setVBOVertexEnabled(true);
+        setVBONormalEnabled(true);
+        setVBOTextureEnabled(true);
+        color = null;
+        colorBuf = null;
 
         if (useClod) {
             this.create(null);

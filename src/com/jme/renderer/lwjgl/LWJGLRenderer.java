@@ -92,6 +92,7 @@ import com.jme.scene.state.lwjgl.*;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.widget.WidgetRenderer;
+import org.lwjgl.BufferUtils;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -100,7 +101,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.16 2004-05-07 22:03:26 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.17 2004-05-12 00:15:27 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -875,53 +876,124 @@ public class LWJGLRenderer implements Renderer {
         GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
         GL11.glScalef(scale, scale, scale);
 
+        prepVBO(t);
+
         // render the object
 
-        GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
         GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+        if (t.isVBOVertexEnabled() && GLContext.GL_ARB_vertex_buffer_object) {
+          ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, t.getVBOVertexID());
+          GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+          ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, 0);
+        } else {
+          GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
+        }
 
         FloatBuffer normals = t.getNormalAsFloatBuffer();
-        if (normals != null) {
-            GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+        if (normals != null || t.getVBONormalID() > 0) {
+          GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+          if (t.isVBONormalEnabled() && GLContext.GL_ARB_vertex_buffer_object) {
+            ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, t.getVBONormalID());
+            GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
+            ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, 0);
+          } else {
             GL11.glNormalPointer(0, normals);
+          }
         } else {
-            GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+          GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
         }
 
         FloatBuffer colors = t.getColorAsFloatBuffer();
-        if (colors != null) {
-            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+        if (colors != null || t.getVBOColorID() > 0) {
+          GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+          if (t.isVBOColorEnabled() && GLContext.GL_ARB_vertex_buffer_object) {
+            ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, t.getVBOColorID());
+            GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
+            ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, 0);
+          } else {
             GL11.glColorPointer(4, 0, colors);
+          }
         } else {
-            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+          GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
         }
 
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
-            FloatBuffer textures = t.getTextureAsFloatBuffer(i);
-            if (textures != null) {
-                if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
-                    GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
-                }
-                if (textures != null) {
-                    GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                    GL11.glTexCoordPointer(2, 0, textures);
-                } else {
-                    GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                }
+          FloatBuffer textures = t.getTextureAsFloatBuffer(i);
+          if (textures != null) {
+            if (GLContext.GL_ARB_multitexture && GLContext.OpenGL13) {
+              GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
             }
+            if (textures != null || t.getVBOTextureID(i) > 0) {
+
+              GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+              if (t.isVBOTextureEnabled() && GLContext.GL_ARB_vertex_buffer_object) {
+                ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, t.getVBOTextureID(i));
+                GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
+                ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, 0);
+              } else {
+                GL11.glTexCoordPointer(2, 0, textures);
+              }
+            } else {
+              GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            }
+          }
         }
 
         IntBuffer indices = t.getIndexAsBuffer();
         if (statisticsOn) {
-            int adder = t.getIndexAsBuffer().capacity();
-            int vertAdder = t.getIndexAsBuffer().capacity();
-            numberOfTris += adder / 3;
-            numberOfVerts += vertAdder;
+          int adder = t.getIndexAsBuffer().capacity();
+          int vertAdder = t.getIndexAsBuffer().capacity();
+          numberOfTris += adder / 3;
+          numberOfVerts += vertAdder;
         }
         GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
 
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPopMatrix();
+    }
+
+    IntBuffer buf = BufferUtils.createIntBuffer(16);
+    public void prepVBO(Geometry g) {
+      if (!GLContext.GL_ARB_vertex_buffer_object) return;
+      if (g.isVBOVertexEnabled() && g.getVBOVertexID() <= 0) {
+        ARBBufferObject.glGenBuffersARB(buf);
+        g.setVBOVertexID(buf.get(0));
+        ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, g.getVBOVertexID() );
+        ARBBufferObject.glBufferDataARB( GL15.GL_ARRAY_BUFFER, g.getVertices().length*3*4, g.getVerticeAsFloatBuffer(), ARBBufferObject.GL_STATIC_DRAW_ARB);
+        buf.clear();
+      }
+      if (g.isVBONormalEnabled() && g.getVBONormalID() <= 0) {
+        ARBBufferObject.glGenBuffersARB(buf);
+        g.setVBONormalID(buf.get(0));
+        ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, g.getVBONormalID() );
+        ARBBufferObject.glBufferDataARB( GL15.GL_ARRAY_BUFFER, g.getTextures().length*3*4, g.getNormalAsFloatBuffer(), ARBBufferObject.GL_STATIC_DRAW_ARB);
+        buf.clear();
+      }
+      if (g.isVBOColorEnabled() && g.getVBOColorID() <= 0) {
+        ARBBufferObject.glGenBuffersARB(buf);
+        g.setVBOColorID(buf.get(0));
+        ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, g.getVBOColorID() );
+        ARBBufferObject.glBufferDataARB( GL15.GL_ARRAY_BUFFER, g.getTextures().length*4*4, g.getColorAsFloatBuffer(), ARBBufferObject.GL_STATIC_DRAW_ARB);
+        buf.clear();
+      }
+      if (g.isVBOTextureEnabled()) {
+        for (int i = 0; i < g.getNumberOfUnits(); i++) {
+
+          if (g.getVBOTextureID(i) <= 0) {
+            ARBBufferObject.glGenBuffersARB(buf);
+            g.setVBOTextureID(i, buf.get(0));
+            ARBBufferObject.glBindBufferARB(GL15.GL_ARRAY_BUFFER,
+                                            g.getVBOTextureID(i));
+            ARBBufferObject.glBufferDataARB(GL15.GL_ARRAY_BUFFER,
+                                            g.getTextures().length * 2 * 4,
+                                            g.getTextureAsFloatBuffer(i),
+                                            ARBBufferObject.GL_STATIC_DRAW_ARB);
+            buf.clear();
+          }
+        }
+      }
+      buf.clear();
+      ARBBufferObject.glBindBufferARB( GL15.GL_ARRAY_BUFFER, 0 );
     }
 
     /**
