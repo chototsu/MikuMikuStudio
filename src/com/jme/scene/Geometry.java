@@ -32,6 +32,7 @@
 package com.jme.scene;
 
 import java.io.Serializable;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
@@ -56,7 +57,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.52 2004-07-02 23:49:54 renanse Exp $
+ * @version $Id: Geometry.java,v 1.53 2004-07-06 04:55:22 cep21 Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -958,4 +959,27 @@ public abstract class Geometry extends Spatial implements Serializable {
     protected void setFloatBuffer(FloatBuffer toSet){
         colorBuf=toSet;
     }
+
+
+    /**
+     * Used with Serialization.  Not to be called manually.
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+        in.defaultReadObject();
+        int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
+                .getTextureState().getNumberOfUnits();
+        texBuf = new FloatBuffer[textureUnits];
+        if (color!=null) updateColorBuffer();
+        if (normal!=null) updateNormalBuffer();
+        if (vertex!=null) updateVertexBuffer();
+        if (texture!=null){
+            for (int i=0;i<texture.length;i++)
+                if (texture[i]!=null && texture[i].length!=0) updateTextureBuffer(i);
+        }
+    }
+
 }

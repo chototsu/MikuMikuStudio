@@ -32,6 +32,7 @@
 package com.jme.math;
 
 import java.util.logging.Level;
+import java.io.*;
 
 import com.jme.util.LoggingSystem;
 
@@ -47,9 +48,9 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.23 2004-06-23 18:14:20 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.24 2004-07-06 04:59:59 cep21 Exp $
  */
-public class Vector3f {
+public class Vector3f implements Externalizable{
 
     /**
      * the x value of the vector.
@@ -751,5 +752,31 @@ public class Vector3f {
      */
     public String toString() {
         return "org.jme.math.Vector3f [X=" + x + ", Y=" + y + ", Z=" + z + "]";
+    }
+
+
+    /**
+     * Used with serialization.  Not to be called manually.
+     * @param in
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Externalizable
+     */
+    public void readExternal(ObjectInput in) throws IOException, ClassNotFoundException {
+        x=in.readFloat();
+        y=in.readFloat();
+        z=in.readFloat();
+    }
+
+    /**
+     * Used with serialization.  Not to be called manually.
+     * @param out
+     * @throws IOException
+     * @see java.io.Externalizable
+     */
+    public void writeExternal(ObjectOutput out) throws IOException {
+        out.writeFloat(x);
+        out.writeFloat(y);
+        out.writeFloat(z);
     }
 }
