@@ -45,9 +45,11 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
+import com.jme.scene.TriMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.model.Model;
 import com.jme.scene.model.ase.ASEModel;
+//import com.jme.scene.model.md2.Md2Model;
 import com.jme.scene.shape.Disk;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
@@ -58,8 +60,6 @@ import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
-import com.jme.scene.*;
-//import com.jme.scene.model.md2.*;
 
 /**
  * <code>TestClodMesh</code> shows off the use of the ClodMesh in jME.
@@ -71,8 +71,9 @@ import com.jme.scene.*;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.5 2004-04-08 19:14:59 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.6 2004-04-09 17:06:56 renanse Exp $
  */
+
 public class TestClodMesh extends VariableTimestepGame {
   private Camera cam;
   private Node root, scene;

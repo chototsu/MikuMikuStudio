@@ -34,19 +34,20 @@ package com.jme.scene.lod;
 
 /**
  * <code>CollapseRecord</code>
- * ported from Eberly
+ * originally ported from David Eberly's c++, modifications and
+ * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: CollapseRecord.java,v 1.2 2004-04-08 15:23:00 renanse Exp $
+ * @version $Id: CollapseRecord.java,v 1.3 2004-04-09 17:06:55 renanse Exp $
  */
 
 public class CollapseRecord {
 
-  public CollapseRecord(int iVKeep, int iVThrow, int iVQuantity,
-                        int iTQuantity) {
-    vertToKeep = iVKeep;
-    vertToThrow = iVThrow;
-    m_iVQuantity = iVQuantity;
-    m_iTQuantity = iTQuantity;
+  public CollapseRecord(int toKeep, int toThrow, int vertQuantity,
+                        int triQuantity) {
+    vertToKeep = toKeep;
+    vertToThrow = toThrow;
+    numbVerts = vertQuantity;
+    numbTriangles = triQuantity;
   }
 
   public CollapseRecord() {
@@ -56,12 +57,12 @@ public class CollapseRecord {
   int vertToKeep = -1, vertToThrow = -1;
 
   // number of vertices after edge collapse
-  int m_iVQuantity = 0;
+  int numbVerts = 0;
 
   // number of triangles after edge collapse
-  int m_iTQuantity = 0;
+  int numbTriangles = 0;
 
   // connectivity array indices in [0..TQ-1] that contain VThrow
-  int m_iIQuantity = 0;
+  int numbIndices = 0;
   int[] indices = null;
 }

@@ -40,21 +40,22 @@ import com.jme.scene.TriMesh;
 
 /**
  * <code>ClodMesh</code>
- * ported from Eberly
+ * originally ported from David Eberly's c++, modifications and
+ * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: ClodMesh.java,v 1.7 2004-04-08 19:14:58 renanse Exp $
+ * @version $Id: ClodMesh.java,v 1.8 2004-04-09 17:06:55 renanse Exp $
  */
 public class ClodMesh extends TriMesh {
-  int m_iCurrentRecord, m_iTargetRecord;
-  CollapseRecord[] m_akRecord;
-ClodCreator creator;
+  int currentRecord, targetRecord;
+  CollapseRecord[] records;
+
   public ClodMesh(
       String name,
       TriMesh data,
       CollapseRecord[] records) {
 
     this(name, data.getVertices(), data.getNormals(), data.getColors(),
-          data.getTextures(), data.getIndices(), records);
+         data.getTextures(), data.getIndices(), records);
 
   }
 
@@ -68,21 +69,20 @@ ClodCreator creator;
 
     super(name, vertices, normal, color, texture, indices);
 
-    m_iTargetRecord = 0;
-    m_iCurrentRecord = 0;
+    targetRecord = 0;
+    currentRecord = 0;
 
     if (records != null && records.length > 0) {
-      m_akRecord = records;
+      this.records = records;
     } else {
-      creator = new ClodCreator(vertices, normal, color, texture,
-                                            indices);
-      m_akRecord = creator.getRecords();
+      ClodCreator creator = new ClodCreator(vertices, normal, color, texture,
+                                indices);
+      this.records = creator.getRecords();
       creator.removeAllTriangles();
       creator = null;
     }
-    triangleQuantity = m_akRecord[0].m_iTQuantity;
-    vertQuantity = m_akRecord[0].m_iVQuantity;
-
+    triangleQuantity = this.records[0].numbTriangles;
+    vertQuantity = this.records[0].numbVerts;
 
     updateColorBuffer();
     updateNormalBuffer();
@@ -97,54 +97,50 @@ ClodCreator creator;
     // class to obtain a desired automated change in the target.
 
     int iTargetRecord = getAutomatedTargetRecord();
-    if (iTargetRecord == m_iCurrentRecord) {
+    if (iTargetRecord == currentRecord) {
       return;
     }
 
     // collapse mesh (if necessary)
     int i, iC;
-    while (m_iCurrentRecord < iTargetRecord) {
-      m_iCurrentRecord++;
+    while (currentRecord < iTargetRecord) {
+      currentRecord++;
 
       // replace indices in connectivity array
-      CollapseRecord rkRecord = m_akRecord[m_iCurrentRecord];
-      for (i = 0; i < rkRecord.m_iIQuantity; i++) {
+      CollapseRecord rkRecord = records[currentRecord];
+      for (i = 0; i < rkRecord.numbIndices; i++) {
         iC = rkRecord.indices[i];
-        if (! (indices[iC] == rkRecord.vertToThrow))throw new AssertionError();
+//        if (! (indices[iC] == rkRecord.vertToThrow))throw new AssertionError();
         indices[iC] = rkRecord.vertToKeep;
       }
 
       // reduce vertex count (vertices are properly ordered)
-      vertQuantity = rkRecord.m_iVQuantity;
+      vertQuantity = rkRecord.numbVerts;
 
       // reduce triangle count (triangles are properly ordered)
-      triangleQuantity = rkRecord.m_iTQuantity;
+      triangleQuantity = rkRecord.numbTriangles;
     }
 
     // expand mesh (if necessary)
-    while (m_iCurrentRecord > iTargetRecord) {
+    while (currentRecord > iTargetRecord) {
       // restore indices in connectivity array
-      CollapseRecord rkRecord = m_akRecord[m_iCurrentRecord];
-      for (i = 0; i < rkRecord.m_iIQuantity; i++) {
+      CollapseRecord rkRecord = records[currentRecord];
+      for (i = 0; i < rkRecord.numbIndices; i++) {
         iC = rkRecord.indices[i];
-        if (! (indices[iC] == rkRecord.vertToKeep))throw new AssertionError();
+//        if (! (indices[iC] == rkRecord.vertToKeep))throw new AssertionError();
         indices[iC] = rkRecord.vertToThrow;
       }
 
-      m_iCurrentRecord--;
-      CollapseRecord rkPrevRecord = m_akRecord[m_iCurrentRecord];
+      currentRecord--;
+      CollapseRecord rkPrevRecord = records[currentRecord];
 
       // increase vertex count (vertices are properly ordered)
-      vertQuantity = rkPrevRecord.m_iVQuantity;
+      vertQuantity = rkPrevRecord.numbVerts;
 
       // increase triangle count (triangles are properly ordered)
-      triangleQuantity = rkPrevRecord.m_iTQuantity;
+      triangleQuantity = rkPrevRecord.numbTriangles;
     }
-//    System.err.println("Current record: "+m_iCurrentRecord+" tris: "+triangleQuantity);
-//    for (int j = 0; j < triangleQuantity; j++) {
-//      System.err.println(j+". tri: " + indices[j*3] + "," + indices[j*3+1] + "," + indices[j*3+2]);
-//      System.err.println(j+". tri: " + vertex[indices[j*3]] + "," + vertex[indices[j*3+1]] + "," + vertex[indices[j*3+2]]);
-//    }
+
     updateColorBuffer();
     updateNormalBuffer();
     updateVertexBuffer();
@@ -158,22 +154,22 @@ ClodCreator creator;
   }
 
   public int getRecordQuantity() {
-    return m_akRecord.length;
+    return records.length;
   }
 
   public int getTargetRecord() {
-    return m_iTargetRecord;
+    return targetRecord;
   }
 
   public void setTargetRecord(int target) {
-    m_iTargetRecord = target;
-    if (m_iTargetRecord < 0)
-      m_iTargetRecord = 0;
-    else if (m_iTargetRecord > m_akRecord.length - 1)
-      m_iTargetRecord = m_akRecord.length - 1;
+    targetRecord = target;
+    if (targetRecord < 0)
+      targetRecord = 0;
+    else if (targetRecord > records.length - 1)
+      targetRecord = records.length - 1;
   }
 
   public int getAutomatedTargetRecord() {
-    return m_iTargetRecord;
+    return targetRecord;
   }
 }

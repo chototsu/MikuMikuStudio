@@ -32,242 +32,45 @@
 
 package com.jme.scene.lod;
 
-import java.util.TreeSet;
 import java.util.Iterator;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeMap;
+import java.util.TreeSet;
 import java.util.Vector;
 
 /**
  * <code>VETMesh</code>
- * ported from Eberly
+ * originally ported from David Eberly's c++, modifications and
+ * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: VETMesh.java,v 1.4 2004-04-08 15:23:00 renanse Exp $
+ * @version $Id: VETMesh.java,v 1.5 2004-04-09 17:06:55 renanse Exp $
  */
 
 public class VETMesh {
 
-  protected TreeMap m_kVMap; // std::map<Integer,VertexAttribute>
-  protected TreeMap m_kEMap; // std::map<Edge,EdgeAttribute>
-  protected TreeMap m_kTMap; // std::map<Triangle,TriangleAttribute>
-
-  // vertex is <v>
-  // edge is <v0,v1> where v0 = min(v0,v1)
-  // triangle is <v0,v1,v2> where v0 = min(v0,v1,v2)
-
-  public class Edge implements Comparable {
-    int m_aiV[] = new int[2];
-
-    public Edge() {}
-
-    public Edge(int iV0, int iV1) {
-      if (iV0 < iV1) {
-        // v0 is minimum
-        m_aiV[0] = iV0;
-        m_aiV[1] = iV1;
-      } else {
-        // v1 is minimum
-        m_aiV[0] = iV1;
-        m_aiV[1] = iV0;
-      }
-    }
-
-    public boolean lessThan(Edge rkE) {
-      if (m_aiV[1] < rkE.m_aiV[1])
-        return true;
-
-      if (m_aiV[1] == rkE.m_aiV[1])
-        return m_aiV[0] < rkE.m_aiV[0];
-
-      return false;
-    }
-
-    public boolean equals(Object obj) {
-      Edge rkE = (Edge)obj;
-      return (m_aiV[0] == rkE.m_aiV[0]) && (m_aiV[1] == rkE.m_aiV[1]);
-    }
-
-    public int compareTo(Object o) {
-      Edge e = (Edge)o;
-      if (lessThan(e))
-        return -1;
-      else if (equals(e))
-        return 0;
-      else
-        return 1;
-    }
-//
-//    public int hashCode() {
-//      return hashCodeStr().hashCode();
-//    }
-//
-//    public String hashCodeStr() {
-//      StringBuffer code = new StringBuffer("v");
-//      code.append(getStr(m_aiV[0], 8));
-//      code.append("v");
-//      code.append(getStr(m_aiV[1], 8));
-//
-//      return code.toString();
-//    }
-
-  };
-
-  public class Triangle implements Comparable {
-    public int m_aiV[] = new int[3];
-
-    public Triangle() {}
-
-    public Triangle(int iV0, int iV1, int iV2) {
-      if (iV0 < iV1) {
-        if (iV0 < iV2) {
-          // v0 is minimum
-          m_aiV[0] = iV0;
-          m_aiV[1] = iV1;
-          m_aiV[2] = iV2;
-        } else {
-          // v2 is minimum
-          m_aiV[0] = iV2;
-          m_aiV[1] = iV0;
-          m_aiV[2] = iV1;
-        }
-      } else {
-        if (iV1 < iV2) {
-          // v1 is minimum
-          m_aiV[0] = iV1;
-          m_aiV[1] = iV2;
-          m_aiV[2] = iV0;
-        } else {
-          // v2 is minimum
-          m_aiV[0] = iV2;
-          m_aiV[1] = iV0;
-          m_aiV[2] = iV1;
-        }
-      }
-
-    }
-
-    public boolean lessThan(Triangle rkT) {
-      if (m_aiV[2] < rkT.m_aiV[2])
-        return true;
-
-      if (m_aiV[2] == rkT.m_aiV[2]) {
-        if (m_aiV[1] < rkT.m_aiV[1])
-          return true;
-
-        if (m_aiV[1] == rkT.m_aiV[1])
-          return m_aiV[0] < rkT.m_aiV[0];
-      }
-
-      return false;
-    }
-
-    public boolean equals(Object obj) {
-      Triangle rkT = (Triangle)obj;
-      return (m_aiV[0] == rkT.m_aiV[0]) &&
-          ( (m_aiV[1] == rkT.m_aiV[1] && m_aiV[2] == rkT.m_aiV[2]) ||
-           (m_aiV[1] == rkT.m_aiV[2] && m_aiV[2] == rkT.m_aiV[1]) );
-    }
-
-    public int compareTo(Object o) {
-      Triangle t = (Triangle)o;
-      if (lessThan(t))
-        return -1;
-      else if (equals(t))
-        return 0;
-      else
-        return 1;
-    }
-//
-//    public int hashCode() {
-//      return hashCodeStr().hashCode();
-//    }
-//    public String hashCodeStr() {
-//      StringBuffer code = new StringBuffer("v");
-//      code.append(getStr(m_aiV[0],8));
-//      code.append("v");
-//      if (m_aiV[1] <= m_aiV[2]) {
-//        code.append(getStr(m_aiV[1], 8));
-//        code.append("v");
-//        code.append(getStr(m_aiV[2], 8));
-//      } else {
-//        code.append(getStr(m_aiV[2], 8));
-//        code.append("v");
-//        code.append(getStr(m_aiV[1], 8));
-//      }
-//
-//      return code.toString();
-//    }
-  };
-
-  private String getStr(int code, int length) {
-    StringBuffer rVal = new StringBuffer(""+code);
-    while (rVal.length() < length) {
-      rVal.insert(0, "0");
-    }
-    return rVal.toString();
-  }
-
-  public class VertexAttribute {
-    public VertexAttribute() {
-      m_kESet = new ExVector(8,8);
-      m_kTSet = new ExVector(8,8);
-      m_pvData = null;
-    }
-
-    public Object m_pvData;
-    public ExVector m_kESet; //<Edge>
-    public ExVector m_kTSet; //<Triangle>
-  };
-
-  public class EdgeAttribute {
-
-    public EdgeAttribute() {
-      m_kTSet = new ExVector(2,2);
-      m_pvData = null;
-    }
-
-    public Object m_pvData;
-    public ExVector m_kTSet; //<Triangle>
-  };
-
-  public class TriangleAttribute {
-    public TriangleAttribute() {
-      m_pvData = null;
-    }
-
-    public Object m_pvData;
-  };
-
-//      // for readability of the code
-//      typedef std::map<int,VertexAttribute> TreeMap;
-//      typedef TreeMap::iterator Iterator;
-//      typedef TreeMap::const_iterator Iterator;
-//      typedef std::map<Edge,EdgeAttribute> TreeMap;
-//      typedef TreeMap::iterator Iterator;
-//      typedef TreeMap::const_iterator Iterator;
-//      typedef std::map<Triangle,TriangleAttribute> TreeMap;
-//      typedef TreeMap::iterator Iterator;
-//      typedef TreeMap::const_iterator Iterator;
-
+  protected TreeMap vertexMap; // Integer,VertexAttribute
+  protected TreeMap edgeMap; // Edge,EdgeAttribute
+  protected TreeMap triangleMap; // Triangle,TriangleAttribute
 
   // construction
   public VETMesh() {
-    m_kEMap = new TreeMap();
-    m_kVMap = new TreeMap();
-    m_kTMap = new TreeMap();
+    edgeMap = new TreeMap();
+    vertexMap = new TreeMap();
+    triangleMap = new TreeMap();
   }
 
   // accessors for sizes
   public int getVertexQuantity() {
-    return (int) m_kVMap.size();
+    return (int) vertexMap.size();
   }
 
   public int getEdgeQuantity() {
-    return (int) m_kEMap.size();
+    return (int) edgeMap.size();
   }
 
   public int getTriangleQuantity() {
-    return (int) m_kTMap.size();
+    return (int) triangleMap.size();
   }
 
   // Used for operations that create new meshes from the current one.  This
@@ -284,195 +87,187 @@ public class VETMesh {
   // behavior for the destruction is to do nothing.  A derived class may
   // override the destruction and handle the data that was detached from
   // the specific mesh component before its destruction.
-  public void onVertexInsert(int iV, boolean insert, VertexAttribute va) {}
+  public void onVertexInsert(Integer vert, boolean insert, VertexAttribute att) {}
 
-  public void onVertexRemove(int iV, boolean remove, VertexAttribute va) {}
+  public void onVertexRemove(Integer vert, boolean remove, VertexAttribute att) {}
 
-  public void onEdgeInsert(Edge rkE, boolean insert, EdgeAttribute va) {}
+  public void onEdgeInsert(Edge edge, boolean insert, EdgeAttribute att) {}
 
-  public void onEdgeRemove(Edge rkE, boolean remove, EdgeAttribute va) {}
+  public void onEdgeRemove(Edge edge, boolean remove, EdgeAttribute att) {}
 
-  public void onTriangleInsert(Triangle rkT, boolean insert,
-                               TriangleAttribute ta) {}
+  public void onTriangleInsert(Triangle tri, boolean insert,
+                               TriangleAttribute att) {}
 
-  public void onTriangleRemove(Triangle rkT, boolean remove,
-                               TriangleAttribute ta) {}
+  public void onTriangleRemove(Triangle tri, boolean remove,
+                               TriangleAttribute att) {}
 
-  public void insertTriangle(int iV0, int iV1, int iV2) {
+  public void insertTriangle(int ivert0, int ivert1, int ivert2) {
     boolean hadTri = false, hadV0 = false, hadV1 = false, hadV2 = false,
         hadE0 = false, hadE1 = false, hadE2 = false;
-    Triangle kT = new Triangle(iV0, iV1, iV2);
-    Edge kE0 = new Edge(iV0, iV1), kE1 = new Edge(iV1, iV2),
-        kE2 = new Edge(iV2, iV0);
+    Integer vert0 = new Integer(ivert0), vert1 = new Integer(ivert1),
+        vert2 = new Integer(ivert2);
+    Triangle tri = new Triangle(ivert0, ivert1, ivert2);
+    Edge edge0 = new Edge(ivert0, ivert1), edge1 = new Edge(ivert1, ivert2),
+        edge2 = new Edge(ivert2, ivert0);
 
     // insert triangle
-    TriangleAttribute kRT_TA = new TriangleAttribute();
-//    Pair kRT =
-    hadTri = (m_kTMap.get(kT) != null);
-    m_kTMap.put(kT, kRT_TA); //pair<Iterator,boolean>
+    TriangleAttribute triAtt = new TriangleAttribute();
+    hadTri = (triangleMap.get(tri) != null);
+    triangleMap.put(tri, triAtt);
 
     // insert vertices
-    VertexAttribute iV0_VA = (VertexAttribute)m_kVMap.get(new Integer(iV0));
-    if (iV0_VA == null) iV0_VA = new VertexAttribute();
+    VertexAttribute vert0att = (VertexAttribute) vertexMap.get(vert0);
+    if (vert0att == null) vert0att = new VertexAttribute();
     else hadV0 = true;
-    iV0_VA.m_kESet.add(kE0);
-    iV0_VA.m_kESet.add(kE2);
-    iV0_VA.m_kTSet.add(kT);
-    //    Pair kRV0 =
-    m_kVMap.put(new Integer(iV0), iV0_VA); //pair<Iterator,boolean>
+    vert0att.edgeSet.add(edge0);
+    vert0att.edgeSet.add(edge2);
+    vert0att.triangleSet.add(tri);
+    vertexMap.put(vert0, vert0att);
 
-    VertexAttribute iV1_VA = (VertexAttribute)m_kVMap.get(new Integer(iV1));
-    if (iV1_VA == null) iV1_VA = new VertexAttribute();
+    VertexAttribute vert1att = (VertexAttribute) vertexMap.get(vert1);
+    if (vert1att == null) vert1att = new VertexAttribute();
     else hadV1 = true;
-    iV1_VA.m_kESet.add(kE0);
-    iV1_VA.m_kESet.add(kE1);
-    iV1_VA.m_kTSet.add(kT);
-    //    Pair kRV1 =
-    m_kVMap.put(new Integer(iV1), iV1_VA); //pair<Iterator,boolean>
+    vert1att.edgeSet.add(edge0);
+    vert1att.edgeSet.add(edge1);
+    vert1att.triangleSet.add(tri);
+    vertexMap.put(vert1, vert1att);
 
-    VertexAttribute iV2_VA = (VertexAttribute)m_kVMap.get(new Integer(iV2));
-    if (iV2_VA == null) iV2_VA = new VertexAttribute();
+    VertexAttribute vert2att = (VertexAttribute) vertexMap.get(vert2);
+    if (vert2att == null) vert2att = new VertexAttribute();
     else hadV2 = true;
-    iV2_VA.m_kESet.add(kE1);
-    iV2_VA.m_kESet.add(kE2);
-    iV2_VA.m_kTSet.add(kT);
-    //    Pair kRV2 =
-    m_kVMap.put(new Integer(iV2), iV2_VA); //pair<Iterator,boolean>
+    vert2att.edgeSet.add(edge1);
+    vert2att.edgeSet.add(edge2);
+    vert2att.triangleSet.add(tri);
+    vertexMap.put(vert2, vert2att);
 
     // insert edges
-    EdgeAttribute kE0_EA = (EdgeAttribute)m_kEMap.get(kE0);
-    if (kE0_EA == null) kE0_EA = new EdgeAttribute();
+    EdgeAttribute edge0att = (EdgeAttribute) edgeMap.get(edge0);
+    if (edge0att == null) edge0att = new EdgeAttribute();
     else hadE0 = true;
-    kE0_EA.m_kTSet.add(kT);
-//    Pair kRE0 =
-    m_kEMap.put(kE0, kE0_EA); //pair<Iterator,boolean>
+    edge0att.triangleSet.add(tri);
+    edgeMap.put(edge0, edge0att);
 
-    EdgeAttribute kE1_EA = (EdgeAttribute)m_kEMap.get(kE1);
-    if (kE1_EA == null) kE1_EA = new EdgeAttribute();
+    EdgeAttribute edge1att = (EdgeAttribute) edgeMap.get(edge1);
+    if (edge1att == null) edge1att = new EdgeAttribute();
     else hadE1 = true;
-    kE1_EA.m_kTSet.add(kT);
-//    Pair kRE1 =
-    m_kEMap.put(kE1, kE1_EA); //pair<Iterator,boolean>
+    edge1att.triangleSet.add(tri);
+    edgeMap.put(edge1, edge1att);
 
-    EdgeAttribute kE2_EA = (EdgeAttribute)m_kEMap.get(kE2);
-    if (kE2_EA == null) kE2_EA = new EdgeAttribute();
+    EdgeAttribute edge2att = (EdgeAttribute) edgeMap.get(edge2);
+    if (edge2att == null) edge2att = new EdgeAttribute();
     else hadE2 = true;
-    kE2_EA.m_kTSet.add(kT);
-//    Pair kRE2 =
-    m_kEMap.put(kE2, kE2_EA); //pair<Iterator,boolean>
+    edge2att.triangleSet.add(tri);
+    edgeMap.put(edge2, edge2att);
 
     // Notify derived classes that mesh components have been inserted.  The
     // notification occurs here to make sure the derived classes have access
     // to the current state of the mesh after the triangle insertion.
-    onVertexInsert(iV0, !hadV0, iV0_VA);
-    onVertexInsert(iV1, !hadV1, iV1_VA);
-    onVertexInsert(iV2, !hadV2, iV2_VA);
-    onEdgeInsert(kE0, !hadE0, kE0_EA);
-    onEdgeInsert(kE1, !hadE1, kE1_EA);
-    onEdgeInsert(kE2, !hadE2, kE2_EA);
-    onTriangleInsert(kT, !hadTri, kRT_TA);
+    onVertexInsert(vert0, !hadV0, vert0att);
+    onVertexInsert(vert1, !hadV1, vert1att);
+    onVertexInsert(vert2, !hadV2, vert2att);
+    onEdgeInsert(edge0, !hadE0, edge0att);
+    onEdgeInsert(edge1, !hadE1, edge1att);
+    onEdgeInsert(edge2, !hadE2, edge2att);
+    onTriangleInsert(tri, !hadTri, triAtt);
   }
 
-  public void insertTriangle(Triangle rkT) {
-    insertTriangle(rkT.m_aiV[0], rkT.m_aiV[1], rkT.m_aiV[2]);
+  public void insertTriangle(Triangle tri) {
+    insertTriangle(tri.vert[0], tri.vert[1], tri.vert[2]);
   }
 
-  public void removeTriangle(int iV0, int iV1, int iV2) {
+  public void removeTriangle(int ivert0, int ivert1, int ivert2) {
     // remove triangle
-    Triangle kT = new Triangle(iV0, iV1, iV2);
-    TriangleAttribute pkTA = (TriangleAttribute) m_kTMap.get(kT);
+    Triangle kT = new Triangle(ivert0, ivert1, ivert2);
+    TriangleAttribute pkTA = (TriangleAttribute) triangleMap.get(kT);
     if (pkTA == null) {
       // triangle does not exist, nothing to do
       return;
     }
 
+    Integer vert0 = new Integer(ivert0), vert1 = new Integer(ivert1),
+        vert2 = new Integer(ivert2);
+
     // update edges
-    Edge kE0 = new Edge(iV0, iV1), kE1 = new Edge(iV1, iV2),
-        kE2 = new Edge(iV2, iV0);
+    Edge kE0 = new Edge(ivert0, ivert1), kE1 = new Edge(ivert1, ivert2),
+        kE2 = new Edge(ivert2, ivert0);
 
-    EdgeAttribute pkE0 = (EdgeAttribute) m_kEMap.get(kE0);
-//    assert(pkE0 != null);
-    pkE0.m_kTSet.remove(kT);
+    EdgeAttribute pkE0 = (EdgeAttribute) edgeMap.get(kE0);
+    pkE0.triangleSet.remove(kT);
 
-    EdgeAttribute pkE1 = (EdgeAttribute) m_kEMap.get(kE1);
-//    assert(pkE1 != null);
-    pkE1.m_kTSet.remove(kT);
+    EdgeAttribute pkE1 = (EdgeAttribute) edgeMap.get(kE1);
+    pkE1.triangleSet.remove(kT);
 
-    EdgeAttribute pkE2 = (EdgeAttribute) m_kEMap.get(kE2);
-//    assert(pkE2 != null);
-    pkE2.m_kTSet.remove(kT);
+    EdgeAttribute pkE2 = (EdgeAttribute) edgeMap.get(kE2);
+    pkE2.triangleSet.remove(kT);
 
     // update vertices
-    VertexAttribute pkV0 = (VertexAttribute) m_kVMap.get(new Integer(iV0));
-//    assert(pkV0 != null);
-    pkV0.m_kTSet.remove(kT);
+    VertexAttribute pkV0 = (VertexAttribute) vertexMap.get(vert0);
+    pkV0.triangleSet.remove(kT);
 
-    VertexAttribute pkV1 = (VertexAttribute) m_kVMap.get(new Integer(iV1));
-//    assert(pkV1 != null);
-    pkV1.m_kTSet.remove(kT);
+    VertexAttribute pkV1 = (VertexAttribute) vertexMap.get(vert1);
+    pkV1.triangleSet.remove(kT);
 
-    VertexAttribute pkV2 = (VertexAttribute) m_kVMap.get(new Integer(iV2));
-//    assert(pkV2 != null);
-    pkV2.m_kTSet.remove(kT);
+    VertexAttribute pkV2 = (VertexAttribute) vertexMap.get(vert2);
+    pkV2.triangleSet.remove(kT);
 
-    if (pkE0.m_kTSet.size() == 0) {
-      pkV0.m_kESet.remove(kE0);
-      pkV1.m_kESet.remove(kE0);
+    if (pkE0.triangleSet.size() == 0) {
+      pkV0.edgeSet.remove(kE0);
+      pkV1.edgeSet.remove(kE0);
     }
 
-    if (pkE1.m_kTSet.size() == 0) {
-      pkV1.m_kESet.remove(kE1);
-      pkV2.m_kESet.remove(kE1);
+    if (pkE1.triangleSet.size() == 0) {
+      pkV1.edgeSet.remove(kE1);
+      pkV2.edgeSet.remove(kE1);
     }
 
-    if (pkE2.m_kTSet.size() == 0) {
-      pkV0.m_kESet.remove(kE2);
-      pkV2.m_kESet.remove(kE2);
+    if (pkE2.triangleSet.size() == 0) {
+      pkV0.edgeSet.remove(kE2);
+      pkV2.edgeSet.remove(kE2);
     }
 
     // Notify derived classes that mesh components are about to be destroyed.
     // The notification occurs here to make sure the derived classes have
     // access to the current state of the mesh before the triangle removal.
 
-    boolean bDestroy = pkV0.m_kESet.size() == 0 &&
-        pkV0.m_kTSet.size() == 0;
-    onVertexRemove(iV0, bDestroy, pkV0);
+    boolean bDestroy = pkV0.edgeSet.size() == 0 &&
+        pkV0.triangleSet.size() == 0;
+    onVertexRemove(vert0, bDestroy, pkV0);
     if (bDestroy)
-      m_kVMap.remove(new Integer(iV0));
+      vertexMap.remove(vert0);
 
-    bDestroy = pkV1.m_kESet.size() == 0 &&
-        pkV1.m_kTSet.size() == 0;
-    onVertexRemove(iV1, bDestroy, pkV1);
+    bDestroy = pkV1.edgeSet.size() == 0 &&
+        pkV1.triangleSet.size() == 0;
+    onVertexRemove(vert1, bDestroy, pkV1);
     if (bDestroy)
-      m_kVMap.remove(new Integer(iV1));
+      vertexMap.remove(vert1);
 
-    bDestroy = pkV2.m_kESet.size() == 0 &&
-        pkV2.m_kTSet.size() == 0;
-    onVertexRemove(iV2, bDestroy, pkV2);
+    bDestroy = pkV2.edgeSet.size() == 0 &&
+        pkV2.triangleSet.size() == 0;
+    onVertexRemove(vert2, bDestroy, pkV2);
     if (bDestroy)
-      m_kVMap.remove(new Integer(iV2));
+      vertexMap.remove(vert2);
 
-    bDestroy = pkE0.m_kTSet.size() == 0;
+    bDestroy = pkE0.triangleSet.size() == 0;
     onEdgeRemove(kE0, bDestroy, pkE0);
     if (bDestroy)
-      m_kEMap.remove(kE0);
+      edgeMap.remove(kE0);
 
-    bDestroy = pkE1.m_kTSet.size() == 0;
+    bDestroy = pkE1.triangleSet.size() == 0;
     onEdgeRemove(kE1, bDestroy, pkE1);
     if (bDestroy)
-      m_kEMap.remove(kE1);
+      edgeMap.remove(kE1);
 
-    bDestroy = pkE2.m_kTSet.size() == 0;
+    bDestroy = pkE2.triangleSet.size() == 0;
     onEdgeRemove(kE2, bDestroy, pkE2);
     if (bDestroy)
-      m_kEMap.remove(kE2);
+      edgeMap.remove(kE2);
 
     onTriangleRemove(kT, true, pkTA);
-    m_kTMap.remove(kT);
+    triangleMap.remove(kT);
   }
 
-  public void removeTriangle(Triangle rkT) {
-    removeTriangle(rkT.m_aiV[0], rkT.m_aiV[1], rkT.m_aiV[2]);
+  public void removeTriangle(Triangle tri) {
+    removeTriangle(tri.vert[0], tri.vert[1], tri.vert[2]);
   }
 
   // This should be called before Mesh destruction if a derived class has
@@ -485,103 +280,43 @@ public class VETMesh {
   // destructor call.
 
   public void removeAllTriangles() {
-    Object[] tris = m_kTMap.keySet().toArray();
+    Object[] tris = triangleMap.keySet().toArray();
     for (int x = 0; x < tris.length; x++) {
       Triangle tri = (Triangle) tris[x];
-      int iV0 = tri.m_aiV[0];
-      int iV1 = tri.m_aiV[1];
-      int iV2 = tri.m_aiV[2];
+      int iV0 = tri.vert[0];
+      int iV1 = tri.vert[1];
+      int iV2 = tri.vert[2];
       removeTriangle(iV0, iV1, iV2);
     }
   }
 
-  // write the mesh to an ASCII file
-  public void printToFile(String acFilename) {
-//      ofstream kOStr(acFilename);
-//      int i;
-//
-//      // print vertices
-//      kOStr << "vertex quantity = " << (int)m_kVMap.size() << endl;
-//      for (Iterator pkVM = m_kVMap.begin(); pkVM != m_kVMap.end(); pkVM++)
-//      {
-//          kOStr << "v<" << pkVM.first << "> : e ";
-//
-//         TreeMap<Edge>& rkESet = pkVM.second.m_kESet;
-//          for (i = 0; i < rkESet.GetSize(); i++)
-//          {
-//              kOStr << '<' << rkESet[i].m_aiV[0]
-//                    << ',' << rkESet[i].m_aiV[1]
-//                    << "> ";
-//          }
-//
-//          kOStr << ": t ";
-//         TreeMap<Triangle>& rkTSet = pkVM.second.m_kTSet;
-//          for (i = 0; i < rkTSet.GetSize(); i++)
-//          {
-//              kOStr << '<' << rkTSet[i].m_aiV[0]
-//                    << ',' << rkTSet[i].m_aiV[1]
-//                    << ',' << rkTSet[i].m_aiV[2]
-//                    << "> ";
-//          }
-//          kOStr << endl;
-//      }
-//      kOStr << endl;
-//
-//      // print edges
-//      kOStr << "edge quantity = " << (int)m_kEMap.size() << endl;
-//      for (Iterator pkEM = m_kEMap.begin(); pkEM != m_kEMap.end(); pkEM++)
-//      {
-//          kOStr << "e<" << pkEM.first.m_aiV[0] << ',' << pkEM.first.m_aiV[1];
-//          kOStr << "> : t ";
-//         TreeMap<Triangle>& rkTSet = pkEM.second.m_kTSet;
-//          for (i = 0; i < rkTSet.GetSize(); i++)
-//          {
-//              kOStr << '<' << rkTSet[i].m_aiV[0]
-//                    << ',' << rkTSet[i].m_aiV[1]
-//                    << ',' << rkTSet[i].m_aiV[2]
-//                    << "> ";
-//          }
-//          kOStr << endl;
-//      }
-//      kOStr << endl;
-//
-//      // print triangles
-//      kOStr << "triangle quantity = " << (int)m_kTMap.size() << endl;
-//      for (Iterator pkTM = m_kTMap.begin(); pkTM != m_kTMap.end(); pkTM++)
-//      {
-//          kOStr << "t<" << pkTM.first.m_aiV[0] << ',' << pkTM.first.m_aiV[1];
-//          kOStr << ',' << pkTM.first.m_aiV[2]  << ">" << endl;
-//      }
-//      kOStr << endl;
-  }
-
   // vertex attributes
   public TreeMap getVertexMap() {
-    return m_kVMap;
+    return vertexMap;
   }
 
   // edge attributes
   public TreeMap getEdgeMap() {
-    return m_kEMap;
+    return edgeMap;
   }
 
-  public ExVector getTriangles(int iV0, int iV1) { //<Triangle>
-    EdgeAttribute pkE = (EdgeAttribute) m_kEMap.get(new Edge(iV0, iV1));
-    return (pkE != null ? pkE.m_kTSet : null);
+  public ExVector getTriangles(int vert0, int vert1) { //<Triangle>
+    EdgeAttribute edgeAtt = (EdgeAttribute) edgeMap.get(new Edge(vert0, vert1));
+    return (edgeAtt != null ? edgeAtt.triangleSet : null);
   }
 
   // triangle attributes
   public TreeMap getTriangleMap() {
-    return m_kTMap;
+    return triangleMap;
   }
 
   // The mesh is manifold if each edge has at most two adjacent triangles.
   // It is possible that the mesh has multiple connected components.
   public boolean isManifold() {
-    Iterator it = m_kEMap.values().iterator();
+    Iterator it = edgeMap.values().iterator();
     while (it.hasNext()) {
       EdgeAttribute ea = (EdgeAttribute) it.next();
-      if (ea.m_kTSet.size() > 2)
+      if (ea.triangleSet.size() > 2)
         return false;
     }
     return true;
@@ -590,10 +325,10 @@ public class VETMesh {
   // The mesh is closed if each edge has exactly two adjacent triangles.
   // It is possible that the mesh has multiple connected components.
   public boolean isClosed() {
-    Iterator it = m_kEMap.values().iterator();
+    Iterator it = edgeMap.values().iterator();
     while (it.hasNext()) {
       EdgeAttribute ea = (EdgeAttribute) it.next();
-      if (ea.m_kTSet.size() != 2)
+      if (ea.triangleSet.size() != 2)
         return false;
     }
     return true;
@@ -605,37 +340,38 @@ public class VETMesh {
     // Do a depth-first search of the mesh.  It is connected if and only if
     // all of the triangles are visited on a single search.
 
-    int iTSize = (int) m_kTMap.size();
+    int iTSize = (int) triangleMap.size();
     if (iTSize == 0)
       return true;
 
     // for marking visited triangles during the traversal
     TreeMap kVisitedMap = new TreeMap(); // Triangle, Boolean
-    Iterator it = m_kTMap.keySet().iterator();
+    Iterator it = triangleMap.keySet().iterator();
     while (it.hasNext()) {
       kVisitedMap.put(it.next(), Boolean.FALSE);
     }
 
-      // start the traversal at any triangle in the mesh
+    // start the traversal at any triangle in the mesh
     Stack kStack = new Stack(); // <Triangle>
-    kStack.push(m_kTMap.keySet().toArray()[0]);
+    kStack.push(triangleMap.keySet().toArray()[0]);
     kVisitedMap.put(kStack.get(0), Boolean.TRUE);
     iTSize--;
 
     Iterator triIt;
     while (!kStack.empty()) {
       // start at the current triangle
-      Triangle kT = (Triangle)kStack.pop();
+      Triangle kT = (Triangle) kStack.pop();
 
       for (int i = 0; i < 3; i++) {
         // get an edge of the current triangle
-        EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(new Edge(kT.m_aiV[i], kT.m_aiV[ (i + 1) % 3]));
+        EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(new Edge(kT.vert[i],
+            kT.vert[ (i + 1) % 3]));
 
         // visit each adjacent triangle
-        ExVector rkTSet = (ExVector)pkE.m_kTSet.clone(); // <Triangle>
+        ExVector rkTSet = (ExVector) pkE.triangleSet.clone(); // <Triangle>
         triIt = rkTSet.iterator();
         while (triIt.hasNext()) {
-          Triangle rkTAdj = (Triangle)triIt.next();
+          Triangle rkTAdj = (Triangle) triIt.next();
           if (Boolean.FALSE.equals(kVisitedMap.get(rkTAdj))) {
             // this adjacent triangle not yet visited
             kStack.push(rkTAdj);
@@ -658,15 +394,15 @@ public class VETMesh {
   // the raiConnect array.  The quantity of indices for component i is
   // Q(i) = Index[i+1]-Index[i] for 0 <= i < N.  The application is
   // responsible for deleting raiConnect.
-  public void getComponents(Vector rkComponents) { // <VETMesh*>
+  public void getComponents(Vector store) { // <VETMesh*>
     // Do a depth-first search of the mesh to find connected components.
-    int iTSize = (int) m_kTMap.size();
+    int iTSize = (int) triangleMap.size();
     if (iTSize == 0)
       return;
 
     // for marking visited triangles during the traversal
     TreeMap kVisitedMap = new TreeMap(); // Triangle, Boolean
-    Iterator it = m_kTMap.keySet().iterator();
+    Iterator it = triangleMap.keySet().iterator();
     while (it.hasNext()) {
       kVisitedMap.put(it.next(), Boolean.FALSE);
     }
@@ -676,7 +412,7 @@ public class VETMesh {
       Stack kStack = new Stack(); // <Triangle>
       Iterator visIt = kVisitedMap.keySet().iterator();
       while (visIt.hasNext()) {
-        Triangle tri = (Triangle)visIt.next();
+        Triangle tri = (Triangle) visIt.next();
         if (Boolean.FALSE.equals(kVisitedMap.get(tri))) {
           // this triangle not yet visited
           kStack.push(tri);
@@ -691,19 +427,19 @@ public class VETMesh {
       Iterator triIt;
       while (!kStack.empty()) {
         // start at the current triangle
-        Triangle kT = (Triangle)kStack.pop();
+        Triangle kT = (Triangle) kStack.pop();
         pkComponent.insertTriangle(kT);
 
         for (int i = 0; i < 3; i++) {
           // get an edge of the current triangle
-          Edge kE = new Edge(kT.m_aiV[i], kT.m_aiV[ (i + 1) % 3]);
-          EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(kE);
+          Edge kE = new Edge(kT.vert[i], kT.vert[ (i + 1) % 3]);
+          EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(kE);
 
           // visit each adjacent triangle
-          ExVector rkTSet = (ExVector)pkE.m_kTSet.clone(); // <Triangle>
+          ExVector rkTSet = (ExVector) pkE.triangleSet.clone(); // <Triangle>
           triIt = rkTSet.iterator();
           while (triIt.hasNext()) {
-            Triangle rkTAdj = (Triangle)triIt.next();
+            Triangle rkTAdj = (Triangle) triIt.next();
             if (Boolean.FALSE.equals(kVisitedMap.get(rkTAdj))) {
               // this adjacent triangle not yet visited
               kStack.push(rkTAdj);
@@ -713,7 +449,7 @@ public class VETMesh {
           }
         }
       }
-      rkComponents.add(pkComponent);
+      store.add(pkComponent);
     }
   }
 
@@ -721,7 +457,7 @@ public class VETMesh {
     rkIndex.clear();
 
     // Do a depth-first search of the mesh to find connected components.
-    int iTSize = (int) m_kTMap.size();
+    int iTSize = (int) triangleMap.size();
     if (iTSize == 0) {
       raiConnect = null;
       return;
@@ -733,7 +469,7 @@ public class VETMesh {
 
     // for marking visited triangles during the traversal
     TreeMap kVisitedMap = new TreeMap(); // Triangle, Boolean
-    Iterator it = m_kTMap.keySet().iterator();
+    Iterator it = triangleMap.keySet().iterator();
     while (it.hasNext()) {
       kVisitedMap.put(it.next(), Boolean.FALSE);
     }
@@ -743,7 +479,7 @@ public class VETMesh {
       Stack kStack = new Stack(); // <Triangle>
       Iterator visIt = kVisitedMap.keySet().iterator();
       while (visIt.hasNext()) {
-        Triangle tri = (Triangle)visIt.next();
+        Triangle tri = (Triangle) visIt.next();
         if (Boolean.FALSE.equals(kVisitedMap.get(tri))) {
           // this triangle not yet visited
           kStack.push(tri);
@@ -758,19 +494,19 @@ public class VETMesh {
       Iterator triIt;
       while (!kStack.empty()) {
         // start at the current triangle
-        Triangle kT = (Triangle)kStack.pop();
+        Triangle kT = (Triangle) kStack.pop();
         pkComponent.insertTriangle(kT);
 
         for (int i = 0; i < 3; i++) {
           // get an edge of the current triangle
-          Edge kE = new Edge(kT.m_aiV[i], kT.m_aiV[ (i + 1) % 3]);
-          EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(kE);
+          Edge kE = new Edge(kT.vert[i], kT.vert[ (i + 1) % 3]);
+          EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(kE);
 
           // visit each adjacent triangle
-          ExVector rkTSet = (ExVector)pkE.m_kTSet.clone(); // <Triangle>
+          ExVector rkTSet = (ExVector) pkE.triangleSet.clone(); // <Triangle>
           triIt = rkTSet.iterator();
           while (triIt.hasNext()) {
-            Triangle rkTAdj = (Triangle)triIt.next();
+            Triangle rkTAdj = (Triangle) triIt.next();
             if (Boolean.FALSE.equals(kVisitedMap.get(rkTAdj))) {
               // this adjacent triangle not yet visited
               kStack.push(rkTAdj);
@@ -790,10 +526,10 @@ public class VETMesh {
       TreeSet pkTIter = new TreeSet(); // <Triangle>::iterator
       Iterator tsetIter = kTSet.iterator();
       while (tsetIter.hasNext()) {
-        Triangle rkT = (Triangle)tsetIter.next();
-        raiConnect[iIndex++] = rkT.m_aiV[0];
-        raiConnect[iIndex++] = rkT.m_aiV[1];
-        raiConnect[iIndex++] = rkT.m_aiV[2];
+        Triangle rkT = (Triangle) tsetIter.next();
+        raiConnect[iIndex++] = rkT.vert[0];
+        raiConnect[iIndex++] = rkT.vert[1];
+        raiConnect[iIndex++] = rkT.vert[2];
       }
     }
 
@@ -823,7 +559,7 @@ public class VETMesh {
     // the comments in WmlTriangleMesh.h for RemoveComponent).
     int riIQuantity = 0;
 
-    int iTSize = (int) m_kTMap.size();
+    int iTSize = (int) triangleMap.size();
     if (iTSize == 0)
       return riIQuantity;
 
@@ -831,35 +567,34 @@ public class VETMesh {
     // A set is used instead of a stack to avoid having a large-memory
     // 'visited' map.
     TreeSet kVisited = new TreeSet(); // <Triangle>
-    kVisited.add(m_kTMap.keySet().toArray()[0]);
+    kVisited.add(triangleMap.keySet().toArray()[0]);
 
     // traverse the connected component
     Iterator triIt;
     while (!kVisited.isEmpty()) {
       // start at the current triangle
-      Triangle kT = (Triangle)kVisited.toArray()[0];
+      Triangle kT = (Triangle) kVisited.toArray()[0];
 
       // add adjacent triangles to the set for recursive processing
       for (int i = 0; i < 3; i++) {
         // get an edge of the current triangle
-        Edge kE = new Edge(kT.m_aiV[i], kT.m_aiV[ (i + 1) % 3]);
-        EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(kE);
-//        assert(pkE != null);
+        Edge kE = new Edge(kT.vert[i], kT.vert[ (i + 1) % 3]);
+        EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(kE);
 
         // visit each adjacent triangle
-        ExVector rkTSet = (ExVector)pkE.m_kTSet.clone(); // <Triangle>
+        ExVector rkTSet = (ExVector) pkE.triangleSet.clone(); // <Triangle>
         triIt = rkTSet.iterator();
         while (triIt.hasNext()) {
-          Triangle kTAdj = (Triangle)triIt.next();
+          Triangle kTAdj = (Triangle) triIt.next();
           if (!kTAdj.equals(kT))
             kVisited.add(kTAdj);
         }
       }
 
       // add triangle to connectivity array
-      aiConnect[riIQuantity++] = kT.m_aiV[0];
-      aiConnect[riIQuantity++] = kT.m_aiV[1];
-      aiConnect[riIQuantity++] = kT.m_aiV[2];
+      aiConnect[riIQuantity++] = kT.vert[0];
+      aiConnect[riIQuantity++] = kT.vert[1];
+      aiConnect[riIQuantity++] = kT.vert[2];
 
       // remove the current triangle (visited, no longer needed)
       kVisited.remove(kT);
@@ -882,18 +617,18 @@ public class VETMesh {
   // strip.  In this case, GetConsistentComponents will return connected
   // components, but in fact the triangles will not (and can not) be
   // consistently ordered.
-  public boolean getConsistentComponents(Vector rkComponents) { // <VETMesh*>
+  public boolean getConsistentComponents(Vector store) { // <VETMesh*>
     if (!isManifold())
       return false;
 
     // Do a depth-first search of the mesh to find connected components.
-    int iTSize = (int) m_kTMap.size();
+    int iTSize = (int) triangleMap.size();
     if (iTSize == 0)
       return true;
 
     // for marking visited triangles during the traversal
     TreeMap kVisitedMap = new TreeMap(); // Triangle, Boolean
-    Iterator it = m_kTMap.keySet().iterator();
+    Iterator it = triangleMap.keySet().iterator();
     while (it.hasNext()) {
       kVisitedMap.put(it.next(), Boolean.FALSE);
     }
@@ -904,7 +639,7 @@ public class VETMesh {
       Stack kStack = new Stack(); // <Triangle>
       Iterator visIt = kVisitedMap.keySet().iterator();
       while (visIt.hasNext()) {
-        Triangle tri = (Triangle)visIt.next();
+        Triangle tri = (Triangle) visIt.next();
         if (Boolean.FALSE.equals(kVisitedMap.get(tri))) {
           // this triangle not yet visited
           kStack.push(tri);
@@ -915,46 +650,45 @@ public class VETMesh {
       }
 
       // traverse the connected component of the starting triangle
-      VETMesh pkComponent = create();
+      VETMesh component = create();
       while (!kStack.empty()) {
         // start at the current triangle
-        Triangle kT = (Triangle)kStack.pop();
-        pkComponent.insertTriangle(kT);
+        Triangle kT = (Triangle) kStack.pop();
+        component.insertTriangle(kT);
 
         for (int i = 0; i < 3; i++) {
           // get an edge of the current triangle
-          int iV0 = kT.m_aiV[i], iV1 = kT.m_aiV[ (i + 1) % 3], iV2;
+          int iV0 = kT.vert[i], iV1 = kT.vert[ (i + 1) % 3], iV2;
           Edge kE = new Edge(iV0, iV1);
-          EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(kE);
+          EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(kE);
 
-          int iSize = pkE.m_kTSet.size();
-//          assert(iSize == 1 || iSize == 2); // mesh is manifold
-          Triangle pkTAdj = (Triangle)pkE.m_kTSet.toArray()[0];
+          int iSize = pkE.triangleSet.size();
+          Triangle pkTAdj = (Triangle) pkE.triangleSet.toArray()[0];
           if (iSize == 2) {
             // get the adjacent triangle to the current one
             if (pkTAdj.equals(kT))
-              pkTAdj = (Triangle)pkE.m_kTSet.toArray()[1];
+              pkTAdj = (Triangle) pkE.triangleSet.toArray()[1];
 
             if (Boolean.FALSE.equals(kVisitedMap.get(pkTAdj))) {
               // adjacent triangle not yet visited
-              if ( (pkTAdj.m_aiV[0] == iV0 && pkTAdj.m_aiV[1] == iV1)
-                  || (pkTAdj.m_aiV[1] == iV0 && pkTAdj.m_aiV[2] == iV1)
-                  || (pkTAdj.m_aiV[2] == iV0 && pkTAdj.m_aiV[0] == iV1)) {
+              if ( (pkTAdj.vert[0] == iV0 && pkTAdj.vert[1] == iV1)
+                  || (pkTAdj.vert[1] == iV0 && pkTAdj.vert[2] == iV1)
+                  || (pkTAdj.vert[2] == iV0 && pkTAdj.vert[0] == iV1)) {
                 // adjacent triangle must be reordered
-                iV0 = pkTAdj.m_aiV[0];
-                iV1 = pkTAdj.m_aiV[1];
-                iV2 = pkTAdj.m_aiV[2];
+                iV0 = pkTAdj.vert[0];
+                iV1 = pkTAdj.vert[1];
+                iV2 = pkTAdj.vert[2];
                 kVisitedMap.remove(pkTAdj);
                 removeTriangle(iV0, iV1, iV2);
                 insertTriangle(iV1, iV0, iV2);
                 kVisitedMap.put(new Triangle(iV1, iV0,
-                                            iV2), Boolean.FALSE);
+                                             iV2), Boolean.FALSE);
 
                 // refresh the iterators since maps changed
-                pkE = (EdgeAttribute)m_kEMap.get(kE);
-                pkTAdj = (Triangle)pkE.m_kTSet.toArray()[0];
+                pkE = (EdgeAttribute) edgeMap.get(kE);
+                pkTAdj = (Triangle) pkE.triangleSet.toArray()[0];
                 if (pkTAdj == kT)
-                  pkTAdj = (Triangle)pkE.m_kTSet.toArray()[1];
+                  pkTAdj = (Triangle) pkE.triangleSet.toArray()[1];
               }
 
               kStack.push(pkTAdj);
@@ -964,7 +698,7 @@ public class VETMesh {
           }
         }
       }
-      rkComponents.add(pkComponent);
+      store.add(component);
     }
 
     return true;
@@ -972,132 +706,222 @@ public class VETMesh {
 
   // Reverse the ordering of all triangles in the mesh.
   public VETMesh getReversedOrderMesh() {
-    VETMesh pkReversed = create();
+    VETMesh reversed = create();
 
-    Iterator it = m_kTMap.keySet().iterator();
+    Iterator it = triangleMap.keySet().iterator();
     while (it.hasNext()) {
-      Triangle t = (Triangle) it.next();
-      pkReversed.insertTriangle(t.m_aiV[0], t.m_aiV[2], t.m_aiV[1]);
+      Triangle tri = (Triangle) it.next();
+      reversed.insertTriangle(tri.vert[0], tri.vert[2], tri.vert[1]);
     }
 
-    return pkReversed;
+    return reversed;
   }
 
   // statistics
 
-//  public void getVertices(Set rkVSet) { // <int>&
-//    rkVSet.clear();
-//    Iterator it = m_kVMap.iterator();
-//    while (it.hasNext())
-//      rkVSet.add(it.next());
-//    for (Iterator pkV = m_kVMap.begin(); pkV != m_kVMap.end(); pkV++)
-//      rkVSet.insert(pkV.first);
-//  }
-
-  public Object getData(int iV) {
-    VertexAttribute pkV = (VertexAttribute)m_kVMap.get(new Integer(iV));
-    return (pkV != null ? pkV.m_pvData : null);
+  public void getVertices(Set store) {
+    store.clear();
+    Iterator it = vertexMap.keySet().iterator();
+    while (it.hasNext())
+      store.add(it.next());
   }
 
-  public ExVector getEdges(int iV) { // <Edge>
-    VertexAttribute pkV = (VertexAttribute)m_kVMap.get(new Integer(iV));
-    return (pkV != null ? pkV.m_kESet : null);
+  public Object getData(int vert) {
+    VertexAttribute pkV = (VertexAttribute) vertexMap.get(new Integer(vert));
+    return (pkV != null ? pkV.data : null);
   }
 
-  public ExVector getTriangles(int iV) // <Triangle>
-  {
-    VertexAttribute pkV = (VertexAttribute)m_kVMap.get(new Integer(iV));
-    return (pkV != null ? pkV.m_kTSet : null);
+  public ExVector getEdges(int vert) { // <Edge>
+    VertexAttribute pkV = (VertexAttribute) vertexMap.get(new Integer(vert));
+    return (pkV != null ? pkV.edgeSet : null);
   }
 
-  public void getEdges(TreeSet rkESet) { //<Edge>
-    rkESet.clear();
-    Iterator it = m_kEMap.keySet().iterator();
+  public ExVector getTriangles(int vert) { // <Triangle>
+    VertexAttribute pkV = (VertexAttribute) vertexMap.get(new Integer(vert));
+    return (pkV != null ? pkV.triangleSet : null);
+  }
+
+  public void getEdges(Set store) { //<Edge>
+    store.clear();
+    Iterator it = edgeMap.keySet().iterator();
     while (it.hasNext()) {
-      rkESet.add(it.next());
+      store.add(it.next());
     }
   }
 
-  public Object getData(int iV0, int iV1) {
-    EdgeAttribute pkE = (EdgeAttribute)m_kEMap.get(new Edge(iV0, iV1));
-    return (pkE != null ? pkE.m_pvData : null);
+  public Object getData(int vert0, int vert1) {
+    EdgeAttribute pkE = (EdgeAttribute) edgeMap.get(new Edge(vert0, vert1));
+    return (pkE != null ? pkE.data : null);
   }
 
-  public Object getData(Edge rkE) {
-    return getData(rkE.m_aiV[0], rkE.m_aiV[1]);
+  public Object getData(Edge edge) {
+    return getData(edge.vert[0], edge.vert[1]);
   }
 
-  public void getTriangles(TreeSet rkTSet) { //<Triangle>
-    rkTSet.clear();
-    Iterator it = m_kTMap.keySet().iterator();
+  public void getTriangles(Set store) { //<Triangle>
+    store.clear();
+    Iterator it = triangleMap.keySet().iterator();
     while (it.hasNext()) {
-      rkTSet.add(it.next());
+      store.add(it.next());
     }
   }
 
-  public Object getData(int iV0, int iV1, int iV2) {
-    TriangleAttribute pkT =
-        (TriangleAttribute)m_kTMap.get(new Triangle(iV0, iV1, iV2));
-    return (pkT != null ? pkT.m_pvData : null);
+  public Object getData(int vert0, int vert1, int vert2) {
+    TriangleAttribute triAtt =
+        (TriangleAttribute) triangleMap.get(new Triangle(vert0, vert1, vert2));
+    return (triAtt != null ? triAtt.data : null);
   }
 
-  public void setData(int iV0, int iV1, int iV2, Object data) {
-    TriangleAttribute pkT =
-        (TriangleAttribute)m_kTMap.get(new Triangle(iV0, iV1, iV2));
-    if (pkT != null) pkT.m_pvData = data;
-//    else System.err.println("PKT WAS NULL!  Could not set data!");
+  public void setData(int vert0, int vert1, int vert2, Object data) {
+    TriangleAttribute triAtt =
+        (TriangleAttribute) triangleMap.get(new Triangle(vert0, vert1, vert2));
+    if (triAtt != null) triAtt.data = data;
   }
 
-  public Object getData(Triangle rkT) {
-    return getData(rkT.m_aiV[0], rkT.m_aiV[1], rkT.m_aiV[2]);
+  public Object getData(Triangle tri) {
+    return getData(tri.vert[0], tri.vert[1], tri.vert[2]);
   }
 
-  public void setData(Triangle rkT, Object data) {
-    setData(rkT.m_aiV[0], rkT.m_aiV[1], rkT.m_aiV[2], data);
+  public void setData(Triangle tri, Object data) {
+    setData(tri.vert[0], tri.vert[1], tri.vert[2], data);
   }
 
-//  // statistics
-//  public void getStatistics(int riVQuantity, int riEQuantity,
-//                            int riTQuantity, float rfAverageEdgesPerVertex,
-//                            float rfAverageTrianglesPerVertex,
-//                            float rfAverageTrianglesPerEdge,
-//                            int riMaximumEdgesPerVertex,
-//                            int riMaximumTrianglesPerVertex,
-//                            int riMaximumTrianglesPerEdge) {
-//    riVQuantity = (int) m_kVMap.size();
-//    riEQuantity = (int) m_kEMap.size();
-//    riTQuantity = (int) m_kTMap.size();
-//
-//    int iESumForV = 0;
-//    int iTSumForV = 0;
-//    riMaximumEdgesPerVertex = 0;
-//    riMaximumTrianglesPerVertex = 0;
-//
-//    int iESize, iTSize;
-//
-//    for (Iterator pkV = m_kVMap.begin(); pkV != m_kVMap.end(); pkV++) {
-//      iESize = pkV.second.m_kESet.GetSize();
-//      iTSize = pkV.second.m_kTSet.GetSize();
-//      iESumForV += iESize;
-//      iTSumForV += iTSize;
-//      if (iESize > riMaximumEdgesPerVertex)
-//        riMaximumEdgesPerVertex = iESize;
-//      if (iTSize > riMaximumTrianglesPerVertex)
-//        riMaximumTrianglesPerVertex = iTSize;
-//    }
-//
-//    int iTSumForE = 0;
-//    riMaximumTrianglesPerEdge = 0;
-//    for (Iterator pkE = m_kEMap.begin(); pkE != m_kEMap.end(); pkE++) {
-//      iTSize = pkE.second.m_kTSet.GetSize();
-//      iTSumForE += iTSize;
-//      if (iTSize > riMaximumTrianglesPerEdge)
-//        riMaximumTrianglesPerEdge = iTSize;
-//    }
-//
-//    rfAverageEdgesPerVertex = ( (float) iESumForV) / riVQuantity;
-//    rfAverageTrianglesPerVertex = ( (float) iTSumForV) / riVQuantity;
-//    rfAverageTrianglesPerEdge = ( (float) iTSumForE) / riEQuantity;
-//  }
+  // vertex is <v>
+  // edge is <v0,v1> where v0 = min(v0,v1)
+  // triangle is <v0,v1,v2> where v0 = min(v0,v1,v2)
 
+  public class Edge implements Comparable {
+    int vert[] = new int[2];
+
+    public Edge(int iV0, int iV1) {
+      if (iV0 < iV1) {
+        // v0 is minimum
+        vert[0] = iV0;
+        vert[1] = iV1;
+      } else {
+        // v1 is minimum
+        vert[0] = iV1;
+        vert[1] = iV0;
+      }
+    }
+
+    public boolean lessThan(Edge otherEdge) {
+      if (vert[1] < otherEdge.vert[1])
+        return true;
+
+      if (vert[1] == otherEdge.vert[1])
+        return vert[0] < otherEdge.vert[0];
+
+      return false;
+    }
+
+    public boolean equals(Object obj) {
+      Edge otherEdge = (Edge) obj;
+      return (vert[0] == otherEdge.vert[0]) && (vert[1] == otherEdge.vert[1]);
+    }
+
+    public int compareTo(Object o) {
+      Edge otherEdge = (Edge) o;
+      if (lessThan(otherEdge))
+        return -1;
+      else if (equals(otherEdge))
+        return 0;
+      else
+        return 1;
+    }
+  };
+
+  public class Triangle implements Comparable {
+    public int vert[] = new int[3];
+
+    public Triangle(int vert0, int vert1, int vert2) {
+      if (vert0 < vert1) {
+        if (vert0 < vert2) {
+          // vert0 is minimum
+          vert[0] = vert0;
+          vert[1] = vert1;
+          vert[2] = vert2;
+        } else {
+          // vert2 is minimum
+          vert[0] = vert2;
+          vert[1] = vert0;
+          vert[2] = vert1;
+        }
+      } else {
+        if (vert1 < vert2) {
+          // vert1 is minimum
+          vert[0] = vert1;
+          vert[1] = vert2;
+          vert[2] = vert0;
+        } else {
+          // vert2 is minimum
+          vert[0] = vert2;
+          vert[1] = vert0;
+          vert[2] = vert1;
+        }
+      }
+    }
+
+    public boolean lessThan(Triangle otherTri) {
+      if (vert[2] < otherTri.vert[2])
+        return true;
+
+      if (vert[2] == otherTri.vert[2]) {
+        if (vert[1] < otherTri.vert[1])
+          return true;
+
+        if (vert[1] == otherTri.vert[1])
+          return vert[0] < otherTri.vert[0];
+      }
+
+      return false;
+    }
+
+    public boolean equals(Object obj) {
+      Triangle otherTri = (Triangle) obj;
+      return (vert[0] == otherTri.vert[0]) &&
+          ( (vert[1] == otherTri.vert[1] && vert[2] == otherTri.vert[2]) ||
+           (vert[1] == otherTri.vert[2] && vert[2] == otherTri.vert[1]));
+    }
+
+    public int compareTo(Object o) {
+      Triangle otherTri = (Triangle) o;
+      if (lessThan(otherTri))
+        return -1;
+      else if (equals(otherTri))
+        return 0;
+      else
+        return 1;
+    }
+  };
+
+  public class VertexAttribute {
+    public ExVector edgeSet; //<Edge>
+    public ExVector triangleSet; //<Triangle>
+    public Object data;
+
+    public VertexAttribute() {
+      edgeSet = new ExVector(8, 8);
+      triangleSet = new ExVector(8, 8);
+      data = null;
+    }
+  };
+
+  public class EdgeAttribute {
+    public ExVector triangleSet; //<Triangle>
+    public Object data;
+
+    public EdgeAttribute() {
+      triangleSet = new ExVector(2, 2);
+      data = null;
+    }
+  };
+
+  public class TriangleAttribute {
+    public Object data;
+
+    public TriangleAttribute() {
+      data = null;
+    }
+  };
 }
