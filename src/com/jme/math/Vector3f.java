@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.26 2004-07-22 18:19:59 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.27 2004-08-17 22:21:34 cep21 Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -294,6 +294,23 @@ public class Vector3f implements Externalizable{
     public Vector3f cross(Vector3f v) {
         return new Vector3f(((y * v.z) - (z * v.y)), ((z * v.x) - (x * v.z)),
                 ((x * v.y) - (y * v.x)));
+    }
+
+    /**
+     * <code>cross</code> calculates the cross product of this vector with a
+     * parameter vector v.  The result is stored in <code>result</code>
+     *
+     * @param v
+     *            the vector to take the cross product of with this.
+     * @param result
+     *            the vector to store the cross product result.
+     * @return result, after recieving the cross product vector.
+     */
+    public Vector3f cross(Vector3f v,Vector3f result) {
+        result.x=((y * v.z) - (z * v.y));
+        result.y=((z * v.x) - (x * v.z));
+        result.z=((x * v.y) - (y * v.x));
+        return result;
     }
 
     /**
