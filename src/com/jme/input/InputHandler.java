@@ -44,7 +44,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.9 2004-07-30 21:07:18 guurk Exp $
+ * @version $Id: InputHandler.java,v 1.10 2004-07-30 21:09:27 guurk Exp $
  */
 public class InputHandler {
     /** List of keyboard actions. They are performed in update if valid. */
@@ -67,6 +67,7 @@ public class InputHandler {
     public InputHandler() {
         keyActions = new ArrayList();
         mouseActions = new ArrayList();
+        buffKeyActions = new ArrayList();
     }
 
     /**
