@@ -28,9 +28,9 @@ import com.jme.sound.scene.SoundNode;
 /**
  * Started Date: Jul 24, 2004 <br>
  * <br>
- * 
+ *
  * Demonstrates intersection testing, sound, and making your own controller.
- * 
+ *
  * @author Jack Lindamood
  */
 public class HelloIntersection extends SimpleGame {
@@ -66,7 +66,7 @@ public class HelloIntersection extends SimpleGame {
      * should just be unique in our game to this sound.
      */
     private int laserEventID = 1;
-    
+
     private int hitEventID = 2;
 
     public static void main(String[] args) {
@@ -132,21 +132,21 @@ public class HelloIntersection extends SimpleGame {
         /** Make the sound softer */
         programSound.setGain(1f);
         programSound.setLooping(false);
-       
+
         programSound.setPosition(cam.getLocation());
         /** locate laser and register it with the prog sound. */
 
         laserURL = HelloIntersection.class.getClassLoader().getResource(
                 "jmetest/data/sound/laser.ogg");
         hitURL = HelloIntersection.class.getClassLoader().getResource(
-                "jmetest/data/sound/explosion.ogg");
+                "jmetest/data/sound/explosion.wav");
         // Ask the system for a program id for this resource
         int programid = SoundPool.compile(new URL[] { laserURL });
         int hitid = SoundPool.compile(new URL[] { hitURL });
         // Then we bind the programid we received to our laser event id.
         programSound.bindEvent(laserEventID, programid);
         programSound.bindEvent(hitEventID, hitid);
-        programSound.setMaxDistance(20f);
+        programSound.setMaxDistance(25f);
         //        programSound.setNextProgram(programid);
         snode.attachChild(programSound);
         //... repeat above 3 lines to register other sounds.
@@ -182,8 +182,8 @@ public class HelloIntersection extends SimpleGame {
             rootNode.attachChild(bullet);
             bullet.updateRenderState();
             /** Signal our sound to play laser during rendering */
-            snode.onEvent(laserEventID);
             programSound.setPosition(cam.getLocation());
+            snode.onEvent(laserEventID);
         }
     }
 
