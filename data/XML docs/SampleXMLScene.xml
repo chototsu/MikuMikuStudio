@@ -1,9 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--Sample scene to load-->
 <Scene xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="LoaderFormat.xsd">
+	<SharedElementsBase>
+		<SharedMaterialBase identification="red" alpha="0" ambient=".1 .1 .1 .1" diffuse="1 0 0 0" emissive="0 0 0 0" shiny="64" specular="1 1 1 0"/>
+		<SharedTextureBase filename="CVS root/src/jmetest/data/images/monkey.jpg" identification="monkeyguy"/>
+	</SharedElementsBase>
 	<Model name="Human">
 		<Mesh name="Head">
-			<MaterialState emissive="0 0 0 1" alpha="1" ambient="0 0 0 1" diffuse="0 1 0 1" shiny="64" specular="1 1 1 1"/>
+			<MaterialState emissive="0 0 0 1" alpha="1" ambient=".1 .1 .1 1" diffuse="0 1 0 1" shiny="64" specular="1 1 1 1"/>
 			<Vertex>
             0 0 0 1 0 0 0 1 0 </Vertex>
 			<Normal>0 0 1 0 0 1 0 0 1</Normal>
@@ -12,6 +16,9 @@
 			<Index> 0 1 2
             </Index>
 		</Mesh>
-		<Primative type="Box" params="MyBox -1 -1 -1 1 1 1" translation="7 7 7"/>
+		<Primative type="Box" params="MyBox -1 -1 -1 1 1 1" translation="7 7 7">
+			<SharedTypes identification="monkeyguy"/>
+			<SharedTypes identification="red"/>
+		</Primative>
 	</Model>
 </Scene>
