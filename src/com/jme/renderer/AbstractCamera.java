@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.12 2004-03-08 23:42:41 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.13 2004-03-11 00:01:33 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -560,32 +560,38 @@ public abstract class AbstractCamera implements Camera {
      * @param bound the bound to check for culling
      * @return true if the bound should be culled, false otherwise.
      */
-    public boolean culled(BoundingVolume bound) {
+    public int contains(BoundingVolume bound) {
         if(bound == null) {
-            return false;
+            return INSIDE_FRUSTUM;
         }
 
-        int planeCounter = planeQuantity - 1;
+        int planeCounter = 5;
         int mask = 1 << planeCounter;
 
+        int rVal = INSIDE_FRUSTUM;
         for (; planeCounter >= 0; planeCounter--, mask >>= 1) {
             if ((planeState & mask) == 0) {
-                int side = bound.whichSide(worldPlane[planeCounter]);
+                int side = bound.whichSide(worldPlane[bound.checkPlanes[planeCounter]]);
 
                 if (side == Plane.NEGATIVE_SIDE) {
                     //object is outside of frustum
-                    return true;
-                }
-
-                if (side == Plane.POSITIVE_SIDE) {
+                    if (planeCounter != 5) {
+                        int i = bound.checkPlanes[5];
+                        bound.checkPlanes[5] = bound.checkPlanes[planeCounter];
+                        bound.checkPlanes[planeCounter] = i;
+                    }
+                    return OUTSIDE_FRUSTUM;
+                } else if (side == Plane.POSITIVE_SIDE) {
                     //object is visible on *this* plane, so mark this plane
                     //so that we don't check it for sub nodes.
                     planeState |= mask;
+                } else {
+                    rVal = INTERSECTS_FRUSTUM;
                 }
             }
         }
 
-        return false;
+        return rVal;
     }
 
     /**
@@ -661,11 +667,11 @@ public abstract class AbstractCamera implements Camera {
             location.dot(topPlaneNormal));
 
         // far plane
-        worldPlane[FAR_PLANE].normal.negateLocal();
+        worldPlane[FAR_PLANE].normal.set(-direction.x, -direction.y, -direction.z);
         worldPlane[FAR_PLANE].setConstant(- (dirDotLocation + frustumFar));
 
         // near plane
-        worldPlane[NEAR_PLANE].normal = direction;
+        worldPlane[NEAR_PLANE].normal.set(direction.x, direction.y, direction.z);
         worldPlane[NEAR_PLANE].setConstant(dirDotLocation + frustumNear);
     }
 

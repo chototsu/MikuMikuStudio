@@ -48,9 +48,14 @@ import com.jme.scene.BoundingVolume;
  * frustum culling.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.5 2004-03-02 03:56:37 renanse Exp $
+ * @version $Id: Camera.java,v 1.6 2004-03-11 00:05:14 renanse Exp $
  */
 public interface Camera extends Serializable {
+
+    public static final int OUTSIDE_FRUSTUM =       0;
+    public static final int INTERSECTS_FRUSTUM =   1;
+    public static final int INSIDE_FRUSTUM =        2;
+
 
     /**
      *
@@ -240,7 +245,7 @@ public interface Camera extends Serializable {
      * @param bound the bound to check for culling
      * @return true if the bound should be culled, false otherwise.
      */
-    public boolean culled(BoundingVolume bound);
+    public int contains(BoundingVolume bound);
 
     /**
      * <code>onFrustumChange</code> is an update callback that is activated
