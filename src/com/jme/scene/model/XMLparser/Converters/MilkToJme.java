@@ -2,6 +2,7 @@ package com.jme.scene.model.XMLparser.Converters;
 
 import com.jme.util.LittleEndien;
 import com.jme.system.JmeException;
+import com.jme.system.DisplaySystem;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
 import com.jme.scene.*;
@@ -126,16 +127,7 @@ public class MilkToJme extends FormatConverter{
             TextureState texState=null;
             String texFile=cutAtNull(tempChar);
             if (texFile.length()!=0){
-                texState=new TextureState(){
-                    public void setTexture(Texture t){
-                        if (texture.length==0) texture=new Texture[1];
-                        texture[0] = t;
-                    }
-                    public void delete(int unit) {throw new JmeException("I am not to be used in a real graph");}
-                    public void deleteAll() {throw new JmeException("I am not to be used in a real graph");}
-                    public void apply() {throw new JmeException("I am not to be used in a real graph");}
-
-                };
+                texState=DisplaySystem.getDisplaySystem().getRenderer().getTextureState();
                 Texture tempTex=new Texture();
 //                tempTex.setImageLocation(new URL("file:///./"+texFile));
                 tempTex.setImageLocation("file:/"+texFile);
