@@ -43,9 +43,16 @@ import com.jme.scene.BoundingVolume;
  * and the camera model. The frustum is also maintained here to allow for easy
  * frustum culling.
  * @author Mark Powell
- * @version $Id: Camera.java,v 1.2 2003-10-13 18:30:09 mojomonkey Exp $
+ * @version $Id: Camera.java,v 1.3 2003-10-27 21:28:18 mojomonkey Exp $
  */
 public interface Camera extends Serializable {
+
+    /**
+     * 
+     * <code>getLocation</code> returns the position of the camera.
+     * @return the position of the camera.
+     */
+    public Vector3f getLocation();
 
     /**
      * <code>getDirection</code> returns the direction the camera is facing.
@@ -64,6 +71,13 @@ public interface Camera extends Serializable {
      * @return the up axis of this camera object.
      */
     public Vector3f getUp();
+    
+    /**
+     * 
+     * <code>setLocation</code> the position of the camera.
+     * @param location the position of the camera.
+     */
+    public void setLocation(Vector3f location);
     
     /**
      * <code>setDirection</code> sets the direction the camera is facing.
