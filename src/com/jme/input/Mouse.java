@@ -50,7 +50,7 @@ import com.jme.scene.state.TextureState;
  * the position defined by the device.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.10 2004-07-23 20:15:09 renanse Exp $
+ * @version $Id: Mouse.java,v 1.11 2004-07-23 20:16:55 renanse Exp $
  */
 public abstract class Mouse extends Quad {
   /**
@@ -172,5 +172,12 @@ public abstract class Mouse extends Quad {
 
   public Vector3f getHotSpotPosition() {
     return _hotSpotLocation;
+  }
+
+  public Vector3f getHotSpotOffset() {
+    return _hotSpotOffset;
+  }
+  public void setHotSpotOffset(Vector3f offset) {
+    _hotSpotOffset = offset;
   }
 }
