@@ -11,6 +11,7 @@ import com.jme.bounding.BoundingBox;
 import com.jme.renderer.*;
 import com.jme.image.Texture;
 import com.jme.system.JmeException;
+import com.jme.system.DisplaySystem;
 
 import java.io.*;
 import java.util.StringTokenizer;
@@ -59,7 +60,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.5 2004-07-02 07:28:42 cep21 Exp $
+     * @version $Id: AseToJme.java,v 1.6 2004-08-17 18:09:58 cep21 Exp $
      */
     private class ASEModelCopy extends Node{
 
@@ -265,9 +266,11 @@ public class AseToJme extends FormatConverter{
                 ASEMaterialInfo mat =
                     (ASEMaterialInfo) materials.get(j);
                 if (mat.file.length() > 0) {
-                    MaterialState ms =new MaterialState(){
-                        public void apply() {throw new JmeException("I am not to be used in a real graph");}
-                    };
+                    MaterialState ms =
+                        DisplaySystem
+                            .getDisplaySystem()
+                            .getRenderer()
+                            .createMaterialState();
 
                     ms.setEnabled(true);
                     ms.setAmbient(
@@ -313,17 +316,13 @@ public class AseToJme extends FormatConverter{
                             return;
                         }
                     }
-                    TextureState ts = new TextureState(){
-                        public void setTexture(Texture t){
-                            if (texture.length==0) texture=new Texture[1];
-                            texture[0] = t;
-                        }
-                        public void delete(int unit) {throw new JmeException("I am not to be used in a real graph");}
-                        public void deleteAll() {throw new JmeException("I am not to be used in a real graph");}
-                        public void apply() {throw new JmeException("I am not to be used in a real graph");}
-
-                    };
+                    TextureState ts =
+                        DisplaySystem
+                            .getDisplaySystem()
+                            .getRenderer()
+                            .createTextureState();
                     ts.setEnabled(true);
+
                     Texture t=new Texture();
                     t.setImageLocation("file:/"+filename);
                     ts.setTexture(t);
