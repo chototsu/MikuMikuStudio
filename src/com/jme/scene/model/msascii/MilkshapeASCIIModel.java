@@ -62,7 +62,7 @@ import com.jme.math.Vector3f;
  * type is desired, the controller can be obtained via the 
  * <code>getAnimationController</code> method.
  * @author Mark Powell
- * @version $Id: MilkshapeASCIIModel.java,v 1.7 2004-02-21 21:20:58 mojomonkey Exp $
+ * @version $Id: MilkshapeASCIIModel.java,v 1.8 2004-02-22 20:44:21 mojomonkey Exp $
  */
 public class MilkshapeASCIIModel extends Model {
 	//the meshes that make up this model.
@@ -484,12 +484,15 @@ public class MilkshapeASCIIModel extends Model {
 	private TextureState loadTexture(String file) {
 		URL fileURL = null;
 		fileURL = MilkshapeASCIIModel.class.getClassLoader().getResource(textureDirectory + file);
-        //check if null. We may not be running via a jar. If so, try loading normally.
-		if(fileURL == null) {
+        if(!textureDirectory.endsWith("/")) {
+            textureDirectory += "/";
+        }
+        if(fileURL == null) {
 			try {
                 fileURL = new URL("file:"+textureDirectory + file);
         	} catch(MalformedURLException e) {
-				LoggingSystem.getLogger().log(Level.WARNING, "Could not load: " +textureDirectory + file);
+				LoggingSystem.getLogger().log(Level.WARNING, "Could not load: " 
+                        + textureDirectory + file);
 				return null;
 			}
 		}
