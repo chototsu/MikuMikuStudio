@@ -129,7 +129,7 @@ import com.jme.widget.WidgetRenderer;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.38 2004-08-27 07:38:40 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.39 2004-08-28 20:32:52 cep21 Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1077,12 +1077,15 @@ public class LWJGLRenderer implements Renderer {
     }
 
     IntBuffer indices = t.getIndexAsBuffer();
-    if (statisticsOn) {
-      int adder = t.getIndexAsBuffer().capacity();
-      int vertAdder = t.getIndexAsBuffer().capacity();
-      numberOfTris += adder / 3;
-      numberOfVerts += vertAdder;
-    }
+      if (statisticsOn) {
+        numberOfTris += (t.getTriangleQuantity() >= 0
+                  ? t.getTriangleQuantity()
+                  : t.getIndices().length/3);
+        numberOfVerts += (t.getVertQuantity() >=0
+                  ? t.getVertQuantity()
+                  : t.getVertices().length);
+      }
+
     GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, t.getVertQuantity(), indices);
 
     GL11.glMatrixMode(GL11.GL_MODELVIEW);
