@@ -51,7 +51,7 @@ import com.jme.scene.state.TextureState;
  * transforms. All other nodes, such as <code>Node</code> and
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.37 2004-04-22 22:26:46 renanse Exp $
+ * @version $Id: Spatial.java,v 1.38 2004-05-07 22:03:25 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
   //rotation matrices
@@ -74,7 +74,7 @@ public abstract class Spatial implements Serializable {
   protected BoundingVolume worldBound;
 
   //reference to the parent node.
-  protected Node parent;
+  protected transient Node parent;
   protected boolean isRoot;
 
   public static RenderState[] defaultStateList = new RenderState[RenderState.RS_MAX_STATE];
@@ -92,6 +92,11 @@ public abstract class Spatial implements Serializable {
 
   //scale values
   protected int frustrumIntersects = Camera.INTERSECTS_FRUSTUM;
+
+  /**
+   * Empty Constructor to be used internally only.
+   */
+  public Spatial() {}
 
   /**
    * Constructor instantiates a new <code>Spatial</code> object setting

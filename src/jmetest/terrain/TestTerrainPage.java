@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.15 2004-05-01 05:31:27 mojomonkey Exp $
+ * @version $Id: TestTerrainPage.java,v 1.16 2004-05-07 22:03:27 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -75,18 +75,18 @@ public class TestTerrainPage extends SimpleGame {
    * @see com.jme.app.SimpleGame#initGame()
    */
   protected void simpleInitGame() {
-      
-      DirectionalLight dl = new DirectionalLight();
-      dl.setDiffuse(new ColorRGBA(1.0f,1.0f,1.0f,1.0f));
-      dl.setDirection(new Vector3f(1,-0.5f,1));
-      dl.setEnabled(true);
-      lightState.attach(dl);
+
+    DirectionalLight dl = new DirectionalLight();
+    dl.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+    dl.setDirection(new Vector3f(1, -0.5f, 1));
+    dl.setEnabled(true);
+    lightState.attach(dl);
 
     camNode = new CameraNode("Camera Node", cam);
     camNode.setLocalTranslation(new Vector3f(0, 250, -20));
     camNode.updateWorldData(0);
     input = new NodeHandler(this, camNode, properties.getRenderer());
-    input.setKeySpeed(50f);
+    input.setKeySpeed(150f);
     input.setMouseSpeed(1f);
     display.setTitle("Terrain Test");
     display.getRenderer().setBackgroundColor(new ColorRGBA(0.5f,0.5f,0.5f,1));
@@ -171,6 +171,6 @@ public class TestTerrainPage extends SimpleGame {
     fs.setApplyFunction(FogState.AF_PER_VERTEX);
     rootNode.setRenderState(fs);
 
-    
+
   }
 }

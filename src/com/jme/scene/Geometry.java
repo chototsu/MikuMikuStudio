@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 package com.jme.scene;
 
@@ -54,9 +54,9 @@ import com.jme.math.FastMath;
  * contains the geometric data for rendering objects. It manages all rendering
  * information such as a collection of states and the data for a model.
  * Subclasses define what the model data is.
- * 
+ *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.33 2004-04-28 14:14:32 mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.34 2004-05-07 22:03:24 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -88,14 +88,19 @@ public abstract class Geometry extends Spatial implements Serializable {
     private RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
     /**
+     * Empty Constructor to be used internally only.
+     */
+    public Geometry() {}
+
+    /**
      * Constructor instantiates a new <code>Geometry</code> object. This is
      * the default object which has an empty vertex array. All other data is
      * null.
-     * 
+     *
      * @param name
      *            the name of the scene element. This is required for
      *            identification and comparision purposes.
-     *  
+     *
      */
     public Geometry(String name) {
         super(name);
@@ -111,7 +116,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      * instantiation the geometry is set including vertex, normal, color and
      * texture information. Any part may be null except for the vertex
      * information. If this is null, an exception will be thrown.
-     * 
+     *
      * @param name
      *            the name of the scene element. This is required for
      *            identification and comparision purposes.
@@ -186,7 +191,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>getColors</code> returns the color information of the geometry.
      * This may be null and should be check for such a case.
-     * 
+     *
      * @return the color array.
      */
     public ColorRGBA[] getColors() {
@@ -195,7 +200,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 
     /**
      * <code>setColors</code> sets the color array of this geometry.
-     * 
+     *
      * @param color
      *            the new color array.
      */
@@ -210,10 +215,10 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setSolidColor</code> sets the color array of this geometry to a
      * single color.
-     * 
+     *
      * @param color the color to set.
      */
     public void setSolidColor(ColorRGBA color) {
@@ -226,7 +231,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>getColorAsFloatBuffer</code> retrieves the float buffer that
      * contains this geometry's color information.
-     * 
+     *
      * @return the buffer that contains this geometry's color information.
      */
     public FloatBuffer getColorAsFloatBuffer() {
@@ -235,7 +240,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 
     /**
      * <code>getVertices</code> returns the vertex array for this geometry.
-     * 
+     *
      * @return the array of vertices for this geometry.
      */
     public Vector3f[] getVertices() {
@@ -245,7 +250,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>setVertices</code> sets the vertices of this geometry. The
      * vertices may not be null and will throw an exception if so.
-     * 
+     *
      * @param vertex
      *            the new vertices of this geometry.
      */
@@ -262,12 +267,12 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setVertex</code> sets a single vertex into the vertex array. The
      * index to set it is given, and due to speed considerations, no bounds
      * checking is done. Therefore, if an invalid index is given, an
      * ArrayIndexOutOfBoundsException will be thrown.
-     * 
+     *
      * @param index
      *            the index of the vertex to set.
      * @param value
@@ -281,12 +286,12 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setTextureCoord</code> sets a single coord into the texture
      * array. The index to set it is given, and due to speed considerations, no
      * bounds checking is done. Therefore, if an invalid index is given, an
      * ArrayIndexOutOfBoundsException will be thrown.
-     * 
+     *
      * @param textureUnit
      *            the textureUnit to set on.
      * @param index
@@ -301,7 +306,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>getVerticeAsFloatBuffer</code> returns the float buffer that
      * contains this geometry's vertex information.
-     * 
+     *
      * @return the float buffer that contains this geometry's vertex
      *         information.
      */
@@ -312,7 +317,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>getNormals</code> returns the array that contains this geometry's
      * normal information.
-     * 
+     *
      * @return the normal array for this geometry.
      */
     public Vector3f[] getNormals() {
@@ -322,7 +327,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>setNormals</code> sets this geometry's normals to a new array of
      * normal values.
-     * 
+     *
      * @param normal
      *            the new normal values.
      */
@@ -339,7 +344,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>getNormalAsFloatBuffer</code> retrieves this geometry's normal
      * information as a float buffer.
-     * 
+     *
      * @return the float buffer containing the geometry information.
      */
     public FloatBuffer getNormalAsFloatBuffer() {
@@ -350,7 +355,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      * <code>getTextures</code> retrieves the texture array that contains this
      * geometry's texture information. The texture coordinates are those of the
      * first texture unit.
-     * 
+     *
      * @return the array that contains the geometry's texture information.
      */
     public Vector2f[] getTextures() {
@@ -358,12 +363,12 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getTextures</code> retrieves the texture array that contains this
      * geometry's texture information for a given texture unit. If the texture
      * unit is invalid, or no texture coordinates are set for the texture unit,
      * null is returned.
-     * 
+     *
      * @param textureUnit
      *            the texture unit to retrieve the coordinates for.
      * @return the texture coordinates of a given texture unit. Null is returned
@@ -381,7 +386,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>setTextures</code> sets this geometry's texture array to a new
      * array.
-     * 
+     *
      * @param texture
      *            the new texture information for this geometry.
      */
@@ -396,11 +401,11 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setTextures</code> sets the texture coordinates of a given
      * texture unit. If the texture unit is not valid, then the coordinates are
      * ignored.
-     * 
+     *
      * @param textures
      *            the coordinates to set.
      * @param textureUnit
@@ -418,11 +423,11 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>copyTextureCoords</code> copys the texture coordinates of a given
      * texture unit to another location. If the texture unit is not valid, then
      * the coordinates are ignored.
-     * 
+     *
      * @param fromIndex
      *            the coordinates to copy.
      * @param toIndex
@@ -443,7 +448,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>getTextureAsFloatBuffer</code> retrieves this geometry's texture
      * information contained within a float buffer.
-     * 
+     *
      * @return the float buffer that contains this geometry's texture
      *         information.
      */
@@ -452,10 +457,10 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getTextureAsFloatBuffer</code> retrieves the texture buffer of a
      * given texture unit. If the texture unit is not valid, null is returned.
-     * 
+     *
      * @param textureUnit
      *            the texture unit to check.
      * @return the texture coordinates at the given texture unit.
@@ -465,10 +470,10 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getNumberOfUnits</code> returns the number of texture units this
      * geometry supports.
-     * 
+     *
      * @return the number of texture units supported by the geometry.
      */
     public int getNumberOfUnits() {
@@ -479,7 +484,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      * <code>updateBound</code> recalculates the bounding object assigned to
      * the geometry. This resets it parameters to adjust for any changes to the
      * vertex information.
-     *  
+     *
      */
     public void updateModelBound() {
         if (bound != null) {
@@ -489,10 +494,10 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getModelBound</code> retrieves the bounding object that contains
      * the geometry node's vertices.
-     * 
+     *
      * @return the bounding object for this geometry.
      */
     public BoundingVolume getModelBound() {
@@ -500,9 +505,9 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setModelBound</code> sets the bounding object for this geometry.
-     * 
+     *
      * @param modelBound
      *            the bounding object for this geometry.
      */
@@ -511,10 +516,10 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setStates</code> applies all the render states for this
      * particular geometry.
-     *  
+     *
      */
     public void applyStates() {
         if (parent != null) Spatial.clearCurrentStates();
@@ -530,7 +535,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      * <code>draw</code> prepares the geometry for rendering to the display.
      * The renderstate is set and the subclass is responsible for rendering the
      * actual data.
-     * 
+     *
      * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
      * @param r
      *            the renderer that displays to the context.
@@ -542,7 +547,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>drawBounds</code> calls super to set the render state then passes
      * itself to the renderer.
-     * 
+     *
      * @param r
      *            the renderer to display
      */
@@ -553,7 +558,7 @@ public abstract class Geometry extends Spatial implements Serializable {
      * <code>updateWorldBound</code> updates the bounding volume that contains
      * this geometry. The location of the geometry is based on the location of
      * all this node's parents.
-     * 
+     *
      * @see com.jme.scene.Spatial#updateWorldBound()
      */
     public void updateWorldBound() {
@@ -581,7 +586,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>setColorBuffer</code> calculates the <code>FloatBuffer</code>
      * that contains all the color information of this geometry.
-     *  
+     *
      */
     public void updateColorBuffer() {
         if (color == null) { return; }
@@ -609,7 +614,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>updateVertexBuffer</code> sets the float buffer that contains
      * this geometry's vertex information.
-     *  
+     *
      */
     public void updateVertexBuffer() {
         if (vertex == null) { return; }
@@ -640,7 +645,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>updateNormalBuffer</code> sets the float buffer that contains
      * this geometry's normal information.
-     *  
+     *
      */
     public void updateNormalBuffer() {
         if (normal == null) { return; }
@@ -664,7 +669,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>updateTextureBuffer</code> sets the float buffer that contains
      * this geometry's texture information.
-     *  
+     *
      */
     public void updateTextureBuffer() {
         if (texture == null) { return; }
@@ -687,7 +692,7 @@ public abstract class Geometry extends Spatial implements Serializable {
     /**
      * <code>updateTextureBuffer</code> sets the float buffer that contains
      * this geometry's texture information.
-     *  
+     *
      */
     public void updateTextureBuffer(int textureUnit) {
         if (texture == null) { return; }
@@ -710,10 +715,10 @@ public abstract class Geometry extends Spatial implements Serializable {
     }
 
     /**
-     * <code>randomVertice</code> returns a random vertex from the list of 
+     * <code>randomVertice</code> returns a random vertex from the list of
      * vertices set to this geometry. If there are no vertices set, null is
      * returned.
-     * 
+     *
      * @return Vector3f a random vertex from the vertex list. Null is returned
      * 		if the vertex list is not set.
      */

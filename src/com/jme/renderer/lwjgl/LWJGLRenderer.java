@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -29,11 +29,11 @@
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -45,7 +45,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 /*
@@ -96,11 +96,11 @@ import com.jme.widget.WidgetRenderer;
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
  * <code>Renderer</code> interface using the LWJGL API.
- * 
+ *
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: LWJGLRenderer.java,v 1.15 2004-04-30 17:29:45 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.16 2004-05-07 22:03:26 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -139,7 +139,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
      * size of the rendering window is passed during construction.
-     * 
+     *
      * @param width
      *            the width of the rendering context.
      * @param height
@@ -164,7 +164,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>setCamera</code> sets the camera this renderer is using. It
      * asserts that the camera is of type <code>LWJGLCamera</code>.
-     * 
+     *
      * @see com.jme.renderer.Renderer#setCamera(com.jme.renderer.Camera)
      */
     public void setCamera(Camera camera) {
@@ -175,7 +175,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>getCamera</code> returns the camera used by this renderer.
-     * 
+     *
      * @see com.jme.renderer.Renderer#getCamera()
      */
     public Camera getCamera() {
@@ -185,7 +185,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getCamera</code> returns a default camera for use with the LWJGL
      * renderer.
-     * 
+     *
      * @param width
      *            the width of the frame.
      * @param height
@@ -199,7 +199,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getAlphaState</code> returns a new LWJGLAlphaState object as a
      * regular AlphaState.
-     * 
+     *
      * @return an AlphaState object.
      */
     public AlphaState getAlphaState() {
@@ -209,7 +209,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getAttributeState</code> returns a new LWJGLAttributeState object
      * as a regular AttributeState.
-     * 
+     *
      * @return an AttributeState object.
      */
     public AttributeState getAttributeState() {
@@ -219,7 +219,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getCullState</code> returns a new LWJGLCullState object as a
      * regular CullState.
-     * 
+     *
      * @return a CullState object.
      * @see com.jme.renderer.Renderer#getCullState()
      */
@@ -230,7 +230,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getDitherState</code> returns a new LWJGLDitherState object as a
      * regular DitherState.
-     * 
+     *
      * @return an DitherState object.
      */
     public DitherState getDitherState() {
@@ -240,7 +240,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getFogState</code> returns a new LWJGLFogState object as a
      * regular FogState.
-     * 
+     *
      * @return an FogState object.
      */
     public FogState getFogState() {
@@ -250,7 +250,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getLightState</code> returns a new LWJGLLightState object as a
      * regular LightState.
-     * 
+     *
      * @return an LightState object.
      */
     public LightState getLightState() {
@@ -260,7 +260,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getMaterialState</code> returns a new LWJGLMaterialState object
      * as a regular MaterialState.
-     * 
+     *
      * @return an MaterialState object.
      */
     public MaterialState getMaterialState() {
@@ -270,7 +270,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getShadeState</code> returns a new LWJGLShadeState object as a
      * regular ShadeState.
-     * 
+     *
      * @return an ShadeState object.
      */
     public ShadeState getShadeState() {
@@ -280,7 +280,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getTextureState</code> returns a new LWJGLTextureState object as
      * a regular TextureState.
-     * 
+     *
      * @return an TextureState object.
      */
     public TextureState getTextureState() {
@@ -290,7 +290,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getWireframeState</code> returns a new LWJGLWireframeState object
      * as a regular WireframeState.
-     * 
+     *
      * @return an WireframeState object.
      */
     public WireframeState getWireframeState() {
@@ -300,7 +300,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getZBufferState</code> returns a new LWJGLZBufferState object as
      * a regular ZBufferState.
-     * 
+     *
      * @return a ZBufferState object.
      */
     public ZBufferState getZBufferState() {
@@ -310,7 +310,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getVertexProgramState</code> returns a new
      * LWJGLVertexProgramState object as a regular VertexProgramState.
-     * 
+     *
      * @return a VertexProgramState object.
      */
     public VertexProgramState getVertexProgramState() {
@@ -320,7 +320,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getStencilState</code> returns a new LWJGLStencilState object as
      * a regular StencilState.
-     * 
+     *
      * @return a StencilState object.
      */
     public StencilState getStencilState() {
@@ -330,7 +330,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>setBackgroundColor</code> sets the OpenGL clear color to the
      * color specified.
-     * 
+     *
      * @see com.jme.renderer.Renderer#setBackgroundColor(com.jme.renderer.ColorRGBA)
      * @param c
      *            the color to set the background color to.
@@ -352,7 +352,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getBackgroundColor</code> retrieves the clear color of the
      * current OpenGL context.
-     * 
+     *
      * @see com.jme.renderer.Renderer#getBackgroundColor()
      * @return the current clear color.
      */
@@ -362,7 +362,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>clearZBuffer</code> clears the OpenGL depth buffer.
-     * 
+     *
      * @see com.jme.renderer.Renderer#clearZBuffer()
      */
     public void clearZBuffer() {
@@ -376,7 +376,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>clearBackBuffer</code> clears the OpenGL color buffer.
-     * 
+     *
      * @see com.jme.renderer.Renderer#clearBackBuffer()
      */
     public void clearBackBuffer() {
@@ -390,7 +390,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>clearBuffers</code> clears both the color and the depth buffer.
-     * 
+     *
      * @see com.jme.renderer.Renderer#clearBuffers()
      */
     public void clearBuffers() {
@@ -405,7 +405,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>displayBackBuffer</code> flips the rendered buffer (back) with
      * the currently displayed buffer.
-     * 
+     *
      * @see com.jme.renderer.Renderer#displayBackBuffer()
      */
     public void displayBackBuffer() {
@@ -457,7 +457,7 @@ public class LWJGLRenderer implements Renderer {
      * <code>takeScreenShot</code> saves the current buffer to a file. The
      * file name is provided, and .png will be appended. True is returned if the
      * capture was successful, false otherwise.
-     * 
+     *
      * @param filename
      *            the name of the file to save.
      * @return true if successful, false otherwise.
@@ -497,7 +497,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>draw</code> renders a tint to the back buffer
-     * 
+     *
      * @param t
      *            is the tint to render.
      */
@@ -537,7 +537,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> draws a point object where a point contains a
      * collection of vertices, normals, colors and texture coordinates.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Point)
      * @param p
      *            the point object to render.
@@ -648,7 +648,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> draws a line object where a line contains a
      * collection of vertices, normals, colors and texture coordinates.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Line)
      * @param l
      *            the line object to render.
@@ -795,7 +795,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>draw</code> renders a curve object.
-     * 
+     *
      * @param c
      *            the curve object to render.
      */
@@ -857,7 +857,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
      * @param t
      *            the mesh to render.
@@ -927,7 +927,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
      * @param t
      *            the mesh to render.
@@ -941,7 +941,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
      * @param t
      *            the mesh to render.
@@ -959,7 +959,7 @@ public class LWJGLRenderer implements Renderer {
      * <code>draw</code> draws a clone node object. The data for the geometry
      * defined in the clone node is set but not rendered. The rendering occurs
      * by the clone node's children (Clones).
-     * 
+     *
      * @param cn
      *            the clone node to render.
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.CloneNode)
@@ -1001,7 +1001,7 @@ public class LWJGLRenderer implements Renderer {
      * <code>draw</code> renders a clone object. The depends on the data for
      * geometry previously being set by a clone node. The world transformations
      * are then made and the geometry is rendered.
-     * 
+     *
      * @param c
      *            the clone object.
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Clone)
@@ -1034,7 +1034,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>draw</code> renders a scene by calling the nodes
      * <code>onDraw</code> method.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
     public void draw(Spatial s) {
@@ -1047,7 +1047,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>drawBounds</code> renders a scene by calling the nodes
      * <code>onDraw</code> method.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
     public void drawBounds(Spatial s) {
@@ -1060,7 +1060,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>drawBounds</code> renders the bounds of a scene by calling the
      * nodes <code>onDrawBounds</code> method.
-     * 
+     *
      * @see com.jme.renderer.Renderer#drawBounds(com.jme.scene.Spatial)
      */
     public void drawBounds(Clone c) {
@@ -1069,7 +1069,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>draw</code> renders a text object using a predefined font.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Text)
      */
     public void draw(Text t) {
@@ -1083,7 +1083,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>draw</code> renders a mouse object using a defined mouse texture.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.input.Mouse)
      */
     public void draw(Mouse m) {
@@ -1123,7 +1123,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>draw</code> renders a WidgetRenderer object to the back buffer.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(WidgetRenderer)
      */
     public void draw(WidgetRenderer wr) {
@@ -1132,7 +1132,7 @@ public class LWJGLRenderer implements Renderer {
 
     /**
      * <code>enableStatistics</code> will turn on statistics gathering.
-     * 
+     *
      * @param value
      *            true to use statistics, false otherwise.
      */
@@ -1152,7 +1152,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * <code>getStatistics</code> returns a string value of the rendering
      * statistics information (number of triangles and number of vertices).
-     * 
+     *
      * @return the string representation of the current statistics.
      */
     public String getStatistics() {
@@ -1161,10 +1161,10 @@ public class LWJGLRenderer implements Renderer {
     }
 
     /**
-     * 
+     *
      * <code>setBoundsStates</code> sets the rendering states for bounding
      * volumes, this includes wireframe and zbuffer.
-     * 
+     *
      * @param enabled
      *            true if these states are to be enabled, false otherwise.
      */

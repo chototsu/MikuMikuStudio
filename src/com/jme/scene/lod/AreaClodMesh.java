@@ -47,12 +47,17 @@ import com.jme.system.DisplaySystem;
  * originally ported from David Eberly's c++, modifications and
  * enhancements made from there.
  * @author Joshua Slack
- * @version $Id: AreaClodMesh.java,v 1.6 2004-04-22 22:26:48 renanse Exp $
+ * @version $Id: AreaClodMesh.java,v 1.7 2004-05-07 22:03:23 renanse Exp $
  */
 public class AreaClodMesh extends ClodMesh {
   float trisPerPixel = 1f;
   float distTolerance = 1f;
   float lastDistance = 0f;
+
+  /**
+   * Empty Constructor to be used internally only.
+   */
+  public AreaClodMesh() {}
 
   public AreaClodMesh(String name) {
       super(name);

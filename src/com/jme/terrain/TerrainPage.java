@@ -53,7 +53,7 @@ import com.jme.scene.Spatial;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.15 2004-05-03 18:11:00 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.16 2004-05-07 22:03:27 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -66,6 +66,11 @@ public class TerrainPage extends Node {
     private Vector3f stepScale;
 
     private int offsetAmount;
+
+    /**
+     * Empty Constructor to be used internally only.
+     */
+    public TerrainPage() {}
 
     /**
      * Constructor instantiates a new <code>TerrainPage</code> object. The

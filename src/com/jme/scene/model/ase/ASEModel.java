@@ -40,7 +40,7 @@ import java.util.ArrayList;
 import java.util.StringTokenizer;
 import java.util.logging.Level;
 
-import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -63,7 +63,7 @@ import com.jme.util.TextureManager;
  * be returned.
  *
  * @author Mark Powell
- * @version $Id: ASEModel.java,v 1.14 2004-04-22 22:26:51 renanse Exp $
+ * @version $Id: ASEModel.java,v 1.15 2004-05-07 22:03:24 renanse Exp $
  */
 public class ASEModel extends Model {
 
@@ -291,7 +291,7 @@ public class ASEModel extends Model {
             object.updateVertexBuffer();
             object.updateNormalBuffer();
             object.setTextures(texCoords2);
-            object.setModelBound(new BoundingSphere());
+            object.setModelBound(new BoundingBox());
             object.updateModelBound();
             this.attachChild(object);
 

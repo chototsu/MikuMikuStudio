@@ -55,11 +55,16 @@ import java.util.Stack;
  * Node allows for any number of children to be attached.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.20 2004-04-22 22:26:45 renanse Exp $
+ * @version $Id: Node.java,v 1.21 2004-05-07 22:03:25 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
     //List to hold the children.
     protected ArrayList children;
+
+    /**
+     * Empty Constructor to be used internally only.
+     */
+    public Node() {}
 
     /**
      * Constructor instantiates a new <code>Node</code> with a default empty
