@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.18 2004-05-27 20:14:10 cep21 Exp $
+ * @version $Id: Quaternion.java,v 1.19 2004-06-06 02:22:07 cep21 Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -679,5 +679,25 @@ public class Quaternion {
 
     public String toString() {
         return "com.jme.math.Quaternion: [x=" +x+" y="+y+" z="+z+" w="+w+"]";
+    }
+
+    /**
+     * are these two quats the same? they are is they both have the same x,y,z,w
+     *
+     * @param o
+     *            the object to compare for equality
+     * @return true if they are equal
+     */
+    public boolean equals(Object o) {
+        if (!(o instanceof Quaternion) || o == null) { return false; }
+
+        if (this == o) { return true; }
+
+        Quaternion comp = (Quaternion) o;
+        if (x != comp.x) return false;
+        if (y != comp.y) return false;
+        if (z != comp.z) return false;
+        if (w != comp.w) return false;
+        return true;
     }
 }
