@@ -4,7 +4,6 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
-import com.jme.renderer.ColorRGBA;
 
 public class TestSimpleGame extends SimpleGame {
 

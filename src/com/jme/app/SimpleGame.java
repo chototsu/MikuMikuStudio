@@ -32,28 +32,26 @@
 
 package com.jme.app;
 
-import java.util.logging.Level;
-import com.jme.util.LoggingSystem;
-import com.jme.scene.Node;
-import com.jme.input.InputHandler;
-import com.jme.util.Timer;
-import com.jme.scene.Text;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.WireframeState;
-import com.jme.input.KeyBindingManager;
-import com.jme.renderer.ColorRGBA;
-import com.jme.system.DisplaySystem;
-import com.jme.math.Vector3f;
-import com.jme.input.FirstPersonHandler;
-import com.jme.input.KeyInput;
-import com.jme.renderer.Camera;
-import com.jme.system.JmeException;
-import com.jme.light.PointLight;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.TextureState;
-import com.jme.util.TextureManager;
 import com.jme.image.Texture;
+import com.jme.input.FirstPersonHandler;
+import com.jme.input.InputHandler;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
+import com.jme.light.PointLight;
+import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
+import com.jme.scene.Text;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.util.TextureManager;
+import com.jme.util.Timer;
 
 /**
  * <code>DemoGame</code> provides the simplest possible implementation
@@ -63,7 +61,7 @@ import com.jme.scene.state.ZBufferState;
  * in almost all cases.
  *
  * @author Joshua Slack
- * @version $Id: SimpleGame.java,v 1.4 2004-04-19 20:44:45 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.5 2004-04-19 20:46:31 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
