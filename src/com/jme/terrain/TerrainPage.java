@@ -31,6 +31,7 @@
  */
 package com.jme.terrain;
 
+import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.jme.bounding.BoundingBox;
@@ -56,7 +57,7 @@ import com.jme.util.LoggingSystem;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.23 2005-02-09 16:41:06 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.24 2005-02-20 23:29:23 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -110,6 +111,7 @@ public class TerrainPage extends Node {
             Vector3f stepScale, int[] heightMap, boolean clod) {
         this(name, blockSize, size, stepScale, heightMap, clod, size,
                 new Vector2f(), 0);
+        fixNormals();
     }
 
     /**
@@ -335,24 +337,18 @@ public class TerrainPage extends Node {
      */
     private void createQuadPage(int size, int blockSize, Vector3f stepScale,
             int[] heightMap, boolean clod) {
-        LoggingSystem.getLogger().log(Level.INFO,
-        "Creating Page");
+        LoggingSystem.getLogger().log(Level.INFO, "Creating Page");
+        
         //      create 4 terrain pages
         Vector2f tempOffset = new Vector2f();
         int quarterSize = size >> 2;
         offsetAmount += quarterSize;
 
         int split = (size + 1) / 2;
-        int newBlockSize = split * split;
 
         //1 upper left
-        int[] heightBlock1 = new int[newBlockSize];
-        int count = 0;
-        for (int i = 0; i < split; i++) {
-            for (int j = 0; j < split; j++) {
-                heightBlock1[count++] = heightMap[j + (i * size)];
-            }
-        }
+        int[] heightBlock1 = createHeightSubBlock(heightMap,0,0,split);
+        
         Vector3f origin1 = new Vector3f(-quarterSize * stepScale.x, 0,
                 -quarterSize * stepScale.z);
 
@@ -361,20 +357,15 @@ public class TerrainPage extends Node {
         tempOffset.x += origin1.x;
         tempOffset.y += origin1.z;
 
-        TerrainPage page1 = new TerrainPage(name + "Page1", blockSize, split,
+        TerrainPage page1 = new TerrainPage(getName() + "Page1", blockSize, split,
                 stepScale, heightBlock1, clod, totalSize, tempOffset,
                 offsetAmount);
         page1.setLocalTranslation(origin1);
         this.attachChild(page1);
 
         //2 lower left
-        int[] heightBlock2 = new int[newBlockSize];
-        count = 0;
-        for (int i = split - 1; i < size; i++) {
-            for (int j = 0; j < split; j++) {
-                heightBlock2[count++] = heightMap[j + (i * size)];
-            }
-        }
+        int[] heightBlock2 = createHeightSubBlock(heightMap,split-1,0,split);
+
         Vector3f origin2 = new Vector3f(-quarterSize * stepScale.x, 0,
                 quarterSize * stepScale.z);
 
@@ -383,20 +374,15 @@ public class TerrainPage extends Node {
         tempOffset.x += origin2.x;
         tempOffset.y += origin2.z;
 
-        TerrainPage page2 = new TerrainPage(name + "Page2", blockSize, split,
+        TerrainPage page2 = new TerrainPage(getName() + "Page2", blockSize, split,
                 stepScale, heightBlock2, clod, totalSize, tempOffset,
                 offsetAmount);
         page2.setLocalTranslation(origin2);
         this.attachChild(page2);
 
-        //3 lower right
-        int[] heightBlock3 = new int[newBlockSize];
-        count = 0;
-        for (int i = 0; i < split; i++) {
-            for (int j = split - 1; j < size; j++) {
-                heightBlock3[count++] = heightMap[j + (i * size)];
-            }
-        }
+        //3 upper right
+        int[] heightBlock3 = createHeightSubBlock(heightMap,0,split-1,split);
+        
         Vector3f origin3 = new Vector3f(quarterSize * stepScale.x, 0,
                 -quarterSize * stepScale.z);
 
@@ -405,20 +391,15 @@ public class TerrainPage extends Node {
         tempOffset.x += origin3.x;
         tempOffset.y += origin3.z;
 
-        TerrainPage page3 = new TerrainPage(name + "Page3", blockSize, split,
+        TerrainPage page3 = new TerrainPage(getName() + "Page3", blockSize, split,
                 stepScale, heightBlock3, clod, totalSize, tempOffset,
                 offsetAmount);
         page3.setLocalTranslation(origin3);
         this.attachChild(page3);
         ////
-        //4 upper right
-        int[] heightBlock4 = new int[newBlockSize];
-        count = 0;
-        for (int i = split - 1; i < size; i++) {
-            for (int j = split - 1; j < size; j++) {
-                heightBlock4[count++] = heightMap[j + (i * size)];
-            }
-        }
+        //4 lower right
+        int[] heightBlock4 = createHeightSubBlock(heightMap,split-1,split-1,split);
+        
         Vector3f origin4 = new Vector3f(quarterSize * stepScale.x, 0,
                 quarterSize * stepScale.z);
 
@@ -427,7 +408,7 @@ public class TerrainPage extends Node {
         tempOffset.x += origin4.x;
         tempOffset.y += origin4.z;
 
-        TerrainPage page4 = new TerrainPage(name + "Page4", blockSize, split,
+        TerrainPage page4 = new TerrainPage(getName() + "Page4", blockSize, split,
                 stepScale, heightBlock4, clod, totalSize, tempOffset,
                 offsetAmount);
         page4.setLocalTranslation(origin4);
@@ -444,19 +425,13 @@ public class TerrainPage extends Node {
             boolean clod) {
         int quarterSize = size >> 2;
         int halfSize = size >> 1;
+        int split = (size + 1) >> 1;
 
         Vector2f tempOffset = new Vector2f();
         offsetAmount += quarterSize;
         //create 4 terrain blocks
-        int split = (size + 1) >> 1;
-        int newBlockSize = split * split;
-        int[] heightBlock1 = new int[newBlockSize];
-        int count = 0;
-        for (int i = 0; i < split; i++) {
-            for (int j = 0; j < split; j++) {
-                heightBlock1[count++] = heightMap[j + (i * size)];
-            }
-        }
+        int[] heightBlock1 = createHeightSubBlock(heightMap,0,0,split);         
+
         Vector3f origin1 = new Vector3f(-halfSize * stepScale.x, 0, -halfSize
                 * stepScale.z);
 
@@ -465,7 +440,7 @@ public class TerrainPage extends Node {
         tempOffset.x += origin1.x / 2;
         tempOffset.y += origin1.z / 2;
 
-        TerrainBlock block1 = new TerrainBlock(name + "Block1", split,
+        TerrainBlock block1 = new TerrainBlock(getName() + "Block1", split,
                 stepScale, heightBlock1, origin1, clod, totalSize, tempOffset,
                 offsetAmount);
         this.attachChild(block1);
@@ -473,13 +448,8 @@ public class TerrainPage extends Node {
         block1.updateModelBound();
 
         //2 lower left
-        int[] heightBlock2 = new int[newBlockSize];
-        count = 0;
-        for (int i = split - 1; i < size; i++) {
-            for (int j = 0; j < split; j++) {
-                heightBlock2[count++] = heightMap[j + (i * size)];
-            }
-        }
+        int[] heightBlock2 = createHeightSubBlock(heightMap,split-1,0,split);
+
         Vector3f origin2 = new Vector3f(-halfSize * stepScale.x, 0, 0);
 
         tempOffset.x = offset.x;
@@ -487,21 +457,16 @@ public class TerrainPage extends Node {
         tempOffset.x += origin1.x / 2;
         tempOffset.y += quarterSize * stepScale.z;
 
-        TerrainBlock block2 = new TerrainBlock(name + "Block2", split,
+        TerrainBlock block2 = new TerrainBlock(getName() + "Block2", split,
                 stepScale, heightBlock2, origin2, clod, totalSize, tempOffset,
                 offsetAmount);
         this.attachChild(block2);
         block2.setModelBound(new BoundingBox());
         block2.updateModelBound();
 
-        //3 lower right
-        int[] heightBlock3 = new int[newBlockSize];
-        count = 0;
-        for (int i = 0; i < split; i++) {
-            for (int j = split - 1; j < size; j++) {
-                heightBlock3[count++] = heightMap[j + (i * size)];
-            }
-        }
+        //3 upper right
+        int[] heightBlock3 = createHeightSubBlock(heightMap,0,split-1,split);
+
         Vector3f origin3 = new Vector3f(0, 0, -halfSize * stepScale.z);
 
         tempOffset.x = offset.x;
@@ -509,21 +474,16 @@ public class TerrainPage extends Node {
         tempOffset.x += quarterSize * stepScale.x;
         tempOffset.y += origin3.z / 2;
 
-        TerrainBlock block3 = new TerrainBlock(name + "Block3", split,
+        TerrainBlock block3 = new TerrainBlock(getName() + "Block3", split,
                 stepScale, heightBlock3, origin3, clod, totalSize, tempOffset,
                 offsetAmount);
         this.attachChild(block3);
         block3.setModelBound(new BoundingBox());
         block3.updateModelBound();
 
-        //4 upper right
-        int[] heightBlock4 = new int[newBlockSize];
-        count = 0;
-        for (int i = split - 1; i < size; i++) {
-            for (int j = split - 1; j < size; j++) {
-                heightBlock4[count++] = heightMap[j + (i * size)];
-            }
-        }
+        //4 lower right
+        int[] heightBlock4 = createHeightSubBlock(heightMap,split-1,split-1,split);
+
         Vector3f origin4 = new Vector3f(0, 0, 0);
 
         tempOffset.x = offset.x;
@@ -531,13 +491,12 @@ public class TerrainPage extends Node {
         tempOffset.x += quarterSize * stepScale.x;
         tempOffset.y += quarterSize * stepScale.z;
 
-        TerrainBlock block4 = new TerrainBlock(name + "Block4", split,
+        TerrainBlock block4 = new TerrainBlock(getName() + "Block4", split,
                 stepScale, heightBlock4, origin4, clod, totalSize, tempOffset,
                 offsetAmount);
         this.attachChild(block4);
         block4.setModelBound(new BoundingBox());
         block4.updateModelBound();
-
     }
 
     /**
@@ -624,5 +583,149 @@ public class TerrainPage extends Node {
      */
     public void setOffsetAmount(int offsetAmount) {
         this.offsetAmount = offsetAmount;
+    }
+    
+    public void fixNormals() {
+        Iterator it = children.iterator();
+        while (it.hasNext()) {
+            Object child = it.next();
+            if (child instanceof TerrainPage) {
+                ((TerrainPage)child).fixNormals();
+            } else if (child instanceof TerrainBlock) {
+                TerrainBlock tb = (TerrainBlock)child;
+                TerrainBlock right = _findRightBlock(tb);
+                TerrainBlock down = _findDownBlock(tb);
+                int tbSize = tb.getSize();
+                if (right != null) {
+                    for (int y = 0; y < tbSize; y++) {
+                        int index1 = ((y+1)*tbSize)-1;
+                        int index2 = (y*tbSize);
+                        tb.setNormal(index1, right.getNormals()[index2]);
+                    }
+                    right.setVBONormalID(-1);
+                }
+                if (down != null) {
+                    int rowStart = ((tbSize-1) * tbSize);
+                    for (int x = 0; x < tbSize; x++) {
+                        int index1 = rowStart + x;
+                        int index2 = x;
+                        tb.setNormal(index1, down.getNormals()[index2]);
+                    }
+                    down.setVBONormalID(-1);
+                }
+                tb.setVBONormalID(-1);
+            }
+        }
+    }
+
+    private TerrainBlock _findRightBlock(TerrainBlock tb) {
+        String tbName = tb.getName();
+        if (tbName.endsWith("1")) {
+            return (TerrainBlock)getChild(tbName.substring(0,tbName.length()-1)+"3");
+        } else if (tbName.endsWith("2")) {
+            return (TerrainBlock)getChild(tbName.substring(0,tbName.length()-1)+"4");            
+        } else if (tbName.endsWith("3")) {
+            // find the page to the right and ask it for child 1.
+            TerrainPage tp = _findRightPage();
+            if (tp != null)
+                return (TerrainBlock)tp.getChild(tp.getName()+"Block1");
+        } else if (tbName.endsWith("4")) {
+            // find the page to the right and ask it for child 2.
+            TerrainPage tp = _findRightPage();
+            if (tp != null)
+                return (TerrainBlock)tp.getChild(tp.getName()+"Block2");
+        }
+        
+        return null;
+    }
+
+    private TerrainBlock _findDownBlock(TerrainBlock tb) {
+        String tbName = tb.getName();
+        if (tbName.endsWith("1")) {
+            return (TerrainBlock)getChild(tbName.substring(0,tbName.length()-1)+"2");
+        } else if (tbName.endsWith("3")) {
+            return (TerrainBlock)getChild(tbName.substring(0,tbName.length()-1)+"4");            
+        } else if (tbName.endsWith("2")) {
+            // find the page below and ask it for child 1.
+            TerrainPage tp = _findDownPage();
+            if (tp != null)
+                return (TerrainBlock)tp.getChild(tp.getName()+"Block1");
+        } else if (tbName.endsWith("4")) {
+            TerrainPage tp = _findDownPage();
+            if (tp != null)
+                return (TerrainBlock)tp.getChild(tp.getName()+"Block3");
+        }
+        
+        return null;
+    }
+
+    private TerrainPage _findRightPage() {
+        String pageName = getName();
+        if (getParent() == null) return null;
+        if (pageName.endsWith("1")) {
+            return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"3");
+        } else if (pageName.endsWith("2")) {
+            return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"4");            
+        } else if (pageName.endsWith("3")) {
+            if (getParent() instanceof TerrainPage) {
+                TerrainPage tp = ((TerrainPage)getParent())._findRightPage();
+                if (tp != null) {
+                    pageName = tp.getName()+"Page3";
+                    return (TerrainPage)tp.getChild(pageName.substring(0,pageName.length()-1)+"1");
+                }
+            }
+        } else if (pageName.endsWith("4")) {
+            if (getParent() instanceof TerrainPage) {
+                TerrainPage tp = ((TerrainPage)getParent())._findRightPage();
+                if (tp != null) {
+                    pageName = tp.getName()+"Page4";
+                    return (TerrainPage)tp.getChild(pageName.substring(0,pageName.length()-1)+"2");
+                }
+            }
+        }
+        
+        return null;
+    }
+
+    private TerrainPage _findDownPage() {
+        String pageName = getName();
+        if (getParent() == null) return null;
+        if (pageName.endsWith("1")) {
+            return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"2");
+        } else if (pageName.endsWith("3")) {
+            return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"4");            
+        } else if (pageName.endsWith("2")) {
+            if (getParent() instanceof TerrainPage) {
+                TerrainPage tp = ((TerrainPage)getParent())._findDownPage();
+                if (tp != null) {
+                    pageName = tp.getName()+"Page2";
+                    return (TerrainPage)tp.getChild(pageName.substring(0,pageName.length()-1)+"1");
+                }
+            }
+        } else if (pageName.endsWith("4")) {
+            if (getParent() instanceof TerrainPage) {
+                TerrainPage tp = ((TerrainPage)getParent())._findDownPage();
+                if (tp != null) {
+                    pageName = tp.getName()+"Page4";
+                    return (TerrainPage)tp.getChild(pageName.substring(0,pageName.length()-1)+"3");
+                }
+            }
+        }
+
+        return null;
+    }
+
+    public static int[] createHeightSubBlock(int[] heightMap, int x, int y, int side) {
+        int[] rVal = new int[side*side];
+        int bsize = (int)FastMath.sqrt(heightMap.length);
+        int count = 0;
+        for (int i = x; i < side+x; i++) {
+            for (int j = y; j < side+y; j++) {
+                if (j < bsize && i < bsize)
+                    rVal[count] = heightMap[j + (i * bsize)];
+                count++;
+            }
+        }
+        return rVal;
     }
 }
