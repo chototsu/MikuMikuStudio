@@ -129,7 +129,6 @@ public class Md3ToJme extends FormatConverter{
             if (version!=15)
                 throw new IOException("Unsupported version " + version + ", only know ver 15");
             name=file.readString(64);
-            System.out.println("Name:"+ new String(name));
             flags=file.readInt();
             numFrames=file.readInt();
             numTags=file.readInt();
@@ -188,6 +187,7 @@ public class Md3ToJme extends FormatConverter{
         Vector3f[][] verts;
         Vector3f[][] norms;
         private final static float XYZ_SCALE=1.0f/64;
+        private static final boolean DEBUG = false;
 
         public void readMe() throws IOException {
             file.markPos();
@@ -266,7 +266,7 @@ public class Md3ToJme extends FormatConverter{
             for (int i=0;i<numShaders;i++){
                 String pathName=file.readString(64);
                 int shaderIndex=file.readInt();
-                System.out.println("path:"+pathName+" Index:"+shaderIndex);
+                if (DEBUG) System.out.println("path:"+pathName+" Index:"+shaderIndex);
             }
         }
 
