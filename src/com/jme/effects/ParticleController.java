@@ -36,11 +36,14 @@ import com.jme.system.DisplaySystem;
 
 /*
  * NOTE: 2/15/04 - Fixed random point using line. MP
- * 		 2/24/04 - Removed initialization of particles and place in particle constructor. MP
+ * 		 2/24/04 - Removed initialization of particles and place in particle 
+ *                  constructor. MP
+ *       2/26/04 - Documentation. - MP
  */
 
 /**
- * <code>ParticleController</code>
+ * <code>ParticleController</code> updates the particles from a given 
+ * particle system. 
  * 
  * @author Ahmed
  * @version $Id: ParticleController.java,v 1.3 2004/02/03 22:44:13 darkprophet

@@ -45,7 +45,7 @@ import com.jme.scene.model.JointMesh;
  * call to <code>setupJointAnimations</code> to properly position and
  * initialize the joints (Milkshape). 
  * @author Mark Powell
- * @version $Id: DeformationJointController.java,v 1.4 2004-02-24 22:05:22 mojomonkey Exp $
+ * @version $Id: DeformationJointController.java,v 1.5 2004-02-27 19:57:54 mojomonkey Exp $
  */
 public class DeformationJointController extends Controller {
 	//keyframe information
@@ -70,6 +70,16 @@ public class DeformationJointController extends Controller {
 		super();
 	}
 	
+    /**
+     * 
+     * <code>setUpdateModelBounds</code> well determine if the bounds of the
+     * model is updated as the model animates. This decision is left up to the
+     * user as it is model dependant if the model changes enough in it's 
+     * animation sequence, it is advised to update the bounds. By default
+     * the bounds are not updated.
+     * @param value true if the bounds should be updated each frame. False,
+     *      otherwise.
+     */
 	public void setUpdateModelBounds(boolean value) {
 		doBoundsUpdate = value;
 	}

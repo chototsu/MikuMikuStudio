@@ -38,26 +38,71 @@ import com.jme.scene.TriMesh;
 
 /*
  * NOTE: 2/24/2004 - Particle now handles own initialization. -MP
+ *       2/27/2004 - Documentation - MP
  */
 
 /**
- * <code>Particle</code>
+ * <code>Particle</code> defines a single particle of a particle system. This
+ * particle is a subclass of TriMesh and is therefore rendered directly. 
+ * The particle is billboarded insuring that it is always facing the camera,
+ * giving it a three dimesional look while in reality being two dimensional.
+ * <br>
+ * The Particle maintains some properties which are altered by the 
+ * ParticleController that is maintaining it. The fade value determines how
+ * much life is removed per update, while life stores how much life is left.
+ * Size gives a scalar value to multiply the particle by. Color maintains the
+ * particles color tint. Position of the particle is defined by the super 
+ * classes Local Translation vector. The position is updated by the velocity
+ * of the particle and the gravity of the particle system.
  * 
  * @author Ahmed
- * @version $Id: Particle.java,v 1.5 2004-02-24 14:59:43 mojomonkey Exp $
+ * @version $Id: Particle.java,v 1.6 2004-02-27 19:57:56 mojomonkey Exp $
  */
 public class Particle extends TriMesh {
 
-	public float fade, life, size;
+    /**
+     * defines how fast the particle "dies".
+     */
+	public float fade;
+    /**
+     * keeps track of the particle's current life.
+     */
+    public float life;
+    /**
+     * defines the scalar for the particle's size.
+     */
+    public float size;
+    /**
+     * defines how much to update the particle's local translation.
+     */
 	public Vector3f velocity;
+    /**
+     * defines the color tint of the particle.
+     */
 	public ColorRGBA color;
 	
+    //holds the colors for the particle corners.
 	private ColorRGBA[] cornerColors;
 
+    /**
+     * Constructor instantiates a default particle with no defined
+     * attributes.
+     * @param name the name of the particle.
+     */
 	public Particle(String name) {
 		super(name);
 	}
 
+    /**
+     * Constructor instantiates a new <code>Particle</code> object with
+     * provided attributes. The particle is then ready for rendering.
+     * @param name the name of the particle.
+     * @param vertices the vertices that make up the particle quad.
+     * @param normal the normal of the particle.
+     * @param color the color of the particle.
+     * @param texture the texture coordinates of the particle.
+     * @param indices the indices of the quad.
+     */
 	public Particle(
 		String name,
 		Vector3f[] vertices,
@@ -73,7 +118,6 @@ public class Particle extends TriMesh {
 		velocity = new Vector3f(0, 0, 0);
 		this.color = new ColorRGBA(0, 0, 0, 0);
 		
-		//averageSize = (float) (ps.getStartSize() + ps.getEndSize()) / 2;
 		BoundingSphere sphere = new BoundingSphere();
 		sphere.setCenter(getLocalTranslation());
 		sphere.setRadius(1.0f);
@@ -81,10 +125,23 @@ public class Particle extends TriMesh {
 		updateModelBound();
 	}
 	
+    /**
+     * 
+     * <code>setAverageSize</code> sets the average size of the particle. This
+     * is used for the bounding volume and is used a good estimate of the 
+     * boundings for the life time of the particle.
+     * @param size the size of the particle.
+     */
 	public void setAverageSize(float size) {
 		((BoundingSphere)getModelBound()).setRadius(size);
 	}
 
+    /**
+     * 
+     * <code>updateColor</code> updates the colors of the quad based on
+     * the current color of the particle.
+     *
+     */
 	public void updateColor() {
 		for (int i = 0; i < cornerColors.length; i++) {
 			cornerColors[i] = this.color;

@@ -47,7 +47,7 @@ import com.jme.system.JmeException;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.7 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: Curve.java,v 1.8 2004-02-27 19:57:53 mojomonkey Exp $
  */
 public abstract class Curve extends Geometry {
 
@@ -86,11 +86,22 @@ public abstract class Curve extends Geometry {
         this.vertex = controlPoints;
         steps = 25;
     }
-        
+    
+    /**
+     * 
+     * <code>setSteps</code> sets the number of steps that make up the curve.
+     * @param steps the number of steps that make up the curve.
+     */
     public void setSteps(int steps) {
         this.steps = steps;
     }
     
+    /**
+     * 
+     * <code>getSteps</code> retrieves the number of steps that make up the
+     * curve.
+     * @return the number of steps that makes up the curve.
+     */
     public int getSteps() {
         return steps;
     }

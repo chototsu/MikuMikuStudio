@@ -95,7 +95,7 @@ import com.jme.widget.text.WidgetText;
  * <code>Renderer</code> interface using the LWJGL API.
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
- * @version $Id: LWJGLRenderer.java,v 1.19 2004-02-20 01:27:02 mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.20 2004-02-27 19:57:55 mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
     //clear color
@@ -599,20 +599,21 @@ public class LWJGLRenderer implements Renderer {
                             color[i].a);
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        i++;
                         GL.glNormal3f(
-                            normal[i + 1].x,
-                            normal[i + 1].y,
-                            normal[i + 1].z);
+                            normal[i].x,
+                            normal[i].y,
+                            normal[i].z);
                         GL.glColor4f(
-                            color[i + 1].r,
-                            color[i + 1].g,
-                            color[i + 1].b,
-                            color[i + 1].a);
+                            color[i].r,
+                            color[i].g,
+                            color[i].b,
+                            color[i].a);
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(
-                            vertex[i + 1].x,
-                            vertex[i + 1].y,
-                            vertex[i + 1].z);
+                            vertex[i].x,
+                            vertex[i].y,
+                            vertex[i].z);
                     }
 
                 } else {
@@ -625,19 +626,20 @@ public class LWJGLRenderer implements Renderer {
                             color[i].b,
                             color[i].a);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        i++;
                         GL.glNormal3f(
-                            normal[i + 1].x,
-                            normal[i + 1].y,
-                            normal[i + 1].z);
+                            normal[i].x,
+                            normal[i].y,
+                            normal[i].z);
                         GL.glColor4f(
-                            color[i + 1].r,
-                            color[i + 1].g,
-                            color[i + 1].b,
-                            color[i + 1].a);
+                            color[i].r,
+                            color[i].g,
+                            color[i].b,
+                            color[i].a);
                         GL.glVertex3f(
-                            vertex[i + 1].x,
-                            vertex[i + 1].y,
-                            vertex[i + 1].z);
+                            vertex[i].x,
+                            vertex[i].y,
+                            vertex[i].z);
                     }
                 }
             } else {
@@ -647,15 +649,16 @@ public class LWJGLRenderer implements Renderer {
                         GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        i++;
                         GL.glNormal3f(
-                            normal[i + 1].x,
-                            normal[i + 1].y,
-                            normal[i + 1].z);
+                            normal[i].x,
+                            normal[i].y,
+                            normal[i].z);
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(
-                            vertex[i + 1].x,
-                            vertex[i + 1].y,
-                            vertex[i + 1].z);
+                            vertex[i].x,
+                            vertex[i].y,
+                            vertex[i].z);
                     }
 
                 } else {
@@ -663,14 +666,15 @@ public class LWJGLRenderer implements Renderer {
                     for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        i++;
                         GL.glNormal3f(
-                            normal[i + 1].x,
-                            normal[i + 1].y,
-                            normal[i + 1].z);
+                            normal[i].x,
+                            normal[i].y,
+                            normal[i].z);
                         GL.glVertex3f(
-                            vertex[i + 1].x,
-                            vertex[i + 1].y,
-                            vertex[i + 1].z);
+                            vertex[i].x,
+                            vertex[i].y,
+                            vertex[i].z);
                     }
 
                 }
@@ -687,16 +691,17 @@ public class LWJGLRenderer implements Renderer {
                             color[i].a);
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        i++;
                         GL.glColor4f(
-                            color[i + 1].r,
-                            color[i + 1].g,
-                            color[i + 1].b,
-                            color[i + 1].a);
+                            color[i].r,
+                            color[i].g,
+                            color[i].b,
+                            color[i].a);
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(
-                            vertex[i + 1].x,
-                            vertex[i + 1].y,
-                            vertex[i + 1].z);
+                            vertex[i].x,
+                            vertex[i].y,
+                            vertex[i].z);
                     }
 
                 } else {
@@ -708,15 +713,16 @@ public class LWJGLRenderer implements Renderer {
                             color[i].b,
                             color[i].a);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        i++;
                         GL.glColor4f(
-                            color[i + 1].r,
-                            color[i + 1].g,
-                            color[i + 1].b,
-                            color[i + 1].a);
+                            color[i].r,
+                            color[i].g,
+                            color[i].b,
+                            color[i].a);
                         GL.glVertex3f(
-                            vertex[i + 1].x,
-                            vertex[i + 1].y,
-                            vertex[i + 1].z);
+                            vertex[i].x,
+                            vertex[i].y,
+                            vertex[i].z);
                     }
                 }
             } else {
@@ -725,21 +731,23 @@ public class LWJGLRenderer implements Renderer {
                     for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        i++;
                         GL.glTexCoord2f(texture[i].x, texture[i].y);
                         GL.glVertex3f(
-                            vertex[i + 1].x,
-                            vertex[i + 1].y,
-                            vertex[i + 1].z);
+                            vertex[i].x,
+                            vertex[i].y,
+                            vertex[i].z);
                     }
 
                 } else {
                     // none
                     for (int i = 0; i < vertex.length - 1; i++) {
                         GL.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        i++;
                         GL.glVertex3f(
-                            vertex[i + 1].x,
-                            vertex[i + 1].y,
-                            vertex[i + 1].z);
+                            vertex[i].x,
+                            vertex[i].y,
+                            vertex[i].z);
                     }
                 }
             }

@@ -45,9 +45,13 @@ import com.jme.util.LoggingSystem;
  * is the first point of the next line. Therefore, for N points there are
  * N-1 lines.
  * @author Mark Powell
- * @version $Id: Line.java,v 1.2 2004-02-20 20:17:49 mojomonkey Exp $
+ * @version $Id: Line.java,v 1.3 2004-02-27 19:57:55 mojomonkey Exp $
  */
 public class Line extends Geometry {
+    
+    public Line(String name) {
+        super(name);
+    }
     
     /**
      * Constructor instantiates a new <code>Line</code> object with a given

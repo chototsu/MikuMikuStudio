@@ -46,10 +46,10 @@ import com.jme.util.LoggingSystem;
  * Client applications should not subclass <code>AbstractGame</code> directly.
  * 
  * @author Eric Woroshow
- * @version $Id: AbstractGame.java,v 1.6 2004-02-08 00:57:56 ericthered Exp $
+ * @version $Id: AbstractGame.java,v 1.7 2004-02-27 19:57:52 mojomonkey Exp $
  */
 public abstract class AbstractGame {
-	private final static String JME_VERSION_TAG = "jME version 0.4.1-experimental";
+	private final static String JME_VERSION_TAG = "jME version 0.5";
 	private final static String DEFAULT_IMAGE = "data/Images/Monkey.jpg";
 
 	/** Never displays a <code>PropertiesDialog</code> on startup, using defaults 
@@ -86,6 +86,8 @@ public abstract class AbstractGame {
 	}
 
 	/**
+     * <code>assertDisplayCreated</code> determines if the display system
+     * was successfully created before use.
 	 * @throws JmeException if the display system was not successfully created
 	 */
 	protected void assertDisplayCreated() throws JmeException {
@@ -133,6 +135,16 @@ public abstract class AbstractGame {
 		dialogImage = file;
 	}
 	
+    /**
+     * 
+     * <code>setDialogBehaviour</code> sets how the properties dialog should
+     * appear. ALWAYS_SHOW_PROPS, NEVER_SHOW_PROPS and FIRSTRUN_OR_NOCONFIGFILE
+     * are the three valid choices. The url of an image file is also used so
+     * you can customize the dialog.
+     * @param behaviour ALWAYS_SHOW_PROPS, NEVER_SHOW_PROPS and 
+     *      FIRSTRUN_OR_NOCONFIGFILE are the valid choices.
+     * @param image the image to display in the box.
+     */
 	public void setDialogBehaviour(int behaviour, URL image){
 		if (behaviour < NEVER_SHOW_PROPS_DIALOG || behaviour > ALWAYS_SHOW_PROPS_DIALOG)
 			throw new IllegalArgumentException("No such properties dialog behaviour");

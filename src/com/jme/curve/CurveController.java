@@ -42,7 +42,7 @@ import com.jme.scene.Spatial;
  * curve), the orientation precision defines how accurate the orientation of the
  * spatial will be.
  * @author Mark Powell
- * @version $Id: CurveController.java,v 1.4 2004-02-24 22:05:23 mojomonkey Exp $
+ * @version $Id: CurveController.java,v 1.5 2004-02-27 19:57:54 mojomonkey Exp $
  */
 public class CurveController extends Controller {
     private Spatial mover;
@@ -115,10 +115,24 @@ public class CurveController extends Controller {
         orientationPrecision = value;
     }
     
+    /**
+     * 
+     * <code>setAutoRotation</code> determines if the object assigned to
+     * the controller will rotate with the curve or just following the 
+     * curve.
+     * @param value true if the object is to rotate with the curve, false
+     *      otherwise.
+     */
     public void setAutoRotation(boolean value) {
         autoRotation = value;
     }
     
+    /**
+     * 
+     * <code>isAutoRotating</code> returns true if the object is rotating with
+     * the curve and false if it is not.
+     * @return true if the object is following the curve, false otherwise.
+     */
     public boolean isAutoRotating() {
         return autoRotation;
     }
@@ -190,7 +204,5 @@ public class CurveController extends Controller {
                 }
             }
         }
-
     }
-
 }

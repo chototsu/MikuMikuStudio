@@ -44,7 +44,7 @@ import com.jme.math.Vector3f;
  * [0,1] where 0 is the first control point and 1 is the second control
  * point.
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.5 2004-02-20 20:17:50 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.6 2004-02-27 19:57:53 mojomonkey Exp $
  */
 public class BezierCurve extends Curve {
 
@@ -120,6 +120,16 @@ public class BezierCurve extends Curve {
         return point;
     }
 
+    /**
+     *  <code>getOrientation</code> calculates the rotation matrix
+     * for any given point along to the line to still be facing
+     * in the direction of the line.
+     * @param time the current time (between 0 and 1)
+     * @param precision how accurate to (i.e. the next time) to 
+     *      check against.
+     * @return the rotation matrix.
+     * @see com.jme.curve.Curve#getOrientation(float, float)
+     */
     public Matrix3f getOrientation(float time, float precision) {
         Matrix3f rotation = new Matrix3f();
 
@@ -144,6 +154,18 @@ public class BezierCurve extends Curve {
         return rotation;
     }
 
+    /**
+     *  <code>getOrientation</code> calculates the rotation matrix
+     * for any given point along to the line to still be facing
+     * in the direction of the line. A up vector is supplied, this
+     * keep the rotation matrix following the line, but insures the
+     * object's up vector is not drastically changed.
+     * @param time the current time (between 0 and 1)
+     * @param precision how accurate to (i.e. the next time) to 
+     *      check against.
+     * @return the rotation matrix.
+     * @see com.jme.curve.Curve#getOrientation(float, float)
+     */
     public Matrix3f getOrientation(float time, float precision, Vector3f up) {
         if(up == null) {
             return getOrientation(time, precision);

@@ -43,7 +43,7 @@ import com.jme.util.Timer;
  * the logic based on the time elapsed.
  *
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.1 2004-02-03 01:05:41 ericthered Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.2 2004-02-27 19:57:52 mojomonkey Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 	//Flag for running the system.
@@ -62,6 +62,12 @@ public abstract class VariableTimestepGame extends AbstractGame {
 		return 1 / frametime;
 	}
 
+    /**
+     * 
+     * <code>updateTime</code> calculates the start and stop time of the
+     * frame.
+     *
+     */
 	private void updateTime() {
 		time1 = timer.getTime();
 		frametime = (time1 - time0) / (float)timer.getResolution();
