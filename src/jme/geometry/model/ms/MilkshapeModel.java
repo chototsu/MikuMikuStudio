@@ -485,7 +485,7 @@ public class MilkshapeModel implements Geometry {
             //render all triangles defined for the current mesh.
             for (int j = 0; j < m; j++) {
                 triangleIndex = meshes[i].triangleIndices[j];
-                currentTri = (Triangle) (triangles[triangleIndex]);
+                currentTri = triangles[triangleIndex];
 
                 for (int k = 0; k < 3; k++) {
                     index = currentTri.vertexIndices[k];

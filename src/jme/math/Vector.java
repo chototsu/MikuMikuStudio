@@ -250,7 +250,7 @@ public class Vector {
 	/**
 	 * <code>toString</code> returns the string representation of
 	 * this Vector. The format is as follows:
-	 * 
+	 * <br><br>
 	 * (XXX.XXX, YYY.YYY, ZZZ.ZZZ)
 	 * 
 	 * @return the string representation of the vector.

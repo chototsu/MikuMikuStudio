@@ -31,8 +31,6 @@
  */
 package jme.math;
 
-import org.lwjgl.vector.Vector3f;
-
 import jme.exception.MonkeyRuntimeException;
 
 /**
@@ -142,7 +140,7 @@ public class Quaternion {
 	 * @param angle the angle to rotate.
 	 * @param axis the axis of rotation.
 	 */
-	public void fromAngleAxis(float angle, Vector3f axis) {
+	public void fromAngleAxis(float angle, Vector axis) {
 		float halfAngle = 0.5f * angle;
 		float sin = (float) Math.sin(halfAngle);
 		w = (float) Math.cos(halfAngle);
@@ -296,12 +294,15 @@ public class Quaternion {
 
 	/**
 	 * <code>toAngleAxis</code> sets a given angle and axis to that
-	 * represented by the current quaternion.
-	 * @param angle the value to contain the angle.
+	 * represented by the current quaternion. The values are stored 
+     * as following: The axis is provided as a parameter and built
+     * by the method, the angle is returned as a float.
 	 * @param axis the object to contain the axis.
+     * @return the angle of rotation.
 	 */
-	public void toAngleAxis(float angle, Vector3f axis) {
+	public float toAngleAxis(Vector axis) {
 		float sqrLength = x * x + y * y + z * z;
+        float angle;
 		if (sqrLength > 0.0) {
 			angle = (float) (2.0 * Math.cos(w));
 			float invLength = (float) (1.0 / Math.sqrt(sqrLength));
@@ -314,6 +315,8 @@ public class Quaternion {
 			axis.y = 0.0f;
 			axis.z = 0.0f;
 		}
+        
+        return angle;
 	}
 
 	/**
@@ -472,4 +475,13 @@ public class Quaternion {
 		z *= -1;
 		w *= -1;
 	}
+    
+    public static void main(String[] args) {
+        Quaternion q = new Quaternion(4,1,0,0);
+        float angle = 0;
+        Vector vec = new Vector();
+        angle = q.toAngleAxis(vec);
+        System.out.println(angle);
+        System.out.println(vec.toString());
+    }
 }

@@ -235,16 +235,16 @@ public class CombinerHeightMap extends AbstractHeightMap {
 			for (int i = 0; i < size; i++) {
 				for (int j = 0; j < size; j++) {
 					heightData[i][j] =
-						(int) ((float) temp1[i][j] * factor1
-							+ (float) temp2[i][j] * factor2);
+						(int) (temp1[i][j] * factor1
+							+ temp2[i][j] * factor2);
 				}
 			}
 		} else if (mode == SUBTRACTION) {
 			for (int i = 0; i < size; i++) {
 				for (int j = 0; j < size; j++) {
 					heightData[i][j] =
-						(int) ((float) temp1[i][j] * factor1
-							- (float) temp2[i][j] * factor2);
+						(int) (temp1[i][j] * factor1
+							- temp2[i][j] * factor2);
 				}
 			}
 		}

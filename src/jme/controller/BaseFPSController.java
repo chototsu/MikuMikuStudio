@@ -159,7 +159,7 @@ public class BaseFPSController extends AbstractGameController {
 
         float rotate = 0.0f;
 
-        rotate = (float)angle / accuracy;
+        rotate = angle / accuracy;
 
         //Determine the axis at which we are rotating.
         Vector temp =
@@ -245,9 +245,8 @@ public class BaseFPSController extends AbstractGameController {
         tiltView(angleY);
         panView(-angleX);
 
-        if (entity instanceof Camera) {
-            ((Camera)entity).updateFrustum();
-        }
+        entity.updateFrustum();
+        
 
         entity.update(time);
 
@@ -389,8 +388,6 @@ public class BaseFPSController extends AbstractGameController {
         Vector vec =
             (
                 entity.getView().subtract(entity.getPosition())).normalize();
-
-        Vector newView = entity.getView();
 
         entity.getPosition().x += vec.x * speed;
         entity.getView().x += vec.x * speed;

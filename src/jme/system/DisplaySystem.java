@@ -32,8 +32,6 @@
 
 package jme.system;
 
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.Toolkit;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -336,9 +334,7 @@ public class DisplaySystem {
         //get all the modes, and find one that matches our width, height, bpp.
         DisplayMode[] modes = Display.getAvailableDisplayModes();
         //Make sure that we find the mode that uses our current monitor freq.
-        GraphicsEnvironment ge =
-            GraphicsEnvironment.getLocalGraphicsEnvironment();
-        GraphicsDevice[] gd = ge.getScreenDevices();
+
         for (int i = 0; i < modes.length; i++) {
         	if (modes[i].width == width
                 && modes[i].height == height
@@ -456,7 +452,7 @@ public class DisplaySystem {
 
             if (fullscreen) {
                 Display.setDisplayMode(mode);
-                gl = new GL(title, bpp, 0, 1, 0);
+                gl = new GL(title, bpp, 0, 16, 0);
             } else {
                 int x, y;
                 x =
@@ -466,7 +462,7 @@ public class DisplaySystem {
                     (Toolkit.getDefaultToolkit().getScreenSize().height
                         - height)
                         / 2;
-                gl = new GL(title, x, y, width, height, bpp, 0, 1, 0);
+                gl = new GL(title, x, y, width, height, bpp, 0, 16, 0);
             }
 
             gl.create();

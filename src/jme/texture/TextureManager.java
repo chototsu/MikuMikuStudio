@@ -124,9 +124,11 @@ public class TextureManager {
     private TextureManager() {
         gl = DisplaySystem.getDisplaySystem().getGL();
         glu = DisplaySystem.getDisplaySystem().getGLU();
-        
-        if(null == gl || null == glu) {
-        	throw new MonkeyGLException("GL/GLU must be initialized before " +        		"calling TextureManager.");
+
+        if (null == gl || null == glu) {
+            throw new MonkeyGLException(
+                "GL/GLU must be initialized before "
+                    + "calling TextureManager.");
         }
         textureList = new HashMap();
         keyList = new ArrayList();
@@ -145,15 +147,18 @@ public class TextureManager {
 
         TextureData tempData;
         for (int i = 0; i < previousKeys.size(); i++) {
-            tempData = (TextureData)previousKeys.get(i);
-            
-            if(tempData.name.endsWith(".tga")) {
-            	loadTexture(tempData.name,tempData.minFilter,
-            			tempData.magFilter,tempData.mipmapped);
+            tempData = (TextureData) previousKeys.get(i);
+
+            if (tempData.name.endsWith(".tga")) {
+                loadTexture(
+                    tempData.name,
+                    tempData.minFilter,
+                    tempData.magFilter,
+                    tempData.mipmapped);
             }
-            
+
             loadImage(
-            	tempData.name,
+                tempData.name,
                 tempData.image,
                 tempData.minFilter,
                 tempData.magFilter,
@@ -171,10 +176,10 @@ public class TextureManager {
 
         TextureData tempData;
         for (int i = 0; i < keys.size(); i++) {
-            tempData = (TextureData)keys.get(i);
+            tempData = (TextureData) keys.get(i);
             loadImage(
-            	tempData.name,
-				tempData.image,
+                tempData.name,
+                tempData.image,
                 tempData.minFilter,
                 tempData.magFilter,
                 tempData.mipmapped);
@@ -188,7 +193,7 @@ public class TextureManager {
      * @return an <code>ArrayList</code> of the keys.
      */
     public ArrayList saveKeys() {
-        previousKeys = (ArrayList)keyList.clone();
+        previousKeys = (ArrayList) keyList.clone();
         return previousKeys;
     }
 
@@ -214,14 +219,14 @@ public class TextureManager {
         int minFilter,
         int magFilter,
         boolean isMipmapped) {
-        
+
         //check if the texture is already loaded.  
         Object obj = textureList.get(image.getDescription());
         if (obj != null) {
             //was previously loaded, so return it.
-            return ((Integer)obj).intValue();
-        }    
-    
+            return ((Integer) obj).intValue();
+        }
+
         return loadImage(
             image.getDescription(),
             image.getImage(),
@@ -230,7 +235,7 @@ public class TextureManager {
             isMipmapped);
 
     }
-    
+
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * string. If a texture with the same filename has previously been loaded,
@@ -258,7 +263,7 @@ public class TextureManager {
         Object obj = textureList.get(file);
         if (obj != null) {
             //was previously loaded, so return it.
-            return ((Integer)obj).intValue();
+            return ((Integer) obj).intValue();
         }
 
         Image image = null;
@@ -266,8 +271,9 @@ public class TextureManager {
         if (".TGA".equalsIgnoreCase(file.substring(file.indexOf('.')))) {
             //Load the TGA file
             image = loadTGAImage(file);
-        } else if(".BMP".equalsIgnoreCase(file.substring(file.indexOf('.')))) {
-        	image = loadBMPImage(file);
+        } else if (
+            ".BMP".equalsIgnoreCase(file.substring(file.indexOf('.')))) {
+            image = loadBMPImage(file);
         } else {
             //Load the new image.
             image = (new javax.swing.ImageIcon(file)).getImage();
@@ -299,7 +305,7 @@ public class TextureManager {
         //check for the id in the hashmap using file as the key
         Object obj = textureList.get(file);
         if (obj != null) {
-            return ((Integer)obj).intValue();
+            return ((Integer) obj).intValue();
         }
 
         //error
@@ -320,10 +326,10 @@ public class TextureManager {
         Object obj = textureList.get(file);
         if (obj != null) {
             //bind it
-            int id = ((Integer)obj).intValue();
+            int id = ((Integer) obj).intValue();
 
             if (id != boundID) {
-            	boundID = id;
+                boundID = id;
                 gl.bindTexture(GL.TEXTURE_2D, id);
             }
 
@@ -346,7 +352,7 @@ public class TextureManager {
      */
     public void bind(int id) {
         if (id != boundID) {
-        	boundID = id;
+            boundID = id;
             gl.bindTexture(GL.TEXTURE_2D, id);
         }
     }
@@ -364,7 +370,7 @@ public class TextureManager {
     public boolean deleteTexture(String file) {
         Object obj = textureList.get(file);
         if (obj != null) {
-            int id = ((Integer)obj).intValue();
+            int id = ((Integer) obj).intValue();
 
             IntBuffer buf =
                 ByteBuffer
@@ -396,8 +402,8 @@ public class TextureManager {
         int id;
         String key;
         for (int i = 0; i < keyList.size(); i++) {
-            key = ((TextureData)keyList.get(i)).name;
-            id = ((Integer)textureList.get(key)).intValue();
+            key = ((TextureData) keyList.get(i)).name;
+            id = ((Integer) textureList.get(key)).intValue();
             if (gl.isTexture(id)) {
                 IntBuffer buf =
                     ByteBuffer
@@ -475,16 +481,17 @@ public class TextureManager {
         BufferedImage tex = null;
         try {
             tex =
-	            new BufferedImage(
-	                image.getWidth(null),
-	                image.getHeight(null),
-	                BufferedImage.TYPE_3BYTE_BGR);
-        } catch(IllegalArgumentException e) {
-        	LoggingSystem.getLoggingSystem().getLogger().log(Level.WARNING,
-        			"Could not load image file " + file);
-        	return -1;
+                new BufferedImage(
+                    image.getWidth(null),
+                    image.getHeight(null),
+                    BufferedImage.TYPE_3BYTE_BGR);
+        } catch (IllegalArgumentException e) {
+            LoggingSystem.getLoggingSystem().getLogger().log(
+                Level.WARNING,
+                "Could not load image file " + file);
+            return -1;
         }
-        Graphics2D g = (Graphics2D)tex.getGraphics();
+        Graphics2D g = (Graphics2D) tex.getGraphics();
         g.drawImage(image, null, null);
         g.dispose();
 
@@ -501,7 +508,7 @@ public class TextureManager {
         int dataAddress = Sys.getDirectBufferAddress(scratch);
 
         byte data[] =
-            (byte[])tex.getRaster().getDataElements(
+            (byte[]) tex.getRaster().getDataElements(
                 0,
                 0,
                 tex.getWidth(),
@@ -557,12 +564,13 @@ public class TextureManager {
             "Successfully loaded " + file);
         //add to our lists.
         textureList.put(file, new Integer(buf.get(0)));
-        keyList.add(new TextureData(image, file, minFilter, magFilter, isMipmapped));
+        keyList.add(
+            new TextureData(image, file, minFilter, magFilter, isMipmapped));
 
         return buf.get(0);
 
     }
-    
+
     /**
     * <code>loadBMPImage</code> because bitmap is not directly supported by
     * Java, we must load it manually. The requires opening a stream to the
@@ -574,30 +582,30 @@ public class TextureManager {
     * 
     * @return <code>Image</code> object that contains the bitmap information.
     */
-	private Image loadBMPImage(String file) {
-		
-			try {
-				FileInputStream fs = new FileInputStream(file);
-				BitmapHeader bh = new BitmapHeader();
-				bh.read(fs);
+    private Image loadBMPImage(String file) {
 
-				if (bh.bitcount == 24)
-					return (bh.readMap24(fs, bh));
+        try {
+            FileInputStream fs = new FileInputStream(file);
+            BitmapHeader bh = new BitmapHeader();
+            bh.read(fs);
 
-				if (bh.bitcount == 32)
-					return (bh.readMap32(fs, bh));
+            if (bh.bitcount == 24)
+                return (bh.readMap24(fs, bh));
 
-				if (bh.bitcount == 8)
-					return (bh.readMap8(fs, bh));
+            if (bh.bitcount == 32)
+                return (bh.readMap32(fs, bh));
 
-				fs.close();
-			} catch (IOException e) {
-				System.err.println("Error while loading " + file);
-				System.exit(1);
-			}
+            if (bh.bitcount == 8)
+                return (bh.readMap8(fs, bh));
 
-			return null;
-		}
+            fs.close();
+        } catch (IOException e) {
+            System.err.println("Error while loading " + file);
+            System.exit(1);
+        }
+
+        return null;
+    }
 
     /**
      * <code>loadTGAImage</code> because targa is not directly supported by
@@ -624,17 +632,17 @@ public class TextureManager {
             DataInputStream dis = new DataInputStream(bis);
 
             //Read the TGA header
-            idLength = (short)dis.read();
-            colorMapType = (short)dis.read();
-            imageType = (short)dis.read();
-            cMapStart = (int)flipEndian(dis.readShort());
-            cMapLength = (int)flipEndian(dis.readShort());
-            cMapDepth = (short)dis.read();
-            xOffset = (int)flipEndian(dis.readShort());
-            yOffset = (int)flipEndian(dis.readShort());
-            width = (int)flipEndian(dis.readShort());
-            height = (int)flipEndian(dis.readShort());
-            pixelDepth = (short)dis.read();
+            idLength = (short) dis.read();
+            colorMapType = (short) dis.read();
+            imageType = (short) dis.read();
+            cMapStart = flipEndian(dis.readShort());
+            cMapLength = flipEndian(dis.readShort());
+            cMapDepth = (short) dis.read();
+            xOffset = flipEndian(dis.readShort());
+            yOffset = flipEndian(dis.readShort());
+            width = flipEndian(dis.readShort());
+            height = flipEndian(dis.readShort());
+            pixelDepth = (short) dis.read();
 
             if (pixelDepth == 24) {
                 cm = new DirectColorModel(24, 0xFF0000, 0xFF00, 0xFF);
@@ -648,7 +656,7 @@ public class TextureManager {
                         0xFF);
             }
 
-            imageDescriptor = (short)dis.read();
+            imageDescriptor = (short) dis.read();
 
             //Skip image ID
             if (idLength > 0) {
@@ -701,216 +709,217 @@ public class TextureManager {
         int input = signedShort & 0xFFFF;
         return (short) (input << 8 | (input & 0xFF00) >>> 8);
     }
-    
+
     /**
      * <code>BitmapHeader</code> contains all Bitmap image header information.
      * This class is used to load the BMP data. The class also handles 
      * retrieving the data for different depth sizes, that is, 32, 24 and 8.
      */
-	private class BitmapHeader {
-			public int size;
-			public int bisize;
-			public int width;
-			public int height;
-			public int planes;
-			public int bitcount;
-			public int compression;
-			public int sizeimage;
-			public int xpm;
-			public int ypm;
-			public int clrused;
-			public int clrimp;
-		
-			private Image readMap32(FileInputStream fs, BitmapHeader bh)
-					throws IOException {
-					Image image;
-					int xwidth = bh.sizeimage / bh.height;
-					int ndata[] = new int[bh.height * bh.width];
-					byte brgb[] = new byte[bh.width * 4 * bh.height];
-					fs.read(brgb, 0, bh.width * 4 * bh.height);
-					int nindex = 0;
+    private class BitmapHeader {
+        public int size;
+        public int bisize;
+        public int width;
+        public int height;
+        public int planes;
+        public int bitcount;
+        public int compression;
+        public int sizeimage;
+        public int xpm;
+        public int ypm;
+        public int clrused;
+        public int clrimp;
 
-					for (int j = 0; j < bh.height; j++) {
-						for (int i = 0; i < bh.width; i++) {
-							ndata[bh.width * (bh.height - j - 1) + i] =
-								constructInt3(brgb, nindex);
-							nindex += 4;
-						}
-					}
+        private Image readMap32(FileInputStream fs, BitmapHeader bh)
+            throws IOException {
+            Image image;
+            int xwidth = bh.sizeimage / bh.height;
+            int ndata[] = new int[bh.height * bh.width];
+            byte brgb[] = new byte[bh.width * 4 * bh.height];
+            fs.read(brgb, 0, bh.width * 4 * bh.height);
+            int nindex = 0;
 
-					image =
-						Toolkit.getDefaultToolkit().createImage(
-							new MemoryImageSource(
-								bh.width,
-								bh.height,
-								ndata,
-								0,
-								bh.width));
-					fs.close();
-					return (image);
-				}
+            for (int j = 0; j < bh.height; j++) {
+                for (int i = 0; i < bh.width; i++) {
+                    ndata[bh.width * (bh.height - j - 1) + i] =
+                        constructInt3(brgb, nindex);
+                    nindex += 4;
+                }
+            }
 
-				private Image readMap24(FileInputStream fs, BitmapHeader bh)
-					throws IOException {
-					Image image;
-					int npad = (bh.sizeimage / bh.height) - bh.width * 3;
-					int ndata[] = new int[bh.height * bh.width];
-					byte brgb[] = new byte[(bh.width + npad) * 3 * bh.height];
-					fs.read(brgb, 0, (bh.width + npad) * 3 * bh.height);
-					int nindex = 0;
+            image =
+                Toolkit.getDefaultToolkit().createImage(
+                    new MemoryImageSource(
+                        bh.width,
+                        bh.height,
+                        ndata,
+                        0,
+                        bh.width));
+            fs.close();
+            return (image);
+        }
 
-					for (int j = 0; j < bh.height; j++) {
-						for (int i = 0; i < bh.width; i++) {
-							ndata[bh.width * (bh.height - j - 1) + i] =
-								constructInt3(brgb, nindex);
-							nindex += 3;
-						}
-						nindex += npad;
-					}
+        private Image readMap24(FileInputStream fs, BitmapHeader bh)
+            throws IOException {
+            Image image;
+            int npad = (bh.sizeimage / bh.height) - bh.width * 3;
+            int ndata[] = new int[bh.height * bh.width];
+            byte brgb[] = new byte[(bh.width + npad) * 3 * bh.height];
+            fs.read(brgb, 0, (bh.width + npad) * 3 * bh.height);
+            int nindex = 0;
 
-					image =
-						Toolkit.getDefaultToolkit().createImage(
-							new MemoryImageSource(
-								bh.width,
-								bh.height,
-								ndata,
-								0,
-								bh.width));
-					fs.close();
-					return image;
-				}
+            for (int j = 0; j < bh.height; j++) {
+                for (int i = 0; i < bh.width; i++) {
+                    ndata[bh.width * (bh.height - j - 1) + i] =
+                        constructInt3(brgb, nindex);
+                    nindex += 3;
+                }
+                nindex += npad;
+            }
 
-				private Image readMap8(FileInputStream fs, BitmapHeader bh)
-					throws IOException {
-					Image image;
-					int nNumColors = 0;
+            image =
+                Toolkit.getDefaultToolkit().createImage(
+                    new MemoryImageSource(
+                        bh.width,
+                        bh.height,
+                        ndata,
+                        0,
+                        bh.width));
+            fs.close();
+            return image;
+        }
 
-					if (bh.clrused > 0) {
-						nNumColors = bh.clrused;
-					} else {
-						nNumColors = (1 & 0xff) << bh.bitcount;
-					}
+        private Image readMap8(FileInputStream fs, BitmapHeader bh)
+            throws IOException {
+            Image image;
+            int nNumColors = 0;
 
-					if (bh.sizeimage == 0) {
-						bh.sizeimage = ((((bh.width * bh.bitcount) + 31) & ~31) >> 3);
-						bh.sizeimage *= bh.height;
-					}
+            if (bh.clrused > 0) {
+                nNumColors = bh.clrused;
+            } else {
+                nNumColors = (1 & 0xff) << bh.bitcount;
+            }
 
-					int npalette[] = new int[nNumColors];
-					byte bpalette[] = new byte[nNumColors * 4];
-					fs.read(bpalette, 0, nNumColors * 4);
-					int nindex8 = 0;
+            if (bh.sizeimage == 0) {
+                bh.sizeimage = ((((bh.width * bh.bitcount) + 31) & ~31) >> 3);
+                bh.sizeimage *= bh.height;
+            }
 
-					for (int n = 0; n < nNumColors; n++) {
-						npalette[n] = constructInt3(bpalette, nindex8);
-						nindex8 += 4;
-					}
+            int npalette[] = new int[nNumColors];
+            byte bpalette[] = new byte[nNumColors * 4];
+            fs.read(bpalette, 0, nNumColors * 4);
+            int nindex8 = 0;
 
-					int npad8 = (bh.sizeimage / bh.height) - bh.width;
-					int ndata8[] = new int[bh.width * bh.height];
-					byte bdata[] = new byte[(bh.width + npad8) * bh.height];
-					fs.read(bdata, 0, (bh.width + npad8) * bh.height);
-					nindex8 = 0;
+            for (int n = 0; n < nNumColors; n++) {
+                npalette[n] = constructInt3(bpalette, nindex8);
+                nindex8 += 4;
+            }
 
-					for (int j8 = 0; j8 < bh.height; j8++) {
-						for (int i8 = 0; i8 < bh.width; i8++) {
-							ndata8[bh.width * (bh.height - j8 - 1) + i8] =
-								npalette[((int) bdata[nindex8] & 0xff)];
-							nindex8++;
-						}
+            int npad8 = (bh.sizeimage / bh.height) - bh.width;
+            int ndata8[] = new int[bh.width * bh.height];
+            byte bdata[] = new byte[(bh.width + npad8) * bh.height];
+            fs.read(bdata, 0, (bh.width + npad8) * bh.height);
+            nindex8 = 0;
 
-						nindex8 += npad8;
-					}
+            for (int j8 = 0; j8 < bh.height; j8++) {
+                for (int i8 = 0; i8 < bh.width; i8++) {
+                    ndata8[bh.width * (bh.height - j8 - 1) + i8] =
+                        npalette[(bdata[nindex8] & 0xff)];
+                    nindex8++;
+                }
 
-					image =
-						Toolkit.getDefaultToolkit().createImage(
-							new MemoryImageSource(
-								bh.width,
-								bh.height,
-								ndata8,
-								0,
-								bh.width));
+                nindex8 += npad8;
+            }
 
-					return image;
-				}
-		
-			/* Builds an int from a byte array - convert little to big endian.
-				 */
+            image =
+                Toolkit.getDefaultToolkit().createImage(
+                    new MemoryImageSource(
+                        bh.width,
+                        bh.height,
+                        ndata8,
+                        0,
+                        bh.width));
 
-				private int constructInt(byte[] in, int offset) {
-					int ret = ((int) in[offset + 3] & 0xff);
-					ret = (ret << 8) | ((int) in[offset + 2] & 0xff);
-					ret = (ret << 8) | ((int) in[offset + 1] & 0xff);
-					ret = (ret << 8) | ((int) in[offset + 0] & 0xff);
-					return (ret);
-				}
+            return image;
+        }
 
-				/* Builds an int from a byte array - convert little to big endian 
-				 * set high order bytes to 0xfff.
-				 */
+        /* Builds an int from a byte array - convert little to big endian.
+        	 */
 
-				private int constructInt3(byte[] in, int offset) {
-					int ret = 0xff;
-					ret = (ret << 8) | ((int) in[offset + 2] & 0xff);
-					ret = (ret << 8) | ((int) in[offset + 1] & 0xff);
-					ret = (ret << 8) | ((int) in[offset + 0] & 0xff);
-					return (ret);
-				}
+        private int constructInt(byte[] in, int offset) {
+            int ret = (in[offset + 3] & 0xff);
+            ret = (ret << 8) | (in[offset + 2] & 0xff);
+            ret = (ret << 8) | (in[offset + 1] & 0xff);
+            ret = (ret << 8) | (in[offset + 0] & 0xff);
+            return (ret);
+        }
 
-				/* Builds an int from a byte array - convert little to big endian.
-				 */
+        /* Builds an int from a byte array - convert little to big endian 
+         * set high order bytes to 0xfff.
+         */
 
-				private long constructLong(byte[] in, int offset) {
-					long ret = ((long) in[offset + 7] & 0xff);
-					ret |= (ret << 8) | ((long) in[offset + 6] & 0xff);
-					ret |= (ret << 8) | ((long) in[offset + 5] & 0xff);
-					ret |= (ret << 8) | ((long) in[offset + 4] & 0xff);
-					ret |= (ret << 8) | ((long) in[offset + 3] & 0xff);
-					ret |= (ret << 8) | ((long) in[offset + 2] & 0xff);
-					ret |= (ret << 8) | ((long) in[offset + 1] & 0xff);
-					ret |= (ret << 8) | ((long) in[offset + 0] & 0xff);
-					return (ret);
-				}
+        private int constructInt3(byte[] in, int offset) {
+            int ret = 0xff;
+            ret = (ret << 8) | (in[offset + 2] & 0xff);
+            ret = (ret << 8) | (in[offset + 1] & 0xff);
+            ret = (ret << 8) | (in[offset + 0] & 0xff);
+            return (ret);
+        }
 
-				/* Builds an double from a byte array - convert little to big endian.
-				 */
+        /* Builds an int from a byte array - convert little to big endian.
+         */
 
-				private double constructDouble(byte[] in, int offset) {
-					long ret = constructLong(in, offset);
-					return (Double.longBitsToDouble(ret));
-				}
+        private long constructLong(byte[] in, int offset) {
+            long ret = ((long) in[offset + 7] & 0xff);
+            ret |= (ret << 8) | ((long) in[offset + 6] & 0xff);
+            ret |= (ret << 8) | ((long) in[offset + 5] & 0xff);
+            ret |= (ret << 8) | ((long) in[offset + 4] & 0xff);
+            ret |= (ret << 8) | ((long) in[offset + 3] & 0xff);
+            ret |= (ret << 8) | ((long) in[offset + 2] & 0xff);
+            ret |= (ret << 8) | ((long) in[offset + 1] & 0xff);
+            ret |= (ret << 8) | ((long) in[offset + 0] & 0xff);
+            return (ret);
+        }
 
-				/* Builds an short from a byte array - convert little to big endian.
-				 */
+        /* Builds an double from a byte array - convert little to big endian.
+         */
 
-				private short constructShort(byte[] in, int offset) {
-					short ret = (short) ((short) in[offset + 1] & 0xff);
-					ret = (short) ((ret << 8) | (short) ((short) in[offset + 0] & 0xff));
-					return (ret);
-				}
+        private double constructDouble(byte[] in, int offset) {
+            long ret = constructLong(in, offset);
+            return (Double.longBitsToDouble(ret));
+        }
 
-			protected final void read(FileInputStream fs) throws IOException {
-				final int bflen = 14;
-				byte bf[] = new byte[bflen];
-				fs.read(bf, 0, bflen);
-				final int bilen = 40;
-				byte bi[] = new byte[bilen];
-				fs.read(bi, 0, bilen);
+        /* Builds an short from a byte array - convert little to big endian.
+         */
 
-				size = constructInt(bf, 2);
-				bisize = constructInt(bi, 2);
-				width = constructInt(bi, 4);
-				height = constructInt(bi, 8);
-				planes = constructShort(bi, 12);
-				bitcount = constructShort(bi, 14);
-				compression = constructInt(bi, 16);
-				sizeimage = constructInt(bi, 20);
-				xpm = constructInt(bi, 24);
-				ypm = constructInt(bi, 28);
-				clrused = constructInt(bi, 32);
-				clrimp = constructInt(bi, 36);
-			}
-		}
+        private short constructShort(byte[] in, int offset) {
+            short ret = (short) (in[offset + 1] & 0xff);
+            ret =
+                (short) ((ret << 8) | (short) (in[offset + 0] & 0xff));
+            return (ret);
+        }
+
+        protected final void read(FileInputStream fs) throws IOException {
+            final int bflen = 14;
+            byte bf[] = new byte[bflen];
+            fs.read(bf, 0, bflen);
+            final int bilen = 40;
+            byte bi[] = new byte[bilen];
+            fs.read(bi, 0, bilen);
+
+            size = constructInt(bf, 2);
+            bisize = constructInt(bi, 2);
+            width = constructInt(bi, 4);
+            height = constructInt(bi, 8);
+            planes = constructShort(bi, 12);
+            bitcount = constructShort(bi, 14);
+            compression = constructInt(bi, 16);
+            sizeimage = constructInt(bi, 20);
+            xpm = constructInt(bi, 24);
+            ypm = constructInt(bi, 28);
+            clrused = constructInt(bi, 32);
+            clrimp = constructInt(bi, 36);
+        }
+    }
 
     /**
      * <code>TextureData</code> maintains the file information for a targa
@@ -918,9 +927,9 @@ public class TextureManager {
      * 
      */
     private class TextureData {
-    	public Image image;
-    	public String name;
-    	public int minFilter;
+        public Image image;
+        public String name;
+        public int minFilter;
         public int magFilter;
         public boolean mipmapped;
 
