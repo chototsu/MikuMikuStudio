@@ -1,8 +1,38 @@
+/*
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 package com.jme.animation;
 
 import com.jme.scene.TriMesh;
 import com.jme.scene.Controller;
-import com.jme.scene.CloneCreator;
 import com.jme.scene.model.EmptyTriMesh;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
@@ -38,6 +68,8 @@ import java.io.*;
  * this controller to the TriMesh it animates.
  * 
  * @author Jack Lindamood
+ * Parts by kevglass
+ * @version $Id: KeyframeController.java,v 1.10 2005-02-27 07:22:39 renanse Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -69,6 +101,11 @@ public class KeyframeController extends Controller {
      */
     transient private int curFrame;
 
+    /**
+     * The frame of animation we're heading towards
+     */
+    transient private int nextFrame;
+    
     /**
      * The PointInTime before <code>curTime</code>
      */
@@ -369,12 +406,26 @@ public class KeyframeController extends Controller {
             curTime += time * this.getSpeed();
         else
             curTime -= time * this.getSpeed();
+        
         findFrame();
         before = ((PointInTime) keyframes.get(curFrame));
-        after = ((PointInTime) keyframes.get(curFrame + 1));
+        // Change this bit so the next frame we're heading towards isn't always going
+        // to be one frame ahead since now we coule be animating from the last to first
+        // frames.
+        //after = ((PointInTime) keyframes.get(curFrame + 1));
+        after = ((PointInTime) keyframes.get(nextFrame));
+        
+        float delta = (curTime - before.time) / (after.time - before.time);
+        
+        // If we doing that wrapping bit then delta should be caculated based 
+        // on the time before the start of the animation we are. 
+        if (nextFrame < curFrame) {
+        	delta = 1 - (getMinTime()-curTime);
+        }
+        
         TriMesh oldShape = before.newShape;
         TriMesh newShape = after.newShape;
-        float delta = (curTime - before.time) / (after.time - before.time);
+        
         Vector3f[] verts = morphMesh.getVertices();
         Vector3f[] norms = morphMesh.getNormals();
         Vector2f[] texts = morphMesh.getTextures();
@@ -464,18 +515,36 @@ public class KeyframeController extends Controller {
      * MinTime and MaxTime bounds
      */
     private void findFrame() {
+    	// If we're in our special wrapping case then just ignore changing
+    	// frames. Once we get back into the actual series we'll revert back
+    	// to the normal process
+    	if ((curTime < getMinTime()) && (nextFrame < curFrame)) {
+    		return;
+    	}
+    	
+    	// Update the rest to maintain our new nextFrame marker as one infront
+    	// of the curFrame in all cases. The wrap case is where the real work 
+    	// is done.
         if (curTime > this.getMaxTime()) {
             if (isSmooth) {
                 swapKeyframeSets();
                 isSmooth = false;
                 curTime = tempNewBeginTime;
                 curFrame = 0;
+                nextFrame = 1;
                 setNewAnimationTimes(tempNewBeginTime, tempNewEndTime);
                 return;
             }
             if (this.getRepeatType() == Controller.RT_WRAP) {
-                curTime = this.getMinTime();
-                curFrame = 0;
+            	float delta = 1;
+                curTime = this.getMinTime() - delta;
+                curFrame++;
+                
+                for (nextFrame = 0; nextFrame < keyframes.size() - 1; nextFrame++) {
+                    if (getMinTime() <= ((PointInTime) keyframes.get(nextFrame)).time)
+                            break;
+                }
+                return;
             } else if (this.getRepeatType() == Controller.RT_CLAMP) {
                 return;
             } else { // Then assume it's RT_CYCLE
@@ -493,26 +562,38 @@ public class KeyframeController extends Controller {
                 curTime = this.getMinTime();
             }
         }
+
+    	nextFrame = curFrame+1;
+    	
         if (curTime > ((PointInTime) keyframes.get(curFrame)).time) {
-            if (curTime < ((PointInTime) keyframes.get(curFrame + 1)).time)
+            if (curTime < ((PointInTime) keyframes.get(curFrame + 1)).time) {
+            	nextFrame = curFrame+1;
                 return;
+            }
             else {
                 for (; curFrame < keyframes.size() - 1; curFrame++) {
-                    if (curTime <= ((PointInTime) keyframes.get(curFrame + 1)).time)
+                    if (curTime <= ((PointInTime) keyframes.get(curFrame + 1)).time) {
+                    		nextFrame = curFrame+1;
                             return;
+                    }
                 }
                 // This -should- be unreachable because of the above
                 curTime = this.getMinTime();
                 curFrame = 0;
+            	nextFrame = curFrame+1;
                 return;
             }
         } else {
             for (; curFrame >= 0; curFrame--) {
-                if (curTime >= ((PointInTime) keyframes.get(curFrame)).time) { return; }
+                if (curTime >= ((PointInTime) keyframes.get(curFrame)).time) {
+                	nextFrame = curFrame+1;
+                	return; 
+                }
             }
             // This should be unreachable because curTime>=0 and
             // keyframes[0].time=0;
             curFrame = 0;
+        	nextFrame = curFrame+1;
             return;
         }
     }
@@ -552,33 +633,6 @@ public class KeyframeController extends Controller {
 
     public TriMesh getMorphMesh() {
         return morphMesh;
-    }
-
-    public Controller putClone(Controller store, CloneCreator properties) {
-
-        if (!properties.isSet("keyframecontroller")) return null;
-
-        // Cannot clone smooth transforming Keyframes
-        if (isSmooth) return null;
-
-        KeyframeController toReturn;
-        if (store == null)
-            toReturn = new KeyframeController();
-        else
-            toReturn = (KeyframeController) store;
-        super.putClone(toReturn, properties);
-
-        toReturn.keyframes = keyframes;
-        toReturn.morphMesh = morphMesh;
-        toReturn.curFrame = curFrame;
-        toReturn.curTime = curTime;
-        toReturn.movingForward = movingForward;
-        toReturn.updatePerFrame = updatePerFrame;
-
-        properties.queueKeyframeController(toReturn);
-
-        return toReturn;
-
     }
 
 }
