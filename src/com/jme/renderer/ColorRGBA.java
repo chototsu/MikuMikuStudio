@@ -47,7 +47,7 @@ import java.io.*;
  * directly addressing the values. A call to clamp will assure that the values
  * are within the constraints.
  * @author Mark Powell
- * @version $Id: ColorRGBA.java,v 1.14 2004-07-31 04:25:29 cep21 Exp $
+ * @version $Id: ColorRGBA.java,v 1.15 2004-08-03 03:21:19 cep21 Exp $
  */
 public class ColorRGBA implements Externalizable{
 
@@ -298,7 +298,7 @@ public class ColorRGBA implements Externalizable{
 
 
     /**
-     * <code>clone</code> creates a new Vector3f object containing the same
+     * <code>clone</code> creates a new ColorRGBA object containing the same
      * data as this one.
      * @return the color that is the same as this.
      */
