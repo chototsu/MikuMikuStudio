@@ -49,7 +49,7 @@ import com.jme.widget.impl.lwjgl.WidgetLWJGLFont;
  * that gives a way of displaying data to the created window.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLDisplaySystem.java,v 1.8 2004-01-25 02:14:38 mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.9 2004-02-02 04:00:42 ericthered Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -76,11 +76,17 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 	}
 
 	/**
-	 * <code>isValidDisplayMode</code>
 	 * @see com.jme.system.DisplaySystem#isValidDisplayMode(int, int, int, int)
 	 */
 	public boolean isValidDisplayMode(int width, int height, int bpp, int freq) {
 		return getValidDisplayMode(width, height, bpp, freq) != null;
+	}
+	
+	/**
+	 * @see com.jme.system.DisplaySystem#setVSyncEnabled(boolean)
+	 */
+	public void setVSyncEnabled(boolean enabled){
+		Window.setVSyncEnabled(enabled);
 	}
 
 	/**

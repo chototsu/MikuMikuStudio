@@ -55,7 +55,7 @@ import com.jme.widget.font.WidgetFont;
  * @see com.jme.renderer.Renderer
  * 
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.9 2004-01-25 02:14:38 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.10 2004-02-02 04:00:42 ericthered Exp $
  */
 public abstract class DisplaySystem {
 	private static DisplaySystem display;
@@ -67,7 +67,6 @@ public abstract class DisplaySystem {
 	public static final String[] rendererNames = { "LWJGL" };
 
 	/**
-	 * 
 	 * <code>getDisplaySystem</code> is a factory method that creates the
 	 * appropriate display system specified by the key parameter. If the
 	 * key given is not a valid identifier for a specific display system,
@@ -108,6 +107,15 @@ public abstract class DisplaySystem {
 	 * @param freq the frequency of refresh of the display (in Hz).
 	 */
 	public abstract boolean isValidDisplayMode(int width, int height, int bpp, int freq);
+	
+	/**
+	 * <code>setVSyncEnabled</code> attempts to enable or disable monitor vertical
+	 * synchronization. The method is a "best attempt" to change the monitor vertical
+	 * refresh synchronization, and is <b>not</b> guaranteed to be successful.
+	 * @param enabled <code>true</code> to synchronize, <code>false</code> to
+	 * 				  ignore synchronization
+	 */
+	public abstract void setVSyncEnabled(boolean enabled);
 	
 	public abstract void setTitle(String title);
 
