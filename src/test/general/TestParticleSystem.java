@@ -32,15 +32,16 @@
 package test.general;
 
 
+
 import org.lwjgl.Display;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GLU;
 import org.lwjgl.opengl.Window;
-import org.lwjgl.vector.Vector3f;
 
 import jme.AbstractGame;
 import jme.entity.effects.ParticleEmitter;
 import jme.entity.effects.ParticleSystem;
+import jme.math.Vector;
 import jme.system.DisplaySystem;
 import jme.utility.Timer;
 
@@ -87,20 +88,20 @@ public class TestParticleSystem extends AbstractGame {
 		timer = Timer.getTimer();
 		
 		ParticleEmitter pe = new ParticleEmitter(1000);
-		pe.setStartColor(new Vector3f(1.0f,1.0f,1.0f));
-		pe.setEndColor(new Vector3f(1.0f,1.0f,1.0f));
-		pe.setStartSize(new Vector3f(0.25f,1.0f,0.25f));
-		pe.setEndSize(new Vector3f(0.25f,1.0f,0.25f));
+		pe.setStartColor(new Vector(1.0f,1.0f,1.0f));
+		pe.setEndColor(new Vector(1.0f,1.0f,1.0f));
+		pe.setStartSize(new Vector(0.25f,1.0f,0.25f));
+		pe.setEndSize(new Vector(0.25f,1.0f,0.25f));
 		pe.setFade(0.01f);
 		pe.setSpeed(1);
-		pe.setGravity(new Vector3f(0.0f,-100.0f,10.0f));
+		pe.setGravity(new Vector(0.0f,-100.0f,10.0f));
 		pe.setFriction(1);
 		pe.setTexture("data/texture/star.png");
 		pe.loopAnimation(true);
 		
 		ps = new ParticleSystem();
 		ps.addEmitter(pe);
-		ps.setPosition(new Vector3f(0,100,-10));
+		ps.setPosition(new Vector(0,100,-10));
 	}
 
 	protected void reinit() {

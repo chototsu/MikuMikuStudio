@@ -32,7 +32,7 @@
 
 package jme.entity.effects;
 
-import org.lwjgl.vector.Vector3f;
+import jme.math.Vector;
 
 /**
  * <code>Particle</code> represents a single particle that is part of a larger
@@ -42,7 +42,7 @@ import org.lwjgl.vector.Vector3f;
  * 
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: Particle.java,v 1.2 2003-09-03 18:05:36 mojomonkey Exp $
  */
 public class Particle {
    
@@ -60,29 +60,29 @@ public class Particle {
     /**
      * the color of the particle in RGB format.
      */
-    public Vector3f color;
+    public Vector color;
     /**
      * the location in 3D space of the particle.
      */
-    public Vector3f position;
+    public Vector position;
     /**
      * the direction the particle is traveling in.
      */
-    public Vector3f velocity;
+    public Vector velocity;
     /**
      * the size of the particle.
      */
-    public Vector3f size;
+    public Vector size;
     
     /**
      * Constructor instantiates a new <code>Particle</code> and
      * initializes all the variables.
      */
     public Particle() {
-        color = new Vector3f();
-        position = new Vector3f();
-        velocity = new Vector3f();
-        size = new Vector3f();
+        color = new Vector();
+        position = new Vector();
+        velocity = new Vector();
+        size = new Vector();
     }
     
     public String toString() {

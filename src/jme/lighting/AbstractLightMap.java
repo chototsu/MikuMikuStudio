@@ -33,8 +33,8 @@
 package jme.lighting;
 
 import jme.exception.MonkeyRuntimeException;
+import jme.math.Vector;
 
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>AbstractLightMap</code> manages a data structure that contains
@@ -48,7 +48,7 @@ import org.lwjgl.vector.Vector3f;
  * may be (1,1,1), but a Mars terrain would be something like (1,0.4,0.7).
  * 
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: AbstractLightMap.java,v 1.2 2003-09-03 18:05:36 mojomonkey Exp $
  */
 public abstract class AbstractLightMap {
 
@@ -60,7 +60,7 @@ public abstract class AbstractLightMap {
 	/**
 	 * the vector that defines the color the light is casting.
 	 */
-	protected Vector3f color;
+	protected Vector color;
 
 	/**
 	 * <code>getShade</code> returns the shade value for the
@@ -78,7 +78,7 @@ public abstract class AbstractLightMap {
 	 * <code>getColor</code> returns the color vector of the lightmap.
 	 * @return the color vector of the lightmap.
 	 */
-	public Vector3f getColor() {
+	public Vector getColor() {
 		return color;
 	}
 
@@ -87,7 +87,7 @@ public abstract class AbstractLightMap {
 	 * @param color the new color for the lightmap.
 	 * @throws MonkeyRuntimeException if color is null.
 	 */
-	public void setColor(Vector3f color) {
+	public void setColor(Vector color) {
 		if(null == color) {
 			throw new MonkeyRuntimeException("Color cannot be null");
 		}

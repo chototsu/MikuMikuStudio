@@ -48,7 +48,7 @@ import org.lwjgl.input.Mouse;
  * <code>EntityController</code>.
  * 
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: AbstractGameController.java,v 1.3 2003-09-03 18:05:36 mojomonkey Exp $
  */
 public abstract class AbstractGameController
     implements KeyboardController, MouseController, EntityController {
@@ -187,7 +187,7 @@ public abstract class AbstractGameController
     }
 
     /**
-     * @see jme.controller.EntityController#setEntityPosition(Vector3f)
+     * @see jme.controller.EntityController#setEntityPosition(Vector)
      */
     public void setEntityPosition(Vector position) {
         entity.setPosition(position);

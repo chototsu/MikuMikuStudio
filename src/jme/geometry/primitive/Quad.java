@@ -43,7 +43,7 @@ import org.lwjgl.opengl.GL;
 /**
  * <code>Quad</code> handles the rendering of a single quad shape. This
  * quad shape is defined by four points and maintained in an array of
- * four <code>Vector3f</code> values. The ordering of the array is important
+ * four <code>Vector</code> values. The ordering of the array is important
  * as each index represents a corner of the quad.
  * 
  * <br><br>
@@ -53,7 +53,7 @@ import org.lwjgl.opengl.GL;
  * 3 - BottomLeft<br>
  * 
  * @author Mark Powell
- * @version $Id: Quad.java,v 1.5 2003-09-03 16:20:51 mojomonkey Exp $
+ * @version $Id: Quad.java,v 1.6 2003-09-03 18:05:36 mojomonkey Exp $
  */
 public class Quad extends Primitive {
     private GL gl;

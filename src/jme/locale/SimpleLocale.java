@@ -35,11 +35,11 @@ package jme.locale;
 import java.util.logging.Level;
 
 import jme.exception.MonkeyRuntimeException;
+import jme.math.Vector;
 import jme.texture.TextureManager;
 import jme.utility.LoggingSystem;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
 /**
  * <code>SimpleLocale</code> defines a simple Locale. This locale is a single
@@ -55,7 +55,7 @@ import org.lwjgl.vector.Vector3f;
 public class SimpleLocale implements Locale {
 
     //Coordinates of locale.
-    private Vector3f center;
+    private Vector center;
     private float halfLength;
 
     //material properties of the locale.
@@ -77,7 +77,7 @@ public class SimpleLocale implements Locale {
      * @throws MonkeyRuntimeException if center is null or length is less than
      *      or equal to zero.
      */
-    public SimpleLocale(Vector3f center, float length) {
+    public SimpleLocale(Vector center, float length) {
 
         if (null == center || length <= 0) {
             throw new MonkeyRuntimeException(
@@ -166,7 +166,7 @@ public class SimpleLocale implements Locale {
      * <code>getCenter</code> returns the center of the locale.
      * @return the center of the locale.
      */
-    public Vector3f getCenter() {
+    public Vector getCenter() {
         return center;
     }
 
@@ -182,7 +182,7 @@ public class SimpleLocale implements Locale {
      * <code>setCenter</code> sets the center of the locale.
      * @param center the new center of the locale.
      */
-    public void setCenter(Vector3f center) {
+    public void setCenter(Vector center) {
         this.center = center;
     }
 

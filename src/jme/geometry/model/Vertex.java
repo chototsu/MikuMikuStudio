@@ -31,15 +31,16 @@
  */
 package jme.geometry.model;
 
-import org.lwjgl.vector.Vector3f;
+import jme.math.Vector;
+
 
 /**
- * <code>Vertex</code> provides an extension to <code>Vector3f</code> to handle
+ * <code>Vertex</code> provides an extension to <code>Vector</code> to handle
  * texture coordinates as well as positions. 
  * 
  * @author Mark Powell
  */
-public class Vertex extends Vector3f {
+public class Vertex extends Vector {
     public byte refCount;
     
     public byte flags;

@@ -37,8 +37,8 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
+import jme.math.Vector;
 import jme.texture.TextureManager;
 
 /**
@@ -59,7 +59,7 @@ import jme.texture.TextureManager;
  * the desired direction. This adds realism to the particle emitter.
  * 
  * @author Mark Powell
- * @version 1
+ * @version $Id: ParticleEmitter.java,v 1.3 2003-09-03 18:05:36 mojomonkey Exp $
  */
 public class ParticleEmitter {
 
@@ -71,8 +71,8 @@ public class ParticleEmitter {
 	private int texId;
 
 	//attributes for positional updates.
-	private Vector3f gravity;
-	private Vector3f position;
+	private Vector gravity;
+	private Vector position;
 	private float speed;
 	private float friction;
 
@@ -80,10 +80,10 @@ public class ParticleEmitter {
 	private float fade;
 
 	//attribute for the particles appearance.
-	private Vector3f startSize;
-	private Vector3f endSize;
-	private Vector3f startColor;
-	private Vector3f endColor;
+	private Vector startSize;
+	private Vector endSize;
+	private Vector startColor;
+	private Vector endColor;
 	
 	private boolean isLooping = false;
 	private boolean isFirst = true;
@@ -94,9 +94,9 @@ public class ParticleEmitter {
 	//objects attributes than create a new one.
 	private float[] matrix;
 	private FloatBuffer buf;
-	private Vector3f right;
-	private Vector3f up;
-	private Vector3f billboard;
+	private Vector right;
+	private Vector up;
+	private Vector billboard;
 
 	/**
 	 * Constructor instantiates a new <code>ParticleEmitter</code> 
@@ -110,12 +110,12 @@ public class ParticleEmitter {
 		this.numParticles = numParticles;
 		particles = new Particle[numParticles];
 
-		startSize = new Vector3f();
-		endSize = new Vector3f();
-		startColor = new Vector3f();
-		endColor = new Vector3f();
-		gravity = new Vector3f();
-		position = new Vector3f();
+		startSize = new Vector();
+		endSize = new Vector();
+		startColor = new Vector();
+		endColor = new Vector();
+		gravity = new Vector();
+		position = new Vector();
 		speed = 1.0f;
 		matrix = new float[16];
 		buf =
@@ -123,9 +123,9 @@ public class ParticleEmitter {
 				.allocateDirect(16 * 4)
 				.order(ByteOrder.nativeOrder())
 				.asFloatBuffer();
-		right = new Vector3f();
-		up = new Vector3f();
-		billboard = new Vector3f();
+		right = new Vector();
+		up = new Vector();
+		billboard = new Vector();
 
 		for (int i = 0; i < numParticles; i++) {
 			particles[i] = new Particle();
@@ -312,7 +312,7 @@ public class ParticleEmitter {
 	 * start color.
 	 * @param endColor the final color of the particle.
 	 */
-	public void setEndColor(Vector3f endColor) {
+	public void setEndColor(Vector endColor) {
 		this.endColor = endColor;
 	}
 
@@ -322,7 +322,7 @@ public class ParticleEmitter {
 	 * start size.
 	 * @param endSize the final size of the particle.
 	 */
-	public void setEndSize(Vector3f endSize) {
+	public void setEndSize(Vector endSize) {
 		this.endSize = endSize;
 	}
 
@@ -332,7 +332,7 @@ public class ParticleEmitter {
 	 * the direction of the particles velocity.
 	 * @param gravity the forces that will be acting on the particle.
 	 */
-	public void setGravity(Vector3f gravity) {
+	public void setGravity(Vector gravity) {
 		this.gravity = gravity;
 	}
 
@@ -342,7 +342,7 @@ public class ParticleEmitter {
 	 * color.
 	 * @param startColor the starting color of the particles.
 	 */
-	public void setStartColor(Vector3f startColor) {
+	public void setStartColor(Vector startColor) {
 		this.startColor = startColor;
 	}
 
@@ -351,7 +351,7 @@ public class ParticleEmitter {
 	 * particle. This size is interpolated with the final size.
 	 * @param startSize the starting size of the particles.
 	 */
-	public void setStartSize(Vector3f startSize) {
+	public void setStartSize(Vector startSize) {
 		this.startSize = startSize;
 	}
 
@@ -372,7 +372,7 @@ public class ParticleEmitter {
 	 * generated.
 	 * @param position
 	 */
-	public void setPosition(Vector3f position) {
+	public void setPosition(Vector position) {
 		this.position = position;
 	}
 

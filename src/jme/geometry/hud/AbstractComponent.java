@@ -33,7 +33,7 @@ package jme.geometry.hud;
 
 import java.util.ArrayList;
 
-import org.lwjgl.vector.Vector3f;
+import jme.math.Vector;
 
 /**
  * <code>AbstractComponent</code> defines a base level of implementation of the
@@ -47,7 +47,7 @@ public abstract class AbstractComponent implements Component {
 	protected int locationY;
 	protected float height;
 	protected float width;
-	protected Vector3f color = new Vector3f(1,1,1);
+	protected Vector color = new Vector(1,1,1);
 	protected float alpha;
 	
 	protected ArrayList children = new ArrayList();

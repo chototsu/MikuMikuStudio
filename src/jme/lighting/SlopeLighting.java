@@ -32,10 +32,10 @@
 
 package jme.lighting;
 
-import org.lwjgl.vector.Vector3f;
 
 import jme.exception.MonkeyRuntimeException;
 import jme.locale.external.data.AbstractHeightMap;
+import jme.math.Vector;
 
 /**
  * <code>SlopeLighting</code> creates a light map based on a given heightmap.
@@ -46,7 +46,7 @@ import jme.locale.external.data.AbstractHeightMap;
  * can be combinations of 1 and -2. I.e. 1,1 1,-1 -1,-1 -1,1.
  * 
  * @author Mark Powell
- * @version 0.1.0
+ * @version $Id: SlopeLighting.java,v 1.3 2003-09-03 18:05:36 mojomonkey Exp $
  */
 public class SlopeLighting extends AbstractLightMap {
 
@@ -100,7 +100,7 @@ public class SlopeLighting extends AbstractLightMap {
 		this.softness = softness;
 		this.heightMap = heightMap;
 
-		color = new Vector3f(1.0f, 1.0f, 1.0f);
+		color = new Vector(1.0f, 1.0f, 1.0f);
 
 		createLighting();
 	}

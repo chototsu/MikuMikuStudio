@@ -35,27 +35,27 @@ package jme.entity.effects;
 import java.util.ArrayList;
 
 import org.lwjgl.opengl.GL;
-import org.lwjgl.vector.Vector3f;
 
 import jme.entity.EntityInterface;
 import jme.entity.camera.Frustum;
 import jme.geometry.bounding.BoundingVolume;
+import jme.math.Vector;
 
 /**
  * <code>ParticleSystem</code> maintains a collection of
  * particle emitters. 
  * 
  * @author Mark Powell
- * @version $Id: ParticleSystem.java,v 1.4 2003-09-03 16:20:52 mojomonkey Exp $
+ * @version $Id: ParticleSystem.java,v 1.5 2003-09-03 18:05:36 mojomonkey Exp $
  */
 public class ParticleSystem implements EntityInterface {
     private ArrayList emitters;
-    private Vector3f position;
+    private Vector position;
     private BoundingVolume boundingVolume;
     
     public ParticleSystem() {
         emitters = new ArrayList();
-        position = new Vector3f();
+        position = new Vector();
     }
 
     /* (non-Javadoc)
@@ -90,7 +90,7 @@ public class ParticleSystem implements EntityInterface {
         emitters.add(emitter);
     }
     
-    public void setPosition(Vector3f position) {
+    public void setPosition(Vector position) {
     	this.position = position;
     }
     
