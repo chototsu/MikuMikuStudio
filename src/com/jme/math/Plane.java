@@ -2,30 +2,30 @@
  * Copyright (c) 2003, jMonkeyEngine - Mojo Monkey Coding
  * All rights reserved.
  *
- * Redistribution and use in source and binary forms, with or without 
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
  *
- * Redistributions of source code must retain the above copyright notice, this 
- * list of conditions and the following disclaimer. 
- * 
- * Redistributions in binary form must reproduce the above copyright notice, 
- * this list of conditions and the following disclaimer in the documentation 
- * and/or other materials provided with the distribution. 
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the 
- * names of its contributors may be used to endorse or promote products derived 
- * from this software without specific prior written permission. 
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" 
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE 
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE 
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE 
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR 
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF 
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS 
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN 
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) 
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE 
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
  *
  */
@@ -37,11 +37,11 @@ import com.jme.util.LoggingSystem;
 
 /**
  * <code>Plane</code> defines a plane where Normal dot (x,y,z) = Constant. This
- * provides methods for calculating a "distance" of a point from this plane. 
+ * provides methods for calculating a "distance" of a point from this plane.
  * The distance is pseudo due to the fact that it can be negative if the point
  * is on the non-normal side of the plane.
  * @author Mark Powell
- * @version $Id: Plane.java,v 1.2 2003-12-08 20:29:54 mojomonkey Exp $
+ * @version $Id: Plane.java,v 1.3 2004-03-03 18:13:57 renanse Exp $
  */
 public class Plane {
     /**
@@ -60,16 +60,16 @@ public class Plane {
     //attributes of the plane.
     private Vector3f normal;
     private float constant;
-    
+
     /**
-     * Constructor instantiates a new <code>Plane</code> object. This is the 
+     * Constructor instantiates a new <code>Plane</code> object. This is the
      * default object and contains a normal of (0,0,0) and a constant of 0.
      *
      */
     public Plane() {
         normal = new Vector3f();
     }
-    
+
     /**
      * Constructor instantiates a new <code>Plane</code> object. The normal
      * and constant values are set at creation.
@@ -78,13 +78,14 @@ public class Plane {
      */
     public Plane(Vector3f normal, float constant) {
         if(normal == null) {
-            LoggingSystem.getLogger().log(Level.WARNING, "Normal was null," +                " created default normal.");
+            LoggingSystem.getLogger().log(Level.WARNING, "Normal was null," +
+                " created default normal.");
             normal = new Vector3f();
         }
         this.normal = normal;
         this.constant = constant;
     }
-    
+
     /**
      * <code>setNormal</code> sets the normal of the plane.
      * @param normal the new normal of the plane.
@@ -97,7 +98,7 @@ public class Plane {
         }
         this.normal = normal;
     }
-    
+
     /**
      * <code>getNormal</code> retrieves the normal of the plane.
      * @return the normal of the plane.
@@ -105,7 +106,7 @@ public class Plane {
     public Vector3f getNormal() {
         return normal;
     }
-    
+
     /**
      * <code>setConstant</code> sets the constant value that helps define the
      * plane.
@@ -114,16 +115,16 @@ public class Plane {
     public void setConstant(float constant) {
         this.constant = constant;
     }
-    
+
     /**
-     * 
+     *
      * <code>getConstant</code> returns the constant of the plane.
      * @return the constant of the plane.
      */
     public float getConstant() {
         return constant;
     }
-    
+
     /**
      * <code>pseudoDistance</code> calculates the distance from this plane to
      * a provided point. If the point is on the negative side of the plane the
@@ -133,11 +134,11 @@ public class Plane {
      * @return the signed distance from the plane to a point.
      */
     public float pseudoDistance(Vector3f point) {
-        return normal.dot(point) - constant;
+        return normal.x*point.x + normal.y*point.y + normal.z*point.z - constant;
     }
-    
+
     /**
-     * <code>whichSide</code> returns the side at which a point lies on 
+     * <code>whichSide</code> returns the side at which a point lies on
      * the plane. The positive values returned are: NEGATIVE_SIDE, POSITIVE_SIDE
      * and NO_SIDE.
      * @param point the point to check.
@@ -153,18 +154,18 @@ public class Plane {
             return NO_SIDE;
         }
     }
-    
+
     /**
-     * <code>toString</code> returns a string thta represents the string 
+     * <code>toString</code> returns a string thta represents the string
      * representation of this plane. It represents the normal as a
      * <code>Vector3f</code> object, so the format is the following:
-     * 
+     *
      * com.jme.math.Plane [Normal: org.jme.math.Vector3f [X=XX.XXXX, Y=YY.YYYY,
      * Z=ZZ.ZZZZ] - Constant: CC.CCCCC]
      * @return the string representation of this plane.
      */
     public String toString() {
-        return "com.jme.math.Plane [Normal: " + normal + " - Constant: " 
+        return "com.jme.math.Plane [Normal: " + normal + " - Constant: "
                 + constant + "]";
     }
 }

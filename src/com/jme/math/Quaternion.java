@@ -46,7 +46,7 @@ import java.util.logging.Level;
  *
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.7 2004-03-03 00:19:38 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.8 2004-03-03 18:13:57 renanse Exp $
  */
 public class Quaternion {
     public float x, y, z, w;
@@ -314,17 +314,17 @@ public class Quaternion {
     public float toAngleAxis(Vector3f axis) {
         float sqrLength = x * x + y * y + z * z;
         float angle;
-        if (sqrLength > 0.0) {
+        if (sqrLength == 0.0f) {
+            angle = 0.0f;
+            axis.x = 1.0f;
+            axis.y = 0.0f;
+            axis.z = 0.0f;
+        } else {
             angle = (float) (2.0 * Math.acos(w));
             float invLength = (float) (1.0 / Math.sqrt(sqrLength));
             axis.x = x * invLength;
             axis.y = y * invLength;
             axis.z = z * invLength;
-        } else {
-            angle = 0.0f;
-            axis.x = 1.0f;
-            axis.y = 0.0f;
-            axis.z = 0.0f;
         }
         angle = (float)(angle*180/Math.PI);
 
