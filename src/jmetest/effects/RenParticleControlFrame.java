@@ -2,12 +2,22 @@ package jmetest.effects;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JColorChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jme.renderer.ColorRGBA;
+import com.jme.math.*;
 import java.awt.*;
-import javax.swing.*;
-import javax.swing.border.*;
-import javax.swing.event.*;
 
 /**
  * <p>Title: </p>
@@ -73,6 +83,25 @@ public class RenParticleControlFrame extends JFrame {
   JPanel agePanel = new JPanel();
   JLabel minAgeLabel = new JLabel();
   JSlider minAgeSlider = new JSlider();
+  JLabel emitYLabel = new JLabel();
+  JLabel emitZLabel = new JLabel();
+  JSlider emitYSlider = new JSlider();
+  JLabel emitXLabel = new JLabel();
+  JSlider emitXSlider = new JSlider();
+  JSlider emitZSlider = new JSlider();
+  JPanel directionPanel = new JPanel();
+  TitledBorder emitBorder;
+  JPanel anglePanel = new JPanel();
+  GridBagLayout gridBagLayout10 = new GridBagLayout();
+  TitledBorder angleBorder;
+  GridBagLayout gridBagLayout11 = new GridBagLayout();
+  JLabel angleLabel = new JLabel();
+  JSlider angleSlider = new JSlider();
+  JPanel randomPanel = new JPanel();
+  TitledBorder randomBorder;
+  GridBagLayout gridBagLayout12 = new GridBagLayout();
+  JLabel randomLabel = new JLabel();
+  JSlider randomSlider = new JSlider();
 
   public RenParticleControlFrame() {
     try {
@@ -90,6 +119,9 @@ public class RenParticleControlFrame extends JFrame {
     speedBorder = new TitledBorder(" PARTICLE SPEED ");
     textureBorder = new TitledBorder(" PARTICLE TEXTURE ");
     gravityBorder = new TitledBorder(" GRAVITY ");
+    emitBorder = new TitledBorder(" EMISSION DIRECTION ");
+    angleBorder = new TitledBorder("");
+    randomBorder = new TitledBorder("");
     this.getContentPane().setLayout(borderLayout1);
     appPanel.setLayout(gridBagLayout1);
     emitPanel.setLayout(gridBagLayout2);
@@ -210,7 +242,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravXSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.01f;
+          TestRenParticleGUI.manager.getGravityForce().x = (float)val * 0.001f;
       }
     });
 
@@ -229,7 +261,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravYSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.01f;
+          TestRenParticleGUI.manager.getGravityForce().y = (float)val * 0.001f;
       }
     });
 
@@ -248,7 +280,7 @@ public class RenParticleControlFrame extends JFrame {
       public void stateChanged(ChangeEvent e) {
         int val = gravZSlider.getValue();
         if (TestRenParticleGUI.manager != null)
-          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.01f;
+          TestRenParticleGUI.manager.getGravityForce().z = (float)val * 0.001f;
       }
     });
 
@@ -268,9 +300,109 @@ public class RenParticleControlFrame extends JFrame {
       }
     });
 
+    directionPanel.setBorder(emitBorder);
+    directionPanel.setLayout(gridBagLayout10);
+    emitBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
+    emitBorder.setTitle(" DIRECTION ");
+    emitZSlider.setOrientation(JSlider.VERTICAL);
+    emitZSlider.setMajorTickSpacing(20);
+    emitZSlider.setMinimum(-100);
+    emitZSlider.setMinorTickSpacing(5);
+    emitZSlider.setPaintLabels(true);
+    emitZSlider.setPaintTicks(true);
+    emitZSlider.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int val = emitZSlider.getValue();
+        if (TestRenParticleGUI.manager != null) {
+          TestRenParticleGUI.manager.getEmissionDirection().z = (float) val;
+          TestRenParticleGUI.manager.updateRotationMatrix();
+        }
+      }
+    });
+    emitYSlider.setOrientation(JSlider.VERTICAL);
+    emitYSlider.setMajorTickSpacing(20);
+    emitYSlider.setMinimum(-100);
+    emitYSlider.setMinorTickSpacing(5);
+    emitYSlider.setPaintLabels(true);
+    emitYSlider.setPaintTicks(true);
+    emitYSlider.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int val = emitYSlider.getValue();
+        if (TestRenParticleGUI.manager != null) {
+          TestRenParticleGUI.manager.getEmissionDirection().y = (float)val;
+          TestRenParticleGUI.manager.updateRotationMatrix();
+        }
+      }
+    });
+    emitXSlider.setOrientation(JSlider.VERTICAL);
+    emitXSlider.setMajorTickSpacing(20);
+    emitXSlider.setMinimum(-100);
+    emitXSlider.setMinorTickSpacing(5);
+    emitXSlider.setPaintLabels(true);
+    emitXSlider.setPaintTicks(true);
+    emitXSlider.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int val = emitXSlider.getValue();
+        if (TestRenParticleGUI.manager != null) {
+          TestRenParticleGUI.manager.getEmissionDirection().x = (float)val;
+          TestRenParticleGUI.manager.updateRotationMatrix();
+        }
+      }
+    });
+    emitXLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    emitXLabel.setText("X");
+    emitYLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    emitYLabel.setText("Y");
+    emitZLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    emitZLabel.setText("Z");
+    anglePanel.setBorder(angleBorder);
+    anglePanel.setLayout(gridBagLayout11);
+    angleBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
+    angleBorder.setTitle(" ANGLE ");
+    angleLabel.setText("Degrees Off Direction:  0");
+    angleLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    angleSlider.setValue(0);
+    angleSlider.setMinimum(0);
+    angleSlider.setMaximum(360);
+    angleSlider.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int val = angleSlider.getValue();
+        TestRenParticleGUI.manager.setEmissionMaximumAngle((float)val * FastMath.DEG_TO_RAD);
+        updateAngleLabels();
+      }
+    });
+    randomPanel.setBorder(randomBorder);
+    randomPanel.setLayout(gridBagLayout12);
+    randomBorder.setTitleFont(new java.awt.Font("Arial", 0, 10));
+    randomBorder.setTitle(" SYSTEM RANDOMNESS ");
+    randomLabel.setFont(new java.awt.Font("Arial", 1, 13));
+    randomLabel.setText("Random Factor: 0.0");
+    randomSlider.setValue(0);
+    randomSlider.setMaximum(100);
+    randomSlider.addChangeListener(new ChangeListener() {
+      public void stateChanged(ChangeEvent e) {
+        int val = randomSlider.getValue();
+        TestRenParticleGUI.manager.setRandomMod((float)val*.1f);
+        updateRandomLabels();
+      }
+    });
     this.getContentPane().add(mainTabbedPane1, BorderLayout.CENTER);
     mainTabbedPane1.add(appPanel,   "Appearance");
     mainTabbedPane1.add(emitPanel,     "Emission");
+    emitPanel.add(directionPanel,         new GridBagConstraints(0, 0, 1, 2, 0.5, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 10, 5), 0, 0));
+    directionPanel.add(emitXSlider,          new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 10, 5, 0), 0, 0));
+    directionPanel.add(emitYSlider,            new GridBagConstraints(1, 0, 1, 1, 0.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 5, 0), 0, 0));
+    directionPanel.add(emitZSlider,         new GridBagConstraints(2, 0, 1, 1, 0.0, 1.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 0, 5, 10), 0, 0));
+    directionPanel.add(emitXLabel,      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+    directionPanel.add(emitYLabel,     new GridBagConstraints(1, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
+    directionPanel.add(emitZLabel,    new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 5), 0, 0));
     mainTabbedPane1.add(worldPanel,    "World");
 
     worldPanel.add(speedPanel,       new GridBagConstraints(0, 0, 1, 1, 0.5, 0.0
@@ -332,8 +464,8 @@ public class RenParticleControlFrame extends JFrame {
             ,GridBagConstraints.NORTHWEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 5), 32, 32));
     speedPanel.add(speedLabel,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(10, 10, 0, 10), 0, 0));
-    speedPanel.add(speedSlider,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 10, 0, 10), 0, 0));
+    speedPanel.add(speedSlider,      new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
     worldPanel.add(gravityPanel,          new GridBagConstraints(1, 0, 1, 3, 0.5, 1.0
             ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 10, 10), 0, 0));
     gravityPanel.add(gravXSlider,    new GridBagConstraints(0, 0, 1, 1, 0.0, 1.0
@@ -348,12 +480,25 @@ public class RenParticleControlFrame extends JFrame {
             ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
     gravityPanel.add(gravZLabel,  new GridBagConstraints(2, 1, 1, 1, 0.0, 0.0
             ,GridBagConstraints.CENTER, GridBagConstraints.NONE, new Insets(0, 0, 0, 0), 0, 0));
-    worldPanel.add(agePanel,     new GridBagConstraints(0, 1, 1, 1, 0.5, 0.0
-            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 10, 5), 0, 0));
+    worldPanel.add(agePanel,      new GridBagConstraints(0, 1, 1, 1, 0.5, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 5, 5), 0, 0));
     agePanel.add(minAgeLabel, new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
             ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 5, 5, 0), 0, 0));
-    agePanel.add(minAgeSlider, new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
-            ,GridBagConstraints.NORTHWEST, GridBagConstraints.BOTH, new Insets(0, 5, 5, 5), 0, 0));
+    agePanel.add(minAgeSlider,  new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.NORTHWEST, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
+    worldPanel.add(randomPanel,  new GridBagConstraints(0, 2, 1, 1, 0.5, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(5, 10, 10, 5), 0, 0));
+    emitPanel.add(anglePanel,   new GridBagConstraints(1, 0, 1, 1, 0.5, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 5, 10), 0, 0));
+    anglePanel.add(angleLabel,     new GridBagConstraints(0, 0, 1, 1, 0.5, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.BOTH, new Insets(10, 5, 5, 10), 0, 0));
+    anglePanel.add(angleSlider,   new GridBagConstraints(0, 1, 1, 1, 1.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(5, 10, 5, 10), 0, 0));
+    anglePanel.add(angleLabel, null);
+    randomPanel.add(randomLabel,    new GridBagConstraints(0, 0, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.WEST, GridBagConstraints.NONE, new Insets(5, 10, 5, 10), 0, 0));
+    randomPanel.add(randomSlider,     new GridBagConstraints(0, 1, 1, 1, 0.0, 0.0
+            ,GridBagConstraints.CENTER, GridBagConstraints.HORIZONTAL, new Insets(0, 5, 5, 5), 0, 0));
 
     setSize(new Dimension(450, 320));
   }
@@ -374,10 +519,33 @@ public class RenParticleControlFrame extends JFrame {
     updateAgeLabels();
     speedSlider.setValue((int)(TestRenParticleGUI.manager.getParticlesSpeed() * 1000));
     updateSpeedLabels();
-    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 100));
-    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 100));
-    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 100));
+    gravXSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().x * 1000));
+    gravYSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().y * 1000));
+    gravZSlider.setValue((int)(TestRenParticleGUI.manager.getGravityForce().z * 1000));
+    emitXSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().x * 10));
+    emitYSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().y * 10));
+    emitZSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionDirection().z * 10));
+    angleSlider.setValue((int)(TestRenParticleGUI.manager.getEmissionMaximumAngle() * FastMath.RAD_TO_DEG));
+    updateAngleLabels();
+    randomSlider.setValue((int)(TestRenParticleGUI.manager.getRandomMod() * 10));
+    updateRandomLabels();
     validate();
+  }
+
+  /**
+   * updateRandomLabels
+   */
+  private void updateRandomLabels() {
+    int val = randomSlider.getValue();
+    randomLabel.setText("Random Factor: "+val/10f);
+  }
+
+  /**
+   * updateAngleLabels
+   */
+  private void updateAngleLabels() {
+    int val = angleSlider.getValue();
+    angleLabel.setText("Degrees Off Direction: "+val);
   }
 
   /**
@@ -455,9 +623,6 @@ public class RenParticleControlFrame extends JFrame {
     endColorPanel.setBackground(color);
     updateColorLabels();
     TestRenParticleGUI.noUpdate = false;
-  }
-  void minAgeSlider_stateChanged(ChangeEvent e) {
-
   }
 
 }
