@@ -1,21 +1,21 @@
 /*
  * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
  * reserved.
- * 
+ *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * Redistributions of source code must retain the above copyright notice, this
  * list of conditions and the following disclaimer.
- * 
+ *
  * Redistributions in binary form must reproduce the above copyright notice,
  * this list of conditions and the following disclaimer in the documentation
  * and/or other materials provided with the distribution.
- * 
+ *
  * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
  * names of its contributors may be used to endorse or promote products derived
  * from this software without specific prior written permission.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
- *  
+ *
  */
 
 /*
@@ -48,32 +48,32 @@ import com.jme.math.Vector2f;
 
 /**
  * <code>DisplaySystem</code>
- * 
+ *
  * @author Gregg Patton
- * @version $Id: DisplaySystem.java,v 1.27 2004-04-30 17:29:47 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.28 2004-05-24 21:03:05 renanse Exp $
  */
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
  * Specifically, any implementing class will create a window for rendering. It
  * also should create the appropriate <code>Renderer</code> object that allows
  * the client to render to this window.
- * 
+ *
  * Implmenting classes should check for the appropriate libraries to insure
  * these libraries are indeed installed on the system. This will allow users to
  * cleanly exit if an improper library was chosen for rendering.
- * 
+ *
  * Example usage:
- * 
+ *
  * <code>
  * DisplaySystem ds = DisplaySystem.getDisplaySystem("LWJGL");<br>
  * ds.createWindow(640,480,32,60,true);<br>
  * Renderer r = ds.getRenderer();<br>
  * </code>
- * 
+ *
  * @see com.jme.renderer.Renderer
- * 
+ *
  * @author Mark Powell
- * @version $Id: DisplaySystem.java,v 1.27 2004-04-30 17:29:47 mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.28 2004-05-24 21:03:05 renanse Exp $
  */
 public abstract class DisplaySystem {
 
@@ -104,7 +104,7 @@ public abstract class DisplaySystem {
      * given is not a valid identifier for a specific display system, null is
      * returned. For valid display systems see the <code>rendererNames</code>
      * array.
-     * 
+     *
      * @param key
      *            the display system to use.
      * @return the appropriate display system specified by the key.
@@ -136,7 +136,7 @@ public abstract class DisplaySystem {
      * constitute a valid display mode on this system. Returning true does not
      * necessarily guarantee that the system is capable of running in the
      * specified display mode, merely that it <i>believes </i> it is possible.
-     * 
+     *
      * @param width
      *            the width/horizontal resolution of the display.
      * @param height
@@ -154,7 +154,7 @@ public abstract class DisplaySystem {
      * vertical synchronization. The method is a "best attempt" to change the
      * monitor vertical refresh synchronization, and is <b>not </b> guaranteed
      * to be successful.
-     * 
+     *
      * @param enabled
      *            <code>true</code> to synchronize, <code>false</code> to
      *            ignore synchronization
@@ -175,7 +175,7 @@ public abstract class DisplaySystem {
      * should be windowed or fullscreen. If false, windowed is chosen. This
      * window will be placed in the center of the screen initially. If true
      * fullscreen mode will be entered with the appropriate settings.
-     * 
+     *
      * @param w
      *            the width/horizontal resolution of the display.
      * @param h
@@ -196,7 +196,7 @@ public abstract class DisplaySystem {
      * <code>DisplaySystem</code>. For example, if
      * <code>LWJGLDisplaySystem</code> is used, the returned
      * <code>Renderer</code> will be</code> LWJGLRenderer</code>.
-     * 
+     *
      * @see com.jme.renderer.Renderer
      * @return the appropriate <code>Renderer</code> implementation that is
      *         compatible with the used <code>DisplaySystem</code>.
@@ -207,7 +207,7 @@ public abstract class DisplaySystem {
      * <code>getRendererType</code> returns an instance of a strongly typed
      * enumeration that can be used to determine the renderer that the
      * DisplaySystem is currently using.
-     * 
+     *
      * @see com.jme.util.JmeType
      * @return
      */
@@ -217,7 +217,7 @@ public abstract class DisplaySystem {
      * <code>isCreated</code> returns the current status of the display
      * system. If the window and renderer are created, true is returned,
      * otherwise false.
-     * 
+     *
      * @return whether the display system is created.
      */
     public abstract boolean isCreated();
@@ -226,7 +226,7 @@ public abstract class DisplaySystem {
      * <code>isClosing</code> notifies if the window is currently closing.
      * This could be caused via the application itself or external interrupts
      * such as alt-f4 etc.
-     * 
+     *
      * @return true if the window is closing, false otherwise.
      */
     public abstract boolean isClosing();
@@ -234,7 +234,7 @@ public abstract class DisplaySystem {
     /**
      * <code>reset</code> cleans up the display system for closing or
      * restarting.
-     *  
+     *
      */
     public abstract void reset();
 
@@ -329,7 +329,7 @@ public abstract class DisplaySystem {
 
     /**
      * Crate a TextureRenderer using the underlying system.
-     * 
+     *
      * @param width
      *            width of texture
      * @param height
@@ -350,16 +350,16 @@ public abstract class DisplaySystem {
 
     /**
      * Translate world to screen coordinates
-     * 
+     *
      * @param worldPosition
      *            Vector3f
      * @return Vector2f
      */
-    public abstract Vector2f getScreenCoordinates(Vector3f worldPosition);
+    public abstract Vector3f getScreenCoordinates(Vector3f worldPosition);
 
     /**
      * Translate screen to world coordinates.
-     * 
+     *
      * @param screenPosition
      *            Vector2f
      * @return Vector3f

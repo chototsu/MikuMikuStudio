@@ -245,7 +245,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      * @author Marius
      * @author Joshua Slack -- rewritten for lwjgl .9
      */
-    public Vector2f getScreenCoordinates(Vector3f worldPosition) {
+    public Vector3f getScreenCoordinates(Vector3f worldPosition) {
         // Modelview matrix
         FloatBuffer mvBuffer = BufferUtils.createFloatBuffer(16);
         GL11.glGetFloat(GL11.GL_MODELVIEW_MATRIX, mvBuffer);
@@ -275,7 +275,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         GLU.gluProject(worldPosition.x, worldPosition.y, worldPosition.z,
                 mvArray, prArray, vpArray, result);
 
-        return new Vector2f(result[0], result[1]);
+        return new Vector3f(result[0], result[1], result[2]);
     }
 
     /**

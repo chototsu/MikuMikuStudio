@@ -56,13 +56,14 @@ import com.jme.util.TextureManager;
  *   setLocalTranslation(sibling.getLocalTranslation()) or something similar to
  *   ensure position.
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.4 2004-05-01 03:49:17 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.5 2004-05-24 21:03:06 renanse Exp $
  */
 
 public class LensFlare extends Node {
   private Quad mainFlare;
   private Quad sFlare[];
-  private Vector2f midPoint, flarePoint;
+  private Vector2f midPoint;
+  private Vector3f flarePoint;
 
   public LensFlare(String name) {
     super(name);
@@ -89,9 +90,10 @@ public class LensFlare extends Node {
     super.updateWorldData(time);
     // Locate light src on screen x,y
     flarePoint = DisplaySystem.getDisplaySystem().getScreenCoordinates(
-        worldTranslation).subtractLocal(midPoint);
+        worldTranslation).subtractLocal(midPoint.x, midPoint.y, 0);
     if (Math.abs(flarePoint.x) > midPoint.x ||
-        Math.abs(flarePoint.y) > midPoint.y) {
+        Math.abs(flarePoint.y) > midPoint.y ||
+        flarePoint.z >= 1.0f) {
       setForceCull(true);
       return;
     } else setForceCull(false);
