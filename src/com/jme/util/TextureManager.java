@@ -37,8 +37,10 @@ import java.awt.Toolkit;
 import java.awt.geom.AffineTransform;
 import java.awt.image.AffineTransformOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
 import java.awt.image.DirectColorModel;
 import java.awt.image.MemoryImageSource;
+import java.awt.image.PixelGrabber;
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.IOException;
@@ -58,7 +60,7 @@ import com.jme.renderer.ColorRGBA;
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
  * @author Mark Powell
- * @version $Id: TextureManager.java,v 1.7 2004-02-27 20:18:50 mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.8 2004-03-04 03:18:30 greggpatton Exp $
  */
 public class TextureManager {
    
@@ -238,19 +240,25 @@ public class TextureManager {
     public static com.jme.image.Image loadImage(
         java.awt.Image image,
         boolean flipImage) {
+            
+        boolean hasAlpha = hasAlpha(image);
+
         //      Obtain the image data.
         BufferedImage tex = null;
         try {
+            
             tex =
                 new BufferedImage(
                     image.getWidth(null),
                     image.getHeight(null),
-                    BufferedImage.TYPE_3BYTE_BGR);
+                    hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR : BufferedImage.TYPE_3BYTE_BGR);
+                    
         } catch (IllegalArgumentException e) {
         	LoggingSystem.getLogger().log(Level.WARNING, "Problem creating buffered Image: " + 
         			e.getMessage());
             return null;
         }
+        
         Graphics2D g = (Graphics2D) tex.getGraphics();
         g.drawImage(image, null, null);
         g.dispose();
@@ -281,7 +289,7 @@ public class TextureManager {
         scratch.rewind();
 
         com.jme.image.Image textureImage = new com.jme.image.Image();
-        textureImage.setType(com.jme.image.Image.RGB888);
+        textureImage.setType(hasAlpha ? com.jme.image.Image.RGBA8888 : com.jme.image.Image.RGB888);
         textureImage.setWidth(tex.getWidth());
         textureImage.setHeight(tex.getHeight());
         textureImage.setData(scratch);
@@ -432,4 +440,25 @@ public class TextureManager {
         return (short) (input << 8 | (input & 0xFF00) >>> 8);
     }
 
+    /**
+     * <code>hasAlpha</code> returns true if the specified image has transparent pixels
+     * @param image Image to check
+     * @return true if the specified image has transparent pixels
+     */
+     public static boolean hasAlpha(java.awt.Image image) {
+         if (image instanceof BufferedImage) {
+             BufferedImage bufferedImage = (BufferedImage)image;
+             return bufferedImage.getColorModel().hasAlpha();
+         }
+    
+         PixelGrabber pixelGrabber = new PixelGrabber(image, 0, 0, 1, 1, false);
+
+         try {
+             pixelGrabber.grabPixels();
+         } catch (InterruptedException e) {
+         }
+    
+         ColorModel colorModel = pixelGrabber.getColorModel();
+         return colorModel.hasAlpha();
+     }
 }
