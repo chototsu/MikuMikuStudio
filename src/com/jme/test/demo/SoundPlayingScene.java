@@ -92,7 +92,7 @@ public class SoundPlayingScene implements Scene {
 		ts.setEnabled(true);
 		ts.setTexture(
 			TextureManager.loadTexture(
-				"C:/eclipse/workspace/JavaMonkeyEngine/jme/data/Font/font.png",
+				"data/Font/font.png",
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
@@ -115,7 +115,7 @@ public class SoundPlayingScene implements Scene {
 		soundLoader.start();
 		soundLoader.queueSound(
 			backgroundMusic.getId(),
-			"C:/eclipse/workspace/JavaMonkeyEngine/jme/data/sound/0.mp3");
+			"data/sound/0.mp3");
 		soundNode= new Node();
 		soundNode.attachChild(text);
 		status= Scene.LOADING_NEXT_SCENE;
@@ -131,7 +131,7 @@ public class SoundPlayingScene implements Scene {
 		tst.setEnabled(true);
 		tst.setTexture(
 			TextureManager.loadTexture(
-				"../data/Images/Monkey.jpg",
+				"data/Images/Monkey.jpg",
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));

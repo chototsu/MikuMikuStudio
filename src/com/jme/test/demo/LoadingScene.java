@@ -73,7 +73,7 @@ public class LoadingScene implements Scene {
 		ts.setEnabled(true);
 		ts.setTexture(
 			TextureManager.loadTexture(
-				"C:/eclipse/workspace/JavaMonkeyEngine/jme/data/Font/font.png",
+				"data/Font/font.png",
 				Texture.MM_LINEAR,
 				Texture.FM_LINEAR,
 				true));
