@@ -60,15 +60,10 @@ class MilkshapeMaterial {
             e.printStackTrace();
         } catch (IOException e) {
         }
-        try {
-            myTex.loadFromFile(toLoad,Texture.MM_LINEAR, Texture.FM_LINEAR,true);
-        } catch (MalformedURLException e) {
-            System.out.println("toLoad is wrong format: " + toLoad.toString());
-        }
-//        myTex.setTexture(TextureManager.loadTexture(toLoad,
-//            Texture.MM_LINEAR,
-//            Texture.FM_LINEAR,
-//            true));
+        myTex.setTexture(TextureManager.loadTexture(toLoad,
+            Texture.MM_LINEAR,
+            Texture.FM_LINEAR,
+            true));
         if (myTex==null) throw new JmeException("Problem loading file " + texture);
         myTex.setEnabled(true);
         return myTex;
