@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * handle renderer viewport setting.
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.14 2004-03-11 02:46:56 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.15 2004-03-31 03:05:52 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
     //planes of the frustum
@@ -120,6 +120,7 @@ public abstract class AbstractCamera implements Camera {
 
     protected Plane[] worldPlane;
     protected Vector3f lookAt = new Vector3f();
+    protected boolean overrideLookAt;
     private int planeState;
 
     /**
@@ -422,6 +423,20 @@ public abstract class AbstractCamera implements Camera {
         this.direction = direction;
         onFrameChange();
 
+    }
+
+    /**
+     * <code>lookAt</code> is a convienence method for auto-setting the frame.
+     *
+     * @param pos Vector3f
+     */
+    public void lookAt(Vector3f pos) {
+      if (pos != null) {
+        lookAt.set(pos);
+        overrideLookAt = true;
+      } else {
+        overrideLookAt = false;
+      }
     }
 
     /**

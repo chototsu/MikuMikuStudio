@@ -49,7 +49,7 @@ import com.jme.scene.BoundingVolume;
  * frustum culling.
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.7 2004-03-30 11:56:38 greggpatton Exp $
+ * @version $Id: Camera.java,v 1.8 2004-03-31 03:05:52 renanse Exp $
  */
 public interface Camera extends Serializable {
 
@@ -342,4 +342,11 @@ public interface Camera extends Serializable {
      *
      */
     public void onFrameChange();
+
+    /**
+     * <code>lookAt</code> is a convienence method for auto-setting the frame.
+     *
+     * @param pos Vector3f
+     */
+    public void lookAt(Vector3f pos);
 }

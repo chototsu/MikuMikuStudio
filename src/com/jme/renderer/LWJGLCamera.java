@@ -41,7 +41,7 @@ import org.lwjgl.opengl.glu.GLU;
  * this class handling the OpenGL specific calls to set the frustum and
  * viewport.
  * @author Mark Powell
- * @version $Id: LWJGLCamera.java,v 1.5 2004-03-05 21:55:17 renanse Exp $
+ * @version $Id: LWJGLCamera.java,v 1.6 2004-03-31 03:05:52 renanse Exp $
  */
 public class LWJGLCamera extends AbstractCamera {
 
@@ -50,7 +50,7 @@ public class LWJGLCamera extends AbstractCamera {
     private Object parent;
     private Class parentClass;
 
-    /**
+  /**
      * Constructor instantiates a new <code>LWJGLCamera</code> object. The
      * width and height are provided, which cooresponds to either the
      * width and height of the rendering window, or the resolution of the
@@ -119,7 +119,8 @@ public class LWJGLCamera extends AbstractCamera {
         // set view matrix
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glLoadIdentity();
-        location.add(direction, lookAt);
+        if (!overrideLookAt)
+          location.add(direction, lookAt);
         GLU.gluLookAt(
             location.x,
             location.y,
