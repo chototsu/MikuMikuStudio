@@ -32,10 +32,11 @@
 
 package com.jme.scene.lod;
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeSet;
-import java.util.Vector;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
@@ -49,7 +50,7 @@ import com.jme.renderer.ColorRGBA;
  * The reason for lack of documentation is that it should have little use to someone
  * outside the API, unless they already know how to use it.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.14 2004-08-22 02:00:35 cep21 Exp $
+ * @version $Id: ClodCreator.java,v 1.15 2004-08-31 01:50:16 renanse Exp $
  */
 
 public class ClodCreator extends VETMesh {
@@ -71,7 +72,7 @@ public class ClodCreator extends VETMesh {
 
   // for reordering vertices and triangles
   TreeSet deletedVertices; // <int>
-  Vector deletedEdges; // <CollapseRecord>
+  ArrayList deletedEdges; // <CollapseRecord>
   CollapseRecord[] records;
 
   private static final Vector3f tempVa=new Vector3f();
@@ -117,7 +118,7 @@ public class ClodCreator extends VETMesh {
     permuteVertices = new int[vertices.length];
     newIndices = new int[indices.length];
 
-    deletedEdges = new Vector();
+    deletedEdges = new ArrayList();
     deletedVertices = new TreeSet();
 
     // Insert the triangles into the mesh.  The triangle indices are attached
