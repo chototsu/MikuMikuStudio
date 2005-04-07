@@ -132,7 +132,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLRenderer.java,v 1.59 2005-04-05 23:45:47 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.60 2005-04-07 19:07:20 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -1039,12 +1039,14 @@ public class LWJGLRenderer implements Renderer {
         }
         if (g.isVBOColorEnabled() && g.getVBOColorID() <= 0) {
             g.updateColorBuffer(g.getVertices().length);
-            GL15.glGenBuffers(buf);
-            g.setVBOColorID(buf.get(0));
-            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
-            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
-                    .getColorAsFloatBuffer(), GL15.GL_STATIC_DRAW);
-            buf.clear();
+            if (g.getColorAsFloatBuffer() != null) {
+	            GL15.glGenBuffers(buf);
+	            g.setVBOColorID(buf.get(0));
+	            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
+	            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
+	                    .getColorAsFloatBuffer(), GL15.GL_STATIC_DRAW);
+	            buf.clear();
+            }
         }
         if (g.isVBOTextureEnabled()) {
             for (int i = 0; i < g.getNumberOfUnits(); i++) {
