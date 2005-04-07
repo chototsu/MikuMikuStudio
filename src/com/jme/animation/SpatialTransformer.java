@@ -54,6 +54,7 @@ import java.util.Arrays;
  * 
  * 
  * @author Jack Lindamood
+ * @author Philip Wainwright (bugfixes)
  */
 public class SpatialTransformer extends Controller {
 
@@ -189,6 +190,8 @@ public class SpatialTransformer extends Controller {
     public void setObject(Spatial objChange, int index, int parentIndex) {
         toChange[index] = objChange;
         pivots[index].setTranslation(objChange.getLocalTranslation());
+        pivots[index].setScale(objChange.getLocalScale());
+        pivots[index].setRotationQuaternion(objChange.getLocalRotation());
         parentIndexes[index] = parentIndex;
     }
 
@@ -292,11 +295,14 @@ public class SpatialTransformer extends Controller {
             if (start == keyframes.size()) { // if they are all null then fill
                 // with identity
                 for (int i = 0; i < keyframes.size(); i++)
-                    ((PointInTime) keyframes.get(i)).look[objIndex].setScale(1,
-                            1, 1);
+                {
+                    pivots[objIndex].getScale( // pull original translation
+                            ((PointInTime) keyframes.get(i)).look[objIndex]
+                            .getScale()); // ...into object translation.
+                }
                 continue; // we're done so lets break
-            }
-
+            } 
+            
             if (start != 0) { // if there -are- null elements at the begining,
                 // then fill with first non-null
                 ((PointInTime) keyframes.get(start)).look[objIndex]
@@ -373,8 +379,10 @@ public class SpatialTransformer extends Controller {
             if (start == keyframes.size()) { // if they are all null then fill
                 // with identity
                 for (int i = 0; i < keyframes.size(); i++)
-                    ((PointInTime) keyframes.get(i)).look[joint]
-                            .setRotationQuaternion(new Quaternion());
+                    pivots[joint].getRotation( // pull original rotation
+                            ((PointInTime) keyframes.get(i)).look[joint]
+                            .getRotation()); // ...into object rotation.
+               
                 continue; // we're done so lets break
             }
             if (start != 0) { // if there -are- null elements at the begining,

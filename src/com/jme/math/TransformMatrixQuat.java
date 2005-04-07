@@ -77,7 +77,15 @@ public class TransformMatrixQuat {
         quat.set(rot);
         return quat;
     }
-
+    
+    /**
+     * Return the rotation quaternion in this matrix.
+     * @return rotation quaternion.
+     */
+    public Quaternion getRotation() {
+        return rot;
+    } 
+    
     /**
      * Stores this scale value into the given vector3f.  If scale is null, a new vector3f is created to
      * hold the value.  The value, once stored, is returned.
