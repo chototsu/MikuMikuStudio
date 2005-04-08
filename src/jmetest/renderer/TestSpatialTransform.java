@@ -30,13 +30,13 @@
 *
 */
 package jmetest.renderer;
-
 /*
  * spatialTest.java
  *
- * Created on 05 April 2005, 19:00 BST
+ * Created on 05 April 2005, 19:00 BST. 
  * Spatial diagnostics tests.
  * Activate the tests by setting the 'test' global, and executing, see code for details.
+ * Note the timeDivision setting must be >=2 for the scale and transform tests (need at least three time points).
  *
  * TESTS :
  * 0            Static, default scale,positon and rotation of translation object **
@@ -48,13 +48,16 @@ package jmetest.renderer;
  * 6            Translation + Scale.
  * 7            All three.
  *
- * ** For test 0 the controller is NOT attached, since no key frames are created for this test, see line 101.
+ * ** For test 0 the controller is NOT attached, since no key frames are created for this test, see line 105.
  */
 
 /**
  *
  * @author Philip Wainwright
- *
+ * 
+ * Updated on 07 April 2005, 20:00 BST : 
+ *      Changed variable keyFrames to timeDivisions
+ *      Modified rotate test [ setRotation() ] to rotate the Transform box through 360 degrees.
  */
 
 import com.jme.app.SimpleGame;
@@ -67,13 +70,13 @@ import com.jme.math.Quaternion;
 public class TestSpatialTransform extends SimpleGame{
    
     //Test setting, 0 to 7.
-    private final int test=4;
+    private final int test=7;
     
     //time in seconds to complete a loop of the test.
-    private final float time = 6; 
+    private final float time = 5; 
     
-    //number of key frames to use.
-    private final float keyFrames = 36; //fps=6
+    //number of time divisions (>=2 for transform and scale tests)
+    private final float timeDivision = 10;
     
     private SpatialTransformer spt;
     
@@ -82,8 +85,7 @@ public class TestSpatialTransform extends SimpleGame{
         //only testing one object
         spt = new SpatialTransformer(1);               
     }
-   
-    
+       
     public static void main(String[] args)
     {
         TestSpatialTransform testApp = new TestSpatialTransform();
@@ -102,7 +104,7 @@ public class TestSpatialTransform extends SimpleGame{
         //two boxes, one is the reference.
         Box ref = new Box("Reference",new Vector3f(0,0,0),new Vector3f(1f,1f,1f));
         Box trans = new Box("Transform",new Vector3f(0,0,0),new Vector3f(1f,1f,1f));
-    
+        
         //Set the transform box to 2x
         trans.setLocalScale(2f);        
         
@@ -165,28 +167,24 @@ public class TestSpatialTransform extends SimpleGame{
     
     
     /**
-     * Sets the test rotation of 0 to 180 to 0 degrees, all axis.     
+     * Sets the test rotation of 0 to 360 degrees, all axis.     
      */
     private void setRotation()
     {
         Quaternion rotRef = new Quaternion();
         
-        float rotation;
+        float rotation=0;
         
         //iterate over the range, go over by one step to accommodate mathematical error
-        for(float timeElp=0;timeElp<(this.time+(this.time/this.keyFrames));timeElp+=(this.time/this.keyFrames))
+        for(float timeElp=0;timeElp<(this.time+(this.time/this.timeDivision));timeElp+=(this.time/this.timeDivision))
         {
-            
-            if(timeElp<(this.time/2))
-                rotation = (timeElp/this.time)*260;
-            else
-                rotation = (float)((1-timeElp/this.time)*260);
-            
-            if(rotation<0)
-                rotation=0;
+            rotation = (timeElp/this.time)*360;
+         
+            if(rotation>360)
+                rotation=360;//lock to 360
             
             rotRef.fromAngleAxis((float)(Math.PI/180)*rotation,new Vector3f(1,1,1));
-                        
+            
             this.spt.setRotation(0,timeElp,rotRef);
         }
     }
@@ -201,14 +199,15 @@ public class TestSpatialTransform extends SimpleGame{
         float translation;
         
         //iterate over the range, go over by one step to accommodate mathematical error
-        for(float timeElp=0;timeElp<(this.time+(this.time/this.keyFrames));timeElp+=(this.time/this.keyFrames))
+        for(float timeElp=0;timeElp<(this.time+(this.time/this.timeDivision));timeElp+=(this.time/this.timeDivision))
         {
             translation = (float)((timeElp/this.time)*(Math.PI*2));
             
             //correct for mathematical errors
             if(translation>(Math.PI*2))
                 translation=(float)Math.PI*2;
-             
+                
+                          
             transRef.x = (float)Math.sin(translation)*5;
             transRef.y = (float)Math.cos(translation)*2.5f;
             transRef.z = (float)Math.cos(translation)*5;
@@ -227,17 +226,14 @@ public class TestSpatialTransform extends SimpleGame{
         float scaling;
         
         //iterate over the range, go over by one step to accommodate mathematical error
-        for(float timeElp=0;timeElp<(this.time+(this.time/this.keyFrames));timeElp+=(this.time/this.keyFrames))
+        for(float timeElp=0;timeElp<(this.time+(this.time/this.timeDivision));timeElp+=(this.time/this.timeDivision))
         {
             
             if(timeElp<(this.time/2))
                 scaling = (timeElp/this.time)*10;
             else
                 scaling = (float)((1-timeElp/this.time)*10);
-            
-            if(scaling<0)
-                scaling=0;
-            
+           
             scaleRef.x = scaling;
             scaleRef.y = scaling;
             scaleRef.z = scaling;
