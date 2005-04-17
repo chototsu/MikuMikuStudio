@@ -209,17 +209,30 @@ public class SoundSystem {
         }        
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception{
         int sampleHandle=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/data/sound/CHAR_CRE_1.ogg", false);
+        
+        int sampleHandle1=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/data/sound/CHAR_CRE_11.ogg", false);
+        
         int nodeHandle=SoundSystem.createSoundNode();
-        SoundSystem.addSampleToNode(nodeHandle, sampleHandle);
+        
+        
+        
+        int nodeHandle1=SoundSystem.createSoundNode();
+        
+        SoundSystem.addSampleToNode(sampleHandle1, nodeHandle1);
+        SoundSystem.addSampleToNode(sampleHandle, nodeHandle);
         
         float y=0;
         SoundSystem.setSampleMaxAudibleDistance(sampleHandle, 100);
             while(true){
-                y+=0.00005;
+                
                 SoundSystem.setSamplePosition(sampleHandle, 0,y, 0);
-                SoundSystem.update(0);
+                SoundSystem.update(nodeHandle, 0);
+                Thread.sleep(1000);
+                SoundSystem.update(nodeHandle1, 0);
+                
+                
             }
            
     }
