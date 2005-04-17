@@ -390,7 +390,7 @@ public class OBBTree {
 
         public int compare(Object o1, Object o2) {
             TreeTriangle a = (TreeTriangle) o1;
-            TreeTriangle b = (TreeTriangle) o1;
+            TreeTriangle b = (TreeTriangle) o2;
             if (a.projection < b.projection) { return -1; }
             if (a.projection > b.projection) { return 1; }
             return 0;
