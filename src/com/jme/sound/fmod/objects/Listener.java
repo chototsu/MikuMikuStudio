@@ -49,12 +49,6 @@ public class Listener {
     private final float[] orientation={0, 0, -1, 0,1,0};
     private final FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private final FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
-    private final FloatBuffer orient0=BufferUtils.createFloatBuffer(1);
-    private final FloatBuffer orient1=BufferUtils.createFloatBuffer(1);
-    private final FloatBuffer orient2=BufferUtils.createFloatBuffer(1);
-    private final FloatBuffer orient3=BufferUtils.createFloatBuffer(1);
-    private final FloatBuffer orient4=BufferUtils.createFloatBuffer(1);
-    private final FloatBuffer orient5=BufferUtils.createFloatBuffer(1);
     private final Vector3f vpos=new Vector3f();
 
     /**
@@ -62,18 +56,12 @@ public class Listener {
      * @return an array of six floats
      */
     public float[] getOrientation(){
-        FSound.FSOUND_3D_Listener_GetAttributes(position, velocity, orient0, orient1,orient2,orient3,orient4,orient5);
-        orientation[0]=orient0.get(0);
-        orientation[1]=orient1.get(0);
-        orientation[2]=orient2.get(0);
-        orientation[3]=orient3.get(0);
-        orientation[4]=orient4.get(0);
-        orientation[5]=orient5.get(0);
         return orientation;
     }
     
     public void update(){        
         FSound.FSOUND_3D_Listener_SetAttributes(position, velocity, orientation[0], orientation[1],orientation[2],orientation[3],orientation[4],orientation[5]);
+        
     }
 
     /**
@@ -83,19 +71,16 @@ public class Listener {
      */
     public void setPosition(Vector3f v) {        
         position.clear();
-        position.put(v.x);
+        position.put(-v.x);
         position.put(v.y);
         position.put(v.z);
-
-        
+        position.rewind();
     }
     
     public Vector3f getPosition(){
-        FSound.FSOUND_3D_Listener_GetAttributes(position, velocity, orient0, orient1,orient2,orient3,orient4,orient5);
         vpos.x=position.get(0);
         vpos.y=position.get(1);
         vpos.z=position.get(2);
-        System.out.println("lx="+vpos.x+" ly="+vpos.y+" lz="+vpos.z);
         return vpos;
     }
 

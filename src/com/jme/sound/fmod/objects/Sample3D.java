@@ -23,8 +23,8 @@ public class Sample3D extends SoundSpatial{
 
     
     private FSoundSample fmodSample;
-    private float ray;
-    private float min;
+    private int ray;
+    private int min=1;
     private Listener listener;
     private int playingChannel=-2;
     private FloatBuffer position=BufferUtils.createFloatBuffer(3);
@@ -46,8 +46,8 @@ public class Sample3D extends SoundSpatial{
     }
     
     public void draw() {        
-        System.out.println("sx="+position.get(0)+" sy="+position.get(1)+" sz="+position.get(2));
-        //FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, (int)min, (int)ray);
+        
+        FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, min, ray);
         if (distance(listener.getPosition().x,
                 listener.getPosition().y, 
                 listener.getPosition().z,
@@ -67,8 +67,10 @@ public class Sample3D extends SoundSpatial{
             return false;
         }
         if((playingChannel=FSound.FSOUND_PlaySound(FSound.FSOUND_FREE, fmodSample)) !=-1){
-            FSound.FSOUND_SetVolume(playingChannel, 255);
-            FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, 4, 10000);
+            
+            FSound.FSOUND_SetPriority(playingChannel, 255); 
+            FSound.FSOUND_3D_SetDistanceFactor(1);
+            FSound.FSOUND_SetPaused(playingChannel, false); 
             return true;
         }
         return false;
@@ -92,7 +94,8 @@ public class Sample3D extends SoundSpatial{
         position.clear();
         position.put(x);
         position.put(y);
-        position.put(z);        
+        position.put(z);   
+        position.position(0);
         
     }
     
@@ -104,12 +107,17 @@ public class Sample3D extends SoundSpatial{
         
     }
     
-    public void setMinDistance(float min){
+    public void setMinDistance(int min){
         this.min=min;
+        FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, min, ray);
         
     }
     
-    public void setMaxAudibleDistance(float max){
+    public void setVolume(int volume){
+        FSound.FSOUND_SetVolume(playingChannel, volume);
+    }
+    
+    public void setMaxAudibleDistance(int max){
         ray=max;
     }
     

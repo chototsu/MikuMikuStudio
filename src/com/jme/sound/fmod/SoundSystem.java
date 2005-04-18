@@ -65,7 +65,7 @@ public class SoundSystem {
     public static final int OUTPUT_WINMM =2;
     public static final int OUTPUT_ASIO =3;
     //LINUZ
-    public static final int OUTPUT_ESS =5;
+    public static final int OUTPUT_OSS =5;
     public static final int OUTPUT_ESD =6;
     public static final int OUTPUT_ALSA =7;
     //MAC
@@ -89,8 +89,6 @@ public class SoundSystem {
             detectOS();
             LoggingSystem.getLogger().log(Level.INFO,"CREATE FMOD");
             FMOD.create();
-            LoggingSystem.getLogger().log(Level.INFO,"INIT FSOUND 44100 32 0");
-            FSound.FSOUND_Init(44100, 32, 0);
             LoggingSystem.getLogger().log(Level.INFO,"CREATE LISTENER");
             listener=new Listener();
             detectOS();
@@ -120,15 +118,19 @@ public class SoundSystem {
             outputMethod=OS_DETECTED;
         }
         switch(outputMethod){
-        case OS_LINUX :
-            break;
-        case OS_WINDOWS : FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_DSOUND);
-        break;
-        case OS_MAC :
-            break;
+            case OS_LINUX : FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_ALSA);
+                break;
+            case OS_WINDOWS : FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_DSOUND);
+                break;
+            case OS_MAC : FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_MAC);
+                break;
             
         }
-    
+        FSound.FSOUND_SetDriver(0);
+        FSound.FSOUND_SetMixer(FSound.FSOUND_MIXER_AUTODETECT);
+        LoggingSystem.getLogger().log(Level.INFO,"INIT FSOUND 44100 32 0");
+        FSound.FSOUND_Init(44100, 32, 0);
+        FSound.FSOUND_3D_SetDistanceFactor(1.0f); 
     }
     
 
@@ -188,20 +190,25 @@ public class SoundSystem {
     
     private static void updateListener(){     
         if(camera !=null){
-            listener.setPosition(camera.getLocation());
+            listener.setPosition(camera.getLocation());            
         }
         float[] orientation = listener.getOrientation();
         Vector3f dir=null;
+        Vector3f up=null;
         if(camera !=null){
          dir = camera.getDirection();
+         up = camera.getUp();
         }else if(dir==null){
             dir=new Vector3f(0, 0, -1);
         }
-        orientation[0] = dir.x;
+        orientation[0] = -dir.x;
         orientation[1] = dir.y;
         orientation[2] = dir.z;
+        orientation[3] = up.x;
+        orientation[4] = up.y;
+        orientation[5] = up.z;
         listener.update();
-        FSound.FSOUND_Update();
+        //FSound.FSOUND_Update();
     }
 
     /**
@@ -284,7 +291,7 @@ public class SoundSystem {
      * @param sample the sample identifier
      * @param dist the distance unit from which the sample will stop playing
      */
-    public static void setSampleMaxAudibleDistance(int sample, float dist){
+    public static void setSampleMaxAudibleDistance(int sample, int dist){
         if(sample3D==null){
             return;
         }else if(sample<0 || sample>=sample3D.length){
@@ -295,7 +302,7 @@ public class SoundSystem {
     }
     
     
-    public static void setSampleMinAudibleDistance(int sample, float dist){
+    public static void setSampleMinAudibleDistance(int sample, int dist){
         if(sample3D==null){
             return;
         }else if(sample<0 || sample>=sample3D.length){
@@ -328,6 +335,21 @@ public class SoundSystem {
     public static void setRolloffFactor(float rolloff){
         FSound.FSOUND_3D_SetRolloffFactor(rolloff);
     } 
+    
+    /**
+     * Set the volume of the given sample
+     * @param sample
+     * @param volume
+     */
+    public void setSampleVolume(int sample, int volume){
+        if(sample3D==null){
+            return;
+        }else if(sample<0 || sample>=sample3D.length){
+            return; 
+        }else{
+            sample3D[sample].setVolume(volume);
+        }
+    }
     
     public static void main(String[] args) throws Exception{
        
@@ -365,7 +387,7 @@ public class SoundSystem {
         FSound.FSOUND_SetMixer(FSound.FSOUND_MIXER_AUTODETECT); 
         FSound.FSOUND_Init(44100, 32, 0); 
          
-        FSoundSample temp  = FSound.FSOUND_Sample_Load( FSound.FSOUND_UNMANAGED, "C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/foot1.wav",  FSound.FSOUND_HW3D | FSound.FSOUND_FORCEMONO, 0, 0); 
+        FSoundSample temp  = FSound.FSOUND_Sample_Load( FSound.FSOUND_UNMANAGED, "D:/eclipse/workspace/JMonkeyEngine/data/sound/foot1.wav",  FSound.FSOUND_HW3D | FSound.FSOUND_FORCEMONO, 0, 0); 
         FSound.FSOUND_Sample_SetMinMaxDistance(temp, 4.0f, 100.0f); 
         FSound.FSOUND_Sample_SetMode(temp, FSound.FSOUND_LOOP_NORMAL); 
              
@@ -397,6 +419,7 @@ public class SoundSystem {
             FSound.FSOUND_3D_Listener_SetAttributes(pos, vel, 0,0,1,0,1,0);
             FSound.FSOUND_Update();
             Thread.sleep(500);
+            System.out.print("\ry="+y);
         }
            
         
