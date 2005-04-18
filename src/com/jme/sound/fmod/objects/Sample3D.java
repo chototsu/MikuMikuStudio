@@ -34,7 +34,7 @@ public class Sample3D extends SoundSpatial{
     
     public Sample3D(String file){     
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
-        fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_FREE, file, FSound.FSOUND_HW3D , 0, 0);
+        fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, file, FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO, 0, 0);
         
     }
     
@@ -45,8 +45,7 @@ public class Sample3D extends SoundSpatial{
         
     }
     
-    public void draw() {
-        FSound.FSOUND_3D_SetAttributes(playingChannel, position, velocity);
+    public void draw() {        
         System.out.println("sx="+position.get(0)+" sy="+position.get(1)+" sz="+position.get(2));
         //FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, (int)min, (int)ray);
         if (distance(listener.getPosition().x,
@@ -58,15 +57,18 @@ public class Sample3D extends SoundSpatial{
             if (!isPlaying()) {                
                 play();
             }
-        }        
+        }   
+        FSound.FSOUND_3D_SetAttributes(playingChannel, position, velocity);
+        
     }
     
     public boolean play(){
         if(fmodSample==null){
             return false;
         }
-        if((playingChannel=FSound.FSOUND_PlaySound(FSound.FSOUND_FREE, fmodSample)) !=1){
-            //FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, 4, 10000);
+        if((playingChannel=FSound.FSOUND_PlaySound(FSound.FSOUND_FREE, fmodSample)) !=-1){
+            FSound.FSOUND_SetVolume(playingChannel, 255);
+            FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, 4, 10000);
             return true;
         }
         return false;

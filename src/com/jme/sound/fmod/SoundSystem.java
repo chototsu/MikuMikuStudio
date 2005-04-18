@@ -34,11 +34,14 @@
  */
 package com.jme.sound.fmod;
 
+import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.fmod3.FMOD;
 import org.lwjgl.fmod3.FMODException;
 import org.lwjgl.fmod3.FSound;
+import org.lwjgl.fmod3.FSoundSample;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -53,48 +56,95 @@ import com.jme.util.LoggingSystem;
 public class SoundSystem {
     
     public static final int FREE_NODE_INDEX = -1;
+    public static final int RENDER_MEHOD_PAUSE=1;
+    public static final int RENDER_MEHOD_STOP=2;
+    
+    public static final int OUTPUT_DEFAULT=0;
+    //WINDOZE
+    public static final int OUTPUT_DSOUND =1;
+    public static final int OUTPUT_WINMM =2;
+    public static final int OUTPUT_ASIO =3;
+    //LINUZ
+    public static final int OUTPUT_ESS =5;
+    public static final int OUTPUT_ESD =6;
+    public static final int OUTPUT_ALSA =7;
+    //MAC
+    public static final int OUTPUT_MAC = 8;
     
     private static Listener listener;
     private static Camera camera;
     private static SoundNode[] nodes;
     private static Sample3D[] sample3D;
+    private static int OS_DETECTED;
     
-
+    private static final int OS_LINUX=1;
+    private static final int OS_WINDOWS=2;
+    private static final int OS_MAC = 3;
+    
   
 
     static{
         try {
+            LoggingSystem.getLogger().log(Level.INFO,"DETECT OPERATING SYSTEM");
+            detectOS();
             LoggingSystem.getLogger().log(Level.INFO,"CREATE FMOD");
             FMOD.create();
             LoggingSystem.getLogger().log(Level.INFO,"INIT FSOUND 44100 32 0");
             FSound.FSOUND_Init(44100, 32, 0);
             LoggingSystem.getLogger().log(Level.INFO,"CREATE LISTENER");
             listener=new Listener();
+            detectOS();
             
         } catch (FMODException e) {
             e.printStackTrace();
         }
     }
     
-    /**
-     * init the sound system by setting it's listener's position to the cameras position
-     * @param cam
-     */
-    public static void init(Camera cam){
-        camera=cam;
+    private static void detectOS() {
+        String osName=System.getProperty("os.name");
+        osName=osName.toUpperCase();
+        if(osName.startsWith("LINUX")) OS_DETECTED=OS_LINUX;
+        if(osName.startsWith("WINDOWS")) OS_DETECTED=OS_WINDOWS;
+        if(osName.startsWith("MAC")) OS_DETECTED=OS_MAC;        
     }
     
+    /**
+     * init the sound system by setting it's listener's position to the cameras position
+     * 
+     * @param cam
+     * @param outputMethod
+     */
+    public static void init(Camera cam, int outputMethod){
+        camera=cam;
+        if(outputMethod==OUTPUT_DEFAULT){
+            outputMethod=OS_DETECTED;
+        }
+        switch(outputMethod){
+        case OS_LINUX :
+            break;
+        case OS_WINDOWS : FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_DSOUND);
+        break;
+        case OS_MAC :
+            break;
+            
+        }
+    
+    }
+    
+
+
     /**
      * Updates the geometric states of all nodes in the scene
      * @param time currently not used 
      */
     public static void update(float time){
         if(nodes==null) return;
-        updateListener();
+        
         for(int a=0; a<nodes.length; a++){
             nodes[a].updateWorldData(time);
         } 
-        FSound.FSOUND_Update();
+        updateListener();
+        
     }
     
     /**
@@ -105,9 +155,9 @@ public class SoundSystem {
     public static void update(int nodeName, float time){
         if(nodes==null) return;
         if(nodeName<0 || nodeName>=nodes.length) return;
-        updateListener();
         nodes[nodeName].updateWorldData(time);
-        FSound.FSOUND_Update();
+        updateListener();
+        
     }
     
     
@@ -136,11 +186,17 @@ public class SoundSystem {
     }
     
     
-    private static void updateListener(){
-        if(camera==null) return;
-        listener.setPosition(camera.getLocation());
+    private static void updateListener(){     
+        if(camera !=null){
+            listener.setPosition(camera.getLocation());
+        }
         float[] orientation = listener.getOrientation();
-        Vector3f dir = camera.getDirection();
+        Vector3f dir=null;
+        if(camera !=null){
+         dir = camera.getDirection();
+        }else if(dir==null){
+            dir=new Vector3f(0, 0, -1);
+        }
         orientation[0] = dir.x;
         orientation[1] = dir.y;
         orientation[2] = dir.z;
@@ -274,9 +330,11 @@ public class SoundSystem {
     } 
     
     public static void main(String[] args) throws Exception{
-        int sampleHandle=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/data/sound/CHAR_CRE_1.ogg", false);
+       
+        /*
+        int sampleHandle=SoundSystem.create3DSample("C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/foot1.wav", false);
         
-        int sampleHandle1=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/data/sound/CHAR_CRE_11.ogg", false);
+        int sampleHandle1=SoundSystem.create3DSample("C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/CHAR_CRE_11.ogg", false);
         
         int nodeHandle=SoundSystem.createSoundNode();
         
@@ -291,7 +349,7 @@ public class SoundSystem {
         SoundSystem.setSampleMaxAudibleDistance(sampleHandle, 1000);
             while(true){
                 y+=0.05;
-                SoundSystem.setSamplePosition(sampleHandle, 0,0, y);
+                SoundSystem.setSamplePosition(sampleHandle, y,0, 0);
                 SoundSystem.update(nodeHandle, 0);
                 SoundSystem.draw(nodeHandle);
                 //Thread.sleep(1000);
@@ -299,7 +357,49 @@ public class SoundSystem {
                // SoundSystem.draw(nodeHandle1);
                 
             }
+            */
+        
+        FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_DSOUND); 
+        FSound.FSOUND_SetDriver(0); 
+         
+        FSound.FSOUND_SetMixer(FSound.FSOUND_MIXER_AUTODETECT); 
+        FSound.FSOUND_Init(44100, 32, 0); 
+         
+        FSoundSample temp  = FSound.FSOUND_Sample_Load( FSound.FSOUND_UNMANAGED, "C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/foot1.wav",  FSound.FSOUND_HW3D | FSound.FSOUND_FORCEMONO, 0, 0); 
+        FSound.FSOUND_Sample_SetMinMaxDistance(temp, 4.0f, 100.0f); 
+        FSound.FSOUND_Sample_SetMode(temp, FSound.FSOUND_LOOP_NORMAL); 
+             
+        if (temp==null) 
+        { 
+             System.out.println("No sound\n"); 
+           //MessageBox(0, "no sound", "no sound", MB_OK); 
+        } 
+
+        FSound.FSOUND_3D_SetDistanceFactor(1.0f); 
+        FSound.FSOUND_SetVolume(FSound.FSOUND_ALL, 255);      // go to max volume 
+         
+        FloatBuffer pos=BufferUtils.createFloatBuffer(3); 
+        FloatBuffer vel=BufferUtils.createFloatBuffer(3); 
+        pos.put(0); 
+        pos.put(0);  
+        pos.put(0);  
+         
+        int channel = FSound.FSOUND_PlaySound(FSound.FSOUND_FREE ,temp); 
+        FSound.FSOUND_SetPriority(channel, 255); 
+        FSound.FSOUND_3D_SetAttributes(channel, pos, vel);    
+        FSound.FSOUND_SetPaused(channel, false); 
+        FSound.FSOUND_SetSurround(channel, true); 
+        float y=0;
+        while(true){
+            pos.clear();
+            pos.put(y++);
+            pos.rewind();
+            FSound.FSOUND_3D_Listener_SetAttributes(pos, vel, 0,0,1,0,1,0);
+            FSound.FSOUND_Update();
+            Thread.sleep(500);
+        }
            
+        
     }
 
     
