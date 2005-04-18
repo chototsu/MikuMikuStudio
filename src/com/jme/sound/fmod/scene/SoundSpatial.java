@@ -96,7 +96,6 @@ public abstract class SoundSpatial {
      * @param b
      */
     public void updateGeometricState(float time, boolean initiator) {
-        onDraw();
         if (initiator) {
             propagateBoundToRoot();
         }

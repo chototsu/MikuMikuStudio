@@ -177,8 +177,7 @@ public class SoundNode extends SoundSpatial{
     public void draw() {
         for (int i = 0; i < children.size(); i++) {
             SoundSpatial child = (SoundSpatial) children.get(i);
-            if (child != null){
-                
+            if (child != null){                
                 child.onDraw();
             }
         }

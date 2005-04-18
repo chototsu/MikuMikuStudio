@@ -24,6 +24,7 @@ public class Sample3D extends SoundSpatial{
     
     private FSoundSample fmodSample;
     private float ray;
+    private float min;
     private Listener listener;
     private int playingChannel=-2;
     private FloatBuffer position=BufferUtils.createFloatBuffer(3);
@@ -34,6 +35,7 @@ public class Sample3D extends SoundSpatial{
     public Sample3D(String file){     
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
         fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_FREE, file, FSound.FSOUND_HW3D , 0, 0);
+        FSound.FSOUND_3D_SetDistanceFactor(5);
     }
     
     public Sample3D(Listener listener, String file){        
@@ -45,14 +47,15 @@ public class Sample3D extends SoundSpatial{
     
     public void draw() {
         FSound.FSOUND_3D_SetAttributes(playingChannel, position, velocity);
+        System.out.println("sx="+position.get(0)+" sy="+position.get(1)+" sz="+position.get(2));
+        //FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, (int)min, (int)ray);
         if (distance(listener.getPosition().x,
                 listener.getPosition().y, 
                 listener.getPosition().z,
                 position.get(0),position.get(1), position.get(2)) > ray) {
-            pause();
+            stop();
         } else {
-            if (!isPlaying()) {
-                
+            if (!isPlaying()) {                
                 play();
             }
         }        
@@ -63,6 +66,7 @@ public class Sample3D extends SoundSpatial{
             return false;
         }
         if((playingChannel=FSound.FSOUND_PlaySound(FSound.FSOUND_FREE, fmodSample)) !=1){
+            //FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, 4, 10000);
             return true;
         }
         return false;
@@ -72,23 +76,34 @@ public class Sample3D extends SoundSpatial{
         return FSound.FSOUND_SetPaused(playingChannel, !FSound.FSOUND_GetPaused(playingChannel));
     }
     
+    public boolean stop(){
+        return FSound.FSOUND_StopSound(playingChannel);
+    }
+    
     public boolean isPlaying(){
         return FSound.FSOUND_IsPlaying(playingChannel);
     }
     
+
+    
     public void setPosition(float x, float y, float z){
-        position.put(0, x);
-        position.put(1, y);
-        position.put(2, z);        
+        position.rewind();
+        position.put(x);
+        position.put(y);
+        position.put(z);        
+        
     }
     
     public void setVelocity(float x, float y, float z){
-        velocity.put(0, x);
-        velocity.put(1, y);
-        velocity.put(2, z);        
+        velocity.rewind();
+        velocity.put(x);
+        velocity.put(y);
+        velocity.put(z);
+        
     }
     
     public void setMinDistance(float min){
+        this.min=min;
         
     }
     

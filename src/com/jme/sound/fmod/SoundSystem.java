@@ -106,6 +106,32 @@ public class SoundSystem {
         if(nodeName<0 || nodeName>=nodes.length) return;
         updateListener();
         nodes[nodeName].updateWorldData(time);
+        FSound.FSOUND_Update();
+    }
+    
+    
+    /**
+     * Draws all nodes in the scene
+     * @param time currently not used 
+     */
+    public static void draw(){
+        if(nodes==null) return;
+        for(int a=0; a<nodes.length; a++){
+            nodes[a].draw();
+        }   
+        FSound.FSOUND_Update();
+    }
+    
+    /**
+     * Draws the given node in the scene
+     * @param nodeName the node to update
+     * @param time currently not used 
+     */
+    public static void draw(int nodeName){
+        if(nodes==null) return;
+        if(nodeName<0 || nodeName>=nodes.length) return;
+        nodes[nodeName].draw();
+        FSound.FSOUND_Update();
     }
     
     
@@ -118,6 +144,7 @@ public class SoundSystem {
         orientation[1] = dir.y;
         orientation[2] = dir.z;
         listener.update();
+        FSound.FSOUND_Update();
     }
 
     /**
@@ -158,7 +185,13 @@ public class SoundSystem {
             return tmp.length;
         }
     }
-    
+    /**
+     * Sets the spatial position of a given sample
+     * @param sample the sample identifier
+     * @param x the x position of the sample
+     * @param y the y position of the sample
+     * @param z the z position of the sample
+     */
     public static void setSamplePosition(int sample, float x, float y, float z){
         if(sample3D==null){
             return;
@@ -169,6 +202,13 @@ public class SoundSystem {
         }
     }
     
+    /**
+     * Sets the velocity of a given sample
+     * @param sample the sample identifier
+     * @param x the x velocity of the sample
+     * @param y the y velocity of the sample
+     * @param z the z velocity of the sample
+     */    
     public static void setSampleVelocity(int sample, float x, float y, float z){
         if(sample3D==null){
             return;
@@ -179,6 +219,14 @@ public class SoundSystem {
         }
     }
     
+    
+
+    
+    /**
+     * Sets the units from which the sample will stop playing
+     * @param sample the sample identifier
+     * @param dist the distance unit from which the sample will stop playing
+     */
     public static void setSampleMaxAudibleDistance(int sample, float dist){
         if(sample3D==null){
             return;
@@ -186,6 +234,17 @@ public class SoundSystem {
             return; 
         }else{
             sample3D[sample].setMaxAudibleDistance(dist);
+        }
+    }
+    
+    
+    public static void setSampleMinAudibleDistance(int sample, float dist){
+        if(sample3D==null){
+            return;
+        }else if(sample<0 || sample>=sample3D.length){
+            return; 
+        }else{
+            sample3D[sample].setMinDistance(dist);
         }
     }
     
@@ -208,6 +267,10 @@ public class SoundSystem {
             nodes[destNode].attachChild(sample3D[sample]);
         }        
     }
+
+    public static void setRolloffFactor(float rolloff){
+        FSound.FSOUND_3D_SetRolloffFactor(rolloff);
+    } 
     
     public static void main(String[] args) throws Exception{
         int sampleHandle=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/data/sound/CHAR_CRE_1.ogg", false);
@@ -222,16 +285,17 @@ public class SoundSystem {
         
         SoundSystem.addSampleToNode(sampleHandle1, nodeHandle1);
         SoundSystem.addSampleToNode(sampleHandle, nodeHandle);
-        
+       
         float y=0;
-        SoundSystem.setSampleMaxAudibleDistance(sampleHandle, 100);
+        SoundSystem.setSampleMaxAudibleDistance(sampleHandle, 1000);
             while(true){
-                
-                SoundSystem.setSamplePosition(sampleHandle, 0,y, 0);
+                y+=0.05;
+                SoundSystem.setSamplePosition(sampleHandle, 0,0, y);
                 SoundSystem.update(nodeHandle, 0);
-                Thread.sleep(1000);
-                SoundSystem.update(nodeHandle1, 0);
-                
+                SoundSystem.draw(nodeHandle);
+                //Thread.sleep(1000);
+               // SoundSystem.update(nodeHandle1, 0);
+               // SoundSystem.draw(nodeHandle1);
                 
             }
            
