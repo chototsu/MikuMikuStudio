@@ -93,8 +93,8 @@ public class TestSoundGraph extends SimpleGame {
     rootNode.setRenderState(tst);
     rootNode.attachChild(box);
     snode = SoundSystem.createSoundNode();
-    footsteps = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/Footsteps.wav", false);
-    background =SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/test.ogg", false);
+    footsteps = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/Footsteps.wav");
+    background =SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/test.ogg");
     SoundSystem.setSampleMaxAudibleDistance(footsteps, 100);
     SoundSystem.setSampleMaxAudibleDistance(background, 1000);
     SoundSystem.addSampleToNode(footsteps, snode);
