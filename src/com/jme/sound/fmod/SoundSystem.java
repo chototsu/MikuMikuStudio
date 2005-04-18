@@ -235,7 +235,7 @@ public class SoundSystem {
      * @param file the sample file name
      * @return the 3D sample identifier
      */
-    public static int create3DSample(String file, boolean asStream){//as stream is not handled yet
+    public static int create3DSample(String file){
         if(sample3D==null){
             sample3D=new Sample3D[1];
             sample3D[0]=new Sample3D(listener, file);

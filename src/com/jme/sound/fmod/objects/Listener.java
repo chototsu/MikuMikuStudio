@@ -61,7 +61,6 @@ public class Listener {
     
     public void update(){        
         FSound.FSOUND_3D_Listener_SetAttributes(position, velocity, orientation[0], orientation[1],orientation[2],orientation[3],orientation[4],orientation[5]);
-        
     }
 
     /**
