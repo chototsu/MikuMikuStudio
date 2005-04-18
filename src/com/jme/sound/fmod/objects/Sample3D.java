@@ -35,7 +35,7 @@ public class Sample3D extends SoundSpatial{
     public Sample3D(String file){     
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
         fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_FREE, file, FSound.FSOUND_HW3D , 0, 0);
-        FSound.FSOUND_3D_SetDistanceFactor(5);
+        
     }
     
     public Sample3D(Listener listener, String file){        
@@ -87,7 +87,7 @@ public class Sample3D extends SoundSpatial{
 
     
     public void setPosition(float x, float y, float z){
-        position.rewind();
+        position.clear();
         position.put(x);
         position.put(y);
         position.put(z);        
@@ -95,7 +95,7 @@ public class Sample3D extends SoundSpatial{
     }
     
     public void setVelocity(float x, float y, float z){
-        velocity.rewind();
+        velocity.clear();
         velocity.put(x);
         velocity.put(y);
         velocity.put(z);

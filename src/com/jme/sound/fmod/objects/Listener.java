@@ -72,8 +72,7 @@ public class Listener {
         return orientation;
     }
     
-    public void update(){
-        
+    public void update(){        
         FSound.FSOUND_3D_Listener_SetAttributes(position, velocity, orientation[0], orientation[1],orientation[2],orientation[3],orientation[4],orientation[5]);
         
     }
@@ -84,7 +83,7 @@ public class Listener {
      * @param z
      */
     public void setPosition(Vector3f v) {        
-        position.rewind();
+        position.clear();
         position.put(v.x);
         position.put(v.y);
         position.put(v.z);

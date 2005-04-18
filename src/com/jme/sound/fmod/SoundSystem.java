@@ -93,7 +93,8 @@ public class SoundSystem {
         updateListener();
         for(int a=0; a<nodes.length; a++){
             nodes[a].updateWorldData(time);
-        }        
+        } 
+        FSound.FSOUND_Update();
     }
     
     /**
