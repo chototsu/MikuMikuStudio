@@ -34,6 +34,7 @@
  *
  */
 package com.jme.sound.lwjgl;
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -167,7 +168,7 @@ public class SoundSystem implements ISoundSystem {
 	private IBuffer loadWAV(URL file) {
 		AudioInputStream audioStream = null;
 		try {
-			audioStream = AudioSystem.getAudioInputStream(file.openStream());
+			audioStream = AudioSystem.getAudioInputStream(new BufferedInputStream(file.openStream()));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (UnsupportedAudioFileException e) {
@@ -222,7 +223,7 @@ public class SoundSystem implements ISoundSystem {
 		IBuffer[] tmp = null;
 		try {
 
-			input = file.openStream();
+			input = new BufferedInputStream(file.openStream());
 			int convsize = 4096 * 2;
 			byte[] convbuffer = new byte[convsize];
 			SyncState syncState = new SyncState();
@@ -491,17 +492,17 @@ public class SoundSystem implements ISoundSystem {
 //		get channels
 		if (format.getChannels() == 1) {
 			if (format.getSampleSizeInBits() == 8) {
-				return (data.length) / (rate );
+				return (float)(data.length) / (float)(rate );
 			} else if (format.getSampleSizeInBits() == 16) {
-				return (data.length) / (rate*2);
+				return (float)(data.length) / (float)(rate*2);
 			} else {
 				throw new JmeException("Illegal sample size");
 			}
 		} else if (format.getChannels() == 2) {
 			if (format.getSampleSizeInBits() == 8) {
-				return (data.length) / (rate *2);
+				return (float)(data.length) / (float)(rate *2);
 			} else if (format.getSampleSizeInBits() == 16) {
-				return (data.length) / (rate * 4);
+				return (float)(data.length) / (float)(rate * 4);
 			} else {
 				throw new JmeException("Illegal sample size");
 			}
