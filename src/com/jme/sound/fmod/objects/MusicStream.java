@@ -44,8 +44,6 @@ import org.lwjgl.fmod3.FSound;
 import org.lwjgl.fmod3.FSoundStream;
 import org.lwjgl.fmod3.callbacks.FSoundStreamCallback;
 
-import com.jme.sound.fmod.callback.Callback;
-import com.jme.system.JmeException;
 
 public class MusicStream {
     
