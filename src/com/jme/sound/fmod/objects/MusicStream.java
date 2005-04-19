@@ -83,7 +83,11 @@ public class MusicStream {
     }
     
     public void close(){
-        FSound.FSOUND_Stream_Close(stream);        
+        FSound.FSOUND_Stream_Close(stream);     
+    }
+    
+    public int length(){
+        return FSound.FSOUND_Stream_GetLengthMs(stream);
     }
     
     /**
