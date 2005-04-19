@@ -277,6 +277,21 @@ public class SoundSystem {
     }
     
     
+    /**
+     * Get the length of the given stream in milliseconds
+     * @param streamName
+     * @return the stream length in millis
+     */
+    public static int getStreamLength(int streamName){
+        if(stream==null){
+            return -1;
+        }else if(streamName<0 || streamName>=stream.length){
+            return -1; 
+        }else{
+            return stream[streamName].length();
+        }
+    }
+    
     public static boolean playStream(int streamName){
         if(stream==null){
             return false;
@@ -431,17 +446,17 @@ public class SoundSystem {
         float y=0;
         //SoundSystem.setSampleMaxAudibleDistance(sampleHandle, 100);
         //SoundSystem.setSampleMinAudibleDistance(sampleHandle, 4);
-            while(true){
+            
                 //y+=0.0005;
                 //SoundSystem.setSamplePosition(sampleHandle, y,0, 0);
                 SoundSystem.playStream(charCre);
-                //SoundSystem.update(nodeHandle, 0);
-                //SoundSystem.draw(nodeHandle);
-                Thread.sleep(5000);
+                int lgth=SoundSystem.getStreamLength(charCre);
+                System.out.println("Length "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
+                Thread.sleep(lgth);
                // SoundSystem.update(nodeHandle1, 0);
                 //SoundSystem.draw(nodeHandle1);
                 
-            }
+            
             
         
    
