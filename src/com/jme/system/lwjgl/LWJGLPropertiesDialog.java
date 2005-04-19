@@ -79,7 +79,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.system.PropertiesIO
  * @author Mark Powell
  * @author Eric Woroshow
- * @version $Id: LWJGLPropertiesDialog.java,v 1.6 2005-04-04 19:10:54 renanse Exp $
+ * @version $Id: LWJGLPropertiesDialog.java,v 1.7 2005-04-19 19:55:09 renanse Exp $
  */
 public final class LWJGLPropertiesDialog extends JDialog {
 
@@ -264,7 +264,8 @@ public final class LWJGLPropertiesDialog extends JDialog {
         buttonPanel.add(ok);
         buttonPanel.add(cancel);
         
-        centerPanel.add(icon, BorderLayout.NORTH);
+        if (icon != null)
+            centerPanel.add(icon, BorderLayout.NORTH);
         centerPanel.add(optionsPanel, BorderLayout.SOUTH);
 
         mainPanel.add(centerPanel, BorderLayout.CENTER);
