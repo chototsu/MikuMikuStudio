@@ -43,6 +43,7 @@ public class TestSteamPlayer {
     
     public static void main(String[] args) throws Exception{
         SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
+        //replace the path to your files
         int clip=SoundSystem.createStream("C:\\Documents and Settings\\Arman\\Mes documents\\Noir Désir-666.667 Club\\09-Noir_Désir-L'homme_pressé.mp3", false);
         int clip2=SoundSystem.createStream("C:\\Documents and Settings\\Arman\\Mes documents\\Noir Désir-666.667 Club\\10-Noir_Désir-Lazy.mp3", false);
         int lgth=SoundSystem.getStreamLength(clip);
@@ -52,6 +53,7 @@ public class TestSteamPlayer {
         Thread.sleep(lgth);
         System.out.println("Length "+(lgth2/1000/60)+" m "+(lgth2/1000%60)+"s");
         SoundSystem.playStream(clip2);
+        Thread.sleep(lgth2);
     }
 
 }
