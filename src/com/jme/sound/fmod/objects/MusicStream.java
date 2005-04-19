@@ -62,9 +62,10 @@ public class MusicStream {
     }
 
     
-    public void play(){
+    public boolean play(){
         playingChannel=FSound.FSOUND_Stream_Play(FSound.FSOUND_FREE, stream);
-        FSound.FSOUND_Stream_SetEndCallback(stream, new EndCallback());        
+        FSound.FSOUND_Stream_SetEndCallback(stream, new EndCallback());     
+        return playingChannel !=-2;
     }
     
     /**

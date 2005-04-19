@@ -94,7 +94,7 @@ public class SoundSystem {
             FMOD.create();
             LoggingSystem.getLogger().log(Level.INFO,"CREATE LISTENER");
             listener=new Listener();
-            detectOS();
+            
             
         } catch (FMODException e) {
             e.printStackTrace();
@@ -129,7 +129,7 @@ public class SoundSystem {
                 break;
             
         }
-        FSound.FSOUND_SetDriver(0);
+        //FSound.FSOUND_SetDriver(0);
         FSound.FSOUND_SetMixer(FSound.FSOUND_MIXER_AUTODETECT);
         LoggingSystem.getLogger().log(Level.INFO,"INIT FSOUND 44100 32 0");
         FSound.FSOUND_Init(44100, 32, 0);
@@ -203,6 +203,7 @@ public class SoundSystem {
          up = camera.getUp();
         }else if(dir==null){
             dir=new Vector3f(0, 0, -1);
+            up=new Vector3f(0, 1, 0);
         }
         orientation[0] = -dir.x;
         orientation[1] = dir.y;
@@ -272,6 +273,17 @@ public class SoundSystem {
             System.arraycopy(tmp, 0, stream, 0, tmp.length);
             stream[tmp.length]=new MusicStream(file, loadIntoMemory);
             return tmp.length;
+        }
+    }
+    
+    
+    public static boolean playMusic(int streamName){
+        if(stream==null){
+            return false;
+        }else if(streamName<0 || streamName>=stream.length){
+            return false; 
+        }else{
+            return stream[streamName].play();
         }
     }
     
@@ -379,74 +391,38 @@ public class SoundSystem {
     
     public static void main(String[] args) throws Exception{
        
-        /*
-        int sampleHandle=SoundSystem.create3DSample("C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/foot1.wav", false);
+        SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
+        int sampleHandle=SoundSystem.create3DSample("C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/foot1.wav");
         
-        int sampleHandle1=SoundSystem.create3DSample("C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/CHAR_CRE_11.ogg", false);
+        int charCre=SoundSystem.createMusicStream("C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/CHAR_CRE_11.ogg", false);
         
-        int nodeHandle=SoundSystem.createSoundNode();
+        //int nodeHandle=SoundSystem.createSoundNode();
         
         
         
-        int nodeHandle1=SoundSystem.createSoundNode();
+       // int nodeHandle1=SoundSystem.createSoundNode();
         
-        SoundSystem.addSampleToNode(sampleHandle1, nodeHandle1);
-        SoundSystem.addSampleToNode(sampleHandle, nodeHandle);
+        
+       // SoundSystem.addSampleToNode(sampleHandle1, nodeHandle1);
+        //SoundSystem.addSampleToNode(sampleHandle, nodeHandle);
        
         float y=0;
-        SoundSystem.setSampleMaxAudibleDistance(sampleHandle, 1000);
+        //SoundSystem.setSampleMaxAudibleDistance(sampleHandle, 100);
+        //SoundSystem.setSampleMinAudibleDistance(sampleHandle, 4);
             while(true){
-                y+=0.05;
-                SoundSystem.setSamplePosition(sampleHandle, y,0, 0);
-                SoundSystem.update(nodeHandle, 0);
-                SoundSystem.draw(nodeHandle);
-                //Thread.sleep(1000);
+                //y+=0.0005;
+                //SoundSystem.setSamplePosition(sampleHandle, y,0, 0);
+                SoundSystem.playMusic(charCre);
+                //SoundSystem.update(nodeHandle, 0);
+                //SoundSystem.draw(nodeHandle);
+                Thread.sleep(5000);
                // SoundSystem.update(nodeHandle1, 0);
-               // SoundSystem.draw(nodeHandle1);
+                //SoundSystem.draw(nodeHandle1);
                 
             }
-            */
+            
         
-        FSound.FSOUND_SetOutput(FSound.FSOUND_OUTPUT_DSOUND); 
-        FSound.FSOUND_SetDriver(0); 
-         
-        FSound.FSOUND_SetMixer(FSound.FSOUND_MIXER_AUTODETECT); 
-        FSound.FSOUND_Init(44100, 32, 0); 
-         
-        FSoundSample temp  = FSound.FSOUND_Sample_Load( FSound.FSOUND_UNMANAGED, "D:/eclipse/workspace/JMonkeyEngine/data/sound/foot1.wav",  FSound.FSOUND_HW3D | FSound.FSOUND_FORCEMONO, 0, 0); 
-        FSound.FSOUND_Sample_SetMinMaxDistance(temp, 4.0f, 100.0f); 
-        FSound.FSOUND_Sample_SetMode(temp, FSound.FSOUND_LOOP_NORMAL); 
-             
-        if (temp==null) 
-        { 
-             System.out.println("No sound\n"); 
-           //MessageBox(0, "no sound", "no sound", MB_OK); 
-        } 
-
-        FSound.FSOUND_3D_SetDistanceFactor(1.0f); 
-        FSound.FSOUND_SetVolume(FSound.FSOUND_ALL, 255);      // go to max volume 
-         
-        FloatBuffer pos=BufferUtils.createFloatBuffer(3); 
-        FloatBuffer vel=BufferUtils.createFloatBuffer(3); 
-        pos.put(0); 
-        pos.put(0);  
-        pos.put(0);  
-         
-        int channel = FSound.FSOUND_PlaySound(FSound.FSOUND_FREE ,temp); 
-        FSound.FSOUND_SetPriority(channel, 255); 
-        FSound.FSOUND_3D_SetAttributes(channel, pos, vel);    
-        FSound.FSOUND_SetPaused(channel, false); 
-        FSound.FSOUND_SetSurround(channel, true); 
-        float y=0;
-        while(true){
-            pos.clear();
-            pos.put(y++);
-            pos.rewind();
-            FSound.FSOUND_3D_Listener_SetAttributes(pos, vel, 0,0,1,0,1,0);
-            FSound.FSOUND_Update();
-            Thread.sleep(500);
-            System.out.print("\ry="+y);
-        }
+   
            
         
     }
