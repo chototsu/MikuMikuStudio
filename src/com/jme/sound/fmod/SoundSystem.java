@@ -57,8 +57,8 @@ import com.jme.util.LoggingSystem;
 public class SoundSystem {
     
     public static final int FREE_NODE_INDEX = -1;
-    public static final int RENDER_MEHOD_PAUSE=1;
-    public static final int RENDER_MEHOD_STOP=2;
+    public static final int RENDER_MEHOD_PAUSE=1;//TODO
+    public static final int RENDER_MEHOD_STOP=2;//TODO
     
     public static final int OUTPUT_DEFAULT=0;
     //WINDOZE
@@ -267,7 +267,7 @@ public class SoundSystem {
             stream[0]=new MusicStream(file, loadIntoMemory);
             return 0;
         }else{
-            MusicStream[] tmp=new MusicStream[sample3D.length];
+            MusicStream[] tmp=new MusicStream[stream.length];
             System.arraycopy(stream, 0, tmp, 0, tmp.length);
             stream=new MusicStream[tmp.length+1];
             System.arraycopy(tmp, 0, stream, 0, tmp.length);
@@ -430,37 +430,12 @@ public class SoundSystem {
     public static void main(String[] args) throws Exception{
        
         SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
+        int clip=SoundSystem.createStream("C:\\Documents and Settings\\Arman\\Mes documents\\Noir Désir-666.667 Club\\09-Noir_Désir-L'homme_pressé.mp3", false);
+        int lgth=SoundSystem.getStreamLength(clip);
+        System.out.println("Length "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
+        SoundSystem.playStream(clip);
+        Thread.sleep(lgth);
         
-        int charCre=SoundSystem.createStream("C:/Evol/JAVA/CLAPTON/Tears in heaven.mp3", false);
-        
-        //int nodeHandle=SoundSystem.createSoundNode();
-        
-        
-        
-       // int nodeHandle1=SoundSystem.createSoundNode();
-        
-        
-       // SoundSystem.addSampleToNode(sampleHandle1, nodeHandle1);
-        //SoundSystem.addSampleToNode(sampleHandle, nodeHandle);
-       
-        float y=0;
-        //SoundSystem.setSampleMaxAudibleDistance(sampleHandle, 100);
-        //SoundSystem.setSampleMinAudibleDistance(sampleHandle, 4);
-            
-                //y+=0.0005;
-                //SoundSystem.setSamplePosition(sampleHandle, y,0, 0);
-                SoundSystem.playStream(charCre);
-                int lgth=SoundSystem.getStreamLength(charCre);
-                System.out.println("Length "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
-                Thread.sleep(lgth);
-               // SoundSystem.update(nodeHandle1, 0);
-                //SoundSystem.draw(nodeHandle1);
-                
-            
-            
-        
-   
-           
         
     }
 
