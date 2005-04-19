@@ -46,6 +46,7 @@ import org.lwjgl.fmod3.FSoundSample;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.sound.fmod.objects.Listener;
+import com.jme.sound.fmod.objects.MusicStream;
 import com.jme.sound.fmod.objects.Sample3D;
 import com.jme.sound.fmod.scene.SoundNode;
 import com.jme.util.LoggingSystem;
@@ -73,10 +74,12 @@ public class SoundSystem {
     
     private static Listener listener;
     private static Camera camera;
+    
     private static SoundNode[] nodes;
     private static Sample3D[] sample3D;
-    private static int OS_DETECTED;
+    private static MusicStream[] stream;
     
+    private static int OS_DETECTED;
     private static final int OS_LINUX=1;
     private static final int OS_WINDOWS=2;
     private static final int OS_MAC = 3;
@@ -249,6 +252,29 @@ public class SoundSystem {
             return tmp.length;
         }
     }
+    
+    
+    /**
+     * Creates a Music stream and returns an identifier for it
+     * @param file streaming file name
+     * @param loadIntoMemory
+     * @return the stream identifier
+     */
+    public static int createMusicStream(String file, boolean loadIntoMemory){
+        if(stream==null){
+            stream=new MusicStream[1];
+            stream[0]=new MusicStream(file, loadIntoMemory);
+            return 0;
+        }else{
+            MusicStream[] tmp=new MusicStream[sample3D.length];
+            System.arraycopy(stream, 0, tmp, 0, tmp.length);
+            stream=new MusicStream[tmp.length+1];
+            System.arraycopy(tmp, 0, stream, 0, tmp.length);
+            stream[tmp.length]=new MusicStream(file, loadIntoMemory);
+            return tmp.length;
+        }
+    }
+    
     /**
      * Sets the spatial position of a given sample
      * @param sample the sample identifier
