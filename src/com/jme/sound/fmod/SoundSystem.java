@@ -261,7 +261,7 @@ public class SoundSystem {
      * @param loadIntoMemory
      * @return the stream identifier
      */
-    public static int createMusicStream(String file, boolean loadIntoMemory){
+    public static int createStream(String file, boolean loadIntoMemory){
         if(stream==null){
             stream=new MusicStream[1];
             stream[0]=new MusicStream(file, loadIntoMemory);
@@ -277,13 +277,36 @@ public class SoundSystem {
     }
     
     
-    public static boolean playMusic(int streamName){
+    public static boolean playStream(int streamName){
         if(stream==null){
             return false;
         }else if(streamName<0 || streamName>=stream.length){
             return false; 
         }else{
             return stream[streamName].play();
+        }
+    }
+    
+    
+    
+    
+    public static boolean pauseStream(int streamName){
+        if(stream==null){
+            return false;
+        }else if(streamName<0 || streamName>=stream.length){
+            return false; 
+        }else{
+            return stream[streamName].pause();
+        }
+    }
+    
+    public static void stopStream(int streamName){
+        if(stream==null){
+            return ;
+        }else if(streamName<0 || streamName>=stream.length){
+            return ; 
+        }else{
+            stream[streamName].stop();
         }
     }
     
@@ -392,9 +415,8 @@ public class SoundSystem {
     public static void main(String[] args) throws Exception{
        
         SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
-        int sampleHandle=SoundSystem.create3DSample("C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/foot1.wav");
         
-        int charCre=SoundSystem.createMusicStream("C:/Evol/eclipse/workspace/FrontJHEAD/data/sound/CHAR_CRE_11.ogg", false);
+        int charCre=SoundSystem.createMusicStream("C:/Evol/JAVA/CLAPTON/Tears in heaven.mp3", false);
         
         //int nodeHandle=SoundSystem.createSoundNode();
         
