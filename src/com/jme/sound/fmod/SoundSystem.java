@@ -416,7 +416,7 @@ public class SoundSystem {
        
         SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
         
-        int charCre=SoundSystem.createMusicStream("C:/Evol/JAVA/CLAPTON/Tears in heaven.mp3", false);
+        int charCre=SoundSystem.createStream("C:/Evol/JAVA/CLAPTON/Tears in heaven.mp3", false);
         
         //int nodeHandle=SoundSystem.createSoundNode();
         
@@ -434,7 +434,7 @@ public class SoundSystem {
             while(true){
                 //y+=0.0005;
                 //SoundSystem.setSamplePosition(sampleHandle, y,0, 0);
-                SoundSystem.playMusic(charCre);
+                SoundSystem.playStream(charCre);
                 //SoundSystem.update(nodeHandle, 0);
                 //SoundSystem.draw(nodeHandle);
                 Thread.sleep(5000);
