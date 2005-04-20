@@ -81,20 +81,18 @@ public class TestSteamPlayer {
                 }
         }
         int nbStream=valid.size();
-        if(valid.size()>0){
+        if(nbStream>0){
             
             for(int a=0; a<nbStream; a++){
                 int music=((Integer)valid.get(a)).intValue();
                 int lgth=SoundSystem.getStreamLength(music);
                 LoggingSystem.getLogger().log(Level.INFO,"Length "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
                 SoundSystem.playStream(music);
-                while(lgth !=0){
+                while(!(lgth <=0)){
                     Thread.sleep(1000);
                     lgth-=1000;
                     System.out.print("\rRemaining "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
-                }
-                
-                
+                }                
             }
         }
         
