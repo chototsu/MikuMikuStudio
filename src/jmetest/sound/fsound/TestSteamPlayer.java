@@ -66,8 +66,10 @@ public class TestSteamPlayer {
             System.exit(-1);
         }
         ArrayList valid=null;
+        ArrayList songs=null;
         if(list !=null && list.length>0){
             valid=new ArrayList();
+            songs=new ArrayList();
         }
         else{
             LoggingSystem.getLogger().log(Level.INFO,"The path entered does not contain any file");
@@ -78,20 +80,20 @@ public class TestSteamPlayer {
                 int nb=SoundSystem.createStream(path+"\\"+list[a], false); 
                 if(SoundSystem.isStreamOpened(nb)){
                     valid.add(new Integer(nb));
+                    songs.add(list[a]);
                 }
         }
         int nbStream=valid.size();
         if(nbStream>0){
-            
+            System.out.print("Found "+nbStream+" playable songs in this directory");
             for(int a=0; a<nbStream; a++){
                 int music=((Integer)valid.get(a)).intValue();
                 int lgth=SoundSystem.getStreamLength(music);
-                LoggingSystem.getLogger().log(Level.INFO,"Length "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
                 SoundSystem.playStream(music);
                 while(!(lgth <=0)){
                     Thread.sleep(1000);
                     lgth-=1000;
-                    System.out.print("\rRemaining "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
+                    System.out.print("\rPlaying "+(String)songs.get(a)+" "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
                 }                
             }
         }
