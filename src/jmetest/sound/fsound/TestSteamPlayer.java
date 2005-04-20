@@ -34,7 +34,12 @@
  */
 package jmetest.sound.fsound;
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.logging.Level;
+
 import com.jme.sound.fmod.SoundSystem;
+import com.jme.util.LoggingSystem;
 
 /**
  * @author Arman
@@ -44,16 +49,56 @@ public class TestSteamPlayer {
     public static void main(String[] args) throws Exception{
         SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
         //replace the path to your files
-        int clip=SoundSystem.createStream("C:\\Documents and Settings\\Arman\\Mes documents\\Noir Désir-666.667 Club\\09-Noir_Désir-L'homme_pressé.mp3", false);
-        int clip2=SoundSystem.createStream("C:\\Documents and Settings\\Arman\\Mes documents\\Noir Désir-666.667 Club\\10-Noir_Désir-Lazy.mp3", false);
-        int lgth=SoundSystem.getStreamLength(clip);
-        int lgth2=SoundSystem.getStreamLength(clip2);
-        System.out.println("Length "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
-        SoundSystem.playStream(clip);        
-        Thread.sleep(lgth);
-        System.out.println("Length "+(lgth2/1000/60)+" m "+(lgth2/1000%60)+"s");
-        SoundSystem.playStream(clip2);
-        Thread.sleep(lgth2);
+        String path=null;
+        if(args.length==0){
+            path="C:\\Evol\\JAVA\\CLAPTON";
+        }else{
+            path=args[0];
+        }
+        File dir=new File(path);
+        String[] list=null;
+        int[] clip=null;
+        if(dir.isDirectory()){
+           list=dir.list();
+        }else{
+            LoggingSystem.getLogger().log(Level.INFO,"The path entered is not a directory");
+            LoggingSystem.getLogger().log(Level.INFO,path);
+            System.exit(-1);
+        }
+        ArrayList valid=null;
+        if(list !=null && list.length>0){
+            valid=new ArrayList();
+        }
+        else{
+            LoggingSystem.getLogger().log(Level.INFO,"The path entered does not contain any file");
+            LoggingSystem.getLogger().log(Level.INFO,path);
+            System.exit(-1);
+        }
+        for(int a=0; a<list.length; a++){
+                int nb=SoundSystem.createStream(path+"\\"+list[a], false); 
+                if(SoundSystem.isStreamOpened(nb)){
+                    valid.add(new Integer(nb));
+                }
+        }
+        int nbStream=valid.size();
+        if(valid.size()>0){
+            
+            for(int a=0; a<nbStream; a++){
+                int music=((Integer)valid.get(a)).intValue();
+                int lgth=SoundSystem.getStreamLength(music);
+                LoggingSystem.getLogger().log(Level.INFO,"Length "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
+                SoundSystem.playStream(music);
+                while(lgth !=0){
+                    Thread.sleep(1000);
+                    lgth-=1000;
+                    System.out.print("\rRemaining "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
+                }
+                
+                
+            }
+        }
+        
+        
     }
 
 }
