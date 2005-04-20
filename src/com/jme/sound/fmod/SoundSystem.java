@@ -45,6 +45,7 @@ import org.lwjgl.fmod3.FSoundSample;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
+import com.jme.sound.fmod.objects.Configuration;
 import com.jme.sound.fmod.objects.Listener;
 import com.jme.sound.fmod.objects.MusicStream;
 import com.jme.sound.fmod.objects.Sample3D;
@@ -131,8 +132,8 @@ public class SoundSystem {
         }
         //FSound.FSOUND_SetDriver(0);
         FSound.FSOUND_SetMixer(FSound.FSOUND_MIXER_AUTODETECT);
-        LoggingSystem.getLogger().log(Level.INFO,"INIT FSOUND 44100 32 0");
-        FSound.FSOUND_Init(44100, 32, 0);
+        LoggingSystem.getLogger().log(Level.INFO,"INIT FSOUND 44100 1024 0");
+        FSound.FSOUND_Init(44100, 1024, 0);
         FSound.FSOUND_3D_SetDistanceFactor(1.0f); 
     }
     
@@ -375,7 +376,15 @@ public class SoundSystem {
         }
     }
     
-    
+    public static void setSampleConfig(int sample, Configuration conf){
+        if(sample3D==null){
+            return;
+        }else if(sample<0 || sample>=sample3D.length){
+            return; 
+        }else{
+            sample3D[sample].setConfiguration(conf); 
+        }
+    }
 
     
     /**
