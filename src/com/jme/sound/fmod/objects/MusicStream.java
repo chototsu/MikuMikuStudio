@@ -53,7 +53,7 @@ public class MusicStream {
     private boolean opened;
     private boolean memory;
     private String streamFile;
-    
+    private Configuration config;
     
     public MusicStream(String file, boolean memoryLoad){
         this.streamFile=file;
@@ -67,6 +67,9 @@ public class MusicStream {
         opened=(stream !=null);        
     }
 
+    public void setConfiguration(Configuration conf){
+        config=conf;
+    }
     
     public boolean play(){
         if(!isPlaying()){

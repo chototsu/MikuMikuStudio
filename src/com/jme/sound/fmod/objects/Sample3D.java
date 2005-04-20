@@ -29,6 +29,7 @@ public class Sample3D extends SoundSpatial{
     private int playingChannel=-2;
     private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
+    private Configuration config;
     
     float posx=0;
     
@@ -41,8 +42,10 @@ public class Sample3D extends SoundSpatial{
     public Sample3D(Listener listener, String file){        
         this(file);
         this.listener=listener;
-        
-        
+    }
+    
+    public void setConfiguration(Configuration conf){
+        config=conf;
     }
     
     public void draw() {        

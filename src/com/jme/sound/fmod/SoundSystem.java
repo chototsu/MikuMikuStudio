@@ -376,6 +376,11 @@ public class SoundSystem {
         }
     }
     
+    /**
+     * Set the FX configuration of the given sample
+     * @param sample sample the sample identifier
+     * @param conf the config
+     */
     public static void setSampleConfig(int sample, Configuration conf){
         if(sample3D==null){
             return;
@@ -383,6 +388,22 @@ public class SoundSystem {
             return; 
         }else{
             sample3D[sample].setConfiguration(conf); 
+        }
+    }
+    
+    
+    /**
+     * Set the FX configuration of the given stream
+     * @param sample stream the sample identifier
+     * @param conf the config
+     */
+    public static void setStreamConfig(int streamName, Configuration conf){
+        if(stream==null){
+            return;
+        }else if(streamName<0 || streamName>=stream.length){
+            return; 
+        }else{
+            stream[streamName].setConfiguration(conf);
         }
     }
 
