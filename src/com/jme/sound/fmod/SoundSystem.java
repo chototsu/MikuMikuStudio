@@ -275,6 +275,22 @@ public class SoundSystem {
             return tmp.length;
         }
     }
+   
+    /**
+     * Checks if a stream is opened. If it is, this can be used to know
+     * that the file is really a audio file  
+     * @param streamName
+     * @return true if the stream is opened
+     */
+    public static boolean isStreamOpened(int streamName){
+        if(stream==null){
+            return false;
+        }else if(streamName<0 || streamName>=stream.length){
+            return false; 
+        }else{
+            return stream[streamName].isOpened();
+        }
+    }
     
     
     /**
@@ -438,8 +454,4 @@ public class SoundSystem {
         
         
     }
-
-    
-    
-
 }

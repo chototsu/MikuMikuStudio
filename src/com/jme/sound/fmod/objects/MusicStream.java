@@ -50,22 +50,41 @@ public class MusicStream {
     private ByteBuffer memoryData;
     private FSoundStream stream;
     private int playingChannel=-2;
+    private boolean opened;
+    private boolean memory;
+    private String streamFile;
+    
     
     public MusicStream(String file, boolean memoryLoad){
+        this.streamFile=file;
         if(memoryLoad){
             memoryData=getData(file);
             stream=FSound.FSOUND_Stream_Open(memoryData, FSound.FSOUND_LOADMEMORY, 0, memoryData.capacity());
+            memory=memoryLoad;
         }else{
             stream = FSound.FSOUND_Stream_Open(file, FSound.FSOUND_NORMAL | FSound.FSOUND_MPEGACCURATE, 0, 0);
         }
-        
+        opened=(stream !=null);        
     }
 
     
     public boolean play(){
-        playingChannel=FSound.FSOUND_Stream_Play(FSound.FSOUND_FREE, stream);
+        if(!isPlaying()){
+            playingChannel=FSound.FSOUND_Stream_Play(FSound.FSOUND_FREE, stream);            
+        }
+        //Stream has been closed re-open if it was closed  
+        if(playingChannel==-1){
+            if(memory){
+                memoryData=getData(streamFile);
+                stream=FSound.FSOUND_Stream_Open(memoryData, FSound.FSOUND_LOADMEMORY, 0, memoryData.capacity());
+            }else{
+                stream = FSound.FSOUND_Stream_Open(streamFile, FSound.FSOUND_NORMAL | FSound.FSOUND_MPEGACCURATE, 0, 0);
+            }
+            opened=(stream !=null);
+            //if the playing channel is still == -1 the this is really not a stream file or the file was (re)moved
+        }
         FSound.FSOUND_Stream_SetEndCallback(stream, new EndCallback());     
-        return playingChannel !=-2;
+        return (playingChannel !=-2 || playingChannel !=-1);
     }
     
     /**
@@ -85,6 +104,11 @@ public class MusicStream {
     public void close(){
         FSound.FSOUND_Stream_Close(stream);     
     }
+    
+    public boolean isPlaying(){
+        return FSound.FSOUND_IsPlaying(playingChannel);
+    }
+    
     
     public int length(){
         return FSound.FSOUND_Stream_GetLengthMs(stream);
@@ -125,5 +149,11 @@ public class MusicStream {
            close();
         }        
     }
+
+
+    public boolean isOpened() {
+        return opened;
+    }
+    
 
 }
