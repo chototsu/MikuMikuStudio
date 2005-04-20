@@ -37,19 +37,262 @@ package com.jme.sound.fmod.objects;
 public class Configuration {
     
     private boolean fxEnabled;
+    private boolean echoEnabled;
+    private boolean chorusEnabled;
+    private boolean compressorEnabled;
+    private boolean distorsionEnabled;
+    private boolean flangerEnabled;
+    private boolean gargleEnabled;
+    private boolean I3DL2ReverbEnabled;
+    private boolean eqEnabled;
+    private boolean reverbEnabled;
+    private boolean maxEnabled;
     private static final int MAX_FX=16;
+    private int fxEchoID=-1;
+    private int fxChorusID=-1;
+    private int fxCompressorID=-1;
+    private int fxDistorsionID=-1;
+    private int fxFlangerID=-1;
+    private int fxGargleID=-1;
+    private int fxI3DL2ReverbID=-1;
+    private int fxParamEqID=-1;
+    private int fxWavesReverbID=-1;
+    private int fxMaxID=-1;
     
+    protected int getFxChorusID() {
+        return fxChorusID;
+    }
+    
+
+    protected void setFxChorusID(int fxChorusID) {
+        this.fxChorusID = fxChorusID;
+    }
+    
+
+    protected int getFxCompressorID() {
+        return fxCompressorID;
+    }
+    
+
+    protected void setFxCompressorID(int fxCompressorID) {
+        this.fxCompressorID = fxCompressorID;
+    }
+    
+
+    protected int getFxDistorsionID() {
+        return fxDistorsionID;
+    }
+    
+
+    protected void setFxDistorsionID(int fxDistorsionID) {
+        this.fxDistorsionID = fxDistorsionID;
+    }
+    
+
+    protected int getFxEchoID() {
+        return fxEchoID;
+    }
+    
+
+    protected void setFxEchoID(int fxEchoID) {
+        this.fxEchoID = fxEchoID;
+    }
+    
+
+    protected int getFxFlangerID() {
+        return fxFlangerID;
+    }
+    
+
+    protected void setFxFlangerID(int fxFlangerID) {
+        this.fxFlangerID = fxFlangerID;
+    }
+    
+
+    protected int getFxGargleID() {
+        return fxGargleID;
+    }
+    
+
+    protected void setFxGargleID(int fxGargleID) {
+        this.fxGargleID = fxGargleID;
+    }
+    
+
+    protected int getFxI3DL2ReverbID() {
+        return fxI3DL2ReverbID;
+    }
+    
+
+    protected void setFxI3DL2ReverbID(int fxI3DL2ReverbID) {
+        this.fxI3DL2ReverbID = fxI3DL2ReverbID;
+    }
+    
+
+    protected int getFxMaxID() {
+        return fxMaxID;
+    }
+    
+
+    protected void setFxMaxID(int fxMaxID) {
+        this.fxMaxID = fxMaxID;
+    }
+    
+
+    protected int getFxParamEqID() {
+        return fxParamEqID;
+    }
+    
+
+    protected void setFxParamEqID(int fxParamEqID) {
+        this.fxParamEqID = fxParamEqID;
+    }
+    
+
+    protected int getFxWavesReverbID() {
+        return fxWavesReverbID;
+    }
+    
+
+    protected void setFxWavesReverbID(int fxWavesReverbID) {
+        this.fxWavesReverbID = fxWavesReverbID;
+    }
+    
+
+   
+    
+
     public Configuration(){
         
     }
     
-    private void enableFX(){
+    public void enableFX(){
         fxEnabled=true;
     }
 
     public boolean isFxEnabled() {
         return fxEnabled;
     }
+
+
+    protected boolean isChorusEnabled() {
+        return chorusEnabled;
+    }
+    
+
+
+    public void enableChorus() {
+        this.chorusEnabled = true;
+    }
+    
+
+
+    protected boolean isCompressorEnabled() {
+        return compressorEnabled;
+    }
+    
+
+
+    public void enableCompressor() {
+        this.compressorEnabled = true;
+    }
+    
+
+
+    protected boolean isDistorsionEnabled() {
+        return distorsionEnabled;
+    }
+    
+
+
+    public void enableDistorsion() {
+        this.distorsionEnabled = true;
+    }
+    
+
+
+    protected boolean isEchoEnabled() {
+        return echoEnabled;
+    }
+    
+
+
+    public void enableEcho() {
+        this.echoEnabled = true;
+    }
+    
+
+
+    protected boolean isEqEnabled() {
+        return eqEnabled;
+    }
+    
+
+
+    public void enableEq() {
+        this.eqEnabled = true;
+    }
+    
+
+
+    protected boolean isFlangerEnabled() {
+        return flangerEnabled;
+    }
+    
+
+
+    public void enableFlanger() {
+        this.flangerEnabled = true;
+    }
+    
+
+
+    protected boolean isGargleEnabled() {
+        return gargleEnabled;
+    }
+    
+
+
+    public void enableGargle( ) {
+        this.gargleEnabled = true;
+    }
+    
+
+
+    protected boolean isI3DL2ReverbEnabled() {
+        return I3DL2ReverbEnabled;
+    }
+    
+
+
+    public void enableI3DL2Reverb() {
+        I3DL2ReverbEnabled = true;
+    }
+    
+
+
+    protected boolean isMaxEnabled() {
+        return maxEnabled;
+    }
+    
+
+
+    public void enableMax() {
+        this.maxEnabled = true;
+    }
+    
+
+
+    protected boolean isReverbEnabled() {
+        return reverbEnabled;
+    }
+    
+
+
+    public void enableReverb() {
+        this.reverbEnabled = true;
+    }
+    
     
     
     

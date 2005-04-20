@@ -30,6 +30,7 @@ public class Sample3D extends SoundSpatial{
     private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
     private Configuration config;
+    private int fxID=-1;
     
     float posx=0;
     
@@ -70,7 +71,12 @@ public class Sample3D extends SoundSpatial{
             return false;
         }
         if((playingChannel=FSound.FSOUND_PlaySound(FSound.FSOUND_FREE, fmodSample)) !=-1){
-            
+            if(config !=null){
+                if(config.isFxEnabled()){
+                    FSound.FSOUND_SetPaused(playingChannel, true);
+                    fxID=FSound.FSOUND_FX_Enable(playingChannel, )
+                }
+            }
             FSound.FSOUND_SetPriority(playingChannel, 255); 
             FSound.FSOUND_3D_SetDistanceFactor(1);
             FSound.FSOUND_SetPaused(playingChannel, false); 
