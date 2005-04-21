@@ -43,6 +43,7 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.sound.SoundAPIController;
 import com.jme.sound.fmod.SoundSystem;
+import com.jme.sound.fmod.scene.Configuration;
 import com.jme.sound.scene.SoundNode;
 import com.jme.sound.scene.SphericalSound;
 import com.jme.util.TextureManager;
@@ -101,6 +102,12 @@ public class TestSoundGraph extends SimpleGame {
     SoundSystem.addSampleToNode(background, snode);
     SoundSystem.setSamplePosition(footsteps, box.getLocalTranslation().x, box.getLocalTranslation().y, box.getLocalTranslation().z);
     SoundSystem.setSampleMinAudibleDistance(footsteps, 4);
+    
+    Configuration config=new Configuration();
+    config.setDistortion(-10, 70, 6000, 5000, 7000);
+    
+    SoundSystem.setSampleConfig(footsteps, config);
+    
     
   }
 }

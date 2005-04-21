@@ -179,11 +179,11 @@ public class Configuration {
     private float[] distorsionParam=new float[5];
     /**
      * 
-     * @param Gain
-     * @param Edge
-     * @param PostEQCenterFrequency
-     * @param PostEQBandwidth
-     * @param PreLowpassCutoff
+     * @param Gain Amount of signal change after distortion, in the range from -60 through 0. The default value is 0 dB.
+     * @param Edge Percentage of distortion intensity, in the range in the range from 0 through 100. The default value is 50 percent
+     * @param PostEQCenterFrequency Center frequency of harmonic content addition, in the range from 100 through 8000. The default value is 4000 Hz
+     * @param PostEQBandwidth Width of frequency band that determines range of harmonic content addition, in the range from 100 through 8000. The default value is 4000 Hz.
+     * @param PreLowpassCutoff Filter cutoff for high-frequency harmonics attenuation, in the range from 100 through 8000. The default value is 4000 Hz
      */
     public void setDistortion(float Gain, float Edge, float PostEQCenterFrequency, float PostEQBandwidth, float PreLowpassCutoff){
         distorsionEnabled=true;
