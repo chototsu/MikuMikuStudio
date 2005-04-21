@@ -213,7 +213,7 @@ public class Sample3D extends SoundSpatial{
                     setFxMaxID(FSound.FSOUND_FX_Enable(playingChannel, Configuration.FX_MAX));
                 }
             }
-            configured=false;
+            configured=true;
             
         }
     }
