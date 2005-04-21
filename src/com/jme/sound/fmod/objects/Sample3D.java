@@ -12,6 +12,7 @@ import org.lwjgl.fmod3.FSoundSample;
 
 import com.jme.intersection.Distance;
 import com.jme.math.Vector3f;
+import com.jme.sound.fmod.scene.Configuration;
 import com.jme.sound.fmod.scene.SoundSpatial;
 import com.jme.util.LoggingSystem;
 
@@ -24,12 +25,8 @@ public class Sample3D extends SoundSpatial{
     
     private FSoundSample fmodSample;
     private int ray;
-    private int min=1;
-    private Listener listener;
-    private int playingChannel=-2;
-    private FloatBuffer position=BufferUtils.createFloatBuffer(3);
+    private int min=1;private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
-    private Configuration config;
     private int fxID=-1;
     
     float posx=0;
@@ -75,7 +72,7 @@ public class Sample3D extends SoundSpatial{
                 if(config.isFxEnabled()){
                     FSound.FSOUND_SetPaused(playingChannel, true);
                     if(config.isChorusEnabled()){
-                        config.setFxChorusID(FSound.FSOUND_FX_Enable(playingChannel, Configuration.FX_CHORUS));
+                        setFxChorusID(FSound.FSOUND_FX_Enable(playingChannel, Configuration.FX_CHORUS));
                     }
                 }
             }

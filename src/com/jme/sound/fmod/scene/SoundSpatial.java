@@ -44,7 +44,7 @@ import com.jme.sound.fmod.SoundSystem;
  * @author Arman Ozcelik
  * 
  */
-public abstract class SoundSpatial {
+public abstract class SoundSpatial extends Playable{
 
     private boolean forceCull;
     private SoundSpatial parent;

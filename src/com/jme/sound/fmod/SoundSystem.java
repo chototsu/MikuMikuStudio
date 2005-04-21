@@ -45,10 +45,10 @@ import org.lwjgl.fmod3.FSoundSample;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
-import com.jme.sound.fmod.objects.Configuration;
 import com.jme.sound.fmod.objects.Listener;
 import com.jme.sound.fmod.objects.MusicStream;
 import com.jme.sound.fmod.objects.Sample3D;
+import com.jme.sound.fmod.scene.Configuration;
 import com.jme.sound.fmod.scene.SoundNode;
 import com.jme.util.LoggingSystem;
 

@@ -45,17 +45,17 @@ import org.lwjgl.fmod3.FSoundStream;
 import org.lwjgl.fmod3.callbacks.FSoundStreamCallback;
 
 import com.jme.sound.fmod.scene.Configuration;
+import com.jme.sound.fmod.scene.Playable;
 
 
-public class MusicStream {
+public class MusicStream extends Playable{
     
     private ByteBuffer memoryData;
     private FSoundStream stream;
-    private int playingChannel=-2;
     private boolean opened;
     private boolean memory;
     private String streamFile;
-    private Configuration config;
+    
     
     public MusicStream(String file, boolean memoryLoad){
         this.streamFile=file;
