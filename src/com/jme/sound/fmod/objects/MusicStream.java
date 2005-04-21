@@ -70,7 +70,7 @@ public class MusicStream extends Playable{
     }
 
     public void setConfiguration(Configuration conf){
-        config=conf;
+        configuration=conf;
     }
     
     public boolean play(){

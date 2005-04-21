@@ -12,7 +12,8 @@ public abstract class Playable {
     
     protected int playingChannel=-2;
     protected Listener listener;
-    protected Configuration config;
+    protected Configuration configuration;
+    protected boolean configured;
     
     private int fxEchoID=-1;
     private int fxChorusID=-1;
@@ -24,6 +25,7 @@ public abstract class Playable {
     private int fxParamEqID=-1;
     private int fxWavesReverbID=-1;
     private int fxMaxID=-1;
+    
     
     
     protected int getFxChorusID() {
@@ -41,8 +43,8 @@ public abstract class Playable {
     }
     
 
-    protected void setFxCompressorID(int fxCompressorID) {
-        this.fxCompressorID = fxCompressorID;
+    protected void setFxCompressorID(int fxCompressor) {
+        this.fxCompressorID = fxCompressor;
     }
     
 
@@ -51,8 +53,8 @@ public abstract class Playable {
     }
     
 
-    protected void setFxDistorsionID(int fxDistorsionID) {
-        this.fxDistorsionID = fxDistorsionID;
+    protected void setFxDistorsionID(int fxDistorsion) {
+        this.fxDistorsionID = fxDistorsion;
     }
     
 
@@ -61,8 +63,8 @@ public abstract class Playable {
     }
     
 
-    protected void setFxEchoID(int fxEchoID) {
-        this.fxEchoID = fxEchoID;
+    protected void setFxEchoID(int fxEcho) {
+        this.fxEchoID = fxEcho;
     }
     
 
@@ -71,8 +73,8 @@ public abstract class Playable {
     }
     
 
-    protected void setFxFlangerID(int fxFlangerID) {
-        this.fxFlangerID = fxFlangerID;
+    protected void setFxFlangerID(int fxFlanger) {
+        this.fxFlangerID = fxFlanger;
     }
     
 
@@ -124,6 +126,15 @@ public abstract class Playable {
     protected void setFxWavesReverbID(int fxWavesReverbID) {
         this.fxWavesReverbID = fxWavesReverbID;
     }
+    
+    public void resetConfig(){
+        configured=false;
+    }
+    
+    protected float[] getChorusConfig(){
+        return configuration !=null ? configuration.getChorusParams() : null;
+    }
+    
     
 
 }
