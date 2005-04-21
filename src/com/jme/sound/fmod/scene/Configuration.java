@@ -198,13 +198,13 @@ public class Configuration {
     private float[] flangerParam=new float[7];
     /**
      * 
-     * @param WetDryMix
-     * @param Depth
-     * @param Feedback
-     * @param Frequency
-     * @param Waveform
-     * @param Delay
-     * @param Phase
+     * @param WetDryMix Ratio of wet (processed) signal to dry (unprocessed) signal. Must be in the range from 0 through 100 (all wet).
+     * @param Depth Percentage by which the delay time is modulated by the low-frequency oscillator (LFO), in hundredths of a percentage point. Must be in the range from 0 through 100. The default value is 25.
+     * @param Feedback Feedback - Percentage of output signal to feed back into the effects input, in the range from -99 to 99. The default value is 0.
+     * @param Frequency Frequency of the LFO, in the range from 0 to 10. The default value is 0.
+     * @param Waveform Waveform of the LFO. By default, the waveform is a sine. Possible values are defined as follows: 0 - Triangle. 1 - Sine.
+     * @param Delay Number of milliseconds the input is delayed before it is played back, in the range from 0 to 4. The default value is 0 ms
+     * @param Phase Phase differential between left and right LFOs, in the range from 0 through 4. Possible values are defined as follows: 0 -180 degrees 1 - 90 degrees 2 0 degrees 3 90 degrees 4 180 degrees 
      */
     public void setFlanger(float WetDryMix, float Depth, float Feedback, float Frequency, int Waveform, float Delay, int Phase){
         fxEnabled=true;
