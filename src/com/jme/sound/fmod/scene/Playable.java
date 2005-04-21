@@ -131,9 +131,7 @@ public abstract class Playable {
         configured=false;
     }
     
-    protected float[] getChorusConfig(){
-        return configuration !=null ? configuration.getChorusParams() : null;
-    }
+    
     
     
 
