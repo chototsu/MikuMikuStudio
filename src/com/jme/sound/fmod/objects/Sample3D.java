@@ -75,7 +75,7 @@ public class Sample3D extends SoundSpatial{
                 if(config.isFxEnabled()){
                     FSound.FSOUND_SetPaused(playingChannel, true);
                     if(config.isChorusEnabled()){
-                    fxID=FSound.FSOUND_FX_Enable(playingChannel, 0);
+                        config.setFxChorusID(FSound.FSOUND_FX_Enable(playingChannel, Configuration.FX_CHORUS));
                     }
                 }
             }

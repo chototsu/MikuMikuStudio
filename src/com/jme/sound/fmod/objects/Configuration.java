@@ -59,6 +59,19 @@ public class Configuration {
     private int fxWavesReverbID=-1;
     private int fxMaxID=-1;
     
+    
+    //FX Config    
+    public static final int FX_CHORUS=0;
+    public static final int FX_COMPRESSOR=1;
+    public static final int FX_DISTORTION=2;
+    public static final int FX_ECHO=3;
+    public static final int FX_FLANGER=4;
+    public static final int FX_GARGLE=5;
+    public static final int FX_I3DL2REVERB=6;
+    public static final int FX_PARAMEQ=7;
+    public static final int FX_WAVES_REVERB=8;
+    public static final int FX_MAX=9;
+    
     protected int getFxChorusID() {
         return fxChorusID;
     }
