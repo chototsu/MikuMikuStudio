@@ -44,6 +44,8 @@ import org.lwjgl.fmod3.FSound;
 import org.lwjgl.fmod3.FSoundStream;
 import org.lwjgl.fmod3.callbacks.FSoundStreamCallback;
 
+import com.jme.sound.fmod.scene.Configuration;
+
 
 public class MusicStream {
     
