@@ -73,8 +73,10 @@ public class Sample3D extends SoundSpatial{
                 listener.getPosition().y, 
                 listener.getPosition().z,
                 position.get(0),position.get(1), position.get(2)) > ray) {
-            stop();
-            delete();
+            if(sourceNumber>=0){
+                stop();
+                delete();
+            }
         } else {
             if (!isPlaying()) {    
                 generateSource();
