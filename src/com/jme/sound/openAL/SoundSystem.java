@@ -113,7 +113,7 @@ public class SoundSystem {
             dir=new Vector3f(0, 0, -1);
             up=new Vector3f(0, 1, 0);
         }
-        orientation[0] = dir.x;
+        orientation[0] = -dir.x;
         orientation[1] = dir.y;
         orientation[2] = dir.z;
         orientation[3] = up.x;
@@ -420,7 +420,7 @@ public class SoundSystem {
      * @param sample
      * @param volume
      */
-    public void setSampleVolume(int sample, int volume){
+    public static void setSampleVolume(int sample, float volume){
         if(sample3D==null){
             return;
         }else if(sample<0 || sample>=sample3D.length){
@@ -429,6 +429,8 @@ public class SoundSystem {
             sample3D[sample].setVolume(volume);
         }
     }
+
+    
     
     
     
