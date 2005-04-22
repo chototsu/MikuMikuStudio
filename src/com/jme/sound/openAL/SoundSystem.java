@@ -5,11 +5,7 @@ package com.jme.sound.openAL;
 
 import java.util.logging.Level;
 
-
-
 import org.lwjgl.openal.AL;
-
-
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -433,5 +429,10 @@ public class SoundSystem {
             sample3D[sample].setVolume(volume);
         }
     }
+    
+    
+    
+    
+
 
 }
