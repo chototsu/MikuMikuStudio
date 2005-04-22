@@ -49,7 +49,7 @@ import com.jme.sound.ISource;
 
 /**
  * @author Arman Ozcelik
- *
+ * @deprecated Use the new sound system implementation please
  */
 public class Source implements ISource {
 

@@ -47,7 +47,7 @@ import com.jme.sound.IListenerFilter;
 
 /**
  * @author Arman Ozcelik
- *
+ * @deprecated Use the new sound system implementation please
  */
 public class Listener implements IListener {
 

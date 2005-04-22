@@ -72,7 +72,7 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 /**
  * @author Arman Ozcelik
- *
+ * @deprecated Use the new sound system implementation please
  */
 public class SoundSystem implements ISoundSystem {
 	private IListener listener;

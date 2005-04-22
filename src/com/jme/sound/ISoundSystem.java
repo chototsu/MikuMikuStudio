@@ -40,7 +40,7 @@ import java.net.URL;
 
 /**
  * @author Arman Ozcelik
- *
+ * @deprecated Use the new sound system implementation please
  */
 public interface ISoundSystem {
 

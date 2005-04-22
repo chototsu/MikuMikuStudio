@@ -46,7 +46,7 @@ import com.jme.sound.IBuffer;
 
 /**
  * @author Arman Ozcelik
- *  
+ * @deprecated Use the new sound system implementation please
  */
 public class Buffer implements IBuffer {
 

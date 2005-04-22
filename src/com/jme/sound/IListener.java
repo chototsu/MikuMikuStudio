@@ -40,7 +40,7 @@ import com.jme.math.Vector3f;
 
 /**
  * @author Arman Ozcelik
- *
+ * @deprecated Use the new sound system implementation please
  */
 public interface IListener {
 

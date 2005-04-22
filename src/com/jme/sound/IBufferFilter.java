@@ -38,7 +38,7 @@ package com.jme.sound;
 
 /**
  * @author Arman Ozcelik
- *
+ * @deprecated Use the new sound system implementation please
  */
 public interface IBufferFilter {
 

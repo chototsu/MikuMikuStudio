@@ -48,6 +48,7 @@ import com.jme.util.Timer;
 
 /**
  * @author Arman Ozcelik
+ * @deprecated Use the new sound system implementation please
  *
  */
 public class SoundRenderer implements ISoundRenderer {

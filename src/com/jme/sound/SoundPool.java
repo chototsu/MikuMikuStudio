@@ -39,7 +39,7 @@ import java.util.Hashtable;
 
 /**
  * @author Arman
- *
+ * @deprecated Use the new sound system implementation please
  */
 public class SoundPool {
 

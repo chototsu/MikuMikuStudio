@@ -39,6 +39,7 @@ package com.jme.sound;
 import java.nio.ByteBuffer;
 
 /**
+ * @deprecated Use the new sound system implementation please
  * @author Arman Ozcelik
  *
  */

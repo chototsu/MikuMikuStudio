@@ -44,7 +44,7 @@ import com.jme.sound.scene.SphericalSound;
 
 /**
  * @author Arman Ozcelik
- *
+ * @deprecated Use the new sound system implementation please
  */
 public class SoundRenderer implements ISoundRenderer {
 
