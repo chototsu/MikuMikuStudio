@@ -115,13 +115,13 @@ public class Configuration {
     /**
      * Fx chorus configuration params.
      * Setting those values will automatically enable fx on the sample or stream
-     * @param WetDryMix
-     * @param Depth
-     * @param Feedback
-     * @param Frequency
-     * @param Waveform
-     * @param Delay
-     * @param Phase
+     * @param WetDryMix Ratio of wet (processed) signal to dry (unprocessed) signal. Must be in the range from 0 through 100 (all wet).
+     * @param Depth Percentage by which the delay time is modulated by the low-frequency oscillator, in hundredths of a percentage point. Must be in the range from 0 through 100. The default value is 25.
+     * @param Feedback  Percentage of output signal to feed back into the effects input, in the range from -99 to 99. The default value is 0.
+     * @param Frequency Frequency of the LFO, in the range from 0 to 10. The default value is 0.     * 
+     * @param Waveform Waveform - Waveform of the LFO. Defined values are 0 triangle. 1 sine. By default, the waveform is a sine.
+     * @param Delay Number of milliseconds the input is delayed before it is played back, in the range from 0 to 20. The default value is 0 ms
+     * @param Phase Phase differential between left and right LFOs, in the range from 0 through 4. Possible values are defined as follows: 0 -180 degrees 1 - 90 degrees 2 0 degrees 3 90 degrees 4 180 degrees
      */
     public void setChorus(float WetDryMix, float Depth, float Feedback, float Frequency, int Waveform, float Delay, int Phase){ 
         fxEnabled=true;
@@ -140,11 +140,11 @@ public class Configuration {
     
     /**
      * 
-     * @param WetDryMix
-     * @param Feedback
-     * @param LeftDelay
-     * @param RightDelay
-     * @param PanDelay
+     * @param WetDryMix Ratio of wet (processed) signal to dry (unprocessed) signal. Must be in the range from 0 through 100 (all wet).
+     * @param Feedback  Percentage of output fed back into input, in the range from 0 through 100. The default value is 0.
+     * @param LeftDelay  Delay for left channel, in milliseconds, in the range from 1 through 2000. The default value is 333 ms
+     * @param RightDelay  Delay for right channel, in milliseconds, in the range from 1 through 2000. The default value is 333 ms.
+     * @param PanDelay Value that specifies whether to swap left and right delays with each successive echo. The default value is FALSE, meaning no swap. Possible values are defined as TRUE or FALSE.
      */
     public void setEcho(float WetDryMix, float Feedback, float LeftDelay, float RightDelay, int PanDelay){
         echoParam[0]=WetDryMix;
@@ -157,12 +157,12 @@ public class Configuration {
     private float[] compressorParam=new float[6];  
     /**
      * 
-     * @param Gain
-     * @param Attack
-     * @param Release
-     * @param Threshold
-     * @param Ratio
-     * @param Predelay
+     * @param Gain  Output gain of signal after compression, in the range from -60 to 60. The default value is 0 dB.
+     * @param Attack Time before compression reaches its full value, in the range from 0.01 to 500. The default value is 0.01 ms.
+     * @param Release Speed at which compression is stopped after input drops below fThreshold, in the range from 50 to 3000. The default value is 50 ms.
+     * @param Threshold  Point at which compression begins, in decibels, in the range from -60 to 0. The default value is -10 dB
+     * @param Ratio Compression ratio, in the range from 1 to 100. The default value is 10, which means 10:1 compression.
+     * @param Predelay Time after lThreshold is reached before attack phase is started, in milliseconds, in the range from 0 to 4. The default value is 0 ms.
      */
     public void setCompressor(float Gain, float Attack, float Release, float Threshold, float Ratio, float Predelay){
         fxEnabled=true;
@@ -234,18 +234,18 @@ public class Configuration {
     private float[] i3DLParam=new float[12];
     /**
      * 
-     * @param Room
-     * @param RoomHF
-     * @param RoomRolloffFactor
-     * @param DecayTime
-     * @param DecayHFRatio
-     * @param Reflections
-     * @param ReflectionsDelay
-     * @param Reverb
-     * @param ReverbDelay
-     * @param Diffusion
-     * @param Density
-     * @param HFReference
+     * @param Room Attenuation of the room effect, in millibels (mB), in the range from -10000 to 0. The default value is -1000 mB.
+     * @param RoomHF Attenuation of the room high-frequency effect, in mB, in the range from -10000 to 0. The default value is 0 mB
+     * @param RoomRolloffFactor  Rolloff factor for the reflected signals, in the range from 0 to 10. The default value is 0.0. The rolloff factor for the direct path is controlled by the listener
+     * @param DecayTime Decay time, in seconds, in the range from .1 to 20. The default value is 1.49 seconds.
+     * @param DecayHFRatio Ratio of the decay time at high frequencies to the decay time at low frequencies, in the range from 0.1 to 2. The default value is 0.83
+     * @param Reflections Attenuation of early reflections relative to lRoom, in mB, in the range from -10000 to 1000. The default value is -2602 mB
+     * @param ReflectionsDelay Delay time of the first reflection relative to the direct path, in seconds, in the range from 0 to 0.3. The default value is 0.007 seconds
+     * @param Reverb Attenuation of late reverberation relative to lRoom, in mB, in the range from -10000 to 2000. The default value is 200 mB
+     * @param ReverbDelay  Time limit between the early reflections and the late reverberation relative to the time of the first reflection, in seconds, in the range from 0 to 0.1. The default value is 0.011 seconds
+     * @param Diffusion Echo density in the late reverberation decay, in percent, in the range from 0 to 100. The default value is 100.0 percent
+     * @param Density Modal density in the late reverberation decay, in percent, in the range from 0 to 100. The default value is 100.0 percent
+     * @param HFReference Reference high frequency, in hertz, in the range from 20 to 20000. The default value is 5000.0 Hz
      */
     public void setI3DL2Reverb(int Room, int RoomHF, float RoomRolloffFactor, float DecayTime, float DecayHFRatio, int Reflections, float ReflectionsDelay, int Reverb, float ReverbDelay, float Diffusion, float Density, float HFReference){
         fxEnabled=true;
@@ -268,9 +268,9 @@ public class Configuration {
     private float[] eqParam=new float[3];
     /**
      * 
-     * @param Center
-     * @param Bandwidth
-     * @param Gain
+     * @param Center Center frequency, in hertz, in the range from 80 to 16000. This value cannot exceed one-third of the frequency of the buffer. Default is 8000
+     * @param Bandwidth Bandwidth, in semitones, in the range from 1 to 36. Default is 12
+     * @param Gain Gain, in the range from -15 to 15. Default is 0. 
      */
     public void setEqParam(float Center, float Bandwidth, float Gain){
         fxEnabled=true;
@@ -284,10 +284,10 @@ public class Configuration {
     private float[] reverbParam=new float[4];
     /**
      * 
-     * @param InGain
-     * @param ReverbMix
-     * @param ReverbTime
-     * @param HighFreqRTRatio
+     * @param InGain Input gain of signal, in decibels (dB), in the range from -96 through 0. The default value is 0 dB.
+     * @param ReverbMix Reverb mix, in dB, in the range from -96 through 0. The default value is 0 dB.
+     * @param ReverbTime Reverb time, in milliseconds, in the range from .001 through 3000. The default value is 1000.
+     * @param HighFreqRTRatio In the range from .001 through .999. The default value is 0.001
      */
     public void setReverb(float InGain, float ReverbMix, float ReverbTime, float HighFreqRTRatio){
         fxEnabled=true;
