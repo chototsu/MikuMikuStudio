@@ -36,6 +36,8 @@ package com.jme.sound.openAL.objects;
 
 import java.nio.FloatBuffer;
 import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
+
 import com.jme.math.Vector3f;
 
 /**
@@ -44,7 +46,9 @@ import com.jme.math.Vector3f;
 public class Listener {
     
     private final float[] orientation={0, 0, -1, 0,1,0};
-    private final FloatBuffer position=BufferUtils.createFloatBuffer(3);
+    private final float[] position={0, 0, 0};
+    private FloatBuffer orientationBuffer=BufferUtils.createFloatBuffer(6);
+    
     private final FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
     private final Vector3f vpos=new Vector3f();
 
@@ -56,8 +60,14 @@ public class Listener {
         return orientation;
     }
     
-    public void update(){        
-       
+    public void update(){
+        AL10.alListener3f(AL10.AL_POSITION, position[0],position[1], position[2]);  
+        if(orientation !=null){
+            for(int a=0; a<orientation.length; a++){
+                orientationBuffer.put(a, orientation[a]);
+            }
+        }
+        AL10.alListener(AL10.AL_ORIENTATION, orientationBuffer);
     }
 
     /**
@@ -66,17 +76,15 @@ public class Listener {
      * @param z
      */
     public void setPosition(Vector3f v) {        
-        position.clear();
-        position.put(-v.x);
-        position.put(v.y);
-        position.put(v.z);
-        position.rewind();
+        position[0]=v.x;
+        position[1]=v.y;
+        position[2]=v.z;
     }
     
     public Vector3f getPosition(){
-        vpos.x=position.get(0);
-        vpos.y=position.get(1);
-        vpos.z=position.get(2);
+        vpos.x=position[0];
+        vpos.y=position[1];
+        vpos.z=position[2];
         return vpos;
     }
 
