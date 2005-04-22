@@ -27,7 +27,9 @@ import com.jme.intersection.Distance;
 import com.jme.math.Vector3f;
 
 import com.jme.sound.IBuffer;
+import com.jme.sound.lwjgl.Source;
 import com.jme.sound.openAL.objects.util.Buffer;
+import com.jme.sound.openAL.objects.util.SampleLoader;
 import com.jme.sound.openAL.scene.Configuration;
 import com.jme.sound.openAL.scene.SoundSpatial;
 import com.jme.system.JmeException;
@@ -52,7 +54,7 @@ public class Sample3D extends SoundSpatial{
     
     public Sample3D(String file){     
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
-        
+        buffer=SampleLoader.loadBuffer(file);
         
     }
     
@@ -72,8 +74,11 @@ public class Sample3D extends SoundSpatial{
                 listener.getPosition().z,
                 position.get(0),position.get(1), position.get(2)) > ray) {
             stop();
+            delete();
         } else {
-            if (!isPlaying()) {                
+            if (!isPlaying()) {    
+                generateSource();
+                AL10.alSourcef(sourceNumber, AL10.AL_MAX_DISTANCE, ray);
                 play();
             }
         }   
@@ -81,6 +86,7 @@ public class Sample3D extends SoundSpatial{
     }
     
     public boolean play(){
+        AL10.alSourcei(sourceNumber, AL10.AL_BUFFER, buffer.getBufferNumber());
         AL10.alSourcePlay(sourceNumber);
         return true;
     }
@@ -96,7 +102,7 @@ public class Sample3D extends SoundSpatial{
     }
     
     public boolean isPlaying(){
-        return (AL10.alGetSourcei(sourceNumber, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING);
+        return sourceNumber >=0 && (AL10.alGetSourcei(sourceNumber, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING);
     }
     
     public void delete() {
@@ -128,7 +134,7 @@ public class Sample3D extends SoundSpatial{
     
     public void setMaxAudibleDistance(int max){
         ray=max;
-        AL10.alSourcef(sourceNumber, AL10.AL_MAX_DISTANCE, max);
+        
     }
     
     private float distance(float ax, float ay, float az, float bx, float by, float bz){
@@ -152,6 +158,12 @@ public class Sample3D extends SoundSpatial{
         
     }
     
+    
+    private void generateSource() {
+        IntBuffer alSources = BufferUtils.createIntBuffer(1);
+        AL10.alGenSources(alSources);
+        sourceNumber=alSources.get(0);
+    }
     
 
 

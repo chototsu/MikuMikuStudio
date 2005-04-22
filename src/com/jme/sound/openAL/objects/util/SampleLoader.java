@@ -42,7 +42,7 @@ public class SampleLoader {
      * @param file
      * @return @see com.jme.sound.ISoundSystem#loadBuffer(java.lang.String)
      */
-    public Buffer loadBuffer(String file) {
+    public static Buffer loadBuffer(String file) {
         try {
             URL url = new URL("file:" + file);
             return loadBuffer(url);
@@ -54,7 +54,7 @@ public class SampleLoader {
     }
     
     
-    private Buffer loadBuffer(URL file) {
+    private static Buffer loadBuffer(URL file) {
         String fileName = file.getFile();
         if (".wav".equalsIgnoreCase(fileName.substring(fileName
                 .lastIndexOf('.')))) {
@@ -64,15 +64,10 @@ public class SampleLoader {
                 .lastIndexOf('.')))) {
             return loadOGG(file);
         }
-        //        if
-        // (".mp3".equalsIgnoreCase(fileName.substring(fileName.lastIndexOf('.'))))
-        // {
-        //            return loadMP3(file);
-        //        }
         return null;
     }
     
-    private Buffer loadWAV(URL file) {
+    private static Buffer loadWAV(URL file) {
         AudioInputStream audioStream = null;
         try {
             audioStream = AudioSystem.getAudioInputStream(new BufferedInputStream(file.openStream()));
@@ -124,7 +119,7 @@ public class SampleLoader {
     }
     
     
-    private Buffer loadOGG(URL file) {
+    private static Buffer loadOGG(URL file) {
         int length = 0;
         InputStream input = null;
         ByteArrayOutputStream baout = new ByteArrayOutputStream();
@@ -365,7 +360,7 @@ public class SampleLoader {
         return tmp[0];
     }
     
-    private int getChannels(Info vorbisInfo) {
+    private static int getChannels(Info vorbisInfo) {
         if (vorbisInfo.channels == 1)
             return AL10.AL_FORMAT_MONO16;
         return AL10.AL_FORMAT_STEREO16;
@@ -373,7 +368,7 @@ public class SampleLoader {
     /**
      * @return
      */
-    private int getChannels(AudioFormat format) {
+    private static int getChannels(AudioFormat format) {
         //      get channels
         if (format.getChannels() == 1) {
             if (format.getSampleSizeInBits() == 8) {
@@ -396,7 +391,7 @@ public class SampleLoader {
         }
     }
     
-    private float getPlayTime(byte[] data, AudioFormat format, int rate) {
+    private static float getPlayTime(byte[] data, AudioFormat format, int rate) {
 //      get channels
         if (format.getChannels() == 1) {
             if (format.getSampleSizeInBits() == 8) {

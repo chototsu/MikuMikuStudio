@@ -129,12 +129,7 @@ public class MusicStream extends Playable{
     }
 
 
-    private class EndCallback implements FSoundStreamCallback{
-        public void FSOUND_STREAMCALLBACK(FSoundStream arg0, ByteBuffer arg1, int arg2) {
-           close();
-        }        
-    }
-
+    
 
     public boolean isOpened() {
         return opened;
