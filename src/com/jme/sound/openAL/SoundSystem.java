@@ -113,7 +113,7 @@ public class SoundSystem {
             dir=new Vector3f(0, 0, -1);
             up=new Vector3f(0, 1, 0);
         }
-        orientation[0] = -dir.x;
+        orientation[0] = dir.x;
         orientation[1] = dir.y;
         orientation[2] = dir.z;
         orientation[3] = up.x;

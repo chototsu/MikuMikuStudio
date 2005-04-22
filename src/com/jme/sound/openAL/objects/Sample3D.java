@@ -50,12 +50,14 @@ public class Sample3D extends SoundSpatial{
     private Buffer buffer=null;
     
     
+    
     float posx=0;
+    private boolean positionChanged=true;
     
     public Sample3D(String file){     
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
         buffer=SampleLoader.loadBuffer(file);
-        
+        generateSource();
     }
     
     public Sample3D(Listener listener, String file){        
@@ -67,24 +69,26 @@ public class Sample3D extends SoundSpatial{
         configuration=conf;
     }
     
-    public void draw() {        
-        
-        if (distance(listener.getPosition().x,
+    public void draw() {  
+       if (distance(listener.getPosition().x,
                 listener.getPosition().y, 
                 listener.getPosition().z,
                 position.get(0),position.get(1), position.get(2)) > ray) {
             if(sourceNumber>=0){
                 stop();
-                delete();
             }
         } else {
-            if (!isPlaying()) {    
-                generateSource();
+            if (!isPlaying()) {
                 AL10.alSourcef(sourceNumber, AL10.AL_MAX_DISTANCE, ray);
                 play();
             }
-        }   
-        
+            if(positionChanged){
+                if(sourceNumber>=0){
+                    AL10.alSource3f(sourceNumber, AL10.AL_POSITION, position.get(0), position.get(1), position.get(2));
+                }
+                positionChanged=false;
+            }
+        }
     }
     
     public boolean play(){
@@ -116,7 +120,10 @@ public class Sample3D extends SoundSpatial{
     
     
     public void setPosition(float x, float y, float z){
-        AL10.alSource3f(sourceNumber, AL10.AL_POSITION, x, y, z);
+        position.put(x);
+        position.put(y);
+        position.put(z);
+        positionChanged=true;
         
     }
     
