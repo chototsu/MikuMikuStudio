@@ -3,16 +3,34 @@
  */
 package com.jme.sound.openAL.objects;
 
+import java.io.BufferedInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.nio.ShortBuffer;
 import java.util.logging.Level;
 
-import org.lwjgl.BufferUtils;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
+import org.lwjgl.BufferUtils;
+import org.lwjgl.openal.AL10;
+
+import com.jcraft.jorbis.Info;
 import com.jme.intersection.Distance;
 import com.jme.math.Vector3f;
 
+import com.jme.sound.IBuffer;
+import com.jme.sound.openAL.objects.util.Buffer;
 import com.jme.sound.openAL.scene.Configuration;
 import com.jme.sound.openAL.scene.SoundSpatial;
+import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 
 
@@ -24,14 +42,17 @@ public class Sample3D extends SoundSpatial{
     
     
     private int ray;
-    private int min=1;private FloatBuffer position=BufferUtils.createFloatBuffer(3);
+    private int min=1;
+    private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
+    private Buffer buffer=null;
     
     
     float posx=0;
     
     public Sample3D(String file){     
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
+        
         
     }
     
@@ -60,38 +81,39 @@ public class Sample3D extends SoundSpatial{
     }
     
     public boolean play(){
-        
-        return false;
+        AL10.alSourcePlay(sourceNumber);
+        return true;
     }
     
     public boolean pause(){
-        return false;
+        AL10.alSourcePause(sourceNumber);
+        return true;
     }
     
     public boolean stop(){
-        return false;
+        AL10.alSourceStop(sourceNumber);
+        return true;
     }
     
     public boolean isPlaying(){
-        return false;
+        return (AL10.alGetSourcei(sourceNumber, AL10.AL_SOURCE_STATE) == AL10.AL_PLAYING);
     }
     
+    public void delete() {
+        IntBuffer alSource = BufferUtils.createIntBuffer(1);
+        alSource.put(sourceNumber);
+        AL10.alDeleteSources(alSource);
 
+    }
+    
     
     public void setPosition(float x, float y, float z){
-        position.clear();
-        position.put(x);
-        position.put(y);
-        position.put(z);   
-        position.position(0);
+        AL10.alSource3f(sourceNumber, AL10.AL_POSITION, x, y, z);
         
     }
     
     public void setVelocity(float x, float y, float z){
-        velocity.clear();
-        velocity.put(x);
-        velocity.put(y);
-        velocity.put(z);
+        AL10.alSource3f(sourceNumber, AL10.AL_VELOCITY, x, y, z);
         
     }
     
@@ -101,10 +123,12 @@ public class Sample3D extends SoundSpatial{
     }
     
     public void setVolume(int volume){
+        AL10.alSourcef(sourceNumber, AL10.AL_GAIN, volume);
     }
     
     public void setMaxAudibleDistance(int max){
         ray=max;
+        AL10.alSourcef(sourceNumber, AL10.AL_MAX_DISTANCE, max);
     }
     
     private float distance(float ax, float ay, float az, float bx, float by, float bz){
@@ -127,6 +151,9 @@ public class Sample3D extends SoundSpatial{
     private void configure(){
         
     }
+    
+    
+
 
     
 }

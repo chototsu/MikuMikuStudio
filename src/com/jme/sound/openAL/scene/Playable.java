@@ -12,7 +12,7 @@ import com.jme.sound.openAL.objects.Listener;
  */
 public abstract class Playable {
     
-    protected int playingsource=-2;
+    protected int sourceNumber=-2;
     protected Listener listener;
     protected Configuration configuration;
     protected boolean configured;
