@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.1 2005-04-22 16:27:05 Anakan Exp $
+ * @version $Id: TestSoundGraph.java,v 1.2 2005-04-22 21:25:46 anakan Exp $
  */
 public class TestSoundGraph extends SimpleGame {
   private int snode;
@@ -55,6 +55,7 @@ public class TestSoundGraph extends SimpleGame {
   int background;
   Box box;
   public static void main(String[] args) {
+      /*
     SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
     int nd=SoundSystem.createSoundNode();
     int ft=SoundSystem.create3DSample("C:/Evol/eclipse/workspace/FrontJHEAD/src/jmetest/data/sound/Footsteps.wav");
@@ -65,9 +66,10 @@ public class TestSoundGraph extends SimpleGame {
         SoundSystem.update(0.0f);
         SoundSystem.draw(nd);
     }
-    //TestSoundGraph app = new TestSoundGraph();
-    //app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    //app.start();
+    */
+    TestSoundGraph app = new TestSoundGraph();
+    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+    app.start();
   }
 
   protected void simpleUpdate() {      
@@ -109,7 +111,7 @@ public class TestSoundGraph extends SimpleGame {
     SoundSystem.addSampleToNode(background, snode);
     SoundSystem.setSamplePosition(footsteps, box.getLocalTranslation().x, box.getLocalTranslation().y, box.getLocalTranslation().z);
     SoundSystem.setSampleMinAudibleDistance(footsteps, 4);
-    
+    SoundSystem.setSampleVolume(background, 0.1f);
     Configuration config=new Configuration();
     config.setDistortion(-10, 70, 6000, 5000, 7000);
     

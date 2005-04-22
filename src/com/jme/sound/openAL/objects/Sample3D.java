@@ -137,7 +137,7 @@ public class Sample3D extends SoundSpatial{
         
     }
     
-    public void setVolume(int volume){
+    public void setVolume(float volume){
         AL10.alSourcef(sourceNumber, AL10.AL_GAIN, volume);
     }
     
