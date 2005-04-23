@@ -102,6 +102,53 @@ public class SampleLoader {
     }
     
     private static Buffer loadWAV(URL file) {
+        
+        InputStream in=null;
+        Buffer[] tmp=null;
+        try {
+            in = file.openStream();            
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024*256);
+            byteOut.reset();
+            byte copyBuffer[] = new byte[1024*4];
+            WavInputStream wavInput = new WavInputStream(in);
+            boolean done = false;
+            int bytesRead=-1;
+            int length=0;
+            while (!done) {
+                bytesRead = wavInput.read(copyBuffer, 0, copyBuffer.length);
+                
+                byteOut.write(copyBuffer, 0, bytesRead);
+                done = (bytesRead != copyBuffer.length || bytesRead < 0);
+                
+            }
+            ByteBuffer data = BufferUtils.createByteBuffer(byteOut.size());
+            data.put(byteOut.toByteArray());
+            data.rewind();
+            if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
+            {
+                ShortBuffer tmp2 = data.duplicate().order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+                while(tmp2.hasRemaining())
+                    data.putShort(tmp2.get());
+                data.rewind();
+            }
+            int channels = wavInput.channels();
+            tmp = Buffer.generateBuffers(1);
+            float time = (byteOut.size()) / (float)(wavInput.rate() * channels * 2);
+            tmp[0].configure(data, getChannels(wavInput), wavInput.rate(), time);
+            LoggingSystem.getLogger().log(Level.INFO,
+                    "Ogg estimated time "+ time);
+            //cleanup
+            data.clear();
+            data = null;            
+            wavInput.close();
+        } catch (IOException e) {
+            
+            e.printStackTrace();
+        }
+        return tmp[0];
+        
+        
+        /*
         AudioInputStream audioStream = null;
         try {
             audioStream = AudioSystem.getAudioInputStream(new BufferedInputStream(file.openStream()));
@@ -150,10 +197,11 @@ public class SampleLoader {
             e2.printStackTrace();
         }
         return tmp[0];
+        */
     }
     
     private static Buffer loadOGG(URL file) {        
-        OggInputStream ois= null;
+        
         InputStream in=null;
         Buffer[] tmp=null;
         try {
@@ -207,20 +255,20 @@ public class SampleLoader {
     /**
      * @return
      */
-    private static int getChannels(AudioFormat format) {
+    private static int getChannels(WavInputStream format) {
         //      get channels
-        if (format.getChannels() == 1) {
-            if (format.getSampleSizeInBits() == 8) {
+        if (format.channels() == 1) {
+            if (format.depth() == 8) {
                 return AL10.AL_FORMAT_MONO8;
-            } else if (format.getSampleSizeInBits() == 16) {
+            } else if (format.depth() == 16) {
                 return AL10.AL_FORMAT_MONO16;
             } else {
                 throw new JmeException("Illegal sample size");
             }
-        } else if (format.getChannels() == 2) {
-            if (format.getSampleSizeInBits() == 8) {
+        } else if (format.channels() == 2) {
+            if (format.depth() == 8) {
                 return AL10.AL_FORMAT_STEREO8;
-            } else if (format.getSampleSizeInBits() == 16) {
+            } else if (format.depth() == 16) {
                 return AL10.AL_FORMAT_STEREO16;
             } else {
                 throw new JmeException("Illegal sample size");
