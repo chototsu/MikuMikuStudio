@@ -115,11 +115,9 @@ public class SampleLoader {
             int bytesRead=-1;
             int length=0;
             while (!done) {
-                bytesRead = wavInput.read(copyBuffer, 0, copyBuffer.length);
-                
+                bytesRead = wavInput.read(copyBuffer, 0, copyBuffer.length);                
                 byteOut.write(copyBuffer, 0, bytesRead);
-                done = (bytesRead != copyBuffer.length || bytesRead < 0);
-                
+                done = (bytesRead != copyBuffer.length || bytesRead < 0);                
             }
             ByteBuffer data = BufferUtils.createByteBuffer(byteOut.size());
             data.put(byteOut.toByteArray());
@@ -136,7 +134,7 @@ public class SampleLoader {
             float time = (byteOut.size()) / (float)(wavInput.rate() * channels * 2);
             tmp[0].configure(data, getChannels(wavInput), wavInput.rate(), time);
             LoggingSystem.getLogger().log(Level.INFO,
-                    "Ogg estimated time "+ time);
+                    "Wav estimated time "+ time);
             //cleanup
             data.clear();
             data = null;            
@@ -147,57 +145,6 @@ public class SampleLoader {
         }
         return tmp[0];
         
-        
-        /*
-        AudioInputStream audioStream = null;
-        try {
-            audioStream = AudioSystem.getAudioInputStream(new BufferedInputStream(file.openStream()));
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (UnsupportedAudioFileException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        int length = audioStream.getFormat().getChannels()
-        * (int) audioStream.getFrameLength()
-        * audioStream.getFormat().getSampleSizeInBits() / 8;
-        byte[] temp = new byte[length];
-        try {
-            audioStream.read(temp, 0, length);
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        ByteBuffer data = BufferUtils.createByteBuffer(length);//ByteBuffer.allocateDirect(length);
-        data.put(temp);
-        data.rewind();
-        
-        // On Mac we need to convert this to big endian
-        if (audioStream.getFormat().getSampleSizeInBits() == 16 && ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
-        {
-            ShortBuffer tmp = data.duplicate().order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-            while(tmp.hasRemaining())
-                data.putShort(tmp.get());
-            data.rewind();
-        } 
-        
-        int channels = getChannels(audioStream.getFormat());
-        Buffer[] tmp = Buffer.generateBuffers(1);
-        tmp[0].configure(data, channels, (int) audioStream.getFormat()
-                .getSampleRate(), getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
-        
-        LoggingSystem.getLogger().log(Level.INFO,
-                "Wav estimated time "+ getPlayTime(temp, audioStream.getFormat(), (int)audioStream.getFormat().getSampleRate()));
-        //cleanup
-        data.clear();
-        data = null;
-        try {
-            audioStream.close();
-        } catch (IOException e2) {
-            e2.printStackTrace();
-        }
-        return tmp[0];
-        */
     }
     
     private static Buffer loadOGG(URL file) {        
