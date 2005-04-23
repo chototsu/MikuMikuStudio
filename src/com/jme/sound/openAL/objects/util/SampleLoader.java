@@ -1,3 +1,34 @@
+/*
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
 /**
  * Created on Apr 22, 2005
  */
@@ -19,6 +50,9 @@ import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
+
+import javazoom.spi.vorbis.sampled.file.VorbisAudioFileFormat;
+import javazoom.spi.vorbis.sampled.file.VorbisAudioFileReader;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
@@ -118,244 +152,49 @@ public class SampleLoader {
         return tmp[0];
     }
     
-    
-    private static Buffer loadOGG(URL file) {
-        int length = 0;
-        InputStream input = null;
-        ByteArrayOutputStream baout = new ByteArrayOutputStream();
-
-        Buffer[] tmp = null;
+    private static Buffer loadOGG(URL file) {        
+        OggInputStream ois= null;
+        InputStream in=null;
+        Buffer[] tmp=null;
         try {
-
-            input = new BufferedInputStream(file.openStream());
-            int convsize = 4096 * 2;
-            byte[] convbuffer = new byte[convsize];
-            SyncState syncState = new SyncState();
-            StreamState streamState = new StreamState();
-            Page page = new Page();
-            Packet packet = new Packet(); // one raw packet of data for decode
-            Info vorbisInfo = new Info(); // struct that stores all the static
-            Comment vorbisComment = new Comment(); // struct that stores all the
-            DspState dspState = new DspState(); // central working state for the
-            Block vorbisBlock = new Block(dspState); // local working space for
-            byte[] buffer;
-            int bytes = 0;
-            syncState.init();
-            while (true) {
-                int eos = 0;
-                int index = syncState.buffer(4096);
-                buffer = syncState.data;
-                try {
-                    bytes = input.read(buffer, index, 4096);
-                } catch (Exception e) {
-                    LoggingSystem.getLogger().log(Level.SEVERE,e.getMessage());
-                    
-                }
-                syncState.wrote(bytes);
-                if (syncState.pageout(page) != 1) {
-                    if (bytes < 4096)
-                        break;
-                    LoggingSystem.getLogger().log(Level.SEVERE,
-                            "Input does not appear to be an Ogg bitstream.");
-                    return new Buffer(0);
-                }
-                streamState.init(page.serialno());
-                vorbisInfo.init();
-                vorbisComment.init();
-                if (streamState.pagein(page) < 0) {
-                    LoggingSystem.getLogger().log(Level.SEVERE,
-                            "Error reading first page of Ogg bitstream data.");
-                    return new Buffer(0);
-                }
-                if (streamState.packetout(packet) != 1) {
-                    LoggingSystem.getLogger().log(Level.SEVERE,
-                            "Error reading initial header packet.");
-                    return new Buffer(0);
-                }
-                if (vorbisInfo.synthesis_headerin(vorbisComment, packet) < 0) {
-                    LoggingSystem
-                            .getLogger()
-                            .log(Level.SEVERE,
-                                    "This Ogg bitstream does not contain Vorbis audio data.");
-                    return new Buffer(0);
-                }
-                int i = 0;
-                while (i < 2) {
-                    while (i < 2) {
-                        int result = syncState.pageout(page);
-                        if (result == 0)
-                            break; // Need more data
-                        if (result == 1) {
-                            streamState.pagein(page);
-                            while (i < 2) {
-                                result = streamState.packetout(packet);
-                                if (result == 0)
-                                    break;
-                                if (result == -1) {
-                                    LoggingSystem
-                                            .getLogger()
-                                            .log(Level.SEVERE,
-                                                    "Corrupt secondary header.  Exiting.");
-                                    return new Buffer(0);
-                                }
-                                vorbisInfo.synthesis_headerin(vorbisComment,
-                                        packet);
-                                i++;
-                            }
-                        }
-                    }
-                    index = syncState.buffer(4096);
-                    buffer = syncState.data;
-                    try {
-                        bytes = input.read(buffer, index, 4096);
-                    } catch (Exception e) {
-                        LoggingSystem.getLogger().log(Level.INFO,e.getMessage());
-                        return new Buffer(0);
-                    }
-                    if (bytes == 0 && i < 2) {
-                        LoggingSystem
-                                .getLogger()
-                                .log(Level.SEVERE,
-                                        "End of file before finding all Vorbis headers!");
-                        return new Buffer(0);
-                    }
-                    syncState.wrote(bytes);
-                }
-                {
-                    byte[][] ptr = vorbisComment.user_comments;
-                    for (int j = 0; j < ptr.length; j++) {
-                        if (ptr[j] == null)
-                            break;
-                        LoggingSystem.getLogger().log(Level.INFO,(new String(ptr[j], 0,
-                                ptr[j].length - 1)));
-                    }
-                    LoggingSystem.getLogger().log(
-                            Level.INFO,
-                            "\nBitstream is " + vorbisInfo.channels
-                                    + " channel, " + vorbisInfo.rate + "Hz");
-                    LoggingSystem.getLogger().log(
-                            Level.INFO,
-                            "Encoded by: "
-                                    + new String(vorbisComment.vendor, 0,
-                                            vorbisComment.vendor.length - 1)
-                                    + "\n");
-                }
-                convsize = 4096 / vorbisInfo.channels;
-                dspState.synthesis_init(vorbisInfo);
-                vorbisBlock.init(dspState);
-                float[][][] _pcm = new float[1][][];
-                int[] _index = new int[vorbisInfo.channels];
-                while (eos == 0) {
-                    while (eos == 0) {
-                        int result = syncState.pageout(page);
-                        if (result == 0)
-                            break;
-                        if (result == -1) {
-                            LoggingSystem
-                                    .getLogger()
-                                    .log(Level.SEVERE,
-                                            "Corrupt or missing data in bitstream; continuing...");
-                        } else {
-                            streamState.pagein(page); // can safely ignore
-                            while (true) {
-                                result = streamState.packetout(packet);
-                                if (result == 0)
-                                    break;
-                                if (result == -1) {
-                                } else {
-                                    int samples;
-                                    if (vorbisBlock.synthesis(packet) == 0) { // test
-                                        dspState.synthesis_blockin(vorbisBlock);
-                                    }
-                                    while ((samples = dspState
-                                            .synthesis_pcmout(_pcm, _index)) > 0) {
-                                        float[][] pcm = _pcm[0];
-                                        int bout = (samples < convsize
-                                                ? samples
-                                                : convsize);
-                                        for (i = 0; i < vorbisInfo.channels; i++) {
-                                            int ptr = i * 2;
-                                            int mono = _index[i];
-                                            for (int j = 0; j < bout; j++) {
-                                                int val = (int) (pcm[i][mono
-                                                        + j] * 32767.);
-                                                if (val > 32767) {
-                                                    val = 32767;
-                                                }
-                                                if (val < -32768) {
-                                                    val = -32768;
-                                                }
-                                                if (val < 0)
-                                                    val = val | 0x8000;
-                                                convbuffer[ptr] = (byte) (val);
-                                                convbuffer[ptr + 1] = (byte) (val >>> 8);
-                                                ptr += 2 * (vorbisInfo.channels);
-                                            }
-                                        }
-                                        baout.write(convbuffer, 0, 2
-                                                * vorbisInfo.channels * bout);
-
-                                        length += 2 * vorbisInfo.channels
-                                                * bout;
-                                        dspState.synthesis_read(bout);
-                                    }
-                                }
-                            }
-                            if (page.eos() != 0)
-                                eos = 1;
-                        }
-                    }
-                    if (eos == 0) {
-                        index = syncState.buffer(4096);
-                        buffer = syncState.data;
-                        try {
-                            bytes = input.read(buffer, index, 4096);
-                        } catch (Exception e) {
-                            LoggingSystem.getLogger().log(Level.SEVERE,e.getMessage());
-                            return new Buffer(0);
-                        }
-                        syncState.wrote(bytes);
-                        if (bytes == 0)
-                            eos = 1;
-                    }
-                }
-                streamState.clear();
-                vorbisBlock.clear();
-                dspState.clear();
-                vorbisInfo.clear();
+            in = file.openStream();            
+            ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024*256);
+            byteOut.reset();
+            byte copyBuffer[] = new byte[1024*4];
+            OggInputStream oggInput = new OggInputStream(in);
+            boolean done = false;
+            int bytesRead=-1;
+            int length=0;
+            while (!done) {
+                bytesRead = oggInput.read(copyBuffer, 0, copyBuffer.length);
+                
+                byteOut.write(copyBuffer, 0, bytesRead);
+                done = (bytesRead != copyBuffer.length || bytesRead < 0);
+                
             }
-            syncState.clear();
-            byte[] buf = baout.toByteArray();
-
-            ByteBuffer data = BufferUtils.createByteBuffer(buf.length);//ByteBuffer.allocateDirect(buf.length);
-            data.put(buf);
+            ByteBuffer data = BufferUtils.createByteBuffer(byteOut.size());
+            data.put(byteOut.toByteArray());
             data.rewind();
-
-            
-              // On Mac we need to convert this to big endian
             if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
             {
                 ShortBuffer tmp2 = data.duplicate().order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
                 while(tmp2.hasRemaining())
                     data.putShort(tmp2.get());
                 data.rewind();
-            } 
-            
-            
+            }
+            int channels = oggInput.getInfo().channels;
             tmp = Buffer.generateBuffers(1);
-            int chans = getChannels(vorbisInfo);
-            int rate= chans == AL10.AL_FORMAT_MONO16
-            ? vorbisInfo.rate
-                    : vorbisInfo.rate;
-            float time = (buf.length) / (float)(rate * vorbisInfo.channels * 2);
-            tmp[0].configure(data, chans, rate, time);
-
+            float time = (byteOut.size()) / (float)(oggInput.getInfo().rate * oggInput.getInfo().channels * 2);
+            tmp[0].configure(data, getChannels(oggInput.getInfo()), oggInput.getInfo().rate, time);
             LoggingSystem.getLogger().log(Level.INFO,
-                    "Sample rate= " + vorbisInfo.rate);
-            LoggingSystem.getLogger().log(Level.INFO,"Estimated Play Time " + time);
-
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
+                    "Ogg estimated time "+ time);
+            //cleanup
+            data.clear();
+            data = null;            
+            oggInput.close();
+        } catch (IOException e) {
+            
+            e.printStackTrace();
         }
         return tmp[0];
     }
