@@ -133,5 +133,5 @@ public abstract class SoundSpatial extends Playable{
         return allowInterrupt;
     }
 
-    //public abstract boolean fireEvent(int event);
+    public abstract boolean fireEvent(int event);
 }

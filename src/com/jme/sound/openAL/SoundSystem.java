@@ -113,7 +113,7 @@ public class SoundSystem {
             dir=new Vector3f(0, 0, -1);
             up=new Vector3f(0, 1, 0);
         }
-        orientation[0] = dir.x;
+        orientation[0] = -dir.x;
         orientation[1] = dir.y;
         orientation[2] = dir.z;
         orientation[3] = up.x;
@@ -364,6 +364,48 @@ public class SoundSystem {
         }
     }
     
+    
+    /**
+     * Binds an event to the given sample. The event number sould be a unique id.
+     * Binding an event to sample will make it play only if the event is fired 
+     * on the container node
+     * @param sample the sample to which the event will be bound
+     * @param event the unique event number
+     */
+    public static void bindEventToSample(int sample, int event){
+        if(sample3D==null){
+            return;
+        }else if(sample<0 || sample>=sample3D.length){
+            return; 
+        }else{
+            sample3D[sample].bindEvent(event);
+        }
+    }
+    
+    /**
+     * Fires an event on all nodes
+     * @param eventName the event to fire
+     */
+    public static void onEvent(int eventName){
+        if(nodes==null) return;        
+        for(int a=0; a<nodes.length; a++){
+            nodes[a].onEvent(eventName);
+        } 
+        
+    }
+    
+    /**
+     * 
+     * @param nodeName
+     * @param eventName
+     */
+    public static void onEvent(int nodeName, int eventName){
+        if(nodes==null) return;
+        if(nodeName<0 || nodeName>=nodes.length) return;
+        nodes[nodeName].onEvent(eventName);
+        
+        
+    }
     
     /**
      * Set the FX configuration of the given stream

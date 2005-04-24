@@ -27,7 +27,7 @@ public class Sample3D extends SoundSpatial{
     private int ray;
     private int min=1;private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
-    
+    private boolean handlesEvent;
     
     float posx=0;
     
@@ -45,9 +45,10 @@ public class Sample3D extends SoundSpatial{
         configuration=conf;
     }
     
-    public void draw() {        
+    public void draw() {  
         
-        FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, min, ray);
+        if(handlesEvent) return;
+        
         if (distance(listener.getPosition().x,
                 listener.getPosition().y, 
                 listener.getPosition().z,
@@ -58,7 +59,7 @@ public class Sample3D extends SoundSpatial{
                 play();
             }
         }   
-        FSound.FSOUND_3D_SetAttributes(playingChannel, position, velocity);
+        
         
     }
     
@@ -70,9 +71,12 @@ public class Sample3D extends SoundSpatial{
             configure();
             FSound.FSOUND_SetPriority(playingChannel, 255); 
             FSound.FSOUND_3D_SetDistanceFactor(1);
+            FSound.FSOUND_3D_SetMinMaxDistance(playingChannel, min, ray);
+            FSound.FSOUND_3D_SetAttributes(playingChannel, position, velocity);
             FSound.FSOUND_SetPaused(playingChannel, false); 
             return true;
         }
+       
         return false;
     }
     
@@ -217,5 +221,38 @@ public class Sample3D extends SoundSpatial{
         }
     }
 
+    private int[] event;
+    private int[] program;
+    
+    public void bindEvent(int eventNumber) {
+        if (event == null) {
+            event = new int[1];
+            event[0] = eventNumber;
+            handlesEvent=true;
+            return;
+        }
+        int[] tmp = new int[event.length + 1];
+        System.arraycopy(event, 0, tmp, 0, event.length);
+        tmp[event.length] = eventNumber;
+        event = tmp;        
+    }
+    
+    /**
+     * Used internally for firing an event on this sound playing object.
+     * @return true if the event has been fired
+     * and false if this sound does not "know" the event
+     */
+    public boolean fireEvent(int eventNumber) {
+        if (event != null && (allowInterrupt || !isPlaying())) {
+            for (int i = 0; i < event.length; i++) {
+                if (event[i] == eventNumber) {
+                    stop();
+                    play();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
     
 }

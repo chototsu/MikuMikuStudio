@@ -48,6 +48,7 @@ public class Sample3D extends SoundSpatial{
     private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
     private Buffer buffer=null;
+    private boolean handlesEvent;
     
     
     
@@ -70,6 +71,7 @@ public class Sample3D extends SoundSpatial{
     }
     
     public void draw() {  
+       if(handlesEvent) return;
        if (distance(listener.getPosition().x,
                 listener.getPosition().y, 
                 listener.getPosition().z,
@@ -82,16 +84,17 @@ public class Sample3D extends SoundSpatial{
                 AL10.alSourcef(sourceNumber, AL10.AL_MAX_DISTANCE, ray);
                 play();
             }
-            if(positionChanged){
-                if(sourceNumber>=0){
-                    AL10.alSource3f(sourceNumber, AL10.AL_POSITION, position.get(0), position.get(1), position.get(2));
-                }
-                positionChanged=false;
-            }
+            
         }
     }
     
     public boolean play(){
+        if(positionChanged){
+            if(sourceNumber>=0){
+                AL10.alSource3f(sourceNumber, AL10.AL_POSITION, position.get(0), position.get(1), position.get(2));
+            }
+            positionChanged=false;
+        }
         AL10.alSourcei(sourceNumber, AL10.AL_BUFFER, buffer.getBufferNumber());
         AL10.alSourcePlay(sourceNumber);
         return true;
@@ -175,6 +178,39 @@ public class Sample3D extends SoundSpatial{
     }
     
 
+    private int[] event;
+    private int[] program;
+    
+    public void bindEvent(int eventNumber) {
+        if (event == null) {
+            event = new int[1];
+            event[0] = eventNumber;
+            handlesEvent=true;
+            return;
+        }
+        int[] tmp = new int[event.length + 1];
+        System.arraycopy(event, 0, tmp, 0, event.length);
+        tmp[event.length] = eventNumber;
+        event = tmp;        
+    }
+    
+    /**
+     * Used internally for firing an event on this sound playing object.
+     * @return true if the event has been fired
+     * and false if this sound does not "know" the event
+     */
+    public boolean fireEvent(int eventNumber) {
+        if (event != null && (allowInterrupt || !isPlaying())) {
+            for (int i = 0; i < event.length; i++) {
+                if (event[i] == eventNumber) {
+                    stop();
+                    play();
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     
 }

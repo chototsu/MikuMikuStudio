@@ -161,9 +161,9 @@ public class SoundNode extends SoundSpatial{
             SoundSpatial child = (SoundSpatial) children.get(i);
             if (child != null) {
                 child.updateGeometricState(time, false);
-                //if(eventStatusChanged){        		    
-        		//    eventStatusChanged=!child.fireEvent(eventNumber);
-        		//}
+                if(eventStatusChanged){        		    
+        		    eventStatusChanged=!child.fireEvent(eventNumber);
+        		}
             }
         }
     }

@@ -454,6 +454,49 @@ public class SoundSystem {
             nodes[destNode].attachChild(sample3D[sample]);
         }        
     }
+    
+    /**
+     * Binds an event to the given sample. The event number sould be a unique id.
+     * Binding an event to sample will make it play only if the event is fired 
+     * on the container node
+     * @param sample the sample to which the event will be bound
+     * @param event the unique event number
+     */
+    public static void bindEventToSample(int sample, int event){
+        if(sample3D==null){
+            return;
+        }else if(sample<0 || sample>=sample3D.length){
+            return; 
+        }else{
+            sample3D[sample].bindEvent(event);
+        }
+    }
+    
+    /**
+     * Fires an event on all nodes
+     * @param eventName the event to fire
+     */
+    public static void onEvent(int eventName){
+        if(nodes==null) return;        
+        for(int a=0; a<nodes.length; a++){
+            nodes[a].onEvent(eventName);
+        } 
+        
+    }
+    
+    /**
+     * 
+     * @param nodeName
+     * @param eventName
+     */
+    public static void onEvent(int nodeName, int eventName){
+        if(nodes==null) return;
+        if(nodeName<0 || nodeName>=nodes.length) return;
+        nodes[nodeName].onEvent(eventName);
+        
+        
+    }
+    
 
     public static void setRolloffFactor(float rolloff){
         FSound.FSOUND_3D_SetRolloffFactor(rolloff);
