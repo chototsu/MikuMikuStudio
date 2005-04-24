@@ -18,11 +18,9 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
-import com.jme.sound.SoundAPIController;
+import com.jme.sound.fmod.SoundSystem;
 import com.jme.util.TextureManager;
-import com.jme.sound.SoundPool;
-import com.jme.sound.scene.ProgrammableSound;
-import com.jme.sound.scene.SoundNode;
+
 
 /**
  * Started Date: Jul 24, 2004 <br>
@@ -55,12 +53,12 @@ public class HelloIntersection extends SimpleGame {
 	 * The programmable sound that will be in charge of maintaining our sound
 	 * effects.
 	 */
-	ProgrammableSound laserSound;
+	int laserSound;
 
-	ProgrammableSound targetSound;
+	int targetSound;
 
 	/** The node where attached sounds will be propagated from */
-	SoundNode snode;
+	int snode;
 
 	/**
 	 * The ID of our laser shooting sound effect. The value is not important. It
@@ -123,38 +121,20 @@ public class HelloIntersection extends SimpleGame {
 	}
 
 	private void setupSound() {
-		/** init sound API acording to the rendering enviroment you're using */
-		SoundAPIController.getSoundSystem(properties.getRenderer());
-		/** Set the 'ears' for the sound API */
-		SoundAPIController.getRenderer().setCamera(cam);
-		snode = new SoundNode();
+        /** Set the 'ears' for the sound API */
+		SoundSystem.init(display.getRenderer().getCamera(), SoundSystem.OUTPUT_DEFAULT);
+		
+		snode = SoundSystem.createSoundNode();
 		/** Create program sound */
-		targetSound = new ProgrammableSound();
-		/** Make the sound softer */
-		targetSound.setLooping(false);
-		targetSound.setMaxDistance(1000f);
-		targetSound.setRolloffFactor(.01f);
-		targetSound.setGain(1000.00f);
-		targetSound.setReferenceDistance(10f);
-
-		laserSound = new ProgrammableSound();
-		laserSound.setLooping(false);
-
-		/** locate laser and register it with the prog sound. */
-
-		laserURL = HelloIntersection.class.getClassLoader().getResource(
-				"jmetest/data/sound/laser.ogg");
-		hitURL = HelloIntersection.class.getClassLoader().getResource(
-				"jmetest/data/sound/explosion.wav");
-		// Ask the system for a program id for this resource
-		int programid = SoundPool.compile(new URL[] { laserURL });
-		int hitid = SoundPool.compile(new URL[] { hitURL });
-		// Then we bind the programid we received to our laser event id.
-		laserSound.bindEvent(laserEventID, programid);
-		targetSound.bindEvent(hitEventID, hitid);
-		//        programSound.setNextProgram(programid);
-		snode.attachChild(laserSound);
-		snode.attachChild(targetSound);
+		targetSound = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/explosion.wav");
+		laserSound=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/laser.ogg");
+        SoundSystem.setSampleMaxAudibleDistance(targetSound, 1000);
+        SoundSystem.setSampleMaxAudibleDistance(laserSound, 1000);
+        // Then we bind the programid we received to our laser event id.
+		SoundSystem.bindEventToSample(laserSound, laserEventID);
+        SoundSystem.bindEventToSample(targetSound, hitEventID);
+        SoundSystem.addSampleToNode(laserSound, snode);
+        SoundSystem.addSampleToNode(targetSound, snode);
 	}
 
 	class FireBullet extends KeyInputAction {
@@ -187,8 +167,9 @@ public class HelloIntersection extends SimpleGame {
 			rootNode.attachChild(bullet);
 			bullet.updateRenderState();
 			/** Signal our sound to play laser during rendering */
-			laserSound.setPosition(cam.getLocation());
-			snode.onEvent(laserEventID);
+            Vector3f v=cam.getLocation();
+			SoundSystem.setSamplePosition(laserSound, v.x, v.y, v.z);
+            SoundSystem.onEvent(snode, laserEventID);
 		}
 	}
 
@@ -226,12 +207,14 @@ public class HelloIntersection extends SimpleGame {
 			/** Does the bullet intersect with target? */
 			if (bullet.getWorldBound().intersects(target.getWorldBound())) {
 				System.out.println("OWCH!!!");
-				targetSound.setPosition(target.getWorldTranslation());
+                Vector3f v=target.getWorldTranslation();
+                SoundSystem.setSamplePosition(targetSound, v.x, v.y, v.z);
+				
 				target.setLocalTranslation(new Vector3f(r.nextFloat() * 10, r
 						.nextFloat() * 10, r.nextFloat() * 10));
 				lifeTime = 0;
-
-				snode.onEvent(hitEventID);
+				SoundSystem.onEvent(snode, hitEventID);
+				
 			}
 		}
 	}
@@ -241,7 +224,7 @@ public class HelloIntersection extends SimpleGame {
 	 */
 	protected void simpleRender() {
 		// Give control to the sound in case sound changes are needed.
-		SoundAPIController.getRenderer().draw(snode);
+		SoundSystem.draw();
 	}
 
 	/**
@@ -249,6 +232,6 @@ public class HelloIntersection extends SimpleGame {
 	 */
 	protected void simpleUpdate() {
 		// Let the programmable sound update itself.
-		snode.updateGeometricState(tpf, true);
+        SoundSystem.update(tpf);
 	}
 }

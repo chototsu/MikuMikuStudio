@@ -23,10 +23,7 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
-import com.jme.sound.SoundAPIController;
-import com.jme.sound.SoundPool;
-import com.jme.sound.scene.ProgrammableSound;
-import com.jme.sound.scene.SoundNode;
+import com.jme.sound.fmod.SoundSystem;
 import com.jme.ui.UIColorScheme;
 import com.jme.ui.UIFonts;
 import com.jme.ui.UIText;
@@ -52,9 +49,10 @@ public class PongRevisited extends SimpleGame {
 
     private ParticleManager manager, bmanager;
 
-    private SoundNode snode;
+    private int snode;
 
-    private ProgrammableSound ballSound;
+    private int ballSound;
+    private int explodeSound;
 
     private static final int BOUNCE_EVENT = 1;
 
@@ -77,10 +75,8 @@ public class PongRevisited extends SimpleGame {
     
 
     protected void simpleInitGame() {
-        SoundAPIController.getSoundSystem(properties.getRenderer());
-        SoundAPIController.getRenderer().setCamera(cam);
-
-        snode = new SoundNode();
+        SoundSystem.init(display.getRenderer().getCamera(), SoundSystem.OUTPUT_DEFAULT);
+        snode = SoundSystem.createSoundNode();
         uiNode = new Node("UINODE");
         
         String[] names = { "main", "nice" };
@@ -131,22 +127,16 @@ public class PongRevisited extends SimpleGame {
         ball.getLocalTranslation().z = -00f;
         ball.updateModelBound();
 
-        ballSound = new ProgrammableSound();
-        /*URL laserURL = PongRevisited.class.getClassLoader().getResource(
-                "data/sound/ESPARK.wav");
-                */
-        URL explodeURL = PongRevisited.class.getClassLoader().getResource(
-                "jmetest/data/sound/explosion.wav");
-        URL wallURL = PongRevisited.class.getClassLoader().getResource(
-                "jmetest/data/sound/turn.wav");
-        //ballSound.bindEvent(BOUNCE_EVENT, SoundPool
-          //      .compile(new URL[] { laserURL }));
-        ballSound.bindEvent(MISS_EVENT, SoundPool
-                .compile(new URL[] { explodeURL }));
-        ballSound.bindEvent(WALL_BOUNCE_EVENT, SoundPool
-                .compile(new URL[] { wallURL }));
-        ballSound.setMaxDistance(5000);
-        snode.attachChild(ballSound);
+        ballSound = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/turn.wav");
+        explodeSound = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/explosion.wav");
+        
+        SoundSystem.bindEventToSample(ballSound, WALL_BOUNCE_EVENT);
+        SoundSystem.bindEventToSample(explodeSound, MISS_EVENT);
+        SoundSystem.setSampleMaxAudibleDistance(ballSound, 5000);
+        SoundSystem.addSampleToNode(ballSound, snode);
+        SoundSystem.addSampleToNode(explodeSound, snode);
+        
+       
 
         lowerWall = new Box("Left Wall", new Vector3f(0, -300, 0), 450f, 5f, 5f);
         lowerWall.setModelBound(new BoundingBox());
@@ -257,29 +247,30 @@ public class PongRevisited extends SimpleGame {
     public void simpleUpdate() {
         manager.setRepeatType(Controller.RT_CLAMP);
         if (checkPlayer()) {
-            ballSound.setPosition(cam.getLocation().x - 5, cam.getLocation().y,
+            SoundSystem.setSamplePosition(ballSound, cam.getLocation().x + 5, cam.getLocation().y,
                     cam.getLocation().z);
-            snode.onEvent(WALL_BOUNCE_EVENT);
+            SoundSystem.onEvent(WALL_BOUNCE_EVENT);
+            
         }
         if (checkComputer()) {
-            ballSound.setPosition(cam.getLocation().x + 5, cam.getLocation().y,
+            SoundSystem.setSamplePosition(ballSound, cam.getLocation().x - 5, cam.getLocation().y,
                     cam.getLocation().z);
-            snode.onEvent(WALL_BOUNCE_EVENT);
+            SoundSystem.onEvent(WALL_BOUNCE_EVENT);
         }
 
         if (checkWalls()) {
-            ballSound.setPosition(cam.getLocation().x + 5, cam.getLocation().y,
+            SoundSystem.setSamplePosition(ballSound, cam.getLocation().x + 5, cam.getLocation().y,
                     cam.getLocation().z);
-            snode.onEvent(WALL_BOUNCE_EVENT);
+            SoundSystem.onEvent(WALL_BOUNCE_EVENT);
         }
         moveBall();
         moveComputer();
 
         if (ball.getLocalTranslation().x < player.getWorldTranslation().x) {
 
-            ballSound.setPosition(cam.getLocation().x - 5, cam.getLocation().y,
+            SoundSystem.setSamplePosition(explodeSound, cam.getLocation().x + 5, cam.getLocation().y,
                     cam.getLocation().z);
-            ballSound.fireEvent(MISS_EVENT);
+            SoundSystem.onEvent(MISS_EVENT);
             computerScoreText.setText("Computer : " + (++computerScore));
             manager.setRepeatType(Controller.RT_WRAP);
             manager.forceRespawn();
@@ -290,9 +281,9 @@ public class PongRevisited extends SimpleGame {
         }
         if (ball.getLocalTranslation().x > computer.getWorldTranslation().x) {
 
-            ballSound.setPosition(cam.getLocation().x - 5, cam.getLocation().y,
+            SoundSystem.setSamplePosition(explodeSound, cam.getLocation().x - 5, cam.getLocation().y,
                     cam.getLocation().z);
-            ballSound.fireEvent(MISS_EVENT);
+            SoundSystem.onEvent(MISS_EVENT);
             playerScoreText.setText("Player : " + (++playerScore));
             manager.setRepeatType(Controller.RT_WRAP);
             manager.forceRespawn();
@@ -302,7 +293,7 @@ public class PongRevisited extends SimpleGame {
             
         }
         fps.print("");
-        snode.updateGeometricState(tpf, true);
+        SoundSystem.update(tpf);
 
         super.simpleUpdate();
 
@@ -360,8 +351,9 @@ public class PongRevisited extends SimpleGame {
     public boolean checkComputer() {
         if (ball.getWorldBound().intersects(computer.getWorldBound())) {
             ballXSpeed = 0 - ballXSpeed;
-            ballSound.setPosition(cam.getLocation().x - 5, cam.getLocation().y,
+            SoundSystem.setSamplePosition(ballSound, cam.getLocation().x - 5, cam.getLocation().y,
                     cam.getLocation().z);
+            
             float racketHit = (ball.getLocalTranslation().y - (computer
                     .getLocalTranslation().y));
             
@@ -386,7 +378,7 @@ public class PongRevisited extends SimpleGame {
 
     public void simpleRender() {
 
-        SoundAPIController.getRenderer().draw(snode);
+        SoundSystem.draw(snode);
         display.getRenderer().draw(particleNode);
 
         super.simpleRender();

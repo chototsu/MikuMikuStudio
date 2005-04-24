@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.3 2005-04-24 18:15:18 anakan Exp $
+ * @version $Id: TestSoundGraph.java,v 1.4 2005-04-24 21:28:35 anakan Exp $
  */
 public class TestSoundGraph extends SimpleGame {
   private int snode;
@@ -55,7 +55,7 @@ public class TestSoundGraph extends SimpleGame {
   int background;
   Box box;
   public static void main(String[] args) {
-      
+    /*  
     SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
     int nd=SoundSystem.createSoundNode();
     int ft=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/Footsteps.wav");
@@ -66,12 +66,12 @@ public class TestSoundGraph extends SimpleGame {
         SoundSystem.update(0.0f);
         SoundSystem.draw(nd);
     }
-    
-      /*
+    */
+      
     TestSoundGraph app = new TestSoundGraph();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
-    */
+    
       /*
       SoundManager manager=new SoundManager("D:/eclipse/workspace/JMonkeyEngine/data/sound");
       manager.playMusic("CHAR_CRE_1.ogg");
@@ -93,7 +93,7 @@ public class TestSoundGraph extends SimpleGame {
    */
   protected void simpleInitGame() {
     display.setTitle("Test Sound Graph");
-    SoundSystem.init(cam, SoundSystem.OUTPUT_DEFAULT);
+    SoundSystem.init(display.getRenderer().getCamera(), SoundSystem.OUTPUT_DEFAULT);
     Vector3f max = new Vector3f(5, 5, 5);
     Vector3f min = new Vector3f( -5, -5, -5);
     box = new Box("Box", min, max);
