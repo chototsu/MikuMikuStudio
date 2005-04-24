@@ -32,9 +32,8 @@ public class Sample3D extends SoundSpatial{
     float posx=0;
     
     public Sample3D(String file){     
-        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
         fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, file, FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
-        
+        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file+ " Success="+(fmodSample !=null));
     }
     
     public Sample3D(Listener listener, String file){        
