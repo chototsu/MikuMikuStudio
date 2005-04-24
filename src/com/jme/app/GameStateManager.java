@@ -28,7 +28,7 @@ import java.util.Iterator;
 import java.util.logging.Level;
 
 import com.jme.scene.Node;
-import com.jme.sound.SoundAPIController;
+
 import com.jme.system.DisplaySystem;
 import com.jme.util.LoggingSystem;
 
@@ -133,13 +133,7 @@ public class GameStateManager {
 		DisplaySystem.getDisplaySystem().getRenderer().
 			setCamera(current.getCamera());
 		
-		try {
-			if (SoundAPIController.getRenderer() != null)
-				SoundAPIController.getRenderer().setCamera(current.getCamera());
-		} catch (IllegalArgumentException e) {
-			// Do nothing - it just means that the sound system hasn't been
-			// initialised.
-		}
+		
 			
 		current.switchTo();
 
