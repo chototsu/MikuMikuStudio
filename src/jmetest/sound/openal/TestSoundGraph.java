@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.2 2005-04-22 21:25:46 anakan Exp $
+ * @version $Id: TestSoundGraph.java,v 1.3 2005-04-24 18:15:18 anakan Exp $
  */
 public class TestSoundGraph extends SimpleGame {
   private int snode;
@@ -55,10 +55,10 @@ public class TestSoundGraph extends SimpleGame {
   int background;
   Box box;
   public static void main(String[] args) {
-      /*
+      
     SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
     int nd=SoundSystem.createSoundNode();
-    int ft=SoundSystem.create3DSample("C:/Evol/eclipse/workspace/FrontJHEAD/src/jmetest/data/sound/Footsteps.wav");
+    int ft=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/Footsteps.wav");
     SoundSystem.addSampleToNode(ft, nd);
     SoundSystem.setSampleMaxAudibleDistance(ft, 100);
     SoundSystem.setSampleMinAudibleDistance(ft, 1);
@@ -66,10 +66,16 @@ public class TestSoundGraph extends SimpleGame {
         SoundSystem.update(0.0f);
         SoundSystem.draw(nd);
     }
-    */
+    
+      /*
     TestSoundGraph app = new TestSoundGraph();
     app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
     app.start();
+    */
+      /*
+      SoundManager manager=new SoundManager("D:/eclipse/workspace/JMonkeyEngine/data/sound");
+      manager.playMusic("CHAR_CRE_1.ogg");
+  */
   }
 
   protected void simpleUpdate() {      
@@ -103,7 +109,7 @@ public class TestSoundGraph extends SimpleGame {
     rootNode.setRenderState(tst);
     rootNode.attachChild(box);
     snode = SoundSystem.createSoundNode();
-    footsteps = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/Footsteps.wav");
+    footsteps = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/data/sound/CHAR_CRE_1.ogg");
     background =SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/test.ogg");
     SoundSystem.setSampleMaxAudibleDistance(footsteps, 100);
     SoundSystem.setSampleMaxAudibleDistance(background, 1000);

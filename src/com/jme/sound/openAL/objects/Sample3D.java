@@ -26,8 +26,8 @@ import com.jcraft.jorbis.Info;
 import com.jme.intersection.Distance;
 import com.jme.math.Vector3f;
 
-import com.jme.sound.IBuffer;
-import com.jme.sound.lwjgl.Source;
+
+
 import com.jme.sound.openAL.objects.util.Buffer;
 import com.jme.sound.openAL.objects.util.SampleLoader;
 import com.jme.sound.openAL.scene.Configuration;

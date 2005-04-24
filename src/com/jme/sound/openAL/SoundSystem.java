@@ -251,13 +251,28 @@ public class SoundSystem {
         }
     }
     
+    /**
+     * Make a stream loop
+     * @param streamName
+     * 
+     */
+    public static void setStreamLooping(int streamName, boolean loop){
+        if(stream==null){
+            return ;
+        }else if(streamName<0 || streamName>=stream.length){
+            return ; 
+        }else{
+            stream[streamName].loop(loop);
+        }
+    }
+    
     
     /**
      * Get the length of the given stream in milliseconds
      * @param streamName
      * @return the stream length in millis
      */
-    public static int getStreamLength(int streamName){
+    public static float getStreamLength(int streamName){
         if(stream==null){
             return -1;
         }else if(streamName<0 || streamName>=stream.length){

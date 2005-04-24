@@ -12,9 +12,13 @@ Available method gives raw bytes of file, not actual bytes of audio.
 default reads, plus skip just pass through - use readSample
 */
 import java.io.*;
+import java.nio.ByteBuffer;
 
-public class WavInputStream extends java.io.FilterInputStream
-{
+import org.lwjgl.openal.AL10;
+
+import com.jme.system.JmeException;
+
+public class WavInputStream extends JMEAudioInputStream{
     private static final int RIFFid = ('R' << 24) | ('I' << 16) + ('F' << 8) + 'F';
     private static final int WAVEid = ('W' << 24) | ('A' << 16) + ('V' << 8) + 'E';
     private static final int fmtid = ('f' << 24) | ('m' << 16) + ('t' << 8) + ' ';
@@ -44,6 +48,23 @@ public class WavInputStream extends java.io.FilterInputStream
         return a | (b << 8) | (c << 16) | (d << 24);
     }
 
+    /**
+     * Reads up to len bytes of data from the input stream into a ByteBuffer.
+     * @param b the buffer into which the data is read.
+     * @param off the start offset of the data.
+     * @param len the maximum number of bytes read.
+     * @return the total number of bytes read into the buffer, or -1 if there is
+     *         no more data because the end of the stream has been reached. 
+     */
+    public int read(ByteBuffer b, int off, int len) throws IOException {
+        byte[] buffer=new byte[b.capacity()];
+        int bytesRead=read(buffer, off, len);
+        b.put(b);
+        b.position(off);
+        return bytesRead;
+    }
+    
+    
     //this allows us to read binary data from the stream
     private DataInputStream DataIn;
 
@@ -148,6 +169,46 @@ public class WavInputStream extends java.io.FilterInputStream
                     throw(new IOException("Input didn't fully skip chunk"));
             }
         }
+    }
+    
+    /**
+     * @return
+     */
+    public int getChannels() {
+        //      get channels
+        if (channels() == 1) {
+            if (depth() == 8) {
+                return AL10.AL_FORMAT_MONO8;
+            } else if (depth() == 16) {
+                return AL10.AL_FORMAT_MONO16;
+            } else {
+                throw new JmeException("Illegal sample size");
+            }
+        } else if (channels() == 2) {
+            if (depth() == 8) {
+                return AL10.AL_FORMAT_STEREO8;
+            } else if (depth() == 16) {
+                return AL10.AL_FORMAT_STEREO16;
+            } else {
+                throw new JmeException("Illegal sample size");
+            }
+        } else {
+            throw new JmeException("Only mono or stereo is supported");
+        }
+    }
+    
+    public int getAudioChannels(){
+        return channels();
+    }
+    
+    private float length;
+    
+    protected void setLength(float time){
+        this.length=time;
+    }
+    
+    public float getLength(){
+        return length;
     }
 }
 

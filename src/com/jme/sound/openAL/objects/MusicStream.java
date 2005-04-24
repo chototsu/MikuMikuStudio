@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
+import com.jme.sound.openAL.objects.util.StreamPlayer;
 import com.jme.sound.openAL.scene.Configuration;
 import com.jme.sound.openAL.scene.Playable;
 
@@ -51,7 +52,7 @@ import com.jme.sound.openAL.scene.Playable;
 public class MusicStream extends Playable{
     
     private ByteBuffer memoryData;
-    private boolean opened;
+    private boolean opened=true;
     private boolean memory;
     private String streamFile;
     private Configuration configuration;
@@ -62,6 +63,7 @@ public class MusicStream extends Playable{
         if(memoryLoad){
            
         }else{
+            sourceNumber=StreamPlayer.getInstance().openStream(file);
         }
             
     }
@@ -71,7 +73,8 @@ public class MusicStream extends Playable{
     }
     
     public boolean play(){
-       return false;
+       StreamPlayer.getInstance().play(sourceNumber);
+       return true;
     }
     
     /**
@@ -79,24 +82,30 @@ public class MusicStream extends Playable{
      * @return true if the stream is paused
      */
     public boolean pause(){
-        return false;
+        return StreamPlayer.getInstance().pauseStream(sourceNumber);
     }
     
-    
+    /**
+     * Stops the stream handled by this Music stream
+     */
     public void stop(){
-        
+        StreamPlayer.getInstance().stopStream(sourceNumber);
     }
     
     public void close(){
     }
     
+    /**
+     * Get the playing status of this stream
+     * @return true is the stream is playing
+     */
     public boolean isPlaying(){
-        return false;
+        return StreamPlayer.getInstance().isPlaying(sourceNumber);
     }
     
     
     public int length(){
-        return 0;
+        return (int)StreamPlayer.getInstance().length(sourceNumber);
     }
     
     /**
@@ -132,7 +141,14 @@ public class MusicStream extends Playable{
     
 
     public boolean isOpened() {
-        return opened;
+        return sourceNumber !=-1;
+    }
+
+    /**
+     * @return
+     */
+    public void loop(boolean flag) {
+        StreamPlayer.getInstance().loopStream(sourceNumber, flag);
     }
     
 
