@@ -106,6 +106,7 @@ public class StreamPlayer{
         if(calculateLength){
             tmp=new OggInputStream(fis);
             float length=getLength(tmp)*1000;
+            System.gc();
             tmp.close();
             fis.close();
             fis=new FileInputStream(file);
@@ -144,20 +145,22 @@ public class StreamPlayer{
      * @param tmp
      */
     private float getLength(JMEAudioInputStream tmpStream) throws IOException{
-        ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024*256);
-        byteOut.reset();
-        byte copyBuffer[] = new byte[1024*4];
+        //ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024*256);
+        //byteOut.reset();
+        byte copyBuffer[] = new byte[1024];
         boolean done = false;
-        int bytesRead=-1;
+        int bytesRead=0;
         int length=0;
         while (!done) {
             bytesRead = tmpStream.read(copyBuffer, 0, copyBuffer.length);
-            byteOut.write(copyBuffer, 0, bytesRead);
+            if(bytesRead !=-1)
+                length+=bytesRead;
+            //byteOut.write(copyBuffer, 0, bytesRead);
             done = (bytesRead != copyBuffer.length || bytesRead < 0);
             
         }
         int channels = tmpStream.getChannels();
-        return (byteOut.size()) / (float)(tmpStream.rate() * tmpStream.getAudioChannels() * 2);
+        return (length) / (float)(tmpStream.rate() * tmpStream.getAudioChannels() * 2);
     
     }
 
@@ -254,7 +257,7 @@ public class StreamPlayer{
         private ByteBuffer dataBuffer = ByteBuffer.allocateDirect(4096*8);
 
         // front and back buffers
-        private IntBuffer buffers = BufferUtils.createIntBuffer(2);
+        private IntBuffer buffers = BufferUtils.createIntBuffer(4);
         // set to true when player is initalized.
         private boolean initialized = false;
         private boolean paused;
@@ -379,15 +382,15 @@ public class StreamPlayer{
         /** Calls update at an interval */
         public void run() {
             if(finished){
-                float length=stream.getLength()*1000;
+                float length=stream.getLength();
                 stream=open(stream.getFileName(), false);
                 if(stream==null) return;
-                System.out.println("Reopened");
+                
             }
             play();
             try {
                 while (update() && !stopped) {
-                    Thread.sleep(interval);
+                    Thread.yield();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
