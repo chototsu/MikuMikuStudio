@@ -88,9 +88,9 @@ public class TestStreamPlayer {
             System.out.print("Found "+nbStream+" playable songs in this directory");
             for(int a=0; a<nbStream; a++){
                 int music=((Integer)valid.get(a)).intValue();
-                float lgth=SoundSystem.getStreamLength(music)*2;
+                int lgth=(int)SoundSystem.getStreamLength(music);
                 SoundSystem.playStream(music);
-                SoundSystem.setStreamLooping(music, true); 
+                //SoundSystem.setStreamLooping(music, true); 
                 while(!(lgth <=0)){
                     Thread.sleep(1000);
                     lgth-=1000;
