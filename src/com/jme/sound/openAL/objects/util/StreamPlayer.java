@@ -43,6 +43,9 @@ import java.nio.IntBuffer;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
+import com.jcraft.jorbis.JOrbisException;
+import com.jcraft.jorbis.VorbisFile;
+
 /**
  * @author Arman
  */
@@ -104,11 +107,19 @@ public class StreamPlayer{
         FileInputStream fis =new FileInputStream(file);
         JMEAudioInputStream tmp=null;
         if(calculateLength){
-            tmp=new OggInputStream(fis);
-            float length=getLength(tmp)*1000;
-            System.gc();
-            tmp.close();
-            fis.close();
+            float length=0;
+            try {
+                VorbisFile vf=new VorbisFile(file);
+                length=vf.time_total(-1)*1000;
+                System.out.println("Vorbis file length="+length);
+            } catch (JOrbisException e) {
+                //"Manual" Count
+                tmp=new OggInputStream(fis);
+                length=getLength(tmp)*1000;
+                tmp.close();
+                fis.close();
+                System.out.println("Manual file length="+length);
+            }            
             fis=new FileInputStream(file);
             tmp=new OggInputStream(fis);
             tmp.setLength(length);
@@ -147,7 +158,7 @@ public class StreamPlayer{
     private float getLength(JMEAudioInputStream tmpStream) throws IOException{
         //ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024*256);
         //byteOut.reset();
-        byte copyBuffer[] = new byte[1024];
+        byte copyBuffer[] = new byte[1024*4];
         boolean done = false;
         int bytesRead=0;
         int length=0;
