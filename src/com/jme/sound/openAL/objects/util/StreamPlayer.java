@@ -399,7 +399,7 @@ public class StreamPlayer{
             play();
             try {
                 while (update() && !stopped) {
-                    Thread.yield();
+                    Thread.sleep(5);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
