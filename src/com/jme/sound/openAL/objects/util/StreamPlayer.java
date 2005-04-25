@@ -35,15 +35,13 @@
 package com.jme.sound.openAL.objects.util;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
-
-import com.jme.system.JmeException;
 
 /**
  * @author Arman

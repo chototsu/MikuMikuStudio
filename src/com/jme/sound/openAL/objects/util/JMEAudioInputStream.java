@@ -3,8 +3,6 @@
  */
 package com.jme.sound.openAL.objects.util;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;

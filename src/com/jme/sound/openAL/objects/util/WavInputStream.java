@@ -11,7 +11,10 @@ Issues:
 Available method gives raw bytes of file, not actual bytes of audio.
 default reads, plus skip just pass through - use readSample
 */
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.ByteBuffer;
 
 import org.lwjgl.openal.AL10;

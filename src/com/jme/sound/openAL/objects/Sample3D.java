@@ -3,36 +3,17 @@
  */
 package com.jme.sound.openAL.objects;
 
-import java.io.BufferedInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.nio.ShortBuffer;
 import java.util.logging.Level;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
-
-import com.jcraft.jorbis.Info;
-import com.jme.intersection.Distance;
-import com.jme.math.Vector3f;
-
-
 
 import com.jme.sound.openAL.objects.util.Buffer;
 import com.jme.sound.openAL.objects.util.SampleLoader;
 import com.jme.sound.openAL.scene.Configuration;
 import com.jme.sound.openAL.scene.SoundSpatial;
-import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 
 

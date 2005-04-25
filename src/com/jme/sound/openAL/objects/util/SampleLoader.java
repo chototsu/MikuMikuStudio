@@ -34,9 +34,7 @@
  */
 package com.jme.sound.openAL.objects.util;
 
-import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -47,23 +45,10 @@ import java.nio.ShortBuffer;
 import java.util.logging.Level;
 
 import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
-
-import javazoom.spi.vorbis.sampled.file.VorbisAudioFileFormat;
-import javazoom.spi.vorbis.sampled.file.VorbisAudioFileReader;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL10;
 
-import com.jcraft.jogg.Packet;
-import com.jcraft.jogg.Page;
-import com.jcraft.jogg.StreamState;
-import com.jcraft.jogg.SyncState;
-import com.jcraft.jorbis.Block;
-import com.jcraft.jorbis.Comment;
-import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
