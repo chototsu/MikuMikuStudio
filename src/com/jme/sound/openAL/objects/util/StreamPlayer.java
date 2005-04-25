@@ -111,14 +111,13 @@ public class StreamPlayer{
             try {
                 VorbisFile vf=new VorbisFile(file);
                 length=vf.time_total(-1)*1000;
-                System.out.println("Vorbis file length="+length);
-            } catch (JOrbisException e) {
+             } catch (JOrbisException e) {
                 //"Manual" Count
                 tmp=new OggInputStream(fis);
                 length=getLength(tmp)*1000;
                 tmp.close();
                 fis.close();
-                System.out.println("Manual file length="+length);
+                
             }            
             fis=new FileInputStream(file);
             tmp=new OggInputStream(fis);
