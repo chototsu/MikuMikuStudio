@@ -228,14 +228,14 @@ public class StreamPlayer{
     private int add(JMEAudioInputStream tmpStream){
         if(player==null){
             player=new Player[1];
-            player[0]=new Player(tmpStream, generateSource(), 5);;
+            player[0]=new Player(tmpStream, generateSource());;
             return 0;
         }else{
             Player[] tmp=new Player[player.length];
             System.arraycopy(player, 0, tmp, 0, tmp.length);
             player=new Player[tmp.length+1];
             System.arraycopy(tmp, 0, player, 0, tmp.length);
-            player[tmp.length]=new Player(tmpStream, generateSource(), 5);
+            player[tmp.length]=new Player(tmpStream, generateSource());
             return tmp.length;
         }
     }
@@ -260,7 +260,6 @@ public class StreamPlayer{
      */
     private class Player implements Runnable{
         // at what interval update is called.
-        private long interval;
         private int source;
         private JMEAudioInputStream stream;
         //temporary buffer
@@ -276,8 +275,8 @@ public class StreamPlayer{
         private boolean looping;
 
         /** Creates the PlayerThread */
-        Player(JMEAudioInputStream current, int sourceNumber ,long interval) {
-            this.interval = interval;
+        Player(JMEAudioInputStream current, int sourceNumber) {
+            
             this.source=sourceNumber;
             stream=current;
             AL10.alGenBuffers(buffers);
