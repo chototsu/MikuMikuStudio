@@ -34,6 +34,7 @@
  */
 package jmetest.sound.openal;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -43,6 +44,9 @@ import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import jmetest.sound.fsound.NextButtonHandler;
 
 import com.jme.sound.openAL.SoundSystem;
 import com.jme.util.LoggingSystem;
@@ -83,6 +87,11 @@ public class TestStreamPlayer {
     }
 
     protected static void startPlayer(JFrame frame, JButton button, File dir) throws Exception{
+        JButton next=new JButton(">>");
+        NextButtonHandler nextHandler=new NextButtonHandler();
+        next.addActionListener(nextHandler);
+        frame.getContentPane().add(next);
+        
         String[] list=null;
         int[] clip=null;
         if(dir !=null && dir.isDirectory()){
@@ -123,6 +132,10 @@ public class TestStreamPlayer {
                     button.repaint();
                     frame.pack();
                     Thread.sleep(1000);
+                    if(nextHandler.isPressed()){
+                        lgth=0;
+                        nextHandler.setPressed(false);
+                    }
                     lgth-=1000;
                     
                 }                
@@ -130,5 +143,28 @@ public class TestStreamPlayer {
         }
         
     }
+    
+    
 
+
+}
+
+class NextButtonHandler implements ActionListener{
+    private boolean pressed;
+    
+    public void actionPerformed(ActionEvent arg0) {
+        pressed=true;
+        
+    }
+
+    public boolean isPressed() {
+        return pressed;
+    }
+    
+
+    public void setPressed(boolean pressed) {
+        this.pressed = pressed;
+    }
+    
+    
 }
