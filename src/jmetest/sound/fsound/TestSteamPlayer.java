@@ -34,9 +34,15 @@
  */
 package jmetest.sound.fsound;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.logging.Level;
+
+import javax.swing.JButton;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 
 import com.jme.sound.fmod.SoundSystem;
 import com.jme.util.LoggingSystem;
@@ -48,21 +54,41 @@ public class TestSteamPlayer {
     
     public static void main(String[] args) throws Exception{
         SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
-        //replace the path to your files
-        String path=null;
-        if(args.length==0){
-            path="C:\\Evol\\JAVA\\CLAPTON";
-        }else{
-            path=args[0];
-        }
-        File dir=new File(path);
+        final JFrame frame=new JFrame();
+        final JButton open=new JButton("Select directory");
+        frame.getContentPane().add(open);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        open.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){   
+                final JFileChooser fileChooser=new JFileChooser();;
+                fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+                fileChooser.showOpenDialog(null);
+                ((JButton)e.getSource()).setEnabled(false);
+                try {
+                    new Thread(new Runnable(){public void run(){try {
+                        startPlayer(frame, open,fileChooser.getSelectedFile());
+                    } catch (Exception e) {
+                       System.exit(-1);
+                    }}}).start();
+                    
+                } catch (Exception e1) {
+                    System.exit(-1);
+                    
+                }
+            }
+        });
+        frame.setSize(300, 100);
+        frame.show();        
+        
+    }
+
+    protected static void startPlayer(JFrame frame, JButton button, File dir) throws Exception{
         String[] list=null;
         int[] clip=null;
-        if(dir.isDirectory()){
+        if(dir !=null && dir.isDirectory()){
            list=dir.list();
         }else{
-            LoggingSystem.getLogger().log(Level.INFO,"The path entered is not a directory");
-            LoggingSystem.getLogger().log(Level.INFO,path);
+            
             System.exit(-1);
         }
         ArrayList valid=null;
@@ -73,11 +99,11 @@ public class TestSteamPlayer {
         }
         else{
             LoggingSystem.getLogger().log(Level.INFO,"The path entered does not contain any file");
-            LoggingSystem.getLogger().log(Level.INFO,path);
+            LoggingSystem.getLogger().log(Level.INFO,dir.getAbsolutePath());
             System.exit(-1);
         }
         for(int a=0; a<list.length; a++){
-                int nb=SoundSystem.createStream(path+"\\"+list[a], false); 
+                int nb=SoundSystem.createStream(dir.getAbsolutePath()+File.separator+list[a], false); 
                 if(SoundSystem.isStreamOpened(nb)){
                     valid.add(new Integer(nb));
                     songs.add(list[a]);
@@ -88,16 +114,20 @@ public class TestSteamPlayer {
             System.out.print("Found "+nbStream+" playable songs in this directory");
             for(int a=0; a<nbStream; a++){
                 int music=((Integer)valid.get(a)).intValue();
-                int lgth=SoundSystem.getStreamLength(music);
+                int lgth=(int)SoundSystem.getStreamLength(music);
                 SoundSystem.playStream(music);
+                //SoundSystem.setStreamLooping(music, true); 
                 while(!(lgth <=0)){
+                    button.setText("Playing "+(String)songs.get(a)+" "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
+                    frame.repaint();
+                    button.repaint();
+                    frame.pack();
                     Thread.sleep(1000);
                     lgth-=1000;
-                    System.out.print("\rPlaying "+(String)songs.get(a)+" "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
+                    
                 }                
             }
         }
-        
         
     }
 
