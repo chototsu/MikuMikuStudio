@@ -34,6 +34,7 @@
  */
 package jmetest.sound.fsound;
 
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -43,6 +44,8 @@ import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 
 import com.jme.sound.fmod.SoundSystem;
 import com.jme.util.LoggingSystem;
@@ -56,7 +59,7 @@ public class TestSteamPlayer {
         SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
         final JFrame frame=new JFrame();
         final JButton open=new JButton("Select directory");
-        frame.getContentPane().add(open);
+        frame.getContentPane().add(open, "Center");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         open.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){   
@@ -83,6 +86,20 @@ public class TestSteamPlayer {
     }
 
     protected static void startPlayer(JFrame frame, JButton button, File dir) throws Exception{
+        frame.getContentPane().remove(button);
+        JPanel panel=new JPanel();
+        panel.setLayout(new BorderLayout());
+        
+        JButton next=new JButton(">>");
+        JButton previous=new JButton("<<");
+        NextButtonHandler nextHandler=new NextButtonHandler();
+        NextButtonHandler previousHandler=new NextButtonHandler();
+        next.addActionListener(nextHandler);
+        previous.addActionListener(previousHandler);
+        panel.add(next, "East");
+        panel.add(previous, "West");
+        panel.add(button, "North");        
+        frame.getContentPane().add(panel);
         String[] list=null;
         int[] clip=null;
         if(dir !=null && dir.isDirectory()){
@@ -123,6 +140,18 @@ public class TestSteamPlayer {
                     button.repaint();
                     frame.pack();
                     Thread.sleep(1000);
+                    if(nextHandler.isPressed()){
+                        lgth=0;
+                        nextHandler.setPressed(false);
+                        SoundSystem.stopStream(music);
+                    }
+                    if(previousHandler.isPressed()){
+                        previousHandler.setPressed(false);
+                        SoundSystem.stopStream(music);
+                        if(a==0) a=-1;
+                        else a-=2;
+                        lgth=0;
+                    }
                     lgth-=1000;
                     
                 }                
@@ -130,5 +159,27 @@ public class TestSteamPlayer {
         }
         
     }
+    
+    
 
+
+}
+class NextButtonHandler implements ActionListener{
+    private boolean pressed;
+    
+    public void actionPerformed(ActionEvent arg0) {
+        pressed=true;
+        
+    }
+
+    public boolean isPressed() {
+        return pressed;
+    }
+    
+
+    public void setPressed(boolean pressed) {
+        this.pressed = pressed;
+    }
+    
+    
 }
