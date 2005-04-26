@@ -28,21 +28,32 @@ public class Sample3D extends SoundSpatial{
     private int min=1;private FloatBuffer position=BufferUtils.createFloatBuffer(3);
     private FloatBuffer velocity=BufferUtils.createFloatBuffer(3);
     private boolean handlesEvent;
+    private int actualVolume=-1;
+    
+    public static final int METHOD_PAUSE=1;
+    public static final int METHOD_STOP=2;
+    public static final int METHOD_MUTE=3;
     
     float posx=0;
+    private int method;
     
     public Sample3D(String file){     
         fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, file, FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file+ " Success="+(fmodSample !=null));
     }
     
-    public Sample3D(Listener listener, String file){        
+    public Sample3D(Listener listener, String file, int renderMethod){        
         this(file);
         this.listener=listener;
+        this.method=renderMethod;
     }
     
     public void setConfiguration(Configuration conf){
         configuration=conf;
+    }
+    
+    public void setRenderMethod(int method){
+        this.method=method;
     }
     
     public void draw() {  
@@ -53,10 +64,24 @@ public class Sample3D extends SoundSpatial{
                 listener.getPosition().y, 
                 listener.getPosition().z,
                 position.get(0),position.get(1), position.get(2)) > ray) {
-            stop();
+            if(method==METHOD_PAUSE){
+                pause();
+            }else
+            if(method==METHOD_STOP){
+                stop();
+            }else 
+            if(method==METHOD_MUTE){
+                mute();
+            }
         } else {
             if (!isPlaying()) {                
                 play();
+            }else if(method==METHOD_PAUSE && isPlaying() && isPaused()){
+                pause();
+            }else if(method==METHOD_MUTE && isPlaying()){
+                if(actualVolume !=-1){
+                    setVolume(actualVolume);
+                }
             }
         }   
         
@@ -84,12 +109,23 @@ public class Sample3D extends SoundSpatial{
         return FSound.FSOUND_SetPaused(playingChannel, !FSound.FSOUND_GetPaused(playingChannel));
     }
     
+    public boolean isPaused(){
+        return FSound.FSOUND_GetPaused(playingChannel);
+    }
+    
     public boolean stop(){
         return FSound.FSOUND_StopSound(playingChannel);
     }
     
     public boolean isPlaying(){
         return FSound.FSOUND_IsPlaying(playingChannel);
+    }
+    
+    public void mute(){
+        if(actualVolume==-1){
+            actualVolume=FSound.FSOUND_GetVolume(playingChannel);
+        }
+        setVolume(0);
     }
     
 

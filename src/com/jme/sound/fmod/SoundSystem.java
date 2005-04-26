@@ -58,10 +58,15 @@ import com.jme.util.LoggingSystem;
 public class SoundSystem {
     
     public static final int FREE_NODE_INDEX = -1;
+    
     public static final int RENDER_MEHOD_PAUSE=1;//TODO
     public static final int RENDER_MEHOD_STOP=2;//TODO
+    public static final int RENDER_MEHOD_MUTE=3;//TODO
+    
     
     public static final int OUTPUT_DEFAULT=0;
+    public static int DEFAULT_RENDER_METOD=1;
+    
     //WINDOZE
     public static final int OUTPUT_DSOUND =1;
     public static final int OUTPUT_WINMM =2;
@@ -84,6 +89,8 @@ public class SoundSystem {
     private static final int OS_LINUX=1;
     private static final int OS_WINDOWS=2;
     private static final int OS_MAC = 3;
+    
+    
     
     
   
@@ -244,14 +251,14 @@ public class SoundSystem {
     public static int create3DSample(String file){
         if(sample3D==null){
             sample3D=new Sample3D[1];
-            sample3D[0]=new Sample3D(listener, file);
+            sample3D[0]=new Sample3D(listener, file, DEFAULT_RENDER_METOD);
             return 0;
         }else{
             Sample3D[] tmp=new Sample3D[sample3D.length];
             System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
             sample3D=new Sample3D[tmp.length+1];
             System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
-            sample3D[tmp.length]=new Sample3D(listener, file);
+            sample3D[tmp.length]=new Sample3D(listener, file, DEFAULT_RENDER_METOD);
             return tmp.length;
         }
     }
@@ -517,5 +524,20 @@ public class SoundSystem {
         }
     }
     
+    /**
+     * Sets the default 3D sample rendering method.
+     * While the 3d sample's max audible distance is set the sound will respect the rendering 
+     * method specified here.
+     * If the pause method is selected the sample will pause if the listener goes out of the max audible distance and continue
+     * to play from where it was paused if the user comes into the audible sphere defined with max audible distance.
+     * If the stop method is selected the sound will stop and restart
+     * If the mute method is selected the sample will continue to play
+     * @param method the method to set, by default the method is SoundSystem.RENDER_METHOD_PAUSE
+     * possible values are SoundSystem.RENDER_MEHOD_MUTE, SoundSystem.RENDER_MEHOD_STOP and SoundSystem.RENDER_MEHOD_PAUSE
+     */
+    public static void setRenderMethod(final int method){
+        if(method !=RENDER_MEHOD_MUTE || method !=RENDER_MEHOD_PAUSE || method !=RENDER_MEHOD_STOP) return;
+        DEFAULT_RENDER_METOD=method;
+    }
 
 }
