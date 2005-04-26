@@ -517,15 +517,5 @@ public class SoundSystem {
         }
     }
     
-    public static void main(String[] args) throws Exception{
-       
-        SoundSystem.init(null, SoundSystem.OUTPUT_DEFAULT);
-        int clip=SoundSystem.createStream("C:\\Documents and Settings\\Arman\\Mes documents\\Noir Désir-666.667 Club\\09-Noir_Désir-L'homme_pressé.mp3", false);
-        int lgth=SoundSystem.getStreamLength(clip);
-        System.out.println("Length "+(lgth/1000/60)+" m "+(lgth/1000%60)+"s");
-        SoundSystem.playStream(clip);
-        Thread.sleep(lgth);
-        
-        
-    }
+
 }
