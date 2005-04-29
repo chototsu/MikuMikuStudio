@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.11 2005-04-06 20:24:25 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.12 2005-04-29 16:09:43 renanse Exp $
  */
 public class Matrix4f {
 
@@ -145,7 +145,7 @@ public class Matrix4f {
      *            the matrix to set the values into.
      */
     public void get(float[] matrix) {
-        set(matrix, true);
+        get(matrix, true);
     }
 
     /**
