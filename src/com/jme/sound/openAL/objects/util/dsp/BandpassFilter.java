@@ -40,7 +40,7 @@ import java.nio.ShortBuffer;
 
 public class BandpassFilter extends Filter {
 
-    private float qParam = 1.0f;
+    private float qParam = 1.4f;
 
     private double alpha;
 
@@ -62,7 +62,11 @@ public class BandpassFilter extends Filter {
 
     public byte[] filter(byte[] input) {
         ShortBuffer buffer = ByteBuffer.wrap(input).asShortBuffer();
-        DoubleBuffer outputBuffer = DoubleBuffer.allocate(buffer.capacity());
+        double[] d=new double[buffer.capacity()];
+        for(int a=0; a<d.length; a++){
+            d[a]=(double)buffer.get(a);
+        }
+        DoubleBuffer outputBuffer = DoubleBuffer.wrap(d);
         double[] inputArray = new double[3];
         double[] outputArray = new double[3];
         int i = 0, j = 0, k = 0;
