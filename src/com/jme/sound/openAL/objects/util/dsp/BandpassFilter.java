@@ -61,18 +61,15 @@ public class BandpassFilter extends Filter {
     }
 
     public byte[] filter(byte[] input) {
-
         ShortBuffer buffer = ByteBuffer.wrap(input).asShortBuffer();
         DoubleBuffer outputBuffer = DoubleBuffer.allocate(buffer.capacity());
-
         double[] inputArray = new double[3];
         double[] outputArray = new double[3];
         int i = 0, j = 0, k = 0;
         for (int a = 0; a < buffer.capacity(); a++) {
-
             // Fetch sample
             inputArray[i] = (double) buffer.get(a);
-
+            
             // Do indices maintainance
             j = i - 2;
             if (j < 0)
@@ -80,11 +77,11 @@ public class BandpassFilter extends Filter {
             k = i - 1;
             if (k < 0)
                 k += 3;
-
+            
             // Run the difference equation
             double out = outputArray[i] = 2 *(alpha * (inputArray[i] - inputArray[j]) 
-                                         + gamma * outputArray[k] 
-                                         - beta * outputArray[j]);
+                    + gamma * outputArray[k] 
+                                          - beta * outputArray[j]);
             double val = outputBuffer.get(a);
             val += adjust * out;
             outputBuffer.put(a, val);
