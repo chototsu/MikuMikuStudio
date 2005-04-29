@@ -57,7 +57,7 @@ public class BandpassFilter extends Filter {
         double tan = Math.tan(theta / (2.0 * q));
         beta = 0.5 * ((1.0 - tan) / (1.0 + tan));
         alpha = (0.5 - beta) / 2.0;
-        gamma = (0.58 + beta) * Math.cos(theta);
+        gamma = (0.5 + beta) * Math.cos(theta);
     }
 
     public byte[] filter(byte[] input) {
@@ -82,9 +82,9 @@ public class BandpassFilter extends Filter {
                 k += 3;
 
             // Run the difference equation
-            double out = outputArray[i] = 2 * (alpha
-                    * (inputArray[i] - inputArray[j]) + gamma * outputArray[k] - beta
-                    * outputArray[j]);
+            double out = outputArray[i] = 2 *(alpha * (inputArray[i] - inputArray[j]) 
+                                         + gamma * outputArray[k] 
+                                         - beta * outputArray[j]);
             double val = outputBuffer.get(a);
             val += adjust * out;
             outputBuffer.put(a, val);
