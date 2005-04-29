@@ -7,6 +7,9 @@ import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+
+import com.jme.sound.openAL.objects.util.dsp.Filter;
 
 /**
  * @author Arman
@@ -14,7 +17,9 @@ import java.nio.ByteBuffer;
 public abstract class JMEAudioInputStream extends FilterInputStream {
     
     public static final String INVALID_OGG_MESSAGE="Input does not appear to be an Ogg bitstream.";
-       
+    protected ArrayList filters=new ArrayList();  
+    
+    
     public JMEAudioInputStream(InputStream in) {
         super(in);
     }
@@ -29,6 +34,15 @@ public abstract class JMEAudioInputStream extends FilterInputStream {
      */
     public abstract int read(ByteBuffer buffer, int offset, int length) throws IOException;
 
+    /**
+     * Adds a DSP filter on this stream
+     * @param f the filter to apply on the stream
+     * @return
+     */
+    public int addFilter(Filter f){
+        filters.add(f);
+        return filters.size()-1;
+    }
     
     public abstract int getChannels();
     
