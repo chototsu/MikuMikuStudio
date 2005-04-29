@@ -34,7 +34,6 @@
  */
 package jmetest.sound.openal;
 
-import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -44,11 +43,6 @@ import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-
-
-
 
 import com.jme.sound.openAL.SoundSystem;
 import com.jme.util.LoggingSystem;
@@ -84,7 +78,7 @@ public class TestStreamPlayer {
             }
         });
         frame.setSize(300, 100);
-        frame.show();        
+        frame.setVisible(true);        
         
     }
 

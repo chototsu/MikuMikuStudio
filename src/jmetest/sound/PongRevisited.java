@@ -3,18 +3,14 @@
  */
 package jmetest.sound;
 
-import java.net.URL;
-
-import jmetest.effects.RenParticleEditor;
-
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.action.KeyInputAction;
 import com.jme.input.action.InputActionEvent;
+import com.jme.input.action.KeyInputAction;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
@@ -204,7 +200,7 @@ public class PongRevisited extends SimpleGame {
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(
             TextureManager.loadTexture(
-            RenParticleEditor.class.getClassLoader().getResource(
+            PongRevisited.class.getClassLoader().getResource(
             "jmetest/data/texture/flaresmall.jpg"),
             Texture.MM_LINEAR_LINEAR,
             Texture.FM_LINEAR));

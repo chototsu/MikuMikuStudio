@@ -36,9 +36,6 @@
  */
 package com.jme.sound.fmod.scene;
 
-import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
-import com.jme.sound.fmod.SoundSystem;
 
 /**
  * @author Arman Ozcelik

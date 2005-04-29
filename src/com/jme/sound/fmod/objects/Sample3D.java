@@ -10,8 +10,6 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.fmod3.FSound;
 import org.lwjgl.fmod3.FSoundSample;
 
-import com.jme.intersection.Distance;
-import com.jme.math.Vector3f;
 import com.jme.sound.fmod.scene.Configuration;
 import com.jme.sound.fmod.scene.SoundSpatial;
 import com.jme.util.LoggingSystem;

@@ -46,7 +46,6 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-
 import com.jme.sound.fmod.SoundSystem;
 import com.jme.util.LoggingSystem;
 
@@ -81,7 +80,7 @@ public class TestSteamPlayer {
             }
         });
         frame.setSize(300, 100);
-        frame.show();        
+        frame.setVisible(true);        
         
     }
 

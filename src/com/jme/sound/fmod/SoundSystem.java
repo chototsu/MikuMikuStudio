@@ -34,14 +34,11 @@
  */
 package com.jme.sound.fmod;
 
-import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
-import org.lwjgl.BufferUtils;
 import org.lwjgl.fmod3.FMOD;
 import org.lwjgl.fmod3.FMODException;
 import org.lwjgl.fmod3.FSound;
-import org.lwjgl.fmod3.FSoundSample;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;

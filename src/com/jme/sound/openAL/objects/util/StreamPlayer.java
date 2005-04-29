@@ -34,7 +34,6 @@
  */
 package com.jme.sound.openAL.objects.util;
 
-import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
