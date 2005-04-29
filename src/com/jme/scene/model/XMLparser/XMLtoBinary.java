@@ -139,7 +139,11 @@ public class XMLtoBinary {
             } else if ("index".equals(att)){
                 if("sptscale".equals(qName) || "sptrot".equals(qName) || "spttrans".equals(qName))
                     writeIntArray(value);
-            } else if ("loc".equals(att) || "dir".equals(att) || "scale".equals(att) || "translation".equals(att) || "trans".equals(att) || "localvec".equals(att)){
+            } else if ("loc".equals(att) || "dir".equals(att)
+                    || "scale".equals(att) || "translation".equals(att)
+                    || "trans".equals(att) || "localvec".equals(att)
+                    || "origcent".equals(att) || "origext".equals(att)
+                    || "nowcent".equals(att) || "nowext".equals(att)) {
                 writeVec3f(value);
             } else if ("rotation".equals(att) || "rot".equals(att) || "localrot".equals(att)){
                 writeQuat(value);
