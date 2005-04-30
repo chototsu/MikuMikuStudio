@@ -30,11 +30,11 @@
   </target>
 <!-- ************************************************************************* -->
 
-  <target name="dist" depends="compile" description="generate jme package" >
+  <target name="dist" depends="compile" description="generate jme jar file" >
     <jar jarfile="${seg}/target/jme.jar"  basedir="${class}" update="no" compress="false"/>
   </target>
 
-  <target name="webdist" depends="compile" description="sign JARs for JNLP distribution" >
+  <target name="webdist" depends="dist" description="sign JARs for JNLP distribution" >
     <signjar jar="${seg}/target/jme.jar"
       alias="jme"
       keystore="${seg}/jnlp/jmeKeyStore"

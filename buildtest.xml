@@ -20,7 +20,7 @@
   <target name="compile" depends="init" description="generate jme test classes">
     <javac srcdir="${src}/jmetest"
            destdir="${class}"
-           classpath="${seg}/target/jme.jar:${seg}/lib/lwjgl.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
+           classpath="${seg}/target/jme.jar:${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
     />
     <!-- copy the resources into the build directory -->
     <copy todir="${jmepackage}/data">
@@ -47,12 +47,12 @@
     <signjar jar="${seg}/target/jmetest.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="Password!"
+             storepass="..."
     />
     <signjar jar="${seg}/target/jmetest-data.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="Password!"
+             storepass="..."
     />
   </target>
   
@@ -71,12 +71,12 @@
     <signjar jar="${seg}/jnlp/lwjgl-windows.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="Password!"
+             storepass="..."
     />
     <signjar jar="${seg}/jnlp/openal-windows.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="Password!"
+             storepass="..."
     />
     
     <!-- Jar and sign Linux native libraries -->
@@ -93,19 +93,38 @@
     <signjar jar="${seg}/jnlp/lwjgl-linux.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="Password!"
+             storepass="..."
     />
     <signjar jar="${seg}/jnlp/openal-linux.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="Password!"
+             storepass="..."
+    />
+    
+    <!-- Jar (eventually) and sign Mac native libraries -->
+    <signjar jar="${seg}/jnlp/lwjgl-mac.jar"
+             alias="jme"
+             keystore="${seg}/jnlp/jmeKeyStore"
+             storepass="..."
+    />
+    <signjar jar="${seg}/jnlp/openal-mac.jar"
+             alias="jme"
+             keystore="${seg}/jnlp/jmeKeyStore"
+             storepass="..."
     />
     
     <!-- Sign the lwjgl jar -->
     <signjar jar="${seg}/lib/lwjgl.jar"
              alias="jme"
              keystore="${seg}/jnlp/jmeKeyStore"
-             storepass="Password!"
+             storepass="..."
+    />
+    
+    <!-- Sign the lwjgl fmod3 jar -->
+    <signjar jar="${seg}/lib/lwjgl_fmod3.jar"
+             alias="jme"
+             keystore="${seg}/jnlp/jmeKeyStore"
+             storepass="..."
     />
   </target>
 
