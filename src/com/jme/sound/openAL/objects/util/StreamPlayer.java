@@ -44,6 +44,8 @@ import org.lwjgl.openal.AL10;
 
 import com.jcraft.jorbis.JOrbisException;
 import com.jcraft.jorbis.VorbisFile;
+import com.jme.sound.openAL.objects.util.dsp.BandpassFilter;
+import com.jme.sound.openAL.objects.util.dsp.Equalizer;
 
 /**
  * @author Arman
@@ -52,6 +54,8 @@ public class StreamPlayer{
     
     private static StreamPlayer instance;
     private Player[] player;
+    private Equalizer equalizer;
+    private BandpassFilter filter;
     
     static{
         instance=new StreamPlayer();
@@ -65,8 +69,12 @@ public class StreamPlayer{
         return instance;
     }
     
-    
-    
+    public void setEqualizer(Equalizer e){
+        if(this.equalizer==null){
+            this.equalizer=e;
+        }        
+    }
+        
     /**
      * Tries to open an ogg or wav file. If the opening operation Is successful
      * a unique id is returned to identify this stream;
@@ -76,7 +84,14 @@ public class StreamPlayer{
     public int openStream(String file){
         JMEAudioInputStream tmp=open(file, true);
         if(tmp==null) return -1;
-        return add(tmp);
+        int streamNumber=add(tmp);
+        if(equalizer !=null){
+            filter=new BandpassFilter(equalizer.getFrequencies());
+            filter.init(tmp.rate());
+            equalizer.addFilter(streamNumber, filter);
+            tmp.addFilter(filter);
+        }
+        return streamNumber;
     }
     
     private JMEAudioInputStream open(String file, boolean calcLength) {
@@ -110,13 +125,11 @@ public class StreamPlayer{
             try {
                 VorbisFile vf=new VorbisFile(file);
                 length=vf.time_total(-1)*1000;
-             } catch (JOrbisException e) {
-                //"Manual" Count
-                tmp=new OggInputStream(fis);
-                length=getLength(tmp)*1000;
-                tmp.close();
-                fis.close();
-                
+             } catch (Exception e) {
+                 
+                 fis.close();
+                 e.printStackTrace();
+                throw new IOException(JMEAudioInputStream.INVALID_OGG_MESSAGE);
             }            
             fis=new FileInputStream(file);
             tmp=new OggInputStream(fis);
@@ -262,7 +275,7 @@ public class StreamPlayer{
         private int source;
         private JMEAudioInputStream stream;
         //temporary buffer
-        private ByteBuffer dataBuffer = ByteBuffer.allocateDirect(4096*8);
+        private ByteBuffer dataBuffer = ByteBuffer.allocateDirect(4096*32);
 
         // front and back buffers
         private IntBuffer buffers = BufferUtils.createIntBuffer(4);
@@ -279,6 +292,9 @@ public class StreamPlayer{
             this.source=sourceNumber;
             stream=current;
             AL10.alGenBuffers(buffers);
+            int[] freq={50, 200, 800, 3200, 12800, 25600};
+            BandpassFilter filter=new BandpassFilter(freq, current.rate());
+            current.addFilter(filter);
             
         }
         

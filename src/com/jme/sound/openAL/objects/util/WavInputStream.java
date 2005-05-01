@@ -16,9 +16,11 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
+import java.util.Iterator;
 
 import org.lwjgl.openal.AL10;
 
+import com.jme.sound.openAL.objects.util.dsp.Filter;
 import com.jme.system.JmeException;
 
 public class WavInputStream extends JMEAudioInputStream{
@@ -62,7 +64,13 @@ public class WavInputStream extends JMEAudioInputStream{
     public int read(ByteBuffer b, int off, int len) throws IOException {
         byte[] buffer=new byte[b.capacity()];
         int bytesRead=read(buffer, off, len);
-        b.put(b);
+        if(bytesRead>0 && filters.size()>0){
+            Iterator it=filters.iterator();
+            while(it.hasNext()){
+                buffer=((Filter)it.next()).filter(buffer);
+            }
+        }
+        b.put(buffer);
         b.position(off);
         return bytesRead;
     }

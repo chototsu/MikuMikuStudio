@@ -36,25 +36,39 @@ package com.jme.sound.openAL.objects.util.dsp;
 
 public abstract class Filter {
 
-    protected double theta;
+    protected double theta[];
+    protected double adjust[];    
+    protected double[] output;
+    protected int frequencies[];
+    protected double gainFactor;
 
-    protected double adjust = 1;
-
-    public Filter(int frequency, int rate) {
-        theta = 2.0 * Math.PI * frequency;
-        theta /= rate;
+    public Filter(int[] frequencies){
+        this.frequencies=frequencies;
+    }
+    
+    
+    
+    protected void initalize(int rate) {
+        
+        theta=new double[frequencies.length];
+        adjust=new double[frequencies.length];
+        for(int a=0; a<frequencies.length; a++){
+            theta[a] = (2 * Math.PI * (frequencies[a]));
+            theta[a]/=rate;
+            adjust[a]=1.0;
+        }
+        gainFactor=1.0/frequencies.length;
+        
     }
 
-    public void setAdjustement(double value) {
-        adjust = value;
+    public void setAdjustement(int frequencyIndex, double value) {
+        adjust[frequencyIndex] = value;
     }
 
-    private double getTheta() {
-        return theta;
-    }
 
-    public abstract byte[] filter(byte[] input);
 
-   
+   public abstract byte[] filter(byte[] input);
+
+
 
 }

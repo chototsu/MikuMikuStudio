@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Iterator;
 
 import org.lwjgl.openal.AL10;
 
@@ -54,6 +55,7 @@ import com.jcraft.jorbis.Block;
 import com.jcraft.jorbis.Comment;
 import com.jcraft.jorbis.DspState;
 import com.jcraft.jorbis.Info;
+import com.jme.sound.openAL.objects.util.dsp.Filter;
 
 
 /**
@@ -226,6 +228,10 @@ public class OggInputStream extends JMEAudioInputStream {
             
             if (!eos) {
                 int bytesToCopy = Math.min(len, convbufferSize-convbufferOff);
+                                    Iterator it=filters.iterator();
+                                    while(it.hasNext()){
+                                        convbuffer=((Filter)it.next()).filter(convbuffer);
+                                    }
                 b.put(convbuffer, convbufferOff, bytesToCopy);
                 convbufferOff += bytesToCopy;
                 bytesRead += bytesToCopy;

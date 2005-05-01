@@ -35,77 +35,116 @@
 package com.jme.sound.openAL.objects.util.dsp;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.DoubleBuffer;
 import java.nio.ShortBuffer;
+import java.nio.channels.GatheringByteChannel;
+
+
 
 public class BandpassFilter extends Filter {
 
     private float qParam = 1.4f;
 
-    private double alpha;
+    private double alpha[];
+    private double beta[];
+    private double gamma[];   
 
-    private double beta;
-
-    private double gamma;
-
-    public BandpassFilter(int frequency, int rate) {
-        super(frequency, rate);
+    
+    
+    public BandpassFilter(int[] frequencies){
+       super(frequencies);        
+    }
+    
+    
+    public void init(int rate){
+        super.initalize(rate);
+        alpha=new double[frequencies.length];
+        beta=new double[frequencies.length];
+        gamma=new double[frequencies.length];
         resetABC(qParam);
     }
 
     public void resetABC(double q) {
-        double tan = Math.tan(theta / (2.0 * q));
-        beta = 0.5 * ((1.0 - tan) / (1.0 + tan));
-        alpha = (0.5 - beta) / 2.0;
-        gamma = (0.5 + beta) * Math.cos(theta);
+        for(int a=0; a<theta.length; a++){
+            double tan = Math.tan(theta[a] / (2.0 * q));
+            beta[a] = 0.5 * ((1.0 - tan) / (1.0 + tan));
+            alpha[a] = (0.5 - beta[a]) / 2.0;
+            gamma[a] = (0.5 + beta[a]) * Math.cos(theta[a]);
+        }
     }
 
     public byte[] filter(byte[] input) {
-        ShortBuffer buffer = ByteBuffer.wrap(input).asShortBuffer();
-        double[] d=new double[buffer.capacity()];
-        for(int a=0; a<d.length; a++){
-            d[a]=(double)buffer.get(a);
+        
+        ByteOrder order=ByteOrder.nativeOrder();
+        ShortBuffer sbuf=ByteBuffer.wrap(input).order(order).asShortBuffer();
+        short[] sinput=new short[input.length/2];
+        for (int i=0; i < sinput.length; i++) {
+            sinput[i] = (sbuf.get(i));
         }
-        DoubleBuffer outputBuffer = DoubleBuffer.wrap(d);
+        
+        /*
+        short[] sinput=new short[input.length/2];
+        int count = input.length / 2;
+        int index = 0;
+
+        for (int i=0; i < count; i++) {
+            sinput[i] = (short)((((int) input[index++]) & 255) + 
+                                      (((int) input[index++]) << 8));
+        }
+        */
+        if(output==null){
+            output=new double[sinput.length];
+        }  
+        
+        for(int a=0; a<output.length; a++){
+            output[a]=(double)sinput[a] * gainFactor;
+        }
+        
+        for(int a=0; a<frequencies.length; a++){
+            passBand(a, sinput);
+        }
+        for (int a = 0; a < output.length; a++) {
+            double dSample = output[a];
+            if (dSample > 32767.0){
+                dSample = 32767.0;
+            }else if (dSample < -32768.0){
+                dSample = -32768.0;
+            }
+            sinput[a] = (short) dSample;
+        }
+     
+        return toByte(sinput, true);
+    }
+    
+    
+    /**
+     * @param a
+     * @param buffer
+     */
+    private void passBand(int passNumber, short[] sinput) {
         double[] inputArray = new double[3];
         double[] outputArray = new double[3];
         int i = 0, j = 0, k = 0;
-        for (int a = 0; a < buffer.capacity(); a++) {
-            // Fetch sample
-            inputArray[i] = (double) buffer.get(a);
-            
-            // Do indices maintainance
+        for (int a = 0; a < sinput.length; a++) {
+            inputArray[i] = (double) sinput[a];
             j = i - 2;
             if (j < 0)
                 j += 3;
             k = i - 1;
             if (k < 0)
                 k += 3;
+            outputArray[i] = 2 *(alpha[passNumber] * (inputArray[i] - inputArray[j]) 
+                                            + gamma[passNumber] * outputArray[k] 
+                                            - beta[passNumber] * outputArray[j]);
             
-            // Run the difference equation
-            double out = outputArray[i] = 2 *(alpha * (inputArray[i] - inputArray[j]) 
-                    + gamma * outputArray[k] 
-                                          - beta * outputArray[j]);
-            double val = outputBuffer.get(a);
-            val += adjust * out;
-            outputBuffer.put(a, val);
+            output[a] += adjust[passNumber] * outputArray[i];
             i = (i + 1) % 3;
         }
-        double[] darray = outputBuffer.array();
-        short[] outShort = new short[darray.length];
-        for (int a = 0; a < outputBuffer.capacity(); a++) {
-            double dSample = darray[a];
-            if (dSample > 32767.0)
-                dSample = 32767.0;
-            else if (dSample < -32768.0)
-                dSample = -32768.0;
-            // Convert sample and store
-            outShort[a] = (short) dSample;
-        }
-        return toByte(outShort, false);
-    }
-    
-    
+        
+        
+     }
+
     public byte[] toByte(short[] array, boolean flag){
         byte[] outBuf=new byte[array.length*2];
         for(int a=0, b=0; a<array.length; a++, b+=2){
@@ -118,25 +157,37 @@ public class BandpassFilter extends Filter {
     
 
     public static final byte[] toByte(short value, boolean flag) {
-        byte abyte0[] = new byte[2];
-        for (byte byte0 = 0; byte0 <= 1; byte0++)
-            abyte0[byte0] = (byte) (value >>> (1 - byte0) * 8);
+        byte temp[] = new byte[2];
+        /*
+        temp[0] = (byte) (value >> 8);
+        temp[1] = (byte) (value & 255);
+        */
+        for (byte b = 0; b <= 1; b++)
+            temp[b] = (byte) (value >>> (1 - b) * 8);
 
         if (flag)
-            abyte0 = reverse_order(abyte0, 2);
-        return abyte0;
+            temp = reverse_order(temp, 2);
+        
+        return temp;
+        
     }
 
-    public static final byte[] toByte(short word0) {
-        return toByte(word0, false);
+    public static final byte[] toByte(short s) {
+        return toByte(s, false);
     }
 
     private static final byte[] reverse_order(byte array[], int i) {
-        byte abyte1[] = new byte[i];
-        for (byte byte0 = 0; byte0 <= i - 1; byte0++)
-            abyte1[byte0] = array[i - 1 - byte0];
+        byte temp[] = new byte[i];
+        for (byte b = 0; b <= i - 1; b++)
+            temp[b] = array[i - 1 - b];
 
-        return abyte1;
+        return temp;
     }
+    
+    
 
+    
+   
+    
+ 
 }

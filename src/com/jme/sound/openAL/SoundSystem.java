@@ -12,6 +12,8 @@ import com.jme.renderer.Camera;
 import com.jme.sound.openAL.objects.Listener;
 import com.jme.sound.openAL.objects.MusicStream;
 import com.jme.sound.openAL.objects.Sample3D;
+import com.jme.sound.openAL.objects.util.StreamPlayer;
+import com.jme.sound.openAL.objects.util.dsp.Equalizer;
 import com.jme.sound.openAL.scene.Configuration;
 import com.jme.sound.openAL.scene.SoundNode;
 import com.jme.util.LoggingSystem;
@@ -487,6 +489,10 @@ public class SoundSystem {
         }
     }
 
+    
+    public void setEqualizer(Equalizer e){
+        StreamPlayer.getInstance().setEqualizer(e);
+    }
     
     
     
