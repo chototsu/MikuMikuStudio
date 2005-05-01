@@ -490,7 +490,7 @@ public class SoundSystem {
     }
 
     
-    public void setEqualizer(Equalizer e){
+    public static void setEqualizer(Equalizer e){
         StreamPlayer.getInstance().setEqualizer(e);
     }
     
