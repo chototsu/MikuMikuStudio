@@ -126,10 +126,8 @@ public class StreamPlayer{
                 VorbisFile vf=new VorbisFile(file);
                 length=vf.time_total(-1)*1000;
              } catch (Exception e) {
-                 
                  fis.close();
-                 e.printStackTrace();
-                throw new IOException(JMEAudioInputStream.INVALID_OGG_MESSAGE);
+                 throw new IOException(JMEAudioInputStream.INVALID_OGG_MESSAGE);
             }            
             fis=new FileInputStream(file);
             tmp=new OggInputStream(fis);
@@ -275,7 +273,7 @@ public class StreamPlayer{
         private int source;
         private JMEAudioInputStream stream;
         //temporary buffer
-        private ByteBuffer dataBuffer = ByteBuffer.allocateDirect(4096*32);
+        private ByteBuffer dataBuffer = ByteBuffer.allocateDirect(4096*16);
 
         // front and back buffers
         private IntBuffer buffers = BufferUtils.createIntBuffer(4);
