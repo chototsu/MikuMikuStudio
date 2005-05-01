@@ -74,29 +74,16 @@ public class BandpassFilter extends Filter {
         }
     }
 
-    public byte[] filter(byte[] input) {
-        
+    public byte[] filter(byte[] input) {        
         ByteOrder order=ByteOrder.nativeOrder();
         ShortBuffer sbuf=ByteBuffer.wrap(input).order(order).asShortBuffer();
         short[] sinput=new short[input.length/2];
         for (int i=0; i < sinput.length; i++) {
             sinput[i] = (sbuf.get(i));
         }
-        
-        /*
-        short[] sinput=new short[input.length/2];
-        int count = input.length / 2;
-        int index = 0;
-
-        for (int i=0; i < count; i++) {
-            sinput[i] = (short)((((int) input[index++]) & 255) + 
-                                      (((int) input[index++]) << 8));
-        }
-        */
         if(output==null){
             output=new double[sinput.length];
         }  
-        
         for(int a=0; a<output.length; a++){
             output[a]=(double)sinput[a] * gainFactor;
         }
@@ -105,15 +92,8 @@ public class BandpassFilter extends Filter {
             passBand(a, sinput);
         }
         for (int a = 0; a < output.length; a++) {
-            double dSample = output[a];
-            if (dSample > 32767.0){
-                dSample = 32767.0;
-            }else if (dSample < -32768.0){
-                dSample = -32768.0;
-            }
-            sinput[a] = (short) dSample;
-        }
-     
+            sinput[a] =(short) Math.min(Short.MAX_VALUE, Math.max(output[a], Short.MIN_VALUE));
+        }     
         return toByte(sinput, true);
     }
     
@@ -158,10 +138,6 @@ public class BandpassFilter extends Filter {
 
     public static final byte[] toByte(short value, boolean flag) {
         byte temp[] = new byte[2];
-        /*
-        temp[0] = (byte) (value >> 8);
-        temp[1] = (byte) (value & 255);
-        */
         for (byte b = 0; b <= 1; b++)
             temp[b] = (byte) (value >>> (1 - b) * 8);
 
