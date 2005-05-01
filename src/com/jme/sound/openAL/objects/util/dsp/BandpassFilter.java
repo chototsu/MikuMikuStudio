@@ -44,7 +44,7 @@ import java.nio.channels.GatheringByteChannel;
 
 public class BandpassFilter extends Filter {
 
-    private float qParam = 1.4f;
+    private float qParam = 1.0f;
 
     private double alpha[];
     private double beta[];
