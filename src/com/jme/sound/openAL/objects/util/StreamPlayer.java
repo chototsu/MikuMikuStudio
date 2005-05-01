@@ -292,9 +292,7 @@ public class StreamPlayer{
             this.source=sourceNumber;
             stream=current;
             AL10.alGenBuffers(buffers);
-            int[] freq={50, 200, 800, 3200, 12800, 25600};
-            BandpassFilter filter=new BandpassFilter(freq, current.rate());
-            current.addFilter(filter);
+            
             
         }
         
