@@ -34,6 +34,9 @@
  */
 package jmetest.sound.openal;
 
+import java.awt.BorderLayout;
+import java.awt.ComponentOrientation;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -43,8 +46,13 @@ import java.util.logging.Level;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import com.jme.sound.openAL.SoundSystem;
+import com.jme.sound.openAL.objects.util.dsp.Equalizer;
 import com.jme.util.LoggingSystem;
 
 /**
@@ -60,7 +68,7 @@ public class TestStreamPlayer {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         open.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){   
-                final JFileChooser fileChooser=new JFileChooser();;
+                final JFileChooser fileChooser=new JFileChooser("C:/SAVE/Apps/ogg");
                 fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
                 fileChooser.showOpenDialog(null);
                 ((JButton)e.getSource()).setEnabled(false);
@@ -83,11 +91,58 @@ public class TestStreamPlayer {
     }
 
     protected static void startPlayer(JFrame frame, JButton button, File dir) throws Exception{
-        JButton next=new JButton(">>");
-        NextButtonHandler nextHandler=new NextButtonHandler();
-        next.addActionListener(nextHandler);
-        frame.getContentPane().add(next);
+        Equalizer e=new Equalizer(new int[]{50, 200, 800, 3200, 12800}, -12, 12);
+        SoundSystem.setEqualizer(e);
+        frame.getContentPane().remove(button);
+        JPanel panel=new JPanel();
+        JPanel southPanel=new JPanel();
+        panel.setLayout(new BorderLayout());
         
+        JButton next=new JButton(">>");
+        JButton previous=new JButton("<<");
+        JSlider sl50=new JSlider(-12, 12, 0);
+        sl50.setOrientation(JSlider.VERTICAL);
+        sl50.setPaintTicks(true);
+        sl50.setMajorTickSpacing(1);
+        
+        
+        JSlider sl200=new JSlider(-12, 12, 0);
+        sl200.setOrientation(JSlider.VERTICAL);
+        sl200.setPaintTicks(true);
+        sl200.setMajorTickSpacing(1);
+        
+        JSlider sl800=new JSlider(-12, 12, 0);
+        sl800.setOrientation(JSlider.VERTICAL);
+        sl800.setPaintTicks(true);
+        sl800.setMajorTickSpacing(1);
+        
+        JSlider sl3200=new JSlider(-12, 12, 0);
+        sl3200.setOrientation(JSlider.VERTICAL);
+        sl3200.setPaintTicks(true);
+        sl3200.setMajorTickSpacing(1);
+        
+        JSlider sl12800=new JSlider(-12, 12, 0);
+        sl12800.setOrientation(JSlider.VERTICAL);
+        sl12800.setPaintTicks(true);
+        sl12800.setMajorTickSpacing(1);
+        
+        GridLayout southPanelLayout=new GridLayout(1, 5);
+        southPanel.setLayout(southPanelLayout);
+        southPanel.add(sl50);
+        southPanel.add(sl200);
+        southPanel.add(sl800);
+        southPanel.add(sl3200);
+        southPanel.add(sl12800);
+        
+        NextButtonHandler nextHandler=new NextButtonHandler();
+        NextButtonHandler previousHandler=new NextButtonHandler();
+        next.addActionListener(nextHandler);
+        previous.addActionListener(previousHandler);
+        panel.add(next, "East");
+        panel.add(previous, "West");
+        panel.add(button, "North");       
+        panel.add(southPanel, "South");
+        frame.getContentPane().add(panel);
         String[] list=null;
         int[] clip=null;
         if(dir !=null && dir.isDirectory()){
@@ -109,9 +164,15 @@ public class TestStreamPlayer {
         }
         for(int a=0; a<list.length; a++){
                 int nb=SoundSystem.createStream(dir.getAbsolutePath()+File.separator+list[a], false); 
+                
                 if(SoundSystem.isStreamOpened(nb)){
                     valid.add(new Integer(nb));
                     songs.add(list[a]);
+                    sl50.addChangeListener(new SliderChangeListener(e, nb, 50));
+                    sl200.addChangeListener(new SliderChangeListener(e, nb, 200));
+                    sl800.addChangeListener(new SliderChangeListener(e, nb, 800));
+                    sl3200.addChangeListener(new SliderChangeListener(e, nb, 3200));
+                    sl12800.addChangeListener(new SliderChangeListener(e, nb, 12800));
                 }
         }
         int nbStream=valid.size();
@@ -131,6 +192,14 @@ public class TestStreamPlayer {
                     if(nextHandler.isPressed()){
                         lgth=0;
                         nextHandler.setPressed(false);
+                        SoundSystem.stopStream(music);
+                    }
+                    if(previousHandler.isPressed()){
+                        previousHandler.setPressed(false);
+                        SoundSystem.stopStream(music);
+                        if(a==0) a=-1;
+                        else a-=2;
+                        lgth=0;
                     }
                     lgth-=1000;
                     
@@ -162,5 +231,29 @@ class NextButtonHandler implements ActionListener{
         this.pressed = pressed;
     }
     
+    
+}
+
+
+class SliderChangeListener implements ChangeListener{
+
+    private int stream;
+    private int freq;
+    private Equalizer eq;
+    
+    public SliderChangeListener(Equalizer e, int streamNumber, int frequency){
+        this.stream=streamNumber;
+        this.freq=frequency;
+        this.eq=e;
+    }
+
+    public void stateChanged(ChangeEvent evt) {
+        JSlider slider = (JSlider)evt.getSource();
+
+        if (!slider.getValueIsAdjusting()) {
+            // Get new value
+            eq.setDBValue(stream, freq, slider.getValue());
+        }
+    }
     
 }
