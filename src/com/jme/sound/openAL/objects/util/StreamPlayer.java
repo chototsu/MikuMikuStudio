@@ -273,7 +273,7 @@ public class StreamPlayer{
         private int source;
         private JMEAudioInputStream stream;
         //temporary buffer
-        private ByteBuffer dataBuffer = ByteBuffer.allocateDirect(4096*16);
+        private ByteBuffer dataBuffer = ByteBuffer.allocateDirect(4096*20);
 
         // front and back buffers
         private IntBuffer buffers = BufferUtils.createIntBuffer(4);
@@ -410,7 +410,7 @@ public class StreamPlayer{
             play();
             try {
                 while (update() && !stopped) {
-                    Thread.sleep(5);
+                    Thread.sleep(2);
                 }
             } catch (Exception e) {
                 e.printStackTrace();

@@ -44,7 +44,7 @@ import java.nio.channels.GatheringByteChannel;
 
 public class BandpassFilter extends Filter {
 
-    private float qParam = 1.0f;
+    private float qParam = 1.6f;
 
     private double alpha[];
     private double beta[];
@@ -69,12 +69,13 @@ public class BandpassFilter extends Filter {
         for(int a=0; a<theta.length; a++){
             double tan = Math.tan(theta[a] / (2.0 * q));
             beta[a] = 0.5 * ((1.0 - tan) / (1.0 + tan));
-            alpha[a] = (0.5 - beta[a]) / 2.0;
+            alpha[a] = (0.5- beta[a]) / 2.0;
             gamma[a] = (0.5 + beta[a]) * Math.cos(theta[a]);
         }
     }
 
     public byte[] filter(byte[] input) {        
+        
         ByteOrder order=ByteOrder.nativeOrder();
         ShortBuffer sbuf=ByteBuffer.wrap(input).order(order).asShortBuffer();
         short[] sinput=new short[input.length/2];
@@ -90,11 +91,12 @@ public class BandpassFilter extends Filter {
         
         for(int a=0; a<frequencies.length; a++){
             passBand(a, sinput);
-        }
+        }        
         for (int a = 0; a < output.length; a++) {
             sinput[a] =(short) Math.min(Short.MAX_VALUE, Math.max(output[a], Short.MIN_VALUE));
         }     
         return toByte(sinput, true);
+        
     }
     
     
@@ -118,12 +120,16 @@ public class BandpassFilter extends Filter {
                                             + gamma[passNumber] * outputArray[k] 
                                             - beta[passNumber] * outputArray[j]);
             
+            
             output[a] += adjust[passNumber] * outputArray[i];
             i = (i + 1) % 3;
         }
         
         
      }
+
+    
+
 
     public byte[] toByte(short[] array, boolean flag){
         byte[] outBuf=new byte[array.length*2];

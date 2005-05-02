@@ -53,8 +53,8 @@ public abstract class Filter {
         theta=new double[frequencies.length];
         adjust=new double[frequencies.length];
         for(int a=0; a<frequencies.length; a++){
-            theta[a] = (2 * Math.PI * (frequencies[a]));
-            theta[a]/=rate;
+            theta[a] = (2 * Math.PI * (frequencies[a]))/rate;
+            
             adjust[a]=1.0;
         }
         gainFactor=1.0/frequencies.length;
