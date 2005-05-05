@@ -149,11 +149,13 @@ public class ObjToJme extends FormatConverter{
             addNormalToList(parts);
             return;
         } else if ("g".equals(parts[0])){
-            if (materialNames.get(parts[1])!=null && materialNames.get(parts[1])!=null)
-                curGroup=(MaterialGrouping) materialNames.get(parts[1]);
-            else
+            //see what the material name is if there isn't a name, assume its the default group
+            if (parts.length >= 2 && materialNames.get(parts[1]) != null
+                   && materialNames.get(parts[1]) != null)
+                curGroup = (MaterialGrouping) materialNames.get(parts[1]);
+             else
                 setDefaultGroup();
-            return;
+            return; 
         } else if ("f".equals(parts[0])){
             addFaces(parts);
             return;
