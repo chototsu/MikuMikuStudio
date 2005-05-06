@@ -222,6 +222,23 @@ public class SoundSystem {
     }
 
     /**
+     * Get the "ears" of the sound system
+     * @return
+     */
+    public static Camera getCamera(){
+        return camera;
+    }
+    
+    /**
+     * Set the "ears" of the sound system
+     * @param c
+     */
+    public static void setCamera(Camera c){
+        camera=c;
+        updateListener();
+    }
+    
+    /**
      * Creates a node ans return an integer as it's identifier.
      * @return the node identifier
      */
