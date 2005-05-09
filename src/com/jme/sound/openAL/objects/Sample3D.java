@@ -104,6 +104,7 @@ public class Sample3D extends SoundSpatial{
     
     
     public void setPosition(float x, float y, float z){
+        position.clear();
         position.put(x);
         position.put(y);
         position.put(z);
