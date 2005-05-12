@@ -30,16 +30,58 @@
   </target>
 <!-- ************************************************************************* -->
 
-  <target name="dist" depends="compile" description="generate jme jar file" >
-    <jar jarfile="${seg}/target/jme.jar"  basedir="${class}" update="no" compress="false"/>
+  <target name="dist-core" depends="compile" description="generate jme jar file" >
+    <jar jarfile="${seg}/target/jme.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jme/**/*.class" />
   </target>
+	
+	<target name="dist-effects" depends="compile" description="generate jme jar file (effects)" >
+	    <jar jarfile="${seg}/target/jme-effects.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class" />
+	  </target>
+	<target name="dist-terrain" depends="compile" description="generate jme jar file (terrain)" >
+		    <jar jarfile="${seg}/target/jme-terrain.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/terrain/**/*.class" />
+		  </target>
+	<target name="dist-model" depends="compile" description="generate jme jar file (model)" >
+		    <jar jarfile="${seg}/target/jme-model.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/model/**/*.class" />
+		  </target>
+	<target name="dist-sound" depends="compile" description="generate jme jar file (sound)" >
+		    <jar jarfile="${seg}/target/jme-sound.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/sound/**/*.class" />
+		  </target>
+	<target name="dist-ui" depends="compile" description="generate jme jar file (ui)" >
+		    <jar jarfile="${seg}/target/jme-ui.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/ui/**/*.class" />
+		  </target>
+	<target name="dist-all" depends="dist-core, dist-terrain, dist-model, dist-sound, dist-ui" description="Build all jar files"/>
 
-  <target name="webdist" depends="dist" description="sign JARs for JNLP distribution" >
+  <target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution" >
     <signjar jar="${seg}/target/jme.jar"
       alias="jme"
       keystore="${seg}/jnlp/jmeKeyStore"
       storepass="..."
     />
+  	<signjar jar="${seg}/target/jme-effects.jar"
+  	      alias="jme"
+  	      keystore="${seg}/jnlp/jmeKeyStore"
+  	      storepass="..."
+  	    />
+    	<signjar jar="${seg}/target/jme-terrain.jar"
+    	      alias="jme"
+    	      keystore="${seg}/jnlp/jmeKeyStore"
+    	      storepass="..."
+    	    />
+  	<signjar jar="${seg}/target/jme-model.jar"
+    alias="jme"
+    keystore="${seg}/jnlp/jmeKeyStore"
+    storepass="..."
+  />
+  	<signjar jar="${seg}/target/jme-sound.jar"
+  	      alias="jme"
+  	      keystore="${seg}/jnlp/jmeKeyStore"
+  	      storepass="..."
+  	    />
+  	<signjar jar="${seg}/target/jme-ui.jar"
+  	      alias="jme"
+  	      keystore="${seg}/jnlp/jmeKeyStore"
+  	      storepass="..."
+  	    />
   </target>
 
 <!-- java doc ************************************************************************* -->
