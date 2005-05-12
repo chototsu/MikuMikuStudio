@@ -18,8 +18,8 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
-import com.jme.sound.fmod.SoundSystem;
 import com.jme.util.TextureManager;
+import com.jmex.sound.fmod.SoundSystem;
 
 
 /**

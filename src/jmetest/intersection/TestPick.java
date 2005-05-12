@@ -38,7 +38,6 @@ import java.net.URL;
 
 import jmetest.renderer.loader.TestMilkJmeWrite;
 
-import com.jme.animation.JointController;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.math.Vector3f;
@@ -46,16 +45,17 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.math.FastMath;
 import com.jme.scene.state.LightState;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.MilkToJme;
+import com.jmex.model.animation.JointController;
 
 /**
  * <code>TestPick</code>
  * 
  * @author Mark Powell
- * @version $Id: TestPick.java,v 1.22 2004-10-14 01:23:08 mojomonkey Exp $
+ * @version $Id: TestPick.java,v 1.23 2005-05-12 22:50:11 Mojomonkey Exp $
  */
 public class TestPick extends SimpleGame {
 

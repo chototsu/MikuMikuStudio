@@ -44,6 +44,7 @@ import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.renderer.CloneCreator;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
@@ -59,7 +60,7 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.70 2005-02-28 16:59:30 renanse Exp $
+ * @version $Id: Geometry.java,v 1.71 2005-05-12 22:49:13 Mojomonkey Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 

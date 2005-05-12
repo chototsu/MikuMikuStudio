@@ -1,12 +1,12 @@
 package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.Converters.MaxToJme;
 import com.jme.scene.Node;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.math.FastMath;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.MaxToJme;
 
 import java.io.*;
 import java.net.URL;

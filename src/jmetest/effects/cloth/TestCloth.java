@@ -34,8 +34,6 @@ package jmetest.effects.cloth;
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.OrientedBoundingBox;
-import com.jme.effects.cloth.ClothUtils;
-import com.jme.effects.cloth.CollidingClothPatch;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -45,6 +43,8 @@ import com.jme.math.Vector3f;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jmex.effects.cloth.ClothUtils;
+import com.jmex.effects.cloth.CollidingClothPatch;
 
 /**
  * <code>TestCloth</code> shows a simple demo of jME's
@@ -52,7 +52,7 @@ import com.jme.util.TextureManager;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.2 2005-02-10 21:48:31 renanse Exp $
+ * @version $Id: TestCloth.java,v 1.3 2005-05-12 22:49:43 Mojomonkey Exp $
  */
 public class TestCloth extends SimpleGame {
 

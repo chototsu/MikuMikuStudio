@@ -39,14 +39,11 @@ import java.net.URL;
 import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
-import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
@@ -54,6 +51,9 @@ import com.jme.util.TextureManager;
 import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Disk;
 import com.jme.renderer.Renderer;
+import com.jmex.effects.ParticleManager;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.MilkToJme;
 
 /**
  * <code>TestDynamicSmoker</code>

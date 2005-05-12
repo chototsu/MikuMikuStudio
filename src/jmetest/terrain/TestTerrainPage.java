@@ -43,17 +43,17 @@ import com.jme.scene.CameraNode;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
-import com.jme.terrain.TerrainPage;
-import com.jme.terrain.util.FaultFractalHeightMap;
-import com.jme.terrain.util.ProceduralTextureGenerator;
 import com.jme.util.TextureManager;
 import com.jme.renderer.Renderer;
+import com.jmex.terrain.TerrainPage;
+import com.jmex.terrain.util.FaultFractalHeightMap;
+import com.jmex.terrain.util.ProceduralTextureGenerator;
 
 /**
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.25 2005-02-10 21:48:26 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.26 2005-05-12 22:49:06 Mojomonkey Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 

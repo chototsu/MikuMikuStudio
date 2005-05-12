@@ -53,16 +53,16 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.model.XMLparser.Converters.FormatConverter;
-import com.jme.scene.model.XMLparser.Converters.ObjToJme;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.util.TextureManager;
 import com.jme.scene.Line;
 import com.jme.intersection.PickData;
+import com.jmex.model.XMLparser.BinaryToXML;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.FormatConverter;
+import com.jmex.model.XMLparser.Converters.ObjToJme;
 
 /**
  * Started Date: Jul 22, 2004 <br>

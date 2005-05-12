@@ -46,8 +46,8 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import com.jme.sound.fmod.SoundSystem;
 import com.jme.util.LoggingSystem;
+import com.jmex.sound.fmod.SoundSystem;
 
 /**
  * @author Arman

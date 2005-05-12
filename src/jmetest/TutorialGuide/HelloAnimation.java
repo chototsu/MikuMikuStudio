@@ -1,5 +1,6 @@
 package jmetest.TutorialGuide;
 
+import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
@@ -7,7 +8,6 @@ import com.jme.scene.Node;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.math.FastMath;
-import com.jme.animation.SpatialTransformer;
 import com.jme.light.PointLight;
 import com.jme.light.SimpleLightNode;
 import com.jme.renderer.ColorRGBA;

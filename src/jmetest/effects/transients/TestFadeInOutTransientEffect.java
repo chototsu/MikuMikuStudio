@@ -35,8 +35,6 @@
 package jmetest.effects.transients;
 import com.jme.app.AbstractGame;
 import com.jme.app.VariableTimestepGame;
-import com.jme.effects.transients.FadeInOut;
-import com.jme.effects.transients.FadeInOutController;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -52,6 +50,8 @@ import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
+import com.jmex.effects.transients.FadeInOut;
+import com.jmex.effects.transients.FadeInOutController;
 /**
  * @author Ahmed
  */

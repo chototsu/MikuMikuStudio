@@ -68,17 +68,17 @@ import javax.swing.event.ChangeListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 
-import com.jme.effects.ParticleManager;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
+import com.jmex.effects.ParticleManager;
 
 /**
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.36 2005-03-15 17:08:12 renanse Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.37 2005-05-12 22:49:42 Mojomonkey Exp $
  *
  */
 

@@ -38,7 +38,6 @@ import java.net.URL;
 
 import jmetest.renderer.loader.TestMilkJmeWrite;
 
-import com.jme.animation.JointController;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
@@ -50,13 +49,14 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.MilkToJme;
+import com.jmex.model.animation.JointController;
 
 /**
  * <code>TestRenderToTexture</code>

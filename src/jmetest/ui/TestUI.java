@@ -63,19 +63,19 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
-import com.jme.ui.UIColorScheme;
-import com.jme.ui.UIBillboard;
-import com.jme.ui.UIButton;
-import com.jme.ui.UICheck;
-import com.jme.ui.UIText;
-import com.jme.ui.UIEditBox;
-import com.jme.ui.UIActiveObject;
-import com.jme.ui.UIObject;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import jmetest.input.TestAbsoluteMouse;
 import com.jme.util.*;
-import com.jme.ui.UIFonts;
+import com.jmex.ui.UIActiveObject;
+import com.jmex.ui.UIBillboard;
+import com.jmex.ui.UIButton;
+import com.jmex.ui.UICheck;
+import com.jmex.ui.UIColorScheme;
+import com.jmex.ui.UIEditBox;
+import com.jmex.ui.UIFonts;
+import com.jmex.ui.UIObject;
+import com.jmex.ui.UIText;
 
 /**
  * @author schustej

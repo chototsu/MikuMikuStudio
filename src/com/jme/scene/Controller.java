@@ -33,6 +33,8 @@ package com.jme.scene;
 
 import java.io.Serializable;
 
+import com.jme.renderer.CloneCreator;
+
 /**
  * <code>Controller</code> provides a base class for creation of controllers
  * to modify nodes and render states over time. The base controller provides a
@@ -41,7 +43,7 @@ import java.io.Serializable;
  * current one and modifies an object in a application specific way.
  * 
  * @author Mark Powell
- * @version $Id: Controller.java,v 1.11 2005-01-03 19:00:15 renanse Exp $
+ * @version $Id: Controller.java,v 1.12 2005-05-12 22:49:12 Mojomonkey Exp $
  */
 public abstract class Controller implements Serializable {
 

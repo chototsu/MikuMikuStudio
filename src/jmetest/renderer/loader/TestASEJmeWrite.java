@@ -1,9 +1,9 @@
 package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.Converters.AseToJme;
 import com.jme.scene.Node;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.AseToJme;
 
 import java.net.URL;
 import java.io.*;

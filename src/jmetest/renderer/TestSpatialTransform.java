@@ -60,8 +60,8 @@ package jmetest.renderer;
  *      Modified rotate test [ setRotation() ] to rotate the Transform box through 360 degrees.
  */
 
-import com.jme.app.SimpleGame;
 import com.jme.animation.SpatialTransformer;
+import com.jme.app.SimpleGame;
 import com.jme.scene.shape.Box;
 import com.jme.scene.Spatial;
 import com.jme.math.Vector3f;

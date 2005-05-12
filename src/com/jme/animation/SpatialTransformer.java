@@ -31,9 +31,9 @@
  */
 package com.jme.animation;
 
+import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.scene.Spatial;
-import com.jme.scene.CloneCreator;
 import com.jme.math.Vector3f;
 import com.jme.math.Quaternion;
 import com.jme.math.TransformMatrixQuat;

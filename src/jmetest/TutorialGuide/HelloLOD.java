@@ -1,9 +1,6 @@
 package jmetest.TutorialGuide;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.Converters.FormatConverter;
-import com.jme.scene.model.XMLparser.Converters.ObjToJme;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.Node;
 import com.jme.scene.TriMesh;
 import com.jme.scene.CameraNode;
@@ -17,6 +14,9 @@ import com.jme.curve.CurveController;
 import com.jme.curve.BezierCurve;
 import com.jme.input.KeyInput;
 import com.jme.input.action.KeyExitAction;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.FormatConverter;
+import com.jmex.model.XMLparser.Converters.ObjToJme;
 
 import java.net.URL;
 import java.io.ByteArrayOutputStream;

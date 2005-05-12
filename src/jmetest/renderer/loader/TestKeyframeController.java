@@ -2,10 +2,10 @@ package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
 import com.jme.scene.shape.Sphere;
-import com.jme.animation.KeyframeController;
 import com.jme.renderer.ColorRGBA;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jmex.model.animation.KeyframeController;
 
 
 /**

@@ -34,7 +34,6 @@ package jmetest.terrain;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
-import com.jme.effects.LensFlare;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
 import com.jme.light.LightNode;
@@ -46,15 +45,16 @@ import com.jme.scene.CameraNode;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.TextureState;
-import com.jme.terrain.TerrainBlock;
-import com.jme.terrain.util.MidPointHeightMap;
 import com.jme.util.TextureManager;
 import com.jme.renderer.Renderer;
+import com.jmex.effects.LensFlare;
+import com.jmex.terrain.TerrainBlock;
+import com.jmex.terrain.util.MidPointHeightMap;
 
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.23 2005-02-10 21:48:26 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.24 2005-05-12 22:49:05 Mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;

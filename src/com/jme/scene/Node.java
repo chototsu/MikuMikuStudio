@@ -49,6 +49,7 @@ import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.PickResults;
 import com.jme.math.Ray;
+import com.jme.renderer.CloneCreator;
 import com.jme.renderer.Renderer;
 import com.jme.util.LoggingSystem;
 
@@ -60,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.38 2005-02-24 22:58:00 renanse Exp $
+ * @version $Id: Node.java,v 1.39 2005-05-12 22:49:12 Mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 

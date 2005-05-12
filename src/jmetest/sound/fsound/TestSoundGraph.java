@@ -42,9 +42,9 @@ import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 
-import com.jme.sound.fmod.SoundSystem;
-import com.jme.sound.fmod.scene.Configuration;
 import com.jme.util.TextureManager;
+import com.jmex.sound.fmod.SoundSystem;
+import com.jmex.sound.fmod.scene.Configuration;
 
 /**
  * @author Arman Ozcelik

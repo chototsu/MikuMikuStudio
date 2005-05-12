@@ -38,7 +38,6 @@ import java.net.URL;
 
 import jmetest.renderer.loader.TestMd2JmeWrite;
 
-import com.jme.animation.KeyframeController;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
@@ -46,16 +45,17 @@ import com.jme.scene.BillboardNode;
 import com.jme.scene.Controller;
 import com.jme.scene.ImposterNode;
 import com.jme.scene.Node;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.Converters.Md2ToJme;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.Md2ToJme;
+import com.jmex.model.animation.KeyframeController;
 
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.16 2005-02-10 21:48:21 renanse Exp $
+ * @version $Id: TestImposterNode.java,v 1.17 2005-05-12 22:49:32 Mojomonkey Exp $
  */
 public class TestImposterNode extends SimpleGame {
   private Node fakeScene;

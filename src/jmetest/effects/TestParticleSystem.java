@@ -33,7 +33,6 @@ package jmetest.effects;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
-import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -42,10 +41,11 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.scene.state.ZBufferState;
+import com.jmex.effects.ParticleManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.26 2005-03-17 23:06:17 renanse Exp $
+ * @version $Id: TestParticleSystem.java,v 1.27 2005-05-12 22:49:41 Mojomonkey Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 

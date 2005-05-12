@@ -44,6 +44,7 @@ import com.jme.math.Ray;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.math.Matrix3f;
+import com.jme.renderer.CloneCreator;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.system.JmeException;
@@ -58,7 +59,7 @@ import com.jme.bounding.OBBTree;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.38 2005-01-13 04:12:08 mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.39 2005-05-12 22:49:13 Mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 

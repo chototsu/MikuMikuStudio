@@ -1,20 +1,20 @@
 package jmetest.renderer.loader;
 
-import com.jme.animation.KeyframeController;
 import com.jme.app.SimpleGame;
-import com.jme.scene.CloneCreator;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.TextureState;
-import com.jme.scene.model.XMLparser.Converters.MilkToJme;
-import com.jme.scene.model.XMLparser.Converters.MaxToJme;
-import com.jme.scene.model.XMLparser.Converters.Md2ToJme;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.math.Vector3f;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.util.TextureManager;
 import com.jme.image.Texture;
+import com.jmex.model.ModelCloneCreator;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.MaxToJme;
+import com.jmex.model.XMLparser.Converters.Md2ToJme;
+import com.jmex.model.XMLparser.Converters.MilkToJme;
+import com.jmex.model.animation.KeyframeController;
 
 import java.net.URL;
 import java.io.*;
@@ -67,7 +67,7 @@ public class TestModelClones extends SimpleGame {
 
         freakmd2.setLocalScale(.1f);
 
-        CloneCreator cc=new CloneCreator(freakmd2);
+        ModelCloneCreator cc=new ModelCloneCreator(freakmd2);
         cc.addProperty("colors");
         cc.addProperty("texcoords");
         cc.addProperty("indices");
@@ -103,7 +103,7 @@ public class TestModelClones extends SimpleGame {
         }
         r.setLocalScale(.1f);
 
-        CloneCreator cc=new CloneCreator(r);
+        ModelCloneCreator cc=new ModelCloneCreator(r);
         cc.addProperty("colors");
         cc.addProperty("texcoords");
         cc.addProperty("indices");
@@ -112,8 +112,10 @@ public class TestModelClones extends SimpleGame {
         for (int i=0;i<3;i++){
             Spatial s=cc.createCopy();
             s.setLocalTranslation(new Vector3f(3*i,0,i));
-            MilkToJme.findController((Node) s).setSpeed((i+1.0f)/4);
-            MilkToJme.findController((Node) s).setModelUpdate(false);
+            if(MilkToJme.findController((Node) s) != null) {
+                MilkToJme.findController((Node) s).setSpeed((i+1.0f)/4);
+                MilkToJme.findController((Node) s).setModelUpdate(false);
+            }
             s.setForceView(true);
             rootNode.attachChild(s);
         }
@@ -141,7 +143,7 @@ public class TestModelClones extends SimpleGame {
             e.printStackTrace();
         }
 
-        CloneCreator cc=new CloneCreator(r);
+        ModelCloneCreator cc=new ModelCloneCreator(r);
         cc.addProperty("colors");
         cc.addProperty("texcoords");
         cc.addProperty("vertices");

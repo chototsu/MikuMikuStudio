@@ -44,6 +44,7 @@ import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
+import com.jme.renderer.CloneCreator;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.RenderState;
@@ -56,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.63 2005-03-01 00:21:39 renanse Exp $
+ * @version $Id: Spatial.java,v 1.64 2005-05-12 22:49:11 Mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
 

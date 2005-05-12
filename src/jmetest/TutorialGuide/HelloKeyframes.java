@@ -8,7 +8,7 @@ import com.jme.scene.state.MaterialState;
 import com.jme.renderer.ColorRGBA;
 import com.jme.math.Vector3f;
 import com.jme.math.FastMath;
-import com.jme.animation.KeyframeController;
+import com.jmex.model.animation.KeyframeController;
 
 /**
  * Started Date: Jul 23, 2004<br><br>

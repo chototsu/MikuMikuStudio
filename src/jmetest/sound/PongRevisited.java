@@ -5,7 +5,6 @@ package jmetest.sound;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
-import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -19,11 +18,12 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
-import com.jme.sound.fmod.SoundSystem;
-import com.jme.ui.UIColorScheme;
-import com.jme.ui.UIFonts;
-import com.jme.ui.UIText;
 import com.jme.util.TextureManager;
+import com.jmex.effects.ParticleManager;
+import com.jmex.sound.fmod.SoundSystem;
+import com.jmex.ui.UIColorScheme;
+import com.jmex.ui.UIFonts;
+import com.jmex.ui.UIText;
 
 /**
  * @author Arman OZCELIK

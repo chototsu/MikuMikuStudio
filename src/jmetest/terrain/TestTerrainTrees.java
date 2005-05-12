@@ -38,23 +38,23 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Vector3f;
-import com.jme.scene.CloneCreator;
 import com.jme.scene.Spatial;
 import com.jme.scene.shape.Pyramid;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.FogState;
 import com.jme.scene.state.TextureState;
-import com.jme.terrain.TerrainBlock;
-import com.jme.terrain.util.MidPointHeightMap;
-import com.jme.terrain.util.ProceduralTextureGenerator;
 import com.jme.util.TextureManager;
+import com.jme.renderer.CloneCreator;
 import com.jme.renderer.Renderer;
+import com.jmex.terrain.TerrainBlock;
+import com.jmex.terrain.util.MidPointHeightMap;
+import com.jmex.terrain.util.ProceduralTextureGenerator;
 
 /**
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainTrees.java,v 1.8 2005-02-10 21:48:25 renanse Exp $
+ * @version $Id: TestTerrainTrees.java,v 1.9 2005-05-12 22:49:05 Mojomonkey Exp $
  */
 public class TestTerrainTrees extends SimpleGame {
 

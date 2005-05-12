@@ -1,5 +1,6 @@
 package jmetest.intersection;
 
+import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.scene.shape.CompositeSphere;
 import com.jme.scene.shape.PQTorus;
@@ -9,7 +10,6 @@ import com.jme.intersection.CollisionData;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.TriangleCollisionResults;
 import com.jme.math.Vector3f;
-import com.jme.animation.SpatialTransformer;
 import com.jme.bounding.BoundingBox;
 import com.jme.renderer.ColorRGBA;
 

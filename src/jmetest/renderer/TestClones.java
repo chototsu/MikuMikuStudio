@@ -1,9 +1,9 @@
 package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
+import com.jme.renderer.CloneCreator;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
-import com.jme.scene.CloneCreator;
 import com.jme.scene.Spatial;
 import com.jme.math.Vector3f;
 import com.jme.math.FastMath;

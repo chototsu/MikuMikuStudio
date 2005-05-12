@@ -1,15 +1,15 @@
 package jmetest.TutorialGuide;
 
 import com.jme.app.SimpleGame;
-import com.jme.terrain.TerrainBlock;
-import com.jme.terrain.util.MidPointHeightMap;
-import com.jme.terrain.util.ImageBasedHeightMap;
-import com.jme.terrain.util.ProceduralTextureGenerator;
 import com.jme.math.Vector3f;
 import com.jme.bounding.BoundingBox;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.image.Texture;
+import com.jmex.terrain.TerrainBlock;
+import com.jmex.terrain.util.ImageBasedHeightMap;
+import com.jmex.terrain.util.MidPointHeightMap;
+import com.jmex.terrain.util.ProceduralTextureGenerator;
 
 import java.net.URL;
 

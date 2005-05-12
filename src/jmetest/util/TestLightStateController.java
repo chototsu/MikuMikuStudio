@@ -31,6 +31,7 @@
  */
 package jmetest.util;
 
+import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.math.FastMath;
@@ -39,7 +40,6 @@ import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.LightState;
 import com.jme.light.PointLight;
 import com.jme.light.SimpleLightNode;
-import com.jme.animation.SpatialTransformer;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.util.LightStateCreator;

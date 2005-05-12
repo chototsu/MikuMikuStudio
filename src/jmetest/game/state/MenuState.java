@@ -36,13 +36,12 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
-import com.jme.input.action.UIInputAction;
-import com.jme.ui.*;
 import com.jme.util.TextureManager;
 import com.jme.math.Vector3f;
 
 import com.jme.app.GameStateManager;
 import com.jme.app.StandardGameState;
+import com.jmex.ui.*;
 
 /** 
  * @author Per Thulin

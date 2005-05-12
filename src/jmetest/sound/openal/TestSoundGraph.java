@@ -41,13 +41,13 @@ import com.jme.image.Texture;
 import com.jme.math.Vector3f;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
-import com.jme.sound.openAL.SoundSystem;
-import com.jme.sound.openAL.scene.Configuration;
 import com.jme.util.TextureManager;
+import com.jmex.sound.openAL.SoundSystem;
+import com.jmex.sound.openAL.scene.Configuration;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.4 2005-04-24 21:28:35 anakan Exp $
+ * @version $Id: TestSoundGraph.java,v 1.5 2005-05-12 22:50:13 Mojomonkey Exp $
  */
 public class TestSoundGraph extends SimpleGame {
   private int snode;

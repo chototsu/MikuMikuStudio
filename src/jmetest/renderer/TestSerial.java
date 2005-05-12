@@ -5,8 +5,6 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Torus;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.*;
-import com.jme.scene.model.XMLparser.Converters.Md2ToJme;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.math.Vector3f;
@@ -20,6 +18,8 @@ import com.jme.input.KeyInput;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
 import com.jme.renderer.ColorRGBA;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.Md2ToJme;
 
 import java.io.*;
 

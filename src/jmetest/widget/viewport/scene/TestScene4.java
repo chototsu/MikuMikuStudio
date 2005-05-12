@@ -38,7 +38,6 @@ import java.net.URL;
 
 import jmetest.renderer.loader.TestMilkJmeWrite;
 
-import com.jme.animation.JointController;
 import com.jme.light.DirectionalLight;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
@@ -46,8 +45,6 @@ import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.Converters.MilkToJme;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
@@ -58,11 +55,14 @@ import com.jme.widget.border.WidgetBorderType;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
 import com.jme.widget.viewport.WidgetViewport;
 import com.jme.widget.viewport.WidgetViewportCameraController;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.MilkToJme;
+import com.jmex.model.animation.JointController;
 
 /**
  * <code>TestScene4</code>
  * @author Gregg Patton
- * @version $Id: TestScene4.java,v 1.9 2004-09-08 17:06:48 mojomonkey Exp $
+ * @version $Id: TestScene4.java,v 1.10 2005-05-12 22:50:20 Mojomonkey Exp $
  */
 public class TestScene4 extends TestAbstractScene {
 

@@ -38,7 +38,6 @@ import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 
 import com.jme.app.VariableTimestepGame;
-import com.jme.effects.ParticleManager;
 import com.jme.image.Texture;
 import com.jme.input.AbstractInputHandler;
 import com.jme.input.InputSystem;
@@ -58,10 +57,11 @@ import com.jme.util.TextureManager;
 import com.jme.util.Timer;
 import com.jme.widget.WidgetAbstractFrame;
 import com.jme.widget.input.mouse.WidgetMouseTestControllerFirstPerson;
+import com.jmex.effects.ParticleManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.11 2005-03-15 17:08:12 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.12 2005-05-12 22:49:41 Mojomonkey Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 

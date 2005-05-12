@@ -1,8 +1,6 @@
 package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.*;
-import com.jme.scene.model.XMLparser.Converters.Md2ToJme;
 import com.jme.scene.Node;
 import com.jme.scene.state.TextureState;
 import com.jme.image.Texture;
@@ -10,7 +8,9 @@ import com.jme.util.TextureManager;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
-import com.jme.animation.KeyframeController;
+import com.jmex.model.XMLparser.*;
+import com.jmex.model.XMLparser.Converters.Md2ToJme;
+import com.jmex.model.animation.KeyframeController;
 
 import javax.swing.*;
 import java.io.*;

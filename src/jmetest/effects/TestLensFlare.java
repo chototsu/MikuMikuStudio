@@ -33,8 +33,6 @@ package jmetest.effects;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
-import com.jme.effects.LensFlare;
-import com.jme.effects.LensFlareFactory;
 import com.jme.image.Image;
 import com.jme.image.Texture;
 import com.jme.light.LightNode;
@@ -45,13 +43,15 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
+import com.jmex.effects.LensFlare;
+import com.jmex.effects.LensFlareFactory;
 
 /**
  * <code>TestLensFlare</code>
  *  Test of the lens flare effect in jME.  Notice that currently it doesn't do
  *  occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.8 2005-02-10 22:06:47 renanse Exp $
+ * @version $Id: TestLensFlare.java,v 1.9 2005-05-12 22:49:42 Mojomonkey Exp $
  */
 public class TestLensFlare extends SimpleGame {
 

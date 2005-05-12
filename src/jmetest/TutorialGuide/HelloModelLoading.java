@@ -1,12 +1,12 @@
 package jmetest.TutorialGuide;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.Converters.ObjToJme;
-import com.jme.scene.model.XMLparser.Converters.FormatConverter;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.Node;
 import com.jme.util.LoggingSystem;
+import com.jmex.model.XMLparser.BinaryToXML;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.FormatConverter;
+import com.jmex.model.XMLparser.Converters.ObjToJme;
 
 import java.net.URL;
 import java.io.ByteArrayOutputStream;

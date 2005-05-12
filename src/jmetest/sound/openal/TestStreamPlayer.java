@@ -35,7 +35,6 @@
 package jmetest.sound.openal;
 
 import java.awt.BorderLayout;
-import java.awt.ComponentOrientation;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -51,9 +50,9 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
-import com.jme.sound.openAL.SoundSystem;
-import com.jme.sound.openAL.objects.util.dsp.Equalizer;
 import com.jme.util.LoggingSystem;
+import com.jmex.sound.openAL.SoundSystem;
+import com.jmex.sound.openAL.objects.util.dsp.Equalizer;
 
 /**
  * @author Arman

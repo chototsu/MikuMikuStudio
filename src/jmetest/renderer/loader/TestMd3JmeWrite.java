@@ -1,13 +1,13 @@
 package jmetest.renderer.loader;
 
 import com.jme.app.SimpleGame;
-import com.jme.scene.model.XMLparser.Converters.Md3ToJme;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.BinaryToXML;
 import com.jme.scene.Node;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jme.image.Texture;
+import com.jmex.model.XMLparser.BinaryToXML;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.Md3ToJme;
 
 import java.io.*;
 import java.net.URL;

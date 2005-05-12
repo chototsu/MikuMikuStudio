@@ -49,9 +49,9 @@ import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.lod.ClodMesh;
-import com.jme.scene.model.XMLparser.JmeBinaryReader;
-import com.jme.scene.model.XMLparser.Converters.AseToJme;
 import com.jme.scene.shape.Disk;
+import com.jmex.model.XMLparser.JmeBinaryReader;
+import com.jmex.model.XMLparser.Converters.AseToJme;
 
 /**
  * <code>TestClodMesh</code> shows off the use of the ClodMesh in jME.
@@ -63,7 +63,7 @@ import com.jme.scene.shape.Disk;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.17 2005-01-08 17:27:08 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.18 2005-05-12 22:49:32 Mojomonkey Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
