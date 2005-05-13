@@ -26,7 +26,7 @@
             <exclude name="**/*.java" />
         </fileset>
     </copy>
-    <javac source="1.4" srcdir="${src}/com" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar:${seg}/lib/lwjgl_fmod3.jar" listfiles="no"/>
+    <javac source="1.4" srcdir="${src}/com" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/target/jme-sound.jar:${seg}/target/jme-model.jar:${seg}/target/jme-terrain.jar:${seg}/target/jme-ui.jar:${seg}/target/jme-effects.jar" listfiles="no"/>
   </target>
 <!-- ************************************************************************* -->
 
@@ -49,7 +49,7 @@
 	<target name="dist-ui" depends="compile" description="generate jme jar file (ui)" >
 		    <jar jarfile="${seg}/target/jme-ui.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/ui/**/*.class" />
 		  </target>
-	<target name="dist-all" depends="dist-core, dist-terrain, dist-model, dist-sound, dist-ui" description="Build all jar files"/>
+	<target name="dist-all" depends="dist-core, dist-terrain, dist-effects, dist-model, dist-sound, dist-ui" description="Build all jar files"/>
 
   <target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution" >
     <signjar jar="${seg}/target/jme.jar"
