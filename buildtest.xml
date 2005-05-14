@@ -20,7 +20,7 @@
   <target name="compile" depends="init" description="generate jme test classes">
     <javac srcdir="${src}/jmetest"
            destdir="${class}"
-           classpath="${seg}/target/jme.jar:${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
+           classpath="${seg}/target/jme.jar:${seg}/target/jme-effects.jar:${seg}/target/jme-model.jar:${seg}/target/jme-terrain.jar:${seg}/target/jme-ui.jar:${seg}/target/jme-sound.jar:${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
     />
     <!-- copy the resources into the build directory -->
     <copy todir="${jmepackage}/data">
