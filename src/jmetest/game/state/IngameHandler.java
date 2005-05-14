@@ -41,10 +41,10 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 
 /**
- * @author Per Thulin
- *
  * This is basically the FirstPersonHandler but without the capability to 
  * exit the application.
+ * 
+ * @author Per Thulin
  */
 public class IngameHandler extends InputHandler {
 
@@ -120,5 +120,5 @@ public class IngameHandler extends InputHandler {
         rotateLeft.setKey("turnLeft");
         addAction(rotateLeft);
     }
+    
 }
-

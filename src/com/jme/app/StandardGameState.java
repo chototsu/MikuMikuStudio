@@ -1,92 +1,169 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
- * reserved. Redistribution and use in source and binary forms, with or without
+ * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
+ *
  * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer. Redistributions in binary
- * form must reproduce the above copyright notice, this list of conditions and
- * the following disclaimer in the documentation and/or other materials provided
- * with the distribution. Neither the name of the Mojo Monkey Coding, jME,
- * jMonkey Engine, nor the names of its contributors may be used to endorse or
- * promote products derived from this software without specific prior written
- * permission. THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
- * CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT
- * NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- * PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
  */
 package com.jme.app;
 
 import com.jme.scene.Node;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.input.InputHandler;
 import com.jme.renderer.Camera;
 
 /**
- * A typical game state that initializes a rootNode and camera.
+ * <p>
+ * A typical game state that initializes a rootNode, camera and a ZBufferState.
  * The input handler is left to be initialized by derived classes.
+ * </p>
+ * 
+ * <p>
+ * In update(float) we update the input and call updateGeometricState(0, true)
+ * on our rootNode. In render(float) we just draw the rootNode.
+ * </p>
+ * 
+ * <p>
+ * stateUpdate and stateRender can be defined for custom updating and 
+ * rendering. Much like in SimpleGame.
+ * </p>
  * 
  * @author Per Thulin
  */
 public abstract class StandardGameState implements GameState {
 	
-	// The input handler of this game state.
+	/** The input handler of this game state. */
 	protected InputHandler input;
 	
-	// The node that gets attatched right under the scene tree root.
-	protected Node stateNode;
+	/** The node that gets updated and rendered by this GameState. */
+	protected Node rootNode;
 	
-	// The camera of this game state.
+	/** The camera of this game state. */
 	protected Camera cam;
 	
 	/**
-	 * Initializes rootNode and camera.
+	 * Inits rootNode, camera and ZBufferState. Also invokes initInput().
 	 */
 	public StandardGameState() {
-		stateNode = new Node("State rootNode");
+		rootNode = new Node("State rootNode");
 		initCamera();
 		initInput();
+		
+		// Create a ZBuffer to display pixels closer to the camera above
+		// farther ones.
+		ZBufferState buf = DisplaySystem.getDisplaySystem().
+			getRenderer().createZBufferState();
+		buf.setEnabled(true);
+		buf.setFunction(ZBufferState.CF_LEQUAL);		
+		rootNode.setRenderState(buf);
+		
+	    // Update geometric and rendering information for the rootNode.
+		rootNode.updateGeometricState(0.0f, true);
+	    rootNode.updateRenderState();
 	}
-
+	
 	/**
-	 * Updates the InputHandler.
+	 * Updates the InputHandler and the geometric state of the rootNode.
+	 * Also calls stateUpdate(float).
 	 * 
-	 * @param tpf The time since last frame.
+	 * @param tpf The elapsed time since last frame.
+	 * @see GameState#update(float)
+	 * @see StandardGameState#stateUpdate(float)
 	 */
-	public void update(float tpf) {
+	public final void update(float tpf) {
 		input.update(tpf);
+		
+		stateUpdate(tpf);
+		
+		rootNode.updateGeometricState(tpf, true);
 	}
 	
 	/**
-	 * Empty.
-	 * @see GameState#render(float)
+	 * Draws the rootNode. Also calls stateRender(float).
 	 * 
-	 * @param tpf The time since last frame.
+	 * @param tpf The elapsed time since last frame.
+	 * @see GameState#render(float)
+	 * @see StandardGameState#stateRender(float)
 	 */
-	public void render(float tpf) {
+	public final void render(float tpf) {
+		stateRender(tpf);
+		DisplaySystem.getDisplaySystem().getRenderer().draw(this.rootNode); 
+	}
 	
+	/**
+	 * This is where derived classes are supposed to put their game logic.
+	 * Gets called between the input.update and 
+	 * rootNode.updateGeometricState calls.
+	 * 
+	 * <p>
+	 * Much like the structure of <code>SimpleGame</code>.
+	 * </p>
+	 * 
+	 * @param tpf The time since the last frame.
+	 */
+	protected void stateUpdate(float tpf) {		
+	}
+	
+	/**
+	 * This is where derived classes are supposed to put their render logic.
+	 * Gets called before the rootNode gets rendered.
+	 * 
+	 * <p>
+	 * Much like the structure of <code>SimpleGame</code>.
+	 * </p>
+	 * 
+	 * @param tpf The time since the last frame.
+	 */
+	protected void stateRender(float tpf) {		
 	}
 	
 	/**
 	 * Empty.
+	 * 
 	 * @see GameState#switchTo()
 	 */
 	public void switchTo() {
-		
+	}
+	
+	/**
+	 * Empty.
+	 * 
+	 * @see GameState#switchFrom()
+	 */
+	public void switchFrom() {
 	}
 
 	/**
-	 * Empty. 
+	 * Empty.
+	 *  
 	 * @see GameState#cleanup()
 	 */
 	public void cleanup() {
-
 	}
 	
 	/**
@@ -103,15 +180,6 @@ public abstract class StandardGameState implements GameState {
 	 */
 	public void setCamera(Camera cam) {
 		this.cam = cam;
-	}
-	
-	/**
-	 * Gets the state node of this state.
-	 * 
-	 * @return The state node of this state.
-	 */
-	public Node getStateNode() {
-		return stateNode;
 	}
 	
 	/**
@@ -132,7 +200,9 @@ public abstract class StandardGameState implements GameState {
 	}
 	
 	/**
-	 * Initialize the input handler.
+	 * Invoked by the constructor after the rootNode and camera has been
+	 * initialized. <b>Derived classes must define input here!</b>
 	 */
 	protected abstract void initInput();
+	
 }

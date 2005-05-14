@@ -35,10 +35,13 @@ import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.AbsoluteMouse;
+import com.jme.input.KeyInput;
 import com.jme.system.DisplaySystem;
 
 /**
  * The input handler we use to navigate the menu. E.g. has an absolute mouse.
+ * If the escape key is pressed the application will be ended using the static
+ * exit method of TestGameStateSystem.
  * 
  * @author Per Thulin
  */
@@ -52,6 +55,7 @@ public class MenuHandler extends InputHandler {
     private void setKeyBindings() {
         keyboard = KeyBindingManager.getKeyBindingManager();
         keyboard.setKeyInput(InputSystem.getKeyInput());
+        keyboard.set("exit", KeyInput.KEY_ESCAPE);
     }
 
     private void setUpMouse() {
@@ -61,4 +65,12 @@ public class MenuHandler extends InputHandler {
         mouse.setMouseInput(InputSystem.getMouseInput());
         setMouse(mouse);
     }
+    
+    public void update(float tpf) {
+    	super.update(tpf);
+		if (keyboard.isValidCommand("exit", false)) {
+			TestGameStateSystem.exit();
+		}
+    }
+    
 }

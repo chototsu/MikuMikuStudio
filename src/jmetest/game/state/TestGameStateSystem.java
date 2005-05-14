@@ -33,39 +33,46 @@ package jmetest.game.state;
 
 import java.util.logging.Level;
 
+import com.jme.app.AbstractGame;
 import com.jme.app.BaseGame;
-import com.jme.app.GameStateManager;
 import com.jme.input.InputSystem;
-import com.jme.scene.Node;
-import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
 
+import com.jme.app.GameStateManager;
 
 /**
+ * <p>
  * This test shows how to use the game state system. It can not extend
- * SimpleGame because a lot of SimpleGames functions (e.g. camera and input)
+ * SimpleGame because a lot of SimpleGames functions (e.g. camera, rootNode and input)
  * has been delegated down to the individual game states. So this class is
- * basically a stripped down version of SimpleGame which inits the
+ * basically a stripped down version of SimpleGame, which inits the
  * GameStateManager.
+ * </p>
+ * 
+ * <p>
+ * It also has a special way to reach the finish method, using a singleton instance
+ * and a static exit method.
+ * </p>
  * 
  * @author Per Thulin
  */
 public class TestGameStateSystem extends BaseGame {
 	
-	// The root of our normal scene graph.
-	protected Node rootNode;
+	/** Only used in the static exit method. */
+	private static AbstractGame instance;
 	
-	// High resolution timer for jME.
-	protected Timer timer;
+	/** High resolution timer for jME. */
+	private Timer timer;
 	
-	// Simply an easy way to get at timer.getTimePerFrame().
-	protected float tpf;
+	/** Simply an easy way to get at timer.getTimePerFrame(). */
+	private float tpf;
 	
 	/**
 	 * This is called every frame in BaseGame.start()
+	 * 
 	 * @param interpolation unused in this implementation
 	 * @see AbstractGame#update(float interpolation)
 	 */
@@ -76,21 +83,17 @@ public class TestGameStateSystem extends BaseGame {
 		
 		// Update the current game state.
 		GameStateManager.getInstance().update(tpf);
-		
-		// Update controllers/render states/transforms/bounds for rootNode.
-		rootNode.updateGeometricState(tpf, true);
 	}
 	
 	/**
 	 * This is called every frame in BaseGame.start(), after update()
+	 * 
 	 * @param interpolation unused in this implementation
 	 * @see AbstractGame#render(float interpolation)
 	 */
 	protected final void render(float interpolation) {	
 		// Clears the previously rendered information.
 		display.getRenderer().clearBuffers();
-		// Draw the rootNode and all its children.
-		display.getRenderer().draw(rootNode);
 		// Render the current game state.
 		GameStateManager.getInstance().render(tpf);
 	}
@@ -98,6 +101,7 @@ public class TestGameStateSystem extends BaseGame {
 	/**
 	 * Creates display, sets  up camera, and binds keys.  Called in BaseGame.start() directly after
 	 * the dialog box.
+	 * 
 	 * @see AbstractGame#initSystem()
 	 */
 	protected final void initSystem() {
@@ -128,23 +132,14 @@ public class TestGameStateSystem extends BaseGame {
 	
 	/**
 	 * Called in BaseGame.start() after initSystem().
+	 * 
 	 * @see AbstractGame#initGame()
 	 */
 	protected final void initGame() {		
 		display.setTitle("Test Game State System");
 		
-		rootNode = new Node("rootNode");
-		
-		// Create a ZBuffer to display pixels closer to the camera above
-		// farther ones.
-		ZBufferState buf = display.getRenderer().createZBufferState();
-		buf.setEnabled(true);
-		buf.setFunction(ZBufferState.CF_LEQUAL);		
-		rootNode.setRenderState(buf);
-		
-		// Creates the GameStateManager. The individual game state nodes will
-		// be attached to the scene tree root we send as a parameter.
-		GameStateManager.create(rootNode);
+		// Creates the GameStateManager. Only needs to be called once.
+		GameStateManager.create();
 		// Adds a new menu state to the game state manager. "Menu" is the key
 		// which we in the future will use in order to switch to the menu, or
 		// remove it.
@@ -152,18 +147,20 @@ public class TestGameStateSystem extends BaseGame {
 		// MUST call this before game loop kicks in.
 		GameStateManager.getInstance().switchTo("Menu");
 		
-		rootNode.updateGeometricState(0.0f, true);
-		rootNode.updateRenderState();
+		instance = this;
 	}
 	
 	/**
-	 * unused
+	 * Empty.
+	 * 
 	 * @see AbstractGame#reinit()
 	 */
-	protected void reinit() {}
+	protected void reinit() {
+	}
 	
 	/**
-	 * Cleans up the keyboard.
+	 * Cleans up the keyboard and game state system.
+	 * 
 	 * @see AbstractGame#cleanup()
 	 */
 	protected void cleanup() {
@@ -187,4 +184,12 @@ public class TestGameStateSystem extends BaseGame {
 		app.setDialogBehaviour(TestGameStateSystem.ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
+	
+	/**
+	 * Static method to finish this application.
+	 */
+	public static void exit() {
+		instance.finish();
+	}
+	
 }

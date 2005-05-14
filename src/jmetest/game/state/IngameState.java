@@ -31,9 +31,7 @@
  */
 package jmetest.game.state;
 
-import com.jme.app.GameStateManager;
-import com.jme.app.StandardGameState;
-import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
@@ -44,6 +42,8 @@ import com.jme.scene.shape.Quad;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
+import com.jme.app.GameStateManager;
+import com.jme.app.StandardGameState;
 
 /**
  * @author Per Thulin
@@ -51,33 +51,17 @@ import com.jme.util.TextureManager;
 public class IngameState extends StandardGameState {
 
 	public IngameState() {
-		super();		
-		initGame();
-	}
-	
-	/**
-	 * Gets called every time the game state manager switches to this game state.
-	 * Sets the window title.
-	 */
-	public void switchTo() {
-		DisplaySystem.getDisplaySystem().
-			setTitle("Test Game State System - Ingame State");
-	}
-	
-	/**
-	 * Inits the quad and its texture.
-	 */
-	private void initGame() {
+		// Move the camera a bit.
 	    cam.setLocation(new Vector3f(0,10,0));
 	    cam.update();
 		
+	    // Create a Quad.
 	    Quad q = new Quad("Quad", 200, 200);
-	    q.setModelBound(new BoundingSphere());
+	    q.setModelBound(new BoundingBox());
 	    q.updateModelBound();
 	    q.setLocalRotation(new Quaternion(new float[] {90*FastMath.DEG_TO_RAD,0,0}));
 	    
-	    stateNode.attachChild(q);
-	    
+	    // Apply a texture to it.
 	    TextureState ts = 
 	    	DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
 	    Texture texture =
@@ -88,9 +72,24 @@ public class IngameState extends StandardGameState {
                 Texture.FM_LINEAR);
 	    texture.setWrap(Texture.WM_WRAP_S_WRAP_T);
 	    ts.setTexture(texture);
-	    ts.setEnabled(true);
-	    
+	    ts.setEnabled(true);	    
 	    q.setRenderState(ts);
+	    
+	    // Add it to the scene.
+	    rootNode.attachChild(q);
+	    
+	    // Remember to update the rootNode before you get going.
+	    rootNode.updateGeometricState(0, true);
+	    rootNode.updateRenderState();
+	}
+	
+	/**
+	 * Gets called every time the game state manager switches to this game state.
+	 * Sets the window title.
+	 */
+	public void switchTo() {
+		DisplaySystem.getDisplaySystem().
+			setTitle("Test Game State System - Ingame State");
 	}
 	
 	/**
@@ -108,19 +107,14 @@ public class IngameState extends StandardGameState {
 	        KeyInput.KEY_ESCAPE);
 	}
 	
-	/**
-	 * Gets called every frame. Updates input and checks if user has pressed
-	 * the exit key. If the user has, we go back to main menu.
-	 */
-	public void update(float tpf) {
-		super.update(tpf);
-		if (KeyBindingManager
-		        .getKeyBindingManager()
-		        .isValidCommand("exit", false)) {
+	protected void stateUpdate(float tpf) {
+		if (KeyBindingManager.getKeyBindingManager().
+				isValidCommand("exit", false)) {
 			// Here we switch to the menu state which is already loaded
 			GameStateManager.getInstance().switchTo("Menu");
 			// And remove this state, because we don't want to keep it in memory.
 			GameStateManager.getInstance().removeGameState("Ingame");
 		}
 	}
+	
 }

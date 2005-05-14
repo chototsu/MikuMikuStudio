@@ -31,8 +31,10 @@
  */
 package jmetest.game.state;
 
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
 import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
@@ -41,29 +43,34 @@ import com.jme.math.Vector3f;
 
 import com.jme.app.GameStateManager;
 import com.jme.app.StandardGameState;
-import com.jmex.ui.*;
+import com.jmex.ui.UIActiveObject;
+import com.jmex.ui.UIButton;
+import com.jmex.ui.UIInputAction;
+import com.jmex.ui.UIObject;
 
 /** 
  * @author Per Thulin
  */
 public class MenuState extends StandardGameState {
 	
-	// The cursor node which holds the mouse gotten from input.
+	/** The cursor node which holds the mouse gotten from input. */
 	private Node cursor;
 	
-	// Our display system.
+	/** Our display system. */
 	private DisplaySystem display;
 	
-	// The play button located at the center of the screen.
-	private UIButton button;
+	/** The play button located at the center of the screen. */
+	private UIButton playButton;
 	
 	public MenuState() {
-		super();
-		
-		display = DisplaySystem.getDisplaySystem();
-		
+		display = DisplaySystem.getDisplaySystem();		
 		initCursor();
 		initButton();
+		
+		rootNode.setLightCombineMode(LightState.OFF);
+		rootNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+		rootNode.updateRenderState();
+		rootNode.updateGeometricState(0, true);
 	}
 	
 	/**
@@ -85,8 +92,7 @@ public class MenuState extends StandardGameState {
 	/**
 	 * Creates a pretty cursor.
 	 */
-	private void initCursor() {
-		
+	private void initCursor() {		
 		Texture texture =
 	        TextureManager.loadTexture(
 	    	        MenuState.class.getClassLoader().getResource(
@@ -113,15 +119,14 @@ public class MenuState extends StandardGameState {
 		cursor = new Node("Cursor");
 		cursor.attachChild(input.getMouse());
 		
-		stateNode.attachChild(cursor);
+		rootNode.attachChild(cursor);
 	}
 	
 	/**
 	 * Inits the button placed at the center of the screen.
 	 */
-	private void initButton() {
-		
-		button  = new UIButton("Play Button",
+	private void initButton() {		
+        playButton = new UIButton("Play Button",
 				(display.getWidth()/2)-128, (display.getHeight()/2), 256, 64,
 				input,
 				"jmetest/data/images/buttonup.png",
@@ -130,39 +135,31 @@ public class MenuState extends StandardGameState {
 				UIActiveObject.TEXTURE
                 | UIActiveObject.DRAW_DOWN | UIActiveObject.DRAW_OVER);
 		
-		button.addAction(new PlayButtonUIAction());
+		playButton.addAction(new UIInputAction() {
+			public void performAction(UIObject object) {
+				UIActiveObject aObject = (UIActiveObject) object;
+				// If the button has been pressed we create and switch to 
+				// the IngameState.
+				if (aObject.getState() == UIActiveObject.DOWN) {
+					GameStateManager.getInstance().
+						addGameState("Ingame", new IngameState());
+					GameStateManager.getInstance().switchTo("Ingame");
+				}
+			}
+		});
 		
-		stateNode.attachChild(button);
+		rootNode.attachChild(playButton);
 	}
 	
 	/**
 	 * Updates input and button.
 	 * 
-	 * @see GameState#update(float)
-	 * 
 	 * @param tpf The time since last frame.
+	 * @see GameState#update(float)
 	 */
-	public void update(float tpf) {
-		// Always update the input.
-		super.update(tpf);
-		
-		// Se if the button has been pressed.
-		button.update(tpf);
+	protected void stateUpdate(float tpf) {		
+		// Check if the button has been pressed.
+		playButton.update(tpf);
 	}
 	
-	/**
-	 * This little class tells us what should happen when the
-	 * button is pressed.
-	 */
-	private class PlayButtonUIAction extends UIInputAction {
-		public void performAction(UIObject object) {
-			UIActiveObject aObject = (UIActiveObject) object;
-			if (aObject.getState() == UIActiveObject.DOWN) {
-				GameStateManager.getInstance().
-					addGameState("Ingame", new IngameState());
-				GameStateManager.getInstance().switchTo("Ingame");
-			}
-		}
-	}
 }
-
