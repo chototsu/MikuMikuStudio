@@ -3,6 +3,7 @@
  */
 package com.jmex.sound.openAL;
 
+import java.net.URL;
 import java.util.logging.Level;
 
 import org.lwjgl.openal.AL;
@@ -217,17 +218,17 @@ public class SoundSystem {
      * @param file the sample file name
      * @return the 3D sample identifier
      */
-    public static int create3DSample(String file){
+    public static int create3DSample(URL url){
         if(sample3D==null){
             sample3D=new Sample3D[1];
-            sample3D[0]=new Sample3D(listener, file);
+            sample3D[0]=new Sample3D(listener, url);
             return 0;
         }else{
             Sample3D[] tmp=new Sample3D[sample3D.length];
             System.arraycopy(sample3D, 0, tmp, 0, tmp.length);
             sample3D=new Sample3D[tmp.length+1];
             System.arraycopy(tmp, 0, sample3D, 0, tmp.length);
-            sample3D[tmp.length]=new Sample3D(listener, file);
+            sample3D[tmp.length]=new Sample3D(listener, url);
             return tmp.length;
         }
     }

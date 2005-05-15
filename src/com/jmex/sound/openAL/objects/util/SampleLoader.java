@@ -73,7 +73,7 @@ public class SampleLoader {
     }
     
     
-    private static Buffer loadBuffer(URL file) {
+    public static Buffer loadBuffer(URL file) {
         String fileName = file.getFile();
         if (".wav".equalsIgnoreCase(fileName.substring(fileName
                 .lastIndexOf('.')))) {

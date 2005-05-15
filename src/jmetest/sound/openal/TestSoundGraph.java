@@ -35,6 +35,9 @@
  */
 package jmetest.sound.openal;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
@@ -47,7 +50,7 @@ import com.jmex.sound.openAL.scene.Configuration;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.5 2005-05-12 22:50:13 Mojomonkey Exp $
+ * @version $Id: TestSoundGraph.java,v 1.6 2005-05-15 23:16:23 anakan Exp $
  */
 public class TestSoundGraph extends SimpleGame {
   private int snode;
@@ -91,7 +94,7 @@ public class TestSoundGraph extends SimpleGame {
    *
    * @see com.jme.app.SimpleGame#initGame()
    */
-  protected void simpleInitGame() {
+  protected void simpleInitGame()  {
     display.setTitle("Test Sound Graph");
     SoundSystem.init(display.getRenderer().getCamera(), SoundSystem.OUTPUT_DEFAULT);
     Vector3f max = new Vector3f(5, 5, 5);
@@ -109,8 +112,14 @@ public class TestSoundGraph extends SimpleGame {
     rootNode.setRenderState(tst);
     rootNode.attachChild(box);
     snode = SoundSystem.createSoundNode();
-    footsteps = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/data/sound/CHAR_CRE_1.ogg");
-    background =SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/test.ogg");
+    try{
+    
+        footsteps = SoundSystem.create3DSample(TestSoundGraph.class.getResource("/data/sound/CHAR_CRE_1.ogg"));
+        background =SoundSystem.create3DSample(TestSoundGraph.class.getResource("/data/sound/test.ogg"));
+    }catch(Exception e){
+        e.printStackTrace();
+    }
+    
     SoundSystem.setSampleMaxAudibleDistance(footsteps, 100);
     SoundSystem.setSampleMaxAudibleDistance(background, 1000);
     SoundSystem.addSampleToNode(footsteps, snode);

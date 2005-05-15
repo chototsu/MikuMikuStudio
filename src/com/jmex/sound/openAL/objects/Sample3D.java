@@ -3,6 +3,7 @@
  */
 package com.jmex.sound.openAL.objects;
 
+import java.net.URL;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
@@ -42,8 +43,19 @@ public class Sample3D extends SoundSpatial{
         generateSource();
     }
     
+    public Sample3D(URL url){     
+        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+url.getFile());
+        buffer=SampleLoader.loadBuffer(url);
+        generateSource();
+    }
+    
     public Sample3D(Listener listener, String file){        
         this(file);
+        this.listener=listener;
+    }
+    
+    public Sample3D(Listener listener, URL url){        
+        this(url);
         this.listener=listener;
     }
     
