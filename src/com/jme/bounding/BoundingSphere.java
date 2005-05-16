@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.24 2005-02-24 06:58:51 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.25 2005-05-16 16:35:15 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -200,7 +200,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     private void recurseMini(Vector3f[] points, int p, int b, int ap) {
         switch (b) {
         case 0:
-            this.radius = -1;
+            this.radius = 0;
             this.center.set(0, 0, 0);
             break;
         case 1:
