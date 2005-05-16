@@ -538,6 +538,20 @@ public class SoundSystem {
         }
     }
     
+    /** 
+     * Sets the volume of all samples attached to a given node. 
+     * 
+     * @param node We change the volume of this nodes children. 
+     * @param volume The volume to set. Should be a value between 0 - 255. 
+     */ 
+    public static void setNodeVolume(int node, float volume) { 
+        if(nodes==null) return;
+        if(node<0 || node>=nodes.length) return;
+        for (int i = 0; i < nodes[node].getQuantity(); i++) { 
+          ((Sample3D)nodes[node].getChild(i)).setVolume((int)volume); 
+        } 
+    } 
+    
     /**
      * Sets the default 3D sample rendering method.
      * While the 3d sample's max audible distance is set the sound will respect the rendering 

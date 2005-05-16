@@ -506,6 +506,21 @@ public class SoundSystem {
             sample3D[sample].setVolume(volume);
         }
     }
+    
+    /** 
+     * Sets the volume of all samples attached to a given node. 
+     * 
+     * @param node We change the volume of this nodes children. 
+     * @param volume The volume to set. Should be a value between 0 - 1. 
+     */ 
+    public static void setNodeVolume(int node, float volume) { 
+        if(nodes==null) return;
+        if(node<0 || node>=nodes.length) return;
+        for (int i = 0; i < nodes[node].getQuantity(); i++) { 
+          ((Sample3D)nodes[node].getChild(i)).setVolume(volume); 
+        } 
+    } 
+
 
     
     public static void setEqualizer(Equalizer e){
