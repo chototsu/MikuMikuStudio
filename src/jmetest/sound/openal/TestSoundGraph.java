@@ -35,8 +35,6 @@
  */
 package jmetest.sound.openal;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
@@ -50,7 +48,7 @@ import com.jmex.sound.openAL.scene.Configuration;
 
 /**
  * @author Arman Ozcelik
- * @version $Id: TestSoundGraph.java,v 1.6 2005-05-15 23:16:23 anakan Exp $
+ * @version $Id: TestSoundGraph.java,v 1.7 2005-05-17 04:19:04 Mojomonkey Exp $
  */
 public class TestSoundGraph extends SimpleGame {
   private int snode;

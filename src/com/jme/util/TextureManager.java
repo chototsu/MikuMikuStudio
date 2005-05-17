@@ -64,7 +64,7 @@ import com.jme.system.DisplaySystem;
  *
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.35 2005-02-25 03:10:18 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.36 2005-05-17 04:19:05 Mojomonkey Exp $
  */
 final public class TextureManager {
     
@@ -163,7 +163,7 @@ final public class TextureManager {
             int magFilter,
             float anisoLevel,
             boolean flipped) {
-        return loadTexture(file, minFilter, magFilter, -1, 1.0f, true);
+        return loadTexture(file, minFilter, magFilter, -1, anisoLevel, true);
     }
     
     /**

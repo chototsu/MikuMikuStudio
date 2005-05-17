@@ -35,7 +35,6 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.Controller;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
-import com.jme.renderer.CloneCreator;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.LoggingSystem;
 import com.jmex.model.EmptyTriMesh;
@@ -71,7 +70,7 @@ import java.io.*;
  * 
  * @author Jack Lindamood
  * Parts by kevglass
- * @version $Id: KeyframeController.java,v 1.1 2005-05-12 22:50:08 Mojomonkey Exp $
+ * @version $Id: KeyframeController.java,v 1.2 2005-05-17 04:19:05 Mojomonkey Exp $
  */
 public class KeyframeController extends Controller {
 

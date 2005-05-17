@@ -1,6 +1,5 @@
 package com.jmex.model.animation;
 
-import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.math.TransformMatrix;
 import com.jme.math.Quaternion;

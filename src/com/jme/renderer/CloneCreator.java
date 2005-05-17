@@ -34,7 +34,6 @@ package com.jme.renderer;
 import com.jme.animation.SpatialTransformer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
 import com.jme.system.JmeException;
 
 import java.util.HashMap;
