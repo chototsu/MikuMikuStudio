@@ -1,107 +1,208 @@
-<project name="jME" default="compile" basedir="." >
-    <description>
-        Ant Build File for the jME project.
+<project name="jME" default="compile" basedir=".">
+	<description>
+        Ant Build File for the jME API.
     </description>
 
-  <property name="seg"      location="."/>
+	<property name="seg" location="." />
 
-  <property name="src"      location="${seg}/src"/>
-  <property name="class"    location="${seg}/build"/>
-  <property name="data"     location="${seg}/data"/>
-  <property name="doc"     location="${data}/doc"/>
+	<property name="src" location="${seg}/src" />
+	<property name="class" location="${seg}/build" />
+	<property name="data" location="${seg}/data" />
+	<property name="doc" location="${data}/doc" />
+	<property name="jars" location="${seg}/target" />
+	<property name="webstart" location="${seg}/jnlp" />
 
-  <target name="init">
-    <tstamp/>
-    <mkdir dir="${src}"/>
-    <mkdir dir="${class}"/>
-    <mkdir dir="${data}"/>
-    <mkdir dir="${doc}"/>
-  </target>
+	<target name="init">
+		<mkdir dir="${src}" />
+		<mkdir dir="${class}" />
+		<mkdir dir="${data}" />
+		<mkdir dir="${doc}" />
+	</target>
 
-  <target name="compile" depends="init" description="generate jme classes">
-    <mkdir dir="${class}"/>
-    <mkdir dir="${class}/com"/>
-    <copy todir="${class}/com">
-        <fileset dir="${src}/com">
-            <exclude name="**/*.java" />
-        </fileset>
-    </copy>
-    <javac source="1.4" srcdir="${src}/com" destdir="${class}" classpath="${seg}/lib/lwjgl.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/target/jme-sound.jar:${seg}/target/jme-model.jar:${seg}/target/jme-terrain.jar:${seg}/target/jme-ui.jar:${seg}/target/jme-effects.jar" listfiles="no"/>
-  </target>
-<!-- ************************************************************************* -->
+	<!-- Compiles all the jME classes, including com.jmex.* -->
+	<target name="compile" depends="init" description="generate jme classes">
+		<mkdir dir="${class}" />
+		<mkdir dir="${class}/com" />
+		<copy todir="${class}/com">
+			<fileset dir="${src}/com">
+				<exclude name="**/*.java" />
+			</fileset>
+		</copy>
+		<javac source="1.4"
+		       srcdir="${src}/com"
+		       destdir="${class}"
+		       classpath="${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
+			   listfiles="no"
+		/>
+	</target>
 
-  <target name="dist-core" depends="compile" description="generate jme jar file" >
-    <jar jarfile="${seg}/target/jme.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jme/**/*.class" />
-  </target>
+	<!-- Jar files for different parts of the jME API -->
+
+	<target name="dist-core" depends="compile" description="generate jme jar file">
+		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="false" includes="**/com/jme/**/*.class" />
+	</target>
+	<target name="dist-effects" depends="compile" description="generate jme jar file (effects)">
+		<jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class" />
+	</target>
+	<target name="dist-terrain" depends="compile" description="generate jme jar file (terrain)">
+		<jar jarfile="${jars}/jme-terrain.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/terrain/**/*.class" />
+	</target>
+	<target name="dist-model" depends="compile" description="generate jme jar file (model)">
+		<jar jarfile="${jars}/jme-model.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/model/**/*.class" />
+	</target>
+	<target name="dist-sound" depends="compile" description="generate jme jar file (sound)">
+		<jar jarfile="${jars}/jme-sound.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/sound/**/*.class" />
+	</target>
+	<target name="dist-ui" depends="compile" description="generate jme jar file (ui)">
+		<jar jarfile="${jars}/jme-ui.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/ui/**/*.class" />
+	</target>
+
+	<!-- Creates all the jME jars -->
+	<target name="dist-all" depends="dist-core, dist-terrain, dist-effects, dist-model, dist-sound, dist-ui" description="Generate all jar files" />
+
+	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
+		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
+		<signjar jar="${jars}/jme-effects.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
+		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
+		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
+		<signjar jar="${jars}/jme-sound.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
+		<signjar jar="${jars}/jme-ui.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
+	</target>
+
+	<!-- Generats javadoc -->
+	<target name="doc" depends="compile" description="generate the javadoc documentation">
+		<javadoc destdir="${doc}" author="true" version="true" use="true" package="yes" windowtitle="jME API">
+			<fileset dir="${src}/com">
+				<include name="**/*.java" />
+			</fileset>
+		</javadoc>
+	</target>
+
+	<!-- Removes all compiled files and documentation, but leaves any created jars -->
+	<target name="clean" description="clean up">
+		<delete dir="${class}" />
+		<delete dir="${doc}" />
+		<delete>
+			<fileset dir="${src}" includes="**/*.class" />
+		</delete>
+	</target>
+
+	<target name="rebuild" depends="clean" description="build from clean">
+		<ant />
+	</target>
+
+	<!-- *** jmetest-related build targets -->
 	
-	<target name="dist-effects" depends="compile" description="generate jme jar file (effects)" >
-	    <jar jarfile="${seg}/target/jme-effects.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class" />
-	  </target>
-	<target name="dist-terrain" depends="compile" description="generate jme jar file (terrain)" >
-		    <jar jarfile="${seg}/target/jme-terrain.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/terrain/**/*.class" />
-		  </target>
-	<target name="dist-model" depends="compile" description="generate jme jar file (model)" >
-		    <jar jarfile="${seg}/target/jme-model.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/model/**/*.class" />
-		  </target>
-	<target name="dist-sound" depends="compile" description="generate jme jar file (sound)" >
-		    <jar jarfile="${seg}/target/jme-sound.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/sound/**/*.class" />
-		  </target>
-	<target name="dist-ui" depends="compile" description="generate jme jar file (ui)" >
-		    <jar jarfile="${seg}/target/jme-ui.jar"  basedir="${class}" update="no" compress="false" includes="**/com/jmex/ui/**/*.class" />
-		  </target>
-	<target name="dist-all" depends="dist-core, dist-terrain, dist-effects, dist-model, dist-sound, dist-ui" description="Build all jar files"/>
+	<target name="compile-test" depends="init" description="generate jme test classes">
+		<javac srcdir="${src}/jmetest"
+	           destdir="${class}"
+	           classpath="${jars}/jme.jar:${jars}/jme-effects.jar:${jars}/jme-model.jar:${jars}/jme-terrain.jar:${jars}/jme-ui.jar:${jars}/jme-sound.jar:${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
+	    />
+		<!-- copy the resources into the build directory -->
+		<copy todir="${class}/jmetest/data">
+			<fileset dir="${src}/jmetest/data"/>
+		</copy>
+	</target>
 
-  <target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution" >
-    <signjar jar="${seg}/target/jme.jar"
-      alias="jme"
-      keystore="${seg}/jnlp/jmeKeyStore"
-      storepass="..."
-    />
-  	<signjar jar="${seg}/target/jme-effects.jar"
-  	      alias="jme"
-  	      keystore="${seg}/jnlp/jmeKeyStore"
-  	      storepass="..."
-  	    />
-    	<signjar jar="${seg}/target/jme-terrain.jar"
-    	      alias="jme"
-    	      keystore="${seg}/jnlp/jmeKeyStore"
-    	      storepass="..."
-    	    />
-  	<signjar jar="${seg}/target/jme-model.jar"
-    alias="jme"
-    keystore="${seg}/jnlp/jmeKeyStore"
-    storepass="..."
-  />
-  	<signjar jar="${seg}/target/jme-sound.jar"
-  	      alias="jme"
-  	      keystore="${seg}/jnlp/jmeKeyStore"
-  	      storepass="..."
-  	    />
-  	<signjar jar="${seg}/target/jme-ui.jar"
-  	      alias="jme"
-  	      keystore="${seg}/jnlp/jmeKeyStore"
-  	      storepass="..."
-  	    />
-  </target>
+	<target name="dist-test" depends="compile-test" description="generate jme test class and data jars" >
+		<!-- Jar the demo classes -->
+		<jar jarfile="${jars}/jmetest.jar" 
+	         basedir="${class}"
+	         excludes="**/jmetest/data/**,**/com/**"
+	         index="yes"
+	    />
 
-<!-- java doc ************************************************************************* -->
-  <target name="doc" depends="compile" description="generate the doc">
-     <javadoc destdir="${doc}" author="true" version="true" use="true" package="yes" windowtitle="jME API">
-       <fileset dir="${src}/com">
-         <include name="**/*.java" />
-       </fileset>
-    </javadoc>
-  </target>
+		<!-- Jar the demo data -->
+		<jar jarfile="${jars}/jmetest-data.jar" 
+	         basedir="${class}"
+	         includes="**/jmetest/data/**"
+	    />
+	</target>
 
-  <target name="clean" description="clean up" >
-     <delete dir="${class}"/>
-     <delete dir="${doc}"/>
-     <delete>
-        <fileset dir="${src}" includes="**/*.class"/>
-     </delete>
-  </target>
+ 	<target name="webdist-test" depends="dist-test" description="sign test jars for Webstart distribution" >
+		<signjar jar="${jars}/jmetest.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+		<signjar jar="${jars}/jmetest-data.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+	</target>
+	
+	<!-- Jar and sign all the libraries required by jME -->
+	<target name="webdist-nativelibs" description="jar and sign native libraries for Webstart distribution" >
+		<!--  Jar and sign the Windows libraries -->
+		<jar jarfile="${webstart}/lwjgl-windows.jar"
+			 basedir="lib"
+		     includes="lwjgl.dll"
+		     update="yes"
+		/>
+		<jar jarfile="${webstart}/openal-windows.jar"
+		     basedir="lib"
+		     includes="lwjglaudio.dll"
+		     update="yes"
+		/>
+		<signjar jar="${webstart}/lwjgl-windows.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+		<signjar jar="${webstart}/openal-windows.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+		
+		<!-- Jar and sign Linux native libraries -->
+		<jar jarfile="${webstart}/lwjgl-linux.jar"
+		     basedir="lib"
+		     includes="liblwjgl.so"
+		     update="yes"
+		/>
+		<jar jarfile="${webstart}/openal-linux.jar"
+		     basedir="lib"
+		     includes="libopenal.so"
+		     update="yes"
+		/>
+		<signjar jar="${webstart}/lwjgl-linux.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+		<signjar jar="${webstart}/openal-linux.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+		
+		<!-- Jar (eventually) and sign Mac native libraries -->
+		<signjar jar="${webstart}/lwjgl-mac.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+		<signjar jar="${webstart}/openal-mac.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+		
+		<!-- Sign the lwjgl jar -->
+		<signjar jar="${seg}/lib/lwjgl.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+		
+		<!-- Sign the lwjgl fmod3 jar -->
+		<signjar jar="${seg}/lib/lwjgl_fmod3.jar"
+		         alias="jme"
+		         keystore="${webstart}/jmeKeyStore"
+		         storepass="..."
+		/>
+	</target>
 
-  <target name="rebuild" depends="clean" description="build from clean" >
-     <ant/>
-  </target>
 </project>
