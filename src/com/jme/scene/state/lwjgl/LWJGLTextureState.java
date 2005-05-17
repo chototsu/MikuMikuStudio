@@ -60,7 +60,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.37 2005-04-04 19:10:55 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.38 2005-05-17 02:56:14 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -391,12 +391,13 @@ public class LWJGLTextureState extends TextureState {
 				GL11.glHint(GL11.GL_PERSPECTIVE_CORRECTION_HINT,
 						textureCorrection[texture.getCorrection()]);
 
+				// set Texture apply mode.
+				GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
+						GL11.GL_TEXTURE_ENV_MODE, textureApply[texture
+								.getApply()]);
+
 				if (texture.getApply() == Texture.AM_COMBINE
 						&& supportsMultiTexture) {
-
-					GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-							GL11.GL_TEXTURE_ENV_MODE, textureApply[texture
-									.getApply()]);
 
 					if (texture.getCombineFuncAlpha() == Texture.ACF_DOT3_RGB
 							|| texture.getCombineFuncAlpha() == Texture.ACF_DOT3_RGBA) {
@@ -477,11 +478,6 @@ public class LWJGLTextureState extends TextureState {
 					GL11.glTexEnvf(GL11.GL_TEXTURE_ENV, GL11.GL_ALPHA_SCALE,
 							texture.getCombineScaleAlpha());
 
-				} else {
-					// set up apply mode
-					GL11.glTexEnvi(GL11.GL_TEXTURE_ENV,
-							GL11.GL_TEXTURE_ENV_MODE, textureApply[texture
-									.getApply()]);
 				}
 
 				if (texture.getEnvironmentalMapMode() == Texture.EM_IGNORE) {
