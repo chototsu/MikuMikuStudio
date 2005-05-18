@@ -35,6 +35,7 @@ import com.jme.scene.TriMesh;
 import com.jme.scene.Controller;
 import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
+import com.jme.renderer.CloneCreator;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.LoggingSystem;
 import com.jmex.model.EmptyTriMesh;
@@ -70,7 +71,7 @@ import java.io.*;
  * 
  * @author Jack Lindamood
  * Parts by kevglass
- * @version $Id: KeyframeController.java,v 1.2 2005-05-17 04:19:05 Mojomonkey Exp $
+ * @version $Id: KeyframeController.java,v 1.3 2005-05-18 01:02:13 Mojomonkey Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -649,7 +650,7 @@ public class KeyframeController extends Controller {
      *            the store Controller.
      * @return The store controller, after a copy.
      */
-    public Controller putClone(Controller store, ModelCloneCreator properties) {
+    public Controller putClone(Controller store, CloneCreator properties) {
        KeyframeController toStore;
         if (store == null) {
            toStore = new KeyframeController();
@@ -665,8 +666,9 @@ public class KeyframeController extends Controller {
            toStore.prevKeyframes = new ArrayList(prevKeyframes);
         }
        
-        properties.queueKeyframeController(toStore);
-       
+        if(properties instanceof ModelCloneCreator) {
+            ((ModelCloneCreator)properties).queueKeyframeController(toStore);
+        }
         return toStore;
     } 
 

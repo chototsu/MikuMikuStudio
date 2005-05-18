@@ -1,5 +1,6 @@
 package com.jmex.model.animation;
 
+import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
 import com.jme.math.TransformMatrix;
 import com.jme.math.Quaternion;
@@ -603,7 +604,7 @@ public class JointController extends Controller {
         movingMeshes.add(child);
     }
 
-    public Controller putClone(Controller store, ModelCloneCreator properties) {
+    public Controller putClone(Controller store,CloneCreator properties) {
         if (!properties.isSet("jointcontroller")) return null;
         JointController toReturn = new JointController(this.numJoints);
         super.putClone(toReturn, properties);
@@ -622,7 +623,9 @@ public class JointController extends Controller {
         toReturn.movingForward = movingForward;
         toReturn.FPS = FPS;
 
-        properties.queueJointController(toReturn);
+        if(properties instanceof ModelCloneCreator) {
+            ((ModelCloneCreator)properties).queueJointController(toReturn);
+        }
 
         return toReturn;
     }
