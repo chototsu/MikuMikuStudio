@@ -46,7 +46,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestSharedMesh</code>
  * @author Mark Powell
- * @version $Id: TestSharedMesh.java,v 1.1 2005-05-17 04:19:05 Mojomonkey Exp $
+ * @version $Id: TestSharedMesh.java,v 1.2 2005-05-19 18:12:29 Mojomonkey Exp $
  */
 public class TestSharedMesh extends SimpleGame {
 
@@ -88,12 +88,6 @@ public class TestSharedMesh extends SimpleGame {
     s.setModelBound(new BoundingBox());
     s.updateModelBound();
     
-    for(int i = 0; i < 500; i++) {
-        SharedMesh sm = new SharedMesh("Share" + i, s);
-        sm.setLocalTranslation(new Vector3f((float)Math.random() * 1000 - 500, (float)Math.random() * 1000 - 500, (float)Math.random() *1000 - 500));
-        rootNode.attachChild(sm);
-    }
-    
     TextureState ts = display.getRenderer().createTextureState();
     ts.setEnabled(true);
     ts.setTexture(
@@ -102,7 +96,16 @@ public class TestSharedMesh extends SimpleGame {
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR));
+    s.setRenderState(ts);
+    
+    for(int i = 0; i < 500; i++) {
+        SharedMesh sm = new SharedMesh("Share" + i, s);
+        sm.setLocalTranslation(new Vector3f((float)Math.random() * 1000 - 500, (float)Math.random() * 1000 - 500, (float)Math.random() *1000 - 500));
+        rootNode.attachChild(sm);
+    }
+    
+    
 
-    rootNode.setRenderState(ts);
+    
   }
 }
