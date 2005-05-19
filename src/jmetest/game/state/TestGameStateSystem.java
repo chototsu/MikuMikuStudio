@@ -35,6 +35,7 @@ import java.util.logging.Level;
 
 import com.jme.app.AbstractGame;
 import com.jme.app.BaseGame;
+import com.jme.app.GameState;
 import com.jme.input.InputSystem;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -49,7 +50,7 @@ import com.jme.app.GameStateManager;
  * SimpleGame because a lot of SimpleGames functions (e.g. camera, rootNode and input)
  * has been delegated down to the individual game states. So this class is
  * basically a stripped down version of SimpleGame, which inits the
- * GameStateManager.
+ * GameStateManager and launches a MenuState.
  * </p>
  * 
  * <p>
@@ -136,18 +137,16 @@ public class TestGameStateSystem extends BaseGame {
 	 * @see AbstractGame#initGame()
 	 */
 	protected final void initGame() {		
+		instance = this;
 		display.setTitle("Test Game State System");
 		
 		// Creates the GameStateManager. Only needs to be called once.
 		GameStateManager.create();
-		// Adds a new menu state to the game state manager. "Menu" is the key
-		// which we in the future will use in order to switch to the menu, or
-		// remove it.
-		GameStateManager.getInstance().addGameState("Menu", new MenuState());
-		// MUST call this before game loop kicks in.
-		GameStateManager.getInstance().switchTo("Menu");
-		
-		instance = this;
+		// Adds a new GameState to the GameStateManager. In order for it to get
+		// processed (rendered and updated) it needs to get activated.
+		GameState menu = new MenuState("menu");
+		menu.setActive(true);
+		GameStateManager.getInstance().attachChild(menu);
 	}
 	
 	/**

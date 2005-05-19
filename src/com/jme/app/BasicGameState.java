@@ -31,54 +31,55 @@
  */
 package com.jme.app;
 
-import java.util.logging.Level;
-
-import com.jme.util.LoggingSystem;
+import com.jme.scene.Node;
+import com.jme.system.DisplaySystem;
 
 /**
- * <code>GameStateManager</code> is nothing more than a singleton 
- * <code>GameStateNode</code>. It should be the root of the GameState "tree".
- * 
- * @see GameStateNode
- * @see GameState
+ * <code>BasicGameState</code> should be a good foundation of any GameState really.
+ * It implements all abstract methods of <code>GameState</code>, and all that
+ * sets it apart is that it creates a rootNode which it update and render.
  * 
  * @author Per Thulin
  */
-public class GameStateManager extends GameStateNode {
+public class BasicGameState extends GameState {
 	
-	/** The singleton. */
-	private static GameStateManager instance;
-	
+	/** The root of this GameStates scenegraph. */
+	protected Node rootNode;
+
 	/**
-	 * Private constructor.
+	 * Creates a new BasicGameState with a given name.
+	 * 
+	 * @param name The name of this GameState.
 	 */
-	private GameStateManager() {
-		super("Game State Manager");
+	public BasicGameState(String name) {
+		this.name = name;
+		rootNode = new Node("state rootNode");
 	}
 	
 	/**
-	 * Creates a new <code>GameStateManager</code>.
+	 * Updates the rootNode.
 	 * 
-	 * @return If this is the first time create() is called, a new instance
-	 * will be created and returned. Otherwise one should use getInstance()
-	 * instead.
+	 * @see GameState#update(float)
 	 */
-	public static GameStateManager create() {
-		if (instance == null) {
-			instance = new GameStateManager();
-			LoggingSystem.getLogger().log(Level.INFO, "Created GameStateManager");
-		}
-		return instance;
+	public void update(float tpf) {
+		rootNode.updateGeometricState(tpf, true);
+	}
+
+	/**
+	 * Draws the rootNode.
+	 * 
+	 * @see GameState#render(float)
+	 */
+	public void render(float tpf) {
+		DisplaySystem.getDisplaySystem().getRenderer().draw(rootNode);
 	}
 	
 	/**
-	 * Returns the singleton instance of this class. <b>Note that create() has
-	 * to have been called before this.</b>
+	 * Empty.
 	 * 
-	 * @return The singleton.
+	 * @see GameState#cleanup()
 	 */
-	public static GameStateManager getInstance() {
-		return instance;
+	public void cleanup() {	
 	}
 	
 }

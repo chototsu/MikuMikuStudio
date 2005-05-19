@@ -31,56 +31,50 @@
  */
 package com.jme.app;
 
-import com.jme.scene.Node;
 import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
-import com.jme.input.InputHandler;
 import com.jme.renderer.Camera;
 
 /**
  * <p>
  * A typical game state that initializes a rootNode, camera and a ZBufferState.
- * The input handler is left to be initialized by derived classes.
  * </p>
  * 
  * <p>
- * In update(float) we update the input and call updateGeometricState(0, true)
- * on our rootNode. In render(float) we just draw the rootNode.
+ * In update(float) we call updateGeometricState(0, true) on the rootNode,
+ * and in render(float) we draw it.
  * </p>
  * 
  * <p>
- * stateUpdate and stateRender can be defined for custom updating and 
- * rendering. Much like in SimpleGame.
+ * stateUpdate and stateRender can be filled with custom logic. Much like in 
+ * SimpleGame.
+ * </p>
+ * 
+ * <p>
+ * The setActive method will trigger the onActivate/onDeactivate methods, giving
+ * derived classes an opportunity to perform special actions. E.g. start/stop 
+ * playing menu music and such. Beware though; the onActivate method points
+ * the renderer to the camera contained by this state, so if you override it
+ * you must remember to call super.onActivate().
  * </p>
  * 
  * @author Per Thulin
  */
-public abstract class StandardGameState implements GameState {
-	
-	/** The input handler of this game state. */
-	protected InputHandler input;
-	
-	/** The node that gets updated and rendered by this GameState. */
-	protected Node rootNode;
+public class StandardGameState extends BasicGameState {
 	
 	/** The camera of this game state. */
 	protected Camera cam;
 	
 	/**
 	 * Inits rootNode, camera and ZBufferState. Also invokes initInput().
+	 * 
+	 * @param name The name of this GameState.
 	 */
-	public StandardGameState() {
-		rootNode = new Node("State rootNode");
-		initCamera();
-		initInput();
+	public StandardGameState(String name) {
+		super(name);
 		
-		// Create a ZBuffer to display pixels closer to the camera above
-		// farther ones.
-		ZBufferState buf = DisplaySystem.getDisplaySystem().
-			getRenderer().createZBufferState();
-		buf.setEnabled(true);
-		buf.setFunction(ZBufferState.CF_LEQUAL);		
-		rootNode.setRenderState(buf);
+		initCamera();
+		initZBuffer();
 		
 	    // Update geometric and rendering information for the rootNode.
 		rootNode.updateGeometricState(0.0f, true);
@@ -88,23 +82,43 @@ public abstract class StandardGameState implements GameState {
 	}
 	
 	/**
-	 * Updates the InputHandler and the geometric state of the rootNode.
-	 * Also calls stateUpdate(float).
+	 * Creates a ZBuffer to display pixels closer to the camera above
+	 * farther ones.
+	 */
+	protected void initZBuffer() {
+		ZBufferState buf = DisplaySystem.getDisplaySystem().
+			getRenderer().createZBufferState();
+		buf.setEnabled(true);
+		buf.setFunction(ZBufferState.CF_LEQUAL);		
+		rootNode.setRenderState(buf);
+	}
+	
+	/**
+	 * Overwritten to appropriately call switchTo() or switchFrom().
+	 * 
+	 * @see GameState#setActive(boolean)
+	 */
+	public void setActive(boolean active) {
+		if (active) onActivate();
+		else onDeactivate();
+		super.setActive(active);
+	}
+	
+	/**
+	 * Calls stateUpdate(float), then updates the geometric state of the 
+	 * rootNode.
 	 * 
 	 * @param tpf The elapsed time since last frame.
 	 * @see GameState#update(float)
 	 * @see StandardGameState#stateUpdate(float)
 	 */
-	public final void update(float tpf) {
-		input.update(tpf);
-		
-		stateUpdate(tpf);
-		
-		rootNode.updateGeometricState(tpf, true);
+	public final void update(float tpf) {	
+		stateUpdate(tpf);		
+		super.update(tpf);
 	}
 	
 	/**
-	 * Draws the rootNode. Also calls stateRender(float).
+	 * Calls stateRender(float), then renders the rootNode.
 	 * 
 	 * @param tpf The elapsed time since last frame.
 	 * @see GameState#render(float)
@@ -112,7 +126,7 @@ public abstract class StandardGameState implements GameState {
 	 */
 	public final void render(float tpf) {
 		stateRender(tpf);
-		DisplaySystem.getDisplaySystem().getRenderer().draw(this.rootNode); 
+		super.render(tpf);
 	}
 	
 	/**
@@ -143,27 +157,18 @@ public abstract class StandardGameState implements GameState {
 	}
 	
 	/**
-	 * Empty.
-	 * 
-	 * @see GameState#switchTo()
+	 * Points the renderers camera to the one contained by this state. Derived 
+	 * classes can put special actions they want to perform when activated here.
 	 */
-	public void switchTo() {
+	protected void onActivate() {
+		DisplaySystem.getDisplaySystem().getRenderer().setCamera(cam);
 	}
 	
 	/**
-	 * Empty.
-	 * 
-	 * @see GameState#switchFrom()
+	 * Derived classes can put special actions they want to perform when 
+	 * deactivated here.
 	 */
-	public void switchFrom() {
-	}
-
-	/**
-	 * Empty.
-	 *  
-	 * @see GameState#cleanup()
-	 */
-	public void cleanup() {
+	protected void onDeactivate() {
 	}
 	
 	/**
@@ -185,7 +190,7 @@ public abstract class StandardGameState implements GameState {
 	/**
 	 * Initializes a standard camera.
 	 */
-	private void initCamera() {
+	protected void initCamera() {
 		DisplaySystem display = DisplaySystem.getDisplaySystem();
 		
 		cam = display.getRenderer().createCamera(
@@ -197,12 +202,8 @@ public abstract class StandardGameState implements GameState {
 				(float) display.getHeight(), 1, 1000);
 		
 		cam.update();
+		
+		display.getRenderer().setCamera(cam);
 	}
-	
-	/**
-	 * Invoked by the constructor after the rootNode and camera has been
-	 * initialized. <b>Derived classes must define input here!</b>
-	 */
-	protected abstract void initInput();
 	
 }

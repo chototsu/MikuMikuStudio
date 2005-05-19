@@ -38,9 +38,11 @@ import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.image.Texture;
+import com.jme.input.InputHandler;
 import com.jme.util.TextureManager;
 import com.jme.math.Vector3f;
 
+import com.jme.app.GameState;
 import com.jme.app.GameStateManager;
 import com.jme.app.StandardGameState;
 import com.jmex.ui.UIActiveObject;
@@ -62,8 +64,13 @@ public class MenuState extends StandardGameState {
 	/** The play button located at the center of the screen. */
 	private UIButton playButton;
 	
-	public MenuState() {
-		display = DisplaySystem.getDisplaySystem();		
+	private InputHandler input;
+	
+	public MenuState(String name) {
+		super(name);
+		
+		display = DisplaySystem.getDisplaySystem();
+		initInput();
 		initCursor();
 		initButton();
 		
@@ -76,8 +83,9 @@ public class MenuState extends StandardGameState {
 	/**
 	 * @see GameStateManager#switchTo(String)
 	 */
-	public void switchTo() {
+	public void onActivate() {
 		display.setTitle("Test Game State System - Menu State");
+		super.onActivate();
 	}
 	
 	/**
@@ -141,9 +149,10 @@ public class MenuState extends StandardGameState {
 				// If the button has been pressed we create and switch to 
 				// the IngameState.
 				if (aObject.getState() == UIActiveObject.DOWN) {
-					GameStateManager.getInstance().
-						addGameState("Ingame", new IngameState());
-					GameStateManager.getInstance().switchTo("Ingame");
+					GameState ingame = new IngameState("ingame");
+					ingame.setActive(true);
+					GameStateManager.getInstance().attachChild(ingame);
+					setActive(false); // Deactivate this (the menu) state.
 				}
 			}
 		});
@@ -157,7 +166,8 @@ public class MenuState extends StandardGameState {
 	 * @param tpf The time since last frame.
 	 * @see GameState#update(float)
 	 */
-	protected void stateUpdate(float tpf) {		
+	protected void stateUpdate(float tpf) {
+		input.update(tpf);
 		// Check if the button has been pressed.
 		playButton.update(tpf);
 	}

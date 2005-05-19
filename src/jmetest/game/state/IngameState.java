@@ -33,6 +33,7 @@ package jmetest.game.state;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
+import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.FastMath;
@@ -50,10 +51,16 @@ import com.jme.app.StandardGameState;
  */
 public class IngameState extends StandardGameState {
 
-	public IngameState() {
+	private InputHandler input;
+	
+	public IngameState(String name) {
+		super(name);
+		
 		// Move the camera a bit.
 	    cam.setLocation(new Vector3f(0,10,0));
 	    cam.update();
+	    
+	    initInput();
 		
 	    // Create a Quad.
 	    Quad q = new Quad("Quad", 200, 200);
@@ -87,16 +94,17 @@ public class IngameState extends StandardGameState {
 	 * Gets called every time the game state manager switches to this game state.
 	 * Sets the window title.
 	 */
-	public void switchTo() {
+	public void onActivate() {
 		DisplaySystem.getDisplaySystem().
 			setTitle("Test Game State System - Ingame State");
+		super.onActivate();
 	}
 	
 	/**
 	 * Gets called from super constructor. Sets up the input handler that let
 	 * us walk around using the w,s,a,d keys and mouse.
 	 */
-	protected void initInput() {
+	private void initInput() {
 	    input = new IngameHandler(cam, "LWJGL");
 	    input.setKeySpeed(10f);
 	    input.setMouseSpeed(1f);
@@ -108,12 +116,13 @@ public class IngameState extends StandardGameState {
 	}
 	
 	protected void stateUpdate(float tpf) {
+		input.update(tpf);
 		if (KeyBindingManager.getKeyBindingManager().
 				isValidCommand("exit", false)) {
 			// Here we switch to the menu state which is already loaded
-			GameStateManager.getInstance().switchTo("Menu");
+			GameStateManager.getInstance().activateChildNamed("menu");
 			// And remove this state, because we don't want to keep it in memory.
-			GameStateManager.getInstance().removeGameState("Ingame");
+			GameStateManager.getInstance().detachChild("ingame");
 		}
 	}
 	
