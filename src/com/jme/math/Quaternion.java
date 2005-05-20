@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.33 2005-04-06 20:24:25 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.34 2005-05-20 06:20:10 renanse Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -495,12 +495,12 @@ public class Quaternion implements Externalizable {
         if ((1 - result) > 0.1f) {// Get the angle between the 2 quaternions,
             // and then store the sin() of that angle
             float theta = FastMath.acos(result);
-            float sinTheta = FastMath.sin(theta);
+            float invSinTheta = 1f / FastMath.sin(theta);
 
             // Calculate the scale for q1 and q2, according to the angle and
             // it's sine value
-            scale0 = FastMath.sin((1 - t) * theta) / sinTheta;
-            scale1 = FastMath.sin((t * theta)) / sinTheta;
+            scale0 = FastMath.sin((1 - t) * theta) * invSinTheta;
+            scale1 = FastMath.sin((t * theta)) * invSinTheta;
         }
 
         // Calculate the x, y, z and w values for the quaternion by using a
@@ -552,12 +552,12 @@ public class Quaternion implements Externalizable {
             // Get the angle between the 2 quaternions, and then store the sin()
             // of that angle
             float theta = (float) FastMath.acos(result);
-            float sinTheta = (float) FastMath.sin(theta);
+            float invSinTheta = 1f / (float) FastMath.sin(theta);
 
             // Calculate the scale for q1 and q2, according to the angle and
             // it's sine value
-            scale0 = (float) FastMath.sin((1 - changeAmnt) * theta) / sinTheta;
-            scale1 = (float) FastMath.sin((changeAmnt * theta)) / sinTheta;
+            scale0 = (float) FastMath.sin((1 - changeAmnt) * theta) * invSinTheta;
+            scale1 = (float) FastMath.sin((changeAmnt * theta)) * invSinTheta;
         }
 
         // Calculate the x, y, z and w values for the quaternion by using a

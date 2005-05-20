@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.12 2005-04-29 16:09:43 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.13 2005-05-20 06:20:10 renanse Exp $
  */
 public class Matrix4f {
 
@@ -849,10 +849,10 @@ public class Matrix4f {
 
     /**
      * <code>mult</code> multiplies an array of 4 floats against this rotation 
-     * matrix. The results are stored directly in the array.
+     * matrix. The results are stored directly in the array. (vec4f x mat4f)
      * 
      * @param vec4f
-     *            float array (size 4) to multiply against the matrix.
+     *            float array (size 4) to multiply by the matrix.
      * @return the vec4f for chaining.
      */
     public float[] mult(float[] vec4f) {
@@ -864,13 +864,13 @@ public class Matrix4f {
         float x = vec4f[0], y = vec4f[1], z = vec4f[2], w = vec4f[3];
         
         vec4f[0] = m00 * x + m01 * y 
-		 		 + m02 * z + m03 * z;
-        vec4f[0] = m10 * x + m11 * y 
-		 		 + m12 * z + m13 * z;
-        vec4f[0] = m20 * x + m21 * y 
-		 		 + m22 * z + m23 * z;
-        vec4f[0] = m30 * x + m31 * y 
-		 		 + m32 * z + m33 * z;
+		 		 + m02 * z + m03 * w;
+        vec4f[1] = m10 * x + m11 * y 
+		 		 + m12 * z + m13 * w;
+        vec4f[2] = m20 * x + m21 * y 
+		 		 + m22 * z + m23 * w;
+        vec4f[3] = m30 * x + m31 * y 
+		 		 + m32 * z + m33 * w;
 
         return vec4f;
     }
