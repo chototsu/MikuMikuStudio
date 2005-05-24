@@ -135,7 +135,7 @@ public class TestRigidSmoker extends SimpleGame {
         Texture.FM_LINEAR));
     ts.setEnabled(true);
 
-    ParticleManager manager = new ParticleManager(300, display.getRenderer().getCamera());
+    ParticleManager manager = new ParticleManager(300);
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0f, 0f, 1f));
     manager.setEmissionMaximumAngle(0.0f);

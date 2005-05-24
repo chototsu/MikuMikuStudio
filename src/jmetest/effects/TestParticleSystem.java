@@ -45,7 +45,7 @@ import com.jmex.effects.ParticleManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: TestParticleSystem.java,v 1.27 2005-05-12 22:49:41 Mojomonkey Exp $
+ * @version $Id: TestParticleSystem.java,v 1.28 2005-05-24 22:47:34 Mojomonkey Exp $
  */
 public class TestParticleSystem extends SimpleGame {
 
@@ -103,7 +103,7 @@ public class TestParticleSystem extends SimpleGame {
         Texture.FM_LINEAR));
     ts.setEnabled(true);
 
-    manager = new ParticleManager(300, display.getRenderer().getCamera());
+    manager = new ParticleManager(300);
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0,1,0));
     manager.setParticlesOrigin(new Vector3f(0,0,0));

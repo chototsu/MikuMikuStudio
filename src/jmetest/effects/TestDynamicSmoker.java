@@ -143,7 +143,7 @@ public class TestDynamicSmoker extends SimpleGame {
         Texture.FM_LINEAR));
     ts.setEnabled(true);
 
-    manager = new ParticleManager(300, display.getRenderer().getCamera());
+    manager = new ParticleManager(300);
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0f, 0f, 1f));
     manager.setEmissionMaximumAngle(0.0f);

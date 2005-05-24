@@ -51,7 +51,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.34 2005-05-20 06:20:10 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.35 2005-05-24 22:47:44 Mojomonkey Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -61,7 +61,7 @@ public class Quaternion implements Externalizable {
     /**
      * Constructor instantiates a new <code>Quaternion</code> object
      * initializing all values to zero, except w which is initialized to 1.
-     *  
+     * 
      */
     public Quaternion() {
         x = 0;
@@ -117,12 +117,14 @@ public class Quaternion implements Externalizable {
      * 
      * @param q
      *            The Quaternion to copy values from.
+     * @return this for chaining
      */
-    public void set(Quaternion q) {
+    public Quaternion set(Quaternion q) {
         this.x = q.x;
         this.y = q.y;
         this.z = q.z;
         this.w = q.w;
+        return this;
     }
 
     /**
@@ -292,7 +294,8 @@ public class Quaternion implements Externalizable {
     /**
      * 
      * <code>toRotationMatrix</code> converts this quaternion to a rotational
-     * matrix. The result is stored in result.  The outer col, row is 0, with 3,3 = 1
+     * matrix. The result is stored in result. The outer col, row is 0, with 3,3 =
+     * 1
      * 
      * @param result
      *            The Matrix4f to store the result in.
@@ -324,7 +327,7 @@ public class Quaternion implements Externalizable {
         result.m20 = fTxz - fTwy;
         result.m21 = fTyz + fTwx;
         result.m22 = 1.0f - (fTxx + fTyy);
-        
+
         return result;
     }
 
@@ -395,17 +398,19 @@ public class Quaternion implements Externalizable {
 
     /**
      * <code>fromAngleAxis</code> sets this quaternion to the values specified
-     * by an angle and an axis of rotation.  This method creates an object, so
+     * by an angle and an axis of rotation. This method creates an object, so
      * use fromAngleNormalAxis if your axis is already normalized.
      * 
      * @param angle
      *            the angle to rotate (in radians).
      * @param axis
      *            the axis of rotation.
+     * @return this quaternion
      */
-    public void fromAngleAxis(float angle, Vector3f axis) {
+    public Quaternion fromAngleAxis(float angle, Vector3f axis) {
         Vector3f normAxis = axis.normalize();
         fromAngleNormalAxis(angle, normAxis);
+        return this;
     }
 
     /**
@@ -417,13 +422,14 @@ public class Quaternion implements Externalizable {
      * @param axis
      *            the axis of rotation (already normalized).
      */
-    public void fromAngleNormalAxis(float angle, Vector3f axis) {
+    public Quaternion fromAngleNormalAxis(float angle, Vector3f axis) {
         float halfAngle = 0.5f * angle;
         float sin = FastMath.sin(halfAngle);
         w = FastMath.cos(halfAngle);
         x = sin * axis.x;
         y = sin * axis.y;
         z = sin * axis.z;
+        return this;
     }
 
     /**
@@ -778,10 +784,14 @@ public class Quaternion implements Externalizable {
      * stored in this Quaternion, which is also returned for chaining. Similar
      * to this *= q.
      * 
-     * @param qx - quat x value
-     * @param qy - quat y value
-     * @param qz - quat z value
-     * @param qw - quat w value
+     * @param qx -
+     *            quat x value
+     * @param qy -
+     *            quat y value
+     * @param qz -
+     *            quat z value
+     * @param qw -
+     *            quat w value
      * 
      * @return This Quaternion, after multiplication.
      */
@@ -927,7 +937,7 @@ public class Quaternion implements Externalizable {
 
     /**
      * <code>negate</code> inverts the values of the quaternion.
-     *  
+     * 
      */
     public void negate() {
         x *= -1;
@@ -981,10 +991,11 @@ public class Quaternion implements Externalizable {
     }
 
     /**
-     *  
-     * <code>hashCode</code> returns the hash code value as an integer and is 
-     * supported for the benefit of hashing based collection classes such as 
-     * Hashtable, HashMap, HashSet etc. 
+     * 
+     * <code>hashCode</code> returns the hash code value as an integer and is
+     * supported for the benefit of hashing based collection classes such as
+     * Hashtable, HashMap, HashSet etc.
+     * 
      * @return the hashcode for this instance of Quaternion.
      * @see java.lang.Object#hashCode()
      */

@@ -32,9 +32,13 @@
 
 package com.jme.scene;
 
-import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
 
+/**
+ * SharedNode allows the sharing of data
+ * @author Mark Powell
+ *
+ */
 public class SharedNode extends Node {
 
 private static final long serialVersionUID = 1L;

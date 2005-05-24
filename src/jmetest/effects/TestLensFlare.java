@@ -51,7 +51,7 @@ import com.jmex.effects.LensFlareFactory;
  *  Test of the lens flare effect in jME.  Notice that currently it doesn't do
  *  occlusion culling.
  * @author Joshua Slack
- * @version $Id: TestLensFlare.java,v 1.9 2005-05-12 22:49:42 Mojomonkey Exp $
+ * @version $Id: TestLensFlare.java,v 1.10 2005-05-24 22:47:34 Mojomonkey Exp $
  */
 public class TestLensFlare extends SimpleGame {
 
@@ -89,6 +89,12 @@ public class TestLensFlare extends SimpleGame {
     lightNode.attachChild(lightBox);
     lightNode.setTarget(rootNode);
     lightNode.setLocalTranslation(new Vector3f( -14f, 14f, -14f));
+    
+    Box box2 = new Box("blocker", new Vector3f(-5,-5,-5), new Vector3f(5,5,5));
+    box2.setModelBound(new BoundingBox());
+    box2.updateModelBound();
+    box2.setLocalTranslation(new Vector3f(100,0,0));
+    rootNode.attachChild(box2);
 
     // clear the lights from this lightbox so the lightbox itself doesn't
 		// get affected by light:
@@ -141,7 +147,7 @@ public class TestLensFlare extends SimpleGame {
 
     LensFlare flare = LensFlareFactory.createBasicLensFlare("flare", tex);
     flare.setLocalTranslation(lightNode.getLocalTranslation());
-
+    flare.setRootNode(rootNode);
     //lightNode.attachChild(flare);
     Box box = new Box("my box", new Vector3f(0, 0, 0), 10, 10, 10);
     box.setModelBound(new BoundingBox());

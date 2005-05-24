@@ -41,57 +41,69 @@ import com.jme.util.LoggingSystem;
  * keyboard) depending on the API desired for the handling of the input. This
  * will allow the client application to only deal with <code>KeyInput</code>
  * and <code>MouseInput</code> not having to worry about the API specifics.
+ * 
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.4 2004-04-22 22:26:29 renanse Exp $
+ * @version $Id: InputSystem.java,v 1.5 2005-05-24 22:47:39 Mojomonkey Exp $
  */
 public class InputSystem {
-    //the input devices.
+    // the input devices.
     private static KeyInput keyInput;
+
     private static MouseInput mouseInput;
 
+    public static final String INPUT_SYSTEM_LWJGL = "LWJGL";
+
     /**
-     *
+     * 
      * <code>createInputSystem</code> initializes the input devices using the
      * provided API string.
-     * @param system the input API to use, e.g. "LWJGL" or "JInput".
+     * 
+     * @param system
+     *            the input API to use, e.g. "LWJGL" or "JInput".
      */
     public static void createInputSystem(String system) {
-        if ("LWJGL".equalsIgnoreCase(system)) {
+        if (INPUT_SYSTEM_LWJGL.equalsIgnoreCase(system)) {
             keyInput = new LWJGLKeyInput();
             mouseInput = new LWJGLMouseInput();
         }
     }
 
     /**
-     *
+     * 
      * <code>getKeyInput</code> retrieves the key input device.
+     * 
      * @return the key input device.
      */
     public static KeyInput getKeyInput() {
         if (keyInput == null) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "KeyInput is null,"
-                    + " insure that a call to createInputSystem was made before"
-                    + " getting the devices.");
+            LoggingSystem
+                    .getLogger()
+                    .log(
+                            Level.WARNING,
+                            "KeyInput is null,"
+                                    + " insure that a call to createInputSystem was made before"
+                                    + " getting the devices.");
         }
         return keyInput;
     }
 
     /**
-     *
+     * 
      * <code>getMouseInput</code> retrieves the mouse input device.
+     * 
      * @return the mouse input device.
      */
     public static MouseInput getMouseInput() {
         if (mouseInput == null) {
-            LoggingSystem.getLogger().log(
-                Level.WARNING,
-                "MouseInput is null,"
-                    + " insure that a call to createInputSystem was made before"
-                    + " getting the devices.");
+            LoggingSystem
+                    .getLogger()
+                    .log(
+                            Level.WARNING,
+                            "MouseInput is null,"
+                                    + " insure that a call to createInputSystem was made before"
+                                    + " getting the devices.");
         }
         return mouseInput;
 

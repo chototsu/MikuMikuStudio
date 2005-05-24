@@ -48,223 +48,216 @@ import com.jme.renderer.Renderer;
  * camera setting compatible with <code>BillboardNode</code>.
  * 
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.17 2005-03-14 20:15:45 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.18 2005-05-24 22:47:30 Mojomonkey Exp $
  */
 public class BillboardNode extends Node {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
-	private float lastTime;
+    private float lastTime;
 
-	private Matrix3f orient;
+    private Matrix3f orient;
 
-	private Vector3f look;
-	private Vector3f left;
-	private Vector3f up;
+    private Vector3f look;
 
-	private int type;
+    private Vector3f left;
 
-	/** Alligns this Billboard Node to the screen. */
-	public static final int SCREEN_ALIGNED = 0;
+    private Vector3f up;
 
-	/** Alligns this Billboard Node to the screen, but keeps the Y axis fixed. */
-	public static final int AXIAL = 1;
+    private int type;
 
-	/** Alligns this Billboard Node to the camera position. */
-	public static final int CAMERA_ALIGNED = 2;
+    /** Alligns this Billboard Node to the screen. */
+    public static final int SCREEN_ALIGNED = 0;
 
-	/**
-	 * Constructor instantiates a new <code>BillboardNode</code>. The name of
-	 * the node is supplied during construction.
-	 * 
-	 * @param name
-	 *            the name of the node.
-	 */
-	public BillboardNode(String name) {
-		super(name);
-		orient = new Matrix3f();
-		up = new Vector3f();
-		look = new Vector3f();
-		left = new Vector3f();
-		type = SCREEN_ALIGNED;
-	}
+    /** Alligns this Billboard Node to the screen, but keeps the Y axis fixed. */
+    public static final int AXIAL = 1;
 
-	/**
-	 * <code>updateWorldData</code> defers the updating of the billboards
-	 * orientation until rendering. This keeps the billboard from being
-	 * needlessly oriented if the player can not actually see it.
-	 * 
-	 * @param time
-	 *            the time between frames.
-	 * @see com.jme.scene.Spatial#updateWorldData(float)
-	 */
-	public void updateWorldData(float time) {
-		lastTime = time;
-		updateWorldBound();
-	}
+    /** Alligns this Billboard Node to the camera position. */
+    public static final int CAMERA_ALIGNED = 2;
 
-	/**
-	 * <code>draw</code> updates the billboards orientation then renders the
-	 * billboard's children.
-	 * 
-	 * @param r
-	 *            the renderer used to draw.
-	 * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
-	 */
-	public void draw(Renderer r) {
-		Camera cam = r.getCamera();
-		rotateBillboard(cam);
+    /**
+     * Constructor instantiates a new <code>BillboardNode</code>. The name of
+     * the node is supplied during construction.
+     * 
+     * @param name
+     *            the name of the node.
+     */
+    public BillboardNode(String name) {
+        super(name);
+        orient = new Matrix3f();
+        up = new Vector3f();
+        look = new Vector3f();
+        left = new Vector3f();
+        type = SCREEN_ALIGNED;
+    }
 
-		super.draw(r);
-	}
+    /**
+     * <code>updateWorldData</code> defers the updating of the billboards
+     * orientation until rendering. This keeps the billboard from being
+     * needlessly oriented if the player can not actually see it.
+     * 
+     * @param time
+     *            the time between frames.
+     * @see com.jme.scene.Spatial#updateWorldData(float)
+     */
+    public void updateWorldData(float time) {
+        lastTime = time;
+        updateWorldBound();
+    }
 
-	/**
-	 * rotate the billboard based on the type set
-	 * 
-	 * @param cam
-	 *            Camera
-	 */
-	public void rotateBillboard(Camera cam) {
-		//get the scale, translation and rotation of the node in world space
-		if (parent != null) {
-			worldScale.set(parent.getWorldScale()).multLocal(localScale);
-			parent.getWorldRotation().mult(localRotation, worldRotation);
-			worldTranslation = parent.getWorldRotation().mult(localTranslation,
-					worldTranslation).multLocal(parent.getWorldScale())
-					.addLocal(parent.getWorldTranslation());
-		} else {
-			worldScale.set(localScale);
-			worldRotation.set(localRotation);
-			worldTranslation.set(localTranslation);
-		}
+    /**
+     * <code>draw</code> updates the billboards orientation then renders the
+     * billboard's children.
+     * 
+     * @param r
+     *            the renderer used to draw.
+     * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
+     */
+    public void draw(Renderer r) {
+        Camera cam = r.getCamera();
+        rotateBillboard(cam);
 
-		switch (type) {
-		case AXIAL:
-			rotateAxial(cam);
-			break;
-		case SCREEN_ALIGNED:
-			rotateScreenAligned(cam);
-			break;
-		case CAMERA_ALIGNED:
-		    rotateCameraAligned(cam);
-		    break;
-		}
+        super.draw(r);
+    }
 
-		for (int i = 0, cSize = children.size(); i < cSize; i++) {
-			Spatial child = (Spatial) children.get(i);
-			if (child != null) {
-				child.updateGeometricState(lastTime, false);
-			}
-		}
-	}
+    /**
+     * rotate the billboard based on the type set
+     * 
+     * @param cam
+     *            Camera
+     */
+    public void rotateBillboard(Camera cam) {
+        // get the scale, translation and rotation of the node in world space
+        updateWorldVectors();
 
-	/**
-	 * rotateCameraAligned
-	 *
-	 * @param camera Camera
-	 */
-	private void rotateCameraAligned(Camera camera) {
-	    look.set(camera.getLocation()).subtractLocal(worldTranslation);
-	    look.normalizeLocal();
-	    
-	    float el = FastMath.asin(look.y);
-	    float az = FastMath.atan2(look.x, look.z);
-	    float elCos = FastMath.cos(el);
-	    float azCos = FastMath.cos(az);
-	    float elSin = FastMath.sin(el);
-	    float azSin = FastMath.sin(az);
-	    
-	    // compute the local orientation matrix for the billboard
-	    orient.m00 = azCos;
-	    orient.m01 = azSin * -elSin;
-	    orient.m02 = azSin * elCos;
-	    orient.m10 = 0;
-	    orient.m11 = elCos;
-	    orient.m12 = elSin;
-	    orient.m20 = -azSin;
-	    orient.m21 = azCos * -elSin;
-	    orient.m22 = azCos * elCos;
-	    
-	    // The billboard must be oriented to face the camera before it is
-	    // transformed into the world.
-	    worldRotation.apply(orient);
-	} 
-	
-	/**
-	 * Rotate the billboard so it points directly opposite the 
-	 * direction the camera's facing
-	 * 
-	 * @param camera
-	 *            Camera
-	 */
-	private void rotateScreenAligned(Camera camera) {
-	    // coopt diff for our in direction:
-	    look.set(camera.getDirection()).negateLocal();
-		// coopt loc for our left direction:
-		left.set(camera.getLeft()).negateLocal();
-		orient.fromAxes(left, camera.getUp(), look);
-		worldRotation.fromRotationMatrix(orient);
-	}
+        switch (type) {
+        case AXIAL:
+            rotateAxial(cam);
+            break;
+        case SCREEN_ALIGNED:
+            rotateScreenAligned(cam);
+            break;
+        case CAMERA_ALIGNED:
+            rotateCameraAligned(cam);
+            break;
+        }
 
-	/**
-	 * Rotate the billboard towards the camera, but keeping the y axis fixed.
-	 * 
-	 * @param camera
-	 *            Camera
-	 */
-	private void rotateAxial(Camera camera) {
-		// Compute the additional rotation required for the billboard to face
-		// the camera. To do this, the camera must be inverse-transformed into
-		// the model space of the billboard.
-	    look.set(camera.getLocation()).subtractLocal(worldTranslation);
-		worldRotation.mult(look, left); // coopt left for our own purposes.
-		left.x *= 1.0f / worldScale.x;
-		left.y *= 1.0f / worldScale.y;
-		left.z *= 1.0f / worldScale.z;
+        for (int i = 0, cSize = children.size(); i < cSize; i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child != null) {
+                child.updateGeometricState(lastTime, false);
+            }
+        }
+    }
 
-		// squared length of the camera projection in the xz-plane
-		float lengthSquared = left.x * left.x + left.z * left.z;
-		if (lengthSquared < FastMath.FLT_EPSILON) {
-			// camera on the billboard axis, rotation not defined
-			return;
-		}
+    /**
+     * rotateCameraAligned
+     * 
+     * @param camera
+     *            Camera
+     */
+    private void rotateCameraAligned(Camera camera) {
+        look.set(camera.getLocation()).subtractLocal(worldTranslation);
+        look.normalizeLocal();
 
-		// unitize the projection
-		float invLength = FastMath.invSqrt(lengthSquared);
-		left.x *= invLength;
-		left.y = 0.0f;
-		left.z *= invLength;
+        float el = FastMath.asin(look.y);
+        float az = FastMath.atan2(look.x, look.z);
+        float elCos = FastMath.cos(el);
+        float azCos = FastMath.cos(az);
+        float elSin = FastMath.sin(el);
+        float azSin = FastMath.sin(az);
 
-		// compute the local orientation matrix for the billboard
-		orient.m00 = left.z;
-		orient.m01 = 0;
-		orient.m02 = left.x;
-		orient.m10 = 0;
-		orient.m11 = 1;
-		orient.m12 = 0;
-		orient.m20 = -left.x;
-		orient.m21 = 0;
-		orient.m22 = left.z;
+        // compute the local orientation matrix for the billboard
+        orient.m00 = azCos;
+        orient.m01 = azSin * -elSin;
+        orient.m02 = azSin * elCos;
+        orient.m10 = 0;
+        orient.m11 = elCos;
+        orient.m12 = elSin;
+        orient.m20 = -azSin;
+        orient.m21 = azCos * -elSin;
+        orient.m22 = azCos * elCos;
 
-		// The billboard must be oriented to face the camera before it is
-		// transformed into the world.
-		worldRotation.apply(orient);
-	}
+        // The billboard must be oriented to face the camera before it is
+        // transformed into the world.
+        worldRotation.apply(orient);
+    }
 
-	/**
-	 * Returns the type of rotation this BillboardNode is set too.
-	 * 
-	 * @return The type of rotation, AXIAL or SCREEN.
-	 */
-	public int getType() {
-		return type;
-	}
+    /**
+     * Rotate the billboard so it points directly opposite the direction the
+     * camera's facing
+     * 
+     * @param camera
+     *            Camera
+     */
+    private void rotateScreenAligned(Camera camera) {
+        // coopt diff for our in direction:
+        look.set(camera.getDirection()).negateLocal();
+        // coopt loc for our left direction:
+        left.set(camera.getLeft()).negateLocal();
+        orient.fromAxes(left, camera.getUp(), look);
+        worldRotation.fromRotationMatrix(orient);
+    }
 
-	/**
-	 * Sets the type of rotation this BillboardNode will have. The type can be
-	 * either SCREEN_ALIGNED or AXIAL. Invalid types will assume no billboard
-	 * rotation.
-	 */
-	public void setType(int type) {
-		this.type = type;
-	}
+    /**
+     * Rotate the billboard towards the camera, but keeping the y axis fixed.
+     * 
+     * @param camera
+     *            Camera
+     */
+    private void rotateAxial(Camera camera) {
+        // Compute the additional rotation required for the billboard to face
+        // the camera. To do this, the camera must be inverse-transformed into
+        // the model space of the billboard.
+        look.set(camera.getLocation()).subtractLocal(worldTranslation);
+        worldRotation.mult(look, left); // coopt left for our own purposes.
+        left.x *= 1.0f / worldScale.x;
+        left.y *= 1.0f / worldScale.y;
+        left.z *= 1.0f / worldScale.z;
+
+        // squared length of the camera projection in the xz-plane
+        float lengthSquared = left.x * left.x + left.z * left.z;
+        if (lengthSquared < FastMath.FLT_EPSILON) {
+            // camera on the billboard axis, rotation not defined
+            return;
+        }
+
+        // unitize the projection
+        float invLength = FastMath.invSqrt(lengthSquared);
+        left.x *= invLength;
+        left.y = 0.0f;
+        left.z *= invLength;
+
+        // compute the local orientation matrix for the billboard
+        orient.m00 = left.z;
+        orient.m01 = 0;
+        orient.m02 = left.x;
+        orient.m10 = 0;
+        orient.m11 = 1;
+        orient.m12 = 0;
+        orient.m20 = -left.x;
+        orient.m21 = 0;
+        orient.m22 = left.z;
+
+        // The billboard must be oriented to face the camera before it is
+        // transformed into the world.
+        worldRotation.apply(orient);
+    }
+
+    /**
+     * Returns the type of rotation this BillboardNode is set too.
+     * 
+     * @return The type of rotation, AXIAL or SCREEN.
+     */
+    public int getType() {
+        return type;
+    }
+
+    /**
+     * Sets the type of rotation this BillboardNode will have. The type can be
+     * either SCREEN_ALIGNED or AXIAL. Invalid types will assume no billboard
+     * rotation.
+     */
+    public void setType(int type) {
+        this.type = type;
+    }
 }

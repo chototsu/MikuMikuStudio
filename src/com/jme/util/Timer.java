@@ -32,48 +32,55 @@
 package com.jme.util;
 
 import com.jme.util.lwjgl.*;
+import com.jme.system.DisplaySystem;
 
 /**
- * <code>Timer</code> is the base class for a high resolultion timer.  It is created from
- * getTimer("display system")
+ * <code>Timer</code> is the base class for a high resolultion timer. It is
+ * created from getTimer("display system")
+ * 
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.8 2004-08-02 22:07:52 cep21 Exp $
+ * @version $Id: Timer.java,v 1.9 2005-05-24 22:47:36 Mojomonkey Exp $
  */
 public abstract class Timer {
     private static Timer instance;
 
     /**
-     * Returns the current time in ticks. A tick is an arbitrary measure
-     * of time defined by the timer implementation. The number of ticks
-     * per second is given by <code>getResolution()</code>.
+     * Returns the current time in ticks. A tick is an arbitrary measure of time
+     * defined by the timer implementation. The number of ticks per second is
+     * given by <code>getResolution()</code>.
+     * 
      * @return a long value representing the current time
      */
     public abstract long getTime();
 
     /**
-     * Returns the time in seconds. There is no guarantee that the timer
-     * starts at 0.0 seconds.
+     * Returns the time in seconds. There is no guarantee that the timer starts
+     * at 0.0 seconds.
+     * 
      * @return the current time in seconds
      */
-    public float getTimeInSeconds(){
-        return getTime() / (float)getResolution();
+    public float getTimeInSeconds() {
+        return getTime() / (float) getResolution();
     }
 
     /**
      * Returns the resolution of the timer.
+     * 
      * @return the number of timer ticks per second
      */
     public abstract long getResolution();
 
     /**
-     * Returns the "calls per second".  If this is called every frame, then it will return the
-     * "frames per second".
+     * Returns the "calls per second". If this is called every frame, then it
+     * will return the "frames per second".
+     * 
      * @return The "calls per second".
      */
     public abstract float getFrameRate();
 
     /**
      * Returns the time, in seconds, between the last call and the current one.
+     * 
      * @return Time between this call and the last one.
      */
     public abstract float getTimePerFrame();
@@ -85,14 +92,16 @@ public abstract class Timer {
     public abstract void update();
 
     /**
-     * Returns the high resolution timer.  Timer is a singleton class so only one
+     * Returns the high resolution timer. Timer is a singleton class so only one
      * instance of Timer is allowed.
-     * @param version The version of the rendering enviroment.
+     * 
+     * @param version
+     *            The version of the rendering enviroment.
      * @return The high resolution timer.
      */
     public static Timer getTimer(String version) {
-        if("LWJGL".equalsIgnoreCase(version)) {
-            if(instance == null || !(instance instanceof LWJGLTimer)) {
+        if (DisplaySystem.DISPLAY_SYSTEM_JWJGL.equalsIgnoreCase(version)) {
+            if (instance == null || !(instance instanceof LWJGLTimer)) {
                 instance = new LWJGLTimer();
             }
 

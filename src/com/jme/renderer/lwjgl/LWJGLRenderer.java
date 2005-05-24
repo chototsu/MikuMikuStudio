@@ -132,14 +132,14 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLRenderer.java,v 1.60 2005-04-07 19:07:20 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.61 2005-05-24 22:47:43 Mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
-    //clear color
+    // clear color
     private ColorRGBA backgroundColor;
 
-    //width and height of renderer
+    // width and height of renderer
     private int width;
 
     private int height;
@@ -225,7 +225,8 @@ public class LWJGLRenderer implements Renderer {
         }
         this.width = width;
         this.height = height;
-        if (camera != null) camera.resize(width, height);
+        if (camera != null)
+            camera.resize(width, height);
         mode = Display.getDisplayMode();
     }
 
@@ -424,7 +425,7 @@ public class LWJGLRenderer implements Renderer {
      *            the color to set the background color to.
      */
     public void setBackgroundColor(ColorRGBA c) {
-        //if color is null set background to white.
+        // if color is null set background to white.
         if (c == null) {
             backgroundColor.a = 1.0f;
             backgroundColor.b = 1.0f;
@@ -474,9 +475,9 @@ public class LWJGLRenderer implements Renderer {
     public void clearBuffers() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
-    
+
     /**
-     * <code>clearBuffers</code> clears both the color and the depth buffer 
+     * <code>clearBuffers</code> clears both the color and the depth buffer
      * for only the part of the buffer defined by the renderer width/height.
      * 
      * @see com.jme.renderer.Renderer#clearBuffers()
@@ -497,29 +498,37 @@ public class LWJGLRenderer implements Renderer {
      * @see com.jme.renderer.Renderer#displayBackBuffer()
      */
     public void displayBackBuffer() {
-        // render queue if needed
+        renderQueue();
+
+        prevColor = prevNorms = prevVerts = null;
+        Arrays.fill(prevTex, null);
+
+        GL11.glFlush();
+        if (!headless)
+            Display.update();
+    }
+
+    /**
+     * render queue if needed
+     */
+    void renderQueue() {
         processingQueue = true;
         queue.renderBuckets();
         if (Spatial.getCurrentState(RenderState.RS_ZBUFFER) != null
                 && !((ZBufferState) Spatial
                         .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
             if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
-                    Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
+                Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
             Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
         }
         processingQueue = false;
-
-        prevColor = prevNorms = prevVerts = null;
-        Arrays.fill(prevTex, null);
-
-        GL11.glFlush();
-        if (!headless) Display.update();
     }
 
     public void setOrtho() {
-        if (inOrthoMode) { throw new JmeException(
-                "Already in Orthographic mode."); }
-        //set up ortho mode
+        if (inOrthoMode) {
+            throw new JmeException("Already in Orthographic mode.");
+        }
+        // set up ortho mode
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -531,9 +540,10 @@ public class LWJGLRenderer implements Renderer {
     }
 
     public void setOrthoCenter() {
-        if (inOrthoMode) { throw new JmeException(
-                "Already in Orthographic mode."); }
-        //set up ortho mode
+        if (inOrthoMode) {
+            throw new JmeException("Already in Orthographic mode.");
+        }
+        // set up ortho mode
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPushMatrix();
         GL11.glLoadIdentity();
@@ -546,8 +556,10 @@ public class LWJGLRenderer implements Renderer {
     }
 
     public void unsetOrtho() {
-        if (!inOrthoMode) { throw new JmeException("Not in Orthographic mode."); }
-        //remove ortho mode, and go back to original
+        if (!inOrthoMode) {
+            throw new JmeException("Not in Orthographic mode.");
+        }
+        // remove ortho mode, and go back to original
         // state
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPopMatrix();
@@ -565,26 +577,27 @@ public class LWJGLRenderer implements Renderer {
      * @return true if successful, false otherwise.
      */
     public boolean takeScreenShot(String filename) {
-        if (null == filename) { throw new JmeException(
-                "Screenshot filename cannot be null"); }
+        if (null == filename) {
+            throw new JmeException("Screenshot filename cannot be null");
+        }
         LoggingSystem.getLogger().log(Level.INFO,
                 "Taking screenshot: " + filename + ".png");
 
-        //Create a pointer to the image info and create a buffered image to
-        //hold it.
+        // Create a pointer to the image info and create a buffered image to
+        // hold it.
         IntBuffer buff = BufferUtils.createIntBuffer(width * height);
-        grabScreenContents(buff, 0,0,width,height);
+        grabScreenContents(buff, 0, 0, width, height);
         BufferedImage img = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
 
-        //Grab each pixel information and set it to the BufferedImage info.
+        // Grab each pixel information and set it to the BufferedImage info.
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 img.setRGB(x, y, buff.get((height - y - 1) * width + x));
             }
         }
 
-        //write out the screenshot image to a file.
+        // write out the screenshot image to a file.
         try {
             File out = new File(filename + ".png");
             return ImageIO.write(img, "png", out);
@@ -611,7 +624,8 @@ public class LWJGLRenderer implements Renderer {
      *            height of block
      */
     public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h) {
-        GL11.glReadPixels(x, y, w, h, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE,
+        GL11
+                .glReadPixels(x, y, w, h, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE,
                         buff);
     }
 
@@ -879,7 +893,7 @@ public class LWJGLRenderer implements Renderer {
      *            the curve object to render.
      */
     public void draw(Curve c) {
-        //      set world matrix
+        // set world matrix
         Quaternion rotation = c.getWorldRotation();
         Vector3f translation = c.getWorldTranslation();
         Vector3f scale = c.getWorldScale();
@@ -944,8 +958,8 @@ public class LWJGLRenderer implements Renderer {
         predrawMesh(t);
 
         IntBuffer indices = t.getIndexAsBuffer();
-        int verts = (t.getVertQuantity() >= 0 ? t.getVertQuantity() 
-                : t.getVertices().length);
+        int verts = (t.getVertQuantity() >= 0 ? t.getVertQuantity() : t
+                .getVertices().length);
         if (statisticsOn) {
             numberOfTris += (t.getTriangleQuantity() >= 0 ? t
                     .getTriangleQuantity() : t.getIndices().length / 3);
@@ -973,8 +987,8 @@ public class LWJGLRenderer implements Renderer {
 
         IntBuffer indices = t.getIndexAsBuffer().duplicate();
         CompositeMesh.IndexRange[] ranges = t.getIndexRanges();
-        int verts = (t.getVertQuantity() >= 0 ? t.getVertQuantity() 
-                : t.getVertices().length);
+        int verts = (t.getVertQuantity() >= 0 ? t.getVertQuantity() : t
+                .getVertices().length);
         if (statisticsOn) {
             numberOfVerts += verts;
             numberOfTris += t.getTriangleQuantity();
@@ -1017,15 +1031,16 @@ public class LWJGLRenderer implements Renderer {
     IntBuffer buf = BufferUtils.createIntBuffer(16);
 
     public void prepVBO(Geometry g) {
-        if (!GLContext.getCapabilities().OpenGL15) return;
+        if (!GLContext.getCapabilities().OpenGL15)
+            return;
         int verts = g.getVertices().length;
         if (g.isVBOVertexEnabled() && g.getVBOVertexID() <= 0) {
             g.updateVertexBuffer(g.getVertices().length);
             GL15.glGenBuffers(buf);
             g.setVBOVertexID(buf.get(0));
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOVertexID());
-            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
-                    .getVerticeAsFloatBuffer(), GL15.GL_STATIC_DRAW);
+            GL15.glBufferData(GL15.GL_ARRAY_BUFFER,
+                    g.getVerticeAsFloatBuffer(), GL15.GL_STATIC_DRAW);
             buf.clear();
         }
         if (g.isVBONormalEnabled() && g.getVBONormalID() <= 0) {
@@ -1033,19 +1048,19 @@ public class LWJGLRenderer implements Renderer {
             GL15.glGenBuffers(buf);
             g.setVBONormalID(buf.get(0));
             GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBONormalID());
-            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
-                    .getNormalAsFloatBuffer(), GL15.GL_STATIC_DRAW);
+            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g.getNormalAsFloatBuffer(),
+                    GL15.GL_STATIC_DRAW);
             buf.clear();
         }
         if (g.isVBOColorEnabled() && g.getVBOColorID() <= 0) {
             g.updateColorBuffer(g.getVertices().length);
             if (g.getColorAsFloatBuffer() != null) {
-	            GL15.glGenBuffers(buf);
-	            g.setVBOColorID(buf.get(0));
-	            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
-	            GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
-	                    .getColorAsFloatBuffer(), GL15.GL_STATIC_DRAW);
-	            buf.clear();
+                GL15.glGenBuffers(buf);
+                g.setVBOColorID(buf.get(0));
+                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, g.getVBOColorID());
+                GL15.glBufferData(GL15.GL_ARRAY_BUFFER, g
+                        .getColorAsFloatBuffer(), GL15.GL_STATIC_DRAW);
+                buf.clear();
             }
         }
         if (g.isVBOTextureEnabled()) {
@@ -1078,7 +1093,8 @@ public class LWJGLRenderer implements Renderer {
      */
     public void drawBounds(Geometry g) {
         // get the bounds
-        if (!(g.getWorldBound() instanceof TriMesh)) return;
+        if (!(g.getWorldBound() instanceof TriMesh))
+            return;
         drawBounds(g.getWorldBound());
     }
 
@@ -1092,7 +1108,8 @@ public class LWJGLRenderer implements Renderer {
      */
     public void drawBounds(BoundingVolume bv) {
         // get the bounds
-        if (!(bv instanceof TriMesh)) return;
+        if (!(bv instanceof TriMesh))
+            return;
         bv.recomputeMesh();
         setBoundsStates(true);
         draw((TriMesh) bv);
@@ -1244,7 +1261,7 @@ public class LWJGLRenderer implements Renderer {
     }
 
     /**
-     *  
+     * 
      */
     private void postdrawMesh() {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -1267,7 +1284,7 @@ public class LWJGLRenderer implements Renderer {
         GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
         GL11.glScalef(scale.x, scale.y, scale.z);
         if (!(scale.x == 1 && scale.y == 1 && scale.z == 1))
-                GL11.glEnable(GL11.GL_NORMALIZE); // since we are using
+            GL11.glEnable(GL11.GL_NORMALIZE); // since we are using
         // glScalef, we should enable
         // this to keep normals
         // working.
@@ -1284,7 +1301,8 @@ public class LWJGLRenderer implements Renderer {
                 GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOVertexID());
                 GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
             } else {
-                if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+                if (usingVBO)
+                    GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
                 GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
             }
         }
@@ -1294,12 +1312,14 @@ public class LWJGLRenderer implements Renderer {
         if (prevNorms != normals) {
             if (normals != null || t.getVBONormalID() > 0) {
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                if (t.isVBONormalEnabled() && GLContext.getCapabilities().OpenGL15) {
+                if (t.isVBONormalEnabled()
+                        && GLContext.getCapabilities().OpenGL15) {
                     usingVBO = true;
                     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBONormalID());
                     GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
                 } else {
-                    if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+                    if (usingVBO)
+                        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
                     GL11.glNormalPointer(0, normals);
                 }
             } else {
@@ -1312,12 +1332,14 @@ public class LWJGLRenderer implements Renderer {
         if (colors == null || prevColor != colors) {
             if (colors != null || t.getVBOColorID() > 0) {
                 GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                if (t.isVBOColorEnabled() && GLContext.getCapabilities().OpenGL15) {
+                if (t.isVBOColorEnabled()
+                        && GLContext.getCapabilities().OpenGL15) {
                     usingVBO = true;
                     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOColorID());
                     GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
                 } else {
-                    if (usingVBO) GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+                    if (usingVBO)
+                        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
                     GL11.glColorPointer(4, 0, colors);
                 }
                 prevColor = colors;
@@ -1329,20 +1351,22 @@ public class LWJGLRenderer implements Renderer {
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureAsFloatBuffer(i);
             if (prevTex[i] != textures && textures != null) {
-                if (GLContext.getCapabilities().GL_ARB_multitexture && GLContext.getCapabilities().OpenGL13) {
+                if (GLContext.getCapabilities().GL_ARB_multitexture
+                        && GLContext.getCapabilities().OpenGL13) {
                     GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                 }
                 if (textures != null || t.getVBOTextureID(i) > 0) {
 
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                    if (t.isVBOTextureEnabled() && GLContext.getCapabilities().OpenGL15) {
+                    if (t.isVBOTextureEnabled()
+                            && GLContext.getCapabilities().OpenGL15) {
                         usingVBO = true;
                         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t
                                 .getVBOTextureID(i));
                         GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
                     } else {
                         if (usingVBO)
-                                GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+                            GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
                         GL11.glTexCoordPointer(2, 0, textures);
                     }
                 } else {

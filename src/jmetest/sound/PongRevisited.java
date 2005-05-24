@@ -143,7 +143,7 @@ public class PongRevisited extends SimpleGame {
         upperWall.updateModelBound();
         
         
-        manager = new ParticleManager(300, display.getRenderer().getCamera());
+        manager = new ParticleManager(300);
         manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
         manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
         manager.setEmissionMaximumAngle(3.1415927f);
@@ -165,7 +165,7 @@ public class PongRevisited extends SimpleGame {
         
         
         
-        bmanager = new ParticleManager(100, display.getRenderer().getCamera());
+        bmanager = new ParticleManager(100);
         bmanager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
         bmanager.setEmissionDirection(new Vector3f(-1.0f, 0.0f, 0.0f));
         bmanager.setEmissionMaximumAngle(0.1f);

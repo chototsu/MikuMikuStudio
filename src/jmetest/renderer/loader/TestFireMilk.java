@@ -124,7 +124,7 @@ public class TestFireMilk extends SimpleGame {
         Texture.FM_LINEAR));
     ts.setEnabled(true);
 
-    ParticleManager manager = new ParticleManager(200, display.getRenderer().getCamera());
+    ParticleManager manager = new ParticleManager(200);
     manager.setGravityForce(new Vector3f(0.0f, 0.0f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
     manager.setEmissionMaximumAngle(0.20943952f);

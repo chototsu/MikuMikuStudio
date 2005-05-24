@@ -71,7 +71,7 @@ import com.jme.math.Vector2f;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.38 2005-04-05 23:45:48 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.39 2005-05-24 22:47:36 Mojomonkey Exp $
  */
 public abstract class DisplaySystem {
 
@@ -108,10 +108,12 @@ public abstract class DisplaySystem {
     /** Number of samples to use for the multisample buffer. */
     protected int samples = 0;
 
+    public static final String DISPLAY_SYSTEM_JWJGL = "LWJGL";
+
     /**
      * The list of current implemented rendering APIs that subclass Display.
      */
-    public static final String[] rendererNames = { "LWJGL" };
+    public static final String[] rendererNames = { DISPLAY_SYSTEM_JWJGL };
 
     /**
      * A new display system has been created. The default static display system
@@ -133,7 +135,7 @@ public abstract class DisplaySystem {
      * @return the appropriate display system specified by the key.
      */
     public static DisplaySystem getDisplaySystem(String key) {
-        if ("LWJGL".equalsIgnoreCase(key)) {
+        if (DISPLAY_SYSTEM_JWJGL.equalsIgnoreCase(key)) {
             new LWJGLDisplaySystem();
         } else {
             display = null;
@@ -266,9 +268,9 @@ public abstract class DisplaySystem {
      * <code>createHeadlessWindow</code> creates a headless window with the
      * desired settings. A headless window is a rendering target that is not
      * shown on screen. It is useful for doing offline rendering, integration
-     * and so forth. You can not have a regular and headless
-     * window at the same time. The width and height defined by w and h define
-     * the size of the window. The color depth is defined by bpp.
+     * and so forth. You can not have a regular and headless window at the same
+     * time. The width and height defined by w and h define the size of the
+     * window. The color depth is defined by bpp.
      * 
      * @param w
      *            the width/horizontal resolution of the display.
@@ -280,9 +282,9 @@ public abstract class DisplaySystem {
     public abstract void createHeadlessWindow(int w, int h, int bpp);
 
     /**
-     * <code>createCanvas</code> creates an awt canvas with the
-     * desired settings. The width and height defined by w and h define
-     * the size of the canvas.
+     * <code>createCanvas</code> creates an awt canvas with the desired
+     * settings. The width and height defined by w and h define the size of the
+     * canvas.
      * 
      * @param w
      *            the width/horizontal resolution of the display.
@@ -324,7 +326,7 @@ public abstract class DisplaySystem {
     public abstract Renderer getRenderer();
 
     public abstract void setRenderer(Renderer r);
-    
+
     /**
      * <code>getRendererType</code> returns an instance of a strongly typed
      * enumeration that can be used to determine the renderer that the
@@ -358,13 +360,13 @@ public abstract class DisplaySystem {
     /**
      * <code>reset</code> cleans up the display system for closing or
      * restarting.
-     *  
+     * 
      */
     public abstract void reset();
 
     /**
      * <code>close</code> shutdowns and destroys any window contexts.
-     *  
+     * 
      */
     public abstract void close();
 

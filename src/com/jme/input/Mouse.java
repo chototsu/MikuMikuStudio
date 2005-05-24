@@ -47,12 +47,12 @@ import com.jme.scene.state.LightState;
 
 /**
  * <code>Mouse</code> defines a node that handles the rendering and updating
- * of a mouse input device. If a cursor is set, this cursor is desplayed in the
+ * of a mouse input device. If a cursor is set, this cursor is displayed in the
  * position defined by the device.
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.15 2004-10-14 01:23:07 mojomonkey Exp $
+ * @version $Id: Mouse.java,v 1.16 2005-05-24 22:47:40 Mojomonkey Exp $
  */
 public abstract class Mouse extends Quad {
 
@@ -73,7 +73,7 @@ public abstract class Mouse extends Quad {
 
     /**
      * Height of this mouse's texture.
-     *  
+     * 
      */
     protected int imageHeight;
 
@@ -186,7 +186,7 @@ public abstract class Mouse extends Quad {
      * call to update(true).
      * 
      * @see #update(boolean)
-     *  
+     * 
      */
     public abstract void update();
 

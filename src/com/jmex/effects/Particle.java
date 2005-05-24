@@ -38,182 +38,203 @@ import com.jme.renderer.ColorRGBA;
 /**
  * <code>Particle</code> defines a single Particle of a Particle system.
  * Generally, you would not interact with this class directly.
- *
+ * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.1 2005-05-12 22:49:25 Mojomonkey Exp $
+ * @version $Id: Particle.java,v 1.2 2005-05-24 22:47:32 Mojomonkey Exp $
  */
 public class Particle {
 
-  Vector3f verts[];
-  Vector3f location;
-  ColorRGBA startColor;
-  ColorRGBA currColor;
-  int status;
+    Vector3f verts[];
 
-  private float currentSize;
-  private float lifeSpan;
-  private float lifeRatio;
-  private float spinAngle;
-  private int currentAge;
-  private ParticleManager parent;
-  private Vector3f speed;
-  private Vector3f bbX, bbY;
+    Vector3f location;
 
-  // colors
-  private float rChange, gChange, bChange, aChange;
+    ColorRGBA startColor;
 
-  /** Particle is dead -- not in play. */
-  public static final int DEAD = 0;
-  /** Particle is currently active. */
-  public static final int ALIVE = 1;
-  /** Particle is available for spawning. */
-  public static final int AVAILABLE = 2;
+    ColorRGBA currColor;
 
-  /**
-   * Particle constructor
-   * @param parent ParticleManager parent of this particle
-   * @param speed initial velocity of the particle in the x,y and z directions
-   * @param iLocation initial location of the particle
-   * @param lifeSpan how long the particle should live for
-   */
-  public Particle(ParticleManager parent, Vector3f speed,
-                     Vector3f iLocation, float lifeSpan) {
-    this.lifeSpan = lifeSpan;
-    this.speed = (Vector3f) speed.clone();
-    this.location = (Vector3f) iLocation.clone();
-    this.location = new Vector3f();
-    this.parent = parent;
+    int status;
 
-    startColor = (ColorRGBA) parent.getStartColor().clone();
-    currColor = new ColorRGBA(startColor);
-    currentAge = 0;
-    status = AVAILABLE;
-    currentSize = parent.getStartSize();
-    verts = new Vector3f[4];
-    for (int i = 0; i < 4; i++) {
-      verts[i] = new Vector3f();
-    }
-    bbX = new Vector3f();
-    bbY = new Vector3f();
-  }
+    private float currentSize;
 
-  /**
-   * Reset particle conditions.  Besides the passed in speeds and lifespan,
-   * we also reset color and size to their starting values (as given by parent.)
-   *
-   * @param speed initial velocity of recreated particle
-   * @param lifeSpan the recreated particle's new lifespan
-   */
-  public void recreateParticle(Vector3f speed, float lifeSpan) {
-    this.lifeSpan = lifeSpan;
-    this.speed.set(speed);
+    private float lifeSpan;
 
-    startColor.set(parent.getStartColor());
-    currColor.set(startColor);
-    rChange = startColor.r - parent.getEndColor().r;
-    gChange = startColor.g - parent.getEndColor().g;
-    bChange = startColor.b - parent.getEndColor().b;
-    aChange = startColor.a - parent.getEndColor().a;
-    currentSize = parent.getStartSize();
-    currentAge = 0;
-    spinAngle = 0;
-    status = AVAILABLE;
-  }
+    private float lifeRatio;
 
-  /**
-   * Update the vertices for this particle, taking size, direction of viewer
-   * and current location into account.
-   */
-  public void updateVerts() {
-    Camera cam = parent.getCamera();
+    private float spinAngle;
 
-    if (spinAngle == 0) {
-      bbX.set(cam.getLeft()).multLocal(currentSize);
-      bbY.set(cam.getUp()).multLocal(currentSize);
-    } else {
-      float cA = FastMath.cos(spinAngle) * currentSize;
-      float sA = FastMath.sin(spinAngle) * currentSize;
-      bbX.set(cam.getLeft()).multLocal(cA).addLocal(cam.getUp().x*sA, cam.getUp().y*sA, cam.getUp().z*sA);
-      bbY.set(cam.getLeft()).multLocal(-sA).addLocal(cam.getUp().x*cA, cam.getUp().y*cA, cam.getUp().z*cA);
+    private int currentAge;
+
+    private ParticleManager parent;
+
+    private Vector3f speed;
+
+    private Vector3f bbX, bbY;
+
+    // colors
+    private float rChange, gChange, bChange, aChange;
+
+    /** Particle is dead -- not in play. */
+    public static final int DEAD = 0;
+
+    /** Particle is currently active. */
+    public static final int ALIVE = 1;
+
+    /** Particle is available for spawning. */
+    public static final int AVAILABLE = 2;
+
+    /**
+     * Particle constructor
+     * 
+     * @param parent
+     *            ParticleManager parent of this particle
+     * @param speed
+     *            initial velocity of the particle in the x,y and z directions
+     * @param iLocation
+     *            initial location of the particle
+     * @param lifeSpan
+     *            how long the particle should live for
+     */
+    public Particle(ParticleManager parent, Vector3f speed, Vector3f iLocation,
+            float lifeSpan) {
+        this.lifeSpan = lifeSpan;
+        this.speed = (Vector3f) speed.clone();
+        this.location = (Vector3f) iLocation.clone();
+        this.location = new Vector3f();
+        this.parent = parent;
+
+        startColor = (ColorRGBA) parent.getStartColor().clone();
+        currColor = new ColorRGBA(startColor);
+        currentAge = 0;
+        status = AVAILABLE;
+        currentSize = parent.getStartSize();
+        verts = new Vector3f[4];
+        for (int i = 0; i < 4; i++) {
+            verts[i] = new Vector3f();
+        }
+        bbX = new Vector3f();
+        bbY = new Vector3f();
     }
 
-    location.add(bbX, verts[1]).subtractLocal(bbY);       // Q4
-    location.add(bbX, verts[2]).addLocal(bbY);            // Q1
-    location.subtract(bbX, verts[3]).addLocal(bbY);       // Q2
-    location.subtract(bbX, verts[0]).subtractLocal(bbY);  // Q3
-  }
+    /**
+     * Reset particle conditions. Besides the passed in speeds and lifespan, we
+     * also reset color and size to their starting values (as given by parent.)
+     * 
+     * @param speed
+     *            initial velocity of recreated particle
+     * @param lifeSpan
+     *            the recreated particle's new lifespan
+     */
+    public void recreateParticle(Vector3f speed, float lifeSpan) {
+        this.lifeSpan = lifeSpan;
+        this.speed.set(speed);
 
-  /**
-   * update position (using current location, speed and gravity), color
-   * (interpolating between start and end color), size (interpolating between
-   * start and end size) and current age of particle.
-   *
-   * After updating the above, <code>updateVerts()</code> is called.
-   *
-   * if this particle's age is greater than its lifespan, it is considered dead.
-   *
-   * @param secondsPassed number of seconds passed since last update.
-   * @return true if this particle is not ALIVE
-   */
-  public boolean updateAndCheck(float secondsPassed) {
-
-    if (status != ALIVE) {
-      return true;
-    }
-    currentAge += secondsPassed * 1000; // add time to age
-    if (currentAge > lifeSpan) {
-      status = DEAD;
-      currColor.a = 0;
-      return true;
+        startColor.set(parent.getStartColor());
+        currColor.set(startColor);
+        rChange = startColor.r - parent.getEndColor().r;
+        gChange = startColor.g - parent.getEndColor().g;
+        bChange = startColor.b - parent.getEndColor().b;
+        aChange = startColor.a - parent.getEndColor().a;
+        currentSize = parent.getStartSize();
+        currentAge = 0;
+        spinAngle = 0;
+        status = AVAILABLE;
     }
 
-    speed.scaleAdd(secondsPassed*1000f, parent.getGravityForce(), speed);
-    location.scaleAdd(secondsPassed*1000f, speed, location);
-    spinAngle = spinAngle + parent.getParticleSpinSpeed()*secondsPassed*100f;
+    /**
+     * Update the vertices for this particle, taking size, direction of viewer
+     * and current location into account.
+     */
+    public void updateVerts(Camera cam) {
 
-    if (parent.getRandomMod() != 0.0f) {
-      location.addLocal(parent.getRandomMod() *
-                        2 * (FastMath.nextRandomFloat() - .5f),
-                        0.0f,
-                        parent.getRandomMod() *
-                        2 * (FastMath.nextRandomFloat() - .5f));
+        if (spinAngle == 0) {
+            bbX.set(cam.getLeft()).multLocal(currentSize);
+            bbY.set(cam.getUp()).multLocal(currentSize);
+        } else {
+            float cA = FastMath.cos(spinAngle) * currentSize;
+            float sA = FastMath.sin(spinAngle) * currentSize;
+            bbX.set(cam.getLeft()).multLocal(cA).addLocal(cam.getUp().x * sA,
+                    cam.getUp().y * sA, cam.getUp().z * sA);
+            bbY.set(cam.getLeft()).multLocal(-sA).addLocal(cam.getUp().x * cA,
+                    cam.getUp().y * cA, cam.getUp().z * cA);
+        }
+
+        location.add(bbX, verts[1]).subtractLocal(bbY); // Q4
+        location.add(bbX, verts[2]).addLocal(bbY); // Q1
+        location.subtract(bbX, verts[3]).addLocal(bbY); // Q2
+        location.subtract(bbX, verts[0]).subtractLocal(bbY); // Q3
     }
 
-    lifeRatio = currentAge / lifeSpan;
+    /**
+     * update position (using current location, speed and gravity), color
+     * (interpolating between start and end color), size (interpolating between
+     * start and end size) and current age of particle.
+     * 
+     * After updating the above, <code>updateVerts()</code> is called.
+     * 
+     * if this particle's age is greater than its lifespan, it is considered
+     * dead.
+     * 
+     * @param secondsPassed
+     *            number of seconds passed since last update.
+     * @return true if this particle is not ALIVE
+     */
+    public boolean updateAndCheck(float secondsPassed) {
 
-    // update the size, currently, the size
-    // updates both the x and y values. So you always
-    // get a square
-    currentSize = parent.getStartSize();
-    currentSize -=
-        ( (currentSize - parent.getEndSize()) * lifeRatio);
+        if (status != ALIVE) {
+            return true;
+        }
+        currentAge += secondsPassed * 1000; // add time to age
+        if (currentAge > lifeSpan) {
+            status = DEAD;
+            currColor.a = 0;
+            return true;
+        }
 
-    // interpolate colors
-    currColor.set(startColor);
-    currColor.r -= rChange * lifeRatio;
-    currColor.g -= gChange * lifeRatio;
-    currColor.b -= bChange * lifeRatio;
-    currColor.a -= aChange * lifeRatio;
+        speed.scaleAdd(secondsPassed * 1000f, parent.getGravityForce(), speed);
+        location.scaleAdd(secondsPassed * 1000f, speed, location);
+        spinAngle = spinAngle + parent.getParticleSpinSpeed() * secondsPassed
+                * 100f;
 
-    updateVerts();
+        if (parent.getRandomMod() != 0.0f) {
+            location.addLocal(parent.getRandomMod() * 2
+                    * (FastMath.nextRandomFloat() - .5f), 0.0f, parent
+                    .getRandomMod()
+                    * 2 * (FastMath.nextRandomFloat() - .5f));
+        }
 
-    return false;
-  }
+        lifeRatio = currentAge / lifeSpan;
 
+        // update the size, currently, the size
+        // updates both the x and y values. So you always
+        // get a square
+        currentSize = parent.getStartSize();
+        currentSize -= ((currentSize - parent.getEndSize()) * lifeRatio);
 
-  /**
-   * Resets current age to 0
-   */
-  public void resetAge() {
-    currentAge = 0;
-  }
+        // interpolate colors
+        currColor.set(startColor);
+        currColor.r -= rChange * lifeRatio;
+        currColor.g -= gChange * lifeRatio;
+        currColor.b -= bChange * lifeRatio;
+        currColor.a -= aChange * lifeRatio;
 
-  public Vector3f getPosition() {
-      return location;
-  }
+        // updateVerts();
 
-  public int getStatus() {
-      return status;
-  }
-  
+        return false;
+    }
+
+    /**
+     * Resets current age to 0
+     */
+    public void resetAge() {
+        currentAge = 0;
+    }
+
+    public Vector3f getPosition() {
+        return location;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
 }

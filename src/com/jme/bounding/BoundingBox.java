@@ -45,7 +45,7 @@ import com.jme.math.*;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.24 2004-12-06 19:04:10 mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.25 2005-05-24 22:47:33 Mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -143,7 +143,9 @@ public class BoundingBox extends Box implements BoundingVolume {
      *            the list of points.
      */
     public void containAABB(Vector3f[] points) {
-        if (points.length <= 0) { return; }
+        if (points.length <= 0) {
+            return;
+        }
 
         Vector3f min = tempVa.set(points[0]);
         Vector3f max = tempVb.set(min);
@@ -151,15 +153,18 @@ public class BoundingBox extends Box implements BoundingVolume {
         for (int i = 1; i < points.length; i++) {
             if (points[i].x < min.x)
                 min.x = points[i].x;
-            else if (points[i].x > max.x) max.x = points[i].x;
+            else if (points[i].x > max.x)
+                max.x = points[i].x;
 
             if (points[i].y < min.y)
                 min.y = points[i].y;
-            else if (points[i].y > max.y) max.y = points[i].y;
+            else if (points[i].y > max.y)
+                max.y = points[i].y;
 
             if (points[i].z < min.z)
                 min.z = points[i].z;
-            else if (points[i].z > max.z) max.z = points[i].z;
+            else if (points[i].z > max.z)
+                max.z = points[i].z;
         }
 
         center.set(min.addLocal(max));
@@ -217,15 +222,24 @@ public class BoundingBox extends Box implements BoundingVolume {
         Matrix3f transMatrix = tempMat;
         transMatrix.set(rotate);
         // Make the rotation matrix all positive to get the maximum x/y/z extent
-        if (transMatrix.m00 < 0) transMatrix.m00 *= -1;
-        if (transMatrix.m01 < 0) transMatrix.m01 *= -1;
-        if (transMatrix.m02 < 0) transMatrix.m02 *= -1;
-        if (transMatrix.m10 < 0) transMatrix.m10 *= -1;
-        if (transMatrix.m11 < 0) transMatrix.m11 *= -1;
-        if (transMatrix.m12 < 0) transMatrix.m12 *= -1;
-        if (transMatrix.m20 < 0) transMatrix.m20 *= -1;
-        if (transMatrix.m21 < 0) transMatrix.m21 *= -1;
-        if (transMatrix.m22 < 0) transMatrix.m22 *= -1;
+        if (transMatrix.m00 < 0)
+            transMatrix.m00 *= -1;
+        if (transMatrix.m01 < 0)
+            transMatrix.m01 *= -1;
+        if (transMatrix.m02 < 0)
+            transMatrix.m02 *= -1;
+        if (transMatrix.m10 < 0)
+            transMatrix.m10 *= -1;
+        if (transMatrix.m11 < 0)
+            transMatrix.m11 *= -1;
+        if (transMatrix.m12 < 0)
+            transMatrix.m12 *= -1;
+        if (transMatrix.m20 < 0)
+            transMatrix.m20 *= -1;
+        if (transMatrix.m21 < 0)
+            transMatrix.m21 *= -1;
+        if (transMatrix.m22 < 0)
+            transMatrix.m22 *= -1;
 
         // (ab)use origExtent to do the multiplication resulting in the biggest
         // extent
@@ -273,7 +287,9 @@ public class BoundingBox extends Box implements BoundingVolume {
      * @return the new sphere
      */
     public BoundingVolume merge(BoundingVolume volume) {
-        if (volume == null) { return this; }
+        if (volume == null) {
+            return this;
+        }
         if (volume instanceof BoundingBox) {
             BoundingBox vBox = (BoundingBox) volume;
             return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent,
@@ -302,7 +318,9 @@ public class BoundingBox extends Box implements BoundingVolume {
      * @return this
      */
     public BoundingVolume mergeLocal(BoundingVolume volume) {
-        if (volume == null) { return this; }
+        if (volume == null) {
+            return this;
+        }
         if (volume instanceof BoundingBox) {
             BoundingBox vBox = (BoundingBox) volume;
             return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent,
@@ -326,7 +344,8 @@ public class BoundingBox extends Box implements BoundingVolume {
      * @return This AABB extended to fit the given OBB.
      */
     private BoundingBox mergeOBB(OrientedBoundingBox volume) {
-        if (!volume.correctCorners) volume.computeCorners();
+        if (!volume.correctCorners)
+            volume.computeCorners();
 
         Vector3f min = tempVa.set(center.x - xExtent, center.y - yExtent,
                 center.z - zExtent);
@@ -337,15 +356,18 @@ public class BoundingBox extends Box implements BoundingVolume {
             Vector3f temp = volume.vectorStore[i];
             if (temp.x < min.x)
                 min.x = temp.x;
-            else if (temp.x > max.x) max.x = temp.x;
+            else if (temp.x > max.x)
+                max.x = temp.x;
 
             if (temp.y < min.y)
                 min.y = temp.y;
-            else if (temp.y > max.y) max.y = temp.y;
+            else if (temp.y > max.y)
+                max.y = temp.y;
 
             if (temp.z < min.z)
                 min.z = temp.z;
-            else if (temp.z > max.z) max.z = temp.z;
+            else if (temp.z > max.z)
+                max.z = temp.z;
         }
 
         center.set(min.addLocal(max));
@@ -379,18 +401,24 @@ public class BoundingBox extends Box implements BoundingVolume {
             float boxZ, BoundingBox rVal) {
 
         minPnt.x = center.x - xExtent;
-        if (minPnt.x > boxCenter.x - boxX) minPnt.x = boxCenter.x - boxX;
+        if (minPnt.x > boxCenter.x - boxX)
+            minPnt.x = boxCenter.x - boxX;
         minPnt.y = center.y - yExtent;
-        if (minPnt.y > boxCenter.y - boxY) minPnt.y = boxCenter.y - boxY;
+        if (minPnt.y > boxCenter.y - boxY)
+            minPnt.y = boxCenter.y - boxY;
         minPnt.z = center.z - zExtent;
-        if (minPnt.z > boxCenter.z - boxZ) minPnt.z = boxCenter.z - boxZ;
+        if (minPnt.z > boxCenter.z - boxZ)
+            minPnt.z = boxCenter.z - boxZ;
 
         maxPnt.x = center.x + xExtent;
-        if (maxPnt.x < boxCenter.x + boxX) maxPnt.x = boxCenter.x + boxX;
+        if (maxPnt.x < boxCenter.x + boxX)
+            maxPnt.x = boxCenter.x + boxX;
         maxPnt.y = center.y + yExtent;
-        if (maxPnt.y < boxCenter.y + boxY) maxPnt.y = boxCenter.y + boxY;
+        if (maxPnt.y < boxCenter.y + boxY)
+            maxPnt.y = boxCenter.y + boxY;
         maxPnt.z = center.z + zExtent;
-        if (maxPnt.z < boxCenter.z + boxZ) maxPnt.z = boxCenter.z + boxZ;
+        if (maxPnt.z < boxCenter.z + boxZ)
+            maxPnt.z = boxCenter.z + boxZ;
 
         rVal.setData(minPnt, maxPnt, false);
 
@@ -555,25 +583,29 @@ public class BoundingBox extends Box implements BoundingVolume {
             return bv.intersectsBoundingBox(this);
     }
 
-    /** 
-     * determines if this bounding box intersects a given bounding sphere. 
-     *  
-     * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere) 
-     */ 
-    public boolean intersectsSphere(BoundingSphere bs) { 
-        
-        if(FastMath.abs(center.x-bs.getCenter().x)<bs.getRadius()+xExtent 
-        && FastMath.abs(center.y-bs.getCenter().y)<bs.getRadius()+yExtent 
-        && FastMath.abs(center.z-bs.getCenter().z)<bs.getRadius()+zExtent) 
-            return true;      
-        
-        return false; 
-    } 
+    /**
+     * determines if this bounding box intersects a given bounding sphere.
+     * 
+     * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
+     */
+    public boolean intersectsSphere(BoundingSphere bs) {
 
+        if (FastMath.abs(center.x - bs.getCenter().x) < bs.getRadius()
+                + xExtent
+                && FastMath.abs(center.y - bs.getCenter().y) < bs.getRadius()
+                        + yExtent
+                && FastMath.abs(center.z - bs.getCenter().z) < bs.getRadius()
+                        + zExtent)
+            return true;
+
+        return false;
+    }
 
     /**
-     * determines if this bounding box intersects a given bounding box. If the two
-     * boxes intersect in any way, true is returned. Otherwise, false is returned.
+     * determines if this bounding box intersects a given bounding box. If the
+     * two boxes intersect in any way, true is returned. Otherwise, false is
+     * returned.
+     * 
      * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox)
      */
     public boolean intersectsBoundingBox(BoundingBox bb) {
@@ -590,47 +622,44 @@ public class BoundingBox extends Box implements BoundingVolume {
             return true;
     }
 
-    /** 
+    /**
      * 
-     * determines if this bounding box intersects with a given oriented bounding box. 
+     * determines if this bounding box intersects with a given oriented bounding
+     * box.
      * 
-     * NOTE: Not currently supported, false always returned. 
+     * NOTE: Not currently supported, false always returned.
      * 
-     * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox) 
-     */ 
-    public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) { 
-        return obb.intersectsBoundingBox(this); 
-    } 
-
-
-    /** 
-     * determines if this bounding box intersects with a given OBB2 bounding. 
-     * 
-     * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2) 
-     */ 
-    public boolean intersectsOBB2(OBB2 obb) { 
-        return obb.intersectsBoundingBox(this); 
-    } 
-
+     * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox)
+     */
+    public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) {
+        return obb.intersectsBoundingBox(this);
+    }
 
     /**
-     * determines if this bounding box intersects with a given ray object.
-     * If an intersection has occurred, true is returned, otherwise false is
-     * returned.
+     * determines if this bounding box intersects with a given OBB2 bounding.
+     * 
+     * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2)
+     */
+    public boolean intersectsOBB2(OBB2 obb) {
+        return obb.intersectsBoundingBox(this);
+    }
+
+    /**
+     * determines if this bounding box intersects with a given ray object. If an
+     * intersection has occurred, true is returned, otherwise false is returned.
      * 
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
      */
     public boolean intersects(Ray ray) {
-        Vector3f diff = ray.origin.subtract(center);
+        Vector3f diff = tempVa.set(ray.origin).subtractLocal(center);
         // convert ray to box coordinates
-        Vector3f origin = new Vector3f(diff.x, diff.y, diff.z);
-        Vector3f direction = new Vector3f(ray.direction.x, ray.direction.y,
+        Vector3f direction = tempVb.set(ray.direction.x, ray.direction.y,
                 ray.direction.z);
         float[] t = new float[2];
         t[0] = 0f;
         t[1] = Float.POSITIVE_INFINITY;
         float[] extents = { xExtent, yExtent, zExtent };
-        return findIntersection(origin, direction, extents, t);
+        return findIntersection(diff, direction, extents, t);
     }
 
     /**
@@ -650,12 +679,16 @@ public class BoundingBox extends Box implements BoundingVolume {
         // plane. Otherwise 'false' is returned in which case the line segment
         // is entirely clipped.
         if (denom > 0.0f) {
-            if (numer > denom * t[1]) return false;
-            if (numer > denom * t[0]) t[0] = numer / denom;
+            if (numer > denom * t[1])
+                return false;
+            if (numer > denom * t[0])
+                t[0] = numer / denom;
             return true;
         } else if (denom < 0.0f) {
-            if (numer > denom * t[0]) return false;
-            if (numer > denom * t[1]) t[1] = numer / denom;
+            if (numer > denom * t[0])
+                return false;
+            if (numer > denom * t[1])
+                t[1] = numer / denom;
             return true;
         } else {
             return numer <= 0.0;

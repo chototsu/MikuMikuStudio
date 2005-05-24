@@ -78,7 +78,7 @@ import com.jmex.effects.ParticleManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleControlFrame.java,v 1.37 2005-05-12 22:49:42 Mojomonkey Exp $
+ * @version $Id: RenParticleControlFrame.java,v 1.38 2005-05-24 22:47:34 Mojomonkey Exp $
  *
  */
 
@@ -1090,8 +1090,7 @@ public class RenParticleControlFrame extends JFrame {
   public void resetManager(int particles) {
     RenParticleEditor.noUpdate = true;
     RenParticleEditor.root.detachChild(RenParticleEditor.manager.getParticles());
-    RenParticleEditor.manager = new ParticleManager(particles,
-        RenParticleEditor.manager.getCamera());
+    RenParticleEditor.manager = new ParticleManager(particles );
 
     ColorRGBA rgba = makeColorRGBA(startColorPanel.getBackground());
     rgba.a = (Integer.parseInt(startAlphaSpinner.getValue().toString()) / 255f);

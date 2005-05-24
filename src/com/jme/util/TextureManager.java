@@ -57,21 +57,22 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 
 /**
- *
+ * 
  * <code>TextureManager</code> provides static methods for building a
  * <code>Texture</code> object. Typically, the information supplied is the
  * filename and the texture properties.
- *
+ * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.36 2005-05-17 04:19:05 Mojomonkey Exp $
+ * @version $Id: TextureManager.java,v 1.37 2005-05-24 22:47:35 Mojomonkey Exp $
  */
 final public class TextureManager {
-    
+
     private static HashMap m_tCache = new HashMap();
-    
-    private TextureManager() {}
-    
+
+    private TextureManager() {
+    }
+
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * string. Filter parameters are used to define the filtering of the
@@ -83,7 +84,7 @@ final public class TextureManager {
      *            the filter for the near values.
      * @param magFilter
      *            the filter for the far values.
-     *
+     * 
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
@@ -91,7 +92,7 @@ final public class TextureManager {
             int magFilter) {
         return loadTexture(file, minFilter, magFilter, 1.0f, true);
     }
-    
+
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * string. Filter parameters are used to define the filtering of the
@@ -105,40 +106,33 @@ final public class TextureManager {
      *            the filter for the far values.
      * @param flipped
      *            If true, the images Y values are flipped.
-     *
+     * 
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
     public static com.jme.image.Texture loadTexture(String file, int minFilter,
-            int magFilter,
-            float anisoLevel,
-            boolean flipped) {
+            int magFilter, float anisoLevel, boolean flipped) {
         URL url = null;
         try {
             url = new URL("file:" + file);
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         return loadTexture(url, minFilter, magFilter, -1, anisoLevel, flipped);
     }
-   
+
     public static com.jme.image.Texture loadTexture(String file, int minFilter,
-            int magFilter,
-            int imageType,
-            float anisoLevel,
-            boolean flipped) {
+            int magFilter, int imageType, float anisoLevel, boolean flipped) {
         URL url = null;
         try {
             url = new URL("file:" + file);
-        }
-        catch (MalformedURLException e) {
+        } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        return loadTexture(url, minFilter, magFilter, imageType, anisoLevel, flipped);
+        return loadTexture(url, minFilter, magFilter, imageType, anisoLevel,
+                flipped);
     }
 
-    
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * url. Filter parameters are used to define the filtering of the texture.
@@ -150,7 +144,7 @@ final public class TextureManager {
      *            the filter for the near values.
      * @param magFilter
      *            the filter for the far values.
-     *
+     * 
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
@@ -158,14 +152,12 @@ final public class TextureManager {
             int magFilter) {
         return loadTexture(file, minFilter, magFilter, -1, 1.0f, true);
     }
-    
+
     public static com.jme.image.Texture loadTexture(URL file, int minFilter,
-            int magFilter,
-            float anisoLevel,
-            boolean flipped) {
+            int magFilter, float anisoLevel, boolean flipped) {
         return loadTexture(file, minFilter, magFilter, -1, anisoLevel, true);
     }
-    
+
     /**
      * <code>loadTexture</code> loads a new texture defined by the parameter
      * url. Filter parameters are used to define the filtering of the texture.
@@ -178,21 +170,18 @@ final public class TextureManager {
      * @param magFilter
      *            the filter for the far values.
      * @param imageType
-     *            the image type to use.  if -1, the type is determined by jME.
-     *            If S3TC/DXT1[A] is available we use that.  if -2, the type is
-     *            determined by jME without using S3TC, even if available.
-     *            See com.jme.image.Image for possible types.
+     *            the image type to use. if -1, the type is determined by jME.
+     *            If S3TC/DXT1[A] is available we use that. if -2, the type is
+     *            determined by jME without using S3TC, even if available. See
+     *            com.jme.image.Image for possible types.
      * @param flipped
      *            If true, the images Y values are flipped.
-     *
+     * 
      * @return the loaded texture. If there is a problem loading the texture,
      *         null is returned.
      */
     public static com.jme.image.Texture loadTexture(URL file, int minFilter,
-            int magFilter,
-            int imageType,
-            float anisoLevel,
-            boolean flipped) {
+            int magFilter, int imageType, float anisoLevel, boolean flipped) {
         if (null == file) {
             System.err.println("Could not load image...  URL was null.");
             return null;
@@ -200,17 +189,18 @@ final public class TextureManager {
         String fileName = file.getFile();
         if (fileName == null)
             return null;
-        
-        TextureKey tkey = new TextureKey(file, minFilter, magFilter, anisoLevel, flipped);
+
+        TextureKey tkey = new TextureKey(file, minFilter, magFilter,
+                anisoLevel, flipped);
         Texture texture = (Texture) m_tCache.get(tkey);
-        
+
         if (texture != null) {
             // Uncomment if you want to see when this occurs.
-//          System.err.println("******** REUSING TEXTURE ********");
+            // System.err.println("******** REUSING TEXTURE ********");
             Texture tClone = texture.createSimpleClone();
             return tClone;
         }
-        
+
         // TODO: Some types currently require making a java.awt.Image object as
         // an intermediate step. Rewrite each type to avoid AWT at all costs.
         com.jme.image.Image imageData = null;
@@ -218,20 +208,21 @@ final public class TextureManager {
             String fileExt = fileName.substring(fileName.lastIndexOf('.'));
             if (".TGA".equalsIgnoreCase(fileExt)) { // TGA, direct to imageData
                 imageData = TGALoader.loadImage(file.openStream());
-            } else if (".DDS".equalsIgnoreCase(fileExt)) { // DDS, direct to imageData
+            } else if (".DDS".equalsIgnoreCase(fileExt)) { // DDS, direct to
+                                                            // imageData
                 imageData = DDSLoader.loadImage(file.openStream());
-            } else if (".BMP".equalsIgnoreCase(fileExt)) { // BMP, awtImage to imageData
+            } else if (".BMP".equalsIgnoreCase(fileExt)) { // BMP, awtImage to
+                                                            // imageData
                 java.awt.Image image = loadBMPImage(file.openStream());
                 imageData = loadImage(image, flipped);
             } else { // Anything else
                 java.awt.Image image = ImageIO.read(file);
                 imageData = loadImage(image, flipped);
             }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
+        } catch (IOException e) {
+            // e.printStackTrace();
             LoggingSystem.getLogger().log(Level.WARNING,
-                    "(IOException) Could not load: " + file);
+                    "Could not load: " + file + " (" + e.getClass() + ")");
             return null;
         }
         if (null == imageData) {
@@ -239,17 +230,20 @@ final public class TextureManager {
                     "(image null) Could not load: " + file);
             return null;
         }
-        
+
         // apply new texture in a state so it will setup the OpenGL id.
         // If we ever need to use two+ display systems at once, this line
         // will need to change.
-        TextureState state = DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+        TextureState state = DisplaySystem.getDisplaySystem().getRenderer()
+                .createTextureState();
 
-        // we've already guessed the format.  override if given.
-        if (imageType != Image.GUESS_FORMAT_NO_S3TC && imageType != Image.GUESS_FORMAT) 
+        // we've already guessed the format. override if given.
+        if (imageType != Image.GUESS_FORMAT_NO_S3TC
+                && imageType != Image.GUESS_FORMAT)
             imageData.setType(imageType);
-        else if (imageType == Image.GUESS_FORMAT && state.isS3TCAvailable()) {  
-            // Enable S3TC DXT1 compression if available and we're guessing format.
+        else if (imageType == Image.GUESS_FORMAT && state.isS3TCAvailable()) {
+            // Enable S3TC DXT1 compression if available and we're guessing
+            // format.
             if (imageData.getType() == com.jme.image.Image.RGB888)
                 imageData.setType(com.jme.image.Image.RGB888_DXT1);
             else if (imageData.getType() == com.jme.image.Image.RGBA8888)
@@ -262,18 +256,16 @@ final public class TextureManager {
         texture.setImage(imageData);
         texture.setMipmapState(minFilter);
         texture.setImageLocation(file.toString());
-        
+
         state.setTexture(texture);
         state.apply();
-        
+
         m_tCache.put(tkey, texture);
         return texture;
     }
-    
+
     public static com.jme.image.Texture loadTexture(java.awt.Image image,
-            int minFilter, 
-            int magFilter,
-            boolean flipped) {
+            int minFilter, int magFilter, boolean flipped) {
         com.jme.image.Image imageData = loadImage(image, flipped);
         Texture texture = new Texture();
         texture.setCorrection(Texture.CM_PERSPECTIVE);
@@ -282,12 +274,9 @@ final public class TextureManager {
         texture.setMipmapState(minFilter);
         return texture;
     }
-    
+
     public static com.jme.image.Texture loadTexture(java.awt.Image image,
-            int minFilter, 
-            int magFilter,
-            float anisoLevel,
-            boolean flipped) {
+            int minFilter, int magFilter, float anisoLevel, boolean flipped) {
         com.jme.image.Image imageData = loadImage(image, flipped);
         Texture texture = new Texture(anisoLevel);
         texture.setCorrection(Texture.CM_PERSPECTIVE);
@@ -296,11 +285,11 @@ final public class TextureManager {
         texture.setMipmapState(minFilter);
         return texture;
     }
-    
+
     /**
-     *
+     * 
      * <code>loadImage</code> sets the image data.
-     *
+     * 
      * @param image
      *            The image data.
      * @param flipImage
@@ -310,18 +299,16 @@ final public class TextureManager {
     public static com.jme.image.Image loadImage(java.awt.Image image,
             boolean flipImage) {
         boolean hasAlpha = hasAlpha(image);
-        //      Obtain the image data.
+        // Obtain the image data.
         BufferedImage tex = null;
         try {
             tex = new BufferedImage(image.getWidth(null),
-                    image.getHeight(null), hasAlpha
-                    ? BufferedImage.TYPE_4BYTE_ABGR
+                    image.getHeight(null),
+                    hasAlpha ? BufferedImage.TYPE_4BYTE_ABGR
                             : BufferedImage.TYPE_3BYTE_BGR);
-        }
-        catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             LoggingSystem.getLogger().log(Level.WARNING,
-                    "Problem creating buffered Image: " +
-                    e.getMessage());
+                    "Problem creating buffered Image: " + e.getMessage());
             return null;
         }
         int width = image.getWidth(null);
@@ -331,38 +318,38 @@ final public class TextureManager {
             tx = AffineTransform.getScaleInstance(1, -1);
             tx.translate(0, -image.getHeight(null));
         }
-        
+
         Graphics2D g = (Graphics2D) tex.getGraphics();
         g.drawImage(image, tx, null);
         g.dispose();
-        //Get a pointer to the image memory
-        ByteBuffer scratch = ByteBuffer.allocateDirect(4 * tex.getWidth()
-                * tex.getHeight()).order(ByteOrder.nativeOrder());
+        // Get a pointer to the image memory
+        ByteBuffer scratch = ByteBuffer.allocateDirect(
+                4 * tex.getWidth() * tex.getHeight()).order(
+                ByteOrder.nativeOrder());
         byte data[] = (byte[]) tex.getRaster().getDataElements(0, 0,
                 tex.getWidth(), tex.getHeight(), null);
         scratch.clear();
         scratch.put(data);
         scratch.flip();
         com.jme.image.Image textureImage = new com.jme.image.Image();
-        textureImage.setType(hasAlpha
-                ? com.jme.image.Image.RGBA8888
-                        : com.jme.image.Image.RGB888);
+        textureImage.setType(hasAlpha ? com.jme.image.Image.RGBA8888
+                : com.jme.image.Image.RGB888);
         textureImage.setWidth(tex.getWidth());
         textureImage.setHeight(tex.getHeight());
         textureImage.setData(scratch);
         return textureImage;
     }
-    
+
     /**
      * <code>loadBMPImage</code> because bitmap is not directly supported by
      * Java, we must load it manually. The requires opening a stream to the file
      * and reading in each byte. After the image data is read, it is used to
      * create a new <code>Image</code> object. This object is returned to be
      * used for normal use.
-     *
+     * 
      * @param fs
      *            The bitmap file stream.
-     *
+     * 
      * @return <code>Image</code> object that contains the bitmap information.
      */
     private static java.awt.Image loadBMPImage(InputStream fs) {
@@ -382,18 +369,17 @@ final public class TextureManager {
             if (bh.bitcount == 8) {
                 return (bh.readMap8(data));
             }
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             LoggingSystem.getLogger().log(Level.WARNING,
-            "Error while loading bitmap texture.");
+                    "Error while loading bitmap texture.");
         }
         return null;
     }
-    
+
     /**
      * <code>hasAlpha</code> returns true if the specified image has
      * transparent pixels
-     *
+     * 
      * @param image
      *            Image to check
      * @return true if the specified image has transparent pixels
@@ -415,13 +401,12 @@ final public class TextureManager {
             } else {
                 return false;
             }
-        }
-        catch (InterruptedException e) {
+        } catch (InterruptedException e) {
             System.err.println("Unable to determine alpha of image: " + image);
         }
         return false;
     }
-    
+
     public static boolean releaseTexture(Texture texture) {
         Collection c = m_tCache.keySet();
         Iterator it = c.iterator();
@@ -436,11 +421,11 @@ final public class TextureManager {
         }
         return false;
     }
-    
+
     public static boolean releaseTexture(TextureKey tKey) {
         return m_tCache.remove(tKey) != null;
     }
-    
+
     public static void clearCache() {
         m_tCache.clear();
     }

@@ -40,9 +40,7 @@
 package com.jme.scene;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Stack;
+import java.util.*;
 import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
@@ -61,7 +59,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.39 2005-05-12 22:49:12 Mojomonkey Exp $
+ * @version $Id: Node.java,v 1.40 2005-05-24 22:47:29 Mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -112,17 +110,21 @@ public class Node extends Spatial implements Serializable {
      * @return the number of children maintained by this node.
      */
     public int attachChild(Spatial child) {
-        if (child == null) { return children.size(); }
+        if (child == null) {
+            return children.size();
+        }
         if (!children.contains(child)) {
             child.setParent(this);
             children.add(child);
             child.setForceCull(forceCull);
             child.setForceView(forceView);
         }
-        LoggingSystem.getLogger().log(
-                Level.INFO,
-                "Child (" + child.getName() + ") attached to this" + " node ("
-                        + getName() + ")");
+        if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
+            LoggingSystem.getLogger().log(
+                    Level.INFO,
+                    "Child (" + child.getName() + ") attached to this"
+                            + " node (" + getName() + ")");
+        }
 
         return children.size();
     }
@@ -156,7 +158,8 @@ public class Node extends Spatial implements Serializable {
      * @return the index the child was at. -1 if the child was not in the list.
      */
     public int detachChildNamed(String childName) {
-        if (childName == null) return -1;
+        if (childName == null)
+            return -1;
         for (int x = 0, max = children.size(); x < max; x++) {
             Spatial child = (Spatial) children.get(x);
             if (childName.equals(child.getName())) {
@@ -225,8 +228,8 @@ public class Node extends Spatial implements Serializable {
 
     /**
      * 
-     * <code>getChild</code> returns the first child found with
-     * exactly the given name (case sensitive.)
+     * <code>getChild</code> returns the first child found with exactly the
+     * given name (case sensitive.)
      * 
      * @param name
      *            the name of the child to retrieve.
@@ -235,8 +238,9 @@ public class Node extends Spatial implements Serializable {
     public Spatial getChild(String name) {
         Iterator it = children.iterator();
         while (it.hasNext()) {
-            Spatial child = (Spatial)it.next();
-            if (name.equals(child.getName())) return child;
+            Spatial child = (Spatial) it.next();
+            if (name.equals(child.getName()))
+                return child;
         }
         return null;
     }
@@ -244,30 +248,34 @@ public class Node extends Spatial implements Serializable {
     public void setForceView(boolean value) {
         forceView = value;
 
-        for (int i = 0; i < children.size(); i++) {
-            ((Spatial) children.get(i)).setForceView(value);
+        if (children != null) {
+            for (int i = 0; i < children.size(); i++) {
+                ((Spatial) children.get(i)).setForceView(value);
+            }
         }
     }
-    
+
     /**
      * determines if the provide Spatial is contained in the children list of
      * this node.
-     * @param spat the spatial object to check.
+     * 
+     * @param spat
+     *            the spatial object to check.
      * @return true if the object is contained, false otherwise.
      */
-    public boolean hasChild(Spatial spat) { 
+    public boolean hasChild(Spatial spat) {
 
-        if (children.contains(spat)) return true; 
+        if (children.contains(spat))
+            return true;
 
-       for (int i = 0; i < children.size(); i++) {
-			Spatial child = (Spatial) children.get(i);
-			if (child instanceof Node && ((Node) child).hasChild(spat))
-				return true; 
-       } 
-        
-        
-        return false; 
-     } 
+        for (int i = 0; i < children.size(); i++) {
+            Spatial child = (Spatial) children.get(i);
+            if (child instanceof Node && ((Node) child).hasChild(spat))
+                return true;
+        }
+
+        return false;
+    }
 
     /**
      * <code>updateWorldData</code> updates all the children maintained by
@@ -296,10 +304,11 @@ public class Node extends Spatial implements Serializable {
      *            the renderer to draw to.
      */
     public void draw(Renderer r) {
-        Spatial child = null;
+        Spatial child;
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
             child = (Spatial) children.get(i);
-            if (child != null) child.onDraw(r);
+            if (child != null)
+                child.onDraw(r);
         }
     }
 
@@ -312,10 +321,11 @@ public class Node extends Spatial implements Serializable {
      */
     public void drawBounds(Renderer r) {
         r.drawBounds(getWorldBound());
-        Spatial child = null;
+        Spatial child;
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
             child = (Spatial) children.get(i);
-            if (child != null) child.onDrawBounds(r);
+            if (child != null)
+                child.onDrawBounds(r);
         }
     }
 
@@ -329,7 +339,8 @@ public class Node extends Spatial implements Serializable {
     protected void applyRenderState(Stack[] states) {
         for (int i = 0, cSize = children.size(); i < cSize; i++) {
             Spatial pkChild = getChild(i);
-            if (pkChild != null) pkChild.updateRenderState(states);
+            if (pkChild != null)
+                pkChild.updateRenderState(states);
         }
     }
 
@@ -377,40 +388,41 @@ public class Node extends Spatial implements Serializable {
      *      com.jme.intersection.CollisionResults)
      */
     public void findCollisions(Spatial scene, CollisionResults results) {
-        if(getWorldBound() != null) {
-	        if (getWorldBound().intersects(scene.getWorldBound())) {
-	            //further checking needed.
-	            for (int i = 0; i < getQuantity(); i++) {
-	                getChild(i).findCollisions(scene, results);
-	            }
-	        }
+        if (getWorldBound() != null) {
+            if (getWorldBound().intersects(scene.getWorldBound())) {
+                // further checking needed.
+                for (int i = 0; i < getQuantity(); i++) {
+                    getChild(i).findCollisions(scene, results);
+                }
+            }
         }
     }
 
     public boolean hasCollision(Spatial scene, boolean checkTriangles) {
-        if(getWorldBound() != null) {
-	        if (getWorldBound().intersects(scene.getWorldBound())) {
-	            //further checking needed.
-	            for (int i = 0; i < getQuantity(); i++) {
-	                if (getChild(i).hasCollision(scene, checkTriangles)) { return true; }
-	            }
-	        }
+        if (getWorldBound() != null) {
+            if (getWorldBound().intersects(scene.getWorldBound())) {
+                // further checking needed.
+                for (int i = 0; i < getQuantity(); i++) {
+                    if (getChild(i).hasCollision(scene, checkTriangles)) {
+                        return true;
+                    }
+                }
+            }
         }
 
         return false;
     }
-    
-    public void findPick(Ray toTest, PickResults results){
-        if(getWorldBound() != null) {
-			if(getWorldBound().intersects(toTest)) {
-				//further checking needed.
-				for(int i = 0; i < getQuantity(); i++) {
-					((Spatial)children.get(i)).findPick(toTest, results);
-				}
-			}
+
+    public void findPick(Ray toTest, PickResults results) {
+        if (getWorldBound() != null) {
+            if (getWorldBound().intersects(toTest)) {
+                // further checking needed.
+                for (int i = 0; i < getQuantity(); i++) {
+                    ((Spatial) children.get(i)).findPick(toTest, results);
+                }
+            }
         }
     }
-
 
     public Spatial putClone(Spatial store, CloneCreator properties) {
         Node toStore;

@@ -45,6 +45,7 @@ import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
+import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
@@ -56,7 +57,7 @@ import com.jme.util.TextureManager;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.22 2005-02-10 21:48:20 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.23 2005-05-24 22:47:38 Mojomonkey Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -356,7 +357,6 @@ public class TestScenegraph extends SimpleGame {
         nc4.addAction(s6);
         nc5.addAction(s6);
         nc6.addAction(s6);
-
     }
 
     public void setSelectedNode(int node) {

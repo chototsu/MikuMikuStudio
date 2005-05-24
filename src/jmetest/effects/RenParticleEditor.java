@@ -61,7 +61,7 @@ import com.jmex.effects.ParticleManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.12 2005-05-12 22:49:41 Mojomonkey Exp $
+ * @version $Id: RenParticleEditor.java,v 1.13 2005-05-24 22:47:34 Mojomonkey Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -226,7 +226,7 @@ protected void render(float interpolation) {
     fpsNode.attachChild(fps);
     fpsNode.setForceView(true);
 
-    manager = new ParticleManager(300, display.getRenderer().getCamera());
+    manager = new ParticleManager(300);
     manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));
     manager.setEmissionDirection(new Vector3f(0.0f, 1.0f, 0.0f));
     manager.setEmissionMaximumAngle(0.2268928f);
