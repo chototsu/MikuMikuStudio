@@ -34,6 +34,7 @@
  */
 package com.jmex.sound.openAL.objects.util;
 
+import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -91,7 +92,7 @@ public class SampleLoader {
         InputStream in=null;
         Buffer[] tmp=null;
         try {
-            in = file.openStream();            
+            in = new BufferedInputStream(file.openStream());            
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024*256);
             byteOut.reset();
             byte copyBuffer[] = new byte[1024*4];
@@ -137,7 +138,7 @@ public class SampleLoader {
         InputStream in=null;
         Buffer[] tmp=null;
         try {
-            in = file.openStream();            
+            in = new BufferedInputStream(file.openStream());            
             ByteArrayOutputStream byteOut = new ByteArrayOutputStream(1024*256);
             byteOut.reset();
             byte copyBuffer[] = new byte[1024*4];
