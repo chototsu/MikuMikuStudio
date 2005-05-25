@@ -203,7 +203,7 @@ public class StandardGameState extends BasicGameState {
 		
 		cam.update();
 		
-		display.getRenderer().setCamera(cam);
+		//display.getRenderer().setCamera(cam);
 	}
 	
 }
