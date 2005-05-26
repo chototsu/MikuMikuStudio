@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.13 2005-05-20 06:20:10 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.14 2005-05-26 20:53:38 renanse Exp $
  */
 public class Matrix4f {
 
@@ -837,18 +837,15 @@ public class Matrix4f {
         }
         if (store == null) store = new Vector3f();
         
-        store.x = m00 * vec.x + m01 * vec.y + m02
-                * vec.z;
-        store.y = m10 * vec.x + m11 * vec.y + m12
-                * vec.z;
-        store.z = m20 * vec.x + m21 * vec.y + m22
-                * vec.z;
+        store.x = m00 * vec.x + m10 * vec.y + m20 * vec.z;
+        store.y = m01 * vec.x + m11 * vec.y + m21 * vec.z;
+        store.z = m02 * vec.x + m12 * vec.y + m22 * vec.z;
 
         return store;
     }
 
     /**
-     * <code>mult</code> multiplies an array of 4 floats against this rotation 
+     * <code>mult</code> multiplies an array of 4 floats against this rotation
      * matrix. The results are stored directly in the array. (vec4f x mat4f)
      * 
      * @param vec4f
@@ -863,14 +860,10 @@ public class Matrix4f {
 
         float x = vec4f[0], y = vec4f[1], z = vec4f[2], w = vec4f[3];
         
-        vec4f[0] = m00 * x + m01 * y 
-		 		 + m02 * z + m03 * w;
-        vec4f[1] = m10 * x + m11 * y 
-		 		 + m12 * z + m13 * w;
-        vec4f[2] = m20 * x + m21 * y 
-		 		 + m22 * z + m23 * w;
-        vec4f[3] = m30 * x + m31 * y 
-		 		 + m32 * z + m33 * w;
+        vec4f[0] = m00 * x + m10 * y + m20 * z + m30 * w;
+        vec4f[1] = m01 * x + m11 * y + m21 * z + m31 * w;
+        vec4f[2] = m02 * x + m12 * y + m22 * z + m32 * w;
+        vec4f[3] = m03 * x + m13 * y + m23 * z + m33 * w;
 
         return vec4f;
     }
