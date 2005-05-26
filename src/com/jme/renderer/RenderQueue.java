@@ -120,7 +120,7 @@ public class RenderQueue {
             orthoBucket.add(s);
             break;
         default:
-            throw new JmeException("Illeagle Render queue order of " + bucket);
+            throw new JmeException("Illegal Render queue order of " + bucket);
         }
     }
 
@@ -142,6 +142,16 @@ public class RenderQueue {
                 spat.queueDistance = cam.getLocation().distanceSquared(
                         spat.getWorldTranslation());
         return spat.queueDistance;
+    }
+
+    /**
+     * clears all of the buckets.
+     */
+    public void clearBuckets() {
+        transparentBucket.clear();
+        opaqueBucket.clear();
+        orthoBucket.clear();
+        cloneBucket.clear();
     }
 
     /**

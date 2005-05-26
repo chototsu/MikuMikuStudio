@@ -132,7 +132,7 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLRenderer.java,v 1.61 2005-05-24 22:47:43 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.62 2005-05-26 15:10:42 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -511,7 +511,7 @@ public class LWJGLRenderer implements Renderer {
     /**
      * render queue if needed
      */
-    void renderQueue() {
+    public void renderQueue() {
         processingQueue = true;
         queue.renderBuckets();
         if (Spatial.getCurrentState(RenderState.RS_ZBUFFER) != null
@@ -522,6 +522,13 @@ public class LWJGLRenderer implements Renderer {
             Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
         }
         processingQueue = false;
+    }
+
+    /**
+     * clear the render queue
+     */
+    public void clearQueue() {
+        queue.clearBuckets();
     }
 
     public void setOrtho() {
