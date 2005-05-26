@@ -239,6 +239,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 initPbuffer();
             }
 
+            // Override parent's last frustum test to avoid accidental incorrect cull
+            if (spat.getParent() != null)
+                spat.getParent().setLastFrustumIntersection(
+                        Camera.INTERSECTS_FRUSTUM);
+
             if (useDirectRender) {
                 // setup and render directly to a 2d texture.
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());

@@ -55,7 +55,7 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.65 2005-05-24 22:47:30 Mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.66 2005-05-26 18:51:10 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -837,6 +837,21 @@ public abstract class Spatial implements Serializable {
      */
     public int getLastFrustumIntersection() {
         return frustrumIntersects;
+    }
+
+    /**
+     * Overrides the last intersection result.  This is useful for
+     * operations that want to start rendering at the middle of a
+     * scene tree and don't want the parent of that node to
+     * influence culling.  (See texture renderer code for example.)
+     * 
+     * Possible values include: Camera.OUTSIDE_FRUSTUM,
+     * Camera.INTERSECTS_FRUSTUM, and Camera.INSIDE_FRUSTUM
+
+     * @param intersects the new value, one of those given above.
+     */
+    public void setLastFrustumIntersection(int intersects) {
+        frustrumIntersects = intersects;
     }
 
     /**
