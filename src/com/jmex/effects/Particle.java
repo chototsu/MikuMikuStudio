@@ -40,7 +40,7 @@ import com.jme.renderer.ColorRGBA;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.2 2005-05-24 22:47:32 Mojomonkey Exp $
+ * @version $Id: Particle.java,v 1.3 2005-05-27 17:16:42 renanse Exp $
  */
 public class Particle {
 
@@ -216,8 +216,6 @@ public class Particle {
         currColor.g -= gChange * lifeRatio;
         currColor.b -= bChange * lifeRatio;
         currColor.a -= aChange * lifeRatio;
-
-        // updateVerts();
 
         return false;
     }
