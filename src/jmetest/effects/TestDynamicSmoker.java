@@ -36,21 +36,19 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.URL;
 
-import jmetest.renderer.loader.TestMilkJmeWrite;
-
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
+import com.jme.scene.TriMesh;
+import com.jme.scene.shape.Disk;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.scene.state.ZBufferState;
 import com.jme.util.TextureManager;
-import com.jme.scene.TriMesh;
-import com.jme.scene.shape.Disk;
-import com.jme.renderer.Renderer;
 import com.jmex.effects.ParticleManager;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
@@ -95,7 +93,7 @@ public class TestDynamicSmoker extends SimpleGame {
     // hijack the camera model for our own purposes
     Node camBox;
     MilkToJme converter=new MilkToJme();
-    URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+    URL MSFile=TestDynamicSmoker.class.getClassLoader().getResource(
     "jmetest/data/model/msascii/camera.ms3d");
     ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
@@ -107,7 +105,7 @@ public class TestDynamicSmoker extends SimpleGame {
         System.exit(0);
     }
     JmeBinaryReader jbr=new JmeBinaryReader();
-    URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
+    URL TEXdir=TestDynamicSmoker.class.getClassLoader().getResource(
             "jmetest/data/model/msascii/");
     jbr.setProperty("texurl",TEXdir);
     camBox=null;
