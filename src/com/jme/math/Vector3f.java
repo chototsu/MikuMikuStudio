@@ -31,8 +31,11 @@
  */
 package com.jme.math;
 
+import java.io.Externalizable;
+import java.io.IOException;
+import java.io.ObjectInput;
+import java.io.ObjectOutput;
 import java.util.logging.Level;
-import java.io.*;
 
 import com.jme.util.LoggingSystem;
 
@@ -48,7 +51,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.30 2004-09-27 20:56:41 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.31 2005-05-30 16:19:17 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -339,7 +342,7 @@ public class Vector3f implements Externalizable{
      * @return the length or magnitude of the vector.
      */
     public float length() {
-        return (float) Math.sqrt(lengthSquared());
+        return FastMath.sqrt(lengthSquared());
     }
 
     /**
@@ -374,7 +377,7 @@ public class Vector3f implements Externalizable{
      * @return the distance between the two vectors.
      */
     public float distance(Vector3f v) {
-        return (float) Math.sqrt(distanceSquared(v));
+        return FastMath.sqrt(distanceSquared(v));
     }
 
     /**
