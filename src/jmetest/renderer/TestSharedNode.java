@@ -39,6 +39,7 @@ import java.io.InputStream;
 import java.net.URL;
 
 import jmetest.renderer.loader.TestASEJmeWrite;
+import jmetest.renderer.loader.TestMilkJmeWrite;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
@@ -54,18 +55,19 @@ import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.AseToJme;
+import com.jmex.model.XMLparser.Converters.MilkToJme;
 
 /**
  * <code>TestSharedMesh</code>
  * @author Mark Powell
- * @version $Id: TestSharedNode.java,v 1.1 2005-05-19 21:49:21 Mojomonkey Exp $
+ * @version $Id: TestSharedNode.java,v 1.2 2005-06-04 22:52:44 Mojomonkey Exp $
  */
 public class TestSharedNode extends SimpleGame {
 
   private Quaternion rotQuat = new Quaternion();
   private float angle = 0;
   private Vector3f axis = new Vector3f(1, 1, 0);
-  
+  Node file = null;
   /**
    * Entry point for the test,
    * @param args
@@ -77,6 +79,9 @@ public class TestSharedNode extends SimpleGame {
     app.start();
   }
 
+  protected void simpleUpdate() {
+      file.updateGeometricState(1, true);
+  }
   /**
    * builds the trimesh.
    * @see com.jme.app.SimpleGame#initGame()
@@ -84,19 +89,22 @@ public class TestSharedNode extends SimpleGame {
   protected void simpleInitGame() {
     display.setTitle("jME - Sphere");
 
-    InputStream statue=TestASEJmeWrite.class.getClassLoader().getResourceAsStream("jmetest/data/model/Statue.ase");
-    URL stateTextureDir=TestASEJmeWrite.class.getClassLoader().getResource("jmetest/data/model/");
-    if (statue==null){
-        System.out.println("Unable to find statue file, did you include jme-test.jar in classpath?");
+    URL MSFile=TestMilkJmeWrite.class.getClassLoader().getResource(
+    "jmetest/data/model/msascii/run.ms3d");
+    ByteArrayOutputStream BO=new ByteArrayOutputStream();
+    if (MSFile==null){
+        System.out.println("Unable to find milkshape file, did you include jme-test.jar in classpath?");
         System.exit(0);
     }
-    AseToJme convert=new AseToJme();
-    ByteArrayOutputStream BO=new ByteArrayOutputStream();
-    Node file = null;
+    MilkToJme convert=new MilkToJme();
+    //ByteArrayOutputStream BO=new ByteArrayOutputStream();
+    
     try {
-        convert.convert(statue,BO);
+        convert.convert(MSFile.openStream(),BO);
         JmeBinaryReader jbr=new JmeBinaryReader();
-        jbr.setProperty("texurl",stateTextureDir);
+        URL TEXdir=TestMilkJmeWrite.class.getClassLoader().getResource(
+        "jmetest/data/model/msascii/");
+        jbr.setProperty("texurl",TEXdir);
         file=jbr.loadBinaryFormat(new ByteArrayInputStream(BO.toByteArray()));
     } catch (IOException e) {
         System.out.println("Damn exceptions:"+e);

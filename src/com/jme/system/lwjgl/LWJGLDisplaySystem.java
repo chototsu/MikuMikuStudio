@@ -77,7 +77,7 @@ import java.awt.Toolkit;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.25 2005-05-24 22:47:41 Mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.26 2005-06-04 22:52:44 Mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -327,6 +327,29 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         return new LWJGLTextureRenderer(width, height,
                 (LWJGLRenderer) getRenderer(), new RenderTexture(useRGB,
                         useRGBA, useDepth, isRectangle, target, mipmaps));
+    }
+    
+    /* (non-Javadoc)
+     * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int, int, int, int, int, int)
+     */
+    public TextureRenderer createTextureRenderer(int width, int height, boolean useRGB, 
+            boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps, 
+            int bpp, int alpha, int depth, int stencil, int samples) {
+        if (!isCreated())
+            return null;
+
+        if (target == TextureRenderer.RENDER_TEXTURE_1D)
+            target = RenderTexture.RENDER_TEXTURE_1D;
+        else if (target == TextureRenderer.RENDER_TEXTURE_2D)
+            target = RenderTexture.RENDER_TEXTURE_2D;
+        else if (target == TextureRenderer.RENDER_TEXTURE_CUBE_MAP)
+            target = RenderTexture.RENDER_TEXTURE_CUBE_MAP;
+        else if (target == TextureRenderer.RENDER_TEXTURE_RECTANGLE)
+            target = RenderTexture.RENDER_TEXTURE_RECTANGLE;
+
+        return new LWJGLTextureRenderer(width, height,
+                (LWJGLRenderer) getRenderer(), new RenderTexture(useRGB,
+                        useRGBA, useDepth, isRectangle, target, mipmaps), bpp, alpha, depth, stencil, samples);
     }
 
     /**
@@ -587,4 +610,6 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public void setRenderer(Renderer r) {
         renderer = (LWJGLRenderer) r;
     }
+
+    
 }

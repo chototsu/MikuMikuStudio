@@ -82,9 +82,27 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     private LWJGLDisplaySystem display;
 
     private boolean headless = false;
-
+    
+    private int bpp, alpha, depth, stencil, samples;
+    
     public LWJGLTextureRenderer(int width, int height,
             LWJGLRenderer parentRenderer, RenderTexture texture) {
+        
+        this(width, height, parentRenderer, texture, DisplaySystem.getDisplaySystem().getBitDepth(), DisplaySystem.getDisplaySystem().getMinAlphaBits(), 
+                DisplaySystem.getDisplaySystem().getMinDepthBits(), DisplaySystem.getDisplaySystem().getMinStencilBits(), 
+                DisplaySystem.getDisplaySystem().getMinSamples());
+    }
+
+    public LWJGLTextureRenderer(int width, int height,
+            LWJGLRenderer parentRenderer, RenderTexture texture, int bpp, int alpha, int depth, 
+            int stencil, int samples) {
+        
+        this.bpp = bpp;
+        this.alpha = alpha;
+        this.depth = depth;
+        this.stencil = stencil;
+        this.samples = samples;
+        
         caps = Pbuffer.getCapabilities();
         if (width != height
                 && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
@@ -295,7 +313,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
         try {
             pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT,
-                    new PixelFormat(32, 0, 8, 0, 0), texture, null);
+                    new PixelFormat(bpp, alpha, depth, stencil, samples), texture, null);
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
                     "initPbuffer()", e);
@@ -311,9 +329,12 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 useDirectRender = false;
                 initPbuffer();
                 return;
-            } else
+            } else {
+                LoggingSystem.getLogger().log(Level.WARNING, "Failed to create Pbuffer.", e); 
                 return;
+            }
         }
+        
         try {
             activate();
 

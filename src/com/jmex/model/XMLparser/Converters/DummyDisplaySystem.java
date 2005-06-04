@@ -486,4 +486,12 @@ public class DummyDisplaySystem extends DisplaySystem {
     public Canvas createCanvas(int w, int h) {
         return null;
     }
+
+    /* (non-Javadoc)
+     * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int, int, int, int, int, int)
+     */
+    public TextureRenderer createTextureRenderer(int width, int height, boolean useRGB, boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps, int bpp, int alpha, int depth, int stencil, int samples) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

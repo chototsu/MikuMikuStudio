@@ -71,7 +71,7 @@ import com.jme.math.Vector2f;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.39 2005-05-24 22:47:36 Mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.40 2005-06-04 22:52:44 Mojomonkey Exp $
  */
 public abstract class DisplaySystem {
 
@@ -527,6 +527,29 @@ public abstract class DisplaySystem {
     public abstract TextureRenderer createTextureRenderer(int width,
             int height, boolean useRGB, boolean useRGBA, boolean useDepth,
             boolean isRectangle, int target, int mipmaps);
+    
+    /**
+     * Crate a TextureRenderer using the underlying system. This should not be
+     * user called. It is called when the display system is created.
+     * 
+     * @param width
+     *            width of texture
+     * @param height
+     *            height of texture
+     * @param useRGB
+     *            if this is true, useRGBA should not be
+     * @param useRGBA
+     *            if this is true, useRGB should not be
+     * @param useDepth
+     * @param isRectangle
+     * @param target
+     * @param mipmaps
+     * @return A TextureRenderer for the display system.
+     */
+    public abstract TextureRenderer createTextureRenderer(int width,
+            int height, boolean useRGB, boolean useRGBA, boolean useDepth,
+            boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
+            int depth, int stencil, int samples);
 
     /**
      * Translate world to screen coordinates
