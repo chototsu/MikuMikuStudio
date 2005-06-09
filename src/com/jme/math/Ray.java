@@ -36,7 +36,7 @@ package com.jme.math;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.6 2004-10-05 23:38:19 mojomonkey Exp $
+ * @version $Id: Ray.java,v 1.7 2005-06-09 18:25:50 renanse Exp $
  */
 public class Ray {
     /** The ray's begining point. */
@@ -55,7 +55,7 @@ public class Ray {
         Vector3f edge2=v2.subtract(v0,tempVb);
         Vector3f pvec=direction.cross(edge2,tempVc);
         float det=edge1.dot(pvec);
-        if (det > -FastMath.FLT_EPSILON & det < FastMath.FLT_EPSILON)
+        if (det > -FastMath.FLT_EPSILON && det < FastMath.FLT_EPSILON)
             return false;
         det=1/det;
         Vector3f tvec=origin.subtract(v0,tempVd);
