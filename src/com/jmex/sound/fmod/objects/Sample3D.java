@@ -3,6 +3,7 @@
  */
 package com.jmex.sound.fmod.objects;
 
+import java.net.URL;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
@@ -35,9 +36,10 @@ public class Sample3D extends SoundSpatial{
     float posx=0;
     private int method;
     
-    public Sample3D(String file){     
-        fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, file, FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
-        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file+ " Success="+(fmodSample !=null));
+    public Sample3D(String file){
+        URL fileU = Sample3D.class.getClassLoader().getResource(file);
+        fmodSample=FSound.FSOUND_Sample_Load(FSound.FSOUND_UNMANAGED, fileU.getFile(), FSound.FSOUND_HW3D |FSound.FSOUND_FORCEMONO | FSound.FSOUND_ENABLEFX, 0, 0);
+        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+fileU.getFile()+ " Success="+(fmodSample !=null));
     }
     
     public Sample3D(Listener listener, String file, int renderMethod){        

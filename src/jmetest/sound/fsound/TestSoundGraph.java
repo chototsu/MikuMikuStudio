@@ -51,61 +51,67 @@ import com.jmex.sound.fmod.scene.Configuration;
  * @version $Id: TestSoundGraph.java,v 1.14 2005/02/10 21:48:31 renanse Exp $
  */
 public class TestSoundGraph extends SimpleGame {
-  private int snode;
-  int footsteps;
-  int background;
-  Box box;
-  public static void main(String[] args) {
-    TestSoundGraph app = new TestSoundGraph();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
+    private int snode;
 
-  protected void simpleUpdate() {      
-    SoundSystem.update(0.0f);
-  }
+    int footsteps;
 
-  protected void simpleRender() {
-      SoundSystem.draw(snode);
-  }
+    int background;
 
-  /*
-   * (non-Javadoc)
-   *
-   * @see com.jme.app.SimpleGame#initGame()
-   */
-  protected void simpleInitGame() {
-    display.setTitle("Test Sound Graph");
-    SoundSystem.init(cam, SoundSystem.OUTPUT_DEFAULT);
-    Vector3f max = new Vector3f(5, 5, 5);
-    Vector3f min = new Vector3f( -5, -5, -5);
-    box = new Box("Box", min, max);
-    box.setModelBound(new BoundingSphere());
-    box.updateModelBound();
-    box.setLocalTranslation(new Vector3f(0, 0, -50));
-    TextureState tst = display.getRenderer().createTextureState();
-    tst.setEnabled(true);
-    tst.setTexture(TextureManager.loadTexture(
-        TestSoundGraph.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
-        Texture.FM_LINEAR));
-    rootNode.setRenderState(tst);
-    rootNode.attachChild(box);
-    snode = SoundSystem.createSoundNode();
-    footsteps = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/Footsteps.wav");
-    background =SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/test.ogg");
-    SoundSystem.setSampleMaxAudibleDistance(footsteps, 100);
-    SoundSystem.setSampleMaxAudibleDistance(background, 1000);
-    SoundSystem.addSampleToNode(footsteps, snode);
-    SoundSystem.addSampleToNode(background, snode);
-    SoundSystem.setSamplePosition(footsteps, box.getLocalTranslation().x, box.getLocalTranslation().y, box.getLocalTranslation().z);
-    SoundSystem.setSampleMinAudibleDistance(footsteps, 4);
-    
-    Configuration config=new Configuration();
-    config.setDistortion(-10, 70, 6000, 5000, 7000);
-    
-    SoundSystem.setSampleConfig(footsteps, config);
-    
-    
-  }
+    Box box;
+
+    public static void main(String[] args) {
+        TestSoundGraph app = new TestSoundGraph();
+        app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+        app.start();
+    }
+
+    protected void simpleUpdate() {
+        SoundSystem.update(0.0f);
+    }
+
+    protected void simpleRender() {
+        SoundSystem.draw(snode);
+    }
+
+    /*
+     * (non-Javadoc)
+     * 
+     * @see com.jme.app.SimpleGame#initGame()
+     */
+    protected void simpleInitGame() {
+        display.setTitle("Test Sound Graph");
+        SoundSystem.init(cam, SoundSystem.OUTPUT_DEFAULT);
+        Vector3f max = new Vector3f(5, 5, 5);
+        Vector3f min = new Vector3f(-5, -5, -5);
+        box = new Box("Box", min, max);
+        box.setModelBound(new BoundingSphere());
+        box.updateModelBound();
+        box.setLocalTranslation(new Vector3f(0, 0, -50));
+        TextureState tst = display.getRenderer().createTextureState();
+        tst.setEnabled(true);
+        tst.setTexture(TextureManager.loadTexture(
+                TestSoundGraph.class.getClassLoader().getResource(
+                        "jmetest/data/images/Monkey.jpg"), Texture.MM_LINEAR,
+                Texture.FM_LINEAR));
+        rootNode.setRenderState(tst);
+        rootNode.attachChild(box);
+        snode = SoundSystem.createSoundNode();
+        footsteps = SoundSystem
+                .create3DSample("jmetest/data/sound/Footsteps.wav");
+        background = SoundSystem
+                .create3DSample("jmetest/data/sound/test.ogg");
+        SoundSystem.setSampleMaxAudibleDistance(footsteps, 100);
+        SoundSystem.setSampleMaxAudibleDistance(background, 1000);
+        SoundSystem.addSampleToNode(footsteps, snode);
+        SoundSystem.addSampleToNode(background, snode);
+        SoundSystem.setSamplePosition(footsteps, box.getLocalTranslation().x,
+                box.getLocalTranslation().y, box.getLocalTranslation().z);
+        SoundSystem.setSampleMinAudibleDistance(footsteps, 4);
+
+        Configuration config = new Configuration();
+        config.setDistortion(-10, 70, 6000, 5000, 7000);
+
+        SoundSystem.setSampleConfig(footsteps, config);
+
+    }
 }
