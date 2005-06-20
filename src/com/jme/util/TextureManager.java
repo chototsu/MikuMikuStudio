@@ -64,7 +64,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.38 2005-06-20 15:42:35 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.39 2005-06-20 15:44:22 renanse Exp $
  */
 final public class TextureManager {
 
@@ -120,7 +120,7 @@ final public class TextureManager {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        return loadTexture(url, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? -1 : -2), anisoLevel, flipped);
+        return loadTexture(url, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC), anisoLevel, flipped);
     }
 
     public static com.jme.image.Texture loadTexture(String file, int minFilter,
@@ -152,12 +152,12 @@ final public class TextureManager {
      */
     public static com.jme.image.Texture loadTexture(URL file, int minFilter,
             int magFilter) {
-        return loadTexture(file, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? -1 : -2), 1.0f, true);
+        return loadTexture(file, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC), 1.0f, true);
     }
 
     public static com.jme.image.Texture loadTexture(URL file, int minFilter,
             int magFilter, float anisoLevel, boolean flipped) {
-        return loadTexture(file, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? -1 : -2), anisoLevel, true);
+        return loadTexture(file, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC), anisoLevel, true);
     }
 
     /**
