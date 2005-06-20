@@ -118,9 +118,9 @@ public class SampleLoader {
             int channels = wavInput.channels();
             tmp = Buffer.generateBuffers(1);
             float time = (byteOut.size()) / (float)(wavInput.rate() * channels * 2);
-            tmp[0].configure(data, getChannels(wavInput), wavInput.rate(), time);
             LoggingSystem.getLogger().log(Level.INFO,
-                    "Wav estimated time "+ time);
+                    "Wav estimated time "+ time+ "  rate: "+wavInput.rate()+"  channels: "+channels+"  depth: "+wavInput.depth());
+            tmp[0].configure(data, getChannels(wavInput), wavInput.rate(), time);
             //cleanup
             data.clear();
             data = null;            

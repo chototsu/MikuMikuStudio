@@ -20,7 +20,7 @@ import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.ParticleManager;
-import com.jmex.sound.fmod.SoundSystem;
+import com.jmex.sound.openAL.SoundSystem;
 import com.jmex.ui.UIColorScheme;
 import com.jmex.ui.UIFonts;
 import com.jmex.ui.UIText;
@@ -123,9 +123,11 @@ public class PongRevisited extends SimpleGame {
         ball.getLocalTranslation().z = -00f;
         ball.updateModelBound();
 
-        ballSound = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/turn.wav");
-        explodeSound = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/explosion.wav");
-        
+        ballSound = SoundSystem.create3DSample(PongRevisited.class
+                .getClassLoader().getResource("jmetest/data/sound/turn.wav"));
+        explodeSound = SoundSystem.create3DSample(PongRevisited.class
+                .getClassLoader().getResource("jmetest/data/sound/explosion.wav"));
+
         SoundSystem.bindEventToSample(ballSound, WALL_BOUNCE_EVENT);
         SoundSystem.bindEventToSample(explodeSound, MISS_EVENT);
         SoundSystem.setSampleMaxAudibleDistance(ballSound, 5000);
