@@ -63,12 +63,14 @@ import com.jme.system.DisplaySystem;
  * filename and the texture properties.
  * 
  * @author Mark Powell
- * @author Joshua Slack -- cache code
- * @version $Id: TextureManager.java,v 1.37 2005-05-24 22:47:35 Mojomonkey Exp $
+ * @author Joshua Slack -- cache code and enhancements
+ * @version $Id: TextureManager.java,v 1.38 2005-06-20 15:42:35 renanse Exp $
  */
 final public class TextureManager {
 
     private static HashMap m_tCache = new HashMap();
+    
+    public static boolean COMPRESS_BY_DEFAULT = true;
 
     private TextureManager() {
     }
@@ -118,7 +120,7 @@ final public class TextureManager {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-        return loadTexture(url, minFilter, magFilter, -1, anisoLevel, flipped);
+        return loadTexture(url, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? -1 : -2), anisoLevel, flipped);
     }
 
     public static com.jme.image.Texture loadTexture(String file, int minFilter,
@@ -150,12 +152,12 @@ final public class TextureManager {
      */
     public static com.jme.image.Texture loadTexture(URL file, int minFilter,
             int magFilter) {
-        return loadTexture(file, minFilter, magFilter, -1, 1.0f, true);
+        return loadTexture(file, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? -1 : -2), 1.0f, true);
     }
 
     public static com.jme.image.Texture loadTexture(URL file, int minFilter,
             int magFilter, float anisoLevel, boolean flipped) {
-        return loadTexture(file, minFilter, magFilter, -1, anisoLevel, true);
+        return loadTexture(file, minFilter, magFilter, (COMPRESS_BY_DEFAULT ? -1 : -2), anisoLevel, true);
     }
 
     /**
