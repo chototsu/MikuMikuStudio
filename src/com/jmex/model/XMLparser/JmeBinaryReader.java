@@ -781,7 +781,7 @@ public class JmeBinaryReader {
         Texture p=null;
         int mipMap = Texture.MM_LINEAR;
         int filter = Texture.FM_LINEAR;
-        int imageType = Image.GUESS_FORMAT;
+        int imageType = TextureManager.COMPRESS_BY_DEFAULT ? Image.GUESS_FORMAT : Image.GUESS_FORMAT_NO_S3TC;
         float aniso = 1.0f;
         boolean flip = true;
         
