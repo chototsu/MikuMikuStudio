@@ -108,13 +108,13 @@ public class SampleLoader {
             ByteBuffer data = BufferUtils.createByteBuffer(byteOut.size());
             data.put(byteOut.toByteArray());
             data.rewind();
-            if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
-            {
-                ShortBuffer tmp2 = data.duplicate().order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
-                while(tmp2.hasRemaining())
-                    data.putShort(tmp2.get());
-                data.rewind();
-            }
+//            if (ByteOrder.nativeOrder() == ByteOrder.BIG_ENDIAN)
+//            {
+//                ShortBuffer tmp2 = data.duplicate().order(ByteOrder.LITTLE_ENDIAN).asShortBuffer();
+//                while(tmp2.hasRemaining())
+//                    data.putShort(tmp2.get());
+//                data.rewind();
+//            }
             int channels = wavInput.channels();
             tmp = Buffer.generateBuffers(1);
             float time = (byteOut.size()) / (float)(wavInput.rate() * channels * 2);

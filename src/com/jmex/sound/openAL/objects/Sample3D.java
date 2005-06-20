@@ -32,10 +32,7 @@ public class Sample3D extends SoundSpatial{
     private Buffer buffer=null;
     private boolean handlesEvent;
     
-    
-    
     float posx=0;
-    private boolean positionChanged=true;
     
     public Sample3D(String file){     
         LoggingSystem.getLogger().log(Level.INFO,"Load file:"+file);
@@ -82,12 +79,6 @@ public class Sample3D extends SoundSpatial{
     }
     
     public boolean play(){
-        if(positionChanged){
-            if(sourceNumber>=0){
-                AL10.alSource3f(sourceNumber, AL10.AL_POSITION, position.get(0), position.get(1), position.get(2));
-            }
-            positionChanged=false;
-        }
         AL10.alSourcei(sourceNumber, AL10.AL_BUFFER, buffer.getBufferNumber());
         AL10.alSourcePlay(sourceNumber);
         return true;
@@ -120,8 +111,9 @@ public class Sample3D extends SoundSpatial{
         position.put(x);
         position.put(y);
         position.put(z);
-        positionChanged=true;
-        
+        if(sourceNumber>=0){
+            AL10.alSource3f(sourceNumber, AL10.AL_POSITION, position.get(0), position.get(1), position.get(2));
+        } 
     }
     
     public void setVelocity(float x, float y, float z){
