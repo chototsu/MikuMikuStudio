@@ -77,7 +77,7 @@ import java.awt.Toolkit;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.26 2005-06-04 22:52:44 Mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.27 2005-06-25 19:04:14 Mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -589,9 +589,14 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     private void reinitDisplay() {
         // create the Display.
-        DisplayMode mode = getValidDisplayMode(width, height, bpp, frq);
-        if (null == mode) {
-            throw new JmeException("Bad display mode");
+    		DisplayMode mode; 
+    	        if (fs) { 
+    	            mode = getValidDisplayMode(width, height, bpp, frq); 
+    	            if (null == mode) { 
+    	                throw new JmeException("Bad display mode"); 
+    	            } 
+    	        } else { 
+    	            mode = new DisplayMode(width, height); 
         }
 
         try {
