@@ -39,7 +39,7 @@
 	<!-- Jar files for different parts of the jME API -->
 
 	<target name="dist-core" depends="compile" description="generate jme jar file">
-		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="false" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga" />
+		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="false" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf" />
 	</target>
 	<target name="dist-effects" depends="compile" description="generate jme jar file (effects)">
 		<jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class" />
