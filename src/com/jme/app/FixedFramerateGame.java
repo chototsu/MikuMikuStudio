@@ -49,7 +49,7 @@ import com.jme.util.Timer;
  * second.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.6 2004-10-14 01:23:11 mojomonkey Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.7 2005-07-08 20:47:18 Mojomonkey Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
 
@@ -165,6 +165,8 @@ public abstract class FixedFramerateGame extends AbstractGame {
                 display.getRenderer().displayBackBuffer();
 
                 endFrame();
+                
+                Thread.yield();
             }
 
         } catch (Throwable t) {

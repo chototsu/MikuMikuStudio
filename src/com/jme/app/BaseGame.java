@@ -43,7 +43,7 @@ import com.jme.util.LoggingSystem;
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.5 2004-11-09 03:11:22 renanse Exp $
+ * @version $Id: BaseGame.java,v 1.6 2005-07-08 20:47:18 Mojomonkey Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 
@@ -72,6 +72,8 @@ public abstract class BaseGame extends AbstractGame {
 
         //swap buffers
         display.getRenderer().displayBackBuffer();
+        
+        Thread.yield();
       }
     }
     catch (Throwable t) {

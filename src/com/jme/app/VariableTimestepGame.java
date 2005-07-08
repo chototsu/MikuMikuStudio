@@ -43,7 +43,7 @@ import com.jme.util.Timer;
  * the logic based on the time elapsed.
  * 
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.10 2004-10-14 01:23:11 mojomonkey Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.11 2005-07-08 20:47:18 Mojomonkey Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 
@@ -99,6 +99,8 @@ public abstract class VariableTimestepGame extends AbstractGame {
 
                 //swap buffers
                 display.getRenderer().displayBackBuffer();
+                
+                Thread.yield();
             }
         } catch (Throwable t) {
             t.printStackTrace();

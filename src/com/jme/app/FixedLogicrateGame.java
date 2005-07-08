@@ -135,6 +135,8 @@ public abstract class FixedLogicrateGame extends AbstractGame {
 
                 //swap buffers
                 display.getRenderer().displayBackBuffer();
+                
+                Thread.yield();
             }
         } catch (Throwable t) {
             t.printStackTrace();
