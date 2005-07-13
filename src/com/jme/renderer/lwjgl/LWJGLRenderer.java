@@ -66,6 +66,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 
 import org.lwjgl.BufferUtils;
+import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.GL11;
@@ -132,7 +133,8 @@ import com.jme.scene.state.RenderState;
  * @see com.jme.renderer.Renderer
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLRenderer.java,v 1.62 2005-05-26 15:10:42 renanse Exp $
+ * @author Tijl Houtbeckers - Small optimizations
+ * @version $Id: LWJGLRenderer.java,v 1.63 2005-07-13 00:06:42 llama Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -183,6 +185,8 @@ public class LWJGLRenderer implements Renderer {
     private FloatBuffer[] prevTex;
 
     private boolean headless = false;
+    
+    private ContextCapabilities capabilities;
 
     /**
      * Constructor instantiates a new <code>LWJGLRenderer</code> object. The
@@ -204,8 +208,13 @@ public class LWJGLRenderer implements Renderer {
 
         LoggingSystem.getLogger().log(Level.INFO,
                 "LWJGLRenderer created. W:  " + width + "H: " + height);
+        
+        capabilities = GLContext.getCapabilities();
+        
         queue = new RenderQueue(this);
         prevTex = new FloatBuffer[createTextureState().getNumberOfUnits()];
+        
+       
     }
 
     /**
@@ -228,6 +237,7 @@ public class LWJGLRenderer implements Renderer {
         if (camera != null)
             camera.resize(width, height);
         mode = Display.getDisplayMode();
+        capabilities = GLContext.getCapabilities();
     }
 
     /**
@@ -973,7 +983,7 @@ public class LWJGLRenderer implements Renderer {
             numberOfVerts += verts;
         }
 
-        if (GLContext.getCapabilities().OpenGL12)
+        if (capabilities.OpenGL12)
             GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, verts, indices);
         else
             GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
@@ -1025,7 +1035,7 @@ public class LWJGLRenderer implements Renderer {
                         + ranges[i].getKind());
             }
             indices.limit(indices.position() + ranges[i].getCount());
-            if (GLContext.getCapabilities().OpenGL12)
+            if (capabilities.OpenGL12)
                 GL12.glDrawRangeElements(mode, 0, verts, indices);
             else
                 GL11.glDrawElements(mode, indices);
@@ -1038,7 +1048,7 @@ public class LWJGLRenderer implements Renderer {
     IntBuffer buf = BufferUtils.createIntBuffer(16);
 
     public void prepVBO(Geometry g) {
-        if (!GLContext.getCapabilities().OpenGL15)
+        if (!capabilities.OpenGL15)
             return;
         int verts = g.getVertices().length;
         if (g.isVBOVertexEnabled() && g.getVBOVertexID() <= 0) {
@@ -1256,7 +1266,7 @@ public class LWJGLRenderer implements Renderer {
      * @return boolean true if VBO supported
      */
     public boolean supportsVBO() {
-        return GLContext.getCapabilities().OpenGL15;
+        return capabilities.OpenGL15;
     }
 
     public int getWidth() {
@@ -1303,7 +1313,7 @@ public class LWJGLRenderer implements Renderer {
         FloatBuffer verticies = t.getVerticeAsFloatBuffer();
         if (prevVerts != verticies) {
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-            if (t.isVBOVertexEnabled() && GLContext.getCapabilities().OpenGL15) {
+            if (t.isVBOVertexEnabled() && capabilities.OpenGL15) {
                 usingVBO = true;
                 GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOVertexID());
                 GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
@@ -1320,7 +1330,7 @@ public class LWJGLRenderer implements Renderer {
             if (normals != null || t.getVBONormalID() > 0) {
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 if (t.isVBONormalEnabled()
-                        && GLContext.getCapabilities().OpenGL15) {
+                        && capabilities.OpenGL15) {
                     usingVBO = true;
                     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBONormalID());
                     GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
@@ -1340,7 +1350,7 @@ public class LWJGLRenderer implements Renderer {
             if (colors != null || t.getVBOColorID() > 0) {
                 GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
                 if (t.isVBOColorEnabled()
-                        && GLContext.getCapabilities().OpenGL15) {
+                        && capabilities.OpenGL15) {
                     usingVBO = true;
                     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t.getVBOColorID());
                     GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
@@ -1358,15 +1368,15 @@ public class LWJGLRenderer implements Renderer {
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureAsFloatBuffer(i);
             if (prevTex[i] != textures && textures != null) {
-                if (GLContext.getCapabilities().GL_ARB_multitexture
-                        && GLContext.getCapabilities().OpenGL13) {
+                if (capabilities.GL_ARB_multitexture
+                        && capabilities.OpenGL13) {
                     GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                 }
                 if (textures != null || t.getVBOTextureID(i) > 0) {
 
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                     if (t.isVBOTextureEnabled()
-                            && GLContext.getCapabilities().OpenGL15) {
+                            && capabilities.OpenGL15) {
                         usingVBO = true;
                         GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, t
                                 .getVBOTextureID(i));
