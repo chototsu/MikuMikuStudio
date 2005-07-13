@@ -166,7 +166,7 @@ public abstract class UIObject extends Node {
             
             //System.out.println( "With Texture: " + name + " x: " + _x + " y: " + _y + " w: " + _width + " h:" + _height);
             
-	        _quad = new Quad( name+"_quad", _width, _height);
+	        _quad = new Quad( getName()+"_quad", _width, _height);
         
 	        /*
 	         * Use the default texture state if there is one right now...
@@ -189,7 +189,7 @@ public abstract class UIObject extends Node {
 	        /*
 	         * Create the base quad
 	         */
-	        _quad = new Quad( name+"_quad", (_width - 1), (_height - 1));
+	        _quad = new Quad( getName()+"_quad", (_width - 1), (_height - 1));
 	        _quad.setColor( 0, _scheme._backgroundcolor);
 	        _quad.setColor( 1, _scheme._backgroundcolor);
 	        _quad.setColor( 2, _scheme._backgroundcolor);
@@ -264,7 +264,7 @@ public abstract class UIObject extends Node {
             colors[1] = _scheme._borderdarkcolor;
         }
         
-        return new Line( name+"_tborder", verts, norms, colors, null);
+        return new Line( getName()+"_tborder", verts, norms, colors, null);
     }
     
     /**
@@ -291,7 +291,7 @@ public abstract class UIObject extends Node {
             colors[1] = _scheme._borderdarkcolor;
         }
         
-        return new Line( name+"_lborder", verts, norms, colors, null);
+        return new Line( getName()+"_lborder", verts, norms, colors, null);
     }
     
     /**
@@ -318,7 +318,7 @@ public abstract class UIObject extends Node {
             colors[1] = _scheme._borderlightcolor;
         }
         
-        return new Line( name+"_bborder", verts, norms, colors, null);
+        return new Line( getName()+"_bborder", verts, norms, colors, null);
     }
     
     /**
@@ -345,7 +345,7 @@ public abstract class UIObject extends Node {
             colors[1] = _scheme._borderlightcolor;
         }
         
-        return new Line( name+"_rborder", verts, norms, colors, null);
+        return new Line( getName()+"_rborder", verts, norms, colors, null);
     }
     
     /**

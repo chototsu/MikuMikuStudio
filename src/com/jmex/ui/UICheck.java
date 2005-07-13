@@ -246,7 +246,7 @@ public class UICheck extends UIActiveObject {
     }
     
     public void setText( UIFonts fonts, String fontName, String text) {
-        _text = new UIText( name+"text", fonts, fontName, text,
+        _text = new UIText( getName()+"text", fonts, fontName, text,
                 _x, _y, 65.0f, 0.0f, _height, _width, _scheme, 0);
         
         _text.setLocalTranslation( new Vector3f( (this.getWidth() - _text.getWidth()) / 2,

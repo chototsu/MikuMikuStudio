@@ -124,7 +124,7 @@ public class UIEditBox extends UIActiveObject {
 
     private void setupKeyBindings() {
         
-        _inputHandler.addKeyboardAction( this.name + "backspc_action", KeyInput.KEY_BACK, new EditBoxKeyInputAction() {
+        _inputHandler.addKeyboardAction( this.getName() + "backspc_action", KeyInput.KEY_BACK, new EditBoxKeyInputAction() {
             public void performAction( InputActionEvent event) {
                 buffignore = true;
                 
@@ -139,7 +139,7 @@ public class UIEditBox extends UIActiveObject {
                 
             }
         });
-        _inputHandler.addKeyboardAction( this.name + "delete_action", KeyInput.KEY_DELETE, new EditBoxKeyInputAction() {
+        _inputHandler.addKeyboardAction( this.getName() + "delete_action", KeyInput.KEY_DELETE, new EditBoxKeyInputAction() {
             public void performAction( InputActionEvent event) {
                 buffignore = true;
 
@@ -152,7 +152,7 @@ public class UIEditBox extends UIActiveObject {
                 
             }
         });
-        _inputHandler.addKeyboardAction( this.name + "left_action", KeyInput.KEY_LEFT, new EditBoxKeyInputAction() {
+        _inputHandler.addKeyboardAction( this.getName() + "left_action", KeyInput.KEY_LEFT, new EditBoxKeyInputAction() {
             public void performAction( InputActionEvent event) {
                 buffignore = true;
 
@@ -166,7 +166,7 @@ public class UIEditBox extends UIActiveObject {
                 
             }
         });
-        _inputHandler.addKeyboardAction( this.name + "right_action", KeyInput.KEY_RIGHT, new EditBoxKeyInputAction() {
+        _inputHandler.addKeyboardAction( this.getName() + "right_action", KeyInput.KEY_RIGHT, new EditBoxKeyInputAction() {
             public void performAction( InputActionEvent event) {
                 buffignore = true;
                 
@@ -181,7 +181,7 @@ public class UIEditBox extends UIActiveObject {
                 
             }
         });
-        _inputHandler.addKeyboardAction( this.name + "end_action", KeyInput.KEY_END, new EditBoxKeyInputAction() {
+        _inputHandler.addKeyboardAction( this.getName() + "end_action", KeyInput.KEY_END, new EditBoxKeyInputAction() {
             public void performAction( InputActionEvent event) {
                 buffignore = true;
                 
@@ -191,7 +191,7 @@ public class UIEditBox extends UIActiveObject {
             }
         });
         
-        _inputHandler.addKeyboardAction( this.name + "home_action", KeyInput.KEY_HOME, new EditBoxKeyInputAction() {
+        _inputHandler.addKeyboardAction( this.getName() + "home_action", KeyInput.KEY_HOME, new EditBoxKeyInputAction() {
             public void performAction( InputActionEvent event) {
                 buffignore = true;
 
@@ -200,7 +200,7 @@ public class UIEditBox extends UIActiveObject {
             }
         });
         
-        _inputHandler.addKeyboardAction( this.name + "space_action", KeyInput.KEY_SPACE, new EditBoxKeyInputAction() {
+        _inputHandler.addKeyboardAction( this.getName() + "space_action", KeyInput.KEY_SPACE, new EditBoxKeyInputAction() {
             public void performAction( InputActionEvent event) {
                 buffignore = true;
 

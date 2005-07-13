@@ -144,7 +144,7 @@ public class UIText extends UIObject {
             
             //System.out.println( xloc);
             
-            UICharacter uichar = _fonts.createCharacter( name + Integer.toString( c),
+            UICharacter uichar = _fonts.createCharacter( getName() + Integer.toString( c),
                     _text.charAt(c),
                     _fontName,
                     xloc,

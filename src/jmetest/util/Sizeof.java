@@ -23,7 +23,7 @@ public class Sizeof {
            Object object = null;
 
            // ### Instantiate your data here and assign it to object
-           object = new Node();
+           object = new Node("Hello");
            // ###
 
            if (i >= 0)

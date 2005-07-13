@@ -45,7 +45,7 @@ import com.jme.math.*;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.25 2005-05-24 22:47:33 Mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.26 2005-07-13 22:35:36 Mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -451,7 +451,7 @@ public class BoundingBox extends Box implements BoundingVolume {
             rVal.origExtent.set(origExtent);
             return rVal;
         } else {
-            BoundingBox rVal = new BoundingBox(name + "_clone",
+            BoundingBox rVal = new BoundingBox(getName() + "_clone",
                     (center != null ? (Vector3f) center.clone() : null),
                     xExtent, yExtent, zExtent);
             rVal.origCenter.set(origCenter);

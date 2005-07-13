@@ -43,7 +43,7 @@ import com.jme.scene.TriMesh;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.10 2004-11-13 01:23:31 cep21 Exp $
+ * @version $Id: Box.java,v 1.11 2005-07-13 22:35:36 Mojomonkey Exp $
  */
 public class Box extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -368,7 +368,7 @@ public class Box extends TriMesh {
 	 * @return the new Box
 	 */
 	public Object clone() {
-		Box rVal = new Box(name + "_clone", (Vector3f) center.clone(), xExtent,
+		Box rVal = new Box(getName() + "_clone", (Vector3f) center.clone(), xExtent,
 				yExtent, zExtent);
 		return rVal;
 	}

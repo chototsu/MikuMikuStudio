@@ -55,9 +55,17 @@ import com.jme.scene.state.TextureState;
  * <code>Geometry</code> are subclasses of <code>Spatial</code>.
  * 
  * @author Mark Powell
- * @version $Id: Spatial.java,v 1.66 2005-05-26 18:51:10 renanse Exp $
+ * @version $Id: Spatial.java,v 1.67 2005-07-13 22:35:37 Mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
+	/** flag to determine if we need debugging names turned on*/
+	private final static boolean useNames;
+	static {
+		useNames = Boolean.getBoolean("jme.debug.names");
+	}
+
+	/** Contains a list of all Spatial's names */
+	protected static WeakHashMap nameMap;
 
     /** Spatial's rotation relative to its parent. */
     protected Quaternion localRotation;
@@ -119,9 +127,6 @@ public abstract class Spatial implements Serializable {
     /** ArrayList of controllers for this spatial. */
     protected ArrayList geometricalControllers = new ArrayList();
 
-    /** This spatial's name. */
-    protected String name;
-
     // scale values
     protected int frustrumIntersects = Camera.INTERSECTS_FRUSTUM;
 
@@ -136,11 +141,17 @@ public abstract class Spatial implements Serializable {
      * rotation, translation and scale value to defaults.
      * 
      * @param name
-     *            the name of the scene element. This is required for
-     *            identification and comparision purposes.
+     *            the name of the scene element. This is used for debugging purposes
+     *            and should be turned on with the jvm property of -Djme.debug.names=true.
+     *            If no debugging is required, null may be passed.
      */
     public Spatial(String name) {
-        this.name = name;
+	    	if (useNames && (name != null)) {
+	     	if(nameMap == null) {
+	     		nameMap = new WeakHashMap();
+	         }
+	     	nameMap.put(this, name);
+		}
         renderStateList = new RenderState[RenderState.RS_MAX_STATE];
         localRotation = new Quaternion();
         worldRotation = new Quaternion();
@@ -157,25 +168,38 @@ public abstract class Spatial implements Serializable {
      *            The spatial's new name.
      */
     public void setName(String name) {
-        this.name = name;
+    		if (useNames && (name != null)) {
+	     	if(nameMap == null) {
+	     		nameMap = new WeakHashMap();
+	         }
+	     	nameMap.put(this, name);
+		}
     }
 
     /**
-     * Returns the name of this spatial.
-     * 
-     * @return This spatial's name.
-     */
-    public String getName() {
-        return name;
-    }
+	 * Returns the name of this spatial.
+	 * 
+	 * @return This spatial's name. If debugging of names is not used, 
+	 * 		the empty string will be returned. If debugging is used but
+	 * 		no name was set for this Spatial, null is returned.
+	 */
+	public String getName() {
+		if (useNames) {
+			if (nameMap == null) {
+				nameMap = new WeakHashMap();
+			}
+			return (String) nameMap.get(this);
+		}
+		return "";
+	}
 
     /**
-     * Adds a Controller to this Spatial's list of controllers.
-     * 
-     * @param controller
-     *            The Controller to add
-     * @see com.jme.scene.Controller
-     */
+	 * Adds a Controller to this Spatial's list of controllers.
+	 * 
+	 * @param controller
+	 *            The Controller to add
+	 * @see com.jme.scene.Controller
+	 */
     public void addController(Controller controller) {
         if (geometricalControllers == null) {
             geometricalControllers = new ArrayList();
@@ -941,7 +965,7 @@ public abstract class Spatial implements Serializable {
      * @return Spatial's name followed by the class of the Spatial
      */
     public String toString() {
-        return name + " (" + this.getClass().getName() + ')';
+        return getName() + " (" + this.getClass().getName() + ')';
     }
 
     public Spatial putClone(Spatial store, CloneCreator properties) {
