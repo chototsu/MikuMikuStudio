@@ -59,7 +59,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.40 2005-05-24 22:47:29 Mojomonkey Exp $
+ * @version $Id: Node.java,v 1.41 2005-07-18 16:47:33 irrisor Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -71,7 +71,7 @@ public class Node extends Spatial implements Serializable {
     /**
      * Empty Constructor to be used internally only.
      */
-    public Node() {
+    protected Node() {
     }
 
     /**
@@ -84,7 +84,7 @@ public class Node extends Spatial implements Serializable {
      */
     public Node(String name) {
         super(name);
-        children = new ArrayList();
+        children = new ArrayList();  //todo: initialize lazily 
         LoggingSystem.getLogger().log(Level.INFO, "Node created.");
     }
 
@@ -104,26 +104,31 @@ public class Node extends Spatial implements Serializable {
      * <code>attachChild</code> attaches a child to this node. This node
      * becomes the child's parent. The current number of children maintained is
      * returned.
+     * <br>
+     * If the child already had a parent it is detached from that former parent.
      * 
      * @param child
      *            the child to attach to this node.
      * @return the number of children maintained by this node.
      */
     public int attachChild(Spatial child) {
-        if (child == null) {
-            return children.size();
-        }
-        if (!children.contains(child)) {
-            child.setParent(this);
-            children.add(child);
-            child.setForceCull(forceCull);
-            child.setForceView(forceView);
-        }
-        if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
-            LoggingSystem.getLogger().log(
-                    Level.INFO,
-                    "Child (" + child.getName() + ") attached to this"
-                            + " node (" + getName() + ")");
+        if (child != null) {
+            if (child.getParent() != this) {
+                if ( child.getParent() != null )
+                {
+                    child.getParent().detachChild( child );
+                }
+                child.setParent(this);
+                children.add(child);
+                child.setForceCull(forceCull);
+                child.setForceView(forceView);
+                if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
+                    LoggingSystem.getLogger().log(
+                            Level.INFO,
+                            "Child (" + child.getName() + ") attached to this"
+                                    + " node (" + getName() + ")");
+                }
+            }
         }
 
         return children.size();
@@ -139,12 +144,18 @@ public class Node extends Spatial implements Serializable {
      * @return the index the child was at. -1 if the child was not in the list.
      */
     public int detachChild(Spatial child) {
-        int index = children.indexOf(child);
-        if (index != -1) {
-            children.remove(index);
-            LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
+        if ( child.getParent() == this )
+        {
+            int index = children.indexOf(child);
+            if (index != -1) {
+                detachChildAt( index );
+            }
+            return index;
         }
-        return index;
+        else
+        {
+            return -1;
+        }
     }
 
     /**
@@ -163,8 +174,7 @@ public class Node extends Spatial implements Serializable {
         for (int x = 0, max = children.size(); x < max; x++) {
             Spatial child = (Spatial) children.get(x);
             if (childName.equals(child.getName())) {
-                children.remove(x);
-                LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
+                detachChildAt( x );
                 return x;
             }
         }
@@ -181,8 +191,13 @@ public class Node extends Spatial implements Serializable {
      * @return the child at the supplied index.
      */
     public Spatial detachChildAt(int index) {
-        LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
-        return (Spatial) children.remove(index);
+        Spatial child = (Spatial) children.remove(index);
+        if ( child != null )
+        {
+            child.setParent( null );
+            LoggingSystem.getLogger().log(Level.INFO, "Child removed.");
+        }
+        return child;
     }
 
     /**
@@ -192,7 +207,9 @@ public class Node extends Spatial implements Serializable {
      */
     public void detachAllChildren() {
         LoggingSystem.getLogger().log(Level.INFO, "All children removed.");
-        children.clear();
+        for ( int i = children.size() - 1; i >= 0; i-- ) {
+            detachChildAt( i );
+        }
     }
 
     /**
