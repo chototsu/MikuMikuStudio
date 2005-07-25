@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="project" basedir=".">
+
+    <property name="name" value="jME"/>
+
+    <property name="major" value="0"/>
+    <property name="minor" value="cvs"/>
+    <property name="vendor" value="jME Development Team"/>
+    <property name="coverage.needed" value="0%"/>
+
+    <property name="project.language.target" value="1.4"/>
+    <property name="project.jdk.home" value="${jdk.home.1.4}"/>
+    <property name="project.jdk.classpath" value="jdk.classpath.1.4"/>
+    <property name="project.working.directory" value="."/>
+    <property name="jdk.home" value="${project.jdk.home}"/>
+
+    <property name="seg" location="." />
+
+    <property name="src" location="${seg}/src"/>
+    <property name="test" value="./junit"/>
+
+    <property name="libs" value="./lib"/>
+    <property name="mainclass" value="jmetest.TestChooser"/>
+    <property name="build" value="${seg}/build"/>
+    <property name="release" value="${seg}/target"/>
+    <property name="data" location="${seg}/data" />
+    <property name="doc" location="${data}/doc" />
+    <property name="javadoc" value="yes"/>
+    <property name="jar" value="${name}.jar"/>
+    <property name="zip" value="${name}.zip"/>
+
+    <path id="classpath">
+        <pathelement path="${project.jdk.classpath}"/>
+        <fileset dir="${libs}" id="libslist">
+            <include name="*.jar"/>
+        </fileset>
+    </path>
+
+    <pathconvert property="jarclasspath" pathsep=" " dirsep="/" refid="libslist">
+      <mapper type="regexp" from=".*(lib.*)" to="\1"/>
+    </pathconvert>
+
+    <fileset id="resources" dir="${src}">
+        <include name="**/*.*"/>
+        <exclude name="build.xml"/>
+        <exclude name="**/*.java"/>
+    </fileset>
+
+    <fileset id="jarcontents" dir="${build}">
+        <exclude name=".dependency-info/**"/>
+    </fileset>
+
+    <zipfileset id="zipcontents" dir="." prefix="${name}">
+        <include name="${jar}"/>
+        <include name="lib/*.*"/>
+    </zipfileset>
+
+    <target name="dist">
+        <ant antfile="build.xml"/>
+    </target>
+
+</project>

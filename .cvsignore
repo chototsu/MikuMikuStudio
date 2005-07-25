@@ -1,0 +1,8 @@
+build-instrumented
+.dependency-info
+jME.jar
+*.iml
+build.properties
+build-server.xml
+jme.jnlp
+properties.cfg

@@ -3,14 +3,12 @@
         Ant Build File for the jME API.
     </description>
 
-	<property name="seg" location="." />
+    <import file="build-import.xml"/>
 
-	<property name="src" location="${seg}/src" />
-	<property name="class" location="${seg}/build" />
-	<property name="data" location="${seg}/data" />
-	<property name="doc" location="${data}/doc" />
-	<property name="jars" location="${seg}/target" />
+	<property name="class" location="${build}" />
+	<property name="jars" location="${release}" />
 	<property name="webstart" location="${seg}/jnlp" />
+    <property file="build.properties"/>
 
 	<target name="init">
 		<mkdir dir="${src}" />
@@ -61,12 +59,12 @@
 	<target name="dist-all" depends="dist-core, dist-terrain, dist-effects, dist-model, dist-sound, dist-ui" description="Generate all jar files" />
 
 	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
-		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
-		<signjar jar="${jars}/jme-effects.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
-		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
-		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
-		<signjar jar="${jars}/jme-sound.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
-		<signjar jar="${jars}/jme-ui.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="..." />
+		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-effects.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-sound.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-ui.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
 	</target>
 
 	<!-- Generats javadoc -->
@@ -92,7 +90,7 @@
 	</target>
 
 	<!-- *** jmetest-related build targets -->
-	
+
 	<target name="compile-test" depends="init" description="generate jme test classes">
 		<javac srcdir="${src}/jmetest"
 	           destdir="${class}"
@@ -106,32 +104,59 @@
 
 	<target name="dist-test" depends="compile-test" description="generate jme test class and data jars" >
 		<!-- Jar the demo classes -->
-		<jar jarfile="${jars}/jmetest.jar" 
+
+        <pathconvert property="jarclasspathlibs" pathsep=" " dirsep="/">
+            <path>
+                <fileset dir="${libs}">
+                    <include name="*.jar"/>
+                </fileset>
+            </path>
+            <mapper type="regexp" from=".*(lib.*)" to="\1"/>
+        </pathconvert>
+        <pathconvert property="jarclasspathrelease" pathsep=" " dirsep="/">
+            <path>
+                <fileset dir="${jars}">
+                    <include name="*.jar"/>
+                    <exclude name="jmetest.jar"/>
+                </fileset>
+            </path>
+            <mapper type="regexp" from=".*target.(.*)" to="\1"/>
+        </pathconvert>
+        <echo>${jarclasspathlibs} ${jarclasspathrelease}</echo>
+
+		<jar jarfile="${jars}/jmetest.jar"
 	         basedir="${class}"
 	         excludes="**/jmetest/data/**,**/com/**"
-	         index="yes"
-	    />
+	         index="yes">
+            <manifest>
+                <attribute name="Implementation-Title" value="${name}"/>
+                <attribute name="Implementation-Vendor" value="${vendor}"/>
+                <attribute name="Version" value="${major}.${minor}"/>
+                <attribute name="Class-Path" value="${jarclasspathlibs} ${jarclasspathrelease}"/>
+                <attribute name="Main-Class" value="${mainclass}"/>
+            </manifest>
+	    </jar>
 
 		<!-- Jar the demo data -->
-		<jar jarfile="${jars}/jmetest-data.jar" 
+		<jar jarfile="${jars}/jmetest-data.jar"
 	         basedir="${class}"
 	         includes="**/jmetest/data/**"
-	    />
+        />
 	</target>
 
  	<target name="webdist-test" depends="dist-test" description="sign test jars for Webstart distribution" >
 		<signjar jar="${jars}/jmetest.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
 		<signjar jar="${jars}/jmetest-data.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
 	</target>
-	
+
 	<!-- Jar and sign all the libraries required by jME -->
 	<target name="webdist-nativelibs" description="jar and sign native libraries for Webstart distribution" >
 		<!--  Jar and sign the Windows libraries -->
@@ -148,14 +173,14 @@
 		<signjar jar="${webstart}/lwjgl-windows.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
 		<signjar jar="${webstart}/openal-windows.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
-		
+
 		<!-- Jar and sign Linux native libraries -->
 		<jar jarfile="${webstart}/lwjgl-linux.jar"
 		     basedir="lib"
@@ -170,39 +195,81 @@
 		<signjar jar="${webstart}/lwjgl-linux.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
 		<signjar jar="${webstart}/openal-linux.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
-		
+
 		<!-- Jar (eventually) and sign Mac native libraries -->
+        <jar jarfile="${webstart}/lwjgl-mac.jar"
+            basedir="lib"
+            includes="liblwjgl.jnilib"
+            update="yes"
+            />
+        <jar jarfile="${webstart}/openal-mac.jar"
+            basedir="lib"
+            includes="libopenal.dylib"
+            update="yes"
+            /><!--fix me: shouldn't it be a jnilib?-->
+
 		<signjar jar="${webstart}/lwjgl-mac.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
 		<signjar jar="${webstart}/openal-mac.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
-		
+
 		<!-- Sign the lwjgl jar -->
 		<signjar jar="${seg}/lib/lwjgl.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
-		
+
 		<!-- Sign the lwjgl fmod3 jar -->
 		<signjar jar="${seg}/lib/lwjgl_fmod3.jar"
 		         alias="jme"
 		         keystore="${webstart}/jmeKeyStore"
-		         storepass="..."
+		         storepass="${storepass}"
 		/>
 	</target>
+
+    <target name="nightly" depends="webdist-all, webdist-nativelibs, webdist-test">
+<!--    <target name="nightly">-->
+        <echo>${libs}/*.jar</echo>
+        <zip zipfile="${release}/jME.zip">
+            <zipfileset dir="${libs}" prefix="lib">
+                <include name="*.jar"/>
+                <include name="*.dll"/>
+                <include name="*.so"/>
+                <include name="*.*lib"/>
+            </zipfileset>
+            <fileset dir="${release}" >
+                <include name="*.jar"/>
+            </fileset>
+        </zip>
+<!--        <mkdir dir="ftp"/>-->
+<!--        <copy todir="ftp">-->
+        <ftp server="ftp.jmonkeyengine.com" userid="${ftpuser}" password="${ftppassword}" remotedir="nightly" >
+            <fileset dir="${webstart}" >
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${libs}" >
+                <include name="*.jar"/>
+            </fileset>
+            <fileset dir="${release}" >
+                <include name="*.jar"/>
+                <include name="jME.zip"/>
+            </fileset>
+        </ftp>
+<!--        </copy>-->
+    </target>
 
 </project>
