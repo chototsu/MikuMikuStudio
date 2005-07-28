@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack (revamp and various methods)
- * @version $Id: Matrix4f.java,v 1.14 2005-05-26 20:53:38 renanse Exp $
+ * @version $Id: Matrix4f.java,v 1.15 2005-07-28 16:53:11 renanse Exp $
  */
 public class Matrix4f {
 
@@ -705,43 +705,75 @@ public class Matrix4f {
      */
     public Matrix4f mult(Matrix4f in2, Matrix4f store) {
         if (store == null) store = new Matrix4f();
-        store.m00 = m00 * in2.m00 + m01
-                * in2.m10 + m02 * in2.m20;
-        store.m01 = m00 * in2.m01 + m01
-                * in2.m11 + m02 * in2.m21;
-        store.m02 = m00 * in2.m02 + m01
-                * in2.m12 + m02 * in2.m22;
-        store.m03 = m00 * in2.m03 + m01
-                * in2.m13 + m02 * in2.m23
-                + m03;
-        store.m10 = m10 * in2.m00 + m11
-                * in2.m10 + m12 * in2.m20;
-        store.m11 = m10 * in2.m01 + m11
-                * in2.m11 + m12 * in2.m21;
-        store.m12 = m10 * in2.m02 + m11
-                * in2.m12 + m12 * in2.m22;
-        store.m13 = m10 * in2.m03 + m11
-                * in2.m13 + m12 * in2.m23
-                + m13;
-        store.m20 = m20 * in2.m00 + m21
-                * in2.m10 + m22 * in2.m20;
-        store.m21 = m20 * in2.m01 + m21
-                * in2.m11 + m22 * in2.m21;
-        store.m22 = m20 * in2.m02 + m21
-                * in2.m12 + m22 * in2.m22;
-        store.m23 = m20 * in2.m03 + m21
-                * in2.m13 + m22 * in2.m23
-                + m23;
-        store.m30 = this.m00 * in2.get(3, 0)
-                + this.m10 * in2.get(3, 1) + this.m20
-                * in2.get(3, 2) + this.m30;
-        store.m31 = this.m01 * in2.get(3, 0)
-                + this.m11 * in2.get(3, 1) + this.m21
-                * in2.get(3, 2) + this.m31;
-        store.m32 = this.m02 * in2.get(3, 0)
-                + this.m12 * in2.get(3, 1) + this.m22
-                * in2.get(3, 2) + this.m32;
-        store.m33 = 1;
+
+        store.m00 = m00 * in2.m00 + 
+        		m01 * in2.m10 + 
+        		m02 * in2.m20 + 
+        		m03 * in2.m30;
+        store.m01 = m00 * in2.m01 + 
+            	m01 * in2.m11 + 
+            	m02 * in2.m21 +
+            	m03 * in2.m31;
+        store.m02 = m00 * in2.m02 + 
+        		m01 * in2.m12 + 
+        		m02 * in2.m22 +
+        		m03 * in2.m32;
+        store.m03 = m00 * in2.m03 + 
+        		m01 * in2.m13 + 
+        		m02 * in2.m23 + 
+        		m03 * in2.m33;
+        
+        store.m10 = m10 * in2.m00 + 
+        		m11 * in2.m10 + 
+        		m12 * in2.m20 +
+        		m13 * in2.m30;
+        store.m11 = m10 * in2.m01 +
+        		m11 * in2.m11 +
+        		m12 * in2.m21 +
+        		m13 * in2.m31;
+        store.m12 = m10 * in2.m02 +
+                m11 * in2.m12 + 
+                m12 * in2.m22 +
+                m13 * in2.m32;
+        store.m13 = m10 * in2.m03 +
+                m11 * in2.m13 +
+                m12 * in2.m23 + 
+                m13 * in2.m33;
+
+        store.m20 = m20 * in2.m00 + 
+        		m21 * in2.m10 + 
+        		m22 * in2.m20 +
+        		m23 * in2.m30;
+        store.m21 = m20 * in2.m01 + 
+        		m21 * in2.m11 + 
+        		m22 * in2.m21 +
+        		m23 * in2.m31;
+        store.m22 = m20 * in2.m02 + 
+        		m21 * in2.m12 + 
+        		m22 * in2.m22 +
+        		m23 * in2.m32;
+        store.m23 = m20 * in2.m03 + 
+        		m21 * in2.m13 + 
+        		m22 * in2.m23 +
+                m23 * in2.m33;
+
+        store.m30 = m30 * in2.m00 + 
+        		m31 * in2.m10 + 
+        		m32 * in2.m20 +
+        		m33 * in2.m30;
+        store.m31 = m30 * in2.m01 + 
+        		m31 * in2.m11 + 
+        		m32 * in2.m21 +
+        		m33 * in2.m31;
+        store.m32 = m30 * in2.m02 + 
+        		m31 * in2.m12 + 
+        		m32 * in2.m22 +
+        		m33 * in2.m32;
+        store.m33 = m30 * in2.m03 + 
+        		m31 * in2.m13 + 
+        		m32 * in2.m23 +
+                m33 * in2.m33;
+        
         return store;
     }
 
@@ -761,44 +793,74 @@ public class Matrix4f {
         float temp20, temp21, temp22, temp23;
         float temp30, temp31, temp32, temp33;
 
-        temp00 = m00 * in2.m00 + m01
-                * in2.m10 + m02 * in2.m20;
-        temp01 = m00 * in2.m01 + m01
-                * in2.m11 + m02 * in2.m21;
-        temp02 = m00 * in2.m02 + m01
-                * in2.m12 + m02 * in2.m22;
-        temp03 = m00 * in2.m03 + m01
-                * in2.m13 + m02 * in2.m23
-                + m03;
-        temp10 = m10 * in2.m00 + m11
-                * in2.m10 + m12 * in2.m20;
-        temp11 = m10 * in2.m01 + m11
-                * in2.m11 + m12 * in2.m21;
-        temp12 = m10 * in2.m02 + m11
-                * in2.m12 + m12 * in2.m22;
-        temp13 = m10 * in2.m03 + m11
-                * in2.m13 + m12 * in2.m23
-                + m13;
-        temp20 = m20 * in2.m00 + m21
-                * in2.m10 + m22 * in2.m20;
-        temp21 = m20 * in2.m01 + m21
-                * in2.m11 + m22 * in2.m21;
-        temp22 = m20 * in2.m02 + m21
-                * in2.m12 + m22 * in2.m22;
-        temp23 = m20 * in2.m03 + m21
-                * in2.m13 + m22 * in2.m23
-                + m23;
-        temp30 = this.m00 * in2.get(3, 0)
-                + this.m10 * in2.get(3, 1) + this.m20
-                * in2.get(3, 2) + this.m30;
-        temp31 = this.m01 * in2.get(3, 0)
-                + this.m11 * in2.get(3, 1) + this.m21
-                * in2.get(3, 2) + this.m31;
-        temp32 = this.m02 * in2.get(3, 0)
-                + this.m12 * in2.get(3, 1) + this.m22
-                * in2.get(3, 2) + this.m32;
-        temp33 = 1;
+        temp00 = m00 * in2.m00 + 
+        		m01 * in2.m10 + 
+        		m02 * in2.m20 + 
+        		m03 * in2.m30;
+        temp01 = m00 * in2.m01 + 
+            	m01 * in2.m11 + 
+            	m02 * in2.m21 +
+            	m03 * in2.m31;
+        temp02 = m00 * in2.m02 + 
+        		m01 * in2.m12 + 
+        		m02 * in2.m22 +
+        		m03 * in2.m32;
+        temp03 = m00 * in2.m03 + 
+        		m01 * in2.m13 + 
+        		m02 * in2.m23 + 
+        		m03 * in2.m33;
+        
+        temp10 = m10 * in2.m00 + 
+        		m11 * in2.m10 + 
+        		m12 * in2.m20 +
+        		m13 * in2.m30;
+        temp11 = m10 * in2.m01 +
+        		m11 * in2.m11 +
+        		m12 * in2.m21 +
+        		m13 * in2.m31;
+        temp12 = m10 * in2.m02 +
+                m11 * in2.m12 + 
+                m12 * in2.m22 +
+                m13 * in2.m32;
+        temp13 = m10 * in2.m03 +
+                m11 * in2.m13 +
+                m12 * in2.m23 + 
+                m13 * in2.m33;
 
+        temp20 = m20 * in2.m00 + 
+        		m21 * in2.m10 + 
+        		m22 * in2.m20 +
+        		m23 * in2.m30;
+        temp21 = m20 * in2.m01 + 
+        		m21 * in2.m11 + 
+        		m22 * in2.m21 +
+        		m23 * in2.m31;
+        temp22 = m20 * in2.m02 + 
+        		m21 * in2.m12 + 
+        		m22 * in2.m22 +
+        		m23 * in2.m32;
+        temp23 = m20 * in2.m03 + 
+        		m21 * in2.m13 + 
+        		m22 * in2.m23 +
+                m23 * in2.m33;
+
+        temp30 = m30 * in2.m00 + 
+        		m31 * in2.m10 + 
+        		m32 * in2.m20 +
+        		m33 * in2.m30;
+        temp31 = m30 * in2.m01 + 
+        		m31 * in2.m11 + 
+        		m32 * in2.m21 +
+        		m33 * in2.m31;
+        temp32 = m30 * in2.m02 + 
+        		m31 * in2.m12 + 
+        		m32 * in2.m22 +
+        		m33 * in2.m32;
+        temp33 = m30 * in2.m03 + 
+        		m31 * in2.m13 + 
+        		m32 * in2.m23 +
+                m33 * in2.m33;
+        
         m00 = temp00;  m01 = temp01;  m02 = temp02;  m03 = temp03;
         m10 = temp10;  m11 = temp11;  m12 = temp12;  m13 = temp13;
         m20 = temp20;  m21 = temp21;  m22 = temp22;  m23 = temp23;
@@ -837,22 +899,71 @@ public class Matrix4f {
         }
         if (store == null) store = new Vector3f();
         
-        store.x = m00 * vec.x + m10 * vec.y + m20 * vec.z;
-        store.y = m01 * vec.x + m11 * vec.y + m21 * vec.z;
-        store.z = m02 * vec.x + m12 * vec.y + m22 * vec.z;
+        store.x = m00 * vec.x + m01 * vec.y + m02 * vec.z + m03 * 1;
+        store.y = m10 * vec.x + m11 * vec.y + m12 * vec.z + m13 * 1;
+        store.z = m20 * vec.x + m21 * vec.y + m22 * vec.z + m23 * 1;
 
         return store;
     }
 
     /**
-     * <code>mult</code> multiplies an array of 4 floats against this rotation
+     * <code>mult</code> multiplies a vector about a rotation matrix. The
+     * resulting vector is returned.
+     * 
+     * @param vec
+     *            vec to multiply against.
+     * @param store
+     *            a vector to store the result in.  created if null is passed.
+     * @return the rotated vector.
+     */
+    public Vector3f multAcross(Vector3f vec, Vector3f store) {
+        if (null == vec) {
+            System.err.println(
+                    "Source vector is" + " null, null result returned.");
+            return null;
+        }
+        if (store == null) store = new Vector3f();
+        
+        store.x = m00 * vec.x + m10 * vec.y + m20 * vec.z + m30 * 1;
+        store.y = m01 * vec.x + m11 * vec.y + m21 * vec.z + m31 * 1;
+        store.z = m02 * vec.x + m12 * vec.y + m22 * vec.z + m32 * 1;
+
+        return store;
+    }
+
+    /**
+     * <code>mult</code> multiplies an array of 4 floats against this rotation 
      * matrix. The results are stored directly in the array. (vec4f x mat4f)
      * 
      * @param vec4f
-     *            float array (size 4) to multiply by the matrix.
+     *            float array (size 4) to multiply against the matrix.
      * @return the vec4f for chaining.
      */
     public float[] mult(float[] vec4f) {
+        if (null == vec4f || vec4f.length != 4) {
+            System.err.println("invalid array given, must be nonnull and length 4");
+            return null;
+        }
+
+        float x = vec4f[0], y = vec4f[1], z = vec4f[2], w = vec4f[3];
+        
+        vec4f[0] = m00 * x + m01 * y + m02 * z + m03 * w;
+        vec4f[1] = m10 * x + m11 * y + m12 * z + m13 * w;
+        vec4f[2] = m20 * x + m21 * y + m22 * z + m23 * w;
+        vec4f[3] = m30 * x + m31 * y + m32 * z + m33 * w;
+
+        return vec4f;
+    }
+
+    /**
+     * <code>mult</code> multiplies an array of 4 floats against this rotation 
+     * matrix. The results are stored directly in the array. (vec4f x mat4f)
+     * 
+     * @param vec4f
+     *            float array (size 4) to multiply against the matrix.
+     * @return the vec4f for chaining.
+     */
+    public float[] multAcross(float[] vec4f) {
         if (null == vec4f || vec4f.length != 4) {
             System.err.println("invalid array given, must be nonnull and length 4");
             return null;
@@ -900,7 +1011,7 @@ public class Matrix4f {
         float fDet = fA0*fB5-fA1*fB4+fA2*fB3+fA3*fB2-fA4*fB1+fA5*fB0;
 
         if ( FastMath.abs(fDet) <= FastMath.FLT_EPSILON )
-            return store.zero();
+            throw new ArithmeticException("This matrix cannot be inverted");
 
         store.m00 = + m11*fB5 - m12*fB4 + m13*fB3;
         store.m10 = - m10*fB5 + m12*fB2 - m13*fB1;
@@ -1361,5 +1472,38 @@ public class Matrix4f {
         result.append(m33);
         result.append(" \n]");
         return result.toString();
+    }
+    
+    public boolean equals(Object o) {
+        if (!(o instanceof Matrix4f) || o == null) {
+            return false;
+        }
+
+        if (this == o) {
+            return true;
+        }
+
+        Matrix4f comp = (Matrix4f) o;
+        if (m00 != comp.m00) return false;
+        if (m01 != comp.m01) return false;
+        if (m02 != comp.m02) return false;
+        if (m03 != comp.m03) return false;
+
+        if (m10 != comp.m10) return false;
+        if (m11 != comp.m11) return false;
+        if (m12 != comp.m12) return false;
+        if (m13 != comp.m13) return false;
+
+        if (m20 != comp.m20) return false;
+        if (m21 != comp.m21) return false;
+        if (m22 != comp.m22) return false;
+        if (m23 != comp.m23) return false;
+
+        if (m30 != comp.m30) return false;
+        if (m31 != comp.m31) return false;
+        if (m32 != comp.m32) return false;
+        if (m33 != comp.m33) return false;
+
+        return true;
     }
 }
