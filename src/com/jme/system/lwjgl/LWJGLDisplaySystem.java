@@ -77,7 +77,7 @@ import java.awt.Toolkit;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.27 2005-06-25 19:04:14 Mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.28 2005-07-28 16:42:16 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -429,7 +429,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
 
     /**
      * <code>getWorldCoordinates</code> translate screen to world coordinates.
-     * Written by Marius, rewritten for lwjgl .9 by Jashua Slack.
+     * Written by Marius, rewritten for lwjgl .9 by Joshua Slack.
      * 
      * @param screenPosition
      *            the screen coordinates to translate.
