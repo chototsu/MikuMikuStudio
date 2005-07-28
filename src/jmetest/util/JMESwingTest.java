@@ -79,7 +79,7 @@ import com.jme.util.awt.SimpleCanvasImpl;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.8 2005-04-05 23:45:47 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.9 2005-07-28 16:59:26 renanse Exp $
  */
 
 public class JMESwingTest {
@@ -150,6 +150,7 @@ public class JMESwingTest {
                 public void run() {
                     while (true) {
                         comp.repaint();
+                        yield();
                     }
                 }
             }.start();
@@ -284,6 +285,7 @@ public class JMESwingTest {
             // Normal Scene setup stuff...
             rotQuat = new Quaternion();
             axis = new Vector3f(1, 1, 0.5f);
+            axis.normalizeLocal();
 
             Vector3f max = new Vector3f(5, 5, 5);
             Vector3f min = new Vector3f(-5, -5, -5);
@@ -320,7 +322,7 @@ public class JMESwingTest {
                     angle = 0;
                 }
             }
-            rotQuat.fromAngleAxis(angle * FastMath.DEG_TO_RAD, axis);
+            rotQuat.fromAngleNormalAxis(angle * FastMath.DEG_TO_RAD, axis);
             box.setLocalRotation(rotQuat);
             
 			if (startTime > System.currentTimeMillis()) {
