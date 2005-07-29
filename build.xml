@@ -219,7 +219,7 @@
             />
         <jar jarfile="${webstart}/openal-mac.jar"
             basedir="lib"
-            includes="libopenal.dylib"
+            includes="openal.dylib"
             update="yes"
             /><!--fix me: shouldn't it be a jnilib?-->
 
