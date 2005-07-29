@@ -8,9 +8,17 @@
 	<property name="class" location="${build}" />
 	<property name="jars" location="${release}" />
 	<property name="webstart" location="${seg}/jnlp" />
+
     <property file="build.properties"/>
+<!--    defaults for build.properties:-->
+    <property name="keyStore" value="jmeKeyStore"/>
+    <property name="storepass" value="..."/>
+    <property name="ftpuser" value="..."/>
+    <property name="ftppassword" value="..."/>
+<!--    end of defaults -->
 
 	<target name="init">
+        <echo message="${keyStore}"/>
 		<mkdir dir="${src}" />
 		<mkdir dir="${class}" />
 		<mkdir dir="${data}" />
@@ -59,12 +67,12 @@
 	<target name="dist-all" depends="dist-core, dist-terrain, dist-effects, dist-model, dist-sound, dist-ui" description="Generate all jar files" />
 
 	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
-		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
-		<signjar jar="${jars}/jme-effects.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
-		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
-		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
-		<signjar jar="${jars}/jme-sound.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
-		<signjar jar="${jars}/jme-ui.jar" alias="jme" keystore="${webstart}/jmeKeyStore" storepass="${storepass}" />
+		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-effects.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-sound.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-ui.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 	</target>
 
 	<!-- Generats javadoc -->
@@ -147,12 +155,12 @@
  	<target name="webdist-test" depends="dist-test" description="sign test jars for Webstart distribution" >
 		<signjar jar="${jars}/jmetest.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 		<signjar jar="${jars}/jmetest-data.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 	</target>
@@ -172,12 +180,12 @@
 		/>
 		<signjar jar="${webstart}/lwjgl-windows.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 		<signjar jar="${webstart}/openal-windows.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 
@@ -194,12 +202,12 @@
 		/>
 		<signjar jar="${webstart}/lwjgl-linux.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 		<signjar jar="${webstart}/openal-linux.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 
@@ -217,26 +225,26 @@
 
 		<signjar jar="${webstart}/lwjgl-mac.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 		<signjar jar="${webstart}/openal-mac.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 
 		<!-- Sign the lwjgl jar -->
 		<signjar jar="${seg}/lib/lwjgl.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 
 		<!-- Sign the lwjgl fmod3 jar -->
 		<signjar jar="${seg}/lib/lwjgl_fmod3.jar"
 		         alias="jme"
-		         keystore="${webstart}/jmeKeyStore"
+		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
 	</target>
