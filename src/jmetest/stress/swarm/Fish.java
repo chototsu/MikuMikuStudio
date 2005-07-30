@@ -5,14 +5,16 @@ import com.jme.intersection.BoundingCollisionResults;
 import com.jme.intersection.CollisionResults;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Controller;
-import com.jme.scene.Node;
+import com.jme.scene.*;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.MaterialState;
 import com.jme.system.DisplaySystem;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
- * A 'Fish' is a single dot in the {@link SwarmTest}. It has three bahaviour rules:
+ * A 'Fish' is a single dot in the {@link TestSwarm}. It has three bahaviour rules:
  * <ol>
  * <li> If other fish are too near try to keep distance </li>
  * <li> Move to average position of all fish in sight </li>
@@ -87,6 +89,10 @@ public class Fish extends Node {
      * Speed of fish that are shown in red. (upper bound, continuously mapped)
      */
     private static final float SPEED_RED = 0.01f;
+    /**
+     * flag to turn off the use of collision detection, setting this to false makes fish move independently
+     */
+    public static boolean useCollisionDetection = true;
 
     /**
      * Create a new Fish.
@@ -107,27 +113,9 @@ public class Fish extends Node {
         this.orientation = new Vector3f( dirx, diry, dirz );
         this.orientation.normalize();
 
-        //setup appearance
-        final Box box = new Box( "fish", new Vector3f(), SIZE, SIZE, SIZE );
-        attachChild( box );
-
-        final MaterialState material = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
-        material.setDiffuse( new ColorRGBA() );
-
-        float redness = ( speed - SPEED_GREEN ) / SPEED_RED;
-        if ( redness > 1 ) {
-            redness = 1;
-        }
-        else if ( redness < 0 ) {
-            redness = 0;
-        }
-        material.setDiffuse( new ColorRGBA( redness, 1.0f - redness, 0, 1 ) );
-        box.setRenderState( material );
+        setupAppearance( speed );
 
         getLocalTranslation().set( x, y, z );
-
-        //setup view radius
-        box.setModelBound( new BoundingSphere( "fish sight", SIGHT_RADIUS / 2, new Vector3f() ) );
 
         //init behaviour
         addController( new Controller() {
@@ -135,6 +123,36 @@ public class Fish extends Node {
                 process();
             }
         } );
+    }
+
+    private static Map visuals = new HashMap();
+
+    private void setupAppearance( final float speed ) {
+        float redness = ( speed - SPEED_GREEN ) / SPEED_RED;
+        if ( redness > 1 ) {
+            redness = 1;
+        }
+        else if ( redness < 0 ) {
+            redness = 0;
+        }
+        Float key = new Float( redness );
+        TriMesh mesh = (TriMesh) visuals.get( key );
+
+        if ( mesh == null )
+        {
+            mesh = new Box( "fish", new Vector3f(), SIZE, SIZE, SIZE );
+
+            final MaterialState material = DisplaySystem.getDisplaySystem().getRenderer().createMaterialState();
+            material.setDiffuse( new ColorRGBA() );
+
+            material.setDiffuse( new ColorRGBA( redness, 1.0f - redness, 0, 1 ) );
+            mesh.setRenderState( material );
+
+            //setup view radius
+            mesh.setModelBound( new BoundingSphere( "fish sight", SIGHT_RADIUS / 2, new Vector3f() ) );
+        }
+        Spatial visual = new SharedMesh( "fish visual", mesh );
+        attachChild( visual );
     }
 
     /**
@@ -162,10 +180,13 @@ public class Fish extends Node {
         relativePositionSumTooNear.set( 0, 0, 0 );
         nearbyFish.clear();
 
-        //todo: it's important what is first here - add javadoc comment!
-        //this.findCollisions( rootNode, nearbyFish );
-        rootNode.findCollisions( this, nearbyFish );
-        view( nearbyFish );
+        if ( useCollisionDetection )
+        {
+            //todo: it's important what is first here - add javadoc comment!
+            //this.findCollisions( rootNode, nearbyFish );
+            rootNode.findCollisions( this, nearbyFish );
+            view( nearbyFish );
+        }
 
         if ( fishInSight > 0 ) {
             relativePositionSumInSight.normalizeLocal();

@@ -10,7 +10,7 @@ import java.util.*;
  * The CollisionTreeManager creates a tree of Nodes in it's {@link #reorganize()} method to speed up collision
  * detection (and other tree dependent operations) for scene graph that would otherwise be flat.
  * <br>
- * See {@link SwarmTest} for a usage example.
+ * See {@link TestSwarm} for a usage example.
  * <br>
  * In detail this manager does the following: On each call of {@link #reorganize()} it iterates all Spatials that
  * have been added (via the {@link #add method}) before. For each Spatial it computes an index in space. This index
