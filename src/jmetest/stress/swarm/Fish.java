@@ -150,6 +150,7 @@ public class Fish extends Node {
 
             //setup view radius
             mesh.setModelBound( new BoundingSphere( "fish sight", SIGHT_RADIUS / 2, new Vector3f() ) );
+            visuals.put( key, mesh );
         }
         Spatial visual = new SharedMesh( "fish visual", mesh );
         attachChild( visual );
