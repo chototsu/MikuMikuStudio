@@ -17,7 +17,7 @@ public class TestGraphBrowser {
      * @param args command line arguments (not used)
      */
     public static void main( String[] args ) {
-        GraphAccessor accessor = new SimpleGraphAccessor();
+        SimpleGraphAccessor accessor = new SimpleGraphAccessor();
         GraphLayouter layouter = new SimpleGraphLayouter( accessor );
         new GraphBrowser( accessor, layouter ).start();
     }
