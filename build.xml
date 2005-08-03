@@ -77,7 +77,7 @@
 
 	<!-- Generats javadoc -->
 	<target name="doc" depends="compile" description="generate the javadoc documentation">
-		<javadoc destdir="${doc}" author="true" version="true" use="true" package="yes" windowtitle="jME API">
+		<javadoc destdir="${doc}" useExternalFile="yes" author="true" version="true" use="true" package="yes" windowtitle="jME API">
 			<fileset dir="${src}/com">
 				<include name="**/*.java" />
 			</fileset>
