@@ -48,7 +48,7 @@ import com.jme.renderer.Renderer;
 /**
  * <code>TestRenderToTexture</code>
  * @author Joshua Slack
- * @version $Id: TestRenderToTexture.java,v 1.29 2005-02-10 21:48:20 renanse Exp $
+ * @version $Id: TestRenderToTexture.java,v 1.30 2005-08-05 12:01:59 irrisor Exp $
  */
 public class TestRenderToTexture extends SimpleGame {
   private Box realBox, monkeyBox;
@@ -123,7 +123,8 @@ public class TestRenderToTexture extends SimpleGame {
     realBox.setModelBound(new BoundingSphere());
     realBox.updateModelBound();
     realBox.setLocalTranslation(new Vector3f(0, 0, 0));
-    realBox.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+    //FIX ME: if the box is put into a queue the texture rendering has to be done before the scene rendering!
+    //realBox.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 
     rootNode.attachChild(realBox);
 
