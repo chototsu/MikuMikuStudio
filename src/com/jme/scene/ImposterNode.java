@@ -48,38 +48,38 @@ import com.jme.renderer.Camera;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.13 2005-01-03 20:04:43 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.14 2005-08-10 18:53:42 renanse Exp $
  */
 public class ImposterNode extends Node {
 	private static final long serialVersionUID = 1L;
 
-	private TextureRenderer tRenderer;
+	protected TextureRenderer tRenderer;
 
-	private Texture texture;
+	protected Texture texture;
 
-	private Node quadScene;
+	protected Node quadScene;
 
-	private static int inode_val = 0;
+	protected static int inode_val = 0;
 
-	private Quad standIn;
+	protected Quad standIn;
 
-	private float redrawRate;
+	protected float redrawRate;
 
-	private float elapsed;
+	protected float elapsed;
 
-	private float cameraDistance = 10f;
+	protected float cameraDistance = 10f;
 
-	private float cameraThreshold;
+	protected float cameraThreshold;
 
-	private float oldAngle;
+	protected float oldAngle;
 
-	private float lastAngle;
+	protected float lastAngle;
 
-	private boolean haveDrawn;
+	protected boolean haveDrawn;
 
-	private boolean byCamera;
+	protected boolean byCamera;
 
-	private boolean byTime;
+	protected boolean byTime;
 
 	public ImposterNode(String name, float size, int twidth, int theight) {
 		super(name);
