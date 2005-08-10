@@ -1,38 +1,117 @@
+/*
+ * Copyright (c) 2003-2005, jMonkeyEngine - Mojo Monkey Coding All rights
+ * reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are met:
+ *
+ * Redistributions of source code must retain the above copyright notice, this
+ * list of conditions and the following disclaimer.
+ *
+ * Redistributions in binary form must reproduce the above copyright notice,
+ * this list of conditions and the following disclaimer in the documentation
+ * and/or other materials provided with the distribution.
+ *
+ * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
+ * names of its contributors may be used to endorse or promote products derived
+ * from this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+ * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+ * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+ * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+ * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+ * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+ * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
 package jmetest;
+
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.HeadlessException;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileFilter;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.net.JarURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLDecoder;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Vector;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
+
+import javax.swing.JButton;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.UIManager;
+import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import jmetest.curve.TestBezierCurve;
 import jmetest.effects.TestDynamicSmoker;
 import jmetest.effects.TestParticleSystem;
 import jmetest.effects.cloth.TestCloth;
-import jmetest.intersection.*;
-import jmetest.renderer.*;
-import jmetest.renderer.loader.*;
-import jmetest.renderer.state.*;
-import jmetest.terrain.*;
+import jmetest.intersection.TestCollision;
+import jmetest.intersection.TestOBBTree;
+import jmetest.intersection.TestPick;
+import jmetest.renderer.TestAnisotropic;
+import jmetest.renderer.TestAutoClodMesh;
+import jmetest.renderer.TestBezierMesh;
+import jmetest.renderer.TestBoxColor;
+import jmetest.renderer.TestCameraMan;
+import jmetest.renderer.TestDiscreteLOD;
+import jmetest.renderer.TestEnvMap;
+import jmetest.renderer.TestImposterNode;
+import jmetest.renderer.TestMultitexture;
+import jmetest.renderer.TestPQTorus;
+import jmetest.renderer.TestRenderQueue;
+import jmetest.renderer.TestRenderToTexture;
+import jmetest.renderer.TestScenegraph;
+import jmetest.renderer.TestSkybox;
+import jmetest.renderer.loader.TestASEJmeWrite;
+import jmetest.renderer.loader.TestFireMilk;
+import jmetest.renderer.loader.TestMaxJmeWrite;
+import jmetest.renderer.loader.TestMd2JmeWrite;
+import jmetest.renderer.loader.TestMilkJmeWrite;
+import jmetest.renderer.loader.TestObjJmeWrite;
+import jmetest.renderer.state.TestFragmentProgramState;
+import jmetest.renderer.state.TestGLSLShaderObjectsState;
+import jmetest.renderer.state.TestLightState;
+import jmetest.renderer.state.TestVertexProgramState;
+import jmetest.terrain.TestTerrain;
+import jmetest.terrain.TestTerrainLighting;
+import jmetest.terrain.TestTerrainPage;
 import jmetest.ui.TestUI;
 
-import javax.swing.*;
-import javax.swing.border.EmptyBorder;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.net.*;
-import java.util.*;
-import java.util.jar.JarFile;
-import java.util.zip.ZipEntry;
-
-import com.jme.util.awt.lwjgl.LWJGLCanvas;
 import org.lwjgl.Sys;
 
 /**
  * Class with a main method that displays a dialog to choose any jME demo to be started.
  */
 public class TestChooser extends JDialog {
+
+    private static final long serialVersionUID = 1L;
 
     /**
      * Constructs a new TestChooser that is initially invisible.
@@ -335,7 +414,7 @@ public class TestChooser extends JDialog {
             chooser.setup( classes );
             Class cls;
             do {
-                chooser.show();
+                chooser.setVisible(true);
                 cls = chooser.getSelectedClass();
                 if ( cls != null ) {
                     try {
