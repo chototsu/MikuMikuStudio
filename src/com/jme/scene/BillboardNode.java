@@ -43,12 +43,13 @@ import com.jme.renderer.Renderer;
  * <code>BillboardNode</code> is useful to contain a single quad that has a
  * image applied to it for lowest detail models. This quad, with the texture,
  * will appear to be a full model at great distances, and save on rendering and
- * memory. It is important to note that the billboards orientation will always
- * be up (0,1,0). This means that a standard camera with up (0,1,0) is the only
- * camera setting compatible with <code>BillboardNode</code>.
+ * memory. It is important to note that for AXIAL mode, the billboards
+ * orientation will always be up (0,1,0). This means that a "standard" jME
+ * camera with up (0,1,0) is the only camera setting compatible with AXIAL mode.
  * 
  * @author Mark Powell
- * @version $Id: BillboardNode.java,v 1.18 2005-05-24 22:47:30 Mojomonkey Exp $
+ * @author Joshua Slack
+ * @version $Id: BillboardNode.java,v 1.19 2005-08-12 21:49:20 renanse Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
