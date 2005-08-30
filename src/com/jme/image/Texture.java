@@ -35,6 +35,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 
 /**
@@ -47,7 +49,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.18 2004-10-07 19:27:16 renanse Exp $
+ * @version $Id: Texture.java,v 1.19 2005-08-30 14:39:49 Mojomonkey Exp $
  */
 public class Texture {
 
@@ -209,6 +211,10 @@ public class Texture {
   //texture attributes.
   private Image image;
   private FloatBuffer blendColorBuffer;
+  
+  private Vector3f translation;
+  private Vector3f scale;
+  private Quaternion rotation;
 
   private float anisoLevel = 1.0f;
 
@@ -831,4 +837,40 @@ public class Texture {
     rVal.setWrap(wrap);
     return rVal;
   }
+	/**
+	 * @return Returns the rotation.
+	 */
+	public Quaternion getRotation() {
+	    return rotation;
+	}
+	/**
+	 * @param rotation The rotation to set.
+	 */
+	public void setRotation(Quaternion rotation) {
+	    this.rotation = rotation;
+	}
+	/**
+	 * @return Returns the scale.
+	 */
+	public Vector3f getScale() {
+	    return scale;
+	}
+	/**
+	 * @param scale The scale to set.
+	 */
+	public void setScale(Vector3f scale) {
+	    this.scale = scale;
+	}
+	/**
+	 * @return Returns the translation.
+	 */
+	public Vector3f getTranslation() {
+	    return translation;
+	}
+	/**
+	 * @param translation The translation to set.
+	 */
+	public void setTranslation(Vector3f translation) {
+	    this.translation = translation;
+	}
 }

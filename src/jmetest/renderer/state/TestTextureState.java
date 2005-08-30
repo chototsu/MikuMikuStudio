@@ -53,6 +53,9 @@ public class TestTextureState extends BaseGame {
     private TriMesh t, t2;
     private Camera cam;
     private Node scene;
+    Vector3f trans;
+    Texture texture;
+    TextureState ts;
 
     /**
      * Entry point for the test,
@@ -69,6 +72,20 @@ public class TestTextureState extends BaseGame {
      * @see com.jme.app.SimpleGame#update()
      */
     protected void update(float interpolation) {
+        
+        trans.x += 0.0003 * interpolation;
+        trans.y += 0.0003 * interpolation;
+        
+        if(trans.x > 10) {
+            trans.x = 0;
+        }
+        
+        if(trans.y > 10) {
+            trans.y = 0;
+        }
+        
+        texture.setTranslation(trans);
+        ts.setTexture(texture);
 
     }
 
@@ -116,6 +133,8 @@ public class TestTextureState extends BaseGame {
         Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
+        
+        trans = new Vector3f();
 
     }
 
@@ -216,13 +235,16 @@ public class TestTextureState extends BaseGame {
         scene.attachChild(t2);
         scene.setLocalTranslation(new Vector3f(0, -25, 0));
 
-        TextureState ts = display.getRenderer().createTextureState();
+        ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
-        ts.setTexture(
-            TextureManager.loadTexture(
+        
+        texture = TextureManager.loadTexture(
                 TestTextureState.class.getClassLoader().getResource("jmetest/data/model/marble.bmp"),
                 Texture.MM_LINEAR,
-                Texture.FM_LINEAR));
+                Texture.FM_LINEAR);
+        texture.setWrap(Texture.WM_WRAP_S_WRAP_T);
+        ts.setTexture(texture);
+            
         t2.setRenderState(ts);
 
         cam.update();

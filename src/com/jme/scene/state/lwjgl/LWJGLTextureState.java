@@ -47,6 +47,8 @@ import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
@@ -60,7 +62,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.38 2005-05-17 02:56:14 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.39 2005-08-30 14:39:51 Mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -172,7 +174,8 @@ public class LWJGLTextureState extends TextureState {
 	public void apply() {
 
 		if (isEnabled()) {
-			int index;
+		    
+		    int index;
 			Texture texture;
 			for (int i = 0; i < numTexUnits; i++) {
 				texture = getTexture(i);
@@ -191,6 +194,19 @@ public class LWJGLTextureState extends TextureState {
 					continue;
 				} else
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
+				
+				GL11.glMatrixMode(GL11.GL_TEXTURE);
+				GL11.glLoadIdentity();
+				if (texture.getTranslation()!=null) {
+				    System.out.println(texture.getTranslation());
+				  GL11.glTranslatef(texture.getTranslation().x,texture.getTranslation().y,texture.getTranslation().z);
+				}
+				if (texture.getRotation()!=null)
+				  GL11.glMultMatrix(texture.getRotation().toRotationMatrix().toFloatBuffer());
+				if (texture.getScale()!=null)
+				  GL11.glScalef(texture.getScale().x,texture.getScale().y,texture.getScale().z);
+				GL11.glMatrixMode(GL11.GL_MODELVIEW);
+				
 
 				//texture not yet loaded.
 				if (texture.getTextureId() == 0) {
@@ -327,6 +343,9 @@ public class LWJGLTextureState extends TextureState {
 				if (texture.needsWrapRefresh()) {
 					texture.setNeedsWrapRefresh(false);
 					// set up wrap mode
+					
+					
+					
 					switch (texture.getWrap()) {
 					case Texture.WM_ECLAMP_S_ECLAMP_T:
 						GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
