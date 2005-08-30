@@ -62,7 +62,7 @@ import java.io.IOException;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.39 2005-08-30 14:39:51 Mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.40 2005-08-30 15:57:37 Mojomonkey Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -198,7 +198,6 @@ public class LWJGLTextureState extends TextureState {
 				GL11.glMatrixMode(GL11.GL_TEXTURE);
 				GL11.glLoadIdentity();
 				if (texture.getTranslation()!=null) {
-				    System.out.println(texture.getTranslation());
 				  GL11.glTranslatef(texture.getTranslation().x,texture.getTranslation().y,texture.getTranslation().z);
 				}
 				if (texture.getRotation()!=null)
