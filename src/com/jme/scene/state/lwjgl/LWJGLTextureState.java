@@ -31,7 +31,9 @@
  */
 package com.jme.scene.state.lwjgl;
 
+import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Stack;
 import java.util.logging.Level;
@@ -39,6 +41,7 @@ import java.util.logging.Level;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBTextureCompression;
 import org.lwjgl.opengl.EXTTextureCompressionS3TC;
+import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -47,22 +50,17 @@ import org.lwjgl.opengl.glu.GLU;
 
 import com.jme.image.Image;
 import com.jme.image.Texture;
-import com.jme.math.Quaternion;
-import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
-import org.lwjgl.opengl.EXTTextureFilterAnisotropic;
-import java.nio.FloatBuffer;
-import java.io.IOException;
 
 /**
  * <code>LWJGLTextureState</code> subclasses the TextureState object using the
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.40 2005-08-30 15:57:37 Mojomonkey Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.41 2005-09-06 16:26:14 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
