@@ -69,6 +69,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.opengl.EXTDrawRangeElements;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
@@ -134,7 +135,7 @@ import com.jme.scene.state.RenderState;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.64 2005-09-06 21:03:07 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.65 2005-09-06 21:07:21 Mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -994,9 +995,10 @@ public class LWJGLRenderer implements Renderer {
 
         if (capabilities.OpenGL12)
             GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, verts, indices);
+        else if (capabilities.GL_EXT_draw_range_elements)
+                 EXTDrawRangeElements.glDrawRangeElementsEXT(GL11.GL_TRIANGLES, 0, verts, indices);
         else
-            GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
-
+                   GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
         postdrawMesh();
     }
 
