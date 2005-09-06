@@ -134,7 +134,7 @@ import com.jme.scene.state.RenderState;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.63 2005-07-13 00:06:42 llama Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.64 2005-09-06 21:03:07 Mojomonkey Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -515,7 +515,16 @@ public class LWJGLRenderer implements Renderer {
 
         GL11.glFlush();
         if (!headless)
-            Display.update();
+            swapBackBuffer();
+    }
+    
+    /**
+     * <code>swapBackBuffer</code> flushes the display and places the current
+     * backbuffer on the screen.
+     *
+     */
+    public void swapBackBuffer() {
+    		Display.update();
     }
 
     /**
