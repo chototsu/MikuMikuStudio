@@ -14,6 +14,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Controller;
 import com.jme.scene.Node;
+import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.AlphaState;
@@ -21,9 +22,6 @@ import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
 import com.jmex.effects.ParticleManager;
 import com.jmex.sound.openAL.SoundSystem;
-import com.jmex.ui.UIColorScheme;
-import com.jmex.ui.UIFonts;
-import com.jmex.ui.UIText;
 
 /**
  * @author Arman OZCELIK
@@ -62,7 +60,7 @@ public class PongRevisited extends SimpleGame {
 
     private int difficulty = 10;
 
-    private UIText playerScoreText, computerScoreText;
+    private Text playerScoreText, computerScoreText;
 
     private int computerScore, playerScore;
 
@@ -77,17 +75,33 @@ public class PongRevisited extends SimpleGame {
         
         String[] names = { "main", "nice" };
         String[] locs = { fontLocation, "jmetest/data/font/conc_font.png" };
-
-        UIFonts _fonts = new UIFonts(names, locs);
-        UIColorScheme _scheme = new UIColorScheme();
         
-        _scheme._foregroundcolor = ColorRGBA.white;
+        TextureState font = display.getRenderer().createTextureState();
+        /** The texture is loaded from fontLocation */
+      font.setTexture(
+          TextureManager.loadTexture(
+          SimpleGame.class.getClassLoader().getResource(
+          fontLocation),
+          Texture.MM_LINEAR,
+          Texture.FM_LINEAR));
+      font.setEnabled(true);
+      
+      AlphaState as1 = display.getRenderer().createAlphaState();
+      as1.setBlendEnabled(true);
+      as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+      as1.setDstFunction(AlphaState.DB_ONE);
+      as1.setTestEnabled(true);
+      as1.setTestFunction(AlphaState.TF_GREATER);
+      as1.setEnabled(true);
         
-        playerScoreText = new UIText("UINODE", _fonts, "nice", "Player : 0", 600, 0,
-                50.0f, 0.0f, 30, 0, _scheme, 0);
+        playerScoreText = new Text("playerScore", "Player : 0");
+        playerScoreText.setRenderState(font);
+        playerScoreText.setRenderState(as1);
         
-        computerScoreText = new UIText( "UINODE", _fonts, "nice", "Computer : 0", 50, 0, 
-                50.0f, 0.0f, 30, 0, _scheme, 0);
+        computerScoreText = new Text( "compScore", "Computer : 0");
+        computerScoreText.setRenderState(font);
+        computerScoreText.setRenderState(as1);
+        computerScoreText.setLocalTranslation(new Vector3f(200,0,0));
         
         //playerScoreText.setText("Player : 0");
         //computerScoreText.setText("Computer : 0");
@@ -191,13 +205,6 @@ public class PongRevisited extends SimpleGame {
         
         
         
-        AlphaState as1 = display.getRenderer().createAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        as1.setEnabled(true);
 
         TextureState ts = display.getRenderer().createTextureState();
         ts.setTexture(
@@ -269,7 +276,7 @@ public class PongRevisited extends SimpleGame {
             SoundSystem.setSamplePosition(explodeSound, cam.getLocation().x + 5, cam.getLocation().y,
                     cam.getLocation().z);
             SoundSystem.onEvent(MISS_EVENT);
-            computerScoreText.setText("Computer : " + (++computerScore));
+            computerScoreText.print("Computer : " + (++computerScore));
             manager.setRepeatType(Controller.RT_WRAP);
             manager.forceRespawn();
             manager.getParticles().setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
@@ -282,7 +289,7 @@ public class PongRevisited extends SimpleGame {
             SoundSystem.setSamplePosition(explodeSound, cam.getLocation().x - 5, cam.getLocation().y,
                     cam.getLocation().z);
             SoundSystem.onEvent(MISS_EVENT);
-            playerScoreText.setText("Player : " + (++playerScore));
+            playerScoreText.print("Player : " + (++playerScore));
             manager.setRepeatType(Controller.RT_WRAP);
             manager.forceRespawn();
             manager.getParticles().setLocalTranslation(new Vector3f(ball.getLocalTranslation().x, ball.getLocalTranslation().y, ball.getLocalTranslation().z));
