@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRTTSideBySide</code>
  * @author Mark Powell
- * @version $Id: TestRTTSideBySide.java,v 1.2 2005-09-11 05:43:38 Mojomonkey Exp $
+ * @version $Id: TestRTTSideBySide.java,v 1.3 2005-09-11 05:45:59 Mojomonkey Exp $
  */
 public class TestRTTSideBySide extends SimpleGame {
 
@@ -97,7 +97,7 @@ public class TestRTTSideBySide extends SimpleGame {
   protected void simpleInitGame() {
     display.setTitle("jME - RTT Side By Side");
     
-    tRenderer = display.createTextureRenderer(1024, 1024, false, true, false, false,
+    tRenderer = display.createTextureRenderer(512, 512, false, true, false, false,
             TextureRenderer.RENDER_TEXTURE_2D,
             4);
     
@@ -129,7 +129,7 @@ public class TestRTTSideBySide extends SimpleGame {
     ts.setTexture(
         TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
-        "jmetest/data/images/lit.png"),
+        "jmetest/data/images/monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR));
 
