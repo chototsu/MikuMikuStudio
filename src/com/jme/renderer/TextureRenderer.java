@@ -48,7 +48,7 @@ import com.jme.scene.Spatial;
  *
  * @see com.jme.system.DisplaySystem
  * @author Joshua Slack
- * @version $Id: TextureRenderer.java,v 1.8 2004-07-31 16:32:41 cep21 Exp $
+ * @version $Id: TextureRenderer.java,v 1.9 2005-09-11 23:54:53 Mojomonkey Exp $
  */
 public interface TextureRenderer {
 
@@ -71,6 +71,17 @@ public interface TextureRenderer {
      * defines a constant for usage of a cubic texture.
      */
     public static final int RENDER_TEXTURE_CUBE_MAP = 4;
+    
+    /**
+     * 
+     * <code>isSupported</code> obtains the capability of the graphics card.
+     * If the graphics card does not have pbuffer support, false is returned, 
+     * otherwise, true is returned. TextureRenderer will not process any
+     * scene elements if pbuffer is not supported.
+     *
+     * @return if this graphics card supports pbuffers or not.
+     */
+    public boolean isSupported();
 
     /**
      * <code>getCamera</code> retrieves the camera this renderer is using.

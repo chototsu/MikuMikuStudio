@@ -37,6 +37,7 @@ import java.nio.IntBuffer;
 import java.util.logging.Level;
 
 import com.jme.image.Texture;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.*;
 import com.jme.scene.*;
@@ -52,7 +53,7 @@ import com.jme.system.DisplaySystem;
  * create this class directly. Instead, allow DisplaySystem to create it for
  * you.
  * 
- * @author Joshua Slack
+ * @author Joshua Slack, Mark Powell
  * @version $Id: LWJGLTextureRenderer.java,v 1.14 2005/04/04 19:10:58 renanse
  *          Exp $
  * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean,
@@ -64,9 +65,9 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     private ColorRGBA backgroundColor = new ColorRGBA(1, 1, 1, 1);
 
-    private int PBUFFER_WIDTH = 256;
+    private int pBufferWidth = 16;
 
-    private int PBUFFER_HEIGHT = 256;
+    private int pBufferHeight = 16;
 
     /* Pbuffer instance */
     private Pbuffer pbuffer;
@@ -75,6 +76,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
 
     private boolean useDirectRender = false;
 
+    private boolean isSupported = true;
+
     private LWJGLRenderer parentRenderer;
 
     private RenderTexture texture;
@@ -82,63 +85,103 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     private LWJGLDisplaySystem display;
 
     private boolean headless = false;
-    
+
     private int bpp, alpha, depth, stencil, samples;
-    
+
     public LWJGLTextureRenderer(int width, int height,
             LWJGLRenderer parentRenderer, RenderTexture texture) {
-        
-        this(width, height, parentRenderer, texture, DisplaySystem.getDisplaySystem().getBitDepth(), DisplaySystem.getDisplaySystem().getMinAlphaBits(), 
-                DisplaySystem.getDisplaySystem().getMinDepthBits(), DisplaySystem.getDisplaySystem().getMinStencilBits(), 
-                DisplaySystem.getDisplaySystem().getMinSamples());
+
+        this(width, height, parentRenderer, texture, DisplaySystem
+                .getDisplaySystem().getBitDepth(), DisplaySystem
+                .getDisplaySystem().getMinAlphaBits(), DisplaySystem
+                .getDisplaySystem().getMinDepthBits(), DisplaySystem
+                .getDisplaySystem().getMinStencilBits(), DisplaySystem
+                .getDisplaySystem().getMinSamples());
     }
 
     public LWJGLTextureRenderer(int width, int height,
-            LWJGLRenderer parentRenderer, RenderTexture texture, int bpp, int alpha, int depth, 
-            int stencil, int samples) {
-        
+            LWJGLRenderer parentRenderer, RenderTexture texture, int bpp,
+            int alpha, int depth, int stencil, int samples) {
+
         this.bpp = bpp;
         this.alpha = alpha;
         this.depth = depth;
         this.stencil = stencil;
         this.samples = samples;
-        
+
         caps = Pbuffer.getCapabilities();
-        if (width != height
-                && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
-            width = height = Math.max(width, height);
-        }
-        if (width > 0)
-            PBUFFER_WIDTH = width;
-        if (height > 0)
-            PBUFFER_HEIGHT = height;
 
-        if (((caps & Pbuffer.PBUFFER_SUPPORTED) == 0)) {
-            LoggingSystem.getLogger().log(Level.SEVERE,
-                    "No Pbuffer support detected, exiting!");
-            System.exit(1); // Clean this up?
-        }
+        if (((caps & Pbuffer.PBUFFER_SUPPORTED) != 0)) {
+            isSupported = true;
 
-        if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
-            LoggingSystem.getLogger().log(Level.INFO,
-                    "Render to Texture Pbuffer supported!");
-            if (texture == null)
-                LoggingSystem
-                        .getLogger()
-                        .log(Level.INFO,
-                                "No RenderTexture used in init, falling back to Copy Texture PBuffer.");
-            else
-                useDirectRender = true;
-        } else {
-            LoggingSystem.getLogger().log(Level.INFO,
-                    "Copy Texture Pbuffer supported!");
-            texture = null;
-        }
+            //Check if we have non-power of two sizes. If so,
+            //find the biggest power of two size that is less than
+            //the provided size.
+            if (!FastMath.isPowerOfTwo(width)) {
+                int newWidth = 2;
+                do {
+                    newWidth <<= 1;
 
-        this.parentRenderer = parentRenderer;
-        this.display = (LWJGLDisplaySystem) DisplaySystem.getDisplaySystem();
-        this.texture = texture;
-        initPbuffer();
+                } while (newWidth < width);
+                width = newWidth >>= 1;
+            }
+
+            if (!FastMath.isPowerOfTwo(height)) {
+                int newHeight = 2;
+                do {
+                    newHeight <<= 1;
+
+                } while (newHeight < width);
+                height = newHeight >>= 1;
+            }
+
+            
+            if (width > 0) pBufferWidth = width;
+            if (height > 0) pBufferHeight = height;
+
+            if ((caps & Pbuffer.RENDER_TEXTURE_SUPPORTED) != 0) {
+                LoggingSystem.getLogger().log(Level.INFO,
+                        "Render to Texture Pbuffer supported!");
+                if (texture == null) {
+                    LoggingSystem
+                            .getLogger()
+                            .log(Level.INFO,
+                                    "No RenderTexture used in init, falling back to Copy Texture PBuffer.");
+                } else {
+                    useDirectRender = true;
+                    validateForCopy();
+                }
+            } else {
+                LoggingSystem.getLogger().log(Level.INFO,
+                        "Copy Texture Pbuffer supported!");
+                texture = null;
+                validateForCopy();
+            }
+            
+            if (pBufferWidth != pBufferHeight
+                    && (caps & Pbuffer.RENDER_TEXTURE_RECTANGLE_SUPPORTED) == 0) {
+                pBufferWidth = pBufferHeight = Math.max(width, height);
+            }
+
+            this.parentRenderer = parentRenderer;
+            this.display = (LWJGLDisplaySystem) DisplaySystem
+                    .getDisplaySystem();
+            this.texture = texture;
+            initPbuffer();
+        }
+    }
+
+    /**
+     * 
+     * <code>isSupported</code> obtains the capability of the graphics card.
+     * If the graphics card does not have pbuffer support, false is returned,
+     * otherwise, true is returned. TextureRenderer will not process any scene
+     * elements if pbuffer is not supported.
+     * 
+     * @return if this graphics card supports pbuffers or not.
+     */
+    public boolean isSupported() {
+        return isSupported;
     }
 
     /**
@@ -170,6 +213,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      *            the color to set the background color to.
      */
     public void setBackgroundColor(ColorRGBA c) {
+
         // if color is null set background to white.
         if (c == null) {
             backgroundColor.a = 1.0f;
@@ -179,6 +223,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
         } else {
             backgroundColor = c;
         }
+
+        if (!isSupported) { return; }
 
         activate();
         GL11.glClearColor(backgroundColor.r, backgroundColor.g,
@@ -201,9 +247,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * <code>setupTexture</code> generates a new Texture object for use with
      * TextureRenderer. Generates a valid gl texture id for this texture.
      * 
-     * @return the new Texture
+     * @return the new Texture, if the graphics card does not support pbuffer's
+     *         null will be returned, and should be checked for.
      */
     public Texture setupTexture() {
+        if (!isSupported) { return null; }
         IntBuffer ibuf = ByteBuffer.allocateDirect(4).order(
                 ByteOrder.nativeOrder()).asIntBuffer();
 
@@ -220,12 +268,14 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      * 
      * @param glTextureID
      *            a valid gl texture id to use
-     * @return the new Texture
+     * @return the new Texture, if the graphics card does not support pbuffer's
+     *         null will be returned, and should be checked for.
      */
     public Texture setupTexture(int glTextureID) {
+        if (!isSupported) { return null; }
         GL11.glBindTexture(GL11.GL_TEXTURE_2D, glTextureID);
         GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, 0, 0,
-                PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
+                pBufferWidth, pBufferHeight, 0);
 
         Texture rVal = new Texture();
         rVal.setTextureId(glTextureID);
@@ -245,6 +295,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
      *            the Texture to render it to.
      */
     public void render(Spatial spat, Texture tex) {
+        if (!isSupported) { return; }
         // clear the current states since we are renderering into a new location
         // and can not rely on states still being set.
         Spatial.clearCurrentStates();
@@ -257,10 +308,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 initPbuffer();
             }
 
-            // Override parent's last frustum test to avoid accidental incorrect cull
+            // Override parent's last frustum test to avoid accidental incorrect
+            // cull
             if (spat.getParent() != null)
-                spat.getParent().setLastFrustumIntersection(
-                        Camera.INTERSECTS_FRUSTUM);
+                    spat.getParent().setLastFrustumIntersection(
+                            Camera.INTERSECTS_FRUSTUM);
 
             if (useDirectRender) {
                 // setup and render directly to a 2d texture.
@@ -271,7 +323,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 parentRenderer.setCamera(getCamera());
                 int oldWidth = parentRenderer.getWidth();
                 int oldHeight = parentRenderer.getHeight();
-                parentRenderer.reinit(PBUFFER_WIDTH, PBUFFER_HEIGHT);
+                parentRenderer.reinit(pBufferWidth, pBufferHeight);
                 parentRenderer.clearBuffers();
                 spat.onDraw(parentRenderer);
                 parentRenderer.renderQueue();
@@ -286,7 +338,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 parentRenderer.setCamera(getCamera());
                 int oldWidth = parentRenderer.getWidth();
                 int oldHeight = parentRenderer.getHeight();
-                parentRenderer.reinit(PBUFFER_WIDTH, PBUFFER_HEIGHT);
+                parentRenderer.reinit(pBufferWidth, pBufferHeight);
                 parentRenderer.clearBuffers();
                 spat.onDraw(parentRenderer);
                 parentRenderer.renderQueue();
@@ -294,7 +346,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 parentRenderer.reinit(oldWidth, oldHeight);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
                 GL11.glCopyTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGB, 0, 0,
-                        PBUFFER_WIDTH, PBUFFER_HEIGHT, 0);
+                        pBufferWidth, pBufferHeight, 0);
                 deactivate();
             }
             tex.setNeedsFilterRefresh(true);
@@ -310,10 +362,11 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     private void initPbuffer() {
+        if (!isSupported) { return; }
 
         try {
-            pbuffer = new Pbuffer(PBUFFER_WIDTH, PBUFFER_HEIGHT,
-                    new PixelFormat(bpp, alpha, depth, stencil, samples), texture, null);
+            pbuffer = new Pbuffer(pBufferWidth, pBufferHeight, new PixelFormat(
+                    bpp, alpha, depth, stencil, samples), texture, null);
         } catch (Exception e) {
             LoggingSystem.getLogger().throwing(this.getClass().toString(),
                     "initPbuffer()", e);
@@ -330,22 +383,22 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 initPbuffer();
                 return;
             } else {
-                LoggingSystem.getLogger().log(Level.WARNING, "Failed to create Pbuffer.", e); 
+                LoggingSystem.getLogger().log(Level.WARNING,
+                        "Failed to create Pbuffer.", e);
                 return;
             }
         }
-        
+
         try {
             activate();
 
-            PBUFFER_WIDTH = pbuffer.getWidth();
-            PBUFFER_HEIGHT = pbuffer.getHeight();
+            pBufferWidth = pbuffer.getWidth();
+            pBufferHeight = pbuffer.getHeight();
 
             GL11.glClearColor(backgroundColor.r, backgroundColor.g,
                     backgroundColor.b, backgroundColor.a);
 
-            if (camera == null)
-                initCamera();
+            if (camera == null) initCamera();
             camera.update();
 
             deactivate();
@@ -355,12 +408,12 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     public void activate() {
+        if (!isSupported) { return; }
         if (active == 0) {
             try {
                 pbuffer.makeCurrent();
             } catch (LWJGLException e) {
-                e.printStackTrace(); // To change body of catch statement use
-                // File | Settings | File Templates.
+                e.printStackTrace();
                 throw new JmeException();
             }
         }
@@ -368,6 +421,7 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     public void deactivate() {
+        if (!isSupported) { return; }
         if (active == 1) {
             try {
                 if (!headless)
@@ -384,7 +438,8 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     private void initCamera() {
-        camera = new LWJGLCamera(PBUFFER_WIDTH, PBUFFER_HEIGHT, this);
+        if (!isSupported) { return; }
+        camera = new LWJGLCamera(pBufferWidth, pBufferHeight, this);
         camera.setFrustum(1.0f, 1000.0f, -0.50f, 0.50f, 0.50f, -0.50f);
         Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);
         Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
@@ -394,14 +449,26 @@ public class LWJGLTextureRenderer implements TextureRenderer {
     }
 
     public void updateCamera() {
+        if (!isSupported) { return; }
         activate();
         camera.update();
         deactivate();
     }
 
     public void cleanup() {
+        if (!isSupported) { return; }
         activate();
         pbuffer.destroy();
         deactivate();
+    }
+
+    private void validateForCopy() {
+        if (pBufferWidth > DisplaySystem.getDisplaySystem().getWidth()) {
+            pBufferWidth = DisplaySystem.getDisplaySystem().getWidth();
+        }
+
+        if (pBufferHeight > DisplaySystem.getDisplaySystem().getHeight()) {
+            pBufferHeight = DisplaySystem.getDisplaySystem().getHeight();
+        }
     }
 }
