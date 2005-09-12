@@ -48,7 +48,7 @@ import com.jme.renderer.Camera;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.14 2005-08-10 18:53:42 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.15 2005-09-12 16:56:47 Mojomonkey Exp $
  */
 public class ImposterNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -92,6 +92,7 @@ public class ImposterNode extends Node {
 		tRenderer.setBackgroundColor(new ColorRGBA(0, 0, 0, 0f));
 
 		quadScene = new Node("imposter_scene_" + inode_val);
+		quadScene.setForceView(true);
 
 		standIn = new Quad("imposter_quad_" + inode_val);
 		standIn.initialize(size, size);
