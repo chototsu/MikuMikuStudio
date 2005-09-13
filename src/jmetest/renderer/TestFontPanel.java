@@ -65,10 +65,11 @@ public class TestFontPanel extends SimpleGame {
 		q1.setSolidColor(ColorRGBA.blue);
 		q1.setLightCombineMode(LightState.OFF);
 		q1.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+		rootNode.detachChild(fpsNode);
 		fontPanel.attachChild(q1);
-		fontPanel.attachChild(fps);
+		fontPanel.attachChild(fpsNode);
 		rootNode.attachChild(fontPanel);
-		rootNode.detachChild(fps);
+		
 		
 
 	}
