@@ -64,6 +64,7 @@ private static final long serialVersionUID = 1L;
 	 *            the TriMesh to share the data.
 	 */
 	private void setTarget(Node target) {
+		this.target = target;
 		processTarget(this, target);
 		
 	}

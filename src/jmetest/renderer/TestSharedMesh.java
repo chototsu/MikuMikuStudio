@@ -37,75 +37,170 @@ import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 
 /**
  * <code>TestSharedMesh</code>
+ * 
  * @author Mark Powell
- * @version $Id: TestSharedMesh.java,v 1.2 2005-05-19 18:12:29 Mojomonkey Exp $
+ * @version $Id: TestSharedMesh.java,v 1.3 2005-09-14 16:29:40 Mojomonkey Exp $
  */
 public class TestSharedMesh extends SimpleGame {
 
-  private Quaternion rotQuat = new Quaternion();
-  private float angle = 0;
-  private Vector3f axis = new Vector3f(1, 1, 0);
-  private Sphere s;
+	private Quaternion rotQuat = new Quaternion();
 
-  /**
-   * Entry point for the test,
-   * @param args
-   */
-  public static void main(String[] args) {
-    LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
-    TestSharedMesh app = new TestSharedMesh();
-    app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
-    app.start();
-  }
+	private float angle = 0;
 
-  protected void simpleUpdate() {
-    if (tpf < 1) {
-      angle = angle + (tpf * 1);
-      if (angle > 360) {
-        angle = 0;
-      }
-    }
-    rotQuat.fromAngleAxis(angle, axis);
-    s.setLocalRotation(rotQuat);
-  }
+	private Vector3f axis = new Vector3f(1, 1, 0);
 
-  /**
-   * builds the trimesh.
-   * @see com.jme.app.SimpleGame#initGame()
-   */
-  protected void simpleInitGame() {
-    display.setTitle("jME - Sphere");
+	private Sphere s;
 
-    s = new Sphere("Sphere", 20, 20, 25);
-    s.setModelBound(new BoundingBox());
-    s.updateModelBound();
-    
-    TextureState ts = display.getRenderer().createTextureState();
-    ts.setEnabled(true);
-    ts.setTexture(
-        TextureManager.loadTexture(
-        TestSharedMesh.class.getClassLoader().getResource(
-        "jmetest/data/images/Monkey.jpg"),
-        Texture.MM_LINEAR_LINEAR,
-        Texture.FM_LINEAR));
-    s.setRenderState(ts);
-    
-    for(int i = 0; i < 500; i++) {
-        SharedMesh sm = new SharedMesh("Share" + i, s);
-        sm.setLocalTranslation(new Vector3f((float)Math.random() * 1000 - 500, (float)Math.random() * 1000 - 500, (float)Math.random() *1000 - 500));
-        rootNode.attachChild(sm);
-    }
-    
-    
+	/**
+	 * Entry point for the test,
+	 * 
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
+		TestSharedMesh app = new TestSharedMesh();
+		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
+		app.start();
+	}
 
-    
-  }
+	protected void simpleUpdate() {
+		if (tpf < 1) {
+			angle = angle + (tpf * 1);
+			if (angle > 360) {
+				angle = 0;
+			}
+		}
+		rotQuat.fromAngleAxis(angle, axis);
+		s.setLocalRotation(rotQuat);
+	}
+
+	/**
+	 * builds the trimesh.
+	 * 
+	 * @see com.jme.app.SimpleGame#initGame()
+	 */
+	protected void simpleInitGame() {
+		display.setTitle("jME - Sphere");
+
+		s = new Sphere("Sphere", 20, 20, 25);
+		s.setModelBound(new BoundingBox());
+		s.updateModelBound();
+		s.setVBOVertexEnabled(true);
+        s.setVBONormalEnabled(true);
+        s.setVBOTextureEnabled(true);
+        s.setVBOColorEnabled(true);
+        
+        CullState cs = display.getRenderer().createCullState();
+        cs.setCullMode(CullState.CS_BACK);
+        cs.setEnabled(true);
+        rootNode.setRenderState(cs);
+        
+		TextureState ts = display.getRenderer().createTextureState();
+		ts.setEnabled(true);
+		ts.setTexture(TextureManager.loadTexture(
+				TestSharedMesh.class.getClassLoader().getResource(
+						"jmetest/data/images/Monkey.jpg"),
+				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+		
+		TextureState ts2 = display.getRenderer().createTextureState();
+		ts2.setEnabled(true);
+		ts2.setTexture(TextureManager.loadTexture(
+				TestSharedMesh.class.getClassLoader().getResource(
+						"jmetest/data/texture/grass.jpg"),
+				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+		
+		TextureState ts3 = display.getRenderer().createTextureState();
+		ts3.setEnabled(true);
+		ts3.setTexture(TextureManager.loadTexture(
+				TestSharedMesh.class.getClassLoader().getResource(
+						"jmetest/data/texture/clouds.png"),
+				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+		
+		TextureState ts4 = display.getRenderer().createTextureState();
+		ts4.setEnabled(true);
+		ts4.setTexture(TextureManager.loadTexture(
+				TestSharedMesh.class.getClassLoader().getResource(
+						"jmetest/data/texture/water.png"),
+				Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR));
+		
+		
+
+		Node n1 = new Node("n1");
+		Node n2 = new Node("n2");
+		Node n3 = new Node("n3");
+		Node n4 = new Node("n4");
+		n1.setLocalTranslation(new Vector3f(750, 0, 0));
+		n2.setLocalTranslation(new Vector3f(750, 0, 750));
+		n3.setLocalTranslation(new Vector3f(-750, 0, 750));
+		n4.setLocalTranslation(new Vector3f(-750, 0, -750));
+
+//		n1.setRenderState(ts);
+//		n2.setRenderState(ts2);
+//		n3.setRenderState(ts3);
+//		n4.setRenderState(ts4);
+		
+		rootNode.attachChild(n1);
+		rootNode.attachChild(n2);
+		rootNode.attachChild(n3);
+		rootNode.attachChild(n4);
+		
+		WireframeState ws = display.getRenderer().createWireframeState();
+		ws.setEnabled(true);
+
+		for (int i = 0; i < 100; i++) {
+			SharedMesh sm = new SharedMesh("Share" + i, s);
+			sm.setLocalTranslation(new Vector3f(
+					(float) Math.random() * 500 - 250,
+					(float) Math.random() * 500 - 250,
+					(float) Math.random() * 500 - 250));
+			sm.setRenderState(ts);
+			sm.setRenderState(ws);
+			n1.attachChild(sm);
+		}
+
+		for (int i = 0; i < 100; i++) {
+			SharedMesh sm = new SharedMesh("Share" + i, s);
+			sm.setLocalTranslation(new Vector3f(
+					(float) Math.random() * 500 - 250,
+					(float) Math.random() * 500 - 250,
+					(float) Math.random() * 500 - 250));
+			sm.setRenderState(ts2);
+			sm.setLightCombineMode(LightState.OFF);
+			n2.attachChild(sm);
+		}
+
+		for (int i = 0; i < 100; i++) {
+			SharedMesh sm = new SharedMesh("Share" + i, s);
+			sm.setLocalTranslation(new Vector3f(
+					(float) Math.random() * 500 - 250,
+					(float) Math.random() * 500 - 250,
+					(float) Math.random() * 500 - 250));
+			sm.setRenderState(ts3);
+			
+			n3.attachChild(sm);
+		}
+
+		for (int i = 0; i < 100; i++) {
+			SharedMesh sm = new SharedMesh("Share" + i, s);
+			sm.setLocalTranslation(new Vector3f(
+					(float) Math.random() * 1000 - 500,
+					(float) Math.random() * 1000 - 500,
+					(float) Math.random() * 1000 - 500));
+			sm.setRenderState(ts4);
+			n4.attachChild(sm);
+		}
+
+	}
 }

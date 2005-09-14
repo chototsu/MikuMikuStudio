@@ -41,7 +41,7 @@ import com.jme.renderer.Camera;
  * turn and the time between frames.
  * 
  * @author Mark Powell
- * @version $Id: KeyRotateLeftAction.java,v 1.12 2004-10-14 01:22:59 mojomonkey Exp $
+ * @version $Id: KeyRotateLeftAction.java,v 1.13 2005-09-14 16:29:39 Mojomonkey Exp $
  */
 public class KeyRotateLeftAction extends KeyInputAction {
     //the camera to manipulate
@@ -93,6 +93,7 @@ public class KeyRotateLeftAction extends KeyInputAction {
         incr.mult(camera.getUp(), camera.getUp());
         incr.mult(camera.getLeft(), camera.getLeft());
         incr.mult(camera.getDirection(), camera.getDirection());
+        camera.normalize();
         camera.update();
     }
 }

@@ -50,7 +50,7 @@ import com.jme.math.Vector3f;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.14 2004-09-14 03:05:35 renanse Exp $
+ * @version $Id: Camera.java,v 1.15 2005-09-14 16:29:41 Mojomonkey Exp $
  */
 public interface Camera extends Serializable {
 
@@ -312,6 +312,8 @@ public interface Camera extends Serializable {
      *
      */
     public void update();
+    
+    public void normalize();
 
     /**
      * <code>getPlaneState</code> returns the state of the frustum planes. So

@@ -51,6 +51,7 @@ import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
 import com.jme.scene.SharedMesh;
 import com.jme.scene.SharedNode;
+import com.jme.scene.shape.Pyramid;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.TextureState;
 import com.jme.util.LoggingSystem;
@@ -63,9 +64,9 @@ import com.jmex.model.XMLparser.Converters.MilkToJme;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNode.java,v 1.3 2005-09-14 16:29:40 Mojomonkey Exp $
+ * @version $Id: TestSharedNodeOffset.java,v 1.1 2005-09-14 16:29:40 Mojomonkey Exp $
  */
-public class TestSharedNode extends SimpleGame {
+public class TestSharedNodeOffset extends SimpleGame {
 
 	private Quaternion rotQuat = new Quaternion();
 
@@ -74,7 +75,10 @@ public class TestSharedNode extends SimpleGame {
 	private Vector3f axis = new Vector3f(1, 1, 0);
 
 	Node file = null;
-
+	
+	Sphere s;
+	
+	SharedMesh shared;
 	/**
 	 * Entry point for the test,
 	 * 
@@ -82,13 +86,13 @@ public class TestSharedNode extends SimpleGame {
 	 */
 	public static void main(String[] args) {
 		LoggingSystem.getLogger().setLevel(java.util.logging.Level.OFF);
-		TestSharedNode app = new TestSharedNode();
+		TestSharedNodeOffset app = new TestSharedNodeOffset();
 		app.setDialogBehaviour(ALWAYS_SHOW_PROPS_DIALOG);
 		app.start();
 	}
 
 	protected void simpleUpdate() {
-		file.updateGeometricState(tpf, true);
+		s.updateGeometricState(tpf, true);
 	}
 
 	/**
@@ -100,38 +104,30 @@ public class TestSharedNode extends SimpleGame {
 		display.setTitle("jME - Sphere");
 		display.getRenderer().setBackgroundColor(ColorRGBA.white);
 		display.setMinSamples(4);
-		URL MSFile = TestMilkJmeWrite.class.getClassLoader().getResource(
-				"jmetest/data/model/msascii/run.ms3d");
-		ByteArrayOutputStream BO = new ByteArrayOutputStream();
-		if (MSFile == null) {
-			System.out
-					.println("Unable to find milkshape file, did you include jme-test.jar in classpath?");
-			System.exit(0);
-		}
-		MilkToJme convert = new MilkToJme();
-		// ByteArrayOutputStream BO=new ByteArrayOutputStream();
-
-		try {
-			convert.convert(MSFile.openStream(), BO);
-			JmeBinaryReader jbr = new JmeBinaryReader();
-			URL TEXdir = TestMilkJmeWrite.class.getClassLoader().getResource(
-					"jmetest/data/model/msascii/");
-			jbr.setProperty("texurl", TEXdir);
-			file = jbr.loadBinaryFormat(new ByteArrayInputStream(BO
-					.toByteArray()));
-		} catch (IOException e) {
-			System.out.println("Damn exceptions:" + e);
-		}
+		
+		file = new Node("main");
+		
+		s = new Sphere("s", 20,20,5);
+		s.setLocalTranslation(new Vector3f(5,5,0));
+		Pyramid p = new Pyramid("p", 10,5);
+		
+		file.attachChild(s);
+		file.attachChild(p);
 
 		Node n1 = new Node("n1");
 
 		for (int i = 0; i < 100; i++) {
+			
 			SharedNode sm = new SharedNode("Share" + i, file);
 			sm.setLocalTranslation(new Vector3f(
 					(float) Math.random() * 200 - 100,
 					(float) Math.random() * 200 - 100,
 					(float) Math.random() * 200 - 100));
 			n1.attachChild(sm);
+			
+			if(i == 0) {
+				shared = (SharedMesh)((Node)sm.getChild(0)).getChild(0);
+			}
 		}
 
 		n1.setLocalTranslation(new Vector3f(500, 0, 0));

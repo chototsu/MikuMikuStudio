@@ -65,7 +65,12 @@ public class SharedMesh extends TriMesh {
 	 */
 	public SharedMesh(String name, TriMesh target) {
 		super(name);
-		setTarget(target);
+		
+		if(target instanceof SharedMesh) {
+			setTarget(((SharedMesh)target).getTarget());
+		} else {
+			setTarget(target);
+		}
 	}
 
 	/**
@@ -74,7 +79,7 @@ public class SharedMesh extends TriMesh {
 	 * @param target
 	 *            the TriMesh to share the data.
 	 */
-	private void setTarget(TriMesh target) {
+	public void setTarget(TriMesh target) {
 		this.target = target;
 
 		RenderState[] states = target.getRenderStateList();
@@ -83,6 +88,19 @@ public class SharedMesh extends TriMesh {
 				setRenderState(states[i]);
 			}
 		}
+		
+		this.localRotation.set(target.getLocalRotation());
+		this.localScale.set(target.getLocalScale());
+		this.localTranslation.set(target.getLocalTranslation());
+	}
+	
+	/**
+	 * <code>getTarget</code> returns the mesh that is being shared by
+	 * this object.
+	 * @return the mesh being shared.
+	 */
+	public TriMesh getTarget() {
+		return target;
 	}
 
 	/**
@@ -135,7 +153,6 @@ public class SharedMesh extends TriMesh {
 		target.setLocalTranslation(worldTranslation);
 		target.setLocalRotation(worldRotation);
 		target.setLocalScale(worldScale);
-
 		r.draw(target);
 	}
 }

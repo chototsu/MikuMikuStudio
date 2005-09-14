@@ -53,7 +53,7 @@ import com.jme.math.FastMath;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.27 2005-02-25 19:34:04 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.28 2005-09-14 16:29:41 Mojomonkey Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -477,6 +477,15 @@ public abstract class AbstractCamera implements Camera {
         up = axes.getRotationColumn(1, up);
         direction = axes.getRotationColumn(2, direction);
         onFrameChange();
+    }
+    
+    /**
+     * normalize normalizes the camera vectors.
+	 */
+    public void normalize() {
+    	left.normalizeLocal();
+    	up.normalizeLocal();
+    	direction.normalizeLocal();
     }
 
     /**
