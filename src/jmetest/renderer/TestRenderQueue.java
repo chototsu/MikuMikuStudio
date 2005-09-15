@@ -58,7 +58,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.12 2005-09-15 17:13:20 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.13 2005-09-15 20:44:12 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -190,7 +190,7 @@ public class TestRenderQueue extends SimpleGame {
     ms1.setShininess(128);
     tb1.setRenderState(ms1);
 
-    Torus tb2 = new Torus("TBox Green", 20, 20, 5, 10);
+    Torus tb2 = new Torus("TBox Green", 20, 20, 3, 6);
     tb2.setModelBound(new BoundingBox());
     tb2.updateModelBound();
     tb2.setLocalTranslation(new Vector3f(0, 0, 30));
