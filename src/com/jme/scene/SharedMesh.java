@@ -34,9 +34,11 @@ package com.jme.scene;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
+import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -49,6 +51,9 @@ import com.jme.util.LoggingSystem;
  * to place multiple copies of the same object throughout the scene without
  * having to duplicate data. It should be known that any change to the provided
  * target mesh will affect the appearance of this mesh, including animations.
+ * Secondly, the SharedMesh is read only. Any attempt to write to the mesh data
+ * via set* methods, will result in a warning being logged and nothing else. Any
+ * changes to the mesh should happened to the target mesh being shared.
  * <br>
  * <b>Important:</b> It is highly recommended that the Target mesh is NOT
  * placed into the scenegraph, as it's translation, rotation and scale are
@@ -438,4 +443,62 @@ public class SharedMesh extends TriMesh {
 		target.setLocalScale(worldScale);
 		r.draw(target);
 	}
+	
+	/**
+     * This function checks for intersection between the target trimesh and the given
+     * one. On the first intersection, true is returned.
+     * 
+     * @param toCheck
+     *            The intersection testing mesh.
+     * @return True if they intersect.
+     */
+    public boolean hasTriangleCollision(TriMesh toCheck) {
+    	
+    	target.setLocalTranslation(worldTranslation);
+		target.setLocalRotation(worldRotation);
+		target.setLocalScale(worldScale);
+		
+		return target.hasTriangleCollision(toCheck);
+    }
+
+    /**
+     * This function finds all intersections between this trimesh and the
+     * checking one. The intersections are stored as Integer objects of Triangle
+     * indexes in each of the parameters.
+     * 
+     * @param toCheck
+     *            The TriMesh to check.
+     * @param thisIndex
+     *            The array of triangle indexes intersecting in this mesh.
+     * @param otherIndex
+     *            The array of triangle indexes intersecting in the given mesh.
+     */
+    public void findTriangleCollision(TriMesh toCheck, ArrayList thisIndex,
+            ArrayList otherIndex) {
+    	target.setLocalTranslation(worldTranslation);
+		target.setLocalRotation(worldRotation);
+		target.setLocalScale(worldScale);
+		
+		target.findTriangleCollision(toCheck, thisIndex, otherIndex);
+    }
+
+    /**
+     * 
+     * <code>findTrianglePick</code> determines the triangles of the target trimesh
+     * that are being touched by the ray. The indices of the triangles are
+     * stored in the provided ArrayList.
+     * 
+     * @param toTest
+     *            the ray to test.
+     * @param results
+     *            the indices to the triangles.
+     */
+    public void findTrianglePick(Ray toTest, ArrayList results) {
+    	target.setLocalTranslation(worldTranslation);
+		target.setLocalRotation(worldRotation);
+		target.setLocalScale(worldScale);
+		
+		target.findTrianglePick(toTest, results);
+    }
+
 }
