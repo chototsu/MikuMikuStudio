@@ -40,6 +40,7 @@ import com.jme.scene.Geometry;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.ZBufferState;
 import com.jme.system.JmeException;
 
 /**
@@ -76,6 +77,9 @@ public class RenderQueue {
     /** CullState for two pass transparency rendering. */
     private CullState tranCull;
     
+    /** ZBufferState for two pass transparency rendering. */
+    private ZBufferState tranZBuff;
+    
     /** boolean for enabling / disabling two pass transparency rendering. */
     private boolean twoPassTransparent = true;
 
@@ -87,6 +91,9 @@ public class RenderQueue {
     public RenderQueue(Renderer r) {
         this.renderer = r;
         tranCull = r.createCullState();
+        tranZBuff = r.createZBufferState();
+        tranZBuff.setWritable(true);
+        tranZBuff.setFunction(ZBufferState.CF_LEQUAL);
         setupBuckets();
     }
 
@@ -228,32 +235,25 @@ public class RenderQueue {
         transparentBucket.sort();
 	        for (int i = 0; i < transparentBucket.listSize; i++) {
                 Spatial obj = transparentBucket.list[i]; 
-                RenderState oldState = transparentBucket.list[i].setRenderState(tranCull);
-                // Only do twopass if true and the current set state is either null or CS_NONE.
-	            if (twoPassTransparent && (oldState == null || ((CullState)oldState).getCullMode() == CullState.CS_NONE)) {
-	                // apply our cullstate change
-	                obj.updateRenderState();  // FIXME: We should change this to only update CULL STATE
+
+                if (twoPassTransparent) {
+	                ((Geometry)obj).states[RenderState.RS_CULL] = null;
+	                ((Geometry)obj).states[RenderState.RS_ZBUFFER] = null;
 
 	                // first render back-facing tris only
+	                tranZBuff.apply();
 	                tranCull.setCullMode(CullState.CS_FRONT);
+	                tranCull.apply();
 	                obj.draw(renderer);
+	                
+	                // force no compare to last cullstate
+	                Spatial.clearCurrentState(RenderState.RS_CULL);
+	                
 	                // then render front-facing tris only
 	                tranCull.setCullMode(CullState.CS_BACK);
+	                tranCull.apply();
 	                obj.draw(renderer);
-
-	                // revert back, we also need to updateRenderState
-	                if (oldState != null)
-	                    obj.setRenderState(oldState);
-	                else
-			            obj.clearRenderState(RenderState.RS_CULL);
-	                
-	                obj.updateRenderState();  // FIXME: We should change this to only update CULL STATE
 	            } else {
-	                // revert back, no need to updateRenderState
-	                if (oldState != null)
-	                    obj.setRenderState(oldState);
-	                else
-			            obj.clearRenderState(RenderState.RS_CULL);
 	                // draw as usual
 	                obj.draw(renderer);
 	            }
