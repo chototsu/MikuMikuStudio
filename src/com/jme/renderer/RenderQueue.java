@@ -92,7 +92,7 @@ public class RenderQueue {
         this.renderer = r;
         tranCull = r.createCullState();
         tranZBuff = r.createZBufferState();
-        tranZBuff.setWritable(true);
+        tranZBuff.setWritable(false);
         tranZBuff.setFunction(ZBufferState.CF_LEQUAL);
         setupBuckets();
     }
