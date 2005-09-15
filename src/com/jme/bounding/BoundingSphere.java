@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.27 2005-09-15 17:14:14 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.28 2005-09-15 19:27:13 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -188,7 +188,6 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         if (center == null)
             center = new Vector3f();
         FloatBuffer buf = BufferUtils.createFloatBuffer(points.capacity());
-        buf.clear();
         points.rewind();
         buf.put(points);
         buf.flip();

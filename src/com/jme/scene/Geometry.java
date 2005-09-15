@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.72 2005-09-15 17:13:35 renanse Exp $
+ * @version $Id: Geometry.java,v 1.73 2005-09-15 19:27:14 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -314,8 +314,8 @@ public abstract class Geometry extends Spatial implements Serializable {
                 || texBuf[toIndex].capacity() != texBuf[fromIndex].capacity())
             texBuf[toIndex] = BufferUtils.createFloatBuffer(texBuf[fromIndex]
                     .capacity());
-		
-		texBuf[toIndex].clear();
+		else
+		    texBuf[toIndex].clear();
 		texBuf[fromIndex].rewind();
 		texBuf[toIndex].put(texBuf[fromIndex]);
 	}
@@ -572,7 +572,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 		} else {
 		    if (vertBuf != null) {
 			    toStore.setVertexBuffer(BufferUtils.createFloatBuffer(vertBuf.capacity()));
-			    toStore.vertBuf.clear();
 			    vertBuf.rewind();
 			    toStore.vertBuf.put(vertBuf);
 			    toStore.setVertexBuffer(toStore.vertBuf); // pick up vertQuantity
@@ -584,7 +583,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 		} else if (colorBuf != null) { // If I should deep copy colors
 		    if (colorBuf != null) {
 			    toStore.colorBuf = BufferUtils.createFloatBuffer(colorBuf.capacity());
-			    toStore.colorBuf.clear();
 			    colorBuf.rewind();
 			    toStore.colorBuf.put(colorBuf);
 		    } else toStore.setColorBuffer(null);
@@ -595,7 +593,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 		} else if (normBuf != null) {
 		    if (normBuf != null) {
 			    toStore.normBuf = BufferUtils.createFloatBuffer(normBuf.capacity());
-			    toStore.normBuf.clear();
 			    normBuf.rewind();
 			    toStore.normBuf.put(normBuf);
 			} else toStore.setNormalBuffer(null);
@@ -608,7 +605,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 				for (int i = 0; i < texBuf.length; i++) {
 				    if (texBuf[i] != null) {
 					    toStore.texBuf[i] = BufferUtils.createFloatBuffer(texBuf[i].capacity());
-					    toStore.texBuf[i].clear();
 					    texBuf[i].rewind();
 					    toStore.texBuf[i].put(texBuf[i]);
 				    } else toStore.texBuf[i] = null;
