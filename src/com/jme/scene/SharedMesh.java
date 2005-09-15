@@ -32,9 +32,16 @@
 
 package com.jme.scene;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+import java.util.logging.Level;
+
 import com.jme.bounding.BoundingVolume;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
+import com.jme.util.LoggingSystem;
 
 /**
  * <code>SharedMesh</code> allows the sharing of data between multiple nodes.
@@ -102,6 +109,281 @@ public class SharedMesh extends TriMesh {
 	 */
 	public TriMesh getTarget() {
 		return target;
+	}
+	
+/**
+	 * <code>reconstruct</code> is not supported in SharedMesh.
+	 *
+	 * @param vertices
+	 *            the new vertices to use.
+	 * @param normals
+	 *            the new normals to use.
+	 * @param colors
+	 *            the new colors to use.
+	 * @param textureCoords
+	 *            the new texture coordinates to use (position 0).
+	 */
+	public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
+			FloatBuffer colors, FloatBuffer textureCoords) {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+				"of the the mesh data.");
+	}
+	
+	/**
+	 * <code>setVBOInfo</code> is not supported in SharedMesh.
+	 */
+	public void setVBOInfo(VBOInfo info) {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+	
+	/**
+	 * <code>getVBOInfo</code> returns the target mesh's vbo info.
+	 */
+	public VBOInfo getVBOInfo() {
+	    return target.getVBOInfo();
+	}
+	
+	/**
+	 *
+	 * <code>setSolidColor</code> is not supported by SharedMesh.
+	 *
+	 * @param color
+	 *            the color to set.
+	 */
+	public void setSolidColor(ColorRGBA color) {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+
+	/**
+	 * <code>setRandomColors</code> is not supported by SharedMesh.
+	 */
+	public void setRandomColors() {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+
+	/**
+	 * <code>getVertexBuffer</code> returns the float buffer that
+	 * contains the target geometry's vertex information.
+	 *
+	 * @return the float buffer that contains the target geometry's vertex
+	 *         information.
+	 */
+	public FloatBuffer getVertexBuffer() {
+		return target.getVertexBuffer();
+	}
+
+	/**
+	 * <code>setVertexBuffer</code> is not supported by SharedMesh.
+	 *
+	 * @param buff
+	 *            the new vertex buffer.
+	 */
+	public void setVertexBuffer(FloatBuffer buff) {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+
+	/**
+	 * Returns the number of vertexes defined in the target's Geometry object.
+	 *
+	 * @return The number of vertexes in the target Geometry object.
+	 */
+	public int getVertQuantity() {
+		return target.getVertQuantity();
+	}
+
+	/**
+	 * <code>getNormalBuffer</code> retrieves the target geometry's normal
+	 * information as a float buffer.
+	 *
+	 * @return the float buffer containing the target geometry information.
+	 */
+	public FloatBuffer getNormalBuffer() {
+		return target.getNormalBuffer();
+	}
+
+	/**
+	 * <code>setNormalBuffer</code> is not supported by SharedMesh.
+	 *
+	 * @param buff
+	 *            the new normal buffer.
+	 */
+	public void setNormalBuffer(FloatBuffer buff) {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+
+	/**
+	 * <code>getColorBuffer</code> retrieves the float buffer that
+	 * contains the target geometry's color information.
+	 *
+	 * @return the buffer that contains the target geometry's color information.
+	 */
+	public FloatBuffer getColorBuffer() {
+		return target.getColorBuffer();
+	}
+
+	/**
+	 * <code>setColorBuffer</code> is not supported by SharedMesh.
+	 *
+	 * @param buff
+	 *            the new color buffer.
+	 */
+	public void setColorBuffer(FloatBuffer buff) {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+	
+	/**
+     * 
+     * <code>getIndexAsBuffer</code> retrieves the target's indices array as an
+     * <code>IntBuffer</code>.
+     * 
+     * @return the indices array as an <code>IntBuffer</code>.
+     */
+    public IntBuffer getIndexBuffer() {
+        return target.getIndexBuffer();
+    }
+
+    /**
+     * 
+     * <code>setIndexBuffer</code> is not supported by SharedMesh.
+     * 
+     * @param indices
+     *            the index array as an IntBuffer.
+     */
+    public void setIndexBuffer(IntBuffer indices) {
+    	LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+    }
+
+    /**
+     * Stores in the <code>storage</code> array the indices of triangle
+     * <code>i</code>. If <code>i</code> is an invalid index, or if
+     * <code>storage.length<3</code>, then nothing happens
+     * 
+     * @param i
+     *            The index of the triangle to get.
+     * @param storage
+     *            The array that will hold the i's indexes.
+     */
+    public void getTriangle(int i, int[] storage) {
+        target.getTriangle(i, storage);
+    }
+
+    /**
+     * Stores in the <code>vertices</code> array the vertex values of triangle
+     * <code>i</code>. If <code>i</code> is an invalid triangle index,
+     * nothing happens.
+     * 
+     * @param i
+     * @param vertices
+     */
+    public void getTriangle(int i, Vector3f[] vertices) {
+        getTriangle(i, vertices);
+    }
+
+    /**
+     * Returns the number of triangles the target TriMesh contains.
+     * 
+     * @return The current number of triangles.
+     */
+    public int getTriangleQuantity() {
+        return target.getTriangleQuantity();
+    }
+
+	/**
+	 *
+	 * <code>copyTextureCoords</code> is not supported by SharedMesh.
+	 *
+	 * @param fromIndex
+	 *            the coordinates to copy.
+	 * @param toIndex
+	 *            the texture unit to set them to.
+	 */
+	public void copyTextureCoords(int fromIndex, int toIndex) {
+	    
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+
+	/**
+	 * <code>getTextureBuffer</code> retrieves the target geometry's texture
+	 * information contained within a float buffer.
+	 *
+	 * @return the float buffer that contains the target geometry's texture
+	 *         information.
+	 */
+	public FloatBuffer getTextureBuffer() {
+		return target.getTextureBuffer();
+	}
+
+	/**
+	 * <code>getTextureBuffers</code> retrieves the target geometry's texture
+	 * information contained within a float buffer array.
+	 *
+	 * @return the float buffers that contain the target geometry's texture
+	 *         information.
+	 */
+	public FloatBuffer[] getTextureBuffers() {
+		return target.getTextureBuffers();
+	}
+
+	/**
+	 *
+	 * <code>getTextureAsFloatBuffer</code> retrieves the texture buffer of a
+	 * given texture unit.
+	 *
+	 * @param textureUnit
+	 *            the texture unit to check.
+	 * @return the texture coordinates at the given texture unit.
+	 */
+	public FloatBuffer getTextureBuffer(int textureUnit) {
+		return target.getTextureBuffer(textureUnit);
+	}
+
+	/**
+     * <code>setTextureBuffer</code> is not supported by SharedMesh.
+     * 
+     * @param buff
+     *            the new vertex buffer.
+     */
+	public void setTextureBuffer(FloatBuffer buff) {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+
+	/**
+     * <code>setTextureBuffer</code> not supported by SharedMesh
+     * 
+     * @param buff
+     *            the new vertex buffer.
+     */
+	public void setTextureBuffer(FloatBuffer buff, int position) {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
+	}
+
+	/**
+	 *
+	 * <code>getNumberOfUnits</code> returns the number of texture units the target
+	 * geometry supports.
+	 *
+	 * @return the number of texture units supported by the target geometry.
+	 */
+	public int getNumberOfUnits() {
+	    return target.getNumberOfUnits();
+	}
+
+	/**
+	 * clearBuffers is not supported by SharedMesh
+	 */
+	public void clearBuffers() {
+		LoggingSystem.getLogger().log(Level.WARNING, "SharedMesh does not allow the manipulation" +
+		"of the the mesh data.");
 	}
 
 	/**
