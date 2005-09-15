@@ -98,15 +98,16 @@ public class RenderQueue {
     }
 
     /**
-     * Enables/Disables two pass transparency rendering.  If enabled,
-     * objects in the TRANSPARENT queue will be rendered in two passes.
-     * On the first pass, objects are rendered with front faces culled.
-     * On the second pass, objects are rendered with back faces culled.
+     * Enables/Disables two pass transparency rendering. If enabled, objects in
+     * the TRANSPARENT queue will be rendered in two passes. On the first pass,
+     * objects are rendered with front faces culled. On the second pass, objects
+     * are rendered with back faces culled.
      * 
-     *  This allows complex transparent objects to be rendered whole
-     *  without concern as to the order of the faces drawn.
+     * This allows complex transparent objects to be rendered whole without
+     * concern as to the order of the faces drawn.
      * 
-     * @param enabled set true to turn on two pass transparency rendering
+     * @param enabled
+     *            set true to turn on two pass transparency rendering
      */
     public void setTwoPassTransparency(boolean enabled) {
         twoPassTransparent = enabled;
