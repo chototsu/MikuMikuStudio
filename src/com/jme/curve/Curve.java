@@ -1,34 +1,35 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.curve;
 
 import com.jme.math.Matrix3f;
@@ -36,6 +37,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.system.JmeException;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Curve</code> defines a collection of points that make up a curve.
@@ -47,7 +49,7 @@ import com.jme.system.JmeException;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.12 2004-08-21 06:18:30 cep21 Exp $
+ * @version $Id: Curve.java,v 1.13 2005-09-15 17:14:50 renanse Exp $
  */
 public abstract class Curve extends Geometry {
 
@@ -55,26 +57,30 @@ public abstract class Curve extends Geometry {
 
     /**
      * Constructor creates a default <code>Curve</code> object with a
-     * zero size array for the points.
+     * no points.
      * @param name the name of the scene element. This is required for identification and
      * 		comparision purposes.
      */
     public Curve(String name) {
     	super(name);
-        this.vertex = new Vector3f[0];
         steps = 25;
     }
 
     /**
-     * Constructor creates a <code>Curve</code> object. The control
-     * point list is set during creation. If the control point list is
-     * null or has fewer than 2 points, an exception is thrown.
-     * @param name the name of the scene element. This is required for identification and
-     * 		comparision purposes.
-     * @param controlPoints the points that define the curve.
+     * Constructor creates a <code>Curve</code> object. The control point list
+     * is set during creation. If the control point list is null or has fewer
+     * than 2 points, an exception is thrown.
+     * 
+     * @param name
+     *            the name of the scene element. This is required for
+     *            identification and comparision purposes.
+     * @param controlPoints
+     *            the points that define the curve. These are copied into the
+     *            object, further changes to these Vectors will not affect the
+     *            Curve.
      */
     public Curve(String name, Vector3f[] controlPoints) {
-    	super(name);
+        super(name);
         if (null == controlPoints) {
             throw new JmeException("Control Points may not be null.");
         }
@@ -83,7 +89,7 @@ public abstract class Curve extends Geometry {
             throw new JmeException("There must be at least two control points.");
         }
 
-        this.vertex = controlPoints;
+        setVertexBuffer(BufferUtils.createFloatBuffer(controlPoints));
         steps = 25;
     }
 

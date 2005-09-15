@@ -1,16 +1,50 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package jmetest.TutorialGuide;
 
+import java.net.URL;
+import java.nio.FloatBuffer;
+
 import com.jme.app.SimpleGame;
-import com.jme.scene.TriMesh;
-import com.jme.scene.state.TextureState;
-import com.jme.math.Vector3f;
-import com.jme.math.Vector2f;
-import com.jme.util.TextureManager;
 import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-
-import java.net.URL;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.scene.TriMesh;
+import com.jme.scene.state.TextureState;
+import com.jme.util.TextureManager;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * Started Date: Jul 21, 2004<br><br>
@@ -53,7 +87,7 @@ public class HelloKeyInput extends SimpleGame {
             0,1,2,1,2,3
         };
         // Create the square
-        square=new TriMesh("My Mesh",vertexes,null, null, texCoords, indexes);
+        square=new TriMesh("My Mesh",BufferUtils.createFloatBuffer(vertexes),null, null, BufferUtils.createFloatBuffer(texCoords), BufferUtils.createIntBuffer(indexes));
         // Point to the monkey image
         URL monkeyLoc=HelloKeyInput.class.getClassLoader().getResource("jmetest/data/images/Monkey.tga");
         // Get my TextureState
@@ -91,27 +125,28 @@ public class HelloKeyInput extends SimpleGame {
     // Called every frame update
     protected void simpleUpdate(){
 
+        boolean updateTex = false;
         // If the coordsDown command was activated
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("coordsDown",true)){
             // Scale my texture down
             coordDelta-=.01f;
-            // Get my square's texture array
-            Vector2f[] texes=square.getTextures();
-            // Change the values of the texture array
-            texes[1].set(coordDelta,0);
-            texes[2].set(0,coordDelta);
-            texes[3].set(coordDelta,coordDelta);
-            // Tell the square TriMesh that I have changed values in it's array
-            square.updateTextureBuffer();
+            updateTex = true;
         }
         // if the coordsUp command was activated
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("coordsUp",true)){
             // Scale my texture up
             coordDelta+=.01f;
-            // Assign each texture value manually.
-            square.setTexture(1,new Vector2f(coordDelta,0));
-            square.setTexture(2,new Vector2f(0,coordDelta));
-            square.setTexture(3,new Vector2f(coordDelta,coordDelta));
+            updateTex = true;
+        }
+        
+        if (updateTex) {
+            // Get my square's texture array
+            FloatBuffer texBuf = square.getTextureBuffer();
+            texBuf.rewind().position(2); // start after the 1st texcoord (2 floats wide)
+            // Change the values of the texture coords in the buffer
+            texBuf.put(coordDelta).put(0);
+            texBuf.put(0).put(coordDelta);
+            texBuf.put(coordDelta).put(coordDelta);            
         }
     }
 }

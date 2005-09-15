@@ -1,40 +1,42 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene.shape;
 
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Pyramid</code> provides an extension of <code>TriMesh</code>. A
@@ -43,7 +45,7 @@ import com.jme.scene.TriMesh;
  * the peak being on the positive y axis and the base being in the x-z plane.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.4 2005-03-16 15:28:25 renanse Exp $
+ * @version $Id: Pyramid.java,v 1.5 2005-09-15 17:13:44 renanse Exp $
  */
 public class Pyramid extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -72,7 +74,7 @@ public class Pyramid extends TriMesh {
 		setVertexData();
 		setNormalData();
 		setTextureData();
-		setColorData();
+	    setSolidColor(ColorRGBA.white);
 		setIndexData();
 	}
 
@@ -90,35 +92,34 @@ public class Pyramid extends TriMesh {
 		Vector3f vert2 = new Vector3f(width / 2, -height / 2, width / 2);
 		Vector3f vert3 = new Vector3f(-width / 2, -height / 2, width / 2);
 
-		Vector3f[] vertices = new Vector3f[16];
+	    vertBuf = BufferUtils.createVector3Buffer(16);
+	    vertQuantity = 16;
 
 		//base
-		vertices[0] = vert3;
-		vertices[1] = vert2;
-		vertices[2] = vert1;
-		vertices[3] = vert0;
+	    vertBuf.put(vert3.x).put(vert3.y).put(vert3.z);
+	    vertBuf.put(vert2.x).put(vert2.y).put(vert2.z);
+	    vertBuf.put(vert1.x).put(vert1.y).put(vert1.z);
+	    vertBuf.put(vert0.x).put(vert0.y).put(vert0.z);
 
 		//side 1
-		vertices[4] = vert0;
-		vertices[5] = vert1;
-		vertices[6] = peak;
+	    vertBuf.put(vert0.x).put(vert0.y).put(vert0.z);
+	    vertBuf.put(vert1.x).put(vert1.y).put(vert1.z);
+	    vertBuf.put(peak.x).put(peak.y).put(peak.z);
 
 		//side 2
-		vertices[7] = vert1;
-		vertices[8] = vert2;
-		vertices[9] = peak;
+	    vertBuf.put(vert1.x).put(vert1.y).put(vert1.z);
+	    vertBuf.put(vert2.x).put(vert2.y).put(vert2.z);
+	    vertBuf.put(peak.x).put(peak.y).put(peak.z);
 
 		//side 3
-		vertices[10] = vert2;
-		vertices[11] = vert3;
-		vertices[12] = peak;
+	    vertBuf.put(vert2.x).put(vert2.y).put(vert2.z);
+	    vertBuf.put(vert3.x).put(vert3.y).put(vert3.z);
+	    vertBuf.put(peak.x).put(peak.y).put(peak.z);
 
 		//side 4
-		vertices[13] = vert3;
-		vertices[14] = vert0;
-		vertices[15] = peak;
-
-		setVertices(vertices);
+	    vertBuf.put(vert3.x).put(vert3.y).put(vert3.z);
+	    vertBuf.put(vert0.x).put(vert0.y).put(vert0.z);
+	    vertBuf.put(peak.x).put(peak.y).put(peak.z);
 	}
 
 	/**
@@ -128,35 +129,33 @@ public class Pyramid extends TriMesh {
 	 *  
 	 */
 	private void setNormalData() {
-		Vector3f[] normals = new Vector3f[16];
-		Vector3f front = new Vector3f(0, 1, 1);
-		Vector3f right = new Vector3f(1, 1, 0);
-		Vector3f back = new Vector3f(0, 1, -1);
-		Vector3f left = new Vector3f(-1, 1, 0);
-		Vector3f bottom = new Vector3f(0, -1, 0);
+		normBuf = BufferUtils.createVector3Buffer(16);
 
-		normals[0] = bottom;
-		normals[1] = bottom;
-		normals[2] = bottom;
-		normals[3] = bottom;
+		// bottom
+		normBuf.put(0).put(-1).put(0);
+  		normBuf.put(0).put(-1).put(0);
+		normBuf.put(0).put(-1).put(0);
+		normBuf.put(0).put(-1).put(0);
 
-		normals[4] = back;
-		normals[5] = back;
-		normals[6] = back;
+		// back
+		normBuf.put(0).put(0.70710677f).put(-0.70710677f);
+		normBuf.put(0).put(0.70710677f).put(-0.70710677f);
+		normBuf.put(0).put(0.70710677f).put(-0.70710677f);
 
-		normals[7] = right;
-		normals[8] = right;
-		normals[9] = right;
+		// right
+		normBuf.put(0.70710677f).put(0.70710677f).put(0);
+		normBuf.put(0.70710677f).put(0.70710677f).put(0);
+		normBuf.put(0.70710677f).put(0.70710677f).put(0);
 
-		normals[10] = front;
-		normals[11] = front;
-		normals[12] = front;
+		// front
+		normBuf.put(0).put(0.70710677f).put(0.70710677f);
+		normBuf.put(0).put(0.70710677f).put(0.70710677f);
+		normBuf.put(0).put(0.70710677f).put(0.70710677f);
 
-		normals[13] = left;
-		normals[14] = left;
-		normals[15] = left;
-
-		setNormals(normals);
+		// left
+		normBuf.put(-0.70710677f).put(0.70710677f).put(0);
+		normBuf.put(-0.70710677f).put(0.70710677f).put(0);
+		normBuf.put(-0.70710677f).put(0.70710677f).put(0);
 
 	}
 
@@ -168,7 +167,7 @@ public class Pyramid extends TriMesh {
 	 *  
 	 */
 	private void setTextureData() {
-		Vector2f[] textures = new Vector2f[16];
+	    texBuf[0] = BufferUtils.createVector2Buffer(16);
 		Vector2f br = new Vector2f(0, 0);
 		Vector2f bl = new Vector2f(1, 0);
 		Vector2f tl = new Vector2f(1, 1);
@@ -178,41 +177,26 @@ public class Pyramid extends TriMesh {
 		Vector2f q2 = new Vector2f(0.5f, 0);
 		Vector2f q3 = new Vector2f(0.25f, 0);
 
-		textures[0] = bl;
-		textures[1] = br;
-		textures[2] = tr;
-		textures[3] = tl;
+		texBuf[0].put(1).put(0);
+		texBuf[0].put(0).put(0);
+		texBuf[0].put(0).put(1);
+		texBuf[0].put(1).put(1);
 
-		textures[4] = bl;
-		textures[5] = q1;
-		textures[6] = tc;
+		texBuf[0].put(1).put(0);
+		texBuf[0].put(0.75f).put(0);
+		texBuf[0].put(0.5f).put(1);
 
-		textures[7] = q1;
-		textures[8] = q2;
-		textures[9] = tc;
+		texBuf[0].put(0.75f).put(0);
+		texBuf[0].put(0.5f).put(0);
+		texBuf[0].put(0.5f).put(1);
 
-		textures[10] = q2;
-		textures[11] = q3;
-		textures[12] = tc;
+		texBuf[0].put(0.5f).put(0);
+		texBuf[0].put(0.25f).put(0);
+		texBuf[0].put(0.5f).put(1);
 
-		textures[13] = q3;
-		textures[14] = br;
-		textures[15] = tc;
-
-		setTextures(textures);
-	}
-
-	/**
-	 * 
-	 * <code>setColorData</code> sets the color of all vertices to white.
-	 *  
-	 */
-	private void setColorData() {
-		ColorRGBA[] color = new ColorRGBA[16];
-		for (int i = 0; i < color.length; i++) {
-			color[i] = new ColorRGBA(1, 1, 1, 1);
-		}
-		setColors(color);
+		texBuf[0].put(0.25f).put(0);
+		texBuf[0].put(0).put(0);
+		texBuf[0].put(0.5f).put(1);
 	}
 
 	/**
@@ -222,9 +206,13 @@ public class Pyramid extends TriMesh {
 	 *  
 	 */
 	private void setIndexData() {
-		int[] index = { 3, 2, 1, 3, 1, 0, 6, 5, 4, 9, 8, 7, 12, 11, 10, 15, 14,
-				13 };
-
-		setIndices(index);
+	    indexBuffer = BufferUtils.createIntBuffer(18);
+	    triangleQuantity = 6;
+	    indexBuffer.put(3).put(2).put(1);
+	    indexBuffer.put(3).put(1).put(0);
+	    indexBuffer.put(6).put(5).put(4);
+	    indexBuffer.put(9).put(8).put(7);
+	    indexBuffer.put(12).put(11).put(10);
+	    indexBuffer.put(15).put(14).put(13);
 	}
 }

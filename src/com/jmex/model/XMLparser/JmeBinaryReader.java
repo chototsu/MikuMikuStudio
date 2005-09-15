@@ -1,45 +1,91 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jmex.model.XMLparser;
 
-import com.jme.scene.*;
-import com.jme.scene.lod.ClodMesh;
-import com.jme.scene.lod.CollapseRecord;
-import com.jme.scene.lod.AreaClodMesh;
-import com.jme.scene.shape.Box;
-import com.jme.scene.state.*;
-import com.jme.math.*;
-import com.jme.renderer.ColorRGBA;
-import com.jme.renderer.Renderer;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.FloatBuffer;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Stack;
+import java.util.logging.Level;
+
+import com.jme.animation.SpatialTransformer;
+import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingVolume;
+import com.jme.bounding.OrientedBoundingBox;
 import com.jme.image.Image;
 import com.jme.image.Texture;
-import com.jme.util.TextureManager;
-import com.jme.util.LoggingSystem;
-import com.jme.animation.SpatialTransformer;
-import com.jme.bounding.BoundingSphere;
-import com.jme.bounding.BoundingBox;
-import com.jme.bounding.OrientedBoundingBox;
-import com.jme.bounding.BoundingVolume;
 import com.jme.light.Light;
-import com.jme.light.SpotLight;
 import com.jme.light.PointLight;
-import com.jmex.model.EmptyTriMesh;
+import com.jme.light.SpotLight;
+import com.jme.math.FastMath;
+import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jme.scene.Controller;
+import com.jme.scene.Geometry;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
+import com.jme.scene.lod.AreaClodMesh;
+import com.jme.scene.lod.ClodMesh;
+import com.jme.scene.lod.CollapseRecord;
+import com.jme.scene.shape.Box;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.util.LoggingSystem;
+import com.jme.util.TextureManager;
+import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
 import com.jmex.model.animation.JointController;
 import com.jmex.model.animation.KeyframeController;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.TerrainPage;
-
-import java.io.InputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.File;
-import java.util.Stack;
-import java.util.Hashtable;
-import java.util.HashMap;
-import java.util.logging.Level;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 
 /**
@@ -192,31 +238,31 @@ public class JmeBinaryReader {
         } else if (tagName.equals("vertex")){
             Geometry geo=(Geometry) s.pop();
             if (attributes.get("q3vert")!=null)
-                geo.setVertices(decodeShortCompress((short[])attributes.get("q3vert")));
+                geo.setVertexBuffer(BufferUtils.createFloatBuffer(decodeShortCompress((short[])attributes.get("q3vert"))));
             else
-                geo.setVertices((Vector3f[]) attributes.get("data"));
+                geo.setVertexBuffer(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
             s.push(geo);
         } else if (tagName.equals("normal")){
-            Geometry geo=(Geometry) s.pop();
+            Geometry geo=(Geometry) s.pop(); // FIXME: The reading/writing could skip the intermediate Vector3f[] array.
             if (attributes.get("q3norm")!=null)
-                geo.setNormals(decodeLatLong((byte[])attributes.get("q3norm")));
+                geo.setNormalBuffer(BufferUtils.createFloatBuffer(decodeLatLong((byte[])attributes.get("q3norm"))));
             else
-                geo.setNormals((Vector3f[]) attributes.get("data"));
+                geo.setNormalBuffer(BufferUtils.createFloatBuffer((Vector3f[]) attributes.get("data")));
             s.push(geo);
         } else if (tagName.equals("texturecoords")){
             Geometry geo=(Geometry) s.pop();
             if (attributes.get("texindex")==null)
-                geo.setTextures((Vector2f[]) attributes.get("data"));
+                geo.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")));
             else
-                geo.setTextures((Vector2f[]) attributes.get("data"),((Integer)attributes.get("texindex")).intValue());
+                geo.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[]) attributes.get("data")),((Integer)attributes.get("texindex")).intValue());
             s.push(geo);
         } else if (tagName.equals("color")){
             Geometry geo=(Geometry) s.pop();
-            geo.setColors((ColorRGBA[]) attributes.get("data"));
+            geo.setColorBuffer((FloatBuffer) attributes.get("data"));
             s.push(geo);
         } else if (tagName.equals("index")){
             TriMesh m=(TriMesh) s.pop();
-            m.setIndices((int[]) attributes.get("data"));
+            m.setIndexBuffer(BufferUtils.createIntBuffer((int[]) attributes.get("data")));
             s.push(m);
         } else if (tagName.equals("origvertex")){
             JointMesh jm=(JointMesh) s.pop();
@@ -302,7 +348,7 @@ public class JmeBinaryReader {
             s.push(kc);
         } else if (tagName.equals("keyframepointintime")){
             s.push(attributes.get("time"));  // Store the current time on the stack
-            s.push(new EmptyTriMesh());
+            s.push(new TriMesh());
         } else if (tagName.equals("lightstate")){
             s.push(buildLightState(attributes));
         } else if (tagName.equals("spotlight")){
@@ -893,7 +939,7 @@ public class JmeBinaryReader {
             if (DEBUG) System.out.println("Reading attribute*" + name + "* with type " + type);
             switch (type){
                 case BinaryFormatConstants.DATA_COLORARRAY:
-                    atribMap.put(name,getColorArray());
+                    atribMap.put(name,getColorBuffer());
                     break;
                 case BinaryFormatConstants.DATA_INTARRAY:
                     atribMap.put(name,getIntArray());
@@ -1036,13 +1082,13 @@ public class JmeBinaryReader {
         return array;
     }
 
-    private ColorRGBA[] getColorArray() throws IOException {
+    private FloatBuffer getColorBuffer() throws IOException {
         int length=myIn.readInt();
         if (length==0) return null;
-        ColorRGBA[] array=new ColorRGBA[length];
+        FloatBuffer buff = BufferUtils.createColorBuffer(length);
         for (int i=0;i<length;i++)
-            array[i]=new ColorRGBA(myIn.readFloat(),myIn.readFloat(),myIn.readFloat(),myIn.readFloat());
-        return array;
+            buff.put(myIn.readFloat()).put(myIn.readFloat()).put(myIn.readFloat()).put(myIn.readFloat());
+        return buff;
     }
 
     // Note, a vector3f that is all NaN is considered null

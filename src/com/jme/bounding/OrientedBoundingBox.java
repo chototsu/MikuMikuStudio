@@ -1,7 +1,47 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jme.bounding;
 
+import java.nio.FloatBuffer;
+
+import com.jme.math.FastMath;
+import com.jme.math.Matrix3f;
+import com.jme.math.Plane;
+import com.jme.math.Quaternion;
+import com.jme.math.Ray;
+import com.jme.math.Vector3f;
 import com.jme.scene.shape.OrientedBox;
-import com.jme.math.*;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * Started Date: Aug 24, 2004 <br>
@@ -111,7 +151,7 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
             return Plane.NO_SIDE;
     }
 
-    public void computeFromPoints(Vector3f[] points) {
+    public void computeFromPoints(FloatBuffer points) {
         containAABB(points);
         // computeCorners();
         correctCorners = false;
@@ -123,35 +163,38 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
      * @param points
      *            The points this OBB should contain.
      */
-    private void containAABB(Vector3f[] points) {
-        if (points.length <= 0) {
+    private void containAABB(FloatBuffer points) {
+        if (points == null || points.capacity() <= 2) { // we need at least a 3 float vector
             return;
         }
 
-        Vector3f min = tempVa.set(points[0]);
-        Vector3f max = tempVb.set(min);
+        BufferUtils.populateFromBuffer(tempVa, points, 0);
+        float minX = tempVa.x, minY = tempVa.y, minZ = tempVa.z;
+        float maxX = tempVa.x, maxY = tempVa.y, maxZ = tempVa.z;
 
-        for (int i = 1; i < points.length; i++) {
-            if (points[i].x < min.x)
-                min.x = points[i].x;
-            else if (points[i].x > max.x)
-                max.x = points[i].x;
+        for (int i = 1, len = points.capacity() / 3; i < len; i++) {
+            BufferUtils.populateFromBuffer(tempVa, points, i);
+            
+            if (tempVa.x < minX)
+                minX = tempVa.x;
+            else if (tempVa.x >maxX)
+                maxX = tempVa.x;
 
-            if (points[i].y < min.y)
-                min.y = points[i].y;
-            else if (points[i].y > max.y)
-                max.y = points[i].y;
+            if (tempVa.y < minY)
+                minY = tempVa.y;
+            else if (tempVa.y > maxY)
+                maxY = tempVa.y;
 
-            if (points[i].z < min.z)
-                min.z = points[i].z;
-            else if (points[i].z > max.z)
-                max.z = points[i].z;
+            if (tempVa.z < minZ)
+                minZ = tempVa.z;
+            else if (tempVa.z > maxZ)
+                maxZ = tempVa.z;
         }
 
-        center.set(min.addLocal(max));
+        center.set(minX+maxX, minY+maxY, minZ+maxZ);
         center.multLocal(0.5f);
 
-        extent.set(max.x - center.x, max.y - center.y, max.z - center.z);
+        extent.set(maxX - center.x, maxY - center.y, maxZ - center.z);
 
         xAxis.set(1, 0, 0);
 
@@ -181,27 +224,22 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
         BoundingSphere mergeSphere = (BoundingSphere) volume;
         if (!correctCorners)
             this.computeCorners();
-        Vector3f[] mergeArray = new Vector3f[16];
-        for (int i = 0; i < vectorStore.length; i++) {
-            mergeArray[i] = this.vectorStore[i];
+
+        FloatBuffer buf = BufferUtils.createVector3Buffer(16);
+        for (int i = 0; i < 8; i++) {
+            buf.put(vectorStore[i].x);
+            buf.put(vectorStore[i].y);
+            buf.put(vectorStore[i].z);
         }
-        mergeArray[8] = tempVc.set(mergeSphere.center).addLocal(
-                mergeSphere.radius, mergeSphere.radius, mergeSphere.radius);
-        mergeArray[9] = tempVd.set(mergeSphere.center).addLocal(
-                -mergeSphere.radius, mergeSphere.radius, mergeSphere.radius);
-        mergeArray[10] = tempVe.set(mergeSphere.center).addLocal(
-                mergeSphere.radius, -mergeSphere.radius, mergeSphere.radius);
-        mergeArray[11] = tempVf.set(mergeSphere.center).addLocal(
-                mergeSphere.radius, mergeSphere.radius, -mergeSphere.radius);
-        mergeArray[12] = tempVg.set(mergeSphere.center).addLocal(
-                -mergeSphere.radius, -mergeSphere.radius, mergeSphere.radius);
-        mergeArray[13] = tempVh.set(mergeSphere.center).addLocal(
-                -mergeSphere.radius, mergeSphere.radius, -mergeSphere.radius);
-        mergeArray[14] = tempVi.set(mergeSphere.center).addLocal(
-                mergeSphere.radius, -mergeSphere.radius, -mergeSphere.radius);
-        mergeArray[15] = tempVj.set(mergeSphere.center).addLocal(
-                -mergeSphere.radius, -mergeSphere.radius, -mergeSphere.radius);
-        containAABB(mergeArray);
+        buf.put(center.x+mergeSphere.radius).put(center.y+mergeSphere.radius).put(center.z+mergeSphere.radius);
+        buf.put(center.x-mergeSphere.radius).put(center.y+mergeSphere.radius).put(center.z+mergeSphere.radius);
+        buf.put(center.x+mergeSphere.radius).put(center.y-mergeSphere.radius).put(center.z+mergeSphere.radius);
+        buf.put(center.x+mergeSphere.radius).put(center.y+mergeSphere.radius).put(center.z-mergeSphere.radius);
+        buf.put(center.x-mergeSphere.radius).put(center.y-mergeSphere.radius).put(center.z+mergeSphere.radius);
+        buf.put(center.x-mergeSphere.radius).put(center.y+mergeSphere.radius).put(center.z-mergeSphere.radius);
+        buf.put(center.x+mergeSphere.radius).put(center.y-mergeSphere.radius).put(center.z-mergeSphere.radius);
+        buf.put(center.x-mergeSphere.radius).put(center.y-mergeSphere.radius).put(center.z-mergeSphere.radius);
+        containAABB(buf);
         correctCorners = false;
         return this;
     }
@@ -210,30 +248,24 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
         BoundingBox mergeBox = (BoundingBox) volume;
         if (!correctCorners)
             this.computeCorners();
-        Vector3f[] mergeArray = new Vector3f[16];
-        for (int i = 0; i < vectorStore.length; i++) {
-            mergeArray[i] = this.vectorStore[i];
+
+        FloatBuffer buf = BufferUtils.createVector3Buffer(16);
+        for (int i = 0; i < 8; i++) {
+            buf.put(vectorStore[i].x);
+            buf.put(vectorStore[i].y);
+            buf.put(vectorStore[i].z);
         }
-        mergeArray[8] = tempVc.set(mergeBox.center).addLocal(mergeBox.xExtent,
-                mergeBox.yExtent, mergeBox.zExtent);
-        mergeArray[9] = tempVd.set(mergeBox.center).addLocal(-mergeBox.xExtent,
-                mergeBox.yExtent, mergeBox.zExtent);
-        mergeArray[10] = tempVe.set(mergeBox.center).addLocal(mergeBox.xExtent,
-                -mergeBox.yExtent, mergeBox.zExtent);
-        mergeArray[11] = tempVf.set(mergeBox.center).addLocal(mergeBox.xExtent,
-                mergeBox.yExtent, -mergeBox.zExtent);
-        mergeArray[12] = tempVg.set(mergeBox.center).addLocal(
-                -mergeBox.xExtent, -mergeBox.yExtent, mergeBox.zExtent);
-        mergeArray[13] = tempVh.set(mergeBox.center).addLocal(
-                -mergeBox.xExtent, mergeBox.yExtent, -mergeBox.zExtent);
-        mergeArray[14] = tempVi.set(mergeBox.center).addLocal(mergeBox.xExtent,
-                -mergeBox.yExtent, -mergeBox.zExtent);
-        mergeArray[15] = tempVj.set(mergeBox.center).addLocal(
-                -mergeBox.xExtent, -mergeBox.yExtent, -mergeBox.zExtent);
-        containAABB(mergeArray);
+        buf.put(center.x+mergeBox.xExtent).put(center.y+mergeBox.yExtent).put(center.z+mergeBox.zExtent);
+        buf.put(center.x-mergeBox.xExtent).put(center.y+mergeBox.yExtent).put(center.z+mergeBox.zExtent);
+        buf.put(center.x+mergeBox.xExtent).put(center.y-mergeBox.yExtent).put(center.z+mergeBox.zExtent);
+        buf.put(center.x+mergeBox.xExtent).put(center.y+mergeBox.yExtent).put(center.z-mergeBox.zExtent);
+        buf.put(center.x-mergeBox.xExtent).put(center.y-mergeBox.yExtent).put(center.z+mergeBox.zExtent);
+        buf.put(center.x-mergeBox.xExtent).put(center.y+mergeBox.yExtent).put(center.z-mergeBox.zExtent);
+        buf.put(center.x+mergeBox.xExtent).put(center.y-mergeBox.yExtent).put(center.z-mergeBox.zExtent);
+        buf.put(center.x-mergeBox.xExtent).put(center.y-mergeBox.yExtent).put(center.z-mergeBox.zExtent);
+        containAABB(buf);
         correctCorners = false;
         return this;
-
     }
 
     private BoundingVolume mergeOBB(OrientedBoundingBox volume) {

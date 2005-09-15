@@ -1,41 +1,44 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jmex.effects.cloth;
 
+import com.jme.math.SpringNode;
 import com.jme.math.SpringNodeForce;
 import com.jme.math.SpringSystem;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>ClothPatch</code> is a rectangular trimesh representing a
@@ -43,7 +46,7 @@ import com.jme.scene.TriMesh;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.1 2005-05-12 22:49:43 Mojomonkey Exp $
+ * @version $Id: ClothPatch.java,v 1.2 2005-09-15 17:14:42 renanse Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -80,11 +83,13 @@ public class ClothPatch extends TriMesh {
 		clothNodesY = nodesY;
 		this.springLength = springLength;
 
-		vertex = new Vector3f[clothNodesY * clothNodesX];
-		normal = new Vector3f[clothNodesY * clothNodesX];
+		vertQuantity = clothNodesY * clothNodesX;
+		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+		texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
 
-		texture[0] = new Vector2f[clothNodesY * clothNodesX];
-		indices = new int[6 * (clothNodesX - 1) * (clothNodesY - 1)];
+		triangleQuantity = (clothNodesX - 1) * (clothNodesY - 1) * 2;
+		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
 
 		initCloth(nodeMass);
 	}
@@ -111,19 +116,21 @@ public class ClothPatch extends TriMesh {
 	 */
 	public void updateNormals() {
 		// zero out the normals
-		for (int i = normal.length; --i >= 0; ) normal[i].zero();
+	    normBuf.clear();
+		for (int i = normBuf.capacity(); --i >= 0; ) normBuf.put(0); 
 		// go through each triangle and add the tri norm to it's corner's norms
 		int i1, i2, i3;
-		for (int i = indices.length-3; i >= 0; i-=3) {
+		for (int i = indexBuffer.capacity()-3; i >= 0; i-=3) {
 			// grab triangle normal
-			i1 = indices[i]; i2 = indices[i+1]; i3 = indices[i+2];
-			getTriangleNormal(vertex[i1], vertex[i2], vertex[i3], tNorm);
-			normal[i1].addLocal(tNorm);
-			normal[i2].addLocal(tNorm);
-			normal[i3].addLocal(tNorm);
-    }
+			i1 = indexBuffer.get(i); i2 = indexBuffer.get(i+1); i3 = indexBuffer.get(i+2);
+			getTriangleNormal(i1, i2, i3, tNorm);
+			BufferUtils.addInBuffer(tNorm, normBuf, i1);
+			BufferUtils.addInBuffer(tNorm, normBuf, i2);
+			BufferUtils.addInBuffer(tNorm, normBuf, i3);
+    	}
 		// normalize
-		for (int i = normal.length; --i >= 0; ) normal[i].normalizeLocal();
+		for (int i = vertQuantity; --i >= 0; )
+		    BufferUtils.normalizeVector3(normBuf, i);
 	}
 
 	/**
@@ -136,10 +143,10 @@ public class ClothPatch extends TriMesh {
 	 * @param store Vector3f to store result in
 	 * @return normal of triangle, same as store param.
 	 */
-	protected Vector3f getTriangleNormal(Vector3f vert1, Vector3f vert2, Vector3f vert3, Vector3f store) {
-		tempV1.set(vert1);
-		tempV2.set(vert2);
-		tempV3.set(vert3);
+	protected Vector3f getTriangleNormal(int vert1, int vert2, int vert3, Vector3f store) {
+	    BufferUtils.populateFromBuffer(tempV1, vertBuf, vert1);
+	    BufferUtils.populateFromBuffer(tempV2, vertBuf, vert2);
+	    BufferUtils.populateFromBuffer(tempV3, vertBuf, vert3);
 
 		//  Translate(v2, v1);
 		tempV2.subtractLocal(tempV1);
@@ -161,28 +168,22 @@ public class ClothPatch extends TriMesh {
 	 */
 	protected void initCloth(float nodeMass) {
 		// Setup our shared vectors...
+	    Vector2f texcoord = new Vector2f();
+	    Vector3f vert = new Vector3f();
 		for (int j = 0; j < clothNodesY; j++) {
 			for (int i = 0; i < clothNodesX; i++) {
 				int ind = getIndex(i, j);
-				vertex[ind] = new Vector3f(
-						springLength * (i - 0.5f * (clothNodesX - 1)),
-						springLength * (0.5f * (clothNodesY - 1) - j),
-						0);
-				normal[ind] = new Vector3f();
-				texture[0][ind] = new Vector2f(
-						(float) i / (clothNodesX - 1),
-						(float) (clothNodesY-(j+1)) / (clothNodesY - 1));
+				vert.set(springLength * (i - 0.5f * (clothNodesX - 1)),
+                        springLength * (0.5f * (clothNodesY - 1) - j), 0);
+				BufferUtils.setInBuffer(vert, vertBuf, ind);
+                texcoord.set((float) i / (clothNodesX - 1),
+                        (float) (clothNodesY - (j + 1)) / (clothNodesY - 1));
+				BufferUtils.setInBuffer(texcoord, texBuf[0], ind);
 			}
 		}
 
-		system = SpringSystem.createRectField(
-				clothNodesX, clothNodesY, vertex, normal, nodeMass);
+		system = SpringSystem.createRectField(clothNodesX, clothNodesY, vertBuf, nodeMass);
 		setupIndices();
-
-		updateVertexBuffer();
-		updateNormalBuffer();
-		updateTextureBuffer();
-		updateIndexBuffer();
 	}
 
 	/**
@@ -241,22 +242,16 @@ public class ClothPatch extends TriMesh {
 	 * Setup the triangle indices for this cloth.
 	 */
 	protected void setupIndices() {
-		int i = 0;
+		indexBuffer.rewind();
 		for (int Y = 0; Y < clothNodesY - 1; Y++) {
 			for (int X = 0; X < clothNodesX - 1; X++) {
-				indices[i] = getIndex(X, Y);
-				i++;
-				indices[i] = getIndex(X, Y + 1);
-				i++;
-				indices[i] = getIndex(X + 1, Y + 1);
-				i++;
+			    indexBuffer.put(getIndex(X, Y));
+			    indexBuffer.put(getIndex(X, Y+1));
+			    indexBuffer.put(getIndex(X+1, Y+1));
 
-				indices[i] = indices[i - 3];
-				i++;
-				indices[i] = indices[i - 2];
-				i++;
-				indices[i] = getIndex(X + 1, Y);
-				i++;
+			    indexBuffer.put(getIndex(X, Y));
+			    indexBuffer.put(getIndex(X+1, Y+1));
+			    indexBuffer.put(getIndex(X+1, Y));
 			}
 		}
 	}
@@ -306,9 +301,16 @@ public class ClothPatch extends TriMesh {
 	 */
 	protected void doUpdate(float sinceLast) {
 		system.update(sinceLast);
-		updateVertexBuffer();
+		updateVertBuffer();
 		updateNormals();
-		updateNormalBuffer();
+	}
+	
+	protected void updateVertBuffer() {
+	    vertBuf.rewind();
+	    for (int x = 0; x < system.getNodeCount(); x++) {
+	        SpringNode n = system.getNode(x);
+	        vertBuf.put(n.position.x).put(n.position.y).put(n.position.z);
+	    }
 	}
 
 }

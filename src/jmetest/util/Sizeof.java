@@ -1,8 +1,40 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package jmetest.util;
 
-import com.jme.scene.Node;
-import com.jme.scene.Spatial;
-import com.jme.scene.TriMesh;
+import com.jme.bounding.BoundingBox;
+import com.jme.math.Vector3f;
+import com.jme.scene.shape.Box;
 import com.jme.system.DisplaySystem;
 
 public class Sizeof {
@@ -12,18 +44,23 @@ public class Sizeof {
        usedMemory();
 
        // Array to keep strong references to allocated objects
-       final int count = 100000;
+       final int count = 1000;
        Object[] objects = new Object[count];
 
        long heap1 = 0;
        DisplaySystem display = DisplaySystem.getDisplaySystem("LWJGL");
        display.createWindow(800, 600, 32, 60, false);
-       // Allocate count+1 objects, discard the first one
+       // Allocate count+1 objects, discard the first five
        for (int i = -1; i < count; ++i) {
            Object object = null;
 
            // ### Instantiate your data here and assign it to object
-           object = new Node("Hello");
+           object = new Box("Box", new Vector3f(5, 5, 5),new Vector3f( -5, -5, -5));
+
+           ((Box)object).setModelBound(new BoundingBox());
+           ((Box)object).updateModelBound();
+
+           ((Box)object).setRandomColors();
            // ###
 
            if (i >= 0)

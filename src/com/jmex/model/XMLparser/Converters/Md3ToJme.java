@@ -1,19 +1,51 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.util.BinaryFileReader;
-import com.jme.math.Vector3f;
-import com.jme.math.Matrix3f;
-import com.jme.math.Vector2f;
-import com.jme.math.FastMath;
-import com.jme.scene.Node;
-import com.jme.scene.TriMesh;
-import com.jmex.model.EmptyTriMesh;
-import com.jmex.model.XMLparser.JmeBinaryWriter;
-import com.jmex.model.animation.KeyframeController;
-
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.IOException;
+
+import com.jme.math.FastMath;
+import com.jme.math.Matrix3f;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.scene.Node;
+import com.jme.scene.TriMesh;
+import com.jme.util.BinaryFileReader;
+import com.jme.util.geom.BufferUtils;
+import com.jmex.model.XMLparser.JmeBinaryWriter;
+import com.jmex.model.animation.KeyframeController;
 
 /**
  * Started Date: Jul 15, 2004<br><br>
@@ -45,16 +77,16 @@ public class Md3ToJme extends FormatConverter{
             KeyframeController vkc=new KeyframeController();
             MD3Surface thisSurface=surfaces[i];
             TriMesh object=new TriMesh(thisSurface.name);
-            object.setIndices(thisSurface.triIndexes);
-            object.setVertices(thisSurface.verts[0]);
-            object.setNormals(thisSurface.norms[0]);
-            object.setTextures(thisSurface.texCoords);
+            object.setIndexBuffer(BufferUtils.createIntBuffer(thisSurface.triIndexes));
+            object.setVertexBuffer(BufferUtils.createFloatBuffer(thisSurface.verts[0]));
+            object.setNormalBuffer(BufferUtils.createFloatBuffer(thisSurface.norms[0]));
+            object.setTextureBuffer(BufferUtils.createFloatBuffer(thisSurface.texCoords));
             toReturn.attachChild(object);
             vkc.setMorphingMesh(object);
             for (int j=0;j<head.numFrames;j++){
-                EmptyTriMesh etm=new EmptyTriMesh();
-                etm.setVertices(thisSurface.verts[j]);
-                etm.setNormals(thisSurface.norms[j]);
+                TriMesh etm=new TriMesh();
+                etm.setVertexBuffer(BufferUtils.createFloatBuffer(thisSurface.verts[j]));
+                etm.setNormalBuffer(BufferUtils.createFloatBuffer(thisSurface.norms[j]));
                 vkc.setKeyframe(j,etm);
             }
             vkc.setActive(true);

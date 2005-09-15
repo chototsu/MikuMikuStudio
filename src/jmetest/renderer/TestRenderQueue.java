@@ -1,62 +1,64 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.math.Vector3f;
-import com.jme.scene.Node;
-import com.jme.scene.shape.Box;
-import com.jme.scene.state.TextureState;
-import com.jme.util.TextureManager;
-import com.jme.renderer.Renderer;
-import com.jme.scene.state.MaterialState;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.scene.state.LightState;
-import com.jme.light.DirectionalLight;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.scene.shape.Quad;
-import com.jme.scene.Spatial;
-import com.jme.scene.state.RenderState;
+import com.jme.light.DirectionalLight;
 import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.shape.Box;
+import com.jme.scene.shape.Quad;
+import com.jme.scene.shape.Torus;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.util.TextureManager;
 
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.11 2005-02-10 21:48:22 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.12 2005-09-15 17:13:20 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -73,22 +75,31 @@ public class TestRenderQueue extends SimpleGame {
   }
 
   protected void simpleUpdate() {
+      boolean updateTitle = false;
 
-    if (KeyBindingManager.getKeyBindingManager().isValidCommand("queue", false)) {
-        if (useQueue) {
-          display.setTitle("Test Render Queue - off - hit Q to toggle Queue mode");
-          transps.setRenderQueueMode(Renderer.QUEUE_SKIP);
-          opaques.setRenderQueueMode(Renderer.QUEUE_SKIP);
-          orthos.setRenderQueueMode(Renderer.QUEUE_SKIP);
-        } else {
-          display.setTitle("Test Render Queue - on - hit Q to toggle Queue mode");
-          transps.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-          opaques.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-          orthos.setRenderQueueMode(Renderer.QUEUE_ORTHO);
-        }
-        useQueue = !useQueue;
-    }
+      if (KeyBindingManager.getKeyBindingManager().isValidCommand("queue", false)) {
+          if (useQueue) {
+              transps.setRenderQueueMode(Renderer.QUEUE_SKIP);
+              opaques.setRenderQueueMode(Renderer.QUEUE_SKIP);
+              orthos.setRenderQueueMode(Renderer.QUEUE_SKIP);
+            } else {
+              transps.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
+              opaques.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+              orthos.setRenderQueueMode(Renderer.QUEUE_ORTHO);
+            }
+          useQueue = !useQueue;
+          updateTitle = true;
+      }
 
+      if (KeyBindingManager.getKeyBindingManager().isValidCommand("trans", false)) {
+          display.getRenderer().getQueue().setTwoPassTransparency(!display.getRenderer().getQueue().isTwoPassTransparency());
+          updateTitle = true;
+      }
+
+      if (updateTitle)
+            display.setTitle("Test Render Queue - " + useQueue
+                    + " - hit Q to toggle Queue mode - 'R' Two Pass: - "
+                    + display.getRenderer().getQueue().isTwoPassTransparency());
   }
 
   protected void simpleRender() {
@@ -105,8 +116,9 @@ public class TestRenderQueue extends SimpleGame {
   }
 
   protected void simpleInitGame() {
-    display.setTitle("Test Render Queue - off - hit Q to toggle Queue mode");
+    display.setTitle("Test Render Queue - false - hit 'Q' to toggle Queue mode - 'R' Two Pass: - true");
     KeyBindingManager.getKeyBindingManager().set("queue", KeyInput.KEY_Q);
+    KeyBindingManager.getKeyBindingManager().set("trans", KeyInput.KEY_R);
     cam.setLocation(new Vector3f(10, 0, 50));
     cam.update();
 
@@ -178,7 +190,7 @@ public class TestRenderQueue extends SimpleGame {
     ms1.setShininess(128);
     tb1.setRenderState(ms1);
 
-    Box tb2 = new Box("TBox Green", min, max);
+    Torus tb2 = new Torus("TBox Green", 20, 20, 5, 10);
     tb2.setModelBound(new BoundingBox());
     tb2.updateModelBound();
     tb2.setLocalTranslation(new Vector3f(0, 0, 30));
@@ -236,6 +248,7 @@ public class TestRenderQueue extends SimpleGame {
     orthos.setRenderState(zstate);
 
     orthos.setRenderState(Spatial.defaultStateList[RenderState.RS_LIGHT]);
+    
     rootNode.setForceCull(true);
     orthos.setForceView(true);
   }

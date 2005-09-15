@@ -1,36 +1,38 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.util.geom;
 
+import java.nio.FloatBuffer;
 import java.util.ArrayList;
 
 import com.jme.math.Vector2f;
@@ -114,42 +116,41 @@ public class GeometryCreator {
 	}
 
 	public GeometryCreator(TriMesh mesh) {
-		Vector3f[] v = mesh.getVertices();
+		FloatBuffer vfb = mesh.getColorBuffer();
+		Vector3f[] v = BufferUtils.getVector3Array(vfb);
 		for (int i = 0; i < v.length; i++) {
 			addCoordinate(v[i]);
 		}
 
-		if (mesh.getColors() != null) {
-			ColorRGBA[] c = mesh.getColors();
+		if (mesh.getColorBuffer() != null) {
+			FloatBuffer fb = mesh.getColorBuffer();
+			ColorRGBA[] c = BufferUtils.getColorArray(fb);
 			for (int i = 0; i < c.length; i++) {
 				addColor(c[i]);
 			}
 		}
 
-		if (mesh.getNormals() != null) {
-			Vector3f[] n = mesh.getNormals();
+		if (mesh.getNormalBuffer() != null) {
+			FloatBuffer fb = mesh.getNormalBuffer();
+			Vector3f[] n = BufferUtils.getVector3Array(fb);
 			for (int i = 0; i < n.length; i++) {
 				addNormal(n[i]);
 			}
 		}
 
-		if (mesh.getAllTextures() != null) {
-			Vector2f[][] t = mesh.getAllTextures();
+		if (mesh.getTextureBuffers() != null) {
+			FloatBuffer[] t = mesh.getTextureBuffers();
 
 			int texUnits = 0;
 			for (int i = 0; i < t.length; i++) {
-				if (t[i] != null && t[i].length > 0) {
+				if (t[i] != null && t[i].capacity() > 1) {
 					texUnits++;
 				}
 			}
 
-			for (int i = 0; i < t[0].length; i++) {
-				Vector2f[] sets = new Vector2f[texUnits];
-				for (int u = 0; u < texUnits; u++) {
-					sets[u] = t[u][i];
-				}
-				addTexCoords(sets);
-			}
+			FloatBuffer fb = t[0];
+			Vector2f[] sets = BufferUtils.getVector2Array(fb);
+			addTexCoords(sets);
 		}
 
 		int triangleCount = mesh.getTriangleQuantity();

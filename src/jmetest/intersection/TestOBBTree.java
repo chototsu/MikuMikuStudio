@@ -1,17 +1,52 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package jmetest.intersection;
+
+import java.nio.FloatBuffer;
 
 import com.jme.animation.SpatialTransformer;
 import com.jme.app.SimpleGame;
-import com.jme.scene.shape.CompositeSphere;
-import com.jme.scene.shape.PQTorus;
-import com.jme.scene.Node;
-import com.jme.scene.TriMesh;
+import com.jme.bounding.BoundingBox;
 import com.jme.intersection.CollisionData;
 import com.jme.intersection.CollisionResults;
 import com.jme.intersection.TriangleCollisionResults;
 import com.jme.math.Vector3f;
-import com.jme.bounding.BoundingBox;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
+import com.jme.scene.TriMesh;
+import com.jme.scene.shape.CompositeSphere;
+import com.jme.scene.shape.PQTorus;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * Started Date: Sep 6, 2004 <br>
@@ -64,16 +99,21 @@ public class TestOBBTree extends SimpleGame {
 		st.interpolateMissing();
 		r.addController(st);
 
-		ColorRGBA[] color1 = r.getColors();
-		for (int i = 0; i < color1.length; i++) {
-			color1[i] = colorSpread[i % 3];
+		FloatBuffer color1 = r.getColorBuffer();
+		color1.clear();
+		for (int i = 0, bLength = color1.capacity(); i < bLength; i+=4) {
+		    ColorRGBA c = colorSpread[i % 3];
+		    color1.put(c.r).put(c.g).put(c.b).put(c.a);
 		}
-		r.setColors(color1);
-		ColorRGBA[] color2 = s.getColors();
-		for (int i = 0; i < color2.length; i++) {
-			color2[i] = colorSpread[i % 3];
+		color1.flip();
+
+		FloatBuffer color2 = s.getColorBuffer();
+		color2.clear();
+		for (int i = 0, bLength = color2.capacity(); i < bLength; i+=4) {
+		    ColorRGBA c = colorSpread[i % 3];
+		    color2.put(c.r).put(c.g).put(c.b).put(c.a);
 		}
-		s.setColors(color2);
+		color2.flip();
 
 		n.attachChild(r);
 		m.attachChild(s);
@@ -90,28 +130,25 @@ public class TestOBBTree extends SimpleGame {
 			return;
 		count = 0;
 
-		ColorRGBA[] color1 = s.getColors();
-		ColorRGBA[] color2 = r.getColors();
+		FloatBuffer color1 = s.getColorBuffer();
+		FloatBuffer color2 = r.getColorBuffer();
 		int[] indexBuffer = new int[3];
 
 		if (oldData != null) {
 
 			for (int i = 0; i < oldData.getSourceTris().size(); i++) {
-				int triIndex = ((Integer) oldData.getSourceTris().get(i))
-						.intValue();
+				int triIndex = ((Integer) oldData.getSourceTris().get(i)).intValue();
 				s.getTriangle(triIndex, indexBuffer);
-				color1[indexBuffer[0]] = colorSpread[indexBuffer[0] % 3];
-				color1[indexBuffer[1]] = colorSpread[indexBuffer[1] % 3];
-				color1[indexBuffer[2]] = colorSpread[indexBuffer[2] % 3];
-
+				BufferUtils.setInBuffer(colorSpread[indexBuffer[0] % 3], color1, indexBuffer[0]);
+				BufferUtils.setInBuffer(colorSpread[indexBuffer[1] % 3], color1, indexBuffer[1]);
+				BufferUtils.setInBuffer(colorSpread[indexBuffer[2] % 3], color1, indexBuffer[2]);
 			}
 			for (int i = 0; i < oldData.getTargetTris().size(); i++) {
-				int triIndex = ((Integer) oldData.getTargetTris().get(i))
-						.intValue();
+				int triIndex = ((Integer) oldData.getTargetTris().get(i)).intValue();
 				r.getTriangle(triIndex, indexBuffer);
-				color2[indexBuffer[0]] = colorSpread[indexBuffer[0] % 3];
-				color2[indexBuffer[1]] = colorSpread[indexBuffer[1] % 3];
-				color2[indexBuffer[2]] = colorSpread[indexBuffer[2] % 3];
+				BufferUtils.setInBuffer(colorSpread[indexBuffer[0] % 3], color2, indexBuffer[0]);
+				BufferUtils.setInBuffer(colorSpread[indexBuffer[1] % 3], color2, indexBuffer[1]);
+				BufferUtils.setInBuffer(colorSpread[indexBuffer[2] % 3], color2, indexBuffer[2]);
 			}
 		}
 
@@ -120,27 +157,23 @@ public class TestOBBTree extends SimpleGame {
 
 		if (results.getNumber() > 0) {
 			oldData = results.getCollisionData(0);
-			for (int i = 0; i < results.getCollisionData(0).getSourceTris()
-					.size(); i++) {
+			for (int i = 0; i < results.getCollisionData(0).getSourceTris().size(); i++) {
 				int triIndex = ((Integer) results.getCollisionData(0)
 						.getSourceTris().get(i)).intValue();
 				s.getTriangle(triIndex, indexBuffer);
-				color1[indexBuffer[0]] = ColorRGBA.red;
-				color1[indexBuffer[1]] = ColorRGBA.red;
-				color1[indexBuffer[2]] = ColorRGBA.red;
+				BufferUtils.setInBuffer(ColorRGBA.red, color1, indexBuffer[0]);
+				BufferUtils.setInBuffer(ColorRGBA.red, color1, indexBuffer[1]);
+				BufferUtils.setInBuffer(ColorRGBA.red, color1, indexBuffer[2]);
 			}
-			s.setColors(color1);
-			for (int i = 0; i < results.getCollisionData(0).getTargetTris()
-					.size(); i++) {
+
+			for (int i = 0; i < results.getCollisionData(0).getTargetTris().size(); i++) {
 				int triIndex = ((Integer) results.getCollisionData(0)
 						.getTargetTris().get(i)).intValue();
 				r.getTriangle(triIndex, indexBuffer);
-				color2[indexBuffer[0]] = ColorRGBA.blue;
-				color2[indexBuffer[1]] = ColorRGBA.blue;
-				color2[indexBuffer[2]] = ColorRGBA.blue;
-
+				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[0]);
+				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[1]);
+				BufferUtils.setInBuffer(ColorRGBA.blue, color2, indexBuffer[2]);
 			}
-			r.setColors(color2);
 		}
 	}
 }

@@ -1,48 +1,49 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene.shape;
 
 import com.jme.math.FastMath;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Torus</code> is um ... a Torus :) The center is by default the
  * origin.
  * 
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.4 2004-09-14 21:52:21 mojomonkey Exp $
+ * @version $Id: Torus.java,v 1.5 2005-09-15 17:13:43 renanse Exp $
  */
 public class Torus extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -81,33 +82,36 @@ public class Torus extends TriMesh {
 
 		setGeometryData();
 		setIndexData();
-		setColorData();
+		setSolidColor(ColorRGBA.white);
 
 	}
 
 	private void setGeometryData() {
 
-		int numVerts = (circleSamples + 1) * (radialSamples + 1);
-		//set the geometry's defined data
-		vertex = new Vector3f[numVerts];
-		normal = new Vector3f[numVerts];
-		//initialize the first texture unit (other texture units are set
-		//by the user)
-		texture[0] = new Vector2f[numVerts];
+        // allocate vertices
+	    vertQuantity = (circleSamples + 1) * (radialSamples + 1);
+        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+
+        // allocate normals if requested
+        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+
+        // allocate texture coordinates
+        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
 
 		// generate geometry
 		float inverseCircleSamples = 1.0f / (float) circleSamples;
 		float inverseRadialSamples = 1.0f / (float) radialSamples;
 		int i = 0;
 		// generate the cylinder itself
+		Vector3f radialAxis = new Vector3f(), torusMiddle = new Vector3f(), tempNormal = new Vector3f();
 		for (int circleCount = 0; circleCount < circleSamples; circleCount++) {
 			// compute center point on torus circle at specified angle
 			float circleFraction = circleCount * inverseCircleSamples;
 			float theta = FastMath.TWO_PI * circleFraction;
 			float cosTheta = FastMath.cos(theta);
 			float sinTheta = FastMath.sin(theta);
-			Vector3f radialAxis = new Vector3f(cosTheta, sinTheta, 0);
-			Vector3f torusMiddle = radialAxis.mult(outerRadius);
+			radialAxis.set(cosTheta, sinTheta, 0);
+			radialAxis.mult(outerRadius, torusMiddle);
 
 			// compute slice vertices with duplication at end point
 			int iSave = i;
@@ -117,49 +121,41 @@ public class Torus extends TriMesh {
 				float phi = FastMath.TWO_PI * radialFraction;
 				float cosPhi = FastMath.cos(phi);
 				float sinPhi = FastMath.sin(phi);
-				Vector3f tempNormal = radialAxis.mult(cosPhi);
+				tempNormal.set(radialAxis).multLocal(cosPhi);
 				tempNormal.z += sinPhi;
-				vertex[i] = torusMiddle.add(tempNormal.mult(innerRadius));
 				if (true)
-					normal[i] = tempNormal;
+				    normBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
 				else
-					normal[i] = tempNormal.negate();
-				if (texture[0][i] == null)
-					texture[0][i] = new Vector2f();
-				texture[0][i].x = radialFraction;
-				texture[0][i].y = circleFraction;
+				    normBuf.put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
+
+				tempNormal.multLocal(innerRadius).addLocal(torusMiddle);
+				vertBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+
+                texBuf[0].put(radialFraction).put(circleFraction);
 				i++;
 			}
 
-			vertex[i] = vertex[iSave];
-			normal[i] = normal[iSave];
-			if (texture[0][i] == null)
-				texture[0][i] = new Vector2f();
-			texture[0][i].x = 1.0f;
-			texture[0][i].y = circleFraction;
-			i++;
+            BufferUtils.copyInternalVector3(vertBuf, iSave, i);
+            BufferUtils.copyInternalVector3(normBuf, iSave, i);
+
+            texBuf[0].put(1.0f).put(circleFraction);
+
+            i++;
 		}
 
 		// duplicate the cylinder ends to form a torus
 		for (int iR = 0; iR <= radialSamples; iR++, i++) {
-			vertex[i] = vertex[iR];
-			normal[i] = normal[iR];
-			if (texture[0][i] == null)
-				texture[0][i] = new Vector2f();
-			texture[0][i].x = texture[0][iR].x;
-			texture[0][i].y = 1.0f;
-
+            BufferUtils.copyInternalVector3(vertBuf, iR, i);
+            BufferUtils.copyInternalVector3(normBuf, iR, i);
+            BufferUtils.copyInternalVector2(texBuf[0], iR, i);
+            texBuf[0].put(i*2+1, 1.0f);
 		}
-
-		setVertices(vertex);
-		setNormals(normal);
-		setTextures(texture[0]);
 	}
 
 	private void setIndexData() {
 		//      allocate connectivity
-		int indexQuantity = 2 * circleSamples * radialSamples;
-		indices = new int[3 * indexQuantity];
+		triangleQuantity = 2 * circleSamples * radialSamples;
+		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
 		int i;
 		// generate connectivity
 		int connectionStart = 0;
@@ -172,32 +168,21 @@ public class Torus extends TriMesh {
 			int i3 = i2 + 1;
 			for (i = 0; i < radialSamples; i++, index += 6) {
 				if (true) {
-					indices[index + 0] = i0++;
-					indices[index + 1] = i2;
-					indices[index + 2] = i1;
-					indices[index + 3] = i1++;
-					indices[index + 4] = i2++;
-					indices[index + 5] = i3++;
+				    indexBuffer.put(i0++);
+				    indexBuffer.put(i2);
+				    indexBuffer.put(i1);
+				    indexBuffer.put(i1++);
+				    indexBuffer.put(i2++);
+				    indexBuffer.put(i3++);
 				} else {
-					indices[index + 0] = i0++;
-					indices[index + 1] = i1;
-					indices[index + 2] = i2;
-					indices[index + 3] = i1++;
-					indices[index + 4] = i3++;
-					indices[index + 5] = i2++;
+				    indexBuffer.put(i0++);
+				    indexBuffer.put(i1);
+				    indexBuffer.put(i2);
+				    indexBuffer.put(i1++);
+				    indexBuffer.put(i3++);
+				    indexBuffer.put(i2++);
 				}
 			}
 		}
-		setIndices(indices);
 	}
-
-	private void setColorData() {
-		color = new ColorRGBA[vertex.length];
-		//initialize colors to white
-		for (int x = 0; x < vertex.length; x++) {
-			color[x] = new ColorRGBA();
-		}
-		setColors(color);
-	}
-
 }

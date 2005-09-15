@@ -1,41 +1,48 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.bounding;
 
+import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
-import com.jme.math.*;
+import com.jme.math.FastMath;
+import com.jme.math.Plane;
+import com.jme.math.Quaternion;
+import com.jme.math.Ray;
+import com.jme.math.Vector3f;
 import com.jme.scene.shape.Sphere;
 import com.jme.util.LoggingSystem;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>BoundingSphere</code> defines a sphere that defines a container for a
@@ -47,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.26 2005-05-24 22:47:33 Mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.27 2005-09-15 17:14:14 renanse Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -63,10 +70,6 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     private static final long serialVersionUID = 1L;
 
     private static final Vector3f tempVeca = new Vector3f();
-
-    private static final Vector3f[] tempVarray = { new Vector3f(),
-            new Vector3f(), new Vector3f(), new Vector3f(), new Vector3f(),
-            new Vector3f(), new Vector3f(), new Vector3f() };
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -168,7 +171,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @param points
      *            the points to contain.
      */
-    public void computeFromPoints(Vector3f[] points) {
+    public void computeFromPoints(FloatBuffer points) {
         calcWelzl(points);
     }
 
@@ -181,16 +184,18 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @param points
      *            The points to calculate the minimum bounds from.
      */
-    public void calcWelzl(Vector3f[] points) {
+    public void calcWelzl(FloatBuffer points) {
         if (center == null)
             center = new Vector3f();
-        Vector3f[] newRef = new Vector3f[points.length];
-        for (int i = 0; i < points.length; i++) {
-            newRef[i] = points[i];
-        }
-        recurseMini(newRef, newRef.length, 0, 0);
+        FloatBuffer buf = BufferUtils.createFloatBuffer(points.capacity());
+        buf.clear();
+        points.rewind();
+        buf.put(points);
+        buf.flip();
+        recurseMini(buf, buf.capacity() / 3, 0, 0);
     }
 
+    private static Vector3f tempA = new Vector3f(), tempB = new Vector3f(), tempC = new Vector3f(), tempD = new Vector3f();
     /**
      * Used from calcWelzl. This function recurses to calculate a minimum
      * bounding sphere a few points at a time.
@@ -206,7 +211,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      *            A variable simulating pointer arithmatic from C++, and offset
      *            in <code>points</code>.
      */
-    private void recurseMini(Vector3f[] points, int p, int b, int ap) {
+    private void recurseMini(FloatBuffer points, int p, int b, int ap) {
         switch (b) {
         case 0:
             this.radius = 0;
@@ -214,26 +219,35 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             break;
         case 1:
             this.radius = 1 - radiusEpsilon;
-            this.center.set(points[ap - 1]);
+            BufferUtils.populateFromBuffer(center, points, ap-1);
             break;
         case 2:
-            setSphere(points[ap - 1], points[ap - 2]);
+            BufferUtils.populateFromBuffer(tempA, points, ap-1);
+            BufferUtils.populateFromBuffer(tempB, points, ap-2);
+            setSphere(tempA, tempB);
             break;
         case 3:
-            setSphere(points[ap - 1], points[ap - 2], points[ap - 3]);
+            BufferUtils.populateFromBuffer(tempA, points, ap-1);
+            BufferUtils.populateFromBuffer(tempB, points, ap-2);
+            BufferUtils.populateFromBuffer(tempC, points, ap-3);
+            setSphere(tempA, tempB, tempC);
             break;
         case 4:
-            setSphere(points[ap - 1], points[ap - 2], points[ap - 3],
-                    points[ap - 4]);
+            BufferUtils.populateFromBuffer(tempA, points, ap-1);
+            BufferUtils.populateFromBuffer(tempB, points, ap-2);
+            BufferUtils.populateFromBuffer(tempC, points, ap-3);
+            BufferUtils.populateFromBuffer(tempD, points, ap-4);
+            setSphere(tempA, tempB, tempC, tempD);
             return;
         }
         for (int i = 0; i < p; i++) {
-            if (points[i + ap].distanceSquared(center) - radius * radius > radiusEpsilon - 1) {
-                Vector3f temp = points[i + ap];
+            BufferUtils.populateFromBuffer(tempA, points, i+ap);
+            if (tempA.distanceSquared(center) - radius * radius > radiusEpsilon - 1) {
                 for (int j = i; j > 0; j--) {
-                    points[j + ap] = points[j - 1 + ap];
+                    BufferUtils.populateFromBuffer(tempB, points, j - 1 + ap);
+                    BufferUtils.setInBuffer(tempB, points, j + ap);
                 }
-                points[ap] = temp;
+                BufferUtils.setInBuffer(tempA, points, ap);
                 recurseMini(points, i, b + 1, ap + 1);
             }
         }
@@ -512,27 +526,21 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     private BoundingSphere mergeOBB(OrientedBoundingBox volume) {
         if (!volume.correctCorners)
             volume.computeCorners();
-        Vector3f[] mergeArray = new Vector3f[16];
+        FloatBuffer buf = BufferUtils.createVector3Buffer(16);
         for (int i = 0; i < 8; i++) {
-            mergeArray[i] = volume.vectorStore[i];
+            buf.put(volume.vectorStore[i].x);
+            buf.put(volume.vectorStore[i].y);
+            buf.put(volume.vectorStore[i].z);
         }
-        mergeArray[8] = tempVarray[0].set(center).addLocal(radius, radius,
-                radius);
-        mergeArray[9] = tempVarray[1].set(center).addLocal(-radius, radius,
-                radius);
-        mergeArray[10] = tempVarray[2].set(center).addLocal(radius, -radius,
-                radius);
-        mergeArray[11] = tempVarray[3].set(center).addLocal(radius, radius,
-                -radius);
-        mergeArray[12] = tempVarray[4].set(center).addLocal(-radius, -radius,
-                radius);
-        mergeArray[13] = tempVarray[5].set(center).addLocal(-radius, radius,
-                -radius);
-        mergeArray[14] = tempVarray[6].set(center).addLocal(radius, -radius,
-                -radius);
-        mergeArray[15] = tempVarray[7].set(center).addLocal(-radius, -radius,
-                -radius);
-        computeFromPoints(mergeArray);
+        buf.put(center.x+radius).put(center.y+radius).put(center.z+radius);
+        buf.put(center.x-radius).put(center.y+radius).put(center.z+radius);
+        buf.put(center.x+radius).put(center.y-radius).put(center.z+radius);
+        buf.put(center.x+radius).put(center.y+radius).put(center.z-radius);
+        buf.put(center.x-radius).put(center.y-radius).put(center.z+radius);
+        buf.put(center.x-radius).put(center.y+radius).put(center.z-radius);
+        buf.put(center.x+radius).put(center.y-radius).put(center.z-radius);
+        buf.put(center.x-radius).put(center.y-radius).put(center.z-radius);
+        computeFromPoints(buf);
         return this;
     }
 

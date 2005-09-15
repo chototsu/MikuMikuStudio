@@ -1,41 +1,42 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene.shape;
 
 import com.jme.math.FastMath;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Cylinder</code> provides an extension of <code>TriMesh</code>. A
@@ -43,7 +44,7 @@ import com.jme.scene.TriMesh;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.5 2004-10-17 18:43:33 mojomonkey Exp $
+ * @version $Id: Cylinder.java,v 1.6 2005-09-15 17:13:44 renanse Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -120,25 +121,23 @@ public class Cylinder extends TriMesh {
     }
 
     private void allocateVertices() {
-        //      allocate vertices
-        int quantity = axisSamples * (radialSamples + 1);
-        vertex = new Vector3f[quantity];
-        normal = new Vector3f[quantity];
-        color = new ColorRGBA[quantity];
-        texture[0] = new Vector2f[quantity];
-        int triQuantity = 2 * (axisSamples - 1) * radialSamples;
-        indices = new int[3 * triQuantity];
+        // allocate vertices
+        vertQuantity = axisSamples * (radialSamples + 1);
+        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+
+        // allocate normals if requested
+        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+
+        // allocate texture coordinates
+        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+
+        triangleQuantity = 2 * (axisSamples - 1) * radialSamples;
+        indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
 
         setGeometryData();
-
         setIndexData();
-
-        setVertices(vertex);
-        setNormals(normal);
-
-        setTextures(texture[0]);
-
-        setColorData();
+        
+        setSolidColor(ColorRGBA.white);
     }
 
     private void setGeometryData() {
@@ -161,6 +160,7 @@ public class Cylinder extends TriMesh {
         cos[radialSamples] = cos[0];
 
         // generate the cylinder itself
+        Vector3f tempNormal = new Vector3f();
         for (int axisCount = 0, i = 0; axisCount < axisSamples; axisCount++) {
             float axisFraction = axisCount * inverseAxisLess; // in [0,1]
             float z = -halfHeight + height * axisFraction;
@@ -172,69 +172,51 @@ public class Cylinder extends TriMesh {
             int save = i;
             for (int radialCount = 0; radialCount < radialSamples; radialCount++) {
                 float radialFraction = radialCount * inverseRadial; // in [0,1)
-                Vector3f tempNormal = new Vector3f(cos[radialCount],
-                        sin[radialCount], 0);
-                vertex[i] = sliceCenter.add(tempNormal.mult(radius));
-                if (true) {
-                    normal[i] = tempNormal;
-                } else {
-                    normal[i] = tempNormal.negate();
-                }
-                if (texture[0][i] == null) {
-                    texture[0][i] = new Vector2f();
-                }
-                texture[0][i].x = radialFraction;
-                texture[0][i].y = axisFraction;
+                tempNormal.set(cos[radialCount], sin[radialCount], 0);
+                if (true) normBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+                else normBuf.put(-tempNormal.x).put(-tempNormal.y).put(-tempNormal.z);
+
+				tempNormal.multLocal(radius).addLocal(sliceCenter);
+				vertBuf.put(tempNormal.x).put(tempNormal.y).put(tempNormal.z);
+
+                texBuf[0].put(radialFraction).put(axisFraction);
                 i++;
             }
 
-            vertex[i] = vertex[save];
-            normal[i] = normal[save];
-            if (texture[0][i] == null) {
-                texture[0][i] = new Vector2f();
-            }
-            texture[0][i].x = 1.0f;
-            texture[0][i].y = axisFraction;
+            BufferUtils.copyInternalVector3(vertBuf, save, i);
+            BufferUtils.copyInternalVector3(normBuf, save, i);
+
+            texBuf[0].put(1.0f).put(axisFraction);
+
             i++;
         }
     }
 
     private void setIndexData() {
         // generate connectivity
-        int index = 0;
         for (int axisCount = 0, axisStart = 0; axisCount < axisSamples - 1; axisCount++) {
             int i0 = axisStart;
             int i1 = i0 + 1;
             axisStart += radialSamples + 1;
             int i2 = axisStart;
             int i3 = i2 + 1;
-            for (int i = 0; i < radialSamples; i++, index += 6) {
+            for (int i = 0; i < radialSamples; i++) {
                 if (true) {
-                    indices[index + 0] = i0++;
-                    indices[index + 1] = i1;
-                    indices[index + 2] = i2;
-                    indices[index + 3] = i1++;
-                    indices[index + 4] = i3++;
-                    indices[index + 5] = i2++;
+                    indexBuffer.put(i0++);
+                    indexBuffer.put(i1);
+                    indexBuffer.put(i2);
+                    indexBuffer.put(i1++);
+                    indexBuffer.put(i3++);
+                    indexBuffer.put(i2++);
                 } else {
-                    indices[index + 0] = i0++;
-                    indices[index + 1] = i2;
-                    indices[index + 2] = i1;
-                    indices[index + 3] = i1++;
-                    indices[index + 4] = i2++;
-                    indices[index + 5] = i3++;
+                    indexBuffer.put(i0++);
+                    indexBuffer.put(i2);
+                    indexBuffer.put(i1);
+                    indexBuffer.put(i1++);
+                    indexBuffer.put(i2++);
+                    indexBuffer.put(i3++);
                 }
             }
         }
-
-        setIndices(indices);
     }
-
-    private void setColorData() {
-        for (int x = 0; x < color.length; x++) {
-            color[x] = new ColorRGBA();
-        }
-        setColors(color);
-    }
-
 }

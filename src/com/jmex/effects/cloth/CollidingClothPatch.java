@@ -1,34 +1,35 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jmex.effects.cloth;
 
 import java.util.ArrayList;
@@ -39,13 +40,14 @@ import com.jme.intersection.TriangleCollisionResults;
 import com.jme.math.SpringNode;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>CollidingClothPatch</code> is a ClothPatch with the ability to interact
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.1 2005-05-12 22:49:42 Mojomonkey Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.2 2005-09-15 17:14:42 renanse Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;
@@ -57,7 +59,6 @@ public class CollidingClothPatch extends ClothPatch {
 
 	// Temp vars used to eliminate object creation
 	protected SpringNode[] srcTemps = new SpringNode[3];
-	protected Vector3f[] tgtTemps = new Vector3f[3];
 	protected Vector3f calcTemp = new Vector3f();
 
 	/**
@@ -105,7 +106,6 @@ public class CollidingClothPatch extends ClothPatch {
 				}
 			}
 		}
-		updateVertexBuffer();
 	}
 
 	/**
@@ -117,24 +117,12 @@ public class CollidingClothPatch extends ClothPatch {
 	 * @param tgtTriIndex int
 	 */
 	protected void handleCollision(TriMesh target, int srcTriIndex, int tgtTriIndex) {
-		srcTemps[0] = system.getNode(indices[srcTriIndex * 3 + 0]);
-		srcTemps[1] = system.getNode(indices[srcTriIndex * 3 + 1]);
-		srcTemps[2] = system.getNode(indices[srcTriIndex * 3 + 2]);
-
-		tgtTemps[0] = target.getVertices()[target.getIndices()[tgtTriIndex * 3 + 0]];
-		tgtTemps[1] = target.getVertices()[target.getIndices()[tgtTriIndex * 3 + 1]];
-		tgtTemps[2] = target.getVertices()[target.getIndices()[tgtTriIndex * 3 + 2]];
-
-		if (srcTemps[0].invMass != 0)
-			srcTemps[0].position.set(tgtTemps[0]);
-		if (srcTemps[1].invMass != 0)
-			srcTemps[1].position.set(tgtTemps[1]);
-		if (srcTemps[2].invMass != 0)
-			srcTemps[2].position.set(tgtTemps[2]);
-
-		srcTemps[0].acceleration.multLocal(.8f); // simple frictional force here.
-		srcTemps[1].acceleration.multLocal(.8f);
-		srcTemps[2].acceleration.multLocal(.8f);
+	    for (int x = 0; x < 3; x++) {
+		    srcTemps[x] = system.getNode(indexBuffer.get(srcTriIndex * 3 + x));
+			if (srcTemps[x].invMass != 0)
+			    BufferUtils.populateFromBuffer(srcTemps[x].position, target.getVertexBuffer(), target.getIndexBuffer().get(tgtTriIndex * 3 + x));
+			srcTemps[x].acceleration.multLocal(.8f); // simple frictional force here.
+	    }
 	}
 
 	/**

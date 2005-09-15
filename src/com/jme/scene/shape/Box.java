@@ -1,40 +1,43 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene.shape;
 
-import com.jme.math.Vector2f;
+import java.nio.FloatBuffer;
+
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Box</code> provides an extension of <code>TriMesh</code>. A
@@ -43,7 +46,7 @@ import com.jme.scene.TriMesh;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.11 2005-07-13 22:35:36 Mojomonkey Exp $
+ * @version $Id: Box.java,v 1.12 2005-09-15 17:13:44 renanse Exp $
  */
 public class Box extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -172,7 +175,7 @@ public class Box extends TriMesh {
 		if (updateBuffers) {
 			setVertexData();
 			setNormalData();
-			setColorData();
+			setSolidColor(ColorRGBA.white);
 			setTextureData();
 			setIndexData();
 		}
@@ -186,45 +189,45 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setVertexData() {
-		Vector3f[] verts = new Vector3f[24];
+	    vertBuf = BufferUtils.createVector3Buffer(24);
+	    vertQuantity = 24;
 		Vector3f[] vert = computeVertices(); // returns 8
 
-		//Front
-		verts[0] = vert[0];
-		verts[1] = vert[1];
-		verts[2] = vert[2];
-		verts[3] = vert[3];
+		//Back
+		vertBuf.put(vert[0].x).put(vert[0].y).put(vert[0].z);
+		vertBuf.put(vert[1].x).put(vert[1].y).put(vert[1].z);
+		vertBuf.put(vert[2].x).put(vert[2].y).put(vert[2].z);
+		vertBuf.put(vert[3].x).put(vert[3].y).put(vert[3].z);
 
 		//Right
-		verts[4] = vert[1];
-		verts[5] = vert[4];
-		verts[6] = vert[6];
-		verts[7] = vert[2];
+		vertBuf.put(vert[1].x).put(vert[1].y).put(vert[1].z);
+		vertBuf.put(vert[4].x).put(vert[4].y).put(vert[4].z);
+		vertBuf.put(vert[6].x).put(vert[6].y).put(vert[6].z);
+		vertBuf.put(vert[2].x).put(vert[2].y).put(vert[2].z);
 
-		//Back
-		verts[8] = vert[4];
-		verts[9] = vert[5];
-		verts[10] = vert[7];
-		verts[11] = vert[6];
+		//Front
+		vertBuf.put(vert[4].x).put(vert[4].y).put(vert[4].z);
+		vertBuf.put(vert[5].x).put(vert[5].y).put(vert[5].z);
+		vertBuf.put(vert[7].x).put(vert[7].y).put(vert[7].z);
+		vertBuf.put(vert[6].x).put(vert[6].y).put(vert[6].z);
 
 		//Left
-		verts[12] = vert[5];
-		verts[13] = vert[0];
-		verts[14] = vert[3];
-		verts[15] = vert[7];
+		vertBuf.put(vert[5].x).put(vert[5].y).put(vert[5].z);
+		vertBuf.put(vert[0].x).put(vert[0].y).put(vert[0].z);
+		vertBuf.put(vert[3].x).put(vert[3].y).put(vert[3].z);
+		vertBuf.put(vert[7].x).put(vert[7].y).put(vert[7].z);
 
 		//Top
-		verts[16] = vert[2];
-		verts[17] = vert[6];
-		verts[18] = vert[7];
-		verts[19] = vert[3];
+		vertBuf.put(vert[2].x).put(vert[2].y).put(vert[2].z);
+		vertBuf.put(vert[6].x).put(vert[6].y).put(vert[6].z);
+		vertBuf.put(vert[7].x).put(vert[7].y).put(vert[7].z);
+		vertBuf.put(vert[3].x).put(vert[3].y).put(vert[3].z);
 
 		//Bottom
-		verts[20] = vert[0];
-		verts[21] = vert[5];
-		verts[22] = vert[4];
-		verts[23] = vert[1];
-		setVertices(verts);
+		vertBuf.put(vert[0].x).put(vert[0].y).put(vert[0].z);
+		vertBuf.put(vert[5].x).put(vert[5].y).put(vert[5].z);
+		vertBuf.put(vert[4].x).put(vert[4].y).put(vert[4].z);
+		vertBuf.put(vert[1].x).put(vert[1].y).put(vert[1].z);
 
 	}
 
@@ -236,7 +239,7 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setNormalData() {
-		Vector3f[] normals = new Vector3f[24];
+	    normBuf = BufferUtils.createVector3Buffer(24);
 		Vector3f front = new Vector3f(0, 0, 1);
 		Vector3f right = new Vector3f(1, 0, 0);
 		Vector3f back = new Vector3f(0, 0, -1);
@@ -245,43 +248,28 @@ public class Box extends TriMesh {
 		Vector3f bottom = new Vector3f(0, -1, 0);
 
 		//back
-		normals[0] = back;
-		normals[1] = back;
-		normals[2] = back;
-		normals[3] = back;
+		for (int i = 0; i < 4; i++)
+		    normBuf.put(0).put(0).put(-1);
 
 		//right
-		normals[4] = right;
-		normals[5] = right;
-		normals[6] = right;
-		normals[7] = right;
+		for (int i = 0; i < 4; i++)
+		    normBuf.put(1).put(0).put(0);
 
 		//front
-		normals[8] = front;
-		normals[9] = front;
-		normals[10] = front;
-		normals[11] = front;
+		for (int i = 0; i < 4; i++)
+		    normBuf.put(0).put(0).put(1);
 
 		//left
-		normals[12] = left;
-		normals[13] = left;
-		normals[14] = left;
-		normals[15] = left;
+		for (int i = 0; i < 4; i++)
+		    normBuf.put(-1).put(0).put(0);
 
 		//top
-		normals[16] = top;
-		normals[17] = top;
-		normals[18] = top;
-		normals[19] = top;
+		for (int i = 0; i < 4; i++)
+		    normBuf.put(0).put(1).put(0);
 
 		//bottom
-		normals[20] = bottom;
-		normals[21] = bottom;
-		normals[22] = bottom;
-		normals[23] = bottom;
-
-		setNormals(normals);
-
+		for (int i = 0; i < 4; i++)
+		    normBuf.put(0).put(-1).put(0);
 	}
 
 	/**
@@ -293,58 +281,15 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setTextureData() {
-		Vector2f[] textures = new Vector2f[24];
-		Vector2f br = new Vector2f(0, 0);
-		Vector2f bl = new Vector2f(1, 0);
-		Vector2f tl = new Vector2f(1, 1);
-		Vector2f tr = new Vector2f(0, 1);
+	    texBuf[0] = BufferUtils.createVector2Buffer(24);
+	    FloatBuffer tex = texBuf[0];
 
-		textures[0] = bl;
-		textures[1] = br;
-		textures[2] = tr;
-		textures[3] = tl;
-
-		textures[4] = bl;
-		textures[5] = br;
-		textures[6] = tr;
-		textures[7] = tl;
-
-		textures[8] = bl;
-		textures[9] = br;
-		textures[10] = tr;
-		textures[11] = tl;
-
-		textures[12] = bl;
-		textures[13] = br;
-		textures[14] = tr;
-		textures[15] = tl;
-
-		textures[16] = bl;
-		textures[17] = br;
-		textures[18] = tr;
-		textures[19] = tl;
-
-		textures[20] = bl;
-		textures[21] = br;
-		textures[22] = tr;
-		textures[23] = tl;
-
-		setTextures(textures);
-
-	}
-
-	/**
-	 * 
-	 * <code>setColorData</code> sets the color values for each vertex of the
-	 * box. Currently, these are set to white.
-	 *  
-	 */
-	private void setColorData() {
-		ColorRGBA[] color = new ColorRGBA[24];
-		for (int i = 0; i < color.length; i++) {
-			color[i] = new ColorRGBA(1, 1, 1, 1);
+		for (int i = 0; i < 6; i++) {
+		    tex.put(1).put(0);
+			tex.put(0).put(0);
+			tex.put(0).put(1);
+			tex.put(1).put(1);
 		}
-		setColors(color);
 	}
 
 	/**
@@ -357,7 +302,7 @@ public class Box extends TriMesh {
 		int[] indices = { 2, 1, 0, 3, 2, 0, 6, 5, 4, 7, 6, 4, 10, 9, 8, 11, 10,
 				8, 14, 13, 12, 15, 14, 12, 18, 17, 16, 19, 18, 16, 22, 21, 20,
 				23, 22, 20 };
-		setIndices(indices);
+		setIndexBuffer(BufferUtils.createIntBuffer(indices));
 
 	}
 

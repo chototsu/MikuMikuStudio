@@ -1,39 +1,40 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
- * reserved.
- * 
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- * 
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
- * 
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * 
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
- * 
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *  
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene;
 
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.system.JmeException;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>BezierMesh</code> is defined by a collection of
@@ -43,7 +44,7 @@ import com.jme.system.JmeException;
  * how smooth the mesh will be.
  * 
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.12 2004-09-14 21:52:13 mojomonkey Exp $
+ * @version $Id: BezierMesh.java,v 1.13 2005-09-15 17:13:35 renanse Exp $
  */
 public class BezierMesh extends TriMesh {
 
@@ -122,14 +123,17 @@ public class BezierMesh extends TriMesh {
 		}
 
 		u = 1;
-		Vector3f[] vertex = new Vector3f[((detailLevel * 2) + 2) * detailLevel];
-		Vector2f[] texture = new Vector2f[((detailLevel * 2) + 2) * detailLevel];
-		Vector3f[] normal = new Vector3f[vertex.length];
-		int[] indices = new int[detailLevel * detailLevel * 6];
+		vertQuantity = ((detailLevel * 2) + 2) * detailLevel;
+		vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+		texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+		normBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
-		int count = 0;
+		triangleQuantity = detailLevel * detailLevel * 6;
+		indexBuffer = BufferUtils.createIntBuffer(triangleQuantity * 3);
+
+		vertBuf.clear();
+		texBuf[0].clear();
 		for (u = 1; u <= detailLevel; u++) {
-
 			py = ((float) u) / ((float) detailLevel);
 			pyold = (u - 1.0f) / (detailLevel);
 			temp[0] = calcBerstein(py, patch.getAnchors()[0]);
@@ -139,85 +143,83 @@ public class BezierMesh extends TriMesh {
 
 			for (v = 0; v <= detailLevel; v++) {
 				px = ((float) v) / ((float) detailLevel);
-				texture[count] = new Vector2f(pyold, px);
-				vertex[count] = new Vector3f(last[v].x, last[v].y, last[v].z);
-				count++;
+				texBuf[0].put(pyold).put(px);
+				vertBuf.put(last[v].x).put(last[v].y).put(last[v].z);
 				last[v] = calcBerstein(px, temp);
-				texture[count] = new Vector2f(py, px);
-				vertex[count] = new Vector3f(last[v].x, last[v].y, last[v].z);
-				count++;
+				texBuf[0].put(py).put(px);
+				vertBuf.put(last[v].x).put(last[v].y).put(last[v].z);
 			}
 
 		}
 
 		int index = -1;
-		for (int i = 0; i < detailLevel * detailLevel * 6; i = i + 6) {
+		for (int i = 0; i < triangleQuantity; i = i + 6) {
 
 			index++;
 			if (i > 0 && i % (detailLevel * 6) == 0) {
 				index += 1;
 			}
 
-			indices[i] = 2 * index;
-			indices[(i + 1)] = (2 * index) + 1;
-			indices[(i + 2)] = (2 * index) + 2;
+			indexBuffer.put(2 * index);
+			indexBuffer.put((2 * index) + 1);
+			indexBuffer.put((2 * index) + 2);
 
-			indices[(i + 3)] = (2 * index) + 3;
-			indices[(i + 4)] = (2 * index) + 2;
-			indices[(i + 5)] = (2 * index) + 1;
+			indexBuffer.put((2 * index) + 3);
+			indexBuffer.put((2 * index) + 2);
+			indexBuffer.put((2 * index) + 1);
 		}
 
-		int normalIndex = 0;
+        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        Vector3f oppositePoint = new Vector3f();
+        Vector3f adjacentPoint = new Vector3f();
+        Vector3f rootPoint = new Vector3f();
+        Vector3f tempNorm = new Vector3f();
+        int adj = 0, opp = 0, normalIndex = 0;
 		for (int i = 0; i < detailLevel; i++) {
 			for (int j = 0; j < (detailLevel * 2) + 2; j++) {
+                BufferUtils.populateFromBuffer(rootPoint, vertBuf, normalIndex);
 				if (j % 2 == 0) {
 					if (i == 0) {
 						if (j < (detailLevel * 2)) {
 							//right cross up
-							normal[normalIndex] = vertex[normalIndex + 1]
-									.subtract(vertex[normalIndex])
-									.cross(
-											vertex[normalIndex + 2]
-													.subtract(vertex[normalIndex]))
-									.normalizeLocal();
+	                        adj = normalIndex+1;
+	                        opp = normalIndex+2;
 						} else {
 							//down cross right
-							normal[normalIndex] = vertex[normalIndex - 2]
-									.subtract(vertex[normalIndex])
-									.cross(
-											vertex[normalIndex + 1]
-													.subtract(vertex[normalIndex]))
-									.normalizeLocal();
+	                        adj = normalIndex-1;
+	                        opp = normalIndex+1;
 						}
 					} else {
-						normal[normalIndex] = (Vector3f) normal[normalIndex
-								- (detailLevel * 2 + 1)].clone();
+					    int ind = normalIndex - (detailLevel * 2 + 1);
+					    normBuf.rewind();
+					    tempNorm.x = normBuf.get(ind*3);
+					    tempNorm.y = normBuf.get(ind*3+1);
+					    tempNorm.z = normBuf.get(ind*3+2);
+					    BufferUtils.setInBuffer(tempNorm, normBuf, normalIndex);
+						normalIndex++;
+					    continue;
 					}
 				} else {
 					if (j < (detailLevel * 2) + 1) {
 						//up cross left
-						normal[normalIndex] = vertex[normalIndex + 2].subtract(
-								vertex[normalIndex]).cross(
-								vertex[normalIndex - 1]
-										.subtract(vertex[normalIndex]))
-								.normalizeLocal();
+                        adj = normalIndex+2;
+                        opp = normalIndex-1;
 					} else {
 						//left cross down
-						normal[normalIndex] = vertex[normalIndex - 1].subtract(
-								vertex[normalIndex]).cross(
-								vertex[normalIndex - 2]
-										.subtract(vertex[normalIndex]))
-								.normalizeLocal();
+                        adj = normalIndex-1;
+                        opp = normalIndex-2;
 					}
 				}
+                BufferUtils.populateFromBuffer(adjacentPoint, vertBuf, adj);
+                BufferUtils.populateFromBuffer(oppositePoint, vertBuf, opp);
+                tempNorm.set(adjacentPoint)
+	                .subtractLocal(rootPoint)
+	                .crossLocal(oppositePoint.subtractLocal(rootPoint))
+	                .normalizeLocal();
+			    BufferUtils.setInBuffer(tempNorm, normBuf, normalIndex);
 				normalIndex++;
 			}
 		}
-
-		setVertices(vertex);
-		setTextures(texture);
-		setIndices(indices);
-		setNormals(normal);
 	}
 
 	/**

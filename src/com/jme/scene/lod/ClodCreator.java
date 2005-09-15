@@ -1,45 +1,46 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.scene.lod;
 
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Map.Entry;
 import java.util.TreeSet;
+import java.util.Map.Entry;
 
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>ClodCreator</code>
@@ -49,17 +50,17 @@ import com.jme.renderer.ColorRGBA;
  * The reason for lack of documentation is that it should have little use to someone
  * outside the API, unless they already know how to use it.
  * @author Joshua Slack
- * @version $Id: ClodCreator.java,v 1.16 2004-09-01 05:20:17 mojomonkey Exp $
+ * @version $Id: ClodCreator.java,v 1.17 2005-09-15 17:14:20 renanse Exp $
  */
 
 public class ClodCreator extends VETMesh {
-  private Vector3f[] vertices;
-  private Vector3f[] normals;
-  private ColorRGBA[] colors;
-  private Vector2f[] textures;
-  private int[] indices;
+  private FloatBuffer vertices;
+  private FloatBuffer normals;
+  private FloatBuffer colors;
+  private FloatBuffer textures;
+  private IntBuffer indices;
 
-  private int currentVertex, currentTriangle, numbTriangles;
+  private int currentVertex, currentTriangle, numbTriangles, vertQuantity;
   private int[] orderedVertices;
   private int[] permuteVertices;
   private int[] newIndices;
@@ -77,6 +78,7 @@ public class ClodCreator extends VETMesh {
   private static final Vector3f tempVa=new Vector3f();
   private static final Vector3f tempVb=new Vector3f();
   private static final Vector3f tempVc=new Vector3f();
+  private static final Vector3f tempVd=new Vector3f();
 
   protected class HeapRecord {
     public HeapRecord() {
@@ -95,12 +97,8 @@ public class ClodCreator extends VETMesh {
     }
   };
 
-  public ClodCreator(
-      Vector3f[] vertexArray,
-      Vector3f[] normalArray,
-      ColorRGBA[] colorArray,
-      Vector2f[] textureArray,
-      int[] indiceArray) {
+  public ClodCreator(FloatBuffer vertexArray, FloatBuffer normalArray,
+            FloatBuffer colorArray, FloatBuffer textureArray, IntBuffer indiceArray) {
     // Hang onto these to avoid having to pass them through member function
     // calls.
     this.vertices = vertexArray;
@@ -108,14 +106,15 @@ public class ClodCreator extends VETMesh {
     this.colors = colorArray;
     this.textures = textureArray;
     this.indices = indiceArray;
-    numbTriangles = indiceArray.length / 3;
+    vertQuantity = vertexArray.capacity() / 3;
+    numbTriangles = indiceArray.capacity() / 3;
 
     // for reordering vertices and triangles
-    currentVertex = vertices.length - 1;
+    currentVertex = vertQuantity - 1;
     currentTriangle = numbTriangles - 1;
-    orderedVertices = new int[vertices.length];
-    permuteVertices = new int[vertices.length];
-    newIndices = new int[indices.length];
+    orderedVertices = new int[vertQuantity];
+    permuteVertices = new int[vertQuantity];
+    newIndices = new int[indices.capacity()];
 
     deletedEdges = new ArrayList();
     deletedVertices = new TreeSet();
@@ -128,23 +127,21 @@ public class ClodCreator extends VETMesh {
 //      int iV1 = m_aiConnect[3 * i + 1];
 //      int iV2 = m_aiConnect[3 * i + 2];
 //      if (!(iV0 != iV1 && iV0 != iV2 && iV1 != iV2)) throw new AssertionError();
-      Triangle tri = new Triangle(indices[3 * i], indices[3 * i + 1],
-                                 indices[3 * i + 2]);
+      Triangle tri = new Triangle(indices.get(3 * i), indices.get(3 * i + 1),
+                                 indices.get(3 * i + 2));
       insertTriangle(tri);
       setData(tri, new Integer(i));
     }
 
     if (triangleMap.size() != numbTriangles) {
       // We must have duplicates...  lets weed them out and make a new Clod.
-      int redoneIndices[] = new int[triangleMap.size() * 3];
+        IntBuffer redoneIndices = BufferUtils.createIntBuffer(triangleMap.size() * 3);
       Iterator it = triangleMap.keySet().iterator();
-      int i = 0;
       while (it.hasNext()) {
         Triangle t = (Triangle) it.next();
-        redoneIndices[i * 3 + 0] = t.vert[0];
-        redoneIndices[i * 3 + 1] = t.vert[1];
-        redoneIndices[i * 3 + 2] = t.vert[2];
-        i++;
+        redoneIndices.put(t.vert[0]);
+        redoneIndices.put(t.vert[1]);
+        redoneIndices.put(t.vert[2]);
       }
       ClodCreator creator = new ClodCreator(vertexArray, normalArray, colorArray, textureArray,
                                             redoneIndices);
@@ -153,8 +150,8 @@ public class ClodCreator extends VETMesh {
       // Copy the reduced indices back to the original indice array.  There will
       // be some bogus ones on the end, but thats ok because they will never be shown thanks to
       // the number of triangles field.
-      for (i = 0; i < redoneIndices.length; i++)
-        indices[i] = redoneIndices[i];
+      indices.rewind();
+      indices.put(redoneIndices);
 
         // clear the triangle map so a call to remove triangles doesn't bomb.
       triangleMap.clear();
@@ -288,30 +285,30 @@ public class ClodCreator extends VETMesh {
     // triangles sharing the edge) are allowed to collapse.
     if (pkEA.triangleSet.size() == 2) {
       // length contribution
-      Vector3f rkEnd0 = vertices[pkE.vert[0]];
-      Vector3f rkEnd1 = vertices[pkE.vert[1]];
-      Vector3f kDiff = rkEnd1.subtract(rkEnd0,tempVa);
-      float fMetric = fLengthWeight * kDiff.length();
+        BufferUtils.populateFromBuffer(tempVa, vertices, pkE.vert[0]);
+        BufferUtils.populateFromBuffer(tempVb, vertices, pkE.vert[1]);
+        Vector3f kDiff = tempVa.subtractLocal(tempVb);
+        float fMetric = fLengthWeight * kDiff.length();
 
       // angle/area contribution
-      Triangle kT = (Triangle) pkEA.triangleSet.toArray()[0];
-      Vector3f kV0 = vertices[kT.vert[0]];
-      Vector3f kV1 = vertices[kT.vert[1]];
-      Vector3f kV2 = vertices[kT.vert[2]];
-      Vector3f kE0 = kV1.subtract(kV0,tempVa);
-      Vector3f kE1 = kV2.subtract(kV0,tempVb);
-      Vector3f kN0 = kE0.cross(kE1,tempVc);
+        Triangle kT = (Triangle) pkEA.triangleSet.toArray()[0];
+        BufferUtils.populateFromBuffer(tempVc, vertices, kT.vert[0]);
+        BufferUtils.populateFromBuffer(tempVa, vertices, kT.vert[1]);
+        BufferUtils.populateFromBuffer(tempVb, vertices, kT.vert[2]);
+        Vector3f kE0 = tempVa.subtractLocal(tempVc);
+        Vector3f kE1 = tempVb.subtractLocal(tempVc);
+        Vector3f kN0 = kE0.cross(kE1,tempVc);
 
-      kT = (Triangle) pkEA.triangleSet.toArray()[1];
-      kV0 = vertices[kT.vert[0]];
-      kV1 = vertices[kT.vert[1]];
-      kV2 = vertices[kT.vert[2]];
-      kE0 = kV1.subtract(kV0,tempVa);
-      kE1 = kV2.subtract(kV0,tempVb);
-      Vector3f kN1 = kE0.crossLocal(kE1);
+        kT = (Triangle) pkEA.triangleSet.toArray()[1];
+        BufferUtils.populateFromBuffer(tempVd, vertices, kT.vert[0]);
+        BufferUtils.populateFromBuffer(tempVa, vertices, kT.vert[1]);
+        BufferUtils.populateFromBuffer(tempVb, vertices, kT.vert[2]);
+        kE0 = tempVa.subtractLocal(tempVd);
+        kE1 = tempVb.subtractLocal(tempVd);
+        Vector3f kN1 = kE0.crossLocal(kE1);
 
-      Vector3f kCross = kN0.cross(kN1,tempVa);
-      fMetric += fAngleWeight * kCross.length();
+        Vector3f kCross = kN0.cross(kN1,tempVa);
+        fMetric += fAngleWeight * kCross.length();
 
       return fMetric;
     }
@@ -327,9 +324,9 @@ public class ClodCreator extends VETMesh {
     int iTIndex = ( (Integer) getData(rkT)).intValue();
     if (iTIndex >= 0) {
 //      if (!(m_iTCurrent >= 0)) throw new AssertionError();
-      newIndices[3 * currentTriangle] = indices[3 * iTIndex];
-      newIndices[3 * currentTriangle + 1] = indices[3 * iTIndex + 1];
-      newIndices[3 * currentTriangle + 2] = indices[3 * iTIndex + 2];
+      newIndices[3 * currentTriangle] = indices.get(3 * iTIndex);
+      newIndices[3 * currentTriangle + 1] = indices.get(3 * iTIndex + 1);
+      newIndices[3 * currentTriangle + 2] = indices.get(3 * iTIndex + 2);
       currentTriangle--;
     }
 
@@ -453,9 +450,9 @@ public class ClodCreator extends VETMesh {
       int iTIndex = ( (Integer) pkTA.data).intValue();
       if (iTIndex >= 0) {
 //        if (!(m_iTCurrent >= 0)) throw new AssertionError();
-        newIndices[3 * currentTriangle] = indices[3 * iTIndex];
-        newIndices[3 * currentTriangle + 1] = indices[3 * iTIndex + 1];
-        newIndices[3 * currentTriangle + 2] = indices[3 * iTIndex + 2];
+        newIndices[3 * currentTriangle] = indices.get(3 * iTIndex);
+        newIndices[3 * currentTriangle + 1] = indices.get(3 * iTIndex + 1);
+        newIndices[3 * currentTriangle + 2] = indices.get(3 * iTIndex + 2);
         currentTriangle--;
       }
     }
@@ -465,47 +462,68 @@ public class ClodCreator extends VETMesh {
 
   public void reorder() {
     // permute the vertices and copy to the original array
-    Vector3f[] akNewVertex = new Vector3f[vertices.length];
     int i;
-    for (i = 0; i < vertices.length; i++)
-      akNewVertex[i] = vertices[orderedVertices[i]];
-    for (i = 0; i < vertices.length; i++)
-      vertices[i] = akNewVertex[i];
+    float[] akNewVertex = new float[vertQuantity * 3];
+    for (i = 0; i < vertQuantity; i++) {
+        int index = orderedVertices[i] * 3;
+        
+        akNewVertex[i*3] = vertices.get(index);
+        akNewVertex[i*3+1] = vertices.get(index+1);
+        akNewVertex[i*3+2] = vertices.get(index+2);
+    }
+    vertices.clear();
+    vertices.put(akNewVertex);
     akNewVertex = null;
 
     // permute the normal vectors (if any)
     if (normals != null) {
-      Vector3f[] akNewNormal = new Vector3f[vertices.length];
-      for (i = 0; i < vertices.length; i++)
-        akNewNormal[i] = normals[orderedVertices[i]];
-      for (i = 0; i < vertices.length; i++)
-        normals[i] = akNewNormal[i];
-      akNewNormal = null;
+    	float[] akNewNormal = new float[vertQuantity * 3];
+        for (i = 0; i < vertQuantity; i++) {
+            int index = orderedVertices[i] * 3;
+            
+            akNewNormal[i*3] = normals.get(index);
+            akNewNormal[i*3+1] = normals.get(index+1);
+            akNewNormal[i*3+2] = normals.get(index+2);
+        }
+        normals.rewind();
+        normals.put(akNewNormal);
+        akNewNormal = null;
     }
 
     // permute the colors (if any)
     if (colors != null) {
-      ColorRGBA[] akNewColor = new ColorRGBA[vertices.length];
-      for (i = 0; i < vertices.length; i++)
-        akNewColor[i] = colors[orderedVertices[i]];
-      for (i = 0; i < vertices.length; i++)
-        colors[i] = akNewColor[i];
+      float[] akNewColor = new float[vertQuantity * 4];
+      for (i = 0; i < vertQuantity; i++) {
+          int index = orderedVertices[i] * 4;
+          
+          akNewColor[i*4] = colors.get(index);
+          akNewColor[i*4+1] = colors.get(index+1);
+          akNewColor[i*4+2] = colors.get(index+2);
+          akNewColor[i*4+3] = colors.get(index+3);
+      }
+      colors.rewind();
+      colors.put(akNewColor);
       akNewColor = null;
     }
 
     // permute the texture coordinates (if any)
     if (textures != null) {
-      Vector2f[] akNewTexture = new Vector2f[vertices.length];
-      for (i = 0; i < vertices.length; i++)
-        akNewTexture[i] = textures[orderedVertices[i]];
-      for (i = 0; i < vertices.length; i++)
-        textures[i] = akNewTexture[i];
-      akNewTexture = null;
+        float[] akNewTexture = new float[vertQuantity * 2];
+        for (i = 0; i < vertQuantity; i++) {
+            int index = orderedVertices[i] * 2;
+            
+            akNewTexture[i*2] = textures.get(index);
+            akNewTexture[i*2+1] = textures.get(index+1);
+        }
+        textures.rewind();
+        textures.put(akNewTexture);
+        akNewTexture = null;
     }
 
     // permute the connectivity array and copy to the original array
+    indices.rewind();
     for (i = 0; i < 3 * numbTriangles; i++)
-      indices[i] = permuteVertices[newIndices[i]];
+      indices.put(permuteVertices[newIndices[i]]);
 
       // permute the keep/throw pairs
     for (i = 0; i < (int) deletedEdges.size(); i++) {
@@ -523,11 +541,11 @@ public class ClodCreator extends VETMesh {
       rakCRecord[i] = new CollapseRecord();
 
       // initial record only stores the initial vertex and triangle quantities
-    rakCRecord[0].numbVerts = vertices.length;
+    rakCRecord[0].numbVerts = vertQuantity;
     rakCRecord[0].numbTriangles = numbTriangles;
 
     // construct the replacement arrays
-    int iVQuantity = vertices.length, iTQuantity = numbTriangles;
+    int iVQuantity = vertQuantity, iTQuantity = numbTriangles;
     int iR, i;
     for (iR = 0; iR < (int) deletedEdges.size(); iR++) {
       CollapseRecord rkERecord = (CollapseRecord) deletedEdges.get(iR);
@@ -546,9 +564,9 @@ public class ClodCreator extends VETMesh {
         int iIMax = 3 * iTQuantity;
         int[] aiIndex = new int[iIMax];
         for (i = 0; i < iIMax; i++) {
-          if (indices[i] == rkRecord.vertToThrow) {
-            indices[i] = rkRecord.vertToKeep;
-            aiIndex[rkRecord.numbIndices++] = i;
+          if (indices.get(i) == rkRecord.vertToThrow) {
+              indices.put(i, rkRecord.vertToKeep);
+              aiIndex[rkRecord.numbIndices++] = i;
           }
         }
 
@@ -571,7 +589,7 @@ public class ClodCreator extends VETMesh {
       for (i = 0; i < rkRecord.numbIndices; i++) {
         int iC = rkRecord.indices[i];
 //        if (!(m_aiConnect[iC] == rkRecord.vertToKeep)) throw new AssertionError();
-        indices[iC] = rkRecord.vertToThrow;
+        indices.put(iC, rkRecord.vertToThrow);
       }
     }
     return rakCRecord;

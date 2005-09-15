@@ -1,23 +1,63 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.scene.*;
-import com.jme.scene.state.*;
-import com.jme.util.LoggingSystem;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
+import java.util.logging.Level;
+
+import com.jme.bounding.BoundingBox;
+import com.jme.image.Texture;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.bounding.BoundingBox;
-import com.jme.renderer.*;
-import com.jme.image.Texture;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
+import com.jme.scene.Node;
+import com.jme.scene.TriMesh;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
+import com.jme.util.LoggingSystem;
+import com.jme.util.geom.BufferUtils;
 import com.jmex.model.Face;
 import com.jmex.model.XMLparser.JmeBinaryWriter;
-
-import java.io.*;
-import java.util.StringTokenizer;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.net.URL;
-import java.net.MalformedURLException;
 
 /**
  * Started Date: Jul 1, 2004<br><br>
@@ -59,7 +99,7 @@ public class AseToJme extends FormatConverter{
      * be returned.
      *
      * @author Mark Powell
-     * @version $Id: AseToJme.java,v 1.1 2005-05-12 22:49:10 Mojomonkey Exp $
+     * @version $Id: AseToJme.java,v 1.2 2005-09-15 17:14:40 renanse Exp $
      */
     private class ASEModelCopy extends Node{
 
@@ -222,7 +262,7 @@ public class AseToJme extends FormatConverter{
 
             for (int i = 0; i < numOfObjects; i++) {
                 ASEObject object = (ASEObject) objectList.get(i);
-                Vector2f[] texCoords2 = new Vector2f[object.getVertices().length];
+                Vector2f[] texCoords2 = new Vector2f[object.getVertQuantity()];
                 for (int j = 0; j < object.faces.length; j++) {
                     int index = object.faces[j].vertIndex[0];
                     texCoords2[index] = new Vector2f();
@@ -251,14 +291,11 @@ public class AseToJme extends FormatConverter{
                     count++;
                 }
 
-                object.setIndices(indices);
-                object.updateVertexBuffer();
-                object.updateNormalBuffer();
-                object.setTextures(texCoords2);
+                object.setIndexBuffer(BufferUtils.createIntBuffer(indices));
+                object.setTextureBuffer(BufferUtils.createFloatBuffer(texCoords2));
                 object.setModelBound(new BoundingBox());
                 object.updateModelBound();
                 this.attachChild(object);
-
             }
 
             for (int j = 0; j < numOfMaterials; j++) {
@@ -488,11 +525,7 @@ public class AseToJme extends FormatConverter{
 
                 if (word.equals(NUM_VERTEX)) {
                     int numOfVerts = Integer.parseInt(tokenizer.nextToken());
-                    Vector3f[] verts = new Vector3f[numOfVerts];
-                    for (int i = 0; i < verts.length; i++) {
-                        verts[i] = new Vector3f();
-                    }
-                    currentObject.setVertices(verts);
+                    currentObject.setVertexBuffer(BufferUtils.createVector3Buffer(numOfVerts));
                 } else if (word.equals(NUM_FACES)) {
                     int numOfFaces = Integer.parseInt(tokenizer.nextToken());
                     currentObject.faces = new Face[numOfFaces];
@@ -625,12 +658,11 @@ public class AseToJme extends FormatConverter{
 
             // Read past the vertex index
             index = Integer.parseInt(tokenizer.nextToken());
-            currentObject.getVertices()[index].x =
-                Float.parseFloat(tokenizer.nextToken());
-            currentObject.getVertices()[index].z =
-                -Float.parseFloat(tokenizer.nextToken());
-            currentObject.getVertices()[index].y =
-                Float.parseFloat(tokenizer.nextToken());
+            float x = Float.parseFloat(tokenizer.nextToken());
+            float z =-Float.parseFloat(tokenizer.nextToken());
+            float y = Float.parseFloat(tokenizer.nextToken());
+            currentObject.getVertexBuffer().position(index*3);
+            currentObject.getVertexBuffer().put(x).put(y).put(z);
 
         }
 
@@ -730,7 +762,7 @@ public class AseToJme extends FormatConverter{
 
             Vector3f vector1 = new Vector3f();
             Vector3f vector2 = new Vector3f();
-            Vector3f[] triangle = new Vector3f[3];
+            Vector3f vector3 = new Vector3f();
 
             // Go through each of the objects to calculate their normals
             for (int index = 0; index < numOfObjects; index++) {
@@ -738,32 +770,23 @@ public class AseToJme extends FormatConverter{
                 ASEObject object = (ASEObject) objectList.get(index);
                 // Here we allocate all the memory we need to calculate the normals
                 Vector3f[] tempNormals = new Vector3f[object.faces.length];
-                Vector3f[] normals = new Vector3f[object.getVertices().length];
+                Vector3f[] normals = new Vector3f[object.getVertQuantity()];
 
                 // Go though all of the faces of this object
                 for (int i = 0; i < object.faces.length; i++) {
-                    vector1 =
-                        object
-                            .getVertices()[object
-                            .faces[i]
-                            .vertIndex[0]]
-                            .subtract(
-                            object.getVertices()[object.faces[i].vertIndex[2]]);
-                    vector2 =
-                        object
-                            .getVertices()[object
-                            .faces[i]
-                            .vertIndex[2]]
-                            .subtract(
-                            object.getVertices()[object.faces[i].vertIndex[1]]);
-
-                    tempNormals[i] = vector1.cross(vector2).normalize();
+                    BufferUtils.populateFromBuffer(vector1, object.getVertexBuffer(), object.faces[i].vertIndex[0]);
+                    BufferUtils.populateFromBuffer(vector2, object.getVertexBuffer(), object.faces[i].vertIndex[1]);
+                    BufferUtils.populateFromBuffer(vector3, object.getVertexBuffer(), object.faces[i].vertIndex[2]);
+                    
+                    vector1.subtractLocal(vector3);
+                    
+                    tempNormals[i] = vector1.cross(vector3.subtract(vector2)).normalizeLocal();
                 }
 
                 Vector3f sum = new Vector3f();
                 int shared = 0;
 
-                for (int i = 0; i < object.getVertices().length; i++) {
+                for (int i = 0; i < object.getVertQuantity(); i++) {
                     for (int j = 0; j < object.faces.length; j++) {
                         if (object.faces[j].vertIndex[0] == i
                             || object.faces[j].vertIndex[1] == i
@@ -780,7 +803,7 @@ public class AseToJme extends FormatConverter{
                     shared = 0; // Reset the shared
                 }
 
-                object.setNormals(normals);
+                object.setNormalBuffer(BufferUtils.createFloatBuffer(normals));
 
             }
         }

@@ -1,14 +1,46 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jme.bounding;
 
-import com.jme.math.Ray;
-import com.jme.math.Vector3f;
-import com.jme.math.Matrix3f;
-import com.jme.intersection.Intersection;
-import com.jme.scene.TriMesh;
-
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.ArrayList;
+
+import com.jme.intersection.Intersection;
+import com.jme.math.Matrix3f;
+import com.jme.math.Ray;
+import com.jme.math.Vector3f;
+import com.jme.scene.TriMesh;
 
 /**
  * Started Date: Sep 5, 2004 <br>
@@ -67,11 +99,11 @@ public class OBBTree {
     public void construct(TriMesh parent) {
         this.myParent = parent;
         Vector3f[] triangles = parent.getMeshAsTriangles();
-				if (tris == null || tris.length != triangles.length / 3)
-					tris = new TreeTriangle[triangles.length / 3];
+        if (tris == null || tris.length != triangles.length / 3)
+            tris = new TreeTriangle[triangles.length / 3];
         for (int i = 0; i < tris.length; i++) {
-        	tris[i] = new TreeTriangle(triangles[i * 3 + 0],
-        		triangles[i * 3 + 1], triangles[i * 3 + 2]);
+            tris[i] = new TreeTriangle(triangles[i * 3 + 0],
+                    triangles[i * 3 + 1], triangles[i * 3 + 2]);
             tris[i].putCentriod();
             tris[i].index = i;
         }
@@ -368,6 +400,7 @@ public class OBBTree {
         float projection;
 
         int index;
+        static final float aThird = 1.0f / 3.0f;
 
         Vector3f centroid;
 
@@ -379,7 +412,7 @@ public class OBBTree {
 
         public void putCentriod() {
             centroid = new Vector3f(a);
-            centroid.addLocal(b).addLocal(c).multLocal(1.0f / 3.0f);
+            centroid.addLocal(b).addLocal(c).multLocal(aThird);
         }
     }
 

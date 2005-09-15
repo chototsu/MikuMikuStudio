@@ -1,17 +1,53 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jmex.model.XMLparser.Converters;
 
-import com.jme.util.BinaryFileReader;
-import com.jme.scene.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Random;
+
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.scene.Controller;
+import com.jme.scene.Node;
+import com.jme.scene.TriMesh;
 import com.jme.system.JmeException;
-import com.jmex.model.EmptyTriMesh;
+import com.jme.util.BinaryFileReader;
+import com.jme.util.geom.BufferUtils;
 import com.jmex.model.Face;
 import com.jmex.model.XMLparser.JmeBinaryWriter;
 import com.jmex.model.animation.KeyframeController;
-
-import java.io.*;
-import java.util.Random;
 
 
 /**
@@ -204,7 +240,7 @@ public class Md2ToJme extends FormatConverter{
                 int numTexVertex = header.numTexCoords;
                 int numOfFaces = header.numTriangles;
                 if (i!=0)
-                    triMesh[i] = new EmptyTriMesh();
+                    triMesh[i] = new TriMesh();
                 else
                     triMesh[i] = this;
                 Vector3f[] verts = new Vector3f[numOfVerts];
@@ -272,14 +308,14 @@ public class Md2ToJme extends FormatConverter{
                         indices[count] = faces[j].vertIndex[2];
                         count++;
                     }
-                    triMesh[i].setIndices(indices);
-                    triMesh[i].setTextures(texCoords2);
+                    triMesh[i].setIndexBuffer(BufferUtils.createIntBuffer(indices));
+                    triMesh[i].setTextureBuffer(BufferUtils.createFloatBuffer(texCoords2));
                     controller.setMorphingMesh(triMesh[i]);
 
                 }   // End if (i==0)
 
-                triMesh[i].setVertices(verts);
-                triMesh[i].setNormals(computeNormals(faces, verts));
+                triMesh[i].setVertexBuffer(BufferUtils.createFloatBuffer(verts));
+                triMesh[i].setNormalBuffer(BufferUtils.createFloatBuffer(computeNormals(faces, verts)));
                 if (i!=0) controller.setKeyframe(i-1,triMesh[i]);
             }
             //build controller. Attach everything.
@@ -299,7 +335,6 @@ public class Md2ToJme extends FormatConverter{
         private Vector3f[] computeNormals(Face[] faces, Vector3f[] verts) {
             Vector3f[] returnNormals = new Vector3f[verts.length];
 
-//            Vector3f[] normals = new Vector3f[faces.length];      // Why is this here?
             Vector3f[] tempNormals = new Vector3f[faces.length];
 
             for (int i = 0; i < faces.length; i++) {
@@ -308,7 +343,6 @@ public class Md2ToJme extends FormatConverter{
                         verts[faces[i].vertIndex[2]]).cross(
                         verts[faces[i].vertIndex[2]].subtract(
                             verts[faces[i].vertIndex[1]]));
-//                normals[i] = tempNormals[i].normalize();  ??? Why is this here
             }
 
             Vector3f sum = new Vector3f();
@@ -325,7 +359,6 @@ public class Md2ToJme extends FormatConverter{
                 }
 
                 returnNormals[i] = sum.divide(-shared);
-//                returnNormals[i] = returnNormals[i].normalizeLocal().negateLocal();
                 returnNormals[i].normalizeLocal().negateLocal();
 
                 sum.zero();

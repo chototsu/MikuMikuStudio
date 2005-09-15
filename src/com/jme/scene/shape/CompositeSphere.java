@@ -1,47 +1,48 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene.shape;
 
 import com.jme.math.FastMath;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.CompositeMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>CompositeSphere</code> is um ... a CompositeSphere :)
  * 
  * @author Joshua Slack
- * @version $Id: CompositeSphere.java,v 1.2 2005-01-03 19:00:15 renanse Exp $
+ * @version $Id: CompositeSphere.java,v 1.3 2005-09-15 17:13:43 renanse Exp $
  */
 public class CompositeSphere extends CompositeMesh {
 	private static final long serialVersionUID = 1L;
@@ -144,129 +145,110 @@ public class CompositeSphere extends CompositeMesh {
 		if (updateBuffers) {
 			setGeometryData();
 			setIndexData();
-			setColorData();
+		    setSolidColor(ColorRGBA.white);
 		}
 
 	}
 
-	private void setGeometryData() {
+    private void setGeometryData() {
 
-		// allocate vertices
-		int numVerts = (zSamples - 2) * (radialSamples + 1) + 2;
-		vertex = new Vector3f[numVerts];
+        // allocate vertices
+        vertQuantity = (zSamples - 2) * (radialSamples + 1) + 2;
+        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
-		// allocate normals if requested
-		normal = new Vector3f[numVerts];
+        // allocate normals if requested
+        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
 
-		// allocate texture coordinates
-		texture[0] = new Vector2f[numVerts];
+        // allocate texture coordinates
+        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
 
-		// generate geometry
-		float fInvRS = 1.0f / (float) radialSamples;
-		float fZFactor = 2.0f / (float) (zSamples - 1);
+        // generate geometry
+        float fInvRS = 1.0f / (float) radialSamples;
+        float fZFactor = 2.0f / (float) (zSamples - 1);
 
-		// Generate points on the unit circle to be used in computing the mesh
-		// points on a cylinder slice.
-		float[] afSin = new float[(radialSamples + 1)];
-		float[] afCos = new float[(radialSamples + 1)];
-		for (int iR = 0; iR < radialSamples; iR++) {
-			float fAngle = FastMath.TWO_PI * fInvRS * iR;
-			afCos[iR] = FastMath.cos(fAngle);
-			afSin[iR] = FastMath.sin(fAngle);
-		}
-		afSin[radialSamples] = afSin[0];
-		afCos[radialSamples] = afCos[0];
+        // Generate points on the unit circle to be used in computing the mesh
+        // points on a sphere slice.
+        float[] afSin = new float[(radialSamples + 1)];
+        float[] afCos = new float[(radialSamples + 1)];
+        for (int iR = 0; iR < radialSamples; iR++) {
+            float fAngle = FastMath.TWO_PI * fInvRS * iR;
+            afCos[iR] = FastMath.cos(fAngle);
+            afSin[iR] = FastMath.sin(fAngle);
+        }
+        afSin[radialSamples] = afSin[0];
+        afCos[radialSamples] = afCos[0];
 
-		// generate the cylinder itself
-		int i = 0;
-		for (int iZ = 1; iZ < (zSamples - 1); iZ++) {
-			float fZFraction = -1.0f + fZFactor * iZ; // in (-1,1)
-			float fZ = radius * fZFraction;
+        // generate the sphere itself
+        int i = 0;
+        for (int iZ = 1; iZ < (zSamples - 1); iZ++) {
+            float fZFraction = -1.0f + fZFactor * iZ; // in (-1,1)
+            float fZ = radius * fZFraction;
 
-			// compute center of slice
-			Vector3f kSliceCenter = tempVb.set(center);
-			kSliceCenter.z += fZ;
+            // compute center of slice
+            Vector3f kSliceCenter = tempVb.set(center);
+            kSliceCenter.z += fZ;
 
-			// compute radius of slice
-			float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius
-					- fZ * fZ));
+            // compute radius of slice
+            float fSliceRadius = FastMath.sqrt(FastMath.abs(radius * radius
+                    - fZ * fZ));
 
-			// compute slice vertices with duplication at end point
-			Vector3f kNormal;
-			int iSave = i;
-			for (int iR = 0; iR < radialSamples; iR++) {
-				float fRadialFraction = iR * fInvRS; // in [0,1)
-				Vector3f kRadial = tempVc.set(afCos[iR], afSin[iR], 0);
-				vertex[i] = kSliceCenter
-						.add(kRadial.mult(fSliceRadius, tempVa));
+            // compute slice vertices with duplication at end point
+            Vector3f kNormal;
+            int iSave = i;
+            for (int iR = 0; iR < radialSamples; iR++) {
+                float fRadialFraction = iR * fInvRS; // in [0,1)
+                Vector3f kRadial = tempVc.set(afCos[iR], afSin[iR], 0);
+                kRadial.mult(fSliceRadius, tempVa);
+                vertBuf.put(kSliceCenter.x + tempVa.x).put(kSliceCenter.y + tempVa.y).put(kSliceCenter.z + tempVa.z);
+                
+                BufferUtils.populateFromBuffer(tempVa, vertBuf, i);
+                kNormal = tempVa.subtractLocal(center);
+                kNormal.normalizeLocal();
+                if (true) // later we may allow interior texture vs. exterior
+                    normBuf.put(kNormal.x).put(kNormal.y).put(kNormal.z);
+                else 
+                    normBuf.put(-kNormal.x).put(-kNormal.y).put(-kNormal.z);
 
-				kNormal = vertex[i].subtract(center);
-				kNormal.normalizeLocal();
-				if (true) // later we may allow interior texture vs. exterior
-					normal[i] = kNormal;
-				else
-					normal[i] = kNormal.negateLocal();
+                texBuf[0].put(fRadialFraction).put(0.5f * (fZFraction + 1.0f));
 
-				if (texture[0][i] == null)
-					texture[0][i] = new Vector2f();
-				texture[0][i].x = fRadialFraction;
-				texture[0][i].y = 0.5f * (fZFraction + 1.0f);
+                i++;
+            }
 
-				i++;
-			}
+            BufferUtils.copyInternalVector3(vertBuf, iSave, i);
+            BufferUtils.copyInternalVector3(normBuf, iSave, i);
 
-			vertex[i] = vertex[iSave];
+            texBuf[0].put(1.0f).put(0.5f * (fZFraction + 1.0f));
 
-			normal[i] = normal[iSave];
+            i++;
+        }
 
-			if (texture[0][i] == null)
-				texture[0][i] = new Vector2f();
-			texture[0][i].x = 1.0f;
-			texture[0][i].y = 0.5f * (fZFraction + 1.0f);
+        // south pole
+        vertBuf.position(i*3);
+        vertBuf.put(center.x).put(center.y).put(center.z-radius);
 
-			i++;
-		}
+        normBuf.position(i * 3);        
+        if (true) normBuf.put(0).put(0).put(-1); // allow for inner texture orientation later.
+        else normBuf.put(0).put(0).put(1);
 
-		// south pole
-		vertex[i] = (Vector3f) center.clone();
-		vertex[i].z -= radius;
-		if (true)
-			normal[i] = new Vector3f(0, 0, -1);
-		else
-			normal[i] = new Vector3f(0, 0, 1);
+        texBuf[0].position(i*2);
+        texBuf[0].put(0.5f).put(0.0f);
 
-		if (texture[0][i] == null)
-			texture[0][i] = new Vector2f();
-		texture[0][i].x = 0.5f;
-		texture[0][i].y = 0.0f;
+        i++;
 
-		i++;
+        // north pole
+        vertBuf.put(center.x).put(center.y).put(center.z+radius);
+        
+        if (true) normBuf.put(0).put(0).put(1);
+        else normBuf.put(0).put(0).put(-1);
 
-		// north pole
-		vertex[i] = (Vector3f) center.clone();
-		vertex[i].z += radius;
-		if (true)
-			normal[i] = new Vector3f(0, 0, 1);
-		else
-			normal[i] = new Vector3f(0, 0, -1);
-
-		if (texture[0][i] == null)
-			texture[0][i] = new Vector2f();
-		texture[0][i].x = 0.5f;
-		texture[0][i].y = 1.0f;
-
-		i++;
-
-		setVertices(vertex);
-		setNormals(normal);
-		setTextures(texture[0]);
-	}
+        texBuf[0].put(0.5f).put(1.0f);
+    }
 
 	private void setIndexData() {
 
         // allocate connectivity
 		int zStrips = zSamples-3;
-		indices = new int[zStrips*2*(radialSamples+1) + 2*(radialSamples+2)];
+		indexBuffer = BufferUtils.createIntBuffer(zStrips*2*(radialSamples+1) + 2*(radialSamples+2));
 		 
 		// generate connectivity
 		
@@ -277,24 +259,23 @@ public class CompositeSphere extends CompositeMesh {
 			iZStart += (radialSamples + 1);
 			int i2 = iZStart;
 			for (int i = 0; i <= radialSamples; i++) {
-				indices[index++] = i0+i;
-				indices[index++] = i2+i;
+			    indexBuffer.put(i0+i);
+			    indexBuffer.put(i2+i);
 			}
 		}
 
 		// south pole triangles (triangle fan)
-		indices[index++] = vertex.length - 2;
+	    indexBuffer.put(vertQuantity - 2);
 		for (int i = 0; i <= radialSamples; i++) {
-			indices[index++] = i;
+		    indexBuffer.put(i);
 		}
 
 		// north pole triangles (triangle fan)
 		int iOffset = (zSamples - 3) * (radialSamples + 1);
-		indices[index++] = vertex.length - 1;
+	    indexBuffer.put(vertQuantity - 1);
 		for (int i = 0; i <= radialSamples; i++) {
-			indices[index++] = i + iOffset;
+		    indexBuffer.put(i+iOffset);
 		}
-		setIndices(indices);
 		
 		IndexRange[] ranges = new IndexRange[zStrips+2];
 		for ( int i =0; i < ranges.length-2; i++) {
@@ -304,15 +285,6 @@ public class CompositeSphere extends CompositeMesh {
 		ranges[ranges.length-1] = CompositeMesh.createTriangleFan(radialSamples+2);
 		setIndexRanges(ranges);
 		
-	}
-
-	private void setColorData() {
-		color = new ColorRGBA[vertex.length];
-		//initialize colors to white
-		for (int x = 0; x < vertex.length; x++) {
-			color[x] = new ColorRGBA();
-		}
-		setColors(color);
 	}
 
 	/**

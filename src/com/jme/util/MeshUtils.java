@@ -1,39 +1,46 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.util;
 
-import com.jme.scene.*;
-import com.jme.math.*;
-import com.jme.renderer.*;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
+
+import com.jme.math.FastMath;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * This class is a set of static mesh creation utilities.
@@ -85,22 +92,12 @@ final public class MeshUtils {
         akVertex[17] = new Vector3f(0.0f, -fB, fC);
         akVertex[18] = new Vector3f(0.0f, fB, -fC);
         akVertex[19] = new Vector3f(0.0f, -fB, -fC);
+        FloatBuffer vertBuf = BufferUtils.createFloatBuffer(akVertex);
 
         // allocate normals if requested
-        Vector3f[] akNormal = null;
-        if (bWantNormals) {
-            akNormal = new Vector3f[iVQuantity];
-            for (i = 0; i < iVQuantity; i++)
-                akNormal[i] = akVertex[i];
-        }
-
-        // allocate colors if requested
-        ColorRGBA[] akColor = null;
-        if (bWantColors) {
-            akColor = new ColorRGBA[iVQuantity];
-            for (int x = 0; x < iVQuantity; x++)
-                akColor[x] = new ColorRGBA();
-        }
+        FloatBuffer normBuf = null;
+        if (bWantNormals)
+            normBuf = BufferUtils.createFloatBuffer(akVertex);
 
         // allocate texture coordinates if requested
         Vector2f[] akUV = null;
@@ -119,6 +116,7 @@ final public class MeshUtils {
                 akUV[i].y = FastMath.acos(akVertex[i].z) * FastMath.INV_PI;
             }
         }
+        FloatBuffer texBuf = BufferUtils.createFloatBuffer(akUV);
 
         // allocate connectivity
         int iTQuantity = 36;
@@ -231,6 +229,7 @@ final public class MeshUtils {
         aiConnect[105] = 7;
         aiConnect[106] = 10;
         aiConnect[107] = 11;
+        IntBuffer indBuf = BufferUtils.createIntBuffer(aiConnect);
 
         if (!bOutsideView) {
             for (i = 0; i < iTQuantity; i++) {
@@ -241,17 +240,20 @@ final public class MeshUtils {
         }
 
         if (rpkMesh != null) {
-            rpkMesh.reconstruct(akVertex, akNormal, akColor, akUV, aiConnect);
+            rpkMesh.reconstruct(vertBuf, normBuf, null, texBuf, indBuf);
         } else {
             rpkMesh =
                 new TriMesh(
                     "dodecahedron",
-                    akVertex,
-                    akNormal,
-                    akColor,
-                    akUV,
-                    aiConnect);
+                    vertBuf,
+                    normBuf,
+                    null,
+                    texBuf,
+                    indBuf);
         }
+        if (bWantColors)
+            rpkMesh.setSolidColor(ColorRGBA.white);
+
         return rpkMesh;
     }
 
@@ -292,22 +294,12 @@ final public class MeshUtils {
         akVertex[9] = new Vector3f(0.0f, -fU, fV);
         akVertex[10] = new Vector3f(0.0f, fU, -fV);
         akVertex[11] = new Vector3f(0.0f, -fU, -fV);
-
+        FloatBuffer vertBuf = BufferUtils.createFloatBuffer(akVertex);
+        
         // allocate normals if requested
-        Vector3f[] akNormal = null;
-        if (bWantNormals) {
-            akNormal = new Vector3f[iVQuantity];
-            for (i = 0; i < iVQuantity; i++)
-                akNormal[i] = akVertex[i];
-        }
-
-        // allocate colors if requested
-        ColorRGBA[] akColor = null;
-        if (bWantColors) {
-            akColor = new ColorRGBA[iVQuantity];
-            for (int x = 0; x < iVQuantity; x++)
-                akColor[x] = new ColorRGBA();
-        }
+        FloatBuffer normBuf = null;
+        if (bWantNormals)
+            normBuf = BufferUtils.createFloatBuffer(akVertex);
 
         // allocate texture coordinates if requested
         Vector2f[] akUV = null;
@@ -326,6 +318,7 @@ final public class MeshUtils {
                 akUV[i].y = FastMath.acos(akVertex[i].z) * FastMath.INV_PI;
             }
         }
+        FloatBuffer texBuf = BufferUtils.createFloatBuffer(akUV);
 
         // allocate connectivity
         int iTQuantity = 20;
@@ -390,6 +383,7 @@ final public class MeshUtils {
         aiConnect[57] = 11;
         aiConnect[58] = 7;
         aiConnect[59] = 5;
+        IntBuffer indBuf = BufferUtils.createIntBuffer(aiConnect);
 
         if (!bOutsideView) {
             for (i = 0; i < iTQuantity; i++) {
@@ -400,17 +394,19 @@ final public class MeshUtils {
         }
 
         if (rpkMesh != null) {
-            rpkMesh.reconstruct(akVertex, akNormal, akColor, akUV, aiConnect);
+            rpkMesh.reconstruct(vertBuf, normBuf, null, texBuf, indBuf);
         } else {
             rpkMesh =
                 new TriMesh(
                     "icosahedron",
-                    akVertex,
-                    akNormal,
-                    akColor,
-                    akUV,
-                    aiConnect);
+                    vertBuf,
+                    normBuf,
+                    null,
+                    texBuf,
+                    indBuf);
         }
+        if (bWantColors)
+            rpkMesh.setSolidColor(ColorRGBA.white);
         return rpkMesh;
     }
 }

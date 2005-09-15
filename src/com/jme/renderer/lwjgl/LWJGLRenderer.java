@@ -1,71 +1,47 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
- * reserved.
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
- */
-
-/*
- * EDIT: 02/09/2004 - Renamed original WidgetViewport to WidgetViewRectangle.
- * GOP
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jme.renderer.lwjgl;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.logging.Level;
 import java.util.Arrays;
+import java.util.logging.Level;
+
 import javax.imageio.ImageIO;
 
-import java.awt.image.BufferedImage;
-
-import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.ARBVertexBufferObject;
 import org.lwjgl.opengl.ContextCapabilities;
 import org.lwjgl.opengl.Display;
@@ -75,10 +51,10 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.glu.GLU;
+
 import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
 import com.jme.math.Quaternion;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -91,6 +67,7 @@ import com.jme.scene.Point;
 import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
+import com.jme.scene.VBOInfo;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.AttributeState;
 import com.jme.scene.state.CullState;
@@ -100,6 +77,7 @@ import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.StencilState;
 import com.jme.scene.state.TextureState;
@@ -123,8 +101,6 @@ import com.jme.scene.state.lwjgl.LWJGLWireframeState;
 import com.jme.scene.state.lwjgl.LWJGLZBufferState;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import com.jme.widget.WidgetRenderer;
-import com.jme.scene.state.RenderState;
 
 /**
  * <code>LWJGLRenderer</code> provides an implementation of the
@@ -134,7 +110,7 @@ import com.jme.scene.state.RenderState;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.66 2005-09-07 18:27:57 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.67 2005-09-15 17:14:12 renanse Exp $
  */
 public class LWJGLRenderer implements Renderer {
 
@@ -159,6 +135,8 @@ public class LWJGLRenderer implements Renderer {
     private boolean statisticsOn;
 
     private boolean usingVBO = false;
+
+    private boolean ignoreVBO = false;
 
     private LWJGLWireframeState boundsWireState = new LWJGLWireframeState();
 
@@ -212,9 +190,8 @@ public class LWJGLRenderer implements Renderer {
         capabilities = GLContext.getCapabilities();
         
         queue = new RenderQueue(this);
-        prevTex = new FloatBuffer[createTextureState().getNumberOfUnits()];
-        
-       
+        if (TextureState.getNumberOfUnits() == -1) createTextureState(); // force units population
+        prevTex = new FloatBuffer[TextureState.getNumberOfUnits()];
     }
 
     /**
@@ -602,7 +579,7 @@ public class LWJGLRenderer implements Renderer {
 
         // Create a pointer to the image info and create a buffered image to
         // hold it.
-        IntBuffer buff = BufferUtils.createIntBuffer(width * height);
+        IntBuffer buff = org.lwjgl.BufferUtils.createIntBuffer(width * height);
         grabScreenContents(buff, 0, 0, width, height);
         BufferedImage img = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
@@ -671,48 +648,49 @@ public class LWJGLRenderer implements Renderer {
         GL11.glBegin(GL11.GL_POINTS);
 
         // draw points
-        Vector3f[] vertex = p.getVertices();
-        Vector3f[] normal = p.getNormals();
-        ColorRGBA[] color = p.getColors();
-        Vector2f[] texture = p.getTextures();
+        FloatBuffer vertex = p.getVertexBuffer();
+        if (vertex != null) vertex.rewind();
+        FloatBuffer normal = p.getNormalBuffer();
+        if (normal != null) normal.rewind();
+        FloatBuffer color = p.getColorBuffer();
+        if (color != null) color.rewind();
+        FloatBuffer texture = p.getTextureBuffer();
 
         if (statisticsOn) {
-            numberOfVerts += vertex.length;
+            numberOfVerts += p.getVertQuantity();
         }
 
         if (normal != null) {
             if (color != null) {
                 if (texture != null) {
                     // N,C,T
-                    for (int i = 0; i < vertex.length; i++) {
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < p.getVertQuantity(); i++) {
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 } else {
                     // N,C
-                    for (int i = 0; i < vertex.length; i++) {
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < p.getVertQuantity(); i++) {
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 }
             } else {
                 if (texture != null) {
                     // N,T
-                    for (int i = 0; i < vertex.length; i++) {
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < p.getVertQuantity(); i++) {
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 } else {
                     // N
-                    for (int i = 0; i < vertex.length; i++) {
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < p.getVertQuantity(); i++) {
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 }
             }
@@ -720,31 +698,29 @@ public class LWJGLRenderer implements Renderer {
             if (color != null) {
                 if (texture != null) {
                     // C,T
-                    for (int i = 0; i < vertex.length; i++) {
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < p.getVertQuantity(); i++) {
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 } else {
                     // C
-                    for (int i = 0; i < vertex.length; i++) {
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < p.getVertQuantity(); i++) {
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 }
             } else {
                 if (texture != null) {
                     // T
-                    for (int i = 0; i < vertex.length; i++) {
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < p.getVertQuantity(); i++) {
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 } else {
                     // none
-                    for (int i = 0; i < vertex.length; i++) {
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < p.getVertQuantity(); i++) {
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 }
             }
@@ -781,68 +757,68 @@ public class LWJGLRenderer implements Renderer {
         GL11.glBegin(GL11.GL_LINES);
 
         // draw line
-        Vector3f[] vertex = l.getVertices();
-        Vector3f[] normal = l.getNormals();
-        ColorRGBA[] color = l.getColors();
-        Vector2f[] texture = l.getTextures();
+        FloatBuffer vertex = l.getVertexBuffer();
+        if (vertex != null) vertex.rewind();
+        FloatBuffer normal = l.getNormalBuffer();
+        if (normal != null) normal.rewind();
+        FloatBuffer color = l.getColorBuffer();
+        if (color != null) color.rewind();
+        FloatBuffer texture = l.getTextureBuffer();
+        if (texture != null) texture.rewind();
 
         if (statisticsOn) {
-            numberOfVerts += vertex.length;
+            numberOfVerts += l.getVertQuantity();
         }
 
         if (normal != null) {
             if (color != null) {
                 if (texture != null) {
                     // N,C,T
-                    for (int i = 0; i < vertex.length - 1; i++) {
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                         i++;
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
 
                 } else {
                     // N,C
-                    for (int i = 0; i < vertex.length - 1; i++) {
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                         i++;
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 }
             } else {
                 if (texture != null) {
                     // N,T
-                    for (int i = 0; i < vertex.length - 1; i++) {
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                         i++;
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
 
                 } else {
                     // N
-                    for (int i = 0; i < vertex.length - 1; i++) {
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                         i++;
-                        GL11.glNormal3f(normal[i].x, normal[i].y, normal[i].z);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
 
                 }
@@ -851,47 +827,43 @@ public class LWJGLRenderer implements Renderer {
             if (color != null) {
                 if (texture != null) {
                     // C,T
-                    for (int i = 0; i < vertex.length - 1; i++) {
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                         i++;
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
 
                 } else {
                     // C
-                    for (int i = 0; i < vertex.length - 1; i++) {
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                         i++;
-                        GL11.glColor4f(color[i].r, color[i].g, color[i].b,
-                                color[i].a);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 }
             } else {
                 if (texture != null) {
                     // T
-                    for (int i = 0; i < vertex.length - 1; i++) {
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                         i++;
-                        GL11.glTexCoord2f(texture[i].x, texture[i].y);
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glTexCoord2f(texture.get(), texture.get());
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
 
                 } else {
                     // none
-                    for (int i = 0; i < vertex.length - 1; i++) {
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                         i++;
-                        GL11.glVertex3f(vertex[i].x, vertex[i].y, vertex[i].z);
+                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
                     }
                 }
             }
@@ -925,16 +897,18 @@ public class LWJGLRenderer implements Renderer {
         // render the object
         GL11.glBegin(GL11.GL_LINE_STRIP);
 
-        ColorRGBA[] color = c.getColors();
+        FloatBuffer color = c.getColorBuffer();
+        if (color != null) color.rewind();
         float colorInterval = 0;
         float colorModifier = 0;
         int colorCounter = 0;
         if (null != color) {
-            GL11.glColor4f(color[0].r, color[0].g, color[0].b, color[0].a);
+            GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
 
-            colorInterval = 1f / c.getColors().length;
+            colorInterval = 4f / color.capacity() ;
             colorModifier = colorInterval;
             colorCounter = 0;
+            color.rewind();
         }
 
         Vector3f point;
@@ -944,10 +918,7 @@ public class LWJGLRenderer implements Renderer {
             if (t >= colorInterval && color != null) {
 
                 colorInterval += colorModifier;
-                GL11.glColor4f(c.getColors()[colorCounter].r,
-                        c.getColors()[colorCounter].g,
-                        c.getColors()[colorCounter].b,
-                        c.getColors()[colorCounter].a);
+                GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
                 colorCounter++;
             }
 
@@ -974,12 +945,11 @@ public class LWJGLRenderer implements Renderer {
     public void draw(TriMesh t) {
         predrawMesh(t);
 
-        IntBuffer indices = t.getIndexAsBuffer();
-        int verts = (t.getVertQuantity() >= 0 ? t.getVertQuantity() : t
-                .getVertices().length);
+        IntBuffer indices = t.getIndexBuffer();
+        indices.rewind();
+        int verts = t.getVertQuantity();
         if (statisticsOn) {
-            numberOfTris += (t.getTriangleQuantity() >= 0 ? t
-                    .getTriangleQuantity() : t.getIndices().length / 3);
+            numberOfTris += t.getTriangleQuantity();
             numberOfVerts += verts;
         }
 
@@ -1002,10 +972,9 @@ public class LWJGLRenderer implements Renderer {
     public void draw(CompositeMesh t) {
         predrawMesh(t);
 
-        IntBuffer indices = t.getIndexAsBuffer().duplicate();
+        IntBuffer indices = t.getIndexBuffer().duplicate(); // returns secondary pointer to same data
         CompositeMesh.IndexRange[] ranges = t.getIndexRanges();
-        int verts = (t.getVertQuantity() >= 0 ? t.getVertQuantity() : t
-                .getVertices().length);
+        int verts = t.getVertQuantity();
         if (statisticsOn) {
             numberOfVerts += verts;
             numberOfTris += t.getTriangleQuantity();
@@ -1045,53 +1014,61 @@ public class LWJGLRenderer implements Renderer {
         postdrawMesh();
     }
 
-    IntBuffer buf = BufferUtils.createIntBuffer(16);
-
+    
+    protected IntBuffer buf = org.lwjgl.BufferUtils.createIntBuffer(16);
     public void prepVBO(Geometry g) {
         if (!capabilities.GL_ARB_vertex_buffer_object)
             return;
-        if (g.isVBOVertexEnabled() && g.getVBOVertexID() <= 0) {
-            g.updateVertexBuffer(g.getVertices().length);
-            ARBVertexBufferObject.glGenBuffersARB(buf);
-            g.setVBOVertexID(buf.get(0));
-            ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getVBOVertexID());
-            ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB,
-                    g.getVerticeAsFloatBuffer(), ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
-            buf.clear();
-        }
-        if (g.isVBONormalEnabled() && g.getVBONormalID() <= 0) {
-            g.updateNormalBuffer(g.getVertices().length);
-            ARBVertexBufferObject.glGenBuffersARB(buf);
-            g.setVBONormalID(buf.get(0));
-            ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getVBONormalID());
-            ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getNormalAsFloatBuffer(),
-            		ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
-            buf.clear();
-        }
-        if (g.isVBOColorEnabled() && g.getVBOColorID() <= 0) {
-            g.updateColorBuffer(g.getVertices().length);
-            if (g.getColorAsFloatBuffer() != null) {
-            	ARBVertexBufferObject.glGenBuffersARB(buf);
-                g.setVBOColorID(buf.get(0));
-                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getVBOColorID());
-                ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
-                        .getColorAsFloatBuffer(), ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
-                buf.clear();
+        
+        VBOInfo vbo = g.getVBOInfo();
+        
+        if (vbo.isVBOVertexEnabled() && vbo.getVBOVertexID() <= 0) {
+            if (g.getVertexBuffer() != null) {
+                g.getVertexBuffer().rewind();
+                buf.rewind();
+                ARBVertexBufferObject.glGenBuffersARB(buf);
+                vbo.setVBOVertexID(buf.get(0));
+                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOVertexID());
+                ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getVertexBuffer(), 
+                        ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
             }
         }
-        if (g.isVBOTextureEnabled()) {
+        if (vbo.isVBONormalEnabled() && vbo.getVBONormalID() <= 0) {
+            if (g.getNormalBuffer() != null) {
+                g.getNormalBuffer().rewind();
+                buf.rewind();
+	            ARBVertexBufferObject.glGenBuffersARB(buf);
+	            vbo.setVBONormalID(buf.get(0));
+	            ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBONormalID());
+	            ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getNormalBuffer(),
+	            		ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+            }
+        }
+        if (vbo.isVBOColorEnabled() && vbo.getVBOColorID() <= 0) {
+            if (g.getColorBuffer() != null) {
+                g.getColorBuffer().rewind();
+                buf.rewind();
+            	ARBVertexBufferObject.glGenBuffersARB(buf);
+            	vbo.setVBOColorID(buf.get(0));
+                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOColorID());
+                ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getColorBuffer(), 
+                        ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+            }
+        }
+        if (vbo.isVBOTextureEnabled()) {
             for (int i = 0; i < g.getNumberOfUnits(); i++) {
 
-                if (g.getVBOTextureID(i) <= 0
-                        && g.getTextureAsFloatBuffer(i) != null) {
-                    g.updateTextureBuffer(i, g.getVertices().length);
-                    ARBVertexBufferObject.glGenBuffersARB(buf);
-                    g.setVBOTextureID(i, buf.get(0));
-                    ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
-                            .getVBOTextureID(i));
-                    ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g
-                            .getTextureAsFloatBuffer(i), ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
-                    buf.clear();
+                if (vbo.getVBOTextureID(i) <= 0
+                        && g.getTextureBuffer(i) != null) {
+                    if (g.getTextureBuffer(i) != null) {
+                        g.getTextureBuffer(i).rewind();
+                        buf.rewind();
+                        ARBVertexBufferObject.glGenBuffersARB(buf);
+                        vbo.setVBOTextureID(i, buf.get(0));
+                        ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOTextureID(i));
+                        ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getTextureBuffer(i), 
+                                ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
+                    }
                 }
             }
         }
@@ -1169,15 +1146,6 @@ public class LWJGLRenderer implements Renderer {
         font.setColor(t.getTextColor());
         font.print((int) t.getWorldTranslation().x, (int) t
                 .getWorldTranslation().y, t.getWorldScale(), t.getText(), 0);
-    }
-
-    /**
-     * <code>draw</code> renders a WidgetRenderer object to the back buffer.
-     * 
-     * @see com.jme.renderer.Renderer#draw(WidgetRenderer)
-     */
-    public void draw(WidgetRenderer wr) {
-        wr.render();
     }
 
     /**
@@ -1304,37 +1272,43 @@ public class LWJGLRenderer implements Renderer {
         // this to keep normals
         // working.
 
-        prepVBO(t);
+        VBOInfo vbo = t.getVBOInfo();
+        if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
+            prepVBO(t);
+            ignoreVBO = false;
+        } else
+            ignoreVBO = true;
 
         // render the object
 
-        FloatBuffer verticies = t.getVerticeAsFloatBuffer();
+        FloatBuffer verticies = t.getVertexBuffer();
         if (prevVerts != verticies) {
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-            if (t.isVBOVertexEnabled() && capabilities.GL_ARB_vertex_buffer_object) {
+            if (!ignoreVBO && vbo.isVBOVertexEnabled()) {
                 usingVBO = true;
-                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, t.getVBOVertexID());
+                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOVertexID());
                 GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
             } else {
                 if (usingVBO)
                 	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
-                GL11.glVertexPointer(3, 0, t.getVerticeAsFloatBuffer());
+                verticies.rewind();
+                GL11.glVertexPointer(3, 0, verticies);
             }
         }
         prevVerts = verticies;
 
-        FloatBuffer normals = t.getNormalAsFloatBuffer();
+        FloatBuffer normals = t.getNormalBuffer();
         if (prevNorms != normals) {
-            if (normals != null || t.getVBONormalID() > 0) {
+            if (normals != null || (!ignoreVBO && vbo.getVBONormalID() > 0)) {
                 GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                if (t.isVBONormalEnabled()
-                        && capabilities.GL_ARB_vertex_buffer_object) {
+                if (!ignoreVBO && vbo.isVBONormalEnabled()) {
                     usingVBO = true;
-                    ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, t.getVBONormalID());
+                    ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBONormalID());
                     GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
                 } else {
                     if (usingVBO)
                     	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+                    normals.rewind();
                     GL11.glNormalPointer(0, normals);
                 }
             } else {
@@ -1343,18 +1317,18 @@ public class LWJGLRenderer implements Renderer {
         }
         prevNorms = normals;
 
-        FloatBuffer colors = t.getColorAsFloatBuffer();
+        FloatBuffer colors = t.getColorBuffer();
         if (colors == null || prevColor != colors) {
-            if (colors != null || t.getVBOColorID() > 0) {
+            if (colors != null || (!ignoreVBO && vbo.getVBOColorID() > 0)) {
                 GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                if (t.isVBOColorEnabled()
-                        && capabilities.GL_ARB_vertex_buffer_object) {
+                if (!ignoreVBO && vbo.isVBOColorEnabled()) {
                     usingVBO = true;
-                    ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, t.getVBOColorID());
+                    ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOColorID());
                     GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
                 } else {
                     if (usingVBO)
                     	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+                    colors.rewind();
                     GL11.glColorPointer(4, 0, colors);
                 }
                 prevColor = colors;
@@ -1364,24 +1338,22 @@ public class LWJGLRenderer implements Renderer {
         }
 
         for (int i = 0; i < t.getNumberOfUnits(); i++) {
-            FloatBuffer textures = t.getTextureAsFloatBuffer(i);
+            FloatBuffer textures = t.getTextureBuffer(i);
             if (prevTex[i] != textures && textures != null) {
-                if (capabilities.GL_ARB_multitexture
-                        && capabilities.OpenGL13) {
+                if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
                     GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
                 }
-                if (textures != null || t.getVBOTextureID(i) > 0) {
+                if (textures != null || (!ignoreVBO && vbo.getVBOTextureID(i) > 0)) {
 
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                    if (t.isVBOTextureEnabled()
-                            && capabilities.GL_ARB_vertex_buffer_object) {
+                    if (!ignoreVBO && vbo.isVBOTextureEnabled()) {
                         usingVBO = true;
-                        ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, t
-                                .getVBOTextureID(i));
+                        ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOTextureID(i));
                         GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
                     } else {
                         if (usingVBO)
                         	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+                        textures.rewind();
                         GL11.glTexCoordPointer(2, 0, textures);
                     }
                 } else {

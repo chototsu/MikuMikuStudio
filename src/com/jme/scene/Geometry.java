@@ -1,57 +1,54 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
- * reserved.
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene;
 
-import java.io.Serializable;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.io.Serializable;
 import java.nio.FloatBuffer;
 import java.util.Stack;
-import java.util.logging.Level;
 
 import com.jme.bounding.BoundingVolume;
 import com.jme.intersection.PickResults;
+import com.jme.math.FastMath;
 import com.jme.math.Ray;
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.CloneCreator;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
-import com.jme.math.FastMath;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Geometry</code> defines a leaf node of the scene graph. The leaf node
@@ -60,62 +57,42 @@ import com.jme.math.FastMath;
  * Subclasses define what the model data is.
  *
  * @author Mark Powell
- * @version $Id: Geometry.java,v 1.71 2005-05-12 22:49:13 Mojomonkey Exp $
+ * @author Joshua Slack
+ * @version $Id: Geometry.java,v 1.72 2005-09-15 17:13:35 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
 	/** The local bounds of this Geometry object. */
 	protected BoundingVolume bound;
 
-	/** The geometry's vertex information. */
-	protected Vector3f[] vertex;
-
-	/** The geometry's per vertex normal information. */
-	protected Vector3f[] normal;
+	/** The number of vertexes in this geometry. */
+	protected int vertQuantity = 0;
 
 	/** The geometry's per vertex color information. */
-	protected ColorRGBA[] color;
-
-	/** The geometry's per Texture per vertex texture coordinate information. */
-	protected Vector2f[][] texture;
-
-	/** The number of vertexes in this geometry. */
-	protected int vertQuantity = -1;
-
-	//buffers that allow for faster data processing.
 	protected transient FloatBuffer colorBuf;
 
+	/** The geometry's per vertex normal information. */
 	protected transient FloatBuffer normBuf;
 
+	/** The geometry's vertex information. */
 	protected transient FloatBuffer vertBuf;
 
+	/** The geometry's per Texture per vertex texture coordinate information. */
 	protected transient FloatBuffer[] texBuf;
 
+	/** The geometry's VBO information. **/
+	protected VBOInfo vboInfo;
+	
 	private RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
-
-	private boolean useVBOVertex = false;
-
-	private boolean useVBOTexture = false;
-
-	private boolean useVBOColor = false;
-
-	private boolean useVBONormal = false;
-
-	private int vboVertexID = -1;
-
-	private int vboColorID = -1;
-
-	private int vboNormalID = -1;
 
 	/** Non -1 values signal this geometry is a clone of grouping "cloneID". */
 	private int cloneID = -1;
-
-	private int[] vboTextureIDs;
 
 	/**
 	 * Empty Constructor to be used internally only.
 	 */
 	public Geometry() {
+		texBuf = new FloatBuffer[1];
 	}
 
 	/**
@@ -130,19 +107,13 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 */
 	public Geometry(String name) {
 		super(name);
-		vertex = new Vector3f[0];
-		int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-				.createTextureState().getNumberOfUnits();
-		texture = new Vector2f[textureUnits][0];
-		texBuf = new FloatBuffer[textureUnits];
-		vboTextureIDs = new int[textureUnits];
+		reconstruct(null, null, null, null);
 	}
-
+	
 	/**
 	 * Constructor creates a new <code>Geometry</code> object. During
 	 * instantiation the geometry is set including vertex, normal, color and
-	 * texture information. Any part may be null except for the vertex
-	 * information. If this is null, an exception will be thrown.
+	 * texture information. 
 	 *
 	 * @param name
 	 *            the name of the scene element. This is required for
@@ -154,235 +125,55 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 * @param color
 	 *            the color of each point of the geometry.
 	 * @param texture
-	 *            the texture coordinates of the geometry.
+	 *            the texture coordinates of the geometry (position 0.)
 	 */
-	public Geometry(String name, Vector3f[] vertex, Vector3f[] normal,
-			ColorRGBA[] color, Vector2f[] texture) {
-
+	public Geometry(String name, FloatBuffer vertex, FloatBuffer normal,
+			FloatBuffer color, FloatBuffer texture) {
 		super(name);
-
-		if (vertex == null) {
-			LoggingSystem.getLogger().log(Level.WARNING,
-					"Geometry must" + " include vertex information.");
-			throw new JmeException(
-					"Geometry must include vertex information. (100)");
-		}
-
-		int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-				.createTextureState().getNumberOfUnits();
-		this.texture = new Vector2f[textureUnits][0];
-		this.texBuf = new FloatBuffer[textureUnits];
-		this.vboTextureIDs = new int[textureUnits];
-		this.vertex = vertex;
-		this.vertQuantity = vertex.length;
-		this.normal = normal;
-		this.color = color;
-		this.texture[0] = texture;
-
-		updateColorBuffer();
-		updateNormalBuffer();
-		updateVertexBuffer();
-		updateTextureBuffer();
+		reconstruct(vertex, normal, color, texture);
 	}
+	
 
-	/**
+    /**
 	 * <code>reconstruct</code> reinitializes the geometry with new data. This
 	 * will reuse the geometry object.
 	 *
 	 * @param vertices
 	 *            the new vertices to use.
-	 * @param normal
+	 * @param normals
 	 *            the new normals to use.
-	 * @param color
+	 * @param colors
 	 *            the new colors to use.
-	 * @param texture
-	 *            the new texture coordinates to use.
+	 * @param textureCoords
+	 *            the new texture coordinates to use (position 0).
 	 */
-	public void reconstruct(Vector3f[] vertices, Vector3f[] normal,
-			ColorRGBA[] color, Vector2f[] texture) {
-
-		if (vertex == null) {
-			LoggingSystem.getLogger().log(Level.WARNING,
-					"Geometry must" + " include vertex information.");
-			throw new JmeException(
-					"Geometry must include vertex information. (101)");
+	public void reconstruct(FloatBuffer vertices, FloatBuffer normals,
+			FloatBuffer colors, FloatBuffer textureCoords) {
+		int textureUnits = TextureState.getNumberOfUnits();
+		if (textureUnits == -1) {
+		    DisplaySystem.getDisplaySystem().getRenderer().createTextureState();
+		    textureUnits = TextureState.getNumberOfUnits();
 		}
+		texBuf = new FloatBuffer[textureUnits];
+		if (vertices == null)
+		    vertQuantity = 0;
+		else
+		    vertQuantity = vertices.capacity() / 3;
 
-		int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-				.createTextureState().getNumberOfUnits();
-		this.texture = new Vector2f[textureUnits][0];
-		this.texBuf = new FloatBuffer[textureUnits];
-		this.vertex = vertices;
-		this.normal = normal;
-		this.color = color;
-		this.texture[0] = texture;
-		this.vertQuantity = vertex.length;
-
-		updateColorBuffer();
-		updateNormalBuffer();
-		updateVertexBuffer();
-		updateTextureBuffer();
+		vertBuf = vertices;
+		normBuf = normals;
+		colorBuf = colors;
+		texBuf[0] = textureCoords;
 	}
-
-	/**
-	 * Returns true if VBO (Vertex Buffer) is enabled for vertex information.
-	 * This is used during rendering.
-	 *
-	 * @return If VBO is enabled for vertexes.
-	 */
-	public boolean isVBOVertexEnabled() {
-		return useVBOVertex;
+	
+	public void setVBOInfo(VBOInfo info) {
+	    this.vboInfo = info;
 	}
-
-	/**
-	 * Returns true if VBO (Vertex Buffer) is enabled for texture information.
-	 * This is used during rendering.
-	 *
-	 * @return If VBO is enabled for textures.
-	 */
-	public boolean isVBOTextureEnabled() {
-		return useVBOTexture;
+	
+	public VBOInfo getVBOInfo() {
+	    return vboInfo;
 	}
-
-	/**
-	 * Returns true if VBO (Vertex Buffer) is enabled for normal information.
-	 * This is used during rendering.
-	 *
-	 * @return If VBO is enabled for normals.
-	 */
-	public boolean isVBONormalEnabled() {
-		return useVBONormal;
-	}
-
-	/**
-	 * Returns true if VBO (Vertex Buffer) is enabled for color information.
-	 * This is used during rendering.
-	 *
-	 * @return If VBO is enabled for colors.
-	 */
-	public boolean isVBOColorEnabled() {
-		return useVBOColor;
-	}
-
-	/**
-	 * Enables or disables Vertex Buffer Objects for vertex information.
-	 *
-	 * @param enabled
-	 *            If true, VBO enabled for vertexes.
-	 */
-	public void setVBOVertexEnabled(boolean enabled) {
-		useVBOVertex = enabled;
-	}
-
-	/**
-	 * Enables or disables Vertex Buffer Objects for texture coordinate
-	 * information.
-	 *
-	 * @param enabled
-	 *            If true, VBO enabled for texture coordinates.
-	 */
-	public void setVBOTextureEnabled(boolean enabled) {
-		useVBOTexture = enabled;
-	}
-
-	/**
-	 * Enables or disables Vertex Buffer Objects for normal information.
-	 *
-	 * @param enabled
-	 *            If true, VBO enabled for normals
-	 */
-	public void setVBONormalEnabled(boolean enabled) {
-		useVBONormal = enabled;
-	}
-
-	/**
-	 * Enables or disables Vertex Buffer Objects for color information.
-	 *
-	 * @param enabled
-	 *            If true, VBO enabled for colors
-	 */
-	public void setVBOColorEnabled(boolean enabled) {
-		useVBOColor = enabled;
-	}
-
-	// TODO: Finish javadoc for VBO information.
-	public int getVBOVertexID() {
-		return vboVertexID;
-	}
-
-	public int getVBOTextureID(int index) {
-		return vboTextureIDs[index];
-	}
-
-	public int getVBONormalID() {
-		return vboNormalID;
-	}
-
-	public int getVBOColorID() {
-		return vboColorID;
-	}
-
-	public void setVBOVertexID(int id) {
-		vboVertexID = id;
-	}
-
-	public void setVBOTextureID(int index, int id) {
-		vboTextureIDs[index] = id;
-	}
-
-	public void setVBONormalID(int id) {
-		vboNormalID = id;
-	}
-
-	public void setVBOColorID(int id) {
-		vboColorID = id;
-	}
-
-	/**
-	 * <code>getColors</code> returns the color information of the geometry.
-	 * This may be null and should be check for such a case.
-	 *
-	 * @return the color array.
-	 */
-	public ColorRGBA[] getColors() {
-		return color;
-	}
-
-	/**
-	 * <code>setColors</code> sets the color array of this geometry.
-	 *
-	 * @param color
-	 *            the new color array.
-	 */
-	public void setColors(ColorRGBA[] color) {
-		if (this.color != null) {
-			if (color == null || this.color.length != color.length) {
-				colorBuf = null;
-			}
-		}
-		this.color = color;
-		updateColorBuffer();
-	}
-
-	/**
-	 *
-	 * <code>setColor</code> sets a single colorRGBA into the color array. The
-	 * index to set it is given, and due to speed considerations, no bounds
-	 * checking is done. Therefore, if an invalid index is given, an
-	 * ArrayIndexOutOfBoundsException will be thrown.
-	 *
-	 * @param index
-	 *            the index of the color to set.
-	 * @param value
-	 *            the color to set.
-	 */
-
-	public void setColor(int index, ColorRGBA value) {
-		color[index] = value;
-		colorBuf.put(index * 4, value.r).put(index * 4 + 1, value.g).put(
-				index * 4 + 2, value.b).put(index * 4 + 3, value.a);
-	}
-
+	
 	/**
 	 *
 	 * <code>setSolidColor</code> sets the color array of this geometry to a
@@ -392,275 +183,109 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *            the color to set.
 	 */
 	public void setSolidColor(ColorRGBA color) {
-		ColorRGBA colors[] = new ColorRGBA[vertex.length];
-		for (int x = 0; x < colors.length; x++)
-			colors[x] = (ColorRGBA) color.clone();
-		setColors(colors);
+	    if (colorBuf == null) 
+	        colorBuf = BufferUtils.createColorBuffer(vertQuantity);
+
+		for (int x = 0, cLength = colorBuf.capacity(); x < cLength; x+=4) {
+		    colorBuf.put(color.r);
+		    colorBuf.put(color.g);
+		    colorBuf.put(color.b);
+		    colorBuf.put(color.a);
+		}
+		colorBuf.flip();
 	}
 
 	/**
 	 * Sets every color of this geometry's color array to a random color.
 	 */
 	public void setRandomColors() {
-		ColorRGBA colors[] = new ColorRGBA[vertex.length];
-		for (int x = 0; x < colors.length; x++)
-			colors[x] = ColorRGBA.randomColor();
-		setColors(colors);
-	}
+	    if (colorBuf == null) 
+	        colorBuf = BufferUtils.createColorBuffer(vertQuantity);
 
-	/**
-	 * <code>getColorAsFloatBuffer</code> retrieves the float buffer that
-	 * contains this geometry's color information.
-	 *
-	 * @return the buffer that contains this geometry's color information.
-	 */
-	public FloatBuffer getColorAsFloatBuffer() {
-		return colorBuf;
-	}
-
-	/**
-	 * <code>getVertices</code> returns the vertex array for this geometry.
-	 *
-	 * @return the array of vertices for this geometry.
-	 */
-	public Vector3f[] getVertices() {
-		return vertex;
-	}
-
-	/**
-	 * <code>setVertices</code> sets the vertices of this geometry. The
-	 * vertices may not be null and will throw an exception if so.
-	 *
-	 * @param vertex
-	 *            the new vertices of this geometry.
-	 */
-	public void setVertices(Vector3f[] vertex) {
-		if (vertex == null) {
-			throw new JmeException(
-					"Geometry must include vertex information. (102)");
+		for (int x = 0, cLength = colorBuf.capacity(); x < cLength; x+=4) {
+		    colorBuf.put(FastMath.nextRandomFloat());
+		    colorBuf.put(FastMath.nextRandomFloat());
+		    colorBuf.put(FastMath.nextRandomFloat());
+		    colorBuf.put(1);
 		}
-		if (this.vertex.length != vertex.length) {
-			vertBuf = null;
-		}
-		this.vertex = vertex;
-		this.vertQuantity = vertex.length;
-
-		updateVertexBuffer();
+		colorBuf.flip();
 	}
 
 	/**
-	 *
-	 * <code>setVertex</code> sets a single vertex into the vertex array. The
-	 * index to set it is given, and due to speed considerations, no bounds
-	 * checking is done. Therefore, if an invalid index is given, an
-	 * ArrayIndexOutOfBoundsException will be thrown.
-	 *
-	 * @param index
-	 *            the index of the vertex to set.
-	 * @param value
-	 *            the vertex to set.
-	 */
-	public void setVertex(int index, Vector3f value) {
-		vertex[index] = value;
-		vertBuf.put(index * 3, value.x);
-		vertBuf.put(index * 3 + 1, value.y);
-		vertBuf.put(index * 3 + 2, value.z);
-	}
-
-	/**
-	 *
-	 * <code>setTextureCoord</code> sets a single coord into the texture
-	 * array. The index to set it is given, and due to speed considerations, no
-	 * bounds checking is done. Therefore, if an invalid index is given, an
-	 * ArrayIndexOutOfBoundsException will be thrown.
-	 *
-	 * @param textureUnit
-	 *            the textureUnit to set on.
-	 * @param index
-	 *            the index of the coord to set.
-	 * @param value
-	 *            the vertex to set.
-	 */
-	public void setTextureCoord(int textureUnit, int index, Vector2f value) {
-		this.texture[textureUnit][index] = value;
-	}
-
-	/**
-	 * <code>getVerticeAsFloatBuffer</code> returns the float buffer that
+	 * <code>getVertexBuffer</code> returns the float buffer that
 	 * contains this geometry's vertex information.
 	 *
 	 * @return the float buffer that contains this geometry's vertex
 	 *         information.
 	 */
-	public FloatBuffer getVerticeAsFloatBuffer() {
+	public FloatBuffer getVertexBuffer() {
 		return vertBuf;
 	}
 
 	/**
-	 * <code>getNormals</code> returns the array that contains this geometry's
-	 * normal information.
+	 * <code>setVertexBuffer</code> sets this geometry's vertices via a
+	 * float buffer consisting of groups of three floats: x,y and z.
 	 *
-	 * @return the normal array for this geometry.
+	 * @param buff
+	 *            the new vertex buffer.
 	 */
-	public Vector3f[] getNormals() {
-		return normal;
+	public void setVertexBuffer(FloatBuffer buff) {
+		this.vertBuf = buff;
+		if (vertBuf != null)
+		    vertQuantity = vertBuf.capacity() / 3;
+		else vertQuantity = 0;
 	}
 
 	/**
-	 * <code>setNormals</code> sets this geometry's normals to a new array of
-	 * normal values.
+	 * Returns the number of vertexes defined in this Geometry object. Basicly,
+	 * it is vertex.length.
 	 *
-	 * @param normal
-	 *            the new normal values.
+	 * @return The number of vertexes in this Geometry object.
 	 */
-	public void setNormals(Vector3f[] normal) {
-		if (this.normal != null) {
-			if (normal == null || this.normal.length != normal.length) {
-				normBuf = null;
-			}
-		}
-		this.normal = normal;
-		updateNormalBuffer();
+	public int getVertQuantity() {
+		return vertQuantity;
 	}
 
 	/**
-	 *
-	 * <code>setNormal</code> sets a single normal into the normal array. The
-	 * index to set it is given, and due to speed considerations, no bounds
-	 * checking is done. Therefore, if an invalid index is given, an
-	 * ArrayIndexOutOfBoundsException will be thrown.
-	 *
-	 * @param index
-	 *            the index of the normal to set.
-	 * @param value
-	 *            the normal to set.
-	 */
-	public void setNormal(int index, Vector3f value) {
-		normal[index] = value;
-		normBuf.put(index * 3, value.x);
-		normBuf.put(index * 3 + 1, value.y);
-		normBuf.put(index * 3 + 2, value.z);
-	}
-
-	/**
-	 * <code>getNormalAsFloatBuffer</code> retrieves this geometry's normal
+	 * <code>getNormalBuffer</code> retrieves this geometry's normal
 	 * information as a float buffer.
 	 *
 	 * @return the float buffer containing the geometry information.
 	 */
-	public FloatBuffer getNormalAsFloatBuffer() {
+	public FloatBuffer getNormalBuffer() {
 		return normBuf;
 	}
 
 	/**
-	 * <code>getTextures</code> retrieves the texture array that contains this
-	 * geometry's texture information. The texture coordinates are those of the
-	 * first texture unit.
+	 * <code>setNormalBuffer</code> sets this geometry's normals via a
+	 * float buffer consisting of groups of three floats: x,y and z.
 	 *
-	 * @return the array that contains the geometry's texture information.
+	 * @param buff
+	 *            the new normal buffer.
 	 */
-	public Vector2f[] getTextures() {
-		return texture[0];
+	public void setNormalBuffer(FloatBuffer buff) {
+		this.normBuf = buff;
 	}
 
 	/**
+	 * <code>getColorBuffer</code> retrieves the float buffer that
+	 * contains this geometry's color information.
 	 *
-	 * <code>getTextures</code> retrieves the texture array that contains this
-	 * geometry's texture information for a given texture unit. If the texture
-	 * unit is invalid, or no texture coordinates are set for the texture unit,
-	 * null is returned.
-	 *
-	 * @param textureUnit
-	 *            the texture unit to retrieve the coordinates for.
-	 * @return the texture coordinates of a given texture unit. Null is returned
-	 *         if the texture unit is not valid, or no coordinates are set for
-	 *         the given unit.
+	 * @return the buffer that contains this geometry's color information.
 	 */
-	public Vector2f[] getTextures(int textureUnit) {
-		if (textureUnit >= 0 && textureUnit < texture.length) {
-			return texture[textureUnit];
-		} else {
-			return null;
-		}
+	public FloatBuffer getColorBuffer() {
+		return colorBuf;
 	}
 
 	/**
-	 * <code>setTextures</code> sets this geometry's texture array to a new
-	 * array.
+	 * <code>setColorBuffer</code> sets this geometry's colors via a
+	 * float buffer consisting of groups of four floats: r,g,b and a.
 	 *
-	 * @param texture
-	 *            the new texture information for this geometry.
+	 * @param buff
+	 *            the new color buffer.
 	 */
-	public void setTextures(Vector2f[] texture) {
-		if (this.texture != null) {
-			if (texture == null || this.texture[0].length != texture.length) {
-				texBuf[0] = null;
-			}
-		}
-		this.texture[0] = texture;
-		updateTextureBuffer();
-	}
-
-	/**
-	 *
-	 * <code>setTextures</code> sets the texture coordinates of a given
-	 * texture unit. If the texture unit is not valid, then the coordinates are
-	 * ignored.
-	 *
-	 * @param textures
-	 *            the coordinates to set.
-	 * @param textureUnit
-	 *            the texture unit to set them to.
-	 */
-	public void setTextures(Vector2f[] textures, int textureUnit) {
-		if (textureUnit < 0 || textureUnit >= this.texture.length) {
-			return;
-		}
-		if (this.texture != null && textures != null) {
-			if (this.texture[textureUnit].length != textures.length) {
-				texBuf[textureUnit] = null;
-			}
-		}
-		this.texture[textureUnit] = textures;
-		updateTextureBuffer(textureUnit);
-	}
-
-	/**
-	 *
-	 * <code>setTexture</code> sets a single texture coordinate into the
-	 * texture array. The index to set it is given, and due to speed
-	 * considerations, no bounds checking is done. Therefore, if an invalid
-	 * index is given, an ArrayIndexOutOfBoundsException will be thrown.
-	 *
-	 * @param index
-	 *            the index of the texture coordinate to set.
-	 * @param value
-	 *            the texture coordinate to set.
-	 */
-	public void setTexture(int index, Vector2f value) {
-		texture[0][index] = value;
-		texBuf[0].put(index * 2, value.x);
-		texBuf[0].put(index * 2 + 1, value.y);
-	}
-
-	/**
-	 *
-	 * <code>setTexture</code> sets a single texture coordinate into the
-	 * texture array. The index to set it is given, and due to speed
-	 * considerations, no bounds checking is done. Therefore, if an invalid
-	 * index is given, an ArrayIndexOutOfBoundsException will be thrown.
-	 *
-	 * @param index
-	 *            the index of the texture coordinate to set.
-	 * @param value
-	 *            the texture coordinate to set.
-	 * @param textureUnit
-	 *            the texture unit to alter.
-	 */
-	public void setTexture(int index, Vector2f value, int textureUnit) {
-		texture[textureUnit][index] = value;
-		texBuf[textureUnit].put(index * 2, value.x);
-		texBuf[textureUnit].put(index * 2 + 1, value.y);
+	public void setColorBuffer(FloatBuffer buff) {
+		this.colorBuf = buff;
 	}
 
 	/**
@@ -675,43 +300,82 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *            the texture unit to set them to.
 	 */
 	public void copyTextureCoords(int fromIndex, int toIndex) {
-		if (fromIndex < 0 || fromIndex >= this.texture.length) {
+	    
+	    if (texBuf == null) return;
+	    
+		if (fromIndex < 0 || fromIndex >= texBuf.length || texBuf[fromIndex] == null) {
 			return;
 		}
-		if (toIndex < 0 || toIndex >= this.texture.length) {
+		if (toIndex < 0 || toIndex >= texBuf.length || toIndex == fromIndex) {
 			return;
 		}
-		if (this.texture != null) {
-			if (this.texture[fromIndex].length != texture.length) {
-				texBuf[toIndex] = null;
-			}
-		}
-		this.texture[toIndex] = (Vector2f[]) texture[fromIndex].clone();
-		updateTextureBuffer(toIndex);
+		
+		if (texBuf[toIndex] == null
+                || texBuf[toIndex].capacity() != texBuf[fromIndex].capacity())
+            texBuf[toIndex] = BufferUtils.createFloatBuffer(texBuf[fromIndex]
+                    .capacity());
+		
+		texBuf[toIndex].clear();
+		texBuf[fromIndex].rewind();
+		texBuf[toIndex].put(texBuf[fromIndex]);
 	}
 
 	/**
-	 * <code>getTextureAsFloatBuffer</code> retrieves this geometry's texture
+	 * <code>getTextureBuffer</code> retrieves this geometry's texture
 	 * information contained within a float buffer.
 	 *
 	 * @return the float buffer that contains this geometry's texture
 	 *         information.
 	 */
-	public FloatBuffer getTextureAsFloatBuffer() {
+	public FloatBuffer getTextureBuffer() {
 		return texBuf[0];
+	}
+
+	/**
+	 * <code>getTextureBuffers</code> retrieves this geometry's texture
+	 * information contained within a float buffer array.
+	 *
+	 * @return the float buffers that contain this geometry's texture
+	 *         information.
+	 */
+	public FloatBuffer[] getTextureBuffers() {
+		return texBuf;
 	}
 
 	/**
 	 *
 	 * <code>getTextureAsFloatBuffer</code> retrieves the texture buffer of a
-	 * given texture unit. If the texture unit is not valid, null is returned.
+	 * given texture unit.
 	 *
 	 * @param textureUnit
 	 *            the texture unit to check.
 	 * @return the texture coordinates at the given texture unit.
 	 */
-	public FloatBuffer getTextureAsFloatBuffer(int textureUnit) {
+	public FloatBuffer getTextureBuffer(int textureUnit) {
 		return texBuf[textureUnit];
+	}
+
+	/**
+     * <code>setTextureBuffer</code> sets this geometry's textures (position
+     * 0) via a float buffer consisting of groups of two floats: x and y.
+     * 
+     * @param buff
+     *            the new vertex buffer.
+     */
+	public void setTextureBuffer(FloatBuffer buff) {
+		this.texBuf[0] = buff;
+	}
+
+	/**
+     * <code>setTextureBuffer</code> sets this geometry's textures st the
+     * position given via a float buffer consisting of groups of two floats: x
+     * and y.
+     * 
+     * @param buff
+     *            the new vertex buffer.
+     */
+	public void setTextureBuffer(FloatBuffer buff, int position) {
+		this.texBuf[position] = buff;
 	}
 
 	/**
@@ -727,46 +391,11 @@ public abstract class Geometry extends Spatial implements Serializable {
 	}
 
 	/**
-	 * Returns the number of vertexes defined in this Geometry object. Basicly,
-	 * it is vertex.length.
-	 *
-	 * @return The number of vertexes in this Geometry object.
-	 */
-	public int getVertQuantity() {
-		return vertQuantity;
-	}
-
-	/**
-	 * Sets all texture coordinates to those defined in the given array of
-	 * arrays.
-	 *
-	 * @param texture
-	 *            The new texture coordinates.
-	 */
-	public void setAllTextures(Vector2f[][] texture) {
-		this.texture = texture;
-	}
-
-	/**
-	 * Returns the geometry's texture coordinate information.
-	 *
-	 * @return The geometry's texture coordinate information.
-	 */
-	public Vector2f[][] getAllTextures() {
-		return texture;
-	}
-
-	/**
 	 * Clears all vertex, normal, texture, and color buffers by setting them to
 	 * null.
 	 */
 	public void clearBuffers() {
-		int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-				.createTextureState().getNumberOfUnits();
-		vertBuf = null;
-		normBuf = null;
-		this.texBuf = new FloatBuffer[textureUnits];
-		colorBuf = null;
+	    reconstruct(null, null, null, null);
 	}
 
 	/**
@@ -777,7 +406,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 */
 	public void updateModelBound() {
 		if (bound != null) {
-			bound.computeFromPoints(vertex);
+			bound.computeFromPoints(vertBuf);
 			updateWorldBound();
 		}
 	}
@@ -890,200 +519,27 @@ public abstract class Geometry extends Spatial implements Serializable {
 	}
 
 	/**
-	 * <code>setColorBuffer</code> calculates the <code>FloatBuffer</code>
-	 * that contains all the color information of this geometry.
-	 *
-	 */
-	public void updateColorBuffer() {
-		if (vertQuantity >= 0)
-		    updateColorBuffer(vertQuantity);
-		else
-		    updateColorBuffer(vertex.length);
-	}	
-
-	/**
-	 * <code>setColorBuffer</code> calculates the <code>FloatBuffer</code>
-	 * that contains all the color information of this geometry.
-	 *@param quantity The number of vertices to update the buffer with colors for.
-	 */
-	public void updateColorBuffer(int quantity) {
-		if (color == null) {
-			return;
-		}
-		int bufferLength = quantity * 4;
-
-		if (colorBuf == null || colorBuf.capacity() < (bufferLength)) {
-			colorBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
-					ByteOrder.nativeOrder()).asFloatBuffer();
-		}
-
-		colorBuf.clear();
-
-		ColorRGBA tempColor;
-		for (int i = 0, max = bufferLength >> 2; i < max; i++) {
-			tempColor = color[i];
-			if (tempColor != null) {
-				colorBuf.put(tempColor.r).put(tempColor.g).put(tempColor.b)
-						.put(tempColor.a);
-			}
-		}
-
-		colorBuf.flip();
-
-	}
-
-	/**
-	 * <code>updateVertexBuffer</code> sets the float buffer that contains
-	 * this geometry's vertex information.
-	 *
-	 */
-	public void updateVertexBuffer() {
-		if (vertQuantity >= 0)
-		    updateVertexBuffer(vertQuantity);
-		else
-		    updateVertexBuffer(vertex.length);
-	}	
-
-	/**
-	 * <code>updateVertexBuffer</code> sets the float buffer that contains
-	 * this geometry's vertex information.
-	 *@param quantity The number of vertices to update the buffer with.
-	 */
-	public void updateVertexBuffer(int quantity) {
-		if (vertex == null) {
-			return;
-		}
-		int bufferLength = quantity * 3;
-		if (vertBuf == null || vertBuf.capacity() < (bufferLength)) {
-			vertBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
-					ByteOrder.nativeOrder()).asFloatBuffer();
-		}
-
-		vertBuf.clear();
-
-		Vector3f tempVect;
-		for (int i = 0, endPoint = bufferLength / 3; i < endPoint; i++) {
-			tempVect = vertex[i];
-			if (tempVect != null) {
-				vertBuf.put(tempVect.x).put(tempVect.y).put(tempVect.z);
-			}
-		}
-
-		vertBuf.flip();
-	}
-
-	/**
-	 * <code>updateNormalBuffer</code> sets the float buffer that contains
-	 * this geometry's normal information.
-	 * 
-	 */
-	public void updateNormalBuffer() {
-		if (vertQuantity >= 0)
-		    updateNormalBuffer(vertQuantity);
-		else
-		    updateNormalBuffer(vertex.length);
-	}	
-
-	/**
-	 * <code>updateNormalBuffer</code> sets the float buffer that contains
-	 * this geometry's normal information.
-	 *@param quantity The number of vertices to update the buffer with normals for.
-	 */
-	public void updateNormalBuffer(int quantity) {
-		if (normal == null) {
-			return;
-		}
-		int bufferLength = quantity * 3;
-		if (normBuf == null || normBuf.capacity() < (bufferLength)) {
-			normBuf = ByteBuffer.allocateDirect(4 * bufferLength).order(
-					ByteOrder.nativeOrder()).asFloatBuffer();
-		}
-
-		normBuf.clear();
-
-		Vector3f tempVect;
-		for (int i = 0, endPoint = bufferLength / 3; i < endPoint; i++) {
-			tempVect = normal[i];
-			if (tempVect != null) {
-				normBuf.put(tempVect.x).put(tempVect.y).put(tempVect.z);
-			}
-		}
-
-		normBuf.flip();
-
-	}
-
-	/**
-	 * <code>updateTextureBuffer</code> sets the float buffer that contains
-	 * this geometry's texture information. Updates textureUnit 0.
-	 *
-	 */
-	public void updateTextureBuffer() {
-		updateTextureBuffer(0);
-	}
-
-	/**
-	 * <code>updateTextureBuffer</code> sets the float buffer that contains
-	 * this geometry's texture information.
-	 * @param textureUnit
-	 */
-	public void updateTextureBuffer(int textureUnit) {
-		if (vertQuantity >= 0)
-		    updateTextureBuffer(textureUnit, vertQuantity);
-		else
-		    updateTextureBuffer(textureUnit, vertex.length);
-	}
-
-	/**
-	 * <code>updateTextureBuffer</code> sets the float buffer that contains
-	 * this geometry's texture information.
-	 * @param textureUnit
-	 * @param quantity
-	 */
-	public void updateTextureBuffer(int textureUnit, int quantity) {
-		if (texture == null) {
-			return;
-		}
-		if (texture[textureUnit] == null) {
-			texBuf[textureUnit] = null;
-			return;
-		}
-		int bufferLength = quantity * 2;
-
-		if (texBuf[textureUnit] == null
-				|| texBuf[textureUnit].capacity() < (bufferLength)) {
-			texBuf[textureUnit] = ByteBuffer.allocateDirect(4 * bufferLength)
-					.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		}
-
-		texBuf[textureUnit].clear();
-
-		Vector2f tempVect;
-		for (int i = 0, max = bufferLength >> 1; i < max; i++) {
-			tempVect = texture[textureUnit][i];
-			if (tempVect != null) {
-				texBuf[textureUnit].put(tempVect.x).put(tempVect.y);
-			}
-		}
-
-		texBuf[textureUnit].flip();
-
-	}
-
-	/**
-	 * <code>randomVertice</code> returns a random vertex from the list of
-	 * vertices set to this geometry. If there are no vertices set, null is
-	 * returned.
-	 *
-	 * @return Vector3f a random vertex from the vertex list. Null is returned
-	 *         if the vertex list is not set.
-	 */
-	public Vector3f randomVertice() {
-		if (vertex == null)
+     * <code>randomVertice</code> returns a random vertex from the list of
+     * vertices set to this geometry. If there are no vertices set, null is
+     * returned.
+     * 
+     * @param fill
+     *            a Vector3f to fill with the results. If null, one is created.
+     *            It is more efficient to pass in a nonnull vector.
+     * @return Vector3f a random vertex from the vertex list. Null is returned
+     *         if the vertex list is not set.
+     */
+	public Vector3f randomVertice(Vector3f fill) {
+		if (vertBuf == null)
 			return null;
 		int i = (int) (FastMath.nextRandomFloat() * vertQuantity);
+		
+		if (fill == null) fill = new Vector3f();
+		BufferUtils.populateFromBuffer(fill, vertBuf, i);
+		
+		worldRotation.multLocal(fill).addLocal(worldTranslation);
 
-		return worldRotation.mult(vertex[i]).addLocal(worldTranslation);
+		return fill;
 	}
 
 	public void findPick(Ray ray, PickResults results) {
@@ -1094,85 +550,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 			//find the triangle that is being hit.
 			//add this node and the triangle to the PickResults list.
 			results.addPick(ray, this);
-		}
-	}
-
-	/**
-	 * Sets this geometry's first texture buffer as a refrence to the passed
-	 * <code>FloatBuffer</code>. Incorrectly built FloatBuffers can have
-	 * undefined results. Use with care.
-	 *
-	 * @param toSet
-	 *            The <code>FloatBuffer</code> to set this geometry's first
-	 *            texture buffer to
-	 */
-	protected void setTextureBuffer(FloatBuffer toSet) {
-		this.texBuf[0] = toSet;
-	}
-
-	/**
-	 * Sets this geometry's normal buffer as a refrence to the passed
-	 * <code>FloatBuffer</code>. Incorrectly built FloatBuffers can have
-	 * undefined results. Use with care.
-	 *
-	 * @param toSet
-	 *            The <code>FloatBuffer</code> to set this geometry's normal
-	 *            buffer to
-	 */
-	protected void setNormalBuffer(FloatBuffer toSet) {
-		normBuf = toSet;
-	}
-
-	/**
-	 * Sets this geometry's vertex buffer as a refrence to the passed
-	 * <code>FloatBuffer</code>. Incorrectly built FloatBuffers can have
-	 * undefined results. Use with care.
-	 *
-	 * @param toSet
-	 *            The <code>FloatBuffer</code> to set this geometry's vertex
-	 *            buffer to
-	 */
-	protected void setVertexBuffer(FloatBuffer toSet) {
-		vertBuf = toSet;
-	}
-
-	/**
-	 * Sets this geometry's color buffer as a refrence to the passed
-	 * <code>FloatBuffer</code>. Incorrectly built FloatBuffers can have
-	 * undefined results. Use with care.
-	 *
-	 * @param toSet
-	 *            The <code>FloatBuffer</code> to set this geometry's color
-	 *            buffer to
-	 */
-	protected void setFloatBuffer(FloatBuffer toSet) {
-		colorBuf = toSet;
-	}
-
-	/**
-	 * Used with Serialization. Not to be called manually.
-	 *
-	 * @param in
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 * @see java.io.Serializable
-	 */
-	private void readObject(java.io.ObjectInputStream in) throws IOException,
-			ClassNotFoundException {
-		in.defaultReadObject();
-		int textureUnits = DisplaySystem.getDisplaySystem().getRenderer()
-				.createTextureState().getNumberOfUnits();
-		texBuf = new FloatBuffer[textureUnits];
-		if (color != null)
-			updateColorBuffer();
-		if (normal != null)
-			updateNormalBuffer();
-		if (vertex != null)
-			updateVertexBuffer();
-		if (texture != null) {
-			for (int i = 0; i < texture.length; i++)
-				if (texture[i] != null && texture[i].length != 0)
-					updateTextureBuffer(i);
 		}
 	}
 
@@ -1191,63 +568,64 @@ public abstract class Geometry extends Spatial implements Serializable {
 		toStore.cloneID = properties.getCloneID(this);
 
 		if (properties.isSet("vertices")) {
-			toStore.vertBuf = this.vertBuf;
-			toStore.vertex = this.vertex;
-			toStore.vertQuantity = this.vertQuantity;
+			toStore.setVertexBuffer(vertBuf);
 		} else {
-			Vector3f[] temp = new Vector3f[this.vertex.length];
-			for (int i = 0; i < temp.length; i++) {
-				temp[i] = new Vector3f(this.vertex[i]);
-			}
-			toStore.setVertices(temp);
+		    if (vertBuf != null) {
+			    toStore.setVertexBuffer(BufferUtils.createFloatBuffer(vertBuf.capacity()));
+			    toStore.vertBuf.clear();
+			    vertBuf.rewind();
+			    toStore.vertBuf.put(vertBuf);
+			    toStore.setVertexBuffer(toStore.vertBuf); // pick up vertQuantity
+		    } else toStore.setVertexBuffer(null);
 		}
 
 		if (properties.isSet("colors")) { // if I should shallow copy colors
-			toStore.colorBuf = this.colorBuf;
-			toStore.color = this.color;
-		} else if (color != null) { // If I should deep copy colors
-
-			ColorRGBA[] temp = new ColorRGBA[this.color.length];
-			for (int i = 0; i < temp.length; i++) {
-				temp[i] = new ColorRGBA(this.color[i]);
-			}
-			toStore.setColors(temp);
+		    toStore.setColorBuffer(colorBuf);
+		} else if (colorBuf != null) { // If I should deep copy colors
+		    if (colorBuf != null) {
+			    toStore.colorBuf = BufferUtils.createFloatBuffer(colorBuf.capacity());
+			    toStore.colorBuf.clear();
+			    colorBuf.rewind();
+			    toStore.colorBuf.put(colorBuf);
+		    } else toStore.setColorBuffer(null);
 		}
 
 		if (properties.isSet("normals")) {
-			toStore.normBuf = this.normBuf;
-			toStore.normal = this.normal;
-		} else if (normal != null) {
-			Vector3f[] temp = new Vector3f[this.normal.length];
-			for (int i = 0; i < temp.length; i++) {
-				temp[i] = new Vector3f(this.normal[i]);
-			}
-			toStore.setNormals(temp);
+		    toStore.setNormalBuffer(normBuf);
+		} else if (normBuf != null) {
+		    if (normBuf != null) {
+			    toStore.normBuf = BufferUtils.createFloatBuffer(normBuf.capacity());
+			    toStore.normBuf.clear();
+			    normBuf.rewind();
+			    toStore.normBuf.put(normBuf);
+			} else toStore.setNormalBuffer(null);
 		}
 
 		if (properties.isSet("texcoords")) {
-			toStore.texBuf = this.texBuf;
-			toStore.texture = this.texture;
+			toStore.texBuf = this.texBuf; // pick up all array positions
 		} else {
-			Vector2f[][] temp = new Vector2f[this.texture.length][];
-			for (int i = 0; i < temp.length; i++) {
-				if (this.texBuf[i] == null)
-					continue;
-				temp[i] = new Vector2f[this.texture[i].length];
-				for (int j = 0; j < temp[i].length; j++) {
-					temp[i][j] = new Vector2f(this.texture[i][j]);
+		    if (texBuf != null) {
+				for (int i = 0; i < texBuf.length; i++) {
+				    if (texBuf[i] != null) {
+					    toStore.texBuf[i] = BufferUtils.createFloatBuffer(texBuf[i].capacity());
+					    toStore.texBuf[i].clear();
+					    texBuf[i].rewind();
+					    toStore.texBuf[i].put(texBuf[i]);
+				    } else toStore.texBuf[i] = null;
 				}
-				toStore.setTextures(temp[i], i);
-			}
+		    } else toStore.texBuf = null;
 		}
 
 		if (bound != null)
 			toStore.setModelBound((BoundingVolume) bound.clone(null));
 
-		toStore.useVBOVertex = this.useVBOVertex;
-		toStore.useVBOColor = this.useVBOColor;
-		toStore.useVBONormal = this.useVBONormal;
-		toStore.useVBOTexture = this.useVBOTexture;
+		if (properties.isSet("vboinfo")) {
+		    toStore.vboInfo = this.vboInfo;
+		} else {
+		    if (toStore.vboInfo != null) {
+		        toStore.setVBOInfo((VBOInfo)vboInfo.copy());
+		    } else toStore.vboInfo = null;
+		}
 
 		return toStore;
 	}
@@ -1260,4 +638,124 @@ public abstract class Geometry extends Spatial implements Serializable {
 	public int getCloneID() {
 		return cloneID;
 	}
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+
+        // vert buffer
+        if (vertBuf == null)
+            s.writeInt(0);
+        else {
+            s.writeInt(vertBuf.capacity());
+            vertBuf.rewind();
+            for (int x = 0, len = vertBuf.capacity(); x < len; x++)
+                s.writeFloat(vertBuf.get());
+        }
+
+        // norm buffer
+        if (normBuf == null)
+            s.writeInt(0);
+        else {
+            s.writeInt(normBuf.capacity());
+            normBuf.rewind();
+            for (int x = 0, len = normBuf.capacity(); x < len; x++)
+                s.writeFloat(normBuf.get());
+        }
+
+        // color buffer
+        if (colorBuf == null)
+            s.writeInt(0);
+        else {
+            s.writeInt(colorBuf.capacity());
+            colorBuf.rewind();
+            for (int x = 0, len = colorBuf.capacity(); x < len; x++)
+                s.writeFloat(colorBuf.get());
+        }
+
+        // tex buffer
+        if (texBuf == null || texBuf.length == 0)
+            s.writeInt(0);
+        else {
+            s.writeInt(texBuf.length);
+            for (int i = 0; i < texBuf.length; i++) {
+                if (texBuf[i] == null)
+                    s.writeInt(0);
+                else {
+                    s.writeInt(texBuf[i].capacity());
+                    texBuf[i].rewind();
+                    for (int x = 0, len = texBuf[i].capacity(); x < len; x++)
+                        s.writeFloat(texBuf[i].get());
+                }
+            }
+        }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        // vert buffer
+        int len = s.readInt();
+        if (len == 0) {
+            setVertexBuffer(null);
+        } else {
+            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readFloat());
+            setVertexBuffer(buf);            
+        }
+        // norm buffer
+        len = s.readInt();
+        if (len == 0) {
+            setNormalBuffer(null);
+        } else {
+            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readFloat());
+            setNormalBuffer(buf);            
+        }
+        // color buffer
+        len = s.readInt();
+        if (len == 0) {
+            setColorBuffer(null);
+        } else {
+            FloatBuffer buf = BufferUtils.createFloatBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readFloat());
+            setColorBuffer(buf);            
+        }
+        // tex buffers
+        len = s.readInt();
+        if (len == 0) {
+            texBuf = null;
+        } else {
+            texBuf = new FloatBuffer[len];
+            for (int i = 0; i < texBuf.length; i++) {
+                len = s.readInt();
+                if (len == 0) {
+                    setTextureBuffer(null, i);
+                } else {
+                    FloatBuffer buf = BufferUtils.createFloatBuffer(len);
+                    for (int x = 0; x < len; x++)
+                        buf.put(s.readFloat());
+                    setTextureBuffer(buf, i);            
+                }
+            }
+        }
+    }
 }

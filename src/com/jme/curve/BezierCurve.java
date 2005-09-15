@@ -1,34 +1,35 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.curve;
 
 import com.jme.intersection.CollisionResults;
@@ -37,6 +38,7 @@ import com.jme.math.Matrix3f;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>BezierCurve</code> uses an ordered-list of three-dimensional points
@@ -47,12 +49,13 @@ import com.jme.scene.Spatial;
  * where 0 is the first control point and 1 is the second control point.
  * 
  * @author Mark Powell
- * @version $Id: BezierCurve.java,v 1.15 2004-10-14 01:23:13 mojomonkey Exp $
+ * @version $Id: BezierCurve.java,v 1.16 2005-09-15 17:14:51 renanse Exp $
  */
 public class BezierCurve extends Curve {
 
 	private static final long serialVersionUID = 1L;
 
+	private static Vector3f tempVect = new Vector3f();
 	/**
 	 * Constructor instantiates a new <code>BezierCurve</code> object.
 	 * 
@@ -90,20 +93,22 @@ public class BezierCurve extends Curve {
 	public Vector3f getPoint(float time, Vector3f point) {
 		//first point
 		if (time < 0) {
-			return vertex[0];
+		    BufferUtils.populateFromBuffer(point, vertBuf, 0);
+			return point;
 		}
 		//last point.
 		if (time > 1) {
-			return vertex[vertex.length - 1];
+		    BufferUtils.populateFromBuffer(point, vertBuf, vertQuantity - 1);
+			return point;
 		}
 
 		float muk = 1;
-		float munk = (float) Math.pow(1 - time, vertex.length - 1);
+		float munk = (float) Math.pow(1 - time, vertQuantity - 1);
 
 		point.zero();
 
-		for (int i = 0; i < vertex.length; i++) {
-			int count = vertex.length - 1;
+		for (int i = 0; i < vertQuantity; i++) {
+			int count = vertQuantity - 1;
 			int iCount = i;
 			int diff = count - iCount;
 			float blend = muk * munk;
@@ -122,9 +127,10 @@ public class BezierCurve extends Curve {
 					diff--;
 				}
 			}
-			point.x += vertex[i].x * blend;
-			point.y += vertex[i].y * blend;
-			point.z += vertex[i].z * blend;
+			BufferUtils.populateFromBuffer(tempVect, vertBuf, i);
+			point.x += tempVect.x * blend;
+			point.y += tempVect.y * blend;
+			point.z += tempVect.z * blend;
 		}
 
 		return point;
@@ -151,9 +157,9 @@ public class BezierCurve extends Curve {
 
 		//calculate tangent
 		Vector3f point = getPoint(time);
-		if (point == vertex[vertex.length - 1] || point == vertex[0]) {
-			return rotation;
-		}
+//		if (point == vertex[vertQuantity - 1] || point == vertex[0]) {
+//			return rotation;
+//		}
 		Vector3f tangent = point.subtract(getPoint(time + precision));
 		tangent = tangent.normalize();
 		//calculate normal

@@ -1,48 +1,47 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene;
 
 import java.io.Serializable;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.logging.Level;
 
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Composite</code> defines a geometry mesh. This mesh defines a three
@@ -94,8 +93,8 @@ public class CompositeMesh extends TriMesh implements Serializable {
 	 * @param ranges
 	 *            the list of index ranges to be used in rendering
 	 */
-	public CompositeMesh(String name, Vector3f[] vertices, Vector3f[] normal,
-			ColorRGBA[] color, Vector2f[] texture, int[] indices,
+	public CompositeMesh(String name, FloatBuffer vertices, FloatBuffer normal,
+	        FloatBuffer color, FloatBuffer texture, IntBuffer indices,
 			IndexRange[] ranges) {
 		super(name);
 		this.reconstruct(vertices, normal, color, texture, indices, ranges);
@@ -120,8 +119,8 @@ public class CompositeMesh extends TriMesh implements Serializable {
 	 * @param ranges
 	 *            the list of index ranges to be used in rendering
 	 */
-	public void reconstruct(Vector3f[] vertices, Vector3f[] normal,
-			ColorRGBA[] color, Vector2f[] texture, int[] indices,
+	public void reconstruct(FloatBuffer vertices, FloatBuffer normal,
+			FloatBuffer color, FloatBuffer texture, IntBuffer indices,
 			IndexRange[] ranges) {
 		super.reconstruct(vertices, normal, color, texture, indices);
 
@@ -192,28 +191,6 @@ public class CompositeMesh extends TriMesh implements Serializable {
 			quantity += ranges[i].getTriangleQuantityEquivalent();
 		}
 		return quantity;
-	}
-
-	/**
-	 * 
-	 * <code>setIndexBuffers</code> creates the <code>IntBuffer</code> that
-	 * contains the indices array.
-	 *  
-	 */
-	public void updateIndexBuffer() {
-		if (indices == null) {
-			return;
-		}
-		IntBuffer indexBuffer = getIndexAsBuffer();
-		if (indexBuffer == null || indexBuffer.capacity() < indices.length) {
-			indexBuffer = ByteBuffer.allocateDirect(indices.length * 4).order(
-					ByteOrder.nativeOrder()).asIntBuffer();
-		}
-
-		indexBuffer.clear();
-		indexBuffer.put(indices, 0, indices.length);
-		indexBuffer.flip();
-		setIndexBuffer(indexBuffer);
 	}
 
 	/**
@@ -308,43 +285,43 @@ public class CompositeMesh extends TriMesh implements Serializable {
 			switch (rng.getKind()) {
 			case CompositeMesh.IndexRange.TRIANGLES:
 				for (int ri = 0; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = indices[ri + index];
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(ri + index);
 				}
 				break;
 			case CompositeMesh.IndexRange.TRIANGLE_STRIP:
 				for (int ri = 2; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = indices[index + ri - 2];
-					cachedTriangleIndices[ctIdx++] = indices[index + ri - 1];
-					cachedTriangleIndices[ctIdx++] = indices[index + ri];
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri - 2);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri - 1);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri);
 				}
 				break;
 			case CompositeMesh.IndexRange.TRIANGLE_FAN:
 				for (int ri = 2; ri < rng.getCount(); ri++) {
-					cachedTriangleIndices[ctIdx++] = indices[index];
-					cachedTriangleIndices[ctIdx++] = indices[index + ri - 1];
-					cachedTriangleIndices[ctIdx++] = indices[index + ri];
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri - 1);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + ri);
 				}
 				break;
 			case CompositeMesh.IndexRange.QUADS:
 				for (int q = 0; q < rng.getCount(); q += 4) {
-					cachedTriangleIndices[ctIdx++] = indices[index + q];
-					cachedTriangleIndices[ctIdx++] = indices[index + q + 1];
-					cachedTriangleIndices[ctIdx++] = indices[index + q + 2];
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 1);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 2);
 
-					cachedTriangleIndices[ctIdx++] = indices[index + q + 2];
-					cachedTriangleIndices[ctIdx++] = indices[index + q + 3];
-					cachedTriangleIndices[ctIdx++] = indices[index + q];
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 2);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 3);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q);
 				}
 				break;
 			case CompositeMesh.IndexRange.QUAD_STRIP:
 				for (int q = 2; q < rng.getCount(); q += 2) {
-					cachedTriangleIndices[ctIdx++] = indices[index + q - 2];
-					cachedTriangleIndices[ctIdx++] = indices[index + q - 1];
-					cachedTriangleIndices[ctIdx++] = indices[index + q];
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q - 2);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q - 1);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q);
 
-					cachedTriangleIndices[ctIdx++] = indices[index + q + 1];
-					cachedTriangleIndices[ctIdx++] = indices[index + q];
-					cachedTriangleIndices[ctIdx++] = indices[index + q - 1];
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q + 1);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q);
+					cachedTriangleIndices[ctIdx++] = indexBuffer.get(index + q - 1);
 				}
 				break;
 			default:
@@ -367,6 +344,7 @@ public class CompositeMesh extends TriMesh implements Serializable {
 		if (cachedTriangleIndices == null) {
 			recreateTriangleIndices();
 		}
+        Vector3f[] vertex = BufferUtils.getVector3Array(vertBuf); // FIXME: UGLY!
 		Vector3f[] triangleData = new Vector3f[cachedTriangleIndices.length];
 		for (int i = 0; i < triangleData.length; i++) {
 			triangleData[i] = vertex[cachedTriangleIndices[i]];
@@ -415,9 +393,10 @@ public class CompositeMesh extends TriMesh implements Serializable {
 		if (i < 0 || iOffset >= cachedTriangleIndices.length) {
 			return;
 		}
-		vertices[0] = vertex[cachedTriangleIndices[iOffset]];
-		vertices[1] = vertex[cachedTriangleIndices[iOffset + 1]];
-		vertices[2] = vertex[cachedTriangleIndices[iOffset + 2]];
+        for (int x = 0; x < 3; x++) {
+            vertices[x] = new Vector3f();   // we could reuse existing, but it may affect current users.
+            BufferUtils.populateFromBuffer(vertices[x], vertBuf, cachedTriangleIndices[iOffset++]);
+        }
 	}
 
 	private static final long serialVersionUID = 1;

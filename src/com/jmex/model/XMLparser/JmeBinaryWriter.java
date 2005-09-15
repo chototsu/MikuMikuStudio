@@ -1,34 +1,82 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jmex.model.XMLparser;
 
-import com.jme.scene.*;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.BitSet;
+import java.util.HashMap;
+import java.util.IdentityHashMap;
+import java.util.Iterator;
+
+import com.jme.animation.SpatialTransformer;
+import com.jme.bounding.BoundingBox;
+import com.jme.bounding.BoundingSphere;
+import com.jme.bounding.BoundingVolume;
+import com.jme.bounding.OrientedBoundingBox;
+import com.jme.image.Texture;
+import com.jme.light.Light;
+import com.jme.light.PointLight;
+import com.jme.light.SpotLight;
+import com.jme.math.FastMath;
+import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
+import com.jme.scene.Geometry;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
+import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.lod.ClodMesh;
 import com.jme.scene.lod.CollapseRecord;
-import com.jme.scene.lod.AreaClodMesh;
-import com.jme.scene.state.*;
-import com.jme.math.*;
-import com.jme.renderer.ColorRGBA;
-import com.jme.light.Light;
-import com.jme.light.SpotLight;
-import com.jme.light.PointLight;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.WireframeState;
+import com.jme.util.geom.BufferUtils;
 import com.jmex.model.JointMesh;
 import com.jmex.model.animation.JointController;
 import com.jmex.model.animation.KeyframeController;
 import com.jmex.terrain.TerrainBlock;
 import com.jmex.terrain.TerrainPage;
-import com.jme.animation.SpatialTransformer;
-import com.jme.bounding.BoundingVolume;
-import com.jme.bounding.BoundingBox;
-import com.jme.bounding.BoundingSphere;
-import com.jme.bounding.OrientedBoundingBox;
-import com.jme.image.Texture;
-
-
-import java.io.OutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-
-import java.util.*;
-import java.net.URL;
 
 
 /**
@@ -630,45 +678,45 @@ public class JmeBinaryWriter {
         if (triMesh==null) return;
         HashMap atts=new HashMap();
         atts.clear();
-        if (triMesh.getVertices()!=null){
+        if (triMesh.getVertexBuffer()!=null){
             if (properties.get("q3vert")!=null)
-                atts.put("q3vert",vertsToShorts(triMesh.getVertices()));
+                atts.put("q3vert",vertsToShorts(BufferUtils.getVector3Array(triMesh.getVertexBuffer())));
             else
-                atts.put("data",triMesh.getVertices());
+                atts.put("data",BufferUtils.getVector3Array(triMesh.getVertexBuffer()));
         }
         writeTag("vertex",atts);
         writeEndTag("vertex");
 
         atts.clear();
-        if (triMesh.getNormals()!=null){
+        if (triMesh.getNormalBuffer()!=null){
             if (properties.get("q3norm")!=null)
-                atts.put("q3norm",normsToShorts(triMesh.getNormals()));
+                atts.put("q3norm",normsToShorts(BufferUtils.getVector3Array(triMesh.getNormalBuffer())));
             else
-                atts.put("data",triMesh.getNormals());
+                atts.put("data",BufferUtils.getVector3Array(triMesh.getNormalBuffer()));
         }
         writeTag("normal",atts);
         writeEndTag("normal");
 
         atts.clear();
-        if (triMesh.getColors()!=null)
-            atts.put("data",triMesh.getColors());
+        if (triMesh.getColorBuffer()!=null)
+            atts.put("data",BufferUtils.getColorArray(triMesh.getColorBuffer()));
         writeTag("color",atts);
         writeEndTag("color");
 
         atts.clear();
         for (int i=0;i<triMesh.getNumberOfUnits();i++){
-            if (triMesh.getTextures(i).length>0) {
+            if (triMesh.getTextureBuffer(i)!=null) {
                 if (i!=0)
                     atts.put("texindex",new Integer(i));
-                atts.put("data",triMesh.getTextures(i));
+                atts.put("data",BufferUtils.getVector2Array(triMesh.getTextureBuffer(i)));
                 writeTag("texturecoords",atts);
                 writeEndTag("texturecoords");
             }
         }
-
+        
         atts.clear();
-        if (triMesh.getIndices()!=null)
-            atts.put("data",triMesh.getIndices());
+        if (triMesh.getIndexBuffer()!=null)
+            atts.put("data",BufferUtils.getIntArray(triMesh.getIndexBuffer()));
         writeTag("index",atts);
         writeEndTag("index");
 
@@ -907,7 +955,7 @@ public class JmeBinaryWriter {
      */
     private void writeTextureState(TextureState state) throws IOException{
         writeTag("texturestate",null);
-        for (int i=0;i<state.getNumberOfUnits();i++){
+        for (int i=0;i<TextureState.getNumberOfUnits();i++){
             if (state.getTexture(i)==null || state.getTexture(i).getImageLocation()==null)
                 continue;
             HashMap atts=new HashMap();

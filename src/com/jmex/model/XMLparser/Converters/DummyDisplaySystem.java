@@ -1,20 +1,75 @@
-package com.jmex.model.XMLparser.Converters;
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
 
-import com.jme.system.DisplaySystem;
-import com.jme.renderer.*;
-import com.jme.scene.state.*;
-import com.jme.scene.*;
-import com.jme.bounding.BoundingVolume;
-import com.jme.curve.Curve;
-import com.jme.widget.WidgetRenderer;
-import com.jme.widget.font.WidgetFont;
-import com.jme.math.Vector3f;
-import com.jme.math.Vector2f;
-import com.jme.image.Texture;
+package com.jmex.model.XMLparser.Converters;
 
 import java.awt.Canvas;
 import java.net.URL;
 import java.nio.IntBuffer;
+
+import com.jme.bounding.BoundingVolume;
+import com.jme.curve.Curve;
+import com.jme.image.Texture;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.renderer.Camera;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.RenderQueue;
+import com.jme.renderer.Renderer;
+import com.jme.renderer.RendererType;
+import com.jme.renderer.TextureRenderer;
+import com.jme.scene.CompositeMesh;
+import com.jme.scene.Geometry;
+import com.jme.scene.Line;
+import com.jme.scene.Point;
+import com.jme.scene.Spatial;
+import com.jme.scene.Text;
+import com.jme.scene.TriMesh;
+import com.jme.scene.state.AlphaState;
+import com.jme.scene.state.AttributeState;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.DitherState;
+import com.jme.scene.state.FogState;
+import com.jme.scene.state.FragmentProgramState;
+import com.jme.scene.state.GLSLShaderObjectsState;
+import com.jme.scene.state.LightState;
+import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.ShadeState;
+import com.jme.scene.state.StencilState;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.VertexProgramState;
+import com.jme.scene.state.WireframeState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.system.DisplaySystem;
 
 /**
  * Started Date: Jul 2, 2004 <br>
@@ -398,9 +453,6 @@ public class DummyDisplaySystem extends DisplaySystem {
             public void draw(CompositeMesh t) {
             }
 
-            public void draw(WidgetRenderer wr) {
-            }
-
             public RenderQueue getQueue() {
                 return null;
             }
@@ -433,8 +485,6 @@ public class DummyDisplaySystem extends DisplaySystem {
             }
 
             public void reinit(int width, int height) {
-                // TODO Auto-generated method stub
-                
             }
         };
     }
@@ -451,16 +501,6 @@ public class DummyDisplaySystem extends DisplaySystem {
     }
 
     public void close() {
-    }
-
-    public WidgetFont getFont(String fontName) {
-        return null;
-    }
-
-    public TextureRenderer createTextureRenderer(int width, int height,
-            boolean useRGB, boolean useRGBA, boolean useDepth,
-            boolean isRectangle, int target, int mipmaps) {
-        return null;
     }
 
     public Vector3f getScreenCoordinates(Vector3f worldPosition) {
@@ -487,11 +527,16 @@ public class DummyDisplaySystem extends DisplaySystem {
         return null;
     }
 
-    /* (non-Javadoc)
-     * @see com.jme.system.DisplaySystem#createTextureRenderer(int, int, boolean, boolean, boolean, boolean, int, int, int, int, int, int, int)
-     */
-    public TextureRenderer createTextureRenderer(int width, int height, boolean useRGB, boolean useRGBA, boolean useDepth, boolean isRectangle, int target, int mipmaps, int bpp, int alpha, int depth, int stencil, int samples) {
-        // TODO Auto-generated method stub
+    public TextureRenderer createTextureRenderer(int width, int height,
+            boolean useRGB, boolean useRGBA, boolean useDepth,
+            boolean isRectangle, int target, int mipmaps) {
+        return null;
+    }
+
+    public TextureRenderer createTextureRenderer(int width, int height,
+            boolean useRGB, boolean useRGBA, boolean useDepth,
+            boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
+            int depth, int stencil, int samples) {
         return null;
     }
 }

@@ -1,48 +1,49 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.scene.shape;
 
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
-import com.jme.math.FastMath;
-import com.jme.math.Vector2f;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>PQTorus</code> generates the geometry of a parameterized torus, also
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.5 2004-09-14 21:52:21 mojomonkey Exp $
+ * @version $Id: PQTorus.java,v 1.6 2005-09-15 17:13:44 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -86,7 +87,7 @@ public class PQTorus extends TriMesh {
 
 		setGeometryData();
 		setIndexData();
-		setColorData();
+		setSolidColor(ColorRGBA.white);
 	}
 
 	private void setGeometryData() {
@@ -94,12 +95,18 @@ public class PQTorus extends TriMesh {
 		final float BETA_STEP = (float) (FastMath.TWO_PI / radialSamples);
 
 		Vector3f[] toruspoints = new Vector3f[steps];
-		vertex = new Vector3f[radialSamples * steps];
-		normal = new Vector3f[vertex.length];
-		texture[0] = new Vector2f[vertex.length];
+        // allocate vertices
+	    vertQuantity = radialSamples * steps;
+        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+
+        // allocate normals if requested
+        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+
+        // allocate texture coordinates
+        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
 
 		Vector3f pointB = new Vector3f(), T = new Vector3f(), N = new Vector3f(), B = new Vector3f();
-
+		Vector3f tempNorm = new Vector3f();
 		float r, x, y, z, theta = 0.0f, beta = 0.0f;
 		int nvertex = 0;
 
@@ -140,60 +147,47 @@ public class PQTorus extends TriMesh {
 				float cx = (float) FastMath.FastTrig.cos(beta) * width;
 				float cy = (float) FastMath.FastTrig.sin(beta) * width;
 				float radialFraction = ((float) j) / radialSamples;
+				tempNorm.x = (cx * N.x + cy * B.x);
+				tempNorm.y = (cx * N.y + cy * B.y);
+				tempNorm.z = (cx * N.z + cy * B.z);
 
-				vertex[nvertex] = new Vector3f();
-				vertex[nvertex].x = (cx * N.x + cy * B.x) + toruspoints[i].x;
-				vertex[nvertex].y = (cx * N.y + cy * B.y) + toruspoints[i].y;
-				vertex[nvertex].z = (cx * N.z + cy * B.z) + toruspoints[i].z;
+			    normBuf.put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
 
-				normal[nvertex] = vertex[nvertex].subtract(toruspoints[i]);
+			    tempNorm.addLocal(toruspoints[i]);
+				vertBuf.put(tempNorm.x).put(tempNorm.y).put(tempNorm.z);
 
-				if (texture[0][nvertex] == null)
-					texture[0][nvertex] = new Vector2f(radialFraction,
-							circleFraction);
+				texBuf[0].put(radialFraction).put(circleFraction);
 
 				nvertex++;
 			}
 		}
-
-		setVertices(vertex);
-		setNormals(normal);
-		setTextures(texture[0]);
-
-		//TODO: - small optimizations (code for clarity to begin, then
-		// optimize! :)
 	}
 
 	private void setIndexData() {
-		int[] indices = new int[6 * vertex.length];
+	    triangleQuantity = 2 * vertQuantity;
+		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
 		int j = 0;
 
-		for (int i = 0; i < vertex.length; i++) {
-			indices[j++] = i;
-			indices[j++] = i + 1;
-			indices[j++] = i - radialSamples;
+		for (int i = 0; i < vertQuantity; i++) {
+		    indexBuffer.put(i);
+            indexBuffer.put(i + 1);
+            indexBuffer.put(i - radialSamples);
 
-			indices[j++] = i + 1;
-			indices[j++] = i - radialSamples;
-			indices[j++] = i - radialSamples + 1;
+            indexBuffer.put(i + 1);
+            indexBuffer.put(i - radialSamples);
+            indexBuffer.put(i - radialSamples + 1);
 		}
 
-		for (int i = 0; i < indices.length; i++) {
-			if (indices[i] < 0)
-				indices[i] += vertex.length;
-			if (indices[i] >= vertex.length)
-				indices[i] -= vertex.length;
+		for (int i = 0, len = indexBuffer.capacity(); i < len; i++) {
+		    int ind = indexBuffer.get(i);
+			if (ind < 0) {
+				ind += vertQuantity;
+				indexBuffer.put(i, ind);
+			}
+			if (ind >= vertQuantity) {
+				ind -= vertQuantity;
+				indexBuffer.put(i, ind);
+			}
 		}
-
-		setIndices(indices);
-	}
-
-	private void setColorData() {
-		color = new ColorRGBA[vertex.length];
-		//initialize colors to white
-		for (int x = 0; x < vertex.length; x++) {
-			color[x] = new ColorRGBA();
-		}
-		setColors(color);
 	}
 }

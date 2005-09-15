@@ -1,24 +1,57 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jmex.model.XMLparser.Converters.TDSChunkingFiles;
 
-
-
-import com.jme.scene.Node;
-import com.jme.scene.TriMesh;
-import com.jme.scene.Spatial;
-import com.jme.scene.state.LightState;
-import com.jme.math.*;
-import com.jme.animation.SpatialTransformer;
-import com.jme.light.Light;
-import com.jme.light.SpotLight;
-import com.jme.light.PointLight;
-import com.jme.renderer.ColorRGBA;
-import com.jme.system.DisplaySystem;
-import com.jme.system.JmeException;
-
-import java.io.IOException;
 import java.io.DataInput;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
+
+import com.jme.animation.SpatialTransformer;
+import com.jme.light.Light;
+import com.jme.light.PointLight;
+import com.jme.light.SpotLight;
+import com.jme.math.TransformMatrix;
+import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
+import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Node;
+import com.jme.scene.Spatial;
+import com.jme.scene.TriMesh;
+import com.jme.scene.state.LightState;
+import com.jme.system.DisplaySystem;
+import com.jme.system.JmeException;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * Started Date: Jul 2, 2004<br><br>
@@ -194,7 +227,7 @@ public class TDSFile extends ChunkerClass{
             tempDir.normalizeLocal();
             toReturn.setDirection(tempDir);
 //            toReturn.setAngle(lightChunk.spotInfo.fallOff);  // Get this working correctly
-            toReturn.setAngle(180);  // TODO: Get this working correctly, it's just a hack
+            toReturn.setAngle(180);  // FIXME: Get this working correctly, it's just a hack
             toReturn.setEnabled(true);
             return toReturn;
         } else{
@@ -299,12 +332,12 @@ public class TDSFile extends ChunkerClass{
                 Vector3f[] newVerts=new Vector3f[vertexes.size()];
                 for (int indexV=0;indexV<newVerts.length;indexV++)
                     newVerts[indexV]=(Vector3f) vertexes.get(indexV);
-                part.setVertices(newVerts);
-                part.setNormals((Vector3f[]) normals.toArray(new Vector3f[]{}));
-                if (whatIAm.texCoords!=null) part.setTextures((Vector2f[]) texCoords.toArray(new Vector2f[]{}));
+                part.setVertexBuffer(BufferUtils.createFloatBuffer(newVerts));
+                part.setNormalBuffer(BufferUtils.createFloatBuffer((Vector3f[]) normals.toArray(new Vector3f[]{})));
+                if (whatIAm.texCoords!=null) part.setTextureBuffer(BufferUtils.createFloatBuffer((Vector2f[]) texCoords.toArray(new Vector2f[]{})));
                 int[] intIndexes=new int[curPosition];
                 System.arraycopy(indexes,0,intIndexes,0,curPosition);
-                part.setIndices(intIndexes);
+                part.setIndexBuffer(BufferUtils.createIntBuffer(intIndexes));
 
                 MaterialBlock myMaterials=(MaterialBlock) objects.materialBlocks.get(matName);
                 if (matName==null)
@@ -329,8 +362,8 @@ public class TDSFile extends ChunkerClass{
                 }
             }
             TriMesh noMaterials=new TriMesh(parentNode.getName()+"-1");
-            noMaterials.setVertices(whatIAm.vertexes);
-            noMaterials.setIndices(noMaterialIndexes);
+            noMaterials.setVertexBuffer(BufferUtils.createFloatBuffer(whatIAm.vertexes));
+            noMaterials.setIndexBuffer(BufferUtils.createIntBuffer(noMaterialIndexes));
             parentNode.attachChild(noMaterials);
         }
     }

@@ -1,32 +1,73 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package jmetest.renderer;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+
+import javax.swing.JOptionPane;
+
+import jmetest.curve.TestBezierCurve;
+import jmetest.renderer.state.TestTextureState;
+
 import com.jme.app.SimpleGame;
-import com.jme.scene.shape.Box;
-import com.jme.scene.shape.Torus;
-import com.jme.scene.shape.Sphere;
-import com.jme.scene.*;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.ZBufferState;
-import com.jme.math.Vector3f;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
-import com.jme.util.TextureManager;
-import com.jme.image.Texture;
-import com.jme.system.JmeException;
-import com.jme.input.KeyBindingManager;
-import com.jme.input.KeyInput;
 import com.jme.curve.BezierCurve;
 import com.jme.curve.CurveController;
+import com.jme.image.Texture;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.Controller;
+import com.jme.scene.Node;
+import com.jme.scene.Skybox;
+import com.jme.scene.TriMesh;
+import com.jme.scene.VBOInfo;
+import com.jme.scene.shape.Box;
+import com.jme.scene.shape.Sphere;
+import com.jme.scene.shape.Torus;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.ZBufferState;
+import com.jme.system.JmeException;
+import com.jme.util.TextureManager;
+import com.jme.util.geom.BufferUtils;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.Md2ToJme;
-
-import java.io.*;
-
-import jmetest.renderer.state.TestTextureState;
-import jmetest.curve.TestBezierCurve;
-
-import javax.swing.*;
 
 /**
  * Started Date: Jul 5, 2004<br><br>
@@ -126,10 +167,7 @@ public class TestSerial extends SimpleGame{
         t.setModelBound(new BoundingBox());
         t.updateModelBound();
         t.setLocalTranslation(new Vector3f(-40, 0, 10));
-        t.setVBOVertexEnabled(true);
-        t.setVBOTextureEnabled(true);
-        t.setVBONormalEnabled(true);
-        t.setVBOColorEnabled(true);
+        t.setVBOInfo(new VBOInfo(true));
         toReturn.attachChild(t);
 
         Sphere s = new Sphere("Sphere", 20, 20, 25);
@@ -137,18 +175,12 @@ public class TestSerial extends SimpleGame{
         s.updateModelBound();
         s.setLocalTranslation(new Vector3f(40, 0, -10));
         toReturn.attachChild(s);
-        s.setVBOVertexEnabled(true);
-        s.setVBOTextureEnabled(true);
-        s.setVBONormalEnabled(true);
-        s.setVBOColorEnabled(true);
+        s.setVBOInfo(new VBOInfo(true));
 
         Box b = new Box("box", new Vector3f(-25, 70, -45), 20, 20, 20);
         b.setModelBound(new BoundingBox());
         b.updateModelBound();
-        b.setVBOVertexEnabled(true);
-        b.setVBOTextureEnabled(true);
-        b.setVBONormalEnabled(true);
-        b.setVBOColorEnabled(true);
+        b.setVBOInfo(new VBOInfo(true));
         toReturn.attachChild(b);
 
 
@@ -250,7 +282,7 @@ public class TestSerial extends SimpleGame{
         colors[1] = new ColorRGBA(1, 0, 0, 1);
         colors[2] = new ColorRGBA(1, 1, 0, 1);
         colors[3] = new ColorRGBA(0, 0, 1, 1);
-        curve.setColors(colors);
+        curve.setColorBuffer(BufferUtils.createFloatBuffer(colors));
 
         Vector3f min = new Vector3f( -0.1f, -0.1f, -0.1f);
         Vector3f max = new Vector3f(0.1f, 0.1f, 0.1f);

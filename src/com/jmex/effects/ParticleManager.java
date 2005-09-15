@@ -1,34 +1,38 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jmex.effects;
+
+import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
 import com.jme.math.Line;
@@ -44,6 +48,7 @@ import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>ParticleManager</code>
@@ -61,7 +66,7 @@ import com.jme.scene.state.TextureState;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.4 2005-06-20 16:28:14 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.5 2005-09-15 17:14:07 renanse Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -94,8 +99,8 @@ public class ParticleManager extends Controller {
     private Vector3f invScale; 
     private Matrix3f rotMatrix;
     private Particle particles[];
-    private Vector3f geometryCoordinates[];
-    private ColorRGBA appearanceColors[];
+    private FloatBuffer geometryCoordinates;
+    private FloatBuffer appearanceColors;
     private ColorRGBA startColor;
     private ColorRGBA endColor;
     private float releaseVariance;
@@ -164,7 +169,7 @@ public class ParticleManager extends Controller {
         controlFlow = false;
         precision = .01f; // 10ms
         
-        geometryCoordinates = new Vector3f[noParticles << 2];
+        geometryCoordinates = BufferUtils.createVector3Buffer(noParticles << 2);
         int[] indices = new int[noParticles * 6];
         for (int j = 0; j < noParticles; j++) {
             indices[0 + j * 6] = j * 4 + 2;
@@ -175,7 +180,7 @@ public class ParticleManager extends Controller {
             indices[5 + j * 6] = j * 4 + 0;
         }
         
-        appearanceColors = new ColorRGBA[noParticles << 2];
+        appearanceColors = BufferUtils.createColorBuffer(noParticles << 2);
         particles = new Particle[noParticles];
         
         // overriding the worldRotation allows the programmer to attach the particles
@@ -200,17 +205,14 @@ public class ParticleManager extends Controller {
 	                        particle.updateVerts(camera);
 	                    }
 	                }
-                    
-                    particlesGeometry.updateVertexBuffer();
-                    particlesGeometry.updateColorBuffer();
                 }
                 super.draw(r);
             }
         };
-        particlesGeometry.setVertices(geometryCoordinates);
-        particlesGeometry.setColors(appearanceColors);
-        particlesGeometry.setTextures(new Vector2f[noParticles << 2], 0);
-        particlesGeometry.setIndices(indices);
+        particlesGeometry.setVertexBuffer(geometryCoordinates);
+        particlesGeometry.setColorBuffer(appearanceColors);
+        particlesGeometry.setTextureBuffer(BufferUtils.createVector2Buffer(noParticles << 2), 0);
+        particlesGeometry.setIndexBuffer(BufferUtils.createIntBuffer(indices));
         particlesGeometry.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
         particlesGeometry.setLightCombineMode(LightState.OFF);
         particlesGeometry.setTextureCombineMode(TextureState.REPLACE);
@@ -225,13 +227,13 @@ public class ParticleManager extends Controller {
             getRandomSpeed(speed);
             particles[k] = new Particle(this, speed, location, life);
             for (int a = 3; a >= 0; a--) {
-                particlesGeometry.setTextureCoord(0, (k << 2) + a, sharedTextureData[a]);
-                geometryCoordinates[ (k << 2) + a] = particles[k].verts[a];
-                appearanceColors[ (k << 2) + a] = particles[k].currColor;
+                int ind = (k << 2) + a;
+                BufferUtils.setInBuffer(sharedTextureData[a], particlesGeometry.getTextureBuffer(), ind);
+                particles[k].verts[a] = ind;
+                BufferUtils.setInBuffer(particles[k].currColor, appearanceColors, (ind));
             }
             
         }
-        particlesGeometry.updateTextureBuffer();
         
         warmUp(60);
     }
@@ -302,7 +304,7 @@ public class ParticleManager extends Controller {
                                 particles[i].location.set(getRectangle().random());
                                 break;
                             case GS_MESH:
-                                particles[i].location.set(getGeoMesh().randomVertice());
+                                getGeoMesh().randomVertice(particles[i].location);
                                 break;
                             case GS_POINT:
                             default:
@@ -317,7 +319,7 @@ public class ParticleManager extends Controller {
                 if (dead) setActive(false);
             }
             if (particlesGeometry.getModelBound() != null) {
-                particlesGeometry.getModelBound().computeFromPoints(particlesGeometry.getVertices());
+                particlesGeometry.getModelBound().computeFromPoints(particlesGeometry.getVertexBuffer());
             }
         }
     }

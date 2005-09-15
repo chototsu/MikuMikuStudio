@@ -1,43 +1,46 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jme.renderer;
 
-import com.jme.math.Vector3f;
-import com.jme.scene.Spatial;
-import com.jme.scene.Geometry;
-import com.jme.system.JmeException;
-
-import java.util.Comparator;
 import java.util.Arrays;
+import java.util.Comparator;
+
+import com.jme.math.Vector3f;
+import com.jme.scene.Geometry;
+import com.jme.scene.Spatial;
+import com.jme.scene.state.CullState;
+import com.jme.scene.state.RenderState;
+import com.jme.system.JmeException;
 
 /**
  * This optional class supports queueing of rendering states that are drawn when
@@ -69,6 +72,12 @@ public class RenderQueue {
 
     /** The renderer. */
     private Renderer renderer;
+    
+    /** CullState for two pass transparency rendering. */
+    private CullState tranCull;
+    
+    /** boolean for enabling / disabling two pass transparency rendering. */
+    private boolean twoPassTransparent = true;
 
     /**
      * Creates a new render queue that will work with the given renderer.
@@ -77,9 +86,32 @@ public class RenderQueue {
      */
     public RenderQueue(Renderer r) {
         this.renderer = r;
+        tranCull = r.createCullState();
         setupBuckets();
     }
 
+    /**
+     * Enables/Disables two pass transparency rendering.  If enabled,
+     * objects in the TRANSPARENT queue will be rendered in two passes.
+     * On the first pass, objects are rendered with front faces culled.
+     * On the second pass, objects are rendered with back faces culled.
+     * 
+     *  This allows complex transparent objects to be rendered whole
+     *  without concern as to the order of the faces drawn.
+     * 
+     * @param enabled set true to turn on two pass transparency rendering
+     */
+    public void setTwoPassTransparency(boolean enabled) {
+        twoPassTransparent = enabled;
+    }
+    
+    /**
+     * @return true if two pass transparency rendering is enabled.
+     */
+    public boolean isTwoPassTransparency() {
+        return twoPassTransparent;
+    }
+    
     /**
      * Creates the buckets needed.
      */
@@ -194,10 +226,39 @@ public class RenderQueue {
      */
     private void renderTransparentBucket() {
         transparentBucket.sort();
-        for (int i = 0; i < transparentBucket.listSize; i++) {
-            transparentBucket.list[i].draw(renderer);
-            transparentBucket.list[i].queueDistance = Float.NEGATIVE_INFINITY;
-        }
+	        for (int i = 0; i < transparentBucket.listSize; i++) {
+                Spatial obj = transparentBucket.list[i]; 
+                RenderState oldState = transparentBucket.list[i].setRenderState(tranCull);
+                // Only do twopass if true and the current set state is either null or CS_NONE.
+	            if (twoPassTransparent && (oldState == null || ((CullState)oldState).getCullMode() == CullState.CS_NONE)) {
+	                // apply our cullstate change
+	                obj.updateRenderState();  // FIXME: We should change this to only update CULL STATE
+
+	                // first render back-facing tris only
+	                tranCull.setCullMode(CullState.CS_FRONT);
+	                obj.draw(renderer);
+	                // then render front-facing tris only
+	                tranCull.setCullMode(CullState.CS_BACK);
+	                obj.draw(renderer);
+
+	                // revert back, we also need to updateRenderState
+	                if (oldState != null)
+	                    obj.setRenderState(oldState);
+	                else
+			            obj.clearRenderState(RenderState.RS_CULL);
+	                
+	                obj.updateRenderState();  // FIXME: We should change this to only update CULL STATE
+	            } else {
+	                // revert back, no need to updateRenderState
+	                if (oldState != null)
+	                    obj.setRenderState(oldState);
+	                else
+			            obj.clearRenderState(RenderState.RS_CULL);
+	                // draw as usual
+	                obj.draw(renderer);
+	            }
+                obj.queueDistance = Float.NEGATIVE_INFINITY;
+	        }
         transparentBucket.clear();
     }
 
@@ -238,7 +299,7 @@ public class RenderQueue {
         }
 
         /**
-         * Adds a spatial to the list. Lise size is doubled if there is no room.
+         * Adds a spatial to the list. List size is doubled if there is no room.
          * 
          * @param s
          *            The spatial to add.

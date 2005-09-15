@@ -1,49 +1,50 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jmex.model.animation;
 
-import com.jme.scene.TriMesh;
-import com.jme.scene.Controller;
-import com.jme.math.Vector3f;
-import com.jme.math.Vector2f;
-import com.jme.renderer.CloneCreator;
-import com.jme.renderer.ColorRGBA;
-import com.jme.util.LoggingSystem;
-import com.jmex.model.EmptyTriMesh;
-import com.jmex.model.ModelCloneCreator;
-
+import java.io.IOException;
+import java.io.Serializable;
+import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.ArrayList;
 import java.util.logging.Level;
-import java.io.*;
+
+import com.jme.renderer.CloneCreator;
+import com.jme.scene.Controller;
+import com.jme.scene.TriMesh;
+import com.jme.util.LoggingSystem;
+import com.jme.util.geom.BufferUtils;
+import com.jmex.model.ModelCloneCreator;
 
 /**
  * Started Date: Jun 12, 2004 <br>
@@ -71,7 +72,7 @@ import java.io.*;
  * 
  * @author Jack Lindamood
  * Parts by kevglass
- * @version $Id: KeyframeController.java,v 1.3 2005-05-18 01:02:13 Mojomonkey Exp $
+ * @version $Id: KeyframeController.java,v 1.4 2005-09-15 17:15:01 renanse Exp $
  */
 public class KeyframeController extends Controller {
 
@@ -189,7 +190,7 @@ public class KeyframeController extends Controller {
      */
     public void setKeyframe(float time, TriMesh shape) {
         if (morphMesh == null || time < 0
-                || shape.getVertices().length != morphMesh.getVertices().length)
+                || shape.getVertexBuffer().capacity() != morphMesh.getVertexBuffer().capacity())
                 return;
         for (int i = 0; i < keyframes.size(); i++) {
             PointInTime lookingTime = (PointInTime) keyframes.get(i);
@@ -243,14 +244,14 @@ public class KeyframeController extends Controller {
                     "Attempt to set invalid endtime:" + newEndTime);
             return;
         }
-        EmptyTriMesh begin = null, end = null;
+        TriMesh begin = null, end = null;
         if (prevKeyframes == null) {
             prevKeyframes = new ArrayList();
-            begin = new EmptyTriMesh();
-            end = new EmptyTriMesh();
+            begin = new TriMesh();
+            end = new TriMesh();
         } else {
-            begin = (EmptyTriMesh) ((PointInTime) prevKeyframes.get(0)).newShape;
-            end = (EmptyTriMesh) ((PointInTime) prevKeyframes.get(1)).newShape;
+            begin = (TriMesh) ((PointInTime) prevKeyframes.get(0)).newShape;
+            end = (TriMesh) ((PointInTime) prevKeyframes.get(1)).newShape;
             prevKeyframes.clear();
         }
 
@@ -339,59 +340,80 @@ public class KeyframeController extends Controller {
      *            The copy to save the current mesh into
      */
     private void getCurrent(TriMesh dataCopy) {
-        if (morphMesh.getColors() != null) {
-            ColorRGBA[] newColors = null;
-            if (dataCopy.getColors().length != morphMesh.getColors().length)
-                newColors = new ColorRGBA[morphMesh.getColors().length];
-            else
-                newColors = dataCopy.getColors();
-            for (int i = 0; i < newColors.length; i++)
-                newColors[i] = new ColorRGBA(morphMesh.getColors()[i]);
-            dataCopy.setColors(newColors);
+        if (morphMesh.getColorBuffer() != null) {
+            FloatBuffer dcColors = dataCopy.getColorBuffer();
+            if (dcColors != null)
+                dcColors.clear();
+            FloatBuffer mmColors = morphMesh.getColorBuffer();
+            mmColors.clear();
+            if (dcColors == null || dcColors.capacity() != mmColors.capacity()) {
+                dcColors = BufferUtils.createFloatBuffer(mmColors.capacity());
+                dcColors.clear();
+                dataCopy.setColorBuffer(dcColors);
+            }
+            
+            dcColors.put(mmColors);
+            dcColors.flip();
         }
-        if (morphMesh.getVertices() != null) {
-            Vector3f[] newVerts = null;
-            if (dataCopy.getVertices() == null
-                    || dataCopy.getVertices().length != morphMesh.getVertices().length)
-                newVerts = new Vector3f[morphMesh.getVertices().length];
-            else
-                newVerts = dataCopy.getVertices();
-            for (int i = 0; i < newVerts.length; i++)
-                newVerts[i] = new Vector3f(morphMesh.getVertices()[i]);
-            dataCopy.setVertices(newVerts);
+        if (morphMesh.getVertexBuffer() != null) {
+            FloatBuffer dcVerts = dataCopy.getVertexBuffer();
+            if (dcVerts != null)
+                dcVerts.clear();
+            FloatBuffer mmVerts = morphMesh.getVertexBuffer();
+            mmVerts.clear();
+            if (dcVerts == null || dcVerts.capacity() != mmVerts.capacity()) {
+                dcVerts = BufferUtils.createFloatBuffer(mmVerts.capacity());
+                dcVerts.clear();
+                dataCopy.setVertexBuffer(dcVerts);
+            }
+            
+            dcVerts.put(mmVerts);
+            dcVerts.flip();
         }
-        if (morphMesh.getNormals() != null) {
-            Vector3f[] newNorms = null;
-            if (dataCopy.getNormals() == null
-                    || dataCopy.getNormals().length != morphMesh.getNormals().length)
-                newNorms = new Vector3f[morphMesh.getNormals().length];
-            else
-                newNorms = dataCopy.getNormals();
-            for (int i = 0; i < newNorms.length; i++)
-                newNorms[i] = new Vector3f(morphMesh.getNormals()[i]);
-            dataCopy.setNormals(newNorms);
+        if (morphMesh.getNormalBuffer() != null) {
+            FloatBuffer dcNorms = dataCopy.getNormalBuffer();
+            if (dcNorms != null)
+                dcNorms.clear();
+            FloatBuffer mmNorms = morphMesh.getNormalBuffer();
+            mmNorms.clear();
+            if (dcNorms == null || dcNorms.capacity() != mmNorms.capacity()) {
+                dcNorms = BufferUtils.createFloatBuffer(mmNorms.capacity());
+                dcNorms.clear();
+                dataCopy.setNormalBuffer(dcNorms);
+            }
+            
+            dcNorms.put(mmNorms);
+            dcNorms.flip();
         }
-        if (morphMesh.getIndices() != null) {
-            int[] newInds = null;
-            if (dataCopy.getIndices() == null
-                    || dataCopy.getIndices().length != morphMesh.getIndices().length)
-                newInds = new int[morphMesh.getIndices().length];
-            else
-                newInds = dataCopy.getIndices();
-            System.arraycopy(morphMesh.getIndices(), 0, newInds, 0,
-                    newInds.length);
-            dataCopy.setIndices(newInds);
+        if (morphMesh.getIndexBuffer() != null) {
+            IntBuffer dcInds = dataCopy.getIndexBuffer();
+            if (dcInds != null)
+                dcInds.clear();
+            IntBuffer mmInds = morphMesh.getIndexBuffer();
+            mmInds.clear();
+            if (dcInds == null || dcInds.capacity() != mmInds.capacity()) {
+                dcInds = BufferUtils.createIntBuffer(mmInds.capacity());
+                dcInds.clear();
+                dataCopy.setIndexBuffer(dcInds);
+            }
+            
+            dcInds.put(mmInds);
+            dcInds.flip();
         }
-        if (morphMesh.getTextures() != null) {
-            Vector2f[] newTex = null;
-            if (dataCopy.getTextures() == null
-                    || dataCopy.getNormals().length != morphMesh.getTextures().length)
-                newTex = new Vector2f[morphMesh.getTextures().length];
-            else
-                newTex = dataCopy.getTextures();
-            for (int i = 0; i < newTex.length; i++)
-                newTex[i] = new Vector2f(morphMesh.getTextures()[i]);
-            dataCopy.setTextures(newTex);
+        if (morphMesh.getTextureBuffer() != null) {
+            FloatBuffer dcTexs = dataCopy.getTextureBuffer();
+            if (dcTexs != null)
+                dcTexs.clear();
+            FloatBuffer mmTexs = morphMesh.getTextureBuffer();
+            mmTexs.clear();
+            if (dcTexs == null || dcTexs.capacity() != mmTexs.capacity()) {
+                dcTexs = BufferUtils.createFloatBuffer(mmTexs.capacity());
+                dcTexs.clear();
+                dataCopy.setTextureBuffer(dcTexs);
+            }
+            
+            dcTexs.put(mmTexs);
+            dcTexs.flip();
         }
     }
 
@@ -428,49 +450,54 @@ public class KeyframeController extends Controller {
         TriMesh oldShape = before.newShape;
         TriMesh newShape = after.newShape;
         
-        Vector3f[] verts = morphMesh.getVertices();
-        Vector3f[] norms = morphMesh.getNormals();
-        Vector2f[] texts = morphMesh.getTextures();
-        ColorRGBA[] colors = morphMesh.getColors();
+        FloatBuffer verts = morphMesh.getVertexBuffer();
+        FloatBuffer norms = morphMesh.getNormalBuffer();
+        FloatBuffer texts = morphMesh.getTextureBuffer();
+        FloatBuffer colors = morphMesh.getColorBuffer();
 
-        Vector3f[] oldverts = oldShape.getVertices();
-        Vector3f[] oldnorms = oldShape.getNormals();
-        Vector2f[] oldtexts = oldShape.getTextures();
-        ColorRGBA[] oldcolors = oldShape.getColors();
+        FloatBuffer oldverts = oldShape.getVertexBuffer();
+        FloatBuffer oldnorms = oldShape.getNormalBuffer();
+        FloatBuffer oldtexts = oldShape.getTextureBuffer();
+        FloatBuffer oldcolors = oldShape.getColorBuffer();
 
-        Vector3f[] newverts = newShape.getVertices();
-        Vector3f[] newnorms = newShape.getNormals();
-        Vector2f[] newtexts = newShape.getTextures();
-        ColorRGBA[] newcolors = newShape.getColors();
+        FloatBuffer newverts = newShape.getVertexBuffer();
+        FloatBuffer newnorms = newShape.getNormalBuffer();
+        FloatBuffer newtexts = newShape.getTextureBuffer();
+        FloatBuffer newcolors = newShape.getColorBuffer();
+        int vertQuantity = verts.capacity() / 3;
         if (verts == null || oldverts == null || newverts == null) return;
-        boolean hitnorms = false, hittexts = false, hitcolors = false;
-        for (int i = 0; i < verts.length; i++) {
-            verts[i].interpolate(oldverts[i], newverts[i], delta);
-            //            morphMesh.setVertex(i,verts[i]);
-            if (norms != null && oldnorms != null && newnorms != null) {
-                norms[i].interpolate(oldnorms[i], newnorms[i], delta);
-                hitnorms = true;
-                //                morphMesh.setNormal(i,norms[i]);
-            }
-            if (texts != null && oldtexts != null && newtexts != null) {
-                texts[i].interpolate(oldtexts[i], newtexts[i], delta);
-                hittexts = true;
-                //                morphMesh.setTexture(i,texts[i]);
-            }
-            if (colors != null && oldcolors != null && newcolors != null) {
-                colors[i].interpolate(oldcolors[i], newcolors[i], delta);
-                hitcolors = true;
-                //                morphMesh.setColor(i,colors[i]);
-            }
+        verts.rewind(); oldverts.rewind(); newverts.rewind();
+
+        if (norms != null) norms.rewind(); // reset to start
+        if (oldnorms != null) oldnorms.rewind(); // reset to start
+        if (newnorms != null) newnorms.rewind(); // reset to start
+
+        if (texts != null) texts.rewind(); // reset to start
+        if (oldtexts != null) oldtexts.rewind(); // reset to start
+        if (newtexts != null) newtexts.rewind(); // reset to start
+
+        if (colors != null) colors.rewind(); // reset to start
+        if (oldcolors != null) oldcolors.rewind(); // reset to start
+        if (newcolors != null) newcolors.rewind(); // reset to start
+                
+        for (int i = 0; i < vertQuantity; i++) {
+            for (int x = 0; x < 3; x++) // x, y, and z
+                verts.put(i*3+x, (1f-delta)*oldverts.get(i*3 + x) + delta*newverts.get(i*3 + x));
+
+            if (norms != null && oldnorms != null && newnorms != null)
+                for (int x = 0; x < 3; x++) // x, y, and z
+                    norms.put(i*3+x, (1f-delta)*oldnorms.get(i*3 + x) + delta*newnorms.get(i*3 + x));
+
+            if (texts != null && oldtexts != null && newtexts != null)
+                for (int x = 0; x < 2; x++) // x and y
+                    texts.put(i*2+x,(1f-delta)*oldtexts.get(i*2 + x) + delta*newtexts.get(i*2 + x));
+
+            if (colors != null && oldcolors != null && newcolors != null)
+                for (int x = 0; x < 4; x++) // r, g, b, a
+                    colors.put(i*4+x,(1f-delta)*oldcolors.get(i*4 + x) + delta*newcolors.get(i*4 + x));
         }
-        morphMesh.updateVertexBuffer();
-        if (hitnorms) morphMesh.updateNormalBuffer();
-        if (hittexts) morphMesh.updateTextureBuffer();
-        if (hitcolors) morphMesh.updateColorBuffer();
+
         if (updatePerFrame) morphMesh.updateModelBound();
-        //          Both methods seem equivalent in speed
-        // Renanse says : depends on machine, update***Buffer will have less of
-        // a hit on some machines.
     }
 
     /**

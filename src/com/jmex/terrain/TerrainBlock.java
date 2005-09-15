@@ -1,43 +1,47 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights
- * reserved.
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
 package com.jmex.terrain;
 
-import com.jme.renderer.Renderer;
-import com.jme.renderer.ColorRGBA;
-import com.jme.scene.lod.AreaClodMesh;
+import java.nio.FloatBuffer;
+
+import com.jme.math.FastMath;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
-import com.jme.math.FastMath;
+import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
+import com.jme.scene.VBOInfo;
+import com.jme.scene.lod.AreaClodMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>TerrainBlock</code> defines the lowest level of the terrain system.
@@ -53,7 +57,7 @@ import com.jme.math.FastMath;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.1 2005-05-12 22:49:41 Mojomonkey Exp $
+ * @version $Id: TerrainBlock.java,v 1.2 2005-09-15 17:15:02 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -80,9 +84,9 @@ public class TerrainBlock extends AreaClodMesh {
     // heightmap values used to create this block
     private int[] heightMap;
 
-  /**
+    /**
      * Empty Constructor to be used internally only.
-     */
+     */ 
     public TerrainBlock() {}
 
     /**
@@ -163,10 +167,8 @@ public class TerrainBlock extends AreaClodMesh {
         buildNormals();
         buildColors();
 
-        setVBOVertexEnabled(true);
-        setVBONormalEnabled(true);
-        setVBOTextureEnabled(true);
-        setVBOColorEnabled(true);
+        VBOInfo vbo = new VBOInfo(true);
+        vboInfo = vbo;
 
         if (useClod) {
             this.create(null);
@@ -201,12 +203,16 @@ public class TerrainBlock extends AreaClodMesh {
      *            int
      */
     public void setDetailTexture(int unit, int repeat) {
-        Vector2f[] texs = new Vector2f[texture[0].length];
-        for (int i = 0; i < texture[0].length; i++) {
-            texs[i] = texture[0][i].mult(repeat);
+        FloatBuffer buf = texBuf[unit];
+        if (buf == null || buf.capacity() != texBuf[0].capacity()) {
+            buf = BufferUtils.createFloatBuffer(texBuf[0].capacity());
+            texBuf[unit] = buf;
         }
-
-        setTextures(texs, unit);
+        buf.clear();
+        texBuf[0].rewind();
+        for (int i = 0, len = buf.capacity(); i < len; i++) {
+            buf.put(repeat * texBuf[0].get());
+        }
     }
 
     /**
@@ -293,18 +299,21 @@ public class TerrainBlock extends AreaClodMesh {
      * TriMesh.
      */
     private void buildVertices() {
-        vertex = new Vector3f[heightMap.length];
+        vertQuantity = heightMap.length;
+        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        Vector3f point = new Vector3f();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
-                vertex[x + (y * size)] = new Vector3f(x * stepScale.x,
+                point.set(x * stepScale.x,
                         heightMap[x + (y * size)] * stepScale.y, y
                                 * stepScale.z);
+                BufferUtils.setInBuffer(point, vertBuf, (x + (y * size)));
             }
         }
 
         //set up the indices
-        int value = ((size - 1) * (size - 1)) * 6;
-        indices = new int[value];
+        triangleQuantity = ((size - 1) * (size - 1)) * 2;
+        indexBuffer = BufferUtils.createIntBuffer(triangleQuantity * 3);
 
         int count = 0;
 
@@ -315,22 +324,19 @@ public class TerrainBlock extends AreaClodMesh {
                 continue;
             }
             //set the top left corner.
-            indices[count++] = i;
+            indexBuffer.put(i);
             //set the bottom right corner.
-            indices[count++] = ((1 + size) + i);
+            indexBuffer.put((1 + size) + i);
             //set the top right corner.
-            indices[count++] = (1 + i);
+            indexBuffer.put(1 + i);
             //set the top left corner
-            indices[count++] = i;
+            indexBuffer.put(i);
             //set the bottom left corner
-            indices[count++] = size + i;
+            indexBuffer.put(size + i);
             //set the bottom right corner
-            indices[count++] = ((1 + size) + i);
+            indexBuffer.put((1 + size) + i);
 
         }
-
-        setVertices(vertex);
-        setIndices(indices);
     }
 
     /**
@@ -342,15 +348,15 @@ public class TerrainBlock extends AreaClodMesh {
         offset.x += (int) (offsetAmount * stepScale.x);
         offset.y += (int) (offsetAmount * stepScale.z);
 
-        texture[0] = new Vector2f[vertex.length];
+        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        texBuf[0].clear();
 
-        for (int i = 0; i < vertex.length; i++) {
-            texture[0][i] = new Vector2f(
-                (vertex[i].x + offset.x) / (stepScale.x * (totalSize - 1)),
-                (vertex[i].z + offset.y) / (stepScale.z * (totalSize - 1)));
+        vertBuf.rewind();
+        for (int i = 0; i < vertQuantity; i++) {
+            texBuf[0].put((vertBuf.get() + offset.x) / (stepScale.x * (totalSize - 1)));
+            vertBuf.get(); // ignore vert y coord.
+            texBuf[0].put((vertBuf.get() + offset.y) / (stepScale.z * (totalSize - 1)));
         }
-
-        setTextures(texture[0]);
     }
 
     /**
@@ -361,54 +367,46 @@ public class TerrainBlock extends AreaClodMesh {
      *
      */
     private void buildNormals() {
-        Vector3f[] normal = new Vector3f[vertex.length];
-        Vector3f oppositeVector = new Vector3f();
-        int normalIndex = 0;
+        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        Vector3f oppositePoint = new Vector3f();
+        Vector3f adjacentPoint = new Vector3f();
+        Vector3f rootPoint = new Vector3f();
+        Vector3f tempNorm = new Vector3f();
+        int adj = 0, opp = 0, normalIndex = 0;
         for (int row = 0; row < size; row++) {
             for (int col = 0; col < size; col++) {
-              normal[normalIndex] = new Vector3f();
+                BufferUtils.populateFromBuffer(rootPoint, vertBuf, normalIndex);
                 if (row == size - 1) {
                     if (col == size - 1) { // last row, last col
                         // up cross left
-                        normal[normalIndex].set(vertex[normalIndex - size])
-                                .subtractLocal(vertex[normalIndex])
-                                .crossLocal(
-                                    oppositeVector.set(vertex[normalIndex - 1])
-                                    .subtractLocal(vertex[normalIndex]))
-                                .normalizeLocal();
+                        adj = normalIndex-size;
+                        opp = normalIndex-1;
                     } else { // last row, except for last col
                         // right cross up
-                        normal[normalIndex].set(vertex[normalIndex + 1])
-                                .subtractLocal(vertex[normalIndex])
-                                .crossLocal(
-                                    oppositeVector.set(vertex[normalIndex - size])
-                                    .subtractLocal(vertex[normalIndex]))
-                                .normalizeLocal();
+                        adj = normalIndex+1;
+                        opp = normalIndex-size;
                     }
                 } else {
                     if (col == size - 1) { // last column except for last row
                         // left cross down
-                        normal[normalIndex].set(vertex[normalIndex - 1])
-                                .subtractLocal(vertex[normalIndex])
-                                .crossLocal(
-                                    oppositeVector.set(vertex[normalIndex + size])
-                                    .subtractLocal(vertex[normalIndex]))
-                                .normalizeLocal();
+                        adj = normalIndex-1;
+                        opp = normalIndex+size;
                     } else { // most cases
                         // down cross right
-                        normal[normalIndex].set(vertex[normalIndex + size])
-                                .subtractLocal(vertex[normalIndex])
-                                .crossLocal(
-                                    oppositeVector.set(vertex[normalIndex + 1])
-                                    .subtractLocal(vertex[normalIndex]))
-                                .normalizeLocal();
+                        adj = normalIndex+size;
+                        opp = normalIndex+1;
                     }
                 }
+                BufferUtils.populateFromBuffer(adjacentPoint, vertBuf, adj);
+                BufferUtils.populateFromBuffer(oppositePoint, vertBuf, opp);
+                tempNorm.set(adjacentPoint)
+	                .subtractLocal(rootPoint)
+	                .crossLocal(oppositePoint.subtractLocal(rootPoint))
+	                .normalizeLocal();
+                BufferUtils.setInBuffer(tempNorm, normBuf, normalIndex);
                 normalIndex++;
             }
         }
-
-        setNormals(normal);
     }
 
     /**
@@ -416,13 +414,7 @@ public class TerrainBlock extends AreaClodMesh {
      */
     private void buildColors()
     {
-        color = new ColorRGBA[vertex.length];
-        //initialize colors to white
-        for (int x = 0; x < vertex.length; x++) {
-            color[x] = new ColorRGBA();
-        }
-
-        setColors(color);
+	    setSolidColor(ColorRGBA.white);
     }
 
     /**

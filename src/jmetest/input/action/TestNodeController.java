@@ -1,40 +1,40 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding
+ * Copyright (c) 2003-2005 jMonkeyEngine
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package jmetest.input.action;
 
 import com.jme.app.BaseGame;
-import com.jme.bounding.BoundingSphere;
-import com.jme.input.NodeHandler;
 import com.jme.input.InputHandler;
+import com.jme.input.NodeHandler;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -45,12 +45,14 @@ import com.jme.scene.Point;
 import com.jme.scene.TriMesh;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
+import com.jme.util.Timer;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.7 2004-08-14 00:50:02 cep21 Exp $
+ * @version $Id: TestNodeController.java,v 1.8 2005-09-15 17:14:21 renanse Exp $
  */
 public class TestNodeController extends BaseGame {
     private Node scene;
@@ -60,13 +62,18 @@ public class TestNodeController extends BaseGame {
     private TriMesh t;
     private TriMesh t2;
     private InputHandler input;
+    /** High resolution timer for jME. */
+    protected Timer timer;
 
-    /**
-     * Nothing to update.
-     * @see com.jme.app.SimpleGame#update()
-     */
     protected void update(float interpolation) {
-        input.update(1);
+        /** Recalculate the framerate. */
+        timer.update();
+          /** Update tpf to time per frame according to the Timer. */
+        float tpf = timer.getTimePerFrame();
+          /** Check for key/mouse updates. */
+        input.update(tpf);
+        scene.updateGeometricState(tpf, true);
+
     }
 
     /**
@@ -107,16 +114,25 @@ public class TestNodeController extends BaseGame {
         blackColor.b = 0;
         display.getRenderer().setBackgroundColor(blackColor);
         cam.setFrustum(1.0f, 1000.0f, -0.55f, 0.55f, 0.4125f, -0.4125f);
-        Vector3f loc = new Vector3f(0.0f, 0.0f, 0.0f);
-        Vector3f left = new Vector3f(-1.0f, 0.0f, 0.0f);
-        Vector3f up = new Vector3f(0.0f, 1.0f, 0.0f);
-        Vector3f dir = new Vector3f(0.0f, 0f, -1.0f);
+        Vector3f loc = new Vector3f(4.0f, 0.0f, 0.0f);
+        Vector3f left = new Vector3f(0.0f, -1.0f, 0.0f);
+        Vector3f up = new Vector3f(0.0f, 0.0f, 1.0f);
+        Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
         cam.setFrame(loc, left, up, dir);
-        cameraNode = new CameraNode("Camera Node", cam);
+        cam.update();
 
         display.getRenderer().setCamera(cam);
 
+        cameraNode = new CameraNode("Camera Node", cam);
+        cameraNode.setLocalTranslation(new Vector3f(0, 250, -20));
+        cameraNode.updateWorldData(0);
+
         input = new NodeHandler(this, cameraNode, "LWJGL");
+        input.setKeySpeed(50f);
+        input.setMouseSpeed(.5f);
+
+        /** Get a high resolution timer for FPS updates. */
+      timer = Timer.getTimer(properties.getRenderer());
 
 
     }
@@ -142,8 +158,8 @@ public class TestNodeController extends BaseGame {
 
         l = new Line("Line Group", vertex, null, color, null);
         l.setLocalTranslation(new Vector3f(-200.0f, -25, -25));
-        l.setModelBound(new BoundingSphere());
-        l.updateModelBound();
+//        l.setModelBound(new BoundingSphere());
+//        l.updateModelBound();
 
         Vector3f[] vertex2 = new Vector3f[1000];
         ColorRGBA[] color2 = new ColorRGBA[1000];
@@ -162,8 +178,8 @@ public class TestNodeController extends BaseGame {
 
         p = new Point("Point Group", vertex2, null, color2, null);
         p.setLocalTranslation(new Vector3f(0.0f, 25, 0));
-        p.setModelBound(new BoundingSphere());
-        p.updateModelBound();
+//        p.setModelBound(new BoundingSphere());
+//        p.updateModelBound();
         Node pointNode = new Node("Point Node");
         pointNode.attachChild(p);
 
@@ -200,10 +216,10 @@ public class TestNodeController extends BaseGame {
         color3[2].a = 1;
         int[] indices = { 0, 1, 2 };
 
-        t = new TriMesh("Triangle 1", verts, null, color3, null, indices);
+        t = new TriMesh("Triangle 1", BufferUtils.createFloatBuffer(verts), null, BufferUtils.createFloatBuffer(color3), null, BufferUtils.createIntBuffer(indices));
         t.setLocalTranslation(new Vector3f(-150, 0, 0));
-        t.setModelBound(new BoundingSphere());
-        t.updateModelBound();
+//        t.setModelBound(new BoundingSphere());
+//        t.updateModelBound();
 
         pointNode.attachChild(t);
         pointNode.setLocalTranslation(new Vector3f(0, -50, 0));
@@ -243,16 +259,17 @@ public class TestNodeController extends BaseGame {
         color4[2].a = 1;
         int[] indices2 = { 0, 1, 2 };
 
-        t2 = new TriMesh("Triangle 2", verts2, null, color4, null, indices2);
+        t2 = new TriMesh("Triangle 2", BufferUtils.createFloatBuffer(verts2), null, BufferUtils.createFloatBuffer(color4), null, BufferUtils.createIntBuffer(indices2));
         t2.setLocalTranslation(new Vector3f(150, 0, 0));
-        t2.setModelBound(new BoundingSphere());
-        t2.updateModelBound();
+//        t2.setModelBound(new BoundingSphere());
+//        t2.updateModelBound();
 
         scene = new Node("Scene graph Node");
         scene.attachChild(l);
         scene.attachChild(pointNode);
         scene.attachChild(t2);
-        scene.attachChild(cameraNode);
+		scene.attachChild(cameraNode);
+
         scene.updateGeometricState(0.0f, true);
 
     }

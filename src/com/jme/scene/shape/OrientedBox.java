@@ -1,9 +1,42 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
 package com.jme.scene.shape;
 
-import com.jme.scene.TriMesh;
-import com.jme.math.Vector3f;
 import com.jme.math.Vector2f;
+import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.scene.TriMesh;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * Started Date: Aug 22, 2004 <br>
@@ -40,9 +73,6 @@ public class OrientedBox extends TriMesh {
 	/** Vector array used to store the array of 8 corners the box has. */
 	public Vector3f[] vectorStore;
 
-	/** Vector array used to store the box's normals. */
-	protected Vector3f[] normalStore;
-
 	/**
 	 * If true, the box's vectorStore array correctly represnts the box's
 	 * corners.
@@ -67,10 +97,6 @@ public class OrientedBox extends TriMesh {
 		for (int i = 0; i < vectorStore.length; i++) {
 			vectorStore[i] = new Vector3f();
 		}
-		normalStore = new Vector3f[6];
-		for (int i = 0; i < normalStore.length; i++) {
-			normalStore[i] = new Vector3f();
-		}
 		meshColor = new ColorRGBA(ColorRGBA.white);
 		texTopRight = new Vector2f(1, 1);
 		texTopLeft = new Vector2f(1, 0);
@@ -88,7 +114,7 @@ public class OrientedBox extends TriMesh {
 	public void computeInformation() {
 		setVertexData();
 		setNormalData();
-		setColorData();
+		setSolidColor(meshColor);
 		setTextureData();
 		setIndexData();
 	}
@@ -97,93 +123,78 @@ public class OrientedBox extends TriMesh {
 	 * Sets the correct indices array for the box.
 	 */
 	private void setIndexData() {
-		if (indices == null || indices.length != 36) {
-			indices = new int[36];
-			setIndexBuffer(null);
+		if (indexBuffer == null || indexBuffer.capacity() != 36) {
+		    indexBuffer = BufferUtils.createIntBuffer(36);
+		    triangleQuantity = 12;
 		}
 		for (int i = 0; i < 6; i++) {
-			indices[i * 6 + 0] = i * 4 + 0;
-			indices[i * 6 + 1] = i * 4 + 1;
-			indices[i * 6 + 2] = i * 4 + 3;
-			indices[i * 6 + 3] = i * 4 + 1;
-			indices[i * 6 + 4] = i * 4 + 2;
-			indices[i * 6 + 5] = i * 4 + 3;
+		    indexBuffer.put(i * 4 + 0);
+		    indexBuffer.put(i * 4 + 1);
+		    indexBuffer.put(i * 4 + 3);
+		    indexBuffer.put(i * 4 + 1);
+		    indexBuffer.put(i * 4 + 2);
+		    indexBuffer.put(i * 4 + 3);
 		}
-		updateIndexBuffer();
 	}
 
 	/**
 	 * Sets the correct texture array for the box.
 	 */
 	private void setTextureData() {
-		if (texture == null || texture[0] == null || texture[0].length != 24) {
-			texture[0] = new Vector2f[24];
-			texBuf[0] = null;
-			for (int i = 0; i < 24; i++)
-				texture[0][i] = new Vector2f();
-		}
-		texture[0][0] = texture[0][4] = texture[0][8] = texture[0][12] = texture[0][16] = texture[0][20] = texTopRight;
-		texture[0][1] = texture[0][5] = texture[0][9] = texture[0][13] = texture[0][17] = texture[0][21] = texTopLeft;
-		texture[0][2] = texture[0][6] = texture[0][10] = texture[0][14] = texture[0][18] = texture[0][22] = texBotLeft;
-		texture[0][3] = texture[0][7] = texture[0][11] = texture[0][15] = texture[0][19] = texture[0][23] = texBotRight;
-		updateTextureBuffer();
-	}
+	    if (texBuf[0] == null || texBuf[0].capacity() != (24*2)) // x, y
+	        texBuf[0] = BufferUtils.createVector2Buffer(24);
 
-	/**
-	 * Sets the correct color array for the box.
-	 */
-	private void setColorData() {
-		if (color == null || color.length != 24) {
-			color = new ColorRGBA[24];
-			colorBuf = null;
-			for (int i = 0; i < 24; i++)
-				color[i] = new ColorRGBA();
-		}
-		for (int i = 0; i < 24; i++)
-			color[i] = meshColor;
-		updateColorBuffer();
+	    for (int x = 0; x < 6; x++) {
+		    texBuf[0].put(texTopRight.x).put(texTopRight.y);
+		    texBuf[0].put(texTopLeft.x).put(texTopLeft.y);
+		    texBuf[0].put(texBotLeft.x).put(texBotLeft.y);
+		    texBuf[0].put(texBotRight.x).put(texBotRight.y);
+	    }
 	}
 
 	/**
 	 * Sets the correct normal array for the box.
 	 */
 	private void setNormalData() {
-		computeNormals();
-		if (normal == null || normal.length != 24) {
-			normal = new Vector3f[24];
-			for (int i = 0; i < 24; i++)
-				normal[i] = new Vector3f();
-			normBuf = null;
+		if (normBuf == null || normBuf.capacity() != (3*24)) {
+		    normBuf = BufferUtils.createVector3Buffer(24);
 		}
 
 		// top
-		normal[0].set(normal[1].set(normal[2].set(normal[3].set(yAxis))));
-		// right
-		normal[4].set(normal[5].set(normal[6].set(normal[7].set(xAxis))));
-		// left
-		normal[8].set(normal[9].set(normal[10].set(normal[11].set(xAxis)
-				.negateLocal())));
-		// bottom
-		normal[12].set(normal[13].set(normal[14].set(normal[15].set(yAxis)
-				.negateLocal())));
-		// back
-		normal[16].set(normal[17].set(normal[18].set(normal[19].set(zAxis)
-				.negateLocal())));
-		// front
-		normal[20].set(normal[21].set(normal[22].set(normal[23].set(zAxis))));
-		updateNormalBuffer();
-	}
+		normBuf.put(yAxis.x).put(yAxis.y).put(yAxis.z);
+		normBuf.put(yAxis.x).put(yAxis.y).put(yAxis.z);
+		normBuf.put(yAxis.x).put(yAxis.y).put(yAxis.z);
+		normBuf.put(yAxis.x).put(yAxis.y).put(yAxis.z);
 
-	/**
-	 * Stores into normalStore the current axis values.
-	 */
-	private void computeNormals() {
-		normalStore[0].set(xAxis);
-		normalStore[1].set(xAxis).negateLocal();
-		normalStore[2].set(yAxis);
-		normalStore[3].set(yAxis).negateLocal();
-		normalStore[4].set(zAxis);
-		normalStore[5].set(zAxis).negateLocal();
+		// right
+		normBuf.put(xAxis.x).put(xAxis.y).put(xAxis.z);
+		normBuf.put(xAxis.x).put(xAxis.y).put(xAxis.z);
+		normBuf.put(xAxis.x).put(xAxis.y).put(xAxis.z);
+		normBuf.put(xAxis.x).put(xAxis.y).put(xAxis.z);
+
+		// left
+		normBuf.put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
+		normBuf.put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
+		normBuf.put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
+		normBuf.put(-xAxis.x).put(-xAxis.y).put(-xAxis.z);
+
+		// bottom
+		normBuf.put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
+		normBuf.put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
+		normBuf.put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
+		normBuf.put(-yAxis.x).put(-yAxis.y).put(-yAxis.z);
+
+		// back
+		normBuf.put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
+		normBuf.put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
+		normBuf.put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
+		normBuf.put(-zAxis.x).put(-zAxis.y).put(-zAxis.z);
+
+		// front
+		normBuf.put(zAxis.x).put(zAxis.y).put(zAxis.z);
+		normBuf.put(zAxis.x).put(zAxis.y).put(zAxis.z);
+		normBuf.put(zAxis.x).put(zAxis.y).put(zAxis.z);
+		normBuf.put(zAxis.x).put(zAxis.y).put(zAxis.z);
 	}
 
 	/**
@@ -191,47 +202,46 @@ public class OrientedBox extends TriMesh {
 	 */
 	private void setVertexData() {
 		computeCorners();
-		if (vertex == null || vertex.length != 24) {
-			vertex = new Vector3f[24];
-			vertQuantity = 24;
-			vertBuf = null;
+		if (vertBuf == null || vertBuf.capacity() != (3*24)) {
+		    vertBuf = BufferUtils.createVector3Buffer(24);
 		}
-		// top
-		vertex[0] = vectorStore[0];
-		vertex[1] = vectorStore[1];
-		vertex[2] = vectorStore[5];
-		vertex[3] = vectorStore[3];
+	    vertQuantity = 24;
 
-		// right
-		vertex[4] = vectorStore[0];
-		vertex[5] = vectorStore[3];
-		vertex[6] = vectorStore[6];
-		vertex[7] = vectorStore[2];
+		//Top
+		vertBuf.put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
+		vertBuf.put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
+		vertBuf.put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
+		vertBuf.put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
 
-		// left
-		vertex[8] = vectorStore[5];
-		vertex[9] = vectorStore[1];
-		vertex[10] = vectorStore[4];
-		vertex[11] = vectorStore[7];
+		//Right
+		vertBuf.put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
+		vertBuf.put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
+		vertBuf.put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
+		vertBuf.put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
 
-		// bottom
-		vertex[12] = vectorStore[6];
-		vertex[13] = vectorStore[7];
-		vertex[14] = vectorStore[4];
-		vertex[15] = vectorStore[2];
+		//Left
+		vertBuf.put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
+		vertBuf.put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
+		vertBuf.put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
+		vertBuf.put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
 
-		// back
-		vertex[16] = vectorStore[3];
-		vertex[17] = vectorStore[5];
-		vertex[18] = vectorStore[7];
-		vertex[19] = vectorStore[6];
+		//Bottom
+		vertBuf.put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
+		vertBuf.put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
+		vertBuf.put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
+		vertBuf.put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
 
-		// front
-		vertex[20] = vectorStore[1];
-		vertex[21] = vectorStore[4];
-		vertex[22] = vectorStore[2];
-		vertex[23] = vectorStore[0];
-		updateVertexBuffer();
+		//Back
+		vertBuf.put(vectorStore[3].x).put(vectorStore[3].y).put(vectorStore[3].z);
+		vertBuf.put(vectorStore[5].x).put(vectorStore[5].y).put(vectorStore[5].z);
+		vertBuf.put(vectorStore[7].x).put(vectorStore[7].y).put(vectorStore[7].z);
+		vertBuf.put(vectorStore[6].x).put(vectorStore[6].y).put(vectorStore[6].z);
+
+		//Front
+		vertBuf.put(vectorStore[1].x).put(vectorStore[1].y).put(vectorStore[1].z);
+		vertBuf.put(vectorStore[4].x).put(vectorStore[4].y).put(vectorStore[4].z);
+		vertBuf.put(vectorStore[2].x).put(vectorStore[2].y).put(vectorStore[2].z);
+		vertBuf.put(vectorStore[0].x).put(vectorStore[0].y).put(vectorStore[0].z);
 	}
 
 	/**

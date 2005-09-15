@@ -1,50 +1,53 @@
 /*
- * Copyright (c) 2003-2004, jMonkeyEngine - Mojo Monkey Coding All rights reserved.
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
+ * modification, are permitted provided that the following conditions are
+ * met:
  *
- * Redistributions of source code must retain the above copyright notice, this
- * list of conditions and the following disclaimer.
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
  *
- * Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
  *
- * Neither the name of the Mojo Monkey Coding, jME, jMonkey Engine, nor the
- * names of its contributors may be used to endorse or promote products derived
- * from this software without specific prior written permission.
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
  *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package com.jmex.effects;
 
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
+import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Particle</code> defines a single Particle of a Particle system.
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.3 2005-05-27 17:16:42 renanse Exp $
+ * @version $Id: Particle.java,v 1.4 2005-09-15 17:14:07 renanse Exp $
  */
 public class Particle {
 
-    Vector3f verts[];
+    int[] verts; 
 
     Vector3f location;
 
@@ -68,7 +71,7 @@ public class Particle {
 
     private Vector3f speed;
 
-    private Vector3f bbX, bbY;
+    private Vector3f bbX = new Vector3f(), bbY = new Vector3f();
 
     // colors
     private float rChange, gChange, bChange, aChange;
@@ -81,6 +84,8 @@ public class Particle {
 
     /** Particle is available for spawning. */
     public static final int AVAILABLE = 2;
+
+    private Vector3f tempVec = new Vector3f();
 
     /**
      * Particle constructor
@@ -107,12 +112,7 @@ public class Particle {
         currentAge = 0;
         status = AVAILABLE;
         currentSize = parent.getStartSize();
-        verts = new Vector3f[4];
-        for (int i = 0; i < 4; i++) {
-            verts[i] = new Vector3f();
-        }
-        bbX = new Vector3f();
-        bbY = new Vector3f();
+        verts = new int[4];
     }
 
     /**
@@ -134,6 +134,8 @@ public class Particle {
         gChange = startColor.g - parent.getEndColor().g;
         bChange = startColor.b - parent.getEndColor().b;
         aChange = startColor.a - parent.getEndColor().a;
+        for (int x = 0; x < 4; x++)
+            BufferUtils.setInBuffer(currColor, parent.getParticles().getColorBuffer(), verts[x]);
         currentSize = parent.getStartSize();
         currentAge = 0;
         spinAngle = 0;
@@ -158,10 +160,17 @@ public class Particle {
                     cam.getUp().y * cA, cam.getUp().z * cA);
         }
 
-        location.add(bbX, verts[1]).subtractLocal(bbY); // Q4
-        location.add(bbX, verts[2]).addLocal(bbY); // Q1
-        location.subtract(bbX, verts[3]).addLocal(bbY); // Q2
-        location.subtract(bbX, verts[0]).subtractLocal(bbY); // Q3
+        location.add(bbX, tempVec).subtractLocal(bbY); // Q4
+        BufferUtils.setInBuffer(tempVec, parent.getParticles().getVertexBuffer(), verts[1]);
+        
+        location.add(bbX, tempVec).addLocal(bbY); // Q1
+        BufferUtils.setInBuffer(tempVec, parent.getParticles().getVertexBuffer(), verts[2]);
+
+        location.subtract(bbX, tempVec).addLocal(bbY); // Q2
+        BufferUtils.setInBuffer(tempVec, parent.getParticles().getVertexBuffer(), verts[3]);
+
+        location.subtract(bbX, tempVec).subtractLocal(bbY); // Q3
+        BufferUtils.setInBuffer(tempVec, parent.getParticles().getVertexBuffer(), verts[0]);
     }
 
     /**
@@ -216,6 +225,8 @@ public class Particle {
         currColor.g -= gChange * lifeRatio;
         currColor.b -= bChange * lifeRatio;
         currColor.a -= aChange * lifeRatio;
+        for (int x = 0; x < 4; x++)
+            BufferUtils.setInBuffer(currColor, parent.getParticles().getColorBuffer(), verts[x]);
 
         return false;
     }
