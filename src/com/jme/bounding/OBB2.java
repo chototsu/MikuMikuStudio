@@ -130,6 +130,10 @@ public class OBB2 implements BoundingVolume {
 	        vectorStore[x] = new Vector3f();
 	}
 	
+	public int getType() {
+		return BoundingVolume.BOUNDING_OBB2;
+	}
+	
 	public BoundingVolume transform(Quaternion rotate, Vector3f translate,
 			Vector3f scale) {
 		return transform(rotate, translate, scale, new OBB2());
@@ -154,7 +158,7 @@ public class OBB2 implements BoundingVolume {
 
 	public BoundingVolume transform(Matrix3f rotate, Vector3f translate,
 			Vector3f scale, BoundingVolume store) {
-		if (store == null || !(store instanceof OBB2)) {
+		if (store == null || store.getType() != BoundingVolume.BOUNDING_OBB2) {
 			store = new OBB2();
 		}
 		OBB2 toReturn = (OBB2) store;
@@ -238,14 +242,25 @@ public class OBB2 implements BoundingVolume {
 	public BoundingVolume mergeLocal(BoundingVolume volume) {
 		if (volume == null)
 			return this;
-		if (volume instanceof OBB2) {
+		
+		switch(volume.getType()) {
+		
+		case BoundingVolume.BOUNDING_OBB2: {
 			return mergeOBB((OBB2) volume);
-		} else if (volume instanceof BoundingBox) {
+		}
+		
+		case BoundingVolume.BOUNDING_BOX: {
 			return mergeAABB((BoundingBox) volume);
-		} else if (volume instanceof BoundingSphere) {
+		}
+		
+		case BoundingVolume.BOUNDING_SPHERE: {
 			return mergeSphere((BoundingSphere) volume);
-		} else
+		}
+		
+		default:
 			return null;
+		
+		}
 	}
 
     private BoundingVolume mergeSphere(BoundingSphere volume) {

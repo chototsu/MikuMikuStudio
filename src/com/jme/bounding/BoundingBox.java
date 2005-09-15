@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.27 2005-09-15 17:14:14 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.28 2005-09-15 23:01:26 Mojomonkey Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -116,6 +116,10 @@ public class BoundingBox extends Box implements BoundingVolume {
             float yExtent, float zExtent) {
         super(name, center, xExtent, yExtent, zExtent);
         initCheckPlanes();
+    }
+    
+    public int getType() {
+    	return BoundingVolume.BOUNDING_BOX;
     }
 
     /**
@@ -220,7 +224,7 @@ public class BoundingBox extends Box implements BoundingVolume {
             Vector3f scale, BoundingVolume store) {
 
         BoundingBox box;
-        if (store == null || !(store instanceof BoundingBox)) {
+        if (store == null || store.getType() != BoundingVolume.BOUNDING_BOX) {
             box = new BoundingBox(new Vector3f(0, 0, 0), 1, 1, 1);
         } else {
             box = (BoundingBox) store;
@@ -301,21 +305,29 @@ public class BoundingBox extends Box implements BoundingVolume {
         if (volume == null) {
             return this;
         }
-        if (volume instanceof BoundingBox) {
-            BoundingBox vBox = (BoundingBox) volume;
+        
+        switch (volume.getType()) {
+        case BoundingVolume.BOUNDING_BOX: {
+        	BoundingBox vBox = (BoundingBox) volume;
             return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent,
                     new BoundingBox(new Vector3f(0, 0, 0), 0, 0, 0));
-        } else if (volume instanceof BoundingSphere) {
-            BoundingSphere vSphere = (BoundingSphere) volume;
+        }
+        
+        case BoundingVolume.BOUNDING_SPHERE: {
+        	BoundingSphere vSphere = (BoundingSphere) volume;
             return merge(vSphere.center, vSphere.radius, vSphere.radius,
                     vSphere.radius, new BoundingBox(new Vector3f(0, 0, 0), 0,
                             0, 0));
-        } else if (volume instanceof OrientedBoundingBox) {
-            OrientedBoundingBox box = (OrientedBoundingBox) volume;
+        }
+        
+        case BoundingVolume.BOUNDING_OBB: {
+        	OrientedBoundingBox box = (OrientedBoundingBox) volume;
             BoundingBox rVal = (BoundingBox) this.clone(null);
             return rVal.mergeOBB(box);
-        } else {
-            return null;
+        }
+        
+        default:
+        	return null;
         }
     }
 
@@ -332,18 +344,26 @@ public class BoundingBox extends Box implements BoundingVolume {
         if (volume == null) {
             return this;
         }
-        if (volume instanceof BoundingBox) {
-            BoundingBox vBox = (BoundingBox) volume;
+        
+        switch (volume.getType()) {
+        case BoundingVolume.BOUNDING_BOX: {
+        	BoundingBox vBox = (BoundingBox) volume;
             return merge(vBox.center, vBox.xExtent, vBox.yExtent, vBox.zExtent,
                     this);
-        } else if (volume instanceof BoundingSphere) {
-            BoundingSphere vSphere = (BoundingSphere) volume;
+        }
+        
+        case BoundingVolume.BOUNDING_SPHERE: {
+        	BoundingSphere vSphere = (BoundingSphere) volume;
             return merge(vSphere.center, vSphere.radius, vSphere.radius,
                     vSphere.radius, this);
-        } else if (volume instanceof OrientedBoundingBox) {
-            return mergeOBB((OrientedBoundingBox) volume);
-        } else {
-            return null;
+        }
+        
+        case BoundingVolume.BOUNDING_OBB: {
+        	return mergeOBB((OrientedBoundingBox) volume);
+        }
+        
+        default:
+        	return null;
         }
     }
 
@@ -446,7 +466,7 @@ public class BoundingBox extends Box implements BoundingVolume {
      * @return the new BoundingBox
      */
     public Object clone(BoundingVolume store) {
-        if (store != null && store instanceof BoundingBox) {
+        if (store != null && store.getType() == BoundingVolume.BOUNDING_BOX) {
             BoundingBox rVal = (BoundingBox) store;
             rVal.center.set(center);
             rVal.xExtent = xExtent;

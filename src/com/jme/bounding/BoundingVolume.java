@@ -45,9 +45,19 @@ import com.jme.math.Vector3f;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.8 2005-09-15 17:14:15 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.9 2005-09-15 23:01:27 Mojomonkey Exp $
  */
 public interface BoundingVolume extends Serializable {
+	
+	public static final int BOUNDING_SPHERE = 0;
+	public static final int BOUNDING_BOX = 1;
+	public static final int BOUNDING_OBB = 2;
+	public static final int BOUNDING_OBB2 = 3;
+	
+	/**
+	 * getType returns the type of bounding volume this is.
+	 */
+	public int getType();
 
 	/**
 	 * 

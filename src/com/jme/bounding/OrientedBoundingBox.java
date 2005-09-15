@@ -115,6 +115,10 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
         super(name);
         initCheckPlanes();
     }
+    
+    public int getType() {
+    	return BoundingVolume.BOUNDING_OBB;
+    }
 
     public BoundingVolume transform(Quaternion rotate, Vector3f translate,
             Vector3f scale) {
@@ -123,7 +127,7 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
 
     public BoundingVolume transform(Quaternion rotate, Vector3f translate,
             Vector3f scale, BoundingVolume store) {
-        if (store == null || !(store instanceof OrientedBoundingBox)) {
+        if (store == null || store.getType() != BoundingVolume.BOUNDING_OBB) {
             store = new OrientedBoundingBox();
         }
 
@@ -210,14 +214,24 @@ public class OrientedBoundingBox extends OrientedBox implements BoundingVolume {
     public BoundingVolume mergeLocal(BoundingVolume volume) {
         if (volume == null)
             return this;
-        if (volume instanceof OrientedBoundingBox) {
-            return mergeOBB((OrientedBoundingBox) volume);
-        } else if (volume instanceof BoundingBox) {
-            return mergeAABB((BoundingBox) volume);
-        } else if (volume instanceof BoundingSphere) {
-            return mergeSphere((BoundingSphere) volume);
-        } else
-            return null;
+        
+        switch(volume.getType()) {
+        	
+        case BoundingVolume.BOUNDING_BOX: {
+        	return mergeAABB((BoundingBox) volume);
+        }
+        
+        case BoundingVolume.BOUNDING_OBB: {
+        	return mergeOBB((OrientedBoundingBox) volume);
+        }
+        
+        case BoundingVolume.BOUNDING_SPHERE: {
+        	return mergeSphere((BoundingSphere) volume);
+        }
+        
+        default:
+        	return null;
+        }
     }
 
     private BoundingVolume mergeSphere(BoundingSphere volume) {

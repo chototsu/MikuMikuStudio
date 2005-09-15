@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.28 2005-09-15 19:27:13 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.29 2005-09-15 23:01:27 Mojomonkey Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -114,6 +114,10 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     public BoundingSphere(String name) {
         super(name);
         initCheckPlanes();
+    }
+    
+    public int getType() {
+    	return BoundingVolume.BOUNDING_SPHERE;
     }
 
     public void initCheckPlanes() {
@@ -402,7 +406,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     public BoundingVolume transform(Quaternion rotate, Vector3f translate,
             Vector3f scale, BoundingVolume store) {
         BoundingSphere sphere;
-        if (store == null || !(store instanceof BoundingSphere)) {
+        if (store == null || store.getType() != BoundingVolume.BOUNDING_SPHERE) {
             sphere = new BoundingSphere(1, new Vector3f(0, 0, 0));
         } else {
             sphere = (BoundingSphere) store;
@@ -460,25 +464,35 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         if (volume == null) {
             return this;
         }
-        if (volume instanceof BoundingSphere) {
-            BoundingSphere sphere = (BoundingSphere) volume;
+        
+        switch(volume.getType()) {
+        
+        case BoundingVolume.BOUNDING_SPHERE: {
+        	BoundingSphere sphere = (BoundingSphere) volume;
             float temp_radius = sphere.getRadius();
             Vector3f temp_center = sphere.getCenter();
             BoundingSphere rVal = new BoundingSphere();
             return merge(temp_radius, temp_center, rVal);
-        } else if (volume instanceof BoundingBox) {
-            BoundingBox box = (BoundingBox) volume;
+        }
+        
+        case BoundingVolume.BOUNDING_BOX: {
+        	BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = new Vector3f(box.xExtent, box.yExtent,
                     box.zExtent);
             Vector3f temp_center = box.getCenter();
             BoundingSphere rVal = new BoundingSphere();
             return merge(radVect.length(), temp_center, rVal);
-        } else if (volume instanceof OrientedBoundingBox) {
-            OrientedBoundingBox box = (OrientedBoundingBox) volume;
+        }
+        
+        case BoundingVolume.BOUNDING_OBB: {
+        	OrientedBoundingBox box = (OrientedBoundingBox) volume;
             BoundingSphere rVal = (BoundingSphere) this.clone(null);
             return rVal.mergeOBB(box);
-        } else {
-            return null;
+        }
+        
+        default: 
+        	return null;
+        
         }
     }
 
@@ -497,21 +511,30 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         if (volume == null) {
             return this;
         }
-        if (volume instanceof BoundingSphere) {
-            BoundingSphere sphere = (BoundingSphere) volume;
+        
+        switch (volume.getType()) {
+        	
+        case BoundingVolume.BOUNDING_SPHERE: {
+        	BoundingSphere sphere = (BoundingSphere) volume;
             float temp_radius = sphere.getRadius();
             Vector3f temp_center = sphere.getCenter();
             return merge(temp_radius, temp_center, this);
-        } else if (volume instanceof BoundingBox) {
-            BoundingBox box = (BoundingBox) volume;
+        }
+        
+        case BoundingVolume.BOUNDING_BOX: {
+        	BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = tmpRadVect;
             radVect.set(box.xExtent, box.yExtent, box.zExtent);
             Vector3f temp_center = box.getCenter();
             return merge(radVect.length(), temp_center, this);
-        } else if (volume instanceof OrientedBoundingBox) {
-            return mergeOBB((OrientedBoundingBox) volume);
-        } else {
-            return null;
+        }
+        
+        case BoundingVolume.BOUNDING_OBB: {
+        	return mergeOBB((OrientedBoundingBox) volume);
+        }
+        
+        default:
+        	return null;
         }
     }
 
@@ -584,7 +607,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @return the new BoundingSphere
      */
     public Object clone(BoundingVolume store) {
-        if (store != null && store instanceof BoundingSphere) {
+        if (store != null && store.getType() == BoundingVolume.BOUNDING_SPHERE) {
             BoundingSphere rVal = (BoundingSphere) store;
             if (null == rVal.center) {
                 rVal.center = new Vector3f();
