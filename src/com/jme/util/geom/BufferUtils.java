@@ -46,7 +46,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.2 2005-09-15 19:26:52 renanse Exp $
+ * @version $Id: BufferUtils.java,v 1.3 2005-09-16 00:56:49 renanse Exp $
  */
 public final class BufferUtils {
 
@@ -367,7 +367,6 @@ public final class BufferUtils {
      *            the postion to place the data; in terms of vectors not floats
      */
     public static void setInBuffer(Vector2f vector, FloatBuffer buf, int index) {
-        buf.rewind();
         buf.put(index * 2, vector.x);
         buf.put((index * 2) + 1, vector.y);
     }
