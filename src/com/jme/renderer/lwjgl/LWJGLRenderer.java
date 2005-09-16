@@ -52,7 +52,6 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GLContext;
 import org.lwjgl.opengl.glu.GLU;
 
-import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -77,7 +76,6 @@ import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.StencilState;
 import com.jme.scene.state.TextureState;
@@ -110,45 +108,21 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.67 2005-09-15 17:14:12 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.68 2005-09-16 20:12:45 Mojomonkey Exp $
  */
-public class LWJGLRenderer implements Renderer {
+public class LWJGLRenderer extends Renderer {
 
-    // clear color
-    private ColorRGBA backgroundColor;
-
-    // width and height of renderer
-    private int width;
-
-    private int height;
+   
 
     private Vector3f vRot = new Vector3f();
 
-    private LWJGLCamera camera;
-
     private LWJGLFont font;
-
-    private long numberOfVerts;
-
-    private long numberOfTris;
-
-    private boolean statisticsOn;
 
     private boolean usingVBO = false;
 
     private boolean ignoreVBO = false;
 
-    private LWJGLWireframeState boundsWireState = new LWJGLWireframeState();
-
-    private LWJGLTextureState boundsTextState = new LWJGLTextureState();
-
-    private LWJGLZBufferState boundsZState = new LWJGLZBufferState();
-
     private boolean inOrthoMode;
-
-    private boolean processingQueue;
-
-    private RenderQueue queue;
 
     private Vector3f tempVa = new Vector3f();
 
@@ -161,8 +135,6 @@ public class LWJGLRenderer implements Renderer {
     private FloatBuffer prevColor;
 
     private FloatBuffer[] prevTex;
-
-    private boolean headless = false;
     
     private ContextCapabilities capabilities;
 
@@ -192,6 +164,12 @@ public class LWJGLRenderer implements Renderer {
         queue = new RenderQueue(this);
         if (TextureState.getNumberOfUnits() == -1) createTextureState(); // force units population
         prevTex = new FloatBuffer[TextureState.getNumberOfUnits()];
+        
+        boundsWireState = new LWJGLWireframeState();
+
+        boundsTextState = new LWJGLTextureState();
+
+        boundsZState = new LWJGLZBufferState();
     }
 
     /**
@@ -227,15 +205,6 @@ public class LWJGLRenderer implements Renderer {
         if (camera instanceof LWJGLCamera) {
             this.camera = (LWJGLCamera) camera;
         }
-    }
-
-    /**
-     * <code>getCamera</code> returns the camera used by this renderer.
-     * 
-     * @see com.jme.renderer.Renderer#getCamera()
-     */
-    public Camera getCamera() {
-        return camera;
     }
 
     /**
@@ -425,16 +394,7 @@ public class LWJGLRenderer implements Renderer {
                 backgroundColor.b, backgroundColor.a);
     }
 
-    /**
-     * <code>getBackgroundColor</code> retrieves the clear color of the
-     * current OpenGL context.
-     * 
-     * @see com.jme.renderer.Renderer#getBackgroundColor()
-     * @return the current clear color.
-     */
-    public ColorRGBA getBackgroundColor() {
-        return backgroundColor;
-    }
+    
 
     /**
      * <code>clearZBuffer</code> clears the OpenGL depth buffer.
@@ -491,32 +451,11 @@ public class LWJGLRenderer implements Renderer {
         Arrays.fill(prevTex, null);
 
         GL11.glFlush();
-        if (!headless)
+        if (!isHeadless())
             Display.update();
     }
 
-    /**
-     * render queue if needed
-     */
-    public void renderQueue() {
-        processingQueue = true;
-        queue.renderBuckets();
-        if (Spatial.getCurrentState(RenderState.RS_ZBUFFER) != null
-                && !((ZBufferState) Spatial
-                        .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
-            if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
-                Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
-            Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
-        }
-        processingQueue = false;
-    }
-
-    /**
-     * clear the render queue
-     */
-    public void clearQueue() {
-        queue.clearBuckets();
-    }
+    
 
     public void setOrtho() {
         if (inOrthoMode) {
@@ -1076,39 +1015,6 @@ public class LWJGLRenderer implements Renderer {
     }
 
     /**
-     * <code>draw</code> renders a <code>TriMesh</code> object including
-     * it's normals, colors, textures and vertices.
-     * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
-     * @param g
-     *            the mesh to render.
-     */
-    public void drawBounds(Geometry g) {
-        // get the bounds
-        if (!(g.getWorldBound() instanceof TriMesh))
-            return;
-        drawBounds(g.getWorldBound());
-    }
-
-    /**
-     * <code>draw</code> renders a <code>TriMesh</code> object including
-     * it's normals, colors, textures and vertices.
-     * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
-     * @param bv
-     *            the mesh to render.
-     */
-    public void drawBounds(BoundingVolume bv) {
-        // get the bounds
-        if (!(bv instanceof TriMesh))
-            return;
-        bv.recomputeMesh();
-        setBoundsStates(true);
-        draw((TriMesh) bv);
-        setBoundsStates(false);
-    }
-
-    /**
      * <code>draw</code> renders a scene by calling the nodes
      * <code>onDraw</code> method.
      * 
@@ -1119,20 +1025,7 @@ public class LWJGLRenderer implements Renderer {
             s.onDraw(this);
         }
 
-    }
-
-    /**
-     * <code>drawBounds</code> renders a scene by calling the nodes
-     * <code>onDraw</code> method.
-     * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
-     */
-    public void drawBounds(Spatial s) {
-        if (s != null) {
-            s.onDrawBounds(this);
-        }
-
-    }
+    }  
 
     /**
      * <code>draw</code> renders a text object using a predefined font.
@@ -1148,67 +1041,6 @@ public class LWJGLRenderer implements Renderer {
                 .getWorldTranslation().y, t.getWorldScale(), t.getText(), 0);
     }
 
-    /**
-     * <code>enableStatistics</code> will turn on statistics gathering.
-     * 
-     * @param value
-     *            true to use statistics, false otherwise.
-     */
-    public void enableStatistics(boolean value) {
-        statisticsOn = value;
-    }
-
-    /**
-     * <code>clearStatistics</code> resets the vertices and triangles counter
-     * for the statistics information.
-     */
-    public void clearStatistics() {
-        numberOfVerts = 0;
-        numberOfTris = 0;
-    }
-
-    /**
-     * <code>getStatistics</code> returns a string value of the rendering
-     * statistics information (number of triangles and number of vertices).
-     * 
-     * @return the string representation of the current statistics.
-     */
-    public String getStatistics() {
-        return "Number of Triangles: " + numberOfTris
-                + " : Number of Vertices: " + numberOfVerts;
-    }
-
-    /**
-     * <code>getStatistics</code> returns a string value of the rendering
-     * statistics information (number of triangles and number of vertices).
-     * 
-     * @return the string representation of the current statistics.
-     */
-    public StringBuffer getStatistics(StringBuffer a) {
-        a.setLength(0);
-        a.append("Number of Triangles: ").append(numberOfTris).append(
-                " : Number of Vertices: ").append(numberOfVerts);
-        return a;
-    }
-
-    /**
-     * See Renderer.isHeadless()
-     * 
-     * @return boolean
-     */
-    public boolean isHeadless() {
-        return headless;
-    }
-
-    /**
-     * See Renderer.setHeadless()
-     * 
-     * @return boolean
-     */
-    public void setHeadless(boolean headless) {
-        this.headless = headless;
-    }
-
     public boolean checkAndAdd(Spatial s) {
         int rqMode = s.getRenderQueueMode();
         if (rqMode != Renderer.QUEUE_SKIP) {
@@ -1218,14 +1050,6 @@ public class LWJGLRenderer implements Renderer {
         return false;
     }
 
-    public RenderQueue getQueue() {
-        return queue;
-    }
-
-    public boolean isProcessingQueue() {
-        return processingQueue;
-    }
-
     /**
      * Return true if the system running this supports VBO
      * 
@@ -1233,14 +1057,6 @@ public class LWJGLRenderer implements Renderer {
      */
     public boolean supportsVBO() {
         return capabilities.OpenGL15;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
     }
 
     /**
@@ -1362,23 +1178,5 @@ public class LWJGLRenderer implements Renderer {
             }
             prevTex[i] = textures;
         }
-    }
-
-    /**
-     * 
-     * <code>setBoundsStates</code> sets the rendering states for bounding
-     * volumes, this includes wireframe and zbuffer.
-     * 
-     * @param enabled
-     *            true if these states are to be enabled, false otherwise.
-     */
-    private void setBoundsStates(boolean enabled) {
-        boundsTextState.apply(); // not enabled -- no texture
-
-        boundsWireState.setEnabled(enabled);
-        boundsWireState.apply();
-
-        boundsZState.setEnabled(enabled);
-        boundsZState.apply();
-    }
+    }   
 }

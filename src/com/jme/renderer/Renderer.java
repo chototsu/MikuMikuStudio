@@ -52,6 +52,7 @@ import com.jme.scene.state.FragmentProgramState;
 import com.jme.scene.state.GLSLShaderObjectsState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.ShadeState;
 import com.jme.scene.state.StencilState;
 import com.jme.scene.state.TextureState;
@@ -79,9 +80,9 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.52 2005-09-15 17:14:53 renanse Exp $
+ * @version $Id: Renderer.java,v 1.53 2005-09-16 20:12:45 Mojomonkey Exp $
  */
-public interface Renderer {
+public abstract class Renderer {
 
     /** The Spatial will inherit its render queue state from its parent. */
     public final static int QUEUE_INHERIT = 0;
@@ -97,6 +98,34 @@ public interface Renderer {
 
     /** The Spatial will render in the ortho bucket. */
     public final static int QUEUE_ORTHO = 4;
+    
+    protected AbstractCamera camera;
+    
+    // clear color
+    protected ColorRGBA backgroundColor;
+
+    protected boolean processingQueue;
+
+    protected RenderQueue queue;
+    
+ 	protected WireframeState boundsWireState;
+
+ 	protected TextureState boundsTextState;
+
+ 	protected ZBufferState boundsZState;
+ 	
+    protected long numberOfVerts;
+
+    protected long numberOfTris;
+
+    protected boolean statisticsOn;
+
+    private boolean headless = false;
+    
+ // width and height of renderer
+    protected int width;
+
+    protected int height;
 
     /**
      * <code>setCamera</code> sets the reference to the applications camera
@@ -105,14 +134,18 @@ public interface Renderer {
      * @param camera
      *            the camera object to use with this <code>Renderer</code>.
      */
-    public void setCamera(Camera camera);
+    public abstract void setCamera(Camera camera);
+
+
 
     /**
-     * <code>createCamera</code> retrieves the camera this renderer is using.
+     * <code>getCamera</code> returns the camera used by this renderer.
      * 
-     * @return the camera this renderer is using.
+     * @see com.jme.renderer.Renderer#getCamera()
      */
-    public Camera getCamera();
+    public Camera getCamera() {
+        return camera;
+    }
 
     /**
      * 
@@ -124,7 +157,7 @@ public interface Renderer {
      *            the height of the frame.
      * @return a default camera for this renderer.
      */
-    public Camera createCamera(int width, int height);
+    public abstract Camera createCamera(int width, int height);
 
     /**
      * 
@@ -134,7 +167,7 @@ public interface Renderer {
      * @return the <code>AlphaState</code> object that can make use of the
      *         proper renderer.
      */
-    public AlphaState createAlphaState();
+    public abstract AlphaState createAlphaState();
 
     /**
      * 
@@ -144,7 +177,7 @@ public interface Renderer {
      * @return the <code>AttributeState</code> object that can make use of the
      *         proper renderer.
      */
-    public AttributeState createAttributeState();
+    public abstract AttributeState createAttributeState();
 
     /**
      * 
@@ -154,7 +187,7 @@ public interface Renderer {
      * @return the <code>CullState</code> object that can make use of the
      *         proper renderer.
      */
-    public CullState createCullState();
+    public abstract CullState createCullState();
 
     /**
      * 
@@ -164,7 +197,7 @@ public interface Renderer {
      * @return the <code>DitherState</code> object that can make use of the
      *         proper renderer.
      */
-    public DitherState createDitherState();
+    public abstract DitherState createDitherState();
 
     /**
      * 
@@ -174,7 +207,7 @@ public interface Renderer {
      * @return the <code>FogState</code> object that can make use of the
      *         proper renderer.
      */
-    public FogState createFogState();
+    public abstract FogState createFogState();
 
     /**
      * 
@@ -184,7 +217,7 @@ public interface Renderer {
      * @return the <code>LightState</code> object that can make use of the
      *         proper renderer.
      */
-    public LightState createLightState();
+    public abstract LightState createLightState();
 
     /**
      * 
@@ -194,7 +227,7 @@ public interface Renderer {
      * @return the <code>MaterialState</code> object that can make use of the
      *         proper renderer.
      */
-    public MaterialState createMaterialState();
+    public abstract MaterialState createMaterialState();
 
     /**
      * 
@@ -204,7 +237,7 @@ public interface Renderer {
      * @return the <code>ShadeState</code> object that can make use of the
      *         proper renderer.
      */
-    public ShadeState createShadeState();
+    public abstract ShadeState createShadeState();
 
     /**
      * 
@@ -214,7 +247,7 @@ public interface Renderer {
      * @return the <code>TextureState</code> object that can make use of the
      *         proper renderer.
      */
-    public TextureState createTextureState();
+    public abstract TextureState createTextureState();
 
     /**
      * 
@@ -224,7 +257,7 @@ public interface Renderer {
      * @return the <code>WireframeState</code> object that can make use of the
      *         proper renderer.
      */
-    public WireframeState createWireframeState();
+    public abstract WireframeState createWireframeState();
 
     /**
      * Retrieves the Z buffer state object for the proper renderer.
@@ -232,7 +265,7 @@ public interface Renderer {
      * @return The <code>ZBufferState</code> object that can make use of the
      *         proper renderer.
      */
-    public ZBufferState createZBufferState();
+    public abstract ZBufferState createZBufferState();
 
     /**
      * Retrieves the vertex program state object for the proper renderer.
@@ -240,7 +273,7 @@ public interface Renderer {
      * @return The <code>VertexProgramState</code> object that can make use of
      *         the proper renderer.
      */
-    public VertexProgramState createVertexProgramState();
+    public abstract VertexProgramState createVertexProgramState();
 
     /**
      * Retrieves the fragment program state object for the proper renderer.
@@ -248,7 +281,7 @@ public interface Renderer {
      * @return The <code>VertexProgramState</code> object that can make use of
      *         the proper renderer.
      */
-    public FragmentProgramState createFragmentProgramState();
+    public abstract FragmentProgramState createFragmentProgramState();
 
     /**
      * <code>createShaderObjectsState</code> retrieves the shader object state
@@ -257,7 +290,7 @@ public interface Renderer {
      * @return the <code>ShaderObjectsState</code> object that can make use of
      *         the proper renderer.
      */
-    public GLSLShaderObjectsState createGLSLShaderObjectsState();
+    public abstract GLSLShaderObjectsState createGLSLShaderObjectsState();
 
     /**
      * Retrieves the stencil state object for the proper renderer.
@@ -265,37 +298,50 @@ public interface Renderer {
      * @return The <code>StencilState</code> object that can make use of the
      *         proper renderer.
      */
-    public StencilState createStencilState();
+    public abstract StencilState createStencilState();
 
-    /**
-     * If true, statistical upkeep of information is done during rendering.
+ /**
+     * <code>enableStatistics</code> will turn on statistics gathering.
      * 
      * @param value
-     *            Should the renderer keep track of statistical information?
+     *            true to use statistics, false otherwise.
      */
-    public void enableStatistics(boolean value);
-
-    /** Reset rendering tracking statistical information. */
-    public void clearStatistics();
-
-    /**
-     * Returns statistical data as a String. The data is renderer specific but
-     * usually contains triangle and vertex counts at a minimum.
-     * 
-     * @return Statistical data for the renderer.
-     */
-    public String getStatistics();
+    public void enableStatistics(boolean value) {
+        statisticsOn = value;
+    }
 
     /**
-     * Stores the statistical data into the passed string buffer and returns a
-     * when finished. This is a more efficient version of getStatistics.
-     * Previous information in the StringBuffer is lost.
-     * 
-     * @param a
-     *            The string buffer to store the result in.
-     * @return The string buffer a, after storage.
+     * <code>clearStatistics</code> resets the vertices and triangles counter
+     * for the statistics information.
      */
-    public StringBuffer getStatistics(StringBuffer a);
+    public void clearStatistics() {
+        numberOfVerts = 0;
+        numberOfTris = 0;
+    }
+
+    /**
+     * <code>getStatistics</code> returns a string value of the rendering
+     * statistics information (number of triangles and number of vertices).
+     * 
+     * @return the string representation of the current statistics.
+     */
+    public String getStatistics() {
+        return "Number of Triangles: " + numberOfTris
+                + " : Number of Vertices: " + numberOfVerts;
+    }
+
+    /**
+     * <code>getStatistics</code> returns a string value of the rendering
+     * statistics information (number of triangles and number of vertices).
+     * 
+     * @return the string representation of the current statistics.
+     */
+    public StringBuffer getStatistics(StringBuffer a) {
+        a.setLength(0);
+        a.append("Number of Triangles: ").append(numberOfTris).append(
+                " : Number of Vertices: ").append(numberOfVerts);
+        return a;
+    }
 
     /**
      * <code>setBackgroundColor</code> sets the color of window. This color
@@ -305,15 +351,18 @@ public interface Renderer {
      * @param c
      *            the color to set the background to.
      */
-    public void setBackgroundColor(ColorRGBA c);
+    public abstract void setBackgroundColor(ColorRGBA c);
 
     /**
-     * <code>getBackgroundColor</code> retrieves the color used for the window
-     * background.
+     * <code>getBackgroundColor</code> retrieves the clear color of the
+     * current OpenGL context.
      * 
-     * @return the background color that is currently set to the background.
+     * @see com.jme.renderer.Renderer#getBackgroundColor()
+     * @return the current clear color.
      */
-    public ColorRGBA getBackgroundColor();
+    public ColorRGBA getBackgroundColor() {
+        return backgroundColor;
+    }
 
     /**
      * <code>clearZBuffer</code> clears the depth buffer of the renderer. The
@@ -321,7 +370,7 @@ public interface Renderer {
      * port. Clearing this buffer prepares it for the next frame.
      *  
      */
-    public void clearZBuffer();
+    public abstract void clearZBuffer();
 
     /**
      * <code>clearBackBuffer</code> clears the back buffer of the renderer.
@@ -329,14 +378,14 @@ public interface Renderer {
      * the screen. Clearing this buffer frees it for rendering the next frame.
      *  
      */
-    public void clearColorBuffer();
+    public abstract void clearColorBuffer();
 
     /**
      * <code>clearBuffers</code> clears both the depth buffer and the back
      * buffer.
      *  
      */
-    public void clearBuffers();
+    public abstract void clearBuffers();
 
     /**
      * <code>clearBuffers</code> clears both the depth buffer and the back
@@ -344,7 +393,7 @@ public interface Renderer {
      * height of the renderer.
      *  
      */
-    public void clearStrictBuffers();
+    public abstract void clearStrictBuffers();
 
     /**
      * <code>displayBackBuffer</code> swaps the back buffer with the currently
@@ -352,7 +401,7 @@ public interface Renderer {
      * a prerenderer display without any flickering.
      *  
      */
-    public void displayBackBuffer();
+    public abstract void displayBackBuffer();
 
     /**
      * 
@@ -362,7 +411,30 @@ public interface Renderer {
      * left of the screen.
      *  
      */
-    public void setOrtho();
+    public abstract void setOrtho();
+    
+    /**
+     * render queue if needed
+     */
+    public void renderQueue() {
+        processingQueue = true;
+        queue.renderBuckets();
+        if (Spatial.getCurrentState(RenderState.RS_ZBUFFER) != null
+                && !((ZBufferState) Spatial
+                        .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
+            if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
+                Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
+            Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
+        }
+        processingQueue = false;
+    }
+
+    /**
+     * clear the render queue
+     */
+    public void clearQueue() {
+        queue.clearBuckets();
+    }
 
     /**
      * 
@@ -373,7 +445,7 @@ public interface Renderer {
      * 
      *  
      */
-    public void setOrthoCenter();
+    public abstract void setOrthoCenter();
 
     /**
      * 
@@ -383,7 +455,7 @@ public interface Renderer {
      * 
      *  
      */
-    public void unsetOrtho();
+    public abstract void unsetOrtho();
 
     /**
      * 
@@ -394,7 +466,7 @@ public interface Renderer {
      *            the name of the screenshot file.
      * @return true if the screen capture was successful, false otherwise.
      */
-    public boolean takeScreenShot(String filename);
+    public abstract boolean takeScreenShot(String filename);
 
     /**
      * <code>grabScreenContents</code> reads a block of pixels from the
@@ -411,7 +483,7 @@ public interface Renderer {
      * @param h -
      *            height of block
      */
-    public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h);
+    public abstract void grabScreenContents(IntBuffer buff, int x, int y, int w, int h);
 
     /**
      * <code>draw</code> renders a scene. As it recieves a base class of
@@ -422,40 +494,53 @@ public interface Renderer {
      * @param s
      *            the scene to render.
      */
-    public void draw(Spatial s);
+    public abstract void draw(Spatial s);
 
     /**
-     * <code>drawBounds</code> renders the bounds of a Geometry. As it
-     * recieves a base class of <code>Geometry</code> the renderer hands off
-     * management of the scene to spatial for it to determine when a
-     * <code>Geometry</code> leaf is reached.
+     * <code>drawBounds</code> renders a scene by calling the nodes
+     * <code>onDraw</code> method.
      * 
-     * @param s
-     *            the Spatial to render bounds for.
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
-    public void drawBounds(Spatial s);
+    public void drawBounds(Spatial s) {
+        if (s != null) {
+            s.onDrawBounds(this);
+        }
+
+    }
 
     /**
-     * <code>drawBounds</code> renders the bounds of a Geometry. As it
-     * recieves a base class of <code>BoundingVolume</code> the renderer hands
-     * off management of the scene to spatial for it to determine when a
-     * <code>Geometry</code> leaf is reached.
+     * <code>draw</code> renders a <code>TriMesh</code> object including
+     * it's normals, colors, textures and vertices.
      * 
-     * @param bv
-     *            the BoundingVolume to render.
-     */
-    public void drawBounds(BoundingVolume bv);
-
-    /**
-     * <code>drawBounds</code> renders the bounds of a Geometry. As it
-     * recieves a base class of <code>Geometry</code> the renderer hands off
-     * management of the scene to spatial for it to determine when a
-     * <code>Geometry</code> leaf is reached.
-     * 
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
      * @param g
-     *            the Geometry to render.
+     *            the mesh to render.
      */
-    public void drawBounds(Geometry g);
+    public void drawBounds(Geometry g) {
+        // get the bounds
+        if (!(g.getWorldBound() instanceof TriMesh))
+            return;
+        drawBounds(g.getWorldBound());
+    }
+
+    /**
+     * <code>draw</code> renders a <code>TriMesh</code> object including
+     * it's normals, colors, textures and vertices.
+     * 
+     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
+     * @param bv
+     *            the mesh to render.
+     */
+    public void drawBounds(BoundingVolume bv) {
+        // get the bounds
+        if (!(bv instanceof TriMesh))
+            return;
+        bv.recomputeMesh();
+        setBoundsStates(true);
+        draw((TriMesh) bv);
+        setBoundsStates(false);
+    }
 
     /**
      * <code>draw</code> renders a single point to the back buffer.
@@ -463,7 +548,7 @@ public interface Renderer {
      * @param p
      *            the point to be rendered.
      */
-    public void draw(Point p);
+    public abstract void draw(Point p);
 
     /**
      * <code>draw</code> renders a line to the back buffer.
@@ -471,7 +556,7 @@ public interface Renderer {
      * @param l
      *            the line to be rendered.
      */
-    public void draw(Line l);
+    public abstract void draw(Line l);
 
     /**
      * 
@@ -480,7 +565,7 @@ public interface Renderer {
      * @param c
      *            the curve to be rendered.
      */
-    public void draw(Curve c);
+    public abstract void draw(Curve c);
 
     /**
      * 
@@ -489,7 +574,7 @@ public interface Renderer {
      * @param t
      *            the text object to be rendered.
      */
-    public void draw(Text t);
+    public abstract void draw(Text t);
 
     /**
      * <code>draw</code> renders a triangle mesh to the back buffer.
@@ -497,7 +582,7 @@ public interface Renderer {
      * @param t
      *            the mesh to be rendered.
      */
-    public void draw(TriMesh t);
+    public abstract void draw(TriMesh t);
 
     /**
      * <code>draw</code> renders a composite mesh to the back buffer.
@@ -505,14 +590,16 @@ public interface Renderer {
      * @param t
      *            the mesh to be rendered.
      */
-    public void draw(CompositeMesh c);
-
+    public abstract void draw(CompositeMesh c);
+    
     /**
      * Get the render queue associated with this Renderer.
      * 
      * @return RenderQueue
      */
-    public RenderQueue getQueue();
+    public RenderQueue getQueue() {
+        return queue;
+    }
 
     /**
      * Return true if this renderer is in the middle of processing its
@@ -520,7 +607,9 @@ public interface Renderer {
      * 
      * @return boolean
      */
-    public boolean isProcessingQueue();
+    public boolean isProcessingQueue() {
+        return processingQueue;
+    }
 
     /**
      * Check a given Spatial to see if it should be queued. return true if it
@@ -530,45 +619,52 @@ public interface Renderer {
      *            Spatial to check
      * @return true if it was queued.
      */
-    public boolean checkAndAdd(Spatial s);
+    public abstract boolean checkAndAdd(Spatial s);
 
     /**
      * Return true if the system running this supports VBO
      * 
      * @return boolean
      */
-    public boolean supportsVBO();
+    public abstract boolean supportsVBO();
 
     /**
-     * Returns true if the renderer is running in Headless mode (ie. it renders
-     * only to a non-visible context.)
+     * See Renderer.isHeadless()
      * 
      * @return boolean
      */
-    public boolean isHeadless();
+    public boolean isHeadless() {
+        return headless;
+    }
 
     /**
-     * Set if the renderer is running in Headless mode. Some renderers may not
-     * provide support for this mode.
+     * See Renderer.setHeadless()
      * 
-     * @param headless
-     *            boolean
+     * @return boolean
      */
-    public void setHeadless(boolean headless);
+    public void setHeadless(boolean headless) {
+        this.headless = headless;
+    }
 
     /**
      * Retrieve the width set on this renderer.
      * 
      * @return width
      */
-    public int getWidth();
+    public int getWidth() {
+        return width;
+    }
+
 
     /**
      * Retrieve the height set on this renderer.
      * 
      * @return height
      */
-    public int getHeight();
+    public int getHeight() {
+        return height;
+    }
+
     
     /**
      * Reinitialize the renderer with the given width/height. Also calls resize
@@ -579,5 +675,23 @@ public interface Renderer {
      * @param height
      *            int
      */
-    public void reinit(int width, int height);
+    public abstract void reinit(int width, int height);
+    
+/**
+     * 
+     * <code>setBoundsStates</code> sets the rendering states for bounding
+     * volumes, this includes wireframe and zbuffer.
+     * 
+     * @param enabled
+     *            true if these states are to be enabled, false otherwise.
+     */
+    private void setBoundsStates(boolean enabled) {
+        boundsTextState.apply(); // not enabled -- no texture
+
+        boundsWireState.setEnabled(enabled);
+        boundsWireState.apply();
+
+        boundsZState.setEnabled(enabled);
+        boundsZState.apply();
+    }
 }
