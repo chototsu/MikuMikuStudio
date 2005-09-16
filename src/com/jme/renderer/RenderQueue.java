@@ -147,7 +147,7 @@ public class RenderQueue {
     public void addToQueue(Spatial s, int bucket) {
         switch (bucket) {
         case Renderer.QUEUE_OPAQUE:
-            if (s instanceof Geometry && ((Geometry) s).getCloneID() != -1) {
+            if (((s.getType() & Spatial.GEOMETRY) == 0)&& ((Geometry) s).getCloneID() != -1) {
                 cloneBucket.add(s);
             } else {
                 opaqueBucket.add(s);

@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.41 2005-09-15 17:13:35 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.42 2005-09-16 19:33:41 Mojomonkey Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -229,6 +229,10 @@ public class TriMesh extends Geometry implements Serializable {
     public int getTriangleQuantity() {
         return triangleQuantity;
     }
+    
+    public int getType() {
+    	return (Spatial.GEOMETRY | Spatial.TRIMESH);
+    }
 
     /**
      * <code>draw</code> calls super to set the render state then passes
@@ -289,7 +293,7 @@ public class TriMesh extends Geometry implements Serializable {
             return false;
         }
         if (getWorldBound().intersects(scene.getWorldBound())) {
-            if ((scene instanceof Node)) {
+            if ((scene.getType() & Spatial.NODE) != 0) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {
                     if (hasCollision(parent.getChild(i), checkTriangles)) {
@@ -322,7 +326,7 @@ public class TriMesh extends Geometry implements Serializable {
         }
 
         if (getWorldBound().intersects(scene.getWorldBound())) {
-            if ((scene instanceof Node)) {
+        	if ((scene.getType() & Spatial.NODE) != 0) {
                 Node parent = (Node) scene;
                 for (int i = 0; i < parent.getQuantity(); i++) {
                     findCollisions(parent.getChild(i), results);

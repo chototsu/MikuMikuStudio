@@ -70,7 +70,7 @@ private static final long serialVersionUID = 1L;
 	}
 	
 	private void processTarget(Node parent, Spatial target) {
-		if(target instanceof Node) {
+		if((target.getType() & Spatial.NODE) != 0) {
 			Node ntarget = (Node)target;
 			Node node = new Node(this.getName()+ntarget.getName());
 			node.setForceCull(ntarget.isForceCulled());
@@ -96,7 +96,7 @@ private static final long serialVersionUID = 1L;
 				processTarget(node, ntarget.getChild(i));
 			}
 			
-		} else if(target instanceof TriMesh) {
+		} else if((target.getType() & Spatial.TRIMESH) != 0) {
 			SharedMesh copy = new SharedMesh(this.getName()+target.getName(), (TriMesh)target);
 			parent.attachChild(copy);
 		}

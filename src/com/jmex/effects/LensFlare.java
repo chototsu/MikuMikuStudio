@@ -66,7 +66,7 @@ import com.jme.system.JmeException;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.3 2005-09-15 17:14:07 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.4 2005-09-16 19:33:41 Mojomonkey Exp $
  */
 
 public class LensFlare extends Node {
@@ -241,9 +241,9 @@ public class LensFlare extends Node {
                 Geometry mesh = (Geometry) pickBoundsGeoms.get(i);
                 if (!mesh.getWorldTranslation().equals(
                         this.getWorldTranslation())
-                        && !(mesh.getParent() instanceof Skybox)
+                        && !((mesh.getParent().getType() & Spatial.SKY_BOX) != 0)
                         && mesh.getRenderQueueMode() != Renderer.QUEUE_TRANSPARENT) {
-                    if (mesh instanceof TriMesh) {
+                    if ((mesh.getType() & Spatial.TRIMESH) != 0) {
                         occludingTriMeshes.add(mesh);
                     } else {
                         this.setIntensity(0);

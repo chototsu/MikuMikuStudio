@@ -155,7 +155,7 @@ public class JmeBinaryWriter {
         }
         entireScene.put(n,null);
         evaluateSpatialChildrenDuplicates(n);
-        if (!(n instanceof Node)) return;
+        if ((n.getType() & Spatial.NODE) == 0) return;
         Node temp=(Node)n;
         for (int i=temp.getQuantity()-1;i>=0;i--){
             findDuplicates(temp.getChild(i));

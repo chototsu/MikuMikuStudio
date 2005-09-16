@@ -52,7 +52,7 @@ import com.jme.system.JmeException;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.8 2005-09-15 17:13:36 renanse Exp $
+ * @version $Id: Skybox.java,v 1.9 2005-09-16 19:33:40 Mojomonkey Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;
@@ -104,6 +104,10 @@ public class Skybox extends Node {
         this.zExtent = zExtent;
 
         initialize();
+    }
+    
+    public int getType() {
+    	return (Spatial.NODE | Spatial.SKY_BOX);
     }
 
     /**

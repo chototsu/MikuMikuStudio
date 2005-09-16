@@ -42,7 +42,7 @@ import com.jme.math.FastMath;
  * <code>AreaUtils</code> is used to calculate the area of various objects, such as bounding volumes.  These
  * functions are very loose approximations.
  * @author Joshua Slack
- * @version $Id: AreaUtils.java,v 1.9 2005-09-15 17:12:58 renanse Exp $
+ * @version $Id: AreaUtils.java,v 1.10 2005-09-16 19:33:42 Mojomonkey Exp $
  */
 
 public class AreaUtils {
@@ -58,11 +58,11 @@ public class AreaUtils {
    * @return The area in pixels on the screen of the bounding volume.
    */
   public static float calcScreenArea(BoundingVolume bound, float distance, float screenWidth) {
-    if (bound instanceof BoundingSphere)
+    if (bound.getType() == BoundingVolume.BOUNDING_SPHERE)
       return calcScreenArea((BoundingSphere)bound, distance, screenWidth);
-    else if (bound instanceof BoundingBox)
+    else if (bound.getType() == BoundingVolume.BOUNDING_BOX)
       return calcScreenArea((BoundingBox)bound, distance, screenWidth);
-    else if (bound instanceof OrientedBoundingBox)
+    else if (bound.getType() == BoundingVolume.BOUNDING_OBB)
       return calcScreenArea((OrientedBoundingBox)bound, distance, screenWidth);
     return 0.0f;
   }

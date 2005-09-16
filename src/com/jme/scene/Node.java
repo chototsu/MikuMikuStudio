@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.42 2005-09-15 17:13:36 renanse Exp $
+ * @version $Id: Node.java,v 1.43 2005-09-16 19:33:40 Mojomonkey Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -264,6 +264,10 @@ public class Node extends Spatial implements Serializable {
         }
         return null;
     }
+    
+    public int getType() {
+    	return Spatial.NODE;
+    }
 
     public void setForceView(boolean value) {
         forceView = value;
@@ -290,7 +294,7 @@ public class Node extends Spatial implements Serializable {
 
         for (int i = 0; i < children.size(); i++) {
             Spatial child = (Spatial) children.get(i);
-            if (child instanceof Node && ((Node) child).hasChild(spat))
+            if ((child.getType() & Spatial.NODE) != 0 && ((Node) child).hasChild(spat))
                 return true;
         }
 

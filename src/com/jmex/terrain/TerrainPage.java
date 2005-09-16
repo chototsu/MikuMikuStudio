@@ -58,7 +58,7 @@ import com.jme.util.LoggingSystem;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.2 2005-09-15 17:15:02 renanse Exp $
+ * @version $Id: TerrainPage.java,v 1.3 2005-09-16 19:33:42 Mojomonkey Exp $
  */
 public class TerrainPage extends Node {
 
@@ -156,6 +156,10 @@ public class TerrainPage extends Node {
         this.stepScale = stepScale;
         split(size, blockSize, stepScale, heightMap, clod);
     }
+    
+    public int getType() {
+    	return (Spatial.NODE | Spatial.TERRAIN_PAGE);
+    }
 
     /**
      *
@@ -169,9 +173,9 @@ public class TerrainPage extends Node {
      */
     public void setDetailTexture(int unit, int repeat) {
         for (int i = 0; i < this.getQuantity(); i++) {
-            if (this.getChild(i) instanceof TerrainPage) {
+            if ((this.getChild(i).getType() & Spatial.TERRAIN_PAGE) != 0) {
                 ((TerrainPage) getChild(i)).setDetailTexture(unit, repeat);
-            } else if (this.getChild(i) instanceof TerrainBlock) {
+            } else if ((this.getChild(i).getType() & Spatial.TERRAIN_BLOCK) != 0) {
                 ((TerrainBlock) getChild(i)).setDetailTexture(unit, repeat);
 
             }
@@ -188,10 +192,10 @@ public class TerrainPage extends Node {
      */
     public void setModelBound(BoundingVolume v) {
         for (int i = 0; i < this.getQuantity(); i++) {
-            if (this.getChild(i) instanceof TerrainPage) {
+            if ((this.getChild(i).getType() & Spatial.TERRAIN_PAGE) != 0) {
                 ((TerrainPage) getChild(i)).setModelBound((BoundingVolume) v
                         .clone(null));
-            } else if (this.getChild(i) instanceof TerrainBlock) {
+            } else if ((this.getChild(i).getType() & Spatial.TERRAIN_BLOCK) != 0) {
                 ((TerrainBlock) getChild(i)).setModelBound((BoundingVolume) v
                         .clone(null));
 
@@ -208,9 +212,9 @@ public class TerrainPage extends Node {
      */
     public void updateModelBound() {
         for (int i = 0; i < this.getQuantity(); i++) {
-            if (this.getChild(i) instanceof TerrainPage) {
+            if ((this.getChild(i).getType() & Spatial.TERRAIN_PAGE) != 0) {
                 ((TerrainPage) getChild(i)).updateModelBound();
-            } else if (this.getChild(i) instanceof TerrainBlock) {
+            } else if ((this.getChild(i).getType() &  Spatial.TERRAIN_BLOCK) != 0) {
                 ((TerrainBlock) getChild(i)).updateModelBound();
 
             }
@@ -295,9 +299,9 @@ public class TerrainPage extends Node {
                 newZ = z + halfmapz;
             }
         }
-        if (child instanceof TerrainBlock)
+        if ((child.getType() & Spatial.TERRAIN_BLOCK) != 0)
             return ((TerrainBlock) child).getHeight(newX, newZ);
-        else if (child instanceof TerrainPage)
+        else if ((child.getType() & Spatial.TERRAIN_PAGE) != 0)
                 return ((TerrainPage) child).getHeight(x
                         - ((TerrainPage) child).getLocalTranslation().x, z
                         - ((TerrainPage) child).getLocalTranslation().z);
@@ -679,7 +683,7 @@ public class TerrainPage extends Node {
         } else if (pageName.endsWith("2")) {
             return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"4");            
         } else if (pageName.endsWith("3")) {
-            if (getParent() instanceof TerrainPage) {
+            if ((getParent().getType() & Spatial.TERRAIN_PAGE) != 0) {
                 TerrainPage tp = ((TerrainPage)getParent())._findRightPage();
                 if (tp != null) {
                     pageName = tp.getName()+"Page3";
@@ -687,7 +691,7 @@ public class TerrainPage extends Node {
                 }
             }
         } else if (pageName.endsWith("4")) {
-            if (getParent() instanceof TerrainPage) {
+            if ((getParent().getType() & Spatial.TERRAIN_PAGE) != 0) {
                 TerrainPage tp = ((TerrainPage)getParent())._findRightPage();
                 if (tp != null) {
                     pageName = tp.getName()+"Page4";
@@ -707,7 +711,7 @@ public class TerrainPage extends Node {
         } else if (pageName.endsWith("3")) {
             return (TerrainPage)getParent().getChild(pageName.substring(0,pageName.length()-1)+"4");            
         } else if (pageName.endsWith("2")) {
-            if (getParent() instanceof TerrainPage) {
+            if ((getParent().getType() & Spatial.TERRAIN_PAGE) != 0) {
                 TerrainPage tp = ((TerrainPage)getParent())._findDownPage();
                 if (tp != null) {
                     pageName = tp.getName()+"Page2";
@@ -715,7 +719,7 @@ public class TerrainPage extends Node {
                 }
             }
         } else if (pageName.endsWith("4")) {
-            if (getParent() instanceof TerrainPage) {
+            if ((getParent().getType() & Spatial.TERRAIN_PAGE) != 0) {
                 TerrainPage tp = ((TerrainPage)getParent())._findDownPage();
                 if (tp != null) {
                     pageName = tp.getName()+"Page4";

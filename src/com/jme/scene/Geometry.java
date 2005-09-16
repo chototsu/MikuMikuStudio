@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.74 2005-09-15 20:35:43 renanse Exp $
+ * @version $Id: Geometry.java,v 1.75 2005-09-16 19:33:40 Mojomonkey Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -388,6 +388,10 @@ public abstract class Geometry extends Spatial implements Serializable {
 	public int getNumberOfUnits() {
 	    if (texBuf == null) return 0;
 		return texBuf.length;
+	}
+	
+	public int getType() {
+		return Spatial.GEOMETRY;
 	}
 
 	/**

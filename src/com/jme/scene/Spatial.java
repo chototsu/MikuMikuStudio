@@ -57,9 +57,17 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.69 2005-09-15 17:13:36 renanse Exp $
+ * @version $Id: Spatial.java,v 1.70 2005-09-16 19:33:40 Mojomonkey Exp $
  */
 public abstract class Spatial implements Serializable {
+	
+	public static final int NODE = 1;
+	public static final int GEOMETRY = 2;
+	public static final int TRIMESH = 4;
+	public static final int SHARED_MESH = 8;
+	public static final int SKY_BOX = 16;
+	public static final int TERRAIN_BLOCK = 32;
+	public static final int TERRAIN_PAGE = 64;
 
     /** Spatial's rotation relative to its parent. */
     protected Quaternion localRotation;
@@ -309,6 +317,8 @@ public abstract class Spatial implements Serializable {
         }
         camera.setPlaneState(state);
     }
+    
+    public abstract int getType();
 
     /**
      * 

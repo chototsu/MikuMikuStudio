@@ -79,11 +79,15 @@ public class SharedMesh extends TriMesh {
 	public SharedMesh(String name, TriMesh target) {
 		super(name);
 		
-		if(target instanceof SharedMesh) {
+		if((target.getType() & Spatial.SHARED_MESH) != 0) {
 			setTarget(((SharedMesh)target).getTarget());
 		} else {
 			setTarget(target);
 		}
+	}
+	
+	public int getType() {
+		return (Spatial.GEOMETRY | Spatial.TRIMESH | Spatial.SHARED_MESH);
 	}
 
 	/**

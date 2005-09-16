@@ -35,6 +35,7 @@ package com.jme.intersection;
 import java.util.ArrayList;
 
 import com.jme.scene.Geometry;
+import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 
 /**
@@ -49,7 +50,7 @@ import com.jme.scene.TriMesh;
  * result in Bounding accuracy.
  * 
  * @author Mark Powell
- * @version $Id: TriangleCollisionResults.java,v 1.4 2005-09-15 17:14:29 renanse Exp $
+ * @version $Id: TriangleCollisionResults.java,v 1.5 2005-09-16 19:33:39 Mojomonkey Exp $
  */
 public class TriangleCollisionResults extends CollisionResults {
     ArrayList a = new ArrayList();
@@ -66,7 +67,7 @@ public class TriangleCollisionResults extends CollisionResults {
         b.clear();
         //find the triangle that is being hit.
         //add this node and the triangle to the CollisionResults list.
-        if (!(s instanceof TriMesh) || !(t instanceof TriMesh)) {
+        if ((s.getType() & Spatial.TRIMESH) == 0 || (t.getType() & Spatial.TRIMESH) == 0) {
             CollisionData data = new CollisionData(s, t);
             addCollisionData(data);
         } else {

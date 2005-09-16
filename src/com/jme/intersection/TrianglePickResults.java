@@ -36,6 +36,7 @@ import java.util.ArrayList;
 
 import com.jme.math.Ray;
 import com.jme.scene.Geometry;
+import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 
 /**
@@ -71,7 +72,7 @@ public class TrianglePickResults extends PickResults {
 		//find the triangle that is being hit.
 		//add this node and the triangle to the CollisionResults
 		// list.
-		if (!(s instanceof TriMesh)) {
+		if ((s.getType() & Spatial.TRIMESH) != 0) {
 			PickData data = new PickData(ray, s);
 			addPickData(data);
 		} else {
