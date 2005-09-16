@@ -51,11 +51,13 @@ public class Sizeof {
        DisplaySystem display = DisplaySystem.getDisplaySystem("LWJGL");
        display.createWindow(800, 600, 32, 60, false);
        // Allocate count+1 objects, discard the first five
+       Vector3f max = new Vector3f(5, 5, 5);
+       Vector3f min = new Vector3f(-5, -5, -5);
        for (int i = -1; i < count; ++i) {
            Object object = null;
 
            // ### Instantiate your data here and assign it to object
-           object = new Box("Box", new Vector3f(5, 5, 5),new Vector3f( -5, -5, -5));
+           object = new Box("Box", min, max);
 
            ((Box)object).setModelBound(new BoundingBox());
            ((Box)object).updateModelBound();

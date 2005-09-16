@@ -42,7 +42,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Geometry;
 import com.jme.scene.Node;
-import com.jme.scene.Skybox;
 import com.jme.scene.Spatial;
 import com.jme.scene.TriMesh;
 import com.jme.scene.state.AlphaState;
@@ -66,7 +65,7 @@ import com.jme.system.JmeException;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.4 2005-09-16 19:33:41 Mojomonkey Exp $
+ * @version $Id: LensFlare.java,v 1.5 2005-09-16 21:36:16 renanse Exp $
  */
 
 public class LensFlare extends Node {

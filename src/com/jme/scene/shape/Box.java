@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.12 2005-09-15 17:13:44 renanse Exp $
+ * @version $Id: Box.java,v 1.13 2005-09-16 21:35:41 renanse Exp $
  */
 public class Box extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -54,12 +54,6 @@ public class Box extends TriMesh {
 	public float xExtent, yExtent, zExtent;
 
 	public final Vector3f center = new Vector3f(0f, 0f, 0f);
-
-	public final static Vector3f AXIS_X = new Vector3f(1, 0, 0);
-
-	public final static Vector3f AXIS_Y = new Vector3f(0, 1, 0);
-
-	public final static Vector3f AXIS_Z = new Vector3f(0, 0, 1);
 
 	/**
 	 * instantiates a new <code>Box</code> object. All information must be
@@ -98,7 +92,7 @@ public class Box extends TriMesh {
 	 */
 	public Box(String name, Vector3f min, Vector3f max) {
 		super(name);
-		setData(min, max, true);
+		setData(min, max);
 	}
 
 	/**
@@ -120,7 +114,7 @@ public class Box extends TriMesh {
 	public Box(String name, Vector3f center, float xExtent, float yExtent,
 			float zExtent) {
 		super(name);
-		setData(center, xExtent, yExtent, zExtent, true);
+		setData(center, xExtent, yExtent, zExtent);
 	}
 
 	/**
@@ -133,17 +127,14 @@ public class Box extends TriMesh {
 	 *            The new minPoint of the box.
 	 * @param maxPoint
 	 *            The new maxPoint of the box.
-	 * @param updateBuffers
-	 *            If true, buffers are updated.
 	 */
-	public void setData(Vector3f minPoint, Vector3f maxPoint,
-			boolean updateBuffers) {
+	public void setData(Vector3f minPoint, Vector3f maxPoint) {
 		center.set(maxPoint).addLocal(minPoint).multLocal(0.5f);
 
 		float x = maxPoint.x - center.x;
 		float y = maxPoint.y - center.y;
 		float z = maxPoint.z - center.z;
-		setData(center, x, y, z, updateBuffers);
+		setData(center, x, y, z);
 	}
 
 	/**
@@ -160,11 +151,9 @@ public class Box extends TriMesh {
 	 *            y extent of the box, in both directions.
 	 * @param zExtent
 	 *            z extent of the box, in both directions.
-	 * @param updateBuffers
-	 *            If true, buffers are updated.
 	 */
 	public void setData(Vector3f center, float xExtent, float yExtent,
-			float zExtent, boolean updateBuffers) {
+			float zExtent) {
 		if (center != null)
 			this.center.set(center);
 
@@ -172,13 +161,12 @@ public class Box extends TriMesh {
 		this.yExtent = yExtent;
 		this.zExtent = zExtent;
 
-		if (updateBuffers) {
-			setVertexData();
-			setNormalData();
-			setSolidColor(ColorRGBA.white);
-			setTextureData();
-			setIndexData();
-		}
+		setVertexData();
+		setNormalData();
+		setSolidColor(ColorRGBA.white);
+		setTextureData();
+		setIndexData();
+
 	}
 
 	/**
@@ -324,8 +312,8 @@ public class Box extends TriMesh {
 	 */
 	public Vector3f[] computeVertices() {
 
-		Vector3f akEAxis[] = { AXIS_X.mult(xExtent), AXIS_Y.mult(yExtent),
-				AXIS_Z.mult(zExtent) };
+		Vector3f akEAxis[] = { Vector3f.UNIT_X.mult(xExtent), Vector3f.UNIT_Y.mult(yExtent),
+		        Vector3f.UNIT_Z.mult(zExtent) };
 
 		Vector3f rVal[] = new Vector3f[8];
 		rVal[0] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1])
