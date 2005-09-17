@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.29 2005-09-17 04:14:15 Mojomonkey Exp $
+ * @version $Id: BoundingBox.java,v 1.30 2005-09-17 15:09:34 renanse Exp $
  */
 public class BoundingBox extends Box implements BoundingVolume {
 
@@ -451,7 +451,7 @@ public class BoundingBox extends Box implements BoundingVolume {
         if (maxPnt.z < boxCenter.z + boxZ)
             maxPnt.z = boxCenter.z + boxZ;
 
-        rVal.setData(minPnt, maxPnt);
+        rVal.setData(minPnt, maxPnt, false);
 
         return rVal;
     }
@@ -515,7 +515,7 @@ public class BoundingBox extends Box implements BoundingVolume {
     public void recomputeMesh() {
         if (!center.equals(oldCenter) || xExtent != oldXExtent
                 || yExtent != oldYExtent || zExtent != oldZExtent) {
-            setData(center, xExtent, yExtent, zExtent);
+            setData(center, xExtent, yExtent, zExtent, true);
             oldXExtent = xExtent;
             oldYExtent = yExtent;
             oldZExtent = zExtent;
