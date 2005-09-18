@@ -46,13 +46,9 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBox.java,v 1.1 2005-09-18 22:02:32 Mojomonkey Exp $
+ * @version $Id: TestBox.java,v 1.2 2005-09-18 22:09:28 Mojomonkey Exp $
  */
 public class TestBox extends SimpleGame {
-  private TriMesh t;
-  private Quaternion rotQuat;
-  private float angle = 0;
-  private Vector3f axis;
 
   /**
    * Entry point for the test,
@@ -64,19 +60,10 @@ public class TestBox extends SimpleGame {
     app.start();
 
   }
-
-  long last=0;
   
   protected void simpleInitGame() {
-    rotQuat = new Quaternion();
-    axis = new Vector3f(1, 1, 0.5f);
-    display.setTitle("Vertex Colors");
+    display.setTitle("Manipulation of TextureBuffer");
     lightState.setEnabled(false);
-
-    Vector3f max = new Vector3f(5, 5, 5);
-    Vector3f min = new Vector3f( -5, -5, -5);
-
-    
     
     Box floor = new Box("Floor", new Vector3f(), 100, 1, 100); 
     floor.setModelBound(new BoundingBox()); 
