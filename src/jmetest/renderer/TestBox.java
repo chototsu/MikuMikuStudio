@@ -35,10 +35,7 @@ package jmetest.renderer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.math.FastMath;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
-import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -46,7 +43,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBox.java,v 1.2 2005-09-18 22:09:28 Mojomonkey Exp $
+ * @version $Id: TestBox.java,v 1.3 2005-09-19 23:11:16 renanse Exp $
  */
 public class TestBox extends SimpleGame {
 
