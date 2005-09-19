@@ -108,7 +108,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.68 2005-09-16 20:12:45 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.69 2005-09-19 03:59:44 Mojomonkey Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -892,10 +892,14 @@ public class LWJGLRenderer extends Renderer {
             numberOfVerts += verts;
         }
 
-        if (capabilities.OpenGL12)
+        if (capabilities.OpenGL12) {
             GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, verts, indices);
-        else
-            GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
+        } else {
+	        indices.limit(t.getTriangleQuantity()*3);
+	        GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
+	        indices.clear();
+        }
+
 
         postdrawMesh();
     }
