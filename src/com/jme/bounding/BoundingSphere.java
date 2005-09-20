@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.29 2005-09-15 23:01:27 Mojomonkey Exp $
+ * @version $Id: BoundingSphere.java,v 1.30 2005-09-20 09:47:18 irrisor Exp $
  */
 public class BoundingSphere extends Sphere implements BoundingVolume {
 
@@ -88,8 +88,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      *            the center of the sphere.
      */
     public BoundingSphere(float radius, Vector3f center) {
-        super("bsphere", center, 10, 10, radius);
-        initCheckPlanes();
+        this("bsphere", radius, center);
     }
 
     /**
@@ -101,7 +100,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      *            the center of the sphere.
      */
     public BoundingSphere(String name, float radius, Vector3f center) {
-        super(name, center, 10, 10, radius);
+        super( name, center, 10, 10, radius );
         initCheckPlanes();
     }
 
@@ -304,6 +303,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @see #calcWelzl(com.jme.math.Vector3f[])
      */
     private void setSphere(Vector3f O, Vector3f A, Vector3f B) {
+        //todo: don't create vectors here!
         Vector3f a = A.subtract(O);
         Vector3f b = B.subtract(O);
         Vector3f acrossB = a.cross(b);
@@ -703,13 +703,16 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             return bv.intersectsSphere(this);
     }
 
+    private static Vector3f tmp_intersectsSphere = new Vector3f();
+
     /*
-     * (non-Javadoc)
-     * 
-     * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
-     */
+    * (non-Javadoc)
+    *
+    * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
+    */
     public boolean intersectsSphere(BoundingSphere bs) {
-        Vector3f diff = getCenter().subtract(bs.getCenter());
+        //note: as a field is used this is not thread safe!
+        Vector3f diff = tmp_intersectsSphere.set(getCenter()).subtractLocal(bs.getCenter());
         float rsum = getRadius() + bs.getRadius();
         return (diff.dot(diff) <= rsum * rsum);
     }

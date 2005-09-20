@@ -369,6 +369,7 @@ public class TestChooser extends JDialog {
             TestChooser chooser = new TestChooser();
             final Vector classes = new Vector();
 
+            System.out.println( "Composing Test list..." );
             Sys.class.getName(); //to check loading lwjgl library
 
             //put some featured tests at the beginning

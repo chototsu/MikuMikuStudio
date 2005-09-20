@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.70 2005-09-16 19:33:40 Mojomonkey Exp $
+ * @version $Id: Spatial.java,v 1.71 2005-09-20 09:47:18 irrisor Exp $
  */
 public abstract class Spatial implements Serializable {
 	
@@ -603,12 +603,13 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
+     * Called by {@link Node#attachChild(Spatial)} and {@link Node#detachChild(Spatial)} - don't call directly.
      * <code>setParent</code> sets the parent of this node.
      * 
      * @param parent
      *            the parent of this node.
      */
-    public void setParent(Node parent) {
+    protected void setParent(Node parent) {
         this.parent = parent;
     }
 

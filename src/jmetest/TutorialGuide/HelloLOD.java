@@ -45,12 +45,10 @@ import com.jme.input.KeyInput;
 import com.jme.input.action.KeyExitAction;
 import com.jme.math.Matrix3f;
 import com.jme.math.Vector3f;
-import com.jme.scene.CameraNode;
-import com.jme.scene.Controller;
-import com.jme.scene.Node;
-import com.jme.scene.TriMesh;
+import com.jme.scene.*;
 import com.jme.scene.lod.AreaClodMesh;
 import com.jme.scene.state.RenderState;
+import com.jme.util.LoggingSystem;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.FormatConverter;
 import com.jmex.model.XMLparser.Converters.ObjToJme;
@@ -156,22 +154,34 @@ public class HelloLOD extends SimpleGame {
         Node clodNode=new Node("Clod node");
         // For each mesh in maggie
         for (int i=0;i<meshParent.getQuantity();i++){
-            // Create an AreaClodMesh for that mesh.  Let it compute records automatically
-            AreaClodMesh acm=new AreaClodMesh("part"+i,(TriMesh) meshParent.getChild(i),null);
-            acm.setModelBound(new BoundingSphere());
-            acm.updateModelBound();
+            final Spatial child = meshParent.getChild(i);
+            if ( child instanceof Node )
+            {
+                clodNode.attachChild( getClodNodeFromParent( (Node) child ) );
+            }
+            else if ( child instanceof TriMesh )
+            {
+                // Create an AreaClodMesh for that mesh.  Let it compute records automatically
+                AreaClodMesh acm=new AreaClodMesh("part"+i,(TriMesh) child,null);
+                acm.setModelBound(new BoundingSphere());
+                acm.updateModelBound();
 
-            // Allow 1/2 of a triangle in every pixel on the screen in the bounds.
-            acm.setTrisPerPixel(.5f);
+                // Allow 1/2 of a triangle in every pixel on the screen in the bounds.
+                acm.setTrisPerPixel(.5f);
 
-            // Force a move of 2 units before updating the mesh geometry
-            acm.setDistanceTolerance(2);
+                // Force a move of 2 units before updating the mesh geometry
+                acm.setDistanceTolerance(2);
 
-            // Give the clodMesh node the material state that the original had.
-            acm.setRenderState(meshParent.getChild(i).getRenderStateList()[RenderState.RS_MATERIAL]);
+                // Give the clodMesh node the material state that the original had.
+                acm.setRenderState(child.getRenderStateList()[RenderState.RS_MATERIAL]);
 
-            // Attach clod node.
-            clodNode.attachChild(acm);
+                // Attach clod node.
+                clodNode.attachChild(acm);
+            }
+            else
+            {
+                LoggingSystem.getLogger().warning( "Unhandled Spatial type: " + child.getClass() );
+            }
         }
         return clodNode;
     }

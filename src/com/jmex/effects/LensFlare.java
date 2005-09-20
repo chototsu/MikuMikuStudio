@@ -65,7 +65,7 @@ import com.jme.system.JmeException;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.5 2005-09-16 21:36:16 renanse Exp $
+ * @version $Id: LensFlare.java,v 1.6 2005-09-20 09:47:19 irrisor Exp $
  */
 
 public class LensFlare extends Node {
@@ -255,7 +255,7 @@ public class LensFlare extends Node {
             }
         }
 
-        for (int x = children.size(); --x >= 0;) {
+        for (int x = getQuantity(); --x >= 0;) {
             FlareQuad fq = (FlareQuad) getChild(x);
             fq.setLocalScale(scale);
             fq.updatePosition(flarePoint, midPoint);

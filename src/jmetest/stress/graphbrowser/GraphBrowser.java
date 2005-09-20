@@ -13,8 +13,8 @@
  *   notice, this list of conditions and the following disclaimer in the
  *   documentation and/or other materials provided with the distribution.
  *
- * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
- *   may be used to endorse or promote products derived from this software 
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors
+ *   may be used to endorse or promote products derived from this software
  *   without specific prior written permission.
  *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
@@ -42,9 +42,7 @@ import com.jme.input.KeyInput;
 import com.jme.light.AmbientLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Line;
-import com.jme.scene.Spatial;
-import com.jme.scene.Text;
+import com.jme.scene.*;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
@@ -85,6 +83,7 @@ public class GraphBrowser extends StressApp {
      * Command for toggling edges.
      */
     private static final String COMMAND_PATH_ONLY = "toggle_path_only";
+    private Box box;
 
     /**
      * Create a graphbrowser app that uses given {@link GraphAccessor} and {@link GraphLayouter}.
@@ -104,10 +103,11 @@ public class GraphBrowser extends StressApp {
         light.setEnabled( true );
         light.setDiffuse( new ColorRGBA( SCENE_LIGHT, SCENE_LIGHT, SCENE_LIGHT, 1 ) );
         lightState.attach( light );
+        box = new Box( "box", new Vector3f( -1, -1, -1 ), new Vector3f( 1, 1, 1 ) );
 
         for ( int i = accessor.getNodeCount() - 1; i >= 0; i-- ) {
             Object node = accessor.getNode( i );
-            Box nodeVis = new Box( String.valueOf( node ), new Vector3f( -1, -1, -1 ), new Vector3f( 1, 1, 1 ) );
+            Spatial nodeVis = new SharedMesh( String.valueOf( node ), box );
             nodeVis.getLocalTranslation().set( layouter.getCoordinates( node ) );
 
             MaterialState material = display.getRenderer().createMaterialState();

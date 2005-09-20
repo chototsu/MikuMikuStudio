@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.20 2005-09-15 17:13:38 renanse Exp $
+ * @version $Id: BillboardNode.java,v 1.21 2005-09-20 09:47:18 irrisor Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
@@ -144,8 +144,8 @@ public class BillboardNode extends Node {
             break;
         }
 
-        for (int i = 0, cSize = children.size(); i < cSize; i++) {
-            Spatial child = (Spatial) children.get(i);
+        for (int i = 0, cSize = getChildren().size(); i < cSize; i++) {
+            Spatial child = (Spatial) getChildren().get(i);
             if (child != null) {
                 child.updateGeometricState(lastTime, false);
             }

@@ -90,6 +90,8 @@
 		<delete dir="${doc}" />
 		<delete>
 			<fileset dir="${src}" includes="**/*.class" />
+            <fileset dir="${release}" includes="jme*.jar"/>
+            <fileset dir="${webstart}" includes="*.jar"/>
 		</delete>
 	</target>
 
@@ -268,6 +270,7 @@
         <ftp server="ftp.jmonkeyengine.com" userid="${ftpuser}" password="${ftppassword}" remotedir="nightly" >
             <fileset dir="${webstart}" >
                 <include name="*.jar"/>
+                <include name="*.jnlp"/>
             </fileset>
             <fileset dir="${libs}" >
                 <include name="*.jar"/>

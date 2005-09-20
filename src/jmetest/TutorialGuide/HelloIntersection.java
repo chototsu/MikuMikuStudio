@@ -51,7 +51,7 @@ import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.MaterialState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jmex.sound.fmod.SoundSystem;
+import com.jmex.sound.openAL.SoundSystem;
 
 
 /**
@@ -158,8 +158,8 @@ public class HelloIntersection extends SimpleGame {
 		
 		snode = SoundSystem.createSoundNode();
 		/** Create program sound */
-		targetSound = SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/explosion.wav");
-		laserSound=SoundSystem.create3DSample("D:/eclipse/workspace/JMonkeyEngine/src/jmetest/data/sound/laser.ogg");
+		targetSound = SoundSystem.create3DSample( getClass().getResource( "/jmetest/data/sound/explosion.wav" ) );
+		laserSound = SoundSystem.create3DSample( getClass().getResource( "/jmetest/data/sound/laser.ogg" ) );
         SoundSystem.setSampleMaxAudibleDistance(targetSound, 1000);
         SoundSystem.setSampleMaxAudibleDistance(laserSound, 1000);
         // Then we bind the programid we received to our laser event id.

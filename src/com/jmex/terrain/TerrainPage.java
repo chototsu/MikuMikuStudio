@@ -58,7 +58,7 @@ import com.jme.util.LoggingSystem;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.3 2005-09-16 19:33:42 Mojomonkey Exp $
+ * @version $Id: TerrainPage.java,v 1.4 2005-09-20 09:47:20 irrisor Exp $
  */
 public class TerrainPage extends Node {
 
@@ -591,7 +591,7 @@ public class TerrainPage extends Node {
     }
     
     public void fixNormals() {
-        Iterator it = children.iterator();
+        Iterator it = getChildren().iterator();
         while (it.hasNext()) {
             Object child = it.next();
             if (child instanceof TerrainPage) {

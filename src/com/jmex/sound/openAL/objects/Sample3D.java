@@ -71,8 +71,8 @@ public class Sample3D extends SoundSpatial{
         generateSource();
     }
     
-    public Sample3D(URL url){     
-        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+url.getFile());
+    public Sample3D(URL url){
+        LoggingSystem.getLogger().log(Level.INFO,"Load file:"+url);
         buffer=SampleLoader.loadBuffer(url);
         generateSource();
     }

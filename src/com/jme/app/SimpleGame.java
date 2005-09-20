@@ -62,7 +62,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.37 2005-09-15 17:14:25 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.38 2005-09-20 09:47:17 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -159,7 +159,7 @@ public abstract class SimpleGame extends BaseGame {
 	simpleUpdate();
 
 	/** Update controllers/render states/transforms/bounds for rootNode. */
-rootNode.updateGeometricState(tpf, true);
+    rootNode.updateGeometricState(tpf, true);
 
   }
 
