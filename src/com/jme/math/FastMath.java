@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.17 2005-09-15 17:13:47 renanse Exp $
+ * @version $Id: FastMath.java,v 1.18 2005-09-20 19:33:37 renanse Exp $
  */
 
 final public class FastMath {
@@ -209,7 +209,8 @@ final public class FastMath {
      * @see java.lang.Math#abs(float)
      */
     public static float abs(float fValue) {
-        return Math.abs(fValue);
+        if (fValue < 0) return -fValue;
+        else return fValue;
     }
 
     /**
