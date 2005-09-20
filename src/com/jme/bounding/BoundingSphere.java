@@ -53,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.31 2005-09-20 16:47:01 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.32 2005-09-20 21:01:56 renanse Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -61,7 +61,7 @@ public class BoundingSphere extends BoundingVolume {
 
     public float radius;
 
-	static final private float radiusEpsilon = 1f + FastMath.FLT_EPSILON;
+	static final private float radiusEpsilon = 1f + 0.00001f;
 
 	protected FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(16);
 
