@@ -56,15 +56,15 @@ import com.jmex.model.animation.KeyframeController;
 /**
  * <code>TestImposterNode</code> shows off the use of the ImposterNode in jME.
  * @author Joshua Slack
- * @version $Id: TestImposterNode.java,v 1.18 2005-09-15 17:13:24 renanse Exp $
+ * @version $Id: TestImposterNode.java,v 1.19 2005-09-20 21:04:13 renanse Exp $
  */
 public class TestImposterNode extends SimpleGame {
   private Node fakeScene;
 
   private Node freakmd2;
 
-  private String FILE_NAME = "data/model/drfreak.md2";
-  private String TEXTURE_NAME = "data/model/drfreak.jpg";
+  private String FILE_NAME = "jmetest/data/model/drfreak.md2";
+  private String TEXTURE_NAME = "jmetest/data/model/drfreak.jpg";
 
   private ImposterNode iNode;
 
@@ -92,8 +92,8 @@ public class TestImposterNode extends SimpleGame {
     Md2ToJme converter=new Md2ToJme();
     ByteArrayOutputStream BO=new ByteArrayOutputStream();
 
-    URL textu=TestMd2JmeWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.jpg");
-    URL freak=TestMd2JmeWrite.class.getClassLoader().getResource("jmetest/data/model/drfreak.md2");
+    URL textu=TestMd2JmeWrite.class.getClassLoader().getResource(TEXTURE_NAME);
+    URL freak=TestMd2JmeWrite.class.getClassLoader().getResource(FILE_NAME);
     freakmd2=null;
 
     try {
@@ -129,8 +129,7 @@ public class TestImposterNode extends SimpleGame {
     ts2.setEnabled(true);
     ts2.setTexture(
         TextureManager.loadTexture(
-        TestImposterNode.class.getClassLoader().getResource("jmetest/" +
-        TEXTURE_NAME),
+        TestImposterNode.class.getClassLoader().getResource(TEXTURE_NAME),
         Texture.MM_LINEAR,
         Texture.FM_LINEAR));
     fakeScene.setRenderState(ts2);
