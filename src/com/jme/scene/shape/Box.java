@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.15 2005-09-20 16:46:38 renanse Exp $
+ * @version $Id: Box.java,v 1.16 2005-09-20 18:45:24 renanse Exp $
  */
 public class Box extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -229,12 +229,6 @@ public class Box extends TriMesh {
 	private void setNormalData() {
 	    if (normBuf == null) {
 		    normBuf = BufferUtils.createVector3Buffer(24);
-			Vector3f front = new Vector3f(0, 0, 1);
-			Vector3f right = new Vector3f(1, 0, 0);
-			Vector3f back = new Vector3f(0, 0, -1);
-			Vector3f left = new Vector3f(-1, 0, 0);
-			Vector3f top = new Vector3f(0, 1, 0);
-			Vector3f bottom = new Vector3f(0, -1, 0);
 	
 			//back
 			for (int i = 0; i < 4; i++)

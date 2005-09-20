@@ -108,7 +108,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.70 2005-09-20 16:47:01 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.71 2005-09-20 18:45:27 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -713,10 +713,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
     	indices.limit(t.getTriangleQuantity()*3); // make sure only the necessary indices are sent through on old cards.
-        if (capabilities.OpenGL12)
-            GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, verts-1, indices);
-        else
-            GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
+        GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
         indices.clear();
             
 
@@ -766,10 +763,7 @@ public class LWJGLRenderer extends Renderer {
                         + ranges[i].getKind());
             }
             indices.limit(indices.position() + ranges[i].getCount());
-            if (capabilities.OpenGL12)
-                GL12.glDrawRangeElements(mode, 0, verts-1, indices);
-            else
-                GL11.glDrawElements(mode, indices);
+            GL11.glDrawElements(mode, indices);
             indices.position(indices.limit());
         }
 

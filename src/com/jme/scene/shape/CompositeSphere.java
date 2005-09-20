@@ -42,7 +42,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>CompositeSphere</code> is um ... a CompositeSphere :)
  * 
  * @author Joshua Slack
- * @version $Id: CompositeSphere.java,v 1.3 2005-09-15 17:13:43 renanse Exp $
+ * @version $Id: CompositeSphere.java,v 1.4 2005-09-20 18:45:25 renanse Exp $
  */
 public class CompositeSphere extends CompositeMesh {
 	private static final long serialVersionUID = 1L;
@@ -253,7 +253,6 @@ public class CompositeSphere extends CompositeMesh {
 		// generate connectivity
 		
 		// zStrips * triangle strip around the CompositeSphere
-		int index = 0;
 		for (int iZ = 0, iZStart = 0; iZ < zStrips; iZ++) {
 			int i0 = iZStart;
 			iZStart += (radialSamples + 1);

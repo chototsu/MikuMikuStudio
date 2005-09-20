@@ -65,7 +65,7 @@ import com.jme.system.DisplaySystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- cache code and enhancements
- * @version $Id: TextureManager.java,v 1.41 2005-09-15 17:12:58 renanse Exp $
+ * @version $Id: TextureManager.java,v 1.42 2005-09-20 18:45:28 renanse Exp $
  */
 final public class TextureManager {
 
@@ -334,8 +334,8 @@ final public class TextureManager {
 					"Problem creating buffered Image: " + e.getMessage());
 			return null;
 		}
-		int width = image.getWidth(null);
-		int height = image.getHeight(null);
+		image.getWidth(null);
+		image.getHeight(null);
 		AffineTransform tx = null;
 		if (flipImage) {
 			tx = AffineTransform.getScaleInstance(1, -1);

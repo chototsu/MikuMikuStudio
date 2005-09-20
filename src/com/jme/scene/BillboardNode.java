@@ -51,7 +51,7 @@ import com.jme.renderer.Renderer;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: BillboardNode.java,v 1.21 2005-09-20 09:47:18 irrisor Exp $
+ * @version $Id: BillboardNode.java,v 1.22 2005-09-20 18:45:31 renanse Exp $
  */
 public class BillboardNode extends Node {
     private static final long serialVersionUID = 1L;
@@ -63,8 +63,6 @@ public class BillboardNode extends Node {
     private Vector3f look;
 
     private Vector3f left;
-
-    private Vector3f up;
 
     private int type;
 
@@ -87,7 +85,6 @@ public class BillboardNode extends Node {
     public BillboardNode(String name) {
         super(name);
         orient = new Matrix3f();
-        up = new Vector3f();
         look = new Vector3f();
         left = new Vector3f();
         type = SCREEN_ALIGNED;

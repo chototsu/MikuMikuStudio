@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.3 2005-09-16 19:33:42 Mojomonkey Exp $
+ * @version $Id: TerrainBlock.java,v 1.4 2005-09-20 18:45:27 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -319,8 +319,6 @@ public class TerrainBlock extends AreaClodMesh {
         //set up the indices
         triangleQuantity = ((size - 1) * (size - 1)) * 2;
         indexBuffer = BufferUtils.createIntBuffer(triangleQuantity * 3);
-
-        int count = 0;
 
         //go through entire array up to the second to last column.
         for (int i = 0; i < (size * (size - 1)); i++) {

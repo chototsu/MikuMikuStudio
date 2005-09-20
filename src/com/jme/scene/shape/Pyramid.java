@@ -32,7 +32,6 @@
 
 package com.jme.scene.shape;
 
-import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.TriMesh;
@@ -45,7 +44,7 @@ import com.jme.util.geom.BufferUtils;
  * the peak being on the positive y axis and the base being in the x-z plane.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.5 2005-09-15 17:13:44 renanse Exp $
+ * @version $Id: Pyramid.java,v 1.6 2005-09-20 18:45:26 renanse Exp $
  */
 public class Pyramid extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -168,14 +167,6 @@ public class Pyramid extends TriMesh {
 	 */
 	private void setTextureData() {
 	    texBuf[0] = BufferUtils.createVector2Buffer(16);
-		Vector2f br = new Vector2f(0, 0);
-		Vector2f bl = new Vector2f(1, 0);
-		Vector2f tl = new Vector2f(1, 1);
-		Vector2f tr = new Vector2f(0, 1);
-		Vector2f tc = new Vector2f(0.5f, 1);
-		Vector2f q1 = new Vector2f(0.75f, 0);
-		Vector2f q2 = new Vector2f(0.5f, 0);
-		Vector2f q3 = new Vector2f(0.25f, 0);
 
 		texBuf[0].put(1).put(0);
 		texBuf[0].put(0).put(0);

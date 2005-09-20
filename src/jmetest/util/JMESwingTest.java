@@ -78,7 +78,7 @@ import com.jme.util.awt.SimpleCanvasImpl;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.10 2005-09-15 17:14:57 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.11 2005-09-20 18:45:30 renanse Exp $
  */
 
 public class JMESwingTest {
@@ -109,7 +109,7 @@ public class JMESwingTest {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        JMESwingTest app = new JMESwingTest();
+        new JMESwingTest();
     }
 
     // **************** SWING FRAME ****************

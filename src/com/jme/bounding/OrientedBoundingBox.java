@@ -61,12 +61,6 @@ public class OrientedBoundingBox extends BoundingVolume {
 
 	static private final Vector3f tempVg = new Vector3f();
 
-	static private final Vector3f tempVh = new Vector3f();
-
-	static private final Vector3f tempVi = new Vector3f();
-
-	static private final Vector3f tempVj = new Vector3f();
-
 	static private final Matrix3f tempMa = new Matrix3f();
 
 	static private final Quaternion tempQa = new Quaternion();

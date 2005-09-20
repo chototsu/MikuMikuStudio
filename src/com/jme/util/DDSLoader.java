@@ -46,7 +46,7 @@ import com.jme.image.Image;
  * later.
  * 
  * @author Gareth Jenkins-Jones
- * @version $Id: DDSLoader.java,v 1.2 2005-09-15 17:12:57 renanse Exp $
+ * @version $Id: DDSLoader.java,v 1.3 2005-09-20 18:45:28 renanse Exp $
  */
 public final class DDSLoader {
     private DDSLoader() {
@@ -102,12 +102,10 @@ public final class DDSLoader {
         private int bpp_;
         private int[] sizes_;
 
-        private InputStream stream_;
         private DataInput in_;
 
         public DDSReader(InputStream in) {
             in_ = new LittleEndien(in);
-            stream_ = in;
         }
 
         public void loadHeader() throws IOException {

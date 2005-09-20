@@ -43,7 +43,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.6 2005-09-15 17:13:44 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.7 2005-09-20 18:45:26 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -166,7 +166,6 @@ public class PQTorus extends TriMesh {
 	private void setIndexData() {
 	    triangleQuantity = 2 * vertQuantity;
 		indexBuffer = BufferUtils.createIntBuffer(3 * triangleQuantity);
-		int j = 0;
 
 		for (int i = 0; i < vertQuantity; i++) {
 		    indexBuffer.put(i);
