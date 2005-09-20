@@ -54,7 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrain</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainTrees.java,v 1.10 2005-09-15 17:14:57 renanse Exp $
+ * @version $Id: TestTerrainTrees.java,v 1.11 2005-09-20 19:33:14 renanse Exp $
  */
 public class TestTerrainTrees extends SimpleGame {
 
@@ -173,7 +173,7 @@ public class TestTerrainTrees extends SimpleGame {
         	Spatial s1 = cc1.createCopy();
             float x = (float) Math.random() * 128 * 5;
             float z = (float) Math.random() * 128 * 5;
-            s1.setLocalTranslation(new Vector3f(x, tb.getHeight(x, z), z));
+            s1.setLocalTranslation(new Vector3f(x, tb.getHeight(x, z)+10, z));
             rootNode.attachChild(s1);
         }
 
