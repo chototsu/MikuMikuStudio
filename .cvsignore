@@ -7,3 +7,6 @@ build-server.xml
 jme.jnlp
 properties.cfg
 ftp
+*.memory
+*.cpu
+debug*

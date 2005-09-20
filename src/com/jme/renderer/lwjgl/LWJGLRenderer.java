@@ -67,21 +67,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.TriMesh;
 import com.jme.scene.VBOInfo;
-import com.jme.scene.state.AlphaState;
-import com.jme.scene.state.AttributeState;
-import com.jme.scene.state.CullState;
-import com.jme.scene.state.DitherState;
-import com.jme.scene.state.FogState;
-import com.jme.scene.state.FragmentProgramState;
-import com.jme.scene.state.GLSLShaderObjectsState;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.MaterialState;
-import com.jme.scene.state.ShadeState;
-import com.jme.scene.state.StencilState;
-import com.jme.scene.state.TextureState;
-import com.jme.scene.state.VertexProgramState;
-import com.jme.scene.state.WireframeState;
-import com.jme.scene.state.ZBufferState;
+import com.jme.scene.state.*;
 import com.jme.scene.state.lwjgl.LWJGLAlphaState;
 import com.jme.scene.state.lwjgl.LWJGLAttributeState;
 import com.jme.scene.state.lwjgl.LWJGLCullState;
@@ -108,7 +94,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.71 2005-09-20 18:45:27 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.72 2005-09-20 19:35:24 irrisor Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -396,13 +382,16 @@ public class LWJGLRenderer extends Renderer {
      * @see com.jme.renderer.Renderer#clearZBuffer()
      */
     public void clearZBuffer() {
+        Spatial.clearCurrentState( RenderState.RS_ZBUFFER );
+        if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
+            Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
         GL11.glClear(GL11.GL_DEPTH_BUFFER_BIT);
     }
 
     /**
      * <code>clearBackBuffer</code> clears the OpenGL color buffer.
      * 
-     * @see com.jme.renderer.Renderer#clearBackBuffer()
+     * @see com.jme.renderer.Renderer#clearColorBuffer()
      */
     public void clearColorBuffer() {
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
@@ -414,6 +403,9 @@ public class LWJGLRenderer extends Renderer {
      * @see com.jme.renderer.Renderer#clearBuffers()
      */
     public void clearBuffers() {
+        Spatial.clearCurrentState( RenderState.RS_ZBUFFER );
+        if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
+            Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
         GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
     }
 
@@ -441,6 +433,14 @@ public class LWJGLRenderer extends Renderer {
     public void displayBackBuffer() {
         renderQueue();
 
+        if (Spatial.getCurrentState(RenderState.RS_ZBUFFER) != null
+                && !((ZBufferState) Spatial
+                .getCurrentState(RenderState.RS_ZBUFFER)).isWritable()) {
+            if (Spatial.defaultStateList[RenderState.RS_ZBUFFER] != null)
+                Spatial.defaultStateList[RenderState.RS_ZBUFFER].apply();
+            Spatial.clearCurrentState(RenderState.RS_ZBUFFER);
+        }
+
         prevColor = prevNorms = prevVerts = null;
         Arrays.fill(prevTex, null);
 
@@ -449,7 +449,7 @@ public class LWJGLRenderer extends Renderer {
             Display.update();
     }
 
-    
+
 
     public void setOrtho() {
         if (inOrthoMode) {
@@ -498,7 +498,7 @@ public class LWJGLRenderer extends Renderer {
      * <code>takeScreenShot</code> saves the current buffer to a file. The
      * file name is provided, and .png will be appended. True is returned if the
      * capture was successful, false otherwise.
-     * 
+     *
      * @param filename
      *            the name of the file to save.
      * @return true if successful, false otherwise.
@@ -538,7 +538,7 @@ public class LWJGLRenderer extends Renderer {
     /**
      * <code>grabScreenContents</code> reads a block of pixels from the
      * current framebuffer.
-     * 
+     *
      * @param buff
      *            a buffer to store contents in.
      * @param x -
@@ -558,7 +558,7 @@ public class LWJGLRenderer extends Renderer {
     /**
      * <code>draw</code> draws a point object where a point contains a
      * collection of vertices, normals, colors and texture coordinates.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Point)
      * @param p
      *            the point object to render.
@@ -589,7 +589,7 @@ public class LWJGLRenderer extends Renderer {
     /**
      * <code>draw</code> draws a line object where a line contains a
      * collection of vertices, normals, colors and texture coordinates.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Line)
      * @param l
      *            the line object to render.
@@ -636,7 +636,7 @@ public class LWJGLRenderer extends Renderer {
 
     /**
      * <code>draw</code> renders a curve object.
-     * 
+     *
      * @param c
      *            the curve object to render.
      */
@@ -696,7 +696,7 @@ public class LWJGLRenderer extends Renderer {
     /**
      * <code>draw</code> renders a <code>TriMesh</code> object including
      * it's normals, colors, textures and vertices.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
      * @param t
      *            the mesh to render.
@@ -723,7 +723,7 @@ public class LWJGLRenderer extends Renderer {
     /**
      * <code>draw</code> renders a <code>CompositeMesh</code> object
      * including it's normals, colors, textures and vertices.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.CompositeMesh)
      * @param t
      *            the mesh to render.
@@ -770,14 +770,14 @@ public class LWJGLRenderer extends Renderer {
         postdrawGeometry();
     }
 
-    
+
     protected IntBuffer buf = org.lwjgl.BufferUtils.createIntBuffer(16);
     public void prepVBO(Geometry g) {
         if (!capabilities.GL_ARB_vertex_buffer_object)
             return;
-        
+
         VBOInfo vbo = g.getVBOInfo();
-        
+
         if (vbo.isVBOVertexEnabled() && vbo.getVBOVertexID() <= 0) {
             if (g.getVertexBuffer() != null) {
                 g.getVertexBuffer().rewind();
@@ -785,7 +785,7 @@ public class LWJGLRenderer extends Renderer {
                 ARBVertexBufferObject.glGenBuffersARB(buf);
                 vbo.setVBOVertexID(buf.get(0));
                 ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOVertexID());
-                ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getVertexBuffer(), 
+                ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getVertexBuffer(),
                         ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
             }
         }
@@ -807,7 +807,7 @@ public class LWJGLRenderer extends Renderer {
             	ARBVertexBufferObject.glGenBuffersARB(buf);
             	vbo.setVBOColorID(buf.get(0));
                 ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOColorID());
-                ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getColorBuffer(), 
+                ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getColorBuffer(),
                         ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
             }
         }
@@ -822,7 +822,7 @@ public class LWJGLRenderer extends Renderer {
                         ARBVertexBufferObject.glGenBuffersARB(buf);
                         vbo.setVBOTextureID(i, buf.get(0));
                         ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOTextureID(i));
-                        ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getTextureBuffer(i), 
+                        ARBVertexBufferObject.glBufferDataARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, g.getTextureBuffer(i),
                                 ARBVertexBufferObject.GL_STATIC_DRAW_ARB);
                     }
                 }
@@ -834,7 +834,7 @@ public class LWJGLRenderer extends Renderer {
     /**
      * <code>draw</code> renders a scene by calling the nodes
      * <code>onDraw</code> method.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
      */
     public void draw(Spatial s) {
@@ -842,11 +842,11 @@ public class LWJGLRenderer extends Renderer {
             s.onDraw(this);
         }
 
-    }  
+    }
 
     /**
      * <code>draw</code> renders a text object using a predefined font.
-     * 
+     *
      * @see com.jme.renderer.Renderer#draw(com.jme.scene.Text)
      */
     public void draw(Text t) {
@@ -869,7 +869,7 @@ public class LWJGLRenderer extends Renderer {
 
     /**
      * Return true if the system running this supports VBO
-     * 
+     *
      * @return boolean true if VBO supported
      */
     public boolean supportsVBO() {
@@ -877,7 +877,7 @@ public class LWJGLRenderer extends Renderer {
     }
 
     /**
-     * 
+     *
      */
     private void postdrawGeometry() {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
@@ -995,5 +995,5 @@ public class LWJGLRenderer extends Renderer {
             }
             prevTex[i] = textures;
         }
-    }   
+    }
 }
