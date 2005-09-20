@@ -61,15 +61,19 @@ public class RenderQueue {
 
     /** List of all transparent object to render. */
     private SpatialList transparentBucket;
+    private SpatialList transparentBackBucket;
 
     /** List of all opaque object to render. */
     private SpatialList opaqueBucket;
+    private SpatialList opaqueBackBucket;
 
     /** List of all ortho object to render. */
     private SpatialList orthoBucket;
+    private SpatialList orthoBackBucket;
 
     /** List of all clone object to render. */
     private SpatialList cloneBucket;
+    private SpatialList cloneBackBucket;
 
     /** The renderer. */
     private Renderer renderer;
@@ -125,9 +129,13 @@ public class RenderQueue {
      */
     private void setupBuckets() {
         opaqueBucket = new SpatialList(new OpaqueComp());
+        opaqueBackBucket = new SpatialList(new OpaqueComp());
         transparentBucket = new SpatialList(new TransparentComp());
+        transparentBackBucket = new SpatialList(new TransparentComp());
         orthoBucket = new SpatialList(new OrthoComp());
+        orthoBackBucket = new SpatialList(new OrthoComp());
         cloneBucket = new SpatialList(new CloneComp());
+        cloneBackBucket = new SpatialList(new CloneComp());
     }
 
     /**
@@ -192,6 +200,27 @@ public class RenderQueue {
         opaqueBucket.clear();
         orthoBucket.clear();
         cloneBucket.clear();
+    }
+
+    /**
+     * swaps all of the buckets with the back buckets.
+     */
+    public void swapBuckets() {
+        SpatialList swap = transparentBucket;
+        transparentBucket = transparentBackBucket;
+        transparentBackBucket = swap;
+
+        swap = orthoBucket;
+        orthoBucket = orthoBackBucket;
+        orthoBackBucket = swap;
+
+        swap = opaqueBucket;
+        opaqueBucket = opaqueBackBucket;
+        opaqueBackBucket = swap;
+
+        swap = cloneBucket;
+        cloneBucket = cloneBackBucket;
+        cloneBackBucket = swap;
     }
 
     /**

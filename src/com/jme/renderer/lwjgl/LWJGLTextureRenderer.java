@@ -333,8 +333,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 int oldHeight = parentRenderer.getHeight();
                 parentRenderer.reinit(pBufferWidth, pBufferHeight);
                 parentRenderer.clearBuffers();
+                parentRenderer.getQueue().swapBuckets();
                 spat.onDraw(parentRenderer);
                 parentRenderer.renderQueue();
+                parentRenderer.getQueue().swapBuckets();
                 parentRenderer.setCamera(oldCamera);
                 parentRenderer.reinit(oldWidth, oldHeight);
                 deactivate();
@@ -348,8 +350,10 @@ public class LWJGLTextureRenderer implements TextureRenderer {
                 int oldHeight = parentRenderer.getHeight();
                 parentRenderer.reinit(pBufferWidth, pBufferHeight);
                 parentRenderer.clearBuffers();
+                parentRenderer.getQueue().swapBuckets();
                 spat.onDraw(parentRenderer);
                 parentRenderer.renderQueue();
+                parentRenderer.getQueue().swapBuckets();
                 parentRenderer.setCamera(oldCamera);
                 parentRenderer.reinit(oldWidth, oldHeight);
                 GL11.glBindTexture(GL11.GL_TEXTURE_2D, tex.getTextureId());
