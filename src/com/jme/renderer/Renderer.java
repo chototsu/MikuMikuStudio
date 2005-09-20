@@ -34,10 +34,8 @@ package com.jme.renderer;
 
 import java.nio.IntBuffer;
 
-import com.jme.bounding.BoundingVolume;
 import com.jme.curve.Curve;
 import com.jme.scene.CompositeMesh;
-import com.jme.scene.Geometry;
 import com.jme.scene.Line;
 import com.jme.scene.Point;
 import com.jme.scene.Spatial;
@@ -80,7 +78,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.53 2005-09-16 20:12:45 Mojomonkey Exp $
+ * @version $Id: Renderer.java,v 1.54 2005-09-20 16:46:40 renanse Exp $
  */
 public abstract class Renderer {
 
@@ -497,52 +495,6 @@ public abstract class Renderer {
     public abstract void draw(Spatial s);
 
     /**
-     * <code>drawBounds</code> renders a scene by calling the nodes
-     * <code>onDraw</code> method.
-     * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.Spatial)
-     */
-    public void drawBounds(Spatial s) {
-        if (s != null) {
-            s.onDrawBounds(this);
-        }
-
-    }
-
-    /**
-     * <code>draw</code> renders a <code>TriMesh</code> object including
-     * it's normals, colors, textures and vertices.
-     * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
-     * @param g
-     *            the mesh to render.
-     */
-    public void drawBounds(Geometry g) {
-        // get the bounds
-        if (!(g.getWorldBound() instanceof TriMesh))
-            return;
-        drawBounds(g.getWorldBound());
-    }
-
-    /**
-     * <code>draw</code> renders a <code>TriMesh</code> object including
-     * it's normals, colors, textures and vertices.
-     * 
-     * @see com.jme.renderer.Renderer#draw(com.jme.scene.TriMesh)
-     * @param bv
-     *            the mesh to render.
-     */
-    public void drawBounds(BoundingVolume bv) {
-        // get the bounds
-        if (!(bv instanceof TriMesh))
-            return;
-        bv.recomputeMesh();
-        setBoundsStates(true);
-        draw((TriMesh) bv);
-        setBoundsStates(false);
-    }
-
-    /**
      * <code>draw</code> renders a single point to the back buffer.
      * 
      * @param p
@@ -677,21 +629,4 @@ public abstract class Renderer {
      */
     public abstract void reinit(int width, int height);
     
-/**
-     * 
-     * <code>setBoundsStates</code> sets the rendering states for bounding
-     * volumes, this includes wireframe and zbuffer.
-     * 
-     * @param enabled
-     *            true if these states are to be enabled, false otherwise.
-     */
-    private void setBoundsStates(boolean enabled) {
-        boundsTextState.apply(); // not enabled -- no texture
-
-        boundsWireState.setEnabled(enabled);
-        boundsWireState.apply();
-
-        boundsZState.setEnabled(enabled);
-        boundsZState.apply();
-    }
 }

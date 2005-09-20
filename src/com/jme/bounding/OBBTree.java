@@ -37,7 +37,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import com.jme.intersection.Intersection;
-import com.jme.math.Matrix3f;
+import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.scene.TriMesh;
@@ -63,10 +63,10 @@ public class OBBTree {
     private OBBTree right;
 
     /** Untransformed bounds of this tree. */
-    public OBB2 bounds;
+    public OrientedBoundingBox bounds;
 
     /** This tree's bounds after transformation. */
-    public OBB2 worldBounds;
+    public OrientedBoundingBox worldBounds;
 
     /** Array of triangles this tree is indexing. */
     private TreeTriangle[] tris;
@@ -125,9 +125,9 @@ public class OBBTree {
         myStart = start;
         myEnd = end;
 				if (bounds == null)
-					bounds = new OBB2();
+					bounds = new OrientedBoundingBox();
 				if (worldBounds == null)
-					worldBounds = new OBB2();
+					worldBounds = new OrientedBoundingBox();
         bounds.computeFromTris(tris, start, end);
         if (myEnd - myStart + 1 <= maxPerLeaf) {
             return;
@@ -158,11 +158,11 @@ public class OBBTree {
     public boolean intersect(OBBTree collisionTree) {
         if (collisionTree == null) return false;
         collisionTree.bounds.transform(
-                collisionTree.myParent.findWorldRotMat(),
+                collisionTree.myParent.getWorldRotation(),
                 collisionTree.myParent.getWorldTranslation(),
                 collisionTree.myParent.getWorldScale(),
                 collisionTree.worldBounds);
-        if (!worldBounds.intersection(collisionTree.worldBounds)) return false;
+        if (!worldBounds.intersectsOrientedBoundingBox(collisionTree.worldBounds)) return false;
         if (left != null) { // This is not a leaf
             if (collisionTree.intersect(left)) { return true; }
             if (collisionTree.intersect(right)) { return true; }
@@ -173,11 +173,11 @@ public class OBBTree {
                 if (this.intersect(collisionTree.right)) { return true; }
                 return false;
             } else { // both are leaves
-                Matrix3f roti = this.myParent.findWorldRotMat();
+                Quaternion roti = this.myParent.getWorldRotation();
                 Vector3f scalei = this.myParent.getWorldScale();
                 Vector3f transi = this.myParent.getWorldTranslation();
 
-                Matrix3f rotj = collisionTree.myParent.findWorldRotMat();
+                Quaternion rotj = collisionTree.myParent.getWorldRotation();
                 Vector3f scalej = collisionTree.myParent.getWorldScale();
                 Vector3f transj = collisionTree.myParent.getWorldTranslation();
                 for (int i = myStart; i < myEnd; i++) {
@@ -222,11 +222,11 @@ public class OBBTree {
             ArrayList bList) {
         if (collisionTree == null) return false;
         collisionTree.bounds.transform(
-                collisionTree.myParent.findWorldRotMat(),
+                collisionTree.myParent.getWorldRotation(),
                 collisionTree.myParent.getWorldTranslation(),
                 collisionTree.myParent.getWorldScale(),
                 collisionTree.worldBounds);
-        if (!worldBounds.intersection(collisionTree.worldBounds)) return false;
+        if (!worldBounds.intersectsOrientedBoundingBox(collisionTree.worldBounds)) return false;
         if (left != null) { // This is not a leaf
             boolean test = collisionTree.intersect(left, bList, aList);
             test = collisionTree.intersect(right, bList, aList) || test;
@@ -238,11 +238,11 @@ public class OBBTree {
                         || test;
                 return test;
             } else { // both are leaves
-                Matrix3f roti = this.myParent.findWorldRotMat();
+                Quaternion roti = this.myParent.getWorldRotation();
                 Vector3f scalei = this.myParent.getWorldScale();
                 Vector3f transi = this.myParent.getWorldTranslation();
 
-                Matrix3f rotj = collisionTree.myParent.findWorldRotMat();
+                Quaternion rotj = collisionTree.myParent.getWorldRotation();
                 Vector3f scalej = collisionTree.myParent.getWorldScale();
                 Vector3f transj = collisionTree.myParent.getWorldTranslation();
                 boolean test = false;
@@ -287,19 +287,19 @@ public class OBBTree {
         if (!worldBounds.intersects(toTest)) return;
 
         if (left != null) {
-            left.bounds.transform(myParent.findWorldRotMat(), myParent
+            left.bounds.transform(myParent.getWorldRotation(), myParent
                     .getWorldTranslation(), myParent.getWorldScale(),
                     left.worldBounds);
             left.intersect(toTest, triList);
         }
 
         if (right != null) {
-            right.bounds.transform(myParent.findWorldRotMat(), myParent
+            right.bounds.transform(myParent.getWorldRotation(), myParent
                     .getWorldTranslation(), myParent.getWorldScale(),
                     right.worldBounds);
             right.intersect(toTest, triList);
         } else if (left == null) {
-            Matrix3f roti = this.myParent.findWorldRotMat();
+            Quaternion roti = this.myParent.getWorldRotation();
             Vector3f scalei = this.myParent.getWorldScale();
             Vector3f transi = this.myParent.getWorldTranslation();
 

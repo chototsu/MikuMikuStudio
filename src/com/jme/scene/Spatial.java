@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.71 2005-09-20 09:47:18 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.72 2005-09-20 16:47:02 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 	
@@ -291,33 +291,12 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
+     * <code>getType</code> returns an int representing the class type
+     * of this Spatial.  This allows avoidance of instanceof.  Comparisons
+     * are to be done via bitwise & allowing checking of superclass instance.
      * 
-     * <code>onDrawBounds</code> checks the node with the camera to see if it
-     * should be culled, if not, the node's draw method is called.
-     * 
-     * @param r
-     *            the renderer used for display.
+     * @return
      */
-    public void onDrawBounds(Renderer r) {
-        if (forceCull) {
-            return;
-        }
-
-        Camera camera = r.getCamera();
-        int state = camera.getPlaneState();
-        // check to see if we can cull this node
-        frustrumIntersects = (parent != null ? parent.frustrumIntersects
-                : Camera.INTERSECTS_FRUSTUM);
-        if (!forceView && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
-            frustrumIntersects = camera.contains(worldBound);
-        }
-
-        if (forceView || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
-            drawBounds(r);
-        }
-        camera.setPlaneState(state);
-    }
-    
     public abstract int getType();
 
     /**
@@ -330,17 +309,6 @@ public abstract class Spatial implements Serializable {
      *            the renderer used for display.
      */
     public abstract void draw(Renderer r);
-
-    /**
-     * 
-     * <code>drawBounds</code> abstract method that handles drawing bounds
-     * data to the renderer if it is geometry and passing the call to it's
-     * children if it is a node.
-     * 
-     * @param r
-     *            the renderer used for display.
-     */
-    public abstract void drawBounds(Renderer r);
 
     /**
      * 

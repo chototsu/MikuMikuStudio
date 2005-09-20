@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.29 2005-09-15 17:14:53 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.30 2005-09-20 16:46:40 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -733,35 +733,32 @@ public abstract class AbstractCamera implements Camera {
     public int contains(BoundingVolume bound) {
         if (bound == null) { return INSIDE_FRUSTUM; }
 
-        int planeCounter = FRUSTUM_PLANES - 1;
         int mask = 0;
-
         int rVal = INSIDE_FRUSTUM;
-        for (; planeCounter >= 0; planeCounter--) {
-            mask = 1 << (bound.getCheckPlane(planeCounter));
-            if ((planeState & mask) == 0) {
-                int side = bound.whichSide(worldPlane[bound
-                        .getCheckPlane(planeCounter)]);
+        
+        for (int planeCounter = FRUSTUM_PLANES; planeCounter >= 0; planeCounter--) {
+          if ( planeCounter == bound.getCheckPlane())
+           continue; // we have already checked this plane at first iteration
+          int planeId = (planeCounter == FRUSTUM_PLANES) ? bound.getCheckPlane() : planeCounter;
+          
+          mask = 1 << (planeId);
+          if ( (planeState & mask) == 0) {
+            int side = bound.whichSide(worldPlane[planeId]);
 
-                if (side == Plane.NEGATIVE_SIDE) {
-                    //object is outside of frustum
-                    if (planeCounter != FRUSTUM_PLANES - 1) {
-                        int i = bound.getCheckPlane(FRUSTUM_PLANES - 1);
-                        bound.setCheckPlane(FRUSTUM_PLANES - 1, bound
-                                .getCheckPlane(planeCounter));
-                        bound.setCheckPlane(planeCounter, i);
-                    }
-                    return OUTSIDE_FRUSTUM;
-                } else if (side == Plane.POSITIVE_SIDE) {
-                    //object is visible on *this* plane, so mark this plane
-                    //so that we don't check it for sub nodes.
-                    planeState |= mask;
-                } else {
-                    rVal = INTERSECTS_FRUSTUM;
-                }
+            if (side == Plane.NEGATIVE_SIDE) {
+              //object is outside of frustum
+              bound.setCheckPlane(planeId);
+              return OUTSIDE_FRUSTUM;
+            } else if (side == Plane.POSITIVE_SIDE) {
+              //object is visible on *this* plane, so mark this plane
+              //so that we don't check it for sub nodes.
+              planeState |= mask;
+            } else {
+              rVal = INTERSECTS_FRUSTUM;
             }
+          }
         }
-
+        
         return rVal;
     }
 

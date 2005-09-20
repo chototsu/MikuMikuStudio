@@ -50,7 +50,7 @@ import com.jme.system.DisplaySystem;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.16 2005-09-15 17:13:36 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.17 2005-09-20 16:46:36 renanse Exp $
  */
 public class ImposterNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -195,18 +195,6 @@ public class ImposterNode extends Node {
 		opp = eye.y - spot.y;
 		lastAngle += FastMath.atan(opp / adj);
 		return oldAngle - lastAngle;
-	}
-
-	/**
-	 * <code>draw</code> calls the onDraw method for each child maintained by
-	 * this node.
-	 * 
-	 * @see com.jme.scene.Spatial#draw(com.jme.renderer.Renderer)
-	 * @param r
-	 *            the renderer to draw to.
-	 */
-	public void drawBounds(Renderer r) {
-		standIn.onDrawBounds(r);
 	}
 
 	/**

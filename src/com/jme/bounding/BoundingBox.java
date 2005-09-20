@@ -40,7 +40,6 @@ import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.scene.shape.Box;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -53,86 +52,36 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.30 2005-09-17 15:09:34 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.31 2005-09-20 16:46:34 renanse Exp $
  */
-public class BoundingBox extends Box implements BoundingVolume {
+public class BoundingBox extends BoundingVolume {
 
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
-    /** These define the array of planes that are check during view culling. */
-    public int[] checkPlanes = new int[6];
+	public float xExtent, yExtent, zExtent;
 
-    private Vector3f minPnt = new Vector3f();
-
-    private Vector3f maxPnt = new Vector3f();
-
-    private float oldXExtent, oldYExtent, oldZExtent;
-
-    private Vector3f oldCenter = new Vector3f();
-
-    private Vector3f origCenter = new Vector3f();
-
-    private Vector3f origExtent = new Vector3f();
-
-    private static final Matrix3f tempMat = new Matrix3f();
-
-    private static final Vector3f tempVa = new Vector3f();
-
-    private static final Vector3f tempVb = new Vector3f();
-
+	public Matrix3f _compMat = new Matrix3f();
+	
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
      * object.
      */
     public BoundingBox() {
-        super("aabb");
-        initCheckPlanes();
     }
 
     /**
      * Contstructor instantiates a new <code>BoundingBox</code> object with
      * given specs.
      */
-    public BoundingBox(String name) {
-        super(name);
-        initCheckPlanes();
-    }
-
-    /**
-     * Contstructor instantiates a new <code>BoundingBox</code> object with
-     * given specs.
-     */
-    public BoundingBox(Vector3f center, float xExtent, float yExtent,
-            float zExtent) {
-        super("aabb", center, xExtent, yExtent, zExtent);
-        initCheckPlanes();
-    }
-
-    /**
-     * Contstructor instantiates a new <code>BoundingBox</code> object with
-     * given specs.
-     */
-    public BoundingBox(String name, Vector3f center, float xExtent,
-            float yExtent, float zExtent) {
-        super(name, center, xExtent, yExtent, zExtent);
-        initCheckPlanes();
+    public BoundingBox(Vector3f c, float x, float y, float z) {
+        this.center.set(c);
+        this.xExtent = x;
+        this.yExtent = y;
+        this.zExtent = z;
     }
     
     public int getType() {
     	return BoundingVolume.BOUNDING_BOX;
-    }
-
-    /**
-     * Not to be called by users. This function initializes the check planes for
-     * the AABB.
-     */
-    public void initCheckPlanes() {
-        checkPlanes[0] = 0;
-        checkPlanes[1] = 1;
-        checkPlanes[2] = 2;
-        checkPlanes[3] = 3;
-        checkPlanes[4] = 4;
-        checkPlanes[5] = 5;
     }
 
     /**
@@ -144,6 +93,54 @@ public class BoundingBox extends Box implements BoundingVolume {
      */
     public void computeFromPoints(FloatBuffer points) {
         containAABB(points);
+    }
+
+    /**
+     * <code>computeFromTris</code> creates a new Bounding Box from a given
+     * set of triangles.  It is used in OBBTree calculations.
+     * 
+     * @param tris
+     * @param start
+     * @param end
+     */
+	public void computeFromTris(OBBTree.TreeTriangle[] tris, int start, int end) {
+		if (end - start <= 0) {
+			return;
+		}
+
+		Vector3f min = _compVect1.set(tris[start].a);
+		Vector3f max = _compVect2.set(min);
+		Vector3f point;
+		for (int i = start; i < end; i++) {
+			point = tris[i].a;
+			checkMinMax(min, max, point);
+			point = tris[i].b;
+			checkMinMax(min, max, point);
+			point = tris[i].c;
+			checkMinMax(min, max, point);
+		}
+
+		center.set(min.addLocal(max));
+		center.multLocal(0.5f);
+
+        xExtent = max.x - center.x;
+        yExtent = max.y - center.y;
+        zExtent = max.z - center.z;
+	}
+
+    private void checkMinMax(Vector3f min, Vector3f max, Vector3f point) {
+		if (point.x < min.x)
+			min.x = point.x;
+		else if (point.x > max.x)
+			max.x = point.x;
+		if (point.y < min.y)
+			min.y = point.y;
+		else if (point.y > max.y)
+			max.y = point.y;
+		if (point.z < min.z)
+			min.z = point.z;
+		else if (point.z > max.z)
+			max.z = point.z;
     }
 
     /**
@@ -159,52 +156,35 @@ public class BoundingBox extends Box implements BoundingVolume {
             return;
         }
 
-        BufferUtils.populateFromBuffer(tempVa, points, 0);
-        float minX = tempVa.x, minY = tempVa.y, minZ = tempVa.z;
-        float maxX = tempVa.x, maxY = tempVa.y, maxZ = tempVa.z;
+        BufferUtils.populateFromBuffer(_compVect1, points, 0);
+        float minX = _compVect1.x, minY = _compVect1.y, minZ = _compVect1.z;
+        float maxX = _compVect1.x, maxY = _compVect1.y, maxZ = _compVect1.z;
 
         for (int i = 1, len = points.capacity() / 3; i < len; i++) {
-            BufferUtils.populateFromBuffer(tempVa, points, i);
+            BufferUtils.populateFromBuffer(_compVect1, points, i);
             
-            if (tempVa.x < minX)
-                minX = tempVa.x;
-            else if (tempVa.x >maxX)
-                maxX = tempVa.x;
+            if (_compVect1.x < minX)
+                minX = _compVect1.x;
+            else if (_compVect1.x >maxX)
+                maxX = _compVect1.x;
 
-            if (tempVa.y < minY)
-                minY = tempVa.y;
-            else if (tempVa.y > maxY)
-                maxY = tempVa.y;
+            if (_compVect1.y < minY)
+                minY = _compVect1.y;
+            else if (_compVect1.y > maxY)
+                maxY = _compVect1.y;
 
-            if (tempVa.z < minZ)
-                minZ = tempVa.z;
-            else if (tempVa.z > maxZ)
-                maxZ = tempVa.z;
+            if (_compVect1.z < minZ)
+                minZ = _compVect1.z;
+            else if (_compVect1.z > maxZ)
+                maxZ = _compVect1.z;
         }
 
         center.set(minX+maxX, minY+maxY, minZ+maxZ);
         center.multLocal(0.5f);
 
-        origExtent.x = xExtent = maxX - center.x;
-        origExtent.y = yExtent = maxY - center.y;
-        origExtent.z = zExtent = maxZ - center.z;
-        origCenter.set(center);
-    }
-
-    /**
-     * <code>transform</code> modifies the center of the box to reflect the
-     * change made via a rotation, translation and scale.
-     * 
-     * @param rotate
-     *            the rotation change.
-     * @param translate
-     *            the translation change.
-     * @param scale
-     *            the size change.
-     */
-    public BoundingVolume transform(Quaternion rotate, Vector3f translate,
-            Vector3f scale) {
-        return this.transform(rotate, translate, scale, null);
+        xExtent = maxX - center.x;
+        yExtent = maxY - center.y;
+        zExtent = maxZ - center.z;
     }
 
     /**
@@ -220,21 +200,19 @@ public class BoundingBox extends Box implements BoundingVolume {
      * @param store
      *            box to store result in
      */
-    public BoundingVolume transform(Quaternion rotate, Vector3f translate,
-            Vector3f scale, BoundingVolume store) {
+    public BoundingVolume transform(Quaternion rotate, Vector3f translate, Vector3f scale, BoundingVolume store) {
 
         BoundingBox box;
         if (store == null || store.getType() != BoundingVolume.BOUNDING_BOX) {
-            box = new BoundingBox(new Vector3f(0, 0, 0), 1, 1, 1);
+            box = new BoundingBox();
         } else {
             box = (BoundingBox) store;
         }
 
-        box.origCenter.set(origCenter);
-        rotate.mult(origCenter, box.center);
+        rotate.mult(center, box.center);
         box.center.multLocal(scale).addLocal(translate);
 
-        Matrix3f transMatrix = tempMat;
+        Matrix3f transMatrix = _compMat;
         transMatrix.set(rotate);
         // Make the rotation matrix all positive to get the maximum x/y/z extent
         if (transMatrix.m00 < 0)
@@ -256,16 +234,12 @@ public class BoundingBox extends Box implements BoundingVolume {
         if (transMatrix.m22 < 0)
             transMatrix.m22 *= -1;
 
-        // (ab)use origExtent to do the multiplication resulting in the biggest
-        // extent
-        // values for a rotation.
-        transMatrix.mult(origExtent, box.origExtent);
+        _compVect1.set(xExtent, yExtent, zExtent);
+        transMatrix.mult(_compVect1, _compVect2);
         // Assign the biggest rotations after scales.
-        box.xExtent = box.origExtent.x * scale.x;
-        box.yExtent = box.origExtent.y * scale.y;
-        box.zExtent = box.origExtent.z * scale.z;
-        // reset origExtent back to what it should be.
-        box.origExtent.set(origExtent);
+        box.xExtent = _compVect2.x * scale.x;
+        box.yExtent = _compVect2.y * scale.y;
+        box.zExtent = _compVect2.z * scale.z;
 
         return box;
     }
@@ -378,9 +352,9 @@ public class BoundingBox extends Box implements BoundingVolume {
         if (!volume.correctCorners)
             volume.computeCorners();
 
-        Vector3f min = tempVa.set(center.x - xExtent, center.y - yExtent,
+        Vector3f min = _compVect1.set(center.x - xExtent, center.y - yExtent,
                 center.z - zExtent);
-        Vector3f max = tempVb.set(center.x + xExtent, center.y + yExtent,
+        Vector3f max = _compVect2.set(center.x + xExtent, center.y + yExtent,
                 center.z + zExtent);
 
         for (int i = 1; i < volume.vectorStore.length; i++) {
@@ -404,10 +378,9 @@ public class BoundingBox extends Box implements BoundingVolume {
         center.set(min.addLocal(max));
         center.multLocal(0.5f);
 
-        origExtent.x = xExtent = max.x - center.x;
-        origExtent.y = yExtent = max.y - center.y;
-        origExtent.z = zExtent = max.z - center.z;
-        origCenter.set(center);
+        xExtent = max.x - center.x;
+        yExtent = max.y - center.y;
+        zExtent = max.z - center.z;
         return this;
     }
 
@@ -431,27 +404,31 @@ public class BoundingBox extends Box implements BoundingVolume {
     private BoundingBox merge(Vector3f boxCenter, float boxX, float boxY,
             float boxZ, BoundingBox rVal) {
 
-        minPnt.x = center.x - xExtent;
-        if (minPnt.x > boxCenter.x - boxX)
-            minPnt.x = boxCenter.x - boxX;
-        minPnt.y = center.y - yExtent;
-        if (minPnt.y > boxCenter.y - boxY)
-            minPnt.y = boxCenter.y - boxY;
-        minPnt.z = center.z - zExtent;
-        if (minPnt.z > boxCenter.z - boxZ)
-            minPnt.z = boxCenter.z - boxZ;
+        _compVect1.x = center.x - xExtent;
+        if (_compVect1.x > boxCenter.x - boxX)
+            _compVect1.x = boxCenter.x - boxX;
+        _compVect1.y = center.y - yExtent;
+        if (_compVect1.y > boxCenter.y - boxY)
+            _compVect1.y = boxCenter.y - boxY;
+        _compVect1.z = center.z - zExtent;
+        if (_compVect1.z > boxCenter.z - boxZ)
+            _compVect1.z = boxCenter.z - boxZ;
 
-        maxPnt.x = center.x + xExtent;
-        if (maxPnt.x < boxCenter.x + boxX)
-            maxPnt.x = boxCenter.x + boxX;
-        maxPnt.y = center.y + yExtent;
-        if (maxPnt.y < boxCenter.y + boxY)
-            maxPnt.y = boxCenter.y + boxY;
-        maxPnt.z = center.z + zExtent;
-        if (maxPnt.z < boxCenter.z + boxZ)
-            maxPnt.z = boxCenter.z + boxZ;
+        _compVect2.x = center.x + xExtent;
+        if (_compVect2.x < boxCenter.x + boxX)
+            _compVect2.x = boxCenter.x + boxX;
+        _compVect2.y = center.y + yExtent;
+        if (_compVect2.y < boxCenter.y + boxY)
+            _compVect2.y = boxCenter.y + boxY;
+        _compVect2.z = center.z + zExtent;
+        if (_compVect2.z < boxCenter.z + boxZ)
+            _compVect2.z = boxCenter.z + boxZ;
 
-        rVal.setData(minPnt, maxPnt, false);
+		center.set(_compVect2).addLocal(_compVect1).multLocal(0.5f);
+
+		xExtent = _compVect2.x - center.x;
+		yExtent = _compVect2.y - center.y;
+		zExtent = _compVect2.z - center.z;
 
         return rVal;
     }
@@ -472,79 +449,14 @@ public class BoundingBox extends Box implements BoundingVolume {
             rVal.xExtent = xExtent;
             rVal.yExtent = yExtent;
             rVal.zExtent = zExtent;
-            rVal.checkPlanes[0] = checkPlanes[0];
-            rVal.checkPlanes[1] = checkPlanes[1];
-            rVal.checkPlanes[2] = checkPlanes[2];
-            rVal.checkPlanes[3] = checkPlanes[3];
-            rVal.checkPlanes[4] = checkPlanes[4];
-            rVal.checkPlanes[5] = checkPlanes[5];
-            rVal.origCenter.set(origCenter);
-            rVal.origExtent.set(origExtent);
+            rVal.checkPlane = checkPlane;
             return rVal;
         } else {
-            BoundingBox rVal = new BoundingBox(getName() + "_clone",
+            BoundingBox rVal = new BoundingBox(
                     (center != null ? (Vector3f) center.clone() : null),
                     xExtent, yExtent, zExtent);
-            rVal.origCenter.set(origCenter);
-            rVal.origExtent.set(origExtent);
             return rVal;
         }
-    }
-
-    /**
-     * <code>getCheckPlane</code> returns a specific check plane. This plane
-     * identitifies the previous value of the visibility check.
-     */
-    public int getCheckPlane(int index) {
-        return checkPlanes[index];
-    }
-
-    /**
-     * <code>setCheckPlane</code> indentifies the value of one of the spheres
-     * checked planes. That is what plane of the view frustum has been checked
-     * for intersection.
-     */
-    public void setCheckPlane(int index, int value) {
-        checkPlanes[index] = value;
-    }
-
-    /**
-     * <code>recomputeMesh</code> regenerates the <code>BoundingBox</code>
-     * based on new model information.
-     */
-    public void recomputeMesh() {
-        if (!center.equals(oldCenter) || xExtent != oldXExtent
-                || yExtent != oldYExtent || zExtent != oldZExtent) {
-            setData(center, xExtent, yExtent, zExtent, true);
-            oldXExtent = xExtent;
-            oldYExtent = yExtent;
-            oldZExtent = zExtent;
-            oldCenter.set(center.x, center.y, center.z);
-        }
-    }
-
-    /**
-     * Find the distance from the center of this Bounding Volume to the given
-     * point.
-     * 
-     * @param point
-     *            The point to get the distance to
-     * @return distance
-     */
-    public float distanceTo(Vector3f point) {
-        return center.distance(point);
-    }
-
-    /**
-     * Stores the current center of this BoundingBox into the store vector.
-     * 
-     * @param store
-     *            The vector to store the center into.
-     * @return The store vector, after setting it's contents to the center
-     */
-    public Vector3f getCenter(Vector3f store) {
-        store.set(center);
-        return store;
     }
 
     /**
@@ -557,48 +469,6 @@ public class BoundingBox extends Box implements BoundingVolume {
         return "com.jme.scene.BoundingBox [Center: " + center + "  xExtent: "
                 + xExtent + "  yExtent: " + yExtent + "  zExtent: " + zExtent
                 + "]";
-    }
-
-    /**
-     * Returns the original, unrotated center of the bounding box.
-     * 
-     * @return The box's original center.
-     */
-    public Vector3f getOrigCenter() {
-        return origCenter;
-    }
-
-    /**
-     * Sets the bounding box's original center. In most cases, users will simply
-     * want to use computefrompoints
-     * 
-     * @param origCenter
-     *            New original center
-     * @see #computeFromPoints(com.jme.math.Vector3f[])
-     */
-    public void setOrigCenter(Vector3f origCenter) {
-        this.origCenter = origCenter;
-    }
-
-    /**
-     * Gets the original, unrotated extent of the box.
-     * 
-     * @return The box's original extent.
-     */
-    public Vector3f getOrigExtent() {
-        return origExtent;
-    }
-
-    /**
-     * Sets the box's original extent. In most cases, users will simply want to
-     * use computefrompoints.
-     * 
-     * @param origExtent
-     *            The new extent.
-     * @see #computeFromPoints(com.jme.math.Vector3f[])
-     */
-    public void setOrigExtent(Vector3f origExtent) {
-        this.origExtent = origExtent;
     }
 
     /**
@@ -667,30 +537,18 @@ public class BoundingBox extends Box implements BoundingVolume {
     }
 
     /**
-     * determines if this bounding box intersects with a given OBB2 bounding.
-     * 
-     * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2)
-     */
-    public boolean intersectsOBB2(OBB2 obb) {
-        return obb.intersectsBoundingBox(this);
-    }
-
-    /**
      * determines if this bounding box intersects with a given ray object. If an
      * intersection has occurred, true is returned, otherwise false is returned.
      * 
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
      */
     public boolean intersects(Ray ray) {
-        Vector3f diff = tempVa.set(ray.origin).subtractLocal(center);
+        Vector3f diff = _compVect1.set(ray.origin).subtractLocal(center);
         // convert ray to box coordinates
-        Vector3f direction = tempVb.set(ray.direction.x, ray.direction.y,
+        Vector3f direction = _compVect2.set(ray.direction.x, ray.direction.y,
                 ray.direction.z);
-        float[] t = new float[2];
-        t[0] = 0f;
-        t[1] = Float.POSITIVE_INFINITY;
-        float[] extents = { xExtent, yExtent, zExtent };
-        return findIntersection(diff, direction, extents, t);
+        float[] t = { 0f, Float.POSITIVE_INFINITY };
+        return findIntersection(diff, direction, t);
     }
 
     /**
@@ -741,15 +599,15 @@ public class BoundingBox extends Box implements BoundingVolume {
      * @return true if an intersection occurs, false otherwise.
      */
     private boolean findIntersection(Vector3f origin, Vector3f direction,
-            float[] extent, float[] t) {
+            float[] t) {
         float saveT0 = t[0], saveT1 = t[1];
-        boolean notEntirelyClipped = clip(+direction.x, -origin.x - extent[0],
-                t)
-                && clip(-direction.x, +origin.x - extent[0], t)
-                && clip(+direction.y, -origin.y - extent[1], t)
-                && clip(-direction.y, +origin.y - extent[1], t)
-                && clip(+direction.z, -origin.z - extent[2], t)
-                && clip(-direction.z, +origin.z - extent[2], t);
+        boolean notEntirelyClipped = 
+            clip(+direction.x, -origin.x - xExtent, t)
+            	&& clip(-direction.x, +origin.x - xExtent, t)
+                && clip(+direction.y, -origin.y - yExtent, t)
+                && clip(-direction.y, +origin.y - yExtent, t)
+                && clip(+direction.z, -origin.z - zExtent, t)
+                && clip(-direction.z, +origin.z - zExtent, t);
         return notEntirelyClipped && (t[0] != saveT0 || t[1] != saveT1);
     }
 }

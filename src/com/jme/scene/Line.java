@@ -45,16 +45,27 @@ import com.jme.util.geom.BufferUtils;
 
 /**
  * <code>Line</code> subclasses geometry and defines a collection of lines.
- * For each two points, a line is created. The last point of the previous line
- * is the first point of the next line. Therefore, for N points there are N-1
- * lines.
+ * For every two points, a line is created. If mode is set to CONNECTED, these
+ * lines as connected as one big line.  If it is set to LOOP, it is also rendered
+ * connected but the last point is connected to the first point.
  * 
  * @author Mark Powell
- * @version $Id: Line.java,v 1.15 2005-09-15 17:13:39 renanse Exp $
+ * @author Joshua Slack
+ * @version $Id: Line.java,v 1.16 2005-09-20 16:46:36 renanse Exp $
  */
 public class Line extends Geometry {
 
 	private static final long serialVersionUID = 1L;
+	
+	public static final int SEGMENTS = 0;
+	public static final int CONNECTED = 1;
+	public static final int LOOP = 2;
+
+	private float lineWidth = 1.0f;
+	private int mode = SEGMENTS;
+	private short stipplePattern = (short)0xFFFF;
+	private int stippleFactor = 1;
+	private boolean antialiased = false;
 
 	/**
 	 * Constructs a new line with the given name. By default, the line has no
@@ -133,17 +144,6 @@ public class Line extends Geometry {
 		r.draw(this);
 	}
 
-	/**
-	 * <code>drawBounds</code> calls super to set the render state then passes
-	 * itself to the renderer.
-	 * 
-	 * @param r
-	 *            the renderer to display
-	 */
-	public void drawBounds(Renderer r) {
-		r.drawBounds(this);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -158,4 +158,91 @@ public class Line extends Geometry {
 	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
 		return false;
 	}
+	
+    /**
+     * @return true if lines are to be antialiased
+     */
+    public boolean isAntialiased() {
+        return antialiased;
+    }
+    
+    /**
+     * Sets whether the line should be antialiased. May decrease performance. If
+     * you want to enabled antialiasing, you should also use an alphastate with
+     * a source of SB_SRC_ALPHA and a destination of DB_ONE_MINUS_SRC_ALPHA or
+     * DB_ONE.
+     * 
+     * @param antiAliased
+     *            true if the line should be antialiased.
+     */
+    public void setAntialiased(boolean antialiased) {
+        this.antialiased = antialiased;
+    }
+    
+    /**
+     * @return either SEGMENTS, CONNECTED or LOOP. See class description.
+     */
+    public int getMode() {
+        return mode;
+    }
+
+    /**
+     * @param mode
+     *            either SEGMENTS, CONNECTED or LOOP. See class description.
+     */
+    public void setMode(int mode) {
+        this.mode = mode;
+    }
+
+    /**
+     * @return the width of this line.
+     */
+    public float getLineWidth() {
+        return lineWidth;
+    }
+
+    /**
+     * Sets the width of the line when drawn. Non anti-aliased line widths are
+     * rounded to the nearest whole number by opengl.
+     * 
+     * @param lineWidth
+     *            The lineWidth to set.
+     */
+    public void setLineWidth(float lineWidth) {
+        this.lineWidth = lineWidth;
+    }
+    
+    /**
+     * @return the set stipplePattern. 0xFFFF means no stipple.
+     */
+    public short getStipplePattern() {
+        return stipplePattern;
+    }
+
+    /**
+     * The stipple or pattern to use when drawing this line. 0xFFFF is a solid
+     * line.
+     * 
+     * @param stipplePattern
+     *            a 16bit short whose bits describe the pattern to use when
+     *            drawing this line
+     */
+    public void setStipplePattern(short stipplePattern) {
+        this.stipplePattern = stipplePattern;
+    }
+    
+    /**
+     * @return the set stippleFactor.
+     */
+    public int getStippleFactor() {
+        return stippleFactor;
+    }
+
+    /**
+     * @param stippleFactor
+     *            magnification factor to apply to the stipple pattern.
+     */
+    public void setStippleFactor(int stippleFactor) {
+        this.stippleFactor = stippleFactor;
+    }
 }

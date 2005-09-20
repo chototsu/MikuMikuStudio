@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.24 2005-09-15 17:13:26 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.25 2005-09-20 16:46:41 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -130,6 +130,7 @@ public class TestScenegraph extends SimpleGame {
     }
 
     private void updateLines() {
+        scene.updateGeometricState(0, true);
         FloatBuffer lineVerts = line.getVertexBuffer();
         lineVerts.rewind();
         BufferUtils.setInBuffer(node1.getWorldTranslation(), lineVerts, 0);
@@ -264,6 +265,9 @@ public class TestScenegraph extends SimpleGame {
         FloatBuffer verts = BufferUtils.createVector3Buffer(10); // 5 lines, 2 endpoints each
         line = new Line("Connection", verts, null, null, null);
         line.setLightCombineMode(LightState.OFF);
+        line.setLineWidth(2.5f);
+        line.setStipplePattern((short)0xAAAA);
+        line.setStippleFactor(5);
 
         ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);

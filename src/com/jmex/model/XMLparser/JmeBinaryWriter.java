@@ -740,9 +740,9 @@ public class JmeBinaryWriter {
         if (sharedObjects.containsKey(v))
             atts.put("sharedident",sharedObjects.get(v));
         atts.put("center",v.getCenter());
-        atts.put("xaxis",v.getxAxis());
-        atts.put("yaxis",v.getyAxis());
-        atts.put("zaxis",v.getzAxis());
+        atts.put("xaxis",v.getXAxis());
+        atts.put("yaxis",v.getYAxis());
+        atts.put("zaxis",v.getZAxis());
         atts.put("extent",v.getExtent());
         writeTag("obb",atts);
         writeEndTag("obb");
@@ -764,8 +764,6 @@ public class JmeBinaryWriter {
         HashMap atts=new HashMap();
         if (sharedObjects.containsKey(v))
             atts.put("sharedident",sharedObjects.get(v));
-        atts.put("origcent",v.getOrigCenter());
-        atts.put("origext",v.getOrigExtent());
         atts.put("nowcent",v.getCenter());
         atts.put("nowext",new Vector3f(v.xExtent,v.yExtent,v.zExtent));
         writeTag("boundbox",atts);

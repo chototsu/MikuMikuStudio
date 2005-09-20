@@ -47,9 +47,11 @@ import com.jme.light.LightNode;
 import com.jme.light.SpotLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
+import com.jme.renderer.Renderer;
 import com.jme.renderer.TextureRenderer;
 import com.jme.scene.CameraNode;
 import com.jme.scene.Node;
+import com.jme.scene.shape.Box;
 import com.jme.scene.shape.Quad;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
@@ -235,6 +237,13 @@ public class TestCameraMan extends SimpleGame {
 
     monitorNode.updateGeometricState(0.0f, true);
     monitorNode.updateRenderState();
+    Box box = new Box( "test", new Vector3f( -10, -10, -10 ), new Vector3f( 10, 10, 10 ) );
+    ZBufferState zs = display.getRenderer().createZBufferState();
+    zs.setWritable( false );
+    box.setRenderState( zs );
+    box.getLocalTranslation().set( 10, 30, -30 );
+    box.setRenderQueueMode( Renderer.QUEUE_TRANSPARENT );
+    box.updateRenderState();
+    model.attachChild( box );
   }
-
 }

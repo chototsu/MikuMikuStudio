@@ -33,7 +33,6 @@
 package com.jme.app;
 
 import com.jme.renderer.Camera;
-import com.jme.scene.state.ZBufferState;
 import com.jme.system.DisplaySystem;
 
 /**

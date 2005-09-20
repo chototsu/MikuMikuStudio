@@ -629,26 +629,21 @@ public class JmeBinaryReader {
     }
 
     private OrientedBoundingBox processOBB(OrientedBoundingBox obb, HashMap attributes) {
-        processSpatial(obb,attributes);
         obb.setCenter((Vector3f) attributes.get("center"));
-        obb.setxAxis((Vector3f) attributes.get("xaxis"));
-        obb.setyAxis((Vector3f) attributes.get("yaxis"));
-        obb.setzAxis((Vector3f) attributes.get("zaxis"));
+        obb.setXAxis((Vector3f) attributes.get("xaxis"));
+        obb.setYAxis((Vector3f) attributes.get("yaxis"));
+        obb.setZAxis((Vector3f) attributes.get("zaxis"));
         obb.setExtent((Vector3f) attributes.get("extent"));
         return obb;
     }
 
     private BoundingSphere processBSphere(BoundingSphere v, HashMap attributes) {
-        processSpatial(v,attributes);
         v.setCenter((Vector3f) attributes.get("center"));
         v.setRadius(((Float)attributes.get("radius")).floatValue());
         return v;
     }
 
     private BoundingBox processBBox(BoundingBox v, HashMap attributes) {
-        processSpatial(v,attributes);
-        v.setOrigCenter((Vector3f) attributes.get("origcent"));
-        v.setOrigExtent((Vector3f) attributes.get("origext"));
         v.setCenter((Vector3f) attributes.get("nowcent"));
         Vector3f ext=(Vector3f) attributes.get("nowext");
         v.xExtent=ext.x;

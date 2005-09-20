@@ -34,7 +34,7 @@ package com.jmex.effects.cloth;
 
 import java.util.ArrayList;
 
-import com.jme.bounding.OrientedBoundingBox;
+import com.jme.bounding.BoundingBox;
 import com.jme.intersection.CollisionData;
 import com.jme.intersection.TriangleCollisionResults;
 import com.jme.math.SpringNode;
@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.2 2005-09-15 17:14:42 renanse Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.3 2005-09-20 16:46:43 renanse Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;
@@ -72,7 +72,7 @@ public class CollidingClothPatch extends ClothPatch {
 	public CollidingClothPatch(String name, int nodesX, int nodesY, float springLength,
 										float nodeMass) {
 		super(name, nodesX, nodesY, springLength, nodeMass);
-		setModelBound(new OrientedBoundingBox());
+		setModelBound(new BoundingBox());
 		updateModelBound();
 		results = new TriangleCollisionResults();
 		colliders = new ArrayList();

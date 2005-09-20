@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.14 2005-09-17 15:05:24 renanse Exp $
+ * @version $Id: Box.java,v 1.15 2005-09-20 16:46:38 renanse Exp $
  */
 public class Box extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -54,12 +54,6 @@ public class Box extends TriMesh {
 	public float xExtent, yExtent, zExtent;
 
 	public final Vector3f center = new Vector3f(0f, 0f, 0f);
-
-	public final static Vector3f AXIS_X = new Vector3f(1, 0, 0);
-
-	public final static Vector3f AXIS_Y = new Vector3f(0, 1, 0);
-
-	public final static Vector3f AXIS_Z = new Vector3f(0, 0, 1);
 
 	/**
 	 * instantiates a new <code>Box</code> object. All information must be
@@ -98,7 +92,7 @@ public class Box extends TriMesh {
 	 */
 	public Box(String name, Vector3f min, Vector3f max) {
 		super(name);
-		setData(min, max, true);
+		setData(min, max);
 	}
 
 	/**
@@ -120,7 +114,7 @@ public class Box extends TriMesh {
 	public Box(String name, Vector3f center, float xExtent, float yExtent,
 			float zExtent) {
 		super(name);
-		setData(center, xExtent, yExtent, zExtent, true);
+		setData(center, xExtent, yExtent, zExtent);
 	}
 
 	/**
@@ -133,17 +127,14 @@ public class Box extends TriMesh {
 	 *            The new minPoint of the box.
 	 * @param maxPoint
 	 *            The new maxPoint of the box.
-	 * @param updateBuffers
-	 *            If true, buffers are updated.
 	 */
-	public void setData(Vector3f minPoint, Vector3f maxPoint,
-			boolean updateBuffers) {
+	public void setData(Vector3f minPoint, Vector3f maxPoint) {
 		center.set(maxPoint).addLocal(minPoint).multLocal(0.5f);
 
 		float x = maxPoint.x - center.x;
 		float y = maxPoint.y - center.y;
 		float z = maxPoint.z - center.z;
-		setData(center, x, y, z, updateBuffers);
+		setData(center, x, y, z);
 	}
 
 	/**
@@ -160,11 +151,9 @@ public class Box extends TriMesh {
 	 *            y extent of the box, in both directions.
 	 * @param zExtent
 	 *            z extent of the box, in both directions.
-	 * @param updateBuffers
-	 *            If true, buffers are updated.
 	 */
 	public void setData(Vector3f center, float xExtent, float yExtent,
-			float zExtent, boolean updateBuffers) {
+			float zExtent) {
 		if (center != null)
 			this.center.set(center);
 
@@ -172,13 +161,12 @@ public class Box extends TriMesh {
 		this.yExtent = yExtent;
 		this.zExtent = zExtent;
 
-		if (updateBuffers) {
-			setVertexData();
-			setNormalData();
-			setSolidColor(ColorRGBA.white);
-			setTextureData();
-			setIndexData();
-		}
+		setVertexData();
+		setNormalData();
+		setSolidColor(ColorRGBA.white);
+		setTextureData();
+		setIndexData();
+
 	}
 
 	/**
@@ -189,7 +177,7 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setVertexData() {
-	    vertBuf = BufferUtils.createVector3Buffer(24);
+        vertBuf = BufferUtils.createVector3Buffer(vertBuf, 24);
 	    vertQuantity = 24;
 		Vector3f[] vert = computeVertices(); // returns 8
 
@@ -239,37 +227,39 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setNormalData() {
-	    normBuf = BufferUtils.createVector3Buffer(24);
-		Vector3f front = new Vector3f(0, 0, 1);
-		Vector3f right = new Vector3f(1, 0, 0);
-		Vector3f back = new Vector3f(0, 0, -1);
-		Vector3f left = new Vector3f(-1, 0, 0);
-		Vector3f top = new Vector3f(0, 1, 0);
-		Vector3f bottom = new Vector3f(0, -1, 0);
-
-		//back
-		for (int i = 0; i < 4; i++)
-		    normBuf.put(0).put(0).put(-1);
-
-		//right
-		for (int i = 0; i < 4; i++)
-		    normBuf.put(1).put(0).put(0);
-
-		//front
-		for (int i = 0; i < 4; i++)
-		    normBuf.put(0).put(0).put(1);
-
-		//left
-		for (int i = 0; i < 4; i++)
-		    normBuf.put(-1).put(0).put(0);
-
-		//top
-		for (int i = 0; i < 4; i++)
-		    normBuf.put(0).put(1).put(0);
-
-		//bottom
-		for (int i = 0; i < 4; i++)
-		    normBuf.put(0).put(-1).put(0);
+	    if (normBuf == null) {
+		    normBuf = BufferUtils.createVector3Buffer(24);
+			Vector3f front = new Vector3f(0, 0, 1);
+			Vector3f right = new Vector3f(1, 0, 0);
+			Vector3f back = new Vector3f(0, 0, -1);
+			Vector3f left = new Vector3f(-1, 0, 0);
+			Vector3f top = new Vector3f(0, 1, 0);
+			Vector3f bottom = new Vector3f(0, -1, 0);
+	
+			//back
+			for (int i = 0; i < 4; i++)
+			    normBuf.put(0).put(0).put(-1);
+	
+			//right
+			for (int i = 0; i < 4; i++)
+			    normBuf.put(1).put(0).put(0);
+	
+			//front
+			for (int i = 0; i < 4; i++)
+			    normBuf.put(0).put(0).put(1);
+	
+			//left
+			for (int i = 0; i < 4; i++)
+			    normBuf.put(-1).put(0).put(0);
+	
+			//top
+			for (int i = 0; i < 4; i++)
+			    normBuf.put(0).put(1).put(0);
+	
+			//bottom
+			for (int i = 0; i < 4; i++)
+			    normBuf.put(0).put(-1).put(0);
+	    }
 	}
 
 	/**
@@ -281,15 +271,17 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setTextureData() {
-	    texBuf[0] = BufferUtils.createVector2Buffer(24);
-	    FloatBuffer tex = texBuf[0];
-
-		for (int i = 0; i < 6; i++) {
-		    tex.put(1).put(0);
-			tex.put(0).put(0);
-			tex.put(0).put(1);
-			tex.put(1).put(1);
-		}
+	    if (texBuf[0] == null) {
+		    texBuf[0] = BufferUtils.createVector2Buffer(24);
+		    FloatBuffer tex = texBuf[0];
+	
+			for (int i = 0; i < 6; i++) {
+			    tex.put(1).put(0);
+				tex.put(0).put(0);
+				tex.put(0).put(1);
+				tex.put(1).put(1);
+			}
+	    }
 	}
 
 	/**
@@ -299,11 +291,12 @@ public class Box extends TriMesh {
 	 *  
 	 */
 	private void setIndexData() {
-		int[] indices = { 2, 1, 0, 3, 2, 0, 6, 5, 4, 7, 6, 4, 10, 9, 8, 11, 10,
-				8, 14, 13, 12, 15, 14, 12, 18, 17, 16, 19, 18, 16, 22, 21, 20,
-				23, 22, 20 };
-		setIndexBuffer(BufferUtils.createIntBuffer(indices));
-
+	    if (indexBuffer == null) {
+			int[] indices = { 2, 1, 0, 3, 2, 0, 6, 5, 4, 7, 6, 4, 10, 9, 8, 11, 10,
+					8, 14, 13, 12, 15, 14, 12, 18, 17, 16, 19, 18, 16, 22, 21, 20,
+					23, 22, 20 };
+			setIndexBuffer(BufferUtils.createIntBuffer(indices));
+	    }
 	}
 
 	/**
@@ -324,8 +317,8 @@ public class Box extends TriMesh {
 	 */
 	public Vector3f[] computeVertices() {
 
-		Vector3f akEAxis[] = { AXIS_X.mult(xExtent), AXIS_Y.mult(yExtent),
-				AXIS_Z.mult(zExtent) };
+		Vector3f akEAxis[] = { Vector3f.UNIT_X.mult(xExtent), Vector3f.UNIT_Y.mult(yExtent),
+		        Vector3f.UNIT_Z.mult(zExtent) };
 
 		Vector3f rVal[] = new Vector3f[8];
 		rVal[0] = center.subtract(akEAxis[0]).subtractLocal(akEAxis[1])

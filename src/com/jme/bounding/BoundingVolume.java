@@ -45,19 +45,52 @@ import com.jme.math.Vector3f;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.9 2005-09-15 23:01:27 Mojomonkey Exp $
+ * @version $Id: BoundingVolume.java,v 1.10 2005-09-20 16:46:34 renanse Exp $
  */
-public interface BoundingVolume extends Serializable {
+public abstract class BoundingVolume implements Serializable {
 	
 	public static final int BOUNDING_SPHERE = 0;
 	public static final int BOUNDING_BOX = 1;
 	public static final int BOUNDING_OBB = 2;
-	public static final int BOUNDING_OBB2 = 3;
+	
+	protected int type = -1;
+
+	protected int checkPlane = 0;
+
+    protected Vector3f center = new Vector3f();
+	
+	protected Vector3f _compVect1 = new Vector3f();
+	protected Vector3f _compVect2 = new Vector3f();
+
+	public BoundingVolume() {
+    }
+
+	public BoundingVolume(Vector3f center) {
+	    this.center.set(center);
+    }
+
+    /**
+	 * Grabs the checkplane we should check first.
+	 * 
+	 * @return
+	 */
+	public int getCheckPlane() {
+	    return checkPlane;
+	}
+
+	/**
+	 * Sets the index of the plane that should be first checked during rendering.
+	 * 
+	 * @param value
+	 */
+	public final void setCheckPlane(int value) {
+	    checkPlane = value;
+	}
 	
 	/**
 	 * getType returns the type of bounding volume this is.
 	 */
-	public int getType();
+	public abstract int getType();
 
 	/**
 	 * 
@@ -72,8 +105,9 @@ public interface BoundingVolume extends Serializable {
 	 *            the scale to resize the bound.
 	 * @return the new bounding volume.
 	 */
-	public BoundingVolume transform(Quaternion rotate, Vector3f translate,
-			Vector3f scale);
+    public final BoundingVolume transform(Quaternion rotate, Vector3f translate, Vector3f scale) {
+        return transform(rotate, translate, scale, null);
+    }
 
 	/**
 	 * 
@@ -90,8 +124,7 @@ public interface BoundingVolume extends Serializable {
 	 *            sphere to store result in
 	 * @return the new bounding volume.
 	 */
-	public BoundingVolume transform(Quaternion rotate, Vector3f translate,
-			Vector3f scale, BoundingVolume store);
+	public abstract BoundingVolume transform(Quaternion rotate, Vector3f translate, Vector3f scale, BoundingVolume store);
 
 	/**
 	 * 
@@ -104,7 +137,7 @@ public interface BoundingVolume extends Serializable {
 	 *            the plane to check against this bounding volume.
 	 * @return the side on which this bounding volume lies.
 	 */
-	public int whichSide(Plane plane);
+	public abstract int whichSide(Plane plane);
 
 	/**
 	 * 
@@ -114,7 +147,7 @@ public interface BoundingVolume extends Serializable {
 	 * @param points
 	 *            the points to contain.
 	 */
-	public void computeFromPoints(FloatBuffer points);
+	public abstract void computeFromPoints(FloatBuffer points);
 
 	/**
 	 * <code>merge</code> combines two bounding volumes into a single bounding
@@ -124,7 +157,7 @@ public interface BoundingVolume extends Serializable {
 	 *            the volume to combine.
 	 * @return the new merged bounding volume.
 	 */
-	public BoundingVolume merge(BoundingVolume volume);
+	public abstract BoundingVolume merge(BoundingVolume volume);
 
 	/**
 	 * <code>mergeLocal</code> combines two bounding volumes into a single
@@ -135,7 +168,7 @@ public interface BoundingVolume extends Serializable {
 	 *            the volume to combine.
 	 * @return this
 	 */
-	public BoundingVolume mergeLocal(BoundingVolume volume);
+	public abstract BoundingVolume mergeLocal(BoundingVolume volume);
 
 	/**
 	 * <code>clone</code> creates a new BoundingVolume object containing the
@@ -146,54 +179,33 @@ public interface BoundingVolume extends Serializable {
 	 *            a new store is created.
 	 * @return the new BoundingVolume
 	 */
-	public Object clone(BoundingVolume store);
+	public abstract Object clone(BoundingVolume store);
+
+	
+	public final Vector3f getCenter() {
+        return center;
+    }
+	
+	public final Vector3f getCenter(Vector3f store) {
+        store.set(center);
+        return store;
+    }
+
+	public final void setCenter(Vector3f newCenter) {
+        center = newCenter;
+    }
 
 	/**
-	 * <code>initCheckPlanes</code> resets the checkplanes to their standard
-	 * order.
-	 */
-	public void initCheckPlanes();
-
-	/**
-	 * get the value for a given index in the checkplanes
-	 * 
-	 * @param index
-	 * @return
-	 */
-	public int getCheckPlane(int index);
-
-	/**
-	 * set the value for a given index in the checkplanes
-	 * 
-	 * @param index
-	 * @param value
-	 */
-	public void setCheckPlane(int index, int value);
-
-	/**
-	 * Reconstruct a visible mesh for the bound.
-	 */
-	public void recomputeMesh();
-
-	/**
-	 * Find the distance from the center of this Bounding Volume to the given
-	 * point.
-	 * 
-	 * @param point
-	 *            The point to get the distance to
-	 * @return distance
-	 */
-	public float distanceTo(Vector3f point);
-
-	/**
-	 * This function stores the approximate center of the bounding volume into
-	 * the store vector. For easy function usage, the store vector should be
-	 * returned when the function is complete.
-	 * 
-	 * @param store
-	 *            The vector to store the center in.
-	 */
-	public Vector3f getCenter(Vector3f store);
+     * Find the distance from the center of this Bounding Volume to the given
+     * point.
+     * 
+     * @param point
+     *            The point to get the distance to
+     * @return distance
+     */
+    public final float distanceTo(Vector3f point) {
+        return center.distance(point);
+    }
 
 	/**
 	 * determines if this bounding volume and a second given volume are
@@ -204,7 +216,7 @@ public interface BoundingVolume extends Serializable {
 	 *            the second volume to test against.
 	 * @return true if this volume intersects the given volume.
 	 */
-	public boolean intersects(BoundingVolume bv);
+	public abstract boolean intersects(BoundingVolume bv);
 
 	/**
 	 * determines if a ray intersects this bounding volume.
@@ -213,7 +225,7 @@ public interface BoundingVolume extends Serializable {
 	 *            the ray to test.
 	 * @return true if this volume is intersected by a given ray.
 	 */
-	public boolean intersects(Ray ray);
+	public abstract boolean intersects(Ray ray);
 
 	/**
 	 * determines if this bounding volume and a given bounding sphere are
@@ -223,7 +235,7 @@ public interface BoundingVolume extends Serializable {
 	 *            the bounding sphere to test against.
 	 * @return true if this volume intersects the given bounding sphere.
 	 */
-	public boolean intersectsSphere(BoundingSphere bs);
+	public abstract boolean intersectsSphere(BoundingSphere bs);
 
 	/**
 	 * determines if this bounding volume and a given bounding box are
@@ -233,26 +245,16 @@ public interface BoundingVolume extends Serializable {
 	 *            the bounding box to test against.
 	 * @return true if this volume intersects the given bounding box.
 	 */
-	public boolean intersectsBoundingBox(BoundingBox bb);
+	public abstract boolean intersectsBoundingBox(BoundingBox bb);
 
 	/**
-	 * determines if this bounding volume and a given oriented bounding box are
+	 * determines if this bounding volume and a given bounding box are
 	 * intersecting.
 	 * 
-	 * @param obb
+	 * @param bb
 	 *            the bounding box to test against.
-	 * @return true if this volume intersects the given oriented bounding box.
+	 * @return true if this volume intersects the given bounding box.
 	 */
-	public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb);
-
-	/**
-	 * determines if this bounding volume and a given oriented bounding box are
-	 * intersecting.
-	 * 
-	 * @param obb
-	 *            the bounding box to test against.
-	 * @return true if this volume intersects the given oriented bounding box.
-	 */
-	public boolean intersectsOBB2(OBB2 obb);
+	public abstract boolean intersectsOrientedBoundingBox(OrientedBoundingBox bb);
 
 }

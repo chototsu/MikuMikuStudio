@@ -40,7 +40,6 @@ import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
-import com.jme.scene.shape.Sphere;
 import com.jme.util.LoggingSystem;
 import com.jme.util.geom.BufferUtils;
 
@@ -54,78 +53,40 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.30 2005-09-20 09:47:18 irrisor Exp $
+ * @version $Id: BoundingSphere.java,v 1.31 2005-09-20 16:47:01 renanse Exp $
  */
-public class BoundingSphere extends Sphere implements BoundingVolume {
+public class BoundingSphere extends BoundingVolume {
 
-    public int[] checkPlanes = new int[6];
+    private static final long serialVersionUID = 2L;
 
-    private float oldRadius;
+    public float radius;
 
-    private Vector3f oldCenter = new Vector3f();
+	static final private float radiusEpsilon = 1f + FastMath.FLT_EPSILON;
 
-    // NOTE: To avoid numerical inaccuracies
-    static final private float radiusEpsilon = 1 + 1e-5f;
-
-    private static final long serialVersionUID = 1L;
-
-    private static final Vector3f tempVeca = new Vector3f();
+	protected FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(16);
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
      * object.
      */
     public BoundingSphere() {
-        this("bsphere");
     }
 
     /**
      * Constructor instantiates a new <code>BoundingSphere</code> object.
      * 
-     * @param radius
+     * @param r
      *            the radius of the sphere.
-     * @param center
+     * @param c
      *            the center of the sphere.
      */
-    public BoundingSphere(float radius, Vector3f center) {
-        this("bsphere", radius, center);
+    public BoundingSphere(float r, Vector3f c) {
+        this.center.set(c);
+        this.radius = r;
     }
 
-    /**
-     * Constructor instantiates a new <code>BoundingSphere</code> object.
-     * 
-     * @param radius
-     *            the radius of the sphere.
-     * @param center
-     *            the center of the sphere.
-     */
-    public BoundingSphere(String name, float radius, Vector3f center) {
-        super( name, center, 10, 10, radius );
-        initCheckPlanes();
-    }
-
-    /**
-     * Constructor instantiates a new <code>BoundingSphere</code> object.
-     * 
-     * @param name
-     *            the name of this sphere object
-     */
-    public BoundingSphere(String name) {
-        super(name);
-        initCheckPlanes();
-    }
-    
     public int getType() {
     	return BoundingVolume.BOUNDING_SPHERE;
-    }
-
-    public void initCheckPlanes() {
-        checkPlanes[0] = 0;
-        checkPlanes[1] = 1;
-        checkPlanes[2] = 2;
-        checkPlanes[3] = 3;
-        checkPlanes[4] = 4;
-        checkPlanes[5] = 5;
     }
 
     /**
@@ -138,15 +99,6 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     }
 
     /**
-     * <code>getCenter</code> returns the center of the bounding sphere.
-     * 
-     * @return the center of the bounding sphere.
-     */
-    public Vector3f getCenter() {
-        return center;
-    }
-
-    /**
      * <code>setRadius</code> sets the radius of this bounding sphere.
      * 
      * @param radius
@@ -154,16 +106,6 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      */
     public void setRadius(float radius) {
         this.radius = radius;
-    }
-
-    /**
-     * <code>setCenter</code> sets the center of the bounding sphere.
-     * 
-     * @param center
-     *            the new center of the bounding sphere.
-     */
-    public void setCenter(Vector3f center) {
-        this.center = center;
     }
 
     /**
@@ -220,7 +162,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             this.center.set(0, 0, 0);
             break;
         case 1:
-            this.radius = 1 - radiusEpsilon;
+            this.radius = 1f - radiusEpsilon;
             BufferUtils.populateFromBuffer(center, points, ap-1);
             break;
         case 2:
@@ -244,7 +186,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         }
         for (int i = 0; i < p; i++) {
             BufferUtils.populateFromBuffer(tempA, points, i+ap);
-            if (tempA.distanceSquared(center) - radius * radius > radiusEpsilon - 1) {
+            if (tempA.distanceSquared(center) - radius * radius > radiusEpsilon - 1f) {
                 for (int j = i; j > 0; j--) {
                     BufferUtils.populateFromBuffer(tempB, points, j - 1 + ap);
                     BufferUtils.setInBuffer(tempB, points, j + ap);
@@ -303,7 +245,6 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
      * @see #calcWelzl(com.jme.math.Vector3f[])
      */
     private void setSphere(Vector3f O, Vector3f A, Vector3f B) {
-        //todo: don't create vectors here!
         Vector3f a = A.subtract(O);
         Vector3f b = B.subtract(O);
         Vector3f acrossB = a.cross(b);
@@ -367,25 +308,6 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
         radius = (float) Math.sqrt(maxRadiusSqr);
 
-    }
-
-    /**
-     * <code>transform</code> modifies the center of the sphere to reflect the
-     * change made via a rotation, translation and scale.
-     * 
-     * @param rotate
-     *            the rotation change.
-     * @param translate
-     *            the translation change.
-     * @param scale
-     *            the size change.
-     * @return BoundingVolume
-     */
-    public BoundingVolume transform(Quaternion rotate, Vector3f translate,
-            Vector3f scale) {
-        Vector3f newCenter = rotate.mult(center).multLocal(scale).addLocal(
-                translate);
-        return new BoundingSphere(getMaxAxis(scale) * radius, newCenter);
     }
 
     /**
@@ -479,7 +401,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         	BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = new Vector3f(box.xExtent, box.yExtent,
                     box.zExtent);
-            Vector3f temp_center = box.getCenter();
+            Vector3f temp_center = box.center;
             BoundingSphere rVal = new BoundingSphere();
             return merge(radVect.length(), temp_center, rVal);
         }
@@ -525,14 +447,14 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
         	BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = tmpRadVect;
             radVect.set(box.xExtent, box.yExtent, box.zExtent);
-            Vector3f temp_center = box.getCenter();
+            Vector3f temp_center = box.center;
             return merge(radVect.length(), temp_center, this);
         }
-        
+
         case BoundingVolume.BOUNDING_OBB: {
         	return mergeOBB((OrientedBoundingBox) volume);
         }
-        
+
         default:
         	return null;
         }
@@ -548,27 +470,27 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     private BoundingSphere mergeOBB(OrientedBoundingBox volume) {
         if (!volume.correctCorners)
             volume.computeCorners();
-        FloatBuffer buf = BufferUtils.createVector3Buffer(16);
+        _mergeBuf.rewind();
         for (int i = 0; i < 8; i++) {
-            buf.put(volume.vectorStore[i].x);
-            buf.put(volume.vectorStore[i].y);
-            buf.put(volume.vectorStore[i].z);
+            _mergeBuf.put(volume.vectorStore[i].x);
+            _mergeBuf.put(volume.vectorStore[i].y);
+            _mergeBuf.put(volume.vectorStore[i].z);
         }
-        buf.put(center.x+radius).put(center.y+radius).put(center.z+radius);
-        buf.put(center.x-radius).put(center.y+radius).put(center.z+radius);
-        buf.put(center.x+radius).put(center.y-radius).put(center.z+radius);
-        buf.put(center.x+radius).put(center.y+radius).put(center.z-radius);
-        buf.put(center.x-radius).put(center.y-radius).put(center.z+radius);
-        buf.put(center.x-radius).put(center.y+radius).put(center.z-radius);
-        buf.put(center.x+radius).put(center.y-radius).put(center.z-radius);
-        buf.put(center.x-radius).put(center.y-radius).put(center.z-radius);
-        computeFromPoints(buf);
+        _mergeBuf.put(center.x+radius).put(center.y+radius).put(center.z+radius);
+        _mergeBuf.put(center.x-radius).put(center.y+radius).put(center.z+radius);
+        _mergeBuf.put(center.x+radius).put(center.y-radius).put(center.z+radius);
+        _mergeBuf.put(center.x+radius).put(center.y+radius).put(center.z-radius);
+        _mergeBuf.put(center.x-radius).put(center.y-radius).put(center.z+radius);
+        _mergeBuf.put(center.x-radius).put(center.y+radius).put(center.z-radius);
+        _mergeBuf.put(center.x+radius).put(center.y-radius).put(center.z-radius);
+        _mergeBuf.put(center.x-radius).put(center.y-radius).put(center.z-radius);
+        computeFromPoints(_mergeBuf);
         return this;
     }
 
     private BoundingVolume merge(float temp_radius, Vector3f temp_center,
             BoundingSphere rVal) {
-        Vector3f diff = temp_center.subtract(center, tempVeca);
+        Vector3f diff = temp_center.subtract(center, _compVect1);
         float lengthSquared = diff.lengthSquared();
         float radiusDiff = temp_radius - radius;
 
@@ -586,7 +508,7 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
 
         float length = (float) Math.sqrt(lengthSquared);
 
-        if (length > FastMath.FLT_EPSILON) {
+        if (length > radiusEpsilon) {
             float coeff = (length + radiusDiff) / (2.0f * length);
             rVal.setCenter(center.addLocal(diff.multLocal(coeff)));
         } else {
@@ -612,72 +534,13 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             if (null == rVal.center) {
                 rVal.center = new Vector3f();
             }
-            rVal.center.x = center.x;
-            rVal.center.y = center.y;
-            rVal.center.z = center.z;
+            rVal.center.set(center);
             rVal.radius = radius;
-            rVal.checkPlanes[0] = checkPlanes[0];
-            rVal.checkPlanes[1] = checkPlanes[1];
-            rVal.checkPlanes[2] = checkPlanes[2];
-            rVal.checkPlanes[3] = checkPlanes[3];
-            rVal.checkPlanes[4] = checkPlanes[4];
-            rVal.checkPlanes[5] = checkPlanes[5];
+            rVal.checkPlane = checkPlane;
             return rVal;
         } else
             return new BoundingSphere(radius,
                     (center != null ? (Vector3f) center.clone() : null));
-    }
-
-    /**
-     * <code>getCheckPlane</code> returns a specific check plane. This plane
-     * identitifies the previous value of the visibility check.
-     */
-    public int getCheckPlane(int index) {
-        return checkPlanes[index];
-    }
-
-    /**
-     * <code>setCheckPlane</code> indentifies the value of one of the spheres
-     * checked planes. That is what plane of the view frustum has been checked
-     * for intersection.
-     */
-    public void setCheckPlane(int index, int value) {
-        checkPlanes[index] = value;
-    }
-
-    /**
-     * <code>recomputeMesh</code> regenerates the <code>BoundingSphere</code>
-     * based on new model information.
-     */
-    public void recomputeMesh() {
-        if (radius != oldRadius || !center.equals(oldCenter)) {
-            setData(center, 10, 10, radius, true);
-            oldRadius = radius;
-            oldCenter.set(center.x, center.y, center.z);
-        }
-    }
-
-    /**
-     * Find the distance from the center of this Bounding Volume to the given
-     * point.
-     * 
-     * @param point
-     *            The point to get the distance to
-     * @return distance
-     */
-    public float distanceTo(Vector3f point) {
-        return center.distance(point);
-    }
-
-    /**
-     * Stores the current center of this BoundingSphere into the store vector.
-     * 
-     * @param store
-     *            The vector to store the center into.
-     * @return The store vector, after setting it's contents to the center
-     */
-    public Vector3f getCenter(Vector3f store) {
-        return store.set(center);
     }
 
     /**
@@ -703,16 +566,13 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
             return bv.intersectsSphere(this);
     }
 
-    private static Vector3f tmp_intersectsSphere = new Vector3f();
-
     /*
-    * (non-Javadoc)
-    *
-    * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
-    */
+     * (non-Javadoc)
+     * 
+     * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
+     */
     public boolean intersectsSphere(BoundingSphere bs) {
-        //note: as a field is used this is not thread safe!
-        Vector3f diff = tmp_intersectsSphere.set(getCenter()).subtractLocal(bs.getCenter());
+        Vector3f diff = getCenter().subtract(bs.getCenter());
         float rsum = getRadius() + bs.getRadius();
         return (diff.dot(diff) <= rsum * rsum);
     }
@@ -746,19 +606,10 @@ public class BoundingSphere extends Sphere implements BoundingVolume {
     /*
      * (non-Javadoc)
      * 
-     * @see com.jme.bounding.BoundingVolume#intersectsOBB2(com.jme.bounding.OBB2)
-     */
-    public boolean intersectsOBB2(OBB2 obb) {
-        return obb.intersectsSphere(this);
-    }
-
-    /*
-     * (non-Javadoc)
-     * 
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
      */
     public boolean intersects(Ray ray) {
-        Vector3f diff = tempVeca.set(ray.getOrigin())
+        Vector3f diff = _compVect1.set(ray.getOrigin())
                 .subtractLocal(getCenter());
         float a = ray.getDirection().lengthSquared();
         float b = diff.dot(ray.getDirection());

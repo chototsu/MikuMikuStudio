@@ -48,11 +48,14 @@ import com.jme.util.geom.BufferUtils;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.13 2005-09-15 17:13:36 renanse Exp $
+ * @version $Id: Point.java,v 1.14 2005-09-20 16:46:36 renanse Exp $
  */
 public class Point extends Geometry {
 
 	private static final long serialVersionUID = 1L;
+
+	private float pointSize = 1.0f;
+	private boolean antialiased = false;
 
 	/**
 	 * Constructor instantiates a new <code>Point</code> object with a given
@@ -122,17 +125,6 @@ public class Point extends Geometry {
 		r.draw(this);
 	}
 
-	/**
-	 * <code>drawBounds</code> calls super to set the render state then passes
-	 * itself to the renderer.
-	 * 
-	 * @param r
-	 *            the renderer to display
-	 */
-	public void drawBounds(Renderer r) {
-		r.drawBounds(this);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -147,4 +139,42 @@ public class Point extends Geometry {
 	public boolean hasCollision(Spatial scene, boolean checkTriangles) {
 		return false;
 	}
+	
+    /**
+     * @return true if points are to be drawn antialiased
+     */
+    public boolean isAntialiased() {
+        return antialiased;
+    }
+    
+    /**
+     * Sets whether the point should be antialiased. May decrease performance. If
+     * you want to enabled antialiasing, you should also use an alphastate with
+     * a source of SB_SRC_ALPHA and a destination of DB_ONE_MINUS_SRC_ALPHA or
+     * DB_ONE.
+     * 
+     * @param antiAliased
+     *            true if the line should be antialiased.
+     */
+    public void setAntialiased(boolean antialiased) {
+        this.antialiased = antialiased;
+    }
+
+    /**
+     * @return the pixel size of each point.
+     */
+    public float getPointSize() {
+        return pointSize;
+    }
+
+    /**
+     * Sets the pixel width of the point when drawn. Non anti-aliased point
+     * sizes are rounded to the nearest whole number by opengl.
+     * 
+     * @param size
+     *            The size to set.
+     */
+    public void setPointSize(float size) {
+        this.pointSize = size;
+    }
 }

@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.43 2005-09-16 19:33:40 Mojomonkey Exp $
+ * @version $Id: Node.java,v 1.44 2005-09-20 16:46:36 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -333,23 +333,6 @@ public class Node extends Spatial implements Serializable {
             child = (Spatial) children.get(i);
             if (child != null)
                 child.onDraw(r);
-        }
-    }
-
-    /**
-     * <code>drawBounds</code> calls super to set the render state then passes
-     * itself to the renderer.
-     * 
-     * @param r
-     *            the renderer to display
-     */
-    public void drawBounds(Renderer r) {
-        r.drawBounds(getWorldBound());
-        Spatial child;
-        for (int i = 0, cSize = children.size(); i < cSize; i++) {
-            child = (Spatial) children.get(i);
-            if (child != null)
-                child.onDrawBounds(r);
         }
     }
 

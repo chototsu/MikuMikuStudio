@@ -59,6 +59,7 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jme.util.geom.Debugger;
 
 /**
  * Started Date: Jul 29, 2004<br><br>
@@ -164,7 +165,7 @@ public class HelloSimpleGame extends BaseGame {
       display.getRenderer().draw(rootNode);
         /** If showing bounds, draw rootNode's bounds, and the bounds of all its children. */
       if (showBounds)
-        display.getRenderer().drawBounds(rootNode);
+        Debugger.drawBounds(rootNode, display.getRenderer());
         /** Draw the fps node to show the fancy information at the bottom. */
       display.getRenderer().draw(fpsNode);
         /** Call simpleRender() in any derived classes. */

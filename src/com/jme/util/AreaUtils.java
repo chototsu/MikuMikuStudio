@@ -35,14 +35,13 @@ package com.jme.util;
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingSphere;
 import com.jme.bounding.BoundingVolume;
-import com.jme.bounding.OrientedBoundingBox;
 import com.jme.math.FastMath;
 
 /**
  * <code>AreaUtils</code> is used to calculate the area of various objects, such as bounding volumes.  These
  * functions are very loose approximations.
  * @author Joshua Slack
- * @version $Id: AreaUtils.java,v 1.10 2005-09-16 19:33:42 Mojomonkey Exp $
+ * @version $Id: AreaUtils.java,v 1.11 2005-09-20 16:46:43 renanse Exp $
  */
 
 public class AreaUtils {
@@ -62,15 +61,7 @@ public class AreaUtils {
       return calcScreenArea((BoundingSphere)bound, distance, screenWidth);
     else if (bound.getType() == BoundingVolume.BOUNDING_BOX)
       return calcScreenArea((BoundingBox)bound, distance, screenWidth);
-    else if (bound.getType() == BoundingVolume.BOUNDING_OBB)
-      return calcScreenArea((OrientedBoundingBox)bound, distance, screenWidth);
     return 0.0f;
-  }
-
-  private static float calcScreenArea(OrientedBoundingBox bound, float distance, float screenWidth) {
-      // Calc as if we are a BoundingSphere for now...
-      float radiusSquare=bound.getExtent().lengthSquared();
-      return ((radiusSquare*screenWidth*screenWidth)/(distance*distance*4))*FastMath.PI;
   }
 
   private static float calcScreenArea(BoundingSphere bound, float distance, float screenWidth) {

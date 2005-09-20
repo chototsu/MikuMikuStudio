@@ -43,7 +43,6 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.BezierMesh;
 import com.jme.scene.BezierPatch;
-import com.jme.scene.TriMesh;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
@@ -53,10 +52,10 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestBezierMesh.java,v 1.22 2005-09-15 17:13:25 renanse Exp $
+ * @version $Id: TestBezierMesh.java,v 1.23 2005-09-20 16:46:41 renanse Exp $
  */
 public class TestBezierMesh extends SimpleGame {
-  private TriMesh t;
+  private BezierMesh bez;
   private PointLight pl;
   private LightNode lightNode;
   private Vector3f currentPos;
@@ -119,7 +118,7 @@ public class TestBezierMesh extends SimpleGame {
     bp.setAnchor(3, 3, new Vector3f(0.75f, 0.75f, -0.5f));
     bp.setDetailLevel(64);
 
-    BezierMesh bez = new BezierMesh("Bezier Mesh");
+    bez = new BezierMesh("Bezier Mesh");
     bez.setPatch(bp);
     Quaternion rot = new Quaternion();
     rot.fromAngleAxis(FastMath.PI, new Vector3f(0,0,1));

@@ -168,17 +168,6 @@ public class CompositeMesh extends TriMesh implements Serializable {
 	}
 
 	/**
-	 * <code>drawBounds</code> calls super to set the render state then passes
-	 * itself to the renderer.
-	 * 
-	 * @param r
-	 *            the renderer to display
-	 */
-	public void drawBounds(Renderer r) {
-		r.drawBounds(this);
-	}
-
-	/**
 	 * @return equivalent number of triangles - each quad counts as two
 	 *         triangles
 	 */

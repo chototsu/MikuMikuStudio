@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.75 2005-09-16 19:33:40 Mojomonkey Exp $
+ * @version $Id: Geometry.java,v 1.76 2005-09-20 16:46:36 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -237,13 +237,22 @@ public abstract class Geometry extends Spatial implements Serializable {
 	}
 
 	/**
-	 * Returns the number of vertexes defined in this Geometry object. Basicly,
-	 * it is vertex.length.
+	 * Returns the number of vertices defined in this Geometry object.
 	 *
-	 * @return The number of vertexes in this Geometry object.
+	 * @return The number of vertices in this Geometry object.
 	 */
 	public int getVertQuantity() {
 		return vertQuantity;
+	}
+
+	/**
+     * 
+     * @param quantity
+     *            the value to override the quantity with. This is overridden by
+     *            setVertexBuffer().
+     */
+	public void setVertQuantity(int quantity) {
+		vertQuantity = quantity;
 	}
 
 	/**
@@ -481,16 +490,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 */
 	public void draw(Renderer r) {
 		applyStates();
-	}
-
-	/**
-	 * <code>drawBounds</code> calls super to set the render state then passes
-	 * itself to the renderer.
-	 *
-	 * @param r
-	 *            the renderer to display
-	 */
-	public void drawBounds(Renderer r) {
 	}
 
 	/**

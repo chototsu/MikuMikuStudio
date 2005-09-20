@@ -72,7 +72,7 @@ public class TrianglePickResults extends PickResults {
 		//find the triangle that is being hit.
 		//add this node and the triangle to the CollisionResults
 		// list.
-		if ((s.getType() & Spatial.TRIMESH) != 0) {
+		if ((s.getType() & Spatial.TRIMESH) == 0) {
 			PickData data = new PickData(ray, s);
 			addPickData(data);
 		} else {

@@ -44,7 +44,7 @@ import com.jme.util.geom.BufferUtils;
  * how smooth the mesh will be.
  * 
  * @author Mark Powell
- * @version $Id: BezierMesh.java,v 1.13 2005-09-15 17:13:35 renanse Exp $
+ * @version $Id: BezierMesh.java,v 1.14 2005-09-20 16:46:36 renanse Exp $
  */
 public class BezierMesh extends TriMesh {
 
@@ -195,6 +195,7 @@ public class BezierMesh extends TriMesh {
 					    tempNorm.x = normBuf.get(ind*3);
 					    tempNorm.y = normBuf.get(ind*3+1);
 					    tempNorm.z = normBuf.get(ind*3+2);
+					    tempNorm.normalizeLocal();
 					    BufferUtils.setInBuffer(tempNorm, normBuf, normalIndex);
 						normalIndex++;
 					    continue;

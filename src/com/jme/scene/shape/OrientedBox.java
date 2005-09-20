@@ -123,10 +123,9 @@ public class OrientedBox extends TriMesh {
 	 * Sets the correct indices array for the box.
 	 */
 	private void setIndexData() {
-		if (indexBuffer == null || indexBuffer.capacity() != 36) {
-		    indexBuffer = BufferUtils.createIntBuffer(36);
-		    triangleQuantity = 12;
-		}
+	    indexBuffer = BufferUtils.createIntBuffer(indexBuffer, 36);
+	    triangleQuantity = 12;
+
 		for (int i = 0; i < 6; i++) {
 		    indexBuffer.put(i * 4 + 0);
 		    indexBuffer.put(i * 4 + 1);
@@ -141,14 +140,15 @@ public class OrientedBox extends TriMesh {
 	 * Sets the correct texture array for the box.
 	 */
 	private void setTextureData() {
-	    if (texBuf[0] == null || texBuf[0].capacity() != (24*2)) // x, y
+	    if (texBuf[0] == null) {
 	        texBuf[0] = BufferUtils.createVector2Buffer(24);
-
-	    for (int x = 0; x < 6; x++) {
-		    texBuf[0].put(texTopRight.x).put(texTopRight.y);
-		    texBuf[0].put(texTopLeft.x).put(texTopLeft.y);
-		    texBuf[0].put(texBotLeft.x).put(texBotLeft.y);
-		    texBuf[0].put(texBotRight.x).put(texBotRight.y);
+	
+		    for (int x = 0; x < 6; x++) {
+			    texBuf[0].put(texTopRight.x).put(texTopRight.y);
+			    texBuf[0].put(texTopLeft.x).put(texTopLeft.y);
+			    texBuf[0].put(texBotLeft.x).put(texBotLeft.y);
+			    texBuf[0].put(texBotRight.x).put(texBotRight.y);
+		    }
 	    }
 	}
 
@@ -156,9 +156,7 @@ public class OrientedBox extends TriMesh {
 	 * Sets the correct normal array for the box.
 	 */
 	private void setNormalData() {
-		if (normBuf == null || normBuf.capacity() != (3*24)) {
-		    normBuf = BufferUtils.createVector3Buffer(24);
-		}
+	    normBuf = BufferUtils.createVector3Buffer(normBuf, 24);
 
 		// top
 		normBuf.put(yAxis.x).put(yAxis.y).put(yAxis.z);
@@ -202,9 +200,7 @@ public class OrientedBox extends TriMesh {
 	 */
 	private void setVertexData() {
 		computeCorners();
-		if (vertBuf == null || vertBuf.capacity() != (3*24)) {
-		    vertBuf = BufferUtils.createVector3Buffer(24);
-		}
+	    vertBuf = BufferUtils.createVector3Buffer(vertBuf, 24);
 	    vertQuantity = 24;
 
 		//Top

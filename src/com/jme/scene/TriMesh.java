@@ -41,7 +41,6 @@ import java.util.logging.Level;
 
 import com.jme.bounding.OBBTree;
 import com.jme.intersection.CollisionResults;
-import com.jme.math.Matrix3f;
 import com.jme.math.Ray;
 import com.jme.math.Vector3f;
 import com.jme.renderer.CloneCreator;
@@ -58,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.42 2005-09-16 19:33:41 Mojomonkey Exp $
+ * @version $Id: TriMesh.java,v 1.43 2005-09-20 16:46:35 renanse Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -70,9 +69,6 @@ public class TriMesh extends Geometry implements Serializable {
 
     /** This tree is only built on calls too updateCollisionTree. */
     private OBBTree collisionTree;
-
-    /** This is and should only be used by collision detection. */
-    private Matrix3f worldMatrot;
 
     /**
      * Empty Constructor to be used internally only.
@@ -255,17 +251,6 @@ public class TriMesh extends Geometry implements Serializable {
     }
 
     /**
-     * <code>drawBounds</code> calls super to set the render state then passes
-     * itself to the renderer.
-     * 
-     * @param r
-     *            the renderer to display
-     */
-    public void drawBounds(Renderer r) {
-        r.drawBounds(this);
-    }
-
-    /**
      * Clears the buffers of this TriMesh. The buffers include its indexBuffer only.
      */
     public void clearBuffers() {
@@ -349,13 +334,8 @@ public class TriMesh extends Geometry implements Serializable {
         if (collisionTree == null || toCheck.collisionTree == null)
             return false;
         else {
-            if (worldMatrot == null)
-                worldMatrot = worldRotation.toRotationMatrix();
-            else
-                worldMatrot = worldRotation.toRotationMatrix(worldMatrot);
-            collisionTree.bounds.transform(worldMatrot, worldTranslation,
+            collisionTree.bounds.transform(worldRotation, worldTranslation,
                     worldScale, collisionTree.worldBounds);
-            toCheck.worldMatrot = toCheck.worldRotation.toRotationMatrix();
             return collisionTree.intersect(toCheck.collisionTree);
         }
     }
@@ -377,13 +357,8 @@ public class TriMesh extends Geometry implements Serializable {
         if (collisionTree == null || toCheck.collisionTree == null)
             return;
         else {
-            if (worldMatrot == null)
-                worldMatrot = worldRotation.toRotationMatrix();
-            else
-                worldMatrot = worldRotation.toRotationMatrix(worldMatrot);
-            collisionTree.bounds.transform(worldMatrot, worldTranslation,
+            collisionTree.bounds.transform(worldRotation, worldTranslation,
                     worldScale, collisionTree.worldBounds);
-            toCheck.worldMatrot = toCheck.worldRotation.toRotationMatrix();
             collisionTree.intersect(toCheck.collisionTree, thisIndex,
                     otherIndex);
         }
@@ -405,30 +380,13 @@ public class TriMesh extends Geometry implements Serializable {
             return;
         }
         if (worldBound.intersects(toTest)) {
-            if (worldMatrot == null) {
-                worldMatrot = worldRotation.toRotationMatrix();
-            } else {
-                worldRotation.toRotationMatrix(worldMatrot);
-
-                if (collisionTree == null) {
-                    updateCollisionTree();
-                }
-                collisionTree.bounds.transform(worldMatrot, worldTranslation,
-                        worldScale, collisionTree.worldBounds);
-                collisionTree.intersect(toTest, results);
+            if (collisionTree == null) {
+                updateCollisionTree();
             }
+            collisionTree.bounds.transform(worldRotation, worldTranslation,
+                    worldScale, collisionTree.worldBounds);
+            collisionTree.intersect(toTest, results);
         }
-    }
-
-    /**
-     * This function is <b>ONLY </b> to be used by the intersection testing
-     * code. It should not be called by users. It returns a matrix3f
-     * representation of the mesh's world rotation.
-     * 
-     * @return This mesh's world rotation.
-     */
-    public Matrix3f findWorldRotMat() {
-        return worldMatrot;
     }
 
     /**

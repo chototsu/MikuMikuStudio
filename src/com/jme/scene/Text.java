@@ -42,7 +42,7 @@ import com.jme.renderer.Renderer;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.19 2005-09-15 17:13:39 renanse Exp $
+ * @version $Id: Text.java,v 1.20 2005-09-20 16:46:35 renanse Exp $
  */
 public class Text extends Geometry {
 
@@ -117,17 +117,6 @@ public class Text extends Geometry {
         }
         super.draw(r);
         r.draw(this);
-    }
-
-    /**
-     * <code>drawBounds</code> calls super to set the render state then passes
-     * itself to the renderer.
-     * 
-     * @param r
-     *            the renderer to display
-     */
-    public void drawBounds(Renderer r) {
-        r.drawBounds(this);
     }
 
     /**

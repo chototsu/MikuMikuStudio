@@ -42,7 +42,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>Sphere</code> is um ... a sphere :)
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.8 2005-09-15 17:13:44 renanse Exp $
+ * @version $Id: Sphere.java,v 1.9 2005-09-20 16:46:38 renanse Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -88,9 +88,6 @@ public class Sphere extends TriMesh {
      */
     public Sphere(String name, int zSamples, int radialSamples, float radius) {
         this(name, new Vector3f(0, 0, 0), zSamples, radialSamples, radius);
-        // super(name);
-        // setData(new Vector3f(0f,0f,0f), zSamples, radialSamples, radius,
-        // true);
     }
 
     /**
@@ -111,9 +108,8 @@ public class Sphere extends TriMesh {
      */
     public Sphere(String name, Vector3f center, int zSamples,
             int radialSamples, float radius) {
-
         super(name);
-        setData(center, zSamples, radialSamples, radius, true);
+        setData(center, zSamples, radialSamples, radius);
     }
 
     /**
@@ -129,11 +125,8 @@ public class Sphere extends TriMesh {
      *            The new number of radial samples of the sphere.
      * @param radius
      *            The new radius of the sphere.
-     * @param updateBuffers
-     *            If true, buffer information is updated as well.
      */
-    public void setData(Vector3f center, int zSamples, int radialSamples,
-            float radius, boolean updateBuffers) {
+    public void setData(Vector3f center, int zSamples, int radialSamples, float radius) {
         if (center != null)
             this.center = center;
         else
@@ -142,25 +135,23 @@ public class Sphere extends TriMesh {
         this.radialSamples = radialSamples;
         this.radius = radius;
 
-        if (updateBuffers) {
-            setGeometryData();
-            setIndexData();
-            setSolidColor(ColorRGBA.white);
-        }
-
+        setGeometryData();
+        setIndexData();
+        setSolidColor(ColorRGBA.white);
     }
+
 
     private void setGeometryData() {
 
         // allocate vertices
         vertQuantity = (zSamples - 2) * (radialSamples + 1) + 2;
-        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        vertBuf = BufferUtils.createVector3Buffer(vertBuf, vertQuantity);
 
         // allocate normals if requested
-        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        normBuf = BufferUtils.createVector3Buffer(normBuf, vertQuantity);
 
         // allocate texture coordinates
-        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        texBuf[0] = BufferUtils.createVector2Buffer(texBuf[0], vertQuantity);
 
         // generate geometry
         float fInvRS = 1.0f / (float) radialSamples;

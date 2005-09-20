@@ -108,7 +108,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.69 2005-09-19 03:59:44 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.70 2005-09-20 16:47:01 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -164,12 +164,6 @@ public class LWJGLRenderer extends Renderer {
         queue = new RenderQueue(this);
         if (TextureState.getNumberOfUnits() == -1) createTextureState(); // force units population
         prevTex = new FloatBuffer[TextureState.getNumberOfUnits()];
-        
-        boundsWireState = new LWJGLWireframeState();
-
-        boundsTextState = new LWJGLTextureState();
-
-        boundsZState = new LWJGLZBufferState();
     }
 
     /**
@@ -496,7 +490,7 @@ public class LWJGLRenderer extends Renderer {
         // state
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPopMatrix();
-        postdrawMesh();
+        postdrawGeometry();
         inOrthoMode = false;
     }
 
@@ -557,8 +551,7 @@ public class LWJGLRenderer extends Renderer {
      *            height of block
      */
     public void grabScreenContents(IntBuffer buff, int x, int y, int w, int h) {
-        GL11
-                .glReadPixels(x, y, w, h, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE,
+        GL11.glReadPixels(x, y, w, h, GL12.GL_BGRA, GL11.GL_UNSIGNED_BYTE,
                         buff);
     }
 
@@ -571,104 +564,26 @@ public class LWJGLRenderer extends Renderer {
      *            the point object to render.
      */
     public void draw(Point p) {
-        // set world matrix
-        Quaternion rotation = p.getWorldRotation();
-        Vector3f translation = p.getWorldTranslation();
-        Vector3f scale = p.getWorldScale();
-        float rot = rotation.toAngleAxis(vRot);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
+        predrawGeometry(p);
 
-        GL11.glTranslatef(translation.x, translation.y, translation.z);
-        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL11.glScalef(scale.x, scale.y, scale.z);
-
-        // render the object
-        GL11.glBegin(GL11.GL_POINTS);
-
-        // draw points
-        FloatBuffer vertex = p.getVertexBuffer();
-        if (vertex != null) vertex.rewind();
-        FloatBuffer normal = p.getNormalBuffer();
-        if (normal != null) normal.rewind();
-        FloatBuffer color = p.getColorBuffer();
-        if (color != null) color.rewind();
-        FloatBuffer texture = p.getTextureBuffer();
-
+        int verts = p.getVertQuantity();
         if (statisticsOn) {
-            numberOfVerts += p.getVertQuantity();
+            numberOfVerts += verts;
         }
 
-        if (normal != null) {
-            if (color != null) {
-                if (texture != null) {
-                    // N,C,T
-                    for (int i = 0; i < p.getVertQuantity(); i++) {
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                } else {
-                    // N,C
-                    for (int i = 0; i < p.getVertQuantity(); i++) {
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                }
-            } else {
-                if (texture != null) {
-                    // N,T
-                    for (int i = 0; i < p.getVertQuantity(); i++) {
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                } else {
-                    // N
-                    for (int i = 0; i < p.getVertQuantity(); i++) {
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                }
-            }
-        } else {
-            if (color != null) {
-                if (texture != null) {
-                    // C,T
-                    for (int i = 0; i < p.getVertQuantity(); i++) {
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                } else {
-                    // C
-                    for (int i = 0; i < p.getVertQuantity(); i++) {
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                }
-            } else {
-                if (texture != null) {
-                    // T
-                    for (int i = 0; i < p.getVertQuantity(); i++) {
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                } else {
-                    // none
-                    for (int i = 0; i < p.getVertQuantity(); i++) {
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                }
-            }
+        GL11.glPointSize(p.getPointSize());
+        if (p.isAntialiased()) {
+            GL11.glEnable(GL11.GL_POINT_SMOOTH);
+            GL11.glHint(GL11.GL_POINT_SMOOTH_HINT, GL11.GL_NICEST);
         }
 
-        GL11.glEnd();
+        GL11.glDrawArrays(GL11.GL_POINTS, 0, verts);
 
-        postdrawMesh();
+        if (p.isAntialiased()) {
+            GL11.glDisable(GL11.GL_POINT_SMOOTH);
+        }
 
+        postdrawGeometry();
     }
 
     /**
@@ -680,138 +595,43 @@ public class LWJGLRenderer extends Renderer {
      *            the line object to render.
      */
     public void draw(Line l) {
-        // set world matrix
-        Quaternion rotation = l.getWorldRotation();
-        Vector3f translation = l.getWorldTranslation();
-        Vector3f scale = l.getWorldScale();
-        float rot = rotation.toAngleAxis(vRot);
-        GL11.glMatrixMode(GL11.GL_MODELVIEW);
-        GL11.glPushMatrix();
+        predrawGeometry(l);
 
-        GL11.glTranslatef(translation.x, translation.y, translation.z);
-        GL11.glRotatef(rot, vRot.x, vRot.y, vRot.z);
-        GL11.glScalef(scale.x, scale.y, scale.z);
-
-        // render the object
-        GL11.glBegin(GL11.GL_LINES);
-
-        // draw line
-        FloatBuffer vertex = l.getVertexBuffer();
-        if (vertex != null) vertex.rewind();
-        FloatBuffer normal = l.getNormalBuffer();
-        if (normal != null) normal.rewind();
-        FloatBuffer color = l.getColorBuffer();
-        if (color != null) color.rewind();
-        FloatBuffer texture = l.getTextureBuffer();
-        if (texture != null) texture.rewind();
-
+        int verts = l.getVertQuantity();
         if (statisticsOn) {
-            numberOfVerts += l.getVertQuantity();
+            numberOfVerts += verts;
+        }
+        
+        GL11.glLineWidth(l.getLineWidth());
+        if (l.getStippleFactor() != (short)0xFFFF) {
+            GL11.glEnable(GL11.GL_LINE_STIPPLE);
+            GL11.glLineStipple(l.getStippleFactor(), l.getStipplePattern());
+        }
+        if (l.isAntialiased()) {
+            GL11.glEnable(GL11.GL_LINE_SMOOTH);
+            GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
+        }
+        
+        switch (l.getMode()) {
+        	case Line.SEGMENTS:
+                GL11.glDrawArrays(GL11.GL_LINES, 0, verts);
+                break;
+            case Line.CONNECTED:
+                GL11.glDrawArrays(GL11.GL_LINE_STRIP, 0, verts);
+                break;
+            case Line.LOOP:
+                GL11.glDrawArrays(GL11.GL_LINE_LOOP, 0, verts);
+                break;
         }
 
-        if (normal != null) {
-            if (color != null) {
-                if (texture != null) {
-                    // N,C,T
-                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                        i++;
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-
-                } else {
-                    // N,C
-                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                        i++;
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                }
-            } else {
-                if (texture != null) {
-                    // N,T
-                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                        i++;
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-
-                } else {
-                    // N
-                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                        i++;
-                        GL11.glNormal3f(normal.get(), normal.get(), normal.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-
-                }
-            }
-        } else {
-            if (color != null) {
-                if (texture != null) {
-                    // C,T
-                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                        i++;
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-
-                } else {
-                    // C
-                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                        i++;
-                        GL11.glColor4f(color.get(), color.get(), color.get(), color.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                }
-            } else {
-                if (texture != null) {
-                    // T
-                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                        i++;
-                        GL11.glTexCoord2f(texture.get(), texture.get());
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-
-                } else {
-                    // none
-                    for (int i = 0; i < l.getVertQuantity() - 1; i++) {
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                        i++;
-                        GL11.glVertex3f(vertex.get(), vertex.get(), vertex.get());
-                    }
-                }
-            }
+        if (l.getStippleFactor() != (short)0xFFFF) {
+            GL11.glDisable(GL11.GL_LINE_STIPPLE);
+        }
+        if (l.isAntialiased()) {
+            GL11.glDisable(GL11.GL_LINE_SMOOTH);
         }
 
-        GL11.glEnd();
-
-        postdrawMesh();
-
+        postdrawGeometry();
     }
 
     /**
@@ -870,7 +690,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         GL11.glEnd();
-        postdrawMesh();
+        postdrawGeometry();
     }
 
     /**
@@ -882,7 +702,7 @@ public class LWJGLRenderer extends Renderer {
      *            the mesh to render.
      */
     public void draw(TriMesh t) {
-        predrawMesh(t);
+        predrawGeometry(t);
 
         IntBuffer indices = t.getIndexBuffer();
         indices.rewind();
@@ -892,16 +712,15 @@ public class LWJGLRenderer extends Renderer {
             numberOfVerts += verts;
         }
 
-        if (capabilities.OpenGL12) {
-            GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, verts, indices);
-        } else {
-	        indices.limit(t.getTriangleQuantity()*3);
-	        GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
-	        indices.clear();
-        }
+    	indices.limit(t.getTriangleQuantity()*3); // make sure only the necessary indices are sent through on old cards.
+        if (capabilities.OpenGL12)
+            GL12.glDrawRangeElements(GL11.GL_TRIANGLES, 0, verts-1, indices);
+        else
+            GL11.glDrawElements(GL11.GL_TRIANGLES, indices);
+        indices.clear();
+            
 
-
-        postdrawMesh();
+        postdrawGeometry();
     }
 
     /**
@@ -913,7 +732,7 @@ public class LWJGLRenderer extends Renderer {
      *            the mesh to render.
      */
     public void draw(CompositeMesh t) {
-        predrawMesh(t);
+        predrawGeometry(t);
 
         IntBuffer indices = t.getIndexBuffer().duplicate(); // returns secondary pointer to same data
         CompositeMesh.IndexRange[] ranges = t.getIndexRanges();
@@ -948,13 +767,13 @@ public class LWJGLRenderer extends Renderer {
             }
             indices.limit(indices.position() + ranges[i].getCount());
             if (capabilities.OpenGL12)
-                GL12.glDrawRangeElements(mode, 0, verts, indices);
+                GL12.glDrawRangeElements(mode, 0, verts-1, indices);
             else
                 GL11.glDrawElements(mode, indices);
             indices.position(indices.limit());
         }
 
-        postdrawMesh();
+        postdrawGeometry();
     }
 
     
@@ -1066,7 +885,7 @@ public class LWJGLRenderer extends Renderer {
     /**
      * 
      */
-    private void postdrawMesh() {
+    private void postdrawGeometry() {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPopMatrix();
     }
@@ -1074,7 +893,7 @@ public class LWJGLRenderer extends Renderer {
     /**
      * @param t
      */
-    private void predrawMesh(TriMesh t) {
+    private void predrawGeometry(Geometry t) {
         // set world matrix
         Quaternion rotation = t.getWorldRotation();
         Vector3f translation = t.getWorldTranslation();

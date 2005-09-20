@@ -46,7 +46,7 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.3 2005-09-16 00:56:49 renanse Exp $
+ * @version $Id: BufferUtils.java,v 1.4 2005-09-20 16:46:33 renanse Exp $
  */
 public final class BufferUtils {
 
@@ -202,6 +202,25 @@ public final class BufferUtils {
     }
 
     /**
+     * Create a new FloatBuffer of an appropriate size to hold the specified
+     * number of Vector3f object data only if the given buffer if not already
+     * the right size.
+     * 
+     * @param buf
+     *            the buffer to first check and rewind
+     * @param vertices
+     *            number of vertices that need to be held by the newly created
+     *            buffer
+     * @return the requested new FloatBuffer
+     */
+    public static FloatBuffer createVector3Buffer(FloatBuffer buf, int vertices) {
+        if (buf != null && buf.capacity() == 3 * vertices) {
+            buf.rewind();
+            return buf;
+        } else return createFloatBuffer(3 * vertices);
+    }
+
+    /**
      * Sets the data contained in the given Vector3F into the FloatBuffer at the
      * specified index.
      * 
@@ -353,6 +372,25 @@ public final class BufferUtils {
     public static FloatBuffer createVector2Buffer(int vertices) {
         FloatBuffer vBuff = createFloatBuffer(2 * vertices);
         return vBuff;
+    }
+
+    /**
+     * Create a new FloatBuffer of an appropriate size to hold the specified
+     * number of Vector2f object data only if the given buffer if not already
+     * the right size.
+     * 
+     * @param buf
+     *            the buffer to first check and rewind
+     * @param vertices
+     *            number of vertices that need to be held by the newly created
+     *            buffer
+     * @return the requested new FloatBuffer
+     */
+    public static FloatBuffer createVector2Buffer(FloatBuffer buf, int vertices) {
+        if (buf != null && buf.capacity() == 2 * vertices) {
+            buf.rewind();
+            return buf;
+        } else return createFloatBuffer(2 * vertices);
     }
 
     /**
@@ -577,6 +615,28 @@ public final class BufferUtils {
         IntBuffer buf = ByteBuffer.allocateDirect(4 * size).order(ByteOrder.nativeOrder()).asIntBuffer();
         buf.clear();
         return buf;
+    }
+    
+    /**
+     * Create a new IntBuffer of an appropriate size to hold the specified
+     * number of ints only if the given buffer if not already the right size.
+     * 
+     * @param buf
+     *            the buffer to first check and rewind
+     * @param size
+     *            number of ints that need to be held by the newly created
+     *            buffer
+     * @return the requested new IntBuffer
+     */
+    public static IntBuffer createIntBuffer(IntBuffer buf, int size) {
+        if (buf != null && buf.capacity() == size) {
+            buf.rewind();
+            return buf;
+        } else { 
+            buf = ByteBuffer.allocateDirect(4 * size).order(ByteOrder.nativeOrder()).asIntBuffer();
+            buf.clear();
+            return buf;
+        }
     }
 
     /**

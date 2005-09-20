@@ -56,13 +56,14 @@ import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
 import com.jme.util.TextureManager;
 import com.jme.util.Timer;
+import com.jme.util.geom.Debugger;
 
 /**
  * <code>SimpleGame</code> provides the simplest possible implementation
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.38 2005-09-20 09:47:17 irrisor Exp $
+ * @version $Id: SimpleGame.java,v 1.39 2005-09-20 16:46:35 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -177,7 +178,7 @@ public abstract class SimpleGame extends BaseGame {
     display.getRenderer().draw(rootNode);
       /** If showing bounds, draw rootNode's bounds, and the bounds of all its children. */
     if (showBounds)
-      display.getRenderer().drawBounds(rootNode);
+      Debugger.drawBounds(rootNode, display.getRenderer(), true);
       /** Call simpleRender() in any derived classes. */
     simpleRender();
       /** Draw the fps node to show the fancy information at the bottom. */

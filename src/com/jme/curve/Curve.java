@@ -49,7 +49,7 @@ import com.jme.util.geom.BufferUtils;
  * classes are responsible for implementing these methods in the appropriate
  * way.
  * @author Mark Powell
- * @version $Id: Curve.java,v 1.13 2005-09-15 17:14:50 renanse Exp $
+ * @version $Id: Curve.java,v 1.14 2005-09-20 16:46:37 renanse Exp $
  */
 public abstract class Curve extends Geometry {
 
@@ -124,15 +124,6 @@ public abstract class Curve extends Geometry {
       }
       super.draw(r);
       r.draw(this);
-    }
-
-    /**
-     * <code>drawBounds</code> calls super to set the render state then passes itself
-     * to the renderer.
-     * @param r the renderer to display
-     */
-    public void drawBounds(Renderer r) {
-        r.drawBounds(this);
     }
 
     /**
