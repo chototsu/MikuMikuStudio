@@ -32,10 +32,12 @@
 
 package com.jme.bounding;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
 import com.jme.math.FastMath;
+import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
@@ -53,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.32 2005-09-20 21:01:56 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.33 2005-09-20 21:51:32 renanse Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -63,7 +65,7 @@ public class BoundingSphere extends BoundingVolume {
 
 	static final private float radiusEpsilon = 1f + 0.00001f;
 
-	protected FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(16);
+	protected transient FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(16);
 
     /**
      * Default contstructor instantiates a new <code>BoundingSphere</code>
@@ -640,5 +642,19 @@ public class BoundingSphere extends BoundingVolume {
                 return false;
             }
         }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        _mergeBuf = BufferUtils.createVector3Buffer(16);
     }
 }

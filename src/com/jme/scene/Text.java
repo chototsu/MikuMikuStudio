@@ -42,7 +42,7 @@ import com.jme.renderer.Renderer;
  * renderstate of this Geometry must be a valid font texture.
  * 
  * @author Mark Powell
- * @version $Id: Text.java,v 1.20 2005-09-20 16:46:35 renanse Exp $
+ * @version $Id: Text.java,v 1.21 2005-09-20 21:51:34 renanse Exp $
  */
 public class Text extends Geometry {
 
@@ -64,7 +64,7 @@ public class Text extends Geometry {
      */
     public Text(String name, String text) {
         super(name);
-        setForceView(true);
+        setCullMode(Spatial.CULL_NEVER);
         this.text = new StringBuffer(text);
         setRenderQueueMode(Renderer.QUEUE_ORTHO);
     }

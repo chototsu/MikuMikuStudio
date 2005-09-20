@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.76 2005-09-20 16:46:36 renanse Exp $
+ * @version $Id: Geometry.java,v 1.77 2005-09-20 21:51:34 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -448,14 +448,10 @@ public abstract class Geometry extends Spatial implements Serializable {
 	}
 
 	/**
-	 * When true, this geometry object will always be rendered as long as its
-	 * parent is rendered.
-	 *
-	 * @param value
-	 *            The new forced view flag for this object.
+     * @see #com.jme.scene.Spatial.setCullMode(int)
 	 */
-	public void setForceView(boolean value) {
-		forceView = value;
+	public void setCullMode(int mode) {
+		cullMode = mode;
 	}
 
 	/**

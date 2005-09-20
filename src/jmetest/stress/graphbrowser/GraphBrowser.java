@@ -187,7 +187,7 @@ public class GraphBrowser extends StressApp {
                 if ( !accessor.isEdgePath( edge ) ) {
                     Spatial spatial = (Spatial) edges.get( edge );
                     if ( spatial != null ) {
-                        spatial.setForceCull( pathOnly );
+                        spatial.setCullMode( pathOnly ? Spatial.CULL_ALWAYS : Spatial.CULL_DYNAMIC);
                     }
                 }
             }

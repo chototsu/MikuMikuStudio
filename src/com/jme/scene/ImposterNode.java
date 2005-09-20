@@ -50,7 +50,7 @@ import com.jme.system.DisplaySystem;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.17 2005-09-20 16:46:36 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.18 2005-09-20 21:51:34 renanse Exp $
  */
 public class ImposterNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -94,7 +94,7 @@ public class ImposterNode extends Node {
 		tRenderer.setBackgroundColor(new ColorRGBA(0, 0, 0, 0f));
 
 		quadScene = new Node("imposter_scene_" + inode_val);
-		quadScene.setForceView(true);
+		quadScene.setCullMode(Spatial.CULL_NEVER);
 
 		standIn = new Quad("imposter_quad_" + inode_val);
 		standIn.initialize(size, size);

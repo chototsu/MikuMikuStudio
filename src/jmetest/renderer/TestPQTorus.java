@@ -39,6 +39,7 @@ import com.jme.image.Texture;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.shape.PQTorus;
 import com.jme.scene.state.TextureState;
@@ -49,7 +50,7 @@ import com.jme.util.TextureManager;
  * <code>TestPQTorus</code> demonstrates the construction and animation of
  * a parameterized torus, also known as a pq torus.
  * @author Eric Woroshow
- * @version $Id: TestPQTorus.java,v 1.17 2005-09-15 17:13:21 renanse Exp $
+ * @version $Id: TestPQTorus.java,v 1.18 2005-09-20 21:51:36 renanse Exp $
  */
 public class TestPQTorus extends SimpleGame {
 
@@ -133,7 +134,7 @@ public class TestPQTorus extends SimpleGame {
       display.setTitle("PQ Torus Test");
       pqText = new Text("PQ label", "");
       pqText.setLocalTranslation(new Vector3f(0,20,0));
-      pqText.setForceView(true);
+      pqText.setCullMode(Spatial.CULL_NEVER);
       fpsNode.attachChild(pqText);
 
         //Generate the geometry

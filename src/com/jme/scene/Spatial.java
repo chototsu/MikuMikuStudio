@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.72 2005-09-20 16:47:02 renanse Exp $
+ * @version $Id: Spatial.java,v 1.73 2005-09-20 21:51:34 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 	
@@ -68,6 +68,10 @@ public abstract class Spatial implements Serializable {
 	public static final int SKY_BOX = 16;
 	public static final int TERRAIN_BLOCK = 32;
 	public static final int TERRAIN_PAGE = 64;
+
+    public static final int CULL_DYNAMIC = 0;
+    public static final int CULL_ALWAYS = 1;
+    public static final int CULL_NEVER = 2;
 
     /** Spatial's rotation relative to its parent. */
     protected Quaternion localRotation;
@@ -87,11 +91,8 @@ public abstract class Spatial implements Serializable {
     /** Spatial's world absolute scale. */
     protected Vector3f worldScale;
 
-    /** If true, spatial and all children are culled from the scene graph. */
-    protected boolean forceCull;
-
-    /** If true, spatial and all children are always rendered in the scene graph. */
-    protected boolean forceView;
+    /** A flag indicating if scene culling should be done on this object dynamically, never, or always. */
+    protected int cullMode = CULL_DYNAMIC;
 
     /** Spatial's bounding volume relative to the world. */
     protected BoundingVolume worldBound;
@@ -271,23 +272,20 @@ public abstract class Spatial implements Serializable {
      *            the renderer used for display.
      */
     public void onDraw(Renderer r) {
-        if (forceCull) {
+        if (cullMode == CULL_ALWAYS) {
             return;
         }
 
-        Camera camera = r.getCamera();
-        int state = camera.getPlaneState();
         // check to see if we can cull this node
         frustrumIntersects = (parent != null ? parent.frustrumIntersects
                 : Camera.INTERSECTS_FRUSTUM);
-        if (!forceView && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
-            frustrumIntersects = camera.contains(worldBound);
+        if (cullMode == CULL_DYNAMIC && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
+            frustrumIntersects = r.getCamera().contains(worldBound);
         }
 
-        if (forceView || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
+        if (cullMode == CULL_NEVER || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
             draw(r);
         }
-        camera.setPlaneState(state);
     }
 
     /**
@@ -344,53 +342,35 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
+     * <code>setCullMode</code> sets how scene culling should work on this
+     * spatial during drawing.
      * 
-     * <code>isForceCulled</code> reports if this node should always be culled
-     * or not. If true, this node will not be displayed.
+     * CULL_DYNAMIC: Determine via the defined Camera planes whether or not this
+     * Spatial should be culled.
      * 
-     * @return true if this node should never be displayed, false otherwise.
-     */
-    public boolean isForceCulled() {
-        return forceCull;
-    }
-
-    /**
+     * CULL_ALWAYS: Always throw away this object and any children during draw
+     * commands.
      * 
-     * <code>isForceView</code> returns true if the node will be rendered
-     * whether it's in the camera frustum or not.
-     * 
-     * @return true if viewing is forced, false otherwise.
-     */
-    public boolean isForceView() {
-        return forceView;
-    }
-
-    /**
-     * 
-     * <code>setForceCull</code> sets if this node should always be culled or
-     * not. True will always cull the node, false will allow proper culling to
-     * take place.
+     * CULL_NEVER: Never throw away this object (always draw it)
      * 
      * NOTE: You must set this AFTER attaching to a parent or it will be reset
-     * with the parent's forceCull value.
+     * with the parent's cullMode value.
      * 
-     * @param forceCull
-     *            the value for forcing a culling.
+     * @param cullMode
+     *            one of CULL_DYNAMIC, CULL_ALWAYS or CULL_NEVER
      */
-    public void setForceCull(boolean forceCull) {
-        this.forceCull = forceCull;
-    }
+    public abstract void setCullMode(int cullMode);
 
+    
     /**
+     * @see #setCullMode(int)
      * 
-     * <code>setForceView</code> will force the node to be rendered whether
-     * it's in the camera frustum or not.
-     * 
-     * @param value
-     *            true to force viewing, false otherwise.
+     * @return the cull mode of this spatial
      */
-    public abstract void setForceView(boolean value);
-
+    public int getCullMode() {
+        return cullMode;
+    }
+    
     /**
      * 
      * <code>updateGeometricState</code> updates all the geometry information

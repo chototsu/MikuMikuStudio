@@ -32,6 +32,7 @@
 
 package com.jme.bounding;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.nio.FloatBuffer;
 
@@ -45,7 +46,7 @@ import com.jme.math.Vector3f;
  * containment of a collection of points.
  * 
  * @author Mark Powell
- * @version $Id: BoundingVolume.java,v 1.10 2005-09-20 16:46:34 renanse Exp $
+ * @version $Id: BoundingVolume.java,v 1.11 2005-09-20 21:51:33 renanse Exp $
  */
 public abstract class BoundingVolume implements Serializable {
 	
@@ -59,8 +60,8 @@ public abstract class BoundingVolume implements Serializable {
 
     protected Vector3f center = new Vector3f();
 	
-	protected Vector3f _compVect1 = new Vector3f();
-	protected Vector3f _compVect2 = new Vector3f();
+	protected transient Vector3f _compVect1 = new Vector3f();
+	protected transient Vector3f _compVect2 = new Vector3f();
 
 	public BoundingVolume() {
     }
@@ -257,4 +258,18 @@ public abstract class BoundingVolume implements Serializable {
 	 */
 	public abstract boolean intersectsOrientedBoundingBox(OrientedBoundingBox bb);
 
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        _compVect1 = new Vector3f();
+        _compVect2 = new Vector3f();
+    }
 }

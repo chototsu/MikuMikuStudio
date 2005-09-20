@@ -117,7 +117,7 @@ public class TestModelClones extends SimpleGame {
                 controller.setSpeed((i+1.0f)*4);
                 controller.setModelUpdate(false);
             }
-            s.setForceView(true);
+            s.setCullMode(Spatial.CULL_NEVER);
             rootNode.attachChild(s);
         }
     }
@@ -153,7 +153,7 @@ public class TestModelClones extends SimpleGame {
                 MilkToJme.findController((Node) s).setSpeed((i+1.0f)/4);
                 MilkToJme.findController((Node) s).setModelUpdate(false);
             }
-            s.setForceView(true);
+            s.setCullMode(Spatial.CULL_NEVER);
             rootNode.attachChild(s);
         }
     }

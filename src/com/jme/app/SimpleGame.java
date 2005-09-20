@@ -45,6 +45,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
@@ -63,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.39 2005-09-20 16:46:35 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.40 2005-09-20 21:51:35 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -315,7 +316,7 @@ public abstract class SimpleGame extends BaseGame {
     // Then our font Text object.
       /** This is what will actually have the text at the bottom. */
     fps = new Text("FPS label", "");
-    fps.setForceView(true);
+    fps.setCullMode(Spatial.CULL_NEVER);
     fps.setTextureCombineMode(TextureState.REPLACE);
 
     // Finally, a stand alone node (not attached to root on purpose)
@@ -323,7 +324,7 @@ public abstract class SimpleGame extends BaseGame {
     fpsNode.attachChild(fps);
     fpsNode.setRenderState(font);
     fpsNode.setRenderState(as1);
-    fpsNode.setForceView(true);
+    fpsNode.setCullMode(Spatial.CULL_NEVER);
 
     // ---- LIGHTS
       /** Set up a basic, default light. */

@@ -65,7 +65,7 @@ import com.jme.system.JmeException;
  * Only FlareQuad objects are acceptable as children.
  * 
  * @author Joshua Slack
- * @version $Id: LensFlare.java,v 1.6 2005-09-20 09:47:19 irrisor Exp $
+ * @version $Id: LensFlare.java,v 1.7 2005-09-20 21:51:38 renanse Exp $
  */
 
 public class LensFlare extends Node {
@@ -184,10 +184,10 @@ public class LensFlare extends Node {
         flarePoint = display.getScreenCoordinates(worldTranslation, flarePoint)
                 .subtractLocal(midPoint.x, midPoint.y, 0);
         if (flarePoint.z >= 1.0f) { // if it's behind us
-            setForceCull(true);
+            setCullMode(Spatial.CULL_ALWAYS);
             return;
         } else
-            setForceCull(false);
+            setCullMode(Spatial.CULL_DYNAMIC);
         // define a line from light src to one opposite across the center point
         // draw main flare at src point
 

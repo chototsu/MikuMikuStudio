@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Node.java,v 1.44 2005-09-20 16:46:36 renanse Exp $
+ * @version $Id: Node.java,v 1.45 2005-09-20 21:51:34 renanse Exp $
  */
 public class Node extends Spatial implements Serializable {
 
@@ -122,8 +122,7 @@ public class Node extends Spatial implements Serializable {
                 }
                 child.setParent(this);
                 children.add(child);
-                child.setForceCull(forceCull);
-                child.setForceView(forceView);
+                child.setCullMode(cullMode);
                 if (LoggingSystem.getLogger().isLoggable(Level.INFO)) {
                     LoggingSystem.getLogger().log(
                             Level.INFO,
@@ -269,12 +268,12 @@ public class Node extends Spatial implements Serializable {
     	return Spatial.NODE;
     }
 
-    public void setForceView(boolean value) {
-        forceView = value;
+    public void setCullMode(int mode) {
+        cullMode = mode;
 
         if (children != null) {
             for (int i = 0; i < children.size(); i++) {
-                ((Spatial) children.get(i)).setForceView(value);
+                ((Spatial) children.get(i)).setCullMode(cullMode);
             }
         }
     }

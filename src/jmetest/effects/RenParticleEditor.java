@@ -47,6 +47,7 @@ import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.RenderState;
@@ -60,7 +61,7 @@ import com.jmex.effects.ParticleManager;
 
 /**
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.14 2005-09-15 17:14:45 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.15 2005-09-20 21:51:40 renanse Exp $
  */
 public class RenParticleEditor extends VariableTimestepGame {
 
@@ -184,9 +185,9 @@ protected void render(float interpolation) {
 
   protected void initGame() {
     root = new Node("Scene graph root");
-    root.setForceView(true);
+    root.setCullMode(Spatial.CULL_NEVER);
     main = new Node("Main node");
-    main.setForceView(true);
+    main.setCullMode(Spatial.CULL_NEVER);
 
     AlphaState as1 = display.getRenderer().createAlphaState();
     as1.setBlendEnabled(true);
@@ -217,11 +218,11 @@ protected void render(float interpolation) {
     fps = new Text("FPS label", "");
     fps.setRenderState(font);
     fps.setRenderState(as1);
-    fps.setForceView(true);
+    fps.setCullMode(Spatial.CULL_NEVER);
 
     fpsNode = new Node("FPS node");
     fpsNode.attachChild(fps);
-    fpsNode.setForceView(true);
+    fpsNode.setCullMode(Spatial.CULL_NEVER);
 
     manager = new ParticleManager(300);
     manager.setGravityForce(new Vector3f(0.0f, -0.0040f, 0.0f));

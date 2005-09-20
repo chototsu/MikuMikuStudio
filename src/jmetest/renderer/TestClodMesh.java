@@ -64,7 +64,7 @@ import com.jmex.model.XMLparser.Converters.AseToJme;
  * M    Toggle Model or Disc
  *
  * @author Joshua Slack
- * @version $Id: TestClodMesh.java,v 1.19 2005-09-15 17:13:21 renanse Exp $
+ * @version $Id: TestClodMesh.java,v 1.20 2005-09-20 21:51:35 renanse Exp $
  */
 
 public class TestClodMesh extends SimpleGame {
@@ -111,8 +111,8 @@ public class TestClodMesh extends SimpleGame {
         .getKeyBindingManager()
         .isValidCommand("switch_models", false)) {
       useModel = !useModel;
-      cNode.setForceCull(useModel);
-      cNode2.setForceCull(!useModel);
+      cNode.setCullMode(useModel ? Spatial.CULL_ALWAYS : Spatial.CULL_DYNAMIC);
+      cNode2.setCullMode(!useModel ? Spatial.CULL_ALWAYS : Spatial.CULL_DYNAMIC);
     }
   }
 
@@ -156,7 +156,7 @@ public class TestClodMesh extends SimpleGame {
 
     cNode = new ClodMesh("model", new Disk("disc", 50, 50, 8), null);
     rootNode.attachChild(cNode);
-    cNode.setForceCull(true);
+    cNode.setCullMode(Spatial.CULL_ALWAYS);
     cNode.setModelBound(new BoundingSphere());
     cNode.updateModelBound();
 
@@ -167,7 +167,7 @@ public class TestClodMesh extends SimpleGame {
     
     cNode2 = new ClodMesh("model", (TriMesh)child, null);
     rootNode.attachChild(cNode2);
-    cNode2.setForceCull(false);
+    cNode2.setCullMode(Spatial.CULL_DYNAMIC);
     cNode2.setModelBound(new BoundingSphere());
     cNode2.updateModelBound();
   }

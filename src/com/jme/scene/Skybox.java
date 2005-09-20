@@ -52,7 +52,7 @@ import com.jme.system.JmeException;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.9 2005-09-16 19:33:40 Mojomonkey Exp $
+ * @version $Id: Skybox.java,v 1.10 2005-09-20 21:51:34 renanse Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;
@@ -209,7 +209,7 @@ public class Skybox extends Node {
         setRenderState(zbuff);
 
         // We don't want it making our skybox disapear, so force view
-        setForceView(true);
+        setCullMode(Spatial.CULL_NEVER);
 
         for (int i = 0; i < 6; i++) {
             // Make sure texture is only what is set.
@@ -219,7 +219,7 @@ public class Skybox extends Node {
             skyboxQuads[i].setLightCombineMode(LightState.REPLACE);
 
             // Make sure the quad is viewable
-            skyboxQuads[i].setForceView(true);
+            skyboxQuads[i].setCullMode(Spatial.CULL_NEVER);
 
             // Set a bounding volume
             skyboxQuads[i].setModelBound(new BoundingBox());

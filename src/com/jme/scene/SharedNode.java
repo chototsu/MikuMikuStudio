@@ -73,8 +73,7 @@ private static final long serialVersionUID = 1L;
 		if((target.getType() & Spatial.NODE) != 0) {
 			Node ntarget = (Node)target;
 			Node node = new Node(this.getName()+ntarget.getName());
-			node.setForceCull(ntarget.isForceCulled());
-			node.setForceView(ntarget.isForceView());
+            node.setCullMode(ntarget.getCullMode());
 			node.setLightCombineMode(ntarget.getLightCombineMode());
 			node.setLocalRotation(ntarget.getLocalRotation());
 			node.setLocalScale(ntarget.getLocalScale());

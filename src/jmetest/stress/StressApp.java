@@ -34,6 +34,7 @@ package jmetest.stress;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
+import com.jme.scene.Spatial;
 import com.jme.scene.Text;
 import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.LightState;
@@ -73,12 +74,12 @@ public abstract class StressApp extends SimpleGame {
         font.setEnabled(true);
 
         Text text = new Text("hint", string);
-        text.setForceView(true);
+        text.setCullMode(Spatial.CULL_NEVER);
         text.setTextureCombineMode(TextureState.REPLACE);
 
         text.setRenderState(font);
         text.setRenderState(as1);
-        text.setForceView(true);
+        text.setCullMode(Spatial.CULL_NEVER);
         text.setLightCombineMode( LightState.OFF );
         return text;
     }
