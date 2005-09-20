@@ -49,7 +49,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRTTSideBySide</code>
  * @author Mark Powell
- * @version $Id: TestRTTSideBySide.java,v 1.4 2005-09-15 17:13:21 renanse Exp $
+ * @version $Id: TestRTTSideBySide.java,v 1.5 2005-09-20 19:54:48 renanse Exp $
  */
 public class TestRTTSideBySide extends SimpleGame {
 
@@ -129,7 +129,7 @@ public class TestRTTSideBySide extends SimpleGame {
     ts.setTexture(
         TextureManager.loadTexture(
         TestBoxColor.class.getClassLoader().getResource(
-        "jmetest/data/images/monkey.jpg"),
+        "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR));
 
