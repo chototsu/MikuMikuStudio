@@ -64,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.40 2005-09-20 21:51:35 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.41 2005-09-21 16:11:55 Mojomonkey Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -84,6 +84,8 @@ public abstract class SimpleGame extends BaseGame {
   protected float tpf;
     /** True if the renderer should display bounds. */
   protected boolean showBounds = false;
+  /** True if the rnederer should display normals. */
+  protected boolean showNormals = false;
 
     /** A wirestate to turn on and off for the rootNode */
   protected WireframeState wireState;
@@ -148,6 +150,12 @@ public abstract class SimpleGame extends BaseGame {
         .isValidCommand("toggle_bounds", false)) {
       showBounds = !showBounds;
     }
+    
+    if (KeyBindingManager
+        .getKeyBindingManager()
+        .isValidCommand("toggle_normals", false)) {
+      showNormals = !showNormals;
+    }
       /** If camera_out is a valid command (via key C), show camera location. */
     if (KeyBindingManager
         .getKeyBindingManager()
@@ -180,6 +188,9 @@ public abstract class SimpleGame extends BaseGame {
       /** If showing bounds, draw rootNode's bounds, and the bounds of all its children. */
     if (showBounds)
       Debugger.drawBounds(rootNode, display.getRenderer(), true);
+    
+    if(showNormals)
+        Debugger.drawNormals(rootNode, display.getRenderer());
       /** Call simpleRender() in any derived classes. */
     simpleRender();
       /** Draw the fps node to show the fancy information at the bottom. */
@@ -264,6 +275,10 @@ public abstract class SimpleGame extends BaseGame {
     KeyBindingManager.getKeyBindingManager().set(
         "toggle_bounds",
         KeyInput.KEY_B);
+    /** Assign key N to action "toggle_normals". */
+    KeyBindingManager.getKeyBindingManager().set(
+        "toggle_normals",
+        KeyInput.KEY_N);
       /** Assign key C to action "camera_out". */
     KeyBindingManager.getKeyBindingManager().set(
         "camera_out",
