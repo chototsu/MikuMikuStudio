@@ -32,7 +32,9 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.logging.Level;
 
 import com.jme.intersection.CollisionResults;
@@ -48,7 +50,7 @@ import com.jme.util.geom.BufferUtils;
  * single points.
  * 
  * @author Mark Powell
- * @version $Id: Point.java,v 1.14 2005-09-20 16:46:36 renanse Exp $
+ * @version $Id: Point.java,v 1.15 2005-09-21 20:38:31 renanse Exp $
  */
 public class Point extends Geometry {
 
@@ -56,6 +58,8 @@ public class Point extends Geometry {
 
 	private float pointSize = 1.0f;
 	private boolean antialiased = false;
+
+    protected transient IntBuffer indexBuffer;
 
 	/**
 	 * Constructor instantiates a new <code>Point</code> object with a given
@@ -82,6 +86,7 @@ public class Point extends Geometry {
 		        BufferUtils.createFloatBuffer(normal), 
 		        BufferUtils.createFloatBuffer(color), 
 		        BufferUtils.createFloatBuffer(texture));
+        generateIndices();
 		LoggingSystem.getLogger().log(Level.INFO, "Point created.");
 	}
 
@@ -106,6 +111,7 @@ public class Point extends Geometry {
 			FloatBuffer color, FloatBuffer texture) {
 
 		super(name, vertex, normal, color, texture);
+        generateIndices();
 		LoggingSystem.getLogger().log(Level.INFO, "Point created.");
 	}
 
@@ -124,6 +130,39 @@ public class Point extends Geometry {
 		super.draw(r);
 		r.draw(this);
 	}
+
+    public void generateIndices() {
+        if (indexBuffer == null || indexBuffer.capacity() != vertQuantity) {
+            indexBuffer = BufferUtils.createIntBuffer(vertQuantity);
+        } else
+            indexBuffer.rewind();
+
+        for (int x = 0; x < vertQuantity; x++)
+            indexBuffer.put(x);
+    }
+    
+    /**
+     * 
+     * <code>getIndexAsBuffer</code> retrieves the indices array as an
+     * <code>IntBuffer</code>.
+     * 
+     * @return the indices array as an <code>IntBuffer</code>.
+     */
+    public IntBuffer getIndexBuffer() {
+        return indexBuffer;
+    }
+
+    /**
+     * 
+     * <code>setIndexBuffer</code> sets the index array for this
+     * <code>Point</code>.
+     * 
+     * @param indices
+     *            the index array as an IntBuffer.
+     */
+    public void setIndexBuffer(IntBuffer indices) {
+        this.indexBuffer = indices;
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -176,5 +215,47 @@ public class Point extends Geometry {
      */
     public void setPointSize(float size) {
         this.pointSize = size;
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        if (indexBuffer == null)
+            s.writeInt(0);
+        else {
+            s.writeInt(indexBuffer.capacity());
+            indexBuffer.rewind();
+            for (int x = 0, len = indexBuffer.capacity(); x < len; x++)
+                s.writeInt(indexBuffer.get());
+        }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        int len = s.readInt();
+        if (len == 0) {
+            setIndexBuffer(null);
+        } else {
+            IntBuffer buf = BufferUtils.createIntBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readInt());
+            setIndexBuffer(buf);            
+        }
     }
 }

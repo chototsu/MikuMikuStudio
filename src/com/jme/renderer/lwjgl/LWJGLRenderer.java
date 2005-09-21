@@ -109,7 +109,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.77 2005-09-21 19:25:41 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.78 2005-09-21 20:38:32 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -579,6 +579,9 @@ public class LWJGLRenderer extends Renderer {
     public void draw(Point p) {
         predrawGeometry(p);
 
+        IntBuffer indices = p.getIndexBuffer();
+        indices.rewind();
+
         int verts = p.getVertQuantity();
         if (statisticsOn) {
             numberOfVerts += verts;
@@ -590,7 +593,7 @@ public class LWJGLRenderer extends Renderer {
             GL11.glHint(GL11.GL_POINT_SMOOTH_HINT, GL11.GL_NICEST);
         }
 
-        GL11.glDrawArrays(GL11.GL_POINTS, 0, verts);
+        GL11.glDrawElements(GL11.GL_POINTS, indices);
 
         if (p.isAntialiased()) {
             GL11.glDisable(GL11.GL_POINT_SMOOTH);
@@ -610,6 +613,8 @@ public class LWJGLRenderer extends Renderer {
     public void draw(Line l) {
         predrawGeometry(l);
 
+        IntBuffer indices = l.getIndexBuffer();
+        indices.rewind();
         int verts = l.getVertQuantity();
         if (statisticsOn) {
             numberOfVerts += verts;
@@ -627,13 +632,13 @@ public class LWJGLRenderer extends Renderer {
         
         switch (l.getMode()) {
         	case Line.SEGMENTS:
-                GL11.glDrawArrays(GL11.GL_LINES, 0, verts);
+                GL11.glDrawElements(GL11.GL_LINES, indices);
                 break;
             case Line.CONNECTED:
-                GL11.glDrawArrays(GL11.GL_LINE_STRIP, 0, verts);
+                GL11.glDrawElements(GL11.GL_LINE_STRIP, indices);
                 break;
             case Line.LOOP:
-                GL11.glDrawArrays(GL11.GL_LINE_LOOP, 0, verts);
+                GL11.glDrawElements(GL11.GL_LINE_LOOP, indices);
                 break;
         }
 

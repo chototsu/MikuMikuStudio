@@ -58,7 +58,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.6 2005-09-21 19:26:44 renanse Exp $
+ * @version $Id: Debugger.java,v 1.7 2005-09-21 20:38:30 renanse Exp $
  */
 public final class Debugger {
 
@@ -255,6 +255,7 @@ public final class Debugger {
                 }
                 
                 normalLines.setDefaultColor(NORMAL_COLOR);
+                normalLines.generateIndices();
                 setNormStates();
                 normalLines.setLocalTranslation(g.getWorldTranslation());
                 normalLines.setLocalScale(g.getWorldScale());

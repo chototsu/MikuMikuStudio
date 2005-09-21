@@ -32,7 +32,9 @@
 
 package com.jme.scene;
 
+import java.io.IOException;
 import java.nio.FloatBuffer;
+import java.nio.IntBuffer;
 import java.util.logging.Level;
 
 import com.jme.intersection.CollisionResults;
@@ -51,7 +53,7 @@ import com.jme.util.geom.BufferUtils;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Line.java,v 1.17 2005-09-21 17:53:00 renanse Exp $
+ * @version $Id: Line.java,v 1.18 2005-09-21 20:38:31 renanse Exp $
  */
 public class Line extends Geometry {
 
@@ -66,6 +68,8 @@ public class Line extends Geometry {
 	private short stipplePattern = (short)0xFFFF;
 	private int stippleFactor = 1;
 	private boolean antialiased = false;
+
+    protected transient IntBuffer indexBuffer;
 
     /**
 	 * Constructs a new line with the given name. By default, the line has no
@@ -98,6 +102,7 @@ public class Line extends Geometry {
 	public Line(String name, FloatBuffer vertex, FloatBuffer normal,
 			FloatBuffer color, FloatBuffer texture) {
 		super(name, vertex, normal, color, texture);
+        generateIndices();
 		LoggingSystem.getLogger().log(Level.INFO, "Line created.");
 	}
 
@@ -125,6 +130,7 @@ public class Line extends Geometry {
 		        BufferUtils.createFloatBuffer(normal), 
 		        BufferUtils.createFloatBuffer(color), 
 		        BufferUtils.createFloatBuffer(texture));
+        generateIndices();
 		LoggingSystem.getLogger().log(Level.INFO, "Line created.");
 	}
 
@@ -143,6 +149,39 @@ public class Line extends Geometry {
 		super.draw(r);
 		r.draw(this);
 	}
+
+    public void generateIndices() {
+        if (indexBuffer == null || indexBuffer.capacity() != vertQuantity) {
+            indexBuffer = BufferUtils.createIntBuffer(vertQuantity);
+        } else
+            indexBuffer.rewind();
+
+        for (int x = 0; x < vertQuantity; x++)
+            indexBuffer.put(x);
+    }
+    
+    /**
+     * 
+     * <code>getIndexAsBuffer</code> retrieves the indices array as an
+     * <code>IntBuffer</code>.
+     * 
+     * @return the indices array as an <code>IntBuffer</code>.
+     */
+    public IntBuffer getIndexBuffer() {
+        return indexBuffer;
+    }
+
+    /**
+     * 
+     * <code>setIndexBuffer</code> sets the index array for this
+     * <code>Line</code>.
+     * 
+     * @param indices
+     *            the index array as an IntBuffer.
+     */
+    public void setIndexBuffer(IntBuffer indices) {
+        this.indexBuffer = indices;
+    }
 
 	/*
 	 * (non-Javadoc)
@@ -244,5 +283,47 @@ public class Line extends Geometry {
      */
     public void setStippleFactor(int stippleFactor) {
         this.stippleFactor = stippleFactor;
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void writeObject(java.io.ObjectOutputStream s) throws IOException {
+        s.defaultWriteObject();
+        if (indexBuffer == null)
+            s.writeInt(0);
+        else {
+            s.writeInt(indexBuffer.capacity());
+            indexBuffer.rewind();
+            for (int x = 0, len = indexBuffer.capacity(); x < len; x++)
+                s.writeInt(indexBuffer.get());
+        }
+    }
+
+    /**
+     * Used with Serialization. Do not call this directly.
+     * 
+     * @param s
+     * @throws IOException
+     * @throws ClassNotFoundException
+     * @see java.io.Serializable
+     */
+    private void readObject(java.io.ObjectInputStream s) throws IOException,
+            ClassNotFoundException {
+        s.defaultReadObject();
+        int len = s.readInt();
+        if (len == 0) {
+            setIndexBuffer(null);
+        } else {
+            IntBuffer buf = BufferUtils.createIntBuffer(len);
+            for (int x = 0; x < len; x++)
+                buf.put(s.readInt());
+            setIndexBuffer(buf);            
+        }
     }
 }
