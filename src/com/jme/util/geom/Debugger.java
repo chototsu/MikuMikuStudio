@@ -58,7 +58,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.4 2005-09-21 17:52:53 renanse Exp $
+ * @version $Id: Debugger.java,v 1.5 2005-09-21 19:05:21 renanse Exp $
  */
 public final class Debugger {
 
@@ -242,7 +242,7 @@ public final class Debugger {
                 norms.rewind();
                 lineVerts.rewind();
                 
-                for (int x = normalLines.getVertQuantity() / 2; --x >= 0; ) {
+                for (int x = 0; x < g.getVertQuantity(); x++ ) {
                     _normalVect.set(verts.get(), verts.get(), verts.get());
                     lineVerts.put(_normalVect.x);
                     lineVerts.put(_normalVect.y);
