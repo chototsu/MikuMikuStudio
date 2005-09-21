@@ -73,6 +73,7 @@ import jmetest.effects.TestDynamicSmoker;
 import jmetest.effects.TestParticleSystem;
 import jmetest.effects.cloth.TestCloth;
 import jmetest.intersection.TestCollision;
+import jmetest.intersection.TestOBBPick;
 import jmetest.intersection.TestOBBTree;
 import jmetest.intersection.TestPick;
 import jmetest.renderer.TestAnisotropic;
@@ -390,6 +391,7 @@ public class TestChooser extends JDialog {
             classes.add( TestCollision.class );
             classes.add( TestOBBTree.class );
             classes.add( TestPick.class );
+            classes.add( TestOBBPick.class );
             classes.add( TestImposterNode.class );
             classes.add( TestRenderToTexture.class );
             classes.add( TestCameraMan.class );

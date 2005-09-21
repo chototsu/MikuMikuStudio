@@ -57,6 +57,10 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     static private final Vector3f _compVect4 = new Vector3f();
 
+    static private final Vector3f _compVect5 = new Vector3f();
+
+    static private final Vector3f _compVect6 = new Vector3f();
+
 	static private final Vector3f tempVe = new Vector3f();
 
 	static private final Vector3f tempVf = new Vector3f();
@@ -366,8 +370,8 @@ public class OrientedBoundingBox extends BoundingVolume {
 		//        Vector3f kMax = new Vector3f();
 		//        float[] kMax=new float[3];
 		//        float[] kMin=new float[3];
-		Vector3f kMin = _compVect2;
-		Vector3f kMax = _compVect3;
+		Vector3f kMin = _compVect5;
+		Vector3f kMax = _compVect6;
 		kMin.zero(); kMax.zero();
 
 		//        rkBox0.ComputeVertices(akVertex);
