@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.78 2005-09-21 20:16:43 renanse Exp $
+ * @version $Id: Spatial.java,v 1.79 2005-09-21 23:53:42 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -69,9 +69,10 @@ public abstract class Spatial implements Serializable {
 	public static final int TERRAIN_BLOCK = 32;
 	public static final int TERRAIN_PAGE = 64;
 
-    public static final int CULL_DYNAMIC = 0;
-    public static final int CULL_ALWAYS = 1;
-    public static final int CULL_NEVER = 2;
+    public static final int CULL_INHERIT = 0;
+    public static final int CULL_DYNAMIC = 1;
+    public static final int CULL_ALWAYS = 2;
+    public static final int CULL_NEVER = 3;
 
     /** Spatial's rotation relative to its parent. */
     protected Quaternion localRotation;
@@ -91,8 +92,8 @@ public abstract class Spatial implements Serializable {
     /** Spatial's world absolute scale. */
     protected Vector3f worldScale;
 
-    /** A flag indicating if scene culling should be done on this object dynamically, never, or always. */
-    protected int cullMode = CULL_DYNAMIC;
+    /** A flag indicating if scene culling should be done on this object by inheritance, dynamically, never, or always. */
+    private int cullMode = CULL_INHERIT;
 
     /** Spatial's bounding volume relative to the world. */
     protected BoundingVolume worldBound;
@@ -354,13 +355,17 @@ public abstract class Spatial implements Serializable {
      *
      * CULL_NEVER: Never throw away this object (always draw it)
      *
+     * CULL_INHERIT: Look for a non-inherit parent and use its cull mode.
+     *
      * NOTE: You must set this AFTER attaching to a parent or it will be reset
      * with the parent's cullMode value.
      *
      * @param cullMode
-     *            one of CULL_DYNAMIC, CULL_ALWAYS or CULL_NEVER
+     *            one of CULL_DYNAMIC, CULL_ALWAYS, CULL_INHERIT or CULL_NEVER
      */
-    public abstract void setCullMode(int cullMode);
+    public void setCullMode(int mode) {
+        cullMode = mode;
+    }
 
 
     /**
@@ -369,7 +374,11 @@ public abstract class Spatial implements Serializable {
      * @return the cull mode of this spatial
      */
     public int getCullMode() {
-        return cullMode;
+        if (cullMode != CULL_INHERIT)
+            return cullMode;
+        else if (parent != null)
+            return parent.getCullMode();
+        else return CULL_DYNAMIC;
     }
 
     /**

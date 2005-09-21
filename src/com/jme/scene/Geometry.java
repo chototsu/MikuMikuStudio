@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.81 2005-09-21 23:35:16 renanse Exp $
+ * @version $Id: Geometry.java,v 1.82 2005-09-21 23:53:42 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -449,13 +449,6 @@ public abstract class Geometry extends Spatial implements Serializable {
 	public void setModelBound(BoundingVolume modelBound) {
 		this.worldBound = null;
 		this.bound = modelBound;
-	}
-
-	/**
-     * @see #com.jme.scene.Spatial.setCullMode(int)
-	 */
-	public void setCullMode(int mode) {
-		cullMode = mode;
 	}
 
 	/**
