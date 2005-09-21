@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.80 2005-09-21 19:10:58 renanse Exp $
+ * @version $Id: Geometry.java,v 1.81 2005-09-21 23:35:16 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -364,6 +364,7 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 * @return the texture coordinates at the given texture unit.
 	 */
 	public FloatBuffer getTextureBuffer(int textureUnit) {
+        if (texBuf == null) return null;
 		return texBuf[textureUnit];
 	}
 
