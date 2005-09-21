@@ -58,7 +58,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.2 2005-09-21 16:31:38 renanse Exp $
+ * @version $Id: Debugger.java,v 1.3 2005-09-21 16:57:43 renanse Exp $
  */
 public final class Debugger {
 
@@ -183,7 +183,7 @@ public final class Debugger {
     static {
         normalLines.setLineWidth(3.0f);
         normalLines.setMode(Line.SEGMENTS);
-        normalLines.setVertexBuffer(BufferUtils.createVector3Buffer(100));
+        normalLines.setVertexBuffer(BufferUtils.createVector3Buffer(33000));
     }
     private static final Vector3f _normalVect = new Vector3f();
     private static ZBufferState normZState;
@@ -240,6 +240,7 @@ public final class Debugger {
                 
                 verts.rewind();
                 norms.rewind();
+                lineVerts.rewind();
                 
                 for (int x = normalLines.getVertQuantity() / 2; --x >= 0; ) {
                     _normalVect.set(verts.get(), verts.get(), verts.get());
@@ -253,7 +254,7 @@ public final class Debugger {
                     lineVerts.put(_normalVect.z);
                 }
                 
-                normalLines.setSolidColor(NORMAL_COLOR);
+                //normalLines.setSolidColor(NORMAL_COLOR);
                 setNormStates();
                 normalLines.setLocalTranslation(g.getWorldTranslation());
                 normalLines.setLocalScale(g.getWorldScale());
