@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.75 2005-09-21 19:03:29 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.76 2005-09-21 19:31:57 irrisor Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -153,7 +153,6 @@ public abstract class Spatial implements Serializable {
      */
     public Spatial(String name) {
         this.name = name;
-        renderStateList = new RenderState[RenderState.RS_MAX_STATE];
         localRotation = new Quaternion();
         worldRotation = new Quaternion();
         localTranslation = new Vector3f();
