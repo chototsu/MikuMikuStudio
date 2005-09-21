@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.76 2005-09-21 19:31:57 irrisor Exp $
+ * @version $Id: Spatial.java,v 1.77 2005-09-21 20:14:52 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -924,7 +924,7 @@ public abstract class Spatial implements Serializable {
         if ( renderStateList != null )
         {
             for (int i = 0; i < renderStateList.length; i++) {
-                store.setRenderState( renderStateList[i] );
+                store.renderStateList[i] = renderStateList[i];
             }
         }
         Iterator I = geometricalControllers.iterator();
