@@ -32,7 +32,6 @@
 
 package com.jme.bounding;
 
-import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
@@ -53,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Joshua Slack
- * @version $Id: BoundingBox.java,v 1.32 2005-09-20 21:51:32 renanse Exp $
+ * @version $Id: BoundingBox.java,v 1.33 2005-09-21 19:58:23 renanse Exp $
  */
 public class BoundingBox extends BoundingVolume {
 
@@ -61,7 +60,7 @@ public class BoundingBox extends BoundingVolume {
 
 	public float xExtent, yExtent, zExtent;
 
-	protected transient Matrix3f _compMat = new Matrix3f();
+    static private final transient Matrix3f _compMat = new Matrix3f();
 	
     /**
      * Default contstructor instantiates a new <code>BoundingBox</code>
@@ -610,20 +609,5 @@ public class BoundingBox extends BoundingVolume {
                 && clip(+direction.z, -origin.z - zExtent, t)
                 && clip(-direction.z, +origin.z - zExtent, t);
         return notEntirelyClipped && (t[0] != saveT0 || t[1] != saveT1);
-    }
-
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
-     */
-    private void readObject(java.io.ObjectInputStream s) throws IOException,
-            ClassNotFoundException {
-        s.defaultReadObject();
-        _compMat = new Matrix3f();
     }
 }

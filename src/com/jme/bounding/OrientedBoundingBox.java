@@ -32,7 +32,6 @@
 
 package com.jme.bounding;
 
-import java.io.IOException;
 import java.nio.FloatBuffer;
 
 import com.jme.math.FastMath;
@@ -48,13 +47,15 @@ import com.jme.util.geom.BufferUtils;
  * <br>
  * 
  * @author Jack Lindamood
+ * @author Joshua Slack (alterations for .9)
  */
 public class OrientedBoundingBox extends BoundingVolume {
 
 	private static final long serialVersionUID = 1L;
 
-	protected transient Vector3f _compVect3 = new Vector3f();
-	protected transient Vector3f _compVect4 = new Vector3f();
+    static private final Vector3f _compVect3 = new Vector3f();
+
+    static private final Vector3f _compVect4 = new Vector3f();
 
 	static private final Vector3f tempVe = new Vector3f();
 
@@ -102,7 +103,7 @@ public class OrientedBoundingBox extends BoundingVolume {
     private final Vector3f tempLeft=new Vector3f(1,0,0); 
     private final Vector3f tempUp=new Vector3f(0,1,0);
 
-    protected transient FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(16);
+    static private final FloatBuffer _mergeBuf = BufferUtils.createVector3Buffer(16);
 
 	/**
 	 * If true, the box's vectorStore array correctly represnts the box's
@@ -1310,21 +1311,5 @@ public class OrientedBoundingBox extends BoundingVolume {
 
     public Vector3f getExtent() {
         return extent;
-    }
-
-    /**
-     * Used with Serialization. Do not call this directly.
-     * 
-     * @param s
-     * @throws IOException
-     * @throws ClassNotFoundException
-     * @see java.io.Serializable
-     */
-    private void readObject(java.io.ObjectInputStream s) throws IOException,
-            ClassNotFoundException {
-        s.defaultReadObject();
-        _compVect3 = new Vector3f();
-        _compVect4 = new Vector3f();
-        _mergeBuf = BufferUtils.createVector3Buffer(16);
     }
 }
