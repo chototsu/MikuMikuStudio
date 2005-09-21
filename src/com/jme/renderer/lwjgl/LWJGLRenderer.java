@@ -109,7 +109,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.79 2005-09-21 23:10:31 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.80 2005-09-21 23:34:44 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1001,10 +1001,10 @@ public class LWJGLRenderer extends Renderer {
 
         for (int i = 0; i < TextureState.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureBuffer(i);
+            if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
+                GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
+            }
             if (prevTex[i] != textures && textures != null) {
-                if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
-                    GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
-                }
                 if (textures != null || (!ignoreVBO && vbo.getVBOTextureID(i) > 0)) {
 
                     GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
