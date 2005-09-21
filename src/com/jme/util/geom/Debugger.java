@@ -58,7 +58,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.5 2005-09-21 19:05:21 renanse Exp $
+ * @version $Id: Debugger.java,v 1.6 2005-09-21 19:26:44 renanse Exp $
  */
 public final class Debugger {
 
@@ -260,6 +260,7 @@ public final class Debugger {
                 normalLines.setLocalScale(g.getWorldScale());
                 normalLines.setLocalRotation(g.getWorldRotation());
                 normalLines.draw(r);
+                r.flush(); // force buffer to be let go.
             }
         }
         
