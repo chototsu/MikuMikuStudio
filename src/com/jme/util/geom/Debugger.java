@@ -58,7 +58,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.1 2005-09-20 16:46:32 renanse Exp $
+ * @version $Id: Debugger.java,v 1.2 2005-09-21 16:31:38 renanse Exp $
  */
 public final class Debugger {
 
@@ -211,6 +211,8 @@ public final class Debugger {
      *            the Spatial to draw normals for.
      * @param r
      *            the Renderer to use to draw the normals.
+     * @param size
+     *            the length of the drawn normal (default is 1.0f).
      * @param doChildren
      *            if true, normals for any children will also be drawn
      */
@@ -225,14 +227,14 @@ public final class Debugger {
             Geometry g = (Geometry)spat;
             FloatBuffer norms = g.getNormalBuffer();
             FloatBuffer verts = g.getVertexBuffer();
-            if (norms != null && verts != null) {
+            if (norms != null && verts != null  && norms.capacity() == verts.capacity()) {
                 FloatBuffer lineVerts = normalLines.getVertexBuffer();
-                if (lineVerts.capacity() < g.getVertQuantity() * 2) {
+                if (lineVerts.capacity() < (6 * g.getVertQuantity())) {
                     lineVerts = BufferUtils.createVector3Buffer(g.getVertQuantity() * 2);
                     normalLines.setVertexBuffer(lineVerts);
                 } else {
                     normalLines.setVertQuantity(2 * g.getVertQuantity());
-                    lineVerts.rewind();
+                    lineVerts.clear();
                     lineVerts.limit(3 * normalLines.getVertQuantity());
                 }
                 
