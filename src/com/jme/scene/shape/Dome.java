@@ -146,7 +146,7 @@ public class Dome extends TriMesh {
         if (updateBuffers) {
             setGeometryData(outsideView);
             setIndexData(outsideView);
-            setSolidColor(ColorRGBA.white);
+            setDefaultColor(ColorRGBA.white);
         }
     }
 

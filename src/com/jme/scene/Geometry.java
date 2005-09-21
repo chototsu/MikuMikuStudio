@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.77 2005-09-20 21:51:34 renanse Exp $
+ * @version $Id: Geometry.java,v 1.78 2005-09-21 17:53:00 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -87,6 +87,8 @@ public abstract class Geometry extends Spatial implements Serializable {
 
 	/** Non -1 values signal this geometry is a clone of grouping "cloneID". */
 	private int cloneID = -1;
+
+    private ColorRGBA defaultColor;
 
 	/**
 	 * Empty Constructor to be used internally only.
@@ -177,7 +179,8 @@ public abstract class Geometry extends Spatial implements Serializable {
 	/**
 	 *
 	 * <code>setSolidColor</code> sets the color array of this geometry to a
-	 * single color.
+	 * single color.  For greater efficiency, try setting the the ColorBuffer
+     * to null and using DefaultColor instead.
 	 *
 	 * @param color
 	 *            the color to set.
@@ -752,5 +755,25 @@ public abstract class Geometry extends Spatial implements Serializable {
                 }
             }
         }
+    }
+
+    /**
+     * <code>getDefaultColor</code> returns the color used if no
+     * per vertex colors are specified.
+     * 
+     * @return default color
+     */
+    public ColorRGBA getDefaultColor() {
+        return defaultColor;
+    }
+
+    /**
+     * <code>setDefaultColor</code> sets the color to be used
+     * if no per vertex color buffer is set.
+     * 
+     * @param color
+     */
+    public void setDefaultColor(ColorRGBA color) {
+        defaultColor = color;
     }
 }

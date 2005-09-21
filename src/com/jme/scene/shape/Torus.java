@@ -43,7 +43,7 @@ import com.jme.util.geom.BufferUtils;
  * origin.
  * 
  * @author Mark Powell
- * @version $Id: Torus.java,v 1.5 2005-09-15 17:13:43 renanse Exp $
+ * @version $Id: Torus.java,v 1.6 2005-09-21 17:52:53 renanse Exp $
  */
 public class Torus extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -82,7 +82,7 @@ public class Torus extends TriMesh {
 
 		setGeometryData();
 		setIndexData();
-		setSolidColor(ColorRGBA.white);
+		setDefaultColor(ColorRGBA.white);
 
 	}
 

@@ -179,7 +179,7 @@ public class FadeInOut extends Transient {
      */
     public void setFadeColor(ColorRGBA c) {
     	fadeColor = (ColorRGBA)c.clone();
-    	fadeQ.setSolidColor(fadeColor);
+    	fadeQ.setDefaultColor(fadeColor);
     }
 
     /**

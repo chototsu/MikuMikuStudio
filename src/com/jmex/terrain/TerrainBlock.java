@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.4 2005-09-20 18:45:27 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.5 2005-09-21 17:53:05 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -417,7 +417,7 @@ public class TerrainBlock extends AreaClodMesh {
      */
     private void buildColors()
     {
-	    setSolidColor(ColorRGBA.white);
+	    setDefaultColor(ColorRGBA.white);
     }
 
     /**

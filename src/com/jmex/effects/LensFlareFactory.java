@@ -43,7 +43,7 @@ import com.jme.system.JmeException;
  * <code>LensFlareFactory</code>
  *  A Factory useful for creating various types of LensFlares.
  * @author Joshua Slack
- * @version $Id: LensFlareFactory.java,v 1.2 2005-09-15 17:14:07 renanse Exp $
+ * @version $Id: LensFlareFactory.java,v 1.3 2005-09-21 17:53:05 renanse Exp $
  */
 
 public class LensFlareFactory {
@@ -76,78 +76,78 @@ public class LensFlareFactory {
 		FlareQuad[] sFlare = new FlareQuad[16];
 		sFlare[0] = new FlareQuad("sf0", midPoint.x * 1.25f, midPoint.x * 1.25f);
 		sFlare[0].setOffset(.8f,.8f);
-		sFlare[0].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f, 1f));
+		sFlare[0].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f, 1f));
 		sFlare[0].setRenderState(tex[3]);
 
 		sFlare[1] = new FlareQuad("sf1", midPoint.x * .75f, midPoint.x * .75f);
 		sFlare[1].setOffset(1.0f,1.0f);
-		sFlare[1].setSolidColor(new ColorRGBA(.8f, .8f, .8f, 1f));
+		sFlare[1].setDefaultColor(new ColorRGBA(.8f, .8f, .8f, 1f));
 		sFlare[1].setRenderState(tex[1]);
 
 		sFlare[2] = new FlareQuad("sf2", midPoint.x * .15f, midPoint.x * .15f);
 		sFlare[2].setOffset(.8f,.8f);
-		sFlare[2].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f, 1f));
+		sFlare[2].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f, 1f));
 
 		sFlare[3] = new FlareQuad("sf3", midPoint.x * .08f, midPoint.x * .08f);
 		sFlare[3].setOffset(2f,2f);
-		sFlare[3].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 50f / 255f,
+		sFlare[3].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 50f / 255f,
 																					1f));
 
 		sFlare[4] = new FlareQuad("sf4", midPoint.x * .40f, midPoint.x * .40f);
 		sFlare[4].setOffset(2.2f,2.2f);
-		sFlare[4].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 50f / 255f,
+		sFlare[4].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 50f / 255f,
 																					1f));
 
 		sFlare[5] = new FlareQuad("sf5", midPoint.x * .1f, midPoint.x * .1f);
 		sFlare[5].setOffset(2.4f,2.4f);
-		sFlare[5].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 50f / 255f,
+		sFlare[5].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 50f / 255f,
 																					1f));
 
 		sFlare[6] = new FlareQuad("sf6", midPoint.x * .25f, midPoint.x * .25f);
 		sFlare[6].setOffset(3f,3f);
-		sFlare[6].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 50f / 255f,
+		sFlare[6].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 50f / 255f,
 																					1f));
 
 		sFlare[7] = new FlareQuad("sf7", midPoint.x * .01f, midPoint.x * .01f);
 		sFlare[7].setOffset(5f,5f);
-		sFlare[7].setSolidColor(new ColorRGBA(.8f, .8f, .8f, 1f));
+		sFlare[7].setDefaultColor(new ColorRGBA(.8f, .8f, .8f, 1f));
 
 		sFlare[8] = new FlareQuad("sf8", midPoint.x * .02f, midPoint.x * .02f);
 		sFlare[8].setOffset(-3f,-3f);
-		sFlare[8].setSolidColor(new ColorRGBA(.8f, .8f, .8f, 1f));
+		sFlare[8].setDefaultColor(new ColorRGBA(.8f, .8f, .8f, 1f));
 
 		sFlare[9] = new FlareQuad("sf9", midPoint.x * .1f, midPoint.x * .1f);
 		sFlare[9].setOffset(-2f,-2f);
-		sFlare[9].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f, 1f));
+		sFlare[9].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f, 1f));
 
 		sFlare[10] = new FlareQuad("sf10", midPoint.x * .06f, midPoint.x * .06f);
 		sFlare[10].setOffset(-1.8f,-1.8f);
-		sFlare[10].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f,
+		sFlare[10].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f,
 																					 1f));
 
 		sFlare[11] = new FlareQuad("sf11", midPoint.x * .375f, midPoint.x * .375f);
 		sFlare[11].setOffset(-1.5f,-1.5f);
-		sFlare[11].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f,
+		sFlare[11].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f,
 																					 1f));
 
 		sFlare[12] = new FlareQuad("sf12", midPoint.x * .1f, midPoint.x * .1f);
 		sFlare[12].setOffset(-1.4f,-1.4f);
-		sFlare[12].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f,
+		sFlare[12].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f,
 																					 1f));
 
 		sFlare[13] = new FlareQuad("sf13", midPoint.x * .25f, midPoint.x * .25f);
 		sFlare[13].setOffset(-1.1f,-1.1f);
-		sFlare[13].setSolidColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f,
+		sFlare[13].setDefaultColor(new ColorRGBA(30f / 255f, 30f / 255f, 0f / 255f,
 																					 1f));
 
 		sFlare[14] = new FlareQuad("sf14", midPoint.x * .75f, midPoint.x * .75f);
 		sFlare[14].setOffset(-1.0f,-1.0f);
-		sFlare[14].setSolidColor(new ColorRGBA(.8f, .8f, .8f, 1f));
+		sFlare[14].setDefaultColor(new ColorRGBA(.8f, .8f, .8f, 1f));
 		sFlare[14].setRenderState(tex[1]);
 
 		sFlare[15] = new FlareQuad("mainFlare", midPoint.x * .75f, midPoint.x * .75f);
 		sFlare[15].setOffset(1.0f,1.0f);
-		sFlare[15].setSolidColor(new ColorRGBA(.95f, .95f, .95f, 1f));
+		sFlare[15].setDefaultColor(new ColorRGBA(.95f, .95f, .95f, 1f));
 		sFlare[15].setRenderState(tex[0]);
 
 		for (int i = 0; i < sFlare.length; i++) {

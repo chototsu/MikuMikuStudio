@@ -64,7 +64,7 @@ public class HelloNode extends SimpleGame {
         // Move the box 2 in the y direction up
         b.setLocalTranslation(new Vector3f(0,2,0));
         // Give the box a solid color of blue.
-        b.setSolidColor(ColorRGBA.blue);
+        b.setDefaultColor(ColorRGBA.blue);
 
         Sphere s=new Sphere("My sphere",10,10,1f);
         // Do bounds for the sphere, but we'll use a BoundingBox this time

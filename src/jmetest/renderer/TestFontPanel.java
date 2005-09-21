@@ -63,7 +63,7 @@ public class TestFontPanel extends SimpleGame {
 		
 		Quad q1 = new Quad("Ortho Q1", 100, 100);
 		q1.setZOrder(1);
-		q1.setSolidColor(ColorRGBA.blue);
+		q1.setDefaultColor(ColorRGBA.blue);
 		q1.setLightCombineMode(LightState.OFF);
 		q1.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 		rootNode.detachChild(fpsNode);

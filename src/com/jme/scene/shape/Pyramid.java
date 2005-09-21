@@ -44,7 +44,7 @@ import com.jme.util.geom.BufferUtils;
  * the peak being on the positive y axis and the base being in the x-z plane.
  * 
  * @author Mark Powell
- * @version $Id: Pyramid.java,v 1.6 2005-09-20 18:45:26 renanse Exp $
+ * @version $Id: Pyramid.java,v 1.7 2005-09-21 17:52:54 renanse Exp $
  */
 public class Pyramid extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -73,7 +73,7 @@ public class Pyramid extends TriMesh {
 		setVertexData();
 		setNormalData();
 		setTextureData();
-	    setSolidColor(ColorRGBA.white);
+	    setDefaultColor(ColorRGBA.white);
 		setIndexData();
 	}
 

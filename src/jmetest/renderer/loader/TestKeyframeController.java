@@ -85,6 +85,7 @@ public class TestKeyframeController extends SimpleGame{
         Sphere big=new Sphere("big",9,15,10);
         big.setSolidColor(ColorRGBA.blue);
         Sphere thisone=new Sphere("blarg",9,15,1);
+        thisone.setSolidColor(ColorRGBA.white);
         kc=new KeyframeController();
         kc.setMorphingMesh(thisone);
         kc.setKeyframe(0,small);
@@ -96,7 +97,7 @@ public class TestKeyframeController extends SimpleGame{
         lightState.setEnabled(false);
         // Note: T L B C Already used
         KeyBindingManager.getKeyBindingManager().set("start_middle",KeyInput.KEY_Q);
-        KeyBindingManager.getKeyBindingManager().set("start_total",KeyInput.KEY_A);
+        KeyBindingManager.getKeyBindingManager().set("start_total",KeyInput.KEY_X);
         KeyBindingManager.getKeyBindingManager().set("toggle_wrap",KeyInput.KEY_Z);
         KeyBindingManager.getKeyBindingManager().set("start_end",KeyInput.KEY_E);
     }

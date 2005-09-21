@@ -44,7 +44,7 @@ import com.jme.util.geom.BufferUtils;
  * Cylinder is the origin.
  * 
  * @author Mark Powell
- * @version $Id: Cylinder.java,v 1.6 2005-09-15 17:13:44 renanse Exp $
+ * @version $Id: Cylinder.java,v 1.7 2005-09-21 17:52:54 renanse Exp $
  */
 public class Cylinder extends TriMesh {
 
@@ -137,7 +137,7 @@ public class Cylinder extends TriMesh {
         setGeometryData();
         setIndexData();
         
-        setSolidColor(ColorRGBA.white);
+        setDefaultColor(ColorRGBA.white);
     }
 
     private void setGeometryData() {

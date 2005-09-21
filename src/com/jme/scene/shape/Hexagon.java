@@ -43,7 +43,7 @@ import com.jme.util.geom.BufferUtils;
  * side length that is given in the constructor.
  * 
  * @author Joel Schuster
- * @version $Id: Hexagon.java,v 1.5 2005-09-15 17:13:42 renanse Exp $
+ * @version $Id: Hexagon.java,v 1.6 2005-09-21 17:52:55 renanse Exp $
  */
 public class Hexagon extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -82,7 +82,7 @@ public class Hexagon extends TriMesh {
 		setIndexData();
 		setTextureData();
 		setNormalData();
-	    setSolidColor(ColorRGBA.white);
+	    setDefaultColor(ColorRGBA.white);
 
 	}
 
@@ -164,6 +164,9 @@ public class Hexagon extends TriMesh {
 
 /*
  * $Log: not supported by cvs2svn $
+ * Revision 1.5  2005/09/15 17:13:42  renanse
+ * Removed Geometry and Spatial object arrays, fixed resulting errors, cleaned up license comments and imports and fixed all tests.  Also removed widget and ui packages.
+ *
  * Revision 1.4  2004/09/14 21:52:21  mojomonkey
  * Clean Up:
  * 1. Added serialVersionUID to those classes that needed it.

@@ -704,6 +704,12 @@ public class JmeBinaryWriter {
         writeEndTag("color");
 
         atts.clear();
+        if (triMesh.getDefaultColor()!=null)
+            atts.put("data",triMesh.getDefaultColor());
+        writeTag("defcolor",atts);
+        writeEndTag("defcolor");
+
+        atts.clear();
         for (int i=0;i<triMesh.getNumberOfUnits();i++){
             if (triMesh.getTextureBuffer(i)!=null) {
                 if (i!=0)

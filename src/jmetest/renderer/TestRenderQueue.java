@@ -58,7 +58,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.14 2005-09-20 21:51:35 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.15 2005-09-21 17:52:58 renanse Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -224,21 +224,21 @@ public class TestRenderQueue extends SimpleGame {
     Quad q1 = new Quad("Ortho Q1", 40, 40);
     q1.setLocalTranslation(new Vector3f(100+center.x,100+center.y,0));
     q1.setZOrder(1);
-    q1.setSolidColor(ColorRGBA.white);
+    q1.setDefaultColor(ColorRGBA.white);
     q1.setLightCombineMode(LightState.OFF);
     orthos.attachChild(q1);
 
     Quad q2 = new Quad("Ortho Q2", 100, 100);
     q2.setLocalTranslation(new Vector3f(60+center.x,60+center.y,0));
     q2.setZOrder(5);
-    q2.setSolidColor(ColorRGBA.red);
+    q2.setDefaultColor(ColorRGBA.red);
     q2.setLightCombineMode(LightState.OFF);
     orthos.attachChild(q2);
 
     Quad q3 = new Quad("Ortho Q3", 120, 60);
     q3.setLocalTranslation(new Vector3f(-20+center.x,-150+center.y,0));
     q3.setZOrder(2);
-    q3.setSolidColor(ColorRGBA.blue);
+    q3.setDefaultColor(ColorRGBA.blue);
     q3.setLightCombineMode(LightState.OFF);
     orthos.attachChild(q3);
 

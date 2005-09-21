@@ -109,7 +109,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.74 2005-09-21 00:28:06 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.75 2005-09-21 17:52:59 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -980,6 +980,9 @@ public class LWJGLRenderer extends Renderer {
                 prevColor = colors;
             } else {
                 GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+                ColorRGBA defCol = t.getDefaultColor();
+                if (defCol != null)
+                    GL11.glColor4f(defCol.r, defCol.g, defCol.b, defCol.a);
             }
         }
 

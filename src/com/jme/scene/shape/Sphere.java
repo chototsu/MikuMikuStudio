@@ -42,7 +42,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>Sphere</code> is um ... a sphere :)
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.9 2005-09-20 16:46:38 renanse Exp $
+ * @version $Id: Sphere.java,v 1.10 2005-09-21 17:52:54 renanse Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -137,7 +137,7 @@ public class Sphere extends TriMesh {
 
         setGeometryData();
         setIndexData();
-        setSolidColor(ColorRGBA.white);
+        setDefaultColor(ColorRGBA.white);
     }
 
 

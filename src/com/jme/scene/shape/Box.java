@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * a way as to generate an axis-aligned box.
  * 
  * @author Mark Powell
- * @version $Id: Box.java,v 1.16 2005-09-20 18:45:24 renanse Exp $
+ * @version $Id: Box.java,v 1.17 2005-09-21 17:52:55 renanse Exp $
  */
 public class Box extends TriMesh {
 	private static final long serialVersionUID = 1L;
@@ -163,7 +163,7 @@ public class Box extends TriMesh {
 
 		setVertexData();
 		setNormalData();
-		setSolidColor(ColorRGBA.white);
+		setDefaultColor(ColorRGBA.white);
 		setTextureData();
 		setIndexData();
 

@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.25 2005-09-20 16:46:41 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.26 2005-09-21 17:52:58 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -208,7 +208,7 @@ public class TestScenegraph extends SimpleGame {
         rootNode.setRenderState(cs);
 
         selectionBox = new Box("Selection", min.mult(1.25f), max.mult(1.25f));
-        selectionBox.setSolidColor(new ColorRGBA(0, 1, 0, 0.5f));
+        selectionBox.setDefaultColor(new ColorRGBA(0, 1, 0, 0.5f));
         selectionBox.setRenderState(as1);
         selectionBox.setModelBound(new BoundingSphere());
         selectionBox.updateModelBound();

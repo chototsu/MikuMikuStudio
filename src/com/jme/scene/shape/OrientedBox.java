@@ -114,7 +114,7 @@ public class OrientedBox extends TriMesh {
 	public void computeInformation() {
 		setVertexData();
 		setNormalData();
-		setSolidColor(meshColor);
+		setDefaultColor(meshColor);
 		setTextureData();
 		setIndexData();
 	}

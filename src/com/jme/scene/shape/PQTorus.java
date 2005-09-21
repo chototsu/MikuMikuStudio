@@ -43,7 +43,7 @@ import com.jme.util.geom.BufferUtils;
  * known as a pq torus.
  * 
  * @author Joshua Slack, Eric Woroshow
- * @version $Id: PQTorus.java,v 1.7 2005-09-20 18:45:26 renanse Exp $
+ * @version $Id: PQTorus.java,v 1.8 2005-09-21 17:52:56 renanse Exp $
  */
 public class PQTorus extends TriMesh {
 
@@ -87,7 +87,7 @@ public class PQTorus extends TriMesh {
 
 		setGeometryData();
 		setIndexData();
-		setSolidColor(ColorRGBA.white);
+		setDefaultColor(ColorRGBA.white);
 	}
 
 	private void setGeometryData() {

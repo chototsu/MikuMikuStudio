@@ -47,7 +47,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestSkybox</code>
  * @author Joshua Slack
- * @version $Id: TestSkybox.java,v 1.6 2005-09-15 17:13:21 renanse Exp $
+ * @version $Id: TestSkybox.java,v 1.7 2005-09-21 17:52:58 renanse Exp $
  */
 public class TestSkybox extends SimpleGame {
 
@@ -93,7 +93,7 @@ public class TestSkybox extends SimpleGame {
     s.setVBOInfo(new VBOInfo(true));
     s.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
 
-    Box b = new Box("Walls", new Vector3f(-0.75f, 0f, -0.75f), new Vector3f(0.75f, 0.75f, 0.75f));
+    Box b = new Box("box", new Vector3f(-25, 70, -45), 20, 20, 20);
     b.setModelBound(new BoundingBox());
     b.updateModelBound();
     b.setVBOInfo(new VBOInfo(true));

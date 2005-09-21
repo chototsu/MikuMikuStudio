@@ -77,7 +77,7 @@ public class TestLightStateController extends SimpleGame {
         LightSphere.setModelBound(new BoundingSphere());
         LightSphere.updateModelBound();
         LightSphere.setLightCombineMode(com.jme.scene.state.LightState.OFF);
-        LightSphere.setSolidColor(LightColor);
+        LightSphere.setDefaultColor(LightColor);
 
         //Create a new point light and fill out the properties
         PointLight pointLight = new PointLight();

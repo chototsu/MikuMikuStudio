@@ -42,7 +42,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>CompositeSphere</code> is um ... a CompositeSphere :)
  * 
  * @author Joshua Slack
- * @version $Id: CompositeSphere.java,v 1.4 2005-09-20 18:45:25 renanse Exp $
+ * @version $Id: CompositeSphere.java,v 1.5 2005-09-21 17:52:55 renanse Exp $
  */
 public class CompositeSphere extends CompositeMesh {
 	private static final long serialVersionUID = 1L;
@@ -145,7 +145,7 @@ public class CompositeSphere extends CompositeMesh {
 		if (updateBuffers) {
 			setGeometryData();
 			setIndexData();
-		    setSolidColor(ColorRGBA.white);
+            setDefaultColor(ColorRGBA.white);
 		}
 
 	}

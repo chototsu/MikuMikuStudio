@@ -260,6 +260,10 @@ public class JmeBinaryReader {
             Geometry geo=(Geometry) s.pop();
             geo.setColorBuffer((FloatBuffer) attributes.get("data"));
             s.push(geo);
+        } else if (tagName.equals("defcolor")){
+            Geometry geo=(Geometry) s.pop();
+            geo.setDefaultColor((ColorRGBA) attributes.get("data"));
+            s.push(geo);
         } else if (tagName.equals("index")){
             TriMesh m=(TriMesh) s.pop();
             m.setIndexBuffer(BufferUtils.createIntBuffer((int[]) attributes.get("data")));
@@ -506,6 +510,7 @@ public class JmeBinaryReader {
         } else if (tagName.equals("vertex")){
         } else if (tagName.equals("normal")){
         } else if (tagName.equals("color")){
+        } else if (tagName.equals("defcolor")){
         } else if (tagName.equals("texturecoords")){
         } else if (tagName.equals("index")){
         } else if (tagName.equals("primitive")){

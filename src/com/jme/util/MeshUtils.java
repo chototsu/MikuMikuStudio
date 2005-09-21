@@ -252,7 +252,7 @@ final public class MeshUtils {
                     indBuf);
         }
         if (bWantColors)
-            rpkMesh.setSolidColor(ColorRGBA.white);
+            rpkMesh.setDefaultColor(ColorRGBA.white);
 
         return rpkMesh;
     }
@@ -406,7 +406,7 @@ final public class MeshUtils {
                     indBuf);
         }
         if (bWantColors)
-            rpkMesh.setSolidColor(ColorRGBA.white);
+            rpkMesh.setDefaultColor(ColorRGBA.white);
         return rpkMesh;
     }
 }
