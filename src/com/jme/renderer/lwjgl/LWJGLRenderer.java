@@ -109,7 +109,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.75 2005-09-21 17:52:59 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.76 2005-09-21 19:06:38 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -895,6 +895,7 @@ public class LWJGLRenderer extends Renderer {
     private void postdrawGeometry() {
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPopMatrix();
+        GL11.glFlush();
     }
 
     /**
