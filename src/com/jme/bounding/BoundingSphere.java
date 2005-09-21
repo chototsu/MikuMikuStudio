@@ -54,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.34 2005-09-21 19:16:16 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.35 2005-09-21 19:41:13 renanse Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -573,7 +573,7 @@ public class BoundingSphere extends BoundingVolume {
      * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
      */
     public boolean intersectsSphere(BoundingSphere bs) {
-        Vector3f diff = getCenter().subtract(bs.getCenter());
+        Vector3f diff = getCenter().subtract(bs.getCenter(), _compVect1);
         float rsum = getRadius() + bs.getRadius();
         return (diff.dot(diff) <= rsum * rsum);
     }
