@@ -46,8 +46,7 @@ import com.jme.renderer.Renderer;
 import com.jme.scene.Controller;
 import com.jme.scene.Geometry;
 import com.jme.scene.TriMesh;
-import com.jme.scene.state.LightState;
-import com.jme.scene.state.TextureState;
+import com.jme.scene.state.*;
 import com.jme.util.geom.BufferUtils;
 
 /**
@@ -66,7 +65,7 @@ import com.jme.util.geom.BufferUtils;
  *       related to picking starting angles was kindly donated by Java Cool Dude.
  *
  * @author Joshua Slack
- * @version $Id: ParticleManager.java,v 1.5 2005-09-15 17:14:07 renanse Exp $
+ * @version $Id: ParticleManager.java,v 1.6 2005-09-21 19:03:31 irrisor Exp $
  *
  * TODO Points and Lines (not just quads)
  * TODO Particles stretched based on historical path
@@ -946,10 +945,10 @@ public class ParticleManager extends Controller {
         
         manager.getParticles().addController(manager);
         
-        for (int i = 0; i < getParticles().getRenderStateList().length; i++) {
-            if (getParticles().getRenderStateList()[i] != null) {
+        for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
+            if (getParticles().getRenderState(i) != null) {
                 manager.getParticles().setRenderState(getParticles()
-                        .getRenderStateList()[i]);
+                        .getRenderState(i));
             }
         }
         

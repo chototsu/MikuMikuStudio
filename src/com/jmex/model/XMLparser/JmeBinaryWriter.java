@@ -198,8 +198,8 @@ public class JmeBinaryWriter {
             }
         }
 
-        for (int i=0;i<s.getRenderStateList().length;i++){
-            RenderState evaluRend=s.getRenderStateList()[i];
+        for (int i=0;i<RenderState.RS_MAX_STATE;i++){
+            RenderState evaluRend=s.getRenderState(i);
             if (evaluRend==null) continue;
             if (entireScene.containsKey(evaluRend)){
                 if (!sharedObjects.containsKey(evaluRend))
@@ -843,10 +843,8 @@ public class JmeBinaryWriter {
      * @throws IOException
      */
     private void writeRenderStates(Spatial spatial) throws IOException {
-        RenderState[] states=spatial.getRenderStateList();
-        if (states==null) return;
-        for (int i=0;i<states.length;i++)
-            writeRenderState(states[i]);
+        for (int i=0;i<RenderState.RS_MAX_STATE;i++)
+            writeRenderState(spatial.getRenderState( i ));
     }
 
     /**

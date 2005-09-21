@@ -57,10 +57,10 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.74 2005-09-20 23:19:40 renanse Exp $
+ * @version $Id: Spatial.java,v 1.75 2005-09-21 19:03:29 irrisor Exp $
  */
 public abstract class Spatial implements Serializable {
-	
+
 	public static final int NODE = 1;
 	public static final int GEOMETRY = 2;
 	public static final int TRIMESH = 4;
@@ -107,7 +107,7 @@ public abstract class Spatial implements Serializable {
     protected final static RenderState[] currentStates = new RenderState[RenderState.RS_MAX_STATE];
 
     /** The render states of this spatial. */
-    protected RenderState[] renderStateList;
+    private RenderState[] renderStateList;
 
     protected int renderQueueMode = Renderer.QUEUE_INHERIT;
 
@@ -146,7 +146,7 @@ public abstract class Spatial implements Serializable {
     /**
      * Constructor instantiates a new <code>Spatial</code> object setting the
      * rotation, translation and scale value to defaults.
-     * 
+     *
      * @param name
      *            the name of the scene element. This is required for
      *            identification and comparision purposes.
@@ -164,7 +164,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Sets the name of this spatial.
-     * 
+     *
      * @param name
      *            The spatial's new name.
      */
@@ -174,7 +174,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Returns the name of this spatial.
-     * 
+     *
      * @return This spatial's name.
      */
     public String getName() {
@@ -183,7 +183,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Adds a Controller to this Spatial's list of controllers.
-     * 
+     *
      * @param controller
      *            The Controller to add
      * @see com.jme.scene.Controller
@@ -197,7 +197,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Removes a Controller to this Spatial's list of controllers, if it exist.
-     * 
+     *
      * @param controller
      *            The Controller to remove
      * @return True if the Controller was in the list to remove.
@@ -212,7 +212,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Returns the controller in this list of controllers at index i.
-     * 
+     *
      * @param i
      *            The index to get a controller from.
      * @return The controller at index i.
@@ -227,7 +227,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Returns the ArrayList that contains this spatial's Controllers.
-     * 
+     *
      * @return This spatial's geometricalControllers.
      */
     public ArrayList getControllers() {
@@ -238,10 +238,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getWorldBound</code> retrieves the world bound at this node
      * level.
-     * 
+     *
      * @return the world bound at this level.
      */
     public BoundingVolume getWorldBound() {
@@ -249,12 +249,12 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setWorldBound</code> sets the world bound for this node level.
      * This function should only be used in rare situations. In most cases,
      * users will let jME's engine set the world bound and will instead call
      * setModelBound on the leaf nodes.
-     * 
+     *
      * @param worldBound
      *            the world bound at this level.
      * @see com.jme.scene.Geometry#setModelBound(com.jme.bounding.BoundingVolume)
@@ -264,10 +264,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>onDraw</code> checks the node with the camera to see if it should
      * be culled, if not, the node's draw method is called.
-     * 
+     *
      * @param r
      *            the renderer used for display.
      */
@@ -296,27 +296,25 @@ public abstract class Spatial implements Serializable {
      * <code>getType</code> returns an int representing the class type
      * of this Spatial.  This allows avoidance of instanceof.  Comparisons
      * are to be done via bitwise & allowing checking of superclass instance.
-     * 
-     * @return
      */
     public abstract int getType();
 
     /**
-     * 
+     *
      * <code>draw</code> abstract method that handles drawing data to the
      * renderer if it is geometry and passing the call to it's children if it is
      * a node.
-     * 
+     *
      * @param r
      *            the renderer used for display.
      */
     public abstract void draw(Renderer r);
 
     /**
-     * 
+     *
      * <code>getWorldRotation</code> retrieves the absolute rotation of the
      * Spatial.
-     * 
+     *
      * @return the Spatial's world rotation matrix.
      */
     public Quaternion getWorldRotation() {
@@ -324,10 +322,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getWorldTranslation</code> retrieves the absolute translation of
      * the spatial.
-     * 
+     *
      * @return the world's tranlsation vector.
      */
     public Vector3f getWorldTranslation() {
@@ -335,10 +333,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>getWorldScale</code> retrieves the absolute scale factor of the
      * spatial.
-     * 
+     *
      * @return the world's scale factor.
      */
     public Vector3f getWorldScale() {
@@ -348,33 +346,33 @@ public abstract class Spatial implements Serializable {
     /**
      * <code>setCullMode</code> sets how scene culling should work on this
      * spatial during drawing.
-     * 
+     *
      * CULL_DYNAMIC: Determine via the defined Camera planes whether or not this
      * Spatial should be culled.
-     * 
+     *
      * CULL_ALWAYS: Always throw away this object and any children during draw
      * commands.
-     * 
+     *
      * CULL_NEVER: Never throw away this object (always draw it)
-     * 
+     *
      * NOTE: You must set this AFTER attaching to a parent or it will be reset
      * with the parent's cullMode value.
-     * 
+     *
      * @param cullMode
      *            one of CULL_DYNAMIC, CULL_ALWAYS or CULL_NEVER
      */
     public abstract void setCullMode(int cullMode);
 
-    
+
     /**
      * @see #setCullMode(int)
-     * 
+     *
      * @return the cull mode of this spatial
      */
     public int getCullMode() {
         return cullMode;
     }
-    
+
     /**
      * 
      * <code>updateGeometricState</code> updates all the geometry information
@@ -485,8 +483,8 @@ public abstract class Spatial implements Serializable {
             propagateStatesFromRoot(parentStates);
         } else {
             for (int x = 0; x < RenderState.RS_MAX_STATE; x++) {
-                if (renderStateList[x] != null)
-                    parentStates[x].push(renderStateList[x]);
+                if (getRenderState(x) != null)
+                    parentStates[x].push(getRenderState(x));
             }
         }
 
@@ -495,7 +493,7 @@ public abstract class Spatial implements Serializable {
         // restore previous if we are not the initiator
         if (!initiator) {
             for (int x = 0; x < RenderState.RS_MAX_STATE; x++)
-                if (renderStateList[x] != null)
+                if (getRenderState(x) != null)
                     parentStates[x].pop();
         }
 
@@ -527,8 +525,8 @@ public abstract class Spatial implements Serializable {
 
         // push states onto current render state stack
         for (int x = 0; x < RenderState.RS_MAX_STATE; x++)
-            if (renderStateList[x] != null)
-                states[x].push(renderStateList[x]);
+            if (getRenderState(x) != null)
+                states[x].push(getRenderState(x));
     }
 
     /**
@@ -682,6 +680,10 @@ public abstract class Spatial implements Serializable {
      * @return the old render state.
      */
     public RenderState setRenderState(RenderState rs) {
+        if ( renderStateList == null )
+        {
+            renderStateList = new RenderState[RenderState.RS_MAX_STATE];
+        }
         RenderState oldState = renderStateList[rs.getType()];
         renderStateList[rs.getType()] = rs;
         return oldState;
@@ -692,8 +694,8 @@ public abstract class Spatial implements Serializable {
      * 
      * @return This spatial's state array.
      */
-    public RenderState[] getRenderStateList() {
-        return renderStateList;
+    public RenderState getRenderState( int type ) {
+        return renderStateList != null ? renderStateList[type] : null;
     }
 
     /**
@@ -704,7 +706,10 @@ public abstract class Spatial implements Serializable {
      * @see com.jme.scene.state.RenderState#getType()
      */
     public void clearRenderState(int renderStateType) {
-        renderStateList[renderStateType] = null;
+        if ( renderStateList != null )
+        {
+            renderStateList[renderStateType] = null;
+        }
     }
 
     public void setRenderQueueMode(int renderQueueMode) {
@@ -917,8 +922,11 @@ public abstract class Spatial implements Serializable {
         store.setLocalTranslation(new Vector3f(getLocalTranslation()));
         store.setLocalRotation(new Quaternion(getLocalRotation()));
         store.setLocalScale(new Vector3f(getLocalScale()));
-        for (int i = 0; i < renderStateList.length; i++) {
-            store.renderStateList[i] = renderStateList[i];
+        if ( renderStateList != null )
+        {
+            for (int i = 0; i < renderStateList.length; i++) {
+                store.setRenderState( renderStateList[i] );
+            }
         }
         Iterator I = geometricalControllers.iterator();
         while (I.hasNext()) {

@@ -52,7 +52,7 @@ import com.jme.system.JmeException;
  * 
  * @author David Bitkowski
  * @author Jack Lindamood (javadoc only)
- * @version $Id: Skybox.java,v 1.10 2005-09-20 21:51:34 renanse Exp $
+ * @version $Id: Skybox.java,v 1.11 2005-09-21 19:03:29 irrisor Exp $
  */
 public class Skybox extends Node {
     private static final long serialVersionUID = 1L;
@@ -149,7 +149,7 @@ public class Skybox extends Node {
         }
 
         TextureState ts = (TextureState) skyboxQuads[direction]
-                .getRenderStateList()[RenderState.RS_TEXTURE];
+                .getRenderState(RenderState.RS_TEXTURE);
         if (ts == null) {
             ts = DisplaySystem.getDisplaySystem().getRenderer()
                     .createTextureState();
@@ -251,7 +251,7 @@ public class Skybox extends Node {
     public void preloadTextures() {
         for (int x = 0; x < 6; x++) {
             TextureState ts = (TextureState) skyboxQuads[x]
-                    .getRenderStateList()[RenderState.RS_TEXTURE];
+                    .getRenderState(RenderState.RS_TEXTURE);
             if (ts != null)
                 ts.apply();
         }

@@ -99,11 +99,11 @@ public class SharedMesh extends TriMesh {
 	public void setTarget(TriMesh target) {
 		this.target = target;
 
-		RenderState[] states = target.getRenderStateList();
-		for (int i = 0; i < states.length; i++) {
-			if (states[i] != null) {
-				setRenderState(states[i]);
-			}
+		for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
+            RenderState renderState = target.getRenderState( i );
+            if (renderState != null) {
+                setRenderState(renderState );
+            }
 		}
 		
 		this.localRotation.set(target.getLocalRotation());

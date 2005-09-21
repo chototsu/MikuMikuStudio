@@ -42,10 +42,7 @@ import com.jme.input.KeyInput;
 import com.jme.light.AmbientLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.Line;
-import com.jme.scene.SharedMesh;
-import com.jme.scene.Spatial;
-import com.jme.scene.Text;
+import com.jme.scene.*;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
@@ -108,19 +105,37 @@ public class GraphBrowser extends StressApp {
         lightState.attach( light );
         box = new Box( "box", new Vector3f( -1, -1, -1 ), new Vector3f( 1, 1, 1 ) );
 
+        MaterialState material = display.getRenderer().createMaterialState();
+        material.setEnabled( true );
+        ColorRGBA white = new ColorRGBA( 1, 1, 1, 1 );
+        material.setDiffuse( white );
+        rootNode.setRenderState( material );
+
         for ( int i = accessor.getNodeCount() - 1; i >= 0; i-- ) {
             Object node = accessor.getNode( i );
             Spatial nodeVis = new SharedMesh( String.valueOf( node ), box );
             nodeVis.getLocalTranslation().set( layouter.getCoordinates( node ) );
 
-            MaterialState material = display.getRenderer().createMaterialState();
-            material.setEnabled( true );
-            material.setDiffuse( colorForNode( node ) );
-            nodeVis.setRenderState( material );
+            ColorRGBA color = colorForNode( node );
+            if ( !white.equals( color ) )
+            {
+                material = display.getRenderer().createMaterialState();
+                material.setEnabled( true );
+                material.setDiffuse( color );
+                nodeVis.setRenderState( material );
+            }
 
             rootNode.attachChild( nodeVis );
             nodes.put( node, nodeVis );
         }
+
+        Node lines = new Node("lines");
+        material = display.getRenderer().createMaterialState();
+        material.setEnabled( true );
+        material.setDiffuse( white );
+        material.setEmissive( white );
+        lines.setRenderState( material );
+        rootNode.attachChild( lines );
 
         for ( int i = accessor.getEdgeCount() - 1; i >= 0; i-- ) {
             Object edge = accessor.getEdge( i );
@@ -131,15 +146,18 @@ public class GraphBrowser extends StressApp {
             Vector3f[] points = {fromVis.getLocalTranslation(), toVis.getLocalTranslation()};
             Line edgeVis = new Line( edge.toString(), points, null, null, null );
 
-            MaterialState material = display.getRenderer().createMaterialState();
-            material.setEnabled( true );
             ColorRGBA color = colorForEdge( edge );
-            material.setDiffuse( color );
-            material.setEmissive( color );
-            edgeVis.setRenderState( material );
+            if ( !white.equals( color ) )
+            {
+                material = display.getRenderer().createMaterialState();
+                material.setEnabled( true );
+                material.setDiffuse( color );
+                material.setEmissive( color );
+                edgeVis.setRenderState( material );
+            }
             edgeVis.setLightCombineMode( LightState.COMBINE_CLOSEST );
 
-            rootNode.attachChild( edgeVis );
+            lines.attachChild( edgeVis );
             edgeVis.updateRenderState();
             edges.put( edge, edgeVis );
         }

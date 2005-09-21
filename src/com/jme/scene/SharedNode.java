@@ -82,11 +82,11 @@ private static final long serialVersionUID = 1L;
 			node.setTextureCombineMode(ntarget.getTextureCombineMode());
 			node.setZOrder(ntarget.getZOrder());
 			
-			RenderState[] states = ntarget.getRenderStateList();
-			for (int i = 0; i < states.length; i++) {
-				if (states[i] != null) {
-					node.setRenderState(states[i]);
-				}
+			for (int i = 0; i < RenderState.RS_MAX_STATE; i++) {
+                RenderState state = ntarget.getRenderState( i );
+                if (state != null) {
+                    node.setRenderState(state );
+                }
 			}
 			
 			parent.attachChild(node);

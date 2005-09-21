@@ -97,7 +97,7 @@ import com.jmex.effects.ParticleManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.16 2005-09-21 08:20:05 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.17 2005-09-21 19:03:33 irrisor Exp $
  *
  */
 
@@ -1715,7 +1715,7 @@ public class RenParticleEditor extends JFrame {
         
 
         private void loadApplyTexture() {
-            TextureState ts = (TextureState)rootNode.getRenderStateList()[RenderState.RS_TEXTURE];
+            TextureState ts = (TextureState)rootNode.getRenderState(RenderState.RS_TEXTURE);
             ts.setTexture(
                     TextureManager.loadTexture(
                             newTexture.getAbsolutePath(),
