@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Geometry.java,v 1.79 2005-09-21 19:03:28 irrisor Exp $
+ * @version $Id: Geometry.java,v 1.80 2005-09-21 19:10:58 renanse Exp $
  */
 public abstract class Geometry extends Spatial implements Serializable {
 
@@ -82,13 +82,13 @@ public abstract class Geometry extends Spatial implements Serializable {
 
 	/** The geometry's VBO information. **/
 	protected VBOInfo vboInfo;
-
+	
 	public RenderState[] states = new RenderState[RenderState.RS_MAX_STATE];
 
 	/** Non -1 values signal this geometry is a clone of grouping "cloneID". */
 	private int cloneID = -1;
 
-    private ColorRGBA defaultColor;
+    private ColorRGBA defaultColor = ColorRGBA.white;
 
 	/**
 	 * Empty Constructor to be used internally only.
@@ -464,8 +464,9 @@ public abstract class Geometry extends Spatial implements Serializable {
 	 *
 	 */
 	public void applyStates() {
+		RenderState tempState = null;
 		for (int i = 0; i < states.length; i++) {
-            RenderState tempState = states[i];
+			tempState = states[i];
 			if (tempState != null) {
 				if (tempState != currentStates[i]) {
 					tempState.apply();
