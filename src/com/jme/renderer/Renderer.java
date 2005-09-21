@@ -78,7 +78,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.54 2005-09-20 16:46:40 renanse Exp $
+ * @version $Id: Renderer.java,v 1.55 2005-09-21 19:25:41 renanse Exp $
  */
 public abstract class Renderer {
 
@@ -543,6 +543,12 @@ public abstract class Renderer {
      *            the mesh to be rendered.
      */
     public abstract void draw(CompositeMesh c);
+    
+    /**
+      * <code>flush</code> tells opengl to finish all currently waiting
+     * commands in the buffer.
+     */
+    public abstract void flush();
     
     /**
      * Get the render queue associated with this Renderer.
