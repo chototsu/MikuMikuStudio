@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.77 2005-09-21 20:14:52 renanse Exp $
+ * @version $Id: Spatial.java,v 1.78 2005-09-21 20:16:43 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -923,6 +923,9 @@ public abstract class Spatial implements Serializable {
         store.setLocalScale(new Vector3f(getLocalScale()));
         if ( renderStateList != null )
         {
+            if (store.renderStateList == null)
+                store.renderStateList = new RenderState[RenderState.RS_MAX_STATE];
+
             for (int i = 0; i < renderStateList.length; i++) {
                 store.renderStateList[i] = renderStateList[i];
             }

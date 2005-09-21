@@ -78,6 +78,7 @@ public class TestOBBTree extends SimpleGame {
 		results = new TriangleCollisionResults();
 		s = new CompositeSphere("sphere", 10, 10, 1);
 		s.updateCollisionTree();
+        s.setSolidColor(ColorRGBA.white);
 		s.setModelBound(new BoundingBox());
 		s.updateModelBound();
 
@@ -86,6 +87,7 @@ public class TestOBBTree extends SimpleGame {
 		r = new PQTorus("tort", 5, 4, 2f, .5f, 128, 16);
 		r.updateCollisionTree();
 		r.setLocalTranslation(new Vector3f(0, 0, 0));
+        r.setSolidColor(ColorRGBA.white);
 		r.setModelBound(new BoundingBox());
 		r.updateModelBound();
 
