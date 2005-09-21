@@ -58,7 +58,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.8 2005-09-21 20:55:16 renanse Exp $
+ * @version $Id: Debugger.java,v 1.9 2005-09-21 20:58:43 renanse Exp $
  */
 public final class Debugger {
 
@@ -228,6 +228,7 @@ public final class Debugger {
             FloatBuffer norms = g.getNormalBuffer();
             FloatBuffer verts = g.getVertexBuffer();
             if (norms != null && verts != null  && norms.capacity() == verts.capacity()) {
+                r.flush(); // force buffer to be let go.
                 FloatBuffer lineVerts = normalLines.getVertexBuffer();
                 if (lineVerts.capacity() < (6 * g.getVertQuantity())) {
                     lineVerts = BufferUtils.createVector3Buffer(g.getVertQuantity() * 2);
@@ -260,7 +261,6 @@ public final class Debugger {
                 normalLines.setLocalTranslation(g.getWorldTranslation());
                 normalLines.setLocalScale(g.getWorldScale());
                 normalLines.setLocalRotation(g.getWorldRotation());
-                r.flush(); // force buffer to be let go.
                 normalLines.draw(r);
                 r.flush(); // force buffer to be let go.
             }
