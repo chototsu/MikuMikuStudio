@@ -58,7 +58,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.9 2005-09-21 20:58:43 renanse Exp $
+ * @version $Id: Debugger.java,v 1.10 2005-09-21 22:20:51 renanse Exp $
  */
 public final class Debugger {
 
@@ -112,7 +112,7 @@ public final class Debugger {
             boundsZState = r.createZBufferState();
         }
         
-        if (spat.getWorldBound() != null)
+        if (spat.getWorldBound() != null && spat.getCullMode() != Spatial.CULL_ALWAYS)
             drawBounds(spat.getWorldBound(), r);
         if (doChildren && (spat.getType() & Spatial.NODE) != 0) {
             Node n = (Node)spat;
@@ -223,47 +223,51 @@ public final class Debugger {
             normZState = r.createZBufferState();
         }
 
-        if ((spat.getType() & Spatial.GEOMETRY) != 0) {
+        if ((spat.getType() & Spatial.GEOMETRY) != 0 && spat.getCullMode() != Spatial.CULL_ALWAYS) {
             Geometry g = (Geometry)spat;
-            FloatBuffer norms = g.getNormalBuffer();
-            FloatBuffer verts = g.getVertexBuffer();
-            if (norms != null && verts != null  && norms.capacity() == verts.capacity()) {
-                r.flush(); // force buffer to be let go.
-                FloatBuffer lineVerts = normalLines.getVertexBuffer();
-                if (lineVerts.capacity() < (6 * g.getVertQuantity())) {
-                    lineVerts = BufferUtils.createVector3Buffer(g.getVertQuantity() * 2);
-                    normalLines.setVertexBuffer(lineVerts);
-                } else {
-                    normalLines.setVertQuantity(2 * g.getVertQuantity());
-                    lineVerts.clear();
-                    lineVerts.limit(3 * normalLines.getVertQuantity());
+            int state = r.getCamera().getPlaneState();
+            if (g.getWorldBound() == null || r.getCamera().contains(g.getWorldBound()) != Camera.OUTSIDE_FRUSTUM) {
+                FloatBuffer norms = g.getNormalBuffer();
+                FloatBuffer verts = g.getVertexBuffer();
+                if (norms != null && verts != null  && norms.capacity() == verts.capacity()) {
+                    FloatBuffer lineVerts = normalLines.getVertexBuffer();
+                    r.flush();
+                    if (lineVerts.capacity() < (6 * g.getVertQuantity())) {
+                        lineVerts = BufferUtils.createVector3Buffer(g.getVertQuantity() * 2);
+                        normalLines.setVertexBuffer(lineVerts);
+                    } else {
+                        normalLines.setVertQuantity(2 * g.getVertQuantity());
+                        lineVerts.clear();
+                        lineVerts.limit(3 * normalLines.getVertQuantity());
+                    }
+                    
+                    verts.rewind();
+                    norms.rewind();
+                    lineVerts.rewind();
+                    
+                    for (int x = 0; x < g.getVertQuantity(); x++ ) {
+                        _normalVect.set(verts.get(), verts.get(), verts.get());
+                        lineVerts.put(_normalVect.x);
+                        lineVerts.put(_normalVect.y);
+                        lineVerts.put(_normalVect.z);
+    
+                        _normalVect.addLocal(norms.get()*size, norms.get()*size, norms.get()*size);
+                        lineVerts.put(_normalVect.x);
+                        lineVerts.put(_normalVect.y);
+                        lineVerts.put(_normalVect.z);
+                    }
+                    
+                    normalLines.setDefaultColor(NORMAL_COLOR);
+                    normalLines.generateIndices();
+                    setNormStates();
+                    normalLines.setLocalTranslation(g.getWorldTranslation());
+                    normalLines.setLocalScale(g.getWorldScale());
+                    normalLines.setLocalRotation(g.getWorldRotation());
+                    normalLines.draw(r);
+                    r.flush();
                 }
-                
-                verts.rewind();
-                norms.rewind();
-                lineVerts.rewind();
-                
-                for (int x = 0; x < g.getVertQuantity(); x++ ) {
-                    _normalVect.set(verts.get(), verts.get(), verts.get());
-                    lineVerts.put(_normalVect.x);
-                    lineVerts.put(_normalVect.y);
-                    lineVerts.put(_normalVect.z);
-
-                    _normalVect.addLocal(norms.get()*size, norms.get()*size, norms.get()*size);
-                    lineVerts.put(_normalVect.x);
-                    lineVerts.put(_normalVect.y);
-                    lineVerts.put(_normalVect.z);
-                }
-                
-                normalLines.setDefaultColor(NORMAL_COLOR);
-                normalLines.generateIndices();
-                setNormStates();
-                normalLines.setLocalTranslation(g.getWorldTranslation());
-                normalLines.setLocalScale(g.getWorldScale());
-                normalLines.setLocalRotation(g.getWorldRotation());
-                normalLines.draw(r);
-                r.flush(); // force buffer to be let go.
             }
+            r.getCamera().setPlaneState(state);
         }
         
         if (doChildren && (spat.getType() & Spatial.NODE) != 0) {
