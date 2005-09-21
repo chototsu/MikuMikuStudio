@@ -37,7 +37,6 @@ import java.nio.FloatBuffer;
 import java.util.logging.Level;
 
 import com.jme.math.FastMath;
-import com.jme.math.Matrix3f;
 import com.jme.math.Plane;
 import com.jme.math.Quaternion;
 import com.jme.math.Ray;
@@ -55,7 +54,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
  * 
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.33 2005-09-20 21:51:32 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.34 2005-09-21 19:16:16 renanse Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
