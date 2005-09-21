@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * to access OpenGL for light processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.11 2005-09-15 17:12:53 renanse Exp $
+ * @version $Id: LWJGLLightState.java,v 1.12 2005-09-21 18:04:41 Mojomonkey Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -89,9 +89,9 @@ public class LWJGLLightState extends LightState {
 	 */
 	public void apply() {
 		int quantity = getQuantity();
-		ambient[0] = 0;
-		ambient[1] = 0;
-		ambient[2] = 0;
+		ambient[0] = 1;
+		ambient[1] = 1;
+		ambient[2] = 1;
 		ambient[3] = 1;
 
 		color[0] = 0;
