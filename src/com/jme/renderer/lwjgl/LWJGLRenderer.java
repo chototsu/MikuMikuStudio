@@ -109,7 +109,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.73 2005-09-20 19:42:14 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.74 2005-09-21 00:28:06 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -1005,6 +1005,8 @@ public class LWJGLRenderer extends Renderer {
                 } else {
                     GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
                 }
+            } else if (prevTex[i] != textures && textures == null) {
+                GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
             }
             prevTex[i] = textures;
         }
