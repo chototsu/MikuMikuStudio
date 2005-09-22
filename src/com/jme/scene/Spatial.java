@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.79 2005-09-21 23:53:42 renanse Exp $
+ * @version $Id: Spatial.java,v 1.80 2005-09-22 00:44:36 renanse Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -272,7 +272,8 @@ public abstract class Spatial implements Serializable {
      *            the renderer used for display.
      */
     public void onDraw(Renderer r) {
-        if (cullMode == CULL_ALWAYS) {
+        int cm = getCullMode();
+        if (cm == CULL_ALWAYS) {
             return;
         }
 
@@ -282,11 +283,11 @@ public abstract class Spatial implements Serializable {
         // check to see if we can cull this node
         frustrumIntersects = (parent != null ? parent.frustrumIntersects
                 : Camera.INTERSECTS_FRUSTUM);
-        if (cullMode == CULL_DYNAMIC && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
+        if (cm == CULL_DYNAMIC && frustrumIntersects == Camera.INTERSECTS_FRUSTUM) {
             frustrumIntersects = camera.contains(worldBound);
         }
 
-        if (cullMode == CULL_NEVER || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
+        if (cm == CULL_NEVER || frustrumIntersects != Camera.OUTSIDE_FRUSTUM) {
             draw(r);
         }
         camera.setPlaneState(state);
