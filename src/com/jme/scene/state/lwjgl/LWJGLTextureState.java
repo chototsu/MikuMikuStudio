@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.42 2005-09-15 17:12:54 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.43 2005-09-22 01:44:44 renanse Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -185,7 +185,7 @@ public class LWJGLTextureState extends TextureState {
 				index = GL13.GL_TEXTURE0 + i;
 
 				if (supportsMultiTexture) {
-					GL13.glActiveTexture(index);
+                    GL13.glActiveTexture(index);
 				}
 
 				if (texture == null) {
@@ -522,12 +522,12 @@ public class LWJGLTextureState extends TextureState {
 			}
 
 			if (supportsMultiTexture) {
-				GL13.glActiveTexture(GL13.GL_TEXTURE0);
+                GL13.glActiveTexture(GL13.GL_TEXTURE0);
 			}
 		} else {
 			if (supportsMultiTexture) {
 				for (int i = 0; i < numTexUnits; i++) {
-					GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
+                    GL13.glActiveTexture(GL13.GL_TEXTURE0 + i);
 					GL11.glDisable(GL11.GL_TEXTURE_2D);
 					currentTexture[i] = null;
 				}
@@ -540,10 +540,10 @@ public class LWJGLTextureState extends TextureState {
 
 	public RenderState extract(Stack stack, Spatial spat) {
 		int mode = spat.getTextureCombineMode();
-		if (mode == REPLACE)
+        if (mode == REPLACE || (mode != OFF && stack.size() == 1) )
 			return (LWJGLTextureState) stack.peek();
 
-		// accumulate the lights in the stack into a single LightState object
+		// accumulate the textures in the stack into a single LightState object
 		LWJGLTextureState newTState = new LWJGLTextureState();
 		boolean foundEnabled = false;
 		Object states[] = stack.toArray();
