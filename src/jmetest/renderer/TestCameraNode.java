@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.11 2005-09-15 17:13:22 renanse Exp $
+ * @version $Id: TestCameraNode.java,v 1.12 2005-09-22 20:33:29 renanse Exp $
  */
 public class TestCameraNode extends BaseGame {
     private TriMesh t;
@@ -70,7 +70,6 @@ public class TestCameraNode extends BaseGame {
     private Node root;
     private Node scene;
     private InputHandler input;
-    private Thread thread;
     private Timer timer;
 
     /**

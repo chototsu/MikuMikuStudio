@@ -36,6 +36,7 @@ import java.nio.FloatBuffer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
+import com.jme.light.AmbientLight;
 import com.jme.light.PointLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -55,7 +56,7 @@ import com.jme.util.geom.BufferUtils;
  * mapping technique outlined in the paper "Parallax Mapping with Offset Limiting:
  * A PerPixel Approximation of Uneven Surfaces".
  * @author Eric Woroshow
- * @version $Id: TestFragmentProgramState.java,v 1.4 2005-09-20 21:51:36 renanse Exp $
+ * @version $Id: TestFragmentProgramState.java,v 1.5 2005-09-22 20:33:29 renanse Exp $
  */
 public class TestFragmentProgramState extends SimpleGame {
     private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
@@ -81,20 +82,24 @@ public class TestFragmentProgramState extends SimpleGame {
         //Set up two lights in the scene
         PointLight light0 = new PointLight();
         light0.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
-        light0.setAmbient(new ColorRGBA(0.1f, 0.1f, 0.1f, 0.1f));
         light0.setLocation(new Vector3f(2f, 4f, 1f));
         light0.setEnabled(true);
         
         PointLight light1 = new PointLight();
         light1.setDiffuse(new ColorRGBA(1.0f, 0.5f, 0.0f, 1.0f));
-        light1.setAmbient(new ColorRGBA(0.1f, 0.1f, 0.1f, 1.0f));
         light1.setLocation(new Vector3f(2f, 2f, 1f));
         light1.setEnabled(true);
+        
+        AmbientLight light2 = new AmbientLight();
+        light2.setEnabled(true);
+        light2.setAmbient(new ColorRGBA(0,0,0,1));
+        
 
-        lightState = display.getRenderer().createLightState();
+        lightState.detachAll();
         lightState.setEnabled(true);
         lightState.attach(light0);
         lightState.attach(light1);
+        lightState.attach(light2);
         
         rootNode.setRenderState(lightState);        
     }
@@ -179,8 +184,8 @@ public class TestFragmentProgramState extends SimpleGame {
     }
     
     protected void simpleUpdate() {
-        angle0 += 0.01111f;
-        angle1 += 0.013f;
+        angle0 += 2 * tpf;
+        angle1 += 4 * tpf;
         
         ((PointLight)lightState.get(0)).setLocation(new Vector3f(2.0f * FastMath.cos(angle0), 2.0f * FastMath.sin(angle0), 1.5f));
         ((PointLight)lightState.get(1)).setLocation(new Vector3f(2.0f * FastMath.cos(angle1), 2.0f * FastMath.sin(angle1), 1.5f));
