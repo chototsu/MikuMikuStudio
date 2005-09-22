@@ -74,7 +74,7 @@ public class TestGLSLShaderObjectsState extends SimpleGame {
         // Check is GLSL is supported on current hardware.
         if (!so.isSupported()) {
             com.jme.util.LoggingSystem.getLogger().log(java.util.logging.Level.SEVERE,
-                "Your graphics card does not support vertex or fragment programs, and thus cannot run this test.");
+                "Your graphics card does not support GLSL programs, and thus cannot run this test.");
             quit();
         }
 
