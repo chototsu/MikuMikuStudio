@@ -109,7 +109,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.80 2005-09-21 23:34:44 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.81 2005-09-22 01:50:19 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -503,7 +503,7 @@ public class LWJGLRenderer extends Renderer {
         // state
         GL11.glMatrixMode(GL11.GL_PROJECTION);
         GL11.glPopMatrix();
-        postdrawGeometry();
+        postdrawGeometry(null);
         inOrthoMode = false;
     }
 
@@ -599,7 +599,7 @@ public class LWJGLRenderer extends Renderer {
             GL11.glDisable(GL11.GL_POINT_SMOOTH);
         }
 
-        postdrawGeometry();
+        postdrawGeometry(p);
     }
 
     /**
@@ -649,7 +649,7 @@ public class LWJGLRenderer extends Renderer {
             GL11.glDisable(GL11.GL_LINE_SMOOTH);
         }
 
-        postdrawGeometry();
+        postdrawGeometry(l);
     }
 
     /**
@@ -708,7 +708,7 @@ public class LWJGLRenderer extends Renderer {
         }
 
         GL11.glEnd();
-        postdrawGeometry();
+        postdrawGeometry(c);
     }
 
     /**
@@ -735,7 +735,7 @@ public class LWJGLRenderer extends Renderer {
         indices.clear();
             
 
-        postdrawGeometry();
+        postdrawGeometry(t);
     }
 
     /**
@@ -785,7 +785,7 @@ public class LWJGLRenderer extends Renderer {
             indices.position(indices.limit());
         }
 
-        postdrawGeometry();
+        postdrawGeometry(t);
     }
 
     
@@ -897,7 +897,12 @@ public class LWJGLRenderer extends Renderer {
     /**
      * 
      */
-    private void postdrawGeometry() {
+    private void postdrawGeometry(Geometry t) {
+        VBOInfo vbo = t != null ? t.getVBOInfo() : null;
+        if (vbo != null && capabilities.GL_ARB_vertex_buffer_object) {
+            ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+        }
+
         GL11.glMatrixMode(GL11.GL_MODELVIEW);
         GL11.glPopMatrix();
     }
@@ -941,88 +946,81 @@ public class LWJGLRenderer extends Renderer {
         // render the object
 
         FloatBuffer verticies = t.getVertexBuffer();
-        if (prevVerts != verticies) {
+        if ((!ignoreVBO && vbo.getVBOVertexID() > 0)) { // use VBO
+            usingVBO = true;
             GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-            if (!ignoreVBO && vbo.isVBOVertexEnabled()) {
-                usingVBO = true;
-                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOVertexID());
-                GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
-            } else {
-                if (usingVBO)
-                	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
-                verticies.rewind();
-                GL11.glVertexPointer(3, 0, verticies);
-            }
+            ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOVertexID());
+            GL11.glVertexPointer(3, GL11.GL_FLOAT, 0, 0);
+        } else if (verticies == null) {
+            GL11.glDisableClientState(GL11.GL_VERTEX_ARRAY);
+        } else if (prevVerts != verticies) {  
+            // textures have changed
+            GL11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
+            if (usingVBO)
+                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+            verticies.rewind();
+            GL11.glVertexPointer(3, 0, verticies);
         }
         prevVerts = verticies;
 
         FloatBuffer normals = t.getNormalBuffer();
-        if (prevNorms != normals) {
-            if (normals != null || (!ignoreVBO && vbo.getVBONormalID() > 0)) {
-                GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
-                if (!ignoreVBO && vbo.isVBONormalEnabled()) {
-                    usingVBO = true;
-                    ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBONormalID());
-                    GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
-                } else {
-                    if (usingVBO)
-                    	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
-                    normals.rewind();
-                    GL11.glNormalPointer(0, normals);
-                }
-            } else {
-                GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
-            }
+        if ((!ignoreVBO && vbo.getVBONormalID() > 0)) { // use VBO
+            usingVBO = true;
+            GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+            ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBONormalID());
+            GL11.glNormalPointer(GL11.GL_FLOAT, 0, 0);
+        } else if (normals == null) {
+            GL11.glDisableClientState(GL11.GL_NORMAL_ARRAY);
+        } else if (prevNorms != normals) {  
+            // textures have changed
+            GL11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
+            if (usingVBO)
+                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+            normals.rewind();
+            GL11.glNormalPointer(0, normals);
         }
         prevNorms = normals;
 
         FloatBuffer colors = t.getColorBuffer();
-        if (colors == null || prevColor != colors) {
-            if (colors != null || (!ignoreVBO && vbo.getVBOColorID() > 0)) {
-                GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
-                if (!ignoreVBO && vbo.isVBOColorEnabled()) {
-                    usingVBO = true;
-                    ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOColorID());
-                    GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
-                } else {
-                    if (usingVBO)
-                    	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
-                    colors.rewind();
-                    GL11.glColorPointer(4, 0, colors);
-                }
-                prevColor = colors;
-            } else {
-                GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
-                ColorRGBA defCol = t.getDefaultColor();
-                if (defCol != null)
-                    GL11.glColor4f(defCol.r, defCol.g, defCol.b, defCol.a);
-            }
+        if ((!ignoreVBO && vbo.getVBOColorID() > 0)) { // use VBO
+            usingVBO = true;
+            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+            ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOColorID());
+            GL11.glColorPointer(4, GL11.GL_FLOAT, 0, 0);
+        } else if (colors == null) {
+            GL11.glDisableClientState(GL11.GL_COLOR_ARRAY);
+            ColorRGBA defCol = t.getDefaultColor();
+            if (defCol != null)
+                GL11.glColor4f(defCol.r, defCol.g, defCol.b, defCol.a);
+        } else if (prevColor != colors) {  
+            // textures have changed
+            GL11.glEnableClientState(GL11.GL_COLOR_ARRAY);
+            if (usingVBO)
+                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+            colors.rewind();
+            GL11.glColorPointer(4, 0, colors);
         }
+        prevColor = colors;
 
         for (int i = 0; i < TextureState.getNumberOfUnits(); i++) {
             FloatBuffer textures = t.getTextureBuffer(i);
             if (capabilities.GL_ARB_multitexture && capabilities.OpenGL13) {
                 GL13.glClientActiveTexture(GL13.GL_TEXTURE0 + i);
             }
-            if (prevTex[i] != textures && textures != null) {
-                if (textures != null || (!ignoreVBO && vbo.getVBOTextureID(i) > 0)) {
-
-                    GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                    if (!ignoreVBO && vbo.isVBOTextureEnabled()) {
-                        usingVBO = true;
-                        ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOTextureID(i));
-                        GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
-                    } else {
-                        if (usingVBO)
-                        	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
-                        textures.rewind();
-                        GL11.glTexCoordPointer(2, 0, textures);
-                    }
-                } else {
-                    GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-                }
-            } else if (prevTex[i] != textures && textures == null) {
+            if ((!ignoreVBO && vbo.getVBOTextureID(i) > 0)) { // use VBO
+                usingVBO = true;
+                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, vbo.getVBOTextureID(i));
+                GL11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, 0);
+            } else if (textures == null) {
                 GL11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+            } else if (prevTex[i] != textures) {  
+                // textures have changed
+                GL11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+                if (usingVBO)
+                	ARBVertexBufferObject.glBindBufferARB(ARBVertexBufferObject.GL_ARRAY_BUFFER_ARB, 0);
+                textures.rewind();
+                GL11.glTexCoordPointer(2, 0, textures);
             }
             prevTex[i] = textures;
         }
