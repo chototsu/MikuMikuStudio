@@ -34,7 +34,7 @@
 				<exclude name="**/*.java" />
 			</fileset>
 		</copy>
-		<javac source="1.4"
+		<javac source="1.4" target="1.4"
 		       srcdir="${src}/com"
 		       destdir="${class}"
 		       classpath="${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
@@ -102,7 +102,8 @@
 	<!-- *** jmetest-related build targets -->
 
 	<target name="compile-test" depends="init" description="generate jme test classes">
-		<javac srcdir="${src}/jmetest"
+		<javac source="1.4" target="1.4"
+		       srcdir="${src}/jmetest"
 	           destdir="${class}"
 	           classpath="${jars}/jme.jar:${jars}/jme-effects.jar:${jars}/jme-model.jar:${jars}/jme-terrain.jar:${jars}/jme-ui.jar:${jars}/jme-sound.jar:${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
 	    />
