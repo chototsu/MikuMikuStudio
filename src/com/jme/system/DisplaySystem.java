@@ -49,7 +49,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * also should create the appropriate <code>Renderer</code> object that allows
  * the client to render to this window.
  * 
- * Implmenting classes should check for the appropriate libraries to insure
+ * Implementing classes should check for the appropriate libraries to insure
  * these libraries are indeed installed on the system. This will allow users to
  * cleanly exit if an improper library was chosen for rendering.
  * 
@@ -66,7 +66,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.41 2005-09-15 17:14:18 renanse Exp $
+ * @version $Id: DisplaySystem.java,v 1.42 2005-09-24 20:25:08 Mojomonkey Exp $
  */
 public abstract class DisplaySystem {
 
@@ -103,6 +103,7 @@ public abstract class DisplaySystem {
     /** Number of samples to use for the multisample buffer. */
     protected int samples = 0;
 
+    /**Defines the constant value for the LWJGL library*/
     public static final String DISPLAY_SYSTEM_JWJGL = "LWJGL";
 
     /**
@@ -215,7 +216,7 @@ public abstract class DisplaySystem {
      * <code>setVSyncEnabled</code> attempts to enable or disable monitor
      * vertical synchronization. The method is a "best attempt" to change the
      * monitor vertical refresh synchronization, and is <b>not </b> guaranteed
-     * to be successful.
+     * to be successful. This is dependant on OS.
      * 
      * @param enabled
      *            <code>true</code> to synchronize, <code>false</code> to
@@ -320,6 +321,13 @@ public abstract class DisplaySystem {
      */
     public abstract Renderer getRenderer();
 
+    /**
+     * <code>setRenderer</code> sets the <code>Renderer</code> object that
+     * is to be used by this display. The implementing class should take 
+     * measures to insure that the given Renderer is compatible with the
+     * Display.
+     * @param r the Renderer to set for this display.
+     */
     public abstract void setRenderer(Renderer r);
 
     /**

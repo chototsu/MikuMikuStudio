@@ -71,7 +71,7 @@ import com.jme.util.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.29 2005-09-15 17:14:43 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.30 2005-09-24 20:25:08 Mojomonkey Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -275,6 +275,9 @@ public class LWJGLDisplaySystem extends DisplaySystem {
     public void reset() {
     }
 
+    /**
+     * <code>close</code> destroys the LWJGL Display context.
+     */
     public void close() {
         Display.destroy();
     }
@@ -596,8 +599,19 @@ public class LWJGLDisplaySystem extends DisplaySystem {
         }
     }
 
+    /**
+     * <code>setRenderer</code> sets the supplied renderer as this display's
+     * renderer. NOTE: If the supplied renderer is not LWJGLRenderer, then it
+     * is ignored.
+     * 
+     * @param r the renderer to set.
+     */
     public void setRenderer(Renderer r) {
-        renderer = (LWJGLRenderer) r;
+    		if(r instanceof LWJGLRenderer) {
+    			renderer = (LWJGLRenderer) r;
+    		} else {
+    			LoggingSystem.getLogger().log(Level.WARNING, "Invalid Renderer type");
+    		}
     }
 
     
