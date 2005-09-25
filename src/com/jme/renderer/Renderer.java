@@ -59,11 +59,11 @@ import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 
 /**
- * <code>Renderer</code> defines an interface that handles displaying of
+ * <code>Renderer</code> defines an abstract class that handles displaying of
  * graphics data to the context. Creation of this object is typically handled
  * via a call to a <code>DisplaySystem</code> subclass.
  * 
- * All rendering state and tasks can be handled through this interface.
+ * All rendering state and tasks can be handled through this class.
  * 
  * Example Usage: <br>
  * NOTE: This example uses the <code>DisplaySystem</code> class to obtain the
@@ -78,7 +78,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @see com.jme.system.DisplaySystem
  * @author Mark Powell
- * @version $Id: Renderer.java,v 1.55 2005-09-21 19:25:41 renanse Exp $
+ * @version $Id: Renderer.java,v 1.56 2005-09-25 01:41:49 Mojomonkey Exp $
  */
 public abstract class Renderer {
 
@@ -105,12 +105,6 @@ public abstract class Renderer {
     protected boolean processingQueue;
 
     protected RenderQueue queue;
-    
- 	protected WireframeState boundsWireState;
-
- 	protected TextureState boundsTextState;
-
- 	protected ZBufferState boundsZState;
  	
     protected long numberOfVerts;
 

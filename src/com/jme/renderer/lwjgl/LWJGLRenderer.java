@@ -109,11 +109,9 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.81 2005-09-22 01:50:19 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.82 2005-09-25 01:41:50 Mojomonkey Exp $
  */
 public class LWJGLRenderer extends Renderer {
-
-   
 
     private Vector3f vRot = new Vector3f();
 
@@ -463,7 +461,14 @@ public class LWJGLRenderer extends Renderer {
     }
 
     
-
+    /**
+     * 
+     * <code>setOrtho</code> sets the display system to be in orthographic
+     * mode. If the system has already been set to orthographic mode a
+     * <code>JmeException</code> is thrown. The origin (0,0) is the bottom
+     * left of the screen.
+     *  
+     */
     public void setOrtho() {
         if (inOrthoMode) {
             throw new JmeException("Already in Orthographic mode.");
@@ -494,7 +499,15 @@ public class LWJGLRenderer extends Renderer {
         GL11.glLoadIdentity();
         inOrthoMode = true;
     }
-
+    
+    /**
+     * 
+     * <code>setOrthoCenter</code> sets the display system to be in
+     * orthographic mode. If the system has already been set to orthographic
+     * mode a <code>JmeException</code> is thrown. The origin (0,0) is the
+     * center of the screen.
+     * 
+     */
     public void unsetOrtho() {
         if (!inOrthoMode) {
             throw new JmeException("Not in Orthographic mode.");
@@ -790,6 +803,12 @@ public class LWJGLRenderer extends Renderer {
 
     
     protected IntBuffer buf = org.lwjgl.BufferUtils.createIntBuffer(16);
+    /**
+     * <code>prepVBO</code> binds the geometry data to a vbo buffer and
+     * sends it to the GPU if necessary. The vbo id is stored in the
+     * geometry's VBOInfo class.
+     * @param g the geometry to initialize VBO for.
+     */
     public void prepVBO(Geometry g) {
         if (!capabilities.GL_ARB_vertex_buffer_object)
             return;
@@ -876,6 +895,13 @@ public class LWJGLRenderer extends Renderer {
                 .getWorldTranslation().y, t.getWorldScale(), t.getText(), 0);
     }
 
+    /**
+     * checkAndAdd is used to process the spatial for the render queue. It's
+     * queue mode is checked, and it is added to the proper queue. If the
+     * queue mode is QUEUE_SKIP, false is returned.
+     * 
+     * @return true if the spatial was added to a queue, false otherwise.
+     */
     public boolean checkAndAdd(Spatial s) {
         int rqMode = s.getRenderQueueMode();
         if (rqMode != Renderer.QUEUE_SKIP) {
@@ -895,7 +921,7 @@ public class LWJGLRenderer extends Renderer {
     }
 
     /**
-     * 
+     * re-initializes the GL context for rendering of another piece of geometry.
      */
     private void postdrawGeometry(Geometry t) {
         VBOInfo vbo = t != null ? t.getVBOInfo() : null;
@@ -916,7 +942,10 @@ public class LWJGLRenderer extends Renderer {
     }
 
     /**
-     * @param t
+     * prepares the GL Context for rendering this geometry. This involves
+     * setting the rotation, translation, and scale, initializing VBO, and
+     * obtaining the buffer data.
+     * @param t the geometry to process.
      */
     private void predrawGeometry(Geometry t) {
         // set world matrix
