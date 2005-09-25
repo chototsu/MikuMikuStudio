@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.26 2005-09-21 17:52:58 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.27 2005-09-25 23:54:45 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -208,11 +208,12 @@ public class TestScenegraph extends SimpleGame {
         rootNode.setRenderState(cs);
 
         selectionBox = new Box("Selection", min.mult(1.25f), max.mult(1.25f));
-        selectionBox.setDefaultColor(new ColorRGBA(0, 1, 0, 0.5f));
+        selectionBox.setDefaultColor(new ColorRGBA(0, .6f, 0, 0.3f));
         selectionBox.setRenderState(as1);
         selectionBox.setModelBound(new BoundingSphere());
         selectionBox.updateModelBound();
         selectionBox.setLightCombineMode(LightState.OFF);
+        selectionBox.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
 
         node1 = new Node("Node 1");
         box1 = new Box("Box 1", min, max);
@@ -298,9 +299,6 @@ public class TestScenegraph extends SimpleGame {
         rootNode.attachChild(line);
         rootNode.attachChild(scene);
         scene.attachChild(selectionBox);
-        cam.update();
-        scene.updateGeometricState(0.0f, true);
-        rootNode.updateRenderState();
 
         nc1 = new NodeHandler(this, node1, "LWJGL");
         nc2 = new NodeHandler(this, node2, "LWJGL");
