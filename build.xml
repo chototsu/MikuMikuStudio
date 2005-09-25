@@ -59,12 +59,9 @@
 	<target name="dist-sound" depends="compile" description="generate jme jar file (sound)">
 		<jar jarfile="${jars}/jme-sound.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/sound/**/*.class" />
 	</target>
-	<target name="dist-ui" depends="compile" description="generate jme jar file (ui)">
-		<jar jarfile="${jars}/jme-ui.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/ui/**/*.class" />
-	</target>
 
 	<!-- Creates all the jME jars -->
-	<target name="dist-all" depends="dist-core, dist-terrain, dist-effects, dist-model, dist-sound, dist-ui" description="Generate all jar files" />
+	<target name="dist-all" depends="dist-core, dist-terrain, dist-effects, dist-model, dist-sound" description="Generate all jar files" />
 
 	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
 		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
@@ -72,7 +69,6 @@
 		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-sound.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
-		<signjar jar="${jars}/jme-ui.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 	</target>
 
 	<!-- Generats javadoc -->
@@ -105,7 +101,7 @@
 		<javac source="1.4" target="1.4"
 		       srcdir="${src}/jmetest"
 	           destdir="${class}"
-	           classpath="${jars}/jme.jar:${jars}/jme-effects.jar:${jars}/jme-model.jar:${jars}/jme-terrain.jar:${jars}/jme-ui.jar:${jars}/jme-sound.jar:${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
+	           classpath="${jars}/jme.jar:${jars}/jme-effects.jar:${jars}/jme-model.jar:${jars}/jme-terrain.jar:${jars}/jme-sound.jar:${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
 	    />
 		<!-- copy the resources into the build directory -->
 		<copy todir="${class}/jmetest/data">
