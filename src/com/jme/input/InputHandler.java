@@ -47,7 +47,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.18 2005-09-15 17:13:04 renanse Exp $
+ * @version $Id: InputHandler.java,v 1.19 2005-09-25 15:27:02 Mojomonkey Exp $
  */
 public class InputHandler {
 
@@ -70,13 +70,13 @@ public class InputHandler {
 	protected boolean useBufferedKeyboard = false;
 
 	/** event that will be used to call each action this frame */
-	private InputActionEvent event;
+	protected InputActionEvent event;
 
 	/** list of all actions that will be executed this frame */
-	private ArrayList actionList;
+	protected ArrayList actionList;
 
 	/** list of names of the events called this frame */
-	private ArrayList eventList;
+	protected ArrayList eventList;
 
 	/**
 	 * Creates a new input handler. By default, there are no keyboard actions or
