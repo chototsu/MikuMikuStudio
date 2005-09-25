@@ -43,7 +43,7 @@ import com.jme.util.geom.BufferUtils;
  * Generally, you would not interact with this class directly.
  * 
  * @author Joshua Slack
- * @version $Id: Particle.java,v 1.4 2005-09-15 17:14:07 renanse Exp $
+ * @version $Id: Particle.java,v 1.5 2005-09-25 15:43:34 renanse Exp $
  */
 public class Particle {
 
@@ -196,6 +196,8 @@ public class Particle {
         if (currentAge > lifeSpan) {
             status = DEAD;
             currColor.a = 0;
+            for (int x = 0; x < 4; x++)
+                BufferUtils.setInBuffer(currColor, parent.getParticles().getColorBuffer(), verts[x]);
             return true;
         }
 
