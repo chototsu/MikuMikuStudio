@@ -58,7 +58,7 @@ import com.jme.util.geom.BufferUtils;
  * use of the <code>TerrainPage</code> class.
  *
  * @author Mark Powell
- * @version $Id: TerrainBlock.java,v 1.5 2005-09-21 17:53:05 renanse Exp $
+ * @version $Id: TerrainBlock.java,v 1.6 2005-09-26 22:51:46 renanse Exp $
  */
 public class TerrainBlock extends AreaClodMesh {
 
@@ -84,6 +84,7 @@ public class TerrainBlock extends AreaClodMesh {
 
     // heightmap values used to create this block
     private int[] heightMap;
+    private int[] oldHeightMap;
 
     /**
      * Empty Constructor to be used internally only.
@@ -305,7 +306,7 @@ public class TerrainBlock extends AreaClodMesh {
      */
     private void buildVertices() {
         vertQuantity = heightMap.length;
-        vertBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        vertBuf = BufferUtils.createVector3Buffer(vertBuf, vertQuantity);
         Vector3f point = new Vector3f();
         for (int x = 0; x < size; x++) {
             for (int y = 0; y < size; y++) {
@@ -351,7 +352,7 @@ public class TerrainBlock extends AreaClodMesh {
         offset.x += (int) (offsetAmount * stepScale.x);
         offset.y += (int) (offsetAmount * stepScale.z);
 
-        texBuf[0] = BufferUtils.createVector2Buffer(vertQuantity);
+        texBuf[0] = BufferUtils.createVector2Buffer(texBuf[0],vertQuantity);
         texBuf[0].clear();
 
         vertBuf.rewind();
@@ -370,7 +371,7 @@ public class TerrainBlock extends AreaClodMesh {
      *
      */
     private void buildNormals() {
-        normBuf = BufferUtils.createVector3Buffer(vertQuantity);
+        normBuf = BufferUtils.createVector3Buffer(normBuf, vertQuantity);
         Vector3f oppositePoint = new Vector3f();
         Vector3f adjacentPoint = new Vector3f();
         Vector3f rootPoint = new Vector3f();
@@ -538,5 +539,79 @@ public class TerrainBlock extends AreaClodMesh {
      */
     public void setHeightMap(int[] heightMap) {
         this.heightMap = heightMap;
+    }
+
+    /**
+     * Updates the block's vertices and normals from the current height map values.
+     */
+    public void updateFromHeightMap() {
+        if (!hasChanged()) return;
+        
+        Vector3f point = new Vector3f();
+        for (int x = 0; x < size; x++) {
+            for (int y = 0; y < size; y++) {
+                point.set(x * stepScale.x,
+                        heightMap[x + (y * size)] * stepScale.y, y
+                                * stepScale.z);
+                BufferUtils.setInBuffer(point, vertBuf, (x + (y * size)));
+            }
+        }
+        buildNormals();
+        if (vboInfo != null) {
+            vboInfo.setVBOVertexID(-1);
+            vboInfo.setVBONormalID(-1);
+        }
+    }
+    
+    /**
+     * <code>setHeightMapValue</code> sets the value of this block's height
+     * map at the given coords
+     * 
+     * @param x
+     * @param y
+     * @param newVal
+     */
+    public void setHeightMapValue(int x, int y, int newVal) {
+        heightMap[x + (y * size)] = newVal;
+    }
+    
+    /**
+     * <code>setHeightMapValue</code> adds to the value of this block's height
+     * map at the given coords
+     * 
+     * @param x
+     * @param y
+     * @param toAdd
+     */
+    public void addHeightMapValue(int x, int y, int toAdd) {
+        heightMap[x + (y * size)] += toAdd;
+    }
+    
+    /**
+     * <code>setHeightMapValue</code> multiplies the value of this block's height
+     * map at the given coords by the value given.
+     * 
+     * @param x
+     * @param y
+     * @param toMult
+     */
+    public void multHeightMapValue(int x, int y, int toMult) {
+        heightMap[x + (y * size)] *= toMult;
+    }
+    
+    protected boolean hasChanged() {
+        boolean update = false;
+        if (oldHeightMap == null) {
+            oldHeightMap = new int[heightMap.length];
+            update = true;
+        }
+        
+        for (int x = 0; x < oldHeightMap.length; x++)
+            if (oldHeightMap[x] != heightMap[x] || update) {
+                update = true;
+                oldHeightMap[x] = heightMap[x];
+            }
+        
+        return update;
     }
 }

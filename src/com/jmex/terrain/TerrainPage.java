@@ -33,7 +33,6 @@
 package com.jmex.terrain;
 
 import java.util.Iterator;
-import java.util.logging.Level;
 
 import com.jme.bounding.BoundingBox;
 import com.jme.bounding.BoundingVolume;
@@ -43,7 +42,6 @@ import com.jme.math.Vector3f;
 import com.jme.scene.Node;
 import com.jme.scene.Spatial;
 import com.jme.system.JmeException;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>TerrainPage</code> is used to build a quad tree of terrain blocks.
@@ -58,7 +56,7 @@ import com.jme.util.LoggingSystem;
  * It is recommended that different combinations are tried.
  *
  * @author Mark Powell
- * @version $Id: TerrainPage.java,v 1.4 2005-09-20 09:47:20 irrisor Exp $
+ * @version $Id: TerrainPage.java,v 1.5 2005-09-26 22:51:47 renanse Exp $
  */
 public class TerrainPage extends Node {
 
@@ -154,7 +152,7 @@ public class TerrainPage extends Node {
         this.totalSize = totalSize;
         this.size = size;
         this.stepScale = stepScale;
-        split(size, blockSize, stepScale, heightMap, clod);
+        split(blockSize, heightMap, clod);
     }
     
     public int getType() {
@@ -216,6 +214,22 @@ public class TerrainPage extends Node {
                 ((TerrainPage) getChild(i)).updateModelBound();
             } else if ((this.getChild(i).getType() &  Spatial.TERRAIN_BLOCK) != 0) {
                 ((TerrainBlock) getChild(i)).updateModelBound();
+
+            }
+        }
+    }
+
+    /**
+     *
+     * <code>updateFromHeightMap</code> updates the verts of all sub blocks
+     * from the contents of their heightmaps.
+     */
+    public void updateFromHeightMap() {
+        for (int i = 0; i < this.getQuantity(); i++) {
+            if ((this.getChild(i).getType() & Spatial.TERRAIN_PAGE) != 0) {
+                ((TerrainPage) getChild(i)).updateFromHeightMap();
+            } else if ((this.getChild(i).getType() &  Spatial.TERRAIN_BLOCK) != 0) {
+                ((TerrainBlock) getChild(i)).updateFromHeightMap();
 
             }
         }
@@ -316,40 +330,31 @@ public class TerrainPage extends Node {
      *
      * @param blockSize
      *            the blocks size to test against.
-     * @param size
-     *            the size of this page.
-     * @param stepScale
-     *            the scale of the x/z axes.
      * @param heightMap
      *            the height data.
      * @param clod
      *            true if level of detail is used, false otherwise.
      */
-    private void split(int size, int blockSize, Vector3f stepScale,
-            int[] heightMap, boolean clod) {
+    private void split(int blockSize, int[] heightMap, boolean clod) {
         if ((size >> 1) + 1 <= blockSize) {
-            createQuadBlock(size, stepScale, heightMap, clod);
+            createQuadBlock(heightMap, clod);
         } else {
-            createQuadPage(size, blockSize, stepScale, heightMap, clod);
+            createQuadPage(blockSize, heightMap, clod);
         }
 
     }
 
     /**
      * <code>createQuadPage</code> generates four new pages from this page.
-     *
-     *
      */
-    private void createQuadPage(int size, int blockSize, Vector3f stepScale,
-            int[] heightMap, boolean clod) {
-        LoggingSystem.getLogger().log(Level.INFO, "Creating Page");
-        
+    private void createQuadPage(int blockSize, int[] heightMap, boolean clod) {
         //      create 4 terrain pages
-        Vector2f tempOffset = new Vector2f();
         int quarterSize = size >> 2;
-        offsetAmount += quarterSize;
 
-        int split = (size + 1) / 2;
+        int split = (size + 1) >> 1;
+        
+        Vector2f tempOffset = new Vector2f();
+        offsetAmount += quarterSize;
 
         //1 upper left
         int[] heightBlock1 = createHeightSubBlock(heightMap,0,0,split);
@@ -369,7 +374,7 @@ public class TerrainPage extends Node {
         this.attachChild(page1);
 
         //2 lower left
-        int[] heightBlock2 = createHeightSubBlock(heightMap,split-1,0,split);
+        int[] heightBlock2 = createHeightSubBlock(heightMap,0,split-1,split);
 
         Vector3f origin2 = new Vector3f(-quarterSize * stepScale.x, 0,
                 quarterSize * stepScale.z);
@@ -386,7 +391,7 @@ public class TerrainPage extends Node {
         this.attachChild(page2);
 
         //3 upper right
-        int[] heightBlock3 = createHeightSubBlock(heightMap,0,split-1,split);
+        int[] heightBlock3 = createHeightSubBlock(heightMap,split-1,0,split);
         
         Vector3f origin3 = new Vector3f(quarterSize * stepScale.x, 0,
                 -quarterSize * stepScale.z);
@@ -423,18 +428,17 @@ public class TerrainPage extends Node {
 
     /**
      * <code>createQuadBlock</code> creates four child blocks from this page.
-     *
-     *
      */
-    private void createQuadBlock(int size, Vector3f stepScale, int[] heightMap,
-            boolean clod) {
+    private void createQuadBlock(int[] heightMap, boolean clod) {
+        //create 4 terrain blocks        
         int quarterSize = size >> 2;
         int halfSize = size >> 1;
         int split = (size + 1) >> 1;
 
         Vector2f tempOffset = new Vector2f();
         offsetAmount += quarterSize;
-        //create 4 terrain blocks
+
+        //1 upper left
         int[] heightBlock1 = createHeightSubBlock(heightMap,0,0,split);         
 
         Vector3f origin1 = new Vector3f(-halfSize * stepScale.x, 0, -halfSize
@@ -453,7 +457,7 @@ public class TerrainPage extends Node {
         block1.updateModelBound();
 
         //2 lower left
-        int[] heightBlock2 = createHeightSubBlock(heightMap,split-1,0,split);
+        int[] heightBlock2 = createHeightSubBlock(heightMap,0,split-1,split);
 
         Vector3f origin2 = new Vector3f(-halfSize * stepScale.x, 0, 0);
 
@@ -470,7 +474,7 @@ public class TerrainPage extends Node {
         block2.updateModelBound();
 
         //3 upper right
-        int[] heightBlock3 = createHeightSubBlock(heightMap,0,split-1,split);
+        int[] heightBlock3 = createHeightSubBlock(heightMap,split-1,0,split);
 
         Vector3f origin3 = new Vector3f(0, 0, -halfSize * stepScale.z);
 
@@ -735,13 +739,162 @@ public class TerrainPage extends Node {
         int[] rVal = new int[side*side];
         int bsize = (int)FastMath.sqrt(heightMap.length);
         int count = 0;
-        for (int i = x; i < side+x; i++) {
-            for (int j = y; j < side+y; j++) {
+        for (int i = y; i < side+y; i++) {
+            for (int j = x; j < side+x; j++) {
                 if (j < bsize && i < bsize)
                     rVal[count] = heightMap[j + (i * bsize)];
                 count++;
             }
         }
         return rVal;
+    }
+    
+    /**
+     * <code>setHeightMapValue</code> sets the value of this block's height
+     * map at the given coords
+     * 
+     * @param x
+     * @param y
+     * @param newVal
+     */
+    public void setHeightMapValue(int x, int y, int newVal) {
+        int quad = findQuadrant(x,y);
+        int split = (size + 1) >> 1;
+        for (int i = children.size(); --i >= 0; ) {
+            Spatial spat = (Spatial)children.get(i);
+            String name = spat.getName();
+            if (name.endsWith("1") && (quad & 1) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).setHeightMapValue(x,y,newVal);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).setHeightMapValue(x,y,newVal);                    
+                }
+            }
+            if (name.endsWith("2") && (quad & 2) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).setHeightMapValue(x-split+1,y,newVal);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).setHeightMapValue(x-split+1,y,newVal);                    
+                }
+            }
+            if (name.endsWith("3") && (quad & 4) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).setHeightMapValue(x,y-split+1,newVal);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).setHeightMapValue(x,y-split+1,newVal);                    
+                }
+            }
+            if (name.endsWith("4") && (quad & 8) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).setHeightMapValue(x-split+1,y-split+1,newVal);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).setHeightMapValue(x-split+1,y-split+1,newVal);                    
+                }
+            }
+        }
+    }
+
+    /**
+     * <code>setHeightMapValue</code> adds to the value of this block's height
+     * map at the given coords
+     * 
+     * @param x
+     * @param y
+     * @param toAdd
+     */
+    public void addHeightMapValue(int x, int y, int toAdd) {
+        int quad = findQuadrant(x,y);
+        int split = (size + 1) >> 1;
+        for (int i = children.size(); --i >= 0; ) {
+            Spatial spat = (Spatial)children.get(i);
+            String name = spat.getName();
+            if (name.endsWith("1") && (quad & 1) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).addHeightMapValue(x,y,toAdd);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).addHeightMapValue(x,y,toAdd);                    
+                }
+            }
+            if (name.endsWith("2") && (quad & 2) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).addHeightMapValue(x,y-split+1,toAdd);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).addHeightMapValue(x,y-split+1,toAdd);                    
+                }
+            }
+            if (name.endsWith("3") && (quad & 4) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).addHeightMapValue(x-split+1,y,toAdd);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).addHeightMapValue(x-split+1,y,toAdd);                    
+                }
+            }
+            if (name.endsWith("4") && (quad & 8) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).addHeightMapValue(x-split+1,y-split+1,toAdd);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).addHeightMapValue(x-split+1,y-split+1,toAdd);                    
+                }
+            }
+        }
+    }
+    
+    /**
+     * <code>setHeightMapValue</code> multiplies the value of this block's height
+     * map at the given coords by the value given.
+     * 
+     * @param x
+     * @param y
+     * @param toMult
+     */
+    public void multHeightMapValue(int x, int y, int toMult) {
+        int quads = findQuadrant(x,y);
+        int split = (size + 1) >> 1;
+        for (int i = children.size(); --i >= 0; ) {
+            Spatial spat = (Spatial)children.get(i);
+            String name = spat.getName();
+            if (name.endsWith("1") && (quads & 1) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).multHeightMapValue(x,y,toMult);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).multHeightMapValue(x,y,toMult);                    
+                }
+            }
+            if (name.endsWith("2") && (quads & 2) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).multHeightMapValue(x,y-split+1,toMult);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).multHeightMapValue(x,y-split+1,toMult);                    
+                }
+            }
+            if (name.endsWith("3") && (quads & 4) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).multHeightMapValue(x-split+1,y,toMult);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).multHeightMapValue(x-split+1,y,toMult);                    
+                }
+            }
+            if (name.endsWith("4") && (quads & 8) != 0) { 
+                if ((spat.getType() & Spatial.TERRAIN_PAGE) != 0) {
+                    ((TerrainPage)spat).multHeightMapValue(x-split+1,y-split+1,toMult);
+                } else if ((spat.getType() & Spatial.TERRAIN_BLOCK) != 0) {
+                    ((TerrainBlock)spat).multHeightMapValue(x-split+1,y-split+1,toMult);                    
+                }
+            }
+        }
+    }
+    
+    private int findQuadrant(int x, int y) {
+        int split = (size + 1) >> 1;
+        int quads = 0;
+        if (x < split && y < split)
+            quads |= 1;
+        if (x < split && y >= split-1)
+            quads |= 2;
+        if (x >= split-1 && y < split)
+            quads |= 4;
+        if (x >= split-1 && y >= split-1)
+            quads |= 8;
+        return quads;
     }
 }
