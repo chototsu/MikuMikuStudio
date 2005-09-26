@@ -54,11 +54,12 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.27 2005-09-15 17:14:57 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.28 2005-09-26 22:51:05 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
   private CameraNode camNode;
+private TerrainPage page;
 
   /**
    * Entry point for the test,
@@ -112,16 +113,15 @@ public class TestTerrainPage extends SimpleGame {
 
     lightState.attach(dr);
 
-//    MidPointHeightMap heightMap = new MidPointHeightMap(128, 1.9f);
     FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0, 255,
         0.75f);
     Vector3f terrainScale = new Vector3f(10,1,10);
     heightMap.setHeightScale( 0.001f);
-    TerrainPage tb = new TerrainPage("Terrain", 33, heightMap.getSize(), terrainScale,
+    page = new TerrainPage("Terrain", 33, heightMap.getSize(), terrainScale,
                                      heightMap.getHeightMap(), false);
 
-    tb.setDetailTexture(1, 16);
-    rootNode.attachChild(tb);
+    page.setDetailTexture(1, 16);
+    rootNode.attachChild(page);
 
     ProceduralTextureGenerator pt = new ProceduralTextureGenerator(heightMap);
     pt.addTexture(new ImageIcon(TestTerrain.class.getClassLoader().getResource(
