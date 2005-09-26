@@ -48,8 +48,6 @@ import com.jme.util.TextureManager;
  *
  */
 public class Lesson1 extends SimpleGame {
-	Sphere s;
-
 	/**
 	 * Main method is the entry point for this lesson. It creates a 
 	 * SimpleGame and tells the dialog to always appear. It then 
@@ -68,24 +66,25 @@ public class Lesson1 extends SimpleGame {
 	   * @see com.jme.app.SimpleGame#initGame()
 	   */
 	  protected void simpleInitGame() {
-	    display.setTitle("Tutorial 1");
-
-	    s = new Sphere("Sphere", 30, 30, 25);
-	    s.setLocalTranslation(new Vector3f(0,0,-40));
-	    s.setModelBound(new BoundingBox());
-	    s.updateModelBound();
-	    rootNode.attachChild(s);
-
-	    TextureState ts = display.getRenderer().createTextureState();
-	    ts.setEnabled(true);
-	    ts.setTexture(
-	        TextureManager.loadTexture(
-	        Lesson1.class.getClassLoader().getResource(
-	        "jmetest/data/images/Monkey.jpg"),
-	        Texture.MM_LINEAR_LINEAR,
-	        Texture.FM_LINEAR));
-
-	    rootNode.setRenderState(ts);
+		  display.setTitle("Tutorial 1");
+		  
+		  Sphere s = new Sphere("Sphere", 30, 30, 25);
+		  s.setLocalTranslation(new Vector3f(0,0,-40));
+		  s.setModelBound(new BoundingBox());
+		  s.updateModelBound();
+		    
+		  TextureState ts = display.getRenderer().createTextureState();
+		  ts.setEnabled(true);
+		  ts.setTexture(
+		            TextureManager.loadTexture(
+		                Lesson1.class.getClassLoader().getResource(
+		                "jmetest/data/images/Monkey.jpg"),
+		                Texture.MM_LINEAR_LINEAR,
+		                Texture.FM_LINEAR));
+		 
+		  s.setRenderState(ts);
+		 
+		  rootNode.attachChild(s);
 	  }
 
 }
