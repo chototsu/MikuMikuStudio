@@ -64,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.41 2005-09-21 16:11:55 Mojomonkey Exp $
+ * @version $Id: SimpleGame.java,v 1.42 2005-09-26 20:38:09 Mojomonkey Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -162,6 +162,10 @@ public abstract class SimpleGame extends BaseGame {
         .isValidCommand("camera_out", false)) {
       System.err.println("Camera at: " +
                          display.getRenderer().getCamera().getLocation());
+    }
+    
+    if (KeyBindingManager.getKeyBindingManager().isValidCommand("screen_shot", false)) {
+    	display.getRenderer().takeScreenShot("SimpleGameScreenShot");
     }
 
 		if (pause) return;
@@ -283,6 +287,9 @@ public abstract class SimpleGame extends BaseGame {
     KeyBindingManager.getKeyBindingManager().set(
         "camera_out",
         KeyInput.KEY_C);
+    KeyBindingManager.getKeyBindingManager().set(
+    	"screen_shot",
+    	KeyInput.KEY_F1);
   }
 
   /**
