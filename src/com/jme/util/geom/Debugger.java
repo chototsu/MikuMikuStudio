@@ -50,6 +50,7 @@ import com.jme.scene.Spatial;
 import com.jme.scene.shape.Box;
 import com.jme.scene.shape.OrientedBox;
 import com.jme.scene.shape.Sphere;
+import com.jme.scene.state.RenderState;
 import com.jme.scene.state.WireframeState;
 import com.jme.scene.state.ZBufferState;
 
@@ -59,7 +60,7 @@ import com.jme.scene.state.ZBufferState;
  * 
  * @author Joshua Slack
  * @author Emond Papegaaij (normals ideas and previous normal tool)
- * @version $Id: Debugger.java,v 1.13 2005-09-25 21:10:38 renanse Exp $
+ * @version $Id: Debugger.java,v 1.14 2005-09-26 17:12:23 renanse Exp $
  */
 public final class Debugger {
 
@@ -170,8 +171,10 @@ public final class Debugger {
     }
     
     private static void setBoundsStates() {
-        for (int x = 0; x < Spatial.defaultStateList.length; x++)
-            Spatial.defaultStateList[x].apply();
+        for (int x = 0; x < Spatial.defaultStateList.length; x++) {
+            if (x != RenderState.RS_ZBUFFER && x != RenderState.RS_WIREFRAME)
+                Spatial.defaultStateList[x].apply();
+        }
         
         boundsWireState.apply();
         boundsZState.apply();
@@ -297,8 +300,10 @@ public final class Debugger {
 
     
     private static void setNormStates() {
-        for (int x = 0; x < Spatial.defaultStateList.length; x++)
-            Spatial.defaultStateList[x].apply();
+        for (int x = 0; x < Spatial.defaultStateList.length; x++) {
+            if (x != RenderState.RS_ZBUFFER)
+                Spatial.defaultStateList[x].apply();
+        }
         
         normZState.apply();
         
