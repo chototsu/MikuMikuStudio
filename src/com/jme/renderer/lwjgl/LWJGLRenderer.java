@@ -35,6 +35,8 @@ package com.jme.renderer.lwjgl;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
@@ -109,7 +111,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.82 2005-09-25 01:41:50 Mojomonkey Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.83 2005-09-26 21:42:56 renanse Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -538,7 +540,8 @@ public class LWJGLRenderer extends Renderer {
 
         // Create a pointer to the image info and create a buffered image to
         // hold it.
-        IntBuffer buff = org.lwjgl.BufferUtils.createIntBuffer(width * height);
+        IntBuffer buff = ByteBuffer.allocateDirect(width * height * 4).order(
+                ByteOrder.LITTLE_ENDIAN).asIntBuffer(); 
         grabScreenContents(buff, 0, 0, width, height);
         BufferedImage img = new BufferedImage(width, height,
                 BufferedImage.TYPE_INT_RGB);
