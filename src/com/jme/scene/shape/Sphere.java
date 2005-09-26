@@ -39,10 +39,11 @@ import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
 /**
- * <code>Sphere</code> is um ... a sphere :)
+ * <code>Sphere</code> represents a 3D object with all points equidistance from
+ * a center point.
  * 
  * @author Joshua Slack
- * @version $Id: Sphere.java,v 1.10 2005-09-21 17:52:54 renanse Exp $
+ * @version $Id: Sphere.java,v 1.11 2005-09-26 23:32:52 Mojomonkey Exp $
  */
 public class Sphere extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -50,9 +51,9 @@ public class Sphere extends TriMesh {
     private int zSamples;
 
     private int radialSamples;
-
+    /**the distance from the center point each point falls on*/
     public float radius;
-
+    /**the center of the sphere*/
     public Vector3f center;
 
     private static Vector3f tempVa = new Vector3f();
@@ -140,7 +141,10 @@ public class Sphere extends TriMesh {
         setDefaultColor(ColorRGBA.white);
     }
 
-
+    /**
+     * builds the vertices based on the radius, center and radial and zSamples.
+     *
+     */
     private void setGeometryData() {
 
         // allocate vertices
@@ -235,6 +239,10 @@ public class Sphere extends TriMesh {
         texBuf[0].put(0.5f).put(1.0f);
     }
 
+    /**
+     * sets the indices for rendering the sphere.
+     *
+     */
     private void setIndexData() {
 
         // allocate connectivity
