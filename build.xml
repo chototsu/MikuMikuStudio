@@ -248,7 +248,7 @@
 		/>
 	</target>
 
-    <target name="nightly" depends="webdist-all, webdist-nativelibs, webdist-test">
+    <target name="nightly"> <!--depends="webdist-all, webdist-nativelibs, webdist-test">-->
 <!--    <target name="nightly">-->
         <echo>${libs}/*.jar</echo>
         <zip zipfile="${release}/jME.zip">
@@ -261,6 +261,11 @@
             <fileset dir="${release}" >
                 <include name="*.jar"/>
             </fileset>
+        </zip>
+        <zip zipfile="${release}/src.zip">
+            <zipfileset dir="${src}" prefix="src">
+                <include name="**/*.*"/>
+            </zipfileset>
         </zip>
 <!--        <mkdir dir="ftp"/>-->
 <!--        <copy todir="ftp">-->
@@ -275,6 +280,7 @@
             <fileset dir="${release}" >
                 <include name="*.jar"/>
                 <include name="jME.zip"/>
+                <include name="src.zip"/>
             </fileset>
         </ftp>
 <!--        </copy>-->
