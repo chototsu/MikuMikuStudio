@@ -146,6 +146,9 @@ public class Lesson2 extends BaseGame {
 		cam.setFrame(loc, left, up, dir);
 		/** Signal that we've changed our camera's location/frustum. */
 		cam.update();
+		
+		 /** Get a high resolution timer for FPS updates. */
+	    timer = Timer.getTimer(properties.getRenderer());
 
 		InputSystem.createInputSystem(properties.getRenderer());
 		key = InputSystem.getKeyInput();
