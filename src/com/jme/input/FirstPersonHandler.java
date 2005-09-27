@@ -40,7 +40,6 @@ import com.jme.input.action.KeyLookDownAction;
 import com.jme.input.action.KeyLookUpAction;
 import com.jme.input.action.KeyRotateLeftAction;
 import com.jme.input.action.KeyRotateRightAction;
-import com.jme.input.action.KeyScreenShotAction;
 import com.jme.input.action.KeyStrafeLeftAction;
 import com.jme.input.action.KeyStrafeRightAction;
 import com.jme.input.action.MouseLook;
@@ -54,7 +53,7 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
  * the camera.
  * @author Mark Powell
- * @version $Id: FirstPersonHandler.java,v 1.7 2005-09-27 16:43:21 Mojomonkey Exp $
+ * @version $Id: FirstPersonHandler.java,v 1.8 2005-09-27 19:13:08 renanse Exp $
  */
 public class FirstPersonHandler extends InputHandler {
 

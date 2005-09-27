@@ -42,7 +42,6 @@ import com.jme.input.action.KeyNodeRotateLeftAction;
 import com.jme.input.action.KeyNodeRotateRightAction;
 import com.jme.input.action.KeyNodeStrafeLeftAction;
 import com.jme.input.action.KeyNodeStrafeRightAction;
-import com.jme.input.action.KeyScreenShotAction;
 import com.jme.input.action.NodeMouseLook;
 import com.jme.math.Vector3f;
 import com.jme.scene.Spatial;
@@ -54,7 +53,7 @@ import com.jme.scene.Spatial;
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeHandler.java,v 1.5 2005-09-15 17:13:06 renanse Exp $
+ * @version $Id: NodeHandler.java,v 1.6 2005-09-27 19:13:08 renanse Exp $
  */
 public class NodeHandler extends InputHandler {
 
@@ -93,7 +92,6 @@ public class NodeHandler extends InputHandler {
         keyboard.set("turnRight", KeyInput.KEY_RIGHT);
         keyboard.set("turnLeft", KeyInput.KEY_LEFT);
         keyboard.set("exit", KeyInput.KEY_ESCAPE);
-        keyboard.set("screenshot", KeyInput.KEY_F12);
 
         setKeyBindingManager(keyboard);
 
@@ -154,8 +152,5 @@ public class NodeHandler extends InputHandler {
         rotateLeft.setKey("turnLeft");
         rotateLeft.setLockAxis(node.getLocalRotation().getRotationColumn(1));
         addAction(rotateLeft);
-        KeyScreenShotAction screenshot = new KeyScreenShotAction();
-        screenshot.setKey("screenshot");
-        addAction(screenshot);
     }
 }
