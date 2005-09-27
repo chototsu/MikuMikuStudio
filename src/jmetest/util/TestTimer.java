@@ -62,7 +62,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.11 2005-09-15 17:14:57 renanse Exp $
+ * @version $Id: TestTimer.java,v 1.12 2005-09-27 19:10:31 renanse Exp $
  */
 public class TestTimer extends BaseGame {
     private TriMesh t;
@@ -71,7 +71,6 @@ public class TestTimer extends BaseGame {
     private Node root;
     private Node scene;
     private InputHandler input;
-    private Thread thread;
     private Timer timer;
     private Quaternion rotQuat;
     private float angle = 0;
@@ -198,9 +197,6 @@ public class TestTimer extends BaseGame {
         scene = new Node("Scene Node");
         root = new Node("Root Scene Node");
         root.attachChild(text);
-
-        Vector3f max = new Vector3f(5,5,5);
-        Vector3f min = new Vector3f(-5,-5,-5);
 
         t = new Pyramid("Pyramid", 10,10);
         t.setModelBound(new BoundingSphere());

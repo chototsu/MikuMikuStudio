@@ -38,9 +38,7 @@ import java.io.IOException;
 import java.net.URL;
 
 import com.jme.app.SimpleGame;
-import com.jme.math.Vector3f;
 import com.jme.scene.Node;
-import com.jme.scene.shape.Box;
 import com.jmex.model.XMLparser.JmeBinaryReader;
 import com.jmex.model.XMLparser.Converters.MilkToJme;
 
@@ -81,11 +79,5 @@ public class TestMilkJmeWrite extends SimpleGame{
         }
         i.setLocalScale(.1f);
         rootNode.attachChild(i);
-    }
-
-    private void drawAxis() {
-        rootNode.attachChild(new Box("axisX",new Vector3f(5,0,0),5f,.1f,.1f));
-        rootNode.attachChild(new Box("axisY",new Vector3f(0,5,0),.1f,5f,.1f));
-        rootNode.attachChild(new Box("axisZ",new Vector3f(0,0,5),.1f,.1f,5f));
     }
 }

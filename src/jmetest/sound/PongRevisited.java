@@ -80,7 +80,7 @@ public class PongRevisited extends SimpleGame {
     private int ballSound;
     private int explodeSound;
 
-    private static final int BOUNCE_EVENT = 1;
+//    private static final int BOUNCE_EVENT = 1;
 
     private static final int WALL_BOUNCE_EVENT = 2;
 
@@ -104,9 +104,6 @@ public class PongRevisited extends SimpleGame {
         SoundSystem.init(display.getRenderer().getCamera(), SoundSystem.OUTPUT_DEFAULT);
         snode = SoundSystem.createSoundNode();
         uiNode = new Node("UINODE");
-        
-        String[] names = { "main", "nice" };
-        String[] locs = { fontLocation, "jmetest/data/font/conc_font.png" };
         
         TextureState font = display.getRenderer().createTextureState();
         /** The texture is loaded from fontLocation */

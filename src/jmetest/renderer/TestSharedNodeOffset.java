@@ -34,7 +34,6 @@ package jmetest.renderer;
 
 import com.jme.app.SimpleGame;
 import com.jme.math.Matrix3f;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
@@ -48,15 +47,9 @@ import com.jme.util.LoggingSystem;
  * <code>TestSharedMesh</code>
  * 
  * @author Mark Powell
- * @version $Id: TestSharedNodeOffset.java,v 1.2 2005-09-15 17:13:22 renanse Exp $
+ * @version $Id: TestSharedNodeOffset.java,v 1.3 2005-09-27 19:10:26 renanse Exp $
  */
 public class TestSharedNodeOffset extends SimpleGame {
-
-	private Quaternion rotQuat = new Quaternion();
-
-	private float angle = 0;
-
-	private Vector3f axis = new Vector3f(1, 1, 0);
 
 	Node file = null;
 	

@@ -98,7 +98,6 @@ public class TestSteamPlayer {
         panel.add(button, "North");        
         frame.getContentPane().add(panel);
         String[] list=null;
-        int[] clip=null;
         if(dir !=null && dir.isDirectory()){
            list=dir.list();
         }else{

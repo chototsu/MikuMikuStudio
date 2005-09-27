@@ -141,7 +141,6 @@ public class TestStreamPlayer {
         panel.add(southPanel, "South");
         frame.getContentPane().add(panel);
         String[] list=null;
-        int[] clip=null;
         if(dir !=null && dir.isDirectory()){
            list=dir.list();
         }else{

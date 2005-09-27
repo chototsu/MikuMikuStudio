@@ -42,7 +42,6 @@ import com.jme.scene.state.RenderState;
 public class SharedNode extends Node {
 
 private static final long serialVersionUID = 1L;
-	private Node target;
 
 	/**
 	 * Constructor creates a new <code>SharedMesh</code> object.
@@ -64,9 +63,7 @@ private static final long serialVersionUID = 1L;
 	 *            the TriMesh to share the data.
 	 */
 	private void setTarget(Node target) {
-		this.target = target;
 		processTarget(this, target);
-		
 	}
 	
 	private void processTarget(Node parent, Spatial target) {
