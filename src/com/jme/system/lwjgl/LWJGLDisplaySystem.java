@@ -71,7 +71,7 @@ import com.jme.util.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.30 2005-09-24 20:25:08 Mojomonkey Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.31 2005-09-27 04:34:29 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 
@@ -510,7 +510,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     private void initDisplay() {
         // create the Display.
-        DisplayMode mode = getValidDisplayMode(width, height, bpp, frq);
+        DisplayMode mode = selectMode();
         PixelFormat format = new PixelFormat(bpp, alphaBits, depthBits,
                 stencilBits, samples);
         if (null == mode) {
@@ -576,15 +576,7 @@ public class LWJGLDisplaySystem extends DisplaySystem {
      */
     private void reinitDisplay() {
         // create the Display.
-    		DisplayMode mode; 
-    	        if (fs) { 
-    	            mode = getValidDisplayMode(width, height, bpp, frq); 
-    	            if (null == mode) { 
-    	                throw new JmeException("Bad display mode"); 
-    	            } 
-    	        } else { 
-    	            mode = new DisplayMode(width, height); 
-        }
+        DisplayMode mode = selectMode();
 
         try {
             Display.setDisplayMode(mode);
@@ -597,6 +589,20 @@ public class LWJGLDisplaySystem extends DisplaySystem {
                     "reinitDisplay()", e);
             throw new Error("Cannot recreate window: " + e.getMessage());
         }
+    }
+
+    // Grab a display mode for use with init / reinit display
+    private DisplayMode selectMode() {
+        DisplayMode mode;
+        if (fs) {
+            mode = getValidDisplayMode(width, height, bpp, frq);
+            if (null == mode) {
+                throw new JmeException("Bad display mode");
+            }
+        } else {
+            mode = new DisplayMode(width, height);
+        }
+        return mode;
     }
 
     /**
