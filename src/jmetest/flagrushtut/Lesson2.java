@@ -61,8 +61,6 @@ public class Lesson2 extends BaseGame {
 	private Camera cam;
 	//the root node of the scene graph
 	private Node scene;
-	//Reference to the keyboard
-	private KeyInput key;
 	//TextureState to show the monkey on the sphere.
 	private TextureState ts;
 	//display attributes for the window. We will keep these values
@@ -93,7 +91,7 @@ public class Lesson2 extends BaseGame {
 		interpolation = timer.getTimePerFrame();
 		//if escape was pressed, we exit
 		if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit")) {
-			System.exit(0);
+			finished = true;
 		}
 	}
 
@@ -151,8 +149,7 @@ public class Lesson2 extends BaseGame {
 	    timer = Timer.getTimer(properties.getRenderer());
 
 		InputSystem.createInputSystem(properties.getRenderer());
-		key = InputSystem.getKeyInput();
-		KeyBindingManager.getKeyBindingManager().setKeyInput(key);
+		KeyBindingManager.getKeyBindingManager().setKeyInput(InputSystem.getKeyInput());
 		display.getRenderer().setCamera(cam);
 
 		KeyBindingManager.getKeyBindingManager().set("exit",
