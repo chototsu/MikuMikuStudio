@@ -42,10 +42,13 @@ import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.light.DirectionalLight;
+import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Node;
+import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
@@ -178,6 +181,8 @@ public class Lesson3 extends BaseGame {
 		scene = new Node("Scene graph node");
 		buildTerrain();
 		scene.attachChild(tb);
+		
+	    buildLighting();
 
 		// update the scene graph for rendering
 		scene.updateGeometricState(0.0f, true);
@@ -185,9 +190,29 @@ public class Lesson3 extends BaseGame {
 	}
 
 	/**
+	 * creates a light for the terrain.
+	 */
+	private void buildLighting() {
+		/** Set up a basic, default light. */
+	    DirectionalLight light = new DirectionalLight();
+	    light.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
+	    light.setAmbient(new ColorRGBA(0.5f, 0.5f, 0.5f, 1.0f));
+	    light.setDirection(new Vector3f(1,-1,0));
+	    light.setEnabled(true);
+
+	      /** Attach the light to a lightState and the lightState to rootNode. */
+	    LightState lightState = display.getRenderer().createLightState();
+	    lightState.setEnabled(true);
+	    lightState.attach(light);
+	    scene.setRenderState(lightState);
+	}
+
+	/**
 	 * build the height map and terrain block.
 	 */
 	private void buildTerrain() {
+		
+		
 		// Generate a random terrain data
 		MidPointHeightMap heightMap = new MidPointHeightMap(64, 1f);
 		// Scale the data
