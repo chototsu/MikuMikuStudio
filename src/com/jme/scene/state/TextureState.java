@@ -40,13 +40,14 @@ import com.jme.util.TextureManager;
 
 /**
  * <code>TextureState</code> maintains a texture state for a given node and
- * it's children. The state maintains a single texture object at a time. It is
+ * it's children. The number of states that a TextureState can maintain at
+ * one time is equal to the number of texture units available on the GPU. It is
  * not within the scope of this class to generate the texture, and is
  * recommended that <code>TextureManager</code> be used to create the
  * Texture objects.
  * @see com.jme.util.TextureManager
  * @author Mark Powell
- * @version $Id: TextureState.java,v 1.17 2005-09-15 17:13:13 renanse Exp $
+ * @version $Id: TextureState.java,v 1.18 2005-09-29 20:24:06 Mojomonkey Exp $
  */
 public abstract class TextureState extends RenderState {
 
