@@ -46,13 +46,14 @@ import com.jme.renderer.ColorRGBA;
  * jME data classes such as Vectors and ColorRGBA.
  * 
  * @author Joshua Slack
- * @version $Id: BufferUtils.java,v 1.4 2005-09-20 16:46:33 renanse Exp $
+ * @version $Id: BufferUtils.java,v 1.5 2005-10-03 05:38:17 renanse Exp $
  */
 public final class BufferUtils {
 
     ////  -- TEMP DATA OBJECTS --  ////
     private static final Vector2f _tempVec2 = new Vector2f();
     private static final Vector3f _tempVec3 = new Vector3f();
+    private static final ColorRGBA _tempColor = new ColorRGBA();
 
     ////  -- COLORRGBA METHODS -- ////
     
@@ -162,6 +163,24 @@ public final class BufferUtils {
      */
     public static void copyInternalColor(FloatBuffer buf, int fromPos, int toPos) {
         copyInternal(buf, fromPos*4, toPos*4, 4);
+    }
+
+    /**
+     * Checks to see if the given ColorRGBA is equals to the data stored in the
+     * buffer at the given data index.
+     * 
+     * @param check
+     *            the color to check against - null will return false.
+     * @param buf
+     *            the buffer to compare data with
+     * @param index
+     *            the position (in terms of colors, not floats) of the color in
+     *            the buffer to check against
+     * @return
+     */
+    public static boolean equals(ColorRGBA check, FloatBuffer buf, int index) {
+        populateFromBuffer(_tempColor, buf, index);
+        return _tempColor.equals(check);
     }
 
     
@@ -337,8 +356,25 @@ public final class BufferUtils {
         setInBuffer(_tempVec3, buf, index);
     }
 
+    /**
+     * Checks to see if the given Vector3f is equals to the data stored in the
+     * buffer at the given data index.
+     * 
+     * @param check
+     *            the vector to check against - null will return false.
+     * @param buf
+     *            the buffer to compare data with
+     * @param index
+     *            the position (in terms of vectors, not floats) of the vector
+     *            in the buffer to check against
+     * @return
+     */
+    public static boolean equals(Vector3f check, FloatBuffer buf, int index) {
+        populateFromBuffer(_tempVec3, buf, index);
+        return _tempVec3.equals(check);
+    }
 
-    ////  -- VECTOR2F METHODS -- ////
+    // // -- VECTOR2F METHODS -- ////
     
     /**
      * Generate a new FloatBuffer using the given array of Vector2f objects.
@@ -506,6 +542,24 @@ public final class BufferUtils {
         populateFromBuffer(_tempVec2, buf, index);
         _tempVec2.multLocal(toMult);
         setInBuffer(_tempVec2, buf, index);
+    }
+
+    /**
+     * Checks to see if the given Vector2f is equals to the data stored in the
+     * buffer at the given data index.
+     * 
+     * @param check
+     *            the vector to check against - null will return false.
+     * @param buf
+     *            the buffer to compare data with
+     * @param index
+     *            the position (in terms of vectors, not floats) of the vector
+     *            in the buffer to check against
+     * @return
+     */
+    public static boolean equals(Vector2f check, FloatBuffer buf, int index) {
+        populateFromBuffer(_tempVec2, buf, index);
+        return _tempVec2.equals(check);
     }
 
 
