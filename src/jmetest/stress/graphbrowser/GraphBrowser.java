@@ -39,7 +39,6 @@ import jmetest.stress.StressApp;
 
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.light.AmbientLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.*;
@@ -99,10 +98,7 @@ public class GraphBrowser extends StressApp {
      * Create all the visual stuff for the graph.
      */
     protected void simpleInitGame() {
-        AmbientLight light = new AmbientLight();
-        light.setEnabled( true );
-        light.setDiffuse( new ColorRGBA( SCENE_LIGHT, SCENE_LIGHT, SCENE_LIGHT, 1 ) );
-        lightState.attach( light );
+        lightState.setGlobalAmbient(new ColorRGBA(0.5f,0.5f,0.5f,1));
         box = new Box( "box", new Vector3f( -1, -1, -1 ), new Vector3f( 1, 1, 1 ) );
 
         MaterialState material = display.getRenderer().createMaterialState();

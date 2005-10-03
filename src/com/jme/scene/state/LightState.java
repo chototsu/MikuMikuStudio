@@ -35,6 +35,7 @@ package com.jme.scene.state;
 import java.util.ArrayList;
 
 import com.jme.light.Light;
+import com.jme.renderer.ColorRGBA;
 
 /**
  * <code>LightState</code> maintains a collection of lights up to the set
@@ -42,7 +43,7 @@ import com.jme.light.Light;
  * be added to the light state. Each light is processed and used to modify
  * the color of the scene.
  * @author Mark Powell
- * @version $Id: LightState.java,v 1.10 2005-09-15 17:13:14 renanse Exp $
+ * @version $Id: LightState.java,v 1.11 2005-10-03 20:05:10 Mojomonkey Exp $
  */
 public abstract class LightState extends RenderState {
   /**
@@ -73,6 +74,9 @@ public abstract class LightState extends RenderState {
   private ArrayList lightList;
   /** When true, both sides of the model will be lighted. */
   protected boolean twoSidedOn;
+  
+
+  protected float[] globalAmbient = { 0.0f, 0.0f, 0.0f, 1.0f };
 
   /**
    * Constructor instantiates a new <code>LightState</code> object. Initially
@@ -165,5 +169,17 @@ public abstract class LightState extends RenderState {
    */
   public boolean getTwoSidedLighting(){
       return this.twoSidedOn;
+  }
+  
+  public void setGlobalAmbient(ColorRGBA color) {
+      globalAmbient[0] = color.r;
+      globalAmbient[1] = color.g;
+      globalAmbient[2] = color.b;
+      globalAmbient[3] = color.a;
+  }
+  
+  public ColorRGBA getGlobalAmbient() {
+      return new ColorRGBA(globalAmbient[0], globalAmbient[1], 
+              globalAmbient[2], globalAmbient[3]);
   }
 }

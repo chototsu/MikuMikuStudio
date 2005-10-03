@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * to access OpenGL for light processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.13 2005-09-21 18:52:13 irrisor Exp $
+ * @version $Id: LWJGLLightState.java,v 1.14 2005-10-03 20:05:12 Mojomonkey Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -59,7 +59,6 @@ public class LWJGLLightState extends LightState {
 	//buffer for light colors.
 	private transient FloatBuffer buffer;
 
-	private float[] ambient = { 0.0f, 0.0f, 0.0f, 1.0f };
 
 	private float[] color;
 
@@ -89,11 +88,6 @@ public class LWJGLLightState extends LightState {
 	 */
 	public void apply() {
 		int quantity = getQuantity();
-		ambient[0] = 1;
-		ambient[1] = 1;
-		ambient[2] = 1;
-		ambient[3] = 1;
-
 		color[0] = 0;
 		color[1] = 0;
 		color[2] = 0;
@@ -110,12 +104,6 @@ public class LWJGLLightState extends LightState {
 				int index = GL11.GL_LIGHT0 + i;
 
 				Light light = get(i);
-
-				if (light.getType() == Light.LT_AMBIENT) {
-					ambient[0] = light.getAmbient().r;
-					ambient[1] = light.getAmbient().g;
-					ambient[2] = light.getAmbient().b;
-				}
 
 				if (light.isEnabled()) {
 
@@ -226,7 +214,7 @@ public class LWJGLLightState extends LightState {
 			}
 
 			buffer.clear();
-			buffer.put(ambient);
+			buffer.put(globalAmbient);
 			buffer.flip();
 			GL11.glLightModel(GL11.GL_LIGHT_MODEL_AMBIENT, buffer);
 

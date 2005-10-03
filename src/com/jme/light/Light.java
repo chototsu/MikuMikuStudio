@@ -52,14 +52,9 @@ import com.jme.renderer.ColorRGBA;
  * Specular lighting defines the reflection of light on shiny surfaces.
  *
  * @author Mark Powell
- * @version $Id: Light.java,v 1.5 2005-09-15 17:14:30 renanse Exp $
+ * @version $Id: Light.java,v 1.6 2005-10-03 20:05:11 Mojomonkey Exp $
  */
 public abstract class Light implements Serializable{
-
-    /**
-     * defines the lighting type as ambient.
-     */
-    public static final int LT_AMBIENT = 0;
     /**
      * defines the lighting type as directional.
      */

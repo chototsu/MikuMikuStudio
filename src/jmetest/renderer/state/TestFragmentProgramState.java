@@ -36,7 +36,6 @@ import java.nio.FloatBuffer;
 
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
-import com.jme.light.AmbientLight;
 import com.jme.light.PointLight;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -56,7 +55,7 @@ import com.jme.util.geom.BufferUtils;
  * mapping technique outlined in the paper "Parallax Mapping with Offset Limiting:
  * A PerPixel Approximation of Uneven Surfaces".
  * @author Eric Woroshow
- * @version $Id: TestFragmentProgramState.java,v 1.5 2005-09-22 20:33:29 renanse Exp $
+ * @version $Id: TestFragmentProgramState.java,v 1.6 2005-10-03 20:05:10 Mojomonkey Exp $
  */
 public class TestFragmentProgramState extends SimpleGame {
     private final static String BRICK_TEX = "jmetest/data/images/rockwall2.png";
@@ -90,17 +89,11 @@ public class TestFragmentProgramState extends SimpleGame {
         light1.setLocation(new Vector3f(2f, 2f, 1f));
         light1.setEnabled(true);
         
-        AmbientLight light2 = new AmbientLight();
-        light2.setEnabled(true);
-        light2.setAmbient(new ColorRGBA(0,0,0,1));
-        
-
         lightState.detachAll();
         lightState.setEnabled(true);
         lightState.attach(light0);
         lightState.attach(light1);
-        lightState.attach(light2);
-        
+        lightState.setGlobalAmbient(new ColorRGBA(0,0,0,1));
         rootNode.setRenderState(lightState);        
     }
     

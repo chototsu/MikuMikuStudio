@@ -161,9 +161,7 @@ public class LightStateCreator {
     protected float getValueFor(Light l, BoundingVolume val) {
         if (!l.isEnabled())
             return 0;
-        else if (l.getType() == Light.LT_AMBIENT) {
-            return max(l.getAmbient());
-        } else if (l.getType() == Light.LT_DIRECTIONAL) {
+        else if (l.getType() == Light.LT_DIRECTIONAL) {
             return getColorValue(l);
         } else if (l.getType() == Light.LT_POINT) {
             return getValueFor((PointLight) l, val);
