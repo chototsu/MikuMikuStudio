@@ -32,47 +32,53 @@
 
 package com.jme.input.thirdperson;
 
+import com.jme.input.ThirdPersonHandler;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
-import com.jme.scene.Node;
 
+/**
+ * 
+ * <code>ThirdPersonForwardAction</code>
+ * 
+ * @author Joshua Slack
+ * @version $Revision: 1.2 $
+ */
 public class ThirdPersonForwardAction extends KeyInputAction {
-    private Node node;
-    private Camera cam;
     private Vector3f rot;
-    private MovementPermitter perm;
+
+    private ThirdPersonHandler handler;
 
     /**
-       * Constructor creates a new <code>ThirdPersonForwardAction</code> object.
-       * During construction, the character to direct and the speed at which to
-       * move the character is set.
-   * @param perm 
-       * @param character the character that will be affected by this action.
-       * @param speed the speed at which the camera can move.
-       */
-      public ThirdPersonForwardAction(Node node, Camera cam, MovementPermitter perm, float speed) {
-          this.node = node;
-          this.cam = cam;
-          this.speed = speed;
-          this.perm = perm;
-          rot = new Vector3f();
-      }
+     * Constructor creates a new <code>ThirdPersonForwardAction</code> object.
+     * During construction, the character to direct and the speed at which to
+     * move the character is set.
+     * 
+     * @param handler
+     *            the associated handler
+     * @param speed
+     *            the speed at which the target can move forward
+     */
+    public ThirdPersonForwardAction(ThirdPersonHandler handler, float speed) {
+        this.handler = handler;
+        this.speed = speed;
+        rot = new Vector3f();
+    }
 
-      /**
-       * <code>performAction</code> moves the node along it's positive
-       * direction vector at a speed of movement speed * time. Where time is
-       * the time between frames and 1 corresponds to 1 second.
-       * @see com.jme.input.action.AbstractInputAction#performAction(float)
-       */
-      public void performAction(InputActionEvent event) {
-          float time = event.getTime();
-        if (perm != null && !perm.canBeMoved()) return;
-        Vector3f loc = node.getLocalTranslation();
-        rot.set(cam.getDirection());
+    /**
+     * <code>performAction</code> moves the node along it's positive
+     * direction vector at a speed of movement speed * time. Where time is
+     * the time between frames and 1 corresponds to 1 second.
+     * @see com.jme.input.action.AbstractInputAction#performAction(float)
+     */
+    public void performAction(InputActionEvent event) {
+        if (handler.getPermitter() != null
+                && !handler.getPermitter().canBeMoved())
+            return;
+        Vector3f loc = handler.getTarget().getLocalTranslation();
+        rot.set(handler.getCamera().getDirection());
         rot.y = 0;
         rot.normalizeLocal();
-        loc.addLocal(rot.multLocal((speed*time)));
-      }
-  }
+        loc.addLocal(rot.multLocal((speed * event.getTime())));
+    }
+}

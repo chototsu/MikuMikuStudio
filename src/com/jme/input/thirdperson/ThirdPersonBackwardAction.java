@@ -32,44 +32,37 @@
 
 package com.jme.input.thirdperson;
 
+import com.jme.input.ThirdPersonHandler;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
-import com.jme.scene.Node;
 
 /**
  * 
  * <code>ThirdPersonBackwardAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class ThirdPersonBackwardAction extends KeyInputAction {
-    private Node node;
-
-    private Camera cam;
 
     private Vector3f rot;
 
-    private MovementPermitter perm;
+    private ThirdPersonHandler handler;
 
     /**
      * Constructor creates a new <code>ThirdPersonBackwardAction</code>
-     * object. During construction, the node to direct and the speed at
-     * which to move the node is set.
+     * object. During construction, the node to direct and the speed at which to
+     * move the node is set.
      * 
-     * @param character
-     *            the character that will be affected by this action.
+     * @param handler
+     *            the associated handler
      * @param speed
      *            the speed at which the camera can move.
      */
-    public ThirdPersonBackwardAction(Node node, Camera cam,
-            MovementPermitter perm, float speed) {
-        this.node = node;
-        this.cam = cam;
+    public ThirdPersonBackwardAction(ThirdPersonHandler handler, float speed) {
+        this.handler = handler;
         this.speed = speed;
-        this.perm = perm;
         rot = new Vector3f();
     }
 
@@ -81,13 +74,14 @@ public class ThirdPersonBackwardAction extends KeyInputAction {
      * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(InputActionEvent event) {
-        float time = event.getTime();
-        if (perm != null && !perm.canBeMoved())
+        if (handler.getPermitter() != null
+                && !handler.getPermitter().canBeMoved())
             return;
-        Vector3f loc = node.getLocalTranslation();
-        rot.set(cam.getDirection());
+        handler.setGoingBackwards(true);
+        Vector3f loc = handler.getTarget().getLocalTranslation();
+        rot.set(handler.getCamera().getDirection());
         rot.y = 0;
         rot.normalizeLocal();
-        loc.subtractLocal(rot.multLocal((speed * time)));
+        loc.subtractLocal(rot.multLocal((speed * event.getTime())));
     }
 }

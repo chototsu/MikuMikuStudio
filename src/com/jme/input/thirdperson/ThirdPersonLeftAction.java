@@ -32,46 +32,55 @@
 
 package com.jme.input.thirdperson;
 
+import com.jme.input.ThirdPersonHandler;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.KeyInputAction;
 import com.jme.math.Vector3f;
-import com.jme.renderer.Camera;
-import com.jme.scene.Node;
 
+/**
+ * 
+ * <code>ThirdPersonLeftAction</code>
+ * 
+ * @author Joshua Slack
+ * @version $Revision: 1.2 $
+ */
 public class ThirdPersonLeftAction extends KeyInputAction {
-    private Node node;
+
     private Vector3f rot;
-    private Camera cam;
-    private MovementPermitter perm;
+
+    private ThirdPersonHandler handler;
 
     /**
      * Constructor creates a new <code>ThirdPersonLeftAction</code> object.
      * During construction, the character to direct and the speed at which to
      * move the character is set.
-     * @param character the character that will be affected by this action.
-     * @param speed the speed at which the camera can move.
+     * 
+     * @param character
+     *            the character that will be affected by this action.
+     * @param speed
+     *            the speed at which the camera can move.
      */
-    public ThirdPersonLeftAction(Node node, Camera cam, MovementPermitter perm, float speed) {
-        this.node = node;
-        this.cam = cam;
+    public ThirdPersonLeftAction(ThirdPersonHandler handler, float speed) {
+        this.handler = handler;
         this.speed = speed;
-        this.perm = perm;
         rot = new Vector3f();
     }
 
     /**
-     * <code>performAction</code> moves the node along it's positive
-     * direction vector at a speed of movement speed * time. Where time is
-     * the time between frames and 1 corresponds to 1 second.
+     * <code>performAction</code> moves the node along it's positive direction
+     * vector at a speed of movement speed * time. Where time is the time
+     * between frames and 1 corresponds to 1 second.
+     * 
      * @see com.jme.input.action.AbstractInputAction#performAction(float)
      */
     public void performAction(InputActionEvent event) {
-        float time = event.getTime();
-      if (perm != null && !perm.canBeMoved()) return;
-      Vector3f loc = node.getLocalTranslation();
-      rot.set(cam.getLeft());
-      rot.y = 0;
-      rot.normalizeLocal();
-      loc.addLocal(rot.multLocal((speed*time)));
+        if (handler.getPermitter() != null
+                && !handler.getPermitter().canBeMoved())
+            return;
+        Vector3f loc = handler.getTarget().getLocalTranslation();
+        rot.set(handler.getCamera().getLeft());
+        rot.y = 0;
+        rot.normalizeLocal();
+        loc.addLocal(rot.multLocal((speed * event.getTime())));
     }
 }

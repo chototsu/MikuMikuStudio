@@ -42,8 +42,11 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.input.ThirdPersonHandler;
 import com.jme.light.DirectionalLight;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -62,7 +65,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -111,6 +114,12 @@ public class TestThirdPersonController extends SimpleGame {
                 .getLocalTranslation())+((BoundingBox)m_character.getWorldBound()).yExtent;
         if (!Float.isInfinite(characterMinHeight) && !Float.isNaN(characterMinHeight)) {
             m_character.getLocalTranslation().y = characterMinHeight;
+        }
+        
+        if (KeyBindingManager
+            .getKeyBindingManager()
+            .isValidCommand("tog_lock_back", false)) {
+          ((ThirdPersonHandler)input).setLockBackwards(!((ThirdPersonHandler)input).isLockBackwards());
         }
     }
 
@@ -228,8 +237,13 @@ public class TestThirdPersonController extends SimpleGame {
     private void setupInput() {
         HashMap handlerProps = new HashMap();
         handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, "true");
+        handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, ""+(1.0f * FastMath.PI));
+        handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, "false");
         input = new ThirdPersonHandler(m_character, cam, handlerProps, properties.getRenderer());
         input.setKeySpeed(100f);
-        input.setMouseSpeed(100f);
+
+        KeyBindingManager.getKeyBindingManager().set(
+                "tog_lock_back",
+                KeyInput.KEY_G);
     }
 }
