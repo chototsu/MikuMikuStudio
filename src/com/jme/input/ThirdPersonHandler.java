@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -164,9 +164,9 @@ public class ThirdPersonHandler extends InputHandler {
     public ThirdPersonHandler(Node node, Camera cam, HashMap props, String api) {
         this.node = node;
         this.camera = cam;
-        setProperties(props);
-        setKeyBindings(api, props);
-        setActions(props);
+        setupKeyboard(api);
+        setActions();
+        updateProperties(props);
     }
 
     /**
@@ -174,33 +174,21 @@ public class ThirdPersonHandler extends InputHandler {
      * <code>setProperties</code> sets up class fields from the given hashmap
      * @param props
      */
-    private void setProperties(HashMap props) {
-        if (props == null) {
-            return;
-        }
+    private void updateProperties(HashMap props) {
         turnSpeed = getFloatProp(props, PROP_TURNSPEED, DEFAULT_TURNSPEED);
         doGradualRotation = getBooleanProp(props, PROP_DOGRADUAL, true);
         lockBackwards = getBooleanProp(props, PROP_LOCKBACKWARDS, false);
         permitter = (MovementPermitter)getObjectProp(props, PROP_PERMITTER, null);
         upVector = (Vector3f)getObjectProp(props, PROP_UPVECTOR, new Vector3f(Vector3f.UNIT_Y));
+        updateKeyBindings(props);
     }
 
-    /**
-     * 
-     * <code>setKeyBindings</code> binds the keys to use for the actions.
-     * 
-     * @param api
-     *            the api to use for the input.
-     * @param props
-     *            a hashmap of properties used to set key mapping.
-     */
-    protected void setKeyBindings(String api, HashMap props) {
+    protected void setupKeyboard(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         InputSystem.createInputSystem(api);
 
         keyboard.setKeyInput(InputSystem.getKeyInput());
         setKeyBindingManager(keyboard);
-        updateKeyBindings(props);
     }
 
     /**
@@ -225,7 +213,7 @@ public class ThirdPersonHandler extends InputHandler {
      * 
      * @param cam
      */
-    protected void setActions(HashMap props) {
+    protected void setActions() {
         ThirdPersonForwardAction forward = new ThirdPersonForwardAction(this, 0.5f);
         forward.setKey(PROP_KEY_FORWARD);
         addAction(forward);

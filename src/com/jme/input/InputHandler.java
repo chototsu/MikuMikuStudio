@@ -48,7 +48,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.21 2005-10-03 20:29:40 renanse Exp $
+ * @version $Id: InputHandler.java,v 1.22 2005-10-03 23:24:24 renanse Exp $
  */
 public class InputHandler {
 
@@ -319,28 +319,28 @@ public class InputHandler {
 
 	}
 
-    protected static float getFloatProp(HashMap props, String key, float defaultVal) {
+    public static float getFloatProp(HashMap props, String key, float defaultVal) {
         if (props == null || props.get(key) == null)
             return defaultVal;
         else
             return Float.parseFloat(props.get(key).toString());
     }
 
-    protected static int getIntProp(HashMap props, String key, int defaultVal) {
+    public static int getIntProp(HashMap props, String key, int defaultVal) {
         if (props == null || props.get(key) == null)
             return defaultVal;
         else
             return Integer.parseInt(props.get(key).toString());
     }
 
-    protected static boolean getBooleanProp(HashMap props, String key, boolean defaultVal) {
+    public static boolean getBooleanProp(HashMap props, String key, boolean defaultVal) {
         if (props == null || props.get(key) == null)
             return defaultVal;
         else
             return "true".equalsIgnoreCase(props.get(key).toString());
     }
 
-    protected static Object getObjectProp(HashMap props, String key, Object defaultVal) {
+    public static Object getObjectProp(HashMap props, String key, Object defaultVal) {
         if (props == null || props.get(key) == null)
             return defaultVal;
         else

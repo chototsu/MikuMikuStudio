@@ -577,7 +577,8 @@ public class Lesson5 extends BaseGame {
     private void buildChaseCamera() {
         Vector3f targetOffset = new Vector3f();
         targetOffset.y = ((BoundingBox) player.getWorldBound()).yExtent * 1.5f;
-        chaser = new ChaseCamera(cam, player, targetOffset);
+        chaser = new ChaseCamera(cam, player, properties.getRenderer());
+        chaser.setTargetOffset(targetOffset);
         chaser.setMouseSpeed(100f);
         chaser.getMouseLook().setMaxRollOut(5);
         chaser.getMouseLook().setMinRollOut(2);

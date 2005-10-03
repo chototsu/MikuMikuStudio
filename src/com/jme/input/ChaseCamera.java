@@ -32,7 +32,8 @@
 
 package com.jme.input;
 
-import com.jme.input.InputHandler;
+import java.util.HashMap;
+
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -44,48 +45,55 @@ import com.jme.scene.Spatial;
  * about and zoom on that element.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 
 public class ChaseCamera extends InputHandler {
+    public static final String PROP_INITIALSPHERECOORDS = "sphereCoords";
+    public static final String PROP_DAMPINGK = "sphereCoords";
+    public static final String PROP_SPRINGK = "sphereCoords";
+    public static final String PROP_TARGETOFFSET = "targetOffset";
+    public static final String PROP_WORLDUPVECTOR = "worldUpVec";
 
-    private Vector3f idealSphereCoords;
-    private Vector3f idealPosition;
-    private Camera cam;
-    private Vector3f velocity;
-    private Spatial target;
-    private float springK, dampingK;
-    private Vector3f dirVec;
-    private Vector3f worldUpVec;
-    private Vector3f upVec;
-    private Vector3f leftVec;
-    private Vector3f targetOffset;
-    private Vector3f targetPos = new Vector3f();
+    public static final float DEFAULT_DAMPINGK = 12.0f;
+    public static final float DEFAULT_SPRINGK = 36.0f;
+    public static final Vector3f DEFAULT_WORLDUPVECTOR = new Vector3f(Vector3f.UNIT_Y);
+
+    protected Vector3f idealSphereCoords;
+    protected Vector3f idealPosition = new Vector3f();
+    protected Camera cam;
+    protected Vector3f velocity = new Vector3f();
+    protected Spatial target;
+    
+    protected float dampingK;
+    protected float springK;
+
+    protected Vector3f dirVec = new Vector3f();
+    protected Vector3f worldUpVec = new Vector3f(DEFAULT_WORLDUPVECTOR);
+    protected Vector3f upVec = new Vector3f();
+    protected Vector3f leftVec = new Vector3f();
+    protected Vector3f targetOffset = new Vector3f();
+    protected Vector3f targetPos = new Vector3f();
 
     /** The ThirdPersonMouseLook action, kept as a field to allow easy access to setting speeds and y axis flipping. */
     protected ThirdPersonMouseLook mouseLook;
 
-    public ChaseCamera(Camera cam, Spatial target, Vector3f targetOffset) {
+    public ChaseCamera(Camera cam, Spatial target, String api) {
+        this(cam, target, null, api);
+    }
+    
+    public ChaseCamera(Camera cam, Spatial target, HashMap props, String api) {
         super();
         this.cam = cam;
         this.target = target;
-        this.targetOffset = targetOffset;
-        velocity = new Vector3f();
-        idealSphereCoords = new Vector3f(150, 0, 0 * FastMath.DEG_TO_RAD);
-        dirVec = new Vector3f();
-        upVec = new Vector3f();
-        leftVec = new Vector3f();
 
-        idealPosition = new Vector3f();
-        worldUpVec = new Vector3f(0,1,0);  // default
-
-        dampingK = 12f; // play with this number for camera velocity...
-        springK = (dampingK * dampingK) / 4;
-        setupMouse();
+        setupMouse(api);
+        updateProperties(props);
     }
 
-    private void setupMouse() {
+    private void setupMouse(String api) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
+        InputSystem.createInputSystem(api);
         mouse.setMouseInput(InputSystem.getMouseInput());
         setMouse(mouse);
 
@@ -94,6 +102,19 @@ public class ChaseCamera extends InputHandler {
         
         mouseLook = new ThirdPersonMouseLook(mouse, this, target);
         addAction(mouseLook);
+    }
+
+    public void updateProperties(HashMap props) {
+        if (idealSphereCoords == null)
+            idealSphereCoords = ((Vector3f)getObjectProp(props, PROP_INITIALSPHERECOORDS, new Vector3f((mouseLook.getMaxRollOut()-mouseLook.getMinRollOut()) / 2f, 0, 0)));
+        
+        worldUpVec = (Vector3f)getObjectProp(props, PROP_WORLDUPVECTOR, DEFAULT_WORLDUPVECTOR);
+        targetOffset = (Vector3f)getObjectProp(props, PROP_TARGETOFFSET, new Vector3f());
+
+        dampingK = getFloatProp(props, PROP_DAMPINGK, DEFAULT_DAMPINGK);
+        springK = getFloatProp(props, PROP_SPRINGK, DEFAULT_SPRINGK);
+
+        mouseLook.updateProperties(props);
     }
 
     public void setCamera(Camera cam) {
