@@ -48,7 +48,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.20 2005-10-03 19:59:55 renanse Exp $
+ * @version $Id: InputHandler.java,v 1.21 2005-10-03 20:29:40 renanse Exp $
  */
 public class InputHandler {
 
@@ -337,7 +337,7 @@ public class InputHandler {
         if (props == null || props.get(key) == null)
             return defaultVal;
         else
-            return Boolean.parseBoolean(props.get(key).toString());
+            return "true".equalsIgnoreCase(props.get(key).toString());
     }
 
     protected static Object getObjectProp(HashMap props, String key, Object defaultVal) {
