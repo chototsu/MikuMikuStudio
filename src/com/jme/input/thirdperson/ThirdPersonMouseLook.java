@@ -44,13 +44,13 @@ import com.jme.scene.Spatial;
 public class ThirdPersonMouseLook implements MouseInputAction {
     private RelativeMouse mouse;
 
-    private static float maxAscent = 45 * FastMath.DEG_TO_RAD;
-    private static float maxRollOut = 240;
-    private static float minRollOut = 20; //40;
+    private float maxAscent = 45 * FastMath.DEG_TO_RAD;
+    private float maxRollOut = 240;
+    private float minRollOut = 20;
 
-    private static float MULT_X_SPEED = 1f/50f;
-    private static float MULT_Y_SPEED = 10f/50f;
-    private static float MULT_ROLL_SPEED = 60f/50f;
+    private float MULT_X_SPEED = 1f/50f;
+    private float MULT_Y_SPEED = 10f/50f;
+    private float MULT_ROLL_SPEED = 60f/50f;
 
     private float mouseXSpeed;
     private float mouseYSpeed;
@@ -212,5 +212,89 @@ public class ThirdPersonMouseLook implements MouseInputAction {
     
     public String getKey() {
         return null;
+    }
+
+    /**
+     * @return Returns the maxAscent.
+     */
+    public float getMaxAscent() {
+        return maxAscent;
+    }
+
+    /**
+     * @param maxAscent The maxAscent to set.
+     */
+    public void setMaxAscent(float maxAscent) {
+        this.maxAscent = maxAscent;
+    }
+
+    /**
+     * @return Returns the maxRollOut.
+     */
+    public float getMaxRollOut() {
+        return maxRollOut;
+    }
+
+    /**
+     * @param maxRollOut The maxRollOut to set.
+     */
+    public void setMaxRollOut(float maxRollOut) {
+        this.maxRollOut = maxRollOut;
+    }
+
+    /**
+     * @return Returns the minRollOut.
+     */
+    public float getMinRollOut() {
+        return minRollOut;
+    }
+
+    /**
+     * @param minRollOut The minRollOut to set.
+     */
+    public void setMinRollOut(float minRollOut) {
+        this.minRollOut = minRollOut;
+    }
+
+    /**
+     * @return Returns the mouseXSpeed.
+     */
+    public float getMouseXSpeed() {
+        return mouseXSpeed;
+    }
+
+    /**
+     * @param mouseXSpeed The mouseXSpeed to set.
+     */
+    public void setMouseXSpeed(float mouseXSpeed) {
+        this.mouseXSpeed = mouseXSpeed;
+    }
+
+    /**
+     * @return Returns the mouseYSpeed.
+     */
+    public float getMouseYSpeed() {
+        return mouseYSpeed;
+    }
+
+    /**
+     * @param mouseYSpeed The mouseYSpeed to set.
+     */
+    public void setMouseYSpeed(float mouseYSpeed) {
+        this.mouseYSpeed = mouseYSpeed;
+    }
+
+    /**
+     * @return Returns the rollInSpeed.
+     */
+    public float getRollInSpeed() {
+        return rollInSpeed;
+    }
+
+    /**
+     * @param rollInSpeed The rollInSpeed to set.
+     */
+    public void setRollInSpeed(float rollInSpeed) {
+        this.rollInSpeed = rollInSpeed;
     }
   }
