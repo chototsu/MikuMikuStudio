@@ -57,7 +57,7 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Spatial.java,v 1.80 2005-09-22 00:44:36 renanse Exp $
+ * @version $Id: Spatial.java,v 1.81 2005-10-03 10:51:45 irrisor Exp $
  */
 public abstract class Spatial implements Serializable {
 
@@ -361,7 +361,7 @@ public abstract class Spatial implements Serializable {
      * NOTE: You must set this AFTER attaching to a parent or it will be reset
      * with the parent's cullMode value.
      *
-     * @param cullMode
+     * @param mode
      *            one of CULL_DYNAMIC, CULL_ALWAYS, CULL_INHERIT or CULL_NEVER
      */
     public void setCullMode(int mode) {
@@ -383,10 +383,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>updateGeometricState</code> updates all the geometry information
      * for the node.
-     * 
+     *
      * @param time
      *            the frame time.
      * @param initiator
@@ -401,10 +401,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>updateWorldData</code> updates the world transforms from the
      * parent down to the leaf.
-     * 
+     *
      * @param time
      *            the frame time.
      */
@@ -413,10 +413,13 @@ public abstract class Spatial implements Serializable {
         Object controller;
         for (int i = 0, gSize = geometricalControllers.size(); i < gSize; i++) {
             try {
-                if ((controller = geometricalControllers.get(i)) != null) {
-                    ((Controller) controller).update(time);
-                }
-            } catch (IndexOutOfBoundsException e) {
+                controller = geometricalControllers.get( i );
+            } catch ( IndexOutOfBoundsException e ) {
+                // a controller was removed in Controller.update (note: this may skip one controller)
+                break;
+            }
+            if ( controller != null ) {
+                ( (Controller) controller ).update( time );
             }
         }
 
@@ -456,12 +459,12 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>updateWorldBound</code> updates the bounding volume of the world.
      * Abstract, geometry transforms the bound while node merges the children's
      * bound. In most cases, users will want to call updateModelBound() and let
      * this function be called automatically during updateGeometricState().
-     * 
+     *
      */
     public abstract void updateWorldBound();
 
@@ -476,7 +479,7 @@ public abstract class Spatial implements Serializable {
     /**
      * Called internally. Updates the render states of this Spatial. The stack
      * contains parent render states.
-     * 
+     *
      * @param parentStates
      *            The list of parent renderstates.
      */
@@ -512,7 +515,7 @@ public abstract class Spatial implements Serializable {
      * Called during updateRenderState(Stack[]), this function determines how
      * the render states are actually applied to the spatial and any children it
      * may have. By default, this function does nothing.
-     * 
+     *
      * @param states
      *            An array of stacks for each state.
      */
@@ -523,7 +526,7 @@ public abstract class Spatial implements Serializable {
      * Called during updateRenderState(Stack[]), this function goes up the scene
      * graph tree until the parent is null and pushes RenderStates onto the
      * states Stack array.
-     * 
+     *
      * @param states
      *            The Stack[] to push states onto.
      */
@@ -539,10 +542,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>propagateBoundToRoot</code> passes the new world bound up the
      * tree to the root.
-     * 
+     *
      */
     public void propagateBoundToRoot() {
         if (parent != null) {
@@ -554,7 +557,7 @@ public abstract class Spatial implements Serializable {
     /**
      * <code>getParent</code> retrieve's this node's parent. If the parent is
      * null this is the root node.
-     * 
+     *
      * @return the parent of this node.
      */
     public Node getParent() {
@@ -564,7 +567,7 @@ public abstract class Spatial implements Serializable {
     /**
      * Called by {@link Node#attachChild(Spatial)} and {@link Node#detachChild(Spatial)} - don't call directly.
      * <code>setParent</code> sets the parent of this node.
-     * 
+     *
      * @param parent
      *            the parent of this node.
      */
@@ -574,7 +577,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * <code>removeFromParent</code> removes this Spatial from it's parent.
-     * 
+     *
      * @return true if it has a parent and performed the remove.
      */
     public boolean removeFromParent() {
@@ -588,7 +591,7 @@ public abstract class Spatial implements Serializable {
     /**
      * <code>getLocalRotation</code> retrieves the local rotation of this
      * node.
-     * 
+     *
      * @return the local rotation of this node.
      */
     public Quaternion getLocalRotation() {
@@ -597,7 +600,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * <code>setLocalRotation</code> sets the local rotation of this node.
-     * 
+     *
      * @param rotation
      *            the new local rotation.
      */
@@ -609,10 +612,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setLocalRotation</code> sets the local rotation of this node,
      * using a quaterion to build the matrix.
-     * 
+     *
      * @param quaternion
      *            the quaternion that defines the matrix.
      */
@@ -623,7 +626,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * <code>getLocalScale</code> retrieves the local scale of this node.
-     * 
+     *
      * @return the local scale of this node.
      */
     public Vector3f getLocalScale() {
@@ -632,7 +635,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * <code>setLocalScale</code> sets the local scale of this node.
-     * 
+     *
      * @param localScale
      *            the new local scale, applied to x, y and z
      */
@@ -645,7 +648,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * <code>setLocalScale</code> sets the local scale of this node.
-     * 
+     *
      * @param localScale
      *            the new local scale.
      */
@@ -657,7 +660,7 @@ public abstract class Spatial implements Serializable {
     /**
      * <code>getLocalTranslation</code> retrieves the local translation of
      * this node.
-     * 
+     *
      * @return the local translation of this node.
      */
     public Vector3f getLocalTranslation() {
@@ -667,7 +670,7 @@ public abstract class Spatial implements Serializable {
     /**
      * <code>setLocalTranslation</code> sets the local translation of this
      * node.
-     * 
+     *
      * @param localTranslation
      *            the local translation of this node.
      */
@@ -677,13 +680,13 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>setRenderState</code> sets a render state for this node. Note,
      * there can only be one render state per type per node. That is, there can
      * only be a single AlphaState a single TextureState, etc. If there is
      * already a render state for a type set the old render state will be
      * returned. Otherwise, null is returned.
-     * 
+     *
      * @param rs
      *            the render state to add.
      * @return the old render state.
@@ -700,7 +703,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Returns the array of RenderState that this Spatial currently has.
-     * 
+     *
      * @return This spatial's state array.
      */
     public RenderState getRenderState( int type ) {
@@ -709,7 +712,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Clears a given render state index by setting it to 0.
-     * 
+     *
      * @param renderStateType
      *            The index of a RenderState to clear
      * @see com.jme.scene.state.RenderState#getType()
@@ -744,7 +747,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Sets how lights from parents should be combined for this spatial.
-     * 
+     *
      * @param lightCombineMode
      *            The light combine mode for this spatial
      * @see com.jme.scene.state.LightState#COMBINE_CLOSEST
@@ -761,7 +764,7 @@ public abstract class Spatial implements Serializable {
     /**
      * Returns this spatial's light combine mode. If the mode is set to inherit,
      * then the spatial gets its combine mode from its parent.
-     * 
+     *
      * @return The spatial's light current combine mode.
      */
     public int getLightCombineMode() {
@@ -775,7 +778,7 @@ public abstract class Spatial implements Serializable {
 
     /**
      * Sets how textures from parents should be combined for this Spatial.
-     * 
+     *
      * @param textureCombineMode
      *            The new texture combine mode for this spatial.
      * @see com.jme.scene.state.TextureState#COMBINE_CLOSEST
@@ -792,7 +795,7 @@ public abstract class Spatial implements Serializable {
     /**
      * Returns this spatial's texture combine mode. If the mode is set to
      * inherit, then the spatial gets its combine mode from its parent.
-     * 
+     *
      * @return The spatial's texture current combine mode.
      */
     public int getTextureCombineMode() {
@@ -809,10 +812,10 @@ public abstract class Spatial implements Serializable {
      * when a check is made to determine if the bounds of the object fall inside
      * a camera's frustum. If a parent is found to fall outside the frustum, the
      * value for this spatial will not be updated.
-     * 
+     *
      * Possible values include: Camera.OUTSIDE_FRUSTUM,
      * Camera.INTERSECTS_FRUSTUM, and Camera.INSIDE_FRUSTUM
-     * 
+     *
      * @return The spatial's last frustum intersection result.
      */
     public int getLastFrustumIntersection() {
@@ -824,7 +827,7 @@ public abstract class Spatial implements Serializable {
      * operations that want to start rendering at the middle of a
      * scene tree and don't want the parent of that node to
      * influence culling.  (See texture renderer code for example.)
-     * 
+     *
      * Possible values include: Camera.OUTSIDE_FRUSTUM,
      * Camera.INTERSECTS_FRUSTUM, and Camera.INSIDE_FRUSTUM
 
@@ -837,7 +840,7 @@ public abstract class Spatial implements Serializable {
     /**
      * sets all current states to null, and therefore forces the use of the
      * default states.
-     * 
+     *
      */
     public static void clearCurrentStates() {
         for (int i = 0; i < currentStates.length; i++)
@@ -848,7 +851,7 @@ public abstract class Spatial implements Serializable {
      * clears the specified state. The state is referenced by it's int value,
      * and therefore should be called via RenderState's constant list. For
      * example, RenderState.RS_ALPHA.
-     * 
+     *
      * @param state
      *            the state to clear.
      */
@@ -871,10 +874,10 @@ public abstract class Spatial implements Serializable {
     }
 
     /**
-     * 
+     *
      * <code>calculateCollisions</code> calls findCollisions to populate the
      * CollisionResults object then processes the collision results.
-     * 
+     *
      * @param scene
      *            the scene to test against.
      * @param results
@@ -888,7 +891,7 @@ public abstract class Spatial implements Serializable {
     /**
      * checks this spatial against a second spatial, any collisions are stored
      * in the results object.
-     * 
+     *
      * @param scene
      *            the scene to test against.
      * @param results
@@ -917,7 +920,7 @@ public abstract class Spatial implements Serializable {
     /**
      * Returns the Spatial's name followed by the class of the spatial <br>
      * Example: "MyNode (com.jme.scene.Spatial)
-     * 
+     *
      * @return Spatial's name followed by the class of the Spatial
      */
     public String toString() {
@@ -936,9 +939,7 @@ public abstract class Spatial implements Serializable {
             if (store.renderStateList == null)
                 store.renderStateList = new RenderState[RenderState.RS_MAX_STATE];
 
-            for (int i = 0; i < renderStateList.length; i++) {
-                store.renderStateList[i] = renderStateList[i];
-            }
+            System.arraycopy( renderStateList, 0, store.renderStateList, 0, renderStateList.length );
         }
         Iterator I = geometricalControllers.iterator();
         while (I.hasNext()) {
