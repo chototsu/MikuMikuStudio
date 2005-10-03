@@ -129,7 +129,7 @@ public class ThirdPersonMouseLook implements MouseInputAction {
       float azimuthAccel = (amount * mouseXSpeed);
       difTemp.set(camPos).subtractLocal(targetPos);
       FastMath.cartesianToSpherical(difTemp, sphereTemp);
-      sphereTemp.y = FastMath.normalizeAngle(sphereTemp.y + (azimuthAccel));
+      sphereTemp.y = FastMath.normalize(sphereTemp.y + (azimuthAccel), -FastMath.TWO_PI, FastMath.TWO_PI);
       FastMath.sphericalToCartesian(sphereTemp, rightTemp);
       rightTemp.addLocal(targetPos);
       camPos.set(rightTemp);

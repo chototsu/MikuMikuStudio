@@ -33,6 +33,7 @@
 package com.jme.input;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.jme.input.action.InputAction;
 import com.jme.input.action.InputActionEvent;
@@ -47,7 +48,7 @@ import com.jme.input.action.MouseInputAction;
  * 
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.19 2005-09-25 15:27:02 Mojomonkey Exp $
+ * @version $Id: InputHandler.java,v 1.20 2005-10-03 19:59:55 renanse Exp $
  */
 public class InputHandler {
 
@@ -317,4 +318,32 @@ public class InputHandler {
 		}
 
 	}
+
+    protected static float getFloatProp(HashMap props, String key, float defaultVal) {
+        if (props == null || props.get(key) == null)
+            return defaultVal;
+        else
+            return Float.parseFloat(props.get(key).toString());
+    }
+
+    protected static int getIntProp(HashMap props, String key, int defaultVal) {
+        if (props == null || props.get(key) == null)
+            return defaultVal;
+        else
+            return Integer.parseInt(props.get(key).toString());
+    }
+
+    protected static boolean getBooleanProp(HashMap props, String key, boolean defaultVal) {
+        if (props == null || props.get(key) == null)
+            return defaultVal;
+        else
+            return Boolean.parseBoolean(props.get(key).toString());
+    }
+
+    protected static Object getObjectProp(HashMap props, String key, Object defaultVal) {
+        if (props == null || props.get(key) == null)
+            return defaultVal;
+        else
+            return props.get(key);
+    }
 }

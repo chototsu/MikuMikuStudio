@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.19 2005-10-03 05:37:04 renanse Exp $
+ * @version $Id: FastMath.java,v 1.20 2005-10-03 19:59:56 renanse Exp $
  */
 
 final public class FastMath {
@@ -625,40 +625,22 @@ final public class FastMath {
     }
 
     /**
-     * Takes an angle (in radians) and expresses it in terms of -2pi to 2pi.
+     * Takes an value and expresses it in terms of min to max.
      * 
      * @param r -
      *            the angle to normalize (in radians)
      * @return the normalized angle (also in radians)
      */
-    public static float normalizeAngle(float r) {
-        if (Float.isInfinite(r) || Float.isNaN(r))
+    public static float normalize(float val, float min, float max) {
+        if (Float.isInfinite(val) || Float.isNaN(val))
             return 0f;
-        while (r > FastMath.TWO_PI)
-            r -= FastMath.TWO_PI;
-        while (r < -FastMath.TWO_PI)
-            r += FastMath.TWO_PI;
-        return r;
+        float range = max-min;
+        while (val > max)
+            val -= range;
+        while (val < min)
+            val += range;
+        return val;
     }
-    
-    
-    /**
-     * Takes an angle (in radians) and expresses it in terms of -pi to pi.
-     * 
-     * @param r -
-     *            the angle to normalize (in radians)
-     * @return the normalized angle (also in radians)
-     */
-    public static float normalizeHalfAngle(float r) {
-        if (Float.isInfinite(r) || Float.isNaN(r))
-            return 0f;
-        while (r > FastMath.PI)
-            r -= FastMath.PI;
-        while (r < -FastMath.PI)
-            r += FastMath.PI;
-        return r;
-    }
-    
     
 
     /**

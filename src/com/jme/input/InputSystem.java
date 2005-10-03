@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.6 2005-09-15 17:13:06 renanse Exp $
+ * @version $Id: InputSystem.java,v 1.7 2005-10-03 19:59:55 renanse Exp $
  */
 public class InputSystem {
     // the input devices.
@@ -55,6 +55,8 @@ public class InputSystem {
 
     private static MouseInput mouseInput;
 
+    private static boolean inited = false;
+    
     public static final String INPUT_SYSTEM_LWJGL = "LWJGL";
 
     /**
@@ -70,8 +72,18 @@ public class InputSystem {
             keyInput = new LWJGLKeyInput();
             mouseInput = new LWJGLMouseInput();
         }
+        inited = true;
     }
 
+    /**
+     * <code>isInited</code> returns true if createInputSystem was previously called.
+     * 
+     * @return inited
+     */
+    public static boolean isInited() {
+        return inited;
+    }
+    
     /**
      * 
      * <code>getKeyInput</code> retrieves the key input device.

@@ -49,15 +49,22 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.5 $
+ * @version $Revision: 1.6 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
-    public static final String KEY_TURNSPEED = "turnSpeed";
-    public static final String KEY_DOGRADUAL = "doGradual";
-    public static final String KEY_PERMITTER = "permitter";
-    public static final String KEY_UPVECTOR = "upVector";
+    public static final String PROP_TURNSPEED = "turnSpeed";
+    public static final String PROP_DOGRADUAL = "doGradual";
+    public static final String PROP_PERMITTER = "permitter";
+    public static final String PROP_UPVECTOR = "upVector";
 
+    public static final String PROP_KEY_FORWARD = "fwdKey";
+    public static final String PROP_KEY_BACKWARD = "backKey";
+    public static final String PROP_KEY_LEFT = "leftKey";
+    public static final String PROP_KEY_RIGHT = "rightKey";
+    public static final String PROP_KEY_STRAFELEFT = "strfLeftKey";
+    public static final String PROP_KEY_STRAFERIGHT = "strfRightKey";
+    
     /** Default character turn speed is 1.5pi per sec. */
     public static final float DEFAULT_TURNSPEED = 1.5f * FastMath.PI;    
     
@@ -108,10 +115,36 @@ public class ThirdPersonHandler extends InputHandler {
     /** An internal vector used for calculations to prevent object creation. */
     protected Vector3f calcVector = new Vector3f();
 
+    /**
+     * Basic constructor for the ThirdPersonHandler. Sets all non specified args
+     * to their defaults.
+     * 
+     * @param node
+     *            the target to move
+     * @param cam
+     *            the camera for movements to be in relation to
+     * @param api
+     *            the api to use for the underlying input system
+     */
     public ThirdPersonHandler(Node node, Camera cam, String api) {
         this(node, cam, null, api);
     }
     
+    /**
+     * Full constructor for the ThirdPersonHandler. Properties in the props arg
+     * will be used to set handler fields if set, otherwise default values are
+     * used.
+     * 
+     * @param node
+     *            the target to move
+     * @param cam
+     *            the camera for movements to be in relation to
+     * @param props
+     *            a hashmap of properties used to set handler characteristics
+     *            where the key is one of this class's static PROP_XXXX fields.
+     * @param api
+     *            the api to use for the underlying input system
+     */
     public ThirdPersonHandler(Node node, Camera cam, HashMap props, String api) {
         this.node = node;
         setProperties(props);
@@ -123,14 +156,10 @@ public class ThirdPersonHandler extends InputHandler {
         if (props == null) {
             return;
         }
-        turnSpeed = getFloatProp(props, KEY_TURNSPEED, DEFAULT_TURNSPEED);
-    }
-
-    protected float getFloatProp(HashMap props, String key, float defaultVal) {
-        if (props.get(key) == null)
-            return defaultVal;
-        else
-            return Float.parseFloat(props.get(key).toString());
+        turnSpeed = getFloatProp(props, PROP_TURNSPEED, DEFAULT_TURNSPEED);
+        doGradualRotation = getBooleanProp(props, PROP_DOGRADUAL, true);
+        permitter = (MovementPermitter)getObjectProp(props, PROP_PERMITTER, null);
+        upVector = (Vector3f)getObjectProp(props, PROP_UPVECTOR, new Vector3f(Vector3f.UNIT_Y));
     }
 
     /**
@@ -139,16 +168,22 @@ public class ThirdPersonHandler extends InputHandler {
      * 
      * @param api
      *            the api to use for the input.
+     * @param props
+     *            a hashmap of properties used to set key mapping.
      */
     protected void setKeyBindings(String api, HashMap props) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
-        InputSystem.createInputSystem(api);
+
+        if (!InputSystem.isInited())
+            InputSystem.createInputSystem(api);
 
         keyboard.setKeyInput(InputSystem.getKeyInput());
-        keyboard.set("forward", KeyInput.KEY_W);
-        keyboard.set("backward", KeyInput.KEY_S);
-        keyboard.set("left", KeyInput.KEY_A);
-        keyboard.set("right", KeyInput.KEY_D);
+        keyboard.set(PROP_KEY_FORWARD, getIntProp(props, PROP_KEY_FORWARD, KeyInput.KEY_W));
+        keyboard.set(PROP_KEY_BACKWARD, getIntProp(props, PROP_KEY_BACKWARD, KeyInput.KEY_S));
+        keyboard.set(PROP_KEY_LEFT, getIntProp(props, PROP_KEY_LEFT, KeyInput.KEY_A));
+        keyboard.set(PROP_KEY_RIGHT, getIntProp(props, PROP_KEY_RIGHT, KeyInput.KEY_D));
+        keyboard.set(PROP_KEY_STRAFELEFT, getIntProp(props, PROP_KEY_STRAFELEFT, KeyInput.KEY_Q));
+        keyboard.set(PROP_KEY_STRAFERIGHT, getIntProp(props, PROP_KEY_STRAFERIGHT, KeyInput.KEY_E));
 
         setKeyBindingManager(keyboard);
     }
@@ -163,19 +198,19 @@ public class ThirdPersonHandler extends InputHandler {
     protected void setActions(Camera cam) {
         ThirdPersonForwardAction forward = new ThirdPersonForwardAction(node,
                 cam, permitter, 0.5f);
-        forward.setKey("forward");
+        forward.setKey(PROP_KEY_FORWARD);
         addAction(forward);
         ThirdPersonBackwardAction backward = new ThirdPersonBackwardAction(
                 node, cam, permitter, 0.5f);
-        backward.setKey("backward");
+        backward.setKey(PROP_KEY_BACKWARD);
         addAction(backward);
         ThirdPersonRightAction right = new ThirdPersonRightAction(node, cam,
                 permitter, 1f);
-        right.setKey("right");
+        right.setKey(PROP_KEY_RIGHT);
         addAction(right);
         ThirdPersonLeftAction left = new ThirdPersonLeftAction(node, cam,
                 permitter, 1f);
-        left.setKey("left");
+        left.setKey(PROP_KEY_LEFT);
         addAction(left);
     }
 
@@ -196,29 +231,29 @@ public class ThirdPersonHandler extends InputHandler {
                 actAngle = FastMath.PI;
             else
                 actAngle = 0;
+            actAngle = FastMath.normalize(actAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
             if (doGradualRotation) {
                 float oldAct = actAngle;
+                faceAngle = FastMath.normalize(faceAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
+
+                // Check the difference between action angle and current facing angle.
                 actAngle -= faceAngle;
+                if (actAngle > FastMath.PI)
+                    actAngle -= FastMath.TWO_PI;
+                else if (actAngle < -FastMath.PI)
+                    actAngle += FastMath.TWO_PI;
 
-                // redo: THE FOLLOWING IS SUPPOSED TO CORRECT THE RAPID CHANGE
-                // FROM ONE DIR TO ANOTHER... IT DOESN'T.
-                if (actAngle == FastMath.PI) {
-                    actAngle -= FastMath.PI / 8f;
-                    oldAct -= FastMath.PI / 8f;
-                }
-                actAngle = FastMath.normalizeAngle(actAngle);
-
-                // update rotation
+                // update faceangle rotation towards action angle
                 if (actAngle > 0) {
                     faceAngle += time * turnSpeed;
-                    if (faceAngle > oldAct)
+                    if (faceAngle > FastMath.normalize(oldAct, 0, FastMath.TWO_PI))
                         faceAngle = oldAct;
-                } else if (actAngle < 0) {
+                } else if (actAngle <= 0) {
                     faceAngle -= time * turnSpeed;
-                    if (faceAngle < oldAct)
+                    if (faceAngle < FastMath.normalize(oldAct, -FastMath.TWO_PI, 0))
                         faceAngle = oldAct;
                 }
-            }
+            } else faceAngle = actAngle;
 
             node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
             node.getLocalTranslation().set(prevLoc);

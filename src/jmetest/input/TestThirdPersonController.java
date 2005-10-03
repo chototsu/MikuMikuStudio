@@ -32,6 +32,8 @@
 
 package jmetest.input;
 
+import java.util.HashMap;
+
 import javax.swing.ImageIcon;
 
 import jmetest.terrain.TestTerrain;
@@ -42,7 +44,6 @@ import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
 import com.jme.input.ThirdPersonHandler;
 import com.jme.light.DirectionalLight;
-import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -61,7 +62,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -121,6 +122,16 @@ public class TestThirdPersonController extends SimpleGame {
         rootNode.attachChild(m_character);
         m_character.attachChild(b);
         m_character.updateWorldBound();
+
+        TextureState ts = display.getRenderer().createTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(
+            TextureManager.loadTexture(
+            TestThirdPersonController.class.getClassLoader().getResource(
+            "jmetest/data/images/Monkey.tga"),
+            Texture.MM_LINEAR,
+            Texture.FM_LINEAR));
+        m_character.setRenderState(ts);
     }
     
     private void setupTerrain() {
@@ -141,6 +152,7 @@ public class TestThirdPersonController extends SimpleGame {
         cs.setEnabled(true);
         rootNode.setRenderState(cs);
 
+        lightState.detachAll();
         lightState.attach(dr);
 
         FaultFractalHeightMap heightMap = new FaultFractalHeightMap(257, 32, 0,
@@ -214,10 +226,10 @@ public class TestThirdPersonController extends SimpleGame {
     }
 
     private void setupInput() {
-        input = new ThirdPersonHandler(m_character, cam, properties.getRenderer());
+        HashMap handlerProps = new HashMap();
+        handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, "true");
+        input = new ThirdPersonHandler(m_character, cam, handlerProps, properties.getRenderer());
         input.setKeySpeed(100f);
         input.setMouseSpeed(100f);
-        ((ThirdPersonHandler)input).setDoGradualRotation(true);
-        ((ThirdPersonHandler)input).setTurnSpeed(1.5f*FastMath.PI);
     }
 }
