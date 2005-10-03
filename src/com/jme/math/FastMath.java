@@ -39,7 +39,7 @@ import java.util.Random;
  * functions.  These are all used as static values and functions.
  *
  * @author Various
- * @version $Id: FastMath.java,v 1.18 2005-09-20 19:33:37 renanse Exp $
+ * @version $Id: FastMath.java,v 1.19 2005-10-03 05:37:04 renanse Exp $
  */
 
 final public class FastMath {
@@ -590,6 +590,76 @@ final public class FastMath {
     public static float nextRandomFloat() {
         return rand.nextFloat();
     }
+
+    /**
+     * Converts a point from spherical coordinates to cartesian and stores the
+     * results in the store var.
+     */
+    public static Vector3f sphericalToCartesian(Vector3f sphereCoords,
+            Vector3f store) {
+        store.y = sphereCoords.x * FastMath.sin(sphereCoords.z);
+        float a = sphereCoords.x * FastMath.cos(sphereCoords.z);
+        store.x = a * FastMath.cos(sphereCoords.y);
+        store.z = a * FastMath.sin(sphereCoords.y);
+
+        return store;
+    }
+
+    /**
+     * Converts a point from cartesian coordinates to spherical and stores the
+     * results in the store var.
+     */
+    public static Vector3f cartesianToSpherical(Vector3f cartCoords,
+            Vector3f store) {
+        if (cartCoords.x == 0)
+            cartCoords.x = FastMath.FLT_EPSILON;
+        store.x = FastMath
+                .sqrt((cartCoords.x * cartCoords.x)
+                        + (cartCoords.y * cartCoords.y)
+                        + (cartCoords.z * cartCoords.z));
+        store.y = FastMath.atan(cartCoords.z / cartCoords.x);
+        if (cartCoords.x < 0)
+            store.y += FastMath.PI;
+        store.z = FastMath.asin(cartCoords.y / store.x);
+        return store;
+    }
+
+    /**
+     * Takes an angle (in radians) and expresses it in terms of -2pi to 2pi.
+     * 
+     * @param r -
+     *            the angle to normalize (in radians)
+     * @return the normalized angle (also in radians)
+     */
+    public static float normalizeAngle(float r) {
+        if (Float.isInfinite(r) || Float.isNaN(r))
+            return 0f;
+        while (r > FastMath.TWO_PI)
+            r -= FastMath.TWO_PI;
+        while (r < -FastMath.TWO_PI)
+            r += FastMath.TWO_PI;
+        return r;
+    }
+    
+    
+    /**
+     * Takes an angle (in radians) and expresses it in terms of -pi to pi.
+     * 
+     * @param r -
+     *            the angle to normalize (in radians)
+     * @return the normalized angle (also in radians)
+     */
+    public static float normalizeHalfAngle(float r) {
+        if (Float.isInfinite(r) || Float.isNaN(r))
+            return 0f;
+        while (r > FastMath.PI)
+            r -= FastMath.PI;
+        while (r < -FastMath.PI)
+            r += FastMath.PI;
+        return r;
+    }
+    
+    
 
     /**
      * FastTrig is used to calculate quick trig functions using a lookup table.
