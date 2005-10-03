@@ -45,7 +45,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestSphere</code>
  * @author Mark Powell
- * @version $Id: TestSphere.java,v 1.12 2005-09-15 17:13:20 renanse Exp $
+ * @version $Id: TestSphere.java,v 1.13 2005-10-03 05:38:46 renanse Exp $
  */
 public class TestSphere extends SimpleGame {
 
@@ -93,7 +93,7 @@ public class TestSphere extends SimpleGame {
     ts.setEnabled(true);
     ts.setTexture(
         TextureManager.loadTexture(
-        TestBoxColor.class.getClassLoader().getResource(
+        TestSphere.class.getClassLoader().getResource(
         "jmetest/data/images/Monkey.jpg"),
         Texture.MM_LINEAR_LINEAR,
         Texture.FM_LINEAR));

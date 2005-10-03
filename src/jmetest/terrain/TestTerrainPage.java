@@ -54,7 +54,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestTerrainPage</code>
  *
  * @author Mark Powell
- * @version $Id: TestTerrainPage.java,v 1.28 2005-09-26 22:51:05 renanse Exp $
+ * @version $Id: TestTerrainPage.java,v 1.29 2005-10-03 05:39:08 renanse Exp $
  */
 public class TestTerrainPage extends SimpleGame {
 
@@ -79,7 +79,7 @@ private TerrainPage page;
    */
   protected void simpleInitGame() {
       rootNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-      fpsNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
+      fpsNode.setRenderQueueMode(Renderer.QUEUE_ORTHO);
 
     DirectionalLight dl = new DirectionalLight();
     dl.setDiffuse(new ColorRGBA(1.0f, 1.0f, 1.0f, 1.0f));
