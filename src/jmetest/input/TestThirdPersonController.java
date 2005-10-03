@@ -61,7 +61,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -215,7 +215,7 @@ public class TestThirdPersonController extends SimpleGame {
         input = new ThirdPersonHandler(this, m_character, chaser, null, properties.getRenderer());
         input.setKeySpeed(100f);
         input.setMouseSpeed(100f);
-        ((ThirdPersonHandler)input).setDoGradualRotation(false);
+        ((ThirdPersonHandler)input).setDoGradualRotation(true);
         ((ThirdPersonHandler)input).setTurnSpeed(1.5f*FastMath.PI);
     }
 }

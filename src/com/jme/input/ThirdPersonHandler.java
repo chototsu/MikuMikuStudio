@@ -51,7 +51,7 @@ import com.jme.scene.Node;
  * Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -186,7 +186,7 @@ public class ThirdPersonHandler extends InputHandler {
                 }
             }
 
-            node.getLocalRotation().fromAngleNormalAxis(-actAngle, upAngle);
+            node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upAngle);
             node.getLocalTranslation().set(prevLoc);
             node.getLocalRotation().getRotationColumn(0, _calc).multLocal(
                     distance);
