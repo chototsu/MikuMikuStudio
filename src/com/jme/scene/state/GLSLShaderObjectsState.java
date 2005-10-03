@@ -312,6 +312,8 @@ public abstract class GLSLShaderObjectsState extends RenderState {
      *            the new value
      */
     public void setUniform(String var, com.jme.image.Texture sampler) {
+        if (sampler.getTextureId() == 0)
+            throw new IllegalArgumentException("Invalid Sampler Texture. Sampler texture has no OpenGL Texture id set.");
         setUniform(var, sampler.getTextureId());
     }
 
