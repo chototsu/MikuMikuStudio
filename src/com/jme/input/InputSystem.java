@@ -47,7 +47,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.7 2005-10-03 19:59:55 renanse Exp $
+ * @version $Id: InputSystem.java,v 1.8 2005-10-03 20:25:11 renanse Exp $
  */
 public class InputSystem {
     // the input devices.
@@ -68,6 +68,29 @@ public class InputSystem {
      *            the input API to use, e.g. "LWJGL" or "JInput".
      */
     public static void createInputSystem(String system) {
+        createInputSystem(system, false);
+    }
+
+    /**
+     * 
+     * <code>createInputSystem</code> initializes the input devices using the
+     * provided API string.
+     * 
+     * @param system
+     *            the input API to use, e.g. "LWJGL" or "JInput".
+     * @param forceNew
+     *            true if we should force creation of the inputSystem regardless
+     *            of whether it was previously inited.
+     */
+    public static void createInputSystem(String system, boolean forceNew) {
+        if (inited && !forceNew) {
+            LoggingSystem
+            .getLogger()
+            .log(Level.INFO,
+                    "InputSystem is already created.");
+            return;
+        }
+            
         if (INPUT_SYSTEM_LWJGL.equalsIgnoreCase(system)) {
             keyInput = new LWJGLKeyInput();
             mouseInput = new LWJGLMouseInput();
