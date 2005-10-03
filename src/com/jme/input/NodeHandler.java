@@ -32,8 +32,6 @@
 
 package com.jme.input;
 
-import com.jme.app.AbstractGame;
-import com.jme.input.action.KeyExitAction;
 import com.jme.input.action.KeyNodeBackwardAction;
 import com.jme.input.action.KeyNodeForwardAction;
 import com.jme.input.action.KeyNodeLookDownAction;
@@ -53,7 +51,7 @@ import com.jme.scene.Spatial;
  * arrow keys rotate and tilt the node and the mouse also rotates and tilts
  * the node.
  * @author Mark Powell
- * @version $Id: NodeHandler.java,v 1.6 2005-09-27 19:13:08 renanse Exp $
+ * @version $Id: NodeHandler.java,v 1.7 2005-10-03 19:53:53 Mojomonkey Exp $
  */
 public class NodeHandler extends InputHandler {
 
@@ -65,11 +63,11 @@ public class NodeHandler extends InputHandler {
      * @param node the node to control.
      * @param api the api to use for input.
      */
-    public NodeHandler(AbstractGame app, Spatial node, String api) {
+    public NodeHandler(Spatial node, String api) {
 
         setKeyBindings(api);
         setUpMouse(node);
-        setActions(node, app);
+        setActions(node);
 
     }
 
@@ -91,7 +89,6 @@ public class NodeHandler extends InputHandler {
         keyboard.set("lookDown", KeyInput.KEY_DOWN);
         keyboard.set("turnRight", KeyInput.KEY_RIGHT);
         keyboard.set("turnLeft", KeyInput.KEY_LEFT);
-        keyboard.set("exit", KeyInput.KEY_ESCAPE);
 
         setKeyBindingManager(keyboard);
 
@@ -122,10 +119,7 @@ public class NodeHandler extends InputHandler {
      * @param node the node to control.
      * @param app the app to use exit with.
      */
-    private void setActions(Spatial node, AbstractGame app) {
-        KeyExitAction exit = new KeyExitAction(app);
-        exit.setKey("exit");
-        addAction(exit);
+    private void setActions(Spatial node) {
         KeyNodeForwardAction forward = new KeyNodeForwardAction(node, 0.5f);
         forward.setKey("forward");
         addAction(forward);

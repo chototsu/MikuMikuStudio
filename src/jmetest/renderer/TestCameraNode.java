@@ -60,7 +60,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestCameraNode.java,v 1.12 2005-09-22 20:33:29 renanse Exp $
+ * @version $Id: TestCameraNode.java,v 1.13 2005-10-03 19:53:48 Mojomonkey Exp $
  */
 public class TestCameraNode extends BaseGame {
     private TriMesh t;
@@ -147,7 +147,7 @@ public class TestCameraNode extends BaseGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
         camNode = new CameraNode("Camera Node", cam);
-        input = new NodeHandler(this, camNode, "LWJGL");
+        input = new NodeHandler(camNode, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");

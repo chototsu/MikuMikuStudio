@@ -61,7 +61,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTorus.java,v 1.13 2005-09-20 21:51:36 renanse Exp $
+ * @version $Id: TestTorus.java,v 1.14 2005-10-03 19:53:46 Mojomonkey Exp $
  */
 public class TestTorus extends BaseGame {
   private Camera cam;
@@ -158,7 +158,7 @@ public class TestTorus extends BaseGame {
     camNode.setLocalTranslation(new Vector3f(0, 0, -100));
     camNode.updateWorldData(0);
 
-    input = new NodeHandler(this, camNode, "LWJGL");
+    input = new NodeHandler(camNode, "LWJGL");
     input.setKeySpeed(10f);
     input.setMouseSpeed(1f);
     display.setTitle("Torus Test");

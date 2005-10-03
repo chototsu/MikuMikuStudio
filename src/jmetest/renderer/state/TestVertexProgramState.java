@@ -71,7 +71,7 @@ public class TestVertexProgramState extends SimpleGame {
 
         cam.setLocation(new Vector3f(0, 0, 45));
         cam.update();
-        input = new NodeHandler(this, rootNode, properties.getRenderer());
+        input = new NodeHandler(rootNode, properties.getRenderer());
         input.setKeySpeed(10);
         input.setMouseSpeed(2);
 

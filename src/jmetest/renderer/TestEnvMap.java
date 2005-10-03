@@ -48,7 +48,7 @@ import com.jme.util.TextureManager;
  * <code>TestBackwardAction</code>
  *
  * @author Mark Powell
- * @version $Id: TestEnvMap.java,v 1.7 2005-09-15 17:13:25 renanse Exp $
+ * @version $Id: TestEnvMap.java,v 1.8 2005-10-03 19:53:47 Mojomonkey Exp $
  */
 public class TestEnvMap extends SimpleGame {
 
@@ -111,7 +111,7 @@ public class TestEnvMap extends SimpleGame {
     rootNode.attachChild(torus);
     rootNode.attachChild(background);
 
-    input = new NodeHandler(this, torus, properties.getRenderer());
+    input = new NodeHandler(torus, properties.getRenderer());
     input.setKeySpeed(10);
     input.setMouseSpeed(2);
   }

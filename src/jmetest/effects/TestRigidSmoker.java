@@ -83,7 +83,7 @@ public class TestRigidSmoker extends SimpleGame {
     smokeNode.setLocalTranslation(new Vector3f(0, 50, -50));
 
     // Setup the input controller and timer
-    input = new NodeHandler(this, smokeNode, "LWJGL");
+    input = new NodeHandler(smokeNode, "LWJGL");
     input.setKeySpeed(10f);
     input.setMouseSpeed(1f);
 

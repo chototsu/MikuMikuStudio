@@ -52,7 +52,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestNodeController</code> provides a test for control of a node, in
  * this case a camera node.
  * @author Mark Powell
- * @version $Id: TestNodeController.java,v 1.8 2005-09-15 17:14:21 renanse Exp $
+ * @version $Id: TestNodeController.java,v 1.9 2005-10-03 19:53:52 Mojomonkey Exp $
  */
 public class TestNodeController extends BaseGame {
     private Node scene;
@@ -127,7 +127,7 @@ public class TestNodeController extends BaseGame {
         cameraNode.setLocalTranslation(new Vector3f(0, 250, -20));
         cameraNode.updateWorldData(0);
 
-        input = new NodeHandler(this, cameraNode, "LWJGL");
+        input = new NodeHandler(cameraNode, "LWJGL");
         input.setKeySpeed(50f);
         input.setMouseSpeed(.5f);
 

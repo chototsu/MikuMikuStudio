@@ -54,7 +54,7 @@ import com.jmex.terrain.util.MidPointHeightMap;
 /**
  * <code>TestTerrainLighting</code>
  * @author Mark Powell
- * @version $Id: TestTerrainLighting.java,v 1.25 2005-09-15 17:14:57 renanse Exp $
+ * @version $Id: TestTerrainLighting.java,v 1.26 2005-10-03 19:53:50 Mojomonkey Exp $
  */
 public class TestTerrainLighting extends SimpleGame {
   private CameraNode camNode;
@@ -107,7 +107,7 @@ public class TestTerrainLighting extends SimpleGame {
     camNode.setLocalTranslation(new Vector3f(0, 250, -20));
     camNode.updateWorldData(0);
 
-    input = new NodeHandler(this, camNode, "LWJGL");
+    input = new NodeHandler(camNode, "LWJGL");
     input.setKeySpeed(50f);
     input.setMouseSpeed(.5f);
 

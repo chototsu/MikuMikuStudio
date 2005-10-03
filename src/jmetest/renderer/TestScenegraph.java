@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.27 2005-09-25 23:54:45 renanse Exp $
+ * @version $Id: TestScenegraph.java,v 1.28 2005-10-03 19:53:48 Mojomonkey Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -300,12 +300,12 @@ public class TestScenegraph extends SimpleGame {
         rootNode.attachChild(scene);
         scene.attachChild(selectionBox);
 
-        nc1 = new NodeHandler(this, node1, "LWJGL");
-        nc2 = new NodeHandler(this, node2, "LWJGL");
-        nc3 = new NodeHandler(this, node3, "LWJGL");
-        nc4 = new NodeHandler(this, node4, "LWJGL");
-        nc5 = new NodeHandler(this, node5, "LWJGL");
-        nc6 = new NodeHandler(this, node6, "LWJGL");
+        nc1 = new NodeHandler(node1, "LWJGL");
+        nc2 = new NodeHandler(node2, "LWJGL");
+        nc3 = new NodeHandler(node3, "LWJGL");
+        nc4 = new NodeHandler(node4, "LWJGL");
+        nc5 = new NodeHandler(node5, "LWJGL");
+        nc6 = new NodeHandler(node6, "LWJGL");
         nc1.setKeySpeed(5);
         nc1.setMouseSpeed(1);
         nc2.setKeySpeed(5);
