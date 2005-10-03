@@ -37,6 +37,8 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -78,6 +80,11 @@ public class TestRenderStateList extends BaseGame {
      */
     protected void update(float interpolation) {
         timer.update();
+        
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
+            finish();
+        }
+
         input.update(timer.getTimePerFrame());
     }
 
@@ -126,10 +133,13 @@ public class TestRenderStateList extends BaseGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonHandler(this, cam, "LWJGL");
+        input = new FirstPersonHandler(cam, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer("LWJGL");
+        KeyBindingManager.getKeyBindingManager().set(
+                "exit",
+                KeyInput.KEY_ESCAPE);
 
     }
 

@@ -32,9 +32,7 @@
 
 package com.jme.input;
 
-import com.jme.app.AbstractGame;
 import com.jme.input.action.KeyBackwardAction;
-import com.jme.input.action.KeyExitAction;
 import com.jme.input.action.KeyForwardAction;
 import com.jme.input.action.KeyLookDownAction;
 import com.jme.input.action.KeyLookUpAction;
@@ -53,7 +51,7 @@ import com.jme.renderer.Camera;
  * arrow keys rotate and tilt the camera and the mouse also rotates and tilts
  * the camera.
  * @author Mark Powell
- * @version $Id: FirstPersonHandler.java,v 1.8 2005-09-27 19:13:08 renanse Exp $
+ * @version $Id: FirstPersonHandler.java,v 1.9 2005-10-03 18:38:37 renanse Exp $
  */
 public class FirstPersonHandler extends InputHandler {
 
@@ -64,12 +62,10 @@ public class FirstPersonHandler extends InputHandler {
      * @param cam The camera to move by this handler.
      * @param api The API to create a KeyBindingManager from.
      */
-    public FirstPersonHandler(AbstractGame app, Camera cam, String api) {
-
+    public FirstPersonHandler(Camera cam, String api) {
         setKeyBindings(api);
         setMouse(cam);
-        setActions(cam, app);
-
+        setActions(cam);
     }
 
     private void setKeyBindings(String api) {
@@ -85,7 +81,6 @@ public class FirstPersonHandler extends InputHandler {
         keyboard.set("lookDown", KeyInput.KEY_DOWN);
         keyboard.set("turnRight", KeyInput.KEY_RIGHT);
         keyboard.set("turnLeft", KeyInput.KEY_LEFT);
-        keyboard.set("exit", KeyInput.KEY_ESCAPE);
 
         setKeyBindingManager(keyboard);
     }
@@ -102,10 +97,7 @@ public class FirstPersonHandler extends InputHandler {
         addAction(mouseLook);
     }
 
-    private void setActions(Camera cam, AbstractGame app) {
-        KeyExitAction exit = new KeyExitAction(app);
-        exit.setKey("exit");
-        addAction(exit);
+    private void setActions(Camera cam) {
         KeyForwardAction forward = new KeyForwardAction(cam, 0.5f);
         forward.setKey("forward");
         addAction(forward);

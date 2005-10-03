@@ -149,6 +149,10 @@ public class HelloSimpleGame extends BaseGame {
         System.err.println("Camera at: " +
                            display.getRenderer().getCamera().getLocation());
       }
+      
+      if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
+          finish();
+      }
 
     }
 
@@ -222,7 +226,7 @@ public class HelloSimpleGame extends BaseGame {
       display.getRenderer().setCamera(cam);
 
       /** Create a basic input controller. */
-      input = new FirstPersonHandler(this, cam, properties.getRenderer());
+      input = new FirstPersonHandler(cam, properties.getRenderer());
         /** Signal to all key inputs they should work 10x faster. */
       input.setKeySpeed(10f);
       input.setMouseSpeed(1f);
@@ -251,6 +255,9 @@ public class HelloSimpleGame extends BaseGame {
       KeyBindingManager.getKeyBindingManager().set(
           "camera_out",
           KeyInput.KEY_C);
+      KeyBindingManager.getKeyBindingManager().set(
+              "exit",
+              KeyInput.KEY_ESCAPE);
     }
 
     /**

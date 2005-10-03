@@ -36,6 +36,8 @@ import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -69,7 +71,12 @@ public class TestFirstPersonController extends BaseGame {
         timer.update();
           /** Update tpf to time per frame according to the Timer. */
         float tpf = timer.getTimePerFrame();
-          /** Check for key/mouse updates. */
+        
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
+            finish();
+        }
+
+        /** Check for key/mouse updates. */
         input.update(tpf);
     }
 
@@ -118,11 +125,14 @@ public class TestFirstPersonController extends BaseGame {
 
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonHandler(this, cam, "LWJGL");
+        input = new FirstPersonHandler(cam, "LWJGL");
 
         /** Get a high resolution timer for FPS updates. */
       timer = Timer.getTimer(properties.getRenderer());
 
+      KeyBindingManager.getKeyBindingManager().set(
+              "exit",
+              KeyInput.KEY_ESCAPE);
 
     }
 

@@ -39,6 +39,8 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.light.DirectionalLight;
 import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
@@ -62,7 +64,7 @@ import com.jme.util.Timer;
 /**
  * <code>TestLightState</code>
  * @author Mark Powell
- * @version $Id: TestTimer.java,v 1.12 2005-09-27 19:10:31 renanse Exp $
+ * @version $Id: TestTimer.java,v 1.13 2005-10-03 18:38:39 renanse Exp $
  */
 public class TestTimer extends BaseGame {
     private TriMesh t;
@@ -113,6 +115,10 @@ public class TestTimer extends BaseGame {
         t.setLocalRotation(rotQuat);
         scene.updateGeometricState(0.0f, true);
 
+        
+        if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
+            finish();
+        }
 
     }
 
@@ -159,7 +165,7 @@ public class TestTimer extends BaseGame {
         cam.setFrame(loc, left, up, dir);
         display.getRenderer().setCamera(cam);
 
-        input = new FirstPersonHandler(this, cam, "LWJGL");
+        input = new FirstPersonHandler(cam, "LWJGL");
         input.setKeySpeed(15f);
         input.setMouseSpeed(1);
         timer = Timer.getTimer(properties.getRenderer());
@@ -167,6 +173,9 @@ public class TestTimer extends BaseGame {
 
         rotQuat = new Quaternion();
         axis = new Vector3f(1,1,1);
+        KeyBindingManager.getKeyBindingManager().set(
+                "exit",
+                KeyInput.KEY_ESCAPE);
 
     }
 

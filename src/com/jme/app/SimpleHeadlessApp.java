@@ -37,6 +37,8 @@ import java.util.logging.Level;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
+import com.jme.input.KeyBindingManager;
+import com.jme.input.KeyInput;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -54,7 +56,7 @@ import com.jme.util.Timer;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleHeadlessApp.java,v 1.5 2005-09-15 17:14:25 renanse Exp $
+ * @version $Id: SimpleHeadlessApp.java,v 1.6 2005-10-03 18:38:38 renanse Exp $
  */
 public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
 
@@ -84,6 +86,10 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
     timer.update();
       /** Update tpf to time per frame according to the Timer. */
     tpf = timer.getTimePerFrame();
+    
+    if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
+        finish();
+    }
 
       /** Call simpleUpdate in any derived classes of SimpleHeadlessApp. */
     simpleUpdate();
@@ -166,7 +172,7 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
     display.getRenderer().setCamera(cam);
 
     /** Create a basic input controller. */
-    input = new FirstPersonHandler(this, cam, properties.getRenderer());
+    input = new FirstPersonHandler(cam, properties.getRenderer());
       /** Signal to all key inputs they should work 10x faster. */
     input.setKeySpeed(10f);
     input.setMouseSpeed(1f);
@@ -178,6 +184,9 @@ public abstract class SimpleHeadlessApp extends BaseHeadlessApp {
       display.setTitle("SimpleHeadlessApp");
       /** Signal to the renderer that it should keep track of rendering information. */
     display.getRenderer().enableStatistics(true);
+    KeyBindingManager.getKeyBindingManager().set(
+            "exit",
+            KeyInput.KEY_ESCAPE);
   }
 
   /**

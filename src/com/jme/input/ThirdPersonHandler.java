@@ -32,13 +32,12 @@
 
 package com.jme.input;
 
-import com.jme.app.AbstractGame;
-import com.jme.input.action.KeyExitAction;
+import java.util.HashMap;
+
 import com.jme.input.thirdperson.MovementPermitter;
 import com.jme.input.thirdperson.ThirdPersonBackwardAction;
 import com.jme.input.thirdperson.ThirdPersonForwardAction;
 import com.jme.input.thirdperson.ThirdPersonLeftAction;
-import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.input.thirdperson.ThirdPersonRightAction;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
@@ -46,53 +45,92 @@ import com.jme.renderer.Camera;
 import com.jme.scene.Node;
 
 /**
- * <code>ThirdPersonHandler</code> defines an InputHandler that sets
- * input to be controlled similar to games such as Zelda Windwaker and
- * Mario 64, etc.
+ * <code>ThirdPersonHandler</code> defines an InputHandler that sets input to
+ * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
+    public static final String KEY_TURNSPEED = "turnSpeed";
+    public static final String KEY_DOGRADUAL = "doGradual";
+    public static final String KEY_PERMITTER = "permitter";
+    public static final String KEY_UPVECTOR = "upVector";
 
-  private Node node;
-  protected Vector3f prevLoc;
-  protected Vector3f loc;
-  protected float faceAngle;
-  protected float turnSpeed = 1.5f*FastMath.PI;
-  private MovementPermitter perm;
-  private Vector3f upAngle = new Vector3f(0,1,0);
-  private Vector3f _calc = new Vector3f();
-  private ChaseCamera chaseCam;
-  private ThirdPersonMouseLook mouseLook;
-  private boolean doGradualRotation = true;
+    /** Default character turn speed is 1.5pi per sec. */
+    public static final float DEFAULT_TURNSPEED = 1.5f * FastMath.PI;    
+    
+    /** The node we are controlling with this handler. */
+    protected Node node;
 
-  /**
-   * Constructor instantiates a new <code>ThirdPersonHandler</code> object.
-   * @param node the node to control.
-   * @param cam the cam to use.
-   * @param api the api to use for input.
-   */
-  public ThirdPersonHandler(AbstractGame app, Node node, ChaseCamera cam,
-            MovementPermitter perm, String api) {
+    /**
+     * The previous location of the node... used to maintain where the node is
+     * before actions are run. This allows a comparison to see where the node
+     * wants to be taken.
+     */
+    protected Vector3f prevLoc = new Vector3f();
+
+    /**
+     * Stores the new location of the node after actions. used internally by
+     * update method
+     */
+    protected Vector3f loc = new Vector3f();
+
+    /**
+     * The current facing direction of the controlled target in radians in terms
+     * of relationship to the world.
+     */
+    protected float faceAngle;
+
+    /**
+     * How fast the character can turn per second. Used when doGradualRotation
+     * is set to true.
+     */
+    protected float turnSpeed = DEFAULT_TURNSPEED;
+
+    /**
+     * When true, the controlled target will do turns by moving forward and
+     * turning at the same time. When false, a turn will cause immediate
+     * rotation to the given angle.
+     */
+    protected boolean doGradualRotation = true;
+
+    /**
+     * When not null, gives a means for denying movement to the controller. See
+     * MovementPermitter javadoc for more.
+     */
+    protected MovementPermitter permitter;
+
+    /** World up vector.  Currently 0,1,0 is the only guarenteed value to work. */
+    protected Vector3f upVector = new Vector3f(0, 1, 0);
+
+    /** An internal vector used for calculations to prevent object creation. */
+    protected Vector3f calcVector = new Vector3f();
+
+    public ThirdPersonHandler(Node node, Camera cam, String api) {
+        this(node, cam, null, api);
+    }
+    
+    public ThirdPersonHandler(Node node, Camera cam, HashMap props, String api) {
         this.node = node;
-        this.perm = perm;
-        prevLoc = new Vector3f();
-        loc = new Vector3f();
-        setKeyBindings(api);
-        setActions(app, cam.getCamera());
-        setChaseCamera(cam);
+        setProperties(props);
+        setKeyBindings(api, props);
+        setActions(cam);
     }
 
-    private void setChaseCamera(ChaseCamera cam) {
-        chaseCam = cam;
-        RelativeMouse mouse = new RelativeMouse("Mouse Input");
-        mouse.setMouseInput(InputSystem.getMouseInput());
-        setMouse(mouse);
+    private void setProperties(HashMap props) {
+        if (props == null) {
+            return;
+        }
+        turnSpeed = getFloatProp(props, KEY_TURNSPEED, DEFAULT_TURNSPEED);
+    }
 
-        mouseLook = new ThirdPersonMouseLook(mouse, cam, node);
-        addAction(mouseLook);
+    protected float getFloatProp(HashMap props, String key, float defaultVal) {
+        if (props.get(key) == null)
+            return defaultVal;
+        else
+            return Float.parseFloat(props.get(key).toString());
     }
 
     /**
@@ -102,7 +140,7 @@ public class ThirdPersonHandler extends InputHandler {
      * @param api
      *            the api to use for the input.
      */
-    protected void setKeyBindings(String api) {
+    protected void setKeyBindings(String api, HashMap props) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         InputSystem.createInputSystem(api);
 
@@ -111,7 +149,6 @@ public class ThirdPersonHandler extends InputHandler {
         keyboard.set("backward", KeyInput.KEY_S);
         keyboard.set("left", KeyInput.KEY_A);
         keyboard.set("right", KeyInput.KEY_D);
-        keyboard.set("exit", KeyInput.KEY_ESCAPE);
 
         setKeyBindingManager(keyboard);
     }
@@ -123,26 +160,23 @@ public class ThirdPersonHandler extends InputHandler {
      * 
      * @param cam
      */
-    protected void setActions(AbstractGame app, Camera cam) {
+    protected void setActions(Camera cam) {
         ThirdPersonForwardAction forward = new ThirdPersonForwardAction(node,
-                cam, perm, 0.5f);
+                cam, permitter, 0.5f);
         forward.setKey("forward");
         addAction(forward);
         ThirdPersonBackwardAction backward = new ThirdPersonBackwardAction(
-                node, cam, perm, 0.5f);
+                node, cam, permitter, 0.5f);
         backward.setKey("backward");
         addAction(backward);
         ThirdPersonRightAction right = new ThirdPersonRightAction(node, cam,
-                perm, 1f);
+                permitter, 1f);
         right.setKey("right");
         addAction(right);
-        ThirdPersonLeftAction left = new ThirdPersonLeftAction(node, cam, perm,
-                1f);
+        ThirdPersonLeftAction left = new ThirdPersonLeftAction(node, cam,
+                permitter, 1f);
         left.setKey("left");
         addAction(left);
-        KeyExitAction exit = new KeyExitAction(app);
-        exit.setKey("exit");
-        addAction(exit);
     }
 
     public void update(float time) {
@@ -186,13 +220,12 @@ public class ThirdPersonHandler extends InputHandler {
                 }
             }
 
-            node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upAngle);
+            node.getLocalRotation().fromAngleNormalAxis(-faceAngle, upVector);
             node.getLocalTranslation().set(prevLoc);
-            node.getLocalRotation().getRotationColumn(0, _calc).multLocal(
+            node.getLocalRotation().getRotationColumn(0, calcVector).multLocal(
                     distance);
-            node.getLocalTranslation().addLocal(_calc);
+            node.getLocalTranslation().addLocal(calcVector);
         }
-        chaseCam.update(time);
     }
 
     /**
@@ -213,16 +246,16 @@ public class ThirdPersonHandler extends InputHandler {
     /**
      * @return Returns the upAngle.
      */
-    public Vector3f getUpAngle() {
-        return upAngle;
+    public Vector3f getUpVector() {
+        return upVector;
     }
 
     /**
      * @param upAngle
      *            The upAngle to set (as copy)
      */
-    public void setUpAngle(Vector3f upAngle) {
-        this.upAngle.set(upAngle);
+    public void setUpVector(Vector3f upAngle) {
+        this.upVector.set(upAngle);
     }
 
     /**
@@ -233,20 +266,6 @@ public class ThirdPersonHandler extends InputHandler {
     }
 
     /**
-     * @return Returns the chaseCam.
-     */
-    public ChaseCamera getChaseCam() {
-        return chaseCam;
-    }
-
-    /**
-     * @return Returns the mouseLook.
-     */
-    public ThirdPersonMouseLook getMouseLook() {
-        return mouseLook;
-    }
-
-    /**
      * @return Returns the doGradualRotation.
      */
     public boolean isDoGradualRotation() {
@@ -254,7 +273,8 @@ public class ThirdPersonHandler extends InputHandler {
     }
 
     /**
-     * @param doGradualRotation The doGradualRotation to set.
+     * @param doGradualRotation
+     *            The doGradualRotation to set.
      */
     public void setDoGradualRotation(boolean doGradualRotation) {
         this.doGradualRotation = doGradualRotation;

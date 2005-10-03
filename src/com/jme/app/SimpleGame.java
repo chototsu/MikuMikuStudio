@@ -64,7 +64,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.42 2005-09-26 20:38:09 Mojomonkey Exp $
+ * @version $Id: SimpleGame.java,v 1.43 2005-10-03 18:38:38 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -165,11 +165,15 @@ public abstract class SimpleGame extends BaseGame {
     }
     
     if (KeyBindingManager.getKeyBindingManager().isValidCommand("screen_shot", false)) {
-    	display.getRenderer().takeScreenShot("SimpleGameScreenShot");
+        display.getRenderer().takeScreenShot("SimpleGameScreenShot");
+    }
+    
+    if (KeyBindingManager.getKeyBindingManager().isValidCommand("exit", false)) {
+        finish();
     }
 
-		if (pause) return;
-		/** Call simpleUpdate in any derived classes of SimpleGame. */
+	if (pause) return;
+	/** Call simpleUpdate in any derived classes of SimpleGame. */
 	simpleUpdate();
 
 	/** Update controllers/render states/transforms/bounds for rootNode. */
@@ -250,7 +254,7 @@ public abstract class SimpleGame extends BaseGame {
     display.getRenderer().setCamera(cam);
 
     /** Create a basic input controller. */
-    input = new FirstPersonHandler(this, cam, properties.getRenderer());
+    input = new FirstPersonHandler(cam, properties.getRenderer());
       /** Signal to all key inputs they should work 10x faster. */
     input.setKeySpeed(10f);
     input.setMouseSpeed(1f);
@@ -288,8 +292,11 @@ public abstract class SimpleGame extends BaseGame {
         "camera_out",
         KeyInput.KEY_C);
     KeyBindingManager.getKeyBindingManager().set(
-    	"screen_shot",
-    	KeyInput.KEY_F1);
+            "screen_shot",
+            KeyInput.KEY_F1);
+    KeyBindingManager.getKeyBindingManager().set(
+            "exit",
+            KeyInput.KEY_ESCAPE);
   }
 
   /**

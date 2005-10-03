@@ -33,6 +33,7 @@
 package com.jme.input;
 
 import com.jme.input.InputHandler;
+import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -43,7 +44,7 @@ import com.jme.scene.Spatial;
  * about and zoom on that element.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -61,6 +62,9 @@ public class ChaseCamera extends InputHandler {
     private Vector3f targetOffset;
     private Vector3f targetPos = new Vector3f();
 
+    /** The ThirdPersonMouseLook action, kept as a field to allow easy access to setting speeds and y axis flipping. */
+    protected ThirdPersonMouseLook mouseLook;
+
     public ChaseCamera(Camera cam, Spatial target, Vector3f targetOffset) {
         super();
         this.cam = cam;
@@ -77,8 +81,21 @@ public class ChaseCamera extends InputHandler {
 
         dampingK = 12f; // play with this number for camera velocity...
         springK = (dampingK * dampingK) / 4;
+        setupMouse();
     }
-    
+
+    private void setupMouse() {
+        RelativeMouse mouse = new RelativeMouse("Mouse Input");
+        mouse.setMouseInput(InputSystem.getMouseInput());
+        setMouse(mouse);
+
+        if (mouseLook != null)
+            removeAction(mouseLook);
+        
+        mouseLook = new ThirdPersonMouseLook(mouse, this, target);
+        addAction(mouseLook);
+    }
+
     public void setCamera(Camera cam) {
         this.cam = cam;
     }
