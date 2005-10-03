@@ -44,7 +44,7 @@ import com.jme.scene.Spatial;
  * about and zoom on that element.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -238,5 +238,12 @@ public class ChaseCamera extends InputHandler {
      */
     public void setWorldUpVec(Vector3f worldUpVec) {
         this.worldUpVec.set(worldUpVec);
+    }
+
+    /**
+     * @return Returns the mouseLook.
+     */
+    public ThirdPersonMouseLook getMouseLook() {
+        return mouseLook;
     }
 }
