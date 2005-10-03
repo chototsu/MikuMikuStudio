@@ -42,6 +42,7 @@ import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
 import com.jme.input.ThirdPersonHandler;
 import com.jme.light.DirectionalLight;
+import com.jme.math.FastMath;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -60,7 +61,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -214,5 +215,7 @@ public class TestThirdPersonController extends SimpleGame {
         input = new ThirdPersonHandler(this, m_character, chaser, null, properties.getRenderer());
         input.setKeySpeed(100f);
         input.setMouseSpeed(100f);
+        ((ThirdPersonHandler)input).setDoGradualRotation(false);
+        ((ThirdPersonHandler)input).setTurnSpeed(1.5f*FastMath.PI);
     }
 }
