@@ -36,7 +36,6 @@ import java.util.HashMap;
 
 import javax.swing.ImageIcon;
 
-import jmetest.flagrushtut.Lesson2;
 import jmetest.renderer.TestSkybox;
 import jmetest.terrain.TestTerrain;
 
@@ -50,18 +49,13 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.light.DirectionalLight;
-import com.jme.math.FastMath;
-import com.jme.math.Quaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
 import com.jme.scene.Node;
-import com.jme.scene.SharedMesh;
 import com.jme.scene.Skybox;
 import com.jme.scene.shape.Box;
-import com.jme.scene.shape.Cylinder;
-import com.jme.scene.state.AlphaState;
 import com.jme.scene.state.CullState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
