@@ -155,6 +155,12 @@ public class ThirdPersonMouseLook implements MouseInputAction {
             camera.getCamera().onFrameChange();
     }
 
+    /**
+     * <code>rotateRight</code> updates the azimuth values of the camera's
+     * spherical coordinates.
+     * 
+     * @param amount
+     */
     private void rotateRight(float amount) {
         Vector3f camPos = camera.getCamera().getLocation();
         Vector3f targetPos = target.getWorldTranslation();
@@ -169,6 +175,12 @@ public class ThirdPersonMouseLook implements MouseInputAction {
         camPos.set(rightTemp);
     }
 
+    /**
+     * <code>rotateRight</code> updates the altitude values of the camera's
+     * spherical coordinates.
+     * 
+     * @param amount
+     */
     private void rotateUp(float amount) {
         if (invertedY)
             amount *= -1;
@@ -302,5 +314,47 @@ public class ThirdPersonMouseLook implements MouseInputAction {
      */
     public void setMinRollOut(float minRollOut) {
         this.minRollOut = minRollOut;
+    }
+
+    /**
+     * @return Returns the mouseXMultiplier.
+     */
+    public float getMouseXMultiplier() {
+        return mouseXMultiplier;
+    }
+
+    /**
+     * @param mouseXMultiplier The mouseXMultiplier to set.
+     */
+    public void setMouseXMultiplier(float mouseXMultiplier) {
+        this.mouseXMultiplier = mouseXMultiplier;
+    }
+
+    /**
+     * @return Returns the mouseYMultiplier.
+     */
+    public float getMouseYMultiplier() {
+        return mouseYMultiplier;
+    }
+
+    /**
+     * @param mouseYMultiplier The mouseYMultiplier to set.
+     */
+    public void setMouseYMultiplier(float mouseYMultiplier) {
+        this.mouseYMultiplier = mouseYMultiplier;
+    }
+
+    /**
+     * @return Returns the rollInSpeed.
+     */
+    public float getRollInSpeed() {
+        return rollInSpeed;
+    }
+
+    /**
+     * @param rollInSpeed The rollInSpeed to set.
+     */
+    public void setRollInSpeed(float rollInSpeed) {
+        this.rollInSpeed = rollInSpeed;
     }
 }

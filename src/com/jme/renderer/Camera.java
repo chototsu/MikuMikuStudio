@@ -46,7 +46,7 @@ import com.jme.math.Vector3f;
  *
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Camera.java,v 1.16 2005-09-15 17:14:53 renanse Exp $
+ * @version $Id: Camera.java,v 1.17 2005-10-04 23:40:44 renanse Exp $
  */
 public interface Camera extends Serializable {
 
@@ -439,12 +439,19 @@ public interface Camera extends Serializable {
     public void onFrameChange();
 
     /**
-     * <code>lookAt</code> is a convienence method for auto-setting the frame.
-     *
+     * <code>lookAt</code> is a convienence method for auto-setting the frame
+     * based on a world position the user desires the camera to look at. It
+     * repoints the camera towards the given position using the difference
+     * between the position and the current camera location as a direction
+     * vector and the worldUpVector to compute up and left camera vectors.
+     * 
      * @param pos
-     *            Vector3f
+     *            where to look at in terms of world coordinates
+     * @param worldUpVector
+     *            a normalized vector indicating the up direction of the world.
+     *            (typically {0, 1, 0} in jME.)
      */
-    public void lookAt(Vector3f pos);
+    public void lookAt(Vector3f pos, Vector3f worldUpVector);
 
 
 

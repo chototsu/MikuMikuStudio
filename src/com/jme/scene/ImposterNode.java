@@ -50,7 +50,7 @@ import com.jme.system.DisplaySystem;
  * <code>ImposterNode</code>
  * 
  * @author Joshua Slack
- * @version $Id: ImposterNode.java,v 1.18 2005-09-20 21:51:34 renanse Exp $
+ * @version $Id: ImposterNode.java,v 1.19 2005-10-04 23:40:46 renanse Exp $
  */
 public class ImposterNode extends Node {
 	private static final long serialVersionUID = 1L;
@@ -82,6 +82,8 @@ public class ImposterNode extends Node {
 	protected boolean byCamera;
 
 	protected boolean byTime;
+
+    protected Vector3f worldUpVector = new Vector3f(0, 1, 0);
 
 	public ImposterNode(String name, float size, int twidth, int theight) {
 		super(name);
@@ -147,7 +149,7 @@ public class ImposterNode extends Node {
 		Vector3f newPos = (eyeLocation.subtract(standIn.getCenter()))
 				.multLocal(ratio).addLocal(standIn.getCenter());
 		tRenderer.getCamera().setLocation(newPos);
-		tRenderer.getCamera().lookAt(standIn.getCenter());
+		tRenderer.getCamera().lookAt(standIn.getCenter(), worldUpVector);
 	}
 
 	/**
@@ -376,4 +378,18 @@ public class ImposterNode extends Node {
 		standIn.updateGeometricState(time, false);
 		elapsed += time;
 	}
+
+    /**
+     * @return Returns the worldUpVector.
+     */
+    public Vector3f getWorldUpVector() {
+        return worldUpVector;
+    }
+
+    /**
+     * @param worldUpVector The worldUpVector to set.
+     */
+    public void setWorldUpVector(Vector3f worldUpVector) {
+        this.worldUpVector = worldUpVector;
+    }
 }

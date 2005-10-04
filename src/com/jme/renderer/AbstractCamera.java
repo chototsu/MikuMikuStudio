@@ -50,7 +50,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack -- Quats
- * @version $Id: AbstractCamera.java,v 1.30 2005-09-20 16:46:40 renanse Exp $
+ * @version $Id: AbstractCamera.java,v 1.31 2005-10-04 23:40:44 renanse Exp $
  */
 public abstract class AbstractCamera implements Camera {
 
@@ -167,11 +167,8 @@ public abstract class AbstractCamera implements Camera {
     /** Array holding the planes that this camera will check for culling. */
     protected Plane[] worldPlane;
 
-    /** Optional Vector3f representing a point this camera is looking at. */
-    protected Vector3f lookAt = new Vector3f();
-
-    /** If true, the lookAt vector is used. Normally false. */
-    protected boolean overrideLookAt;
+    /** Computation vector used in lookAt operations. */
+    protected Vector3f oldDirection = new Vector3f();
 
     /**
      * A mask value set during contains() that allows fast culling of a Node's
@@ -554,20 +551,32 @@ public abstract class AbstractCamera implements Camera {
     }
 
     /**
-     * <code>lookAt</code> is a convienence method for auto-setting the frame.
-     * Unlike its name, this function doesn't totally "look at" a position
-     * mostly because left and up vectors are not updated.
+     * <code>lookAt</code> is a convienence method for auto-setting the frame
+     * based on a world position the user desires the camera to look at. It
+     * repoints the camera towards the given position using the difference
+     * between the position and the current camera location as a direction
+     * vector and the worldUpVector to compute up and left camera vectors.
      * 
      * @param pos
-     *            Vector3f
+     *            where to look at in terms of world coordinates
+     * @param worldUpVector
+     *            a normalized vector indicating the up direction of the world.
+     *            (typically {0, 1, 0} in jME.)
      */
-    public void lookAt(Vector3f pos) {
-        if (pos != null) {
-            lookAt.set(pos);
-            overrideLookAt = true;
-        } else {
-            overrideLookAt = false;
+    public void lookAt(Vector3f pos, Vector3f worldUpVector) {
+        direction.set(pos).subtractLocal(location).normalizeLocal();
+
+        // check to see if we haven't really updated camera -- no need to call
+        // sets.
+        if (oldDirection.equals(direction)) {
+            return;
         }
+
+        oldDirection.set(direction);
+        up.set(worldUpVector);
+        left = up.cross(direction).normalizeLocal();
+        up = direction.cross(left).normalizeLocal();
+        onFrameChange();
     }
 
     /**
