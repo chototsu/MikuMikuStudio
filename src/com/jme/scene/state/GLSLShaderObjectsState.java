@@ -304,20 +304,6 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     }
 
     /**
-     * Set an uniform value for the shader object.
-     * 
-     * @param var
-     *            uniform variable to change
-     * @param sampler
-     *            the new value
-     */
-    public void setUniform(String var, com.jme.image.Texture sampler) {
-        if (sampler.getTextureId() == 0)
-            throw new IllegalArgumentException("Invalid Sampler Texture. Sampler texture has no OpenGL Texture id set.");
-        setUniform(var, sampler.getTextureId());
-    }
-
-    /**
      * <code>clearUniforms</code> clears all uniform values from this state.
      *
      */
@@ -326,14 +312,7 @@ public abstract class GLSLShaderObjectsState extends RenderState {
     }
     
     
-    
-    
-    
-    
-    
-    
-    
-    
+
     
 
     /**
