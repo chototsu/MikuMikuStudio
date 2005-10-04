@@ -65,7 +65,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.7 $
+ * @version $Revision: 1.8 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -114,12 +114,6 @@ public class TestThirdPersonController extends SimpleGame {
                 .getLocalTranslation())+((BoundingBox)m_character.getWorldBound()).yExtent;
         if (!Float.isInfinite(characterMinHeight) && !Float.isNaN(characterMinHeight)) {
             m_character.getLocalTranslation().y = characterMinHeight;
-        }
-        
-        if (KeyBindingManager
-            .getKeyBindingManager()
-            .isValidCommand("tog_lock_back", false)) {
-          ((ThirdPersonHandler)input).setLockBackwards(!((ThirdPersonHandler)input).isLockBackwards());
         }
     }
 
@@ -232,7 +226,6 @@ public class TestThirdPersonController extends SimpleGame {
         targetOffset.y = ((BoundingBox) m_character.getWorldBound()).yExtent * 1.5f;
         chaser = new ChaseCamera(cam, m_character, properties.getRenderer());
         chaser.setTargetOffset(targetOffset);
-        chaser.setMouseSpeed(100f);
     }
 
     private void setupInput() {
@@ -242,9 +235,5 @@ public class TestThirdPersonController extends SimpleGame {
         handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, "false");
         input = new ThirdPersonHandler(m_character, cam, handlerProps, properties.getRenderer());
         input.setKeySpeed(100f);
-
-        KeyBindingManager.getKeyBindingManager().set(
-                "tog_lock_back",
-                KeyInput.KEY_G);
     }
 }
