@@ -273,7 +273,7 @@ public class Lesson5 extends BaseGame {
      */
     private void buildPlayer() {
         //box stand in
-        Box b = new Box("box", new Vector3f(), 0.5f,0.25f,0.5f);
+        Box b = new Box("box", new Vector3f(), 0.35f,0.25f,0.5f);
         b.setModelBound(new BoundingBox());
         b.updateModelBound();
         
