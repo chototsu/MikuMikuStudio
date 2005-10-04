@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -171,7 +171,9 @@ public class ThirdPersonHandler extends InputHandler {
 
     /**
      * 
-     * <code>setProperties</code> sets up class fields from the given hashmap
+     * <code>setProperties</code> sets up class fields from the given hashmap.
+     * It also calls updateKeyBindings for you.
+     * 
      * @param props
      */
     private void updateProperties(HashMap props) {
@@ -183,6 +185,11 @@ public class ThirdPersonHandler extends InputHandler {
         updateKeyBindings(props);
     }
 
+    /**
+     * 
+     * <code>setupKeyboard</code>
+     * @param api
+     */
     protected void setupKeyboard(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         InputSystem.createInputSystem(api);

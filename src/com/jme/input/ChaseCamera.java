@@ -45,7 +45,7 @@ import com.jme.scene.Spatial;
  * about and zoom on that element.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.4 $
+ * @version $Revision: 1.5 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -91,6 +91,13 @@ public class ChaseCamera extends InputHandler {
         updateProperties(props);
     }
 
+    /**
+     * Set up a relative mouse and the ThirdPersonMouseLook used in this
+     * camera's control.
+     * 
+     * @param api
+     *            input system to use
+     */
     private void setupMouse(String api) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
         InputSystem.createInputSystem(api);
@@ -105,6 +112,8 @@ public class ChaseCamera extends InputHandler {
     }
 
     public void updateProperties(HashMap props) {
+        mouseLook.updateProperties(props);
+        
         if (idealSphereCoords == null)
             idealSphereCoords = ((Vector3f)getObjectProp(props, PROP_INITIALSPHERECOORDS, new Vector3f((mouseLook.getMaxRollOut()-mouseLook.getMinRollOut()) / 2f, 0, 0)));
         
@@ -113,8 +122,6 @@ public class ChaseCamera extends InputHandler {
 
         dampingK = getFloatProp(props, PROP_DAMPINGK, DEFAULT_DAMPINGK);
         springK = getFloatProp(props, PROP_SPRINGK, DEFAULT_SPRINGK);
-
-        mouseLook.updateProperties(props);
     }
 
     public void setCamera(Camera cam) {
