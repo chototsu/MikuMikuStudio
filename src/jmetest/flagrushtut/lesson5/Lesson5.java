@@ -32,6 +32,8 @@
 
 package jmetest.flagrushtut.lesson5;
 
+import java.util.HashMap;
+
 import javax.swing.ImageIcon;
 
 import jmetest.flagrushtut.Lesson2;
@@ -46,6 +48,7 @@ import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.input.thirdperson.ThirdPersonMouseLook;
 import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
 import com.jme.math.Quaternion;
@@ -80,9 +83,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
 public class Lesson5 extends BaseGame {
     // the terrain we will drive over.
     private TerrainBlock tb;
-    // The texture that makes up the "force field", we will keep a reference to it
-    // here to allow us to animate it.
-    private Texture t;
+    private ForceFieldFence fence;
     //Sky box (we update it each frame)
     private Skybox skybox;
     
@@ -134,17 +135,7 @@ public class Lesson5 extends BaseGame {
         //update the chase camera to handle the player moving around.
         chaser.update(interpolation);
 
-        //We will use the interpolation value to keep the speed
-        //of the forcefield consistent between computers.
-        //we update the Y have of the texture matrix to give
-        //the appearance the forcefield is moving.
-        t.getTranslation().y += 0.3f * interpolation;
-        //if the translation is over 1, it's wrapped, so go ahead
-        //and check for this (to keep the vector's y value from getting
-        //too large.)
-        if(t.getTranslation().y > 1) {
-            t.getTranslation().y = 0;
-        }
+        fence.update(interpolation);
         
         //we want to keep the skybox around our eyes, so move it with
         //the camera
@@ -294,167 +285,19 @@ public class Lesson5 extends BaseGame {
     }
     
     /**
-     * buildEnvironment will create a fence. This is done by hand
-     * to show how to create geometry and shared this geometry.
-     * Normally, you wouldn't build your models by hand as it is
-     * too much of a trial and error process.
+     * buildEnvironment will create a fence. 
      */
     private void buildEnvironment() {
         //This is the main node of our fence
-        Node forceFieldFence = new Node("fence");
-        
-        //This cylinder will act as the four main posts at each corner
-        Cylinder postGeometry = new Cylinder("post", 10, 10, 1, 10);
-        Quaternion q = new Quaternion();
-        //rotate the cylinder to be vertical
-        q.fromAngleAxis(FastMath.PI/2, new Vector3f(1,0,0));
-        postGeometry.setLocalRotation(q);
-        postGeometry.setModelBound(new BoundingBox());
-        postGeometry.updateModelBound();
-        
-        //We will share the post 4 times (one for each post)
-        //It is *not* a good idea to add the original geometry 
-        //as the sharedmeshes will alter its local values.
-        //We then translate the posts into position. 
-        //Magic numbers are bad, but help illustrate the point.:)
-        SharedMesh post1 = new SharedMesh("post1", postGeometry);
-        post1.setLocalTranslation(new Vector3f(0,0.5f,0));
-        SharedMesh post2 = new SharedMesh("post2", postGeometry);
-        post2.setLocalTranslation(new Vector3f(32,0.5f,0));
-        SharedMesh post3 = new SharedMesh("post3", postGeometry);
-        post3.setLocalTranslation(new Vector3f(0,0.5f,32));
-        SharedMesh post4 = new SharedMesh("post4", postGeometry);
-        post4.setLocalTranslation(new Vector3f(32,0.5f,32));
-        
-        //This cylinder will be the horizontal struts that hold
-        //the field in place.
-        Cylinder strutGeometry = new Cylinder("strut", 10,10, 0.125f, 32);
-        strutGeometry.setModelBound(new BoundingBox());
-        strutGeometry.updateModelBound();
-        
-        //again, we'll share this mesh.
-        //Some we need to rotate to connect various posts.
-        SharedMesh strut1 = new SharedMesh("strut1", strutGeometry);
-        Quaternion rotate90 = new Quaternion();
-        rotate90.fromAngleAxis(FastMath.PI/2, new Vector3f(0,1,0));
-        strut1.setLocalRotation(rotate90);
-        strut1.setLocalTranslation(new Vector3f(16,3f,0));
-        SharedMesh strut2 = new SharedMesh("strut2", strutGeometry);
-        strut2.setLocalTranslation(new Vector3f(0,3f,16));
-        SharedMesh strut3 = new SharedMesh("strut3", strutGeometry);
-        strut3.setLocalTranslation(new Vector3f(32,3f,16));
-        SharedMesh strut4 = new SharedMesh("strut4", strutGeometry);
-        strut4.setLocalRotation(rotate90);
-        strut4.setLocalTranslation(new Vector3f(16,3f,32));
-        
-        //Create the actual forcefield 
-        //The first box handles the X-axis, the second handles the z-axis.
-        //We don't rotate the box as a demonstration on how boxes can be 
-        //created differently.
-        Box forceFieldX = new Box("forceFieldX", new Vector3f(-16, -3f, -0.1f), new Vector3f(16f, 3f, 0.1f));
-        forceFieldX.setModelBound(new BoundingBox());
-        forceFieldX.updateModelBound();
-        //We are going to share these boxes as well
-        SharedMesh forceFieldX1 = new SharedMesh("forceFieldX1",forceFieldX);
-        forceFieldX1.setLocalTranslation(new Vector3f(16,0,0));
-        SharedMesh forceFieldX2 = new SharedMesh("forceFieldX2",forceFieldX);
-        forceFieldX2.setLocalTranslation(new Vector3f(16,0,32));
-        
-        //The other box for the Z axis
-        Box forceFieldZ = new Box("forceFieldZ", new Vector3f(-0.1f, -3f, -16), new Vector3f(0.1f, 3f, 16));
-        forceFieldZ.setModelBound(new BoundingBox());
-        forceFieldZ.updateModelBound();
-        //and again we will share it
-        SharedMesh forceFieldZ1 = new SharedMesh("forceFieldZ1",forceFieldZ);
-        forceFieldZ1.setLocalTranslation(new Vector3f(0,0,16));
-        SharedMesh forceFieldZ2 = new SharedMesh("forceFieldZ2",forceFieldZ);
-        forceFieldZ2.setLocalTranslation(new Vector3f(32,0,16));
-        
-        //add all the force fields to a single node and make this node part of
-        //the transparent queue.
-        Node forceFieldNode = new Node("forceFieldNode");
-        forceFieldNode.setRenderQueueMode(Renderer.QUEUE_TRANSPARENT);
-        forceFieldNode.attachChild(forceFieldX1);
-        forceFieldNode.attachChild(forceFieldX2);
-        forceFieldNode.attachChild(forceFieldZ1);
-        forceFieldNode.attachChild(forceFieldZ2);
-        
-        //Add the alpha values for the transparent node
-        AlphaState as1 = display.getRenderer().createAlphaState();
-        as1.setBlendEnabled(true);
-        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
-        as1.setDstFunction(AlphaState.DB_ONE);
-        as1.setTestEnabled(true);
-        as1.setTestFunction(AlphaState.TF_GREATER);
-        as1.setEnabled(true);
-        
-        forceFieldNode.setRenderState(as1);
-        
-        //load a texture for the force field elements
-        TextureState ts = display.getRenderer().createTextureState();
-        t = TextureManager.loadTexture(Lesson2.class.getClassLoader()
-                  .getResource("jmetest/data/texture/reflector.PNG"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        
-        t.setWrap(Texture.WM_WRAP_S_WRAP_T);
-        t.setTranslation(new Vector3f());
-        ts.setTexture(t);
-        
-        forceFieldNode.setRenderState(ts);
-        
-       
-        //put all the posts into a tower node
-        Node towerNode = new Node("tower");
-        towerNode.attachChild(post1);
-        towerNode.attachChild(post2);
-        towerNode.attachChild(post3);
-        towerNode.attachChild(post4);
-        
-        //add the tower to the opaque queue (we don't want to be able to see through them)
-        //and we do want to see them through the forcefield.
-        towerNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-        
-        //load a texture for the towers
-        TextureState ts2 = display.getRenderer().createTextureState();
-        Texture t2 = TextureManager.loadTexture(Lesson2.class.getClassLoader()
-                  .getResource("jmetest/data/texture/post.PNG"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        
-        ts2.setTexture(t2);
-        
-        towerNode.setRenderState(ts2);
-        
-        //put all the struts into a single node.
-        Node strutNode = new Node("strutNode");
-        strutNode.attachChild(strut1);
-        strutNode.attachChild(strut2);
-        strutNode.attachChild(strut3);
-        strutNode.attachChild(strut4);
-        //this too is in the opaque queue.
-        strutNode.setRenderQueueMode(Renderer.QUEUE_OPAQUE);
-        
-        //load a texture for the struts
-        TextureState ts3 = display.getRenderer().createTextureState();
-        Texture t3 = TextureManager.loadTexture(Lesson2.class.getClassLoader()
-                  .getResource("jmetest/data/texture/rust.PNG"),
-                  Texture.MM_LINEAR_LINEAR, Texture.FM_LINEAR);
-        
-        ts3.setTexture(t3);
-        
-        strutNode.setRenderState(ts3);
+        fence = new ForceFieldFence("fence");
         
         //we will do a little 'tweaking' by hand to make it fit in the terrain a bit better.
         //first we'll scale the entire "model" by a factor of 5
-        forceFieldFence.setLocalScale(5);
+        fence.setLocalScale(5);
         //now let's move the fence to to the height of the terrain and in a little bit.
-        forceFieldFence.setLocalTranslation(new Vector3f(25, tb.getHeight(25,25) + 15, 25));
+        fence.setLocalTranslation(new Vector3f(25, tb.getHeight(25,25)+10, 25));
         
-        //Attach all the pieces to the main fence node
-        forceFieldFence.attachChild(forceFieldNode);
-        forceFieldFence.attachChild(towerNode);
-        forceFieldFence.attachChild(strutNode);
-        
-        scene.attachChild(forceFieldFence);
+        scene.attachChild(fence);
     }
 
     /**
@@ -577,11 +420,12 @@ public class Lesson5 extends BaseGame {
     private void buildChaseCamera() {
         Vector3f targetOffset = new Vector3f();
         targetOffset.y = ((BoundingBox) player.getWorldBound()).yExtent * 1.5f;
-        chaser = new ChaseCamera(cam, player, properties.getRenderer());
-        chaser.setTargetOffset(targetOffset);
+        HashMap props = new HashMap();
+        props.put(ThirdPersonMouseLook.PROP_MAXROLLOUT, "6");
+        props.put(ThirdPersonMouseLook.PROP_MINROLLOUT, "3");
+        props.put(ChaseCamera.PROP_TARGETOFFSET, targetOffset);
+        chaser = new ChaseCamera(cam, player, props, properties.getRenderer());
         chaser.setMouseSpeed(100f);
-        chaser.getMouseLook().setMaxRollOut(5);
-        chaser.getMouseLook().setMinRollOut(2);
     }
 
     /**
