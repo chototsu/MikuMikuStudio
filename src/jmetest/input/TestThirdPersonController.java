@@ -42,8 +42,6 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
-import com.jme.input.KeyBindingManager;
-import com.jme.input.KeyInput;
 import com.jme.input.ThirdPersonHandler;
 import com.jme.light.DirectionalLight;
 import com.jme.math.FastMath;
@@ -65,7 +63,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
