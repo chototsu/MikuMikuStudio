@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.6 $
+ * @version $Revision: 1.7 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -244,9 +244,7 @@ public class ChaseCamera extends InputHandler {
         float offZ = (camPos.z - targetPos.z);
         if (worldUpVec.x == 1) {
             offX = (camPos.y - targetPos.y);
-            offZ = (camPos.z - targetPos.z);
         } else if (worldUpVec.z == 1) {
-            offX = (camPos.x - targetPos.x);
             offZ = (camPos.y - targetPos.y);
         }
         idealSphereCoords.y = FastMath.atan2(offZ, offX);
