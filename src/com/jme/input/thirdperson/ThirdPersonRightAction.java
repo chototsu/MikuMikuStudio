@@ -42,7 +42,7 @@ import com.jme.math.Vector3f;
  * <code>ThirdPersonRightAction</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class ThirdPersonRightAction extends KeyInputAction {
 
@@ -67,7 +67,7 @@ public class ThirdPersonRightAction extends KeyInputAction {
     }
 
     /**
-     * <code>performAction</code> moves the node along it's positive direction
+     * <code>performAction</code> moves the node towards the right direction
      * vector at a speed of movement speed * time. Where time is the time
      * between frames and 1 corresponds to 1 second.
      * 
@@ -78,8 +78,13 @@ public class ThirdPersonRightAction extends KeyInputAction {
                 && !handler.getPermitter().canBeMoved())
             return;
         Vector3f loc = handler.getTarget().getLocalTranslation();
-        rot.set(handler.getCamera().getLeft());
-        rot.y = 0;
+        if (handler.isCameraAlignedMovement()) {
+            rot.set(handler.getCamera().getLeft());
+            rot.y = 0;
+        } else {
+            handler.getTarget().getLocalRotation().getRotationColumn(2, rot);
+            rot.negateLocal();
+        }
         rot.normalizeLocal();
         loc.subtractLocal(rot.multLocal((speed * event.getTime())));
     }

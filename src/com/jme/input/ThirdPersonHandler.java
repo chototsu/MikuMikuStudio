@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -58,6 +58,7 @@ public class ThirdPersonHandler extends InputHandler {
     public static final String PROP_PERMITTER = "permitter";
     public static final String PROP_UPVECTOR = "upVector";
     public static final String PROP_LOCKBACKWARDS = "lockBackwards";
+    public static final String PROP_CAMERAALIGNEDMOVE = "cameraAlignedMovement";
 
     public static final String PROP_KEY_FORWARD = "fwdKey";
     public static final String PROP_KEY_BACKWARD = "backKey";
@@ -67,7 +68,7 @@ public class ThirdPersonHandler extends InputHandler {
     public static final String PROP_KEY_STRAFERIGHT = "strfRightKey";
     
     /** Default character turn speed is 1.5pi per sec. */
-    public static final float DEFAULT_TURNSPEED = 1.5f * FastMath.PI;    
+    public static final float DEFAULT_TURNSPEED = 1.5f * FastMath.PI;
     
     /** The node we are controlling with this handler. */
     protected Node node;
@@ -126,6 +127,13 @@ public class ThirdPersonHandler extends InputHandler {
     protected boolean lockBackwards;
     
     /**
+     * if true, movements of the character are in relation to the current camera
+     * view. If false, they are in relation to the current target's facing
+     * vector. Default is true.
+     */
+    protected boolean cameraAlignedMovement;
+    
+    /**
      * if true, backwards movement will not cause the target to rotate around to
      * point backwards. (useful for vehicle movement) Default is false.
      */
@@ -180,6 +188,7 @@ public class ThirdPersonHandler extends InputHandler {
         turnSpeed = getFloatProp(props, PROP_TURNSPEED, DEFAULT_TURNSPEED);
         doGradualRotation = getBooleanProp(props, PROP_DOGRADUAL, true);
         lockBackwards = getBooleanProp(props, PROP_LOCKBACKWARDS, false);
+        cameraAlignedMovement = getBooleanProp(props, PROP_CAMERAALIGNEDMOVE, true);
         permitter = (MovementPermitter)getObjectProp(props, PROP_PERMITTER, null);
         upVector = (Vector3f)getObjectProp(props, PROP_UPVECTOR, new Vector3f(Vector3f.UNIT_Y));
         updateKeyBindings(props);
@@ -249,17 +258,23 @@ public class ThirdPersonHandler extends InputHandler {
         loc.subtractLocal(node.getLocalTranslation());
         if (!loc.equals(Vector3f.ZERO)) {
             float distance = loc.length();
-            loc.normalizeLocal();
-            float actAngle;
-            if (loc.x < 0)
-                actAngle = FastMath.atan(loc.z / loc.x);
-            else if (loc.x > 0)
-                actAngle = FastMath.PI + FastMath.atan(loc.z / loc.x);
-            else if (loc.z > 0)
-                actAngle = FastMath.PI;
-            else
-                actAngle = 0;
+            if (distance != 0)
+                loc.divideLocal(distance); // this == normalizeLocal.
+            
+            loc.negateLocal();
+            
+            float actAngle = 0;
+            if (upVector.y == 1) {
+                actAngle = FastMath.atan2(loc.z, loc.x);
+            } else if (upVector.x == 1) {
+                actAngle = FastMath.atan2(loc.z, loc.y);
+            } else if (upVector.z == 1) {
+                actAngle = FastMath.atan2(loc.y, loc.x);
+            }
+            
             actAngle = FastMath.normalize(actAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
+
+            System.err.println("actAngle: "+actAngle);
             
             calcFaceAngle(actAngle, time);
 
@@ -268,6 +283,7 @@ public class ThirdPersonHandler extends InputHandler {
             node.getLocalRotation().getRotationColumn(0, calcVector).multLocal(distance);
             if (lockBackwards && walkingBackwards) {
                 node.getLocalTranslation().subtractLocal(calcVector);
+                System.err.println("WALKING BACKWARDS");
                 walkingBackwards = false;
             } else
                 node.getLocalTranslation().addLocal(calcVector);
@@ -381,6 +397,14 @@ public class ThirdPersonHandler extends InputHandler {
 
     public boolean isLockBackwards() {
         return lockBackwards;
+    }
+
+    public void setCameraAlignedMovement(boolean b) {
+        cameraAlignedMovement = b;
+    }
+
+    public boolean isCameraAlignedMovement() {
+        return cameraAlignedMovement;
     }
 
     /**
