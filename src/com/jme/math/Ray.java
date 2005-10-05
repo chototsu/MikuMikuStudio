@@ -32,12 +32,13 @@
 
 package com.jme.math;
 
+
 /**
  * <code>Ray</code> defines a line segment which has an origin and a direction.
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.9 2005-09-15 17:13:48 renanse Exp $
+ * @version $Id: Ray.java,v 1.10 2005-10-05 17:53:22 renanse Exp $
  */
 public class Ray {
     /** The ray's begining point. */
@@ -51,6 +52,19 @@ public class Ray {
     private static final Vector3f tempVd=new Vector3f();
     private static final Vector3f tempVe=new Vector3f();
 
+
+    /**
+     * <code>intersect</code> determines if the Ray intersects a triangle
+     * defined by the specified points.
+     * 
+     * @param v0
+     *            first point of the triangle.
+     * @param v1
+     *            second point of the triangle.
+     * @param v2
+     *            third point of the triangle.
+     * @return true if the ray collides.
+     */
     public boolean intersect(Vector3f v0,Vector3f v1,Vector3f v2){
         Vector3f edge1=v1.subtract(v0,tempVa);
         Vector3f edge2=v2.subtract(v0,tempVb);
@@ -70,6 +84,45 @@ public class Ray {
         return true;
     }
 
+
+    /**
+     * <code>intersectWhere</code> determines if the Ray intersects a triangle
+     * defined by the specified points and if so it stores the point of
+     * intersection in the given loc vector.
+     * 
+     * @param v0
+     *            first point of the triangle.
+     * @param v1
+     *            second point of the triangle.
+     * @param v2
+     *            third point of the triangle.
+     * @param loc
+     *            storage vector to save the collision point in (if the ray
+     *            collides)
+     * @return true if the ray collides.
+     */
+    public boolean intersectWhere(Vector3f v0, Vector3f v1, Vector3f v2,
+            Vector3f loc) {
+        Vector3f edge1 = v1.subtract(v0, tempVa);
+        Vector3f edge2 = v2.subtract(v0, tempVb);
+        Vector3f pvec = direction.cross(edge2, tempVc);
+        float det = edge1.dot(pvec);
+        if (det > -FastMath.FLT_EPSILON && det < FastMath.FLT_EPSILON)
+            return false;
+        det = 1f / det;
+        Vector3f tvec = origin.subtract(v0, tempVd);
+        float u = tvec.dot(pvec) * det;
+        if (u < 0.0 || u > 1.0)
+            return false;
+        Vector3f qvec = tvec.cross(edge1, tempVe);
+        float v = direction.dot(qvec) * det;
+        if (v < 0.0 || v + u > 1.0)
+            return false;
+        float t = edge2.dot(qvec) * det;
+        loc.set(origin).addLocal(direction.x * t, direction.y * t,
+                direction.z * t);
+        return true;
+    }
 
     /**
      * Constructor instantiates a new <code>Ray</code> object. As default, the
