@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -274,8 +274,6 @@ public class ThirdPersonHandler extends InputHandler {
             
             actAngle = FastMath.normalize(actAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
 
-            System.err.println("actAngle: "+actAngle);
-            
             calcFaceAngle(actAngle, time);
 
             node.getLocalTranslation().set(prevLoc);
@@ -283,7 +281,6 @@ public class ThirdPersonHandler extends InputHandler {
             node.getLocalRotation().getRotationColumn(0, calcVector).multLocal(distance);
             if (lockBackwards && walkingBackwards) {
                 node.getLocalTranslation().subtractLocal(calcVector);
-                System.err.println("WALKING BACKWARDS");
                 walkingBackwards = false;
             } else
                 node.getLocalTranslation().addLocal(calcVector);
