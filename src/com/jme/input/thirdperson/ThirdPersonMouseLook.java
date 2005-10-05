@@ -106,9 +106,9 @@ public class ThirdPersonMouseLook implements MouseInputAction {
         maxAscent = InputHandler.getFloatProp(props, PROP_MAXASCENT, DEFAULT_MAXASCENT);
         maxRollOut = InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MAXROLLOUT);
         minRollOut = InputHandler.getFloatProp(props, PROP_MINROLLOUT, DEFAULT_MINROLLOUT);
-        mouseXMultiplier = InputHandler.getFloatProp(props, PROP_MOUSEXMULT, DEFAULT_MOUSEXMULT);
-        mouseYMultiplier = InputHandler.getFloatProp(props, PROP_MOUSEYMULT, DEFAULT_MOUSEYMULT);
-        mouseRollMultiplier = InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MOUSEROLLMULT);
+        setMouseXMultiplier(InputHandler.getFloatProp(props, PROP_MOUSEXMULT, DEFAULT_MOUSEXMULT));
+        setMouseYMultiplier(InputHandler.getFloatProp(props, PROP_MOUSEYMULT, DEFAULT_MOUSEYMULT));
+        setMouseRollMultiplier(InputHandler.getFloatProp(props, PROP_MAXROLLOUT, DEFAULT_MOUSEROLLMULT));
         invertedY = InputHandler.getBooleanProp(props, PROP_INVERTEDY, DEFAULT_INVERTEDY);
     }
 
@@ -324,9 +324,13 @@ public class ThirdPersonMouseLook implements MouseInputAction {
     }
 
     /**
-     * @param mouseXMultiplier The mouseXMultiplier to set.
+     * @param mouseXMultiplier The mouseXMultiplier to set.  Updates mouseXSpeed as well.
      */
     public void setMouseXMultiplier(float mouseXMultiplier) {
+        if (this.mouseXMultiplier != 0) {
+            float speed = mouseXSpeed / this.mouseXMultiplier;
+            mouseXSpeed = speed * mouseXMultiplier;
+        }
         this.mouseXMultiplier = mouseXMultiplier;
     }
 
@@ -338,23 +342,31 @@ public class ThirdPersonMouseLook implements MouseInputAction {
     }
 
     /**
-     * @param mouseYMultiplier The mouseYMultiplier to set.
+     * @param mouseYMultiplier The mouseYMultiplier to set.  Updates mouseYSpeed as well.
      */
     public void setMouseYMultiplier(float mouseYMultiplier) {
+        if (this.mouseYMultiplier != 0) {
+            float speed = mouseYSpeed / this.mouseYMultiplier;
+            mouseYSpeed = speed * mouseYMultiplier;
+        }
         this.mouseYMultiplier = mouseYMultiplier;
     }
 
     /**
-     * @return Returns the rollInSpeed.
+     * @return Returns the mouseRollMultiplier.
      */
-    public float getRollInSpeed() {
-        return rollInSpeed;
+    public float getMouseRollMultiplier() {
+        return mouseRollMultiplier;
     }
 
     /**
-     * @param rollInSpeed The rollInSpeed to set.
+     * @param mouseRollMultiplier The mouseRollMultiplier to set.  Updates rollInSpeed as well.
      */
-    public void setRollInSpeed(float rollInSpeed) {
-        this.rollInSpeed = rollInSpeed;
+    public void setMouseRollMultiplier(float mouseRollMultiplier) {
+        if (this.mouseRollMultiplier != 0) {
+            float speed = rollInSpeed / this.mouseRollMultiplier;
+            rollInSpeed = speed * mouseRollMultiplier;
+        }
+        this.mouseRollMultiplier = mouseRollMultiplier;
     }
 }
