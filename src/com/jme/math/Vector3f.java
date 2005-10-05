@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.33 2005-09-16 21:35:53 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.34 2005-10-05 23:35:25 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -673,7 +673,7 @@ public class Vector3f implements Externalizable{
         if (length != 0) {
             return divideLocal(length);
         } else {
-            return divideLocal(1);
+            return this;
         }
     }
 
