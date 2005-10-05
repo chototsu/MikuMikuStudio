@@ -46,7 +46,7 @@ import java.util.Vector;
  * This class is used as a base class for ClodCreator, and should have little use
  * outside of a base class for clod meshes.
  * @author Joshua Slack
- * @version $Id: VETMesh.java,v 1.8 2005-09-15 17:14:21 renanse Exp $
+ * @version $Id: VETMesh.java,v 1.9 2005-10-05 00:28:37 renanse Exp $
  * @see ClodCreator
  */
 
@@ -526,7 +526,6 @@ public class VETMesh {
       pkComponent = null;
 
       rkIndex.add(new Integer(iIndex));
-      TreeSet pkTIter = new TreeSet(); // <Triangle>::iterator
       Iterator tsetIter = kTSet.iterator();
       while (tsetIter.hasNext()) {
         Triangle rkT = (Triangle) tsetIter.next();
