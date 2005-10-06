@@ -17,6 +17,13 @@
     <property name="ftppassword" value="..."/>
 <!--    end of defaults -->
 
+    <path id="classpath">
+        <fileset dir="${libs}">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path="${class}"/>
+    </path>
+
 	<target name="init">
         <echo message="${keyStore}"/>
 		<mkdir dir="${src}" />
@@ -37,12 +44,20 @@
 		<javac source="1.4" target="1.4"
 		       srcdir="${src}/com"
 		       destdir="${class}"
-		       classpath="${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
+		       classpathref="classpath"
 			   listfiles="no"
 		/>
 	</target>
 
-	<!-- Jar files for different parts of the jME API -->
+    <target name="run-testchooser" depends="compile-test" description="Runs the TestChooser">
+        <java classname="jmetest.TestChooser"
+              fork="true"
+              classpathref="classpath">
+            <jvmarg value='-Djava.library.path="${libs}"'/>
+        </java>
+    </target>
+
+    <!-- Jar files for different parts of the jME API -->
 
 	<target name="dist-core" depends="compile" description="generate jme jar file">
 		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="false" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf" />
@@ -97,11 +112,11 @@
 
 	<!-- *** jmetest-related build targets -->
 
-	<target name="compile-test" depends="init" description="generate jme test classes">
+	<target name="compile-test" depends="compile" description="generate jme test classes">
 		<javac source="1.4" target="1.4"
 		       srcdir="${src}/jmetest"
 	           destdir="${class}"
-	           classpath="${jars}/jme.jar:${jars}/jme-effects.jar:${jars}/jme-model.jar:${jars}/jme-terrain.jar:${jars}/jme-sound.jar:${seg}/lib/lwjgl.jar:${seg}/lib/lwjgl_fmod3.jar:${seg}/lib/jogg-0.0.5.jar:${seg}/lib/jorbis-0.0.12.jar"
+	           classpathref="classpath"
 	    />
 		<!-- copy the resources into the build directory -->
 		<copy todir="${class}/jmetest/data">
