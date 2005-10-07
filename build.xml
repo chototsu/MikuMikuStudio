@@ -53,7 +53,7 @@
         <java classname="jmetest.TestChooser"
               fork="true"
               classpathref="classpath">
-            <jvmarg value='-Djava.library.path="${libs}"'/>
+            <jvmarg value="-Djava.library.path=${libs}"/>
         </java>
     </target>
 
