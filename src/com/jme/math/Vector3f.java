@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  *
  * @author Mark Powell
  * @author Joshua Slack
- * @version $Id: Vector3f.java,v 1.34 2005-10-05 23:35:25 renanse Exp $
+ * @version $Id: Vector3f.java,v 1.35 2005-10-08 21:09:57 renanse Exp $
  */
 public class Vector3f implements Externalizable{
 
@@ -319,9 +319,10 @@ public class Vector3f implements Externalizable{
      * @return result, after recieving the cross product vector.
      */
     public Vector3f cross(Vector3f v,Vector3f result) {
-        result.x=((y * v.z) - (z * v.y));
-        result.y=((z * v.x) - (x * v.z));
-        result.z=((x * v.y) - (y * v.x));
+        float resX = ((y * v.z) - (z * v.y)); 
+        float resY = ((z * v.x) - (x * v.z));
+        float resZ = ((x * v.y) - (y * v.x));
+        result.set(resX, resY, resZ);
         return result;
     }
 
