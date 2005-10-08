@@ -38,20 +38,38 @@ package com.jme.math;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.10 2005-10-05 17:53:22 renanse Exp $
+ * @version $Id: Ray.java,v 1.11 2005-10-08 21:12:11 renanse Exp $
  */
 public class Ray {
     /** The ray's begining point. */
     public Vector3f origin;
     /** The direction of the ray. */
     public Vector3f direction;
-    
-    private static final Vector3f tempVa=new Vector3f();
-    private static final Vector3f tempVb=new Vector3f();
-    private static final Vector3f tempVc=new Vector3f();
-    private static final Vector3f tempVd=new Vector3f();
-    private static final Vector3f tempVe=new Vector3f();
+    protected static final Vector3f tempVa=new Vector3f();
+    protected static final Vector3f tempVb=new Vector3f();
+    protected static final Vector3f tempVc=new Vector3f();
+    protected static final Vector3f tempVd=new Vector3f();
 
+    /**
+     * Constructor instantiates a new <code>Ray</code> object. As default, the
+     * origin is (0,0,0) and the direction is (0,0,0).
+     *
+     */
+    public Ray() {
+        origin = new Vector3f();
+        direction = new Vector3f();
+    }
+
+    /**
+     * Constructor instantiates a new <code>Ray</code> object. The origin and
+     * direction are given.
+     * @param origin the origin of the ray.
+     * @param direction the direction the ray travels in.
+     */
+    public Ray(Vector3f origin, Vector3f direction) {
+        this.origin = origin;
+        this.direction = direction;
+    }
 
     /**
      * <code>intersect</code> determines if the Ray intersects a triangle
@@ -77,7 +95,7 @@ public class Ray {
         float u=tvec.dot(pvec) *det;
         if (u < 0.0f || u > 1.0f)
             return false;
-        Vector3f qvec=tvec.cross(edge1,tempVe);
+        Vector3f qvec=tvec.cross(edge1,tempVc);
         float v=direction.dot(qvec) * det;
         if (v < 0.0f || v + u > 1.0f)
             return false;
@@ -114,7 +132,7 @@ public class Ray {
         float u = tvec.dot(pvec) * det;
         if (u < 0.0 || u > 1.0)
             return false;
-        Vector3f qvec = tvec.cross(edge1, tempVe);
+        Vector3f qvec = tvec.cross(edge1, tempVc);
         float v = direction.dot(qvec) * det;
         if (v < 0.0 || v + u > 1.0)
             return false;
@@ -125,24 +143,43 @@ public class Ray {
     }
 
     /**
-     * Constructor instantiates a new <code>Ray</code> object. As default, the
-     * origin is (0,0,0) and the direction is (0,0,0).
-     *
+     * <code>intersectWherePlanar</code> determines if the Ray intersects a
+     * triangle defined by the specified points and if so it stores the point of
+     * intersection in the given loc vector as t, u, v where t is the distance
+     * from the origin to the point of intersection and u,v is the intersection
+     * point in terms of the triangle plane.
+     * 
+     * @param v0
+     *            first point of the triangle.
+     * @param v1
+     *            second point of the triangle.
+     * @param v2
+     *            third point of the triangle.
+     * @param loc
+     *            storage vector to save the collision point in (if the ray
+     *            collides) as t, u, v
+     * @return true if the ray collides.
      */
-    public Ray() {
-        origin = new Vector3f();
-        direction = new Vector3f();
-    }
-
-    /**
-     * Constructor instantiates a new <code>Ray</code> object. The origin and
-     * direction are given.
-     * @param origin the origin of the ray.
-     * @param direction the direction the ray travels in.
-     */
-    public Ray(Vector3f origin, Vector3f direction) {
-        this.origin = origin;
-        this.direction = direction;
+    public boolean intersectWherePlanar(Vector3f v0, Vector3f v1, Vector3f v2,
+            Vector3f loc) {
+        Vector3f edge1 = v1.subtract(v0, tempVa);
+        Vector3f edge2 = v2.subtract(v0, tempVb);
+        Vector3f pvec = direction.cross(edge2, tempVc);
+        float det = edge1.dot(pvec);
+        if (det > -FastMath.FLT_EPSILON && det < FastMath.FLT_EPSILON)
+            return false;
+        det = 1f / det;
+        Vector3f tvec = origin.subtract(v0, tempVd);
+        float u = tvec.dot(pvec) * det;
+        if (u < 0.0 || u > 1.0)
+            return false;
+        Vector3f qvec = tvec.cross(edge1, tempVc);
+        float v = direction.dot(qvec) * det;
+        if (v < 0.0 || v + u > 1.0)
+            return false;
+        float t = edge2.dot(qvec) * det;
+        loc.set(t, u, v);
+        return true;
     }
 
     /**
