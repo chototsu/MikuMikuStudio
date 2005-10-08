@@ -51,7 +51,7 @@ import com.jme.util.geom.BufferUtils;
  * to access OpenGL for light processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLLightState.java,v 1.14 2005-10-03 20:05:12 Mojomonkey Exp $
+ * @version $Id: LWJGLLightState.java,v 1.15 2005-10-08 14:18:32 irrisor Exp $
  */
 public class LWJGLLightState extends LightState {
 	private static final long serialVersionUID = 1L;
@@ -93,7 +93,7 @@ public class LWJGLLightState extends LightState {
 		color[2] = 0;
 		color[3] = 1;
 
-		if (quantity > 0 && isEnabled()) {
+		if (isEnabled()) {
 			GL11.glEnable(GL11.GL_LIGHTING);
 
 			if (twoSidedOn) {
@@ -228,7 +228,7 @@ public class LWJGLLightState extends LightState {
 
 	public RenderState extract(Stack stack, Spatial spat) {
 		int mode = spat.getLightCombineMode();
-		if (mode == REPLACE || (mode != OFF && stack.size() == 1) )
+		if (mode == REPLACE || (mode != OFF && stack.size() == 1) )  //todo: use dummy state if off?
 			return (LWJGLLightState) stack.peek();
 
 		// accumulate the lights in the stack into a single LightState object
