@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.11 $
+ * @version $Revision: 1.12 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -69,6 +69,8 @@ public class ThirdPersonHandler extends InputHandler {
     
     /** Default character turn speed is 1.5pi per sec. */
     public static final float DEFAULT_TURNSPEED = 1.5f * FastMath.PI;
+
+    public static float angleEpsilon = 0.001f;
     
     /** The node we are controlling with this handler. */
     protected Node node;
@@ -134,8 +136,8 @@ public class ThirdPersonHandler extends InputHandler {
     protected boolean cameraAlignedMovement;
     
     /**
-     * if true, backwards movement will not cause the target to rotate around to
-     * point backwards. (useful for vehicle movement) Default is false.
+     * internally used boolean for denoting that a backwards action is currently
+     * being performed.
      */
     protected boolean walkingBackwards;
 
@@ -255,13 +257,11 @@ public class ThirdPersonHandler extends InputHandler {
         prevLoc.set(node.getLocalTranslation());
         loc.set(prevLoc);
         super.update(time);
-        loc.subtractLocal(node.getLocalTranslation());
+        node.getLocalTranslation().subtract(loc, loc);
         if (!loc.equals(Vector3f.ZERO)) {
             float distance = loc.length();
             if (distance != 0)
-                loc.divideLocal(distance); // this == normalizeLocal.
-            
-            loc.negateLocal();
+                loc.divideLocal(distance); // this is same as normalizeLocal.
             
             float actAngle = 0;
             if (upVector.y == 1) {
@@ -272,8 +272,6 @@ public class ThirdPersonHandler extends InputHandler {
                 actAngle = FastMath.atan2(loc.y, loc.x);
             }
             
-            actAngle = FastMath.normalize(actAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
-
             calcFaceAngle(actAngle, time);
 
             node.getLocalTranslation().set(prevLoc);
@@ -295,26 +293,32 @@ public class ThirdPersonHandler extends InputHandler {
     private void calcFaceAngle(float actAngle, float time) {
         if (doGradualRotation) {
             faceAngle = FastMath.normalize(faceAngle, -FastMath.TWO_PI, FastMath.TWO_PI);
+            float oldAct = actAngle;
 
             // Check the difference between action angle and current facing angle.
             actAngle -= faceAngle;
+            if (actAngle == 0) return;
             if (actAngle > FastMath.PI)
                 actAngle -= FastMath.TWO_PI;
             else if (actAngle < -FastMath.PI)
                 actAngle += FastMath.TWO_PI;
 
+            boolean above = faceAngle > oldAct;
             if (lockBackwards && walkingBackwards) {
                 // update faceangle rotation towards action angle
-                if (actAngle > 0)
+                if (actAngle > angleEpsilon)
                     faceAngle -= time * turnSpeed;
-                else if (actAngle <= 0)
+                else if (actAngle < -angleEpsilon)
                     faceAngle += time * turnSpeed;
             } else {
                 // update faceangle rotation towards action angle
-                if (actAngle > 0)
+                if (actAngle > angleEpsilon) {
                     faceAngle += time * turnSpeed;
-                else if (actAngle <= 0)
+                    if (!above && faceAngle > oldAct) faceAngle = oldAct;
+                } else if (actAngle < -angleEpsilon) {
                     faceAngle -= time * turnSpeed;
+                    if (above && faceAngle < oldAct) faceAngle = oldAct;
+                }
             }
         } else {
             if (lockBackwards && walkingBackwards)
