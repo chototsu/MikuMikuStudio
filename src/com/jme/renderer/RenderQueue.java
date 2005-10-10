@@ -268,7 +268,8 @@ public class RenderQueue {
 
                 if (twoPassTransparent) {
 	                ((Geometry)obj).states[RenderState.RS_CULL] = null;
-	                ((Geometry)obj).states[RenderState.RS_ZBUFFER] = null;
+                    ZBufferState oldZState = (ZBufferState)((Geometry)obj).states[RenderState.RS_ZBUFFER];
+                    ((Geometry)obj).states[RenderState.RS_ZBUFFER] = null;
 
 	                // first render back-facing tris only
 	                tranZBuff.apply();
@@ -280,6 +281,7 @@ public class RenderQueue {
 	                Spatial.clearCurrentState(RenderState.RS_CULL);
 	                
 	                // then render front-facing tris only
+                    ((Geometry)obj).states[RenderState.RS_ZBUFFER] = oldZState;
 	                tranCull.setCullMode(CullState.CS_BACK);
 	                tranCull.apply();
 	                obj.draw(renderer);
