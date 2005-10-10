@@ -58,7 +58,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestRenderQueue</code>
  * @author Joshua Slack
- * @version $Id: TestRenderQueue.java,v 1.16 2005-09-22 20:02:15 renanse Exp $
+ * @version $Id: TestRenderQueue.java,v 1.17 2005-10-10 17:17:15 Mojomonkey Exp $
  */
 public class TestRenderQueue extends SimpleGame {
   private boolean useQueue = false;
@@ -208,9 +208,20 @@ public class TestRenderQueue extends SimpleGame {
     transps.attachChild(tb3);
     MaterialState ms3 = display.getRenderer().createMaterialState();
     ms3.setEnabled(true);
-    ms3.setDiffuse(new ColorRGBA(1,0,0,.75f));
+    ms3.setDiffuse(new ColorRGBA(1,0,0,.5f));
     ms3.setShininess(128);
     tb3.setRenderState(ms3);
+    
+    Box tb4 = new Box("TBox Blue2", new Vector3f(-4.5f,-4.5f,-4.5f), new Vector3f(4.5f,4.5f,4.5f));
+    tb4.setModelBound(new BoundingBox());
+    tb4.updateModelBound();
+    tb4.setLocalTranslation(new Vector3f(0, 4, 17));
+    transps.attachChild(tb4);
+    MaterialState ms4 = display.getRenderer().createMaterialState();
+    ms4.setEnabled(true);
+    ms4.setDiffuse(new ColorRGBA(0,0,1,.75f));
+    ms4.setShininess(128);
+    tb4.setRenderState(ms4);
 
     AlphaState as = display.getRenderer().createAlphaState();
     as.setEnabled(true);
