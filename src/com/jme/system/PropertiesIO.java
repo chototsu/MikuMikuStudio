@@ -54,7 +54,7 @@ import com.jme.util.LoggingSystem;
  * <br>
  *
  * @author Mark Powell
- * @version $Id: PropertiesIO.java,v 1.4 2005-09-15 17:14:18 renanse Exp $
+ * @version $Id: PropertiesIO.java,v 1.5 2005-10-10 23:23:07 Mojomonkey Exp $
  */
 public class PropertiesIO {
     /**
@@ -125,7 +125,7 @@ public class PropertiesIO {
         } catch (FileNotFoundException e) {
             LoggingSystem.getLogger().log(
                 Level.WARNING,
-                "Could not load properties: " + e.toString());
+                "Could not load properties. Creating a new one.");
             return false;
         }
 
@@ -137,7 +137,7 @@ public class PropertiesIO {
         } catch (IOException e) {
             LoggingSystem.getLogger().log(
                 Level.WARNING,
-                "Could not load properties: " + e.toString());
+                "Could not load properties. Creating a new one.");
             return false;
         }
 
