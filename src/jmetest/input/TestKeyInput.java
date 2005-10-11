@@ -36,6 +36,7 @@ import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
+import com.jme.input.KeyInputListener;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -46,11 +47,13 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
+import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.8 2005-09-15 17:14:44 renanse Exp $
+ * @version $Id: TestKeyInput.java,v 1.9 2005-10-11 10:41:57 irrisor Exp $
  */
 public class TestKeyInput extends BaseGame {
     private Text text;
@@ -64,10 +67,6 @@ public class TestKeyInput extends BaseGame {
         app.start();
     }
 
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#update()
-     */
     protected void update(float interpolation) {
         key.update();
         if(key.isKeyDown(KeyInput.KEY_0)) {
@@ -81,7 +80,7 @@ public class TestKeyInput extends BaseGame {
 
     /**
      * draws the scene graph
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.SimpleGame#render(float)
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -120,10 +119,8 @@ public class TestKeyInput extends BaseGame {
         Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
         cam.setFrame(loc, left, up, dir);
 
-        InputSystem.createInputSystem(properties.getRenderer());
-        key = InputSystem.getKeyInput();
+        key = KeyInput.get();
         display.getRenderer().setCamera(cam);
-
     }
 
     /**
@@ -137,7 +134,7 @@ public class TestKeyInput extends BaseGame {
         ts.setEnabled(true);
         ts.setTexture(
             TextureManager.loadTexture(
-               	TestKeyInput.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                   TestKeyInput.class.getClassLoader().getResource("jmetest/data/font/font.png"),
                 Texture.MM_LINEAR,
                 Texture.FM_LINEAR));
         text.setRenderState(ts);
@@ -154,6 +151,12 @@ public class TestKeyInput extends BaseGame {
 
         scene.updateGeometricState(0.0f, true);
         scene.updateRenderState();
+
+        KeyInput.get().addListener( new KeyInputListener() {
+            public void onKey( char character, int keyCode, boolean pressed ) {
+                text.print( "key: '" + (character != 0 ? ""+character : "\\0") + "' (code "+keyCode+") " + (pressed?"pressed":"released") );
+            }
+        } );
     }
 
     /**

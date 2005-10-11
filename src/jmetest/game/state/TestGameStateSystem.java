@@ -38,6 +38,9 @@ import com.jme.app.AbstractGame;
 import com.jme.app.BaseGame;
 import com.jme.app.GameStateManager;
 import com.jme.input.InputSystem;
+import com.jme.input.KeyInput;
+import com.jme.input.MouseInput;
+import com.jme.input.joystick.JoystickInput;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
@@ -127,7 +130,6 @@ public class TestGameStateSystem extends BaseGame {
 		/** Get a high resolution timer for FPS updates. */
 		timer = Timer.getTimer(properties.getRenderer());
 		
-		InputSystem.createInputSystem(properties.getRenderer());
 	}
 	
 	/**
@@ -167,10 +169,9 @@ public class TestGameStateSystem extends BaseGame {
 		// Performs cleanup on all loaded game states.
 		GameStateManager.getInstance().cleanup();
 		
-		if (InputSystem.getKeyInput() != null)
-			InputSystem.getKeyInput().destroy();
-		if (InputSystem.getMouseInput() != null)
-			InputSystem.getMouseInput().destroy();
+        KeyInput.destroyIfInitalized();
+        MouseInput.destroyIfInitalized();
+        JoystickInput.destroyIfInitalized();
 	}
 	
 	/**

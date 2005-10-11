@@ -522,6 +522,19 @@ public class SoundSystem {
     }
 
     public static void setRolloffFactor(float rolloff){
+        for ( int i = 0; i < sample3D.length; i++ ) {
+            setSampleRolloffFactor( i, rolloff );
+        }
+    }
+
+    public static void setSampleRolloffFactor(int sample, float rolloff){
+        if(sample3D==null){
+            return;
+        }else if(sample<0 || sample>=sample3D.length){
+            return;
+        }else{
+            sample3D[sample].setRolloffFactor( rolloff );
+        }
     } 
     
     /**

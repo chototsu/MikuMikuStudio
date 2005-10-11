@@ -65,10 +65,6 @@ public class TestKeyBinding extends BaseGame {
         app.start();
     }
 
-    /**
-     * Not used.
-     * @see com.jme.app.SimpleGame#update()
-     */
     protected void update(float interpolation) {
         key.update();
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("zero")) {
@@ -91,7 +87,7 @@ public class TestKeyBinding extends BaseGame {
 
     /**
      * draws the scene graph
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.SimpleGame#render
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -130,8 +126,7 @@ public class TestKeyBinding extends BaseGame {
         Vector3f dir = new Vector3f(-1.0f, 0f, 0.0f);
         cam.setFrame(loc, left, up, dir);
 
-        InputSystem.createInputSystem(properties.getRenderer());
-        key = InputSystem.getKeyInput();
+        key = KeyInput.get();
         KeyBindingManager.getKeyBindingManager().setKeyInput(key);
         display.getRenderer().setCamera(cam);
 

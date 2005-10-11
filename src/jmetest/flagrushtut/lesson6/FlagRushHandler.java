@@ -63,7 +63,7 @@ public class FlagRushHandler extends InputHandler {
     
     /**
      * Supply the node to control and the api that will handle input creation.
-     * @param node the node we wish to move
+     * @param vehicle the node we wish to move
      * @param api the library that will handle creation of the input.
      */
     public FlagRushHandler(Vehicle vehicle, String api) {
@@ -80,9 +80,8 @@ public class FlagRushHandler extends InputHandler {
      */
     private void setKeyBindings(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
-        InputSystem.createInputSystem(api);
 
-        keyboard.setKeyInput(InputSystem.getKeyInput());
+        keyboard.setKeyInput(KeyInput.get());
         keyboard.set("forward", KeyInput.KEY_W);
         keyboard.set("backward", KeyInput.KEY_S);
         keyboard.set("turnRight", KeyInput.KEY_D);

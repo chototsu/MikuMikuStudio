@@ -35,18 +35,18 @@ package jmetest.stress.swarm;
 import java.util.Random;
 import java.util.logging.Level;
 
-import jmetest.stress.StressApp;
-
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.scene.Text;
 import com.jme.util.LoggingSystem;
+import jmetest.stress.StressApp;
 
 /**
  * This is a stress test with following charactersitics:
  * very high number of fast rendering geoms (boxes), with many changes to position (on/off), flat/organized tree
  * <br>
  * Many {@link Fish} are swarming around...
+ *
  * @author Irrisor
  * @created 21.11.2004, 12:28:12
  */
@@ -73,39 +73,40 @@ public class TestSwarm extends StressApp {
      */
     private static final String COMMAND_COLLISION = "toggle_collision";
 
+    private long startTime;
+    private int frame;
+
     /**
      * Called near end of initGame(). Must be defined by derived classes.
      */
     protected void simpleInitGame() {
-        Random random = new Random();
+        long initStartTime = System.currentTimeMillis(); //todo: replace by nanoTime() when JDK1.5 required
+        Random random = new Random( 1 );
 
         collisionTreeManager = new CollisionTreeManager( rootNode, new float[]{0.2f, 1.2f} );
 //        collisionTreeManager = new CollisionTreeManager( rootNode, new float[]{0.1f, 1.0f} );
 
         //create some fish
-        for ( int i=0; i<NUMBER_OF_FISH/10; ++i )
-        {
+        for ( int i = 0; i < NUMBER_OF_FISH / 10; ++i ) {
             final Fish fish = new Fish(
-                    0 + random.nextFloat()- 0.5f, 0 + random.nextFloat()- 0.5f, 0,
-                    random.nextFloat()- 0.5f, random.nextFloat()- 0.5f, 0,
+                    0 + random.nextFloat() - 0.5f, 0 + random.nextFloat() - 0.5f, 0,
+                    random.nextFloat() - 0.5f, random.nextFloat() - 0.5f, 0,
                     0.001f, rootNode );
             collisionTreeManager.add( fish );
         }
 
-        for ( int i=0; i<NUMBER_OF_FISH*2/10; ++i )
-        {
+        for ( int i = 0; i < NUMBER_OF_FISH * 2 / 10; ++i ) {
             final Fish fish = new Fish(
-                    0 + random.nextFloat()- 0.5f, random.nextFloat()- 0.5f, 0,
-                    random.nextFloat()- 0.5f, random.nextFloat()- 0.5f, 0,
+                    0 + random.nextFloat() - 0.5f, random.nextFloat() - 0.5f, 0,
+                    random.nextFloat() - 0.5f, random.nextFloat() - 0.5f, 0,
                     0.005f, rootNode );
             collisionTreeManager.add( fish );
         }
 
-        for ( int i=0; i<NUMBER_OF_FISH*7/10; ++i )
-        {
+        for ( int i = 0; i < NUMBER_OF_FISH * 7 / 10; ++i ) {
             final Fish fish = new Fish(
-                    0 + random.nextFloat()- 0.5f, 0 + random.nextFloat()- 0.5f, 0,
-                    random.nextFloat()- 0.5f, random.nextFloat()- 0.5f, 0,
+                    0 + random.nextFloat() - 0.5f, 0 + random.nextFloat() - 0.5f, 0,
+                    random.nextFloat() - 0.5f, random.nextFloat() - 0.5f, 0,
                     0.01f, rootNode );
             collisionTreeManager.add( fish );
         }
@@ -116,17 +117,20 @@ public class TestSwarm extends StressApp {
 
         KeyBindingManager.getKeyBindingManager().set(
                 COMMAND_REORGANIZATION,
-                KeyInput.KEY_R);
+                KeyInput.KEY_R );
         final Text text = createText( "Press R to toggle scene graph reorganization (node tree / flat)" );
         text.getLocalTranslation().set( 0, 20, 0 );
         rootNode.attachChild( text );
 
         KeyBindingManager.getKeyBindingManager().set(
                 COMMAND_COLLISION,
-                KeyInput.KEY_U);
+                KeyInput.KEY_U );
         final Text text2 = createText( "Press U to toggle collision detection use (fish perception on/off)" );
         text2.getLocalTranslation().set( 0, 40, 0 );
         rootNode.attachChild( text2 );
+        long initTime = System.currentTimeMillis() - initStartTime;
+        System.out.println( "Setup took " + initTime + " ms (below 100 ms very inaccurate)." );
+        startTime = System.currentTimeMillis();
     }
 
     /**
@@ -134,28 +138,32 @@ public class TestSwarm extends StressApp {
      * Called every frame in update.
      */
     protected void simpleUpdate() {
-        if (KeyBindingManager
+        if ( KeyBindingManager
                 .getKeyBindingManager()
-                .isValidCommand(COMMAND_REORGANIZATION, false)) {
+                .isValidCommand( COMMAND_REORGANIZATION, false ) ) {
             doReorganizeScenegraph = !doReorganizeScenegraph;
-            if ( !doReorganizeScenegraph )
-            {
+            if ( !doReorganizeScenegraph ) {
                 collisionTreeManager.disable();
             }
         }
-        if (KeyBindingManager
+        if ( KeyBindingManager
                 .getKeyBindingManager()
-                .isValidCommand(COMMAND_COLLISION, false)) {
+                .isValidCommand( COMMAND_COLLISION, false ) ) {
             Fish.useCollisionDetection = !Fish.useCollisionDetection;
         }
-        if ( doReorganizeScenegraph )
-        {
+        if ( doReorganizeScenegraph ) {
             collisionTreeManager.reorganize();
+        }
+        frame++;
+        if ( frame == 100 ) {
+            long time = System.currentTimeMillis() - startTime;
+            System.out.println( "First 100 frames took " + time + " ms." );
         }
     }
 
     /**
      * Main.
+     *
      * @param args command line arguments
      */
     public static void main( String[] args ) {

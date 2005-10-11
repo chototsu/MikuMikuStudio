@@ -36,6 +36,7 @@ import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputSystem;
+import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
 import com.jme.scene.Text;
@@ -66,7 +67,6 @@ public class TestAbsoluteMouse extends SimpleGame {
 
     protected void simpleInitGame() {
       lightState.setEnabled(false);
-        InputSystem.createInputSystem(properties.getRenderer());
         display.getRenderer().setBackgroundColor(ColorRGBA.blue);
         mouse = new AbsoluteMouse("Mouse Input", display.getWidth(), display.getHeight());
         TextureState cursor = display.getRenderer().createTextureState();
@@ -77,7 +77,7 @@ public class TestAbsoluteMouse extends SimpleGame {
 							Texture.MM_LINEAR, Texture.FM_LINEAR)
 					);
         mouse.setRenderState(cursor);
-        mouse.setMouseInput(InputSystem.getMouseInput());
+        mouse.setMouseInput( MouseInput.get());
         input.setMouse(mouse);
 
         text = new Text("Text Label","Testing Mouse");

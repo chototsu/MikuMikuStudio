@@ -57,7 +57,7 @@ import com.jme.util.geom.BufferUtils;
  * three points.
  * 
  * @author Mark Powell
- * @version $Id: TriMesh.java,v 1.43 2005-09-20 16:46:35 renanse Exp $
+ * @version $Id: TriMesh.java,v 1.44 2005-10-11 10:41:50 irrisor Exp $
  */
 public class TriMesh extends Geometry implements Serializable {
 
@@ -449,7 +449,6 @@ public class TriMesh extends Geometry implements Serializable {
      * 
      * @param s
      * @throws IOException
-     * @throws ClassNotFoundException
      * @see java.io.Serializable
      */
     private void writeObject(java.io.ObjectOutputStream s) throws IOException {

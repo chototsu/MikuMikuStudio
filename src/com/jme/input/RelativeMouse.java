@@ -45,7 +45,7 @@ package com.jme.input;
  * typically useful for a first person mouse look or similar.
  * 
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.14 2005-09-15 17:13:06 renanse Exp $
+ * @version $Id: RelativeMouse.java,v 1.15 2005-10-11 10:41:47 irrisor Exp $
  */
 public class RelativeMouse extends Mouse {
 
@@ -80,7 +80,7 @@ public class RelativeMouse extends Mouse {
      * @see com.jme.input.Mouse#update(boolean)
      */
     public void update(boolean updateState) {
-        if (updateState) mouse.updateState();
+        if (updateState) mouse.update();
 
         localTranslation.x = mouse.getXDelta() * _speed;
         localTranslation.y = mouse.getYDelta() * _speed;

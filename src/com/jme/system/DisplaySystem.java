@@ -42,6 +42,9 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
+import com.jme.input.MouseInput;
+import com.jme.input.KeyInput;
+import com.jme.input.joystick.JoystickInput;
 
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -66,7 +69,7 @@ import com.jme.system.lwjgl.LWJGLDisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.42 2005-09-24 20:25:08 Mojomonkey Exp $
+ * @version $Id: DisplaySystem.java,v 1.43 2005-10-11 10:41:50 irrisor Exp $
  */
 public abstract class DisplaySystem {
 
@@ -104,12 +107,12 @@ public abstract class DisplaySystem {
     protected int samples = 0;
 
     /**Defines the constant value for the LWJGL library*/
-    public static final String DISPLAY_SYSTEM_JWJGL = "LWJGL";
+    public static final String DISPLAY_SYSTEM_LWJGL = "LWJGL";
 
     /**
      * The list of current implemented rendering APIs that subclass Display.
      */
-    public static final String[] rendererNames = { DISPLAY_SYSTEM_JWJGL };
+    public static final String[] rendererNames = { DISPLAY_SYSTEM_LWJGL };
 
     /**
      * A new display system has been created. The default static display system
@@ -131,7 +134,11 @@ public abstract class DisplaySystem {
      * @return the appropriate display system specified by the key.
      */
     public static DisplaySystem getDisplaySystem(String key) {
-        if (DISPLAY_SYSTEM_JWJGL.equalsIgnoreCase(key)) {
+
+        //force to initialize joystick input before display system as there are lwjgl issues with creating it afterwards
+        JoystickInput.get();
+
+        if (DISPLAY_SYSTEM_LWJGL.equalsIgnoreCase(key)) {
             new LWJGLDisplaySystem();
         } else {
             display = null;
@@ -210,7 +217,7 @@ public abstract class DisplaySystem {
      *            the frequency of refresh of the display (in Hz).
      */
     public abstract boolean isValidDisplayMode(int width, int height, int bpp,
-            int freq);
+                                               int freq);
 
     /**
      * <code>setVSyncEnabled</code> attempts to enable or disable monitor
@@ -306,7 +313,7 @@ public abstract class DisplaySystem {
      *            use fullscreen, false will use windowed mode.
      */
     public abstract void recreateWindow(int w, int h, int bpp, int frq,
-            boolean fs);
+                                        boolean fs);
 
     /**
      * <code>getRenderer</code> returns the <code>Renderer</code>
@@ -336,7 +343,7 @@ public abstract class DisplaySystem {
      * DisplaySystem is currently using.
      * 
      * @see com.jme.util.JmeType
-     * @return
+     * @return renderer type
      */
     public abstract RendererType getRendererType();
 
@@ -521,9 +528,9 @@ public abstract class DisplaySystem {
      * @return A TextureRenderer for the display system.
      */
     public abstract TextureRenderer createTextureRenderer(int width,
-            int height, boolean useRGB, boolean useRGBA, boolean useDepth,
-            boolean isRectangle, int target, int mipmaps);
-    
+                                                          int height, boolean useRGB, boolean useRGBA, boolean useDepth,
+                                                          boolean isRectangle, int target, int mipmaps);
+
     /**
      * Crate a TextureRenderer using the underlying system. This should not be
      * user called. It is called when the display system is created.
@@ -543,9 +550,9 @@ public abstract class DisplaySystem {
      * @return A TextureRenderer for the display system.
      */
     public abstract TextureRenderer createTextureRenderer(int width,
-            int height, boolean useRGB, boolean useRGBA, boolean useDepth,
-            boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
-            int depth, int stencil, int samples);
+                                                          int height, boolean useRGB, boolean useRGBA, boolean useDepth,
+                                                          boolean isRectangle, int target, int mipmaps, int bpp, int alpha,
+                                                          int depth, int stencil, int samples);
 
     /**
      * Translate world to screen coordinates
@@ -566,7 +573,7 @@ public abstract class DisplaySystem {
      * @return Vector3f The store vector3f, after storing.
      */
     public abstract Vector3f getScreenCoordinates(Vector3f worldPosition,
-            Vector3f store);
+                                                  Vector3f store);
 
     /**
      * Translate screen to world coordinates.
@@ -579,7 +586,7 @@ public abstract class DisplaySystem {
      * @return Vector3f A vector3f representing the vector's world position.
      */
     public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
-            float zPos);
+                                                 float zPos);
 
     /**
      * Translate screen to world coordinates.
@@ -594,5 +601,5 @@ public abstract class DisplaySystem {
      * @return Vector3f The store vector, after storing it's result.
      */
     public abstract Vector3f getWorldCoordinates(Vector2f screenPosition,
-            float zPos, Vector3f store);
+                                                 float zPos, Vector3f store);
 }

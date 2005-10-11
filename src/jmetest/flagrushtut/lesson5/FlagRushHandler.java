@@ -69,9 +69,8 @@ public class FlagRushHandler extends InputHandler {
      */
     private void setKeyBindings(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
-        InputSystem.createInputSystem(api);
 
-        keyboard.setKeyInput(InputSystem.getKeyInput());
+        keyboard.setKeyInput(KeyInput.get());
         keyboard.set("forward", KeyInput.KEY_W);
         keyboard.set("backward", KeyInput.KEY_S);
         keyboard.set("turnRight", KeyInput.KEY_D);

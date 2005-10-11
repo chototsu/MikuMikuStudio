@@ -61,7 +61,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.28 2005-10-03 19:53:48 Mojomonkey Exp $
+ * @version $Id: TestScenegraph.java,v 1.29 2005-10-11 10:41:58 irrisor Exp $
  */
 public class TestScenegraph extends SimpleGame {
 
@@ -164,7 +164,7 @@ public class TestScenegraph extends SimpleGame {
 
         lightState.setEnabled(false);
 
-        key = InputSystem.getKeyInput();
+        key = KeyInput.get();
         KeyBindingManager.getKeyBindingManager().setKeyInput(key);
 
         KeyBindingManager.getKeyBindingManager().set("notex", KeyInput.KEY_7);

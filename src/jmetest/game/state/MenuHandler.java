@@ -37,6 +37,7 @@ import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.input.MouseInput;
 import com.jme.system.DisplaySystem;
 
 /**
@@ -55,7 +56,7 @@ public class MenuHandler extends InputHandler {
 
     private void setKeyBindings() {
         keyboard = KeyBindingManager.getKeyBindingManager();
-        keyboard.setKeyInput(InputSystem.getKeyInput());
+        keyboard.setKeyInput(KeyInput.get());
         keyboard.set("exit", KeyInput.KEY_ESCAPE);
     }
 
@@ -63,7 +64,7 @@ public class MenuHandler extends InputHandler {
 		DisplaySystem display = DisplaySystem.getDisplaySystem();
         mouse = new AbsoluteMouse("Mouse Input", display.getWidth(),
         		display.getHeight());
-        mouse.setMouseInput(InputSystem.getMouseInput());
+        mouse.setMouseInput( MouseInput.get());
         setMouse(mouse);
     }
     

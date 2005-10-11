@@ -51,9 +51,9 @@ import com.jme.util.geom.BufferUtils;
  * A typical usage is to allow the class define the center and radius by calling
  * either <code>containAABB</code> or <code>averagePoints</code>. A call to
  * <code>computeFramePoint</code> in turn calls <code>containAABB</code>.
- * 
+ *
  * @author Mark Powell
- * @version $Id: BoundingSphere.java,v 1.36 2005-09-21 19:58:23 renanse Exp $
+ * @version $Id: BoundingSphere.java,v 1.37 2005-10-11 10:41:42 irrisor Exp $
  */
 public class BoundingSphere extends BoundingVolume {
 
@@ -74,7 +74,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /**
      * Constructor instantiates a new <code>BoundingSphere</code> object.
-     * 
+     *
      * @param r
      *            the radius of the sphere.
      * @param c
@@ -91,7 +91,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /**
      * <code>getRadius</code> returns the radius of the bounding sphere.
-     * 
+     *
      * @return the radius of the bounding sphere.
      */
     public float getRadius() {
@@ -100,7 +100,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /**
      * <code>setRadius</code> sets the radius of this bounding sphere.
-     * 
+     *
      * @param radius
      *            the new radius of the bounding sphere.
      */
@@ -112,7 +112,7 @@ public class BoundingSphere extends BoundingVolume {
      * <code>computeFromPoints</code> creates a new Bounding Sphere from a
      * given set of points. It uses the <code>containAABB</code> method as
      * default.
-     * 
+     *
      * @param points
      *            the points to contain.
      */
@@ -125,7 +125,7 @@ public class BoundingSphere extends BoundingVolume {
      * was originally found at
      * http://www.flipcode.com/cgi-bin/msg.cgi?showThread=COTD-SmallestEnclosingSpheres&forum=cotd&id=-1
      * in C++ and translated to java by Cep21
-     * 
+     *
      * @param points
      *            The points to calculate the minimum bounds from.
      */
@@ -143,7 +143,7 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * Used from calcWelzl. This function recurses to calculate a minimum
      * bounding sphere a few points at a time.
-     * 
+     *
      * @param points
      *            The array of points to look through.
      * @param p
@@ -200,7 +200,7 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * Calculates the minimum bounding sphere of 4 points. Used in welzl's
      * algorithm.
-     * 
+     *
      * @param O
      *            The 1st point inside the sphere.
      * @param A
@@ -209,7 +209,7 @@ public class BoundingSphere extends BoundingVolume {
      *            The 3rd point inside the sphere.
      * @param C
      *            The 4th point inside the sphere.
-     * @see #calcWelzl(com.jme.math.Vector3f[])
+     * @see #calcWelzl(java.nio.FloatBuffer)
      */
     private void setSphere(Vector3f O, Vector3f A, Vector3f B, Vector3f C) {
         Vector3f a = A.subtract(O);
@@ -235,14 +235,14 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * Calculates the minimum bounding sphere of 3 points. Used in welzl's
      * algorithm.
-     * 
+     *
      * @param O
      *            The 1st point inside the sphere.
      * @param A
      *            The 2nd point inside the sphere.
      * @param B
      *            The 3rd point inside the sphere.
-     * @see #calcWelzl(com.jme.math.Vector3f[])
+     * @see #calcWelzl(java.nio.FloatBuffer)
      */
     private void setSphere(Vector3f O, Vector3f A, Vector3f B) {
         Vector3f a = A.subtract(O);
@@ -267,12 +267,12 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * Calculates the minimum bounding sphere of 2 points. Used in welzl's
      * algorithm.
-     * 
+     *
      * @param O
      *            The 1st point inside the sphere.
      * @param A
      *            The 2nd point inside the sphere.
-     * @see #calcWelzl(com.jme.math.Vector3f[])
+     * @see #calcWelzl(java.nio.FloatBuffer)
      */
     private void setSphere(Vector3f O, Vector3f A) {
         radius = FastMath.sqrt(((A.x - O.x) * (A.x - O.x) + (A.y - O.y)
@@ -284,7 +284,7 @@ public class BoundingSphere extends BoundingVolume {
      * <code>averagePoints</code> selects the sphere center to be the average
      * of the points and the sphere radius to be the smallest value to enclose
      * all points.
-     * 
+     *
      * @param points
      *            the list of points to contain.
      */
@@ -313,7 +313,7 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * <code>transform</code> modifies the center of the sphere to reflect the
      * change made via a rotation, translation and scale.
-     * 
+     *
      * @param rotate
      *            the rotation change.
      * @param translate
@@ -357,7 +357,7 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * <code>whichSide</code> takes a plane (typically provided by a view
      * frustum) to determine which side this bound is on.
-     * 
+     *
      * @param plane
      *            the plane to check against.
      * @return side
@@ -377,7 +377,7 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * <code>merge</code> combines this sphere with a second bounding sphere.
      * This new sphere contains both bounding spheres and is returned.
-     * 
+     *
      * @param volume
      *            the sphere to combine with this sphere.
      * @return the new sphere
@@ -386,9 +386,9 @@ public class BoundingSphere extends BoundingVolume {
         if (volume == null) {
             return this;
         }
-        
+
         switch(volume.getType()) {
-        
+
         case BoundingVolume.BOUNDING_SPHERE: {
         	BoundingSphere sphere = (BoundingSphere) volume;
             float temp_radius = sphere.getRadius();
@@ -396,7 +396,7 @@ public class BoundingSphere extends BoundingVolume {
             BoundingSphere rVal = new BoundingSphere();
             return merge(temp_radius, temp_center, rVal);
         }
-        
+
         case BoundingVolume.BOUNDING_BOX: {
         	BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = new Vector3f(box.xExtent, box.yExtent,
@@ -405,16 +405,16 @@ public class BoundingSphere extends BoundingVolume {
             BoundingSphere rVal = new BoundingSphere();
             return merge(radVect.length(), temp_center, rVal);
         }
-        
+
         case BoundingVolume.BOUNDING_OBB: {
         	OrientedBoundingBox box = (OrientedBoundingBox) volume;
             BoundingSphere rVal = (BoundingSphere) this.clone(null);
             return rVal.mergeOBB(box);
         }
-        
-        default: 
+
+        default:
         	return null;
-        
+
         }
     }
 
@@ -424,7 +424,7 @@ public class BoundingSphere extends BoundingVolume {
      * <code>mergeLocal</code> combines this sphere with a second bounding
      * sphere locally. Altering this sphere to contain both the original and the
      * additional sphere volumes;
-     * 
+     *
      * @param volume
      *            the sphere to combine with this sphere.
      * @return this
@@ -433,16 +433,16 @@ public class BoundingSphere extends BoundingVolume {
         if (volume == null) {
             return this;
         }
-        
+
         switch (volume.getType()) {
-        	
+
         case BoundingVolume.BOUNDING_SPHERE: {
         	BoundingSphere sphere = (BoundingSphere) volume;
             float temp_radius = sphere.getRadius();
             Vector3f temp_center = sphere.getCenter();
             return merge(temp_radius, temp_center, this);
         }
-        
+
         case BoundingVolume.BOUNDING_BOX: {
         	BoundingBox box = (BoundingBox) volume;
             Vector3f radVect = tmpRadVect;
@@ -462,7 +462,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /**
      * Merges this sphere with the given OBB.
-     * 
+     *
      * @param volume
      *            The OBB to merge.
      * @return This sphere, after merging.
@@ -522,7 +522,7 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * <code>clone</code> creates a new BoundingSphere object containing the
      * same data as this one.
-     * 
+     *
      * @param store
      *            where to store the cloned information. if null or wrong class,
      *            a new store is created.
@@ -546,7 +546,7 @@ public class BoundingSphere extends BoundingVolume {
     /**
      * <code>toString</code> returns the string representation of this object.
      * The form is: "Radius: RRR.SSSS Center: <Vector>".
-     * 
+     *
      * @return the string representation of this.
      */
     public String toString() {
@@ -556,7 +556,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.bounding.BoundingVolume)
      */
     public boolean intersects(BoundingVolume bv) {
@@ -568,7 +568,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.bounding.BoundingVolume#intersectsSphere(com.jme.bounding.BoundingSphere)
      */
     public boolean intersectsSphere(BoundingSphere bs) {
@@ -579,7 +579,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.bounding.BoundingVolume#intersectsBoundingBox(com.jme.bounding.BoundingBox)
      */
     public boolean intersectsBoundingBox(BoundingBox bb) {
@@ -596,7 +596,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.bounding.BoundingVolume#intersectsOrientedBoundingBox(com.jme.bounding.OrientedBoundingBox)
      */
     public boolean intersectsOrientedBoundingBox(OrientedBoundingBox obb) {
@@ -605,7 +605,7 @@ public class BoundingSphere extends BoundingVolume {
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see com.jme.bounding.BoundingVolume#intersects(com.jme.math.Ray)
      */
     public boolean intersects(Ray ray) {

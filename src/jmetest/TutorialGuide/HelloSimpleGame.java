@@ -42,6 +42,8 @@ import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.input.MouseInput;
+import com.jme.input.joystick.JoystickInput;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -370,7 +372,8 @@ public class HelloSimpleGame extends BaseGame {
      */
     protected void cleanup() {
       LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
-      input.getKeyBindingManager().getKeyInput().destroy();
-      InputSystem.getMouseInput().destroy();
+      KeyInput.destroyIfInitalized();
+      MouseInput.destroyIfInitalized();
+      JoystickInput.destroyIfInitalized();
     }
 }

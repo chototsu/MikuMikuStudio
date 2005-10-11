@@ -111,7 +111,7 @@ import com.jme.util.LoggingSystem;
  * @author Mark Powell
  * @author Joshua Slack - Optimizations and Headless rendering
  * @author Tijl Houtbeckers - Small optimizations
- * @version $Id: LWJGLRenderer.java,v 1.83 2005-09-26 21:42:56 renanse Exp $
+ * @version $Id: LWJGLRenderer.java,v 1.84 2005-10-11 10:41:48 irrisor Exp $
  */
 public class LWJGLRenderer extends Renderer {
 
@@ -635,7 +635,7 @@ public class LWJGLRenderer extends Renderer {
         if (statisticsOn) {
             numberOfVerts += verts;
         }
-        
+
         GL11.glLineWidth(l.getLineWidth());
         if (l.getStippleFactor() != (short)0xFFFF) {
             GL11.glEnable(GL11.GL_LINE_STIPPLE);
@@ -645,7 +645,7 @@ public class LWJGLRenderer extends Renderer {
             GL11.glEnable(GL11.GL_LINE_SMOOTH);
             GL11.glHint(GL11.GL_LINE_SMOOTH_HINT, GL11.GL_NICEST);
         }
-        
+
         switch (l.getMode()) {
         	case Line.SEGMENTS:
                 GL11.glDrawElements(GL11.GL_LINES, indices);

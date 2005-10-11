@@ -5,8 +5,7 @@ import com.jme.scene.Node;
 import com.jme.system.DisplaySystem;
 
 /**
- * @author christian.schneider@uni-kassel.de
- * @created 18.06.2005, 15:58:36
+ * @author Irrisor
  */
 public abstract class StandardGameStateDefaultCamera extends BasicGameState {
     public StandardGameStateDefaultCamera( String name ) {

@@ -192,6 +192,11 @@
 		     includes="lwjglaudio.dll"
 		     update="yes"
 		/>
+        <jar jarfile="${webstart}/jinput-windows.jar"
+             basedir="lib"
+             includes="jinput-dxplugin.dll"
+             update="yes"
+                />
 		<signjar jar="${webstart}/lwjgl-windows.jar"
 		         alias="jme"
 		         keystore="${webstart}/${keyStore}"
@@ -202,6 +207,11 @@
 		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
+        <signjar jar="${webstart}/jinput-windows.jar"
+                 alias="jme"
+                 keystore="${webstart}/${keyStore}"
+                 storepass="${storepass}"
+                />
 
 		<!-- Jar and sign Linux native libraries -->
 		<jar jarfile="${webstart}/lwjgl-linux.jar"
@@ -214,6 +224,11 @@
 		     includes="libopenal.so"
 		     update="yes"
 		/>
+        <jar jarfile="${webstart}/jinput-linux.jar"
+             basedir="lib"
+             includes="libjinput-linux.so"
+             update="yes"
+                />
 		<signjar jar="${webstart}/lwjgl-linux.jar"
 		         alias="jme"
 		         keystore="${webstart}/${keyStore}"
@@ -224,6 +239,11 @@
 		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
+        <signjar jar="${webstart}/jinput-linux.jar"
+                 alias="jme"
+                 keystore="${webstart}/${keyStore}"
+                 storepass="${storepass}"
+                />
 
 		<!-- Jar (eventually) and sign Mac native libraries -->
         <jar jarfile="${webstart}/lwjgl-mac.jar"
@@ -236,6 +256,11 @@
             includes="openal.dylib"
             update="yes"
             /><!--fix me: shouldn't it be a jnilib?-->
+        <jar jarfile="${webstart}/jinput-mac.jar"
+             basedir="lib"
+             includes="libjinput.jnilib"
+             update="yes"
+                />
 
 		<signjar jar="${webstart}/lwjgl-mac.jar"
 		         alias="jme"
@@ -247,6 +272,11 @@
 		         keystore="${webstart}/${keyStore}"
 		         storepass="${storepass}"
 		/>
+        <signjar jar="${webstart}/jinput-mac.jar"
+                 alias="jme"
+                 keystore="${webstart}/${keyStore}"
+                 storepass="${storepass}"
+                />
 
 		<!-- Sign the lwjgl jar -->
 		<signjar jar="${seg}/lib/lwjgl.jar"

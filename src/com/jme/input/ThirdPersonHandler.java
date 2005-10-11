@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.12 $
+ * @version $Revision: 1.13 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -203,9 +203,8 @@ public class ThirdPersonHandler extends InputHandler {
      */
     protected void setupKeyboard(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
-        InputSystem.createInputSystem(api);
 
-        keyboard.setKeyInput(InputSystem.getKeyInput());
+        keyboard.setKeyInput(KeyInput.get());
         setKeyBindingManager(keyboard);
     }
 

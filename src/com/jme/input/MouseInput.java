@@ -32,32 +32,79 @@
 
 package com.jme.input;
 
+import java.util.ArrayList;
+
+import com.jme.input.lwjgl.LWJGLMouseInput;
+
 
 /**
  * <code>MouseInput</code> defines an interface to communicate with the mouse
  * input device.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.7 2005-09-15 17:13:06 renanse Exp $
+ * @version $Id: MouseInput.java,v 1.8 2005-10-11 10:41:46 irrisor Exp $
  */
-public interface MouseInput {
+public abstract class MouseInput {
 
-    public final static int BUTTON_1 = 1;
-    public final static int BUTTON_2 = 2;
-    public final static int BUTTON_3 = 4;
+    private static MouseInput instance;
+    /**
+     * list of event listeners.
+     */
+    protected ArrayList listeners;
 
-    public final static int BUTTON_1_2 = BUTTON_1 | BUTTON_2;
-    public final static int BUTTON_1_3 = BUTTON_1 | BUTTON_3;
-    public final static int BUTTON_2_3 = BUTTON_2 | BUTTON_3;
-
-    public final static int BUTTON_1_2_3 = BUTTON_1 | BUTTON_2 | BUTTON_3;
+    /**
+     * @return the input instance, implementation is determined by querying {@link #getProvider()}
+     */
+    public static MouseInput get()
+    {
+        if ( instance == null )
+        {
+            if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( getProvider() ) )
+            {
+                instance = new LWJGLMouseInput(){};
+            }
+            else
+            {
+                throw new IllegalArgumentException( "Unsupported provider: " + getProvider() );
+            }
+        }
+        return instance;
+    }
 
 
     /**
+     * Query current provider for input.
      *
-     * <code>destroy</code> cleans up the native mouse interface.
-     *
+     * @return currently selected provider
      */
-    public void destroy();
+    public static String getProvider() {
+        return provider;
+    }
+
+    /**
+     * store the value for field provider
+     */
+    private static String provider = InputSystem.INPUT_SYSTEM_LWJGL;
+
+    /**
+     * Change the provider used for mouse input. Default is {@link InputSystem.INPUT_SYSTEM_LWJGL}.
+     *
+     * @param value new provider
+     * @throws IllegalStateException if called after first call of {@link #get()}. Note that get is called when
+     * creating the DisplaySystem.
+     */
+    public static void setProvider( final String value ) {
+        if ( instance != null )
+        {
+            throw new IllegalStateException( "Provider may only be changed before input is created!" );
+        }
+        provider = value;
+    }
+
+    /**
+     * <code>destroy</code> cleans up the native mouse interface.
+     * Destroy is protected now - please is {@link #destroyIfInitalized()}.
+     */
+    protected abstract void destroy();
 
     /**
      *
@@ -66,7 +113,7 @@ public interface MouseInput {
      * @param buttonName the name to get the code for.
      * @return the code for the given button name.
      */
-    public int getButtonIndex(String buttonName);
+    public abstract int getButtonIndex(String buttonName);
 
     /**
      *
@@ -75,7 +122,7 @@ public interface MouseInput {
      * @param buttonCode the button code to check.
      * @return true if the button is pressed, false otherwise.
      */
-    public boolean isButtonDown(int buttonCode);
+    public abstract boolean isButtonDown(int buttonCode);
 
     /**
      *
@@ -84,7 +131,7 @@ public interface MouseInput {
      * @param buttonIndex the code to get the name for.
      * @return the name for the given button code.
      */
-    public String getButtonName(int buttonIndex);
+    public abstract String getButtonName(int buttonIndex);
 
     /**
      *
@@ -92,74 +139,100 @@ public interface MouseInput {
      * false otherwise.
      * @return true if the mouse input is created, false otherwise.
      */
-    public boolean isCreated();
-
-    /**
-     *
-     * <code>poll</code> updates the mouse.
-     *
-     */
-    public void poll();
+    public abstract boolean isCreated();
 
     /**
      *
      * <code>getWheelDelta</code> gets the change in the mouse wheel.
      * @return the change in the mouse wheel.
      */
-    public int getWheelDelta();
+    public abstract int getWheelDelta();
 
     /**
      *
      * <code>getXDelta</code> gets the change along the x axis.
      * @return the change along the x axis.
      */
-    public int getXDelta();
+    public abstract int getXDelta();
 
     /**
      *
      * <code>getYDelta</code> gets the change along the y axis.
      * @return the change along the y axis.
      */
-    public int getYDelta();
+    public abstract int getYDelta();
 
     /**
      *
      * <code>getXAbsolute</code> gets the absolute x axis value.
      * @return the absolute x axis value.
      */
-    public int getXAbsolute();
+    public abstract int getXAbsolute();
 
     /**
      *
      * <code>getYAbsolute</code> gets the absolute y axis value.
      * @return the absolute y axis value.
      */
-    public int getYAbsolute();
+    public abstract int getYAbsolute();
 
     /**
-     * <code>updateState</code> updates the mouse state.
+     * Updates the state of the mouse (position and button states). Invokes event listeners synchronously.
      */
-    public void updateState();
+    public abstract void update();
 
     /**
      * <code>setCursorVisible</code> sets the visiblity of the hardware cursor.
      * @param v true turns the cursor on false turns it off
      */
-    public void setCursorVisible(boolean v);
+    public abstract void setCursorVisible(boolean v);
 
     /**
      * <code>isCursorVisible</code>
      * @return the visibility of the hardware cursor
      */
-    public boolean isCursorVisible();
+    public abstract boolean isCursorVisible();
 
     /**
-     * @return the state of the mouse buttons.
+     * Subscribe a listener to receive mouse events. Enable event generation.
+     * @param listener to be subscribed
      */
-    public MouseButtonStateType getButtonState();
+    public void addListener( MouseInputListener listener ) {
+        if ( listeners == null ) {
+            listeners = new ArrayList();
+        }
+
+        listeners.add( listener );
+    }
 
     /**
-     * @return the previous state of the mouse buttons.
+     * Unsubscribe a listener. Disable event generation if no more listeners.
+     * @see #addListener(com.jme.input.MouseInputListener)
+     * @param listener to be unsuscribed
      */
-    public MouseButtonStateType getPreviousButtonState();
+    public void removeListener( MouseInputListener listener ) {
+        if ( listeners != null ) {
+            listeners.remove( listener );
+        }
+    }
+
+    /**
+     * Remove all listeners and disable event generation.
+     */
+    public void removeListeners() {
+        if ( listeners != null ) {
+            listeners.clear();
+        }
+    }
+
+    /**
+     * Destroy the input if it was initialized.
+     */
+    public static void destroyIfInitalized() {
+        if ( instance != null )
+        {
+            instance.destroy();
+            instance = null;
+        }
+    }
 }

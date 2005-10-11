@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.36 2005-09-15 17:13:45 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.37 2005-10-11 10:41:48 irrisor Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -558,13 +558,13 @@ public class Quaternion implements Externalizable {
         if ((1 - result) > 0.1f) {
             // Get the angle between the 2 quaternions, and then store the sin()
             // of that angle
-            float theta = (float) FastMath.acos(result);
-            float invSinTheta = 1f / (float) FastMath.sin(theta);
+            float theta = FastMath.acos(result);
+            float invSinTheta = 1f / FastMath.sin(theta);
 
             // Calculate the scale for q1 and q2, according to the angle and
             // it's sine value
-            scale0 = (float) FastMath.sin((1 - changeAmnt) * theta) * invSinTheta;
-            scale1 = (float) FastMath.sin((changeAmnt * theta)) * invSinTheta;
+            scale0 = FastMath.sin((1 - changeAmnt) * theta) * invSinTheta;
+            scale1 = FastMath.sin((changeAmnt * theta)) * invSinTheta;
         }
 
         // Calculate the x, y, z and w values for the quaternion by using a
@@ -971,7 +971,7 @@ public class Quaternion implements Externalizable {
      * @return true if they are equal, false otherwise.
      */
     public boolean equals(Object o) {
-        if (!(o instanceof Quaternion) || o == null) {
+        if ( !(o instanceof Quaternion) ) {
             return false;
         }
 

@@ -33,26 +33,28 @@
 package com.jme.input.lwjgl;
 
 import java.util.logging.Level;
+import java.util.ArrayList;
 
 import org.lwjgl.input.Keyboard;
 
 import com.jme.input.KeyInput;
+import com.jme.input.KeyInputListener;
 import com.jme.util.LoggingSystem;
 
 /**
  * <code>LWJGLKeyInput</code> uses the LWJGL API to access the keyboard.
  * The LWJGL make use of the native interface for the keyboard.
  * @author Mark Powell
- * @version $Id: LWJGLKeyInput.java,v 1.7 2005-09-15 17:13:18 renanse Exp $
+ * @version $Id: LWJGLKeyInput.java,v 1.8 2005-10-11 10:41:44 irrisor Exp $
  */
-public class LWJGLKeyInput implements KeyInput {
+public class LWJGLKeyInput extends KeyInput {
 
     /**
      * Constructor instantiates a new <code>LWJGLKeyInput</code> object. During
      * instantiation, the keyboard is created.
      *
      */
-    public LWJGLKeyInput() {
+    protected LWJGLKeyInput() {
         try {
 
             Keyboard.create();
@@ -103,7 +105,27 @@ public class LWJGLKeyInput implements KeyInput {
      * @see com.jme.input.KeyInput#update()
      */
     public void update() {
-        Keyboard.poll();
+        /**Polling is done in {@link org.lwjgl.opengl.Display#update()} */
+        //Keyboard.poll();
+
+        if ( listeners != null && listeners.size() > 0 ) {
+            while ( Keyboard.next() ) {
+                char c = Keyboard.getEventCharacter();
+                int keyCode = Keyboard.getEventKey();
+                boolean pressed = Keyboard.getEventKeyState();
+
+                for ( int i = 0; i < listeners.size(); i++ ) {
+                    KeyInputListener listener = (KeyInputListener) listeners.get( i );
+                    listener.onKey( c, keyCode,  pressed );
+                }
+            }
+        }
+        else {
+            // clear events - could use a faster method in lwjgl here...
+            while ( Keyboard.next() ) {
+                //nothing
+            }
+        }
     }
 
     /**

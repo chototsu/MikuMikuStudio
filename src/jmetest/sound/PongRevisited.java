@@ -167,9 +167,9 @@ public class PongRevisited extends SimpleGame {
         ball.updateModelBound();
 
         ballSound = SoundSystem.create3DSample(PongRevisited.class
-                .getClassLoader().getResource("jmetest/data/sound/turn.wav"));
+                .getClassLoader().getResource("jmetest/data/sound/turn.ogg"));
         explodeSound = SoundSystem.create3DSample(PongRevisited.class
-                .getClassLoader().getResource("jmetest/data/sound/explosion.wav"));
+                .getClassLoader().getResource("jmetest/data/sound/explosion.ogg"));
 
         SoundSystem.bindEventToSample(ballSound, WALL_BOUNCE_EVENT);
         SoundSystem.bindEventToSample(explodeSound, MISS_EVENT);

@@ -204,7 +204,7 @@ public class Fish extends Node {
     /**
      * list of nearby fish.
      */
-    protected CollisionResults nearbyFish = new BoundingCollisionResults();
+    protected static CollisionResults nearbyFish = new BoundingCollisionResults();
 
     /**
      * Compute the position and facing for the next frame. See class description for details.

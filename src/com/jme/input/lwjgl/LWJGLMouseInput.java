@@ -33,11 +33,12 @@
 package com.jme.input.lwjgl;
 
 import java.util.logging.Level;
+import java.util.ArrayList;
 
 import org.lwjgl.input.Mouse;
 
-import com.jme.input.MouseButtonStateType;
 import com.jme.input.MouseInput;
+import com.jme.input.MouseInputListener;
 import com.jme.system.lwjgl.LWJGLStandardCursor;
 import com.jme.util.LoggingSystem;
 
@@ -45,12 +46,9 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.9 2005-09-15 17:13:19 renanse Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.10 2005-10-11 10:41:45 irrisor Exp $
  */
-public class LWJGLMouseInput implements MouseInput {
-
-    private MouseButtonStateType buttonType = MouseButtonStateType.MOUSE_BUTTON_NONE;
-    private MouseButtonStateType previousButtonType = MouseButtonStateType.MOUSE_BUTTON_NONE;
+public class LWJGLMouseInput extends MouseInput {
 
     private int dx, dy;
 		private boolean virgin = true;
@@ -61,7 +59,7 @@ public class LWJGLMouseInput implements MouseInput {
      * this creation, it is logged.
      *
      */
-    public LWJGLMouseInput() {
+    protected LWJGLMouseInput() {
         try {
             Mouse.create();
             setCursorVisible(false);
@@ -69,6 +67,7 @@ public class LWJGLMouseInput implements MouseInput {
             LoggingSystem.getLogger().log(Level.WARNING, "Problem during " + "creation of Mouse.");
         }
     }
+
     /**
      * <code>destroy</code> cleans up the native mouse reference.
      * @see com.jme.input.MouseInput#destroy()
@@ -113,24 +112,6 @@ public class LWJGLMouseInput implements MouseInput {
     }
 
     /**
-     * <code>poll</code> gets the current state of the mouse.
-     * @see com.jme.input.MouseInput#poll()
-     */
-    public void poll() {
-        if (Mouse.isGrabbed()) {
-            dx = Mouse.getDX();
-            dy = Mouse.getDY();
-        } else {
-            dx = Mouse.getEventX();
-            dy = Mouse.getEventY();          
-        }
-        if (virgin && (dx != 0 || dy != 0)) {
-            dx = dy = 0;
-            virgin = false;
-        }
-    }
-
-    /**
      * <code>getWheelDelta</code> retrieves the change of the mouse wheel,
      * if any.
      * @see com.jme.input.MouseInput#getWheelDelta()
@@ -171,62 +152,60 @@ public class LWJGLMouseInput implements MouseInput {
 
     /**
      * <code>updateState</code> updates the mouse state.
-     * @see com.jme.input.MouseInput#updateState()
+     * @see com.jme.input.MouseInput#update()
      */
-    public void updateState() {
-        poll();
+    public void update() {
+        /**Actual polling is done in {@link org.lwjgl.opengl.Display#update()} */
 
-        setButtonStateType();
-    }
+        boolean grabbed = Mouse.isGrabbed();
+        int x;
+        int y;
+        if ( grabbed ) {
+            dx = x = Mouse.getDX();
+            dy = y = Mouse.getDY();
+        } else {
+            dx = x = Mouse.getEventX();
+            dy = y = Mouse.getEventY();
+        }
+        if (virgin && (dx != 0 || dy != 0)) {
+            dx = dy = 0;
+            virgin = false;
+        }
 
-    private void setButtonStateType() {
-        int button = 0;
 
-        previousButtonType = buttonType;
+        if ( listeners != null && listeners.size() > 0 ) {
+            while ( Mouse.next() ) {
+                int button = Mouse.getEventButton();
+                boolean pressed = button >= 0 ? Mouse.getEventButtonState() : false;
 
-        for (int i = 0; i < Mouse.getButtonCount(); i++) {
-            if (Mouse.isButtonDown(i)) {
-                switch (i) {
-                    case 0 :
-                        button |= BUTTON_1;
-                        break;
-                    case 1 :
-                        button |= BUTTON_2;
-                        break;
-                    case 2 :
-                        button |= BUTTON_3;
-                        break;
+                int wheelDelta = Mouse.getEventDWheel();
+
+                int xDelta = Mouse.getEventDX();
+                int yDelta = Mouse.getEventDY();
+
+                for ( int i = 0; i < listeners.size(); i++ ) {
+                    MouseInputListener listener = (MouseInputListener) listeners.get( i );
+                    if ( button >= 0 )
+                    {
+                        listener.onButton( button,  pressed, x, y );
+                    }
+                    if ( wheelDelta != 0 )
+                    {
+                        listener.onWheel( wheelDelta, x, y );
+                    }
+                    if ( xDelta != 0 || yDelta != 0 )
+                    {
+                        listener.onMove( xDelta, yDelta, x, y );
+                    }
                 }
             }
         }
-
-        switch (button) {
-            case 0 :
-                buttonType = MouseButtonStateType.MOUSE_BUTTON_NONE;
-                break;
-            case BUTTON_1 :
-                buttonType = MouseButtonStateType.MOUSE_BUTTON_1;
-                break;
-            case BUTTON_2 :
-                buttonType = MouseButtonStateType.MOUSE_BUTTON_2;
-                break;
-            case BUTTON_3 :
-                buttonType = MouseButtonStateType.MOUSE_BUTTON_3;
-                break;
-            case BUTTON_1_2 :
-                buttonType = MouseButtonStateType.MOUSE_BUTTON_1_2;
-                break;
-            case BUTTON_1_3 :
-                buttonType = MouseButtonStateType.MOUSE_BUTTON_1_3;
-                break;
-            case BUTTON_2_3 :
-                buttonType = MouseButtonStateType.MOUSE_BUTTON_2_3;
-                break;
-            case BUTTON_1_2_3 :
-                buttonType = MouseButtonStateType.MOUSE_BUTTON_1_2_3;
-                break;
+        else {
+            // clear events - could use a faster method in lwjgl here...
+            while ( Mouse.next() ) {
+                //nothing
+            }
         }
-
     }
 
 
@@ -255,30 +234,6 @@ public class LWJGLMouseInput implements MouseInput {
      */
     public boolean isCursorVisible() {
         return Mouse.getNativeCursor() != null;
-    }
-
-    /**
-     *
-     * @return The current state of the mouse's buttons.
-     */
-    public MouseButtonStateType getButtonType() {
-        return buttonType;
-    }
-
-    /**
-     * @return the state of the mouse buttons.
-     * @see com.jme.input.MouseInput#getButtonState()
-     */
-    public MouseButtonStateType getButtonState() {
-        return buttonType;
-    }
-
-    /**
-     * @return the previous state of the mouse buttons.
-     * @see com.jme.input.MouseInput#getPreviousButtonState()
-     */
-    public MouseButtonStateType getPreviousButtonState() {
-        return previousButtonType;
     }
 
 }

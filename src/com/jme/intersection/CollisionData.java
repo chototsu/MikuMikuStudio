@@ -54,18 +54,28 @@ public class CollisionData {
 
     private ArrayList targetTris;
 
+    /**
+     * instantiates a new CollisionData object.
+     *
+     * @param sourceMesh
+     *            the relevant Geometry
+     * @param targetMesh
+     *            the mesh the relevant Geometry collided with.
+     */
     public CollisionData(Geometry sourceMesh, Geometry targetMesh) {
         this(sourceMesh, targetMesh, null, null);
     }
 
     /**
      * instantiates a new CollisionData object.
-     * 
-     * @param mesh
-     *            the mesh the relevant TriMesh collided with.
-     * @param source
+     *
+     * @param sourceMesh
+     *            the relevant Geometry
+     * @param targetMesh
+     *            the mesh the relevant Geometry collided with.
+     * @param sourceTris
      *            the triangles of the relevant TriMesh that made contact.
-     * @param target
+     * @param targetTris
      *            the triangles of the second mesh that made contact.
      */
     public CollisionData(Geometry sourceMesh, Geometry targetMesh,

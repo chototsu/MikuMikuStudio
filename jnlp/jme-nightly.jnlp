@@ -31,16 +31,19 @@
         <j2se version="1.4+"/>
         <nativelib href="lwjgl-windows.jar"/>
         <nativelib href="openal-windows.jar"/>
+        <nativelib href="jinput-windows.jar"/>
     </resources>
     <resources os="Mac OS">
         <j2se version="1.4+"/>
         <nativelib href="lwjgl-mac.jar"/>
         <nativelib href="openal-mac.jar"/>
+        <nativelib href="jinput-mac.jar"/>
     </resources>
     <resources os="Linux" arch="i386">
         <j2se version="1.4+"/>
         <nativelib href="lwjgl-linux.jar"/>
         <nativelib href="openal-linux.jar"/>
+        <nativelib href="jinput-linux.jar"/>
     </resources>
 
     <component-desc/>

@@ -37,6 +37,7 @@ import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.RelativeMouse;
+import com.jme.input.MouseInput;
 import com.jme.input.action.KeyBackwardAction;
 import com.jme.input.action.KeyForwardAction;
 import com.jme.input.action.KeyLookDownAction;
@@ -72,9 +73,8 @@ public class IngameHandler extends InputHandler {
 
     private void setKeyBindings(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
-        InputSystem.createInputSystem(api);
 
-        keyboard.setKeyInput(InputSystem.getKeyInput());
+        keyboard.setKeyInput(KeyInput.get());
         keyboard.set("forward", KeyInput.KEY_W);
         keyboard.set("backward", KeyInput.KEY_S);
         keyboard.set("strafeLeft", KeyInput.KEY_A);
@@ -91,7 +91,7 @@ public class IngameHandler extends InputHandler {
 
     private void setMouse(Camera cam) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
-        mouse.setMouseInput(InputSystem.getMouseInput());
+        mouse.setMouseInput( MouseInput.get());
         setMouse(mouse);
 
         MouseLook mouseLook = new MouseLook(mouse, cam, 1.0f);

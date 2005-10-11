@@ -47,7 +47,7 @@ package com.jme.input;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.16 2005-09-15 17:13:06 renanse Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.17 2005-10-11 10:41:45 irrisor Exp $
  */
 public class AbsoluteMouse extends Mouse {
 
@@ -92,7 +92,7 @@ public class AbsoluteMouse extends Mouse {
      * @see com.jme.input.Mouse#update(boolean)
      */
     public void update(boolean updateState) {
-        if (updateState) mouse.updateState();
+        if (updateState) mouse.update();
 
         localTranslation.x += mouse.getXDelta() * _speed;
         localTranslation.y += mouse.getYDelta() * _speed;

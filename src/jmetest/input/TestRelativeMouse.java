@@ -36,6 +36,7 @@ import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.InputSystem;
 import com.jme.input.RelativeMouse;
+import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;
@@ -118,7 +119,6 @@ public class TestRelativeMouse extends BaseGame {
             e.printStackTrace();
             System.exit(1);
         }
-        InputSystem.createInputSystem(properties.getRenderer());
         ColorRGBA blueColor = new ColorRGBA();
         blueColor.r = 0;
         blueColor.g = 0;
@@ -142,7 +142,7 @@ public class TestRelativeMouse extends BaseGame {
 
         mouse = new RelativeMouse("Mouse Input");
 
-        mouse.setMouseInput(InputSystem.getMouseInput());
+        mouse.setMouseInput( MouseInput.get());
 
         text = new Text("Text Input", "Testing Mouse");
         text.setLocalTranslation(new Vector3f(1, 60, 0));

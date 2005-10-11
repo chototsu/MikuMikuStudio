@@ -40,6 +40,8 @@ import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
+import com.jme.input.MouseInput;
+import com.jme.input.joystick.JoystickInput;
 import com.jme.light.PointLight;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -64,7 +66,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.43 2005-10-03 18:38:38 renanse Exp $
+ * @version $Id: SimpleGame.java,v 1.44 2005-10-11 10:41:41 irrisor Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 
@@ -410,9 +412,8 @@ public abstract class SimpleGame extends BaseGame {
   protected void cleanup() {
     LoggingSystem.getLogger().log(Level.INFO, "Cleaning up resources.");
 
-    if (InputSystem.getKeyInput() != null)
-      InputSystem.getKeyInput().destroy();
-    if (InputSystem.getMouseInput() != null)
-      InputSystem.getMouseInput().destroy();
+    KeyInput.destroyIfInitalized();
+    MouseInput.destroyIfInitalized();
+    JoystickInput.destroyIfInitalized();
   }
 }

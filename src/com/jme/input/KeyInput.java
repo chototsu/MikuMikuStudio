@@ -32,15 +32,19 @@
 
 package com.jme.input;
 
+import java.util.ArrayList;
+
+import com.jme.input.lwjgl.LWJGLKeyInput;
+
 /**
  * <code>KeyInput</code> provides an interface for dealing with keyboard input.
  * There are public contstants for each key of the keyboard, which correspond
  * to the LWJGL key bindings. This may require conversion by other subclasses
  * for specific APIs.
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.9 2005-09-15 17:13:07 renanse Exp $
+ * @version $Id: KeyInput.java,v 1.10 2005-10-11 10:41:46 irrisor Exp $
  */
-public interface KeyInput {
+public abstract class KeyInput {
 
     /**
      * escape key.
@@ -541,20 +545,76 @@ public interface KeyInput {
      */
     public static final int KEY_SLEEP = 0xDF;
 
+
+    private static KeyInput instance;
+    /**
+     * list of event listeners.
+     */
+    protected ArrayList listeners;
+
+    /**
+     * @return the input instance, implementation is determined by querying {@link #getProvider()}
+     */
+    public static KeyInput get()
+    {
+        if ( instance == null )
+        {
+            if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( getProvider() ) )
+            {
+                instance = new LWJGLKeyInput(){};
+            }
+            else
+            {
+                throw new IllegalArgumentException( "Unsupported provider: " + getProvider() );
+            }
+        }
+        return instance;
+    }
+
+
+    /**
+     * Query current provider for input.
+     *
+     * @return currently selected provider
+     */
+    public static String getProvider() {
+        return provider;
+    }
+
+    /**
+     * store the value for field provider
+     */
+    private static String provider = InputSystem.INPUT_SYSTEM_LWJGL;
+
+    /**
+     * Change the provider used for keyboard input. Default is {@link InputSystem.INPUT_SYSTEM_LWJGL}.
+     *
+     * @param value new provider
+     * @throws IllegalStateException if called after first call of {@link #get()}. Note that get is called when
+     * creating the DisplaySystem.
+     */
+    public static void setProvider( final String value ) {
+        if ( instance != null )
+        {
+            throw new IllegalStateException( "Provider may only be changed before input is created!" );
+        }
+        provider = value;
+    }
+
     /**
      * <code>isKeyDown</code> returns true if the given key is pressed. False
      * otherwise.
      * @param key the keycode to check for.
      * @return true if the key is pressed, false otherwise.
      */
-    public boolean isKeyDown(int key);
+    public abstract boolean isKeyDown(int key);
 
     /**
      *
      * <code>isCreated</code> returns true if the key class is initialized.
      * @return true if it is initialized and ready for use, false otherwise.
      */
-    public boolean isCreated();
+    public abstract boolean isCreated();
 
     /**
      *
@@ -563,53 +623,95 @@ public interface KeyInput {
      * @param key the key code to check.
      * @return the string representation of a key code.
      */
-    public String getKeyName(int key);
+    public abstract String getKeyName(int key);
 
     /**
      * The reverse of getKeyName, returns the value of the key given the name
      * @param name
-     * @return
+     * @return the value of the key
      */
-    public int getKeyIndex( String name);
+    public abstract int getKeyIndex( String name);
 
     /**
-     *
-     * <code>update</code> updates the current state of the keyboard, holding
+     * Updates the current state of the keyboard, holding
      * information about what keys are pressed.
-     *
+     * Invokes event listeners synchronously.
+     * @see
      */
-    public void update();
+    public abstract void update();
 
     /**
      *
      * <code>destroy</code> frees the keyboard for use by other applications.
-     *
+     * Destroy is protected now - please is {@link #destroyIfInitalized()}.
      */
-    public void destroy();
+    protected abstract void destroy();
 
     /**
      * iterates to the next event when using event
      * based keyboard
      * @return true if there are more events in the list
      */
-    public boolean next();
+    public abstract boolean next();
 
     /**
      * The key pressed state of the current key event
      * @return returns true if the key is down
      */
-    public boolean state();
+    public abstract boolean state();
 
     /**
      * the key value of the current event
      * @return gives the value of the key for the event
      */
-    public int key();
+    public abstract int key();
 
     /**
      * the char value of the current event
      * @return gives the char value of the key for the event
      */
-    public char keyChar();
+    public abstract char keyChar();
 
+    /**
+     * Subscribe a listener to receive mouse events. Enable event generation.
+     * @param listener to be subscribed
+     */
+    public void addListener( KeyInputListener listener ) {
+        if ( listeners == null ) {
+            listeners = new ArrayList();
+        }
+
+        listeners.add( listener );
+    }
+
+    /**
+     * Unsubscribe a listener. Disable event generation if no more listeners.
+     * @see #addListener(com.jme.input.KeyInputListener)
+     * @param listener to be unsuscribed
+     */
+    public void removeListener( KeyInputListener listener ) {
+        if ( listeners != null ) {
+            listeners.remove( listener );
+        }
+    }
+
+    /**
+     * Remove all listeners and disable event generation.
+     */
+    public void removeListeners() {
+        if ( listeners != null ) {
+            listeners.clear();
+        }
+    }
+
+    /**
+     * Destroy the input if it was initialized.
+     */
+    public static void destroyIfInitalized() {
+        if ( instance != null )
+        {
+            instance.destroy();
+            instance = null;
+        }
+    }
 }

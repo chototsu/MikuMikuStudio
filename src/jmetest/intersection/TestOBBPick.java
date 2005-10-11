@@ -118,7 +118,7 @@ public class TestOBBPick extends SimpleGame {
 		am.setRenderState(as);
 
 		// Get the mouse input device and assign it to the AbsoluteMouse
-		am.setMouseInput(InputSystem.getMouseInput());
+		am.setMouseInput(MouseInput.get());
 		// Move the mouse to the middle of the screen to start with
 		am.setLocalTranslation(new Vector3f(display.getWidth() / 2, display
 				.getHeight() / 2, 0));

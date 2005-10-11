@@ -37,6 +37,8 @@ import com.jme.bounding.BoundingSphere;
 import com.jme.input.InputHandler;
 import com.jme.input.InputSystem;
 import com.jme.input.RelativeMouse;
+import com.jme.input.MouseInputListener;
+import com.jme.input.MouseInput;
 import com.jme.input.action.MouseLook;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -45,9 +47,15 @@ import com.jme.scene.Line;
 import com.jme.scene.Node;
 import com.jme.scene.Point;
 import com.jme.scene.TriMesh;
+import com.jme.scene.Text;
+import com.jme.scene.state.TextureState;
+import com.jme.scene.state.AlphaState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.geom.BufferUtils;
+import com.jme.util.TextureManager;
+import com.jme.image.Texture;
+import org.lwjgl.input.Mouse;
 
 /**
  * <code>TestBackwardAction</code>
@@ -62,10 +70,10 @@ public class TestMouseLook extends BaseGame {
     private TriMesh t;
     private TriMesh t2;
     private InputHandler input;
+    private Text text;
 
     /**
-     * Nothing to update.
-     * @see com.jme.app.SimpleGame#update()
+     * @see com.jme.app.SimpleGame#update
      */
     protected void update(float interpolation) {
         input.update(1);
@@ -73,7 +81,7 @@ public class TestMouseLook extends BaseGame {
 
     /**
      * Render the scene
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.SimpleGame#render
      */
     protected void render(float interpolation) {
         display.getRenderer().clearBuffers();
@@ -117,16 +125,13 @@ public class TestMouseLook extends BaseGame {
         display.getRenderer().setCamera(cam);
 
         input = new InputHandler();
-        InputSystem.createInputSystem("LWJGL");
 
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
-        mouse.setMouseInput(InputSystem.getMouseInput());
+        mouse.setMouseInput( MouseInput.get());
         input.setMouse(mouse);
         MouseLook mouseLook = new MouseLook(mouse, cam, 0.1f);
         mouseLook.setLockAxis(up);
         input.addAction(mouseLook);
-
-
     }
 
     /**
@@ -262,8 +267,41 @@ public class TestMouseLook extends BaseGame {
         scene.attachChild(t2);
         cam.update();
 
-        scene.updateGeometricState(0.0f, true);
+        text = new Text("Text Label", "");
+        text.setLocalTranslation(new Vector3f(1, 60, 0));
+        TextureState ts = display.getRenderer().createTextureState();
+        ts.setEnabled(true);
+        ts.setTexture(
+                TextureManager.loadTexture(
+                        TestMouseLook.class.getClassLoader().getResource("jmetest/data/font/font.png"),
+                        Texture.MM_LINEAR,
+                        Texture.FM_LINEAR));
+        text.setRenderState(ts);
+        AlphaState as1 = display.getRenderer().createAlphaState();
+        as1.setBlendEnabled(true);
+        as1.setSrcFunction(AlphaState.SB_SRC_ALPHA);
+        as1.setDstFunction(AlphaState.DB_ONE);
+        as1.setTestEnabled(true);
+        as1.setTestFunction(AlphaState.TF_GREATER);
+        text.setRenderState(as1);
+        scene.attachChild(text);
+        scene.updateRenderState();
 
+        MouseInput.get().addListener( new MouseInputListener() {
+            public void onButton( int button, boolean pressed, int x, int y ) {
+                text.print( "button " + button + " " + (pressed?"pressed":"released") );
+            }
+
+            public void onWheel( int wheelDelta, int x, int y ) {
+                text.print( "wheel scrolled " + wheelDelta );
+            }
+
+            public void onMove( int xDelta, int yDelta, int newX, int newY ) {
+                text.print( "mouse moved by ("+xDelta+";"+yDelta+")");
+            }
+        } );
+
+        scene.updateGeometricState(0.0f, true);
     }
 
     /**

@@ -229,5 +229,8 @@ public class Sample3D extends SoundSpatial{
         return false;
     }
 
-    
+
+    public void setRolloffFactor( float rolloff ) {
+        AL10.alSourcef(sourceNumber, AL10.AL_ROLLOFF_FACTOR, rolloff);
+    }
 }

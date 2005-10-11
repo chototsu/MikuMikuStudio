@@ -56,7 +56,7 @@ import com.jme.system.DisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Jack Lindamood - (Javadoc only)
- * @version $Id: AbstractInputHandler.java,v 1.9 2005-09-15 17:13:06 renanse Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.10 2005-10-11 10:41:45 irrisor Exp $
  */
 public abstract class AbstractInputHandler {
 
@@ -392,11 +392,7 @@ public abstract class AbstractInputHandler {
     protected void setKeyBindings(RendererType rendererType) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
 
-        //Check to see if we already have an input system, we only need one.
-        if (InputSystem.getKeyInput() == null)
-                InputSystem.createInputSystem(rendererType.getName());
-
-        keyboard.setKeyInput(InputSystem.getKeyInput());
+        keyboard.setKeyInput(KeyInput.get());
 
         setKeyBindingManager(keyboard);
     }

@@ -40,7 +40,7 @@ import com.jme.util.lwjgl.LWJGLTimer;
  * created from getTimer("display system")
  * 
  * @author Mark Powell
- * @version $Id: Timer.java,v 1.10 2005-09-15 17:12:57 renanse Exp $
+ * @version $Id: Timer.java,v 1.11 2005-10-11 10:41:51 irrisor Exp $
  */
 public abstract class Timer {
     private static Timer instance;
@@ -101,7 +101,7 @@ public abstract class Timer {
      * @return The high resolution timer.
      */
     public static Timer getTimer(String version) {
-        if (DisplaySystem.DISPLAY_SYSTEM_JWJGL.equalsIgnoreCase(version)) {
+        if (DisplaySystem.DISPLAY_SYSTEM_LWJGL.equalsIgnoreCase(version)) {
             if (instance == null || !(instance instanceof LWJGLTimer)) {
                 instance = new LWJGLTimer();
             }

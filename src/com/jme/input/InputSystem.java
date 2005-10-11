@@ -47,17 +47,14 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.8 2005-10-03 20:25:11 renanse Exp $
+ * @version $Id: InputSystem.java,v 1.9 2005-10-11 10:41:46 irrisor Exp $
  */
 public class InputSystem {
-    // the input devices.
-    private static KeyInput keyInput;
-
-    private static MouseInput mouseInput;
-
-    private static boolean inited = false;
     
     public static final String INPUT_SYSTEM_LWJGL = "LWJGL";
+
+
+    // ************** deprecated old stuff below - could be removed after a while ************** //
 
     /**
      * 
@@ -66,9 +63,14 @@ public class InputSystem {
      * 
      * @param system
      *            the input API to use, e.g. "LWJGL" or "JInput".
+     * @deprecated not needed any more - simply remove calls to this method if LWJGL is used
+     * @see KeyInput#setProvider(String)
+     * @see MouseInput#setProvider(String)
+     * @see com.jme.input.joystick.JoystickInput#setProvider(String)
      */
     public static void createInputSystem(String system) {
-        createInputSystem(system, false);
+        KeyInput.setProvider( system );
+        MouseInput.setProvider( system );
     }
 
     /**
@@ -81,30 +83,25 @@ public class InputSystem {
      * @param forceNew
      *            true if we should force creation of the inputSystem regardless
      *            of whether it was previously inited.
+     * @deprecated not needed any more - omit calls
      */
     public static void createInputSystem(String system, boolean forceNew) {
-        if (inited && !forceNew) {
-            LoggingSystem
-            .getLogger()
-            .log(Level.INFO,
-                    "InputSystem is already created.");
-            return;
+        if ( forceNew )
+        {
+            throw new UnsupportedOperationException( "recreating input system is not supported" );
         }
-            
-        if (INPUT_SYSTEM_LWJGL.equalsIgnoreCase(system)) {
-            keyInput = new LWJGLKeyInput();
-            mouseInput = new LWJGLMouseInput();
-        }
-        inited = true;
+        KeyInput.setProvider( system );
+        MouseInput.setProvider( system );
     }
 
     /**
      * <code>isInited</code> returns true if createInputSystem was previously called.
      * 
-     * @return inited
+     * @return true
+     * @deprecated not needed any more - omit calls
      */
     public static boolean isInited() {
-        return inited;
+        return true;
     }
     
     /**
@@ -112,18 +109,10 @@ public class InputSystem {
      * <code>getKeyInput</code> retrieves the key input device.
      * 
      * @return the key input device.
+     * @deprecated use {@link KeyInput#get()} instead
      */
     public static KeyInput getKeyInput() {
-        if (keyInput == null) {
-            LoggingSystem
-                    .getLogger()
-                    .log(
-                            Level.WARNING,
-                            "KeyInput is null,"
-                                    + " insure that a call to createInputSystem was made before"
-                                    + " getting the devices.");
-        }
-        return keyInput;
+        return KeyInput.get();
     }
 
     /**
@@ -131,18 +120,9 @@ public class InputSystem {
      * <code>getMouseInput</code> retrieves the mouse input device.
      * 
      * @return the mouse input device.
+     * @deprecated use {@link MouseInput#get()} instead
      */
     public static MouseInput getMouseInput() {
-        if (mouseInput == null) {
-            LoggingSystem
-                    .getLogger()
-                    .log(
-                            Level.WARNING,
-                            "MouseInput is null,"
-                                    + " insure that a call to createInputSystem was made before"
-                                    + " getting the devices.");
-        }
-        return mouseInput;
-
+        return MouseInput.get();
     }
 }

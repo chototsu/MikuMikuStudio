@@ -61,7 +61,7 @@ import com.jme.util.LoggingSystem;
  * LWJGL API to access OpenGL for texture processing.
  * 
  * @author Mark Powell
- * @version $Id: LWJGLTextureState.java,v 1.45 2005-09-22 01:57:31 renanse Exp $
+ * @version $Id: LWJGLTextureState.java,v 1.46 2005-10-11 10:41:49 irrisor Exp $
  */
 public class LWJGLTextureState extends TextureState {
 
@@ -123,7 +123,7 @@ public class LWJGLTextureState extends TextureState {
 	 * The number of textures that can be combined is determined during
 	 * construction. This equates the number of texture units supported by the
 	 * graphics card.
-	 *  
+	 *
 	 */
 	public LWJGLTextureState() {
 		super();
@@ -167,13 +167,13 @@ public class LWJGLTextureState extends TextureState {
 	 * subsequent calls. The multitexture extension is used to define the
 	 * multiple texture states, with the number of units being determined at
 	 * construction time.
-	 * 
+	 *
 	 * @see com.jme.scene.state.RenderState#apply()
 	 */
 	public void apply() {
 
 		if (isEnabled()) {
-		    
+
 		    int index;
 			Texture texture;
 			for (int i = 0; i < numTexUnits; i++) {
@@ -193,7 +193,7 @@ public class LWJGLTextureState extends TextureState {
 					continue;
 				} else
 					GL11.glEnable(GL11.GL_TEXTURE_2D);
-				
+
 				GL11.glMatrixMode(GL11.GL_TEXTURE);
 				GL11.glLoadIdentity();
 				if (texture.getTranslation()!=null) {
@@ -204,7 +204,7 @@ public class LWJGLTextureState extends TextureState {
 				if (texture.getScale()!=null)
 				  GL11.glScalef(texture.getScale().x,texture.getScale().y,texture.getScale().z);
 				GL11.glMatrixMode(GL11.GL_MODELVIEW);
-				
+
 
 				//texture not yet loaded.
 				if (texture.getTextureId() == 0) {
@@ -261,14 +261,14 @@ public class LWJGLTextureState extends TextureState {
                             } else if (texture.getMipmap() != Texture.MM_NONE ) {
                                 max = mipSizes.length;
                             }
-                            
+
                             for ( int m = 0; m < max; m++ )
                             {
                                 int width = Math.max( 1, image.getWidth() >> m );
                                 int height = Math.max( 1, image.getHeight() >> m );
-                                
+
                                 data.position( pos );
-                                
+
                                 if ( image.isCompressedType() )
                                 {
                                     ARBTextureCompression.glCompressedTexImage2DARB(
@@ -284,7 +284,7 @@ public class LWJGLTextureState extends TextureState {
                                             height, 0, imageFormats[image.getType()],
                                             GL11.GL_UNSIGNED_BYTE, data);
                                 }
-                                
+
                                 pos += mipSizes[ m ];
                             }
                         }
@@ -341,9 +341,9 @@ public class LWJGLTextureState extends TextureState {
 				if (texture.needsWrapRefresh()) {
 					texture.setNeedsWrapRefresh(false);
 					// set up wrap mode
-					
-					
-					
+
+
+
 					switch (texture.getWrap()) {
 					case Texture.WM_ECLAMP_S_ECLAMP_T:
 						GL11.glTexParameteri(GL11.GL_TEXTURE_2D,
@@ -540,7 +540,7 @@ public class LWJGLTextureState extends TextureState {
 
 	public RenderState extract(Stack stack, Spatial spat) {
 		int mode = spat.getTextureCombineMode();
-        if (mode == REPLACE || (mode != OFF && stack.size() == 1) )
+        if (mode == REPLACE || (mode != OFF && stack.size() == 1) ) //todo: use dummy state if off?
 			return (LWJGLTextureState) stack.peek();
 
 		// accumulate the textures in the stack into a single LightState object
