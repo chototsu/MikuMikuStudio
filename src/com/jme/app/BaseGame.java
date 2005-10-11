@@ -35,6 +35,7 @@ package com.jme.app;
 import java.util.logging.Level;
 
 import com.jme.util.LoggingSystem;
+import com.jme.input.InputSystem;
 
 /**
  * <code>BaseGame</code> provides the simplest possible implementation
@@ -44,7 +45,7 @@ import com.jme.util.LoggingSystem;
  * in almost all cases.
  *
  * @author Mark Powell, Eric Woroshow
- * @version $Id: BaseGame.java,v 1.7 2005-09-15 17:14:25 renanse Exp $
+ * @version $Id: BaseGame.java,v 1.8 2005-10-11 20:06:50 irrisor Exp $
  */
 public abstract class BaseGame extends AbstractGame {
 
@@ -65,6 +66,10 @@ public abstract class BaseGame extends AbstractGame {
 
       //main loop
       while (!finished && !display.isClosing()) {
+        //handle input events prior to updating the scene
+        // - some applications may want to put this into update of the game state
+        InputSystem.update();
+
         //update game state, do not use interpolation parameter
         update( -1.0f);
 
@@ -73,7 +78,7 @@ public abstract class BaseGame extends AbstractGame {
 
         //swap buffers
         display.getRenderer().displayBackBuffer();
-        
+
         Thread.yield();
       }
     }
@@ -85,7 +90,7 @@ public abstract class BaseGame extends AbstractGame {
     LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
 
     if (display != null)
-    		display.reset();
+            display.reset();
     quit();
   }
 
@@ -94,8 +99,8 @@ public abstract class BaseGame extends AbstractGame {
    * @see AbstractGame#quit()
    */
   protected void quit() {
-  	if (display != null)
-  		display.close();
+      if (display != null)
+          display.close();
     System.exit(0);
   }
 

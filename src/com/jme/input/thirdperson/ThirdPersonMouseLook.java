@@ -38,6 +38,7 @@ import com.jme.input.ChaseCamera;
 import com.jme.input.InputHandler;
 import com.jme.input.Mouse;
 import com.jme.input.RelativeMouse;
+import com.jme.input.MouseInput;
 import com.jme.input.action.InputActionEvent;
 import com.jme.input.action.MouseInputAction;
 import com.jme.math.FastMath;
@@ -144,7 +145,7 @@ public class ThirdPersonMouseLook implements MouseInputAction {
             rotateUp(amount);
             updated = true;
         }
-        int wdelta = mouse.getMouseInput().getWheelDelta();
+        int wdelta = MouseInput.get().getWheelDelta();
         if (wdelta != 0) {
             float amount = time * -wdelta;
             rollIn(amount);

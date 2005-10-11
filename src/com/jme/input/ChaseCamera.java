@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.8 $
+ * @version $Revision: 1.9 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -139,7 +139,6 @@ public class ChaseCamera extends InputHandler {
      */
     private void setupMouse(String api) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
-        mouse.setMouseInput(MouseInput.get());
         setMouse(mouse);
 
         if (mouseLook != null)

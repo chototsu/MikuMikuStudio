@@ -125,7 +125,6 @@ public class TestMouseLook extends BaseGame {
         input = new InputHandler();
 
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
-        mouse.setMouseInput( MouseInput.get());
         input.setMouse(mouse);
         MouseLook mouseLook = new MouseLook(mouse, cam, 0.1f);
         mouseLook.setLockAxis(up);

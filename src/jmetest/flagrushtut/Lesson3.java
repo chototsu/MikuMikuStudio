@@ -161,8 +161,6 @@ public class Lesson3 extends BaseGame {
 		/** Get a high resolution timer for FPS updates. */
 		timer = Timer.getTimer(properties.getRenderer());
 
-		KeyBindingManager.getKeyBindingManager().setKeyInput(
-				KeyInput.get());
 		display.getRenderer().setCamera(cam);
 
 		KeyBindingManager.getKeyBindingManager().set("exit",

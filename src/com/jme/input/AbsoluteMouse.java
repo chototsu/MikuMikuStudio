@@ -47,7 +47,7 @@ package com.jme.input;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: AbsoluteMouse.java,v 1.17 2005-10-11 10:41:45 irrisor Exp $
+ * @version $Id: AbsoluteMouse.java,v 1.18 2005-10-11 20:06:55 irrisor Exp $
  */
 public class AbsoluteMouse extends Mouse {
 
@@ -75,27 +75,13 @@ public class AbsoluteMouse extends Mouse {
     }
 
     /**
-     * <code>update</code> sets the mouse's current position within the
-     * window.
-     */
-    public void update() {
-        update(true);
-    }
-
-    /**
      * <code>update</code> updates the mouse's information with the last known
      * mouse movement and button presses. If updateState is true, the mouse is
      * polled for new movement and button press information
-     * 
-     * @param updateState
-     *            Mouse information is updated if true
-     * @see com.jme.input.Mouse#update(boolean)
      */
-    public void update(boolean updateState) {
-        if (updateState) mouse.update();
-
-        localTranslation.x += mouse.getXDelta() * _speed;
-        localTranslation.y += mouse.getYDelta() * _speed;
+    public void update() {
+        localTranslation.x += MouseInput.get().getXDelta() * _speed;
+        localTranslation.y += MouseInput.get().getYDelta() * _speed;
 
         if (localTranslation.x + hotSpotOffset.x < 0) {
             localTranslation.x = -hotSpotOffset.x;

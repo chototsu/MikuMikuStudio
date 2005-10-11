@@ -44,18 +44,9 @@ import com.jme.input.MouseInput;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.2 2005-09-15 17:13:55 renanse Exp $
+ * @version $Id: InputActionEvent.java,v 1.3 2005-10-11 20:06:52 irrisor Exp $
  */
 public class InputActionEvent {
-
-    //The key list contains the current state of the keyboard.
-    private KeyInput keys;
-    
-    //The mouse information
-    private MouseInput mouse;
-
-    //the event list contains the names of all actions called for this event.
-    private ArrayList eventList;
 
     //the time of the event.
     private float time;
@@ -66,45 +57,6 @@ public class InputActionEvent {
      *  
      */
     public InputActionEvent() {
-        this(null, null, null, 0);
-    }
-
-    /**
-     * instantiates a new InputActionEvent object. The keys, eventList and time
-     * are set during creation.
-     * 
-     * @param keys
-     *            the key state.
-     * @param eventList
-     *            the list of called actions.
-     * @param time
-     *            the time of the event.
-     */
-    public InputActionEvent(KeyInput keys, MouseInput mouse, ArrayList eventList, float time) {
-        this.keys = keys;
-        this.eventList = eventList;
-        this.time = time;
-    }
-
-    /**
-     * returns the event list. This list contains all actions called for this
-     * event.
-     * 
-     * @return Returns the eventList.
-     */
-    public ArrayList getEventList() {
-        return eventList;
-    }
-
-    /**
-     * sets the event list. This list contains all actions called for this
-     * event.
-     * 
-     * @param eventList
-     *            The eventList to set.
-     */
-    public void setEventList(ArrayList eventList) {
-        this.eventList = eventList;
     }
 
     /**
@@ -124,63 +76,5 @@ public class InputActionEvent {
      */
     public void setTime(float time) {
         this.time = time;
-    }
-
-    /**
-     * returns the list of keys.
-     * 
-     * @return Returns the keys.
-     */
-    public KeyInput getKeys() {
-        return keys;
-    }
-
-    /**
-     * sets the list of keys.
-     * 
-     * @param keys
-     *            The keys to set.
-     */
-    public void setKeys(KeyInput keys) {
-        this.keys = keys;
-    }
-
-    /**
-     * 
-     * <code>isKeyDown</code> determines if a particular key is pressed at the
-     * time of the event. The key is defined as a constant from KeyInput. If the
-     * key is pressed, true is returned else, false is returned.
-     * 
-     * @param key
-     *            the key to check (defined as a constant in KeyInput).
-     * @return true if the supplied key is pressed, false otherwise.
-     */
-    public boolean isKeyDown(int key) {
-        return keys.isKeyDown(key);
-    }
-
-    /**
-     * 
-     * <code>containsEvent</code> determines if a event defined by its name is
-     * currently contained in the list.
-     * 
-     * @param event
-     *            the event to check.
-     * @return true if the event is in the list, false otherwise.
-     */
-    public boolean containsEvent(String event) {
-        return eventList.contains(event);
-    }
-    /**
-     * @return Returns the mouse.
-     */
-    public MouseInput getMouse() {
-        return mouse;
-    }
-    /**
-     * @param mouse The mouse to set.
-     */
-    public void setMouse(MouseInput mouse) {
-        this.mouse = mouse;
     }
 }

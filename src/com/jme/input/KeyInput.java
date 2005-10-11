@@ -40,11 +40,17 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * <code>KeyInput</code> provides an interface for dealing with keyboard input.
  * There are public contstants for each key of the keyboard, which correspond
  * to the LWJGL key bindings. This may require conversion by other subclasses
- * for specific APIs.
+ * for specific APIs. <br>
+ * The status of spcific keys can be queried via the {@link #isKeyDown}
+ * method. For each key that is pressed or released an event is generated which
+ * can be received by a {@link KeyInputListener}, these are subsribed via
+ * {@link #addListener(KeyInputListener)}. Handling of events is done inside the
+ * {@link #update} method.
+ *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.10 2005-10-11 10:41:46 irrisor Exp $
+ * @version $Id: KeyInput.java,v 1.11 2005-10-11 20:06:58 irrisor Exp $
  */
-public abstract class KeyInput {
+public abstract class KeyInput extends Input {
 
     /**
      * escape key.
@@ -646,31 +652,6 @@ public abstract class KeyInput {
      * Destroy is protected now - please is {@link #destroyIfInitalized()}.
      */
     protected abstract void destroy();
-
-    /**
-     * iterates to the next event when using event
-     * based keyboard
-     * @return true if there are more events in the list
-     */
-    public abstract boolean next();
-
-    /**
-     * The key pressed state of the current key event
-     * @return returns true if the key is down
-     */
-    public abstract boolean state();
-
-    /**
-     * the key value of the current event
-     * @return gives the value of the key for the event
-     */
-    public abstract int key();
-
-    /**
-     * the char value of the current event
-     * @return gives the char value of the key for the event
-     */
-    public abstract char keyChar();
 
     /**
      * Subscribe a listener to receive mouse events. Enable event generation.

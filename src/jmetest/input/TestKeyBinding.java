@@ -65,7 +65,6 @@ public class TestKeyBinding extends BaseGame {
     }
 
     protected void update(float interpolation) {
-        key.update();
         if (KeyBindingManager.getKeyBindingManager().isValidCommand("zero")) {
             text.print("You pressed 0.");
         }
@@ -126,7 +125,6 @@ public class TestKeyBinding extends BaseGame {
         cam.setFrame(loc, left, up, dir);
 
         key = KeyInput.get();
-        KeyBindingManager.getKeyBindingManager().setKeyInput(key);
         display.getRenderer().setCamera(cam);
 
         KeyBindingManager.getKeyBindingManager().set("zero", KeyInput.KEY_0);

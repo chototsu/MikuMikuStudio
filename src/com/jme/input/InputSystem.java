@@ -32,6 +32,8 @@
 
 package com.jme.input;
 
+import com.jme.input.joystick.JoystickInput;
+
 
 /**
  * <code>InputSystem</code> creates the required input objects (mouse and
@@ -42,12 +44,25 @@ package com.jme.input;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.10 2005-10-11 17:50:10 renanse Exp $
+ * @version $Id: InputSystem.java,v 1.11 2005-10-11 20:06:57 irrisor Exp $
  */
 public class InputSystem {
-    
+
     public static final String INPUT_SYSTEM_LWJGL = "LWJGL";
 
+    /**
+     * Update the core input system - mouse, keyboard and joystick.
+     * Thus all events are handled within this method call.
+     * @see KeyInput#update()
+     * @see MouseInput#update()
+     * @see JoystickInput#update()
+     */
+    public static void update()
+    {
+        MouseInput.get().update();
+        KeyInput.get().update();
+        JoystickInput.get().update();
+    }
 
     // ************** deprecated old stuff below - could be removed after a while ************** //
 
@@ -61,11 +76,12 @@ public class InputSystem {
      * @deprecated not needed any more - simply remove calls to this method if LWJGL is used
      * @see KeyInput#setProvider(String)
      * @see MouseInput#setProvider(String)
-     * @see com.jme.input.joystick.JoystickInput#setProvider(String)
+     * @see JoystickInput#setProvider(String)
      */
     public static void createInputSystem(String system) {
         KeyInput.setProvider( system );
         MouseInput.setProvider( system );
+        JoystickInput.setProvider( system );
     }
 
     /**
@@ -87,6 +103,7 @@ public class InputSystem {
         }
         KeyInput.setProvider( system );
         MouseInput.setProvider( system );
+        JoystickInput.setProvider( system );
     }
 
     /**
@@ -98,7 +115,7 @@ public class InputSystem {
     public static boolean isInited() {
         return true;
     }
-    
+
     /**
      * 
      * <code>getKeyInput</code> retrieves the key input device.

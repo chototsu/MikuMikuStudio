@@ -76,7 +76,6 @@ public class TestAbsoluteMouse extends SimpleGame {
 							Texture.MM_LINEAR, Texture.FM_LINEAR)
 					);
         mouse.setRenderState(cursor);
-        mouse.setMouseInput( MouseInput.get());
         input.setMouse(mouse);
 
         text = new Text("Text Label","Testing Mouse");

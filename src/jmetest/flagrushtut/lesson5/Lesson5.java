@@ -117,7 +117,7 @@ public class Lesson5 extends BaseGame {
      * to get the framerate. Things are now starting to happen, so we will 
      * update 
      * 
-     * @see com.jme.app.SimpleGame#update()
+     * @see com.jme.app.SimpleGame#update
      */
     protected void update(float interpolation) {
         // update the time to get the framerate
@@ -164,7 +164,7 @@ public class Lesson5 extends BaseGame {
     /**
      * draws the scene graph
      * 
-     * @see com.jme.app.SimpleGame#render()
+     * @see com.jme.app.SimpleGame#render
      */
     protected void render(float interpolation) {
         // Clear the screen
@@ -208,8 +208,6 @@ public class Lesson5 extends BaseGame {
         /** Get a high resolution timer for FPS updates. */
         timer = Timer.getTimer(properties.getRenderer());
 
-        KeyBindingManager.getKeyBindingManager().setKeyInput(
-                KeyInput.get());
         display.getRenderer().setCamera(cam);
 
         KeyBindingManager.getKeyBindingManager().set("exit",

@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
+import com.jme.input.InputSystem;
 
 /**
  * <code>FixedFramerateGame</code> attempts to run the game at a fixed frame
@@ -51,7 +52,7 @@ import com.jme.util.Timer;
  * second.
  * 
  * @author Eric Woroshow
- * @version $Id: FixedFramerateGame.java,v 1.8 2005-09-15 17:14:25 renanse Exp $
+ * @version $Id: FixedFramerateGame.java,v 1.9 2005-10-11 20:06:51 irrisor Exp $
  */
 public abstract class FixedFramerateGame extends AbstractGame {
 
@@ -157,6 +158,10 @@ public abstract class FixedFramerateGame extends AbstractGame {
             while (!finished && !display.isClosing()) {
                 startFrame();
 
+                //handle input events prior to updating the scene
+                // - some applications may want to put this into update of the game state
+                InputSystem.update();
+
                 //update game state, do not use interpolation parameter
                 update(-1.0f);
 
@@ -167,7 +172,7 @@ public abstract class FixedFramerateGame extends AbstractGame {
                 display.getRenderer().displayBackBuffer();
 
                 endFrame();
-                
+
                 Thread.yield();
             }
 

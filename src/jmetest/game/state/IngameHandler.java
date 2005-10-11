@@ -73,7 +73,6 @@ public class IngameHandler extends InputHandler {
     private void setKeyBindings(String api) {
         KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
 
-        keyboard.setKeyInput(KeyInput.get());
         keyboard.set("forward", KeyInput.KEY_W);
         keyboard.set("backward", KeyInput.KEY_S);
         keyboard.set("strafeLeft", KeyInput.KEY_A);
@@ -84,13 +83,10 @@ public class IngameHandler extends InputHandler {
         keyboard.set("turnLeft", KeyInput.KEY_LEFT);
         keyboard.set("screenshot", KeyInput.KEY_F12);
         keyboard.set("exit", KeyInput.KEY_ESCAPE);
-
-        setKeyBindingManager(keyboard);
     }
 
     private void setMouse(Camera cam) {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
-        mouse.setMouseInput( MouseInput.get());
         setMouse(mouse);
 
         MouseLook mouseLook = new MouseLook(mouse, cam, 1.0f);

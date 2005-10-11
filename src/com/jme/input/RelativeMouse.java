@@ -45,7 +45,7 @@ package com.jme.input;
  * typically useful for a first person mouse look or similar.
  * 
  * @author Mark Powell
- * @version $Id: RelativeMouse.java,v 1.15 2005-10-11 10:41:47 irrisor Exp $
+ * @version $Id: RelativeMouse.java,v 1.16 2005-10-11 20:06:59 irrisor Exp $
  */
 public class RelativeMouse extends Mouse {
 
@@ -63,27 +63,14 @@ public class RelativeMouse extends Mouse {
     }
 
     /**
-     * <code>update</code> sets the translation vector to the change from the
-     * previous polling.
-     */
-    public void update() {
-        update(true);
-    }
-
-    /**
      * <code>update</code> updates the mouse's position by simply adding to
      * the current location the mouse's X and Y movement delta. Unlike
      * AbsoluteMouse, no checks are made for moving outside a paticular bounds
      * because this class is used only for frame to frame relative movements.
-     * 
-     * @param updateState
-     * @see com.jme.input.Mouse#update(boolean)
      */
-    public void update(boolean updateState) {
-        if (updateState) mouse.update();
-
-        localTranslation.x = mouse.getXDelta() * _speed;
-        localTranslation.y = mouse.getYDelta() * _speed;
+    public void update() {
+        localTranslation.x = MouseInput.get().getXDelta() * _speed;
+        localTranslation.y = MouseInput.get().getYDelta() * _speed;
         worldTranslation.set(localTranslation);
         hotSpotLocation.set(localTranslation).addLocal(hotSpotOffset);
     }

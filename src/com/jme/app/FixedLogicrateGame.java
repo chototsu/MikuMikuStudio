@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
+import com.jme.input.InputSystem;
 
 /**
  * <code>FixedLogicrateGame</code> implements a main-loop designed to acheive
@@ -119,6 +120,10 @@ public abstract class FixedLogicrateGame extends AbstractGame {
                 loops = 0;
 
                 while ((time1 - time0) > tickTime && loops < MAX_LOOPS) {
+                    //handle input events prior to updating the scene
+                    // - some applications may want to put this into update of the game state
+                    InputSystem.update();
+
                     //update game state, do not use interpolation parameter
                     update(-1.0f);
                     time0 += tickTime;
@@ -136,7 +141,7 @@ public abstract class FixedLogicrateGame extends AbstractGame {
 
                 //swap buffers
                 display.getRenderer().displayBackBuffer();
-                
+
                 Thread.yield();
             }
         } catch (Throwable t) {

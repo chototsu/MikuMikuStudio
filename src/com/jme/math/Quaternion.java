@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.38 2005-10-11 17:07:50 renanse Exp $
+ * @version $Id: Quaternion.java,v 1.39 2005-10-11 20:07:00 irrisor Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -62,7 +62,7 @@ public class Quaternion implements Externalizable {
     /**
      * Constructor instantiates a new <code>Quaternion</code> object
      * initializing all values to zero, except w which is initialized to 1.
-     * 
+     *
      */
     public Quaternion() {
         x = 0;
@@ -74,7 +74,7 @@ public class Quaternion implements Externalizable {
     /**
      * Constructor instantiates a new <code>Quaternion</code> object from the
      * given list of parameters.
-     * 
+     *
      * @param x
      *            the x value of the quaternion.
      * @param y
@@ -94,7 +94,7 @@ public class Quaternion implements Externalizable {
     /**
      * sets the data in a <code>Quaternion</code> object from the given list
      * of parameters.
-     * 
+     *
      * @param x
      *            the x value of the quaternion.
      * @param y
@@ -115,7 +115,7 @@ public class Quaternion implements Externalizable {
      * Sets the data in this <code>Quaternion</code> object to be equal to the
      * passed <code>Quaternion</code> object. The values are copied producing
      * a new object.
-     * 
+     *
      * @param q
      *            The Quaternion to copy values from.
      * @return this for chaining
@@ -131,7 +131,7 @@ public class Quaternion implements Externalizable {
     /**
      * Constructor instantiates a new <code>Quaternion</code> object from a
      * collection of rotation angles.
-     * 
+     *
      * @param angles
      *            the angles of rotation (x, y, z) that will define the
      *            <code>Quaternion</code>.
@@ -143,7 +143,7 @@ public class Quaternion implements Externalizable {
     /**
      * Constructor instantiates a new <code>Quaternion</code> object from an
      * interpolation between two other quaternions.
-     * 
+     *
      * @param q1
      *            the first quaternion.
      * @param q2
@@ -158,7 +158,7 @@ public class Quaternion implements Externalizable {
     /**
      * Constructor instantiates a new <code>Quaternion</code> object from an
      * existing quaternion, creating a copy.
-     * 
+     *
      * @param q
      *            the quaternion to copy.
      */
@@ -172,7 +172,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>fromAngles</code> builds a quaternion from the Euler rotation
      * angles (x,y,z).
-     * 
+     *
      * @param angles
      *            the Euler angles of rotation.
      */
@@ -203,10 +203,10 @@ public class Quaternion implements Externalizable {
     }
 
     /**
-     * 
+     *
      * <code>fromRotationMatrix</code> generates a quaternion from a supplied
      * matrix. This matrix is assumed to be a rotational matrix.
-     * 
+     *
      * @param matrix
      *            the matrix that defines the rotation.
      */
@@ -245,10 +245,10 @@ public class Quaternion implements Externalizable {
     }
 
     /**
-     * 
+     *
      * <code>toRotationMatrix</code> converts this quaternion to a rotational
      * matrix.
-     * 
+     *
      * @return the rotation matrix representation of this quaternion.
      */
     public Matrix3f toRotationMatrix() {
@@ -257,10 +257,10 @@ public class Quaternion implements Externalizable {
     }
 
     /**
-     * 
+     *
      * <code>toRotationMatrix</code> converts this quaternion to a rotational
      * matrix. The result is stored in result.
-     * 
+     *
      * @param result
      *            The Matrix3f to store the result in.
      * @return the rotation matrix representation of this quaternion.
@@ -293,11 +293,11 @@ public class Quaternion implements Externalizable {
     }
 
     /**
-     * 
+     *
      * <code>toRotationMatrix</code> converts this quaternion to a rotational
      * matrix. The result is stored in result. The outer col, row is 0, with 3,3 =
      * 1
-     * 
+     *
      * @param result
      *            The Matrix4f to store the result in.
      * @return the rotation matrix representation of this quaternion.
@@ -336,7 +336,7 @@ public class Quaternion implements Externalizable {
      * <code>getRotationColumn</code> returns one of three columns specified
      * by the parameter. This column is returned as a <code>Vector3f</code>
      * object.
-     * 
+     *
      * @param i
      *            the column to retrieve. Must be between 0 and 2.
      * @return the column specified by the index.
@@ -349,7 +349,7 @@ public class Quaternion implements Externalizable {
      * <code>getRotationColumn</code> returns one of three columns specified
      * by the parameter. This column is returned as a <code>Vector3f</code>
      * object.
-     * 
+     *
      * @param i
      *            the column to retrieve. Must be between 0 and 2.
      * @param store
@@ -401,7 +401,7 @@ public class Quaternion implements Externalizable {
      * <code>fromAngleAxis</code> sets this quaternion to the values specified
      * by an angle and an axis of rotation. This method creates an object, so
      * use fromAngleNormalAxis if your axis is already normalized.
-     * 
+     *
      * @param angle
      *            the angle to rotate (in radians).
      * @param axis
@@ -417,7 +417,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>fromAngleNormalAxis</code> sets this quaternion to the values
      * specified by an angle and a normalized axis of rotation.
-     * 
+     *
      * @param angle
      *            the angle to rotate (in radians).
      * @param axis
@@ -438,7 +438,7 @@ public class Quaternion implements Externalizable {
      * represented by the current quaternion. The values are stored as
      * following: The axis is provided as a parameter and built by the method,
      * the angle is returned as a float.
-     * 
+     *
      * @param axis
      *            the object to contain the axis.
      * @return the angle of rotation in degrees.
@@ -466,7 +466,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>slerp</code> sets this quaternion's value as an interpolation
      * between two other quaternions.
-     * 
+     *
      * @param q1
      *            the first quaternion.
      * @param q2
@@ -525,7 +525,7 @@ public class Quaternion implements Externalizable {
     /**
      * Sets the values of this quaternion to the slerp from itself to q2 by
      * changeAmnt
-     * 
+     *
      * @param q2
      *            Final interpolation value
      * @param changeAmnt
@@ -579,7 +579,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>add</code> adds the values of this quaternion to those of the
      * parameter quaternion. The result is returned as a new quaternion.
-     * 
+     *
      * @param q
      *            the quaternion to add to this.
      * @return the new quaternion.
@@ -591,7 +591,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>add</code> adds the values of this quaternion to those of the
      * parameter quaternion. The result is stored in this Quaternion..
-     * 
+     *
      * @param q
      *            the quaternion to add to this.
      * @return This Quaternion after addition.
@@ -608,7 +608,7 @@ public class Quaternion implements Externalizable {
      * <code>subtract</code> subtracts the values of the parameter quaternion
      * from those of this quaternion. The result is returned as a new
      * quaternion.
-     * 
+     *
      * @param q
      *            the quaternion to subtract from this.
      * @return the new quaternion.
@@ -621,7 +621,7 @@ public class Quaternion implements Externalizable {
      * <code>mult</code> multiplies this quaternion by a parameter quaternion.
      * The result is returned as a new quaternion. It should be noted that
      * quaternion multiplication is not cummulative so q * p != p * q.
-     * 
+     *
      * @param q
      *            the quaternion to multiply this quaternion by.
      * @return the new quaternion.
@@ -634,9 +634,9 @@ public class Quaternion implements Externalizable {
      * <code>mult</code> multiplies this quaternion by a parameter quaternion.
      * The result is returned as a new quaternion. It should be noted that
      * quaternion multiplication is not cummulative so q * p != p * q.
-     * 
+     *
      * It IS safe for q and res to be the same object.
-     * 
+     *
      * @param q
      *            the quaternion to multiply this quaternion by.
      * @param res
@@ -657,7 +657,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>apply</code> multiplies this quaternion by a parameter matrix
      * internally.
-     * 
+     *
      * @param matrix
      *            the matrix to apply to this quaternion.
      */
@@ -673,13 +673,13 @@ public class Quaternion implements Externalizable {
     }
 
     /**
-     * 
+     *
      * <code>fromAxes</code> creates a <code>Quaternion</code> that
      * represents the coordinate system defined by three axes. These axes are
      * assumed to be orthogonal and no error checking is applied. Thus, the user
      * must insure that the three axes being provided indeed represents a proper
      * right handed coordinate system.
-     * 
+     *
      * @param axis
      *            the array containing the three vectors representing the
      *            coordinate system.
@@ -706,11 +706,11 @@ public class Quaternion implements Externalizable {
     }
 
     /**
-     * 
+     *
      * <code>toAxes</code> builds an array of three vectors. Each vector
      * corresponds to an axis of the coordinate system defined by the quaternion
      * rotation.
-     * 
+     *
      * @param axis
      *            the array of vectors to be filled.
      */
@@ -724,7 +724,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter vector. The
      * result is returned as a new vector.
-     * 
+     *
      * @param v
      *            the vector to multiply this quaternion by.
      * @return the new vector.
@@ -736,7 +736,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter vector. The
      * result is stored in the supplied vector
-     * 
+     *
      * @param v
      *            the vector to multiply this quaternion by.
      * @return v
@@ -759,7 +759,7 @@ public class Quaternion implements Externalizable {
      * Multiplies this Quaternion by the supplied quaternion. The result is
      * stored in this Quaternion, which is also returned for chaining. Similar
      * to this *= q.
-     * 
+     *
      * @param q
      *            The Quaternion to multiply this one by.
      * @return This Quaternion, after multiplication.
@@ -779,7 +779,7 @@ public class Quaternion implements Externalizable {
      * Multiplies this Quaternion by the supplied quaternion. The result is
      * stored in this Quaternion, which is also returned for chaining. Similar
      * to this *= q.
-     * 
+     *
      * @param qx -
      *            quat x value
      * @param qy -
@@ -788,7 +788,7 @@ public class Quaternion implements Externalizable {
      *            quat z value
      * @param qw -
      *            quat w value
-     * 
+     *
      * @return This Quaternion, after multiplication.
      */
     public Quaternion multLocal(float qx, float qy, float qz, float qw) {
@@ -805,7 +805,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter vector. The
      * result is returned as a new vector.
-     * 
+     *
      * @param v
      *            the vector to multiply this quaternion by.
      * @param store
@@ -834,7 +834,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter scalar. The
      * result is returned as a new quaternion.
-     * 
+     *
      * @param scalar
      *            the quaternion to multiply this quaternion by.
      * @return the new quaternion.
@@ -846,7 +846,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>mult</code> multiplies this quaternion by a parameter scalar. The
      * result is stored locally.
-     * 
+     *
      * @param scalar
      *            the quaternion to multiply this quaternion by.
      * @return this.
@@ -862,7 +862,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>dot</code> calculates and returns the dot product of this
      * quaternion with that of the parameter quaternion.
-     * 
+     *
      * @param q
      *            the quaternion to calculate the dot product of.
      * @return the dot product of this and the parameter quaternion.
@@ -874,7 +874,7 @@ public class Quaternion implements Externalizable {
     /**
      * <code>norm</code> returns the norm of this quaternion. This is the dot
      * product of this quaternion with itself.
-     * 
+     *
      * @return the norm of the quaternion.
      */
     public float norm() {
@@ -896,7 +896,7 @@ public class Quaternion implements Externalizable {
      * <code>inverse</code> returns the inverse of this quaternion as a new
      * quaternion. If this quaternion does not have an inverse (if its normal is
      * 0 or less), then null is returned.
-     * 
+     *
      * @return the inverse of this quaternion or null if the inverse does not
      *         exist.
      */
@@ -916,7 +916,7 @@ public class Quaternion implements Externalizable {
      * <code>inverse</code> calculates the inverse of this quaternion and
      * returns this quaternion after it is calculated. If this quaternion does
      * not have an inverse (if it's norma is 0 or less), nothing happens
-     * 
+     *
      * @return the inverse of this quaternion
      */
     public Quaternion inverseLocal() {
@@ -933,7 +933,7 @@ public class Quaternion implements Externalizable {
 
     /**
      * <code>negate</code> inverts the values of the quaternion.
-     * 
+     *
      */
     public void negate() {
         x *= -1;
@@ -943,12 +943,12 @@ public class Quaternion implements Externalizable {
     }
 
     /**
-     * 
+     *
      * <code>toString</code> creates the string representation of this
      * <code>Quaternion</code>. The values of the quaternion are displace (x,
      * y, z, w), in the following manner: <br>
      * com.jme.math.Quaternion: [x=1" y=2 z=3 w=1]
-     * 
+     *
      * @return the string representation of this object.
      * @see java.lang.Object#toString()
      */
@@ -960,13 +960,13 @@ public class Quaternion implements Externalizable {
     /**
      * <code>equals</code> determines if two quaternions are logically equal,
      * that is, if the values of (x, y, z, w) are the same for both quaternions.
-     * 
+     *
      * @param o
      *            the object to compare for equality
      * @return true if they are equal, false otherwise.
      */
     public boolean equals(Object o) {
-        if (!(o instanceof Quaternion) || o == null) {
+        if (!(o instanceof Quaternion) ) {
             return false;
         }
 

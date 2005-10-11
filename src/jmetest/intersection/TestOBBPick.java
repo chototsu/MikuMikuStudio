@@ -116,8 +116,6 @@ public class TestOBBPick extends SimpleGame {
 		as.setTestFunction(AlphaState.TF_GREATER);
 		am.setRenderState(as);
 
-		// Get the mouse input device and assign it to the AbsoluteMouse
-		am.setMouseInput(MouseInput.get());
 		// Move the mouse to the middle of the screen to start with
 		am.setLocalTranslation(new Vector3f(display.getWidth() / 2, display
 				.getHeight() / 2, 0));
@@ -199,10 +197,8 @@ public class TestOBBPick extends SimpleGame {
 	// This is called every frame. Do changing of values here.
 	protected void simpleUpdate() {
 
-		// Get the mouse input device from the jME mouse
-		MouseInput thisMouse = am.getMouseInput();
 		// Is button 0 down? Button 0 is left click
-		if (thisMouse.isButtonDown(0)) {
+		if (MouseInput.get().isButtonDown(0)) {
 			Vector2f screenPos = new Vector2f();
 			// Get the position that the mouse is pointing to
 			screenPos.set(am.getHotSpotPosition().x, am.getHotSpotPosition().y);

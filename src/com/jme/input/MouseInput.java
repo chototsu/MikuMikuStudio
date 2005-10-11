@@ -40,10 +40,17 @@ import com.jme.input.lwjgl.LWJGLMouseInput;
 /**
  * <code>MouseInput</code> defines an interface to communicate with the mouse
  * input device.
+ * The status of spcific buttons can be queried via the {@link #isButtonDown}
+ * method. Position data can be queried by various get methods.
+ * For each button that is pressed or released as well as for movement of
+ * mouse or wheel an event is generated which
+ * can be received by a {@link MouseInputListener}, these are subsribed via
+ * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
+ * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.8 2005-10-11 10:41:46 irrisor Exp $
+ * @version $Id: MouseInput.java,v 1.9 2005-10-11 20:06:58 irrisor Exp $
  */
-public abstract class MouseInput {
+public abstract class MouseInput extends Input {
 
     private static MouseInput instance;
     /**
@@ -181,6 +188,7 @@ public abstract class MouseInput {
      */
     public abstract void update();
 
+    //todo:
     /**
      * <code>setCursorVisible</code> sets the visiblity of the hardware cursor.
      * @param v true turns the cursor on false turns it off

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import com.jme.input.joystick.lwjgl.LWJGLJoystickInput;
 import com.jme.input.InputSystem;
+import com.jme.input.Input;
 
 /**
  * Manager for attached Joysticks. Singleton - use the {@link #get()} method.
@@ -12,7 +13,7 @@ import com.jme.input.InputSystem;
  *
  * @author Matthew D. Hicks, Irrisor
  */
-public abstract class JoystickInput {
+public abstract class JoystickInput extends Input {
 
     /**
      * Only instance.
@@ -20,7 +21,7 @@ public abstract class JoystickInput {
     private static JoystickInput instance;
 
     /**
-     * Initialize (if needed) and return the JoystickManager.
+     * Initialize (if needed) and return the JoystickInput.
      * Implementation is determined by querying {@link #getProvider()}.
      * @return the only instance of the joystick manager
      */
@@ -126,12 +127,6 @@ public abstract class JoystickInput {
 //            thread.start();
 //        }
 //    }
-
-    /**
-     * Poll data for all joysticks (update their values) and send events to all listeners
-     * (events will not be generated if no listeners were added via {@link #addListener}).
-     */
-    public abstract void update();
 
     /**
      * list of event listeners.

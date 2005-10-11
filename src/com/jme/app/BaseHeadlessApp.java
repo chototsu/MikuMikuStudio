@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 import com.jme.renderer.Renderer;
 import com.jme.util.LoggingSystem;
+import com.jme.input.InputSystem;
 
 /**
  * <code>BaseHeadlessApp</code> provides the simplest possible implementation
@@ -45,7 +46,7 @@ import com.jme.util.LoggingSystem;
  * to add a finer control over the timer.
  *
  * @author Joshua Slack, Mark Powell, Eric Woroshow
- * @version $Id: BaseHeadlessApp.java,v 1.3 2005-09-15 17:14:24 renanse Exp $
+ * @version $Id: BaseHeadlessApp.java,v 1.4 2005-10-11 20:06:50 irrisor Exp $
  */
 public abstract class BaseHeadlessApp extends AbstractGame {
 
@@ -65,13 +66,17 @@ public abstract class BaseHeadlessApp extends AbstractGame {
       initGame();
 
       //main loop
-			Renderer r = display.getRenderer();
+            Renderer r = display.getRenderer();
       while (!finished && !display.isClosing()) {
+        //handle input events prior to updating the scene
+        // - some applications may want to put this into update of the game state
+        InputSystem.update();
+
         //update game state, do not use interpolation parameter
         update( -1.0f);
 
         //render
-	    render( -1.0f);
+        render( -1.0f);
 
         //draw queue contents
         r.displayBackBuffer();
@@ -85,7 +90,7 @@ public abstract class BaseHeadlessApp extends AbstractGame {
     LoggingSystem.getLogger().log(Level.INFO, "Application ending.");
 
     if (display != null)
-    		display.reset();
+            display.reset();
     quit();
   }
 
@@ -94,8 +99,8 @@ public abstract class BaseHeadlessApp extends AbstractGame {
    * @see AbstractGame#quit()
    */
   protected void quit() {
-  	if (display != null)
-  		display.close();
+      if (display != null)
+          display.close();
     System.exit(0);
   }
 

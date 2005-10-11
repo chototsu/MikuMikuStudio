@@ -53,14 +53,9 @@ import com.jme.scene.state.TextureState;
  * 
  * @author Mark Powell
  * @author Gregg Patton
- * @version $Id: Mouse.java,v 1.18 2005-09-20 21:51:37 renanse Exp $
+ * @version $Id: Mouse.java,v 1.19 2005-10-11 20:06:58 irrisor Exp $
  */
 public abstract class Mouse extends Quad {
-
-    /**
-     * the input device.
-     */
-    protected MouseInput mouse;
 
     /**
      * the cursor's texture.
@@ -162,43 +157,10 @@ public abstract class Mouse extends Quad {
 
     /**
      * 
-     * <code>setMouseInput</code> sets the input device for the mouse.
-     * 
-     * @param mouse
-     *            the input device for the mouse.
-     */
-    public void setMouseInput(MouseInput mouse) {
-        this.mouse = mouse;
-    }
-
-    /**
-     * 
-     * <code>getMouseInput</code> retrieves the input device for the mouse.
-     * 
-     * @return the input device for the mouse.
-     */
-    public MouseInput getMouseInput() {
-        return mouse;
-    }
-
-    /**
-     * 
-     * <code>update</code> updates the mouse input object. This is normally a
-     * call to update(true).
-     * 
-     * @see #update(boolean)
-     * 
+     * <code>update</code> updates the geometric mouse object.
+     *
      */
     public abstract void update();
-
-    /**
-     * <code>update</code> updates the mouse input object. This is where the
-     * mouse location and button press states are updated.
-     * 
-     * @param updateState
-     *            indicates if the mouse's state (buttons) should be updated
-     */
-    public abstract void update(boolean updateState);
 
     /**
      * Sets the speed multiplier for updating the cursor position

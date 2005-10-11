@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.10 2005-09-15 17:13:04 renanse Exp $
+ * @version $Id: KeyBindingManager.java,v 1.11 2005-10-11 20:06:57 irrisor Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -59,33 +59,12 @@ public class KeyBindingManager {
 
         private boolean[] restrictKey = new boolean[256];
 
-    //handles determining if a key is pressed or not.
-    private KeyInput keyInput;
-
 	/**
 	 * Private constructor is called by the getInstance method.
 	 * It initializes the keyMap.
 	 */
 	private KeyBindingManager() {
 		keyMap = new HashMap();
-    }
-
-    /**
-     *
-     * <code>setKeyInput</code> sets the class that will determine if a
-     * particular key is pressed or not.
-     * @param keyInput the key input object.
-     */
-    public void setKeyInput(KeyInput keyInput) {
-        this.keyInput = keyInput;
-    }
-
-    /**
-     * Returns the current KeyInput that this manager is using to determine keyboard input.
-     * @return The current KeyInput used by this manager.
-     */
-    public KeyInput getKeyInput() {
-        return keyInput;
     }
 
 	/**
@@ -191,10 +170,6 @@ public class KeyBindingManager {
      * @return true if the command should be executed, false otherwise.
      */
     public boolean isValidCommand(String command, boolean allowRepeats) {
-        if(keyInput == null) {
-            return false;
-        }
-
         ArrayList keyList = (ArrayList)keyMap.get(command);
         if(null == keyList) {
             return false;
@@ -209,7 +184,7 @@ public class KeyBindingManager {
 
             for(int j = 0; value && j < keycodes.length; j++) {
               if (allowRepeats)
-                value = value && keyInput.isKeyDown(keycodes[j]);
+                value = value && KeyInput.get().isKeyDown(keycodes[j]);
               else
                 value = value && getStickyKey(keycodes[j]);
             }
@@ -231,13 +206,10 @@ public class KeyBindingManager {
      * @return True if the key is a fresh key input.
      */
     private boolean getStickyKey(int key) {
-      if(keyInput == null) {
-          return false;
-      }
-        if (!restrictKey[key] && keyInput.isKeyDown(key)) {
+        if (!restrictKey[key] && KeyInput.get().isKeyDown(key)) {
             restrictKey[key] = true;
             return true;
-        } else if (!keyInput.isKeyDown(key) && restrictKey[key])
+        } else if (!KeyInput.get().isKeyDown(key) && restrictKey[key])
             restrictKey[key] = false;
         return false;
     }
@@ -249,15 +221,6 @@ public class KeyBindingManager {
 	public void remove(String command) {
 		keyMap.remove(command);
 	}
-
-    /**
-     *
-     * <code>update</code> updates the status of the keyboard.
-     *
-     */
-    public void update() {
-        keyInput.update();
-    }
 
     /**
      * <code>getInstance</code> gets the static singleton instance of

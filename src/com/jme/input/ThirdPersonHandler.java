@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.13 $
+ * @version $Revision: 1.14 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -174,7 +174,6 @@ public class ThirdPersonHandler extends InputHandler {
     public ThirdPersonHandler(Node node, Camera cam, HashMap props, String api) {
         this.node = node;
         this.camera = cam;
-        setupKeyboard(api);
         setActions();
         updateProperties(props);
     }
@@ -198,23 +197,12 @@ public class ThirdPersonHandler extends InputHandler {
 
     /**
      * 
-     * <code>setupKeyboard</code>
-     * @param api
-     */
-    protected void setupKeyboard(String api) {
-        KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
-
-        keyboard.setKeyInput(KeyInput.get());
-        setKeyBindingManager(keyboard);
-    }
-
-    /**
-     * 
      * <code>updateKeyBindings</code> allows a user to update the keys mapped to the various actions.
      * 
      * @param props
      */
     public void updateKeyBindings(HashMap props) {
+        KeyBindingManager keyboard = KeyBindingManager.getKeyBindingManager();
         keyboard.set(PROP_KEY_FORWARD, getIntProp(props, PROP_KEY_FORWARD, KeyInput.KEY_W));
         keyboard.set(PROP_KEY_BACKWARD, getIntProp(props, PROP_KEY_BACKWARD, KeyInput.KEY_S));
         keyboard.set(PROP_KEY_LEFT, getIntProp(props, PROP_KEY_LEFT, KeyInput.KEY_A));
@@ -227,8 +215,7 @@ public class ThirdPersonHandler extends InputHandler {
      * 
      * <code>setActions</code> sets the keyboard actions with the
      * corresponding key command.
-     * 
-     * @param cam
+     *
      */
     protected void setActions() {
         ThirdPersonForwardAction forward = new ThirdPersonForwardAction(this, 0.5f);

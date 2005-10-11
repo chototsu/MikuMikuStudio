@@ -36,6 +36,7 @@ import java.util.logging.Level;
 
 import com.jme.util.LoggingSystem;
 import com.jme.util.Timer;
+import com.jme.input.InputSystem;
 
 /**
  * <code>VariableTimestepGame</code> implements a very simple loop, updating
@@ -45,7 +46,7 @@ import com.jme.util.Timer;
  * the logic based on the time elapsed.
  * 
  * @author Eric Woroshow
- * @version $Id: VariableTimestepGame.java,v 1.12 2005-09-15 17:14:24 renanse Exp $
+ * @version $Id: VariableTimestepGame.java,v 1.13 2005-10-11 20:06:51 irrisor Exp $
  */
 public abstract class VariableTimestepGame extends AbstractGame {
 
@@ -69,7 +70,7 @@ public abstract class VariableTimestepGame extends AbstractGame {
      */
     private void updateTime() {
         timer.update();
-        frametime = timer.getTimePerFrame(); 
+        frametime = timer.getTimePerFrame();
     }
 
     /**
@@ -93,6 +94,10 @@ public abstract class VariableTimestepGame extends AbstractGame {
                 //determine time elapsed since last frame
                 updateTime();
 
+                //handle input events prior to updating the scene
+                // - some applications may want to put this into update of the game state
+                InputSystem.update();
+
                 //update game state, pass amount of elapsed time
                 update(frametime);
 
@@ -101,7 +106,7 @@ public abstract class VariableTimestepGame extends AbstractGame {
 
                 //swap buffers
                 display.getRenderer().displayBackBuffer();
-                
+
                 Thread.yield();
             }
         } catch (Throwable t) {

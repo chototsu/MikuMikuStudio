@@ -50,7 +50,7 @@ import com.jme.util.TextureManager;
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.10 2005-10-11 17:52:11 renanse Exp $
+ * @version $Id: TestKeyInput.java,v 1.11 2005-10-11 20:07:07 irrisor Exp $
  */
 public class TestKeyInput extends BaseGame {
     private Text text;
@@ -65,7 +65,6 @@ public class TestKeyInput extends BaseGame {
     }
 
     protected void update(float interpolation) {
-        key.update();
         if(key.isKeyDown(KeyInput.KEY_0)) {
             text.print("You pressed 0.");
         }
