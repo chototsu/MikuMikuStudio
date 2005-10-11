@@ -293,8 +293,7 @@
 		/>
 	</target>
 
-    <target name="nightly"> <!--depends="webdist-all, webdist-nativelibs, webdist-test">-->
-<!--    <target name="nightly">-->
+    <target name="nightly" depends="webdist-all, webdist-nativelibs, webdist-test">
         <echo>${libs}/*.jar</echo>
         <zip zipfile="${release}/jME.zip">
             <zipfileset dir="${libs}" prefix="lib">
