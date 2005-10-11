@@ -52,7 +52,7 @@ import com.jme.util.LoggingSystem;
  * 
  * @author Mark Powell
  * @author Joshua Slack - Optimizations
- * @version $Id: Quaternion.java,v 1.37 2005-10-11 10:41:48 irrisor Exp $
+ * @version $Id: Quaternion.java,v 1.38 2005-10-11 17:07:50 renanse Exp $
  */
 public class Quaternion implements Externalizable {
     private static final long serialVersionUID = 1L;
@@ -627,12 +627,7 @@ public class Quaternion implements Externalizable {
      * @return the new quaternion.
      */
     public Quaternion mult(Quaternion q) {
-        Quaternion res = new Quaternion();
-        res.x = x * q.w + y * q.z - z * q.y + w * q.x;
-        res.y = -x * q.z + y * q.w + z * q.x + w * q.y;
-        res.z = x * q.y - y * q.x + z * q.w + w * q.z;
-        res.w = -x * q.x - y * q.y - z * q.z + w * q.w;
-        return res;
+        return mult(q, null);
     }
 
     /**
@@ -971,7 +966,7 @@ public class Quaternion implements Externalizable {
      * @return true if they are equal, false otherwise.
      */
     public boolean equals(Object o) {
-        if ( !(o instanceof Quaternion) ) {
+        if (!(o instanceof Quaternion) || o == null) {
             return false;
         }
 
