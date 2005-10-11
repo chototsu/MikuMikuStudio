@@ -63,7 +63,7 @@ import com.jmex.terrain.util.ProceduralTextureGenerator;
  * <code>TestThirdPersonController</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.10 $
+ * @version $Revision: 1.11 $
  */
 public class TestThirdPersonController extends SimpleGame {
 
@@ -122,7 +122,7 @@ public class TestThirdPersonController extends SimpleGame {
         m_character = new Node("char node");
         rootNode.attachChild(m_character);
         m_character.attachChild(b);
-        m_character.updateWorldBound();
+        m_character.updateWorldBound(); // We do this to allow the camera setup access to the world bound in our setup code.
 
         TextureState ts = display.getRenderer().createTextureState();
         ts.setEnabled(true);
@@ -232,6 +232,7 @@ public class TestThirdPersonController extends SimpleGame {
         handlerProps.put(ThirdPersonHandler.PROP_DOGRADUAL, "true");
         handlerProps.put(ThirdPersonHandler.PROP_TURNSPEED, ""+(1.0f * FastMath.PI));
         handlerProps.put(ThirdPersonHandler.PROP_LOCKBACKWARDS, "false");
+        handlerProps.put(ThirdPersonHandler.PROP_CAMERAALIGNEDMOVE, "true");
         input = new ThirdPersonHandler(m_character, cam, handlerProps, properties.getRenderer());
         input.setKeySpeed(100f);
     }
