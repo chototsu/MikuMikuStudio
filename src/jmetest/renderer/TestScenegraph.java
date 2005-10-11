@@ -37,7 +37,6 @@ import java.nio.FloatBuffer;
 import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingSphere;
 import com.jme.image.Texture;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.NodeHandler;
@@ -61,7 +60,7 @@ import com.jme.util.geom.BufferUtils;
  * <code>TestScenegraph</code>
  *
  * @author Mark Powell
- * @version $Id: TestScenegraph.java,v 1.29 2005-10-11 10:41:58 irrisor Exp $
+ * @version $Id: TestScenegraph.java,v 1.30 2005-10-11 17:52:40 renanse Exp $
  */
 public class TestScenegraph extends SimpleGame {
 

@@ -34,7 +34,6 @@ package jmetest.input;
 
 import com.jme.app.BaseGame;
 import com.jme.image.Texture;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
 import com.jme.input.KeyInputListener;
 import com.jme.math.Vector3f;
@@ -47,13 +46,11 @@ import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.TextureManager;
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 
 /**
  * <code>TestKeyInput</code>
  * @author Mark Powell
- * @version $Id: TestKeyInput.java,v 1.9 2005-10-11 10:41:57 irrisor Exp $
+ * @version $Id: TestKeyInput.java,v 1.10 2005-10-11 17:52:11 renanse Exp $
  */
 public class TestKeyInput extends BaseGame {
     private Text text;

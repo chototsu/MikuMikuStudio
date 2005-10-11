@@ -41,7 +41,11 @@ import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.ColorRGBA;
-import com.jme.scene.*;
+import com.jme.scene.Line;
+import com.jme.scene.Node;
+import com.jme.scene.SharedMesh;
+import com.jme.scene.Spatial;
+import com.jme.scene.Text;
 import com.jme.scene.shape.Box;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.MaterialState;
@@ -62,10 +66,6 @@ public class GraphBrowser extends StressApp {
      * Map from graph edge (Object) to visualization (Line)
      */
     Map edges = new HashMap();
-    /**
-     * diffuse light amount.
-     */
-    private static final float SCENE_LIGHT = 0.7f;
     /**
      * Accessor used for reading the graph.
      */

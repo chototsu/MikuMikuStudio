@@ -38,7 +38,6 @@ import com.jme.app.SimpleGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
-import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
 import com.jme.intersection.BoundingPickResults;
 import com.jme.intersection.PickResults;

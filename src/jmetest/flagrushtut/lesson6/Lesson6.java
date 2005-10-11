@@ -44,7 +44,6 @@ import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
 import com.jme.input.ChaseCamera;
 import com.jme.input.InputHandler;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.thirdperson.ThirdPersonMouseLook;

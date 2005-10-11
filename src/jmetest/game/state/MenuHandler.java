@@ -34,7 +34,6 @@ package jmetest.game.state;
 
 import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;

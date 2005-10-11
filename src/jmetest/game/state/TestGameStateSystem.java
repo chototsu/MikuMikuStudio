@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import com.jme.app.AbstractGame;
 import com.jme.app.BaseGame;
 import com.jme.app.GameStateManager;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
 import com.jme.input.joystick.JoystickInput;

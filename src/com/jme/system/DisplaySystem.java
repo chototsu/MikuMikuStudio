@@ -34,6 +34,7 @@ package com.jme.system;
 
 import java.awt.Canvas;
 
+import com.jme.input.joystick.JoystickInput;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Renderer;
@@ -42,9 +43,6 @@ import com.jme.renderer.TextureRenderer;
 import com.jme.scene.Spatial;
 import com.jme.scene.state.RenderState;
 import com.jme.system.lwjgl.LWJGLDisplaySystem;
-import com.jme.input.MouseInput;
-import com.jme.input.KeyInput;
-import com.jme.input.joystick.JoystickInput;
 
 /**
  * <code>DisplaySystem</code> defines an interface for system creation.
@@ -69,7 +67,7 @@ import com.jme.input.joystick.JoystickInput;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: DisplaySystem.java,v 1.43 2005-10-11 10:41:50 irrisor Exp $
+ * @version $Id: DisplaySystem.java,v 1.44 2005-10-11 17:50:11 renanse Exp $
  */
 public abstract class DisplaySystem {
 

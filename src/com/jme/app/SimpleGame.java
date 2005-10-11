@@ -37,7 +37,6 @@ import java.util.logging.Level;
 import com.jme.image.Texture;
 import com.jme.input.FirstPersonHandler;
 import com.jme.input.InputHandler;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
@@ -66,7 +65,7 @@ import com.jme.util.geom.Debugger;
  * of a main game loop. Interpolation is used between frames for varying framerates.
  *
  * @author Joshua Slack, (javadoc by cep21)
- * @version $Id: SimpleGame.java,v 1.44 2005-10-11 10:41:41 irrisor Exp $
+ * @version $Id: SimpleGame.java,v 1.45 2005-10-11 17:50:07 renanse Exp $
  */
 public abstract class SimpleGame extends BaseGame {
 

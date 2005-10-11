@@ -32,11 +32,6 @@
 
 package com.jme.input;
 
-import java.util.logging.Level;
-
-import com.jme.input.lwjgl.LWJGLKeyInput;
-import com.jme.input.lwjgl.LWJGLMouseInput;
-import com.jme.util.LoggingSystem;
 
 /**
  * <code>InputSystem</code> creates the required input objects (mouse and
@@ -47,7 +42,7 @@ import com.jme.util.LoggingSystem;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.9 2005-10-11 10:41:46 irrisor Exp $
+ * @version $Id: InputSystem.java,v 1.10 2005-10-11 17:50:10 renanse Exp $
  */
 public class InputSystem {
     

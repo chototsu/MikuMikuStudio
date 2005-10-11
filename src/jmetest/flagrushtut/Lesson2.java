@@ -35,7 +35,6 @@ package jmetest.flagrushtut;
 import com.jme.app.BaseGame;
 import com.jme.bounding.BoundingBox;
 import com.jme.image.Texture;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.math.Vector3f;

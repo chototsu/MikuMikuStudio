@@ -43,7 +43,6 @@ import java.util.ArrayList;
 import com.jme.app.SimpleGame;
 import com.jme.image.Texture;
 import com.jme.input.AbsoluteMouse;
-import com.jme.input.InputSystem;
 import com.jme.input.MouseInput;
 import com.jme.intersection.PickData;
 import com.jme.intersection.PickResults;

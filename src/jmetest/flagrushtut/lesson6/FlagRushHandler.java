@@ -39,7 +39,6 @@ import jmetest.flagrushtut.lesson6.actions.VehicleRotateLeftAction;
 import jmetest.flagrushtut.lesson6.actions.VehicleRotateRightAction;
 
 import com.jme.input.InputHandler;
-import com.jme.input.InputSystem;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 
