@@ -57,10 +57,13 @@
         </java>
     </target>
 
-    <!-- Jar files for different parts of the jME API -->
+	<!-- Jar files for different parts of the jME API -->
 
 	<target name="dist-core" depends="compile" description="generate jme jar file">
 		<jar jarfile="${jars}/jme.jar" basedir="${class}" update="no" compress="false" includes="**/com/jme/**/*.class, **/com/jme/**/*.tga, **/com/jme/**/*.png, **/com/jme/**/*.glf" />
+	</target>
+	<target name="dist-awt" depends="compile" description="generate jme jar file (awt)">
+		<jar jarfile="${jars}/jme-awt.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/awt/**/*.class" />
 	</target>
 	<target name="dist-effects" depends="compile" description="generate jme jar file (effects)">
 		<jar jarfile="${jars}/jme-effects.jar" basedir="${class}" update="no" compress="false" includes="**/com/jmex/effects/**/*.class" />
@@ -76,10 +79,11 @@
 	</target>
 
 	<!-- Creates all the jME jars -->
-	<target name="dist-all" depends="dist-core, dist-terrain, dist-effects, dist-model, dist-sound" description="Generate all jar files" />
+	<target name="dist-all" depends="dist-core, dist-terrain, dist-awt, dist-effects, dist-model, dist-sound" description="Generate all jar files" />
 
 	<target name="webdist-all" depends="dist-all" description="sign JARs for JNLP distribution">
 		<signjar jar="${jars}/jme.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
+		<signjar jar="${jars}/jme-awt.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-effects.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-terrain.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
 		<signjar jar="${jars}/jme-model.jar" alias="jme" keystore="${webstart}/${keyStore}" storepass="${storepass}" />
