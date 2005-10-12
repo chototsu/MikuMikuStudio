@@ -60,7 +60,7 @@ import com.jme.renderer.lwjgl.LWJGLTextureRenderer;
 import com.jme.system.DisplaySystem;
 import com.jme.system.JmeException;
 import com.jme.util.LoggingSystem;
-import com.jme.util.awt.lwjgl.LWJGLCanvas;
+import com.jmex.awt.lwjgl.LWJGLCanvas;
 
 /**
  * <code>LWJGLDisplaySystem</code> defines an implementation of
@@ -71,7 +71,7 @@ import com.jme.util.awt.lwjgl.LWJGLCanvas;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Joshua Slack - Optimizations and Headless rendering
- * @version $Id: LWJGLDisplaySystem.java,v 1.31 2005-09-27 04:34:29 renanse Exp $
+ * @version $Id: LWJGLDisplaySystem.java,v 1.32 2005-10-12 04:00:27 renanse Exp $
  */
 public class LWJGLDisplaySystem extends DisplaySystem {
 

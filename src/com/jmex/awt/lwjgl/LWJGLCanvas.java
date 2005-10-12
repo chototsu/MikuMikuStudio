@@ -30,21 +30,71 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.util.awt;
+package com.jmex.awt.lwjgl;
 
 import java.awt.Color;
 
-/**
- * <code>JMEComponent</code> is an interface to classes allowing jME generated
- * graphics to be displayed in an AWT/Swing interface.
- *
- * @author Joshua Slack
- * @version $Id: JMECanvas.java,v 1.2 2005-09-15 17:14:58 renanse Exp $
- */
+import org.lwjgl.LWJGLException;
+import org.lwjgl.opengl.AWTGLCanvas;
 
-public interface JMECanvas {
-    
-    public void setImplementor(JMECanvasImplementor impl);
-    public void setVSync(boolean sync);
-    public void setBackground(Color bgColor);
+import com.jme.input.InputSystem;
+import com.jme.renderer.ColorRGBA;
+import com.jmex.awt.JMECanvas;
+import com.jmex.awt.JMECanvasImplementor;
+
+/**
+ * <code>LWJGLCanvas</code>
+ * 
+ * @author Joshua Slack
+ * @version $Id: LWJGLCanvas.java,v 1.1 2005-10-12 04:00:26 renanse Exp $
+ */
+public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
+
+    private static final long serialVersionUID = 1L;
+
+    private JMECanvasImplementor impl;
+
+    public LWJGLCanvas() throws LWJGLException {
+        super();
+    }
+
+    public void setVSync(boolean sync) {
+        try {
+            setVSyncEnabled(sync);
+        } catch (LWJGLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setImplementor(JMECanvasImplementor impl) {
+        this.impl = impl;
+    }
+
+    public void paintGL() {
+        try {
+            makeCurrent();
+            
+            InputSystem.update();
+
+            if (!impl.isSetup())
+                impl.doSetup();
+
+            impl.doUpdate();
+
+            impl.doRender();
+
+            swapBuffers();
+        } catch (LWJGLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void setBackground(Color bgColor) {
+        impl.setBackground(makeColorRGBA(bgColor));
+    }
+
+    protected ColorRGBA makeColorRGBA(Color color) {
+        return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
+                color.getBlue() / 255f, color.getAlpha() / 255f);
+    }
 }

@@ -89,15 +89,15 @@ import com.jme.scene.state.RenderState;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import com.jme.util.awt.JMECanvas;
-import com.jme.util.awt.SimpleCanvasImpl;
+import com.jmex.awt.JMECanvas;
+import com.jmex.awt.SimpleCanvasImpl;
 import com.jmex.effects.ParticleManager;
 
 /**
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.18 2005-10-12 03:42:20 renanse Exp $
+ * @version $Id: RenParticleEditor.java,v 1.19 2005-10-12 04:00:37 renanse Exp $
  *
  */
 

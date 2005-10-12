@@ -32,11 +32,6 @@
 
 package com.jme.input.action;
 
-import java.util.ArrayList;
-
-import com.jme.input.KeyInput;
-import com.jme.input.MouseInput;
-
 /**
  * <code>InputActionEvent</code> defines an event that generates the
  * processing of a given InputAction. This event contains information about the
@@ -44,7 +39,7 @@ import com.jme.input.MouseInput;
  * the other Actions that were to be processed at the same time.
  * 
  * @author Mark Powell
- * @version $Id: InputActionEvent.java,v 1.3 2005-10-11 20:06:52 irrisor Exp $
+ * @version $Id: InputActionEvent.java,v 1.4 2005-10-12 04:00:31 renanse Exp $
  */
 public class InputActionEvent {
 

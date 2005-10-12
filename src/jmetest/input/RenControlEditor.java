@@ -66,7 +66,7 @@ import javax.swing.event.ChangeListener;
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
 import com.jme.system.DisplaySystem;
-import com.jme.util.awt.JMECanvas;
+import com.jmex.awt.JMECanvas;
 import com.jmex.awt.input.AWTKeyInput;
 import com.jmex.awt.input.AWTMouseInput;
 

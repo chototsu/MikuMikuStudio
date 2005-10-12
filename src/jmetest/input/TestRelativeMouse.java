@@ -35,7 +35,6 @@ package jmetest.input;
 import com.jme.app.BaseGame;
 import com.jme.image.Texture;
 import com.jme.input.RelativeMouse;
-import com.jme.input.MouseInput;
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
 import com.jme.renderer.ColorRGBA;

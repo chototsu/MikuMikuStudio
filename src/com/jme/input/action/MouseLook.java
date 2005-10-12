@@ -32,7 +32,6 @@
 
 package com.jme.input.action;
 
-import com.jme.input.KeyBindingManager;
 import com.jme.input.Mouse;
 import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
@@ -43,7 +42,7 @@ import com.jme.renderer.Camera;
  * and converts it into camera rotations and camera tilts.
  * 
  * @author Mark Powell
- * @version $Id: MouseLook.java,v 1.12 2005-10-11 20:06:52 irrisor Exp $
+ * @version $Id: MouseLook.java,v 1.13 2005-10-12 04:00:32 renanse Exp $
  */
 public class MouseLook implements MouseInputAction {
     //mouse that detects relative movements.

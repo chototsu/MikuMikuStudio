@@ -30,71 +30,22 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.util.awt.lwjgl;
+package com.jmex.awt;
 
 import java.awt.Color;
 
-import org.lwjgl.LWJGLException;
-import org.lwjgl.opengl.AWTGLCanvas;
-
-import com.jme.input.InputSystem;
-import com.jme.renderer.ColorRGBA;
-import com.jme.util.awt.JMECanvas;
-import com.jme.util.awt.JMECanvasImplementor;
 
 /**
- * <code>LWJGLCanvas</code>
- * 
+ * <code>JMEComponent</code> is an interface to classes allowing jME generated
+ * graphics to be displayed in an AWT/Swing interface.
+ *
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.3 2005-10-12 03:43:10 renanse Exp $
+ * @version $Id: JMECanvas.java,v 1.1 2005-10-12 04:00:23 renanse Exp $
  */
-public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
-    private static final long serialVersionUID = 1L;
-
-    private JMECanvasImplementor impl;
-
-    public LWJGLCanvas() throws LWJGLException {
-        super();
-    }
-
-    public void setVSync(boolean sync) {
-        try {
-            setVSyncEnabled(sync);
-        } catch (LWJGLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setImplementor(JMECanvasImplementor impl) {
-        this.impl = impl;
-    }
-
-    public void paintGL() {
-        try {
-            makeCurrent();
-            
-            InputSystem.update();
-
-            if (!impl.isSetup())
-                impl.doSetup();
-
-            impl.doUpdate();
-
-            impl.doRender();
-
-            swapBuffers();
-        } catch (LWJGLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setBackground(Color bgColor) {
-        impl.setBackground(makeColorRGBA(bgColor));
-    }
-
-    protected ColorRGBA makeColorRGBA(Color color) {
-        return new ColorRGBA(color.getRed() / 255f, color.getGreen() / 255f,
-                color.getBlue() / 255f, color.getAlpha() / 255f);
-    }
+public interface JMECanvas {
+    
+    public void setImplementor(JMECanvasImplementor impl);
+    public void setVSync(boolean sync);
+    public void setBackground(Color bgColor);
 }

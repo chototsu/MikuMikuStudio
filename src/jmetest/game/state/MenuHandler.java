@@ -36,7 +36,6 @@ import com.jme.input.AbsoluteMouse;
 import com.jme.input.InputHandler;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
-import com.jme.input.MouseInput;
 import com.jme.input.Mouse;
 import com.jme.system.DisplaySystem;
 

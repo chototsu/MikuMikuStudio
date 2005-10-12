@@ -32,7 +32,6 @@
 
 package com.jme.input.action;
 
-import com.jme.input.KeyBindingManager;
 import com.jme.input.Mouse;
 import com.jme.input.RelativeMouse;
 import com.jme.math.Vector3f;
@@ -43,7 +42,7 @@ import com.jme.scene.Spatial;
  * movement and converts it into node rotations and node tilts.
  * 
  * @author Mark Powell
- * @version $Id: NodeMouseLook.java,v 1.9 2005-10-11 20:06:53 irrisor Exp $
+ * @version $Id: NodeMouseLook.java,v 1.10 2005-10-12 04:00:32 renanse Exp $
  */
 public class NodeMouseLook implements MouseInputAction {
 

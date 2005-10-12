@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.util.awt;
+package com.jmex.awt;
 
 import com.jme.math.Vector3f;
 import com.jme.renderer.Camera;
@@ -45,7 +45,7 @@ import com.jme.util.Timer;
  * <code>SimpleCanvasImpl</code>
  * 
  * @author Joshua Slack
- * @version $Id: SimpleCanvasImpl.java,v 1.3 2005-09-21 08:22:31 renanse Exp $
+ * @version $Id: SimpleCanvasImpl.java,v 1.1 2005-10-12 04:00:25 renanse Exp $
  */
 
 public class SimpleCanvasImpl extends JMECanvasImplementor {

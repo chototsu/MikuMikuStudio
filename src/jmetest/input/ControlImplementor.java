@@ -54,7 +54,7 @@ import com.jme.scene.state.FogState;
 import com.jme.scene.state.LightState;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
-import com.jme.util.awt.SimpleCanvasImpl;
+import com.jmex.awt.SimpleCanvasImpl;
 import com.jmex.terrain.TerrainPage;
 import com.jmex.terrain.util.FaultFractalHeightMap;
 import com.jmex.terrain.util.ProceduralTextureGenerator;

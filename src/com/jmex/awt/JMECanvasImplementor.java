@@ -30,7 +30,7 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.util.awt;
+package com.jmex.awt;
 
 import com.jme.renderer.ColorRGBA;
 import com.jme.renderer.Renderer;
@@ -39,7 +39,7 @@ import com.jme.renderer.Renderer;
  * <code>JMECanvasImplementor</code>
  * 
  * @author Joshua Slack
- * @version $Id: JMECanvasImplementor.java,v 1.2 2005-09-15 17:14:58 renanse Exp $
+ * @version $Id: JMECanvasImplementor.java,v 1.1 2005-10-12 04:00:24 renanse Exp $
  */
 public abstract class JMECanvasImplementor {
 

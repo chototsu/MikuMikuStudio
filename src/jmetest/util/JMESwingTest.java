@@ -66,9 +66,9 @@ import com.jme.scene.shape.Box;
 import com.jme.scene.state.TextureState;
 import com.jme.system.DisplaySystem;
 import com.jme.util.TextureManager;
-import com.jme.util.awt.JMECanvas;
-import com.jme.util.awt.JMECanvasImplementor;
-import com.jme.util.awt.SimpleCanvasImpl;
+import com.jmex.awt.JMECanvas;
+import com.jmex.awt.JMECanvasImplementor;
+import com.jmex.awt.SimpleCanvasImpl;
 
 /**
  * <code>JMESwingTest</code> is a test demoing the JMEComponent and
@@ -78,7 +78,7 @@ import com.jme.util.awt.SimpleCanvasImpl;
  * Note the Repaint thread and how you grab a canvas and add an implementor to it.
  * 
  * @author Joshua Slack
- * @version $Id: JMESwingTest.java,v 1.11 2005-09-20 18:45:30 renanse Exp $
+ * @version $Id: JMESwingTest.java,v 1.12 2005-10-12 04:00:36 renanse Exp $
  */
 
 public class JMESwingTest {
