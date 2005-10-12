@@ -47,7 +47,7 @@ import com.jme.input.MouseInput;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -139,16 +139,15 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     }
 
     public void update() {
-        // TODO Auto-generated method stub
+        // TODO: Add listener calls.
     }
 
     public void setCursorVisible(boolean v) {
-        // TODO Auto-generated method stub
-        
+        ; // ignore
     }
 
     public boolean isCursorVisible() {
-        // TODO Auto-generated method stub
+        // always true
         return true;
     }
 
