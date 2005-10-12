@@ -50,7 +50,7 @@ import com.jme.input.MouseInputListener;
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.3 $
+ * @version $Revision: 1.4 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
@@ -104,9 +104,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     }
 
     public int getWheelDelta() {
-        int rVal = wheelDelta;
-        wheelDelta = 0;
-        return rVal;
+        return wheelDelta;
     }
 
     public int getXDelta() {
@@ -115,9 +113,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             int rVal = (deltaRelative.getWidth() / 2) - absPoint.x;
             return (int)(rVal * -0.01f);
         } else {
-            int rVal = deltaPoint.x;
-            deltaPoint.x = 0;
-            return rVal;
+            return deltaPoint.x;
         }
     }
 
@@ -127,9 +123,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             int rVal = (deltaRelative.getHeight() / 2) - absPoint.y;
             return (int)(rVal * -0.05f);
         } else {
-            int rVal = deltaPoint.y;
-            deltaPoint.y = 0;
-            return rVal;
+            return deltaPoint.y;
         }
     }
 
@@ -200,6 +194,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
         lastEventX = x;
         lastEventY = y;
+        wheelDelta = 0;
+        deltaPoint.setLocation(0,0);
     }
 
     public void setCursorVisible(boolean v) {
