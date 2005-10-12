@@ -37,7 +37,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 
 import com.jme.math.Quaternion;
-import com.jme.math.TransformMatrixQuat;
+import com.jme.math.TransformQuaternion;
 import com.jme.math.Vector3f;
 import com.jme.renderer.CloneCreator;
 import com.jme.scene.Controller;
@@ -68,7 +68,7 @@ public class SpatialTransformer extends Controller {
     public Spatial[] toChange;
 
     /** Used internally by update specifying how to change each object. */
-    private TransformMatrixQuat[] pivots;
+    private TransformQuaternion[] pivots;
 
     /**
      * parentIndexes[i] states that toChange[i]'s parent is
@@ -111,12 +111,12 @@ public class SpatialTransformer extends Controller {
     public SpatialTransformer(int numObjects) {
         this.numObjects = numObjects;
         toChange = new Spatial[numObjects];
-        pivots = new TransformMatrixQuat[numObjects];
+        pivots = new TransformQuaternion[numObjects];
         parentIndexes = new int[numObjects];
         haveChanged = new boolean[numObjects];
         Arrays.fill(parentIndexes, -1);
         for (int i = 0; i < numObjects; i++)
-            pivots[i] = new TransformMatrixQuat();
+            pivots[i] = new TransformQuaternion();
         keyframes = new ArrayList();
     }
 
@@ -574,7 +574,7 @@ public class SpatialTransformer extends Controller {
         public float time;
 
         /** toChange[i] looks like look[i] at time. */
-        public TransformMatrixQuat[] look;
+        public TransformQuaternion[] look;
 
         /**
          * Constructs a new PointInTime with the time <code>time</code>
@@ -583,12 +583,12 @@ public class SpatialTransformer extends Controller {
          *            The the for this PointInTime.
          */
         PointInTime(float time) {
-            look = new TransformMatrixQuat[numObjects];
+            look = new TransformQuaternion[numObjects];
             usedRot = new BitSet(numObjects);
             usedTrans = new BitSet(numObjects);
             usedScale = new BitSet(numObjects);
             for (int i = 0; i < look.length; i++)
-                look[i] = new TransformMatrixQuat();
+                look[i] = new TransformQuaternion();
             this.time = time;
         }
 

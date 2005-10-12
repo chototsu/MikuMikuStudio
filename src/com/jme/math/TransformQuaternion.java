@@ -40,7 +40,7 @@ import com.jme.scene.Spatial;
  * than a matrix using Matrix3f for rotation when doing point translation.
  * @author Jack Lindamood
  */
-public class TransformMatrixQuat {
+public class TransformQuaternion {
 
     private Quaternion rot=new Quaternion();
     private Vector3f translation=new Vector3f();
@@ -136,7 +136,7 @@ public class TransformMatrixQuat {
      * @param t2 The ending transform.
      * @param delta An amount between 0 and 1 representing how far to interpolate from t1 to t2.
      */
-    public void interpolateTransforms(TransformMatrixQuat t1, TransformMatrixQuat t2, float delta) {
+    public void interpolateTransforms(TransformQuaternion t1, TransformQuaternion t2, float delta) {
         this.rot.slerp(t1.rot,t2.rot,delta);
         this.translation.interpolate(t1.translation,t2.translation,delta);
         this.scale.interpolate(t1.scale,t2.scale,delta);
@@ -147,7 +147,7 @@ public class TransformMatrixQuat {
      * @param parent The parent matrix.
      * @return This matrix, after combining.
      */
-    public TransformMatrixQuat combineWithParent(TransformMatrixQuat parent) {
+    public TransformQuaternion combineWithParent(TransformQuaternion parent) {
         scale.multLocal(parent.scale);
         rot.multLocal(parent.rot);
         parent
@@ -200,7 +200,7 @@ public class TransformMatrixQuat {
      * Sets this matrix to be equal to the given matrix.
      * @param matrixQuat The matrix to be equal to.
      */
-    public void set(TransformMatrixQuat matrixQuat) {
+    public void set(TransformQuaternion matrixQuat) {
         this.translation.set(matrixQuat.translation);
         this.rot.set(matrixQuat.rot);
         this.scale.set(matrixQuat.scale);
