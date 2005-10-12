@@ -53,7 +53,6 @@ import java.awt.event.MouseWheelListener;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSpinner;
 import javax.swing.JTabbedPane;
@@ -95,58 +94,41 @@ public class RenControlEditor extends JFrame {
 
     public RenControlEditor() {
         setTitle("RenControlEditor - 3rd Person");
-        setBounds(100, 100, 500, 375);
+        setBounds(100, 100, 702, 409);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        String vers = System.getProperty("os.name").toLowerCase();
+        boolean isMac = false;
+        if (vers.indexOf("mac") != -1) {
+           isMac = true;
+        }
+        
         final JPanel panel = new JPanel();
         panel.setLayout(new GridBagLayout());
-        final JPanel inputModePanel = new JPanel();
-        final GridBagConstraints gridBagConstraints_1 = new GridBagConstraints();
-        gridBagConstraints_1.fill = GridBagConstraints.BOTH;
-        gridBagConstraints_1.weightx = .7;
-        gridBagConstraints_1.weighty = 0;
-        gridBagConstraints_1.insets = new Insets(4, 4, 0, 0);
-        gridBagConstraints_1.anchor = GridBagConstraints.NORTHWEST;
-        gridBagConstraints_1.gridx = 0;
-        gridBagConstraints_1.gridy = 0;
-        panel.add(inputModePanel, gridBagConstraints_1);
-        final FlowLayout flowLayout_1 = new FlowLayout();
-        flowLayout_1.setVgap(0);
-        inputModePanel.setLayout(flowLayout_1);
-        inputModePanel.setBorder(new TitledBorder(null, "Input", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-
-        final JRadioButton mousekeyboardRadioButton = new JRadioButton();
-        mousekeyboardRadioButton.setSelected(true);
-        mousekeyboardRadioButton.setText("Mouse/Keyboard");
-        inputModePanel.add(mousekeyboardRadioButton);
-
-        final JRadioButton gameControllerRadioButton = new JRadioButton();
-        gameControllerRadioButton.setText("Game Controller");
-        inputModePanel.add(gameControllerRadioButton);
-
         final JPanel testPanel = new JPanel();
         testPanel.setPreferredSize(new Dimension(50, 50));
         testPanel.setMinimumSize(new Dimension(100, 100));
         final GridBagConstraints gridBagConstraints_2 = new GridBagConstraints();
+        gridBagConstraints_2.insets = new Insets(4, 4, 0, 0);
         gridBagConstraints_2.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_2.fill = GridBagConstraints.BOTH;
         gridBagConstraints_2.weighty = 1.0;
         gridBagConstraints_2.weightx = .7;
         gridBagConstraints_2.gridx = 0;
-        gridBagConstraints_2.gridy = 1;
+        gridBagConstraints_2.gridy = 0;
         panel.add(testPanel, gridBagConstraints_2);
         testPanel.setLayout(new BorderLayout());
         testPanel.add(getGlCanvas(), BorderLayout.CENTER);
         testPanel.setBorder(new TitledBorder(null, "Test Here", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
 
-        final JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.RIGHT);
+        final JTabbedPane tabbedPane = new JTabbedPane();
+        tabbedPane.setTabPlacement(SwingConstants.RIGHT);
         final GridBagConstraints gridBagConstraints_3 = new GridBagConstraints();
         gridBagConstraints_3.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_3.fill = GridBagConstraints.BOTH;
         gridBagConstraints_3.weightx = .3;
         gridBagConstraints_3.weighty = 1.0;
         gridBagConstraints_3.insets = new Insets(4, 4, 0, 4);
-        gridBagConstraints_3.gridheight = 2;
         gridBagConstraints_3.gridx = 1;
         gridBagConstraints_3.gridy = 0;
         panel.add(tabbedPane, gridBagConstraints_3);
@@ -156,12 +138,17 @@ public class RenControlEditor extends JFrame {
 
         final JPanel panel_3 = new JPanel();
         panel_3.setLayout(new GridBagLayout());
-        VTextIcon icon1 = new VTextIcon(tabbedPane, "Camera");
-        tabbedPane.addTab(null, icon1, panel_3, null);
+//        if (!isMac) { // we need to use vertical label
+//            VTextIcon icon = new VTextIcon(tabbedPane, "Camera");
+//            tabbedPane.addTab(null, icon, panel_3, null);
+//        } else
+            tabbedPane.addTab("Camera", null, panel_3, null);
 
         final JLabel maxAscentLabel = new JLabel();
         maxAscentLabel.setText("Max ascent:");
         final GridBagConstraints gridBagConstraints_4 = new GridBagConstraints();
+        gridBagConstraints_4.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_4.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_4.gridy = 0;
         gridBagConstraints_4.gridx = 0;
         panel_3.add(maxAscentLabel, gridBagConstraints_4);
@@ -173,6 +160,8 @@ public class RenControlEditor extends JFrame {
             }
         });
         final GridBagConstraints gridBagConstraints_5 = new GridBagConstraints();
+        gridBagConstraints_5.insets = new Insets(0, 4, 0, 0);
+        gridBagConstraints_5.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_5.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints_5.gridy = 1;
         gridBagConstraints_5.gridx = 0;
@@ -181,7 +170,7 @@ public class RenControlEditor extends JFrame {
         final JLabel oLabel = new JLabel();
         oLabel.setFont(new Font("", Font.PLAIN, 9));
         final GridBagConstraints gridBagConstraints_8 = new GridBagConstraints();
-        gridBagConstraints_8.anchor = GridBagConstraints.NORTH;
+        gridBagConstraints_8.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_8.gridy = 1;
         gridBagConstraints_8.gridx = 1;
         panel_3.add(oLabel, gridBagConstraints_8);
@@ -190,12 +179,16 @@ public class RenControlEditor extends JFrame {
         final JLabel minRollinLabel = new JLabel();
         minRollinLabel.setText("Min Rollin:");
         final GridBagConstraints gridBagConstraints_6 = new GridBagConstraints();
+        gridBagConstraints_6.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_6.insets = new Insets(4, 4, 0, 0);
         gridBagConstraints_6.gridy = 2;
         gridBagConstraints_6.gridx = 0;
         panel_3.add(minRollinLabel, gridBagConstraints_6);
 
         minRollSpinner = new JSpinner();
         final GridBagConstraints gridBagConstraints_7 = new GridBagConstraints();
+        gridBagConstraints_7.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_7.insets = new Insets(0, 4, 0, 0);
         gridBagConstraints_7.fill = GridBagConstraints.HORIZONTAL;
         gridBagConstraints_7.gridy = 3;
         gridBagConstraints_7.gridx = 0;
@@ -204,33 +197,49 @@ public class RenControlEditor extends JFrame {
         final JLabel maxRollinLabel = new JLabel();
         maxRollinLabel.setText("Max Rollin:");
         final GridBagConstraints gridBagConstraints_9 = new GridBagConstraints();
-        gridBagConstraints_9.gridy = 4;
-        gridBagConstraints_9.gridx = 0;
+        gridBagConstraints_9.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_9.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_9.gridy = 2;
+        gridBagConstraints_9.gridx = 2;
         panel_3.add(maxRollinLabel, gridBagConstraints_9);
 
         maxRollSpinner = new JSpinner();
         final GridBagConstraints gridBagConstraints_10 = new GridBagConstraints();
+        gridBagConstraints_10.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_10.insets = new Insets(0, 4, 0, 0);
         gridBagConstraints_10.fill = GridBagConstraints.HORIZONTAL;
-        gridBagConstraints_10.gridy = 5;
-        gridBagConstraints_10.gridx = 0;
+        gridBagConstraints_10.gridy = 3;
+        gridBagConstraints_10.gridx = 2;
         panel_3.add(maxRollSpinner, gridBagConstraints_10);
 
         final JPanel panel_4 = new JPanel();
-        VTextIcon icon2 = new VTextIcon(tabbedPane, "Springs");
-        tabbedPane.addTab(null, icon2, panel_4, null);
+//        if (!isMac) { // we need to use vertical label
+//            VTextIcon icon = new VTextIcon(tabbedPane, "Springs");
+//            tabbedPane.addTab(null, icon, panel_4, null);
+//        } else
+            tabbedPane.addTab("Springs", null, panel_4, null);
 
         final JPanel panel_5 = new JPanel();
-        VTextIcon icon3 = new VTextIcon(tabbedPane, "Movement");
-        tabbedPane.addTab(null, icon3, panel_5, null);
+//            if (!isMac) { // we need to use vertical label
+//                VTextIcon icon = new VTextIcon(tabbedPane, "Movement");
+//                tabbedPane.addTab(null, icon, panel_5, null);
+//            } else
+            tabbedPane.addTab("Movement", null, panel_5, null);
 
         final JPanel panel_6 = new JPanel();
-        VTextIcon icon4 = new VTextIcon(tabbedPane, "Samples");
-        tabbedPane.addTab(null, icon4, panel_6, null);
+//          if (!isMac) { // we need to use vertical label
+//              VTextIcon icon = new VTextIcon(tabbedPane, "Examples");
+//              tabbedPane.addTab(null, icon, panel_6, null);
+//          } else
+          tabbedPane.addTab("Examples", null, panel_6, null);
 
-        final JPanel panel_7 = new JPanel();
-        VTextIcon icon5 = new VTextIcon(tabbedPane, "Code");
-        tabbedPane.addTab(null, icon5, panel_7, null);
-
+      final JPanel panel_7 = new JPanel();
+//        if (!isMac) { // we need to use vertical label
+//            VTextIcon icon = new VTextIcon(tabbedPane, "File");
+//            tabbedPane.addTab(null, icon, panel_7, null);
+//        } else
+        tabbedPane.addTab("File", null, panel_7, null);
+            
         final JPanel statPanel = new JPanel();
         final GridBagConstraints gridBagConstraints_11 = new GridBagConstraints();
         gridBagConstraints_11.anchor = GridBagConstraints.NORTHWEST;
@@ -238,7 +247,7 @@ public class RenControlEditor extends JFrame {
         gridBagConstraints_11.weightx = 1.0;
         gridBagConstraints_11.fill = GridBagConstraints.BOTH;
         gridBagConstraints_11.gridx = 0;
-        gridBagConstraints_11.gridy = 2;
+        gridBagConstraints_11.gridy = 1;
         panel.add(statPanel, gridBagConstraints_11);
         final FlowLayout flowLayout = new FlowLayout();
         flowLayout.setHgap(2);
