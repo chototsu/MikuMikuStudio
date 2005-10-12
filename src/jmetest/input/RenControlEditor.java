@@ -126,6 +126,7 @@ public class RenControlEditor extends JFrame {
         inputModePanel.add(gameControllerRadioButton);
 
         final JPanel testPanel = new JPanel();
+        testPanel.setPreferredSize(new Dimension(50, 50));
         testPanel.setMinimumSize(new Dimension(100, 100));
         final GridBagConstraints gridBagConstraints_2 = new GridBagConstraints();
         gridBagConstraints_2.anchor = GridBagConstraints.NORTHWEST;
@@ -139,7 +140,7 @@ public class RenControlEditor extends JFrame {
         testPanel.add(getGlCanvas(), BorderLayout.CENTER);
         testPanel.setBorder(new TitledBorder(null, "Test Here", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
 
-        final JTabbedPane tabbedPane = new JTabbedPane();
+        final JTabbedPane tabbedPane = new JTabbedPane(SwingConstants.RIGHT);
         final GridBagConstraints gridBagConstraints_3 = new GridBagConstraints();
         gridBagConstraints_3.anchor = GridBagConstraints.NORTHWEST;
         gridBagConstraints_3.fill = GridBagConstraints.BOTH;
@@ -153,7 +154,6 @@ public class RenControlEditor extends JFrame {
         tabbedPane.setMinimumSize(new Dimension(200, 100));
         tabbedPane.setPreferredSize(new Dimension(200, 100));
         tabbedPane.setBorder(new TitledBorder(null, "Params", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
-        tabbedPane.setTabPlacement(SwingConstants.RIGHT);
 
         final JPanel panel_3 = new JPanel();
         panel_3.setLayout(new GridBagLayout());
@@ -303,8 +303,6 @@ public class RenControlEditor extends JFrame {
 
             // make the canvas:
             glCanvas = DisplaySystem.getDisplaySystem("LWJGL").createCanvas(width, height);
-            glCanvas.setSize(new Dimension(50,50));
-            //glCanvas.setPreferredSize(new Dimension(50, 50));
 
             // add a listener... if window is resized, we can do something about it.
             glCanvas.addComponentListener(new ComponentAdapter() {
