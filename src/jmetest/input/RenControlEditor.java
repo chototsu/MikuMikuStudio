@@ -247,7 +247,7 @@ public class RenControlEditor extends JFrame {
         statPanel.setLayout(flowLayout);
 
         final JLabel hitescToLabel = new JLabel();
-        hitescToLabel.setText("Hit 'esc' to release mouse");
+        hitescToLabel.setText("Click and drag in the Test area to control.  WASD controls target.");
         statPanel.add(hitescToLabel);
         
         final JScrollPane scrollPane = new JScrollPane(panel);
