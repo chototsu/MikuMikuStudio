@@ -40,19 +40,22 @@ import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.util.BitSet;
+import java.util.List;
+import java.util.LinkedList;
 
 import com.jme.input.MouseInput;
+import com.jme.input.MouseInputListener;
 
 /**
  * <code>AWTMouseInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AWTMouseInput extends MouseInput implements MouseListener, MouseWheelListener, MouseMotionListener {
 
     public static int WHEEL_AMP = 40;   // arbitrary...  Java's mouse wheel seems to report something a lot lower than lwjgl's
-    
+
     private int wheelDelta;
     private boolean enabled = true;
     private boolean dragOnly = false;
@@ -67,7 +70,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
     protected AWTMouseInput() {
         ;
     }
-    
+
     protected void destroy() {
         ; // ignore
     }
@@ -76,7 +79,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         if ("MOUSE0".equalsIgnoreCase(buttonName)) return 0;
         else if ("MOUSE1".equalsIgnoreCase(buttonName)) return 1;
         else if ("MOUSE2".equalsIgnoreCase(buttonName)) return 2;
-        
+
         throw new IllegalArgumentException("invalid buttonName: "+buttonName);
     }
 
@@ -138,8 +141,65 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         return absPoint.y;
     }
 
+    /**
+     * Swing events are put in here in the swing thread and removed from it in the update method.
+     * To flatline memory usage the LinkedList could be replaced by two ArrayLists but then one
+     * would need to synchronize insertions.
+     */
+    private List swingEvents = new LinkedList();
+    /**
+     * x position of last event that was processed by {@link #update}
+     */
+    private int lastEventX;
+    /**
+     * y position of last event that was processed by {@link #update}
+     */
+    private int lastEventY;
+
     public void update() {
-        // TODO: Add listener calls.
+        int x = lastEventX;
+        int y = lastEventY;
+
+        if ( listeners != null && !listeners.isEmpty() )
+        {
+            while ( !swingEvents.isEmpty() )
+            {
+                MouseEvent event = (MouseEvent) swingEvents.remove( 0 );
+
+                switch ( event.getID() ) {
+                    case MouseEvent.MOUSE_DRAGGED:
+                    case MouseEvent.MOUSE_MOVED:
+                        for ( int i = 0; i < listeners.size(); i++ ) {
+                            MouseInputListener listener = (MouseInputListener) listeners.get( i );
+                            listener.onMove( event.getX() - x, event.getY() - y, event.getX(), event.getY() );
+                        }
+                        x = event.getX();
+                        y = event.getY();
+                        break;
+                    case MouseEvent.MOUSE_PRESSED:
+                    case MouseEvent.MOUSE_RELEASED:
+                        for ( int i = 0; i < listeners.size(); i++ ) {
+                            MouseInputListener listener = (MouseInputListener) listeners.get( i );
+                            listener.onButton( event.getButton(), event.getID() == MouseEvent.MOUSE_PRESSED, event.getX(), event.getY() );
+                        }
+                        break;
+                    case MouseEvent.MOUSE_WHEEL:
+                        for ( int i = 0; i < listeners.size(); i++ ) {
+                            MouseInputListener listener = (MouseInputListener) listeners.get( i );
+                            listener.onWheel( ((MouseWheelEvent)event).getUnitsToScroll()*WHEEL_AMP, event.getX(), event.getY() );
+                        }
+                        break;
+                    default:
+                }
+            }
+        }
+        else
+        {
+            swingEvents.clear();
+        }
+
+        lastEventX = x;
+        lastEventY = y;
     }
 
     public void setCursorVisible(boolean v) {
@@ -193,7 +253,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
 
     public void mousePressed(MouseEvent arg0) {
         if (!enabled) return;
-        
+
         switch (arg0.getButton()) {
         case MouseEvent.BUTTON1:
             buttons.set(0, true);
@@ -205,6 +265,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             buttons.set(2, true);
             break;
         }
+
+        swingEvents.add( arg0 );
     }
 
     public void mouseReleased(MouseEvent arg0) {
@@ -221,6 +283,8 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
             buttons.set(2, false);
             break;
         }
+
+        swingEvents.add( arg0 );
     }
 
     public void mouseEntered(MouseEvent arg0) {
@@ -231,7 +295,7 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         ; // ignore for now
     }
 
-    
+
     // **********************************
     // java.awt.event.MouseWheelListener methods
     // **********************************
@@ -240,9 +304,11 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         if (!enabled) return;
 
         wheelDelta -= arg0.getUnitsToScroll() * WHEEL_AMP;
+
+        swingEvents.add( arg0 );
     }
 
-    
+
     // **********************************
     // java.awt.event.MouseMotionListener methods
     // **********************************
@@ -254,15 +320,14 @@ public class AWTMouseInput extends MouseInput implements MouseListener, MouseWhe
         deltaPoint.x = absPoint.x-lastPoint.x;
         deltaPoint.y = absPoint.y-lastPoint.y;
         lastPoint.setLocation(arg0.getPoint());
+
+        swingEvents.add( arg0 );
     }
 
     public void mouseMoved(MouseEvent arg0) {
         if (!enabled || dragOnly) return;
 
-        absPoint.setLocation(arg0.getPoint());
-        deltaPoint.x = absPoint.x-lastPoint.x;
-        deltaPoint.y = absPoint.y-lastPoint.y;
-        lastPoint.setLocation(arg0.getPoint());
+        mouseDragged( arg0 );
     }
 
 }
