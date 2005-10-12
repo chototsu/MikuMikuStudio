@@ -36,6 +36,7 @@ import java.awt.Component;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 
@@ -52,7 +53,7 @@ import javax.swing.Icon;
  * special rules when drawn vertically and should never be rotated)
  * 
  * @author Lee Ann Rucker - LRucker@mac.com
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class VTextIcon implements Icon, PropertyChangeListener {
     String fLabel;
@@ -177,10 +178,13 @@ public class VTextIcon implements Icon, PropertyChangeListener {
      */
     public void paintIcon(Component c, Graphics g, int x, int y) {
         // We don't insist that it be on the same Component
-    		if (c != null) {
-        g.setColor(c.getForeground());
-        g.setFont(c.getFont());
-    		}
+        Graphics2D g2 = (Graphics2D) g;
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+        if (c != null) {
+            g.setColor(c.getForeground());
+            g.setFont(c.getFont());
+        }
         if (fRotation == ROTATE_NONE) {
             int yPos = y + fCharHeight;
             for (int i = 0; i < fCharStrings.length; i++) {

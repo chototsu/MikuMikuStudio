@@ -65,7 +65,6 @@ import javax.swing.event.ChangeListener;
 
 import com.jme.input.KeyInput;
 import com.jme.input.MouseInput;
-import com.jme.input.MouseInputListener;
 import com.jme.system.DisplaySystem;
 import com.jmex.awt.JMECanvas;
 import com.jmex.awt.input.AWTKeyInput;
@@ -272,20 +271,20 @@ public class RenControlEditor extends JFrame {
             }
         }.start();
 
-        // event test - does print event only
-        MouseInput.get().addListener( new MouseInputListener() {
-            public void onButton( int button, boolean pressed, int x, int y ) {
-                System.out.println( "button " + button + " " + (pressed?"pressed":"released") );
-            }
-
-            public void onWheel( int wheelDelta, int x, int y ) {
-                System.out.println( "wheel scrolled " + wheelDelta );
-            }
-
-            public void onMove( int xDelta, int yDelta, int newX, int newY ) {
-                System.out.println( "mouse moved by ("+xDelta+";"+yDelta+")");
-            }
-        } );
+//        // event test - does print event only
+//        MouseInput.get().addListener( new MouseInputListener() {
+//            public void onButton( int button, boolean pressed, int x, int y ) {
+//                System.out.println( "button " + button + " " + (pressed?"pressed":"released") );
+//            }
+//
+//            public void onWheel( int wheelDelta, int x, int y ) {
+//                System.out.println( "wheel scrolled " + wheelDelta );
+//            }
+//
+//            public void onMove( int xDelta, int yDelta, int newX, int newY ) {
+//                System.out.println( "mouse moved by ("+xDelta+";"+yDelta+")");
+//            }
+//        } );
 
         // force a resize to ensure proper canvas size.
         glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight()+1);
