@@ -97,7 +97,7 @@ import com.jmex.effects.ParticleManager;
  * <code>RenParticleControlFrame</code>
  *
  * @author Joshua Slack
- * @version $Id: RenParticleEditor.java,v 1.17 2005-09-21 19:03:33 irrisor Exp $
+ * @version $Id: RenParticleEditor.java,v 1.18 2005-10-12 03:42:20 renanse Exp $
  *
  */
 
@@ -248,9 +248,8 @@ public class RenParticleEditor extends JFrame {
             }.start();
             
             updateFromManager();
-            doResize();
         } catch (Exception ex) {
-//            ex.printStackTrace();
+            ex.printStackTrace();
         }
     }
 
@@ -1535,7 +1534,7 @@ public class RenParticleEditor extends JFrame {
             // -------------GL STUFF------------------
 
             // make the canvas:
-            glCanvas = DisplaySystem.getDisplaySystem("lwjgl").createCanvas(width, height);
+            glCanvas = DisplaySystem.getDisplaySystem("LWJGL").createCanvas(width, height);
 
             // add a listener... if window is resized, we can do something about it.
             glCanvas.addComponentListener(new ComponentAdapter() {
@@ -1550,7 +1549,7 @@ public class RenParticleEditor extends JFrame {
             glCanvas.addMouseListener(l);
             glCanvas.addMouseMotionListener(l);
 
-            // Important!  Here is where we add the guts to the panel:
+            // Important!  Here is where we add the guts to the canvas:
             impl = new MyImplementor(width, height);
             ((JMECanvas) glCanvas).setImplementor(impl);
             
