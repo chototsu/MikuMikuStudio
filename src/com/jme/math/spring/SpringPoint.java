@@ -30,44 +30,46 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.math;
+package com.jme.math.spring;
+
+import com.jme.math.Vector3f;
 
 /**
- * <code>SpringNode</code> defines a single node in a SpringSystem.
+ * <code>SpringPoint</code> defines a single point in a SpringSystem.
  * @author Joshua Slack
- * @version $Id: SpringNode.java,v 1.2 2005-09-15 17:13:45 renanse Exp $
+ * @version $Id: SpringPoint.java,v 1.1 2005-10-12 16:56:13 Mojomonkey Exp $
  */
-public class SpringNode {
+public class SpringPoint {
 
 	/**
-	 * index of this node in the system.  Needs to be set by the programmer.
-	 * can be useful for derivatives of SpringNodeForce that may apply force
-	 * differently to different nodes based on location in the matrix.
+	 * index of this point in the system.  Needs to be set by the programmer.
+	 * can be useful for derivatives of SpringpointForce that may apply force
+	 * differently to different points based on location in the matrix.
 	 */
 	public int index = 0;
-	/** Mass of this node. */
+	/** Mass of this point. */
 	public float mass = 1;
-	/** Inverse Mass of this node. */
+	/** Inverse Mass of this point. */
 	public float invMass = 1;
-	/** Position of this node in space. */
+	/** Position of this point in space. */
 	public Vector3f position;
-	/** Previous Position of this node in space. */
+	/** Previous Position of this point in space. */
 	public Vector3f oldPos;
 	/** Acceleration vector, zeroed and recalculated on each SpringSystem.calcForces(float). */
 	public Vector3f acceleration;
 
 	/**
 	 * Public constructor.
-	 * @param pos Vertex position of this node.
+	 * @param pos Vertex position of this point.
 	 */
-	public SpringNode(Vector3f pos) {
+	public SpringPoint(Vector3f pos) {
 		position = pos;
 		oldPos = new Vector3f(pos);
 		acceleration = new Vector3f(0, 0, 0);
 	}
 
 	/**
-	 * Set the mass for this node.  Also calculates and stores the inverse
+	 * Set the mass for this point.  Also calculates and stores the inverse
 	 * mass to invMass field for future use.
 	 * @param m float
 	 */
@@ -82,7 +84,7 @@ public class SpringNode {
 	}
 
 	/**
-	 * Verlet update of node location.  Pretty stable.  Updates position
+	 * Verlet update of point location.  Pretty stable.  Updates position
 	 * by using implied velocity derived from the distance travled since
 	 * last update.  Thus velocity and position do not get out of sync.
 	 * @param dt float - change in time since last update.

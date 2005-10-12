@@ -37,8 +37,8 @@ import java.util.ArrayList;
 import com.jme.bounding.BoundingBox;
 import com.jme.intersection.CollisionData;
 import com.jme.intersection.TriangleCollisionResults;
-import com.jme.math.SpringNode;
 import com.jme.math.Vector3f;
+import com.jme.math.spring.SpringPoint;
 import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
@@ -47,7 +47,7 @@ import com.jme.util.geom.BufferUtils;
  * with other objects.  Override handleCollision to change collision behavior.
  *
  * @author Joshua Slack
- * @version $Id: CollidingClothPatch.java,v 1.3 2005-09-20 16:46:43 renanse Exp $
+ * @version $Id: CollidingClothPatch.java,v 1.4 2005-10-12 16:56:12 Mojomonkey Exp $
  */
 public class CollidingClothPatch extends ClothPatch {
     private static final long serialVersionUID = 1L;
@@ -58,7 +58,7 @@ public class CollidingClothPatch extends ClothPatch {
 	protected ArrayList colliders;
 
 	// Temp vars used to eliminate object creation
-	protected SpringNode[] srcTemps = new SpringNode[3];
+	protected SpringPoint[] srcTemps = new SpringPoint[3];
 	protected Vector3f calcTemp = new Vector3f();
 
 	/**

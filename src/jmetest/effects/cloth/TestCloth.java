@@ -39,8 +39,8 @@ import com.jme.image.Texture;
 import com.jme.input.KeyBindingManager;
 import com.jme.input.KeyInput;
 import com.jme.light.PointLight;
-import com.jme.math.SpringNodeForce;
 import com.jme.math.Vector3f;
+import com.jme.math.spring.SpringPointForce;
 import com.jme.scene.shape.Sphere;
 import com.jme.scene.state.TextureState;
 import com.jme.util.TextureManager;
@@ -53,14 +53,14 @@ import com.jmex.effects.cloth.CollidingClothPatch;
  * triangle based collision.
  *
  * @author Joshua Slack
- * @version $Id: TestCloth.java,v 1.4 2005-09-15 17:15:05 renanse Exp $
+ * @version $Id: TestCloth.java,v 1.5 2005-10-12 16:56:14 Mojomonkey Exp $
  */
 public class TestCloth extends SimpleGame {
 
 	private CollidingClothPatch cloth;
 	private float windStrength = 40f;
 	private Vector3f windDirection = new Vector3f(.3f, 0f, .8f);
-	private SpringNodeForce wind, gravity, drag;
+	private SpringPointForce wind, gravity, drag;
 	private Sphere sphere;
 
 

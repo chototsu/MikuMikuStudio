@@ -32,11 +32,11 @@
 
 package com.jmex.effects.cloth;
 
-import com.jme.math.SpringNode;
-import com.jme.math.SpringNodeForce;
-import com.jme.math.SpringSystem;
 import com.jme.math.Vector2f;
 import com.jme.math.Vector3f;
+import com.jme.math.spring.SpringPoint;
+import com.jme.math.spring.SpringPointForce;
+import com.jme.math.spring.SpringSystem;
 import com.jme.scene.TriMesh;
 import com.jme.util.geom.BufferUtils;
 
@@ -46,7 +46,7 @@ import com.jme.util.geom.BufferUtils;
  * with a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: ClothPatch.java,v 1.2 2005-09-15 17:14:42 renanse Exp $
+ * @version $Id: ClothPatch.java,v 1.3 2005-10-12 16:56:12 Mojomonkey Exp $
  */
 public class ClothPatch extends TriMesh {
     private static final long serialVersionUID = 1L;
@@ -96,18 +96,18 @@ public class ClothPatch extends TriMesh {
 
 	/**
 	 * Add an external force to the underlying SpringSystem.
-	 * @param force SpringNodeForce
+	 * @param force SpringPointForce
 	 */
-	public void addForce(SpringNodeForce force) {
+	public void addForce(SpringPointForce force) {
 		system.addForce(force);
 	}
 
 	/**
 	 * Remove a force from the underlying SpringSystem.
-	 * @param force SpringNodeForce
+	 * @param force SpringPointForce
 	 * @return true if found and removed.
 	 */
-	public boolean removeForce(SpringNodeForce force) {
+	public boolean removeForce(SpringPointForce force) {
 		return system.removeForce(force);
 	}
 
@@ -308,7 +308,7 @@ public class ClothPatch extends TriMesh {
 	protected void updateVertBuffer() {
 	    vertBuf.rewind();
 	    for (int x = 0; x < system.getNodeCount(); x++) {
-	        SpringNode n = system.getNode(x);
+	        SpringPoint n = system.getNode(x);
 	        vertBuf.put(n.position.x).put(n.position.y).put(n.position.z);
 	    }
 	}

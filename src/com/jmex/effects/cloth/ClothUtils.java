@@ -33,14 +33,14 @@
 package com.jmex.effects.cloth;
 
 import com.jme.math.FastMath;
-import com.jme.math.SpringNode;
-import com.jme.math.SpringNodeForce;
 import com.jme.math.Vector3f;
+import com.jme.math.spring.SpringPoint;
+import com.jme.math.spring.SpringPointForce;
 
 /**
  * <code>ClothUtils</code>
  * @author Joshua Slack
- * @version $Id: ClothUtils.java,v 1.2 2005-09-15 17:14:42 renanse Exp $
+ * @version $Id: ClothUtils.java,v 1.3 2005-10-12 16:56:12 Mojomonkey Exp $
  */
 public final class ClothUtils {
 
@@ -56,15 +56,15 @@ public final class ClothUtils {
 	 * @param windStr Max strength of wind.
 	 * @param windDir Direction wind should blow.
 	 * @param addRandom randomly alter the strength of the wind by 0-100%
-	 * @return SpringNodeForce
+	 * @return SpringPointForce
 	 */
-	public static SpringNodeForce createBasicWind(final float windStr, final Vector3f windDir, final boolean addRandom) {
-		return new SpringNodeForce() {
+	public static SpringPointForce createBasicWind(final float windStr, final Vector3f windDir, final boolean addRandom) {
+		return new SpringPointForce() {
 			private final float strength = windStr;
 			private final Vector3f windDirection = windDir;
 			private final boolean random = addRandom;
 
-			public void apply(float dt, SpringNode node) {
+			public void apply(float dt, SpringPoint node) {
 				float tStr = (random ? FastMath.nextRandomFloat() * strength : strength);
 				node.acceleration.addLocal(windDirection.x * tStr,
 																			 windDirection.y * tStr,
@@ -76,13 +76,13 @@ public final class ClothUtils {
 	/**
 	 * Create a basic gravitational force.
 	 *
-	 * @return SpringNodeForce
+	 * @return SpringPointForce
 	 */
-	public static SpringNodeForce createBasicGravity() {
-		return new SpringNodeForce() {
+	public static SpringPointForce createBasicGravity() {
+		return new SpringPointForce() {
 			private Vector3f gravity = new Vector3f(0, -32.14f, 0); // ft/s2
 
-			public void apply(float dt, SpringNode node) {
+			public void apply(float dt, SpringPoint node) {
 				node.acceleration.addLocal(gravity.x, gravity.y,
 												gravity.z);
 			}
@@ -95,14 +95,14 @@ public final class ClothUtils {
 	 * multiplying by the drag coefficient and dividing by the particle mass.
 	 *
 	 * @param dragCoef Should be positive.  Larger values mean more drag but possibly more instability.
-	 * @return SpringNodeForce
+	 * @return SpringPointForce
 	 */
-	public static SpringNodeForce createBasicDrag(final float dragCoef) {
-		return new SpringNodeForce() {
+	public static SpringPointForce createBasicDrag(final float dragCoef) {
+		return new SpringPointForce() {
 			private Vector3f velocity = new Vector3f();
 			private float dragCoefficient = dragCoef;
 
-			public void apply(float dt, SpringNode node) {
+			public void apply(float dt, SpringPoint node) {
 				// viscous drag
 				velocity.set(node.position);
 				velocity.subtractLocal(node.oldPos).divideLocal(dt);

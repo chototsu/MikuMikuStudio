@@ -30,21 +30,23 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.math;
+package com.jme.math.spring;
+
+import com.jme.math.Vector3f;
 
 /**
  * <code>Spring</code> defines a single spring connecting two SpringNodes
  * in a SpringSystem.
  *
  * @author Joshua Slack
- * @version $Id: Spring.java,v 1.2 2005-09-15 17:13:47 renanse Exp $
+ * @version $Id: Spring.java,v 1.1 2005-10-12 16:56:13 Mojomonkey Exp $
  */
 public class Spring {
 
 	/** First node connected by this Spring. */
-	public SpringNode node1;
+	public SpringPoint node1;
 	/** Second node connected by this Spring. */
-	public SpringNode node2;
+	public SpringPoint node2;
 	/** Rest length of this Spring. */
 	private float restLength = 1;
 	/** The squared rest length of this spring */
@@ -60,7 +62,7 @@ public class Spring {
 	 * @param node2 SpringNode
 	 * @param restLength float
 	 */
-	public Spring(SpringNode node1, SpringNode node2, float restLength) {
+	public Spring(SpringPoint node1, SpringPoint node2, float restLength) {
 		this.node1 = node1;
 		this.node2 = node2;
 		setRestLength(restLength);

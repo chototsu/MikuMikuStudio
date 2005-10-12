@@ -30,16 +30,16 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.math;
+package com.jme.math.spring;
 
 /**
- * <code>SpringNodeForce</code> is an abstract class defining an external
+ * <code>SpringPointForce</code> is an abstract class defining an external
  * force to be used with the SpringSystem class.
  *
  * @author Joshua Slack
- * @version $Id: SpringNodeForce.java,v 1.2 2005-09-15 17:13:46 renanse Exp $
+ * @version $Id: SpringPointForce.java,v 1.1 2005-10-12 16:56:14 Mojomonkey Exp $
  */
-public abstract class SpringNodeForce {
+public abstract class SpringPointForce {
 
 	/**
 	 * Is this force enabled?  ie, should it be used when calculating forces
@@ -64,11 +64,11 @@ public abstract class SpringNodeForce {
 	}
 
 	/**
-	 * Apply the force defined by this class on a given node.
+	 * Apply the force defined by this class on a given point.
 	 * Should do this by making a call to
 	 * <i>node.acceleration.addLocal(....);</i>
 	 * @param dt amount of time since last apply call in ms.
 	 * @param node the node to apply the force to.
 	 */
-	public abstract void apply(float dt, SpringNode node);
+	public abstract void apply(float dt, SpringPoint node);
 }

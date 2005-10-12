@@ -30,16 +30,18 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package com.jme.math;
+package com.jme.math.spring;
 
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
+
+import com.jme.math.Vector3f;
 
 /**
  * <code>SpringSystem</code> is a set of springs and nodes that
  * act and update as a cohesive unit.
  * @author Joshua Slack
- * @version $Id: SpringSystem.java,v 1.2 2005-09-15 17:13:45 renanse Exp $
+ * @version $Id: SpringSystem.java,v 1.1 2005-10-12 16:56:13 Mojomonkey Exp $
  */
 public class SpringSystem {
 	/** Array of SpringNodes in this system. */
@@ -63,8 +65,8 @@ public class SpringSystem {
 	 * @param index int
 	 * @return SpringNode
 	 */
-	public SpringNode getNode(int index) {
-		return (SpringNode)nodes.get(index);
+	public SpringPoint getNode(int index) {
+		return (SpringPoint)nodes.get(index);
 	}
 
 	/**
@@ -79,7 +81,7 @@ public class SpringSystem {
 	 * Add a SpringNode to this system.
 	 * @param node SpringNode
 	 */
-	public void addNode(SpringNode node) {
+	public void addNode(SpringPoint node) {
 		nodes.add(node);
 	}
 
@@ -88,7 +90,7 @@ public class SpringSystem {
 	 * @param node SpringNode
 	 * @return true if SpringNode is found and removed.
 	 */
-	public boolean removeNode(SpringNode node) {
+	public boolean removeNode(SpringPoint node) {
 		return nodes.remove(node);
 	}
 
@@ -114,7 +116,7 @@ public class SpringSystem {
 	 * @param node1 SpringNode
 	 * @param node2 SpringNode
 	 */
-	public void addSpring(SpringNode node1, SpringNode node2) {
+	public void addSpring(SpringPoint node1, SpringPoint node2) {
 		Spring s = new Spring(node1, node2, node1.position.distance(node2.position));
 		springs.add(s);
 	}
@@ -156,18 +158,18 @@ public class SpringSystem {
 
 	/**
 	 * Add an external force to this system.
-	 * @param force SpringNodeForce
+	 * @param force SpringPointForce
 	 */
-	public void addForce(SpringNodeForce force) {
+	public void addForce(SpringPointForce force) {
 		externalForces.add(force);
 	}
 
 	/**
 	 * Remove a force from this system.
-	 * @param force SpringNodeForce
+	 * @param force SpringPointForce
 	 * @return true if found and removed.
 	 */
-	public boolean removeForce(SpringNodeForce force) {
+	public boolean removeForce(SpringPointForce force) {
 		return externalForces.remove(force);
 	}
 
@@ -193,7 +195,7 @@ public class SpringSystem {
 
 		verts.rewind();
 		for (int i = 0, len = verts.capacity() / 3; i < len; i++) {
-			SpringNode node = new SpringNode(new Vector3f(verts.get(), verts.get(), verts.get()));
+			SpringPoint node = new SpringPoint(new Vector3f(verts.get(), verts.get(), verts.get()));
 			node.index = i;
 			node.setMass(particleMass);
 			system.nodes.add(node);
@@ -201,40 +203,40 @@ public class SpringSystem {
 
 		for (int j = 0; j < height; j++) {
 			for (int i = 0; i < width; i++) {
-				SpringNode node = (SpringNode)system.nodes.get(j * width + i);
+				SpringPoint node = (SpringPoint)system.nodes.get(j * width + i);
 
 				// attach structural springs...  one down and one right
 				if (i < width - 1)
-					system.addSpring(node, (SpringNode)system.nodes.get(j * width + (i + 1)));
+					system.addSpring(node, (SpringPoint)system.nodes.get(j * width + (i + 1)));
 				if (j < height - 1)
-					system.addSpring(node, (SpringNode)system.nodes.get((j + 1) * width + i));
+					system.addSpring(node, (SpringPoint)system.nodes.get((j + 1) * width + i));
 
 				// attach more structural springs...  one up and one left
 				if (i > 0)
-					system.addSpring(node, (SpringNode)system.nodes.get(j * width + (i - 1)));
+					system.addSpring(node, (SpringPoint)system.nodes.get(j * width + (i - 1)));
 				if (j > 0)
-					system.addSpring(node, (SpringNode)system.nodes.get((j - 1) * width + i));
+					system.addSpring(node, (SpringPoint)system.nodes.get((j - 1) * width + i));
 
 					// attach shear springs...  4 diagonals
 				if (i < width - 1 && j > 0)
-					system.addSpring(node, (SpringNode)system.nodes.get((j - 1) * width + (i + 1)));
+					system.addSpring(node, (SpringPoint)system.nodes.get((j - 1) * width + (i + 1)));
 				if (i < width - 1 && j < height - 1)
-					system.addSpring(node, (SpringNode)system.nodes.get((j + 1) * width + (i + 1)));
+					system.addSpring(node, (SpringPoint)system.nodes.get((j + 1) * width + (i + 1)));
 
 				if (i > 0 && j > 0)
-					system.addSpring(node, (SpringNode)system.nodes.get((j - 1) * width + (i - 1)));
+					system.addSpring(node, (SpringPoint)system.nodes.get((j - 1) * width + (i - 1)));
 				if (i > 0 && j < height - 1)
-					system.addSpring(node, (SpringNode)system.nodes.get((j + 1) * width + (i - 1)));
+					system.addSpring(node, (SpringPoint)system.nodes.get((j + 1) * width + (i - 1)));
 
 				// attach bend springs...  two spaces in each direction.
 				if (i < width - 2)
-					system.addSpring(node, (SpringNode)system.nodes.get(j * width + (i + 2)));
+					system.addSpring(node, (SpringPoint)system.nodes.get(j * width + (i + 2)));
 				if (j < height - 2)
-					system.addSpring(node, (SpringNode)system.nodes.get((j + 2) * width + i));
+					system.addSpring(node, (SpringPoint)system.nodes.get((j + 2) * width + i));
 				if (i > 1)
-					system.addSpring(node, (SpringNode)system.nodes.get(j * width + (i - 2)));
+					system.addSpring(node, (SpringPoint)system.nodes.get(j * width + (i - 2)));
 				if (j > 1)
-					system.addSpring(node, (SpringNode)system.nodes.get((j - 2) * width + i));
+					system.addSpring(node, (SpringPoint)system.nodes.get((j - 2) * width + i));
 			}
 		}
 //		System.err.println("nodes: " + system.nodes.size());
@@ -249,12 +251,12 @@ public class SpringSystem {
 	 */
 	public void calcForces(float dt) {
 		for (int x = 0, nSize = nodes.size(); x < nSize; x++) {
-			SpringNode node = (SpringNode)nodes.get(x);
+			SpringPoint node = (SpringPoint)nodes.get(x);
 			node.acceleration.zero();
 
 			// apply external forces
 			for (int y = externalForces.size(); --y >= 0; ) {
-				SpringNodeForce force = (SpringNodeForce) externalForces.get(y);
+				SpringPointForce force = (SpringPointForce) externalForces.get(y);
 				if (force.isEnabled()) {
 					force.apply(dt, node);
 				}
@@ -269,7 +271,7 @@ public class SpringSystem {
 	 */
 	public void update(float dt) {
 		for (int x = 0, nSize = nodes.size(); x < nSize; x++) {
-			SpringNode node = (SpringNode)nodes.get(x);
+			SpringPoint node = (SpringPoint)nodes.get(x);
 			node.update(dt);
 		}
 		for (int x = 0; x < relaxLoops; x++) {
