@@ -44,11 +44,12 @@ import com.jme.input.joystick.JoystickInput;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.11 2005-10-11 20:06:57 irrisor Exp $
+ * @version $Id: InputSystem.java,v 1.12 2005-10-12 03:44:38 renanse Exp $
  */
 public class InputSystem {
 
     public static final String INPUT_SYSTEM_LWJGL = "LWJGL";
+    public static final String INPUT_SYSTEM_AWT = "AWT";
 
     /**
      * Update the core input system - mouse, keyboard and joystick.

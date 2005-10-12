@@ -35,6 +35,7 @@ package com.jme.input;
 import java.util.ArrayList;
 
 import com.jme.input.lwjgl.LWJGLKeyInput;
+import com.jmex.awt.input.AWTKeyInput;
 
 /**
  * <code>KeyInput</code> provides an interface for dealing with keyboard input.
@@ -48,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.11 2005-10-11 20:06:58 irrisor Exp $
+ * @version $Id: KeyInput.java,v 1.12 2005-10-12 03:44:38 renanse Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -568,6 +569,10 @@ public abstract class KeyInput extends Input {
             if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( getProvider() ) )
             {
                 instance = new LWJGLKeyInput(){};
+            }
+            else if ( InputSystem.INPUT_SYSTEM_AWT.equals( getProvider() ) )
+            {
+                instance = new AWTKeyInput(){};
             }
             else
             {

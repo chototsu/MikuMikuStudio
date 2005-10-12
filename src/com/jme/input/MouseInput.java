@@ -35,6 +35,7 @@ package com.jme.input;
 import java.util.ArrayList;
 
 import com.jme.input.lwjgl.LWJGLMouseInput;
+import com.jmex.awt.input.AWTMouseInput;
 
 
 /**
@@ -48,7 +49,7 @@ import com.jme.input.lwjgl.LWJGLMouseInput;
  * {@link #addListener(MouseInputListener)}. Handling of events is done inside the
  * {@link #update} method.
  * @author Mark Powell
- * @version $Id: MouseInput.java,v 1.9 2005-10-11 20:06:58 irrisor Exp $
+ * @version $Id: MouseInput.java,v 1.10 2005-10-12 03:44:39 renanse Exp $
  */
 public abstract class MouseInput extends Input {
 
@@ -65,9 +66,13 @@ public abstract class MouseInput extends Input {
     {
         if ( instance == null )
         {
-            if ( InputSystem.INPUT_SYSTEM_LWJGL.equals( getProvider() ) )
+            if ( InputSystem.INPUT_SYSTEM_LWJGL.equalsIgnoreCase( getProvider() ) )
             {
                 instance = new LWJGLMouseInput(){};
+            }
+            else if ( InputSystem.INPUT_SYSTEM_AWT.equalsIgnoreCase( getProvider() ) )
+            {
+                instance = new AWTMouseInput(){};
             }
             else
             {
