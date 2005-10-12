@@ -1,0 +1,335 @@
+/*
+ * Copyright (c) 2003-2005 jMonkeyEngine
+ * All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions are
+ * met:
+ *
+ * * Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * * Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * * Neither the name of 'jMonkeyEngine' nor the names of its contributors 
+ *   may be used to endorse or promote products derived from this software 
+ *   without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+ * TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+ * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
+ * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
+ * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
+ * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR
+ * PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF
+ * LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+ * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ */
+
+package jmetest.input;
+
+import java.awt.BorderLayout;
+import java.awt.Canvas;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.Toolkit;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.event.MouseWheelListener;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
+import javax.swing.JSpinner;
+import javax.swing.JTabbedPane;
+import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.TitledBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import com.jme.input.KeyInput;
+import com.jme.input.MouseInput;
+import com.jme.system.DisplaySystem;
+import com.jme.util.awt.JMECanvas;
+import com.jmex.awt.input.AWTKeyInput;
+import com.jmex.awt.input.AWTMouseInput;
+
+public class RenControlEditor extends JFrame {
+    private static final long serialVersionUID = 1L;
+    
+    private JSpinner maxRollSpinner;
+    private JSpinner minRollSpinner;
+    private JSpinner ascentSpinner;
+    private Canvas glCanvas;
+    int width = 640, height = 480;
+    private ControlImplementor impl;
+    
+    private Dimension MIN_DIMENSION = new Dimension(400, 300);
+    
+    public static void main(String args[]) {
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+            Toolkit.getDefaultToolkit().setDynamicLayout(true);
+            JFrame.setDefaultLookAndFeelDecorated(true);
+            new RenControlEditor();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public RenControlEditor() {
+        setTitle("RenControlEditor - 3rd Person");
+        setBounds(100, 100, 500, 375);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+        final JPanel panel = new JPanel();
+        panel.setLayout(new GridBagLayout());
+        final JPanel inputModePanel = new JPanel();
+        final GridBagConstraints gridBagConstraints_1 = new GridBagConstraints();
+        gridBagConstraints_1.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_1.weightx = .7;
+        gridBagConstraints_1.weighty = 0;
+        gridBagConstraints_1.insets = new Insets(4, 4, 0, 0);
+        gridBagConstraints_1.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_1.gridx = 0;
+        gridBagConstraints_1.gridy = 0;
+        panel.add(inputModePanel, gridBagConstraints_1);
+        final FlowLayout flowLayout_1 = new FlowLayout();
+        flowLayout_1.setVgap(0);
+        inputModePanel.setLayout(flowLayout_1);
+        inputModePanel.setBorder(new TitledBorder(null, "Input", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+
+        final JRadioButton mousekeyboardRadioButton = new JRadioButton();
+        mousekeyboardRadioButton.setSelected(true);
+        mousekeyboardRadioButton.setText("Mouse/Keyboard");
+        inputModePanel.add(mousekeyboardRadioButton);
+
+        final JRadioButton gameControllerRadioButton = new JRadioButton();
+        gameControllerRadioButton.setText("Game Controller");
+        inputModePanel.add(gameControllerRadioButton);
+
+        final JPanel testPanel = new JPanel();
+        testPanel.setMinimumSize(new Dimension(100, 100));
+        final GridBagConstraints gridBagConstraints_2 = new GridBagConstraints();
+        gridBagConstraints_2.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_2.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_2.weighty = 1.0;
+        gridBagConstraints_2.weightx = .7;
+        gridBagConstraints_2.gridx = 0;
+        gridBagConstraints_2.gridy = 1;
+        panel.add(testPanel, gridBagConstraints_2);
+        testPanel.setLayout(new BorderLayout());
+        testPanel.add(getGlCanvas(), BorderLayout.CENTER);
+        testPanel.setBorder(new TitledBorder(null, "Test Here", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+
+        final JTabbedPane tabbedPane = new JTabbedPane();
+        final GridBagConstraints gridBagConstraints_3 = new GridBagConstraints();
+        gridBagConstraints_3.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_3.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_3.weightx = .3;
+        gridBagConstraints_3.weighty = 1.0;
+        gridBagConstraints_3.insets = new Insets(4, 4, 0, 4);
+        gridBagConstraints_3.gridheight = 2;
+        gridBagConstraints_3.gridx = 1;
+        gridBagConstraints_3.gridy = 0;
+        panel.add(tabbedPane, gridBagConstraints_3);
+        tabbedPane.setMinimumSize(new Dimension(200, 100));
+        tabbedPane.setPreferredSize(new Dimension(200, 100));
+        tabbedPane.setBorder(new TitledBorder(null, "Params", TitledBorder.DEFAULT_JUSTIFICATION, TitledBorder.DEFAULT_POSITION, null, null));
+        tabbedPane.setTabPlacement(SwingConstants.RIGHT);
+
+        final JPanel panel_3 = new JPanel();
+        panel_3.setLayout(new GridBagLayout());
+        VTextIcon icon1 = new VTextIcon(tabbedPane, "Camera");
+        tabbedPane.addTab(null, icon1, panel_3, null);
+
+        final JLabel maxAscentLabel = new JLabel();
+        maxAscentLabel.setText("Max ascent:");
+        final GridBagConstraints gridBagConstraints_4 = new GridBagConstraints();
+        gridBagConstraints_4.gridy = 0;
+        gridBagConstraints_4.gridx = 0;
+        panel_3.add(maxAscentLabel, gridBagConstraints_4);
+
+        ascentSpinner = new JSpinner();
+        ascentSpinner.addChangeListener(new ChangeListener() {
+            public void stateChanged(ChangeEvent e) {
+                System.err.println("hi!" +ascentSpinner.getValue());
+            }
+        });
+        final GridBagConstraints gridBagConstraints_5 = new GridBagConstraints();
+        gridBagConstraints_5.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints_5.gridy = 1;
+        gridBagConstraints_5.gridx = 0;
+        panel_3.add(ascentSpinner, gridBagConstraints_5);
+
+        final JLabel oLabel = new JLabel();
+        oLabel.setFont(new Font("", Font.PLAIN, 9));
+        final GridBagConstraints gridBagConstraints_8 = new GridBagConstraints();
+        gridBagConstraints_8.anchor = GridBagConstraints.NORTH;
+        gridBagConstraints_8.gridy = 1;
+        gridBagConstraints_8.gridx = 1;
+        panel_3.add(oLabel, gridBagConstraints_8);
+        oLabel.setText("o");
+
+        final JLabel minRollinLabel = new JLabel();
+        minRollinLabel.setText("Min Rollin:");
+        final GridBagConstraints gridBagConstraints_6 = new GridBagConstraints();
+        gridBagConstraints_6.gridy = 2;
+        gridBagConstraints_6.gridx = 0;
+        panel_3.add(minRollinLabel, gridBagConstraints_6);
+
+        minRollSpinner = new JSpinner();
+        final GridBagConstraints gridBagConstraints_7 = new GridBagConstraints();
+        gridBagConstraints_7.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints_7.gridy = 3;
+        gridBagConstraints_7.gridx = 0;
+        panel_3.add(minRollSpinner, gridBagConstraints_7);
+
+        final JLabel maxRollinLabel = new JLabel();
+        maxRollinLabel.setText("Max Rollin:");
+        final GridBagConstraints gridBagConstraints_9 = new GridBagConstraints();
+        gridBagConstraints_9.gridy = 4;
+        gridBagConstraints_9.gridx = 0;
+        panel_3.add(maxRollinLabel, gridBagConstraints_9);
+
+        maxRollSpinner = new JSpinner();
+        final GridBagConstraints gridBagConstraints_10 = new GridBagConstraints();
+        gridBagConstraints_10.fill = GridBagConstraints.HORIZONTAL;
+        gridBagConstraints_10.gridy = 5;
+        gridBagConstraints_10.gridx = 0;
+        panel_3.add(maxRollSpinner, gridBagConstraints_10);
+
+        final JPanel panel_4 = new JPanel();
+        VTextIcon icon2 = new VTextIcon(tabbedPane, "Springs");
+        tabbedPane.addTab(null, icon2, panel_4, null);
+
+        final JPanel panel_5 = new JPanel();
+        VTextIcon icon3 = new VTextIcon(tabbedPane, "Movement");
+        tabbedPane.addTab(null, icon3, panel_5, null);
+
+        final JPanel panel_6 = new JPanel();
+        VTextIcon icon4 = new VTextIcon(tabbedPane, "Samples");
+        tabbedPane.addTab(null, icon4, panel_6, null);
+
+        final JPanel panel_7 = new JPanel();
+        VTextIcon icon5 = new VTextIcon(tabbedPane, "Code");
+        tabbedPane.addTab(null, icon5, panel_7, null);
+
+        final JPanel statPanel = new JPanel();
+        final GridBagConstraints gridBagConstraints_11 = new GridBagConstraints();
+        gridBagConstraints_11.anchor = GridBagConstraints.NORTHWEST;
+        gridBagConstraints_11.gridwidth = 2;
+        gridBagConstraints_11.weightx = 1.0;
+        gridBagConstraints_11.fill = GridBagConstraints.BOTH;
+        gridBagConstraints_11.gridx = 0;
+        gridBagConstraints_11.gridy = 2;
+        panel.add(statPanel, gridBagConstraints_11);
+        final FlowLayout flowLayout = new FlowLayout();
+        flowLayout.setHgap(2);
+        flowLayout.setVgap(2);
+        flowLayout.setAlignment(FlowLayout.LEFT);
+        statPanel.setLayout(flowLayout);
+
+        final JLabel hitescToLabel = new JLabel();
+        hitescToLabel.setText("Hit 'esc' to release mouse");
+        statPanel.add(hitescToLabel);
+        
+        final JScrollPane scrollPane = new JScrollPane(panel);
+        getContentPane().add(scrollPane, BorderLayout.CENTER);
+
+        // center the frame
+        setLocationRelativeTo(null);
+        // show frame
+        setVisible(true);
+
+        while (glCanvas == null || impl.startTime == 0) ;
+
+        // MAKE SURE YOU REPAINT SOMEHOW OR YOU WON'T SEE THE UPDATES...
+        new Thread() {
+            { setDaemon(true); }
+            public void run() {
+                while (true) {
+                    glCanvas.repaint();
+                    yield();
+                }
+            }
+        }.start();
+
+        // force a resize to ensure proper canvas size.
+        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight()+1);
+        glCanvas.setSize(glCanvas.getWidth(), glCanvas.getHeight()-1);
+    }
+    
+    public Dimension getMinimumSize() {
+        return MIN_DIMENSION;
+    }
+
+    protected Canvas getGlCanvas() {
+        if (glCanvas == null) {
+
+            // -------------GL STUFF------------------
+
+            // make the canvas:
+            glCanvas = DisplaySystem.getDisplaySystem("LWJGL").createCanvas(width, height);
+            glCanvas.setPreferredSize(new Dimension(50, 50));
+
+            // add a listener... if window is resized, we can do something about it.
+            glCanvas.addComponentListener(new ComponentAdapter() {
+                public void componentResized(ComponentEvent ce) {
+                    impl.resizeCanvas(glCanvas.getSize().width, glCanvas.getSize().height);
+                }
+            });
+            glCanvas.addFocusListener(new FocusListener() {
+
+                public void focusGained(FocusEvent arg0) {
+                    ((AWTKeyInput)KeyInput.get()).setEnabled(true);
+                    ((AWTMouseInput)MouseInput.get()).setEnabled(true);
+                }
+
+                public void focusLost(FocusEvent arg0) {
+                    ((AWTKeyInput)KeyInput.get()).setEnabled(false);
+                    ((AWTMouseInput)MouseInput.get()).setEnabled(false);
+                }
+                
+            });
+            
+            KeyInput.setProvider("AWT");
+            ((AWTKeyInput)KeyInput.get()).setEnabled(false);
+            KeyListener kl = (KeyListener)KeyInput.get();
+            
+            glCanvas.addKeyListener(kl);
+
+            MouseInput.setProvider("AWT");
+            ((AWTMouseInput)MouseInput.get()).setEnabled(false);
+            ((AWTMouseInput)MouseInput.get()).setDragOnly(true);
+            ((AWTMouseInput)MouseInput.get()).setRelativeDelta(glCanvas);
+            glCanvas.addMouseListener((MouseListener)MouseInput.get());
+            glCanvas.addMouseWheelListener((MouseWheelListener)MouseInput.get());
+            glCanvas.addMouseMotionListener((MouseMotionListener)MouseInput.get());
+
+            // Important!  Here is where we add the guts to the canvas:
+            impl = new ControlImplementor(width, height);
+            ((JMECanvas) glCanvas).setImplementor(impl);
+            
+            // -----------END OF GL STUFF-------------
+        }
+        return glCanvas;
+    }
+
+}
