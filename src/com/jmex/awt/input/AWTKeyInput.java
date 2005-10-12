@@ -44,7 +44,7 @@ import com.jme.input.KeyInputListener;
  * <code>AWTKeyInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.1 $
+ * @version $Revision: 1.2 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
@@ -360,10 +360,6 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
             return KeyEvent.VK_INSERT;
         case KEY_DELETE:
             return KeyEvent.VK_DELETE;
-        case KEY_LWIN:
-            return KeyEvent.VK_WINDOWS;
-        case KEY_RWIN:
-            return KeyEvent.VK_WINDOWS;
         }
         System.err.println("unsupported key.");
         return 0;
@@ -590,8 +586,6 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
             return KEY_INSERT;
         case KeyEvent.VK_DELETE:
             return KEY_DELETE;
-        case KeyEvent.VK_WINDOWS:
-            return KEY_LWIN;
 
         }
         System.err.println("unsupported key.");

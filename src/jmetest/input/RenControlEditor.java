@@ -303,7 +303,8 @@ public class RenControlEditor extends JFrame {
 
             // make the canvas:
             glCanvas = DisplaySystem.getDisplaySystem("LWJGL").createCanvas(width, height);
-            glCanvas.setPreferredSize(new Dimension(50, 50));
+            glCanvas.setSize(new Dimension(50,50));
+            //glCanvas.setPreferredSize(new Dimension(50, 50));
 
             // add a listener... if window is resized, we can do something about it.
             glCanvas.addComponentListener(new ComponentAdapter() {
