@@ -37,6 +37,7 @@ import java.awt.Color;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.AWTGLCanvas;
 
+import com.jme.input.InputSystem;
 import com.jme.renderer.ColorRGBA;
 import com.jme.util.awt.JMECanvas;
 import com.jme.util.awt.JMECanvasImplementor;
@@ -45,7 +46,7 @@ import com.jme.util.awt.JMECanvasImplementor;
  * <code>LWJGLCanvas</code>
  * 
  * @author Joshua Slack
- * @version $Id: LWJGLCanvas.java,v 1.2 2005-09-15 17:15:00 renanse Exp $
+ * @version $Id: LWJGLCanvas.java,v 1.3 2005-10-12 03:43:10 renanse Exp $
  */
 public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
 
@@ -72,6 +73,8 @@ public class LWJGLCanvas extends AWTGLCanvas implements JMECanvas {
     public void paintGL() {
         try {
             makeCurrent();
+            
+            InputSystem.update();
 
             if (!impl.isSetup())
                 impl.doSetup();
