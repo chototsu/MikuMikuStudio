@@ -52,7 +52,7 @@ import com.jme.scene.Spatial;
  * </p>
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.9 $
+ * @version $Revision: 1.10 $
  */
 
 public class ChaseCamera extends InputHandler {
@@ -98,11 +98,9 @@ public class ChaseCamera extends InputHandler {
      *            Camera to control
      * @param target
      *            the target node to chase
-     * @param api
-     *            a string denoting the input api to use
      */
-    public ChaseCamera(Camera cam, Spatial target, String api) {
-        this(cam, target, null, api);
+    public ChaseCamera(Camera cam, Spatial target) {
+        this(cam, target, null);
     }
     
     /**
@@ -118,26 +116,21 @@ public class ChaseCamera extends InputHandler {
      *            a hashmap of properties to set this camera up with. keys are
      *            from the statics ChaseCamera.PROP_XXXX and
      *            ThirdPersonMouseLook.PROP_XXXX
-     * @param api
-     *            a string denoting the input api to use
      */
-    public ChaseCamera(Camera cam, Spatial target, HashMap props, String api) {
+    public ChaseCamera(Camera cam, Spatial target, HashMap props) {
         super();
         this.cam = cam;
         this.target = target;
 
-        setupMouse(api);
+        setupMouse();
         updateProperties(props);
     }
 
     /**
      * Set up a relative mouse and the ThirdPersonMouseLook used in this
      * camera's control.
-     * 
-     * @param api
-     *            input system to use
      */
-    private void setupMouse(String api) {
+    private void setupMouse() {
         RelativeMouse mouse = new RelativeMouse("Mouse Input");
         setMouse(mouse);
 

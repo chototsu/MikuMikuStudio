@@ -49,7 +49,7 @@ import com.jme.scene.Node;
  * be controlled similar to games such as Zelda Windwaker and Mario 64, etc.
  * 
  * @author <a href="mailto:josh@renanse.com">Joshua Slack</a>
- * @version $Revision: 1.14 $
+ * @version $Revision: 1.15 $
  */
 
 public class ThirdPersonHandler extends InputHandler {
@@ -149,11 +149,9 @@ public class ThirdPersonHandler extends InputHandler {
      *            the target to move
      * @param cam
      *            the camera for movements to be in relation to
-     * @param api
-     *            the api to use for the underlying input system
      */
-    public ThirdPersonHandler(Node node, Camera cam, String api) {
-        this(node, cam, null, api);
+    public ThirdPersonHandler(Node node, Camera cam) {
+        this(node, cam, null);
     }
     
     /**
@@ -168,10 +166,8 @@ public class ThirdPersonHandler extends InputHandler {
      * @param props
      *            a hashmap of properties used to set handler characteristics
      *            where the key is one of this class's static PROP_XXXX fields.
-     * @param api
-     *            the api to use for the underlying input system
      */
-    public ThirdPersonHandler(Node node, Camera cam, HashMap props, String api) {
+    public ThirdPersonHandler(Node node, Camera cam, HashMap props) {
         this.node = node;
         this.camera = cam;
         setActions();
