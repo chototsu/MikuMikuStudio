@@ -38,7 +38,7 @@ package com.jme.math;
  * That is, a point and an infinite ray is cast from this point. The ray is
  * defined by the following equation: R(t) = origin + t*direction for t >= 0.
  * @author Mark Powell
- * @version $Id: Ray.java,v 1.11 2005-10-08 21:12:11 renanse Exp $
+ * @version $Id: Ray.java,v 1.12 2005-10-12 17:17:39 Mojomonkey Exp $
  */
 public class Ray {
     /** The ray's begining point. */
@@ -69,6 +69,15 @@ public class Ray {
     public Ray(Vector3f origin, Vector3f direction) {
         this.origin = origin;
         this.direction = direction;
+    }
+    
+    /**
+     * <code>intersect</code> determines if the Ray intersects a triangle.
+     * @param t the Triangle to test against.
+     * @return true if the ray collides.
+     */
+    public boolean intersect(Triangle t) {
+        return intersect(t.get(0), t.get(1), t.get(2));
     }
 
     /**
@@ -102,6 +111,18 @@ public class Ray {
         return true;
     }
 
+    /**
+     * <code>intersectWhere</code> determines if the Ray intersects a triangle. It then
+     * stores the point of intersection in the given loc vector
+     * @param t the Triangle to test against.
+     * @param loc
+     *            storage vector to save the collision point in (if the ray
+     *            collides)
+     * @return true if the ray collides.
+     */
+    public boolean intersectWhere(Triangle t, Vector3f loc) {
+        return intersectWhere(t.get(0), t.get(1), t.get(2), loc);
+    }
 
     /**
      * <code>intersectWhere</code> determines if the Ray intersects a triangle
@@ -140,6 +161,23 @@ public class Ray {
         loc.set(origin).addLocal(direction.x * t, direction.y * t,
                 direction.z * t);
         return true;
+    }
+    
+    /**
+     * <code>intersectWherePlanar</code> determines if the Ray intersects a
+     * triangle and if so it stores the point of
+     * intersection in the given loc vector as t, u, v where t is the distance
+     * from the origin to the point of intersection and u,v is the intersection
+     * point in terms of the triangle plane.
+     * 
+     * @param t the Triangle to test against.
+     * @param loc
+     *            storage vector to save the collision point in (if the ray
+     *            collides) as t, u, v
+     * @return true if the ray collides.
+     */
+    public boolean intersectWherePlanar(Triangle t, Vector3f loc) {
+        return intersectWhere(t.get(0), t.get(1), t.get(2), loc);
     }
 
     /**
