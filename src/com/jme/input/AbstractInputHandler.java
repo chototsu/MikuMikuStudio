@@ -36,17 +36,6 @@
 
 package com.jme.input;
 
-import java.util.ArrayList;
-
-import com.jme.app.AbstractGame;
-import com.jme.input.action.KeyInputAction;
-import com.jme.input.action.InputAction;
-import com.jme.input.action.InputActionEvent;
-import com.jme.input.action.MouseInputAction;
-import com.jme.renderer.Camera;
-import com.jme.renderer.RendererType;
-import com.jme.system.DisplaySystem;
-
 /**
  * <code>AbstractInputHandler</code> defines a super abstract class for input
  * controlling. It maintains a list of actions and mouse actions. These actions
@@ -56,7 +45,7 @@ import com.jme.system.DisplaySystem;
  * @author Mark Powell
  * @author Gregg Patton
  * @author Jack Lindamood - (Javadoc only)
- * @version $Id: AbstractInputHandler.java,v 1.11 2005-10-11 20:06:55 irrisor Exp $
+ * @version $Id: AbstractInputHandler.java,v 1.12 2005-10-12 03:40:59 renanse Exp $
  */
 public abstract class AbstractInputHandler {
 
