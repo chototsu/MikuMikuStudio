@@ -48,7 +48,7 @@ import com.jme.input.action.MouseInputAction;
  *
  * @author Mark Powell
  * @author Jack Lindamood - (javadoc only)
- * @version $Id: InputHandler.java,v 1.24 2005-10-11 20:06:57 irrisor Exp $
+ * @version $Id: InputHandler.java,v 1.25 2005-10-13 07:04:39 irrisor Exp $
  */
 public class InputHandler extends AbstractInputHandler {
 
@@ -76,6 +76,15 @@ public class InputHandler extends AbstractInputHandler {
         mouseActions = new ArrayList();
         event = new InputActionEvent();
         actionList = new ArrayList();
+    }
+
+    /**
+     * @return keyboard manager.
+     * @deprecated use {@link KeyBindingManager#getKeyBindingManager()}
+     */
+    public KeyBindingManager getKeyBindingManager() {
+        //todo: remove this method in .11
+        return KeyBindingManager.getKeyBindingManager();
     }
 
     /**
@@ -214,10 +223,9 @@ public class InputHandler extends AbstractInputHandler {
         actionList.clear();
 
         for ( int i = 0; i < keyActions.size(); i++ ) {
-            if ( KeyBindingManager.getKeyBindingManager().isValidCommand( ( (InputAction) keyActions
-                    .get( i ) ).getKey(), ( (KeyInputAction) keyActions
-                    .get( i ) ).allowsRepeats() ) ) {
-                actionList.add( keyActions.get( i ) );
+            KeyInputAction keyInputAction = (KeyInputAction) keyActions.get( i );
+            if ( KeyBindingManager.getKeyBindingManager().isValidCommand( keyInputAction.getKey(), keyInputAction.allowsRepeats() ) ) {
+                actionList.add( keyInputAction );
             }
         }
 

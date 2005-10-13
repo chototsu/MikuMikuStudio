@@ -44,7 +44,7 @@ import com.jme.input.joystick.JoystickInput;
  * @see com.jme.input.KeyInput
  * @see com.jme.input.MouseInput
  * @author Mark Powell
- * @version $Id: InputSystem.java,v 1.12 2005-10-12 03:44:38 renanse Exp $
+ * @version $Id: InputSystem.java,v 1.13 2005-10-13 07:04:39 irrisor Exp $
  */
 public class InputSystem {
 
@@ -80,6 +80,7 @@ public class InputSystem {
      * @see JoystickInput#setProvider(String)
      */
     public static void createInputSystem(String system) {
+        //todo: remove this method in .11
         KeyInput.setProvider( system );
         MouseInput.setProvider( system );
         JoystickInput.setProvider( system );
@@ -98,6 +99,7 @@ public class InputSystem {
      * @deprecated not needed any more - omit calls
      */
     public static void createInputSystem(String system, boolean forceNew) {
+        //todo: remove this method in .11
         if ( forceNew )
         {
             throw new UnsupportedOperationException( "recreating input system is not supported" );
@@ -114,6 +116,7 @@ public class InputSystem {
      * @deprecated not needed any more - omit calls
      */
     public static boolean isInited() {
+        //todo: remove this method in .11
         return true;
     }
 
@@ -125,6 +128,7 @@ public class InputSystem {
      * @deprecated use {@link KeyInput#get()} instead
      */
     public static KeyInput getKeyInput() {
+        //todo: remove this method in .11
         return KeyInput.get();
     }
 
@@ -136,6 +140,7 @@ public class InputSystem {
      * @deprecated use {@link MouseInput#get()} instead
      */
     public static MouseInput getMouseInput() {
+        //todo: remove this method in .11
         return MouseInput.get();
     }
 }

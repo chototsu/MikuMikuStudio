@@ -44,7 +44,7 @@ import com.jme.input.KeyInputListener;
  * <code>AWTKeyInput</code>
  * 
  * @author Joshua Slack
- * @version $Revision: 1.2 $
+ * @version $Revision: 1.3 $
  */
 public class AWTKeyInput extends KeyInput implements KeyListener {
 
@@ -72,6 +72,7 @@ public class AWTKeyInput extends KeyInput implements KeyListener {
     }
 
     public void update() {
+        //todo: replace with linked list or synchronize this to avoid missing events
         if ( listeners != null && listeners.size() > 0 ) {
             for (int x = 0; x < events.size(); x++) {
                 KeyEvent e = (KeyEvent)events.get(x);

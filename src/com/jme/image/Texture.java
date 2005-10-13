@@ -50,7 +50,7 @@ import com.jme.renderer.ColorRGBA;
  * apply - AM_MODULATE, correction - CM_AFFINE.
  * @see com.jme.image.Image
  * @author Mark Powell
- * @version $Id: Texture.java,v 1.20 2005-09-15 17:14:59 renanse Exp $
+ * @version $Id: Texture.java,v 1.21 2005-10-13 07:04:37 irrisor Exp $
  */
 public class Texture {
 
@@ -732,6 +732,7 @@ public class Texture {
    * @deprecated Must set aniso level when loading texture from manager.
    */
   public void setAnisoLevel(float level) {
+    //todo: remove this method in .10 ?
     anisoLevel = level;
   }
 

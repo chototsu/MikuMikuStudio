@@ -45,12 +45,13 @@ import com.jme.util.LoggingSystem;
  * <code>LWJGLMouseInput</code> handles mouse input via the LWJGL Input API.
  *
  * @author Mark Powell
- * @version $Id: LWJGLMouseInput.java,v 1.12 2005-10-11 20:06:54 irrisor Exp $
+ * @version $Id: LWJGLMouseInput.java,v 1.13 2005-10-13 07:04:38 irrisor Exp $
  */
 public class LWJGLMouseInput extends MouseInput {
 
     private int dx, dy;
-		private boolean virgin = true;
+    private boolean virgin = true;
+    private int dWheel;
 
     /**
      * Constructor creates a new <code>LWJGLMouseInput</code> object. A call
@@ -116,7 +117,7 @@ public class LWJGLMouseInput extends MouseInput {
      * @see com.jme.input.MouseInput#getWheelDelta()
      */
     public int getWheelDelta() {
-        return Mouse.getDWheel();
+        return dWheel;
     }
     /**
      * <code>getXDelta</code> retrieves the change of the x position, if any.
@@ -172,12 +173,13 @@ public class LWJGLMouseInput extends MouseInput {
             dx = dy = 0;
             virgin = false;
         }
+        dWheel = Mouse.getDWheel();
 
 
         if ( listeners != null && listeners.size() > 0 ) {
             while ( Mouse.next() ) {
                 int button = Mouse.getEventButton();
-                boolean pressed = button >= 0 ? Mouse.getEventButtonState() : false;
+                boolean pressed = button >= 0 && Mouse.getEventButtonState();
 
                 int wheelDelta = Mouse.getEventDWheel();
 

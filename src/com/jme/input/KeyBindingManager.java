@@ -48,7 +48,7 @@ import com.jme.util.LoggingSystem;
  *
  * @see com.jme.input.KeyInput
  * @author Mark Powell
- * @version $Id: KeyBindingManager.java,v 1.11 2005-10-11 20:06:57 irrisor Exp $
+ * @version $Id: KeyBindingManager.java,v 1.12 2005-10-13 07:04:40 irrisor Exp $
  */
 public class KeyBindingManager {
 	//singleton instance
@@ -65,6 +65,15 @@ public class KeyBindingManager {
 	 */
 	private KeyBindingManager() {
 		keyMap = new HashMap();
+    }
+
+    /**
+     * @return The current KeyInput
+     * @deprecated use {@link KeyInput#get()} instead
+     */
+    public KeyInput getKeyInput() {
+        //todo: remove this method in .11
+        return KeyInput.get();
     }
 
 	/**
@@ -174,19 +183,20 @@ public class KeyBindingManager {
         if(null == keyList) {
             return false;
         }
-
-        int[] keycodes;
-        boolean value = true;
+        if ( keyList.isEmpty() )
+        {
+            return true; //is this desired? (it was the previous behaviour)
+        }
 
         for(int i = 0, max = keyList.size(); i < max; i++) {
-            keycodes = ((KeyCodes)keyList.get(i)).keys;
-            value = true;
+            int[] keycodes = ((KeyCodes)keyList.get(i)).keys;
+            boolean value = true;
 
             for(int j = 0; value && j < keycodes.length; j++) {
               if (allowRepeats)
-                value = value && KeyInput.get().isKeyDown(keycodes[j]);
+                value = KeyInput.get().isKeyDown(keycodes[j]);
               else
-                value = value && getStickyKey(keycodes[j]);
+                value = getStickyKey(keycodes[j]);
             }
 
             if (value) {
@@ -194,7 +204,7 @@ public class KeyBindingManager {
             }
         }
 
-        return value;
+        return false;
     }
 
     /**

@@ -49,7 +49,7 @@ import com.jmex.awt.input.AWTKeyInput;
  * {@link #update} method.
  *
  * @author Mark Powell
- * @version $Id: KeyInput.java,v 1.12 2005-10-12 03:44:38 renanse Exp $
+ * @version $Id: KeyInput.java,v 1.13 2005-10-13 07:04:40 irrisor Exp $
  */
 public abstract class KeyInput extends Input {
 
@@ -699,5 +699,15 @@ public abstract class KeyInput extends Input {
             instance.destroy();
             instance = null;
         }
+    }
+
+    /**
+     * this method only exists to point developers the right way:
+     * @deprecated have a look at {@link #addListener(KeyInputListener)} - you can grab keyboard events using a listener
+     */
+    public boolean next()
+    {
+        //todo: remove this method in .11
+        return false;
     }
 }
