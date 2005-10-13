@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.jme.input.joystick.Joystick;
 import com.jme.input.joystick.JoystickInputListener;
 import com.jme.input.joystick.JoystickInput;
+import com.jme.input.joystick.DummyJoystickInput;
 import com.jme.util.LoggingSystem;
 import org.lwjgl.input.Controllers;
 import org.lwjgl.LWJGLException;
@@ -14,7 +15,7 @@ import org.lwjgl.LWJGLException;
  */
 public class LWJGLJoystickInput extends JoystickInput {
     private ArrayList joysticks;
-    private DummyJoystick dummyJoystick;
+    private DummyJoystickInput.DummyJoystick dummyJoystick;
 
 
     protected LWJGLJoystickInput() {
@@ -80,7 +81,7 @@ public class LWJGLJoystickInput extends JoystickInput {
         {
             if ( dummyJoystick == null )
             {
-                dummyJoystick = new DummyJoystick();
+                dummyJoystick = new DummyJoystickInput.DummyJoystick();
             }
             return dummyJoystick;
         }
@@ -90,36 +91,4 @@ public class LWJGLJoystickInput extends JoystickInput {
         Controllers.destroy();
     }
 
-    private static class DummyJoystick implements Joystick {
-        public void rumble( int axis, float intensity ) {
-        }
-
-        public String[] getAxisNames() {
-            return new String[0];
-        }
-
-        public int getAxisCount() {
-            return 0;
-        }
-
-        public float getAxisValue( int axis ) {
-            return 0;
-        }
-
-        public int getButtonCount() {
-            return 0;
-        }
-
-        public boolean isButtonPressed( int button ) {
-            return false;
-        }
-
-        public String getName() {
-            return "Dummy";
-        }
-
-        public void setDeadZone( int axis, float value ) {
-
-        }
-    }
 }

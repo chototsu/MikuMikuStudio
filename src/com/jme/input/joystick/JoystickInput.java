@@ -31,6 +31,10 @@ public abstract class JoystickInput extends Input {
             {
                 instance = new LWJGLJoystickInput(){};
             }
+            else if ( InputSystem.INPUT_SYSTEM_DUMMY.equals( getProvider() ) )
+            {
+                instance = new DummyJoystickInput(){};
+            }
             else
             {
                 throw new IllegalArgumentException( "Unsupported provider: " + getProvider() );
